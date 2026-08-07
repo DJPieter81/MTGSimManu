@@ -114,6 +114,16 @@ class CardTemplate:
     color_identity: Set[Color] = field(default_factory=set)
     # For lands
     produces_mana: List[str] = field(default_factory=list)  # e.g., ["W", "R"]
+    # Mana UNITS from the land's plain {T} ability: one inner list of
+    # color options per unit of mana produced (E1 — multi-mana lands).
+    # 'Add {G}{U}' → [["G"], ["U"]] (two fixed units);
+    # 'Add {G} or {U}' → [["G", "U"]] (one unit, color choice).
+    # Empty ⇒ legacy single unit whose options are `produces_mana`.
+    mana_units: List[List[str]] = field(default_factory=list)
+    # 'When this land enters, return a land you control to its owner's
+    # hand' — structural ETB clause of the karoo family (E1b), a
+    # sibling of `enters_tapped`.
+    etb_return_land: bool = False
     enters_tapped: bool = False
     # Life payment to enter untapped (shock lands = 2, derived from oracle text)
     untap_life_cost: int = 0
@@ -168,6 +178,14 @@ class CardTemplate:
     @property
     def is_creature(self) -> bool:
         return CardType.CREATURE in self.card_types
+
+    @property
+    def mana_count(self) -> int:
+        """Units of mana one tap of this land produces (≥1 for any
+        mana-producing land; E1 multi-mana schema)."""
+        if self.mana_units:
+            return len(self.mana_units)
+        return 1 if self.produces_mana else 0
 
     @property
     def is_land(self) -> bool:
@@ -233,14 +251,32 @@ class CardInstance:
     blocked_by: List[int] = field(default_factory=list)
     # Damage
     damage_marked: int = 0
+    # Deathtouch marker (CR 702.2 / SBA 704.5i): total damage dealt to
+    # this creature by deathtouch sources since the last damage
+    # cleanup. Written by engine/damage.py:deal_damage; consumed by
+    # SBAManager.perform_deathtouch_check (destroy on any amount > 0).
+    # Wears off with marked damage in cleanup_damage().
+    _deathtouch_damage: int = 0
     # Temporary effects
     temp_power_mod: int = 0
     temp_toughness_mod: int = 0
     temp_keywords: Set[Keyword] = field(default_factory=set)
+    # Land animation ("this land becomes an N/M creature until end of
+    # turn") — Track H. While True the instance belongs to the combat
+    # class (creatures property, can_attack/can_block, SBA death
+    # check); the printed P/T ride on temp_power_mod/temp_toughness_mod
+    # and every part wears off together in cleanup_damage().
+    is_animated: bool = False
     # Tracking
     turned_face_up: bool = True
     entered_battlefield_this_turn: bool = False
     attacked_this_turn: bool = False
+    # CR 400.7 object identity: a card that changes zones becomes a new
+    # object. The engine reuses one CardInstance across zones, so each
+    # battlefield entry bumps this sequence; delayed one-shot riders
+    # (e.g. "exile it at the beginning of the next end step") capture it
+    # at registration and go stale if the object re-enters.
+    battlefield_entry_seq: int = 0
     # Energy counters (for energy decks)
     energy_produced: int = 0
     # Flashback (granted by Past in Flames)
@@ -249,6 +285,17 @@ class CardInstance:
     targets: List[int] = field(default_factory=list)  # instance_ids
     # Instance-level tags (for equipment effects etc.)
     instance_tags: Set[str] = field(default_factory=set)
+    # CR 111: token-ness is a property of the OBJECT, not the template.
+    # Set by the token-creation funnel (PermanentEffects.create_token);
+    # read by SBA 704.5f (tokens off the battlefield cease to exist)
+    # and the cast gate (CR 111.2 — tokens aren't cards, can't be cast).
+    is_token: bool = False
+
+    # Activated abilities granted to THIS instance by resolved effects
+    # (saga "gains '<cost>: <effect>'" chapters, etc.). Oracle-text
+    # fragments of the form "<cost>: <effect>"; cleared when the
+    # permanent leaves the battlefield.
+    granted_abilities: List[str] = field(default_factory=list)
     # Back-reference to game state (set when entering battlefield)
     _game_state: Any = field(default=None, repr=False)
     # Evoke tracking
@@ -485,9 +532,16 @@ class CardInstance:
         return self.template.keywords | self.temp_keywords
 
     @property
+    def has_deathtouch(self) -> bool:
+        """DamageSource protocol hook (engine/damage.py:deal_damage
+        reads `source.has_deathtouch` to write the CR 704.5i marker).
+        Keyword-derived — includes temp-granted deathtouch."""
+        return Keyword.DEATHTOUCH in self.keywords
+
+    @property
     def has_summoning_sickness(self) -> bool:
         """A creature has summoning sickness if it entered this turn and doesn't have haste."""
-        if not self.template.is_creature:
+        if not (self.template.is_creature or self.is_animated):
             return False
         if Keyword.HASTE in self.keywords:
             return False
@@ -497,7 +551,7 @@ class CardInstance:
 
     @property
     def can_attack(self) -> bool:
-        if not self.template.is_creature:
+        if not (self.template.is_creature or self.is_animated):
             return False
         if self.tapped:
             return False
@@ -509,7 +563,7 @@ class CardInstance:
 
     @property
     def can_block(self) -> bool:
-        if not self.template.is_creature:
+        if not (self.template.is_creature or self.is_animated):
             return False
         if self.tapped:
             return False
@@ -517,9 +571,17 @@ class CardInstance:
 
     @property
     def is_dead(self) -> bool:
-        if not self.template.is_creature:
+        if not (self.template.is_creature or self.is_animated):
             return False
-        return self.damage_marked >= self.toughness or self.toughness <= 0
+        if self.toughness <= 0:
+            # CR 704.5g: toughness 0 or less puts the creature into the
+            # graveyard — not a destroy effect, indestructible can't save it.
+            return True
+        if Keyword.INDESTRUCTIBLE in self.keywords:
+            # CR 704.5h exemption: lethal marked damage destroys, and
+            # indestructible permanents can't be destroyed.
+            return False
+        return self.damage_marked >= self.toughness
 
     def tap(self):
         self.tapped = True
@@ -534,9 +596,16 @@ class CardInstance:
 
     def cleanup_damage(self):
         self.damage_marked = 0
+        # CR 704.5i marker wears off with the marked damage it rode on.
+        self._deathtouch_damage = 0
         self.temp_power_mod = 0
         self.temp_toughness_mod = 0
         self.temp_keywords.clear()
+        # "Until end of turn" animation wears off with the temp mods it
+        # rides on — and ends immediately when the permanent leaves the
+        # battlefield (every cleanup_damage call site is one of those
+        # two events).
+        self.is_animated = False
 
     def take_damage(self, amount: int, source) -> None:
         """Receive `amount` damage as a permanent (CR 119.3).
@@ -588,6 +657,9 @@ class CardInstance:
         self.zone = "battlefield"
         self.summoning_sick = True
         self.entered_battlefield_this_turn = True
+        # CR 400.7: each battlefield entry is a new object; delayed
+        # one-shot riders bound to a previous entry must lose track of it.
+        self.battlefield_entry_seq += 1
         if self.template.is_land and self.template.enters_tapped:
             self.tapped = True
 

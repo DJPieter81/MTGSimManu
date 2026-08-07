@@ -36,20 +36,29 @@ _RUNNER = None
 def _load_db_from_parts():
     """Sandbox workaround: ModernAtomic.json gets corrupted between
     process invocations in this environment. Load directly from the
-    8 part files and inject into a CardDatabase. This bypasses the
+    part files and inject into a CardDatabase. This bypasses the
     auto-discovery path entirely.
     """
+    import glob as _glob
     import json as _json
+    import re as _re
     import tempfile
     import os as _os
     project_root = _os.path.dirname(_os.path.dirname(
         _os.path.abspath(__file__)))
     merged = {}
-    for i in range(1, 9):
-        part = _os.path.join(project_root, f'ModernAtomic_part{i}.json')
+    # Glob ALL parts in numeric order and accept both part shapes —
+    # mirrors tests/conftest.py. A previous hardcoded 1..8 wrapper-only
+    # loop silently ran on a stale DB once part9 landed.
+    parts = sorted(
+        _glob.glob(_os.path.join(project_root, 'ModernAtomic_part*.json')),
+        key=lambda p: int(_re.search(r'part(\d+)', p).group(1)))
+    for part in parts:
         with open(part, encoding='utf-8') as f:
             d = _json.load(f)
-        merged.update(d['data'])
+        chunk = (d['data'] if isinstance(d, dict)
+                 and 'data' in d and 'meta' in d else d)
+        merged.update(chunk)
     # Write to a private tempfile and pass that path to CardDatabase
     # so we don't trigger the corrupting auto-discovery.
     tf = tempfile.NamedTemporaryFile(

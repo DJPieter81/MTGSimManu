@@ -1,0 +1,1375 @@
+Loaded 21759 cards (0 errors)
+Loaded 21759 cards (0 errors)
+  Sideboard (Boros Energy vs Goryo's Vengeance): +1 Blood Moon, +1 Surgical Extraction, -2 Thraben Charm
+  Sideboard (Boros Energy vs Goryo's Vengeance): +1 Blood Moon, +1 Surgical Extraction, -2 Thraben Charm
+======================================================================
+  GAME 1: Goryo's Vengeance (P1) vs Boros Energy (P2)  —  seed 52500
+  Series: Goryo's Vengeance 0 - 0 Boros Energy
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Goryo's Vengeance wins → chooses to play first
+║ P1 (on play): Goryo's Vengeance
+║ P2 (on draw): Boros Energy
+╚═══════════════════════════════════════════════════════
+
+P1 (Goryo's Vengeance) opening hand (4 lands, 3 spells):
+  • Hallowed Fountain [Land, CMC 0]
+  • Marsh Flats [Land, CMC 0]
+  • Undying Evil [Spell, CMC 1]
+  • Thoughtseize [Spell, CMC 1]
+  • Flooded Strand [Land, CMC 0]
+  • Leyline of Sanctity [Spell, CMC 4]
+  • Island [Land, CMC 0]
+→ P1 MULLIGANS (combo path under-covered in 7-card hand (best path: 0/2 role buckets; need enabler+payoff))
+  New hand (1 lands, 6 spells): ['Faithful Mending', "Goryo's Vengeance", 'Godless Shrine', 'Ephemerate', 'Griselbrand', 'Inquisition of Kozilek', 'Inquisition of Kozilek']
+→ P1 MULLIGANS (combo set present but lands miss colors ['U'])
+  New hand (3 lands, 4 spells): ['Undying Evil', 'Marsh Flats', 'Thoughtseize', 'Ephemerate', 'Flooded Strand', 'Marsh Flats', 'Inquisition of Kozilek']
+→ P1 mulligans to 5, bottoms: ['Undying Evil', 'Ephemerate']
+  Keeps: ['Marsh Flats', 'Thoughtseize', 'Flooded Strand', 'Marsh Flats', 'Inquisition of Kozilek']
+
+P2 (Boros Energy) opening hand (4 lands, 3 spells):
+  • Marsh Flats [Land, CMC 0]
+  • Elegant Parlor [Land, CMC 0]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Goblin Bombardment [Spell, CMC 2]
+  • Sacred Foundry [Land, CMC 0]
+  • Fable of the Mirror-Breaker // Reflection of Kiki-Jiki [Spell, CMC 3]
+  • Plains [Land, CMC 0]
+→ P2 MULLIGANS (too many lands (4 > 3); first-turn value 4 < 5)
+  New hand (5 lands, 2 spells): ['Mountain', 'Arid Mesa', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Guide of Souls', 'Marsh Flats', 'Plains', 'Arid Mesa']
+→ P2 MULLIGANS (too many lands (5 > 3); first-turn value 3 < 5)
+  New hand (1 lands, 6 spells): ['Guide of Souls', 'Goblin Bombardment', 'Ocelot Pride', 'Marsh Flats', 'Fable of the Mirror-Breaker // Reflection of Kiki-Jiki', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'The Legend of Roku // Avatar Roku']
+→ P2 mulligans to 5, bottoms: ['The Legend of Roku // Avatar Roku', 'Fable of the Mirror-Breaker // Reflection of Kiki-Jiki']
+  Keeps: ['Guide of Souls', 'Goblin Bombardment', 'Ocelot Pride', 'Marsh Flats', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
+
+
+╔══ TURN 1 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 20  |  Boros Energy 20
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 55  |  Graveyard: 0
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Marsh Flats
+T1 P1: Crack Marsh Flats (pay 1 life) -> Watery Grave (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Goryo's Vengeance 19
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 55  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+T1 P2: Play Marsh Flats
+T1 P2: Crack Marsh Flats (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 19  |  Boros Energy 19
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 1
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Watery Grave
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Island
+  [Main 1]
+T2 P1: Play Flooded Strand
+T2 P1: Crack Flooded Strand (pay 1 life) -> Godless Shrine (tapped, life: 18)
+    → Goal: fill_resource [interaction]
+    [Mana] Tap Watery Grave→B (paying for Inquisition of Kozilek, 1 mana remaining)
+T2 P1: Cast Inquisition of Kozilek (B)
+    [Priority] P2 passes (no response)
+T2: Resolve Inquisition of Kozilek
+T2 P1: Inquisition of Kozilek discards Goblin Bombardment
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 19  |  Goryo's Vengeance 18
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 53  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T], Godless Shrine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Elegant Parlor
+  [Main 1]
+T2 P2: surveil 1 → Ocelot Pride to GY
+T2 P2: Play Elegant Parlor (enters tapped)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Ocelot Pride, 1 mana remaining)
+T2 P2: Cast Ocelot Pride (W)
+    [Priority] P1 passes (no response)
+T2: Resolve Ocelot Pride
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 18  |  Boros Energy 19
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 3
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Godless Shrine
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1)
+║   Lands: Sacred Foundry [T], Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Archon of Cruelty
+  [Main 1]
+T3 P1: Play Marsh Flats
+T3 P1: Crack Marsh Flats (pay 1 life) -> Godless Shrine (untapped, life: 15)
+    → Goal: fill_resource [interaction]
+    [Mana] Tap Watery Grave→B (paying for Thoughtseize, 3 mana remaining)
+T3 P1: Cast Thoughtseize (B)
+    [Priority] P2 passes (no response)
+T3: Resolve Thoughtseize
+T3: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger moved hand -> graveyard (forced discard)
+T3 P1: Thoughtseize → opponent discards 1
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 19  |  Goryo's Vengeance 13
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 4
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1)
+║   Lands: Sacred Foundry, Elegant Parlor
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T], Godless Shrine, Godless Shrine
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+T3 P2: Play Arid Mesa
+T3 P2: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (tapped, life: 18)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 2 mana remaining)
+T3 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T3: Resolve Ragavan, Nimble Pilferer
+    → Goal: curve_out [enablers]
+    [Mana] Tap Elegant Parlor→W (paying for Guide of Souls, 1 mana remaining)
+T3 P2: Cast Guide of Souls (W)
+    [Priority] P1 passes (no response)
+T3: Resolve Guide of Souls
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ocelot Pride
+T3 P2: Attack with Ocelot Pride
+  [Declare Blockers] P1 does not block
+T3 P2:   Ocelot Pride (1/1) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 13 → 12
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 12  |  Boros Energy 19
+║ Hand: 2 cards  |  Opp hand: 0 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 5
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Godless Shrine, Godless Shrine
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1) [tapped], Ragavan, Nimble Pilferer (2/1), Guide of Souls (1/2)
+║   Lands: Sacred Foundry [T], Elegant Parlor [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Unburial Rites
+  [Main 1]
+T4 P1: Play Island
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 19  |  Goryo's Vengeance 12
+║ Hand: 0 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 5
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ragavan, Nimble Pilferer (2/1), Guide of Souls (1/2)
+║   Lands: Sacred Foundry, Elegant Parlor, Sacred Foundry
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Godless Shrine, Godless Shrine, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Seasoned Pyromancer
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→R, Elegant Parlor→R, Sacred Foundry→R (paying for Seasoned Pyromancer, 3 mana remaining)
+T4 P2: Cast Seasoned Pyromancer (1RR)
+    [Priority] P1 passes (no response)
+T4: Resolve Seasoned Pyromancer
+T4 P2: Seasoned Pyromancer: discard 2, draw 2 (Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Seasoned Pyromancer) (no nonland discards)
+T4 P2: Gain 1 life from Guide of Souls (life: 20)
+T4 P2: +1 energy from Guide of Souls (total: 1)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ocelot Pride, Ragavan, Nimble Pilferer, Guide of Souls
+T4 P2: Attack with Ocelot Pride, Ragavan, Nimble Pilferer, Guide of Souls
+  [Declare Blockers] P1 does not block
+T4 P2:   Ocelot Pride (1/1) → 1 dmg to player
+T4 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T4 P2: Create 1x Treasure token(s)
+T4 P2: Ragavan, Nimble Pilferer exiles Atraxa, Grand Unifier from top of P1's library
+T4 P2: Ragavan, Nimble Pilferer — may cast Atraxa, Grand Unifier this turn
+T4 P2:   Guide of Souls (1/2) → 1 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 12 → 8
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Atraxa, Grand Unifier returned to exile (uncast)
+
+╔══ TURN 5 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 8  |  Boros Energy 21
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 5
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Godless Shrine, Godless Shrine, Island
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1) [tapped], Ragavan, Nimble Pilferer (2/1) [tapped], Guide of Souls (1/2) [tapped], Seasoned Pyromancer (2/2)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry [T], Elegant Parlor [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Atraxa, Grand Unifier
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 21  |  Goryo's Vengeance 8
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 5
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ragavan, Nimble Pilferer (2/1), Guide of Souls (1/2), Seasoned Pyromancer (2/2)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Elegant Parlor, Sacred Foundry
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Godless Shrine, Godless Shrine, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: The Legend of Roku // Avatar Roku
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→R, Elegant Parlor→R, Sacred Foundry→R (paying for Seasoned Pyromancer, 3 mana remaining)
+T5 P2: Cast Seasoned Pyromancer (1RR)
+    [Priority] P1 passes (no response)
+T5: Resolve Seasoned Pyromancer
+T5 P2: Create 2x Elemental token(s)
+T5 P2: Seasoned Pyromancer: discard 2, draw 2 (Blood Moon, Fable of the Mirror-Breaker // Reflection of Kiki-Jiki), create 2 Elemental(s)
+T5 P2: Gain 1 life from Guide of Souls (life: 22)
+T5 P2: +1 energy from Guide of Souls (total: 2)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ocelot Pride, Ragavan, Nimble Pilferer, Guide of Souls, Seasoned Pyromancer
+T5 P2: Attack with Ocelot Pride, Ragavan, Nimble Pilferer, Guide of Souls, Seasoned Pyromancer
+  [Declare Blockers] P1 does not block
+T5 P2:   Ocelot Pride (1/1) → 1 dmg to player
+T5 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T5 P2: Create 1x Treasure token(s)
+T5 P2: Ragavan, Nimble Pilferer exiles Inquisition of Kozilek from top of P1's library
+T5 P2: Ragavan, Nimble Pilferer — may cast Inquisition of Kozilek this turn
+T5 P2:   Guide of Souls (1/2) → 1 dmg to player
+T5 P2:   Seasoned Pyromancer (2/2) → 2 dmg to player
+  [Combat Damage] 6 damage dealt → P1 life: 8 → 2
+  [End Combat]
+  [Main 2]
+  [End Step]
+T5: Inquisition of Kozilek returned to exile (uncast)
+
+╔══ TURN 6 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 2  |  Boros Energy 23
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 46  |  Graveyard: 5
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Godless Shrine, Godless Shrine, Island
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1) [tapped], Ragavan, Nimble Pilferer (2/1) [tapped], Guide of Souls (1/2) [tapped], Seasoned Pyromancer (2/2) [tapped], Seasoned Pyromancer (2/2), Elemental Token (1/1), Elemental Token (1/1)
+║   Other: Treasure Token, Treasure Token
+║   Lands: Sacred Foundry [T], Elegant Parlor [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Unburial Rites
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 23  |  Goryo's Vengeance 2
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 43  |  Graveyard: 7
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ragavan, Nimble Pilferer (2/1), Guide of Souls (1/2), Seasoned Pyromancer (2/2), Seasoned Pyromancer (2/2), Elemental Token (1/1), Elemental Token (1/1)
+║   Other: Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Elegant Parlor, Sacred Foundry
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Godless Shrine, Godless Shrine, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Marsh Flats
+  [Main 1]
+T6 P2: Play Marsh Flats
+T6 P2: Crack Marsh Flats (pay 1 life) -> Sacred Foundry (tapped, life: 22)
+    → Goal: curve_out
+    [Mana] Tap Sacred Foundry→R, Elegant Parlor→R, Sacred Foundry→R (paying for Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, 3 mana remaining)
+T6 P2: Cast Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2R)
+    [Priority] P1 passes (no response)
+T6: Resolve Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+T6 P2: Create 1x Goblin token(s)
+T6 P2: Fable Ch.I: Create 2/2 Goblin Shaman with haste
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ocelot Pride, Ragavan, Nimble Pilferer, Guide of Souls, Seasoned Pyromancer, Seasoned Pyromancer, Elemental Token, Elemental Token, Goblin Token
+T6 P2: Attack with Ocelot Pride, Ragavan, Nimble Pilferer, Guide of Souls, Seasoned Pyromancer, Seasoned Pyromancer, Elemental Token, Elemental Token, Goblin Token
+  [Declare Blockers] P1 does not block
+T6 P2:   Ocelot Pride (1/1) → 1 dmg to player
+T6 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T6 P2: Create 1x Treasure token(s)
+T6 P2: Ragavan, Nimble Pilferer exiles Griselbrand from top of P1's library
+T6 P2: Ragavan, Nimble Pilferer — may cast Griselbrand this turn
+T6 P2:   Guide of Souls (1/2) → 1 dmg to player
+T6 P2:   Seasoned Pyromancer (2/2) → 2 dmg to player
+T6 P2:   Seasoned Pyromancer (2/2) → 2 dmg to player
+T6 P2:   Elemental Token (1/1) → 1 dmg to player
+T6 P2:   Elemental Token (1/1) → 1 dmg to player
+T6 P2:   Goblin Token (2/2) → 2 dmg to player
+P1 loses: life total -10
+  [Combat Damage] 12 damage dealt → P1 life: 2 → -10
+
+>>> Boros Energy wins Game 1 on turn 6 via damage
+    Final life: Goryo's Vengeance=-10  Boros Energy=23
+
+======================================================================
+  GAME 2: Goryo's Vengeance (P1) vs Boros Energy (P2)  —  seed 52501
+  Series: Goryo's Vengeance 0 - 1 Boros Energy
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Boros Energy wins → chooses to play first
+║ P1 (on play): Boros Energy
+║ P2 (on draw): Goryo's Vengeance
+╚═══════════════════════════════════════════════════════
+
+P1 (Goryo's Vengeance) opening hand (2 lands, 5 spells):
+  • Ephemerate [Spell, CMC 1]
+  • Atraxa, Grand Unifier [Creature, CMC 7]
+  • Undying Evil [Spell, CMC 1]
+  • Marsh Flats [Land, CMC 0]
+  • Ephemerate [Spell, CMC 1]
+  • Unburial Rites [Spell, CMC 5]
+  • Flooded Strand [Land, CMC 0]
+→ P1 MULLIGANS (combo path under-covered in 7-card hand (best path: 1/2 role buckets; need enabler+payoff))
+  New hand (3 lands, 4 spells): ['Thoughtseize', 'Ephemerate', 'Marsh Flats', 'Godless Shrine', 'Unburial Rites', "Goryo's Vengeance", 'Concealed Courtyard']
+→ P1 MULLIGANS (combo path under-covered in 6-card hand (best path: 1/2 role buckets; need enabler))
+  New hand (3 lands, 4 spells): ['Flooded Strand', 'Concealed Courtyard', 'Atraxa, Grand Unifier', 'Unburial Rites', 'Swamp', 'Undying Evil', 'Unburial Rites']
+→ P1 mulligans to 5, bottoms: ['Undying Evil', 'Flooded Strand']
+  Keeps: ['Concealed Courtyard', 'Atraxa, Grand Unifier', 'Unburial Rites', 'Swamp', 'Unburial Rites']
+
+P2 (Boros Energy) opening hand (1 lands, 6 spells):
+  • Seasoned Pyromancer [Creature, CMC 3]
+  • Fable of the Mirror-Breaker // Reflection of Kiki-Jiki [Spell, CMC 3]
+  • Voice of Victory [Creature, CMC 2]
+  • Guide of Souls [Creature, CMC 1]
+  • Ocelot Pride [Creature, CMC 1]
+  • Plains [Land, CMC 0]
+  • Galvanic Discharge [Spell, CMC 1]
+→ P2 MULLIGANS (too few lands (1 < 2))
+  New hand (4 lands, 3 spells): ['Ajani, Nacatl Pariah // Ajani, Nacatl Avenger', 'Seasoned Pyromancer', 'Marsh Flats', 'Dalkovan Encampment', 'Ocelot Pride', 'Sacred Foundry', 'Arid Mesa']
+→ P2 MULLIGANS (too many lands (4 > 3); first-turn value 4 < 5)
+  New hand (5 lands, 2 spells): ['Ranger-Captain of Eos', 'Marsh Flats', 'Sacred Foundry', 'Marsh Flats', 'Sacred Foundry', 'Blood Moon', 'Windswept Heath']
+→ P2 mulligans to 5, bottoms: ['Ranger-Captain of Eos', 'Marsh Flats']
+  Keeps: ['Sacred Foundry', 'Marsh Flats', 'Sacred Foundry', 'Blood Moon', 'Windswept Heath']
+
+
+╔══ TURN 1 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Goryo's Vengeance 20
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 55  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Sacred Foundry (untapped, life: 20)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 20  |  Boros Energy 20
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 55  |  Graveyard: 0
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Archon of Cruelty
+  [Main 1]
+T1 P1: Play Concealed Courtyard (untapped, 0 other lands)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Goryo's Vengeance 20
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 55  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Concealed Courtyard
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+T2 P2: Play Marsh Flats
+T2 P2: Crack Marsh Flats (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T2 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T2: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 20  |  Boros Energy 19
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 54  |  Graveyard: 0
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Concealed Courtyard
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Undying Evil
+  [Main 1]
+T2 P1: Play Swamp
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 19  |  Goryo's Vengeance 20
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 53  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry, Sacred Foundry
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Concealed Courtyard, Swamp
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+T3 P2: Play Windswept Heath
+T3 P2: Crack Windswept Heath (pay 1 life) -> Sacred Foundry (tapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T3 P2: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T3 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T3 P2: Create 1x Treasure token(s)
+T3 P2: Ragavan, Nimble Pilferer exiles Flooded Strand from top of P1's library
+T3 P2: Ragavan, Nimble Pilferer — may cast Flooded Strand this turn
+  [Combat Damage] 2 damage dealt → P1 life: 20 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+T3: Flooded Strand returned to exile (uncast)
+
+╔══ TURN 3 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 18  |  Boros Energy 18
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 52  |  Graveyard: 0
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Concealed Courtyard, Swamp
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped]
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Atraxa, Grand Unifier
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 18  |  Goryo's Vengeance 18
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Concealed Courtyard, Swamp
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Windswept Heath
+  [Main 1]
+T4 P2: Play Windswept Heath
+T4 P2: Crack Windswept Heath -> Plains (untapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T4 P2: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T4 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T4 P2: Create 1x Treasure token(s)
+T4 P2: Ragavan, Nimble Pilferer exiles Watery Grave from top of P1's library
+T4 P2: Ragavan, Nimble Pilferer — may cast Watery Grave this turn
+  [Combat Damage] 2 damage dealt → P1 life: 18 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Watery Grave returned to exile (uncast)
+
+╔══ TURN 4 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 16  |  Boros Energy 17
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 50  |  Graveyard: 0
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Concealed Courtyard, Swamp
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped]
+║   Other: Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Concealed Courtyard
+  [Main 1]
+T4 P1: Play Concealed Courtyard (untapped, 2 other lands)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 17  |  Goryo's Vengeance 16
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 3
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Other: Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Concealed Courtyard, Swamp, Concealed Courtyard
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Blood Moon
+  [Main 1]
+T5 P2: Play Arid Mesa
+T5 P2: Crack Arid Mesa -> Mountain (untapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T5 P2: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T5 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T5 P2: Create 1x Treasure token(s)
+T5 P2: Ragavan, Nimble Pilferer exiles Plains from top of P1's library
+T5 P2: Ragavan, Nimble Pilferer — may cast Plains this turn
+  [Combat Damage] 2 damage dealt → P1 life: 16 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+T5: Plains returned to exile (uncast)
+
+╔══ TURN 5 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 14  |  Boros Energy 16
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 48  |  Graveyard: 0
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Concealed Courtyard, Swamp, Concealed Courtyard
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped]
+║   Other: Treasure Token, Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Inquisition of Kozilek
+  [Main 1]
+    → Goal: fill_resource [interaction]
+    [Mana] Tap Swamp→B (paying for Inquisition of Kozilek, 3 mana remaining)
+T5 P1: Cast Inquisition of Kozilek (B)
+    [Priority] P2 passes (no response)
+T5: Resolve Inquisition of Kozilek
+T5 P1: Inquisition of Kozilek discards Blood Moon
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 16  |  Goryo's Vengeance 14
+║ Hand: 2 cards  |  Opp hand: 6 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 5
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Other: Treasure Token, Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains, Mountain
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Concealed Courtyard, Swamp [T], Concealed Courtyard
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+T6 P2: Play Sacred Foundry (untapped, life: 16)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T6 P2: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T6 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T6 P2: Create 1x Treasure token(s)
+T6 P2: Ragavan, Nimble Pilferer exiles Hallowed Fountain from top of P1's library
+T6 P2: Ragavan, Nimble Pilferer — may cast Hallowed Fountain this turn
+  [Combat Damage] 2 damage dealt → P1 life: 14 → 12
+  [End Combat]
+  [Main 2]
+  [End Step]
+T6: Hallowed Fountain returned to exile (uncast)
+
+╔══ TURN 6 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 12  |  Boros Energy 16
+║ Hand: 6 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 6
+║ Library: 46  |  Graveyard: 1
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Concealed Courtyard, Swamp, Concealed Courtyard
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped]
+║   Other: Treasure Token, Treasure Token, Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains, Mountain, Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Silent Clearing
+  [Main 1]
+T6 P1: Play Silent Clearing
+T6 P1: Activate Silent Clearing (sacrifice)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 16  |  Goryo's Vengeance 12
+║ Hand: 2 cards  |  Opp hand: 7 cards
+║ Lands: 6  |  Opp lands: 3
+║ Library: 46  |  Graveyard: 5
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Other: Treasure Token, Treasure Token, Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains, Mountain, Sacred Foundry
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Concealed Courtyard, Swamp, Concealed Courtyard
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Galvanic Discharge
+  [Main 1]
+    → Goal: curve_out [interaction]
+    [Target] → face (3 dmg, life 12 → 9): face value 4.50
+    [Mana] Tap Mountain→R (paying for Galvanic Discharge, 6 mana remaining)
+T7 P2: Cast Galvanic Discharge (R)
+    [Priority] P1 passes (no response)
+T7: Resolve Galvanic Discharge
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T7 P2: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T7 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T7 P2: Create 1x Treasure token(s)
+T7 P2: Ragavan, Nimble Pilferer exiles Faithful Mending from top of P1's library
+T7 P2: Ragavan, Nimble Pilferer — may cast Faithful Mending this turn
+  [Combat Damage] 2 damage dealt → P1 life: 12 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+T7: Faithful Mending returned to exile (uncast)
+
+╔══ TURN 7 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 10  |  Boros Energy 16
+║ Hand: 7 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 6
+║ Library: 43  |  Graveyard: 2
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Concealed Courtyard, Swamp, Concealed Courtyard
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped]
+║   Other: Treasure Token, Treasure Token, Treasure Token, Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains, Mountain [T], Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Goryo's Vengeance
+  [Main 1]
+T7 P1: Play Silent Clearing
+T7 P1: Activate Silent Clearing (sacrifice)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T7: Archon of Cruelty moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 8 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 16  |  Goryo's Vengeance 10
+║ Hand: 2 cards  |  Opp hand: 7 cards
+║ Lands: 6  |  Opp lands: 3
+║ Library: 45  |  Graveyard: 6
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Other: Treasure Token, Treasure Token, Treasure Token, Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains, Mountain, Sacred Foundry
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Concealed Courtyard, Swamp, Concealed Courtyard
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ocelot Pride
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Plains→W (paying for Ocelot Pride, 6 mana remaining)
+T8 P2: Cast Ocelot Pride (W)
+    [Priority] P1 passes (no response)
+T8: Resolve Ocelot Pride
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T8 P2: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T8 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T8 P2: Create 1x Treasure token(s)
+T8 P2: Ragavan, Nimble Pilferer exiles Marsh Flats from top of P1's library
+T8 P2: Ragavan, Nimble Pilferer — may cast Marsh Flats this turn
+  [Combat Damage] 2 damage dealt → P1 life: 10 → 8
+  [End Combat]
+  [Main 2]
+T8 P2: Play Marsh Flats
+T8 P2: Crack Marsh Flats -> Plains (untapped)
+  [End Step]
+
+╔══ TURN 8 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 8  |  Boros Energy 15
+║ Hand: 7 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 7
+║ Library: 40  |  Graveyard: 4
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Concealed Courtyard, Swamp, Concealed Courtyard
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Ocelot Pride (1/1)
+║   Other: Treasure Token, Treasure Token, Treasure Token, Treasure Token, Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains [T], Mountain, Sacred Foundry, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Unburial Rites
+  [Main 1]
+T8 P1: Play Marsh Flats
+T8 P1: Crack Marsh Flats (pay 1 life) -> Godless Shrine (untapped, life: 5)
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Swamp→B, Concealed Courtyard→W (paying for Goryo's Vengeance, 4 mana remaining)
+T8 P1: Cast Goryo's Vengeance (1B)
+    [Priority] P2 passes (no response)
+T8: Resolve Goryo's Vengeance
+T8 P1: Reanimate Archon of Cruelty
+T8 P1: Archon of Cruelty: P2 sacrifices Ocelot Pride
+T8 P1: Archon of Cruelty: P2 discards Ragavan, Nimble Pilferer
+T8 P1: Archon of Cruelty: P2 loses 3 life (now 12)
+T8 P1: Gain 3 life from Archon of Cruelty (life: 8)
+T8 P1: Archon of Cruelty: draw 1, gain 3 life (now 8)
+T8 P1: Goryo's Vengeance → kills Ocelot Pride, opponent discards 1
+    → Goal: execute_payoff [protection]
+    [Mana] Tap Concealed Courtyard→W (paying for Ephemerate, 2 mana remaining)
+T8 P1: Cast Ephemerate (W)
+    [Priority] P2 passes (no response)
+T8: Resolve Ephemerate
+T8 P1: Archon of Cruelty: P2 sacrifices Ragavan, Nimble Pilferer
+T8 P1: Archon of Cruelty: P2 discards Blood Moon
+T8 P1: Archon of Cruelty: P2 loses 3 life (now 9)
+T8 P1: Gain 3 life from Archon of Cruelty (life: 11)
+T8 P1: Archon of Cruelty: draw 1, gain 3 life (now 11)
+T8: Blink Archon of Cruelty
+T8 P1: Ephemerate → kills Ragavan, Nimble Pilferer, opponent discards 1
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Archon of Cruelty
+T8 P1: Gain 3 life from Archon of Cruelty (life: 14)
+T8 P1: Attack with Archon of Cruelty
+  [Declare Blockers] P2 does not block
+T8 P1:   Archon of Cruelty (6/6) → 6 dmg to player
+  [Combat Damage] 6 damage dealt → P2 life: 9 → 3
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 3  |  Goryo's Vengeance 14
+║ Hand: 0 cards  |  Opp hand: 7 cards
+║ Lands: 7  |  Opp lands: 4
+║ Library: 43  |  Graveyard: 11
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Other: Treasure Token, Treasure Token, Treasure Token, Treasure Token, Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains, Mountain, Sacred Foundry, Plains
+║ Goryo's Vengeance board:
+║   Creatures: Archon of Cruelty (6/6) [tapped]
+║   Lands: Concealed Courtyard [T], Swamp [T], Concealed Courtyard [T], Godless Shrine
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ocelot Pride
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Plains→W (paying for Ocelot Pride, 7 mana remaining)
+T9 P2: Cast Ocelot Pride (W)
+    [Priority] P1 passes (no response)
+T9: Resolve Ocelot Pride
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 14  |  Boros Energy 3
+║ Hand: 7 cards  |  Opp hand: 0 cards
+║ Lands: 4  |  Opp lands: 7
+║ Library: 36  |  Graveyard: 5
+║ Goryo's Vengeance board:
+║   Creatures: Archon of Cruelty (6/6)
+║   Lands: Concealed Courtyard, Swamp, Concealed Courtyard, Godless Shrine
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1)
+║   Other: Treasure Token, Treasure Token, Treasure Token, Treasure Token, Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains [T], Mountain, Sacred Foundry, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T9 P1: Cast Ephemerate (W)
+T9 P1: Rebound Ephemerate
+T9: Resolve Ephemerate
+T9 P1: Archon of Cruelty: P2 sacrifices Ocelot Pride
+T9 P1: Archon of Cruelty: P2 loses 3 life (now 0)
+T9 P1: Gain 3 life from Archon of Cruelty (life: 17)
+T9 P1: Archon of Cruelty: draw 1, gain 3 life (now 17)
+T9: Blink Archon of Cruelty
+T9 P1: Ephemerate → kills Ocelot Pride
+
+>>> Goryo's Vengeance wins Game 2 on turn 9 via damage
+    Final life: Goryo's Vengeance=17  Boros Energy=0
+
+======================================================================
+  GAME 3: Boros Energy (P1) vs Goryo's Vengeance (P2)  —  seed 52502
+  Series: Goryo's Vengeance 1 - 1 Boros Energy
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Boros Energy wins → chooses to play first
+║ P1 (on play): Boros Energy
+║ P2 (on draw): Goryo's Vengeance
+╚═══════════════════════════════════════════════════════
+
+P1 (Boros Energy) opening hand (2 lands, 5 spells):
+  • Blood Moon [Spell, CMC 3]
+  • Surgical Extraction [Spell, CMC 1]
+  • Seasoned Pyromancer [Creature, CMC 3]
+  • Blood Moon [Spell, CMC 3]
+  • Ranger-Captain of Eos [Creature, CMC 3]
+  • Sacred Foundry [Land, CMC 0]
+  • Arid Mesa [Land, CMC 0]
+→ P1 MULLIGANS (no creature with CMC ≤ 2)
+  New hand (3 lands, 4 spells): ['Arid Mesa', 'Arid Mesa', 'Sacred Foundry', 'Guide of Souls', 'Ranger-Captain of Eos', 'The Legend of Roku // Avatar Roku', 'Ragavan, Nimble Pilferer']
+→ P1 mulligans to 6, bottoms: ['The Legend of Roku // Avatar Roku']
+  Keeps: ['Arid Mesa', 'Arid Mesa', 'Sacred Foundry', 'Guide of Souls', 'Ranger-Captain of Eos', 'Ragavan, Nimble Pilferer']
+
+P2 (Goryo's Vengeance) opening hand (1 lands, 6 spells):
+  • Ephemerate [Spell, CMC 1]
+  • Goryo's Vengeance [Spell, CMC 2]
+  • Atraxa, Grand Unifier [Creature, CMC 7]
+  • Faithful Mending [Spell, CMC 2]
+  • Marsh Flats [Land, CMC 0]
+  • Goryo's Vengeance [Spell, CMC 2]
+  • Unburial Rites [Spell, CMC 5]
+→ P2 MULLIGANS (combo set present but lands miss colors ['U'])
+  New hand (3 lands, 4 spells): ["Goryo's Vengeance", 'Flooded Strand', 'Griselbrand', 'Marsh Flats', 'Marsh Flats', 'Leyline of Sanctity', 'Archon of Cruelty']
+→ P2 MULLIGANS (combo path under-covered in 6-card hand (best path: 1/2 role buckets; need enabler))
+  New hand (2 lands, 5 spells): ['Thoughtseize', 'Ephemerate', 'Leyline of Sanctity', 'Griselbrand', 'Marsh Flats', 'Watery Grave', 'Griselbrand']
+→ P2 mulligans to 5, bottoms: ['Griselbrand', 'Leyline of Sanctity']
+  Keeps: ['Thoughtseize', 'Ephemerate', 'Griselbrand', 'Marsh Flats', 'Watery Grave']
+
+
+╔══ TURN 1 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 20  |  Goryo's Vengeance 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 54  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Arid Mesa
+T1 P1: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Goryo's Vengeance (P2) ══════════════════════════
+║ Life: Goryo's Vengeance 20  |  Boros Energy 19
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 55  |  Graveyard: 0
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Concealed Courtyard
+  [Main 1]
+T1 P2: Play Marsh Flats
+T1 P2: Crack Marsh Flats (pay 1 life) -> Godless Shrine (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 19  |  Goryo's Vengeance 19
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: The Legend of Roku // Avatar Roku
+  [Main 1]
+T2 P1: Play Arid Mesa
+T2 P1: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (tapped, life: 18)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Guide of Souls, 1 mana remaining)
+T2 P1: Cast Guide of Souls (W)
+    [Priority] P2 passes (no response)
+T2: Resolve Guide of Souls
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Goryo's Vengeance (P2) ══════════════════════════
+║ Life: Goryo's Vengeance 19  |  Boros Energy 18
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 53  |  Graveyard: 1
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Island
+  [Main 1]
+T2 P2: Play Watery Grave (untapped, life: 17)
+    → Goal: fill_resource [interaction]
+    [Mana] Tap Godless Shrine→B (paying for Thoughtseize, 2 mana remaining)
+T2 P2: Cast Thoughtseize (B)
+    [Priority] P1 passes (no response)
+T2: Resolve Thoughtseize
+T2: Ranger-Captain of Eos moved hand -> graveyard (forced discard)
+T2 P2: Thoughtseize → opponent discards 1
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 18  |  Goryo's Vengeance 15
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 3
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2)
+║   Lands: Sacred Foundry, Sacred Foundry
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine [T], Watery Grave
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Seasoned Pyromancer
+  [Main 1]
+T3 P1: Play Sacred Foundry (untapped, life: 18)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→R, Sacred Foundry→R, Sacred Foundry→R (paying for Seasoned Pyromancer, 3 mana remaining)
+T3 P1: Cast Seasoned Pyromancer (1RR)
+    [Priority] P2 passes (no response)
+T3: Resolve Seasoned Pyromancer
+T3 P1: Create 2x Elemental token(s)
+T3 P1: Seasoned Pyromancer: discard 2, draw 2 (Marsh Flats, Guide of Souls), create 2 Elemental(s)
+T3 P1: Gain 1 life from Guide of Souls (life: 19)
+T3 P1: +1 energy from Guide of Souls (total: 1)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Guide of Souls
+T3 P1: Attack with Guide of Souls
+  [Declare Blockers] P2 does not block
+T3 P1:   Guide of Souls (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P2 life: 15 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Goryo's Vengeance (P2) ══════════════════════════
+║ Life: Goryo's Vengeance 14  |  Boros Energy 19
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 52  |  Graveyard: 2
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Watery Grave
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2) [tapped], Seasoned Pyromancer (2/2), Elemental Token (1/1), Elemental Token (1/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Marsh Flats
+  [Main 1]
+T3 P2: Play Marsh Flats
+T3 P2: Crack Marsh Flats (pay 1 life) -> Godless Shrine (tapped, life: 13)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 19  |  Goryo's Vengeance 13
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 5
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2), Seasoned Pyromancer (2/2), Elemental Token (1/1), Elemental Token (1/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Watery Grave, Godless Shrine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Elegant Parlor
+  [Main 1]
+T4 P1: Play Marsh Flats
+T4 P1: Crack Marsh Flats (pay 1 life) -> Sacred Foundry (tapped, life: 18)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Guide of Souls, 3 mana remaining)
+T4 P1: Cast Guide of Souls (W)
+    [Priority] P2 passes (no response)
+T4: Resolve Guide of Souls
+T4 P1: Gain 1 life from Guide of Souls (life: 19)
+T4 P1: +1 energy from Guide of Souls (total: 2)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Guide of Souls, Seasoned Pyromancer, Elemental Token, Elemental Token
+T4 P1: Attack with Guide of Souls, Seasoned Pyromancer, Elemental Token, Elemental Token
+  [Declare Blockers] P2 does not block
+T4 P1:   Guide of Souls (1/2) → 1 dmg to player
+T4 P1:   Seasoned Pyromancer (2/2) → 2 dmg to player
+T4 P1:   Elemental Token (1/1) → 1 dmg to player
+T4 P1:   Elemental Token (1/1) → 1 dmg to player
+  [Combat Damage] 5 damage dealt → P2 life: 13 → 8
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Goryo's Vengeance (P2) ══════════════════════════
+║ Life: Goryo's Vengeance 8  |  Boros Energy 19
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 50  |  Graveyard: 3
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Watery Grave, Godless Shrine
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2) [tapped], Seasoned Pyromancer (2/2) [tapped], Elemental Token (1/1) [tapped], Elemental Token (1/1) [tapped], Guide of Souls (1/2)
+║   Lands: Sacred Foundry [T], Sacred Foundry, Sacred Foundry, Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Atraxa, Grand Unifier
+  [Main 1]
+T4 P2: Play Island
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 19  |  Goryo's Vengeance 8
+║ Hand: 1 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 6
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2), Seasoned Pyromancer (2/2), Elemental Token (1/1), Elemental Token (1/1), Guide of Souls (1/2)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Sacred Foundry
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Watery Grave, Godless Shrine, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Blood Moon
+  [Main 1]
+T5 P1: surveil 1 → Ocelot Pride to GY
+T5 P1: Play Elegant Parlor (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Guide of Souls, Seasoned Pyromancer, Elemental Token, Elemental Token, Guide of Souls
+T5 P1: Attack with Guide of Souls, Seasoned Pyromancer, Elemental Token, Elemental Token, Guide of Souls
+  [Declare Blockers] P2 does not block
+T5 P1:   Guide of Souls (1/2) → 1 dmg to player
+T5 P1:   Seasoned Pyromancer (2/2) → 2 dmg to player
+T5 P1:   Elemental Token (1/1) → 1 dmg to player
+T5 P1:   Elemental Token (1/1) → 1 dmg to player
+T5 P1:   Guide of Souls (1/2) → 1 dmg to player
+  [Combat Damage] 6 damage dealt → P2 life: 8 → 2
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Goryo's Vengeance (P2) ══════════════════════════
+║ Life: Goryo's Vengeance 2  |  Boros Energy 19
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 49  |  Graveyard: 3
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Watery Grave, Godless Shrine, Island
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2) [tapped], Seasoned Pyromancer (2/2) [tapped], Elemental Token (1/1) [tapped], Elemental Token (1/1) [tapped], Guide of Souls (1/2) [tapped]
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Sacred Foundry, Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Archon of Cruelty
+  [Main 1]
+T5 P2: Play Concealed Courtyard (tapped, 4 other lands)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 19  |  Goryo's Vengeance 2
+║ Hand: 1 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 44  |  Graveyard: 7
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2), Seasoned Pyromancer (2/2), Elemental Token (1/1), Elemental Token (1/1), Guide of Souls (1/2)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Sacred Foundry, Elegant Parlor
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Watery Grave, Godless Shrine, Island, Concealed Courtyard [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Seasoned Pyromancer
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→R, Sacred Foundry→R, Sacred Foundry→R (paying for Seasoned Pyromancer, 5 mana remaining)
+T6 P1: Cast Seasoned Pyromancer (1RR)
+    [Priority] P2 passes (no response)
+T6: Resolve Seasoned Pyromancer
+T6 P1: Create 1x Elemental token(s)
+T6 P1: Seasoned Pyromancer: discard 2, draw 2 (Galvanic Discharge, Surgical Extraction), create 1 Elemental(s)
+T6 P1: Gain 1 life from Guide of Souls (life: 20)
+T6 P1: +1 energy from Guide of Souls (total: 3)
+T6 P1: Gain 1 life from Guide of Souls (life: 21)
+T6 P1: +1 energy from Guide of Souls (total: 4)
+    → Goal: curve_out [interaction]
+    [Mana] Tap Sacred Foundry→R (paying for Galvanic Discharge, 2 mana remaining)
+T6 P1: Cast Galvanic Discharge (R)
+    [Priority] P2 passes (no response)
+T6: Resolve Galvanic Discharge
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Guide of Souls, Seasoned Pyromancer, Elemental Token, Elemental Token, Guide of Souls
+T6 P1: Attack with Guide of Souls, Seasoned Pyromancer, Elemental Token, Elemental Token, Guide of Souls
+  [Declare Blockers] P2 does not block
+T6 P1:   Guide of Souls (1/2) → 1 dmg to player
+T6 P1:   Seasoned Pyromancer (2/2) → 2 dmg to player
+T6 P1:   Elemental Token (1/1) → 1 dmg to player
+T6 P1:   Elemental Token (1/1) → 1 dmg to player
+T6 P1:   Guide of Souls (1/2) → 1 dmg to player
+P2 loses: life total -4
+  [Combat Damage] 6 damage dealt → P2 life: 2 → -4
+
+>>> Boros Energy wins Game 3 on turn 6 via damage
+    Final life: Boros Energy=21  Goryo's Vengeance=-4
+
+======================================================================
+  MATCH RESULT: Boros Energy wins 2-1
+======================================================================

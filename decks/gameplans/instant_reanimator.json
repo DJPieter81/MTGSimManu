@@ -1,0 +1,183 @@
+{
+  "deck_name": "Instant Reanimator",
+  "archetype": "combo",
+  "goals": [
+    {
+      "goal_type": "DISRUPT",
+      "description": "Early setup: Thoughtseize protection, deploy Psychic Frog as looter/clock",
+      "card_priorities": {
+        "Thoughtseize": 18.0,
+        "Psychic Frog": 20.0,
+        "Faithful Mending": 20.0,
+        "Solitude": 12.0,
+        "Prismatic Ending": 10.0
+      },
+      "card_roles": {
+        "engines": [
+          "Psychic Frog"
+        ],
+        "enablers": [
+          "Faithful Mending",
+          "Thoughtseize"
+        ],
+        "interaction": [
+          "Solitude",
+          "Prismatic Ending"
+        ]
+      },
+      "min_turns": 1
+    },
+    {
+      "goal_type": "FILL_RESOURCE",
+      "description": "Bin Atraxa or Griselbrand via Faithful Mending / Psychic Frog discard",
+      "card_priorities": {
+        "Faithful Mending": 25.0,
+        "Psychic Frog": 18.0,
+        "Quantum Riddler": 12.0,
+        "Thoughtseize": 8.0
+      },
+      "card_roles": {
+        "engines": [
+          "Psychic Frog"
+        ],
+        "enablers": [
+          "Faithful Mending",
+          "Psychic Frog",
+          "Quantum Riddler"
+        ]
+      },
+      "resource_target": 1,
+      "resource_min_cmc": 7,
+      "resource_zone": "graveyard"
+    },
+    {
+      "goal_type": "EXECUTE_PAYOFF",
+      "description": "Reanimate Atraxa/Griselbrand with Goryo's Vengeance; Ephemerate re-triggers the ETB",
+      "card_priorities": {
+        "Goryo's Vengeance": 25.0,
+        "Ephemerate": 14.0,
+        "Faithful Mending": 12.0
+      },
+      "card_roles": {
+        "payoffs": [
+          "Goryo's Vengeance"
+        ],
+        "protection": [
+          "Ephemerate"
+        ]
+      },
+      "resource_zone": "graveyard",
+      "resource_min_cmc": 7,
+      "min_turns": 1,
+      "min_mana_for_payoff": 2
+    },
+    {
+      "goal_type": "PUSH_DAMAGE",
+      "description": "Attack with reanimated fatty + Frog; protect with Ephemerate, stabilize with Solitude",
+      "card_priorities": {
+        "Ephemerate": 15.0,
+        "Solitude": 10.0,
+        "Psychic Frog": 8.0
+      },
+      "card_roles": {
+        "protection": [
+          "Ephemerate"
+        ],
+        "interaction": [
+          "Solitude",
+          "Prismatic Ending"
+        ]
+      }
+    }
+  ],
+  "mulligan_keys": [
+    "Atraxa, Grand Unifier",
+    "Faithful Mending",
+    "Goryo's Vengeance",
+    "Griselbrand",
+    "Psychic Frog"
+  ],
+  "mulligan_min_lands": 2,
+  "mulligan_max_lands": 4,
+  "mulligan_combo_sets": [
+    [
+      "Faithful Mending",
+      "Goryo's Vengeance",
+      "Atraxa, Grand Unifier"
+    ],
+    [
+      "Faithful Mending",
+      "Goryo's Vengeance",
+      "Griselbrand"
+    ],
+    [
+      "Psychic Frog",
+      "Goryo's Vengeance",
+      "Atraxa, Grand Unifier"
+    ],
+    [
+      "Psychic Frog",
+      "Goryo's Vengeance",
+      "Griselbrand"
+    ]
+  ],
+  "_mulligan_combo_paths_doc": "Payoff bucket includes the reanimation targets, not just Goryo's Vengeance: with 8 looters the deck digs to the 4 Goryo's fast, so enabler + fatty is a legitimate keep. Requiring Goryo's itself in the opener mulled ~60% of hands (P(4-of in 7) ~ 0.40) and collapsed the aggro matchups (Boros/Zoo/Affinity 0% at n=15).",
+  "mulligan_combo_paths": [
+    {
+      "enablers": [
+        "Faithful Mending",
+        "Psychic Frog"
+      ],
+      "payoffs": [
+        "Goryo's Vengeance",
+        "Atraxa, Grand Unifier",
+        "Griselbrand"
+      ]
+    }
+  ],
+  "land_priorities": {
+    "Flooded Strand": 5.0,
+    "Polluted Delta": 5.0,
+    "Marsh Flats": 4.0,
+    "Watery Grave": 4.0,
+    "Godless Shrine": 3.0,
+    "Hallowed Fountain": 3.0,
+    "Meticulous Archive": 3.0,
+    "Undercity Sewers": 3.0,
+    "Otawara, Soaring City": 2.0,
+    "Island": 1.0,
+    "Plains": 1.0,
+    "Swamp": 1.0
+  },
+  "reactive_only": [
+    "Force of Negation"
+  ],
+  "always_early": [
+    "Faithful Mending",
+    "Psychic Frog",
+    "Thoughtseize"
+  ],
+  "combo_readiness_check": "generic_combo_readiness",
+  "fallback_goals": [
+    {
+      "goal_type": "PUSH_DAMAGE",
+      "description": "Plan B: Psychic Frog beatdown backed by Solitude and interaction",
+      "card_priorities": {
+        "Psychic Frog": 20.0,
+        "Solitude": 14.0,
+        "Prismatic Ending": 10.0
+      },
+      "card_roles": {
+        "interaction": [
+          "Solitude",
+          "Prismatic Ending"
+        ]
+      }
+    }
+  ],
+  "critical_pieces": [
+    "Atraxa, Grand Unifier",
+    "Goryo's Vengeance",
+    "Griselbrand"
+  ]
+}

@@ -179,17 +179,66 @@ class ResponseDecider:
         #   • NaN — no chain state inferred; preserve legacy
         #     behaviour exactly (no change for aggro / midrange).
         #
-        # Pitch counters retain a free firing path (effective cost ≤
-        # PITCH_COUNTER_FREE_COST) — burning a pitch counter has near-
-        # zero opportunity cost and the chain-aware hold rule does
-        # not need to override that trade.
+        # Pitch counters retain a free firing path — burning a pitch
+        # counter costs one pitched card and NO mana, so its
+        # opportunity cost against the future payoff is near zero and
+        # the chain-aware hold rule does not need to override that
+        # trade.  The exemption is classified by MECHANIC
+        # (`_is_pitch_counter`: mana-free alternative-cost path on
+        # opp's turn), not by effective-cost value — a cheap HARD-PAID
+        # counter (1-CMC "counter unless pays" family) carries the
+        # same card-opportunity cost as any counter and is at its
+        # best against the payoff, when the combo player is tapped
+        # out mid-chain.  Micro-audit A4 Wave-2: the old cost-based
+        # check (`_effective_counter_cost ≤ PITCH_COUNTER_FREE_COST`)
+        # let any 1-CMC hard counter bypass the hold and fire on
+        # chain fuel.
         from ai.combo_calc import bottleneck_probability
         bp = bottleneck_probability(stack_item, game, self.player_idx)
         if bp == 0.0:
+            # Turn-scoped cast-lock (silence class) fires INTO the
+            # hold state instead of being reserved by it.  The hold's
+            # rationale — "a counter is at its best against the
+            # payoff" — inverts for a cast-lock: it never trades with
+            # the payoff at all, and every remaining cast it denies is
+            # chain EV removed, so it is at its best the EARLIER it
+            # lands in a running chain.  bp == 0.0 is exactly that
+            # state: the opponent is mid-cast (>=1 prior spell this
+            # turn) with a payoff still reachable, so resolving the
+            # cast-lock now shuts down the rest of the combo turn
+            # while the held counters stay reserved for the payoff's
+            # next attempt.  Cheapest first: effect is binary, extra
+            # mana on a bigger lock buys nothing this turn.
+            cast_locks = sorted(
+                (c for c in instants if "silence" in c.template.tags),
+                key=lambda c: c.template.cmc or 0,
+            )
+            if cast_locks:
+                lock = cast_locks[0]
+                if self.strategic_logger:
+                    self.strategic_logger.log_response(
+                        self.player_idx, lock.name,
+                        stack_item.source.name, game,
+                        "Cast-lock on mid-cast chain: deny every "
+                        "remaining cast this turn; counters stay "
+                        "reserved for the payoff")
+                self._record_decision(
+                    game, stack_item,
+                    chosen_inst=lock, chosen_targets=[],
+                    chosen_reason=(
+                        "cast-lock fired on mid-cast chain fuel "
+                        "(bottleneck_probability=0): denies the rest "
+                        "of the combo turn"
+                    ),
+                    alternatives=[], instants=instants,
+                    threat=threat,
+                    held_counter_floor_ev=self._held_counter_floor_ev(game),
+                    triage_skip=False,
+                )
+                return lock, []
             cheap_pitch = any(
                 "counterspell" in c.template.tags
-                and self._effective_counter_cost(game, c)
-                <= PITCH_COUNTER_FREE_COST
+                and self._is_pitch_counter(game, c)
                 for c in instants
             )
             if not cheap_pitch:
@@ -772,24 +821,40 @@ class ResponseDecider:
 
         return effective
 
-    def _effective_counter_cost(self, game: "GameState", instant: "CardInstance") -> int:
-        """Cost paid to actually fire this counter, after alternative-cost paths.
+    def _is_pitch_counter(self, game: "GameState", instant: "CardInstance") -> bool:
+        """True iff this counter is castable via the mana-free PITCH
+        alternative cost right now.
 
         Mirrors the engine's `can_cast` alternative-cost path for "exile a
         {color} card from your hand rather than pay this spell's mana cost"
-        (game_state.py:880-903): on the opponent's turn, the counter is free
-        in mana — its cost is a single exiled card, which we represent as 1
+        (game_state.py:880-903): the pitch path is live only on the
+        opponent's turn.  Classification is by MECHANIC (oracle
+        alternative-cost clause), not by printed cost — a 1-CMC
+        hard-paid counter is NOT a pitch counter even though its mana
+        cost matches the pitch card-cost representation.
+
+        Single classification site: `_effective_counter_cost` (cost
+        ranking) and the chain-fuel hold exemption in
+        `decide_response` (M2 Wave-2) both consult this predicate.
+        """
+        oracle = (instant.template.oracle_text or '').lower()
+        return (
+            'exile a' in oracle and 'rather than pay' in oracle
+            and getattr(game, 'active_player', None) != self.player_idx
+        )
+
+    def _effective_counter_cost(self, game: "GameState", instant: "CardInstance") -> int:
+        """Cost paid to actually fire this counter, after alternative-cost paths.
+
+        Routes through `_is_pitch_counter` (single classification
+        site): on the opponent's turn a pitch counter is free in mana
+        — its cost is a single exiled card, which we represent as 1
         for ranking purposes. Otherwise the cost is the printed CMC.
 
         Used to pick the cheapest castable counter when several are available;
         without this the legacy hand-order iteration would burn the wrong one.
         """
-        oracle = (instant.template.oracle_text or '').lower()
-        is_pitch_counter = (
-            'exile a' in oracle and 'rather than pay' in oracle
-            and getattr(game, 'active_player', None) != self.player_idx
-        )
-        if is_pitch_counter:
+        if self._is_pitch_counter(game, instant):
             return 1  # one exiled card, no mana
         return instant.template.cmc
 

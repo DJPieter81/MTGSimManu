@@ -52,6 +52,7 @@ from ai.scoring_constants import (
     REMOVAL_THREAT_PREMIUM_SCALE,
     CHEAP_REMOVAL_ACTION_BONUS,
     LANDFALL_DEFERRAL_PENALTY,
+    LAND_GAMEPLAN_PRIORITY_SCALE,
     X_BOARD_WIPE_WASTE_FLOOR,
     BLINK_FIZZLE_FLOOR,
     CHUMP_SENTINEL_VALUE,
@@ -424,12 +425,30 @@ class EVPlayer:
 
         snap = snapshot_from_game(game, self.player_idx)
 
+        # ── ACTIVATION region — activated win-condition lines ──
+        # Battlefield permanents' activated abilities that represent
+        # win conditions (creature-land animation) are Play candidates
+        # like any cast: enumerated here so they compete on EV, and
+        # scored entirely from clock primitives in ai/activation_ev.py.
+        # Enumerated BEFORE the legal-plays early return: an empty hand
+        # must not silence an activatable win condition (the Azorius P0
+        # — the AI sat on animate lands while decking).  Pre-combat
+        # only: the animation exists to attack this turn.
+        activation_plays: List[Play] = []
+        from engine.game_state import Phase as _Phase
+        if game.current_phase == _Phase.MAIN1:
+            from ai.activation_ev import land_animation_candidates
+            for perm, act_ev, act_reason in land_animation_candidates(
+                    game, self.player_idx, snap):
+                activation_plays.append(
+                    Play("activate_ability", perm, [], act_ev, act_reason))
+
         legal = game.get_legal_plays(self.player_idx)
-        if not legal:
+        if not legal and not activation_plays:
             return None
         if excluded_cards:
             legal = [c for c in legal if c.instance_id not in excluded_cards]
-            if not legal:
+            if not legal and not activation_plays:
                 return None
 
         lands = [c for c in legal if c.template.is_land]
@@ -561,13 +580,24 @@ class EVPlayer:
                     is_dying = snap.am_dead_next or (snap.opp_power >= prof.dying_opp_power
                                                      and snap.opp_clock_discrete <= prof.dying_opp_clock)
                     has_big_target = self._has_high_threat_target(game, spell, snap)
+                    # A blink held "for protection" must be castable
+                    # PROACTIVELY when it would clear a live pending
+                    # end-of-turn-exile rider on an own permanent
+                    # (Goryo's-style detriment): the rider fires at OUR
+                    # end step, so cast-later loses the body outright
+                    # (CR 400.7 new-object rule; engine side in PR #462).
+                    # RC-1 decision layer, docs/diagnostics/
+                    # 2026-07-05_goryos_field_13pct_root_cause.md.
+                    clears_detriment = (
+                        'blink' in tags
+                        and bool(self._pending_eot_exile_riders(game)))
                     # has_big_target overrides control_patience: if a real
                     # threat is on board (oracle-driven threat floor), the
                     # reactive-only spell should fire proactively even for
                     # control decks that otherwise hold until late. Audit
                     # finding: Azorius Prismatic Ending sat in hand until
                     # Cranial Plating had already locked the game.
-                    if is_dying or has_big_target:
+                    if is_dying or has_big_target or clears_detriment:
                         pass  # allow through reactive-only gate
                     elif (prof.control_patience
                           and snap.opp_clock_discrete >= CONTROL_PATIENCE_OPP_CLOCK_THRESHOLD):
@@ -596,6 +626,10 @@ class EVPlayer:
         equip_play = self._consider_equip(game, me)
         if equip_play:
             candidates.append(equip_play)
+
+        # Activated win-condition lines compete with casts/lands on EV
+        # (enumerated above, before the legal-plays early return).
+        candidates.extend(activation_plays)
 
         if not candidates:
             self._last_candidates = []
@@ -806,6 +840,16 @@ class EVPlayer:
                 return min(ev, X_BOARD_WIPE_WASTE_FLOOR)
             if kill_count == 1 and killable_power < 2:
                 return min(ev, X_BOARD_WIPE_WASTE_FLOOR)
+            if (kill_count == 1
+                    and snap.opp_hand_size
+                    >= OPP_HAND_FULL_HOLDBACK_THRESHOLD):
+                # A one-kill sweep is spot removal. A wipe's value curve
+                # rises with the opponent's board; while they still hold
+                # a development-threshold grip (same signal the mana-
+                # holdback gate uses), the bigger sweep is still coming
+                # — spending the sweeper now forfeits it (2026-07-06
+                # azorius aggro-defense diagnostic).
+                return min(ev, X_BOARD_WIPE_WASTE_FLOOR)
         elif kill_count == 0:
             return min(ev, X_BOARD_WIPE_WASTE_FLOOR)
         return None
@@ -842,9 +886,23 @@ class EVPlayer:
 
         # ── Base: projection-based EV ──
         # Projects board after cast + opponent response, returns clock delta
-        # Pass BHI for Bayesian-updated opponent response probabilities
+        # Pass BHI for Bayesian-updated opponent response probabilities.
+        # Goal + gameplan-role context feed the M4 gear-shift: the
+        # current goal (GoalType.value) selects the goal_weights row
+        # (close_game re-weights finishers up / cantrips down), and
+        # cards declared in the gameplan's finishers/payoffs role
+        # buckets carry the synthetic ROLE_FINISHER_TAG.  Knowledge
+        # location: roles come from decks/gameplans/*.json via
+        # self._payoff_names — no card names in code.
+        from ai.strategy_profile import ROLE_FINISHER_TAG
+        goal_value = None
+        if self.goal_engine is not None:
+            goal_value = self.goal_engine.current_goal.goal_type.value
+        role_tags = (frozenset({ROLE_FINISHER_TAG})
+                     if card.name in self._payoff_names else frozenset())
         ev = compute_play_ev(card, snap, self.archetype, game, self.player_idx,
-                             bhi=self.bhi)
+                             bhi=self.bhi, goal=goal_value,
+                             role_tags=role_tags)
 
         # ── Free cast bonus (generic) ──
         # Any spell offered for 0 effective mana (Ragavan exile, cascade,
@@ -989,19 +1047,44 @@ class EVPlayer:
                     Kw.STORM in getattr(t, 'keywords', set())
                 )
                 if finishers_in_hand and not is_self_finisher:
-                    cheapest_finisher_cmc = min(
-                        (f.template.cmc or 0)
+                    # Effective costs, not printed CMC (5-panel audit
+                    # Unresolved #4 — partial-chain decision math).
+                    # With cost reducers on board (Ruby Medallion,
+                    # Electromancer shells) the finisher's REAL cost
+                    # shrinks — comparing printed cmc made the gate
+                    # fire when the finisher could not actually be
+                    # locked out, suppressing all chain fuel below
+                    # the payoff so the payoff fired FIRST at a
+                    # sub-lethal storm count (trace: Azorius vs Ruby
+                    # Storm s60100, Grapeshot fired at storm=2 for 4
+                    # damage into 17 with Glimpse still castable).
+                    # Route through the W0-F cost primitive — the
+                    # single owner of cost-modification math.
+                    from ai.effective_cmc import effective_cmc
+                    cheapest_finisher_cost = min(
+                        effective_cmc(f, snap, game=game,
+                                      player_idx=self.player_idx)
                         for f in finishers_in_hand
                     )
-                    candidate_cmc = t.cmc or 0
-                    post_cast_mana = snap.my_mana - candidate_cmc
-                    if post_cast_mana < cheapest_finisher_cmc:
+                    candidate_cost = effective_cmc(
+                        card, snap, game=game,
+                        player_idx=self.player_idx)
+                    # A ritual candidate REBUILDS mana — credit its
+                    # oracle-derived production (same template
+                    # property `combo_chain.classify_card` reads), so
+                    # a mana-positive ritual is never treated as
+                    # locking the finisher out.
+                    ritual_data = getattr(t, 'ritual_mana', None)
+                    mana_produced = ritual_data[1] if ritual_data else 0
+                    post_cast_mana = (snap.my_mana - candidate_cost
+                                      + mana_produced)
+                    if post_cast_mana < cheapest_finisher_cost:
                         # Finisher_unlock_chance: 1.0 when the
                         # finisher IS castable right now (mana >=
-                        # cmc); else 0.0. Oracle-derived from
-                        # current snapshot, no magic numbers.
+                        # effective cost); else 0.0. Oracle-derived
+                        # from current snapshot, no magic numbers.
                         finisher_unlock_chance = (
-                            1.0 if snap.my_mana >= cheapest_finisher_cmc
+                            1.0 if snap.my_mana >= cheapest_finisher_cost
                             else 0.0
                         )
                         ev -= finisher_unlock_chance * snap.opp_life / 2.0
@@ -1081,6 +1164,19 @@ class EVPlayer:
                     turns = MIDGAME_HORIZON_TURNS  # rules constant: Modern midgame horizon
                 turns = max(GAME_HORIZON_MIN_TURNS, min(turns, GAME_HORIZON_MAX_COST_REDUCER))
                 ev += turns * card_clock_impact(snap) * CLOCK_IMPACT_LIFE_SCALING
+
+        # ── Activated win-condition line: planeswalker ultimate ──
+        # A walker whose ultimate wins/locks the game is a win
+        # condition when its loyalty trajectory reaches the line
+        # inside the opponent-clock horizon (Track H — the loyalty-
+        # pool projection above credits generic activations but not
+        # the win line itself).  Value derived in ai/pw_ability.py
+        # from clock primitives; pinned by
+        # tests/test_pw_ultimate_line_valued_when_reachable.py.
+        if CardType.PLANESWALKER in t.card_types:
+            from ai.pw_ability import ultimate_win_line_value
+            ev += ultimate_win_line_value(
+                t.oracle_text or '', t.loyalty or 0, snap)
 
         # ── Duplicate Chalice-of-the-Void / hate permanent penalty ──
         # Casting a second Chalice with the same X is useless (same CMC
@@ -1208,6 +1304,41 @@ class EVPlayer:
                                 for c in me.creatures)
             if etb_creatures and has_attackers:
                 ev -= BLINK_M1_HOLD_PENALTY  # wait for M2 so we keep combat damage
+
+        # ── Blink clears a live pending EOT-exile detriment (CR 400.7) ──
+        # A delayed "exile it at the beginning of the next end step"
+        # rider (Goryo's Vengeance / Sneak Attack shape) tracks a
+        # specific object; blinking makes the permanent a new object and
+        # sheds the rider (engine side: PR #462 object identity).
+        # Keeping the body past end of turn is worth its full threat
+        # value — derived from `creature_threat_value`, the same
+        # principled subsystem removal targeting uses.  Sequencing: the
+        # rider only fires at OUR end step, so in MAIN1 an attack-
+        # capable rider should swing first (the temporary body still
+        # deals combat damage) and be blinked post-combat — pre-combat
+        # the credit is withheld and the existing M1-hold penalty
+        # applies, steering the cast to MAIN2.  RC-1 decision layer,
+        # docs/diagnostics/2026-07-05_goryos_field_13pct_root_cause.md.
+        if ('blink' in tags and (t.is_instant or t.is_sorcery)
+                and game is not None):
+            riders = self._pending_eot_exile_riders(game)
+            if riders:
+                best_rider = max(
+                    riders, key=lambda c: creature_threat_value(c, snap))
+                in_main1 = 'MAIN1' in str(getattr(game, 'current_phase', ''))
+                if in_main1 and best_rider.can_attack:
+                    ev -= BLINK_M1_HOLD_PENALTY  # swing first, blink in M2
+                else:
+                    ev += creature_threat_value(best_rider, snap)
+
+        # ── Reserve mana for a blink that clears a live rider ──
+        # The credit above prices the blink; this prices everything
+        # ELSE: a competing cast that would strand the held blink
+        # forfeits the clearance value (same primitive, opposite sign).
+        if 'blink' not in tags and game is not None:
+            ev += self._blink_reservation_penalty(
+                me, snap, cost=t.cmc or 0,
+                exclude_instance_id=card.instance_id, game=game)
 
         # ── Noncreature-only counter dead vs creature-heavy opponents ──
         # Dovin's Veto / Negate can't target creature spells.
@@ -1449,15 +1580,17 @@ class EVPlayer:
         # cost of held interaction — used to size the penalty.
         held_costs: list = []
         held_colors: set = set()
+        from ai.card_classes import is_held_interaction
         for c in me.hand:
             if exclude_instance_id is not None \
                     and c.instance_id == exclude_instance_id:
                 continue
             tmpl = c.template
-            if not tmpl.is_instant:
-                continue
-            tags = getattr(tmpl, 'tags', set())
-            if not ('removal' in tags or 'counterspell' in tags):
+            # Membership comes from the central class registry — the
+            # cast-lock omission that made control tap out vs
+            # creatureless combo was the founding incident
+            # (docs/proposals/2026-07-09_structural_findings.md #2).
+            if not is_held_interaction(tmpl):
                 continue
             held_costs.append(tmpl.cmc or 0)
             mc = tmpl.mana_cost
@@ -1737,7 +1870,7 @@ class EVPlayer:
 
         ev = LAND_BASE_EV
 
-        current_untapped = len(me.untapped_lands)
+        current_untapped = me.untapped_mana_capacity()
         hand_spells = [s for s in me.hand if not s.template.is_land]
         has_castable_spells = any(
             (s.template.cmc or 0) <= current_untapped + 1
@@ -1940,7 +2073,7 @@ class EVPlayer:
                     ev += p_assemble * completed_value
 
         # Landfall deferral: cast landfall creature FIRST, then play land
-        current_mana = len(me.untapped_lands) + me.mana_pool.total() + me._tron_mana_bonus()
+        current_mana = me.untapped_mana_capacity() + me.mana_pool.total() + me._tron_mana_bonus()
         for spell in me.hand:
             if spell.template.is_land:
                 continue
@@ -1950,6 +2083,17 @@ class EVPlayer:
             if game.can_cast(self.player_idx, spell):
                 ev -= LANDFALL_DEFERRAL_PENALTY  # defer land so creature resolves first
                 break
+
+        # ── Gameplan land-priority hook (Track H handoff, G finding 2) ──
+        # ``land_priorities`` is per-deck DATA (decks/gameplans/*.json)
+        # that previously reached only mulligan bottoming.  Consuming
+        # it here lets a gameplan order engine-land sequencing in game
+        # without any card names in code.  The scale keeps the term a
+        # land-vs-land tiebreaker, not a land-vs-spell override.
+        if self.goal_engine:
+            declared = self.goal_engine.gameplan.land_priorities.get(
+                land.name, 0.0)
+            ev += declared * LAND_GAMEPLAN_PRIORITY_SCALE
 
         return ev
 
@@ -3350,9 +3494,13 @@ class EVPlayer:
                     return [best.instance_id]
                 return []
 
-        # Exile effects (March of Otherworldly Light, etc.): target best nonland permanent
+        # Exile effects (March of Otherworldly Light, etc.): target best
+        # nonland permanent.  Blink spells are NOT opp-exile: their
+        # "exile target creature you control ... return" is a self-blink
+        # (same exclusion the card DB applies to the 'removal' tag) —
+        # they fall through to the blink branch below.
         oracle = (spell.template.oracle_text or '').lower()
-        if 'exile target' in oracle:
+        if 'exile target' in oracle and 'blink' not in tags:
             from engine.cards import CardType
             nonland = [c for c in opp.battlefield if not c.template.is_land]
             if nonland:
@@ -3360,9 +3508,19 @@ class EVPlayer:
                 return [best.instance_id]
             return []
 
-        # Blink effects: target our best ETB creature, fall back to any creature
+        # Blink effects: a creature carrying a live pending EOT-exile
+        # rider outranks any ETB retrigger — the blink permanently keeps
+        # a body that is otherwise lost at end of turn (CR 400.7; see
+        # the detriment-clearance EV term in _score_spell). Then best
+        # ETB creature, then any creature.
         if 'blink' in tags:
             me = game.players[self.player_idx]
+            rider_creatures = [c for c in self._pending_eot_exile_riders(game)
+                               if c.template.is_creature]
+            if rider_creatures:
+                best = max(rider_creatures,
+                           key=lambda c: creature_threat_value(c, snap))
+                return [best.instance_id]
             etb_creatures = [c for c in me.creatures
                              if 'etb_value' in getattr(c.template, 'tags', set())]
             if etb_creatures:
@@ -3548,6 +3706,94 @@ class EVPlayer:
 
         return pump_impact + mana_tempo
 
+    def _pending_eot_exile_riders(self, game) -> List["CardInstance"]:
+        """Own battlefield permanents tracked by a LIVE delayed
+        end-of-turn-exile rider (the Goryo's Vengeance / Sneak Attack /
+        Through the Breach detriment shape).
+
+        Live = the tracked object is still on the battlefield under the
+        SAME battlefield entry — the CR 400.7 object-identity staleness
+        check, mirroring what the engine applies at end-of-turn cleanup
+        (engine/turn_manager.py).  Data source is the engine's rider
+        registry (`game_state.register_end_of_turn_exile`), so the
+        check is mechanic-driven: any delayed-EOT-exile effect × any
+        permanent, no card names.
+        """
+        riders = []
+        for card, controller, entry_seq in getattr(
+                game, '_end_of_turn_exiles', ()):
+            if (controller == self.player_idx
+                    and getattr(card, 'zone', None) == 'battlefield'
+                    and getattr(card, 'battlefield_entry_seq', 0)
+                    == entry_seq):
+                riders.append(card)
+        return riders
+
+    def _blink_reservation_penalty(self, me, snap, cost: int,
+                                   exclude_instance_id, game) -> float:
+        """Reservation charge for a cast that would strand a held blink
+        while a live pending EOT-exile rider exists (RC-1 follow-up,
+        docs/diagnostics/2026-07-05_goryos_field_13pct_root_cause.md).
+
+        The blink-clears-detriment credit prices the blink itself, but
+        the line dies upstream if a competing cast in the same main
+        phase spends the blink's last color source (replay evidence:
+        the last white-capable source spent on a discard spell right
+        after reanimating). Charge the forfeited clearance credit —
+        the saved permanent's `creature_threat_value`, the SAME
+        primitive the credit side uses — when this cast flips the held
+        blink from castable to uncastable this turn. Zero when no
+        rider is live, no blink is held, or capacity survives the
+        cast. Mirrors `_holdback_penalty`'s off-color-first payment
+        accounting; mechanic-driven, no card names.
+        """
+        if game is None or cost <= 0:
+            return 0.0
+        riders = self._pending_eot_exile_riders(game)
+        if not riders:
+            return 0.0
+        blinks = [c for c in me.hand
+                  if c.instance_id != exclude_instance_id
+                  and 'blink' in getattr(c.template, 'tags', set())
+                  and (c.template.is_instant or c.template.is_sorcery)]
+        if not blinks:
+            return 0.0
+        bl = min(blinks, key=lambda c: c.template.cmc or 0).template
+        bl_cmc = bl.cmc or 0
+
+        def _castable(total_mana: int, by_color: dict) -> bool:
+            if total_mana < bl_cmc:
+                return False
+            mc = bl.mana_cost
+            for code, attr in (
+                ('W', 'white'), ('U', 'blue'), ('B', 'black'),
+                ('R', 'red'), ('G', 'green'),
+            ):
+                pips = getattr(mc, attr, 0) if mc is not None else 0
+                if pips and by_color.get(code, 0) < pips:
+                    return False
+            return True
+
+        by_color_now = dict(getattr(snap, 'my_mana_by_color', {}) or {})
+        if not _castable(snap.my_mana, by_color_now):
+            return 0.0  # blink already uncastable — nothing to strand
+
+        # Post-cast capacity: pay the candidate from off-color mana
+        # first (rational optimum), dipping into each blink color only
+        # when off-color runs out — the same accounting
+        # `_holdback_penalty` uses for held counters.
+        by_color_after = {}
+        for code, avail in by_color_now.items():
+            off_color = max(0, snap.my_mana - avail)
+            must_tap_from_color = max(0, cost - off_color)
+            by_color_after[code] = max(0, avail - must_tap_from_color)
+        if _castable(snap.my_mana - cost, by_color_after):
+            return 0.0
+
+        best_rider = max(riders,
+                         key=lambda c: creature_threat_value(c, snap))
+        return -creature_threat_value(best_rider, snap)
+
     def _has_high_threat_target(self, game, spell, snap=None) -> bool:
         """True if a removal spell has a target worth proactively casting for.
 
@@ -3672,7 +3918,7 @@ class EVPlayer:
             return None
 
         # Available mana
-        available_mana = (len(player.untapped_lands)
+        available_mana = (player.untapped_mana_capacity()
                           + player.mana_pool.total()
                           + player._tron_mana_bonus())
 

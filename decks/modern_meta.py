@@ -16,22 +16,36 @@ METAGAME_SHARES changes. Gameplans live as JSON per-deck under
 from typing import Dict, List, Tuple
 
 # Metagame share data for weighting in simulations
+# July 2026 refresh — mtgdecks.net Modern meta (90-day window, retrieved
+# 2026-07-05), post May-18-2026 B&R (Phlage, Titan of Fire's Fury and
+# Lotus Field banned in Modern effective 2026-05-19).
+# Top-10 real shares mapped onto registered decks; decks outside the
+# real top-10 carry their observed standing from the mtgdecks 2-month
+# meta table (Eldrazi Tron 4.78, Living End 3.47, Domain Aggro 2.78,
+# Dimir Frog 2.14, Azorius Control 2.13) or a small residual share.
+# "Izzet Prowess" carries the real "UR Cutter Prowess" share; "Jeskai
+# Blink" carries the "Jeskai Control" share (same Jeskai bucket);
+# "4/5c Control" carries the "4/5c Aggro" bucket (closest registered
+# archetype). Raw percentages, not normalized to 100 — same convention
+# as before (weighting normalizes by the sum).
 METAGAME_SHARES = {
-    "Boros Energy": 21.1,
-    "Jeskai Blink": 9.2,
-    "Eldrazi Tron": 7.1,
-    "Ruby Storm": 6.2,
-    "Affinity": 6.1,
-    "Izzet Prowess": 4.9,
-    "Amulet Titan": 4.1,
-    "Goryo's Vengeance": 3.6,
-    "Living End": 3.6,
-    "Domain Zoo": 2.9,
-    "Dimir Midrange": 2.8,
-    "4c Omnath": 3.5,
-    "4/5c Control": 3.5,
-    "Pinnacle Affinity": 5.7,
-    "Azorius Control": 2.5,
+    "Boros Energy": 15.93,
+    "Affinity": 10.16,
+    "Instant Reanimator": 4.88,
+    "Amulet Titan": 4.81,
+    "Eldrazi Tron": 4.78,
+    "Ruby Storm": 3.99,
+    "Izzet Prowess": 3.99,
+    "Jeskai Blink": 3.80,
+    "Living End": 3.47,
+    "4/5c Control": 3.29,
+    "Domain Zoo": 2.78,
+    "Boros Ponza": 2.75,
+    "Dimir Midrange": 2.14,
+    "Azorius Control": 2.13,
+    "Goryo's Vengeance": 1.50,
+    "4c Omnath": 1.50,
+    "Pinnacle Affinity": 1.50,
     "Azorius Control (WST)": 0.0,
     "Azorius Control (WST v2)": 0.0,
 }
@@ -39,25 +53,20 @@ METAGAME_SHARES = {
 # Full decklists: mainboard + sideboard
 MODERN_DECKS: Dict[str, Dict[str, Dict[str, int]]] = {
     "Boros Energy": {
-        # rarakkyo — 5-8, Modern Challenge 32 (April 18, 2026)
-        # Identical 75 to Rashek's Apr-16 Challenge 64 list — the consensus
-        # current tuning. Key shifts from the RandomOctopus (Apr 4) list:
-        #   - Orim's Chant moved MB (2) → SB (2)   [aligns with bug 2 fix:
-        #     unkicked Chant no longer Time-Walks, so it's correctly SB-only]
-        #   - Static Prison cut (1 → 0)
-        #   - Flooded Strand (4) → Windswept Heath (4)
-        #   - +1 Ranger-Captain of Eos MB (silence effect vs combo)
-        #   - +1 Blood Moon MB (proactive vs greedy manabases)
-        #   - +1 The Legend of Roku MB (recursive threat)
-        #   - +1 Dalkovan Encampment (manland)
-        #   - Sideboard retooled: -Wrath, -Charmaw ratios, +Surgical, +Vexing
-        #     Bauble, +Damping Sphere, +Orim's Chant, +Celestial Purge single
+        # July 2026 post-ban refresh (base: rarakkyo, Modern Challenge 32,
+        # Apr 18 2026). Phlage, Titan of Fire's Fury banned 2026-05-19;
+        # per magic.gg Metagame Mentor (May/June 2026), stock post-ban
+        # builds replaced Phlage with Fable of the Mirror-Breaker and a
+        # second The Legend of Roku as the 3-mana value engines, and
+        # trimmed Arena of Glory (the Phlage haste engine) to 1.
+        #   - -4 Phlage → +3 Fable of the Mirror-Breaker, +1 Roku (1→2)
+        #   - Arena of Glory 3→1; +1 Sacred Foundry (3→4), +1 Plains (2→3)
         "mainboard": {
             "Ragavan, Nimble Pilferer": 4,
             "Ocelot Pride": 4,
             "Guide of Souls": 4,
             "Ajani, Nacatl Pariah // Ajani, Nacatl Avenger": 4,
-            "Phlage, Titan of Fire's Fury": 4,
+            "Fable of the Mirror-Breaker // Reflection of Kiki-Jiki": 3,
             "Seasoned Pyromancer": 3,
             "Voice of Victory": 2,
             "Ranger-Captain of Eos": 1,
@@ -65,15 +74,15 @@ MODERN_DECKS: Dict[str, Dict[str, Dict[str, int]]] = {
             "Thraben Charm": 2,
             "Blood Moon": 1,
             "Goblin Bombardment": 3,
-            "The Legend of Roku": 1,
+            "The Legend of Roku": 2,
             "Arid Mesa": 4,
             "Windswept Heath": 4,
             "Marsh Flats": 3,
-            "Arena of Glory": 3,
-            "Sacred Foundry": 3,
+            "Arena of Glory": 1,
+            "Sacred Foundry": 4,
             "Elegant Parlor": 2,
             "Dalkovan Encampment": 1,
-            "Plains": 2,
+            "Plains": 3,
             "Mountain": 1,
         },
         "sideboard": {
@@ -91,23 +100,28 @@ MODERN_DECKS: Dict[str, Dict[str, Dict[str, int]]] = {
         },
     },
     "Jeskai Blink": {
-        # Spellyp — 5-0, Modern League (April 5, 2026) — updated
+        # July 2026 post-ban refresh (base: Spellyp — 5-0, Modern League,
+        # April 5 2026). Phlage banned 2026-05-19. Real-meta Jeskai now
+        # tracks as "Jeskai Control" (~3.8%); this entry keeps the blink
+        # shell (the surviving Jeskai build per post-ban Moxfield lists)
+        # with the Phlage slots redistributed to control elements:
+        #   - -4 Phlage → +1 Fable (3→4), +1 Wrath of the Skies (1→2),
+        #     +1 Prismatic Ending (2→3), +1 Witch Enchanter (1→2)
         "mainboard": {
-            # Creatures (21)
+            # Creatures (18)
             "Phelia, Exuberant Shepherd": 4,
-            "Phlage, Titan of Fire's Fury": 4,
             "Quantum Riddler": 4,
             "Ragavan, Nimble Pilferer": 4,
             "Solitude": 4,
-            "Witch Enchanter": 1,
-            # Instants + Sorceries (13)
+            "Witch Enchanter": 2,
+            # Instants + Sorceries (15)
             "Consign to Memory": 4,
             "Ephemerate": 2,
             "Galvanic Discharge": 4,
-            "Prismatic Ending": 2,
-            "Wrath of the Skies": 1,
-            # Other spells (3)
-            "Fable of the Mirror-Breaker // Reflection of Kiki-Jiki": 3,
+            "Prismatic Ending": 3,
+            "Wrath of the Skies": 2,
+            # Other spells (4)
+            "Fable of the Mirror-Breaker // Reflection of Kiki-Jiki": 4,
             # Lands (23)
             "Arena of Glory": 2,
             "Arid Mesa": 4,
@@ -252,6 +266,9 @@ MODERN_DECKS: Dict[str, Dict[str, Dict[str, int]]] = {
     },
     "Amulet Titan": {
         # Juintatz — Modern Challenge 64 (April 4, 2026)
+        # July 2026 post-ban refresh: Lotus Field banned 2026-05-19.
+        # -2 Lotus Field → +1 Simic Growth Chamber (3→4), +1 Forest (3→4)
+        # (reverting to the pre-Lotus-Field bounceland/basic split).
         "mainboard": {
             "Primeval Titan": 4,
             "Arboreal Grazer": 4,
@@ -267,10 +284,9 @@ MODERN_DECKS: Dict[str, Dict[str, Dict[str, int]]] = {
             "Gruul Turf": 4,
             "Urza's Saga": 4,
             "Crumbling Vestige": 4,
-            "Simic Growth Chamber": 3,
+            "Simic Growth Chamber": 4,
             "Boseiju, Who Endures": 3,
-            "Forest": 3,
-            "Lotus Field": 2,
+            "Forest": 4,
             "Echoing Deeps": 1,
             "Hanweir Battlements // Hanweir, the Writhing Township": 1,
             "Mirrorpool": 1,
@@ -348,11 +364,14 @@ MODERN_DECKS: Dict[str, Dict[str, Dict[str, int]]] = {
     },
     "Domain Zoo": {
         # Mariscal — 5-0, Modern League (April 5, 2026)
+        # July 2026 post-ban refresh: Phlage banned 2026-05-19.
+        # -4 Phlage → +4 Wild Nacatl (turn-1 3/3 under Leyline of the
+        # Guildpact; the aggro slot post-ban "Domain Aggro" lists lean on).
         "mainboard": {
             "Ragavan, Nimble Pilferer": 4,
             "Doorkeeper Thrull": 4,
             "Territorial Kavu": 4,
-            "Phlage, Titan of Fire's Fury": 4,
+            "Wild Nacatl": 4,
             "Scion of Draco": 4,
             "Teferi, Time Raveler": 1,
             "Lightning Bolt": 4,
@@ -425,6 +444,10 @@ MODERN_DECKS: Dict[str, Dict[str, Dict[str, int]]] = {
         },
     },
     "Izzet Prowess": {
+        # July 2026 refresh — real meta tracks this as "UR Cutter Prowess"
+        # (~3.99%): stock June-2026 builds run the full 4 Cori-Steel Cutter
+        # (mtgdecks/mtggoldfish archetype pages, June 2026).
+        # +2 Cori-Steel Cutter (2→4), -2 Violent Urge.
         "mainboard": {
             # Creatures (12)
             "Dragon's Rage Channeler": 4,
@@ -435,11 +458,10 @@ MODERN_DECKS: Dict[str, Dict[str, Dict[str, int]]] = {
             "Lava Dart": 4,
             "Unholy Heat": 2,
             "Mutagenic Growth": 4,
-            "Violent Urge": 2,
             "Mishra's Bauble": 4,
             "Expressive Iteration": 4,
             "Preordain": 4,
-            "Cori-Steel Cutter": 2,
+            "Cori-Steel Cutter": 4,
             # Lands (18)
             "Scalding Tarn": 3,
             "Wooded Foothills": 3,
@@ -569,20 +591,21 @@ MODERN_DECKS: Dict[str, Dict[str, Dict[str, int]]] = {
             "Temple Garden": 1,
             "Thundering Falls": 1,
             "Windswept Heath": 3,
-            # Creatures (16)
+            # Creatures (14) — July 2026 post-ban refresh: Phlage banned
+            # 2026-05-19; -2 Phlage → +1 Wrath of the Skies (2→3),
+            # +1 Stock Up (2→3).
             "Eternal Witness": 2,
             "Omnath, Locus of Creation": 3,
-            "Phlage, Titan of Fire's Fury": 2,
             "Quantum Riddler": 4,
             "Solitude": 4,
-            # Spells (21)
+            # Spells (23)
             "Ephemerate": 3,
             "Galvanic Discharge": 3,
             "Orim's Chant": 4,
             "Prismatic Ending": 2,
-            "Stock Up": 2,
+            "Stock Up": 3,
             "Teferi, Time Raveler": 3,
-            "Wrath of the Skies": 2,
+            "Wrath of the Skies": 3,
             "Wrenn and Six": 3,
         },
         "sideboard": {
@@ -743,6 +766,93 @@ MODERN_DECKS: Dict[str, Dict[str, Dict[str, int]]] = {
             "Celestial Purge": 1,
             "Rest in Peace": 1,
             "Wrath of the Skies": 1,
+        },
+    },
+    "Instant Reanimator": {
+        # July 2026 meta addition (~4.9% — mtgdecks.net "Instant
+        # Reanimator" / "Esper Reanimator"). Esper Goryo's shell: cheat
+        # Atraxa/Griselbrand into play with Goryo's Vengeance, keep it
+        # with Ephemerate; Psychic Frog + Faithful Mending fill the yard.
+        # Core 37 nonland + fetch base per TCGplayer "Modern Esper Goryo's
+        # MTG Deck Guide" (2026); remaining land slots and sideboard
+        # reconstructed from archetype staples (deck sites were
+        # egress-blocked this session — see PR body).
+        "mainboard": {
+            "Atraxa, Grand Unifier": 4,
+            "Ephemerate": 4,
+            "Faithful Mending": 4,
+            "Flooded Strand": 4,
+            "Force of Negation": 3,
+            "Godless Shrine": 1,
+            "Goryo's Vengeance": 4,
+            "Griselbrand": 1,
+            "Hallowed Fountain": 2,
+            "Island": 2,
+            "Marsh Flats": 3,
+            "Meticulous Archive": 1,
+            "Otawara, Soaring City": 1,
+            "Plains": 1,
+            "Polluted Delta": 4,
+            "Prismatic Ending": 2,
+            "Psychic Frog": 4,
+            "Quantum Riddler": 4,
+            "Solitude": 4,
+            "Swamp": 1,
+            "Thoughtseize": 3,
+            "Undercity Sewers": 1,
+            "Watery Grave": 2,
+        },
+        "sideboard": {
+            "Celestial Purge": 2,
+            "Consign to Memory": 4,
+            "Damn": 2,
+            "Mystical Dispute": 3,
+            "Nihil Spellbomb": 2,
+            "Subtlety": 1,
+            "Teferi, Time Raveler": 1,
+        },
+    },
+    "Boros Ponza": {
+        # July 2026 meta addition (~2.75%). Base: Milos Mrkic — 2nd
+        # (6-1-2), Modern Destination Qualifier EUL Premier @ MOLE,
+        # May 27 2026 (mtgdecks.net / unityleague.gg). Land-denial shell:
+        # Blood Moon + Cleansing Wildfire/Pillage/Obsidian Charmaw with an
+        # Ephemerate blink package (Phelia/Solitude/Seasoned Pyromancer).
+        # 47 of 60 MB slots confirmed from the source; remaining land
+        # slots and sideboard reconstructed from archetype staples
+        # (deck sites were egress-blocked this session — see PR body).
+        "mainboard": {
+            "Arena of Glory": 1,
+            "Arid Mesa": 4,
+            "Blood Moon": 4,
+            "Cleansing Wildfire": 4,
+            "Elegant Parlor": 1,
+            "Ephemerate": 4,
+            "Fable of the Mirror-Breaker // Reflection of Kiki-Jiki": 1,
+            "Flagstones of Trokair": 2,
+            "Inspiring Vantage": 2,
+            "Lightning Bolt": 4,
+            "Marsh Flats": 4,
+            "Mountain": 3,
+            "Obsidian Charmaw": 3,
+            "Phelia, Exuberant Shepherd": 3,
+            "Pillage": 3,
+            "Plains": 4,
+            "Ragavan, Nimble Pilferer": 3,
+            "Sacred Foundry": 2,
+            "Seasoned Pyromancer": 4,
+            "Solitude": 3,
+            "Sunbaked Canyon": 1,
+        },
+        "sideboard": {
+            "Celestial Purge": 2,
+            "Damping Sphere": 2,
+            "Kor Firewalker": 2,
+            "Magus of the Moon": 1,
+            "Molten Rain": 2,
+            "Rest in Peace": 2,
+            "Sanctifier en-Vec": 2,
+            "Wear // Tear": 2,
         },
     },
 }

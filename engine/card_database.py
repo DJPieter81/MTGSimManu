@@ -521,6 +521,73 @@ class OracleTextParser:
         return sorted(mana_colors)
 
     @classmethod
+    def detect_land_mana_units(cls, oracle_text: str) -> List[List[str]]:
+        """Parse a land's plain '{T}: Add …' ability into mana UNITS.
+
+        One inner list of color options per unit of mana produced
+        (E1 — multi-mana lands):
+
+            '{T}: Add {G}{U}.'              → [["G"], ["U"]]
+            '{T}: Add {C}{C}.'              → [["C"], ["C"]]
+            '{T}: Add {G} or {U}.'          → [["G", "U"]]
+            '{T}: Add {W}, {U}, or {B}.'    → [["W", "U", "B"]]
+            '{T}: Add two mana of any one color.'
+                                            → [[W..G], [W..G]]
+
+        Only cost-free tap lines count ('{T}:' with nothing between the
+        tap symbol and the colon) — abilities with additional costs
+        ('{T}, Sacrifice …:') are not always-available production and
+        must not inflate the unit count.  When several plain tap lines
+        exist, the largest is the land's production (a land is tapped
+        once for its best line).  Returns [] when no plain tap line is
+        found; callers fall back to a single unit of `produces_mana`.
+        """
+        if not oracle_text:
+            return []
+        all_colors = ["W", "U", "B", "R", "G"]
+        word_to_num = {"one": 1, "two": 2, "three": 3}
+        best: List[List[str]] = []
+        for line in oracle_text.splitlines():
+            m = re.match(r"\s*\{T\}\s*:\s*Add\s+([^.]+)",
+                         line, re.IGNORECASE)
+            if not m:
+                continue
+            payload = m.group(1)
+            # Spend-restricted production ('Spend this mana only to
+            # cast …') is not always-available mana — the restricted
+            # line must not raise the land's unit count.
+            if re.search(r"spend this mana only", line[m.end():],
+                         re.IGNORECASE):
+                continue
+            units: List[List[str]] = []
+            wm = re.search(
+                r"(one|two|three)\s+mana\s+of\s+any(?:\s+one)?\s+color",
+                payload, re.IGNORECASE)
+            if wm:
+                n = word_to_num[wm.group(1).lower()]
+                units = [list(all_colors) for _ in range(n)]
+            else:
+                # Alternatives are a color CHOICE for one unit;
+                # consecutive symbols inside one alternative are FIXED
+                # units produced together.
+                alts = re.split(r"\s*,\s*or\s+|\s*,\s*|\s+or\s+", payload)
+                alt_syms = [re.findall(r"\{([WUBRGC])\}", a) for a in alts]
+                alt_syms = [s for s in alt_syms if s]
+                if not alt_syms:
+                    continue
+                if len(alt_syms) == 1:
+                    units = [[sym] for sym in alt_syms[0]]
+                elif all(len(s) == 1 for s in alt_syms):
+                    units = [[s[0] for s in alt_syms]]
+                else:
+                    # Mixed multi-symbol alternatives: take the first
+                    # alternative's fixed units (conservative floor).
+                    units = [[sym] for sym in alt_syms[0]]
+            if len(units) > len(best):
+                best = units
+        return best
+
+    @classmethod
     def classify_card_role(cls, card_data: dict, effects: List[OracleEffect]) -> Set[str]:
         """Classify a card's strategic role based on its effects and stats."""
         tags = set()
@@ -1135,10 +1202,16 @@ ManaCost.add_color = _add_color
 class CardDatabase:
     """Loads and manages the complete Modern card pool."""
 
+    # Full ModernAtomic carries ~21k cards; anything smaller is a fixture
+    # or partial file, so a load below this triggers the one-shot
+    # merge_db.py recovery in load().
+    _MIN_REAL_DB_CARDS = 1000
+
     def __init__(self, json_path: str = None):
         self.cards: Dict[str, CardTemplate] = {}
         self._raw_data: Dict[str, Any] = {}
         self._effects_cache: Dict[str, List[OracleEffect]] = {}
+        self._automerge_attempted = False
         if json_path:
             self.load(json_path)
         else:
@@ -1163,6 +1236,30 @@ class CardDatabase:
             raw = json.load(f)
 
         card_data = raw.get("data", raw)
+
+        # Cross-check the merge provenance stamp (written by merge_db.py).
+        # A card_count that disagrees with the file's actual entry count
+        # means the merged DB was truncated, hand-edited, or assembled
+        # outside merge_db.py — the silent-stale-DB failure class of
+        # 2026-07-05. Warn loudly but NEVER crash; a file with no stamp
+        # (pre-stamp merges, fixtures) loads silently.
+        try:
+            meta = raw.get("meta") if isinstance(raw, dict) else None
+            stamp = meta.get("merged_from") if isinstance(meta, dict) else None
+            if isinstance(stamp, dict) and "card_count" in stamp:
+                stamped = stamp["card_count"]
+                actual = len(card_data)
+                if stamped != actual:
+                    print(
+                        "WARNING: PROVENANCE MISMATCH in "
+                        f"{json_path}: meta.merged_from.card_count="
+                        f"{stamped} but the file contains {actual} "
+                        "entries — the merged DB was modified after "
+                        "merge_db.py wrote it. Re-run: python3 merge_db.py"
+                    )
+        except Exception:
+            pass  # provenance check must never block a load
+
         count = 0
         errors = 0
 
@@ -1201,15 +1298,34 @@ class CardDatabase:
 
         print(f"Loaded {count} cards ({errors} errors)")
 
-        if count < 1000:
-            import subprocess, pathlib
+        if count < self._MIN_REAL_DB_CARDS and not self._automerge_attempted:
+            # One-shot recovery: a too-small load usually means a fresh
+            # checkout where the gitignored ModernAtomic.json is absent and
+            # auto-discovery fell through to a small fixture. Run merge_db.py
+            # once, then reload the CANONICAL file it writes — reloading the
+            # same too-small candidate path recursed unboundedly until
+            # RecursionError (2026-07-06 CI outage, run 28756950990).
+            self._automerge_attempted = True
+            import os, subprocess, pathlib
             merge = pathlib.Path(__file__).parent.parent / 'merge_db.py'
             if merge.exists():
                 print("DB too small — auto-running merge_db.py and reloading...")
                 subprocess.run(['python', str(merge)], cwd=str(merge.parent))
                 self.cards.clear()
                 self._raw_data.clear()
-                self.load(json_path)
+                canonical = self._canonical_db_path()
+                reload_path = canonical if os.path.exists(canonical) else json_path
+                self.load(reload_path)
+                if len(self.cards) < self._MIN_REAL_DB_CARDS:
+                    print("WARNING: card DB still too small after merge_db.py "
+                          f"({len(self.cards)} cards) — check "
+                          "ModernAtomic_part*.json integrity.")
+
+    def _canonical_db_path(self) -> str:
+        """Project-root ModernAtomic.json — the file merge_db.py writes."""
+        import os
+        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        return os.path.join(project_root, 'ModernAtomic.json')
 
     def _build_template(self, name: str, data: dict) -> Optional[CardTemplate]:
         """Build a CardTemplate from MTGJSON card data."""
@@ -1319,9 +1435,20 @@ class CardDatabase:
         untap_life_cost = 0
         untap_max_other_lands = -1
         tap_damage = 0
+        mana_units: List[List[str]] = []
+        etb_return_land = False
         if CardType.LAND in card_types:
             produces_mana = OracleTextParser.detect_land_mana(oracle_text, subtypes, card_name=name)
+            mana_units = OracleTextParser.detect_land_mana_units(oracle_text)
             enters_tapped = OracleTextParser.detect_enters_tapped(oracle_text, card_name=name)
+            # Karoo-family structural ETB clause (E1b): mandatory
+            # "return a land you control to its owner's hand" on entry.
+            if oracle_text and re.search(
+                    r"when(?:ever)? (?:this land|[^.,\n]{1,40}) enters"
+                    r"(?: the battlefield)?,\s*return a land you control"
+                    r" to its owner'?s hand",
+                    oracle_text, re.IGNORECASE):
+                etb_return_land = True
             # Detect land entry conditions from oracle text
             if oracle_text:
                 import re as _re
@@ -1372,6 +1499,8 @@ class CardDatabase:
             abilities=abilities,
             color_identity=color_identity,
             produces_mana=produces_mana,
+            mana_units=mana_units,
+            etb_return_land=etb_return_land,
             enters_tapped=enters_tapped,
             untap_life_cost=untap_life_cost,
             untap_max_other_lands=untap_max_other_lands,

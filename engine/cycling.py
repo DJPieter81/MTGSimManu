@@ -41,7 +41,7 @@ class CyclingManager:
             return False
         # Mana cost check
         if cost["mana"] > 0:
-            untapped = len(player.untapped_lands) + player.mana_pool.total() + player._tron_mana_bonus()
+            untapped = player.untapped_mana_capacity() + player.mana_pool.total() + player._tron_mana_bonus()
             if untapped < cost["mana"]:
                 return False
             # Color check for colored cycling costs.  Routes through

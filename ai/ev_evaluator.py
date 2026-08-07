@@ -82,10 +82,20 @@ from ai.deck_knowledge import DeckKnowledge
 # lookup over the per-archetype `phase_weights` table.  Both are pure
 # compositions — no magic numbers introduced here.
 from ai.clock import life_phase
-from ai.strategy_profile import phase_weight_multiplier
+# `apply_preference_weight` is the sign-aware application (A2 fix):
+# a bonus weight makes a play strictly MORE attractive on both sides
+# of zero (gains × w, costs ÷ w).  `goal_weight_multiplier` is the
+# goal-axis twin of the phase lookup (M4 part 3): `goal=close_game`
+# re-weights gameplan-declared finisher roles up, cantrips down.
+from ai.strategy_profile import (
+    apply_preference_weight,
+    goal_weight_multiplier,
+    phase_weight_multiplier,
+)
 # Effective-CMC primitive (W0-F + M9 wiring).  Subsumes delve, evoke,
 # Medallion-reduced cost, affinity, improvise — see ai/effective_cmc.py.
 from ai.effective_cmc import effective_cmc
+from engine.oracle_clauses import split_abilities
 
 
 # ─────────────────────────────────────────────────────────────
@@ -770,9 +780,14 @@ def _has_immediate_effect(card: "CardInstance") -> bool:
     # ETB value (Omnath, Thragtusk, PW ETB effects) — resolves immediately
     if 'etb_value' in tags:
         return True
-    if 'enters' in oracle and (
-            'deal' in oracle or 'gain' in oracle or 'exile' in oracle
-            or 'draw' in oracle or 'search your library' in oracle):
+    # Clause-scoped (E5): the ETB trigger and its effect verb share one
+    # ability paragraph (CR 603.1) — a damage/draw verb in a separate
+    # activated ability (or reminder text on another line) must not
+    # count as immediate ETB value.
+    if any('enters' in a and (
+            'deal' in a or 'gain' in a or 'exile' in a
+            or 'draw' in a or 'search your library' in a)
+           for a in split_abilities(oracle)):
         return True
     # Planeswalkers provide loyalty activations this turn
     from engine.cards import CardType
@@ -813,6 +828,14 @@ def _has_self_etb_effect(oracle: str) -> bool:
     Self-ETB matches "when ~ enters", "when this creature enters",
     "when CARDNAME enters" — not "whenever a creature enters", which is
     a board trigger that requires another entry to fire.
+
+    Clause-scoped (E5): the material-effect verb must appear in the
+    SAME ability paragraph as the self-ETB trigger (CR 603.1 — a
+    triggered ability's condition and effect share one ability; the
+    effect may span several sentences of that paragraph). The previous
+    whole-text keyword scan was a self-admitted over-approximation:
+    an effect verb belonging to a separate ability made a vanilla-ETB
+    card look like it had ETB value.
     """
     if 'enters' not in oracle:
         return False
@@ -825,30 +848,27 @@ def _has_self_etb_effect(oracle: str) -> bool:
         'when this land enters', 'when this permanent enters',
         'when ~ enters', 'when this token enters',
     )
-    has_self_trigger = any(p in oracle for p in self_patterns)
-    # Fallback: "When <name> enters" — the name is the card's own, so
-    # match "^when " followed by "enters" with nothing in between
-    # identifying another creature/permanent qualifier.  Cheap check:
-    # "when" appears and "enters" follows, without "another" / "a
-    # creature" / "a permanent" between them.
-    if not has_self_trigger:
-        import re as _re
-        # Look for the first "when ... enters" within a sentence
-        m = _re.search(r'when\s+([^.]{0,50}?)\s+enters', oracle)
-        if m:
-            preamble = m.group(1)
-            generic_phrases = ('another', 'a creature', 'a permanent',
-                               'an artifact', 'an enchantment', 'a land',
-                               'a nontoken', 'one or more', 'any creature',
-                               'any opponent', 'you cast', 'you attack')
-            if not any(gp in preamble for gp in generic_phrases):
+    generic_phrases = ('another', 'a creature', 'a permanent',
+                       'an artifact', 'an enchantment', 'a land',
+                       'a nontoken', 'one or more', 'any creature',
+                       'any opponent', 'you cast', 'you attack')
+    import re as _re
+    for ability in split_abilities(oracle):
+        if 'enters' not in ability:
+            continue
+        has_self_trigger = any(p in ability for p in self_patterns)
+        # Fallback: "When <name> enters" — the name is the card's own,
+        # so match "when " followed by "enters" with nothing in between
+        # identifying another creature/permanent qualifier.
+        if not has_self_trigger:
+            m = _re.search(r'when\s+([^.]{0,50}?)\s+enters', ability)
+            if m and not any(gp in m.group(1) for gp in generic_phrases):
                 has_self_trigger = True
-    if not has_self_trigger:
-        return False
-    # Must have a material effect verb in the oracle (trigger text is
-    # in the same sentence usually; this is an over-approximation but
-    # keeps false-negatives low).
-    return any(kw in oracle for kw in _ETB_EFFECT_KEYWORDS)
+        # Material effect verb must live in the trigger's own ability.
+        if has_self_trigger and any(kw in ability
+                                    for kw in _ETB_EFFECT_KEYWORDS):
+            return True
+    return False
 
 
 def _is_immediate_interaction(oracle: str, tags) -> bool:
@@ -865,7 +885,15 @@ def _is_immediate_interaction(oracle: str, tags) -> bool:
         return True
     if 'counter target' in oracle:
         return True
-    if 'target opponent' in oracle and 'discard' in oracle:
+    # Targeted forced discard — Modern templating uses BOTH
+    # "target opponent" (Duress form) and "target player"
+    # (Thoughtseize / Inquisition form) for the same mechanic.
+    # Matching only the former deferred the entire target-player
+    # class forever (RC-2, docs/diagnostics/
+    # 2026-07-05_goryos_field_13pct_root_cause.md).  Own-hand
+    # looting has neither phrase, so it does not ride this branch.
+    if (('target player' in oracle or 'target opponent' in oracle)
+            and 'discard' in oracle):
         return True
     return False
 
@@ -2512,7 +2540,56 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
             projected.opp_power += expected_opp_power
             projected.opp_creature_count += expected_opp_count
 
+    # ── M1-AI: opponent-static self card-event taxes ──────────────
+    # The engine trigger fan-out charges the caster per CAST and per
+    # REAL draw (impulse-reveal excluded, CR 121.1c).  The projection
+    # must price the same events or every cast decision walks into
+    # damage the chain estimator already knows about (seed 60101 T5:
+    # Manamorphose at 2 life into two Bowmasters).  Single source of
+    # truth mirrored from the engine: `Tag.IMPULSE_DRAW` zeroes the
+    # draw count; `opp_static_damage_per_card_event` prices the board.
+    if game is not None:
+        from ai.bhi import opp_static_damage_per_card_event
+        _cast_tax = opp_static_damage_per_card_event(game, player_idx,
+                                                     "cast")
+        _n_draws = _projected_real_draws(card)
+        _draw_tax = (opp_static_damage_per_card_event(game, player_idx,
+                                                      "draw")
+                     if _n_draws else 0)
+        _tax = _cast_tax + _n_draws * _draw_tax
+        if _tax:
+            projected.my_life -= _tax
+
     return projected
+
+
+def _projected_real_draws(card: "CardInstance") -> int:
+    """Projected REAL draw events from resolving `card` — the mirror
+    of the engine's impulse split in `oracle_resolver`.
+
+    Impulse-tagged cards (Tag.IMPULSE_DRAW, the same classifier
+    verdict the engine branch gates on) are NOT draws (CR 121.1c) →
+    0.  Otherwise: 'draw N cards' parses N; the look-and-keep shape
+    ('put one of them into your hand') counts as one draw, matching
+    the engine's real-draw branch.
+    """
+    from ai.oracle_classifier import Tag, tags_for
+    if Tag.IMPULSE_DRAW in tags_for(card.template.name):
+        return 0
+    oracle = (card.template.oracle_text or '').lower()
+    import re as _re
+    m = _re.search(r'draw\s+(\w+)\s+cards?', oracle)
+    word_to_num = {'a': 1, 'one': 1, 'two': 2, 'three': 3,  # magic-allow: numeral parse table (word→int), mirrors engine oracle parser
+                   'four': 4, 'five': 5}  # magic-allow: numeral parse table continuation
+    if m:
+        tok = m.group(1)
+        try:
+            return int(tok)
+        except ValueError:
+            return word_to_num.get(tok, 0)
+    if 'put one of them into your hand' in oracle:
+        return 1  # magic-allow: look-and-keep shape is one draw (CR 121.1), mirrors engine real-draw branch
+    return 0
 
 
 def estimate_opponent_response(card: "CardInstance", projected: EVSnapshot,
@@ -2865,13 +2942,22 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
                     game: "GameState" = None, player_idx: int = 0,
                     dk: Optional[DeckKnowledge] = None,
                     detailed: bool = False,
-                    bhi: "BayesianHandTracker" = None):
+                    bhi: "BayesianHandTracker" = None,
+                    goal: Optional[str] = None,
+                    role_tags: frozenset = frozenset()):
     """Compute the expected value of casting a spell using 1-ply lookahead.
 
     EV = E[V(state_after_play_and_response)] - V(current_state)
 
     If detailed=True, returns (ev, info_dict) with projection breakdown.
     Otherwise returns ev as a float.
+
+    `goal` is the caller's current GoalEngine goal (`GoalType.value`
+    string, or None when the player has no goal engine) — consumed by
+    the goal-weights gear-shift (M4 part 3).  `role_tags` are synthetic
+    gameplan-role tags (e.g. `ROLE_FINISHER_TAG` for cards declared in
+    the gameplan's finishers/payoffs role buckets) unioned with the
+    card's oracle tags for both weight lookups.
     """
     # Deferral check (design: docs/design/ev_correctness_overhaul.md §3).
     # Before running the projection, ask: does casting this turn deliver
@@ -2903,6 +2989,29 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
 
     # Project state after casting
     projected = _project_spell(card, snap, dk, game, player_idx)
+
+    # ── M1-AI: lethal-to-self floor ────────────────────────────────
+    # A cast whose own projection kills the caster is a game-ending
+    # event against us; it sits at the established game-ending
+    # sentinel (-LETHAL_THREAT) regardless of any value the spell
+    # would otherwise generate (seed 60101: suicide-by-cantrip).
+    if projected.my_life <= 0 < snap.my_life:
+        from ai.scoring_constants import LETHAL_THREAT
+        _cur = evaluate_board(snap, archetype, dk)
+        if not detailed:
+            return -LETHAL_THREAT
+        return -LETHAL_THREAT, {
+            'current_value': _cur,
+            'projected_value': evaluate_board(projected, archetype, dk),
+            'raw_delta': -LETHAL_THREAT,
+            'after_response_value': _cur,
+            'response_discount': 0.0,
+            'counter_pct': 0.0,
+            'removal_pct': 0.0,
+            'this_turn_signals': [],
+            'lethal_to_self': True,
+        }
+
     projected_value = evaluate_board(projected, archetype, dk)
 
     # ── SINGLE interaction-probability call site (M7 / W1b-7) ──
@@ -3024,26 +3133,35 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
                 progress = min(1.0, damage / max(1, snap.opp_life))
                 ev += p_resolves * progress * win_swing
 
-    # ── Life-phase gear-shift (M4) ──
-    # Pure lookup over `strategy_profile.phase_weights`.  At PANIC,
-    # control / midrange / aggro archetypes up-weight defensive tags
-    # (`removal`, `board_wipe`, `counterspell`, `lifegain`, ...) and
-    # down-weight purely-proactive tags (`cantrip`, `card_advantage`)
-    # so the AI gear-shifts to "stay alive" instead of executing the
-    # standard `grind_value` projection.  At DEVELOP / GRIND the
-    # lookup returns the identity multiplier, so the standard
-    # projection is unchanged.
+    # ── Life-phase + goal gear-shift (M4, A2) ──
+    # Pure lookups over `strategy_profile.phase_weights` and
+    # `strategy_profile.goal_weights`.  At PANIC, control / midrange /
+    # aggro archetypes up-weight defensive tags (`removal`,
+    # `board_wipe`, `counterspell`, `lifegain`, ...) and down-weight
+    # purely-proactive tags (`cantrip`, `card_advantage`) so the AI
+    # gear-shifts to "stay alive".  At goal=close_game (M4 part 3),
+    # gameplan-declared finisher roles are up-weighted and cantrips
+    # down-weighted so the closing gear is a real re-ranking, not a
+    # label.  At DEVELOP / GRIND / other goals the lookups return the
+    # identity multiplier, so the standard projection is unchanged.
     #
-    # No `if life_phase == PANIC:` if-chain — the phase is passed
-    # straight to a dict lookup, and unrecognised archetypes /
-    # phases / tags all fall through to IDENTITY_PHASE_WEIGHTS = 1.0.
-    # Replaces scattered `my_life-vs-literal-N` magic-threshold
-    # conditionals (see W0-B life_phase + tests/test_life_phase.py
-    # and ev_player.py's deleted DESPERATE_LIFE_THRESHOLD gate).
+    # No `if life_phase == PANIC:` if-chain — phase and goal are
+    # passed straight to dict lookups, and unrecognised archetypes /
+    # phases / goals / tags all fall through to the identity weight.
+    #
+    # Application is SIGN-AWARE (`apply_preference_weight`, A2 fix):
+    # plain `ev *= mult` inverted the gear-shift for negative-EV
+    # defensive plays (1.5 × −5 = −7.5 — the "up-weighted" removal
+    # sank below PLAY_VALUE_FLOOR and the AI passed the turn at panic
+    # life; s60104).  A preference weight must be monotone in the
+    # weight on BOTH sides of zero: gains × w, costs ÷ w.  Pinned by
+    # tests/test_panic_gearshift_reaches_play_selection.py.
     phase = life_phase(snap)
-    mult = phase_weight_multiplier(
-        archetype, phase, getattr(card.template, 'tags', set()) or set())
-    ev *= mult
+    _weight_tags = ((getattr(card.template, 'tags', set()) or set())
+                    | set(role_tags or ()))
+    mult = phase_weight_multiplier(archetype, phase, _weight_tags)
+    mult *= goal_weight_multiplier(archetype, goal, _weight_tags)
+    ev = apply_preference_weight(ev, mult)
 
     if not detailed:
         return ev

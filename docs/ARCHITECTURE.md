@@ -3,6 +3,7 @@
 > Current architecture for the Modern simulator. Replaces the prior content
 > of this file (which referenced deleted modules and was marked stale).
 > Operational summary lives in `CLAUDE.md`; this file is the reference.
+> Last freshness pass: 2026-07-05 (post engine+AI overhaul, PRs #441–#467).
 
 ---
 
@@ -49,6 +50,22 @@ The engine enforces Magic rules. It does NOT make decisions.
 - Mana pools empty between phases (CR 500.4)
 - Main phase loops `EVPlayer.decide_main_phase()` until AI passes
 - Response windows after each spell for counterspells
+- Tap-ability dispatch: activated tap abilities are enumerated from oracle text and fired via `_activate_tap_abilities()` during main phases — they are not auto-executed on ETB; planeswalker loyalty-ability *choice* is delegated to `ai/pw_ability.py` (the runner only enforces loyalty legality)
+
+**SBAManager** (`engine/sba_manager.py`) — state-based actions as a static-method rule module (no instance state; every check takes the game object):
+
+- CR 704.5c — player with lethal poison counters loses
+- CR 704.5h — creature with lethal damage marked is destroyed (indestructible exempt)
+- CR 704.5i — creature dealt damage by a deathtouch source is destroyed
+- All four SBA rules above (plus CR 608.2b below) were restored from dead code in the 2026-07-05 resolver/SBA unification (PR #447) — they existed but were never invoked by the live resolution path
+
+**Spell resolution** (`engine/spell_resolution.py`) — CR 608.2b: target legality is re-checked on resolution; a spell whose targets are ALL illegal fizzles (is countered by the rules). `engine/cast_manager.py` snapshots each card-target's zone at cast time to support the check.
+
+**Object identity** (`engine/cards.py` / `engine/game_state.py`) — `battlefield_entry_seq` increments on every battlefield entry, giving each permanent-instance a distinct identity per CR 400.7. Delayed riders (e.g. end-of-turn exile) record the seq at registration and drop silently when the tracked object has since changed zones — a re-entered card is a new object.
+
+**Oracle clause scoping** (`engine/oracle_clauses.py`) — shared clause-splitting primitives for oracle-text predicates: `split_abilities` (paragraph scope — the correct unit for pairing a trigger with its effect per CR 603.1) and sentence-level splitting. Fixes the whole-text-conjunction over-approximation where two substrings matched in *different* abilities falsely classified a card (E5, PR #448). New oracle predicates should scope through this module, not test raw full-text.
+
+**Saga chapters** (`engine/oracle_parser.py`) — CR 714: saga oracle text parses into a sequence of chapter abilities (Roman numerals I..V), each granted as a real triggered ability rather than pattern-matched ad hoc.
 
 **EFFECT_REGISTRY** (`engine/card_effects.py`) — 80+ card-specific handlers:
 
@@ -82,6 +99,16 @@ def bowmasters_etb(game, card, controller, targets=None, item=None):
 - Goals define card_roles (enablers, payoffs, interaction, engines)
 - GoalEngine tracks which goal is active
 
+**Planeswalker ability choice** (`ai/pw_ability.py`) — loyalty-ability selection lifted out of the engine (2026-07-05): ranking is description-driven from generic oracle-text patterns (no per-card logic), with two pinned decision rules — a defensive-minus urgency bonus when the race is failing, and a suicide guard that penalizes lines dropping the walker to zero loyalty unless they neutralize a threat. `engine/game_runner.py` only delegates and enforces legality.
+
+**LLM tooling layer** (`ai/llm_*.py`) — offline-optional; sims never call it. Powers dev-side tools (gameplan synthesis, replay diagnosis, doc-freshness and handler audits):
+
+- `ai/llm_models.py` — per-task default model registry with env-var override chain (`select_model`: explicit override → `MTG_LLM_MODEL_<TASK>` → `MTG_LLM_MODEL` → built-in default)
+- `ai/llm_budgets.py` — per-task spend budgets
+- `ai/llm_metrics.py` — token/cost accounting (price tables)
+- `ai/llm_cache.py` — response cache keyed by model string + input
+- `ai/llm_agents.py` — the agent definitions the tools in `tools/` drive
+
 **Key scoring flow:**
 
 1. `decide_main_phase()` gets legal plays from `game.get_legal_plays()`
@@ -94,7 +121,7 @@ def bowmasters_etb(game, card, controller, targets=None, item=None):
 
 ## Layer 3: Deck Configuration
 
-**Decklists** (`decks/modern_meta.py`) — mainboard + sideboard for all 16 decks.
+**Decklists** (`decks/modern_meta.py`) — mainboard + sideboard for all 19 decks (July 2026 meta refresh added Instant Reanimator and Boros Ponza).
 
 **Gameplans** (`decks/gameplans/*.json`) — per-deck strategy:
 

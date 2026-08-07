@@ -100,8 +100,12 @@ class GameState:
         self._triggers_queue: List[Tuple[Ability, CardInstance, int]] = []
         # Global storm count (all spells cast this turn by both players)
         self._global_storm_count: int = 0
-        # Delayed triggers (e.g., exile at end of turn for Goryo's)
-        self._end_of_turn_exiles: List[Tuple[CardInstance, int]] = []
+        # Delayed one-shot triggers: "exile it at the beginning of the
+        # next end step" (temporary-reanimation / put-onto-battlefield
+        # riders). Entries are (card, controller, battlefield_entry_seq):
+        # the seq captures which OBJECT the rider tracks (CR 400.7) — if
+        # the card re-enters the battlefield the rider goes stale.
+        self._end_of_turn_exiles: List[Tuple[CardInstance, int, int]] = []
         # Game log
         self.log: List[str] = []
         self.max_turns: int = MAX_TURNS
@@ -117,6 +121,21 @@ class GameState:
         iid = self._next_instance_id
         self._next_instance_id += 1
         return iid
+
+    def register_end_of_turn_exile(self, card: CardInstance,
+                                   controller: int) -> None:
+        """Register a delayed 'exile it at the beginning of the next end
+        step' rider against the card's CURRENT battlefield object.
+
+        CR 400.7: the rider tracks an object, not a card. Capturing
+        `battlefield_entry_seq` at registration lets the end step detect
+        that the object it was tracking left the battlefield (blink,
+        bounce, death) and drop the rider even if the same CardInstance
+        is back on the battlefield as a new object.
+        """
+        self._end_of_turn_exiles.append(
+            (card, controller, card.battlefield_entry_seq)
+        )
 
     def get_card_by_id(self, instance_id: int) -> Optional[CardInstance]:
         """Find a card instance by its unique ID across all zones."""
@@ -391,7 +410,7 @@ class GameState:
             return False
 
         # Check mana
-        available = len(player.untapped_lands) + player.mana_pool.total() + player._tron_mana_bonus()
+        available = player.untapped_mana_capacity() + player.mana_pool.total() + player._tron_mana_bonus()
         if available < template.equip_cost:
             return False
 
@@ -464,15 +483,24 @@ class GameState:
     def reanimate(self, *args, **kwargs):
         return PermanentEffects.reanimate(self, *args, **kwargs)
 
+    def animate_land(self, *args, **kwargs):
+        return PermanentEffects.animate_land(self, *args, **kwargs)
+
     def create_token(self, *args, **kwargs):
         return PermanentEffects.create_token(self, *args, **kwargs)
 
     def activate_planeswalker(self, *args, **kwargs):
         return PlaneswalkerManager.activate_planeswalker(self, *args, **kwargs)
 
+    def _apply_land_etb_static(self, permanent: "CardInstance",
+                               controller: int):
+        LandManager.apply_land_etb_static(self, permanent, controller)
+
+    # Backward-compatible alias — the untap watcher now runs inside the
+    # uniform land-entry hook (with the karoo return clause after it).
     def _apply_untap_on_enter_triggers(self, permanent: "CardInstance",
                                         controller: int):
-        LandManager.apply_untap_on_enter_triggers(self, permanent, controller)
+        LandManager.apply_land_etb_static(self, permanent, controller)
 
     def _apply_lands_enter_untapped(self, land: "CardInstance",
                                      controller: int):
@@ -553,17 +581,18 @@ class GameState:
         TriggerManager.queue_trigger(self, trigger_reg)
 
     def check_state_based_actions(self) -> bool:
-        """Check and perform state-based actions.
+        """Live SBA path — check and perform state-based actions once.
 
-        Delegates to SBAManager for the proper SBA loop (CR 704.3):
-        check all SBAs, if any performed check again, repeat until stable.
-
-        Also preserves the legacy _creature_dies path for Undying/Persist
-        handling until those are migrated to the event system.
+        This inline sequence IS the live implementation (it does not
+        delegate to SBAManager's check_and_perform_loop, which has no
+        live callers). Rules with a single shared implementation are
+        SBAManager statics called from here AND from that loop:
+        perform_poison_check (704.5c), perform_deathtouch_check
+        (704.5i). Creature death routes through _creature_dies so
+        Undying/Persist replacement is preserved. End-state (single
+        CR 704.3 fixpoint over shared statics):
+        docs/proposals/resolver_sba_unification.md §6.
         """
-        # Use the new SBA manager for the core checks
-        # But first, handle creatures with lethal damage through the legacy
-        # path so Undying/Persist still work correctly.
         actions_taken = False
 
         # Player life totals (SBA 704.5a)
@@ -573,6 +602,13 @@ class GameState:
                 self.winner = 1 - i
                 self.log.append(f"P{i+1} loses: life total {player.life}")
                 actions_taken = True
+
+        if self.game_over:
+            return actions_taken
+
+        # Lethal poison (SBA 704.5c) — single implementation in SBAManager
+        if SBAManager.perform_poison_check(self):
+            actions_taken = True
 
         if self.game_over:
             return actions_taken
@@ -592,6 +628,12 @@ class GameState:
                 self._creature_dies(creature)
                 actions_taken = True
 
+        # Creatures dealt damage by a deathtouch source (SBA 704.5i) —
+        # single implementation in SBAManager; routes death through
+        # _creature_dies so Undying/Persist are preserved.
+        if SBAManager.perform_deathtouch_check(self):
+            actions_taken = True
+
         # Planeswalkers with 0 or less loyalty (SBA 704.5p)
         for player in self.players:
             dead_pws = [c for c in player.planeswalkers
@@ -602,6 +644,11 @@ class GameState:
                     cause="SBA 704.5p: zero loyalty"
                 )
                 actions_taken = True
+
+        # Tokens off the battlefield cease to exist (SBA 704.5f) —
+        # single implementation lives in SBAManager.
+        if SBAManager.perform_token_cleanup(self):
+            actions_taken = True
 
         # Legend rule (SBA 704.5j)
         for player in self.players:

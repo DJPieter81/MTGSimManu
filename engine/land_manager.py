@@ -137,7 +137,7 @@ class LandManager:
                 f"T{game.display_turn} P{player_idx+1}: Play {card.name}")
 
         # ── Generic "untap enters tapped" (Amulet of Vigor pattern) ──
-        LandManager.apply_untap_on_enter_triggers(game, card, player_idx)
+        LandManager.apply_land_etb_static(game, card, player_idx)
         # ── "Lands you control enter untapped" static (Spelunking pattern) ──
         LandManager.apply_lands_enter_untapped(game, card, player_idx)
 
@@ -209,7 +209,7 @@ class LandManager:
 
             player.battlefield.append(best_land)
             # Amulet of Vigor and similar untap triggers
-            LandManager.apply_untap_on_enter_triggers(
+            LandManager.apply_land_etb_static(
                 game, best_land, player_idx)
             # Spelunking / "lands you control enter untapped" static must
             # apply on the fetchland-crack path too — matches the play_land
@@ -308,6 +308,54 @@ class LandManager:
                         game.log.append(
                             f"T{game.display_turn} P{player_idx+1}: "
                             f"{perm.name} 3rd landfall: {dmg} damage")
+
+    @staticmethod
+    def apply_land_etb_static(game: "GameState",
+                              land: "CardInstance",
+                              controller: int) -> None:
+        """Uniform land-entry hook: structural clauses every land-entry
+        path must fire, regardless of HOW the land arrived (land drop,
+        fetch crack, mass land search).
+
+        Currently: untap-on-enter watchers (Amulet pattern) followed by
+        the mandatory karoo ETB clause 'return a land you control to
+        its owner's hand' (E1b), parsed at DB load into
+        `template.etb_return_land`.  Ordering matters — the untap
+        trigger and the return trigger enter the queue together and
+        the controller orders them; resolving untap first matches the
+        line every karoo deck takes (untap, then bounce).
+        """
+        LandManager.apply_untap_on_enter_triggers(game, land, controller)
+        if not getattr(land.template, "etb_return_land", False):
+            return
+        player = game.players[controller]
+        if land not in player.battlefield:
+            return  # already gone (replaced/removed by another trigger)
+        others = [c for c in player.battlefield
+                  if c.template.is_land
+                  and c.instance_id != land.instance_id]
+        if others:
+            # Engine-neutral deterministic choice: bounce the land
+            # whose loss costs least NOW — prefer an already-tapped
+            # land, then the fewest mana units, then the fewest color
+            # options (a basic before a dual).  All keys derive from
+            # game state; the AI can pass a preference later via the
+            # same optional-cost router the shock-pay path uses.
+            def _cost_key(c):
+                return (0 if c.tapped else 1,
+                        c.template.mana_count,
+                        len(c.template.produces_mana))
+            target = min(others, key=_cost_key)
+        else:
+            # Mandatory trigger, one legal object: itself.
+            target = land
+        player.battlefield.remove(target)
+        target.zone = "hand"
+        target.tapped = False
+        player.hand.append(target)
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: "
+            f"{land.name} ETB returns {target.name} to hand")
 
     @staticmethod
     def apply_untap_on_enter_triggers(game: "GameState",

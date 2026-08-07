@@ -119,6 +119,19 @@ class CastManager:
         player = game.players[player_idx]
         template = card.template
 
+        # CR 111.2 — a token isn't a card and can never be cast,
+        # regardless of what zone a stale instance sits in.
+        if getattr(card, 'is_token', False):
+            return False
+
+        # Turn-scoped cast-lock ("[target player] can't cast spells
+        # this turn" — the silence class).  The effect layer sets
+        # `silenced_this_turn` from the oracle clause on resolution;
+        # the cast gate enforces it here for the rest of the turn.
+        # Applies to every cast route (hand, flashback, escape).
+        if getattr(player, 'silenced_this_turn', False):
+            return False
+
         if card.zone != "hand" and card.zone != "graveyard":
             return False
 
@@ -140,7 +153,7 @@ class CastManager:
                     return False  # Not enough cards to exile
                 # Check mana for escape cost
                 untapped_lands = player.untapped_lands
-                total_mana = (len(untapped_lands) + player.mana_pool.total()
+                total_mana = (player.untapped_mana_capacity() + player.mana_pool.total()
                               + player._tron_mana_bonus())
                 if total_mana < template.escape_cost:
                     return False
@@ -231,7 +244,7 @@ class CastManager:
 
         # Check mana (pool + untapped lands + Tron bonus)
         untapped_lands = player.untapped_lands
-        total_mana = (len(untapped_lands) + player.mana_pool.total()
+        total_mana = (player.untapped_mana_capacity() + player.mana_pool.total()
                       + player._tron_mana_bonus())
 
         # X-cost spells: require minimum mana to cast meaningfully
@@ -338,27 +351,36 @@ class CastManager:
                 and total_mana >= template.dash_cost):
             return True
 
-        # Warp alternative cost (Pinnacle Emissary)
+        # Warp alternative cost (early cast for artifact-synergy decks).
+        # Track H handoff fix: the previous check tested
+        # `'Artifact' in str(card_types)`, which never matches the
+        # CardType enum's string form — the branch was dead code.
         oracle = (template.oracle_text or "").lower()
         if "warp" in oracle:
             has_artifact = any(
-                'Artifact' in str(getattr(c.template, 'card_types', []))
+                CardType.ARTIFACT in c.template.card_types
                 for c in player.battlefield
             )
             if has_artifact and total_mana >= 1:
                 return True
 
-        # Improvise: tap artifacts to pay generic (Kappa Cannoneer, etc.)
+        # Improvise: tap artifacts to pay generic. Same Track H fix as
+        # the warp branch (dead enum-string check → real membership
+        # test). Improvise pays GENERIC only, so the colored portion
+        # of the cost is a floor the artifact taps cannot reduce.
         if "improvise" in oracle:
             untapped_artifacts = sum(
                 1 for c in player.battlefield
-                if hasattr(c, 'template')
-                and 'Artifact' in str(getattr(c.template, 'card_types', []))
+                if CardType.ARTIFACT in c.template.card_types
                 and not c.template.is_land
                 and not getattr(c, 'tapped', False)
-                and c != card
+                and c is not card
             )
-            improvise_cmc = max(0, effective_cmc - untapped_artifacts)
+            colored_floor = (template.mana_cost.white + template.mana_cost.blue
+                             + template.mana_cost.black + template.mana_cost.red
+                             + template.mana_cost.green)
+            improvise_cmc = max(colored_floor,
+                                effective_cmc - untapped_artifacts)
             if total_mana >= improvise_cmc:
                 return True
 
@@ -405,9 +427,13 @@ class CastManager:
         # Guildpact and dynamic mana abilities (E1: Mox Opal metalcraft,
         # CR 702.98) contribute the right colour set for the feasibility
         # solver.
+        # E1: one source per mana UNIT — a multi-mana land contributes
+        # one entry per unit (fixed karoo units stay single-color).
+        from .mana_payment import ManaPayment as _MP
         sources = []
         for land in untapped_lands:
-            sources.append(set(game._effective_produces_mana(player_idx, land)))
+            for options in _MP.land_mana_units(game, player_idx, land):
+                sources.append(set(options))
         # Mana pool as fixed-color sources
         for color in ["W", "U", "B", "R", "G", "C"]:
             pool_amount = player.mana_pool.get(color)
@@ -504,7 +530,7 @@ class CastManager:
 
         player = game.players[player_idx]
         untapped_lands = player.untapped_lands
-        total_mana = (len(untapped_lands) + player.mana_pool.total()
+        total_mana = (player.untapped_mana_capacity() + player.mana_pool.total()
                       + player._tron_mana_bonus())
         if total_mana < cost.cmc:
             return False
@@ -519,9 +545,13 @@ class CastManager:
             for _ in range(needed):
                 color_needs.append(color)
 
+        # E1: one source per mana UNIT — a multi-mana land contributes
+        # one entry per unit (fixed karoo units stay single-color).
+        from .mana_payment import ManaPayment as _MP
         sources = []
         for land in untapped_lands:
-            sources.append(set(game._effective_produces_mana(player_idx, land)))
+            for options in _MP.land_mana_units(game, player_idx, land):
+                sources.append(set(options))
         for color in ["W", "U", "B", "R", "G", "C"]:
             pool_amount = player.mana_pool.get(color)
             for _ in range(pool_amount):
@@ -719,6 +749,10 @@ class CastManager:
         player = game.players[player_idx]
         template = card.template
 
+        # CR 111.2 — tokens are never castable, free_cast included.
+        if getattr(card, 'is_token', False):
+            return False
+
         if not free_cast and not game.can_cast(player_idx, card):
             return False
 
@@ -726,7 +760,7 @@ class CastManager:
         evoked = False
         dashed = False
         if not free_cast:
-            untapped = len(player.untapped_lands) + player.mana_pool.total() + player._tron_mana_bonus()
+            untapped = player.untapped_mana_capacity() + player.mana_pool.total() + player._tron_mana_bonus()
 
             # Decide whether to use Dash (e.g., Ragavan)
             # Dash strategy: use Dash when...
@@ -1021,7 +1055,7 @@ class CastManager:
             x_info = template.x_cost_data
             # X = (total mana available) / multiplier
             # For XX spells, X = mana / 2; for X spells, X = mana
-            available_for_x = len(player.untapped_lands) + player.mana_pool.total() + player._tron_mana_bonus()
+            available_for_x = player.untapped_mana_capacity() + player.mana_pool.total() + player._tron_mana_bonus()
             x_value = available_for_x // x_info["multiplier"]
             # AI chooses optimal X based on oracle text:
             oracle = (template.oracle_text or '').lower()
@@ -1122,24 +1156,42 @@ class CastManager:
                     )
                 land = lands_pool.pop(0)
                 land.tapped = True
-                remaining -= 1
-                produced = list(game._effective_produces_mana(player_idx, land) or [])
-                if is_converge:
-                    # Pick a new color if possible, else any produced color
-                    new_cols = [c for c in produced if c not in xpay_colors]
-                    pick = new_cols[0] if new_cols else (produced[0] if produced else 'C')
-                else:
-                    pick = produced[0] if produced else 'C'
-                if pick and pick != 'C':
-                    xpay_colors.add(pick)
+                # E1: one tap yields every unit the land produces.
+                from .mana_payment import ManaPayment as _MP
+                for options in _MP.land_mana_units(game, player_idx, land):
+                    if remaining <= 0:
+                        break
+                    remaining -= 1
+                    if is_converge:
+                        new_cols = [c for c in options
+                                    if c not in xpay_colors]
+                        pick = new_cols[0] if new_cols else (
+                            options[0] if options else 'C')
+                    else:
+                        pick = options[0] if options else 'C'
+                    if pick and pick != 'C':
+                        xpay_colors.add(pick)
             # Surface the updated color set for the stack item / Converge resolvers
             game._last_colors_spent = xpay_colors
+
+        # CR 608.2b support: snapshot each card-target's zone at cast
+        # time. ResolutionManager re-checks target legality on
+        # resolution against this snapshot — battlefield for removal,
+        # stack for counterspells, graveyard for reanimation. Player-
+        # target markers (negative ids) have no zone to snapshot.
+        target_zones = {}
+        for _tid in (targets or []):
+            if isinstance(_tid, int) and _tid > 0:
+                _tc = game.get_card_by_id(_tid)
+                if _tc is not None:
+                    target_zones[_tid] = _tc.zone
 
         stack_item = StackItem(
             item_type=StackItemType.SPELL,
             source=card,
             controller=player_idx,
             targets=targets or [],
+            target_zones=target_zones,
             x_value=x_value,
             # Snapshot the colors actually spent for Converge ("number of
             # colors of mana spent to cast this spell"). Populated by the
@@ -1162,7 +1214,7 @@ class CastManager:
                 reduction = count_cost_reducers(game, player_idx, sc.template)
                 reduction += player.temp_cost_reduction
                 effective_splice = max(0, splice - reduction)
-                available_mana = player.mana_pool.total() + len(player.untapped_lands)
+                available_mana = player.mana_pool.total() + player.untapped_mana_capacity()
                 if available_mana >= effective_splice:
                     # Pay splice cost from mana pool/lands
                     from .mana import ManaCost as MC

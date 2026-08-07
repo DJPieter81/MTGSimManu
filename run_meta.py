@@ -23,6 +23,30 @@ from decks.modern_meta import MODERN_DECKS, get_all_deck_names, METAGAME_SHARES
 _DEFAULT_WORKERS = max(1, (os.cpu_count() or 4) - 1)
 
 
+# ─── Canonical seed geometry ─────────────────────────────────
+# Structural finding #5 (docs/proposals/2026-07-09_structural_findings.md):
+# --matrix, --field and --matchup historically used different seed grids,
+# so identical code read different WRs depending on which command
+# measured it. The grid origins and step below are the long-standing
+# reproducibility contract from CLAUDE.md ("Standard seeds: matchups
+# start at 50000 (step 500), matrix at 40000 (step 500)"); seed_grid()
+# is the single source of the per-pair seed arithmetic, and --probe
+# re-runs cells on the MATRIX grid so its numbers are directly
+# comparable to matrix cells by construction.
+SEED_STEP = 500            # reproducibility contract: historical grid step
+MATRIX_SEED_START = 40000  # matrix grid origin (--matrix, --probe)
+MATCHUP_SEED_START = 50000  # matchup/field grid origin (--matchup, --field)
+
+
+def seed_grid(n_games: int, seed_start: int) -> List[int]:
+    """The exact per-pair seed sequence for a grid origin.
+
+    Every competitive path (matrix worker, serial matrix loop, probe)
+    consumes this function — never a local copy of the arithmetic.
+    """
+    return [seed_start + i * SEED_STEP for i in range(n_games)]
+
+
 DECK_ALIASES = {
     "zoo": "Domain Zoo",
     "storm": "Ruby Storm",
@@ -47,6 +71,8 @@ DECK_ALIASES = {
     "izzet": "Izzet Prowess",
     "affinity": "Affinity",
     "robots": "Affinity",
+    "ponza": "Boros Ponza",
+    "instant": "Instant Reanimator",
     "azorius": "Azorius Control",
     "uw": "Azorius Control",
     "wst": "Azorius Control",
@@ -175,8 +201,7 @@ def _worker_matchup(args):
     runner = _worker_runner
     wins = {d1_name: 0, d2_name: 0}
     errors = []
-    for i in range(n_games):
-        seed = seed_start + i * 500
+    for seed in seed_grid(n_games, seed_start):
         try:
             r = _run_pair(runner, d1_name, d2_name, seed, bo1=bo1)
             wins[r.winner_deck] = wins.get(r.winner_deck, 0) + 1
@@ -202,7 +227,7 @@ def _run_game_no_runner(d1_name, d2_name, seed):
 
 
 def run_sigma(deck1: str, deck2: str, n_games: int = 50,
-              repeats: int = 5, seed_start: int = 50000,
+              repeats: int = 5, seed_start: int = MATCHUP_SEED_START,
               bo3: bool = True) -> Dict:
     """Quantify run-to-run variance for a single matchup.
 
@@ -240,7 +265,7 @@ def run_sigma(deck1: str, deck2: str, n_games: int = 50,
 
 
 def run_matchup(deck1: str, deck2: str, n_games: int = 50,
-                seed_start: int = 50000, verbose: bool = False,
+                seed_start: int = MATCHUP_SEED_START, verbose: bool = False,
                 bo3: bool = True) -> Dict:
     """Run N matchups between two decks. Returns stats dict.
 
@@ -281,6 +306,8 @@ def run_matchup(deck1: str, deck2: str, n_games: int = 50,
         'avg_turn1': round(avg_turn1, 1), 'avg_turn2': round(avg_turn2, 1),
         'turn_dist1': sorted(turn_wins[deck1]), 'turn_dist2': sorted(turn_wins[deck2]),
         'format': 'bo1' if bo1 else 'bo3',
+        'seed_geometry': {'grid': 'matchup', 'seed_start': seed_start,
+                          'step': SEED_STEP, 'n_games': n_games},
     }
     if not bo1:
         # B1: expose match-level detail — 2-0 sweeps vs 2-1 grinds
@@ -304,7 +331,7 @@ def run_field(deck: str, n_games: int = 30, opponents: List[str] = None,
         opponents = [n for n in get_all_deck_names() if n != deck]
 
     if parallel and len(opponents) > 1:
-        args = [(deck, opp, n_games, 50000, bo1) for opp in opponents]
+        args = [(deck, opp, n_games, MATCHUP_SEED_START, bo1) for opp in opponents]
         with mp.Pool(_DEFAULT_WORKERS, initializer=_init_worker) as pool:
             worker_results = pool.map(_worker_matchup, args)
         results = {d2: pct for d1, d2, pct, _errs in worker_results}
@@ -314,19 +341,87 @@ def run_field(deck: str, n_games: int = 30, opponents: List[str] = None,
         results = {}
         for opp in opponents:
             wins = {deck: 0, opp: 0}
-            for i in range(n_games):
-                seed = 50000 + i * 500
+            for seed in seed_grid(n_games, MATCHUP_SEED_START):
                 r = _run_pair(runner, deck, opp, seed, bo1=bo1)
                 wins[r.winner_deck] = wins.get(r.winner_deck, 0) + 1
             results[opp] = round(wins[deck] / n_games * 100)
 
     avg = sum(results.values()) / len(results) if results else 0
     return {'deck': deck, 'matchups': results, 'average': round(avg, 1),
-            'format': 'bo1' if bo1 else 'bo3'}
+            'format': 'bo1' if bo1 else 'bo3',
+            'seed_geometry': {'grid': 'field',
+                              'seed_start': MATCHUP_SEED_START,
+                              'step': SEED_STEP, 'n_games': n_games}}
+
+
+def run_probe(deck: str, opponent: Optional[str] = None, n_games: int = 20,
+              parallel: bool = True, bo3: bool = True) -> Dict:
+    """Run matchup(s) on the EXACT matrix seed grid.
+
+    Structural finding #5: probe numbers are directly comparable to
+    matrix cells because every pair replays the identical seed
+    sequence the matrix path uses — ``seed_grid(n_games,
+    MATRIX_SEED_START)`` via the same ``_worker_matchup`` worker — not
+    the matchup/field grid.
+
+    Args:
+        deck: Deck to probe.
+        opponent: Single opponent (one matrix cell). None = every
+            other deck (a full matrix row).
+        n_games: Matches per pair (Bo3 by default, like the matrix).
+        parallel: Use multiprocessing for multi-opponent probes.
+        bo3: Bo3 with sideboarding (canonical). bo3=False is
+            diagnostic only.
+
+    Returns a field-shaped dict plus 'seed_geometry' describing the
+    grid, so downstream consumers (save_results stamp, trend reports)
+    never guess which grid produced the numbers.
+    """
+    global _worker_runner
+    bo1 = not bo3
+    if opponent is not None:
+        opponents = [opponent]
+    else:
+        opponents = [n for n in get_all_deck_names() if n != deck]
+
+    if parallel and len(opponents) > 1:
+        args = [(deck, opp, n_games, MATRIX_SEED_START, bo1)
+                for opp in opponents]
+        with mp.Pool(_DEFAULT_WORKERS, initializer=_init_worker) as pool:
+            worker_results = pool.map(_worker_matchup, args)
+        _report_worker_errors(worker_results)
+    else:
+        # Reuse the matrix worker in-process (one runner, cached).
+        if _worker_runner is None:
+            _worker_runner = _get_runner()
+        worker_results = [
+            _worker_matchup((deck, opp, n_games, MATRIX_SEED_START, bo1))
+            for opp in opponents
+        ]
+
+    results = {d2: pct for _d1, d2, pct, _errs in worker_results}
+    n_errors = sum(len(errs) for _, _, _, errs in worker_results)
+    avg = sum(results.values()) / len(results) if results else 0
+    return {
+        'deck': deck,
+        'opponent': opponent,
+        'matchups': results,
+        'average': round(avg, 1),
+        'format': 'bo1' if bo1 else 'bo3',
+        'n_games': n_games,
+        'errors': n_errors,
+        'seed_geometry': {
+            'grid': 'matrix',
+            'seed_start': MATRIX_SEED_START,
+            'step': SEED_STEP,
+            'n_games': n_games,
+            'seeds': seed_grid(n_games, MATRIX_SEED_START),
+        },
+    }
 
 
 def run_meta_matrix(top_tier: int = None, n_games: int = 20,
-                    seed_start: int = 40000, parallel: bool = True,
+                    seed_start: int = MATRIX_SEED_START, parallel: bool = True,
                     bo3: bool = True) -> Dict:
     """Run full metagame matrix. Returns matrix dict + rankings.
 
@@ -387,8 +482,7 @@ def run_meta_matrix(top_tier: int = None, n_games: int = 20,
         runner = _get_runner()
         for idx, (d1_name, d2_name, ng, ss, _bo1) in enumerate(pairs):
             wins = {d1_name: 0, d2_name: 0}
-            for g in range(ng):
-                seed = ss + g * 500
+            for seed in seed_grid(ng, ss):
                 try:
                     r = _run_pair(runner, d1_name, d2_name, seed, bo1=_bo1)
                     wins[r.winner_deck] = wins.get(r.winner_deck, 0) + 1
@@ -464,7 +558,9 @@ def run_meta_matrix(top_tier: int = None, n_games: int = 20,
     return {'matrix': matrix, 'rankings': rankings, 'names': names,
             'tier1': sorted(tier1), 'tier2': sorted(tier2),
             'n_games': n_games, 'format': 'bo1' if bo1 else 'bo3',
-            'symmetry_issues': symmetry_issues}
+            'symmetry_issues': symmetry_issues,
+            'seed_geometry': {'grid': 'matrix', 'seed_start': seed_start,
+                              'step': SEED_STEP, 'n_games': n_games}}
 
 
 def inspect_deck(deck_name: str) -> str:
@@ -878,6 +974,20 @@ def run_bo3(deck1: str, deck2: str, seed: int = 42000,
         with open(dump_replay, 'w') as f:
             f.write(replay_log.to_ndjson())
             f.write('\n')
+        # Auto-audit: every dump gets the rules-legality lint pass
+        # (tools/replay_lint.py). Non-fatal — findings go to stdout so
+        # the operator sees violations immediately.
+        try:
+            from tools.replay_lint import lint_file as _lint_file
+            _findings = _lint_file(dump_replay, db=CardDatabase())
+            if _findings:
+                lines.append(f"replay_lint: {len(_findings)} finding(s) "
+                             f"in {dump_replay}")
+                lines.extend("  " + _f.line() for _f in _findings)
+            else:
+                lines.append(f"replay_lint: clean ({dump_replay})")
+        except Exception as _exc:
+            lines.append(f"replay_lint: skipped ({_exc})")
 
     return '\n'.join(lines)
 
@@ -1013,9 +1123,40 @@ def save_results(result: Dict, path: str = RESULTS_FILE):
         if key not in ('matrix', 'rankings', 'names'):
             data[key] = result[key]
 
+    # Command stamp (structural finding #5: "numbers always stamped
+    # with their generating command"). seed_geometry comes from the
+    # producing function's self-description; a result that declared
+    # none is stamped None rather than guessed at.
+    data['generated_by'] = {
+        'command': ' '.join(sys.argv),
+        'seed_geometry': result.get('seed_geometry'),
+        'timestamp': data['timestamp'],
+    }
+
     with open(path, 'w') as f:
         json.dump(data, f, indent=2)
     print(f'Results saved to {path}', file=sys.stderr)
+
+
+def _run_calibration_check(results_path: str = RESULTS_FILE) -> None:
+    """Post-save calibration audit (tools/check_calibration.py).
+
+    Mirrors the replay-lint hook (PR #444): every ``--matrix --save``
+    becomes a ground-truth audit of the freshly saved matrix against
+    the real-world Modern priors in tools/calibration_bands.json.
+    Non-fatal — out-of-band findings are printed as diagnostics and
+    never fail the run; a missing bands file degrades to a one-line
+    notice.
+    """
+    try:
+        from tools.check_calibration import DEFAULT_BANDS_PATH, run_check
+        if not os.path.exists(DEFAULT_BANDS_PATH):
+            print(f'check_calibration: skipped (no bands file at '
+                  f'{DEFAULT_BANDS_PATH})', file=sys.stderr)
+            return
+        run_check(results_path, DEFAULT_BANDS_PATH, strict=False)
+    except Exception as e:
+        print(f'check_calibration: skipped ({e})', file=sys.stderr)
 
 
 def load_results(path: str = RESULTS_FILE) -> Optional[Dict]:
@@ -1116,6 +1257,24 @@ def print_field(result: Dict):
         print(f'  vs {opp:25s}: {pct:3d}%  {bar}')
 
 
+def print_probe(result: Dict):
+    """Pretty-print a probe result, always naming its seed geometry."""
+    geo = result['seed_geometry']
+    fmt = result.get('format', 'bo3').upper()
+    print(f'\nPROBE {result["deck"]} — matrix seed grid '
+          f'(start {geo["seed_start"]}, step {geo["step"]}, '
+          f'n={geo["n_games"]}, {fmt})')
+    print(f'  seeds: {geo["seeds"]}')
+    for opp, pct in sorted(result['matchups'].items(), key=lambda x: -x[1]):
+        bar = '#' * (pct // 2)
+        print(f'  vs {opp:25s}: {pct:3d}%  {bar}')
+    if len(result['matchups']) > 1:
+        print(f'  field average: {result["average"]}%')
+    if result.get('errors'):
+        print(f'  WARNING: {result["errors"]} game(s) raised — '
+              f'see stderr for tracebacks')
+
+
 # ─── CLI ──────────────────────────────────────────────────────
 
 
@@ -1125,6 +1284,13 @@ if __name__ == '__main__':
     parser.add_argument('--matrix', action='store_true', help='Run full metagame matrix')
     parser.add_argument('--matchup', nargs=2, metavar=('DECK1', 'DECK2'), help='Run matchup between two decks')
     parser.add_argument('--field', metavar='DECK', help='Run one deck vs all others')
+    parser.add_argument('--probe', nargs='+', metavar='DECK',
+                        help='Run matchup(s) on the EXACT matrix seed grid '
+                             '(start 40000, step 500) so the numbers are '
+                             'directly comparable to matrix cells. '
+                             '--probe DECK = vs all opponents (a matrix '
+                             'row); --probe DECK OPP = one matrix cell. '
+                             'Pair with -n; Bo3 by default like the matrix.')
     parser.add_argument('--verbose', nargs=2, metavar=('DECK1', 'DECK2'), help='Run single game log (actions only)')
     parser.add_argument('--trace', nargs=2, metavar=('DECK1', 'DECK2'), help='Run single game with full AI reasoning')
     parser.add_argument('--bo3', nargs=2, metavar=('DECK1', 'DECK2'),
@@ -1225,6 +1391,19 @@ if __name__ == '__main__':
         print(audit_deck(resolve_deck_name(args.audit), n_games=args.games))
         sys.exit(0)
 
+    if args.probe:
+        if len(args.probe) > 2:
+            parser.error('--probe takes DECK [OPPONENT]')
+        probe_deck = resolve_deck_name(args.probe[0])
+        probe_opp = (resolve_deck_name(args.probe[1])
+                     if len(args.probe) == 2 else None)
+        result = run_probe(probe_deck, probe_opp, n_games=args.games,
+                           bo3=not args.bo1)
+        print_probe(result)
+        if args.save:
+            save_results(result)
+        sys.exit(0)
+
     # Bo3 / detailed match (many synonyms)
     bo3_args = (args.bo3 or args.match or getattr(args, 'play_by_play', None)
                 or args.pbp or args.detailed or getattr(args, 'game_log', None)
@@ -1293,7 +1472,14 @@ if __name__ == '__main__':
             rankings.sort(key=lambda x: x[0], reverse=True)
             result = {'matrix': matrix, 'rankings': rankings,
                       'names': names, 'n_games': args.games,
-                      'format': 'bo1' if args.bo1 else 'bo3'}
+                      'format': 'bo1' if args.bo1 else 'bo3',
+                      # tools.parallel_matrix dispatches run_matchup
+                      # per pair, so this path runs on the MATCHUP
+                      # grid — stamped honestly (finding #5).
+                      'seed_geometry': {'grid': 'parallel-matrix',
+                                        'seed_start': MATCHUP_SEED_START,
+                                        'step': SEED_STEP,
+                                        'n_games': args.games}}
         else:
             result = run_meta_matrix(top_tier=args.decks, n_games=args.games, bo3=not args.bo1)
         print_matrix(result)
@@ -1324,6 +1510,10 @@ if __name__ == '__main__':
 
         if args.save:
             save_results(result)
+            # Calibration audit vs ground-truth Modern priors
+            # (tools/check_calibration.py). Non-fatal — mirrors the
+            # replay-lint hook (PR #444).
+            _run_calibration_check()
             # Auto-rebuild dashboard from saved results
             try:
                 from build_dashboard import merge

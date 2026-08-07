@@ -226,6 +226,23 @@ def evoke_budget_penalty(prior_evokes: int, target_threat: float) -> float:
 
 # ─── Pitch / opportunity-cost constants ──────────────────────────────
 
+CHAIN_MIDCAST_MIN_STORM_COUNT: int = 2
+"""Rules-constant: minimum `spells_cast_this_turn` for a chain to be
+MID-CAST while a spell sits on the stack.
+
+`spells_cast_this_turn` includes the spell currently on the stack —
+`engine/cast_manager.py` increments the counter at push time (a cast
+completes on push, CR 601.2i).  Mid-cast therefore means the stack
+spell PLUS at least one prior cast this turn, i.e. a count of 2.
+
+Used by `bottleneck_probability` in `ai/combo_calc.py` to scope the
+chain-fuel hold (bp == 0.0) to turns where the opponent's chain is
+actually running.  Below this count the spell is the opponent's first
+cast of the turn — ordinary development — and the hold must not
+apply (2026-07-05 storm-overshoot root cause: an archetype-keyed hold
+locked reactive decks out of countering ANY fuel spell all game).
+"""
+
 PITCH_COUNTER_FREE_COST: int = 1
 """Rules-constant: effective cost of a "free" pitch counter on the
 opponent's turn — 1 exiled card, no mana.
@@ -2189,6 +2206,21 @@ deployment that wins the game.
 Used by `_score_land` Titan-ramp branch in `ai/ev_player.py`.
 """
 
+LAND_GAMEPLAN_PRIORITY_SCALE: float = 0.25
+"""Derived: converts a gameplan-declared `land_priorities` value
+(per-deck JSON data, historical range 2.0-10.0) into `_score_land`
+EV units.  At 0.25 the strongest declared priority (10.0) adds +2.5
+— a quarter of LAND_BASE_EV (10.0), enough to re-order land-vs-land
+choices but never enough to outrank a castable spell or flip a
+land-vs-pass decision.  Half the mulligan-side conversion
+(MULL_KEEP_LAND_PRIORITY_SCALE 0.5) because in-game sequencing
+corrects itself next turn while a mulligan bottoming is permanent.
+
+Used by the gameplan land-priority hook in `_score_land`
+(`ai/ev_player.py`); pinned by
+tests/test_gameplan_land_priorities_order_in_game_land_drops.py.
+"""
+
 RAMP_TO_BIG_SOON: float = 4.0
 """Derived: bonus when a land brings us to a 6+ CMC payoff next turn.
 One-third of RAMP_TO_BIG_NOW because the payoff is delayed by one
@@ -3810,6 +3842,20 @@ reanimator scale.
 Used by `_clause_gy_hate` in `ai/sideboard_solver.py`.
 """
 
+SB_EXPECTED_CHAIN_SPELLS_DENIED: float = 7.0
+"""Rules-constant: expected spells denied per resolved cast-rate
+denial effect (one-spell-per-turn locks, per-spell surcharges,
+storm-trigger counters) against a fully-chain-reliant opponent.
+7 = the canonical lethal storm-turn chain length (storm count needed
+for a lethal Grapeshot-class payoff at 20 life is ~9 copies from ~7-8
+prior casts); stopping one combo turn denies that whole chain.
+
+Sister shape: SB_EXPECTED_GY_CREATURES_DENIED (same clause-family
+scaling pattern, graveyard axis).
+
+Used by `_clause_spell_chain_hate` in `ai/sideboard_solver.py`.
+"""
+
 SB_DEFAULT_AVG_CMC: float = 2.5
 """Rules-constant: fallback average CMC for our nonland cards when
 the deck has zero non-land templates (degenerate case). 2.5 matches
@@ -5334,6 +5380,29 @@ survives a centralised re-tune.
 
 Used by `GoalEngine.card_keep_score` critical-singleton branch in
 `ai/gameplan.py`.
+"""
+
+
+MULL_BOTTOM_DECLARED_PIECE_PROTECTION: float = MULL_KEEP_CRITICAL_SINGLETON_FLOOR
+"""Derived: additive bottoming protection for the first copy of any
+non-land card the gameplan declares as part of its plan
+(`mulligan_keys` ∪ `mulligan_combo_sets` ∪ `mulligan_combo_paths`
+buckets ∪ `critical_pieces` ∪ `always_early`).
+
+Equal by construction to `MULL_KEEP_CRITICAL_SINGLETON_FLOOR` —
+the same tier of "this is the deck's plan, don't discard it".  The
+bonus must exceed the realistic land keep ceiling
+(`MULL_KEEP_LAND_NEEDED` 10 + land_priorities×`MULL_KEEP_LAND_PRIORITY_SCALE`
++ colors×`MULL_KEEP_LAND_COLOR_PRODUCTION_SCALE` ≈ 16) so a declared
+piece never sorts below a land while surplus lands exist to bottom
+instead.  It is *additive* (not a floor) so the role/key/cmc weights
+keep ordering declared pieces relative to each other, and it applies
+only to the FIRST copy per name so duplicate copies of
+interchangeable pieces remain the preferred bottoms.
+
+Used by `MulliganDecider.choose_cards_to_bottom` in `ai/mulligan.py`
+(bug: seed-50001 Storm mull-to-5 bottomed Ral + Pyretic Ritual, see
+tests/test_mulligan_bottoming_protects_declared_combo_pieces.py).
 """
 
 

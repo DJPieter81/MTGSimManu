@@ -127,6 +127,7 @@ def choose_discard(game: "GameState", player_idx: int,
     # the same FILL_RESOURCE / graveyard / min_cmc shape benefits
     # identically.
     reanimation_min_cmc = _reanimation_fuel_min_cmc(game, player_idx)
+    keystones = _declared_keystones(game, player_idx)
 
     def discard_score(card: "CardInstance") -> int:
         t = card.template
@@ -156,8 +157,17 @@ def choose_discard(game: "GameState", player_idx: int,
         # High-CMC creatures are reanimation targets (generic fallback
         # for decks that don't declare a FILL_RESOURCE graveyard goal —
         # e.g. a random midrange hand with an accidental fat body).
+        # EXCEPT a declared gameplan keystone in a deck with NO
+        # graveyard plan: that creature is the payoff the deck exists
+        # to CAST, not fuel to bin (Amulet discarded both copies of its
+        # 6-drop payoff to hand size — 2026-07-06 diagnostic). Same
+        # keystone set the forced-discard picker consults; reanimators
+        # never reach here (GV-1 short-circuits above).
         if t.is_creature and t.cmc >= DISCARD_BIG_CREATURE_CMC_THRESHOLD:
-            score += DISCARD_BIG_CREATURE_BASE + t.cmc
+            if t.name in keystones:
+                score -= DISCARD_COMBO_TUTOR_PROTECT
+            else:
+                score += DISCARD_BIG_CREATURE_BASE + t.cmc
 
         # Excess lands (4+ in hand with 3+ already on battlefield).
         if t.is_land:
@@ -183,6 +193,28 @@ def choose_discard(game: "GameState", player_idx: int,
         return score
 
     return max(hand, key=discard_score)
+
+
+def _declared_keystones(game: "GameState", player_idx: int) -> set:
+    """The player's own gameplan-declared keystone card names
+    (critical_pieces / mulligan_keys / always_early) — the same
+    keystone fields the forced-discard picker and the mulligan
+    bottoming protection consult. Empty set when no gameplan."""
+    player = game.players[player_idx]
+    deck_name = getattr(player, 'deck_name', '') or ''
+    if not deck_name:
+        return set()
+    try:
+        from ai.gameplan import get_gameplan
+    except ImportError:
+        return set()
+    plan = get_gameplan(deck_name)
+    if plan is None:
+        return set()
+    names: set = set()
+    for field in ('critical_pieces', 'mulligan_keys', 'always_early'):
+        names.update(getattr(plan, field, None) or [])
+    return names
 
 
 def _reanimation_fuel_min_cmc(game: "GameState",

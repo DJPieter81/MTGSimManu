@@ -180,10 +180,10 @@ def deal_damage(source: Any, target: Any, amount: int,
     has_deathtouch = getattr(source, 'has_deathtouch', False)
     if has_deathtouch and hasattr(effective_target, '_deathtouch_damage'):
         # CardInstance defines `_deathtouch_damage` as an instance
-        # attribute consumed by `engine/sba_manager.py:143` (CR
-        # 704.5i). Increment rather than assign so multiple
-        # deathtouch hits in the same resolution batch compound
-        # before the SBA pass.
+        # attribute consumed by SBAManager.perform_deathtouch_check
+        # (CR 704.5i — called from both SBA entry points). Increment
+        # rather than assign so multiple deathtouch hits in the same
+        # resolution batch compound before the SBA pass.
         try:
             effective_target._deathtouch_damage = (
                 getattr(effective_target, '_deathtouch_damage', 0)

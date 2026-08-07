@@ -172,22 +172,28 @@ def test_pay_life_stops_when_post_payment_life_within_opp_reach(card_db):
     assert game.players[0].life == 13
 
 
-def test_pay_life_lifelink_attacker_allows_double_activation(card_db):
-    """WITH lifelink the projected post-combat life absorbs the
-    payments (20−14+7 = 13 > 6): two activations are correct play —
-    pins the unified formula (GV2-6 semantics preserved)."""
+def test_pay_life_lifelink_attacker_single_activation_under_hand_cap(card_db):
+    """WITH lifelink at 20 life the payment is clearly survivable (the
+    clock guard would permit a second draw), but the RC-4 MAX_HAND_SIZE
+    cap (merged from main) bounds an empty-hand Griselbrand to a single
+    draw-7 (0→7): the loop stops before a second activation that would
+    only feed cleanup discards.  The lifelink survival offset itself is
+    pinned by tests/test_griselbrand_lifelink_activation.py."""
     game = GameState(rng=random.Random(1))
     _pay_life_board(game, card_db, 20,
                     ["Seasoned Pyromancer", "Seasoned Pyromancer"])
     r = _runner(card_db)
     r._activate_pay_life_draw(game, 0)
     pays = [l for l in game.log if "pay 7 life" in l]
-    assert len(pays) == 2, f"expected 2 activations, got {pays}"
+    assert len(pays) == 1, f"expected 1 activation under hand cap, got {pays}"
 
 
-def test_pay_life_double_activation_when_clearly_safe(card_db):
-    """No lifelink, 40 life vs the same board: 40→33→26, both post-
-    payment values clear the threshold → two activations."""
+def test_pay_life_single_activation_capped_by_hand_size(card_db):
+    """No lifelink, 40 life vs the same board: life alone would allow a
+    second draw-7 (40→33→26 both clear the clock), but the RC-4
+    MAX_HAND_SIZE cap stops after the first draw-7 fills the hand (0→7).
+    Paying life for cards discarded at cleanup is pure loss (CR 514.1);
+    the clock guard bounds death, the hand cap bounds waste."""
     game = GameState(rng=random.Random(1))
     grisel = _pay_life_board(game, card_db, 40,
                              ["Seasoned Pyromancer", "Seasoned Pyromancer"])
@@ -195,4 +201,4 @@ def test_pay_life_double_activation_when_clearly_safe(card_db):
     r = _runner(card_db)
     r._activate_pay_life_draw(game, 0)
     pays = [l for l in game.log if "pay 7 life" in l]
-    assert len(pays) >= 2
+    assert len(pays) == 1
