@@ -1,0 +1,48 @@
+name: Cleanup stale branches
+
+# One-shot manual cleanup of merged/superseded claude/* branches.
+# Trigger from the Actions tab (mobile-friendly). Deletes every branch
+# listed in .github/stale-branches.txt using the built-in GITHUB_TOKEN.
+# Protected branches (main, the active working branch) are never in the
+# list and are additionally guarded below.
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type DELETE to confirm deletion of the listed branches'
+        required: true
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  delete:
+    if: ${{ github.event.inputs.confirm == 'DELETE' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Delete listed branches
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -uo pipefail
+          PROTECT_RE='^(main|master|claude/cardpool-tier1-decklists-WIJJY)$'
+          deleted=0; skipped=0; failed=0
+          while IFS= read -r br; do
+            [ -z "$br" ] && continue
+            if echo "$br" | grep -qE "$PROTECT_RE"; then
+              echo "SKIP (protected): $br"; skipped=$((skipped+1)); continue
+            fi
+            # Delete the ref via the API; tolerate already-gone (422/404).
+            if gh api -X DELETE "repos/${GITHUB_REPOSITORY}/git/refs/heads/${br}" >/dev/null 2>&1; then
+              echo "deleted: $br"; deleted=$((deleted+1))
+            else
+              echo "skip/failed (maybe already gone): $br"; failed=$((failed+1))
+            fi
+          done < .github/stale-branches.txt
+          echo "----"
+          echo "deleted=$deleted skipped=$skipped failed_or_gone=$failed"
