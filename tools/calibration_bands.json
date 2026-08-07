@@ -91,6 +91,616 @@
         50
       ],
       "provenance": "Real Modern prior: Dimir's discard + Orcish Bowmasters + graveyard interaction hurt reanimator combo; Goryo's is the underdog."
+    },
+    {
+      "deck_a": "Boros Energy",
+      "deck_b": "Instant Reanimator",
+      "expected_wr_a": [
+        50,
+        65
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): race: Instant Reanimator goldfishes vs Boros Energy's clock; speed decides the edge"
+    },
+    {
+      "deck_a": "Boros Energy",
+      "deck_b": "Amulet Titan",
+      "expected_wr_a": [
+        45,
+        60
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): Boros Energy's fast clock punishes Amulet Titan's setup turns"
+    },
+    {
+      "deck_a": "Boros Energy",
+      "deck_b": "Eldrazi Tron",
+      "expected_wr_a": [
+        45,
+        60
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): Boros Energy's fast clock punishes Eldrazi Tron's setup turns"
+    },
+    {
+      "deck_a": "Boros Energy",
+      "deck_b": "Ruby Storm",
+      "expected_wr_a": [
+        40,
+        55
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): race: Ruby Storm goldfishes vs Boros Energy's clock; speed decides the edge"
+    },
+    {
+      "deck_a": "Boros Energy",
+      "deck_b": "Izzet Prowess",
+      "expected_wr_a": [
+        45,
+        60
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): creature-mirror shape; removal density and recursion decide small edges"
+    },
+    {
+      "deck_a": "Affinity",
+      "deck_b": "Instant Reanimator",
+      "expected_wr_a": [
+        50,
+        65
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): race: Instant Reanimator goldfishes vs Affinity's clock; speed decides the edge"
+    },
+    {
+      "deck_a": "Affinity",
+      "deck_b": "Amulet Titan",
+      "expected_wr_a": [
+        45,
+        60
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): Affinity's fast clock punishes Amulet Titan's setup turns"
+    },
+    {
+      "deck_a": "Affinity",
+      "deck_b": "Ruby Storm",
+      "expected_wr_a": [
+        40,
+        55
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): race: Ruby Storm goldfishes vs Affinity's clock; speed decides the edge"
+    },
+    {
+      "deck_a": "Affinity",
+      "deck_b": "Izzet Prowess",
+      "expected_wr_a": [
+        45,
+        60
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): creature-mirror shape; removal density and recursion decide small edges"
+    },
+    {
+      "deck_a": "Instant Reanimator",
+      "deck_b": "Amulet Titan",
+      "expected_wr_a": [
+        40,
+        60
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): no strong archetype edge expected between gy-combo and big-mana-ramp; wide near-even prior"
+    },
+    {
+      "deck_a": "Instant Reanimator",
+      "deck_b": "Eldrazi Tron",
+      "expected_wr_a": [
+        40,
+        60
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): no strong archetype edge expected between gy-combo and big-mana-prison; wide near-even prior"
+    },
+    {
+      "deck_a": "Instant Reanimator",
+      "deck_b": "Ruby Storm",
+      "expected_wr_a": [
+        40,
+        55
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): combo race; the faster/less disruptable side is favored"
+    },
+    {
+      "deck_a": "Instant Reanimator",
+      "deck_b": "Izzet Prowess",
+      "expected_wr_a": [
+        40,
+        55
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): race: Instant Reanimator goldfishes vs Izzet Prowess's clock with thin interaction; speed decides the edge"
+    },
+    {
+      "deck_a": "Amulet Titan",
+      "deck_b": "Eldrazi Tron",
+      "expected_wr_a": [
+        45,
+        60
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): big-mana mirror; prison elements vs raw ramp"
+    },
+    {
+      "deck_a": "Amulet Titan",
+      "deck_b": "Ruby Storm",
+      "expected_wr_a": [
+        40,
+        60
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): no strong archetype edge expected between big-mana-ramp and chain-combo; wide near-even prior"
+    },
+    {
+      "deck_a": "Amulet Titan",
+      "deck_b": "Izzet Prowess",
+      "expected_wr_a": [
+        40,
+        55
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): Izzet Prowess's fast clock punishes Amulet Titan's setup turns; Amulet Titan's payoff turns stabilize when reached"
+    },
+    {
+      "deck_a": "Eldrazi Tron",
+      "deck_b": "Ruby Storm",
+      "expected_wr_a": [
+        55,
+        70
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): Chalice/Trinisphere-class taxing is structurally strong vs chain combo"
+    },
+    {
+      "deck_a": "Eldrazi Tron",
+      "deck_b": "Izzet Prowess",
+      "expected_wr_a": [
+        55,
+        70
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): Chalice on 1 turns off most of Prowess's deck; oversized bodies wall the tempo plan"
+    },
+    {
+      "deck_a": "Ruby Storm",
+      "deck_b": "Izzet Prowess",
+      "expected_wr_a": [
+        50,
+        65
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): race: Ruby Storm goldfishes vs Izzet Prowess's clock with thin interaction; speed decides the edge"
+    },
+    {
+      "deck_a": "Boros Energy",
+      "deck_b": "Jeskai Blink",
+      "expected_wr_a": [
+        45,
+        60
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): classic aggro-vs-control: Boros Energy pressures before sweeper mana; Jeskai Blink stabilizes often enough to keep it near even"
+    },
+    {
+      "deck_a": "Boros Energy",
+      "deck_b": "4/5c Control",
+      "expected_wr_a": [
+        45,
+        60
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): classic aggro-vs-control: Boros Energy pressures before sweeper mana; 4/5c Control stabilizes often enough to keep it near even"
+    },
+    {
+      "deck_a": "Boros Energy",
+      "deck_b": "Boros Ponza",
+      "expected_wr_a": [
+        40,
+        60
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): no strong archetype edge expected between aggro-midrange and land-denial-midrange; wide near-even prior"
+    },
+    {
+      "deck_a": "Boros Energy",
+      "deck_b": "Dimir Midrange",
+      "expected_wr_a": [
+        45,
+        60
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): classic aggro-vs-control: Boros Energy pressures before sweeper mana; Dimir Midrange stabilizes often enough to keep it near even"
+    },
+    {
+      "deck_a": "Affinity",
+      "deck_b": "Jeskai Blink",
+      "expected_wr_a": [
+        45,
+        60
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): classic aggro-vs-control: Affinity pressures before sweeper mana; Jeskai Blink stabilizes often enough to keep it near even"
+    },
+    {
+      "deck_a": "Affinity",
+      "deck_b": "Living End",
+      "expected_wr_a": [
+        50,
+        65
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): race: Living End goldfishes vs Affinity's clock; speed decides the edge"
+    },
+    {
+      "deck_a": "Affinity",
+      "deck_b": "4/5c Control",
+      "expected_wr_a": [
+        45,
+        60
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): classic aggro-vs-control: Affinity pressures before sweeper mana; 4/5c Control stabilizes often enough to keep it near even"
+    },
+    {
+      "deck_a": "Affinity",
+      "deck_b": "Domain Zoo",
+      "expected_wr_a": [
+        45,
+        60
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): creature-mirror shape; removal density and recursion decide small edges"
+    },
+    {
+      "deck_a": "Affinity",
+      "deck_b": "Boros Ponza",
+      "expected_wr_a": [
+        40,
+        55
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): land denial slows Affinity less than most, but Ponza's artifact answers are mainboard-adjacent"
+    },
+    {
+      "deck_a": "Affinity",
+      "deck_b": "Dimir Midrange",
+      "expected_wr_a": [
+        45,
+        60
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): classic aggro-vs-control: Affinity pressures before sweeper mana; Dimir Midrange stabilizes often enough to keep it near even"
+    },
+    {
+      "deck_a": "Instant Reanimator",
+      "deck_b": "Jeskai Blink",
+      "expected_wr_a": [
+        35,
+        50
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): Jeskai Blink (value-control) carries dense interaction into Instant Reanimator's gy-combo lines; combo is the underdog but SB disruption keeps it live"
+    },
+    {
+      "deck_a": "Instant Reanimator",
+      "deck_b": "Living End",
+      "expected_wr_a": [
+        45,
+        60
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): both graveyard decks; IR's targeted interaction gives a small edge over LE's all-in cascades"
+    },
+    {
+      "deck_a": "Instant Reanimator",
+      "deck_b": "4/5c Control",
+      "expected_wr_a": [
+        35,
+        50
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): 4/5c Control (goodstuff-control) carries dense interaction into Instant Reanimator's gy-combo lines; combo is the underdog but SB disruption keeps it live"
+    },
+    {
+      "deck_a": "Instant Reanimator",
+      "deck_b": "Domain Zoo",
+      "expected_wr_a": [
+        40,
+        55
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): race: Instant Reanimator goldfishes vs Domain Zoo's clock with thin interaction; speed decides the edge"
+    },
+    {
+      "deck_a": "Instant Reanimator",
+      "deck_b": "Boros Ponza",
+      "expected_wr_a": [
+        40,
+        60
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): no strong archetype edge expected between gy-combo and land-denial-midrange; wide near-even prior"
+    },
+    {
+      "deck_a": "Instant Reanimator",
+      "deck_b": "Dimir Midrange",
+      "expected_wr_a": [
+        35,
+        50
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): Dimir Midrange (discard-midrange) carries dense interaction into Instant Reanimator's gy-combo lines; combo is the underdog but SB disruption keeps it live"
+    },
+    {
+      "deck_a": "Instant Reanimator",
+      "deck_b": "Azorius Control",
+      "expected_wr_a": [
+        35,
+        50
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): Azorius Control (draw-go-control) carries dense interaction into Instant Reanimator's gy-combo lines; combo is the underdog but SB disruption keeps it live"
+    },
+    {
+      "deck_a": "Amulet Titan",
+      "deck_b": "Jeskai Blink",
+      "expected_wr_a": [
+        50,
+        65
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): Amulet Titan goes over the top of 1-for-1 interaction; ETB value + removal trades poorly vs Amulet Titan's redundancy"
+    },
+    {
+      "deck_a": "Amulet Titan",
+      "deck_b": "Living End",
+      "expected_wr_a": [
+        40,
+        60
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): no strong archetype edge expected between big-mana-ramp and cascade-combo; wide near-even prior"
+    },
+    {
+      "deck_a": "Amulet Titan",
+      "deck_b": "4/5c Control",
+      "expected_wr_a": [
+        50,
+        65
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): Amulet Titan goes over the top of 1-for-1 interaction; removal + card quality trades poorly vs Amulet Titan's redundancy"
+    },
+    {
+      "deck_a": "Amulet Titan",
+      "deck_b": "Domain Zoo",
+      "expected_wr_a": [
+        40,
+        55
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): Domain Zoo's fast clock punishes Amulet Titan's setup turns; Amulet Titan's payoff turns stabilize when reached"
+    },
+    {
+      "deck_a": "Amulet Titan",
+      "deck_b": "Boros Ponza",
+      "expected_wr_a": [
+        35,
+        50
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): land destruction attacks Amulet's whole axis; its redundancy keeps it from being a blowout"
+    },
+    {
+      "deck_a": "Amulet Titan",
+      "deck_b": "Azorius Control",
+      "expected_wr_a": [
+        50,
+        65
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): Amulet Titan goes over the top of 1-for-1 interaction; counters + sweepers + manlands trades poorly vs Amulet Titan's redundancy"
+    },
+    {
+      "deck_a": "Eldrazi Tron",
+      "deck_b": "Jeskai Blink",
+      "expected_wr_a": [
+        50,
+        65
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): Eldrazi Tron goes over the top of 1-for-1 interaction; ETB value + removal trades poorly vs Eldrazi Tron's redundancy"
+    },
+    {
+      "deck_a": "Eldrazi Tron",
+      "deck_b": "Living End",
+      "expected_wr_a": [
+        40,
+        60
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): no strong archetype edge expected between big-mana-prison and cascade-combo; wide near-even prior"
+    },
+    {
+      "deck_a": "Eldrazi Tron",
+      "deck_b": "4/5c Control",
+      "expected_wr_a": [
+        50,
+        65
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): Eldrazi Tron goes over the top of 1-for-1 interaction; removal + card quality trades poorly vs Eldrazi Tron's redundancy"
+    },
+    {
+      "deck_a": "Eldrazi Tron",
+      "deck_b": "Domain Zoo",
+      "expected_wr_a": [
+        40,
+        55
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): Domain Zoo's fast clock punishes Eldrazi Tron's setup turns; Eldrazi Tron's payoff turns stabilize when reached"
+    },
+    {
+      "deck_a": "Eldrazi Tron",
+      "deck_b": "Boros Ponza",
+      "expected_wr_a": [
+        40,
+        60
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): no strong archetype edge expected between big-mana-prison and land-denial-midrange; wide near-even prior"
+    },
+    {
+      "deck_a": "Eldrazi Tron",
+      "deck_b": "Dimir Midrange",
+      "expected_wr_a": [
+        50,
+        65
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): Eldrazi Tron goes over the top of 1-for-1 interaction; discard + counters + Bowmasters trades poorly vs Eldrazi Tron's redundancy"
+    },
+    {
+      "deck_a": "Eldrazi Tron",
+      "deck_b": "Azorius Control",
+      "expected_wr_a": [
+        50,
+        65
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): Eldrazi Tron goes over the top of 1-for-1 interaction; counters + sweepers + manlands trades poorly vs Eldrazi Tron's redundancy"
+    },
+    {
+      "deck_a": "Ruby Storm",
+      "deck_b": "Jeskai Blink",
+      "expected_wr_a": [
+        35,
+        50
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): Jeskai Blink (value-control) carries dense interaction into Ruby Storm's chain-combo lines; combo is the underdog but SB disruption keeps it live"
+    },
+    {
+      "deck_a": "Ruby Storm",
+      "deck_b": "Living End",
+      "expected_wr_a": [
+        50,
+        65
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): Storm typically goldfishes a turn faster; LE's pieces don't interact with the chain"
+    },
+    {
+      "deck_a": "Ruby Storm",
+      "deck_b": "4/5c Control",
+      "expected_wr_a": [
+        35,
+        50
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): 4/5c Control (goodstuff-control) carries dense interaction into Ruby Storm's chain-combo lines; combo is the underdog but SB disruption keeps it live"
+    },
+    {
+      "deck_a": "Ruby Storm",
+      "deck_b": "Domain Zoo",
+      "expected_wr_a": [
+        50,
+        65
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): race: Ruby Storm goldfishes vs Domain Zoo's clock with thin interaction; speed decides the edge"
+    },
+    {
+      "deck_a": "Ruby Storm",
+      "deck_b": "Boros Ponza",
+      "expected_wr_a": [
+        40,
+        60
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): no strong archetype edge expected between chain-combo and land-denial-midrange; wide near-even prior"
+    },
+    {
+      "deck_a": "Izzet Prowess",
+      "deck_b": "Jeskai Blink",
+      "expected_wr_a": [
+        45,
+        60
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): classic aggro-vs-control: Izzet Prowess pressures before sweeper mana; Jeskai Blink stabilizes often enough to keep it near even"
+    },
+    {
+      "deck_a": "Izzet Prowess",
+      "deck_b": "Living End",
+      "expected_wr_a": [
+        50,
+        65
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): race: Living End goldfishes vs Izzet Prowess's clock; speed decides the edge"
+    },
+    {
+      "deck_a": "Izzet Prowess",
+      "deck_b": "4/5c Control",
+      "expected_wr_a": [
+        45,
+        60
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): classic aggro-vs-control: Izzet Prowess pressures before sweeper mana; 4/5c Control stabilizes often enough to keep it near even"
+    },
+    {
+      "deck_a": "Izzet Prowess",
+      "deck_b": "Domain Zoo",
+      "expected_wr_a": [
+        45,
+        60
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): creature-mirror shape; removal density and recursion decide small edges"
+    },
+    {
+      "deck_a": "Izzet Prowess",
+      "deck_b": "Boros Ponza",
+      "expected_wr_a": [
+        40,
+        60
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): no strong archetype edge expected between tempo-aggro and land-denial-midrange; wide near-even prior"
+    },
+    {
+      "deck_a": "Izzet Prowess",
+      "deck_b": "Dimir Midrange",
+      "expected_wr_a": [
+        45,
+        60
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): classic aggro-vs-control: Izzet Prowess pressures before sweeper mana; Dimir Midrange stabilizes often enough to keep it near even"
+    },
+    {
+      "deck_a": "Izzet Prowess",
+      "deck_b": "Azorius Control",
+      "expected_wr_a": [
+        45,
+        60
+      ],
+      "needs_user_review": true,
+      "provenance": "T1/T2 grid draft 2026-07-09 (archetype-logic prior, USER REVIEW PENDING): classic aggro-vs-control: Izzet Prowess pressures before sweeper mana; Azorius Control stabilizes often enough to keep it near even"
     }
   ],
   "field_bands": [
