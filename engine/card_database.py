@@ -1236,6 +1236,30 @@ class CardDatabase:
             raw = json.load(f)
 
         card_data = raw.get("data", raw)
+
+        # Cross-check the merge provenance stamp (written by merge_db.py).
+        # A card_count that disagrees with the file's actual entry count
+        # means the merged DB was truncated, hand-edited, or assembled
+        # outside merge_db.py — the silent-stale-DB failure class of
+        # 2026-07-05. Warn loudly but NEVER crash; a file with no stamp
+        # (pre-stamp merges, fixtures) loads silently.
+        try:
+            meta = raw.get("meta") if isinstance(raw, dict) else None
+            stamp = meta.get("merged_from") if isinstance(meta, dict) else None
+            if isinstance(stamp, dict) and "card_count" in stamp:
+                stamped = stamp["card_count"]
+                actual = len(card_data)
+                if stamped != actual:
+                    print(
+                        "WARNING: PROVENANCE MISMATCH in "
+                        f"{json_path}: meta.merged_from.card_count="
+                        f"{stamped} but the file contains {actual} "
+                        "entries — the merged DB was modified after "
+                        "merge_db.py wrote it. Re-run: python3 merge_db.py"
+                    )
+        except Exception:
+            pass  # provenance check must never block a load
+
         count = 0
         errors = 0
 
