@@ -47,6 +47,27 @@ NO_CLOCK = 99.0
 # Clock arithmetic — turns to kill, derived from board state
 # ─────────────────────────────────────────────────────────────
 
+def opp_one_turn_damage(game: "GameState", player_idx: int) -> int:
+    """Damage the opponent can deal on their next turn — the M4-spec
+    primitive.
+
+    Derivation (state-only, no constants): their on-board creature
+    power counts in full (tapped bodies untap at their untap step),
+    plus ONE average-deployment increment (board_power / creature
+    count) — aggro boards grow every turn, and a survival threshold
+    built on the current board alone under-counts by exactly one
+    deployment (probe s60110 T4: guard saw 4-5 power, took 8).
+    Empty board → 0.
+    """
+    opp = game.players[1 - player_idx]
+    creatures = [c for c in opp.creatures]
+    if not creatures:
+        return 0
+    board_power = sum(c.power or 0 for c in creatures)
+    development = board_power // len(creatures)
+    return board_power + development
+
+
 def combat_clock(power: int, opp_life: int,
                  evasion_power: int = 0,
                  opp_total_toughness: int = 0) -> float:

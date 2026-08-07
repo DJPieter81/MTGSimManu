@@ -55,8 +55,38 @@ if TYPE_CHECKING:
     from ai.strategy_profile import ArchetypeStrategy
 
 
+def _apply_critical_keeper_floor(
+    scored: List[tuple],
+    critical_names: set,
+    floor: float,
+) -> List[tuple]:
+    """Raise the best-scored copy of each critical piece to `floor`.
+
+    The per-card score path can only protect SINGLETONS (it cannot
+    designate a keeper among identical copies), so a hand holding TWO
+    copies of a critical piece previously had ZERO protection and
+    could bottom both (probe s60110: both reanimation payloads
+    bottomed).  One copy per critical name gets the singleton floor
+    — bottoming down to one copy stays legal, bottoming the last is
+    what the floor prevents.
+    """
+    if not critical_names:
+        return scored
+    best_idx: dict = {}
+    for i, (card, score) in enumerate(scored):
+        if card.name in critical_names:
+            j = best_idx.get(card.name)
+            if j is None or score > scored[j][1]:
+                best_idx[card.name] = i
+    for i in best_idx.values():
+        card, score = scored[i]
+        scored[i] = (card, max(score, floor))
+    return scored
+
+
 def _apply_legendary_dedup_penalty(
     scored: List[tuple],
+    exempt_names: Optional[set] = None,
 ) -> List[tuple]:
     """Subtract a bottom-preference penalty from duplicate legendary copies.
 
@@ -75,9 +105,10 @@ def _apply_legendary_dedup_penalty(
     from engine.cards import Supertype
     seen_legendary: set = set()
     out: List[tuple] = []
+    exempt = exempt_names or set()
     for c, s in scored:
         is_legendary = Supertype.LEGENDARY in getattr(c.template, "supertypes", ())
-        if is_legendary:
+        if is_legendary and c.name not in exempt:
             if c.name in seen_legendary:
                 out.append((c, s - LEGENDARY_DUPLICATE_PENALTY))
                 continue
@@ -773,7 +804,24 @@ class MulliganDecider:
         # ai/gameplan.py::card_keep_score).  A penalty of 50 ensures
         # duplicate copies sort below every realistic alternative
         # without overflowing into negative-by-design land scores.
-        scored = _apply_legendary_dedup_penalty(scored)
+        critical: set = set()
+        gy_resource = False
+        if self.goal_engine and self.goal_engine.gameplan:
+            critical = set(self.goal_engine.gameplan.critical_pieces or ())
+            try:
+                from ai.combo_calc import _find_resource_zone
+                zone, target, _min = _find_resource_zone(self.goal_engine)
+                gy_resource = (zone == "graveyard" and target > 0)
+            except Exception:
+                gy_resource = False
+        from ai.scoring_constants import MULL_KEEP_CRITICAL_SINGLETON_FLOOR
+        scored = _apply_critical_keeper_floor(
+            scored, critical, MULL_KEEP_CRITICAL_SINGLETON_FLOOR)
+        # Graveyard-resource decks: the duplicate copy of a critical
+        # piece is FUEL for the yard, not a dead legendary — exempt it
+        # from the CR 704.5j dedup penalty (probe s60110).
+        scored = _apply_legendary_dedup_penalty(
+            scored, exempt_names=critical if gy_resource else None)
         scored.sort(key=lambda x: x[1])
 
         # Enforce mulligan_min_lands floor on the KEPT hand. Without this,
