@@ -1444,6 +1444,13 @@ class CardDatabase:
             if c in COLOR_MAP:
                 color_identity.add(COLOR_MAP[c])
 
+        # Parse the permanent's own printed color (distinct from color
+        # identity — see CardTemplate.colors docstring).
+        colors = set()
+        for c in data.get("colors", []):
+            if c in COLOR_MAP:
+                colors.add(COLOR_MAP[c])
+
         # Parse oracle effects
         effects = OracleTextParser.parse(oracle_text, name)
         self._effects_cache[name] = effects
@@ -1521,6 +1528,7 @@ class CardDatabase:
             keywords=keywords,
             abilities=abilities,
             color_identity=color_identity,
+            colors=colors,
             produces_mana=produces_mana,
             mana_units=mana_units,
             etb_return_land=etb_return_land,

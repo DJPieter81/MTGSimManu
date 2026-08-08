@@ -112,6 +112,15 @@ class CardTemplate:
     keywords: Set[Keyword] = field(default_factory=set)
     abilities: List[Ability] = field(default_factory=list)
     color_identity: Set[Color] = field(default_factory=set)
+    # The permanent's own printed color (MTGJSON `colors`) — NOT the
+    # same as color_identity (MTGJSON `colorIdentity`, which can
+    # include colors referenced by the card's text/cost beyond its own
+    # printed color; used for format-legality checks, not "is this
+    # permanent white/blue/etc." characteristic checks). Needed for
+    # any color-conditional static ability ("has vigilance if it's
+    # white") — using color_identity for that check is a common latent
+    # bug in exactly this shape of effect.
+    colors: Set[Color] = field(default_factory=set)
     # For lands
     produces_mana: List[str] = field(default_factory=list)  # e.g., ["W", "R"]
     # Mana UNITS from the land's plain {T} ability: one inner list of
@@ -271,6 +280,23 @@ class CardInstance:
     temp_power_mod: int = 0
     temp_toughness_mod: int = 0
     temp_keywords: Set[Keyword] = field(default_factory=set)
+    # Continuous-effects-manager-derived P/T/keywords (engine/
+    # continuous_effects.py). Kept SEPARATE from temp_power_mod/
+    # temp_toughness_mod/temp_keywords above — those are a shared
+    # dumping ground for one-shot pump spells, Dash, and other ad-hoc
+    # mutations throughout engine/card_effects.py, cleared
+    # unconditionally by cleanup_damage() every end of turn. The
+    # cem_* fields represent RE-DERIVED continuous/static effects
+    # (lords, anthems, equipment, static keyword grants) that persist
+    # exactly as long as their source is on the battlefield; they are
+    # cleared and rebuilt by ContinuousEffectsManager.recalculate()
+    # on every call, not by turn-based cleanup, so mixing them into
+    # temp_power_mod would either wipe a continuous effect early
+    # (at end of turn) or double-count it (recalculate() re-applying
+    # on top of a value cleanup_damage() never reset).
+    cem_power_mod: int = 0
+    cem_toughness_mod: int = 0
+    cem_keywords: Set[Keyword] = field(default_factory=set)
     # Land animation ("this land becomes an N/M creature until end of
     # turn") — Track H. While True the instance belongs to the combat
     # class (creatures property, can_attack/can_block, SBA death
@@ -388,12 +414,14 @@ class CardInstance:
     @property
     def power(self) -> int:
         base = self._dynamic_base_power()
-        return base + self.plus_counters - self.minus_counters + self.temp_power_mod
+        return (base + self.plus_counters - self.minus_counters
+                + self.temp_power_mod + self.cem_power_mod)
 
     @property
     def toughness(self) -> int:
         base = self._dynamic_base_toughness()
-        return base + self.plus_counters - self.minus_counters + self.temp_toughness_mod
+        return (base + self.plus_counters - self.minus_counters
+                + self.temp_toughness_mod + self.cem_toughness_mod)
 
     def _get_domain_count(self) -> int:
         """Count basic land types among lands controlled by this card's controller."""
@@ -605,7 +633,7 @@ class CardInstance:
 
     @property
     def keywords(self) -> Set[Keyword]:
-        return self.template.keywords | self.temp_keywords
+        return self.template.keywords | self.temp_keywords | self.cem_keywords
 
     @property
     def has_deathtouch(self) -> bool:

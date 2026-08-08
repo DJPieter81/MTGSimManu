@@ -103,7 +103,7 @@ class ContinuousEffectsManager:
             layer=Layer.POWER_TOUGHNESS,
             pt_sublayer=PTSublayer.STATIC_MOD,
             affected=lambda g, c: "Goblin" in c.template.subtypes,
-            apply=lambda g, c: setattr(c, 'temp_power_mod', c.temp_power_mod + 1),
+            apply=lambda g, c: setattr(c, 'cem_power_mod', c.cem_power_mod + 1),
             description="Other Goblins get +1/+1",
         ))
 
@@ -144,11 +144,31 @@ class ContinuousEffectsManager:
 
         This method:
         1. Clears all calculated modifications on all permanents
+           (cem_power_mod/cem_toughness_mod/cem_keywords — the
+           dedicated accumulator fields this manager owns; see
+           engine/cards.py for why these are kept separate from
+           temp_power_mod/temp_toughness_mod/temp_keywords)
         2. Applies effects in layer order
         3. Each effect checks if it affects a card, then applies
+
+        Idempotent: calling this any number of times in a row (the
+        intended usage — after ETB, after spells resolve, before
+        combat) produces the same result each time, since step 1
+        always starts from zero rather than accumulating on top of
+        the previous call's output.
         """
         # Remove effects whose source is no longer on the battlefield
         self._cleanup_stale_effects(game)
+
+        # Step 1: clear all cem_* fields before reapplying — apply
+        # functions use += (an accumulator, so multiple effects on the
+        # same card compose), which requires starting from a known
+        # zero baseline every call.
+        for player in game.players:
+            for card in player.battlefield:
+                card.cem_power_mod = 0
+                card.cem_toughness_mod = 0
+                card.cem_keywords.clear()
 
         # Sort effects by (layer, pt_sublayer, timestamp)
         sorted_effects = sorted(self._effects, key=lambda e: (
@@ -215,7 +235,7 @@ def create_equipment_effect(source_id: int, source_name: str,
 
     def apply_power(game, card):
         bonus = power_bonus_fn(game, card)
-        card.temp_power_mod += bonus
+        card.cem_power_mod += bonus
 
     effects.append(ContinuousEffect(
         source_id=source_id,
@@ -230,7 +250,7 @@ def create_equipment_effect(source_id: int, source_name: str,
     if toughness_bonus_fn:
         def apply_toughness(game, card):
             bonus = toughness_bonus_fn(game, card)
-            card.temp_toughness_mod += bonus
+            card.cem_toughness_mod += bonus
 
         effects.append(ContinuousEffect(
             source_id=source_id,
@@ -266,7 +286,7 @@ def create_lord_effect(source_id: int, source_name: str,
 
     if power_bonus != 0:
         def apply_power(game, card):
-            card.temp_power_mod += power_bonus
+            card.cem_power_mod += power_bonus
 
         effects.append(ContinuousEffect(
             source_id=source_id,
@@ -280,7 +300,7 @@ def create_lord_effect(source_id: int, source_name: str,
 
     if toughness_bonus != 0:
         def apply_toughness(game, card):
-            card.temp_toughness_mod += toughness_bonus
+            card.cem_toughness_mod += toughness_bonus
 
         effects.append(ContinuousEffect(
             source_id=source_id,
@@ -295,7 +315,7 @@ def create_lord_effect(source_id: int, source_name: str,
     if keyword_grants:
         for kw in keyword_grants:
             def apply_keyword(game, card, _kw=kw):
-                card.temp_keywords.add(_kw)
+                card.cem_keywords.add(_kw)
 
             effects.append(ContinuousEffect(
                 source_id=source_id,
@@ -303,7 +323,7 @@ def create_lord_effect(source_id: int, source_name: str,
                 layer=Layer.ABILITY,
                 affected=affected_fn,
                 apply=apply_keyword,
-                description=f"{source_name}: grants {_kw.name}",
+                description=f"{source_name}: grants {kw.name}",
             ))
 
     return effects
@@ -333,7 +353,7 @@ def create_pump_spell_effect(source_id: int, source_name: str,
 
     if power_bonus != 0:
         def apply_power(game, card):
-            card.temp_power_mod += power_bonus
+            card.cem_power_mod += power_bonus
 
         effects.append(ContinuousEffect(
             source_id=source_id,
@@ -348,7 +368,7 @@ def create_pump_spell_effect(source_id: int, source_name: str,
 
     if toughness_bonus != 0:
         def apply_toughness(game, card):
-            card.temp_toughness_mod += toughness_bonus
+            card.cem_toughness_mod += toughness_bonus
 
         effects.append(ContinuousEffect(
             source_id=source_id,
@@ -364,7 +384,7 @@ def create_pump_spell_effect(source_id: int, source_name: str,
     if keyword_grants:
         for kw in keyword_grants:
             def apply_keyword(game, card, _kw=kw):
-                card.temp_keywords.add(_kw)
+                card.cem_keywords.add(_kw)
 
             effects.append(ContinuousEffect(
                 source_id=source_id,
@@ -372,7 +392,7 @@ def create_pump_spell_effect(source_id: int, source_name: str,
                 layer=Layer.ABILITY,
                 affected=is_target,
                 apply=apply_keyword,
-                description=f"{source_name}: grants {_kw.name}",
+                description=f"{source_name}: grants {kw.name}",
                 duration=duration,
             ))
 

@@ -132,7 +132,72 @@ Remaining (tracked here, not yet started):
 - [ ] Per-file baseline reduction in `tools/zone_mutation_baseline.json` as each tranche above lands
   (`python tools/check_zone_mutation.py --update` after migrating, in the same commit as the migration).
 
-### 0b. Activate continuous_effects.py — NOT STARTED
+### 0b. Activate continuous_effects.py — DONE (manager correctness + first real pilot registration)
+
+Found before writing any migration code that `recalculate()`'s own docstring ("1. Clears all
+calculated modifications on all permanents") didn't match its body — it only removed effects
+whose SOURCE had left, then applied every remaining effect's `apply` closure via `+=` with no
+reset. Since the manager's documented usage is "called at key points: after ETB, after spells
+resolve, before combat" (i.e. repeatedly), this would have double/triple/N-counted every
+registered effect the moment it was wired in.
+
+Fixed by:
+- Adding dedicated `cem_power_mod`/`cem_toughness_mod`/`cem_keywords` accumulator fields on
+  `CardInstance` (engine/cards.py), kept **separate** from `temp_power_mod`/`temp_toughness_mod`/
+  `temp_keywords` — those are a shared dumping ground for one-shot pump spells, Dash, etc.
+  throughout `card_effects.py`, cleared unconditionally at end-of-turn `cleanup_damage()`.
+  Reusing them for continuous effects would either wipe a lord's bonus early (end of turn) or
+  double-count it (`recalculate()` re-applying on top of a value cleanup never reset). `power`/
+  `toughness`/`keywords` properties now sum both accumulator families.
+- `recalculate()` clears the `cem_*` fields at the start of every call — genuinely idempotent now,
+  verified by `tests/test_continuous_effects_manager_recalculate.py` (register once, recalculate
+  twice → same value not double; source leaves battlefield, recalculate → bonus retracts).
+- **Found and fixed a third pre-existing, never-exercised bug** while wiring the factories:
+  `create_lord_effect`/`create_pump_spell_effect`'s `description=f"...{_kw.name}"` referenced `_kw`
+  (a closure-local parameter name of the nested `apply_keyword` function) from the OUTER scope
+  where only `kw` (the loop variable) is defined — a `NameError` waiting to fire the moment any
+  caller registered a keyword grant. Never caught because the module had zero callers until now.
+  Fixed to `kw.name`. Verified: temporarily reverted the clear-step fix and confirmed all 3 manager
+  tests go genuinely red (not just fail-to-import) before restoring it — real red→green, not just
+  green-by-construction.
+
+**Pilot activation — Scion of Draco** (chosen because it's a documented audit-census finding: the
+`creature.keywords.add(...)` no-op at `card_effects.py:2908-2912`). Investigating the REAL oracle
+text before fixing revealed the existing handler modeled the wrong mechanic entirely: "Each
+creature you control **has** vigilance if it's white, hexproof if it's blue, lifelink if it's
+black, first strike if it's red, and trample if it's green" is a continuous, per-creature-color
+static ability (present tense) — not a one-time ETB event gated on an unrelated Leyline-of-the-
+Guildpact flag that (even if the mutation had worked) would have granted all five keywords to
+every creature regardless of color. A `temp_keywords.add()` one-line fix would have been WRONG,
+not just incomplete.
+
+Also found: `CardTemplate` only had `color_identity` (MTGJSON `colorIdentity` — format-legality
+scope, can differ from a card's own printed color), no field for a permanent's actual color at
+all. Added `CardTemplate.colors` (MTGJSON `colors`), populated at DB load mirroring the existing
+`color_identity` pattern — a small, generically-useful primitive (any future "if it's [color]"
+card needs this, not just Scion).
+
+Implementation: `scion_of_draco_etb` now registers 5 `create_lord_effect`-shaped continuous
+effects (one per color→keyword mapping), each `affected_fn` checking the specific creature's own
+`template.colors` and `controller`. Retraction is automatic via the manager's existing stale-
+source cleanup — no separate unregister call needed. `game.continuous_effects.recalculate(game)`
+called once inline in the handler (proves the wiring end-to-end for this card; broader "call
+recalculate() at every game-loop checkpoint" wiring is Phase 3 scope, not needed for existing
+registered effects to work correctly when re-registered on each relevant ETB).
+
+Tests: `tests/test_continuous_effects_manager_recalculate.py` (3 — manager correctness, generic
+fixtures), `tests/test_scion_of_draco_color_conditional_keywords.py` (2 — color-specific grant,
+not-all-five; retraction on leaving battlefield).
+
+**Verified live**: `python run_meta.py --bo3 "Domain Zoo" "4c Omnath" -s 60001` — confirms the
+correct log message fires on cast, and that removal (Leyline Binding, Solitude exiling Scion)
+interacts cleanly with the registered effects with no crash and correct retraction.
+
+Deferred to Phase 3 (explicitly out of scope for this pilot): migrating the OTHER lord/pump/
+equipment mutations in `card_effects.py` to this system (the plan's original broader scope) — the
+manager is now proven correct and has one real registration; converting the remaining dozens of
+`temp_power_mod +=`-style call sites is real, separate migration work per card/mechanic, tracked
+here rather than rushed.
 
 ### 0c. Effective-characteristics accessor + DFC back-face capture — DONE (fixes audited bug #3, both halves)
 
