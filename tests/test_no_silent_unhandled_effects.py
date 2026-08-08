@@ -39,6 +39,12 @@ ALLOWED_UNHANDLED: set[tuple[str, str]] = {
     # "Exile the top two cards; you may play them" — impulse draw not modeled
     # for this specific card by any handler/oracle branch.
     ("Wrenn's Resolve", "spell"),
+    # "Reveal top 4, may take a permanent to hand, mill the rest, make a
+    # mana token" — same impulse/library-dig class as the two entries
+    # above, not modeled by any handler/oracle branch. Newly registered
+    # in Amulet Titan's Aug 2026 decklist refresh (PR #486); tracked here
+    # rather than rushing a fresh engine mechanic into a data-only PR.
+    ("Malevolent Rumble", "spell"),
 }
 
 
