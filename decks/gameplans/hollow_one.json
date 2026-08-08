@@ -1,0 +1,51 @@
+{
+  "deck_name": "Hollow One",
+  "archetype": "combo",
+  "goals": [
+    {
+      "goal_type": "DEPLOY_ENGINE",
+      "description": "Deploy enablers and engines",
+      "card_roles": {
+        "engines": [
+          "Hollow One"
+        ],
+        "enablers": [
+          "Faithless Looting"
+        ]
+      }
+    },
+    {
+      "goal_type": "EXECUTE_PAYOFF",
+      "description": "Execute the combo",
+      "card_roles": {
+        "payoffs": [
+          "Hollow One",
+          "Ox of Agonas",
+          "Street Wraith"
+        ],
+        "enablers": [
+          "Faithless Looting"
+        ]
+      }
+    },
+    {
+      "goal_type": "PUSH_DAMAGE",
+      "description": "Close the game"
+    }
+  ],
+  "mulligan_keys": [
+    "Blazing Rootwalla",
+    "Hardened Academic",
+    "Hollow One",
+    "Lightning Bolt",
+    "Marauding Mako"
+  ],
+  "mulligan_min_lands": 1,
+  "mulligan_max_lands": 3,
+  "reactive_only": [],
+  "always_early": [
+    "Blazing Rootwalla",
+    "Hollow One",
+    "Marauding Mako"
+  ]
+}

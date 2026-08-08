@@ -48,6 +48,7 @@ DECK_ARCHETYPES = {
     "Creatures Toolbox":  ArchetypeStrategy.COMBO,
     "Grixis Reanimator":  ArchetypeStrategy.COMBO,
     "Azorius Blink":      ArchetypeStrategy.AGGRO,
+    "Hollow One":         ArchetypeStrategy.COMBO,
 }
 
 

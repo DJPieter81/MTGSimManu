@@ -39,11 +39,12 @@ from typing import Dict, List, Tuple
 # sourced cohort layered onto the July mtgdecks.net-based numbers above.
 # Five archetypes with real meta share had no registered deck at all;
 # import_deck.py auto-generated their gameplans. A sixth (Hollow One,
-# ~3%) is NOT registered: both fetched Aug 2026 lists run Hardened
-# Academic (4x) and Practiced Offense (2x) as core pieces, and neither
-# card is in ModernAtomic yet — needs update_modern_atomic.py from an
-# environment that can reach mtgjson.com (same block as the Marvel
-# Super Heroes gap) before Hollow One can be simulated accurately.
+# ~3%) was blocked at the time: both fetched Aug 2026 lists run
+# Hardened Academic (4x) and Practiced Offense (2x) as core pieces,
+# neither of which was in ModernAtomic. Unblocked 2026-08-08 via the
+# new .github/workflows/refresh_card_db.yml (GitHub Actions infra, not
+# subject to this session's mtgjson.com egress block) and registered
+# below.
 METAGAME_SHARES = {
     "Boros Energy": 15.93,
     "Affinity": 10.16,
@@ -69,6 +70,7 @@ METAGAME_SHARES = {
     "Azorius Blink": 5.0,
     "Creatures Toolbox": 5.0,
     "Grixis Reanimator": 4.0,
+    "Hollow One": 3.0,
 }
 
 # Full decklists: mainboard + sideboard
@@ -1180,6 +1182,49 @@ MODERN_DECKS: Dict[str, Dict[str, Dict[str, int]]] = {
             "Sanctifier en-Vec": 3,
             "Spell Pierce": 2,
             "White Orchid Phantom": 4,
+        },
+    },
+    "Hollow One": {
+        # Aug 2026 addition (base: mtgtop8.com Modern event=89330
+        # deck=877940, retrieved 2026-08-08 via
+        # tools/fetch_tier1_decklists.py / .github/workflows/weekly.yml).
+        # 3% meta share; blocked at initial registration (PR #486) on
+        # two missing cards (Hardened Academic, Practiced Offense),
+        # unblocked by .github/workflows/refresh_card_db.yml pulling a
+        # fresh ModernAtomic from mtgjson.com. Classic graveyard-fuel
+        # aggro: discard the hand with Burning Inquiry/Faithless
+        # Looting to power out Hollow One + Vengevine for free.
+        # Gameplan auto-generated via import_deck.py.
+        "mainboard": {
+            "Arena of Glory": 1,
+            "Arid Mesa": 1,
+            "Blazing Rootwalla": 4,
+            "Bloodstained Mire": 3,
+            "Burning Inquiry": 4,
+            "Detective's Phoenix": 4,
+            "Faithless Looting": 4,
+            "Hardened Academic": 4,
+            "Hollow One": 4,
+            "Lightning Bolt": 4,
+            "Marauding Mako": 4,
+            "Mountain": 4,
+            "Ox of Agonas": 1,
+            "Practiced Offense": 2,
+            "Sacred Foundry": 4,
+            "Street Wraith": 4,
+            "Vengevine": 4,
+            "Wooded Foothills": 4,
+        },
+        "sideboard": {
+            "Blood Moon": 2,
+            "Brotherhood's End": 1,
+            "Damping Sphere": 2,
+            "Meltdown": 2,
+            "Obsidian Charmaw": 2,
+            "Pithing Needle": 1,
+            "Pyroclasm": 2,
+            "Surgical Extraction": 2,
+            "Wrath of the Skies": 1,
         },
     },
 }
