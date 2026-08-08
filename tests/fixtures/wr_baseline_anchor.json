@@ -89,8 +89,8 @@
       "deck1": "Living End",
       "deck2": "Jeskai Blink",
       "seed": 50500,
-      "winner": "Living End",
-      "turns": 9
+      "winner": "Jeskai Blink",
+      "turns": 8
     },
     {
       "deck1": "4c Omnath",
@@ -117,15 +117,15 @@
       "deck1": "Azorius Control (WST)",
       "deck2": "Azorius Control (WST v2)",
       "seed": 50500,
-      "winner": "Azorius Control (WST v2)",
+      "winner": "Azorius Control (WST)",
       "turns": 13
     },
     {
       "deck1": "Instant Reanimator",
       "deck2": "Dimir Midrange",
       "seed": 51000,
-      "winner": "Instant Reanimator",
-      "turns": 11
+      "winner": "Dimir Midrange",
+      "turns": 10
     },
     {
       "deck1": "Boros Ponza",
@@ -139,7 +139,7 @@
       "deck2": "Boros Ponza",
       "seed": 51500,
       "winner": "Instant Reanimator",
-      "turns": 10
+      "turns": 11
     },
     {
       "deck1": "Eldrazi Ramp",

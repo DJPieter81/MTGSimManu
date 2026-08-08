@@ -1416,6 +1416,7 @@ class EVPlayer:
                         turns=2,
                         opp_library=opp.library,
                         opp_hand_size=len(opp.hand),
+                        snap=snap,
                     )
                     # REMOVAL_DEFERRAL_TARGET_GAP encodes the typical
                     # ``creature_threat_value`` gap between a 1-power
@@ -2423,30 +2424,6 @@ class EVPlayer:
 
         return payoff_ev - waste
 
-    def _best_removal_target_value(self, removal, game, opp) -> float:
-        """Find the most valuable creature this removal can kill.
-
-        Accounts for mana efficiency: cheap removal on cheap threats
-        is better than expensive removal on cheap threats.
-
-        Uses creature_threat_value (oracle-driven, accounts for scaling/attack triggers)
-        instead of creature_value (raw clock impact). This ensures Affinity Constructs
-        with artifact affinity and other threat amplifiers are correctly prioritized.
-        """
-        if not opp.creatures:
-            return 0.0
-        removal_cmc = removal.template.cmc or 0
-        best = 0.0
-        for c in opp.creatures:
-            val = creature_threat_value(c)
-            # Penalize overkill: using 5-mana removal on a 1/1 is wasteful
-            target_cmc = c.template.cmc or 0
-            if removal_cmc > target_cmc + self.profile.removal_overkill_cmc_diff:
-                val *= self.profile.removal_overkill_mult  # overkill penalty for inefficient removal
-            if val > best:
-                best = val
-        return best
-
     # ═══════════════════════════════════════════════════════════
     # COMBAT — reuse existing CombatPlanner
     # ═══════════════════════════════════════════════════════════
@@ -2983,6 +2960,14 @@ class EVPlayer:
         # quote the lifespan-delta score).
         my_power_total = sum((c.power or 0) for c in me.creatures)
         opp_power_total = sum((c.power or 0) for c in opp.creatures)
+        # Live board snapshot for creature_value/creature_threat_value
+        # calls below (e.g. the emergency-block portfolio cap) — those
+        # functions require an explicit snapshot; using the real board
+        # state here instead of a fictional default matters most
+        # exactly when it's called: mid-emergency, with real life
+        # totals far from a "comfortable" baseline.
+        from ai.ev_evaluator import snapshot_from_game
+        block_snap = snapshot_from_game(game, self.player_idx)
 
         # EMERGENCY: block when incoming damage is dangerous
         # Triggers: lethal this turn, drop-below-5, or projected lethal across 2 turns
@@ -3107,7 +3092,7 @@ class EVPlayer:
                 if best_chump:
                     emergency_blocks[attacker.instance_id] = [best_chump.instance_id]
                     e_used.add(best_chump.instance_id)
-                    sacrificed_value += creature_value(best_chump)
+                    sacrificed_value += creature_value(best_chump, block_snap)
                     # Check if we've blocked enough to survive/stabilize
                     blocked_damage = sum(
                         a.power or 0 for a in attackers if a.instance_id in emergency_blocks

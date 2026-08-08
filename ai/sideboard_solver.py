@@ -53,10 +53,10 @@ def _density(pred: Callable, templates: List["CardTemplate"]) -> float:
 def _avg_creature_threat(opp_templates: List["CardTemplate"]) -> float:
     """Mean `creature_threat_value` over opp's creature templates.
 
-    Uses the shared `_DEFAULT_SNAP` — same snapshot scale the rest of
+    Uses the shared `BASELINE_SNAPSHOT` — same snapshot scale the rest of
     the threat-scoring pipeline uses.
     """
-    from ai.ev_evaluator import creature_threat_value, _DEFAULT_SNAP
+    from ai.ev_evaluator import creature_threat_value, BASELINE_SNAPSHOT
     from engine.cards import CardInstance
     creatures = [t for t in opp_templates if t.is_creature]
     if not creatures:
@@ -67,7 +67,7 @@ def _avg_creature_threat(opp_templates: List["CardTemplate"]) -> float:
         # owner are irrelevant; creature_threat_value reads template + power.
         inst = CardInstance(template=t, owner=0, controller=0,
                              instance_id=-1, zone="library")
-        total += creature_threat_value(inst, _DEFAULT_SNAP)
+        total += creature_threat_value(inst, BASELINE_SNAPSHOT)
     return total / len(creatures)
 
 
@@ -305,11 +305,11 @@ def _clause_body_value(template: "CardTemplate") -> float:
     swapped out wholesale.
     """
     if template.is_creature:
-        from ai.ev_evaluator import creature_threat_value, _DEFAULT_SNAP
+        from ai.ev_evaluator import creature_threat_value, BASELINE_SNAPSHOT
         from engine.cards import CardInstance
         inst = CardInstance(template=template, owner=0, controller=0,
                              instance_id=-1, zone="library")
-        return creature_threat_value(inst, _DEFAULT_SNAP)
+        return creature_threat_value(inst, BASELINE_SNAPSHOT)
 
     # Cascade spells cast a free spell on resolution. Their body value
     # equals roughly one cast's EV. Approximate via creature_threat_value
@@ -318,13 +318,13 @@ def _clause_body_value(template: "CardTemplate") -> float:
     tags = template.tags or set()
     if 'cascade' in oracle or 'cascade' in tags:
         from ai.clock import mana_clock_impact
-        from ai.ev_evaluator import _DEFAULT_SNAP
+        from ai.ev_evaluator import BASELINE_SNAPSHOT
         # One free cast ≈ cmc-limit worth of mana advantage.
         # mana_clock_impact × CLOCK_IMPACT_LIFE_SCALING converts the
         # opp_life-normalised clock-units back into life-points / turn,
         # then × cmc gives the cascade's free-cast life-equivalent.
         return ((template.cmc or 0)
-                * mana_clock_impact(_DEFAULT_SNAP)
+                * mana_clock_impact(BASELINE_SNAPSHOT)
                 * CLOCK_IMPACT_LIFE_SCALING)
 
     return 0.0
@@ -556,10 +556,10 @@ def plan_sideboard(
         # Replaces Phase 2.5's uniform (sb_cmc − main_cmc), which
         # over-penalized control-deck curve-upgrades (Sheoldred, finishers).
         from ai.clock import mana_clock_impact
-        from ai.ev_evaluator import _DEFAULT_SNAP
+        from ai.ev_evaluator import BASELINE_SNAPSHOT
         # mana_unit ≈ 1.0 — clock-impact × CLOCK_IMPACT_LIFE_SCALING
         # reverses the opp_life normalisation in mana_clock_impact.
-        mana_unit = mana_clock_impact(_DEFAULT_SNAP) * CLOCK_IMPACT_LIFE_SCALING
+        mana_unit = mana_clock_impact(BASELINE_SNAPSHOT) * CLOCK_IMPACT_LIFE_SCALING
         sb_cmc = sb_tmpl.cmc or 0
         main_cmc = main_tmpl.cmc or 0
         cmc_floor = max(main_cmc, my_avg_cmc)

@@ -223,20 +223,53 @@ def test_plating_cannot_be_paid_from_one_waste(card_db):
 
 
 def test_phlage_does_not_reduce_other_spells(card_db):
-    """Phlage's oracle text contains 'cost' (escape cost reference)
-    and 'less' (in 'less than' or 'colorless'). Pre-fix it falsely
-    fired as a generic cost-reducer for spells cast by Boros Energy.
-    Post-fix: count_cost_reducers returns 0 with Phlage on board."""
+    """Reproduces the exact substring trap Phlage's real oracle text
+    exhibited before it was banned (2026-05-19) and removed from the
+    card database: 'sacrifice it unless it escaped' contains 'less'
+    (from 'unLESS', not 'colorless' — a distinct substring origin from
+    the adjacent Pinnacle Emissary test below), and 'for its escape
+    cost' contains 'cost'. Pre-fix this combination falsely fired as a
+    generic cost-reducer for spells cast by Boros Energy. Post-fix:
+    count_cost_reducers returns 0 with this fixture on board.
+
+    Synthetic fixture (not a card_db lookup) so this regression test
+    survives independent of any one real card's continued DB
+    presence — Phlage's own case is exactly why that matters."""
+    from engine.cards import CardTemplate
+
     game = GameState(rng=random.Random(0))
-    phlage = _put_in_play(game, card_db, "Phlage, Titan of Fire's Fury", 0)
+    phlage_tmpl = CardTemplate(
+        name="Test Fixture: Escape Creature (Phlage-shape oracle text)",
+        card_types=[CardType.CREATURE], mana_cost=ManaCost(generic=2, red=1, white=1),
+        supertypes=[], subtypes=[], power=3, toughness=3, loyalty=None,
+        keywords=set(), abilities=[], color_identity=set(), produces_mana=[],
+        enters_tapped=False,
+        oracle_text=(
+            "When this creature enters, sacrifice it unless it escaped.\n"
+            "Escape—{R}{R}{W}{W}, Exile five other cards from your "
+            "graveyard. (You may cast this card from your graveyard for "
+            "its escape cost.)"
+        ),
+        tags=set(),
+    )
+    phlage = CardInstance(
+        template=phlage_tmpl, owner=0, controller=0,
+        instance_id=game.next_instance_id(), zone="battlefield",
+    )
+    phlage._game_state = game
+    phlage.enter_battlefield()
+    phlage.summoning_sick = False
+    game.players[0].battlefield.append(phlage)
+
     bolt_t = card_db.get_card("Lightning Bolt")
     if bolt_t is None:
         pytest.skip("Lightning Bolt missing from DB")
 
     n = count_cost_reducers(game, 0, bolt_t)
     assert n == 0, (
-        f"Phlage's 'cost' + 'less' substring presence must not make "
-        f"it a generic cost reducer. count_cost_reducers={n}."
+        f"'cost' + 'less' substring presence (from an escape clause, "
+        f"not a real cost-reduction ability) must not make this a "
+        f"generic cost reducer. count_cost_reducers={n}."
     )
 
 

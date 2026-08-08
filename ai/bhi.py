@@ -20,6 +20,9 @@ import math
 from dataclasses import dataclass, field
 from typing import Dict, Optional, TYPE_CHECKING
 
+if TYPE_CHECKING:
+    from ai.ev_evaluator import EVSnapshot
+
 from ai.scoring_constants import (
     BHI_DISCARD_FLAT_PRIOR,
     COUNTER_HOLD_RATE_DEFAULT,
@@ -88,7 +91,8 @@ class HandBeliefs:
                                     current_target_value: float,
                                     turns: int = 2,
                                     opp_library=None,
-                                    opp_hand_size: int = 0) -> float:
+                                    opp_hand_size: int = 0,
+                                    snap: "Optional[EVSnapshot]" = None) -> float:
         """P(opponent draws/produces a creature with threat value >
         ``current_target_value`` within the next ``turns`` turns).
 
@@ -126,7 +130,16 @@ class HandBeliefs:
         """
         # Local import to avoid an import cycle at module load
         # (ai.ev_evaluator imports from ai.bhi via TYPE_CHECKING).
-        from ai.ev_evaluator import creature_threat_value
+        from ai.ev_evaluator import creature_threat_value, BASELINE_SNAPSHOT
+
+        # ``snap`` is optional here (unlike the strict ai/ev_player.py
+        # call sites) because this primitive is also exercised directly
+        # from unit tests that build deterministic opp_library/hand_size
+        # fixtures without a live game snapshot. The live decision path
+        # (ai/ev_player.py) always has a real snapshot in scope and
+        # passes it explicitly.
+        if snap is None:
+            snap = BASELINE_SNAPSHOT
 
         if opp_library is None:
             opp_library = []
@@ -151,7 +164,7 @@ class HandBeliefs:
             # for creatures; "equip" / "equipped creature gets" oracle
             # for equipment-class artifacts).
             if getattr(t, 'is_creature', False):
-                if creature_threat_value(c) > current_target_value:
+                if creature_threat_value(c, snap) > current_target_value:
                     higher += 1
             else:
                 oracle = (getattr(t, 'oracle_text', '') or '').lower()

@@ -75,7 +75,7 @@ AFFINITY_LIB = [
 BOROS_LIB = [
     "Guide of Souls",
     "Ajani, Nacatl Pariah",
-    "Phlage, Titan of Fire's Fury",
+    "Lightning Helix",
     "Lightning Bolt",
     "Galvanic Discharge",
     "Static Prison",

@@ -2,7 +2,7 @@
 
 Emergency-path selection picks the smallest-creature_value chump, but
 creature_value alone is not enough to protect structurally-valuable
-pieces: Phlage (escape), Ajani-like planeswalkers, and battle-cry /
+pieces: Kroxa (escape), Ajani-like planeswalkers, and battle-cry /
 attack-trigger sources all show up as chump candidates. _is_protected_piece
 wraps these in an oracle/tag-driven filter that applies to both the
 emergency and non-emergency paths.
@@ -51,13 +51,13 @@ class TestProtectedPieceHelper:
         assert _mk_player()._is_protected_piece(card) is True
 
     def test_escape_creature_is_protected(self, card_db):
-        """Phlage has 'Escape—' in oracle (em-dash). Must be protected."""
-        tmpl = card_db.get_card("Phlage, Titan of Fire's Fury")
+        """Kroxa has 'Escape—' in oracle (em-dash). Must be protected."""
+        tmpl = card_db.get_card("Kroxa, Titan of Death's Hunger")
         assert tmpl is not None
         card = CardInstance(template=tmpl, owner=0, controller=0,
                              instance_id=0, zone="battlefield")
         assert _mk_player()._is_protected_piece(card) is True, (
-            "Phlage has 'Escape—' in oracle; must be protected."
+            "Kroxa has 'Escape—' in oracle; must be protected."
         )
 
     def test_attack_trigger_source_is_protected(self, card_db):
@@ -78,20 +78,20 @@ class TestProtectedPieceHelper:
         assert _mk_player()._is_protected_piece(card) is False
 
 
-class TestPhlageNotChumpedWhenTokenAvailable:
-    def test_memnite_blocks_instead_of_phlage_at_healthy_life(self, card_db):
-        """Me: Phlage (6/6) + Memnite (1/1) chump fodder. Opp: Sojourner's
+class TestKroxaNotChumpedWhenTokenAvailable:
+    def test_memnite_blocks_instead_of_kroxa_at_healthy_life(self, card_db):
+        """Me: Kroxa (6/6) + Memnite (1/1) chump fodder. Opp: Sojourner's
         Companion temp-boosted to 10/10. Life=17. Non-emergency path.
 
         Neither blocker can kill the 10/10. Memnite should be the chosen
-        blocker (or no block); Phlage is protected (escape) and must
+        blocker (or no block); Kroxa is protected (escape) and must
         not be selected."""
         game = GameState(rng=random.Random(0))
         game.players[0].life = 17
         game.players[1].life = 20
 
-        phlage = _add_to_battlefield(game, card_db,
-                                      "Phlage, Titan of Fire's Fury",
+        kroxa = _add_to_battlefield(game, card_db,
+                                      "Kroxa, Titan of Death's Hunger",
                                       controller=0)
         memnite = _add_to_battlefield(game, card_db, "Memnite", controller=0)
         attacker = _add_to_battlefield(game, card_db,
@@ -104,26 +104,26 @@ class TestPhlageNotChumpedWhenTokenAvailable:
         player = _mk_player()
         blocks = player.decide_blockers(game, [attacker])
 
-        # Phlage must not be used as a chump.
+        # Kroxa must not be used as a chump.
         all_blocker_ids = [b for ids in blocks.values() for b in ids]
-        assert phlage.instance_id not in all_blocker_ids, (
-            f"Phlage (escape creature) must not chump. Got {blocks}."
+        assert kroxa.instance_id not in all_blocker_ids, (
+            f"Kroxa (escape creature) must not chump. Got {blocks}."
         )
 
 
-class TestPhlageMayChumpIfOnlyOptionAndLethal:
-    def test_phlage_chumps_when_lethal_and_only_blocker(self, card_db):
-        """Me: Phlage only on board. Opp: Sojourner's Companion (4/4).
+class TestKroxaMayChumpIfOnlyOptionAndLethal:
+    def test_kroxa_chumps_when_lethal_and_only_blocker(self, card_db):
+        """Me: Kroxa only on board. Opp: Sojourner's Companion (4/4).
         Life=4 — incoming lethal. Emergency path.
 
-        Phlage is protected, but the fallback in _blocker_candidates
-        must still return Phlage when no alternative exists."""
+        Kroxa is protected, but the fallback in _blocker_candidates
+        must still return Kroxa when no alternative exists."""
         game = GameState(rng=random.Random(0))
         game.players[0].life = 4
         game.players[1].life = 20
 
-        phlage = _add_to_battlefield(game, card_db,
-                                      "Phlage, Titan of Fire's Fury",
+        kroxa = _add_to_battlefield(game, card_db,
+                                      "Kroxa, Titan of Death's Hunger",
                                       controller=0)
         attacker = _add_to_battlefield(game, card_db,
                                         "Sojourner's Companion",
@@ -132,11 +132,11 @@ class TestPhlageMayChumpIfOnlyOptionAndLethal:
         player = _mk_player()
         blocks = player.decide_blockers(game, [attacker])
         assert attacker.instance_id in blocks, (
-            f"at life=4 vs lethal incoming and Phlage is the only blocker, "
-            f"Phlage must block (survival beats protection). Got {blocks}."
+            f"at life=4 vs lethal incoming and Kroxa is the only blocker, "
+            f"Kroxa must block (survival beats protection). Got {blocks}."
         )
-        assert phlage.instance_id in blocks[attacker.instance_id], (
-            f"Phlage must be assigned when it's the only blocker. Got "
+        assert kroxa.instance_id in blocks[attacker.instance_id], (
+            f"Kroxa must be assigned when it's the only blocker. Got "
             f"{blocks}."
         )
 

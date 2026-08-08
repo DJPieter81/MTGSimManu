@@ -176,23 +176,24 @@ def _threat_score(card, game=None, owner=None) -> float:
         if t.is_creature and 'ward' in oracle:
             import re as _re
             from ai.clock import mana_clock_impact
-            from ai.ev_evaluator import _DEFAULT_SNAP
+            from ai.ev_evaluator import BASELINE_SNAPSHOT
             m = _re.search(r'ward\s*\{?(\d+)\}?', oracle)
             ward_cost = int(m.group(1)) if m else 3
-            base -= ward_cost * mana_clock_impact(_DEFAULT_SNAP) * 20.0
+            base -= ward_cost * mana_clock_impact(BASELINE_SNAPSHOT) * 20.0
         return base
 
-    # Context-free fallback path.
+    # Context-free fallback path (legacy callsites with no game in
+    # scope): BASELINE_SNAPSHOT is the correct, explicit choice here —
+    # there is no live board to build a real snapshot from.
     if t.is_creature:
-        from ai.ev_evaluator import creature_threat_value
-        base = creature_threat_value(card)
+        from ai.ev_evaluator import creature_threat_value, BASELINE_SNAPSHOT
+        base = creature_threat_value(card, BASELINE_SNAPSHOT)
         if 'ward' in oracle:
             import re as _re
             from ai.clock import mana_clock_impact
-            from ai.ev_evaluator import _DEFAULT_SNAP
             m = _re.search(r'ward\s*\{?(\d+)\}?', oracle)
             ward_cost = int(m.group(1)) if m else 3
-            base -= ward_cost * mana_clock_impact(_DEFAULT_SNAP) * 20.0
+            base -= ward_cost * mana_clock_impact(BASELINE_SNAPSHOT) * 20.0
         return base
     return float(t.cmc or 0)
 
@@ -712,10 +713,13 @@ def ephemerate_resolve(game, card, controller, targets=None, item=None):
     # score of re-triggering the creature's ETB — delegate to the AI
     # layer's creature_threat_value (same math-derived formula used for
     # removal targeting), discounted by P(ETB finds a useful target).
+    from ai.ev_evaluator import snapshot_from_game
+    _blink_snap = snapshot_from_game(game, controller)
+
     def _blink_value(c):
         from ai.ev_evaluator import creature_threat_value
         tags = getattr(c.template, 'tags', set())
-        base = creature_threat_value(c)
+        base = creature_threat_value(c, _blink_snap)
         # Removal ETB requires an opposing creature. Without a target, a
         # re-trigger is wasted — scale base by a "usefulness factor".
         if 'removal' in tags:
@@ -2555,15 +2559,16 @@ def thraben_charm_resolve(game, card, controller, targets=None, item=None):
     # highest. Damage mode value uses creature_threat_value (the same
     # primitive the AI scoring layer uses) so a Plating-equipped 9/1
     # outranks an unequipped 0/2.
-    from ai.ev_evaluator import creature_threat_value
+    from ai.ev_evaluator import creature_threat_value, snapshot_from_game
 
     best_creature = None
     best_creature_value = 0.0
     if damage > 0:
+        _tc_snap = snapshot_from_game(game, controller)
         for c in opp.creatures:
             tough = c.toughness if c.toughness is not None else (c.template.toughness or 0)
             if damage >= tough > 0:  # 2N kills it
-                v = creature_threat_value(c)
+                v = creature_threat_value(c, _tc_snap)
                 if v > best_creature_value:
                     best_creature_value = v
                     best_creature = c

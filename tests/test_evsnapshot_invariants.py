@@ -35,7 +35,7 @@ from ai.ev_evaluator import EVSnapshot, snapshot_from_game
 def test_construction_with_valid_state_succeeds():
     """The default constructor with no overrides is the simplest valid
     state — no field violates its invariant.  Used everywhere as a
-    baseline (``_DEFAULT_SNAP``, fixture defaults)."""
+    baseline (``BASELINE_SNAPSHOT``, fixture defaults)."""
     snap = EVSnapshot()
     assert snap.my_life > 0
     assert snap.opp_life > 0
