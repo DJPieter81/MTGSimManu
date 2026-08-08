@@ -202,6 +202,7 @@ let gamesPerPair = 50, deck1 = '', deck2 = '', seed = 55555, guideDeck = '', bo3
 let outputs = { dashboard: true, replays: false, audit: false, deckGuide: false, bo3Replay: true, gitPush: false };
 let runMode = 'cowork', execStatus = 'idle', execLog = '';
 let ghToken = ''; try { ghToken = sessionStorage.getItem('gh_pat') || ''; } catch(e) {}
+let weeklyStatus = 'idle', weeklyLog = '';
 
 function getDecks() { return format === 'legacy' ? LEGACY_DECKS : MODERN_DECKS; }
 function getHistory() { return format === 'legacy' ? LEGACY_HISTORY : MODERN_HISTORY; }
@@ -408,6 +409,23 @@ function render() {
       <div class="check-desc">Stage results, commit with summary, push to origin main</div></div></div></div>`;
   document.getElementById('output-checks').innerHTML = chk;
 
+  // Weekly Automation card (Modern only)
+  if (format === 'modern') {
+    let weekly = '<span class="label">Weekly Automation</span><div style="font-size:11px;color:var(--muted);margin-bottom:10px">Runs on GitHub servers on a Monday-morning schedule automatically — no need to open this panel. These buttons trigger the same pipeline on demand.</div><div style="display:flex;gap:8px;margin-bottom:8px">';
+    weekly += `<button class="btn btn-green ${weeklyStatus==='running'?'btn-disabled':''}" onclick="triggerWeekly('decklists_only')" ${weeklyStatus==='running'?'disabled':''}>` + (weeklyStatus==='running'?'Running...':'📄 Fetch Tier-1 Decklists') + '</button>';
+    weekly += `<button class="btn btn-github ${weeklyStatus==='running'?'btn-disabled':''}" onclick="triggerWeekly('full')" ${weeklyStatus==='running'?'disabled':''}>` + (weeklyStatus==='running'?'Running...':'🔁 Run Weekly Refresh Now') + '</button>';
+    weekly += '</div>';
+    if (weeklyLog) weekly += '<pre id="weekly-output" style="font-family:\'JetBrains Mono\',monospace;font-size:11px;background:#0d1117;color:#c9d1d9;padding:10px;border-radius:6px;max-height:120px;overflow:auto;margin:0">' + weeklyLog.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</pre>';
+    else weekly += '<pre id="weekly-output" style="font-family:\'JetBrains Mono\',monospace;font-size:11px;background:#0d1117;color:#c9d1d9;padding:10px;border-radius:6px;max-height:120px;overflow:auto;margin:0;display:none"></pre>';
+    if (!ghToken) weekly += '<div style="font-size:10px;color:var(--muted);margin-top:6px">Needs a GitHub PAT — set it in Run Method → GitHub Actions below.</div>';
+    const weeklyCardEl = document.createElement('div');
+    weeklyCardEl.className = 'card';
+    weeklyCardEl.id = 'weekly-mode-card';
+    weeklyCardEl.innerHTML = weekly;
+    const execModeCardEl = document.getElementById('exec-mode-card');
+    execModeCardEl.parentNode.insertBefore(weeklyCardEl, execModeCardEl);
+  }
+
   // Execution mode card
   let exec = '<span class="label">Run Method</span><div style="display:flex;gap:8px;margin-bottom:12px">';
   [{k:'github',l:'\u2601\uFE0F GitHub Actions',d:'Runs on GitHub\'s servers'},
@@ -533,6 +551,30 @@ async function triggerGitHub() {
     else { const t = await res.text(); execLog += '\u274c HTTP ' + res.status + ': ' + t + '\n'; execStatus = 'error'; }
   } catch(e) { execLog += '\u274c Network error: ' + e.message + '\n'; execStatus = 'error'; }
   renderExec();
+}
+
+async function triggerWeekly(mode) {
+  if (format !== 'modern') return;
+  if (!ghToken) { weeklyLog = 'Error: No GitHub PAT set. Enter token in Run Method → GitHub Actions below.'; weeklyStatus = 'error'; renderWeekly(); return; }
+  try { sessionStorage.setItem('gh_pat', ghToken); } catch(e) {}
+  weeklyStatus = 'running'; weeklyLog = 'Triggering weekly.yml (mode=' + mode + ')...\\n'; renderWeekly();
+  const repo = 'DJPieter81/MTGSimManu';
+  try {
+    const res = await fetch(`https://api.github.com/repos/${repo}/actions/workflows/weekly.yml/dispatches`, {
+      method: 'POST', headers: { Authorization: `token ${ghToken}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ref: 'main', inputs: { mode: mode } }),
+    });
+    if (res.status === 204) { weeklyLog += '\\u2705 Dispatched on ' + repo + '.\\nCheck: https://github.com/' + repo + '/actions\\n'; weeklyStatus = 'done'; }
+    else { const t = await res.text(); weeklyLog += '\\u274c HTTP ' + res.status + ': ' + t + '\\n'; weeklyStatus = 'error'; }
+  } catch(e) { weeklyLog += '\\u274c Network error: ' + e.message + '\\n'; weeklyStatus = 'error'; }
+  renderWeekly();
+}
+
+function renderWeekly() {
+  const el = document.getElementById('weekly-output');
+  if (!el) return;
+  if (weeklyLog) { el.style.display = 'block'; el.textContent = weeklyLog; }
+  else { el.style.display = 'none'; }
 }
 
 async function triggerLocal() {
