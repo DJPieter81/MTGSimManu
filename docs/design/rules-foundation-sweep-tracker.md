@@ -134,13 +134,54 @@ Remaining (tracked here, not yet started):
 
 ### 0b. Activate continuous_effects.py — NOT STARTED
 
-### 0c. Effective-characteristics accessor + DFC back-face capture — NOT STARTED
+### 0c. Effective-characteristics accessor + DFC back-face capture — DONE (fixes audited bug #3, both halves)
 
 Root cause confirmed via `docs/history/plans/TRANSFORM_FIX_PLAN.md`: `_transform_permanent` was
 built specifically (and only) for planeswalker-backed transforms (Ajani, Ral — that plan's
 original scope), archived as done, then reused for Fable/Kiki-Jiki (a creature-backed transform)
-without generalizing. Confirms the fix is adding the missing generalization, not re-deriving
+without generalizing. Confirmed the fix is adding the missing generalization, not re-deriving
 already-attempted work.
+
+Verified via real DB inspection (Fable of the Mirror-Breaker // Reflection of Kiki-Jiki) that
+`card_entries[1]` is genuinely the back FACE (not a printing variant) — MTGJSON's Atomic format
+uses `side: 'a'`/`'b'` per-face entries. Kiki-Jiki's back face: `types: ['Enchantment','Creature']`,
+subtypes `['Goblin','Shaman']`, P/T 2/2 — confirming it's an Enchantment Creature, not a bare
+Creature (relevant: it later legitimately dies to an artifact/enchantment-destruction removal
+spell in the replay below, which is correct now that its type is captured at all).
+
+Implementation:
+- `CardTemplate` gained `back_face_types`/`back_face_subtypes`/`back_face_power`/
+  `back_face_toughness`/`back_face_keywords`, populated at DB load for **every** multi-face card
+  (not just planeswalker-backed — `card_database.py`'s previous gate `if 'Planeswalker' in
+  card_entries[1].get('types', [])` removed).
+- `CardInstance` gained `effective_card_types`/`effective_subtypes`/`effective_is_creature`/
+  `effective_is_planeswalker` (front vs back face selected once, by `is_transformed`) and private
+  `_effective_printed_power`/`_effective_printed_toughness`/`_effective_oracle_text` consumed by
+  `_dynamic_base_power`/`_dynamic_base_toughness` (previously read `self.template.power`/
+  `oracle_text` unconditionally — the front face — even when transformed).
+- `is_transformed` promoted from an undeclared `setattr`-only attribute to a real dataclass field.
+- `PlayerState.creatures`/`.planeswalkers` now consult `effective_is_creature`/
+  `effective_is_planeswalker` instead of hardcoding "transformed ⇒ planeswalker".
+- **Second bug found and fixed in the same pass** (not in the original plan item, found via a live
+  test-failure trace): `ResolutionManager._handle_permanent_etb`'s `EFFECT_REGISTRY.execute(name,
+  ETB, ...)` and the oracle-fallback both key on the front face's literal name/oracle text, which
+  is identical for both DFC faces — so Fable's own Chapter I ETB handler ("create a Goblin token")
+  unconditionally re-fired every time Fable's Chapter III exile-and-return-transformed triggered,
+  since that return is a genuine re-entry per this engine's implementation. Fixed by skipping the
+  whole front-face-keyed ETB dispatch block when `card.is_transformed` — correct for the current
+  pool (no card has a back-face-specific ETB effect that would need to fire there); documented as
+  needing its own dispatch mechanism if that ever changes. Also fixed `is_creature`/`is_artifact`
+  (Torpor Orb / Doorkeeper Thrull suppression checks) in the same function to use
+  `effective_card_types` — same class, found by inspection while fixing the ETB-refire bug.
+
+Tests: `tests/test_transform_creature_back_face.py` (3 tests — creature-back-face classification,
+no-ETB-refire, planeswalker-back-face regression guard).
+
+**Replayed the exact audited seed**: `python run_meta.py --bo3 "Jeskai Blink" "Eldrazi Tron" -s
+55502`. Confirmed: T9 Fable transforms into Kiki-Jiki, no spurious Goblin token, no 704.5p
+zero-loyalty death. Kiki-Jiki survives on the battlefield as a creature until later legitimately
+destroyed by Eldrazi Tron's Kozilek's Command (a real artifact/enchantment-destruction mode X=3) —
+correct, since Kiki-Jiki really is an Enchantment Creature. Bug #3 confirmed fixed end-to-end.
 
 ### 0d. Finish SBA unification — NOT STARTED (but exact scope already authored)
 

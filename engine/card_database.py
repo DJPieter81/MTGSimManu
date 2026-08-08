@@ -1269,12 +1269,35 @@ class CardDatabase:
                 entry = card_entries[0] if isinstance(card_entries, list) else card_entries
                 template = self._build_template(card_name, entry)
                 if template:
-                    # Store back face data for double-faced cards (transform)
-                    if (isinstance(card_entries, list) and len(card_entries) >= 2
-                            and 'Planeswalker' in card_entries[1].get('types', [])):
+                    # Store back face data for ANY multi-face card (transform,
+                    # not just planeswalker-backed — MTGJSON provides full
+                    # face data for creature/land/enchantment/artifact back
+                    # faces too; only text+loyalty were captured before this
+                    # fix, so e.g. a transform-to-creature DFC (Reflection of
+                    # Kiki-Jiki) had no back-face type/P-T data at all and was
+                    # misclassified as still being its front face's type —
+                    # see CardInstance.effective_card_types /
+                    # _effective_printed_power in engine/cards.py.
+                    if isinstance(card_entries, list) and len(card_entries) >= 2:
                         back = card_entries[1]
                         template.back_face_oracle = back.get('text', '')
                         template.back_face_loyalty = int(back.get('loyalty', 0) or 0)
+                        template.back_face_types = [
+                            TYPE_MAP[t] for t in back.get('types', []) if t in TYPE_MAP
+                        ]
+                        template.back_face_subtypes = list(back.get('subtypes', []) or [])
+                        back_power = back.get('power')
+                        template.back_face_power = (
+                            int(back_power) if back_power not in (None, '', '*') else None
+                        )
+                        back_toughness = back.get('toughness')
+                        template.back_face_toughness = (
+                            int(back_toughness) if back_toughness not in (None, '', '*') else None
+                        )
+                        template.back_face_keywords = {
+                            KEYWORD_MAP[k] for k in back.get('keywords', []) or []
+                            if k in KEYWORD_MAP
+                        }
                     self.cards[card_name] = template
                     self._raw_data[card_name] = entry
                     count += 1

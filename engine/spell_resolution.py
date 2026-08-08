@@ -254,13 +254,17 @@ class ResolutionManager:
             "torpor_orb_active" in c.instance_tags
             for p in game.players for c in p.battlefield
         )
-        is_creature = CardType.CREATURE in template.card_types
+        # effective_card_types (not template.card_types) so a
+        # transformed creature-backed permanent is correctly seen as
+        # a creature for this suppression check, not its front face's
+        # type.
+        is_creature = CardType.CREATURE in card.effective_card_types
 
         # Doorkeeper Thrull static: "Artifacts and creatures entering the
         # battlefield don't cause abilities to trigger." Generic oracle
         # check (no card name) — triggers when any permanent on the board
         # has that static clause.
-        is_artifact = CardType.ARTIFACT in template.card_types
+        is_artifact = CardType.ARTIFACT in card.effective_card_types
         doorkeeper_active = False
         if is_creature or is_artifact:
             for p in game.players:
@@ -282,24 +286,45 @@ class ResolutionManager:
             game.log.append(f"T{game.display_turn}: {template.name} ETB suppressed by Doorkeeper Thrull")
         else:
             # Dispatch to card effect registry for card-specific ETB logic.
-            # Timing-scoped (not name-scoped): a card whose only
-            # registration is for an unrelated timing (SPELL_RESOLVE,
-            # ATTACK, DIES, END_STEP) must still reach the generic
-            # oracle-derived ETB resolver below. Mirrors the correct
-            # pattern already used in zone_transfer._fire_etb_triggers.
-            has_specific_handler = EFFECT_REGISTRY.has_handler(
-                template.name, EffectTiming.ETB)
-            EFFECT_REGISTRY.execute(
-                template.name, EffectTiming.ETB, game, card, controller,
-                targets=(item.targets if item else None),
-                item=item,
-            )
-
-            # Generic oracle-text-based ETB resolution for cards WITHOUT specific handlers
+            #
+            # Skipped entirely when `card.is_transformed`: EFFECT_REGISTRY
+            # keys handlers on the literal card name, which is identical
+            # for both faces of a DFC (e.g. "Fable of the Mirror-Breaker
+            # // Reflection of Kiki-Jiki") — there is no way to register
+            # a handler specific to one face. A transform-via-exile-
+            # return (Fable Ch.III) genuinely re-enters the battlefield,
+            # but what "enters" is the BACK face; firing the FRONT
+            # face's own registered ETB handler (Fable's "create a
+            # Goblin token") on that re-entry is a category error — the
+            # handler describes the front face's printed text, not
+            # what's now on the battlefield. Same reasoning for the
+            # generic oracle-derived fallback below, which reads
+            # `template.oracle_text` (also front-face). No card in the
+            # current pool has a back-face-specific ETB effect that
+            # would need to fire here; if one is added, it needs its
+            # own dispatch keyed on back-face identity, not this path.
+            #
+            # Timing-scoped (not name-scoped) when it DOES run: a card
+            # whose only registration is for an unrelated timing
+            # (SPELL_RESOLVE, ATTACK, DIES, END_STEP) must still reach
+            # the generic oracle-derived ETB resolver below. Mirrors
+            # the correct pattern already used in
+            # zone_transfer._fire_etb_triggers.
+            has_specific_handler = False
             oracle_resolver_fired = False
-            if not has_specific_handler:
-                from .oracle_resolver import resolve_etb_from_oracle
-                oracle_resolver_fired = resolve_etb_from_oracle(game, card, controller)
+            if not card.is_transformed:
+                has_specific_handler = EFFECT_REGISTRY.has_handler(
+                    template.name, EffectTiming.ETB)
+                EFFECT_REGISTRY.execute(
+                    template.name, EffectTiming.ETB, game, card, controller,
+                    targets=(item.targets if item else None),
+                    item=item,
+                )
+
+                # Generic oracle-text-based ETB resolution for cards WITHOUT specific handlers
+                if not has_specific_handler:
+                    from .oracle_resolver import resolve_etb_from_oracle
+                    oracle_resolver_fired = resolve_etb_from_oracle(game, card, controller)
 
             # Generic ETB triggers
             game.trigger_etb(card, controller)
