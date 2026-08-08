@@ -1,0 +1,80 @@
+name: Weekly Refresh
+
+# Runs entirely on GitHub-hosted infra — no local machine or login needed.
+# - schedule: full pipeline every Monday 06:00 UTC (decklists + matrix + dashboard)
+# - workflow_dispatch: manual trigger, used by the two control panel buttons
+#     mode=full             -> same as the schedule
+#     mode=decklists_only   -> tier-1 decklist fetch + diff report only (fast)
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'full (decklists + matrix + dashboard) or decklists_only'
+        required: true
+        default: 'full'
+        type: choice
+        options: [full, decklists_only]
+
+jobs:
+  weekly:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Reassemble ModernAtomic.json
+        run: |
+          python3 -c "
+          import json
+          merged = {}
+          for i in range(1, 9):
+              try:
+                  with open(f'ModernAtomic_part{i}.json') as f:
+                      merged.update(json.load(f)['data'])
+              except FileNotFoundError:
+                  break
+          with open('ModernAtomic.json', 'w') as f:
+              json.dump({'meta': {}, 'data': merged}, f)
+          print(f'Loaded {len(merged)} cards')
+          "
+
+      - name: Fetch tier-1 decklists + diff report
+        run: |
+          python3 tools/fetch_tier1_decklists.py --top 16 --events-per-archetype 2
+
+      - name: Full matrix refresh (16 decks, n=50)
+        if: github.event_name == 'schedule' || inputs.mode == 'full'
+        run: |
+          python3 run_meta.py --matrix --decks 16 -n 50 --save --workers 3
+          python3 merge_matrix_results.py
+          python3 build_dashboard.py metagame_data.jsx modern_meta_matrix_full.html
+          python3 build_guide.py --all guides/
+          python3 scan_results.py --js
+          python3 build_showcase.py mtgsimmanu_showcase.html
+
+      - name: Commit and push results
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "data: weekly refresh (${{ github.event_name == 'schedule' && 'scheduled' || inputs.mode }}) via GitHub Actions"
+          git push
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: weekly-refresh-results
+          path: |
+            data/tier1_decklists/**
+            metagame_results.json
+            modern_meta_matrix_full.html
+            run_history.json
+          retention-days: 30

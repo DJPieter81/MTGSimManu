@@ -256,6 +256,26 @@ export default function SimControlPanel() {
     } catch (e) { setExecLog(prev => prev + `\u274c Network error: ${e.message}\n`); setExecStatus("error"); }
   };
 
+  // ── Weekly automation trigger (dispatches .github/workflows/weekly.yml) ──
+  // Runs on GitHub's infra — no local server, no repeated login needed.
+  const [weeklyStatus, setWeeklyStatus] = useState("idle"); // "idle", "running", "done", "error"
+  const [weeklyLog, setWeeklyLog] = useState("");
+  const triggerWeekly = async (mode) => {
+    if (format !== "modern") return; // weekly.yml only exists in MTGSimManu
+    if (!ghToken) { setWeeklyLog("Error: No GitHub PAT set. Enter token in Run Method \u2192 GitHub Actions below."); setWeeklyStatus("error"); return; }
+    try { sessionStorage.setItem("gh_pat", ghToken); } catch {}
+    setWeeklyStatus("running"); setWeeklyLog(`Triggering weekly.yml (mode=${mode})...\n`);
+    const repo = "DJPieter81/MTGSimManu";
+    try {
+      const res = await fetch(`https://api.github.com/repos/${repo}/actions/workflows/weekly.yml/dispatches`, {
+        method: "POST", headers: { Authorization: `token ${ghToken}`, Accept: "application/vnd.github.v3+json", "Content-Type": "application/json" },
+        body: JSON.stringify({ ref: "main", inputs: { mode } }),
+      });
+      if (res.status === 204) { setWeeklyLog(prev => prev + `\u2705 Dispatched on ${repo}.\nCheck: https://github.com/${repo}/actions\n`); setWeeklyStatus("done"); }
+      else { const t = await res.text(); setWeeklyLog(prev => prev + `\u274c HTTP ${res.status}: ${t}\n`); setWeeklyStatus("error"); }
+    } catch (e) { setWeeklyLog(prev => prev + `\u274c Network error: ${e.message}\n`); setWeeklyStatus("error"); }
+  };
+
   // ── Local server trigger ──
   const triggerLocal = async () => {
     setExecStatus("running"); setExecLog("Sending to local server...\n");
@@ -626,6 +646,41 @@ export default function SimControlPanel() {
                 <Check checked={outputs.gitPush} onClick={() => toggleOut("gitPush")} label="Git commit & push" desc="Stage results, commit with summary, push to origin main" />
               </div>
             </div>
+
+            {/* ── Weekly Automation ── */}
+            {format === "modern" && (
+              <div style={S.card}>
+                <span style={S.label}>Weekly Automation</span>
+                <div style={{ fontSize: 11, color: muted, marginBottom: 10 }}>
+                  Runs on GitHub's servers on a Monday-morning schedule automatically \u2014 no need to open this panel.
+                  These buttons trigger the same pipeline on demand.
+                </div>
+                <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+                  <button
+                    style={{ ...S.btn, background: weeklyStatus === "running" ? muted : green }}
+                    disabled={weeklyStatus === "running"}
+                    onClick={() => triggerWeekly("decklists_only")}
+                  >
+                    {weeklyStatus === "running" ? "Running..." : "\uD83D\uDCC4 Fetch Tier-1 Decklists"}
+                  </button>
+                  <button
+                    style={{ ...S.btn, background: weeklyStatus === "running" ? muted : blue }}
+                    disabled={weeklyStatus === "running"}
+                    onClick={() => triggerWeekly("full")}
+                  >
+                    {weeklyStatus === "running" ? "Running..." : "\uD83D\uDD01 Run Weekly Refresh Now"}
+                  </button>
+                </div>
+                {weeklyLog && (
+                  <pre style={{ ...S.mono, fontSize: 11, background: "#0d1117", color: "#c9d1d9", padding: 10, borderRadius: 6, maxHeight: 120, overflow: "auto", margin: 0 }}>
+                    {weeklyLog}
+                  </pre>
+                )}
+                {!ghToken && (
+                  <div style={{ fontSize: 10, color: muted, marginTop: 6 }}>Needs a GitHub PAT \u2014 set it in Run Method \u2192 GitHub Actions below.</div>
+                )}
+              </div>
+            )}
 
             {/* ── Execution Mode ── */}
             <div style={S.card}>
