@@ -39,6 +39,59 @@ class ResolutionManager:
     """Stack resolution + permanent ETB + spell-effect dispatch."""
 
     @staticmethod
+    def _move_resolved_spell_off_stack(game: "GameState", card: "CardInstance"):
+        """Move an instant/sorcery off the stack to its correct zone,
+        applying the alternate-cast zone-replacement effects (CR
+        702.33a flashback, CR 702.86 rebound, CR 707.10a spell copy).
+
+        These replacements are tied to HOW the spell was cast, not to
+        how it left the stack — they apply identically whether the
+        spell resolves normally or is countered. Single owner of this
+        logic so both call sites (normal resolution and the
+        counterspell branch in `_execute_spell_effects`) stay in sync.
+        """
+        if getattr(card, '_cast_with_flashback', False):
+            # Flashback: exile instead of going to graveyard (CR 702.33a)
+            card.zone = "exile"
+            game.players[card.owner].exile.append(card)
+            card.has_flashback = False  # no longer has flashback
+        elif hasattr(card, '_rebound_controller'):
+            # Rebound: exile instead of graveyard, cast for free next upkeep
+            card.zone = "exile"
+            game.players[card.owner].exile.append(card)
+            if not hasattr(game, '_rebound_cards'):
+                game._rebound_cards = []
+            game._rebound_cards.append(card)
+        elif getattr(card, '_is_spell_copy', False):
+            # CR 707.10a — a resolved (or countered) spell COPY ceases
+            # to exist; it never enters the graveyard (imprint-copy
+            # artifacts, storm copies routed here, …).
+            card.zone = "expired_copy"
+        else:
+            card.zone = "graveyard"
+            game.players[card.owner].graveyard.append(card)
+
+    @staticmethod
+    def _move_countered_stack_item(game: "GameState", stack_item: "StackItem",
+                                    countered_card: "CardInstance"):
+        """Move a countered stack item's source card to its correct
+        zone. For a countered SPELL, this is the same alternate-cast
+        zone-replacement logic as normal resolution (CR 702.33a/86,
+        707.10a — see `_move_resolved_spell_off_stack`): countering a
+        spell is one of the ways it "would be put into a graveyard
+        from the stack", so the same replacement applies. For a
+        countered ABILITY, the source is a permanent (already on the
+        battlefield or wherever it was) — it does not move; only the
+        ability itself fails to resolve. (Pre-existing behavior for
+        ability items is unchanged here — out of scope for this fix.)
+        """
+        if stack_item.item_type == StackItemType.SPELL:
+            ResolutionManager._move_resolved_spell_off_stack(game, countered_card)
+        else:
+            countered_card.zone = "graveyard"
+            game.players[countered_card.owner].graveyard.append(countered_card)
+
+    @staticmethod
     def resolve_stack(game: "GameState"):
         """Resolve the top item on the stack."""
         if game.stack.is_empty:
@@ -82,26 +135,7 @@ class ResolutionManager:
                 # Cascade: exile from top until lower CMC, cast free
                 if Keyword.CASCADE in template.keywords:
                     game._handle_cascade(item)
-                # Flashback: exile instead of going to graveyard (MTG CR 702.33a)
-                if getattr(card, '_cast_with_flashback', False):
-                    card.zone = "exile"
-                    game.players[card.owner].exile.append(card)
-                    card.has_flashback = False  # no longer has flashback
-                elif hasattr(card, '_rebound_controller'):
-                    # Rebound: exile instead of graveyard, cast for free next upkeep
-                    card.zone = "exile"
-                    game.players[card.owner].exile.append(card)
-                    if not hasattr(game, '_rebound_cards'):
-                        game._rebound_cards = []
-                    game._rebound_cards.append(card)
-                elif getattr(card, '_is_spell_copy', False):
-                    # CR 707.10a — a resolved spell COPY ceases to
-                    # exist; it never enters the graveyard (imprint-
-                    # copy artifacts, storm copies routed here, …).
-                    card.zone = "expired_copy"
-                else:
-                    card.zone = "graveyard"
-                    game.players[card.owner].graveyard.append(card)
+                ResolutionManager._move_resolved_spell_off_stack(game, card)
             else:
                 # Permanent enters battlefield
                 card.controller = item.controller
@@ -574,8 +608,8 @@ class ResolutionManager:
                             if stack_item.source.instance_id == tid:
                                 countered = game.stack.items.pop(i)
                                 countered_card = countered.source
-                                countered_card.zone = "graveyard"
-                                game.players[countered_card.owner].graveyard.append(countered_card)
+                                ResolutionManager._move_countered_stack_item(
+                                    game, countered, countered_card)
                                 game.log.append(
                                     f"T{game.display_turn}: {countered_card.name} is countered")
                                 break
@@ -583,8 +617,8 @@ class ResolutionManager:
                     # No explicit target — counter the next spell on the stack
                     countered = game.stack.pop()
                     countered_card = countered.source
-                    countered_card.zone = "graveyard"
-                    game.players[countered_card.owner].graveyard.append(countered_card)
+                    ResolutionManager._move_countered_stack_item(
+                        game, countered, countered_card)
                     game.log.append(
                         f"T{game.display_turn}: {countered_card.name} is countered")
 
