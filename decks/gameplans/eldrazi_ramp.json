@@ -1,0 +1,57 @@
+{
+  "deck_name": "Eldrazi Ramp",
+  "archetype": "midrange",
+  "goals": [
+    {
+      "goal_type": "INTERACT",
+      "description": "Deploy threats while interacting",
+      "card_roles": {
+        "enablers": [],
+        "payoffs": [
+          "Devourer of Destiny",
+          "Emrakul, the Promised End",
+          "Herigast, Erupting Nullkite"
+        ],
+        "interaction": [
+          "Kozilek's Command",
+          "Kozilek's Return",
+          "Ugin, Eye of the Storms"
+        ]
+      }
+    },
+    {
+      "goal_type": "GRIND_VALUE",
+      "description": "Grind value with threats and card advantage",
+      "card_roles": {
+        "payoffs": [
+          "Devourer of Destiny",
+          "Emrakul, the Promised End",
+          "Herigast, Erupting Nullkite"
+        ],
+        "enablers": [
+          "Malevolent Rumble",
+          "Ugin, Eye of the Storms",
+          "Emrakul, the Promised End",
+          "Sowing Mycospawn"
+        ]
+      }
+    },
+    {
+      "goal_type": "CLOSE_GAME",
+      "description": "Close with threats"
+    }
+  ],
+  "mulligan_keys": [
+    "Emrakul, the Promised End",
+    "Kozilek's Command",
+    "Kozilek's Return",
+    "Sowing Mycospawn"
+  ],
+  "mulligan_min_lands": 2,
+  "mulligan_max_lands": 4,
+  "reactive_only": [],
+  "always_early": [
+    "Emrakul, the Promised End",
+    "Sowing Mycospawn"
+  ]
+}

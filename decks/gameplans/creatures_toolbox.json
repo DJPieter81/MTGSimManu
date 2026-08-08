@@ -1,0 +1,43 @@
+{
+  "deck_name": "Creatures Toolbox",
+  "archetype": "combo",
+  "goals": [
+    {
+      "goal_type": "DEPLOY_ENGINE",
+      "description": "Deploy enablers and engines",
+      "card_roles": {
+        "engines": [],
+        "enablers": []
+      }
+    },
+    {
+      "goal_type": "EXECUTE_PAYOFF",
+      "description": "Execute the combo",
+      "card_roles": {
+        "payoffs": [
+          "Craterhoof Behemoth",
+          "Ouroboroid"
+        ],
+        "enablers": []
+      }
+    },
+    {
+      "goal_type": "PUSH_DAMAGE",
+      "description": "Close the game"
+    }
+  ],
+  "mulligan_keys": [
+    "Badgermole Cub",
+    "Birds of Paradise",
+    "Delighted Halfling",
+    "Devoted Druid"
+  ],
+  "mulligan_min_lands": 1,
+  "mulligan_max_lands": 3,
+  "reactive_only": [],
+  "always_early": [
+    "Birds of Paradise",
+    "Delighted Halfling",
+    "Walking Ballista"
+  ]
+}

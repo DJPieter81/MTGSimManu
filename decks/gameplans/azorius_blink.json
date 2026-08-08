@@ -1,0 +1,58 @@
+{
+  "deck_name": "Azorius Blink",
+  "archetype": "aggro",
+  "goals": [
+    {
+      "goal_type": "CURVE_OUT",
+      "description": "Deploy creatures on curve",
+      "card_roles": {
+        "enablers": [
+          "Guide of Souls",
+          "Momo, Friendly Flier",
+          "Ocelot Pride",
+          "Phelia, Exuberant Shepherd"
+        ],
+        "payoffs": [
+          "Quantum Riddler",
+          "Solitude",
+          "Starfield Shepherd"
+        ],
+        "interaction": [
+          "March of Otherworldly Light"
+        ]
+      }
+    },
+    {
+      "goal_type": "PUSH_DAMAGE",
+      "description": "Attack aggressively, remove blockers",
+      "card_roles": {
+        "interaction": [
+          "March of Otherworldly Light",
+          "Consign to Memory"
+        ]
+      }
+    },
+    {
+      "goal_type": "CLOSE_GAME",
+      "description": "Close the game with damage"
+    }
+  ],
+  "mulligan_keys": [
+    "Guide of Souls",
+    "March of Otherworldly Light",
+    "Momo, Friendly Flier",
+    "Ocelot Pride",
+    "Phelia, Exuberant Shepherd"
+  ],
+  "mulligan_min_lands": 1,
+  "mulligan_max_lands": 3,
+  "reactive_only": [
+    "Consign to Memory"
+  ],
+  "always_early": [
+    "Guide of Souls",
+    "March of Otherworldly Light",
+    "Momo, Friendly Flier",
+    "Ocelot Pride"
+  ]
+}
