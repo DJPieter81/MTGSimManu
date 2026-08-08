@@ -1,0 +1,33 @@
+name: Refresh Card DB
+
+# Runs entirely on GitHub-hosted infra — mtgjson.com is blocked on the
+# local Claude Code session's egress proxy (see CLAUDE.md's "STILL
+# MISSING from the DB" notes), but GitHub Actions runners have normal
+# internet access. Manual trigger only: MTGJSON updates on its own
+# cadence, not worth polling on a schedule.
+on:
+  workflow_dispatch: {}
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Refresh ModernAtomic from MTGJSON
+        run: python3 update_modern_atomic.py
+
+      - name: Verify merge_db.py still reassembles cleanly
+        run: python3 merge_db.py
+
+      - name: Commit and push refreshed parts
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add ModernAtomic_part*.json
+          git diff --cached --quiet || git commit -m "chore: refresh ModernAtomic for new sets via GitHub Actions"
+          git push
