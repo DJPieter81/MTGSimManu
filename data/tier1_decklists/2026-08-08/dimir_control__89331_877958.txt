@@ -1,0 +1,36 @@
+// Dimir Control — mtgtop8 event=89331 deck=877958
+3 Bloodstained Mire
+1 Flooded Strand
+2 Island
+1 Otawara, Soaring City
+4 Polluted Delta
+1 Swamp
+1 Takenuma, Abandoned Mire
+2 Undercity Sewers
+4 Watery Grave
+2 Orcish Bowmasters
+4 Psychic Frog
+4 Quantum Riddler
+3 Subtlety
+1 Tamiyo, Inquisitive Student
+2 Wan Shi Tong, Librarian
+1 Cling to Dust
+1 Consign to Memory
+2 Counterspell
+2 Drown in the Loch
+4 Fatal Push
+4 Force of Negation
+3 Sheoldred's Edict
+1 Sink into Stupor
+3 Spell Snare
+4 Thoughtseize
+
+Sideboard
+2 Break the Ice
+3 Consign to Memory
+2 Engineered Explosives
+1 Extirpate
+1 Ghost Vacuum
+3 Mystical Dispute
+1 Pithing Needle
+2 Toxic Deluge

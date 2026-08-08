@@ -1,0 +1,33 @@
+// Eldrazi Ramp — mtgtop8 event=89301 deck=877685
+1 Commercial District
+4 Eldrazi Temple
+3 Forest
+3 Grove of the Burnwillows
+1 Sanctum of Ugin
+1 Shifting Woodland
+2 Stomping Ground
+4 Ugin's Labyrinth
+3 Wooded Foothills
+3 Devourer of Destiny
+3 Emrakul, the Promised End
+1 Herigast, Erupting Nullkite
+3 Icetill Explorer
+2 Sire of Seven Deaths
+4 Sowing Mycospawn
+1 World Breaker
+4 Kozilek's Command
+3 Kozilek's Return
+4 Malevolent Rumble
+4 Talisman of Impulse
+2 Ugin, Eye of the Storms
+4 Utopia Sprawl
+
+Sideboard
+2 Blasphemous Act
+1 Bojuka Bog
+1 Grafdigger's Cage
+2 Nature's Claim
+1 Soulless Jailer
+2 Surgical Extraction
+3 Trinisphere
+3 Unholy Heat

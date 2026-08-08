@@ -1,0 +1,35 @@
+// Reanimator — mtgtop8 event=89272 deck=877519
+1 Bloodstained Mire
+2 Cephalid Coliseum
+1 Flooded Strand
+1 Marsh Flats
+4 Polluted Delta
+1 Snow-Covered Island
+2 Snow-Covered Swamp
+3 Undercity Sewers
+1 Verdant Catacombs
+3 Watery Grave
+3 Abhorrent Oculus
+4 Archon of Cruelty
+1 Boggart Trawler
+2 Emperor of Bones
+4 Fallaji Archaeologist
+4 Gran-Gran
+4 Psychic Frog
+2 Bitter Triumph
+4 Fatal Push
+3 Flare of Denial
+4 Persist
+3 Thoughtseize
+3 Unearth
+
+Sideboard
+4 Consign to Memory
+1 Disruptor Flute
+1 End of the Hunt
+2 Engineered Explosives
+1 Flare of Denial
+2 Force of Negation
+1 Hurkyl's Recall
+1 Into the Flood Maw
+2 Mystical Dispute

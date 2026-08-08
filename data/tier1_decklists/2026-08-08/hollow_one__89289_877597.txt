@@ -1,0 +1,30 @@
+// Hollow One — mtgtop8 event=89289 deck=877597
+1 Arena of Glory
+3 Arid Mesa
+3 Bloodstained Mire
+1 Elegant Parlor
+3 Mountain
+3 Sacred Foundry
+4 Wooded Foothills
+4 Blazing Rootwalla
+4 Detective's Phoenix
+4 Hardened Academic
+4 Hollow One
+4 Marauding Mako
+4 Street Wraith
+4 Vengevine
+4 Burning Inquiry
+4 Faithless Looting
+1 Lava Dart
+3 Lightning Bolt
+2 Practiced Offense
+
+Sideboard
+2 Fire Magic
+1 Lightning Bolt
+2 Magebane Lizard
+3 Meltdown
+2 Prismatic Ending
+1 Rough / Tumble
+3 Surgical Extraction
+1 Wear / Tear

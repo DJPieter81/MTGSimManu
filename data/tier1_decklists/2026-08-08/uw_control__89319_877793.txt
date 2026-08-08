@@ -1,0 +1,40 @@
+// UW Control — mtgtop8 event=89319 deck=877793
+3 Arid Mesa
+4 Flooded Strand
+1 Geier Reach Sanitarium
+2 Hallowed Fountain
+1 Hedge Maze
+2 Island
+1 Meticulous Archive
+1 Monumental Henge
+2 Plains
+1 Sacred Foundry
+3 Scalding Tarn
+1 Steam Vents
+1 Thundering Falls
+3 Solitude
+4 Consult the Star Charts
+3 Counterspell
+1 Day's Undoing
+1 Force of Negation
+3 Galvanic Discharge
+1 Lórien Revealed
+4 Orim's Chant
+2 Prismatic Ending
+2 Spell Snare
+1 Supreme Verdict
+3 Wrath of the Skies
+2 Isochron Scepter
+4 Narset, Parter of Veils
+3 Teferi, Time Raveler
+
+Sideboard
+1 Kaheera, the Orphanguard
+3 Consign to Memory
+1 Day's Undoing
+1 Force of Negation
+2 High Noon
+3 Mystical Dispute
+1 Prismatic Ending
+2 Rest in Peace
+1 Wrath of the Skies

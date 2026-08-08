@@ -1,0 +1,41 @@
+// Creatures Toolbox — mtgtop8 event=89319 deck=877795
+1 Boseiju, Who Endures
+2 Dryad Arbor
+3 Forest
+2 Misty Rainforest
+1 Nurturing Peatland
+2 Overgrown Tomb
+1 Temple Garden
+1 Underground Mortuary
+3 Verdant Catacombs
+2 Windswept Heath
+2 Wooded Foothills
+4 Badgermole Cub
+2 Birds of Paradise
+1 Craterhoof Behemoth
+4 Delighted Halfling
+4 Devoted Druid
+1 Duskwatch Recruiter
+1 Eternal Witness
+1 Fiend Artisan
+1 Formidable Speaker
+1 Ouroboroid
+1 Shang-Chi, Master of Kung Fu
+1 Vizier of Remedies
+4 Green Sun's Zenith
+4 Nature's Rhythm
+2 Agatha's Soul Cauldron
+4 Leyline of Abundance
+4 Tyvar, Jubilant Brawler
+
+Sideboard
+1 Collector Ouphe
+2 Endurance
+2 Fatal Push
+2 Force of Vigor
+1 Grist, the Hunger Tide
+1 Keen-Eyed Curator
+1 Outland Liberator
+1 Skyfisher Spider
+1 Suncleanser
+3 Thoughtseize

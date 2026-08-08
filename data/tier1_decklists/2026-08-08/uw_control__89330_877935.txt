@@ -1,0 +1,39 @@
+// UW Control — mtgtop8 event=89330 deck=877935
+1 Castle Vantress
+2 Field of Ruin
+4 Flooded Strand
+2 Hallowed Fountain
+3 Island
+3 Meticulous Archive
+1 Misty Rainforest
+1 Mystic Gate
+2 Plains
+2 Polluted Delta
+2 Scalding Tarn
+1 Steam Vents
+1 Undercity Sewers
+2 Snapcaster Mage
+3 Solitude
+4 Brainsurge
+1 Consign to Memory
+4 Consult the Star Charts
+4 Counterspell
+2 Logic Knot
+3 Prismatic Ending
+3 Spell Snare
+1 Terminus
+1 Tune the Narrative
+3 Wrath of the Skies
+2 Teferi, Hero of Dominaria
+2 Teferi, Time Raveler
+
+Sideboard
+3 Consign to Memory
+2 High Noon
+4 Mystical Dispute
+1 Nihil Spellbomb
+1 Prismatic Ending
+1 Spell Snare
+1 Surgical Extraction
+1 Terminus
+1 Wrath of the Skies

@@ -1,0 +1,29 @@
+// Blink — mtgtop8 event=89319 deck=877791
+2 Arid Mesa
+4 Flooded Strand
+4 Hallowed Fountain
+2 Marsh Flats
+2 Meticulous Archive
+3 Plains
+1 Windswept Heath
+2 Aang, Swift Savior
+4 Guide of Souls
+1 Haliya, Guided by Light
+3 Momo, Friendly Flier
+4 Ocelot Pride
+4 Phelia, Exuberant Shepherd
+4 Quantum Riddler
+4 Solitude
+4 Starfield Shepherd
+4 Witch Enchanter
+2 Consign to Memory
+4 Ephemerate
+2 March of Otherworldly Light
+
+Sideboard
+3 Clarion Conqueror
+2 Consign to Memory
+1 Rest in Peace
+3 Sanctifier en-Vec
+2 Spell Pierce
+4 White Orchid Phantom
