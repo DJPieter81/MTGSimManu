@@ -1,0 +1,48 @@
+{
+  "deck_name": "Grixis Reanimator",
+  "archetype": "combo",
+  "goals": [
+    {
+      "goal_type": "DEPLOY_ENGINE",
+      "description": "Deploy enablers and engines",
+      "card_roles": {
+        "engines": [],
+        "enablers": [
+          "Cling to Dust",
+          "Faithless Looting",
+          "Thought Scour",
+          "Unearth"
+        ]
+      }
+    },
+    {
+      "goal_type": "EXECUTE_PAYOFF",
+      "description": "Execute the combo",
+      "card_roles": {
+        "payoffs": [
+          "Archon of Cruelty"
+        ],
+        "enablers": [
+          "Cling to Dust",
+          "Faithless Looting",
+          "Thought Scour"
+        ]
+      }
+    },
+    {
+      "goal_type": "PUSH_DAMAGE",
+      "description": "Close the game"
+    }
+  ],
+  "mulligan_keys": [
+    "Emperor of Bones",
+    "Fatal Push",
+    "Psychic Frog"
+  ],
+  "mulligan_min_lands": 1,
+  "mulligan_max_lands": 3,
+  "reactive_only": [
+    "Spell Pierce"
+  ],
+  "always_early": []
+}

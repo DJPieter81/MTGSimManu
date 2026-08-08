@@ -45,6 +45,11 @@ ALLOWED_UNHANDLED: set[tuple[str, str]] = {
     # in Amulet Titan's Aug 2026 decklist refresh (PR #486); tracked here
     # rather than rushing a fresh engine mechanic into a data-only PR.
     ("Malevolent Rumble", "spell"),
+    # "Look at top 5, may take a colorless card to hand, rest to bottom" —
+    # same impulse/library-dig class as the entries above, not modeled.
+    # Newly registered via Eldrazi Ramp / Broodscale Bloodchief (Aug 2026
+    # meta-gap fill, PR #486).
+    ("Ancient Stirrings", "spell"),
 }
 
 

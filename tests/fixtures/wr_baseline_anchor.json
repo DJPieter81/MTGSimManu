@@ -140,6 +140,41 @@
       "seed": 51500,
       "winner": "Instant Reanimator",
       "turns": 10
+    },
+    {
+      "deck1": "Eldrazi Ramp",
+      "deck2": "Broodscale Bloodchief",
+      "seed": 52000,
+      "winner": "Eldrazi Ramp",
+      "turns": 12
+    },
+    {
+      "deck1": "Creatures Toolbox",
+      "deck2": "Grixis Reanimator",
+      "seed": 52000,
+      "winner": "Grixis Reanimator",
+      "turns": 8
+    },
+    {
+      "deck1": "Azorius Blink",
+      "deck2": "Eldrazi Ramp",
+      "seed": 52500,
+      "winner": "Azorius Blink",
+      "turns": 9
+    },
+    {
+      "deck1": "Broodscale Bloodchief",
+      "deck2": "Creatures Toolbox",
+      "seed": 52500,
+      "winner": "Broodscale Bloodchief",
+      "turns": 8
+    },
+    {
+      "deck1": "Grixis Reanimator",
+      "deck2": "Azorius Blink",
+      "seed": 53000,
+      "winner": "Grixis Reanimator",
+      "turns": 8
     }
   ]
 }

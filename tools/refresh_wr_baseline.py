@@ -63,6 +63,12 @@ MATCHUPS: list[tuple[str, str, int]] = [
     ("Instant Reanimator",    "Dimir Midrange",          51000),
     ("Boros Ponza",           "Boros Energy",            51000),
     ("Instant Reanimator",    "Boros Ponza",             51500),
+    # Aug 2026 meta-gap fill — new registrations, each appears twice.
+    ("Eldrazi Ramp",          "Broodscale Bloodchief",   52000),
+    ("Creatures Toolbox",     "Grixis Reanimator",       52000),
+    ("Azorius Blink",         "Eldrazi Ramp",            52500),
+    ("Broodscale Bloodchief", "Creatures Toolbox",       52500),
+    ("Grixis Reanimator",     "Azorius Blink",           53000),
 ]
 
 

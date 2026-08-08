@@ -43,6 +43,11 @@ DECK_ARCHETYPES = {
     "Pinnacle Affinity":  ArchetypeStrategy.AGGRO,
     "Instant Reanimator": ArchetypeStrategy.COMBO,
     "Boros Ponza":        ArchetypeStrategy.MIDRANGE,
+    "Eldrazi Ramp":       ArchetypeStrategy.MIDRANGE,
+    "Broodscale Bloodchief": ArchetypeStrategy.MIDRANGE,
+    "Creatures Toolbox":  ArchetypeStrategy.COMBO,
+    "Grixis Reanimator":  ArchetypeStrategy.COMBO,
+    "Azorius Blink":      ArchetypeStrategy.AGGRO,
 }
 
 

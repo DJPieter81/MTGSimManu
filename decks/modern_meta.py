@@ -27,7 +27,23 @@ from typing import Dict, List, Tuple
 # Blink" carries the "Jeskai Control" share (same Jeskai bucket);
 # "4/5c Control" carries the "4/5c Aggro" bucket (closest registered
 # archetype). Raw percentages, not normalized to 100 — same convention
-# as before (weighting normalizes by the sum).
+# as before (weighting normalizes by the sum). NOTE (2026-08-08): the
+# mtgtop8 "4/5c Aggro" decklist pulled for this same date is actually a
+# near-exact match for our registered "Domain Zoo" (Ragavan/Territorial
+# Kavu/Leyline Binding core), not "4/5c Control" (an Omnath/Wrath shell
+# with zero card overlap) — the July mapping above was likely wrong.
+# Not corrected here; flagging for a follow-up share rebalance.
+#
+# Aug 2026 addition — mtgtop8.com Modern top-16 breakdown (retrieved
+# 2026-08-08 via tools/fetch_tier1_decklists.py), a second, differently-
+# sourced cohort layered onto the July mtgdecks.net-based numbers above.
+# Five archetypes with real meta share had no registered deck at all;
+# import_deck.py auto-generated their gameplans. A sixth (Hollow One,
+# ~3%) is NOT registered: both fetched Aug 2026 lists run Hardened
+# Academic (4x) and Practiced Offense (2x) as core pieces, and neither
+# card is in ModernAtomic yet — needs update_modern_atomic.py from an
+# environment that can reach mtgjson.com (same block as the Marvel
+# Super Heroes gap) before Hollow One can be simulated accurately.
 METAGAME_SHARES = {
     "Boros Energy": 15.93,
     "Affinity": 10.16,
@@ -48,6 +64,11 @@ METAGAME_SHARES = {
     "Pinnacle Affinity": 1.50,
     "Azorius Control (WST)": 0.0,
     "Azorius Control (WST v2)": 0.0,
+    "Eldrazi Ramp": 7.0,
+    "Broodscale Bloodchief": 7.0,
+    "Azorius Blink": 5.0,
+    "Creatures Toolbox": 5.0,
+    "Grixis Reanimator": 4.0,
 }
 
 # Full decklists: mainboard + sideboard
@@ -910,6 +931,255 @@ MODERN_DECKS: Dict[str, Dict[str, Dict[str, int]]] = {
             "Rest in Peace": 2,
             "Sanctifier en-Vec": 2,
             "Wear // Tear": 2,
+        },
+    },
+    "Eldrazi Ramp": {
+        # Aug 2026 addition (base: mtgtop8.com Modern event=89301
+        # deck=877685, retrieved 2026-08-08 via
+        # tools/fetch_tier1_decklists.py / .github/workflows/weekly.yml).
+        # 7% meta share, previously unregistered — distinct from
+        # "Eldrazi Tron" (no Urza's Tower/Mine/Power Plant here; this is
+        # a green Ugin's Labyrinth / Eldrazi Temple ramp shell built
+        # around Sowing Mycospawn + Malevolent Rumble + Ugin, Eye of the
+        # Storms). Gameplan auto-generated via import_deck.py. Fetched
+        # list ran 1x World Breaker; swapped for a 4th Emrakul, the
+        # Promised End — World Breaker's "{2}{C}, sacrifice a land:
+        # return this from graveyard to hand" is a genuine unhandled
+        # activated ability (test_oracle_validation.py caught it; the
+        # existing generic sacrifice framework only covers self-
+        # sacrifice "Sacrifice this:" patterns, not sac-a-different-
+        # permanent costs). Implementing graveyard activation properly
+        # is real engine work, out of scope for this decklist PR.
+        "mainboard": {
+            "Commercial District": 1,
+            "Devourer of Destiny": 3,
+            "Eldrazi Temple": 4,
+            "Emrakul, the Promised End": 4,
+            "Forest": 3,
+            "Grove of the Burnwillows": 3,
+            "Herigast, Erupting Nullkite": 1,
+            "Icetill Explorer": 3,
+            "Kozilek's Command": 4,
+            "Kozilek's Return": 3,
+            "Malevolent Rumble": 4,
+            "Sanctum of Ugin": 1,
+            "Shifting Woodland": 1,
+            "Sire of Seven Deaths": 2,
+            "Sowing Mycospawn": 4,
+            "Stomping Ground": 2,
+            "Talisman of Impulse": 4,
+            "Ugin's Labyrinth": 4,
+            "Ugin, Eye of the Storms": 2,
+            "Utopia Sprawl": 4,
+            "Wooded Foothills": 3,
+        },
+        "sideboard": {
+            "Blasphemous Act": 2,
+            "Bojuka Bog": 1,
+            "Grafdigger's Cage": 1,
+            "Nature's Claim": 2,
+            "Soulless Jailer": 1,
+            "Surgical Extraction": 2,
+            "Trinisphere": 3,
+            "Unholy Heat": 3,
+        },
+    },
+    "Broodscale Bloodchief": {
+        # Aug 2026 addition (base: mtgtop8.com Modern event=89330
+        # deck=877939, retrieved 2026-08-08 via
+        # tools/fetch_tier1_decklists.py / .github/workflows/weekly.yml).
+        # 7% meta share, previously unregistered. Gruul Eldrazi-adjacent
+        # midrange: Urza's Saga + Ancient Stirrings for consistency,
+        # Basking Broodscale / Glaring Fleshraker / Sowing Mycospawn as
+        # the creature suite, Malevolent Rumble for card selection,
+        # Blade of the Bloodchief as the payoff. Gameplan auto-generated
+        # via import_deck.py.
+        "mainboard": {
+            "Ancient Stirrings": 4,
+            "Basking Broodscale": 4,
+            "Blade of the Bloodchief": 3,
+            "Boseiju, Who Endures": 2,
+            "Delighted Halfling": 2,
+            "Eldrazi Temple": 4,
+            "Emrakul, the Promised End": 3,
+            "Forest": 3,
+            "Glaring Fleshraker": 3,
+            "Grove of the Burnwillows": 4,
+            "Haywire Mite": 1,
+            "Kozilek's Command": 4,
+            "Malevolent Rumble": 4,
+            "Misty Rainforest": 1,
+            "Shifting Woodland": 1,
+            "Soul-Guide Lantern": 1,
+            "Sowing Mycospawn": 4,
+            "Springleaf Drum": 1,
+            "Stomping Ground": 1,
+            "The Mycosynth Gardens": 1,
+            "Unholy Heat": 2,
+            "Urza's Saga": 4,
+            "Verdant Catacombs": 1,
+            "Vexing Bauble": 2,
+        },
+        "sideboard": {
+            "Cavern of Souls": 1,
+            "Damping Sphere": 1,
+            "Gemstone Caverns": 1,
+            "Grafdigger's Cage": 1,
+            "Nature's Claim": 2,
+            "Pithing Needle": 1,
+            "Sire of Seven Deaths": 1,
+            "Soulless Jailer": 1,
+            "Thief of Existence": 2,
+            "Unholy Heat": 2,
+            "Vexing Bauble": 1,
+            "Warping Wail": 1,
+        },
+    },
+    "Creatures Toolbox": {
+        # Aug 2026 addition (base: mtgtop8.com Modern event=89319
+        # deck=877792, retrieved 2026-08-08 via
+        # tools/fetch_tier1_decklists.py / .github/workflows/weekly.yml).
+        # 5% meta share, previously unregistered. Green creature-combo
+        # toolbox: Devoted Druid + Vizier of Remedies (infinite mana),
+        # Green Sun's Zenith / Fiend Artisan to tutor pieces, Craterhoof
+        # Behemoth as the payoff. Gameplan auto-generated via
+        # import_deck.py. KNOWN GAP: "Shang-Chi, Master of Kung Fu" (a
+        # 1-of in both fetched lists for this archetype) is not yet in
+        # ModernAtomic — resolves to an engine placeholder until
+        # update_modern_atomic.py can run from an environment that can
+        # reach mtgjson.com.
+        "mainboard": {
+            "Agatha's Soul Cauldron": 2,
+            "Badgermole Cub": 4,
+            "Birds of Paradise": 2,
+            "Boseiju, Who Endures": 1,
+            "Craterhoof Behemoth": 1,
+            "Delighted Halfling": 4,
+            "Devoted Druid": 4,
+            "Dryad Arbor": 2,
+            "Duskwatch Recruiter": 1,
+            "Eternal Witness": 1,
+            "Fiend Artisan": 1,
+            "Forest": 3,
+            "Green Sun's Zenith": 4,
+            "Leyline of Abundance": 4,
+            "Misty Rainforest": 2,
+            "Nature's Rhythm": 4,
+            "Nurturing Peatland": 1,
+            "Ouroboroid": 1,
+            "Overgrown Tomb": 2,
+            "Shang-Chi, Master of Kung Fu": 1,
+            "Temple Garden": 1,
+            "Tyvar, Jubilant Brawler": 4,
+            "Underground Mortuary": 1,
+            "Verdant Catacombs": 3,
+            "Vizier of Remedies": 1,
+            "Walking Ballista": 1,
+            "Windswept Heath": 2,
+            "Wooded Foothills": 2,
+        },
+        "sideboard": {
+            "Collector Ouphe": 1,
+            "Drannith Magistrate": 1,
+            "Endurance": 2,
+            "Fatal Push": 2,
+            "Force of Vigor": 2,
+            "Grist, the Hunger Tide": 1,
+            "Keen-Eyed Curator": 1,
+            "Outland Liberator": 1,
+            "Suncleanser": 1,
+            "Vexing Bauble": 2,
+        },
+    },
+    "Grixis Reanimator": {
+        # Aug 2026 addition (base: mtgtop8.com Modern "Reanimator"
+        # event=89271 deck=877501, retrieved 2026-08-08 via
+        # tools/fetch_tier1_decklists.py / .github/workflows/weekly.yml).
+        # ~4% meta share, previously unregistered under this name — the
+        # diff tool's naive substring match had flagged it "yes" against
+        # "Instant Reanimator," but the two share zero cards. This is a
+        # Persist/Unearth reanimation shell (Archon of Cruelty, Emperor
+        # of Bones, Abhorrent Oculus) with self-mill (Faithless Looting,
+        # Thought Scour), distinct from Instant Reanimator's Esper
+        # Goryo's Vengeance/Ephemerate combo and from the standalone
+        # "Goryo's Vengeance" registration. Gameplan auto-generated via
+        # import_deck.py.
+        "mainboard": {
+            "Abhorrent Oculus": 4,
+            "Archon of Cruelty": 4,
+            "Blood Crypt": 1,
+            "Bloodstained Mire": 4,
+            "Cling to Dust": 1,
+            "Darkslick Shores": 1,
+            "Emperor of Bones": 3,
+            "Faithless Looting": 4,
+            "Fatal Push": 4,
+            "Inquisition of Kozilek": 1,
+            "Island": 1,
+            "Persist": 4,
+            "Polluted Delta": 4,
+            "Psychic Frog": 4,
+            "Raucous Theater": 1,
+            "Scalding Tarn": 1,
+            "Spell Pierce": 1,
+            "Steam Vents": 1,
+            "Swamp": 2,
+            "Thought Scour": 3,
+            "Thoughtseize": 4,
+            "Undercity Sewers": 1,
+            "Unearth": 4,
+            "Verdant Catacombs": 1,
+            "Watery Grave": 1,
+        },
+        "sideboard": {
+            "Consign to Memory": 3,
+            "Harbinger of the Seas": 2,
+            "Meltdown": 2,
+            "Mystical Dispute": 2,
+            "Nihil Spellbomb": 2,
+            "Pyroclasm": 2,
+            "Vexing Bauble": 2,
+        },
+    },
+    "Azorius Blink": {
+        # Aug 2026 addition (base: mtgtop8.com Modern "Blink"
+        # event=89319 deck=877791, retrieved 2026-08-08 via
+        # tools/fetch_tier1_decklists.py / .github/workflows/weekly.yml).
+        # ~5% meta share, previously unregistered under this name —
+        # distinct from the 3-color "Jeskai Blink" (Ragavan/Fable/Wrath
+        # of the Skies shell): this is a 2-color WU blink build around
+        # Phelia/Witch Enchanter/Ephemerate with Ocelot Pride/Guide of
+        # Souls energy support and no red at all. Gameplan
+        # auto-generated via import_deck.py.
+        "mainboard": {
+            "Aang, Swift Savior": 2,
+            "Arid Mesa": 2,
+            "Consign to Memory": 2,
+            "Ephemerate": 4,
+            "Flooded Strand": 4,
+            "Guide of Souls": 4,
+            "Haliya, Guided by Light": 1,
+            "Hallowed Fountain": 4,
+            "March of Otherworldly Light": 2,
+            "Marsh Flats": 2,
+            "Meticulous Archive": 2,
+            "Momo, Friendly Flier": 3,
+            "Ocelot Pride": 4,
+            "Phelia, Exuberant Shepherd": 4,
+            "Plains": 3,
+            "Quantum Riddler": 4,
+            "Solitude": 4,
+            "Starfield Shepherd": 4,
+            "Windswept Heath": 1,
+            "Witch Enchanter": 4,
+        },
+        "sideboard": {
+            "Clarion Conqueror": 3,
+            "Consign to Memory": 2,
+            "Rest in Peace": 1,
+            "Sanctifier en-Vec": 3,
+            "Spell Pierce": 2,
+            "White Orchid Phantom": 4,
         },
     },
 }
