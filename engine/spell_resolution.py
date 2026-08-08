@@ -111,7 +111,8 @@ class ResolutionManager:
                 # ETB handler exists (Engineered Explosives uses sunburst via its
                 # own handler, so don't double-set charge counters here)
                 if item.x_value > 0 and template.x_cost_data:
-                    has_dedicated_etb = template.name in EFFECT_REGISTRY._handlers
+                    has_dedicated_etb = EFFECT_REGISTRY.has_handler(
+                        template.name, EffectTiming.ETB)
                     x_info = template.x_cost_data
                     effect = x_info.get("effect", "")
                     if effect == "charge_counters" and not has_dedicated_etb:
@@ -246,8 +247,14 @@ class ResolutionManager:
         elif doorkeeper_active:
             game.log.append(f"T{game.display_turn}: {template.name} ETB suppressed by Doorkeeper Thrull")
         else:
-            # Dispatch to card effect registry for card-specific ETB logic
-            has_specific_handler = template.name in EFFECT_REGISTRY._handlers
+            # Dispatch to card effect registry for card-specific ETB logic.
+            # Timing-scoped (not name-scoped): a card whose only
+            # registration is for an unrelated timing (SPELL_RESOLVE,
+            # ATTACK, DIES, END_STEP) must still reach the generic
+            # oracle-derived ETB resolver below. Mirrors the correct
+            # pattern already used in zone_transfer._fire_etb_triggers.
+            has_specific_handler = EFFECT_REGISTRY.has_handler(
+                template.name, EffectTiming.ETB)
             EFFECT_REGISTRY.execute(
                 template.name, EffectTiming.ETB, game, card, controller,
                 targets=(item.targets if item else None),
