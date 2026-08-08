@@ -581,12 +581,34 @@ class GameState:
         TriggerManager.queue_trigger(self, trigger_reg)
 
     def check_state_based_actions(self) -> bool:
-        """Live SBA path — check and perform state-based actions once.
+        """CR 704.3 fixpoint: check and perform state-based actions,
+        repeating until a pass performs none. Bounded by
+        SBA_MAX_ITERATIONS as a safety valve (same constant/pattern as
+        the dead SBAManager.check_and_perform_loop this ports).
 
-        This inline sequence IS the live implementation (it does not
-        delegate to SBAManager's check_and_perform_loop, which has no
-        live callers). Rules with a single shared implementation are
-        SBAManager statics called from here AND from that loop:
+        Needed now that ContinuousEffectsManager (0b) is live: an
+        earlier-checked rule in a single pass (e.g. lethal-damage/
+        toughness, rules g/h) can miss a condition caused by a
+        later rule in the SAME pass (e.g. legend rule, j — sacrificing
+        a permanent whose continuous effect was keeping a DIFFERENT
+        creature alive). A single pass only catches that on the NEXT
+        external check_state_based_actions() call; the fixpoint loop
+        catches it within this one.
+        """
+        actions_taken = False
+        iterations = 0
+        while iterations < SBA_MAX_ITERATIONS:
+            performed = self._check_sba_once()
+            if not performed:
+                break
+            actions_taken = True
+            iterations += 1
+        return actions_taken
+
+    def _check_sba_once(self) -> bool:
+        """Single CR 704.3 pass. Rules with a single shared
+        implementation are SBAManager statics called from here AND
+        from the dead SBAManager.check_and_perform_loop:
         perform_poison_check (704.5c), perform_deathtouch_check
         (704.5i). Creature death routes through _creature_dies so
         Undying/Persist replacement is preserved. End-state (single
@@ -594,6 +616,12 @@ class GameState:
         docs/proposals/resolver_sba_unification.md §6.
         """
         actions_taken = False
+
+        # Continuous effects (0b) must be fresh before checking P/T-
+        # dependent SBAs (lethal damage, toughness) below — a
+        # retraction from a rule checked LATER in the previous pass
+        # (e.g. legend rule) must be visible to those checks THIS pass.
+        self.continuous_effects.recalculate(self)
 
         # Player life totals (SBA 704.5a)
         for i, player in enumerate(self.players):

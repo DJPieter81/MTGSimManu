@@ -248,17 +248,55 @@ zero-loyalty death. Kiki-Jiki survives on the battlefield as a creature until la
 destroyed by Eldrazi Tron's Kozilek's Command (a real artifact/enchantment-destruction mode X=3) —
 correct, since Kiki-Jiki really is an Enchantment Creature. Bug #3 confirmed fixed end-to-end.
 
-### 0d. Finish SBA unification — NOT STARTED (but exact scope already authored)
+### 0d. Finish SBA unification — fixpoint loop DONE; static consolidation deferred to Phase 3
 
-`docs/proposals/resolver_sba_unification.md` (status: active) already documents this exact task as
+`docs/proposals/resolver_sba_unification.md` (status: active) already documents the fuller task as
 its own named follow-up (§6): every 704.5x rule becomes a `SBAManager.perform_*` static (3/9 done:
 poison, deathtouch, token-cleanup), `check_state_based_actions` collapses into the CR 704.3 fixpoint
-loop over those statics. Remaining 6: zero-toughness (704.5g), lethal-damage (704.5h — the
-INDESTRUCTIBLE exemption part is already fixed at the single owning site, `CardInstance.is_dead`;
-what remains is consolidating into a shared static), legend rule (704.5j), planeswalker-loyalty
-(704.5p), player-life (704.5a), empty-library-decking (704.5b — currently an inline instant-loss in
-`draw_cards`, not deferred to the next SBA window; `_drew_from_empty` is read at `sba_manager.py:101`
-and written nowhere in the repo).
+loop. **Landed the fixpoint loop** — the highest-value, cleanly-testable piece — and investigated
+704.5b before implementing it (found zero blast radius, same pattern as the discard/annihilator
+findings in 0a).
+
+**Fixpoint loop**: `GameState.check_state_based_actions` ran its full rule sequence exactly ONCE
+per call — no CR 704.3 repeat-until-stable. This became a REAL (not just latent) gap the moment 0b
+activated `ContinuousEffectsManager`: a legend-rule sacrifice (checked LAST in the sequence) can
+retract a continuous toughness/keyword grant a DIFFERENT creature depended on — but the toughness/
+lethal-damage checks (rules g/h) already ran EARLIER in that same pass, so the cascade was only
+caught on the NEXT external call (13 call sites throughout the engine — not guaranteed to fire
+before other same-step logic reads the now-stale state). Fixed by extracting the existing single-
+pass body into `_check_sba_once()` and wrapping `check_state_based_actions()` around it in a loop
+bounded by `SBA_MAX_ITERATIONS` (already imported, previously unused — the exact constant/pattern
+the dead `SBAManager.check_and_perform_loop` already used). Also added
+`self.continuous_effects.recalculate(self)` at the top of each pass, so a prior pass's retraction
+is visible before the P/T-dependent checks run.
+
+Tests: `tests/test_sba_fixpoint_loop.py` — a REAL cascading-SBA integration test (two same-named
+Legendary creatures, one granting a continuous +0/+2 toughness bonus to a third creature via
+`ContinuousEffectsManager`; sacrificing the older one via legend rule must retract the bonus and
+kill the third creature in the SAME `check_state_based_actions()` call), plus a mocked loop-bound
+test mirroring `tests/test_sba_uses_max_iterations_constant.py`'s existing style for the dead loop.
+Full suite + all pre-existing SBA-pinning tests (indestructible, poison, deathtouch, the dead-loop
+iteration-bound test) green; the dead loop itself untouched (still pinned, still dead, unaffected).
+
+**704.5b (draw from empty library) — investigated, deprioritized.** Currently an inline instant-
+loss in `draw_cards` rather than deferred to the next SBA window (the technically-correct CR 704.5b
+behavior, which matters for Thassa's Oracle/Laboratory Maniac-class "win the game" interactions).
+Checked the registered 16-deck pool programmatically for any "win the game" or library-empty-
+interaction card: **zero hits**. Without such a card, the instant-vs-deferred distinction is
+outcome-neutral — the player who'd draw from empty still loses either way, just via a different
+CR-technical path. Per the same class-size reasoning as 0a's discard/annihilator findings,
+deprioritized rather than implemented now; re-open if a mill/self-deck win-condition card enters
+the pool. `_drew_from_empty` (the dead flag in `sba_manager.py`, never written anywhere) is left
+as-is — it's part of the untouched dead loop, not a live-path concern.
+
+**Deferred to Phase 3**: consolidating the remaining inline rules (704.5a life, 704.5g/h toughness/
+lethal-damage, 704.5j legend rule, 704.5p planeswalker-loyalty) into shared `SBAManager` statics
+matching the poison/deathtouch/token-cleanup pattern, and — only once every rule is shared —
+retiring `SBAManager.check_and_perform_loop`/`_check_and_perform_once` (blocked today by
+`tests/test_sba_uses_max_iterations_constant.py` pinning the dead loop via `inspect.getsource`;
+retiring requires moving that pinned rule to the now-live `check_state_based_actions` fixpoint
+loop in the same change). Real, separate migration work — the live path is already correct and
+now has its own fixpoint; consolidating for code-sharing's sake alone isn't urgent.
 
 ### 0e. Make snapshot mandatory in ai/ — NOT STARTED
 
