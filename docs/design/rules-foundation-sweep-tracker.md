@@ -105,11 +105,21 @@ Remaining (tracked here, not yet started):
 - [ ] Migrate `_creature_dies` to route the battlefield→graveyard zone-list mutation through
   `zone_manager.move_card` (currently raw-mutates then separately calls the trigger dispatch, which
   is now correct but still bypasses the funnel's own bookkeeping/logging).
-- [ ] Migrate discard paths (madness/Containment Construct-class triggers depend on this).
-  Highest-value remaining tranche per the plan's stated priority order.
-- [ ] Migrate sacrifice paths beyond `_creature_dies` (`triggers.py` annihilator sacrifice — currently
-  fires no dies/sacrifice/LTB triggers and picks targets for the opponent by lowest CMC, a second,
-  separate bug worth its own failing test).
+- [x] **Investigated, deprioritized**: discard-path migration (madness/Containment Construct-class
+  triggers). Finding: `_force_discard` (`game_state.py:537`) *already* routes through
+  `zone_mgr.move_card` — this tranche is further along than the plan assumed. What's actually missing
+  is a `resolve_discard_trigger` imperative function (analogous to `resolve_dies_trigger`) for
+  discard-watcher effects, since `move_card`'s own event firing (the dead `EventBus`) doesn't fire
+  anything for hand→graveyard transitions at all. **Verified zero blast radius**: 0 madness cards and
+  0 discard-watcher-shaped cards (Archfiend of Ifnir/Containment Construct/Liliana's Caress class) in
+  any of the 16 registered decks' 75s (checked programmatically against `decks/modern_meta.py` +
+  `ModernAtomic_part*.json`). Per CLAUDE.md's class-size rule ("how many cards could legitimately hit
+  this path? If fewer than 10, you are patching"), building this now would be speculative work with
+  no observable game impact. Re-check if/when a madness or discard-watcher card enters the pool.
+- [x] **Investigated, deprioritized**: `triggers.py`'s Annihilator-sacrifice raw mutation (fires no
+  dies/sacrifice/LTB triggers, picks the opponent's sacrifice targets by lowest CMC instead of asking
+  them). Real bug, confirmed. **Verified zero blast radius**: 0 cards with `Keyword.ANNIHILATOR` in
+  any of the 16 registered decks' 75s. Same class-size reasoning as above — deprioritized, not fixed.
 - [ ] Extend `zone_manager._get_zone_list` / `move_card` to understand the "stack" zone, so future
   stack→zone transitions (the ~11 remaining `spell_resolution.py` sites) can route through the real
   funnel instead of file-local helpers. Architecturally larger than the counter-fizzle fix already
