@@ -110,11 +110,14 @@ class PlayerState:
     def creatures(self) -> List[CardInstance]:
         # Animated lands ("this land becomes an N/M creature until end
         # of turn") belong to the combat class while the animation
-        # lasts — Track H.
+        # lasts — Track H. `effective_is_creature` resolves front vs
+        # back face for transformed DFCs — the single owner of "what
+        # type is this permanent right now" (engine/cards.py), fixing
+        # the prior hardcoded "transformed ⇒ became a planeswalker"
+        # assumption that excluded creature-backed transforms (e.g.
+        # Reflection of Kiki-Jiki) from combat entirely.
         return [c for c in self.battlefield
-                if (c.template.is_creature
-                    and not getattr(c, 'is_transformed', False))
-                or getattr(c, 'is_animated', False)]
+                if c.effective_is_creature or getattr(c, 'is_animated', False)]
 
     @property
     def lands(self) -> List[CardInstance]:
@@ -122,9 +125,7 @@ class PlayerState:
 
     @property
     def planeswalkers(self) -> List[CardInstance]:
-        return [c for c in self.battlefield
-                if (CardType.PLANESWALKER in c.template.card_types
-                    or getattr(c, 'is_transformed', False))]
+        return [c for c in self.battlefield if c.effective_is_planeswalker]
 
     @property
     def untapped_lands(self) -> List[CardInstance]:

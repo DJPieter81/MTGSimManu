@@ -2897,27 +2897,47 @@ def territorial_kavu_attack(game, card, controller, targets=None, item=None):
 # Scion of Draco — domain cost reduction + keyword soup
 # ═══════════════════════════════════════════════════════════════════
 @EFFECT_REGISTRY.register("Scion of Draco", EffectTiming.ETB,
-                           description="Flying 4/4, gives all creatures keywords by color")
+                           description="Flying 4/4; creatures you control gain a "
+                                       "color-conditional keyword")
 def scion_of_draco_etb(game, card, controller, targets=None, item=None):
-    """Scion of Draco: 4/4 flying. With Leyline (all colors), gives all
-    creatures: vigilance, hexproof, first strike, lifelink, flying."""
+    """Scion of Draco: 4/4 flying. Static ability (continuous, not a
+    one-time ETB event): 'Each creature you control has vigilance if
+    it's white, hexproof if it's blue, lifelink if it's black, first
+    strike if it's red, and trample if it's green.' Registered as
+    ContinuousEffects (engine/continuous_effects.py) so the grant is
+    re-derived every recalculate() — per-creature by that creature's
+    OWN printed color, not the controller's overall color range — and
+    automatically retracts if Scion leaves the battlefield (the
+    manager's stale-source cleanup). Mechanic-class: "creatures you
+    control have keyword K if they're color C" — this registration
+    shape generalizes to any future card with the same clause."""
     from .cards import Keyword
-    player = game.players[controller]
-    has_leyline = getattr(player, '_leyline_guildpact', False)
-    if has_leyline:
-        # All permanents are all colors → every creature gets everything
-        for creature in player.creatures:
-            creature.keywords.add(Keyword.LIFELINK)
-            creature.keywords.add(Keyword.FLYING)
-            creature.keywords.add(Keyword.FIRST_STRIKE)
-            creature.keywords.add(Keyword.VIGILANCE)
-        game.log.append(
-            f"T{game.display_turn} P{controller+1}: "
-            f"Scion of Draco grants all creatures: vigilance, first strike, lifelink, flying")
-    else:
-        game.log.append(
-            f"T{game.display_turn} P{controller+1}: "
-            f"Scion of Draco enters (no Leyline — partial keywords)")
+    from .mana import Color
+    from .continuous_effects import ContinuousEffect, Layer, create_lord_effect
+
+    color_keyword_map = {
+        Color.WHITE: Keyword.VIGILANCE,
+        Color.BLUE: Keyword.HEXPROOF,
+        Color.BLACK: Keyword.LIFELINK,
+        Color.RED: Keyword.FIRST_STRIKE,
+        Color.GREEN: Keyword.TRAMPLE,
+    }
+    for color, keyword in color_keyword_map.items():
+        def affected(g, c, _color=color, _controller=controller):
+            return (c.controller == _controller
+                    and c.template.is_creature
+                    and _color in c.template.colors)
+        for effect in create_lord_effect(
+                source_id=card.instance_id, source_name=card.template.name,
+                affected_fn=affected, power_bonus=0, toughness_bonus=0,
+                keyword_grants={keyword},
+                description=f"grants {keyword.name} to your {color.name} creatures"):
+            game.continuous_effects.register(effect)
+    game.continuous_effects.recalculate(game)
+    game.log.append(
+        f"T{game.display_turn} P{controller+1}: "
+        f"Scion of Draco enters — creatures gain vigilance/hexproof/"
+        f"lifelink/first strike/trample if white/blue/black/red/green")
 
 
 # ═══════════════════════════════════════════════════════════════════

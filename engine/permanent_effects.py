@@ -280,8 +280,18 @@ class PermanentEffects:
         game.players[owner].graveyard.append(creature)
         game.players[controller].creatures_died_this_turn += 1
 
-        # Generic oracle-text-based dies triggers
-        if creature.template.name not in EFFECT_REGISTRY._handlers:
+        # Dies triggers: a registered EffectTiming.DIES handler owns
+        # this card's dies behavior (mirrors the ETB execute-then-
+        # fallback pattern at card_effects.py:69); only fall back to
+        # the generic oracle-derived path when no DIES-specific
+        # handler is registered. The previous gate tested "does this
+        # NAME have any handler at all" — a card with only an ETB or
+        # SPELL_RESOLVE registration (the vast majority) had its
+        # unrelated oracle-derived dies clause silently skipped, and
+        # the one real DIES registration (Haywire Mite) was never
+        # invoked by anything.
+        if not EFFECT_REGISTRY.execute(creature.template.name, EffectTiming.DIES,
+                                       game, creature, controller):
             from .oracle_resolver import resolve_dies_trigger
             resolve_dies_trigger(game, creature, controller)
 

@@ -112,6 +112,15 @@ class CardTemplate:
     keywords: Set[Keyword] = field(default_factory=set)
     abilities: List[Ability] = field(default_factory=list)
     color_identity: Set[Color] = field(default_factory=set)
+    # The permanent's own printed color (MTGJSON `colors`) — NOT the
+    # same as color_identity (MTGJSON `colorIdentity`, which can
+    # include colors referenced by the card's text/cost beyond its own
+    # printed color; used for format-legality checks, not "is this
+    # permanent white/blue/etc." characteristic checks). Needed for
+    # any color-conditional static ability ("has vigilance if it's
+    # white") — using color_identity for that check is a common latent
+    # bug in exactly this shape of effect.
+    colors: Set[Color] = field(default_factory=set)
     # For lands
     produces_mana: List[str] = field(default_factory=list)  # e.g., ["W", "R"]
     # Mana UNITS from the land's plain {T} ability: one inner list of
@@ -170,6 +179,16 @@ class CardTemplate:
     domain_reduction: int = 0                 # cost reduction per basic land type
     back_face_oracle: str = ""                # oracle text for back face (transform cards)
     back_face_loyalty: int = 0                # starting loyalty for back face planeswalker
+    # Full back-face characteristics for ANY multi-face card (not just
+    # planeswalker-backed). Populated at DB load alongside
+    # back_face_oracle/back_face_loyalty above. Empty/None = single-faced
+    # card, or back-face data wasn't captured (should not happen for any
+    # card with >=2 MTGJSON face entries after the DFC-capture fix).
+    back_face_types: List[CardType] = field(default_factory=list)
+    back_face_subtypes: List[str] = field(default_factory=list)
+    back_face_power: Optional[int] = None
+    back_face_toughness: Optional[int] = None
+    back_face_keywords: Set[Keyword] = field(default_factory=set)
     power_scales_with: str = ""               # "domain", "tarmogoyf", "delirium", "graveyard"
     # Splice onto Arcane: oracle-derived from "Splice onto Arcane {cost}"
     splice_cost: Optional[int] = None          # mana cost to splice (None = no splice)
@@ -261,12 +280,37 @@ class CardInstance:
     temp_power_mod: int = 0
     temp_toughness_mod: int = 0
     temp_keywords: Set[Keyword] = field(default_factory=set)
+    # Continuous-effects-manager-derived P/T/keywords (engine/
+    # continuous_effects.py). Kept SEPARATE from temp_power_mod/
+    # temp_toughness_mod/temp_keywords above — those are a shared
+    # dumping ground for one-shot pump spells, Dash, and other ad-hoc
+    # mutations throughout engine/card_effects.py, cleared
+    # unconditionally by cleanup_damage() every end of turn. The
+    # cem_* fields represent RE-DERIVED continuous/static effects
+    # (lords, anthems, equipment, static keyword grants) that persist
+    # exactly as long as their source is on the battlefield; they are
+    # cleared and rebuilt by ContinuousEffectsManager.recalculate()
+    # on every call, not by turn-based cleanup, so mixing them into
+    # temp_power_mod would either wipe a continuous effect early
+    # (at end of turn) or double-count it (recalculate() re-applying
+    # on top of a value cleanup_damage() never reset).
+    cem_power_mod: int = 0
+    cem_toughness_mod: int = 0
+    cem_keywords: Set[Keyword] = field(default_factory=set)
     # Land animation ("this land becomes an N/M creature until end of
     # turn") — Track H. While True the instance belongs to the combat
     # class (creatures property, can_attack/can_block, SBA death
     # check); the printed P/T ride on temp_power_mod/temp_toughness_mod
     # and every part wears off together in cleanup_damage().
     is_animated: bool = False
+    # True once `_transform_permanent` (engine/oracle_resolver.py) has
+    # flipped this instance to its back face. Consulted by
+    # `effective_card_types`/`effective_power`/`effective_toughness`
+    # below to select front- vs back-face characteristics — the single
+    # owner of "what type/P/T is this permanent right now" for
+    # transformed DFCs. Previously an undeclared setattr-only
+    # attribute read via getattr(..., False) at 9 call sites.
+    is_transformed: bool = False
     # Tracking
     turned_face_up: bool = True
     entered_battlefield_this_turn: bool = False
@@ -314,15 +358,70 @@ class CardInstance:
     def name(self) -> str:
         return self.template.name
 
+    # ── Effective characteristics (CR 613-adjacent) ─────────────────
+    # Single owner of "what is true about this permanent's printed
+    # characteristics RIGHT NOW" for a transformed DFC. Front vs back
+    # face is selected once, here, instead of every reader guessing
+    # independently (the bug class this fixes: player_state.creatures/
+    # planeswalkers previously hardcoded "transformed ⇒ became a
+    # planeswalker" — true only for the one DFC shape the original
+    # transform code was built against).
+
+    @property
+    def effective_card_types(self) -> List[CardType]:
+        """Card types of whichever face is currently active."""
+        if self.is_transformed and self.template.back_face_types:
+            return self.template.back_face_types
+        return self.template.card_types
+
+    @property
+    def effective_subtypes(self) -> List[str]:
+        """Subtypes of whichever face is currently active."""
+        if self.is_transformed and self.template.back_face_types:
+            return self.template.back_face_subtypes
+        return self.template.subtypes
+
+    @property
+    def effective_is_creature(self) -> bool:
+        return CardType.CREATURE in self.effective_card_types
+
+    @property
+    def effective_is_planeswalker(self) -> bool:
+        return CardType.PLANESWALKER in self.effective_card_types
+
+    def _effective_printed_power(self) -> int:
+        """Printed power of whichever face is currently active."""
+        if (self.is_transformed and self.template.back_face_types
+                and self.template.back_face_power is not None):
+            return self.template.back_face_power
+        return self.template.power or 0
+
+    def _effective_printed_toughness(self) -> int:
+        """Printed toughness of whichever face is currently active."""
+        if (self.is_transformed and self.template.back_face_types
+                and self.template.back_face_toughness is not None):
+            return self.template.back_face_toughness
+        return self.template.toughness or 0
+
+    def _effective_oracle_text(self) -> str:
+        """Oracle text of whichever face is currently active — drives
+        the regex-based scaling detection in _dynamic_base_power/
+        _dynamic_base_toughness below."""
+        if self.is_transformed and self.template.back_face_oracle:
+            return self.template.back_face_oracle
+        return self.template.oracle_text or ''
+
     @property
     def power(self) -> int:
         base = self._dynamic_base_power()
-        return base + self.plus_counters - self.minus_counters + self.temp_power_mod
+        return (base + self.plus_counters - self.minus_counters
+                + self.temp_power_mod + self.cem_power_mod)
 
     @property
     def toughness(self) -> int:
         base = self._dynamic_base_toughness()
-        return base + self.plus_counters - self.minus_counters + self.temp_toughness_mod
+        return (base + self.plus_counters - self.minus_counters
+                + self.temp_toughness_mod + self.cem_toughness_mod)
 
     def _get_domain_count(self) -> int:
         """Count basic land types among lands controlled by this card's controller."""
@@ -411,9 +510,14 @@ class CardInstance:
         """Calculate base power, accounting for domain and similar effects.
         Scaling type is detected at template load time from oracle text
         (CardTemplate.power_scales_with) — no card names hardcoded here.
+
+        Reads the currently-active face's printed power/oracle text
+        (_effective_printed_power/_effective_oracle_text) so a
+        transformed permanent's power reflects its back face, not the
+        front face it flipped from.
         """
         if self.zone != "battlefield":
-            return self.template.power or 0
+            return self._effective_printed_power()
         scaling = self.template.power_scales_with
 
         if scaling == "domain":
@@ -424,15 +528,15 @@ class CardInstance:
             if self._has_delirium():
                 # Parse bonus from oracle: "gets +N/+M" → use N for power
                 import re as _re
-                oracle = (self.template.oracle_text or '').lower()
+                oracle = self._effective_oracle_text().lower()
                 m = _re.search(r'gets?\s+\+(\d+)/\+(\d+)', oracle)
                 bonus = int(m.group(1)) if m else 2
-                return (self.template.power or 0) + bonus
-            return self.template.power or 0
+                return self._effective_printed_power() + bonus
+            return self._effective_printed_power()
         if scaling == "graveyard":
-            return (self.template.power or 0) + self._get_gy_instants_sorceries()
+            return self._effective_printed_power() + self._get_gy_instants_sorceries()
 
-        base = self.template.power or 0
+        base = self._effective_printed_power()
         # Construct Token and similar: "gets +N/+N for each artifact you control"
         # NB: must match the bonus-per-artifact pattern specifically. The naive
         # `'artifact you control' in oracle` match triggered on Affinity reminder
@@ -440,9 +544,9 @@ class CardInstance:
         # inflated every Affinity creature's power to the controller's artifact
         # count. Scope the match to the actual Construct/Plating pattern.
         import re as _re
-        oracle = (self.template.oracle_text or '').lower()
+        oracle = self._effective_oracle_text().lower()
         if _re.search(r'\+\d+/\+\d+\s+for\s+each\s+artifact\s+you\s+control', oracle):
-            base = (self.template.power or 0) + self._get_artifact_count()
+            base = self._effective_printed_power() + self._get_artifact_count()
         # Equipment scaling (Cranial Plating, Nettlecyst, etc.)
         # Tags are equipped_{instance_id} — unique per equipment, supports stacking.
         for tag in self.instance_tags:
@@ -470,7 +574,7 @@ class CardInstance:
     def _dynamic_base_toughness(self) -> int:
         """Calculate base toughness — mirrors _dynamic_base_power scaling logic."""
         if self.zone != "battlefield":
-            return self.template.toughness or 0
+            return self._effective_printed_toughness()
         scaling = self.template.power_scales_with
 
         if scaling == "domain":
@@ -480,20 +584,20 @@ class CardInstance:
         if scaling == "delirium":
             if self._has_delirium():
                 import re as _re
-                oracle = (self.template.oracle_text or '').lower()
+                oracle = self._effective_oracle_text().lower()
                 m = _re.search(r'gets?\s+\+(\d+)/\+(\d+)', oracle)
                 bonus = int(m.group(2)) if m else 2
-                return (self.template.toughness or 0) + bonus
-            return self.template.toughness or 0
+                return self._effective_printed_toughness() + bonus
+            return self._effective_printed_toughness()
         if scaling == "graveyard":
-            return (self.template.toughness or 0) + self._get_gy_instants_sorceries()
+            return self._effective_printed_toughness() + self._get_gy_instants_sorceries()
 
-        base = self.template.toughness or 0
+        base = self._effective_printed_toughness()
         import re as _re
-        oracle = (self.template.oracle_text or '').lower()
+        oracle = self._effective_oracle_text().lower()
         # Same tightening as _dynamic_base_power — see note above.
         if _re.search(r'\+\d+/\+\d+\s+for\s+each\s+artifact\s+you\s+control', oracle):
-            base = (self.template.toughness or 0) + self._get_artifact_count()
+            base = self._effective_printed_toughness() + self._get_artifact_count()
         # Equipment toughness scaling — only applies when toughness component is non-zero.
         # e.g. Nettlecyst: +1/+1 for each artifact → toughness bonus applies
         # e.g. Cranial Plating: +1/+0 for each artifact → NO toughness bonus
@@ -529,7 +633,7 @@ class CardInstance:
 
     @property
     def keywords(self) -> Set[Keyword]:
-        return self.template.keywords | self.temp_keywords
+        return self.template.keywords | self.temp_keywords | self.cem_keywords
 
     @property
     def has_deathtouch(self) -> bool:
