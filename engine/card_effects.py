@@ -369,122 +369,70 @@ def springleaf_drum_etb(game, card, controller, targets=None, item=None):
     )
 
 
-@EFFECT_REGISTRY.register("Phlage, Titan of Fire's Fury", EffectTiming.ETB,
-                           description="ETB: sacrifice unless escaped; deal 3 damage, gain 3 life")
-def phlage_etb(game, card, controller, targets=None, item=None):
-    # Oracle: "When Phlage enters, sacrifice it unless it was cast from
-    # a graveyard." "Whenever Phlage enters or attacks, it deals 3 damage
-    # to any target and you gain 3 life."
-    # Target-fidelity: honour the declared target first. Only fall back
-    # to the oracle-driven picker when nothing was declared (e.g. an
-    # attack-trigger re-fire that re-enters this handler without a stack
-    # item, or a reanimator path with no chosen target).
-    from engine.oracle_resolver import _pick_damage_target
-    opponent = 1 - controller
-    target = None
-    if targets:
-        for tid in targets:
-            if tid is None or tid < 0:
-                continue  # sentinel "face"
-            cand = game.get_card_by_id(tid)
-            if cand is not None and cand.zone == "battlefield":
-                target = cand
-                break
-    if target is None and not targets:
-        target = _pick_damage_target(game, controller, 3)
-    if target is not None:
-        target.damage_marked = getattr(target, 'damage_marked', 0) + 3
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Phlage: 3 damage to {target.name}, gain 3 life")
-        game.check_state_based_actions()
-    else:
-        game.players[opponent].life -= 3
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Phlage: 3 damage to opponent, gain 3 life")
-    game.players[controller].life += 3
-
-    # Sacrifice unless escaped
-    escaped = getattr(card, '_escaped', False)
-    if not escaped:
-        if card in game.players[controller].battlefield:
-            game.players[controller].battlefield.remove(card)
-            card.zone = "graveyard"
-            game.players[controller].graveyard.append(card)
-            game.log.append(f"T{game.display_turn} P{controller+1}: "
-                            f"Phlage sacrificed (not escaped)")
-
-    # Check if opponent is dead
-    if game.players[opponent].life <= 0:
-        game.game_over = True
-        game.winner = controller
-        game.win_condition = "life_total"
+# NOTE: "Phlage, Titan of Fire's Fury" used to be registered here
+# (ETB: sacrifice unless escaped; deal 3 damage to any target; gain 3
+# life). It was removed after research for the "deal N damage to any
+# target" EFFECT_REGISTRY cluster (see
+# docs/design/rules-foundation-sweep-tracker.md, Phase 3) found the
+# card itself is no longer in ModernAtomic — it was removed entirely
+# by the MTGJSON refresh that followed its Modern ban (commit
+# d02c543, already on main before this branch). No CardInstance can
+# ever carry that literal name, so the handler was unreachable dead
+# code (grepped: no test constructs a card with this exact name
+# either). Deleted rather than migrated — same class-size/dead-code
+# reasoning this program applies elsewhere. If Phlage (or a
+# functional reprint) re-enters the pool, re-add a handler that
+# routes its damage step through
+# `engine.oracle_resolver.resolve_damage_to_chosen_target` rather
+# than restoring the old raw-mutation version.
 
 
 # ═══════════════════════════════════════════════════════════════════
 # Spell Resolution Effects
 # ═══════════════════════════════════════════════════════════════════
 
+# The next three handlers (Lightning Bolt, Lava Dart, Unholy Heat) —
+# plus Grapeshot, registered further below — are all instances of one
+# mechanic shape: "deal N damage to any target". Each used to
+# re-implement its own copy of "walk the declared target list, apply
+# damage to the first eligible creature/planeswalker, else go face."
+# That inline duplication is now `engine.oracle_resolver.
+# resolve_damage_to_chosen_target`, the single shared owner (routes
+# through `engine.damage.deal_damage` so lifelink/deathtouch/SBA
+# scheduling are correct by construction). See
+# docs/design/rules-foundation-sweep-tracker.md (Phase 3) for the
+# full cluster research — which cards were included/excluded and why.
 @EFFECT_REGISTRY.register("Lightning Bolt", EffectTiming.SPELL_RESOLVE,
                            description="Deal 3 damage to any target")
 def lightning_bolt_resolve(game, card, controller, targets=None, item=None):
-    from .damage import deal_damage
-    from .cards import CardType
-    opponent = 1 - controller
-    if targets:
-        for tid in targets:
-            if tid == -1:
-                break  # AI chose face
-            target = game.get_card_by_id(tid)
-            if (target and target.zone == "battlefield"
-                    and (target.template.is_creature
-                         or CardType.PLANESWALKER in target.template.card_types)):
-                deal_damage(card, target, 3)
-                return
-    deal_damage(card, game.players[opponent], 3)
+    from .oracle_resolver import resolve_damage_to_chosen_target
+    resolve_damage_to_chosen_target(game, card, controller, 3, targets)
 
 
 @EFFECT_REGISTRY.register("Lava Dart", EffectTiming.SPELL_RESOLVE,
                            description="Deal 1 damage to any target")
 def lava_dart_resolve(game, card, controller, targets=None, item=None):
-    from .damage import deal_damage
-    from .cards import CardType
-    opponent = 1 - controller
-    if targets:
-        for tid in targets:
-            if tid == -1:
-                break  # AI chose face
-            target = game.get_card_by_id(tid)
-            if (target and target.zone == "battlefield"
-                    and (target.template.is_creature
-                         or CardType.PLANESWALKER in target.template.card_types)):
-                deal_damage(card, target, 1)
-                return
-    deal_damage(card, game.players[opponent], 1)
+    from .oracle_resolver import resolve_damage_to_chosen_target
+    resolve_damage_to_chosen_target(game, card, controller, 1, targets)
 
 
 @EFFECT_REGISTRY.register("Unholy Heat", EffectTiming.SPELL_RESOLVE,
                            description="Deal 2 (or 6 with delirium) damage")
 def unholy_heat_resolve(game, card, controller, targets=None, item=None):
-    from .damage import deal_damage
-    from .cards import CardType
-    opponent = 1 - controller
+    # The only real per-card quirk in this cluster: the printed amount
+    # is conditional on delirium (CR-style card-specific AMOUNT
+    # computation, not a target-resolution difference) — this stays
+    # here; only the target application delegates to the shared
+    # resolver.
+    from .oracle_resolver import resolve_damage_to_chosen_target
     gy = game.players[controller].graveyard
     types_in_gy = set()
     for c in gy:
         for ct in c.template.card_types:
             types_in_gy.add(ct)
-    damage = 6 if len(types_in_gy) >= 4 else 2
-    if targets:
-        for tid in targets:
-            if tid == -1:
-                break  # AI chose face
-            target = game.get_card_by_id(tid)
-            if (target and target.zone == "battlefield"
-                    and (target.template.is_creature
-                         or CardType.PLANESWALKER in target.template.card_types)):
-                deal_damage(card, target, damage)
-                return
-    deal_damage(card, game.players[opponent], damage)
+    delirium = len(types_in_gy) >= 4
+    damage = 6 if delirium else 2
+    resolve_damage_to_chosen_target(game, card, controller, damage, targets)
 
 
 @EFFECT_REGISTRY.register("Goryo's Vengeance", EffectTiming.SPELL_RESOLVE,
@@ -549,14 +497,32 @@ def unmarked_grave_resolve(game, card, controller, targets=None, item=None):
 @EFFECT_REGISTRY.register("Grapeshot", EffectTiming.SPELL_RESOLVE,
                            description="Deal 1 damage to any target")
 def grapeshot_resolve(game, card, controller, targets=None, item=None):
-    opponent = 1 - controller
-    # Grapeshot deals 1 damage (base effect). Storm copies are handled
-    # by _handle_storm which calls this again for each copy.
-    game.players[opponent].life -= 1
-    game.players[controller].damage_dealt_this_turn += 1
-    game.log.append(f"T{game.display_turn} P{controller+1}: "
-                    f"Grapeshot deals 1 damage"
-                    f" (opponent life: {game.players[opponent].life})")
+    # Grapeshot deals 1 damage (base effect) to its declared "any
+    # target". Storm copies are handled by _handle_storm, which calls
+    # this again for each copy, re-declaring the same `item.targets`
+    # (correct: CR 706.10c — Storm copies keep the original targets
+    # unless the caster is offered new ones, which this engine does
+    # not yet model).
+    #
+    # Pre-migration bug: this handler ignored `targets` entirely and
+    # always mutated `opponent.life` directly, bypassing
+    # `engine.damage.deal_damage` — real damage-application drift from
+    # the shared funnel (see
+    # tests/test_burn_damage_shared_resolver.py::TestGrapeshotRespectsDeclaredTarget).
+    # The live AI always casts Grapeshot with `targets=[-1]`
+    # (ai/ev_player.py's storm-finisher target policy), so this fix
+    # does not change any current sim outcome — it just makes the
+    # engine correct for any other caller of a "deal N damage to any
+    # target" storm spell.
+    from .oracle_resolver import resolve_damage_to_chosen_target
+    hit = resolve_damage_to_chosen_target(game, card, controller, 1, targets)
+    if hit is not None:
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
+                        f"Grapeshot deals 1 damage to {hit.name}")
+    else:
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
+                        f"Grapeshot deals 1 damage"
+                        f" (opponent life: {game.players[1 - controller].life})")
 
 
 @EFFECT_REGISTRY.register("Past in Flames", EffectTiming.SPELL_RESOLVE,

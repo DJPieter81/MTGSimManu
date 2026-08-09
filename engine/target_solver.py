@@ -503,6 +503,18 @@ def _matches_type(card: "CardInstance", types: FrozenSet[str],
     return False
 
 
+def _blocked_by_hexproof(card: "CardInstance", controller: int) -> bool:
+    """CR 702.11d — a permanent with hexproof can't be the target of a
+    spell or ability an OPPONENT controls (your own spells can still
+    target it). Battlefield-zone only; hexproof has no meaning for
+    cards in other zones.
+    """
+    from .cards import Keyword
+    if card.controller == controller:
+        return False
+    return Keyword.HEXPROOF in card.keywords
+
+
 def _matches_supertype(card: "CardInstance",
                        supertype: Optional[str]) -> bool:
     """Filter by supertype. None = no filter. Mirrors the legendary /
@@ -644,6 +656,8 @@ def has_legal_target(game: "GameState", controller: int,
             continue
         if not _matches_supertype(card, req.supertype):
             continue
+        if req.zone == "battlefield" and _blocked_by_hexproof(card, controller):
+            continue
         # Owner already pre-filtered by _zone_cards.
         return True
     return False
@@ -681,6 +695,8 @@ def enumerate_legal_targets(game: "GameState", controller: int,
         if not _matches_type(card, req.types, req.zone):
             continue
         if not _matches_supertype(card, req.supertype):
+            continue
+        if req.zone == "battlefield" and _blocked_by_hexproof(card, controller):
             continue
         out.append(card)
     return out
