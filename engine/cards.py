@@ -193,6 +193,14 @@ class CardTemplate:
     # Splice onto Arcane: oracle-derived from "Splice onto Arcane {cost}"
     splice_cost: Optional[int] = None          # mana cost to splice (None = no splice)
     is_arcane: bool = False                    # True if subtype includes Arcane
+    # Counter/tax framework — structured replacement for the old
+    # "'counter' in ability.description" substring dispatch. Populated
+    # at load time from the same OracleEffect the ability description
+    # is synthesized from, so it can never drift from what actually
+    # got matched.
+    is_counterspell: bool = False              # has a "counter target ..." effect
+    counter_target_kind: str = ""              # "spell"/"creature_spell"/"noncreature_spell"/"instant_or_sorcery_spell"
+    counter_tax_amount: int = 0                # {N} from "unless its controller pays {N}"; 0 = hard counter
 
     @property
     def is_creature(self) -> bool:

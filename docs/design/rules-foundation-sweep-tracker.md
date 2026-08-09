@@ -374,12 +374,108 @@ decision changes from 0a-0e landing, not regressions.
 **Phase 0 is now fully merged (0a-0e complete).** Per the approved plan's sequencing, Phase 1 can
 start.
 
-## Phase 1 / 2 / 3
+## Phase 1
 
-Not started. See the approved plan (`/root/.claude/plans/lets-create-plan-and-typed-flurry.md` at
-authoring time — copy the plan content here if that path is not durable across sessions) for full
-item-by-item design. Phase 1: 1a cost/counter framework, 1b combat legality, 1c damage funnel,
-1d CDA generalization. Phase 2: 2a `opportunity_cost` primitive, 2b joint block-assignment, 2c
+See the approved plan (`/root/.claude/plans/lets-create-plan-and-typed-flurry.md` at authoring
+time — copy the plan content here if that path is not durable across sessions) for full
+item-by-item design. 1b combat legality, 1c damage funnel, 1d CDA generalization: not started.
+
+### 1a. "Unless controller pays {N}" counter/tax framework — DONE
+
+**Problem confirmed exactly as scoped:** `spell_resolution.py`'s counter dispatch synthesized a
+"Counter target X" ability description from the parsed `OracleEffect`, discarding the
+"unless...pays {N}" clause entirely — Metallic Rebuke, Mana Leak, and Countersquall counter
+every spell unconditionally, identical to Counterspell. Confirmed via the DB: `Metallic Rebuke`
+oracle is `"...Counter target spell unless its controller pays {3}."`.
+
+**Two additional bugs found and fixed in the same class** (both surfaced by tracing why the
+fix didn't reach real cards):
+
+1. **Dispatch fragility** — the `elif "counter" in desc:` gate was a raw substring match.
+   Empirically zero false positives exist today (no synthesized ability description happens to
+   contain "counter" outside real counter effects), but the plan's concern generalizes to a real
+   structural bug: gating on a **template-level** `is_counterspell` flag with no per-ability
+   scoping would mis-fire on every OTHER ability of a **multi-ability counterspell** — 58
+   Modern-legal counterspells (Cryptic Command, Absorb, Censor, Bone to Ash, Confirm Suspicions,
+   Exclude, ...) carry a second synthesized ability (usually "Draw 1 card(s)") alongside the
+   counter effect. Fixed by gating on **both** `card.template.is_counterspell` (new structured
+   field, populated at load time from the same `OracleEffect` the ability description is
+   synthesized from — never re-derived from raw oracle text at resolution time) **and** the
+   specific ability's own synthesized description starting with `"counter target"` — this binds
+   the branch to the ONE ability entry that's actually the counter effect, not every ability on
+   a multi-ability card. `counter_target_kind` (structured: `"spell"`/`"creature_spell"`/
+   `"noncreature_spell"`/`"instant_or_sorcery_spell"`) replaces the `'noncreature' in
+   counter_oracle` / `'instant or sorcery' in counter_oracle` substring checks for the same
+   reason.
+2. **`resolve_spell_from_oracle` intercepts multi-ability counterspells before they ever reach
+   the counter dispatch at all** — its "draw N cards" pattern (`engine/oracle_resolver.py`)
+   matches the WHOLE oracle string, not a single clause (the function's own docstring claims
+   clause-scoping via `split_abilities`, but this specific branch uses the raw `oracle` string).
+   On a real "draw + counter" counterspell it fires the draw, returns `True`, and the caller
+   (`_execute_spell_effects`) skips the per-ability loop entirely — **the counter effect never
+   runs at all**. Confirmed empirically: `Cryptic Command`, `Censor`, `Confirm Suspicions`, and
+   `Exclude` are intercepted this way (`Absorb`/`Countersquall`/`Counterspell`/`Mana Leak` are
+   not, since they have no separate draw-pattern-matching clause). This is a worse bug than the
+   tax issue — these 4 cards countered NOTHING before this fix, tax or no tax. Fixed by skipping
+   `resolve_spell_from_oracle` entirely for any `is_counterspell` card, always routing through
+   the per-ability loop (which correctly fires both the draw ability AND the counter ability as
+   independent entries, since it iterates the synthesized abilities list rather than pattern-
+   matching the whole oracle string once).
+
+**Design, following the plan:** `engine/oracle_parser.py::parse_counter_tax` (scoped to the
+single ability paragraph containing "counter target" via `split_abilities`, so an unrelated
+"unless...pays" clause elsewhere on a multi-ability card — e.g. a land's optional-untapped-entry
+cost — can't leak in) → `CardTemplate.counter_tax_amount` (populated at load time, `0` = hard
+counter). At resolution, a nonzero tax routes through `engine/optional_costs.py`'s NEW
+`offer_counter_tax`/`parse_counter_tax_cost` — reusing the EXISTING `OptionalCost` typed schema
+and the EXISTING `decide_optional_cost` AI callback (both already existed, unused for this shape,
+per `ai/schemas.py`'s `CostKind = Literal["life", "mana", ...]` / `EffectKind = Literal[...,
+"counter_target", ...]` already anticipating exactly this), not a new mechanic-named callback —
+just a new discovery+offer pair for the case where the decision-maker (targeted spell's
+controller) differs from the source card's own controller (the counter's caster). Affordability
+(`player.available_mana_estimate < amount`) is an engine-side rules gate checked BEFORE offering
+the decision at all — an unpayable tax never becomes a choice, matching a real game where an
+unaffordable "unless" clause auto-resolves to the default (countered). The strategic "would I
+want to" question is decided by `ai.ev_evaluator.project_counter_tax_payment` (new function,
+reuses the existing `_project_spell` oracle-driven resolution projection rather than a second
+bespoke value model — pre-compensates for `_project_spell`'s "still in hand" assumption since the
+targeted spell already left the hand and already paid its own cost) feeding `best_choice` via the
+same `[pay, skip]` `Choice` list `decide_optional_cost` already builds for every other optional
+cost — no new AI decision-kernel code.
+
+**Tests (failing-first):** `tests/test_counter_tax_framework.py` — `parse_counter_tax` unit tests
+(hard vs soft, ability-paragraph scoping), structured-field tests on real DB cards (Metallic
+Rebuke tax=3, Counterspell tax=0, Essence Scatter kind=creature_spell, DB-wide zero-false-positive
+regression on the old substring-collision concern), resolution-engine integration
+(`TestSoftCounterResolution`: pay→not countered, don't-pay→countered, unaffordable→auto-countered
+with the AI callback never even asked, hard-counter regression), `TestMultiAbilityCounterDoesNotDoubleFire`
+(synthetic Cryptic-Command-shape fixture — counters exactly once, doesn't re-fire on the second
+ability), `TestRealMultiAbilityCounterspellsActuallyCounter::test_censor_counters_its_target` (real
+DB card, pins the `resolve_spell_from_oracle` interception fix specifically). 15 tests, all
+failing red before the fix (verified via the substring/template-flag-only intermediate states
+during development), green after.
+
+**Replay:** `python run_meta.py --bo3 "Pinnacle Affinity" "Izzet Prowess" -s 55506` does NOT
+demonstrate the fix — traced via `sys.settrace` to a genuinely separate, pre-existing bug: the AI
+decides to cast Metallic Rebuke based on a color-blind mana-availability estimate, then the
+engine's real (correctly color-aware) mana-payment step rejects the cast because no blue source
+is actually untapped at that moment (`CastManager.cast_spell` returns `False` at its final
+`tap_lands_for_mana` call — confirmed identical on `origin/main` before this branch's changes via
+a `git stash` A/B comparison, so this is not a regression from this work). Deprioritized per
+class-size reasoning — this is a general "AI overestimates castability of colored spells" gap,
+not specific to counterspells, and out of scope for 1a. **Seed `55507` does demonstrate the fix
+working end-to-end in a real game**: `T4: Resolve Metallic Rebuke` → `T4: Dragon's Rage Channeler
+is countered`. Unit tests are the authoritative verification for the pay/don't-pay/unaffordable
+branches specifically, since live-game RNG doesn't reliably hit the tax-paid branch on demand.
+
+**Follow-up filed, not fixed here:** the color-blind mana-availability estimate in the AI
+response-cast decision path (`ai/response.py` / whatever feeds `game_runner.py`'s
+`opponent_ai.decide_response`) — worth its own investigation given the class size (affects any
+colored spell's response-cast decision, not just counterspells).
+
+## Phase 2 / 3
+
+Not started. Phase 2: 2a `opportunity_cost` primitive, 2b joint block-assignment, 2c
 unify 3 combat models. Phase 3: this tracker doc (item 1, now done) + EFFECT_REGISTRY mechanic-
 cluster consolidation (burn-N-damage, destroy/exile-nonland-MV≤X, board-sweep, draw-N clusters —
 ~40-50 of 104 registrations) + remaining `ai/` patch retirement using 2a/2b's primitives + remaining

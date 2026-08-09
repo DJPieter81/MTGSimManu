@@ -317,6 +317,38 @@ def parse_cost_reduction(oracle: str) -> Optional[Dict]:
     return {'target': target, 'amount': amount, 'color': color}
 
 
+def parse_counter_tax(oracle: str) -> int:
+    """Parse a "soft counter" tax amount from oracle text.
+
+    Rule: "Counter target spell unless its controller pays {N}" gives
+    the targeted spell's controller a real choice — pay {N} generic
+    mana or the spell is countered. Modern examples: Metallic Rebuke,
+    Mana Leak, Countersquall (Mana Leak/Countersquall have no "improvise"
+    prefix; the pattern below only anchors on the counter+unless+pays
+    clause, not on any particular preceding ability).
+
+    Returns 0 (no tax — an unconditional "hard" counter like
+    Counterspell/Essence Scatter) when the clause is absent.
+
+    Scoped to a single ability paragraph via `split_abilities` so an
+    unrelated "unless...pays" clause elsewhere on a multi-ability card
+    (e.g. a land's "enters tapped unless you pay {N} life") cannot be
+    mistaken for a counter tax on a card that also happens to counter
+    something in a separate ability.
+    """
+    for clause in split_abilities(oracle or ''):
+        low = clause.lower()
+        if 'counter target' not in low:
+            continue
+        m = re.search(
+            r"unless\s+(?:its|their)\s+controller\s+pays\s*\{(\d+)\}",
+            low,
+        )
+        if m:
+            return int(m.group(1))
+    return 0
+
+
 def parse_domain_reduction(oracle: str) -> Optional[int]:
     """Parse domain-based cost reduction.
 

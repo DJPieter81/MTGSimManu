@@ -520,9 +520,22 @@ class ResolutionManager:
         # text for generic patterns (draw, discard, etc.). Returns True
         # when an effect fires, in which case the legacy ability-parser
         # below is skipped.
+        #
+        # Counterspells skip this resolver entirely and always fall
+        # through to the generic per-ability loop below. Reason: this
+        # resolver's pattern matches (e.g. "draw N cards") test the
+        # WHOLE oracle string, not a single clause — on a multi-clause
+        # counterspell (Cryptic Command's "Draw a card." mode; Censor/
+        # Confirm Suspicions/Exclude's "Draw a card. Counter target
+        # ... spell." template) it fires the draw and returns True,
+        # never reaching the counter effect at all. The per-ability
+        # loop below processes each synthesized ability independently
+        # (draw AND counter both fire), so it is the only path that
+        # gets a multi-ability counterspell's counter effect to run.
         from .oracle_resolver import resolve_spell_from_oracle
-        if resolve_spell_from_oracle(game, card, controller, item.targets):
-            return
+        if not getattr(card.template, 'is_counterspell', False):
+            if resolve_spell_from_oracle(game, card, controller, item.targets):
+                return
 
         # ── Generic fallback: parse abilities from oracle text ──
         # All named card effects are now handled by EFFECT_REGISTRY (card_effects.py).
@@ -608,44 +621,67 @@ class ResolutionManager:
                         if target and target.zone == "battlefield":
                             game._exile_permanent(target)
 
-            elif "counter" in desc:
-                # Validate counterspell targeting restrictions
-                counter_oracle = (card.template.oracle_text or '').lower()
+            elif (getattr(card.template, 'is_counterspell', False)
+                  and desc.startswith('counter target')):
+                # Gated on the structured `is_counterspell` flag
+                # (populated at load time from the same parsed effect
+                # the "Counter target ..." ability description was
+                # built from) PLUS this specific ability's synthesized
+                # description, not a raw oracle-text substring match —
+                # a raw-text `"counter" in desc` check collides with
+                # unrelated "counter" mentions ("+1/+1 counter",
+                # "charge counter") elsewhere on the same card, and a
+                # template-only flag (with no per-ability scoping)
+                # would re-fire on every OTHER ability of a multi-
+                # ability counterspell (58 Modern-legal counterspells —
+                # Cryptic Command, Absorb, Censor, ... — carry a
+                # second ability, e.g. "Draw 1 card(s)", alongside the
+                # counter effect; only the counter ability's own
+                # iteration should enter this branch).
+                #
+                # Validate counterspell targeting restrictions via the
+                # structured `counter_target_kind` field, for the same
+                # substring-collision reason as above.
+                target_kind = getattr(card.template, 'counter_target_kind', '')
                 target_template = None
+                target_stack_index = None
                 if item.targets:
                     for tid in item.targets:
-                        for si in game.stack.items:
+                        for i, si in enumerate(game.stack.items):
                             if si.source.instance_id == tid:
                                 target_template = si.source.template
+                                target_stack_index = i
                                 break
+                        if target_template is not None:
+                            break
                 elif not game.stack.is_empty:
-                    target_template = game.stack.top.source.template if game.stack.top else None
+                    target_template = game.stack.top.source.template
+                    target_stack_index = len(game.stack.items) - 1
 
                 # Noncreature-only counters can't hit creatures
-                if target_template and 'noncreature' in counter_oracle and target_template.is_creature:
+                if target_template and target_kind == 'noncreature_spell' and target_template.is_creature:
                     game.log.append(f"T{game.display_turn}: {card.name} fizzles (can't counter creature)")
-                elif target_template and 'instant or sorcery' in counter_oracle and not (target_template.is_instant or target_template.is_sorcery):
+                elif target_template and target_kind == 'instant_or_sorcery_spell' and not (target_template.is_instant or target_template.is_sorcery):
                     game.log.append(f"T{game.display_turn}: {card.name} fizzles (wrong target type)")
-                elif item.targets:
-                    for tid in item.targets:
-                        # Find the targeted spell on the stack
-                        for i, stack_item in enumerate(game.stack.items):
-                            if stack_item.source.instance_id == tid:
-                                countered = game.stack.items.pop(i)
-                                countered_card = countered.source
-                                ResolutionManager._move_countered_stack_item(
-                                    game, countered, countered_card)
-                                game.log.append(
-                                    f"T{game.display_turn}: {countered_card.name} is countered")
-                                break
-                elif not game.stack.is_empty:
-                    # No explicit target — counter the next spell on the stack
-                    countered = game.stack.pop()
-                    countered_card = countered.source
-                    ResolutionManager._move_countered_stack_item(
-                        game, countered, countered_card)
-                    game.log.append(
-                        f"T{game.display_turn}: {countered_card.name} is countered")
+                elif target_stack_index is not None:
+                    stack_item = game.stack.items[target_stack_index]
+                    countered_card = stack_item.source
+                    tax_amount = getattr(card.template, 'counter_tax_amount', 0) or 0
+                    paid = False
+                    if tax_amount > 0:
+                        from .optional_costs import offer_counter_tax
+                        paid = offer_counter_tax(game, card, countered_card)
+                    if paid:
+                        game.log.append(
+                            f"T{game.display_turn}: {countered_card.name}'s "
+                            f"controller pays {tax_amount} — not countered "
+                            f"by {card.name}")
+                    else:
+                        game.stack.items.pop(target_stack_index)
+                        ResolutionManager._move_countered_stack_item(
+                            game, stack_item, countered_card)
+                        game.log.append(
+                            f"T{game.display_turn}: {countered_card.name} is countered")
 
             elif "draw" in desc:
                 amount = 1

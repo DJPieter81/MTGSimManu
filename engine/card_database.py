@@ -1692,6 +1692,7 @@ class CardDatabase:
             parse_ritual_mana, parse_cycling_cost, parse_cycling_variant,
             parse_energy_production, has_cascade, parse_x_cost,
             parse_domain_reduction, detect_power_scaling, parse_splice_cost,
+            parse_counter_tax,
         )
         oracle = template.oracle_text or ''
         template.ritual_mana = parse_ritual_mana(oracle)
@@ -1704,6 +1705,17 @@ class CardDatabase:
         template.domain_reduction = parse_domain_reduction(oracle) or 0
         template.splice_cost = parse_splice_cost(oracle)
         template.power_scales_with = detect_power_scaling(oracle)
+
+        # Counter/tax framework (structured, not a description substring
+        # match): derived from the same `effects` list `abilities` was
+        # built from above, so `is_counterspell`/`counter_target_kind`
+        # can never drift from what the ability text actually says.
+        counter_effect = next(
+            (e for e in effects if e.effect_type == "counter"), None)
+        if counter_effect is not None:
+            template.is_counterspell = True
+            template.counter_target_kind = counter_effect.target_type
+        template.counter_tax_amount = parse_counter_tax(oracle)
 
         return template
 
