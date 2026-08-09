@@ -374,16 +374,147 @@ decision changes from 0a-0e landing, not regressions.
 **Phase 0 is now fully merged (0a-0e complete).** Per the approved plan's sequencing, Phase 1 can
 start.
 
-## Phase 1 / 2 / 3
+## Phase 1 / 2
 
-Not started. See the approved plan (`/root/.claude/plans/lets-create-plan-and-typed-flurry.md` at
-authoring time — copy the plan content here if that path is not durable across sessions) for full
-item-by-item design. Phase 1: 1a cost/counter framework, 1b combat legality, 1c damage funnel,
-1d CDA generalization. Phase 2: 2a `opportunity_cost` primitive, 2b joint block-assignment, 2c
-unify 3 combat models. Phase 3: this tracker doc (item 1, now done) + EFFECT_REGISTRY mechanic-
-cluster consolidation (burn-N-damage, destroy/exile-nonland-MV≤X, board-sweep, draw-N clusters —
-~40-50 of 104 registrations) + remaining `ai/` patch retirement using 2a/2b's primitives + remaining
-raw zone-mutation sites + CDA coverage extension (Death's Shadow, Mortivore/Bonehoard, Multani).
+Not started (as of this Phase 3 slice; both may land on separate branches in parallel — see
+Phase 3 note below on concurrent siblings). See the approved plan
+(`/root/.claude/plans/lets-create-plan-and-typed-flurry.md` at authoring time — copy the plan
+content here if that path is not durable across sessions) for full item-by-item design. Phase 1:
+1a cost/counter framework, 1b combat legality, 1c damage funnel, 1d CDA generalization. Phase 2:
+2a `opportunity_cost` primitive, 2b joint block-assignment, 2c unify 3 combat models.
+
+## Phase 3
+
+Tracked sweep of the long tail: EFFECT_REGISTRY mechanic-cluster consolidation (burn-N-damage,
+destroy/exile-nonland-MV≤X, board-sweep, draw-N clusters — ~40-50 of 104 registrations) +
+remaining `ai/` patch retirement using 2a/2b's primitives + remaining raw zone-mutation sites +
+CDA coverage extension (Death's Shadow, Mortivore/Bonehoard, Multani). Several Phase 3 slices
+run on separate branches in parallel (this doc may accumulate more than one `###` subsection
+below from sibling sessions — merge conflicts here are expected to be prose-only and low-risk).
+
+### EFFECT_REGISTRY removal-spell cluster consolidation — DONE
+
+**Problem confirmed, and extended past the original scope.** The prior patch census claimed a
+shared `_nonland_permanent_threat` HELPER existed for threat-scoring but no shared RESOLUTION
+handler — confirmed accurate (it was purely a `max(..., key=...)` comparator, called
+independently from 4 separate handler bodies). But reading every handler in full surfaced two
+real bugs the census didn't catch, both instances of this whole program's diagnosis ("no single
+owner for what is true right now"):
+
+1. **4 of the 6 handlers (Abrupt Decay, Prismatic Ending, Leyline Binding, March of Otherworldly
+   Light) never read the `targets` parameter at all**, even though `spell_resolution.py` already
+   threads `item.targets` into every `EFFECT_REGISTRY.execute(SPELL_RESOLVE/ETB, ...)` call, and
+   `ai/ev_player.py::_choose_targets` already computes a real target for these removal-tagged
+   spells (via `permanent_threat` + `engine_disruption_value`) before casting. The already-made
+   choice was silently discarded and a DIFFERENT permanent was picked at resolution using a
+   second, less-informed heuristic (`_nonland_permanent_threat`, which has no combo-engine-
+   disruption premium). Only Assassin's Trophy and Fatal Push consulted `targets`.
+2. **Fatal Push's explicit-target branch, when the chosen target failed its mana-value
+   condition, fell through to auto-picking a DIFFERENT creature** instead of doing nothing.
+   CR 608.2c: a resolution-time condition ("if it has mana value 2 or less") that a legally-
+   targeted permanent fails means the spell/ability has no effect — it does not re-target.
+   Verified via an A/B harness reproducing the exact pre-fix function body: targeting a
+   mana-value-6 creature with a mana-value-1 bystander also on board destroyed the BYSTANDER,
+   not the (correctly-surviving) targeted creature — see the test-writing session's harness in
+   this branch's history; the same shape is what `test_destroy_removal_condition_failure_*`
+   pins.
+
+**Per-card restriction table** (verified against real oracle text via `CardDatabase`, not
+assumed from memory — one entry corrected a wrong assumption going in):
+
+| Card | Zone dest | Type filter | Owner scope | MV condition |
+|---|---|---|---|---|
+| Abrupt Decay | destroy | nonland permanent | opponent | ≤ 3 (fixed) |
+| Assassin's Trophy | destroy | **any permanent, including lands** | opponent | none |
+| Fatal Push | destroy | **creature only** | opponent | ≤ 2, or ≤ 4 with revolt |
+| Leyline Binding | exile | nonland permanent | opponent | **none** — the domain-scaled cost reduction is a *casting* cost, not a targeting restriction (verified against the real oracle text: "exile target nonland permanent an opponent controls" has no mana-value clause at all) |
+| Prismatic Ending | exile | nonland permanent | opponent | ≤ colors of mana spent (Converge), floor 1, cap 5 |
+| March of Otherworldly Light | exile | **artifact/creature/enchantment only** (not all nonland — no planeswalkers/battles) | opponent | ≤ X paid |
+
+March of Otherworldly Light was folded into the migration even though the task's illustrative
+list named five cards — it is the same mechanic shape (exile, MV-gated, opponent-only) and
+Assassin's Trophy/Fatal Push's own per-card type-filter differences already required the
+resolver to be type-parameterized, so including it costs nothing and is a second real card
+proving the generalization (per CLAUDE.md's "name at least one other card/deck that benefits").
+
+**Design.** `engine/card_effects.py::_resolve_nonland_permanent_removal(game, card, controller,
+targets, item, *, zone_dest, types, owner_scope, mv_max_fn, log_verb)` — one function shared by
+all 6 cards. Target-legality candidate enumeration (zone/type/owner-scope) is delegated to
+`engine.target_solver.enumerate_legal_targets` (a new `_removal_legal_pool` helper builds an
+`instance_id → CardInstance` map from it) — never re-derived per handler. **Note**: on this
+branch, `target_solver.py` does not yet have hexproof-aware filtering (that lands in Phase 1b,
+a separate not-yet-merged branch) — this resolver calls the shared enumeration function rather
+than re-implementing zone/type/owner filtering locally specifically so it inherits hexproof
+(and any future protection-as-targeting) filtering automatically the moment Phase 1b merges,
+with zero changes needed here.
+
+Per-card differences are captured entirely as keyword arguments a thin registration wrapper
+supplies — `mv_max_fn: (game, card, controller, item) -> int | None` computes the resolution-time
+condition (`None` = no condition at all, correctly modeling Assassin's Trophy/Leyline Binding).
+Zone dispatch: `zone_dest="graveyard"` routes through the existing `game._permanent_destroyed`
+funnel (`engine/permanent_effects.py`, Phase 0a discipline) — which itself dispatches to
+`game._creature_dies` for creature targets, so Undying/Persist replacement still applies — and a
+new explicit indestructible check (CR 702.12b) added generically for the whole cluster, since
+neither `_permanent_destroyed` nor `_creature_dies` checked it themselves and 2 of the 6 handlers
+(Abrupt Decay, Assassin's Trophy) previously had **no indestructible check at all** (a real,
+previously-silent rules bug — only Fatal Push had one, and it was per-card duplicated logic, not
+shared). `zone_dest="exile"` routes through `game._exile_permanent` — no indestructible check, no
+death-replacement funnel, matching CR 700.4/CR 702.92d (exile bypasses Undying/Persist).
+
+**Migration shape per card**: all 6 registrations shrink to a one-line call into the shared
+resolver with parsed parameters; none were deleted entirely (each still needs its own
+`EFFECT_REGISTRY.register("Card Name", ...)` decorator per the established per-card-registration
+pattern this file uses — CLAUDE.md's Phase 3 scoping explicitly keeps those calls, targeting only
+the bespoke LOGIC inside handler bodies). Assassin's Trophy keeps a one-line comment noting the
+still-unmodeled "opponent may search for a basic land" downside (unchanged, out of scope — no
+basic-land-search simulation exists anywhere in the engine yet). `_nonland_permanent_threat`
+(the shared threat-scoring comparator) is unchanged and now has exactly one call site (inside the
+new resolver's auto-pick fallback) instead of four duplicated ones.
+
+**Abstraction ratchet note**: `tools/check_abstraction.py --list` reports 0 card-name hits and 0
+deck-gate hits both before and after this change — its regex only matches `card.name ==` /
+`name in {...}` literal-comparison shapes, not `EFFECT_REGISTRY.register("Card Name", ...)`
+decorator calls (confirmed by inspection, matching this task's own framing that the ratchet is
+blind to this pattern). No baseline change was possible or needed; the real improvement here is
+LOGIC consolidation (6 duplicated candidate-filter/target-legality/zone-dispatch bodies → 1
+shared function), which the current ratchet cannot measure. `check_magic_numbers.py` (engine/
+only touched, `ai/` untouched — unaffected, still 13/13), `check_zone_mutation.py` (all zone
+changes route through the pre-existing `_permanent_destroyed`/`_exile_permanent` funnel, no new
+raw `.zone =` sites — unaffected, still 103/103), and `check_doc_hygiene.py` all pass clean.
+
+**Tests (failing-first, rule-phrased):** `tests/test_nonland_permanent_removal_mv_threshold.py`
+— 17 tests: CR 608.2c condition-failure-does-not-retarget (the Fatal Push bug, plus a positive
+control), Fatal Push's revolt-threshold formula, honors-pre-chosen-target-over-auto-pick (the
+4-handler bug, plus the auto-pick-fallback regression anchor for when no target was chosen),
+destroy-vs-exile zone dispatch (indestructible blocks destroy only, Undying-return-on-destroy,
+no-Undying-replacement-on-exile), and one test per card pinning its specific restriction shape
+(Assassin's Trophy's no-MV-condition + land-targetability, Leyline Binding's no-MV-condition,
+Prismatic Ending's Converge formula + colorless floor, March's X-paid formula + its
+artifact/creature/enchantment-only type filter excluding lands). Verified genuinely red pre-fix
+two ways: (1) the whole file fails to import against the pre-fix module (the new private
+functions don't exist yet — `git stash` A/B on `engine/card_effects.py`), and (2) a standalone
+harness reproducing the exact pre-fix `fatal_push_resolve` body against the condition-failure
+fixture confirms it destroys the wrong creature (the bystander), which is the specific behavior
+the new test's assertion rejects.
+
+**WR-anchor drift (expected, absorbed):** `tests/test_wr_baseline_anchor.py::test_match_outcome_matches_baseline[baseline[4]]`
+(Jeskai Blink vs 4c Omnath, seed 50000) flipped winner (`4c Omnath` → `Jeskai Blink`, same
+turn count, T13) after this change — verified via `git stash` A/B on `engine/card_effects.py`
+alone that it is caused by this fix, not a pre-existing drift. Both decks in that matchup run
+cards from this cluster (Jeskai Blink: 3× Prismatic Ending; 4c Omnath: 2× Prismatic Ending,
+4× Leyline Binding), so a real AI-decision change here (both handlers now honor a pre-chosen
+target instead of silently re-picking) is exactly the kind of legitimate behavior change Phase
+0e already established a precedent for absorbing via `tools/refresh_wr_baseline.py`. Traced with
+`--verbose` at the same seed: no fizzles, no crashes, both removal spells resolve against legal
+in-game permanents. Ran `python tools/refresh_wr_baseline.py`; `git diff
+tests/fixtures/wr_baseline_anchor.json` confirms exactly the one expected entry changed (winner
+only, turns unchanged) — committed alongside this fix.
+
+Full suite: 2376 passed, 22 skipped, 4 deselected, 2 xfailed, 0 failed. All ratchets clean
+(`check_abstraction.py`, `check_magic_numbers.py`, `check_zone_mutation.py`,
+`check_doc_hygiene.py`) — no baseline changes to any of the 4 (the abstraction ratchet's regex
+does not match `EFFECT_REGISTRY.register(...)` calls at all, so this migration is invisible to
+it in both directions).
 
 ## Verification convention (every item)
 
