@@ -349,6 +349,40 @@ def parse_counter_tax(oracle: str) -> int:
     return 0
 
 
+def parse_protection_from(oracle: str) -> frozenset:
+    """Parse "protection from <color>" clauses (CR 702.16), including
+    the compound "protection from X and from Y" form (e.g. Sanctifier
+    en-Vec's "Protection from black and from red").
+
+    Returns a frozenset of `engine.mana.Color` values a blocker/target
+    with this protection can't be blocked-by/targeted-by (CR 702.16d,
+    702.16e). Type-based protection ("protection from artifacts") and
+    "protection from everything" are not covered here — 0 cards in
+    the registered 16-deck pool use those forms; extend when one
+    enters the pool (same class-size discipline as every other
+    oracle-derived field in this module).
+    """
+    from engine.mana import Color
+    color_words = {
+        'red': Color.RED, 'blue': Color.BLUE, 'black': Color.BLACK,
+        'white': Color.WHITE, 'green': Color.GREEN,
+    }
+    _COLOR_ALT = r'(?:red|blue|black|white|green)'
+    # Match the whole compound span ("protection from black and from
+    # red") first, then pull every color word out of just that span —
+    # a plain findall on the whole oracle would miss the second color
+    # in the compound form, since only the FIRST one is preceded by
+    # the word "protection" (the rest are "and from <color>").
+    clause = re.search(
+        rf'protection from {_COLOR_ALT}(?:\s+and\s+from\s+{_COLOR_ALT})*',
+        (oracle or '').lower(),
+    )
+    if not clause:
+        return frozenset()
+    found = re.findall(_COLOR_ALT, clause.group(0))
+    return frozenset(color_words[c] for c in found)
+
+
 def parse_domain_reduction(oracle: str) -> Optional[int]:
     """Parse domain-based cost reduction.
 

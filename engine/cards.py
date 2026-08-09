@@ -201,6 +201,12 @@ class CardTemplate:
     is_counterspell: bool = False              # has a "counter target ..." effect
     counter_target_kind: str = ""              # "spell"/"creature_spell"/"noncreature_spell"/"instant_or_sorcery_spell"
     counter_tax_amount: int = 0                # {N} from "unless its controller pays {N}"; 0 = hard counter
+    # Combat/targeting legality (CR 702.16d/e) — colors this permanent
+    # has protection from. Empty = no protection. Populated at load
+    # time from oracle text (engine.oracle_parser.parse_protection_from),
+    # consumed by CombatManager.declare_blockers (blocking legality)
+    # and target_solver.py (illegal-target filtering).
+    protection_from_colors: frozenset = field(default_factory=frozenset)
 
     @property
     def is_creature(self) -> bool:

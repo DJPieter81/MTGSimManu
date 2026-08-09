@@ -378,7 +378,7 @@ start.
 
 See the approved plan (`/root/.claude/plans/lets-create-plan-and-typed-flurry.md` at authoring
 time — copy the plan content here if that path is not durable across sessions) for full
-item-by-item design. 1b combat legality, 1c damage funnel, 1d CDA generalization: not started.
+item-by-item design. 1c damage funnel, 1d CDA generalization: not started.
 
 ### 1a. "Unless controller pays {N}" counter/tax framework — DONE
 
@@ -472,6 +472,63 @@ branches specifically, since live-game RNG doesn't reliably hit the tax-paid bra
 response-cast decision path (`ai/response.py` / whatever feeds `game_runner.py`'s
 `opponent_ai.decide_response`) — worth its own investigation given the class size (affects any
 colored spell's response-cast decision, not just counterspells).
+
+### 1b. Combat legality enforcement — DONE (evasion, menace, protection-blocking, hexproof-targeting)
+
+**Problem confirmed exactly as scoped:** `CombatManager.declare_blockers`'s docstring said
+"validates and records" blocking assignments; the body only recorded them. Flying/reach/menace/
+protection were entirely unenforced at the engine layer — `ai/ev_player.py::decide_blockers`
+already filters candidates by these same rules before proposing a block, but that only means the
+AI is polite to itself; nothing stopped an illegal assignment from being recorded and acted on as
+legal if it reached this layer any other way. Confirmed `engine/target_solver.py` (the unified
+targeting module Phase 1-3 of a prior migration already routes cast-legality checks through) had
+matching zero coverage for hexproof/protection as illegal-target filters.
+
+**Design:** New oracle-derived `CardTemplate.protection_from_colors: frozenset` (populated at
+load time via new `engine/oracle_parser.py::parse_protection_from`, which handles the compound
+"protection from X and from Y" form — e.g. Sanctifier en-Vec's "Protection from black and from
+red" — by matching the whole clause span first, then extracting every color word from within it,
+since only the FIRST color in the compound form is preceded by the word "protection"). Scope:
+color-based protection only (matches the precedent already set by `ai/sideboard_solver.py`'s
+`_clause_protection_color`); type-based ("protection from artifacts") and "protection from
+everything" are 0-card gaps in the registered 16-deck pool today — extend when one enters.
+
+`CombatManager.declare_blockers` now filters `blocker_ids` per attacker: CR 702.9b (flying needs
+flying/reach to block), CR 702.16d (protection blocks a same-quality blocker), both per-blocker;
+CR 702.111b (menace needs ≥2 blockers) is a whole-assignment rule checked after the per-blocker
+filter — a single surviving blocker against a menace attacker drops the ENTIRE block (menace
+isn't "one fewer legal blocker", it's "this block never happened"). Every drop is logged so AI
+behavior stays debuggable (a silently-dropped illegal block is indistinguishable from a
+deliberate no-block decision in the log).
+
+`engine/target_solver.py` gains `_blocked_by_hexproof(card, controller)` (CR 702.11d — hexproof
+blocks OPPONENT spells/abilities only, not the controller's own), wired into both
+`has_legal_target` and `enumerate_legal_targets`'s per-candidate filtering loop, scoped to
+`req.zone == "battlefield"` (hexproof has no meaning for cards in other zones — a reanimation
+spell targeting a hexproof creature CARD in a graveyard is unaffected).
+
+**Deferred, not fixed here:** Shadow (CR 702.27) — zero Modern-legal cards have this keyword
+(Nemesis-block mechanic, never reprinted into Modern legality), so building enforcement for it
+would be speculative machinery for a 0-card class; skip until proven otherwise. Ward (CR 702.21)
+— structurally a "cost imposed on the caster when targeting" mechanic, much closer in shape to
+1a's counter-tax framework (`OptionalCost`/`decide_optional_cost`) than to a simple illegal-target
+filter; the plan's original framing grouped it with hexproof/protection, but that's not
+rules-accurate (ward doesn't make a target illegal, it imposes a consequence for targeting
+anyway). 4 cards with "ward" in the registered 16-deck pool. Worth its own properly-scoped
+test-first pass reusing 1a's cost/decision primitives rather than rushing it into this commit.
+Protection as a TARGETING restriction (not just a blocking restriction — CR 702.16e, a removal
+spell of the protected quality can't target the protected permanent either) is also deferred:
+needs the source spell's own color threaded through `TargetRequirement`/`has_legal_target`, which
+neither function currently receives — a real but separable extension.
+
+**Tests (failing-first):** `tests/test_combat_block_legality.py` (11 tests — flying/reach
+evasion, menace whole-block illegality, protection-from-color blocking, real-card structured-field
+integration on Sanctifier en-Vec, illegal-block logging) and 4 new tests appended to the existing
+`tests/test_target_solver_legality.py` (opponent's hexproof creature excluded from both
+`has_legal_target` and `enumerate_legal_targets`; own hexproof creature still targetable by own
+spells; a second non-hexproof candidate keeps the requirement satisfiable). 15 new tests total.
+
+Full suite: 2389 passed, 22 skipped, 4 deselected, 2 xfailed, 0 failed. All ratchets clean.
 
 ## Phase 2 / 3
 

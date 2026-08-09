@@ -103,14 +103,65 @@ class CombatManager:
                          blocks: Dict[int, List[int]]):
         """CR 509: Declare blockers step.
 
-        Records blocking assignments. The AI has already chosen blockers;
-        this method validates and records the assignments.
+        Validates AND records blocking assignments (CR 509.1b): a
+        blocker illegal for evasion (flying/reach), protection, or
+        menace's ≥2-blocker requirement is dropped, not recorded as-is.
+        This is a defensive backstop, not the caller's only guard —
+        `ai/ev_player.py::decide_blockers` already filters candidates
+        by the same rules before proposing a block, but nothing
+        previously stopped an illegal assignment reaching this layer
+        another way (a different caller, a bug in that filter) from
+        being recorded and acted on as if it were legal.
         """
         for assignment in self._assignments:
-            attacker_id = assignment.attacker.instance_id
+            attacker = assignment.attacker
+            attacker_id = attacker.instance_id
             blocker_ids = blocks.get(attacker_id, [])
-            assignment.blocker_ids = blocker_ids
-            assignment.is_blocked = len(blocker_ids) > 0
+
+            legal_blocker_ids = []
+            for bid in blocker_ids:
+                blocker = game.get_card_by_id(bid)
+                if blocker is None:
+                    continue
+                if not self._can_block(attacker, blocker):
+                    game.log.append(
+                        f"T{game.display_turn}: illegal block dropped — "
+                        f"{blocker.name} cannot legally block "
+                        f"{attacker.name}")
+                    continue
+                legal_blocker_ids.append(bid)
+
+            # CR 702.111b — menace: a block by fewer than 2 creatures
+            # is illegal in its entirety, not "partially legal".
+            if (Keyword.MENACE in attacker.keywords
+                    and 0 < len(legal_blocker_ids) < 2):
+                game.log.append(
+                    f"T{game.display_turn}: illegal block dropped — "
+                    f"{attacker.name} has menace and needs 2+ blockers")
+                legal_blocker_ids = []
+
+            assignment.blocker_ids = legal_blocker_ids
+            assignment.is_blocked = len(legal_blocker_ids) > 0
+
+    @staticmethod
+    def _can_block(attacker: "CardInstance", blocker: "CardInstance") -> bool:
+        """CR 509.1b per-blocker legality — evasion (flying/reach) and
+        protection. Menace's ≥2-blocker requirement is a whole-
+        assignment rule, checked by the caller, not here.
+        """
+        # CR 702.9b — a flying attacker can only be blocked by a
+        # creature with flying and/or reach.
+        if (Keyword.FLYING in attacker.keywords
+                and Keyword.FLYING not in blocker.keywords
+                and Keyword.REACH not in blocker.keywords):
+            return False
+        # CR 702.16d — protection: can't be blocked by a creature of
+        # the quality this attacker has protection from.
+        protection = getattr(attacker.template, 'protection_from_colors',
+                             frozenset())
+        if protection and (blocker.template.colors & protection):
+            return False
+        return True
 
     def resolve_combat_damage(self, game: "GameState") -> int:
         """CR 510: Combat damage step.
