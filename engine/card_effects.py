@@ -575,10 +575,115 @@ def faithful_mending_resolve(game, card, controller, targets=None, item=None):
     game.players[controller].life += 2
 
 
+# ═══════════════════════════════════════════════════════════════════
+# Board-sweep cluster — shared destroy/sacrifice-all resolver
+# ═══════════════════════════════════════════════════════════════════
+#
+# Mechanic (CR 701.6a "destroy" / CR 701.20a "sacrifice", applied to
+# EVERY matching permanent on EVERY player's battlefield rather than a
+# single chosen target): a symmetric mass effect, optionally scoped by
+# type (creature / artifact+creature+enchantment) and/or a resolution-
+# time filter (a mana-value ceiling, a "has a color" predicate). This
+# is NOT a targeted effect — CR 608.2b legality re-checks, hexproof
+# (CR 702.11c protects only against being the target of a spell or
+# ability), and `target_solver.enumerate_legal_targets` (which layers
+# hexproof filtering on top of type filtering) do not apply here; a
+# sweeper hits a hexproof creature exactly the same as any other. Only
+# `target_solver._matches_type` — the pure type-token predicate, with
+# no targeting semantics attached — is reused, matching the "single
+# owner for one rule" principle without pulling in unrelated behavior.
+#
+# The one real rules fork inside the cluster is destroy vs. sacrifice:
+#   - Destroy (Damnation, Supreme Verdict, Wrath of the Skies) is
+#     blocked by indestructible (CR 702.12b) — checked here, since
+#     neither `game._creature_dies` nor `game._permanent_destroyed`
+#     check it internally (same finding the removal-spell cluster
+#     documented: indestructible is the CALLER's responsibility).
+#   - Sacrifice (All Is Dust: "each player sacrifices...") is NOT
+#     blocked by indestructible (CR 701.20a — sacrificing is not a
+#     destroy event) and is not a "may" for the permanent's
+#     controller once the effect resolves. Zone-wise both funnel
+#     through the same `_creature_dies`/`_permanent_destroyed`
+#     primitives (a battlefield→graveyard move plus Undying/Persist/
+#     dies-trigger dispatch) — the distinction is ONLY which
+#     permanents are eligible in the first place, not how a permanent
+#     that IS swept leaves the battlefield.
+#
+# See docs/design/rules-foundation-sweep-tracker.md, Phase 3, for the
+# per-card table this generalizes (Damnation, Supreme Verdict,
+# All Is Dust, Wrath of the Skies).
+
+def _board_sweep_pool(game, types):
+    """Every battlefield permanent (both players) matching `types`.
+    Delegates type-token matching to `target_solver._matches_type` —
+    the single owner of that predicate — rather than re-deriving
+    per-CardType checks here. Not targeting: no hexproof filtering.
+    """
+    from . import target_solver
+    return [c for p in game.players for c in list(p.battlefield)
+            if target_solver._matches_type(c, types, "battlefield")]
+
+
+def _resolve_board_sweep(
+        game, card, controller, targets, item, *,
+        action="destroy",
+        types=frozenset({"creature"}),
+        filter_fn=None,
+        log_verb="destroys",
+        log_noun="creatures",
+):
+    """Generic resolver for the destroy/sacrifice-all-matching-
+    permanents cluster (see module comment above).
+
+    action: "destroy" (CR 702.12b indestructible applies) or
+      "sacrifice" (CR 701.20a — indestructible does not apply).
+    types: token set consumed by `target_solver._matches_type`
+      ("creature", "artifact", "enchantment", "permanent_nonland", ...).
+    filter_fn: optional (game, controller, permanent) -> bool,
+      an additional resolution-time condition (mana-value ceiling,
+      "has a color", etc.) beyond the type filter. Returns True to
+      KEEP the permanent in the sweep.
+    """
+    from .cards import Keyword
+
+    candidates = _board_sweep_pool(game, types)
+    if filter_fn is not None:
+        candidates = [c for c in candidates if filter_fn(game, controller, c)]
+    if action == "destroy":
+        candidates = [c for c in candidates
+                      if Keyword.INDESTRUCTIBLE not in c.keywords]
+
+    count = 0
+    for permanent in candidates:
+        if permanent.template.is_creature:
+            game._creature_dies(permanent)
+        else:
+            game._permanent_destroyed(permanent)
+        count += 1
+    game.log.append(f"T{game.display_turn} P{controller+1}: "
+                    f"{card.name} {log_verb} {count} {log_noun}")
+    return count
+
+
+def _wrath_of_the_skies_mv_filter(x_val):
+    def _filter(game, controller, permanent):
+        return (permanent.template.cmc or 0) <= x_val
+    return _filter
+
+
+def _all_is_dust_has_color(game, controller, permanent):
+    # Oracle: "sacrifices all permanents ... that are one or more
+    # colors." Uses CardTemplate.colors (a permanent's actual color,
+    # CR 105.2a) rather than color_identity (a format-legality
+    # superset that can include colors not actually on the permanent,
+    # e.g. a colored activated-ability cost) — the same distinction
+    # Phase 0b's Scion of Draco fix established `colors` for.
+    return len(permanent.template.colors) > 0
+
+
 @EFFECT_REGISTRY.register("Wrath of the Skies", EffectTiming.SPELL_RESOLVE,
                            description="Get X energy, pay any amount, destroy permanents with MV <= paid")
 def wrath_of_the_skies_resolve(game, card, controller, targets=None, item=None):
-    from .cards import Keyword
     player = game.players[controller]
 
     # Oracle: "You get X {E}, then you may pay any amount of {E}.
@@ -593,19 +698,15 @@ def wrath_of_the_skies_resolve(game, card, controller, targets=None, item=None):
     if x_val > 0:
         player.spend_energy(x_val)
 
-    # Step 3: destroy each permanent with MV <= x_val
-    for p in game.players:
-        to_destroy = [c for c in p.battlefield
-                      if not c.template.is_land
-                      and (c.template.cmc or 0) <= x_val
-                      and Keyword.INDESTRUCTIBLE not in c.keywords]
-        for permanent in to_destroy:
-            if permanent.template.is_creature:
-                game._creature_dies(permanent)
-            else:
-                game._permanent_destroyed(permanent)
-    game.log.append(f"T{game.display_turn} P{controller+1}: "
-                    f"Wrath of the Skies (X={x_val}) sweeps the board")
+    # Step 3: destroy each artifact/creature/enchantment with MV <= x_val
+    _resolve_board_sweep(
+        game, card, controller, targets, item,
+        action="destroy",
+        types=frozenset({"artifact", "creature", "enchantment"}),
+        filter_fn=_wrath_of_the_skies_mv_filter(x_val),
+        log_verb=f"(X={x_val}) sweeps the board, destroying",
+        log_noun="permanents",
+    )
 
 
 @EFFECT_REGISTRY.register("Prismatic Ending", EffectTiming.SPELL_RESOLVE,
@@ -1796,14 +1897,15 @@ def psychic_frog_etb(game, card, controller, targets=None, item=None):
 @EFFECT_REGISTRY.register("Damnation", EffectTiming.SPELL_RESOLVE,
                            description="Destroy all creatures")
 def damnation_resolve(game, card, controller, targets=None, item=None):
-    """Damnation: destroy all creatures."""
-    all_creatures = []
-    for p in game.players:
-        all_creatures.extend(p.creatures)
-    for creature in all_creatures:
-        game._permanent_destroyed(creature)
-    game.log.append(f"T{game.display_turn} P{controller+1}: "
-                    f"Damnation destroys {len(all_creatures)} creatures")
+    """Damnation: destroy all creatures. They can't be regenerated
+    (no regeneration mechanic modeled in this engine, so no-op) —
+    still subject to CR 702.12b indestructible like any destroy
+    effect (bug fix: the pre-migration handler destroyed unconditionally,
+    with no indestructible check at all)."""
+    _resolve_board_sweep(
+        game, card, controller, targets, item,
+        action="destroy", types=frozenset({"creature"}),
+    )
 
 
 @EFFECT_REGISTRY.register("Sheoldred, the Apocalypse", EffectTiming.ETB,
@@ -2354,18 +2456,17 @@ def teferi_t3_etb(game, card, controller, targets=None, item=None):
 @EFFECT_REGISTRY.register("Supreme Verdict", EffectTiming.SPELL_RESOLVE,
                            description="Destroy all creatures (can't be countered)")
 def supreme_verdict_resolve(game, card, controller, targets=None, item=None):
-    """Supreme Verdict: destroy all creatures. Can't be countered."""
-    from .cards import Keyword
-    total_killed = 0
-    for p in game.players:
-        to_kill = [c for c in p.creatures
-                   if Keyword.INDESTRUCTIBLE not in c.keywords]
-        for creature in to_kill:
-            game._creature_dies(creature)
-            total_killed += 1
-    game.log.append(
-        f"T{game.display_turn} P{controller+1}: "
-        f"Supreme Verdict destroys {total_killed} creatures")
+    """Supreme Verdict: destroy all creatures. "Can't be countered" is
+    a casting-time property, not a resolution-time board-sweep effect
+    — out of this cluster's scope. (Verified: no `is_uncounterable`/
+    "can't be countered" enforcement exists anywhere in engine/ today;
+    Supreme Verdict is castable-and-counterable like any other spell
+    in the current implementation. A real, separate gap — belongs
+    with 1a's counter-tax framework, not this sweep-resolver slice.)"""
+    _resolve_board_sweep(
+        game, card, controller, targets, item,
+        action="destroy", types=frozenset({"creature"}),
+    )
 
 
 # ═══════════════════════════════════════════════════════════════════
@@ -2672,21 +2773,20 @@ def phelia_end_step(game, card, controller, targets=None, item=None):
 @EFFECT_REGISTRY.register("All Is Dust", EffectTiming.SPELL_RESOLVE,
                            description="Each player sacrifices all colored permanents")
 def all_is_dust_resolve(game, card, controller, targets=None, item=None):
-    """All Is Dust: destroy all colored permanents (leaves colorless Eldrazi alive)."""
-    total = 0
-    for p in game.players:
-        colored = [c for c in list(p.battlefield)
-                   if not c.template.is_land
-                   and len(c.template.color_identity) > 0]
-        for perm in colored:
-            if perm.template.is_creature:
-                game._creature_dies(perm)
-            else:
-                game._permanent_destroyed(perm)
-            total += 1
-    game.log.append(
-        f"T{game.display_turn} P{controller+1}: "
-        f"All Is Dust sacrifices {total} colored permanents")
+    """All Is Dust: each player SACRIFICES (not destroys — CR 701.20a,
+    indestructible does not apply) all colored nonland permanents they
+    control (leaves colorless permanents, e.g. Eldrazi, alive). Bug
+    fix migrating this handler: the pre-migration check used
+    `color_identity` (a format-legality superset — can include colors
+    not actually on the permanent, e.g. from a colored activated-
+    ability cost) instead of `colors` (the permanent's real color,
+    CR 105.2a) — see `_all_is_dust_has_color` above."""
+    _resolve_board_sweep(
+        game, card, controller, targets, item,
+        action="sacrifice", types=frozenset({"permanent_nonland"}),
+        filter_fn=_all_is_dust_has_color,
+        log_verb="sacrifices", log_noun="colored permanents",
+    )
 
 
 # ═══════════════════════════════════════════════════════════════════
