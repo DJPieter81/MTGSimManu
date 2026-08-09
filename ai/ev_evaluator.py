@@ -2613,6 +2613,41 @@ def project_counter_tax_payment(card: "CardInstance", snap: EVSnapshot,
     return projected.replace(my_mana=max(0, projected.my_mana - tax_amount))
 
 
+def project_ward_tax_payment(card: "CardInstance", snap: EVSnapshot,
+                              tax_amount: int,
+                              game: "GameState" = None,
+                              player_idx: int = 0) -> EVSnapshot:
+    """Project the board state if a Ward "counter this spell/ability
+    unless its controller pays {N}" tax (CR 702.21a) is paid, and
+    `card` — the CASTER'S OWN spell/ability, already on the stack,
+    forced into the pay-or-be-countered decision because it targeted
+    an opponent's Ward permanent — resolves normally.
+
+    Mirror image of `project_counter_tax_payment` (1a): there, the
+    pay/don't-pay decision belongs to the TARGETED spell's controller
+    (an opposing counterspell threatens it); here, it belongs to the
+    SOURCE spell/ability's own caster (their own targeting choice
+    triggered the threat). Once the decision-maker is identified,
+    both project the SAME shape — "does the stack item I control
+    survive, minus an additional mana tax" — over the SAME snapshot
+    convention (called from `decide_optional_cost` with `snap`
+    reflecting live game state at the moment the item is about to
+    resolve, i.e. before its effect has been applied) so this
+    delegates to that computation rather than re-deriving it. Kept as
+    a separately named entry point (not a bare alias) for call-site
+    clarity: each is discovered from a different template field
+    (`ward_cost` here, `counter_tax_amount` there) via a different
+    engine hook (`engine.optional_costs.offer_ward_tax`'s per-target
+    scan in `spell_resolution.resolve_stack`, vs `offer_counter_tax`'s
+    counterspell-resolution dispatch) — the shared math is a real
+    coincidence of both mechanics reducing to "pay to keep my own
+    stack item alive", not evidence the two mechanics are the same
+    thing.
+    """
+    return project_counter_tax_payment(card, snap, tax_amount,
+                                        game=game, player_idx=player_idx)
+
+
 def _projected_real_draws(card: "CardInstance") -> int:
     """Projected REAL draw events from resolving `card` — the mirror
     of the engine's impulse split in `oracle_resolver`.

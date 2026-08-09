@@ -530,6 +530,131 @@ spells; a second non-hexproof candidate keeps the requirement satisfiable). 15 n
 
 Full suite: 2389 passed, 22 skipped, 4 deselected, 2 xfailed, 0 failed. All ratchets clean.
 
+### Ward mechanic (deferred from 1b) — DONE
+
+**Placement note:** filed here (immediately after 1b) rather than as a new Phase-3 entry because
+this item IS 1b's own explicitly-deferred paragraph ("Ward ... worth its own properly-scoped
+test-first pass reusing 1a's cost/decision primitives") being picked up and finished, not a new
+finding from a fresh sweep — keeping it adjacent to the deferral makes the tracker's "what got
+deferred, what happened to it" trail readable in one place.
+
+**Problem confirmed exactly as scoped:** a codebase-wide `grep -i ward` across `engine/` and `ai/`
+prior to this change returned zero hits outside comments/docstrings — no Ward (CR 702.21a)
+enforcement existed anywhere. A spell or ability could legally target a Ward permanent and simply
+resolve; the "counter unless its controller pays [cost]" trigger was never offered to anyone.
+Confirmed via the DB: 4 registered-16-deck-pool cards carry "ward" in their oracle text (Kappa
+Cannoneer, Lavaspur Boots, Sire of Seven Deaths, Hall of Storm Giants), and all 4 previously
+functioned as if unwarded.
+
+**Confirmed 1b's framing was rules-accurate, not just plausible.** Ward is a triggered ability that
+lives on the TARGETED PERMANENT ("Whenever this permanent becomes the target of a spell or ability
+an opponent controls, counter that spell or ability unless its controller pays [cost]") — the
+mirror image of 1a's counter-tax framework in EVERY structural respect except one: 1a's counter-tax
+is a property of a SPECIFIC SPELL (a counterspell), discovered once, at that spell's own resolution.
+Ward is a property of the TARGET, and can be triggered by ANY spell or ability that targets it —
+so, unlike 1a, the check can't live inside a single mechanic's resolution branch; it needs a hook
+that runs for every targeted stack item, spell or ability alike.
+
+**Class-size discipline applied to cost-shape scoping.** DB-wide census of every card whose oracle
+text has a clause literally STARTING with "ward" (`engine.oracle_clauses.split_clauses`, matching
+how the keyword always prints as its own standalone ability line): 76 are mana-cost-shaped
+("Ward {N}"), 15 are life-shaped ("Ward—Pay N life"), 26 are other shapes (discard a card,
+sacrifice a permanent, collect evidence N, exile-cost, some with no fixed numeric amount at all —
+"Ward—Pay life equal to this creature's power" has no static {N} to encode). Mana-shape clears the
+≥10-card class-size bar most clearly (5x the next bucket) and is the only shape implemented in this
+pass. Life/discard/sacrifice-shaped Ward — real cards, e.g. Sire of Seven Deaths's "Ward—Pay 7
+life" — are a documented, deliberate gap: `parse_ward_cost` returns 0 for them (same "0 = no tax to
+enforce" contract `parse_counter_tax` uses for hard counters), so they behave as unwarded until a
+follow-up extends `CostDescriptor`'s existing `"life"`/`"discard"`/`"sacrifice"` `CostKind` variants
+(all already defined in `ai/schemas.py`, unused for this purpose today) to the Ward discovery site.
+
+**Second gap found and deliberately excluded, not missed.** Ward CONFERRED to another object —
+Lavaspur Boots' "Equipped creature ... has ward {1}" (an Equipment granting ward to whatever it's
+attached to), Hall of Storm Giants' "{5}{U}: ... becomes a 7/7 ... creature with ward {3}" (an
+activated ability that temporarily grants ward to its own source) — is a DYNAMIC keyword-grant
+mechanism, the same class as 0b's `ContinuousEffectsManager` migration (a static field on the
+granting card's own `CardTemplate` cannot represent "ward on whatever this is currently attached
+to" or "ward only while animated"). `parse_ward_cost` is scoped via clause-START matching
+specifically so these don't leak in as false positives on the wrong card (Lavaspur Boots' own
+`ward_cost` must read 0 — the Boots are never themselves targeted with intent to remove a
+creature). Confirmed via `tests/test_ward_framework.py::TestWardTemplateField` that both cards
+correctly report `ward_cost == 0`. Extending Ward enforcement to dynamically-granted instances is
+future work, tracked here rather than silently mis-scoped into this pass.
+
+**Design, mirroring 1a exactly where the shapes coincide and diverging where they don't:**
+`engine/oracle_parser.py::parse_ward_cost` (clause-scoped via `split_clauses`, not
+`split_abilities` — Ward's own clause never needs pairing with an unrelated trigger phrase the way
+1a's counter-tax needed `"counter target"` co-occurrence, since the clause literally starting with
+"ward" IS the whole signal) → `CardTemplate.ward_cost` (populated at load time, mirroring
+`counter_tax_amount`'s pattern; 0 = no mana-shaped ward). At resolution, `engine/optional_costs.py`
+gains a NEW `offer_ward_tax`/`parse_ward_tax_cost` pair — same typed `OptionalCost` schema, same
+`decide_optional_cost` AI callback as every other optional-cost mechanic, no new callback — with
+the (target-permanent, targeting-item) role assignment reversed from 1a's (source-spell,
+targeted-spell): the WARDED PERMANENT plays 1a's "source_card" role (it carries the tax-imposing
+ability), and the CASTER'S OWN spell/ability plays 1a's "targeted_card" role (it's the stack item
+at risk of being countered). Affordability is checked engine-side before offering the decision, an
+unpayable tax auto-counters with no AI call at all — identical rule to 1a's, for the identical CR
+reason (an unpayable "unless" clause never becomes a real choice in a real game).
+
+**Hook point — the one piece that genuinely can't reuse 1a's shape.** 1a dispatches from inside the
+counterspell's own resolution branch (`_execute_spell_effects`'s per-ability loop), because the
+mechanic only exists on counterspells. Ward has no equivalent "only exists on X" anchor — it must
+be checked for every stack item, spell or ability, the instant before it would resolve. Implemented
+at the TOP of `engine/spell_resolution.py::resolve_stack`, immediately after popping the item and
+before the existing CR 608.2b fizzle check: for each target in `item.targets`, if the live card is
+still on the battlefield, carries `ward_cost > 0`, and is controlled by an OPPONENT of the item's
+own controller (CR 702.21a's "an opponent controls" gate — a player targeting their own warded
+permanent never triggers it), `offer_ward_tax` is called. An unpaid tax reuses 1a's own
+`ResolutionManager._move_countered_stack_item` (already branches SPELL vs ABILITY correctly) and
+returns immediately — nothing else about the item resolves. Multiple simultaneously-warded targets
+each get their own sequential offer; the first one left unpaid counters the WHOLE spell/ability (CR
+702.21a counters the spell, not just that target) and short-circuits any remaining checks.
+
+**AI projection — same math, reversed roles, not a re-derivation.** `ai/ev_evaluator.py::
+project_ward_tax_payment` projects "does my own spell/ability survive, minus the tax" for the
+pay branch. Investigated whether this needed new logic (1a's docstring explicitly frames the two
+mechanics as opposite-polarity: "there, the TARGETED spell's controller decides; here, the SOURCE
+spell's caster decides") — but tracing the actual math shows both mechanics reduce to the identical
+computation once the decision-maker is identified: in 1a, the decision-maker (targeted spell's
+controller) is ALSO that spell's own caster from ITS perspective; in Ward, the decision-maker
+(source spell's caster) is the SAME role relative to their own spell. Both projections are "does
+the stack item I control survive this resolution, minus an additional mana tax" over the identical
+`snap`-at-resolution-time convention `decide_optional_cost` already provides. `project_ward_tax_
+payment` therefore delegates to `project_counter_tax_payment` rather than re-deriving the
+pre-compensation math, kept as a separately-named entry point (not a bare alias) purely for
+call-site clarity — each is discovered from a different template field via a different engine hook,
+and the shared math is a real coincidence of shape, not evidence the two mechanics are one thing
+wearing two names.
+
+**Tests (failing-first):** `tests/test_ward_framework.py` — 23 tests. `TestParseWardCost` (8):
+no-ward, standalone clause, clause-with-reminder-text, ward-among-other-abilities, life-shaped
+returns 0, discard-shaped returns 0, ward-conferred-via-equipment not captured, ward-conferred-via-
+activated-ability not captured. `TestWardTemplateField` (6): real-DB structured-field checks on all
+4 pool cards (Kappa Cannoneer ward_cost=4; Sire of Seven Deaths, Lavaspur Boots, Hall of Storm
+Giants all 0, each for a documented reason), a DB-wide ≥10-card class-size floor (positive control),
+a DB-wide false-positive guard (every `ward_cost>0` card has a real clause starting with "ward").
+`TestWardResolution` (6): pay→spell resolves and kills its target, don't-pay→spell countered and
+target survives, unaffordable→auto-countered with the AI callback never invoked, own-permanent
+targeting never triggers the offer at all, a non-warded target is completely unaffected by the new
+code path, and a two-target spell with only one warded target gets fully countered (not partially)
+when that one tax goes unpaid. `TestWardAppliesToAbilitiesNotJustSpells` (2): an
+`ACTIVATED_ABILITY`-type stack item targeting a warded permanent is gated identically to a spell
+(effect callable never invoked when unpaid, invoked exactly once when paid) — the one behavior 1a's
+own test suite never needed to cover, since counter-tax is spell-only by construction.
+`TestProjectWardTaxPayment` (1): `project_ward_tax_payment` and `project_counter_tax_payment`
+produce the identical mana-deducted result on the same inputs, pinning the delegation intentionally
+rather than leaving it to drift.
+
+Verified genuinely red pre-fix via `git stash` on the 6 modified engine/AI files (test file and an
+unrelated in-flight sibling-agent file left untouched by the stash): `ImportError: cannot import
+name 'parse_ward_cost'` — the mechanic didn't exist at all, matching 1b's own "likely: none at all"
+prediction for what the grep would find.
+
+Full suite: 2413 passed pre-existing baseline (from 1d) + this pass's 23 new tests. All 4 ratchets
+(`check_abstraction.py`, `check_magic_numbers.py`, `check_zone_mutation.py`,
+`check_doc_hygiene.py`) clean — zone-mutation count unchanged at 102 (the new unpaid-tax path
+reuses 1a's existing `_move_countered_stack_item`, adding no new raw `.zone =` site).
+
 ### 1c. Combat damage funnel unification — DONE
 
 **Problem confirmed exactly as scoped:** `CombatManager._deal_combat_damage` never routed through

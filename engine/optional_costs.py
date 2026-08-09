@@ -210,3 +210,78 @@ def offer_counter_tax(game: "GameState", source_card: "CardInstance",
     if not game.callbacks.decide_optional_cost(game, targeted_player_idx, opt):
         return False
     return bool(opt.apply_to_game(game, targeted_player_idx))
+
+
+# ─────────────────────────────────────────────────────────────
+# Ward tax — "whenever this permanent becomes the target of a spell
+# or ability an opponent controls, counter that spell or ability
+# unless its controller pays [cost]" (CR 702.21a)
+# ─────────────────────────────────────────────────────────────
+#
+# Mirror image of the counter-tax pair above: there, a counterSPELL
+# (`source_card`) taxes the TARGETED spell's controller. Here, the
+# TARGETED PERMANENT (`warded_card` — plays the `source_card` role,
+# since it's the thing carrying the tax-imposing ability) taxes the
+# controller of whichever spell/ability chose it as a target
+# (`casting_card` — plays the `targeted_card` role, since it's the
+# stack item at risk of being countered). Same typed `OptionalCost`
+# schema, same `decide_optional_cost` callback — only the discovery
+# site differs (`engine.spell_resolution.resolve_stack`'s per-item
+# target scan, not a counterspell's own resolution dispatch), because
+# ward isn't a property of a specific spell — it can be triggered by
+# ANY spell or ability that targets a warded permanent.
+
+def parse_ward_tax_cost(warded_card: "CardInstance",
+                         casting_card: "CardInstance"
+                         ) -> Optional[OptionalCost]:
+    """Build the OptionalCost for `warded_card`'s Ward tax, from
+    `casting_card`'s controller's perspective (the caster whose
+    spell/ability targeted `warded_card` and now risks having it
+    countered). None if `warded_card` has no (mana-shaped) ward."""
+    amount = getattr(warded_card.template, "ward_cost", 0) or 0
+    if amount <= 0:
+        return None
+
+    cost = CostDescriptor(kind="mana", amount=amount)
+    effect = EffectDescriptor(kind="counter_target", magnitude=1)
+
+    def _to_game(g, p, amt=amount):
+        from .mana import ManaCost
+        from .mana_payment import ManaPayment
+        return ManaPayment.tap_lands_for_mana(g, p, ManaCost(generic=amt))
+
+    def _to_snap(s, cc=casting_card, amt=amount):
+        from ai.ev_evaluator import project_ward_tax_payment
+        return project_ward_tax_payment(cc, s, amt)
+
+    return OptionalCost(
+        name=(f"{warded_card.template.name}: pay {amount} to save "
+              f"{casting_card.template.name} from being countered "
+              f"by ward"),
+        cost=cost, effect=effect,
+        apply_to_game=_to_game, apply_to_snap=_to_snap,
+    )
+
+
+def offer_ward_tax(game: "GameState", warded_card: "CardInstance",
+                    casting_card: "CardInstance",
+                    casting_player_idx: int) -> bool:
+    """Ask `casting_card`'s controller (the player whose spell/ability
+    targeted `warded_card`) whether to pay `warded_card`'s Ward tax.
+    Returns True iff paid (the spell/ability survives, not countered).
+
+    Affordability is an engine-side rules gate, not a strategic
+    choice: if the caster cannot produce the mana, no decision is
+    offered at all — the spell/ability is simply countered, matching
+    a real game where an unpayable "unless" clause never triggers a
+    choice.
+    """
+    opt = parse_ward_tax_cost(warded_card, casting_card)
+    if opt is None:
+        return False
+    player = game.players[casting_player_idx]
+    if player.available_mana_estimate < opt.cost.amount:
+        return False
+    if not game.callbacks.decide_optional_cost(game, casting_player_idx, opt):
+        return False
+    return bool(opt.apply_to_game(game, casting_player_idx))

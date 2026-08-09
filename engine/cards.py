@@ -209,6 +209,16 @@ class CardTemplate:
     # consumed by CombatManager.declare_blockers (blocking legality)
     # and target_solver.py (illegal-target filtering).
     protection_from_colors: frozenset = field(default_factory=frozenset)
+    # Ward (CR 702.21a) — mirror image of the counter/tax framework
+    # above: there, the SOURCE card taxes a TARGETED spell's
+    # controller; here, the permanent (this template) taxes the
+    # controller of whatever spell/ability TARGETS it. Populated at
+    # load time from engine.oracle_parser.parse_ward_cost. 0 = no
+    # (mana-shaped) ward to enforce — either genuinely no ward, or a
+    # ward of an excluded cost shape (life/discard/sacrifice/...; see
+    # parse_ward_cost's docstring). Consumed by
+    # engine.optional_costs.offer_ward_tax via the resolve_stack hook.
+    ward_cost: int = 0                         # {N} from "Ward {N}"; 0 = no mana-shaped ward
 
     @property
     def is_creature(self) -> bool:

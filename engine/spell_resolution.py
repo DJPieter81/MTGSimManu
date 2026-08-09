@@ -101,6 +101,47 @@ class ResolutionManager:
         card = item.source
         template = card.template
 
+        # CR 702.21a — Ward: "Whenever this permanent becomes the
+        # target of a spell or ability an opponent controls, counter
+        # that spell or ability unless its controller pays [cost]."
+        # Checked here — for EVERY spell/ability item, right before
+        # it would resolve — because ward is a property of the
+        # TARGET, not of the spell/ability targeting it (unlike 1a's
+        # counter-tax, which only applies to counterspells and is
+        # dispatched from their own resolution branch below). Mirror
+        # image of 1a's decision-maker relationship: the choice
+        # belongs to THIS item's own controller (the caster who chose
+        # a warded target), not to the warded permanent's controller.
+        # Multiple simultaneously-targeted warded permanents each get
+        # their own tax offer in target order; the first one left
+        # unpaid counters the whole spell/ability immediately (CR
+        # 702.21a counters the SPELL, not just that one target) and
+        # stops further ward checks — there is nothing left to tax.
+        for _tid in list(item.targets):
+            if not isinstance(_tid, int) or _tid < 0:
+                continue  # face/player target — permanents only have ward
+            _target = game.get_card_by_id(_tid)
+            if _target is None or _target.zone != "battlefield":
+                continue
+            _ward_amount = getattr(_target.template, 'ward_cost', 0) or 0
+            if _ward_amount <= 0:
+                continue
+            if _target.controller == item.controller:
+                continue  # CR 702.21a: only vs an OPPONENT's spell/ability
+            from .optional_costs import offer_ward_tax
+            _paid = offer_ward_tax(game, _target, card, item.controller)
+            if _paid:
+                game.log.append(
+                    f"T{game.display_turn}: {card.name}'s controller "
+                    f"pays {_ward_amount} — not countered by "
+                    f"{_target.name}'s ward")
+            else:
+                ResolutionManager._move_countered_stack_item(game, item, card)
+                game.log.append(
+                    f"T{game.display_turn}: {card.name} is countered "
+                    f"by {_target.name}'s ward")
+                return
+
         # CR 608.2b: re-check target legality on resolution. A spell
         # whose targets are ALL illegal doesn't resolve — it fizzles
         # to the graveyard with no effect. Ported from the dead legacy
