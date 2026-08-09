@@ -544,3 +544,56 @@ def test_non_modal_spell_with_two_required_targets_is_AND(card_db):
     assert all(r.mode_group is None for r in reqs)
     # Neither has a legal target → spell uncastable
     assert has_legal_target_for_spell(game, 0, reqs) is False
+
+
+# ── Hexproof (CR 702.11d) ────────────────────────────────────────────
+#
+# A permanent with hexproof can't be the target of a spell or ability
+# an OPPONENT controls; the controller's own spells can still target
+# it. Previously unenforced — target_solver had zero hexproof checks,
+# so a removal spell would report a hexproof creature as a legal
+# target as long as SOME creature satisfied the type/zone/owner
+# filters.
+
+
+def test_opponents_hexproof_creature_is_not_a_legal_target(card_db):
+    game = _new_game()
+    _battlefield(game, card_db, "Striped Riverwinder", 1)
+    req = parse("Destroy target creature.")[0]
+    assert has_legal_target(game, 0, req) is False, (
+        "an opponent's hexproof creature must not be reported as a "
+        "legal target for a removal spell"
+    )
+
+
+def test_own_hexproof_creature_is_a_legal_target_for_own_spell(card_db):
+    game = _new_game()
+    _battlefield(game, card_db, "Striped Riverwinder", 0)
+    req = parse("Target creature you control gains flying.")[0]
+    assert has_legal_target(game, 0, req) is True, (
+        "hexproof only restricts OPPONENT spells — the controller's "
+        "own spell must still be able to target it"
+    )
+
+
+def test_hexproof_creature_excluded_from_enumeration(card_db):
+    game = _new_game()
+    hexproof_creature = _battlefield(
+        game, card_db, "Striped Riverwinder", 1)
+    _battlefield(game, card_db, "Memnite", 1)
+    req = parse("Destroy target creature.")[0]
+    candidates = enumerate_legal_targets(game, 0, req)
+    assert hexproof_creature not in candidates
+    assert any(c.name == "Memnite" for c in candidates)
+
+
+def test_hexproof_creature_still_a_legal_target_when_other_removal_exists(
+        card_db):
+    """Regression: hexproof filtering must not reject the WHOLE
+    requirement just because one candidate is protected — a second,
+    non-hexproof creature keeps the spell castable."""
+    game = _new_game()
+    _battlefield(game, card_db, "Striped Riverwinder", 1)
+    _battlefield(game, card_db, "Memnite", 1)
+    req = parse("Destroy target creature.")[0]
+    assert has_legal_target(game, 0, req) is True

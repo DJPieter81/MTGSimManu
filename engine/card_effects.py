@@ -369,122 +369,70 @@ def springleaf_drum_etb(game, card, controller, targets=None, item=None):
     )
 
 
-@EFFECT_REGISTRY.register("Phlage, Titan of Fire's Fury", EffectTiming.ETB,
-                           description="ETB: sacrifice unless escaped; deal 3 damage, gain 3 life")
-def phlage_etb(game, card, controller, targets=None, item=None):
-    # Oracle: "When Phlage enters, sacrifice it unless it was cast from
-    # a graveyard." "Whenever Phlage enters or attacks, it deals 3 damage
-    # to any target and you gain 3 life."
-    # Target-fidelity: honour the declared target first. Only fall back
-    # to the oracle-driven picker when nothing was declared (e.g. an
-    # attack-trigger re-fire that re-enters this handler without a stack
-    # item, or a reanimator path with no chosen target).
-    from engine.oracle_resolver import _pick_damage_target
-    opponent = 1 - controller
-    target = None
-    if targets:
-        for tid in targets:
-            if tid is None or tid < 0:
-                continue  # sentinel "face"
-            cand = game.get_card_by_id(tid)
-            if cand is not None and cand.zone == "battlefield":
-                target = cand
-                break
-    if target is None and not targets:
-        target = _pick_damage_target(game, controller, 3)
-    if target is not None:
-        target.damage_marked = getattr(target, 'damage_marked', 0) + 3
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Phlage: 3 damage to {target.name}, gain 3 life")
-        game.check_state_based_actions()
-    else:
-        game.players[opponent].life -= 3
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Phlage: 3 damage to opponent, gain 3 life")
-    game.players[controller].life += 3
-
-    # Sacrifice unless escaped
-    escaped = getattr(card, '_escaped', False)
-    if not escaped:
-        if card in game.players[controller].battlefield:
-            game.players[controller].battlefield.remove(card)
-            card.zone = "graveyard"
-            game.players[controller].graveyard.append(card)
-            game.log.append(f"T{game.display_turn} P{controller+1}: "
-                            f"Phlage sacrificed (not escaped)")
-
-    # Check if opponent is dead
-    if game.players[opponent].life <= 0:
-        game.game_over = True
-        game.winner = controller
-        game.win_condition = "life_total"
+# NOTE: "Phlage, Titan of Fire's Fury" used to be registered here
+# (ETB: sacrifice unless escaped; deal 3 damage to any target; gain 3
+# life). It was removed after research for the "deal N damage to any
+# target" EFFECT_REGISTRY cluster (see
+# docs/design/rules-foundation-sweep-tracker.md, Phase 3) found the
+# card itself is no longer in ModernAtomic — it was removed entirely
+# by the MTGJSON refresh that followed its Modern ban (commit
+# d02c543, already on main before this branch). No CardInstance can
+# ever carry that literal name, so the handler was unreachable dead
+# code (grepped: no test constructs a card with this exact name
+# either). Deleted rather than migrated — same class-size/dead-code
+# reasoning this program applies elsewhere. If Phlage (or a
+# functional reprint) re-enters the pool, re-add a handler that
+# routes its damage step through
+# `engine.oracle_resolver.resolve_damage_to_chosen_target` rather
+# than restoring the old raw-mutation version.
 
 
 # ═══════════════════════════════════════════════════════════════════
 # Spell Resolution Effects
 # ═══════════════════════════════════════════════════════════════════
 
+# The next three handlers (Lightning Bolt, Lava Dart, Unholy Heat) —
+# plus Grapeshot, registered further below — are all instances of one
+# mechanic shape: "deal N damage to any target". Each used to
+# re-implement its own copy of "walk the declared target list, apply
+# damage to the first eligible creature/planeswalker, else go face."
+# That inline duplication is now `engine.oracle_resolver.
+# resolve_damage_to_chosen_target`, the single shared owner (routes
+# through `engine.damage.deal_damage` so lifelink/deathtouch/SBA
+# scheduling are correct by construction). See
+# docs/design/rules-foundation-sweep-tracker.md (Phase 3) for the
+# full cluster research — which cards were included/excluded and why.
 @EFFECT_REGISTRY.register("Lightning Bolt", EffectTiming.SPELL_RESOLVE,
                            description="Deal 3 damage to any target")
 def lightning_bolt_resolve(game, card, controller, targets=None, item=None):
-    from .damage import deal_damage
-    from .cards import CardType
-    opponent = 1 - controller
-    if targets:
-        for tid in targets:
-            if tid == -1:
-                break  # AI chose face
-            target = game.get_card_by_id(tid)
-            if (target and target.zone == "battlefield"
-                    and (target.template.is_creature
-                         or CardType.PLANESWALKER in target.template.card_types)):
-                deal_damage(card, target, 3)
-                return
-    deal_damage(card, game.players[opponent], 3)
+    from .oracle_resolver import resolve_damage_to_chosen_target
+    resolve_damage_to_chosen_target(game, card, controller, 3, targets)
 
 
 @EFFECT_REGISTRY.register("Lava Dart", EffectTiming.SPELL_RESOLVE,
                            description="Deal 1 damage to any target")
 def lava_dart_resolve(game, card, controller, targets=None, item=None):
-    from .damage import deal_damage
-    from .cards import CardType
-    opponent = 1 - controller
-    if targets:
-        for tid in targets:
-            if tid == -1:
-                break  # AI chose face
-            target = game.get_card_by_id(tid)
-            if (target and target.zone == "battlefield"
-                    and (target.template.is_creature
-                         or CardType.PLANESWALKER in target.template.card_types)):
-                deal_damage(card, target, 1)
-                return
-    deal_damage(card, game.players[opponent], 1)
+    from .oracle_resolver import resolve_damage_to_chosen_target
+    resolve_damage_to_chosen_target(game, card, controller, 1, targets)
 
 
 @EFFECT_REGISTRY.register("Unholy Heat", EffectTiming.SPELL_RESOLVE,
                            description="Deal 2 (or 6 with delirium) damage")
 def unholy_heat_resolve(game, card, controller, targets=None, item=None):
-    from .damage import deal_damage
-    from .cards import CardType
-    opponent = 1 - controller
+    # The only real per-card quirk in this cluster: the printed amount
+    # is conditional on delirium (CR-style card-specific AMOUNT
+    # computation, not a target-resolution difference) — this stays
+    # here; only the target application delegates to the shared
+    # resolver.
+    from .oracle_resolver import resolve_damage_to_chosen_target
     gy = game.players[controller].graveyard
     types_in_gy = set()
     for c in gy:
         for ct in c.template.card_types:
             types_in_gy.add(ct)
-    damage = 6 if len(types_in_gy) >= 4 else 2
-    if targets:
-        for tid in targets:
-            if tid == -1:
-                break  # AI chose face
-            target = game.get_card_by_id(tid)
-            if (target and target.zone == "battlefield"
-                    and (target.template.is_creature
-                         or CardType.PLANESWALKER in target.template.card_types)):
-                deal_damage(card, target, damage)
-                return
-    deal_damage(card, game.players[opponent], damage)
+    delirium = len(types_in_gy) >= 4
+    damage = 6 if delirium else 2
+    resolve_damage_to_chosen_target(game, card, controller, damage, targets)
 
 
 @EFFECT_REGISTRY.register("Goryo's Vengeance", EffectTiming.SPELL_RESOLVE,
@@ -549,14 +497,32 @@ def unmarked_grave_resolve(game, card, controller, targets=None, item=None):
 @EFFECT_REGISTRY.register("Grapeshot", EffectTiming.SPELL_RESOLVE,
                            description="Deal 1 damage to any target")
 def grapeshot_resolve(game, card, controller, targets=None, item=None):
-    opponent = 1 - controller
-    # Grapeshot deals 1 damage (base effect). Storm copies are handled
-    # by _handle_storm which calls this again for each copy.
-    game.players[opponent].life -= 1
-    game.players[controller].damage_dealt_this_turn += 1
-    game.log.append(f"T{game.display_turn} P{controller+1}: "
-                    f"Grapeshot deals 1 damage"
-                    f" (opponent life: {game.players[opponent].life})")
+    # Grapeshot deals 1 damage (base effect) to its declared "any
+    # target". Storm copies are handled by _handle_storm, which calls
+    # this again for each copy, re-declaring the same `item.targets`
+    # (correct: CR 706.10c — Storm copies keep the original targets
+    # unless the caster is offered new ones, which this engine does
+    # not yet model).
+    #
+    # Pre-migration bug: this handler ignored `targets` entirely and
+    # always mutated `opponent.life` directly, bypassing
+    # `engine.damage.deal_damage` — real damage-application drift from
+    # the shared funnel (see
+    # tests/test_burn_damage_shared_resolver.py::TestGrapeshotRespectsDeclaredTarget).
+    # The live AI always casts Grapeshot with `targets=[-1]`
+    # (ai/ev_player.py's storm-finisher target policy), so this fix
+    # does not change any current sim outcome — it just makes the
+    # engine correct for any other caller of a "deal N damage to any
+    # target" storm spell.
+    from .oracle_resolver import resolve_damage_to_chosen_target
+    hit = resolve_damage_to_chosen_target(game, card, controller, 1, targets)
+    if hit is not None:
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
+                        f"Grapeshot deals 1 damage to {hit.name}")
+    else:
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
+                        f"Grapeshot deals 1 damage"
+                        f" (opponent life: {game.players[1 - controller].life})")
 
 
 @EFFECT_REGISTRY.register("Past in Flames", EffectTiming.SPELL_RESOLVE,
@@ -645,57 +611,21 @@ def wrath_of_the_skies_resolve(game, card, controller, targets=None, item=None):
 @EFFECT_REGISTRY.register("Prismatic Ending", EffectTiming.SPELL_RESOLVE,
                            description="Exile target nonland permanent with MV <= colors")
 def prismatic_ending_resolve(game, card, controller, targets=None, item=None):
-    opponent = 1 - controller
-    opp = game.players[opponent]
-    # Converge: X = number of distinct colors of mana actually spent to cast
-    # this spell. Captured at cast time into item.colors_spent by the engine
-    # (tap_lands_for_mana + mana-pool diff). Fallback: if item is missing
-    # (older test harnesses), approximate from untapped land colors — imperfect
-    # but matches the pre-tracking heuristic.
-    colors = set(getattr(item, 'colors_spent', set())) if item else set()
-    if not colors:
-        player = game.players[controller]
-        for land in player.untapped_lands:
-            for c in (land.template.produces_mana or []):
-                colors.add(c)
-    colors.discard('C')  # Converge counts colored pips only
-    max_cmc = min(len(colors), 5)
-    if max_cmc < 1:
-        max_cmc = 1
-    exile_targets = [c for c in opp.battlefield
-                     if not c.template.is_land and c.template.cmc <= max_cmc]
-    if exile_targets:
-        target = max(exile_targets, key=lambda c: _nonland_permanent_threat(c, opp.battlefield))
-        game._exile_permanent(target)
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Prismatic Ending exiles {target.name} (X={max_cmc})")
+    _resolve_nonland_permanent_removal(
+        game, card, controller, targets, item,
+        zone_dest="exile", mv_max_fn=_prismatic_ending_mv_max,
+        log_verb="exiles",
+    )
 
 
 @EFFECT_REGISTRY.register("March of Otherworldly Light", EffectTiming.SPELL_RESOLVE,
                            description="Exile target artifact, creature, or enchantment with MV <= X")
 def march_otherworldly_light_resolve(game, card, controller, targets=None, item=None):
-    from .cards import CardType
-    opponent = 1 - controller
-    opp = game.players[opponent]
-    # X = mana actually paid for {X} (stored on the stack item at cast
-    # time). Mirrors Wrath of the Skies' pattern at line 615; reading
-    # from len(lands) would ignore the cast-time commitment and let
-    # March target permanents above the paid CMC.
-    x_val = item.x_value if item and hasattr(item, 'x_value') else 0
-    exile_targets = [c for c in opp.battlefield
-                     if not c.template.is_land
-                     and (CardType.ARTIFACT in c.template.card_types
-                          or CardType.CREATURE in c.template.card_types
-                          or CardType.ENCHANTMENT in c.template.card_types)
-                     and c.template.cmc <= x_val]
-    if exile_targets:
-        target = max(exile_targets, key=lambda c: _threat_score(c, game, opp))
-        game._exile_permanent(target)
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"March of Otherworldly Light exiles {target.name}")
-    else:
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"March of Otherworldly Light: no valid targets")
+    _resolve_nonland_permanent_removal(
+        game, card, controller, targets, item,
+        zone_dest="exile", types=frozenset({"artifact", "creature", "enchantment"}),
+        mv_max_fn=_march_otherworldly_light_mv_max, log_verb="exiles",
+    )
 
 
 @EFFECT_REGISTRY.register("Ephemerate", EffectTiming.SPELL_RESOLVE,
@@ -1421,75 +1351,6 @@ def kolaghans_command_resolve(game, card, controller, targets=None, item=None):
                         f"Kolaghan's Command: opponent discards")
 
 
-@EFFECT_REGISTRY.register("Abrupt Decay", EffectTiming.SPELL_RESOLVE,
-                           description="Destroy target nonland permanent with MV 3 or less")
-def abrupt_decay_resolve(game, card, controller, targets=None, item=None):
-    opponent = 1 - controller
-    opp = game.players[opponent]
-    valid = [c for c in opp.battlefield
-             if not c.template.is_land and c.template.cmc <= 3]
-    if valid:
-        target = max(valid, key=lambda c: _nonland_permanent_threat(c, opp.battlefield))
-        game._permanent_destroyed(target)
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Abrupt Decay destroys {target.name}")
-
-
-@EFFECT_REGISTRY.register("Assassin's Trophy", EffectTiming.SPELL_RESOLVE,
-                           description="Destroy target permanent, opponent searches for basic land")
-def assassins_trophy_resolve(game, card, controller, targets=None, item=None):
-    opponent = 1 - controller
-    opp = game.players[opponent]
-    if targets:
-        for tid in targets:
-            target = game.get_card_by_id(tid)
-            if target and target.zone == "battlefield":
-                game._permanent_destroyed(target)
-                game.log.append(f"T{game.display_turn} P{controller+1}: "
-                                f"Assassin's Trophy destroys {target.name}")
-    else:
-        # Auto-target: highest value nonland permanent
-        nonlands = [c for c in opp.battlefield if not c.template.is_land]
-        if nonlands:
-            target = max(nonlands, key=lambda c: _nonland_permanent_threat(c, opp.battlefield))
-            game._permanent_destroyed(target)
-            game.log.append(f"T{game.display_turn} P{controller+1}: "
-                            f"Assassin's Trophy destroys {target.name}")
-    # Opponent gets a basic land (simplified: just a small benefit)
-    # In practice this is a downside but we don't model basic land search
-
-
-@EFFECT_REGISTRY.register("Fatal Push", EffectTiming.SPELL_RESOLVE,
-                           description="Destroy creature with MV 2 or less (4 with revolt)")
-def fatal_push_resolve(game, card, controller, targets=None, item=None):
-    from .cards import Keyword
-    opponent = 1 - controller
-    opp = game.players[opponent]
-    # Check revolt (simplified: did a permanent leave this turn?)
-    has_revolt = game.players[controller].creatures_died_this_turn > 0
-    max_cmc = 4 if has_revolt else 2
-
-    if targets:
-        for tid in targets:
-            target = game.get_card_by_id(tid)
-            if (target and target.zone == "battlefield" and
-                target.template.is_creature and target.template.cmc <= max_cmc and
-                Keyword.INDESTRUCTIBLE not in target.keywords):
-                game._creature_dies(target)
-                game.log.append(f"T{game.display_turn} P{controller+1}: "
-                                f"Fatal Push destroys {target.name}")
-                return
-    # Auto-target
-    valid = [c for c in opp.creatures
-             if c.template.cmc <= max_cmc and
-             Keyword.INDESTRUCTIBLE not in c.keywords]
-    if valid:
-        target = max(valid, key=lambda c: c.power or 0)
-        game._creature_dies(target)
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Fatal Push destroys {target.name}")
-
-
 def _nonland_permanent_threat(c, opp_battlefield):
     """Score a nonland permanent for removal targeting.
 
@@ -1513,17 +1374,190 @@ def _nonland_permanent_threat(c, opp_battlefield):
     return score
 
 
-@EFFECT_REGISTRY.register("Leyline Binding", EffectTiming.ETB,
-                           description="Exile target nonland permanent")
-def leyline_binding_etb(game, card, controller, targets=None, item=None):
-    opponent = 1 - controller
-    opp = game.players[opponent]
-    nonlands = [c for c in opp.battlefield if not c.template.is_land]
-    if nonlands:
-        target = max(nonlands, key=lambda c: _nonland_permanent_threat(c, opp.battlefield))
-        game._exile_permanent(target)
+# ═══════════════════════════════════════════════════════════════════
+# Nonland permanent removal cluster — shared destroy/exile resolver
+# ═══════════════════════════════════════════════════════════════════
+#
+# Mechanic (CR 608.2b/608.2c): "Destroy/exile target permanent
+# [optionally restricted by type], and only if [a resolution-time
+# condition — usually a mana-value threshold] holds when the spell/
+# ability resolves." A card's TARGET LEGALITY (does a legal candidate
+# exist / is a chosen id still legal — zone, type, owner, hexproof
+# once engine/target_solver.py grows that check) is a separate rules
+# question from whether its CONDITION is met once a legal target is
+# selected. Conflating the two was the bug this cluster shared: some
+# handlers ignored the pre-chosen `targets` entirely and re-derived
+# their own pick every time; one handler (Fatal Push) fell through to
+# picking a DIFFERENT target when the chosen one failed its condition,
+# which is not what CR 608.2c says happens (the spell does nothing —
+# it does not re-target).
+#
+# See docs/design/rules-foundation-sweep-tracker.md, Phase 3, for the
+# per-card restriction table this generalizes (Abrupt Decay,
+# Assassin's Trophy, Fatal Push, Leyline Binding, Prismatic Ending,
+# March of Otherworldly Light).
+
+_FATAL_PUSH_BASE_MV = 2    # rules constant: Fatal Push, no revolt
+_FATAL_PUSH_REVOLT_MV = 4  # rules constant: Fatal Push, with revolt
+_ABRUPT_DECAY_MV = 3       # rules constant: Abrupt Decay's fixed threshold
+_CONVERGE_MAX_COLORS = 5   # rules constant: WUBRG — the color pip ceiling
+
+
+def _removal_legal_pool(game, controller, owner_scope, types):
+    """Battlefield permanents of `types` legal for `controller` to
+    target, filtered by `owner_scope` ("opponent"/"any") via
+    `target_solver.enumerate_legal_targets` — the single owner of
+    target-legality (CR 601.2c), never re-derived here. Keyed by
+    instance_id for O(1) lookup against a pre-chosen target id.
+    """
+    from . import target_solver
+    req = target_solver.TargetRequirement(
+        zone="battlefield", types=frozenset(types), owner_scope=owner_scope,
+    )
+    return {c.instance_id: c
+            for c in target_solver.enumerate_legal_targets(game, controller, req)}
+
+
+def _resolve_nonland_permanent_removal(
+        game, card, controller, targets, item, *,
+        zone_dest,
+        types=frozenset({"permanent_nonland"}),
+        owner_scope="opponent",
+        mv_max_fn=None,
+        log_verb="destroys",
+):
+    """Generic resolver for the destroy/exile-target-permanent cluster
+    (see module comment above). Every card in the cluster shares this
+    one function body; per-card differences are entirely captured by
+    the keyword arguments a thin registration wrapper supplies.
+
+    zone_dest:
+      "graveyard" — destroy. Routes through `game._permanent_destroyed`,
+        which itself dispatches to `game._creature_dies` for creature
+        targets (so Undying/Persist replacement, CR 702.92d/702.77c,
+        still applies) and is a no-op against an indestructible
+        permanent (CR 702.12b) — checked below since neither funnel
+        function checks it itself.
+      "exile" — routes through `game._exile_permanent`. No death
+        replacement applies to exile (CR 700.4 — the permanent never
+        goes to the graveyard), and indestructible does not protect
+        against it.
+    mv_max_fn: optional (game, card, controller, item) -> int | None,
+      the resolution-time mana-value ceiling. None means the card has
+      no such condition at all (Assassin's Trophy, Leyline Binding).
+    """
+    from .cards import Keyword
+
+    legal = _removal_legal_pool(game, controller, owner_scope, types)
+    max_mv = mv_max_fn(game, card, controller, item) if mv_max_fn else None
+
+    def _meets_condition(target) -> bool:
+        if max_mv is not None and (target.template.cmc or 0) > max_mv:
+            return False  # CR 608.2c: condition unmet
+        if zone_dest == "graveyard" and Keyword.INDESTRUCTIBLE in target.keywords:
+            return False  # CR 702.12b: destroy does nothing
+        return True
+
+    def _apply(target):
+        if zone_dest == "exile":
+            game._exile_permanent(target)
+        else:
+            game._permanent_destroyed(target)
         game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Leyline Binding exiles {target.name}")
+                        f"{card.name} {log_verb} {target.name}")
+
+    if targets:
+        # A target was already chosen (cast time / trigger-target
+        # selection) — honor it rather than re-deriving a fresh pick.
+        for tid in targets:
+            target = legal.get(tid)
+            if target is None:
+                continue  # CR 608.2b: illegal at resolution, try next id
+            if not _meets_condition(target):
+                return  # CR 608.2c: condition unmet — no effect, no retarget
+            _apply(target)
+            return
+        return  # every chosen id was illegal at resolution — no effect
+
+    # No pre-chosen target (dies-trigger fan-out, blink/reanimation
+    # re-entry via zone_transfer._fire_etb_triggers, or a synthetic
+    # test call site with no cast-time target selection): auto-pick
+    # the highest-threat legal + condition-satisfying candidate, using
+    # the heuristic every handler in this cluster already shared.
+    candidates = [c for c in legal.values() if _meets_condition(c)]
+    if not candidates:
+        return
+    opp_battlefield = game.players[1 - controller].battlefield
+    best = max(candidates,
+              key=lambda c: _nonland_permanent_threat(c, opp_battlefield))
+    _apply(best)
+
+
+def _fatal_push_mv_max(game, card, controller, item):
+    has_revolt = game.players[controller].creatures_died_this_turn > 0
+    return _FATAL_PUSH_REVOLT_MV if has_revolt else _FATAL_PUSH_BASE_MV
+
+
+def _prismatic_ending_mv_max(game, card, controller, item):
+    # Converge: X = number of distinct colors of mana actually spent to
+    # cast this spell. Captured at cast time into item.colors_spent by
+    # the engine (tap_lands_for_mana + mana-pool diff). Fallback: if
+    # item is missing (older test harnesses), approximate from
+    # untapped land colors — imperfect but matches the pre-tracking
+    # heuristic this replaces.
+    colors = set(getattr(item, 'colors_spent', set())) if item else set()
+    if not colors:
+        for land in game.players[controller].untapped_lands:
+            for c in (land.template.produces_mana or []):
+                colors.add(c)
+    colors.discard('C')  # Converge counts colored pips only
+    return max(1, min(len(colors), _CONVERGE_MAX_COLORS))
+
+
+def _march_otherworldly_light_mv_max(game, card, controller, item):
+    # X = mana actually paid for {X} (stored on the stack item at cast
+    # time). Reading from len(lands) would ignore the cast-time
+    # commitment and let March target permanents above the paid CMC.
+    return item.x_value if item and hasattr(item, 'x_value') else 0
+
+
+@EFFECT_REGISTRY.register("Abrupt Decay", EffectTiming.SPELL_RESOLVE,
+                           description="Destroy target nonland permanent with MV 3 or less")
+def abrupt_decay_resolve(game, card, controller, targets=None, item=None):
+    _resolve_nonland_permanent_removal(
+        game, card, controller, targets, item,
+        zone_dest="graveyard", mv_max_fn=lambda g, c, ctl, it: _ABRUPT_DECAY_MV,
+    )
+
+
+@EFFECT_REGISTRY.register("Assassin's Trophy", EffectTiming.SPELL_RESOLVE,
+                           description="Destroy target permanent, opponent searches for basic land")
+def assassins_trophy_resolve(game, card, controller, targets=None, item=None):
+    _resolve_nonland_permanent_removal(
+        game, card, controller, targets, item,
+        zone_dest="graveyard", types=frozenset({"permanent"}),
+    )
+    # Opponent gets a basic land (simplified: just a small benefit)
+    # In practice this is a downside but we don't model basic land search
+
+
+@EFFECT_REGISTRY.register("Fatal Push", EffectTiming.SPELL_RESOLVE,
+                           description="Destroy creature with MV 2 or less (4 with revolt)")
+def fatal_push_resolve(game, card, controller, targets=None, item=None):
+    _resolve_nonland_permanent_removal(
+        game, card, controller, targets, item,
+        zone_dest="graveyard", types=frozenset({"creature"}),
+        mv_max_fn=_fatal_push_mv_max,
+    )
+
+
+@EFFECT_REGISTRY.register("Leyline Binding", EffectTiming.ETB,
+                           description="Exile target nonland permanent an opponent controls")
+def leyline_binding_etb(game, card, controller, targets=None, item=None):
+    _resolve_nonland_permanent_removal(
+        game, card, controller, targets, item,
+        zone_dest="exile", log_verb="exiles",
+    )
 
 
 

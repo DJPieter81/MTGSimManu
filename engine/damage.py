@@ -194,6 +194,28 @@ def deal_damage(source: Any, target: Any, amount: int,
             # attribute; deathtouch on players is a no-op per CR.
             pass
 
+    # ── Lifelink (CR 702.15) ──
+    #
+    # A source with lifelink causes its controller to gain life equal
+    # to the damage dealt, for ANY damage event (combat or otherwise)
+    # — not just combat damage assigned to an opponent. Resolved here
+    # rather than left as a per-caller responsibility, so every
+    # `deal_damage` call site gets lifelink correct by construction —
+    # this is what activates the "lifelink hook" this module's
+    # docstring has documented as reserved-but-unimplemented since
+    # W0-D. Needs the source's own game-state backref (a PlayerState
+    # source has none — lifelink is a creature/permanent keyword, so
+    # this only ever fires when `source` is a CardInstance).
+    has_lifelink = getattr(source, 'has_lifelink', False)
+    if has_lifelink:
+        lifelink_game = _find_game_state(source)
+        controller_idx = getattr(source, 'controller', None)
+        if (lifelink_game is not None and controller_idx is not None
+                and 0 <= controller_idx < len(lifelink_game.players)):
+            gainer = lifelink_game.players[controller_idx]
+            gainer.life += effective_amount
+            gainer.life_gained_this_turn += effective_amount
+
     # ── Apply damage via the target's own method ──
     #
     # The target object owns the mutation. This is what kills the

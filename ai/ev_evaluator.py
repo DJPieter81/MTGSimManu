@@ -2583,6 +2583,36 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
     return projected
 
 
+def project_counter_tax_payment(card: "CardInstance", snap: EVSnapshot,
+                                 tax_amount: int,
+                                 game: "GameState" = None,
+                                 player_idx: int = 0) -> EVSnapshot:
+    """Project the board state if a "counter target spell unless its
+    controller pays {N}" tax is paid and `card` — already cast,
+    currently on the stack and targeted by the counter — resolves
+    normally.
+
+    Reuses `_project_spell`'s oracle-driven resolution projection (the
+    same generic tag/effect-type dispatch that prices any spell's
+    ETB/damage/card-advantage impact) rather than a second bespoke
+    model. `_project_spell` assumes its card is still in hand — it
+    decrements `my_hand_size` by 1 and subtracts the card's own
+    effective cost from `my_mana`. A spell already on the stack has
+    already left the hand and already paid its own cost, so both
+    decrements are pre-compensated here (added back before
+    projecting) and only the ADDITIONAL tax payment is charged
+    against the result.
+    """
+    from ai.effective_cmc import effective_cmc
+    own_cost = effective_cmc(card, snap, game=game, player_idx=player_idx)
+    pre = snap.replace(
+        my_hand_size=snap.my_hand_size + 1,
+        my_mana=snap.my_mana + own_cost,
+    )
+    projected = _project_spell(card, pre, game=game, player_idx=player_idx)
+    return projected.replace(my_mana=max(0, projected.my_mana - tax_amount))
+
+
 def _projected_real_draws(card: "CardInstance") -> int:
     """Projected REAL draw events from resolving `card` — the mirror
     of the engine's impulse split in `oracle_resolver`.
