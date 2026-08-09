@@ -982,6 +982,7 @@ verification, matching this program's precedent for fixes whose live-game trigge
 don't reliably occur under the deck's own AI policy (see 1a's Metallic Rebuke note for the same
 pattern).
 
+### EFFECT_REGISTRY board-sweep cluster consolidation — DONE
 
 **Scope:** the EFFECT_REGISTRY "destroy/sacrifice all [matching] permanents" cluster — a symmetric
 mass effect hitting every eligible permanent on every player's battlefield, as opposed to the
