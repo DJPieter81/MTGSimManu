@@ -12,7 +12,8 @@ Units: turns of clock advantage. +1.0 means I'm one combat step ahead.
 from __future__ import annotations
 import enum
 import math
-from typing import TYPE_CHECKING, Set
+import re
+from typing import TYPE_CHECKING, Optional, Set
 
 from ai.scoring_constants import (
     PURE_BLOCKER_TOUGHNESS_VALUE,
@@ -38,6 +39,7 @@ from ai.scoring_constants import (
 if TYPE_CHECKING:
     from ai.ev_evaluator import EVSnapshot
     from engine.cards import CardInstance
+    from engine.game_state import PlayerState
 
 # Sentinel: no clock (no creatures / no win condition)
 NO_CLOCK = 99.0
@@ -378,6 +380,122 @@ def creature_clock_impact_from_card(card: "CardInstance",
         base += TOKEN_MAKER_BONUS / opp_life
 
     return base
+
+
+# ─────────────────────────────────────────────────────────────
+# Opportunity cost — "what do I lose by spending this?" (Phase 2a,
+# docs/design/rules-foundation-sweep-tracker.md). Single owner for a
+# question every chump-block / sacrifice / discard-target decision
+# needs answered. Before this primitive existed, each call site
+# answered it with its own POSITIVE-signal proxy wired as a VETO:
+# raw power (ai.ev_player's 0-power chump-block gate — the audited
+# specimen bug), an oracle substring ("whenever this creature
+# attacks"), a card type (PLANESWALKER), or a name list. Every proxy
+# correlates with "this permanent has value elsewhere", but none of
+# them PRICE that value — so the AI refused its cheapest, most
+# disposable resources at exactly the moment a real price comparison
+# would say "spend it, it's worth ~0 anyway".
+# ─────────────────────────────────────────────────────────────
+
+# CR 602.1a: an activated ability is written "[Cost]: [Effect]." Costs
+# are either mana symbols (`{T}`, `{2}{R}`, …) or a capitalized keyword
+# cost phrase (`Sacrifice a Goblin`, `Discard a card`, `Remove a +1/+1
+# counter from this creature`), optionally comma-separated, ending in a
+# colon. This is the same "colon is the activation cost separator"
+# convention `engine/oracle_parser.py`'s saga-chapter-grant parser
+# already documents (`_SAGA_GAINS_RE`'s docstring) — reused here as a
+# direct oracle-text scan because `CardTemplate.abilities` never
+# populates `AbilityType.ACTIVATED` at DB-load time (only CAST / ETB /
+# ATTACK / DIES are extracted there; verified empirically — 0 of 12972
+# creatures in the live DB carry an ACTIVATED entry), so
+# `ai.response_enumeration._battlefield_has_activatable`'s structural
+# check is unreachable for real cards today. Deliberately NOT filtered
+# to exclude mana abilities (unlike that helper) — a mana dork's
+# activated ability is exactly the kind of recurring value this
+# primitive must price; losing a mana source to a needless chump block
+# is a real cost.
+_ACTIVATED_ABILITY_RE = re.compile(
+    r'(?:\{[^}]+\}|[A-Z][a-zA-Z \'\-]{2,40})'
+    r'(?:,\s*(?:\{[^}]+\}|[A-Z][a-zA-Z \'\-]{2,40}))*'
+    r'\s*:\s'
+)
+
+
+def _has_activated_ability(card: "CardInstance") -> bool:
+    """True iff ``card``'s oracle text contains a CR 602.1a-shaped
+    activated ability ("[Cost]: [Effect]")."""
+    oracle = getattr(card.template, 'oracle_text', '') or ''
+    return bool(_ACTIVATED_ABILITY_RE.search(oracle))
+
+
+def opportunity_cost(card: "CardInstance", board: Optional["PlayerState"],
+                      snap: "EVSnapshot") -> float:
+    """What we lose by spending ``card`` right now (chump block,
+    forced sacrifice, discard) — in the same "value" units as
+    ``ai.ev_evaluator.creature_value`` (clock-impact ×
+    ``CREATURE_VALUE_OUTER_SCALE``), so callers can weigh it directly
+    against a benefit computed in those units.
+
+    Three additive components, each reusing an existing primitive
+    rather than reimplementing it — this function is the single
+    place that prices "future value if kept", callable BEFORE a
+    veto excludes the candidate rather than only after:
+
+      1. Ongoing combat/keyword clock impact if the permanent stays
+         on the battlefield — ``creature_clock_impact_from_card``.
+         This already answers "can this thing ever attack/block
+         productively again" generically: a vanilla 0/0 with no
+         keywords prices at 0 (nothing left to block or attack
+         with); a 0-power creature with real toughness prices its
+         blocking value via ``PURE_BLOCKER_TOUGHNESS_VALUE`` inside
+         that same function.
+      2. Un-exhausted activated ability — one card's worth of future
+         clock impact (``card_clock_impact``, the same conversion
+         ``creature_clock_impact_from_card`` already uses for the
+         "card_advantage" tag bonus) when the oracle text exposes a
+         CR 602.1a-shaped activated ability (``_has_activated_ability``
+         below — deliberately not
+         ``ai.response_enumeration._battlefield_has_activatable``,
+         whose structural ``AbilityType.ACTIVATED`` check is
+         unreachable for every real card in the live DB; see that
+         helper's comment for the empirical count). A repeatable
+         engine recurs every turn cycle regardless of whether it
+         already fired this turn, so this does not gate on
+         ``card.tapped``.
+      3. Equipment ceiling — ``_equipment_ceiling_for_creature``
+         (``ai.permanent_threat``), already expressed in these same
+         "value" units (it is summed directly into
+         ``creature_threat_value`` today).
+
+    Returns 0.0 for a non-creature permanent (this primitive prices
+    what's lost by spending a creature/blocker specifically) and for
+    a creature with genuinely no future value: no keywords, no
+    toughness, no activated ability, no equipment ceiling on the
+    board — a truly spent chump.
+
+    ``board`` is the controller's ``PlayerState`` (needed to look up
+    unattached/rebindable equipment); pass ``None`` when unavailable
+    (e.g. a context-free fixture) — the equipment-ceiling term is
+    simply omitted, matching ``creature_threat_value``'s existing
+    "no game/controller in scope" fallback.
+    """
+    if not getattr(card.template, 'is_creature', False):
+        return 0.0
+
+    from ai.scoring_constants import CREATURE_VALUE_OUTER_SCALE
+
+    base = creature_clock_impact_from_card(card, snap) * CREATURE_VALUE_OUTER_SCALE
+
+    if _has_activated_ability(card):
+        base += card_clock_impact(snap) * CREATURE_VALUE_OUTER_SCALE
+
+    ceiling_lift = 0.0
+    game = getattr(card, '_game_state', None)
+    if game is not None and board is not None:
+        from ai.permanent_threat import _equipment_ceiling_for_creature
+        ceiling_lift = _equipment_ceiling_for_creature(card, board, game)
+
+    return base + ceiling_lift
 
 
 # ─────────────────────────────────────────────────────────────

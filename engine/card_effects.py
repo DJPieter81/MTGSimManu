@@ -616,57 +616,21 @@ def wrath_of_the_skies_resolve(game, card, controller, targets=None, item=None):
 @EFFECT_REGISTRY.register("Prismatic Ending", EffectTiming.SPELL_RESOLVE,
                            description="Exile target nonland permanent with MV <= colors")
 def prismatic_ending_resolve(game, card, controller, targets=None, item=None):
-    opponent = 1 - controller
-    opp = game.players[opponent]
-    # Converge: X = number of distinct colors of mana actually spent to cast
-    # this spell. Captured at cast time into item.colors_spent by the engine
-    # (tap_lands_for_mana + mana-pool diff). Fallback: if item is missing
-    # (older test harnesses), approximate from untapped land colors — imperfect
-    # but matches the pre-tracking heuristic.
-    colors = set(getattr(item, 'colors_spent', set())) if item else set()
-    if not colors:
-        player = game.players[controller]
-        for land in player.untapped_lands:
-            for c in (land.template.produces_mana or []):
-                colors.add(c)
-    colors.discard('C')  # Converge counts colored pips only
-    max_cmc = min(len(colors), 5)
-    if max_cmc < 1:
-        max_cmc = 1
-    exile_targets = [c for c in opp.battlefield
-                     if not c.template.is_land and c.template.cmc <= max_cmc]
-    if exile_targets:
-        target = max(exile_targets, key=lambda c: _nonland_permanent_threat(c, opp.battlefield))
-        game._exile_permanent(target)
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Prismatic Ending exiles {target.name} (X={max_cmc})")
+    _resolve_nonland_permanent_removal(
+        game, card, controller, targets, item,
+        zone_dest="exile", mv_max_fn=_prismatic_ending_mv_max,
+        log_verb="exiles",
+    )
 
 
 @EFFECT_REGISTRY.register("March of Otherworldly Light", EffectTiming.SPELL_RESOLVE,
                            description="Exile target artifact, creature, or enchantment with MV <= X")
 def march_otherworldly_light_resolve(game, card, controller, targets=None, item=None):
-    from .cards import CardType
-    opponent = 1 - controller
-    opp = game.players[opponent]
-    # X = mana actually paid for {X} (stored on the stack item at cast
-    # time). Mirrors Wrath of the Skies' pattern at line 615; reading
-    # from len(lands) would ignore the cast-time commitment and let
-    # March target permanents above the paid CMC.
-    x_val = item.x_value if item and hasattr(item, 'x_value') else 0
-    exile_targets = [c for c in opp.battlefield
-                     if not c.template.is_land
-                     and (CardType.ARTIFACT in c.template.card_types
-                          or CardType.CREATURE in c.template.card_types
-                          or CardType.ENCHANTMENT in c.template.card_types)
-                     and c.template.cmc <= x_val]
-    if exile_targets:
-        target = max(exile_targets, key=lambda c: _threat_score(c, game, opp))
-        game._exile_permanent(target)
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"March of Otherworldly Light exiles {target.name}")
-    else:
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"March of Otherworldly Light: no valid targets")
+    _resolve_nonland_permanent_removal(
+        game, card, controller, targets, item,
+        zone_dest="exile", types=frozenset({"artifact", "creature", "enchantment"}),
+        mv_max_fn=_march_otherworldly_light_mv_max, log_verb="exiles",
+    )
 
 
 @EFFECT_REGISTRY.register("Ephemerate", EffectTiming.SPELL_RESOLVE,
@@ -1392,75 +1356,6 @@ def kolaghans_command_resolve(game, card, controller, targets=None, item=None):
                         f"Kolaghan's Command: opponent discards")
 
 
-@EFFECT_REGISTRY.register("Abrupt Decay", EffectTiming.SPELL_RESOLVE,
-                           description="Destroy target nonland permanent with MV 3 or less")
-def abrupt_decay_resolve(game, card, controller, targets=None, item=None):
-    opponent = 1 - controller
-    opp = game.players[opponent]
-    valid = [c for c in opp.battlefield
-             if not c.template.is_land and c.template.cmc <= 3]
-    if valid:
-        target = max(valid, key=lambda c: _nonland_permanent_threat(c, opp.battlefield))
-        game._permanent_destroyed(target)
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Abrupt Decay destroys {target.name}")
-
-
-@EFFECT_REGISTRY.register("Assassin's Trophy", EffectTiming.SPELL_RESOLVE,
-                           description="Destroy target permanent, opponent searches for basic land")
-def assassins_trophy_resolve(game, card, controller, targets=None, item=None):
-    opponent = 1 - controller
-    opp = game.players[opponent]
-    if targets:
-        for tid in targets:
-            target = game.get_card_by_id(tid)
-            if target and target.zone == "battlefield":
-                game._permanent_destroyed(target)
-                game.log.append(f"T{game.display_turn} P{controller+1}: "
-                                f"Assassin's Trophy destroys {target.name}")
-    else:
-        # Auto-target: highest value nonland permanent
-        nonlands = [c for c in opp.battlefield if not c.template.is_land]
-        if nonlands:
-            target = max(nonlands, key=lambda c: _nonland_permanent_threat(c, opp.battlefield))
-            game._permanent_destroyed(target)
-            game.log.append(f"T{game.display_turn} P{controller+1}: "
-                            f"Assassin's Trophy destroys {target.name}")
-    # Opponent gets a basic land (simplified: just a small benefit)
-    # In practice this is a downside but we don't model basic land search
-
-
-@EFFECT_REGISTRY.register("Fatal Push", EffectTiming.SPELL_RESOLVE,
-                           description="Destroy creature with MV 2 or less (4 with revolt)")
-def fatal_push_resolve(game, card, controller, targets=None, item=None):
-    from .cards import Keyword
-    opponent = 1 - controller
-    opp = game.players[opponent]
-    # Check revolt (simplified: did a permanent leave this turn?)
-    has_revolt = game.players[controller].creatures_died_this_turn > 0
-    max_cmc = 4 if has_revolt else 2
-
-    if targets:
-        for tid in targets:
-            target = game.get_card_by_id(tid)
-            if (target and target.zone == "battlefield" and
-                target.template.is_creature and target.template.cmc <= max_cmc and
-                Keyword.INDESTRUCTIBLE not in target.keywords):
-                game._creature_dies(target)
-                game.log.append(f"T{game.display_turn} P{controller+1}: "
-                                f"Fatal Push destroys {target.name}")
-                return
-    # Auto-target
-    valid = [c for c in opp.creatures
-             if c.template.cmc <= max_cmc and
-             Keyword.INDESTRUCTIBLE not in c.keywords]
-    if valid:
-        target = max(valid, key=lambda c: c.power or 0)
-        game._creature_dies(target)
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Fatal Push destroys {target.name}")
-
-
 def _nonland_permanent_threat(c, opp_battlefield):
     """Score a nonland permanent for removal targeting.
 
@@ -1484,17 +1379,190 @@ def _nonland_permanent_threat(c, opp_battlefield):
     return score
 
 
-@EFFECT_REGISTRY.register("Leyline Binding", EffectTiming.ETB,
-                           description="Exile target nonland permanent")
-def leyline_binding_etb(game, card, controller, targets=None, item=None):
-    opponent = 1 - controller
-    opp = game.players[opponent]
-    nonlands = [c for c in opp.battlefield if not c.template.is_land]
-    if nonlands:
-        target = max(nonlands, key=lambda c: _nonland_permanent_threat(c, opp.battlefield))
-        game._exile_permanent(target)
+# ═══════════════════════════════════════════════════════════════════
+# Nonland permanent removal cluster — shared destroy/exile resolver
+# ═══════════════════════════════════════════════════════════════════
+#
+# Mechanic (CR 608.2b/608.2c): "Destroy/exile target permanent
+# [optionally restricted by type], and only if [a resolution-time
+# condition — usually a mana-value threshold] holds when the spell/
+# ability resolves." A card's TARGET LEGALITY (does a legal candidate
+# exist / is a chosen id still legal — zone, type, owner, hexproof
+# once engine/target_solver.py grows that check) is a separate rules
+# question from whether its CONDITION is met once a legal target is
+# selected. Conflating the two was the bug this cluster shared: some
+# handlers ignored the pre-chosen `targets` entirely and re-derived
+# their own pick every time; one handler (Fatal Push) fell through to
+# picking a DIFFERENT target when the chosen one failed its condition,
+# which is not what CR 608.2c says happens (the spell does nothing —
+# it does not re-target).
+#
+# See docs/design/rules-foundation-sweep-tracker.md, Phase 3, for the
+# per-card restriction table this generalizes (Abrupt Decay,
+# Assassin's Trophy, Fatal Push, Leyline Binding, Prismatic Ending,
+# March of Otherworldly Light).
+
+_FATAL_PUSH_BASE_MV = 2    # rules constant: Fatal Push, no revolt
+_FATAL_PUSH_REVOLT_MV = 4  # rules constant: Fatal Push, with revolt
+_ABRUPT_DECAY_MV = 3       # rules constant: Abrupt Decay's fixed threshold
+_CONVERGE_MAX_COLORS = 5   # rules constant: WUBRG — the color pip ceiling
+
+
+def _removal_legal_pool(game, controller, owner_scope, types):
+    """Battlefield permanents of `types` legal for `controller` to
+    target, filtered by `owner_scope` ("opponent"/"any") via
+    `target_solver.enumerate_legal_targets` — the single owner of
+    target-legality (CR 601.2c), never re-derived here. Keyed by
+    instance_id for O(1) lookup against a pre-chosen target id.
+    """
+    from . import target_solver
+    req = target_solver.TargetRequirement(
+        zone="battlefield", types=frozenset(types), owner_scope=owner_scope,
+    )
+    return {c.instance_id: c
+            for c in target_solver.enumerate_legal_targets(game, controller, req)}
+
+
+def _resolve_nonland_permanent_removal(
+        game, card, controller, targets, item, *,
+        zone_dest,
+        types=frozenset({"permanent_nonland"}),
+        owner_scope="opponent",
+        mv_max_fn=None,
+        log_verb="destroys",
+):
+    """Generic resolver for the destroy/exile-target-permanent cluster
+    (see module comment above). Every card in the cluster shares this
+    one function body; per-card differences are entirely captured by
+    the keyword arguments a thin registration wrapper supplies.
+
+    zone_dest:
+      "graveyard" — destroy. Routes through `game._permanent_destroyed`,
+        which itself dispatches to `game._creature_dies` for creature
+        targets (so Undying/Persist replacement, CR 702.92d/702.77c,
+        still applies) and is a no-op against an indestructible
+        permanent (CR 702.12b) — checked below since neither funnel
+        function checks it itself.
+      "exile" — routes through `game._exile_permanent`. No death
+        replacement applies to exile (CR 700.4 — the permanent never
+        goes to the graveyard), and indestructible does not protect
+        against it.
+    mv_max_fn: optional (game, card, controller, item) -> int | None,
+      the resolution-time mana-value ceiling. None means the card has
+      no such condition at all (Assassin's Trophy, Leyline Binding).
+    """
+    from .cards import Keyword
+
+    legal = _removal_legal_pool(game, controller, owner_scope, types)
+    max_mv = mv_max_fn(game, card, controller, item) if mv_max_fn else None
+
+    def _meets_condition(target) -> bool:
+        if max_mv is not None and (target.template.cmc or 0) > max_mv:
+            return False  # CR 608.2c: condition unmet
+        if zone_dest == "graveyard" and Keyword.INDESTRUCTIBLE in target.keywords:
+            return False  # CR 702.12b: destroy does nothing
+        return True
+
+    def _apply(target):
+        if zone_dest == "exile":
+            game._exile_permanent(target)
+        else:
+            game._permanent_destroyed(target)
         game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Leyline Binding exiles {target.name}")
+                        f"{card.name} {log_verb} {target.name}")
+
+    if targets:
+        # A target was already chosen (cast time / trigger-target
+        # selection) — honor it rather than re-deriving a fresh pick.
+        for tid in targets:
+            target = legal.get(tid)
+            if target is None:
+                continue  # CR 608.2b: illegal at resolution, try next id
+            if not _meets_condition(target):
+                return  # CR 608.2c: condition unmet — no effect, no retarget
+            _apply(target)
+            return
+        return  # every chosen id was illegal at resolution — no effect
+
+    # No pre-chosen target (dies-trigger fan-out, blink/reanimation
+    # re-entry via zone_transfer._fire_etb_triggers, or a synthetic
+    # test call site with no cast-time target selection): auto-pick
+    # the highest-threat legal + condition-satisfying candidate, using
+    # the heuristic every handler in this cluster already shared.
+    candidates = [c for c in legal.values() if _meets_condition(c)]
+    if not candidates:
+        return
+    opp_battlefield = game.players[1 - controller].battlefield
+    best = max(candidates,
+              key=lambda c: _nonland_permanent_threat(c, opp_battlefield))
+    _apply(best)
+
+
+def _fatal_push_mv_max(game, card, controller, item):
+    has_revolt = game.players[controller].creatures_died_this_turn > 0
+    return _FATAL_PUSH_REVOLT_MV if has_revolt else _FATAL_PUSH_BASE_MV
+
+
+def _prismatic_ending_mv_max(game, card, controller, item):
+    # Converge: X = number of distinct colors of mana actually spent to
+    # cast this spell. Captured at cast time into item.colors_spent by
+    # the engine (tap_lands_for_mana + mana-pool diff). Fallback: if
+    # item is missing (older test harnesses), approximate from
+    # untapped land colors — imperfect but matches the pre-tracking
+    # heuristic this replaces.
+    colors = set(getattr(item, 'colors_spent', set())) if item else set()
+    if not colors:
+        for land in game.players[controller].untapped_lands:
+            for c in (land.template.produces_mana or []):
+                colors.add(c)
+    colors.discard('C')  # Converge counts colored pips only
+    return max(1, min(len(colors), _CONVERGE_MAX_COLORS))
+
+
+def _march_otherworldly_light_mv_max(game, card, controller, item):
+    # X = mana actually paid for {X} (stored on the stack item at cast
+    # time). Reading from len(lands) would ignore the cast-time
+    # commitment and let March target permanents above the paid CMC.
+    return item.x_value if item and hasattr(item, 'x_value') else 0
+
+
+@EFFECT_REGISTRY.register("Abrupt Decay", EffectTiming.SPELL_RESOLVE,
+                           description="Destroy target nonland permanent with MV 3 or less")
+def abrupt_decay_resolve(game, card, controller, targets=None, item=None):
+    _resolve_nonland_permanent_removal(
+        game, card, controller, targets, item,
+        zone_dest="graveyard", mv_max_fn=lambda g, c, ctl, it: _ABRUPT_DECAY_MV,
+    )
+
+
+@EFFECT_REGISTRY.register("Assassin's Trophy", EffectTiming.SPELL_RESOLVE,
+                           description="Destroy target permanent, opponent searches for basic land")
+def assassins_trophy_resolve(game, card, controller, targets=None, item=None):
+    _resolve_nonland_permanent_removal(
+        game, card, controller, targets, item,
+        zone_dest="graveyard", types=frozenset({"permanent"}),
+    )
+    # Opponent gets a basic land (simplified: just a small benefit)
+    # In practice this is a downside but we don't model basic land search
+
+
+@EFFECT_REGISTRY.register("Fatal Push", EffectTiming.SPELL_RESOLVE,
+                           description="Destroy creature with MV 2 or less (4 with revolt)")
+def fatal_push_resolve(game, card, controller, targets=None, item=None):
+    _resolve_nonland_permanent_removal(
+        game, card, controller, targets, item,
+        zone_dest="graveyard", types=frozenset({"creature"}),
+        mv_max_fn=_fatal_push_mv_max,
+    )
+
+
+@EFFECT_REGISTRY.register("Leyline Binding", EffectTiming.ETB,
+                           description="Exile target nonland permanent an opponent controls")
+def leyline_binding_etb(game, card, controller, targets=None, item=None):
+    _resolve_nonland_permanent_removal(
+        game, card, controller, targets, item,
+        zone_dest="exile", log_verb="exiles",
+    )
 
 
 
