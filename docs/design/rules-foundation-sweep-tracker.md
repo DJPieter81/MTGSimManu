@@ -1092,6 +1092,148 @@ pure internal-mechanism consolidation (three duplicate implementations → one s
 verified-identical observable outcome, not a behavior fix; the unit/integration tests above are the
 authoritative verification, matching this program's precedent for internal-refactor-only slices
 (see 1c's deathtouch-marker rewrite, which is the same "same outcome, different mechanism" shape).
+
+### EFFECT_REGISTRY board-sweep cluster consolidation — DONE
+
+**Scope:** the EFFECT_REGISTRY "destroy/sacrifice all [matching] permanents" cluster — a symmetric
+mass effect hitting every eligible permanent on every player's battlefield, as opposed to the
+target-picking "destroy/exile ONE chosen permanent" shape the removal-spell slice (immediately
+above this subsection) already generalizes. This branch was cut from `origin/main` at the Phase 1
+tip, before the removal-spell slice merged, and was developed independently of it; the two clusters
+share no code (removal's `_resolve_nonland_permanent_removal` picks one legal target and honors
+`targets`, board-sweep never receives a meaningful `targets` list at all — it is not a targeted
+effect) and merged cleanly with no code-level conflict, only the expected prose-only conflict in
+this doc (both slices append a `###` subsection to the same `## Phase 3` section — resolved by
+keeping both, this one placed after removal's per this doc's edit-time ordering).
+
+**Research pass (read every candidate in full before designing anything):** grepped
+`engine/card_effects.py` for every handler shaped like "destroy/exile all creatures" or
+"destroy/exile all permanents [filtered]". Four real candidates, verified against real oracle text
+via `CardDatabase` (not assumed from memory):
+
+- **Damnation** — `"Destroy all creatures. They can't be regenerated."` Unconditional, no filter.
+  Real bug found: the pre-migration handler had **no indestructible check at all** — it called
+  `game._permanent_destroyed` on every creature unconditionally, which itself does not check
+  indestructible (neither `_creature_dies` nor `_permanent_destroyed` do — the removal-spell
+  slice's commit already documented this exact "indestructible is the caller's job" finding for
+  target-picking removal; this slice re-confirms it applies identically to mass removal). Verified
+  by extracting the pre-fix handler body into a standalone script and running it against a
+  synthetic indestructible creature — it died. Supreme Verdict and Wrath of the Skies already
+  checked indestructible correctly pre-migration; only Damnation had the gap.
+- **Supreme Verdict** — `"This spell can't be countered. Destroy all creatures."` Same
+  unconditional creature-destroy as Damnation, plus an uncounterable-casting property. Confirmed by
+  grepping the whole `engine/` tree for `is_uncounterable`/`"can't be countered"` enforcement: none
+  exists anywhere. Supreme Verdict is castable-and-counterable like any other spell in the current
+  implementation today — a real, separate gap belonging with 1a's counter-tax/uncounterable
+  framework, not this sweep-resolver slice. Left as a documented follow-up, not fixed here (out of
+  this cluster's mechanic boundary).
+- **All Is Dust** — `"Each player sacrifices all permanents they control that are one or more
+  colors."` Two real differences from Damnation/Supreme Verdict: (1) **sacrifice, not destroy**
+  (CR 701.20a) — indestructible does NOT protect against it, the opposite rule from the other two
+  cards in the cluster; (2) filtered by color, not creature-type — and covers ALL nonland
+  permanents (artifacts, enchantments, planeswalkers, creatures), not just creatures. Real bug
+  found: the pre-migration handler checked `color_identity` (MTGJSON `colorIdentity`, a
+  format-legality superset that can include colors a permanent doesn't actually have — e.g. from a
+  colored activated-ability cost) instead of `colors` (MTGJSON `colors`, the permanent's actual
+  printed color, CR 105.2a) — `CardTemplate.colors` was added in Phase 0b specifically to fix this
+  exact class of "is this permanent actually white/blue/etc." check, and All Is Dust's handler
+  predates that field and was never updated to use it. Programmatic DB sweep: 1077 nonland cards
+  have `colors != color_identity`, confirming this is not a hypothetical edge case.
+- **Wrath of the Skies** — `"You get X {E}..., then you may pay any amount of {E}. Destroy each
+  artifact, creature, and enchantment with mana value ≤ the amount of {E} paid."` The burn-damage
+  cluster's own commit already investigated and excluded this card ("despite the 'Skies' name, its
+  oracle is an energy-fueled board wipe... no damage effect at all") — confirming it belongs HERE,
+  not there. Two real differences: (1) type-filtered to artifact/creature/enchantment (lands and
+  planeswalkers survive even at high X); (2) a resolution-time mana-value ceiling derived from the
+  energy actually paid (a genuine per-card quirk — the energy get/spend bookkeeping stays in the
+  card's own wrapper, exactly like Unholy Heat's delirium-amount computation stayed in its wrapper
+  in the burn-damage slice). Indestructible applies (it's a destroy effect) — already checked
+  correctly pre-migration.
+
+No card was excluded from this cluster after verification — all four candidates found by the
+grep matched the mechanic shape once real oracle text was checked.
+
+**Design:** `engine.card_effects._resolve_board_sweep(game, card, controller, targets, item, *,
+action, types, filter_fn, log_verb, log_noun)` is the new single owner. `action="destroy"` (CR
+702.12b — indestructible blocks it) vs. `action="sacrifice"` (CR 701.20a — indestructible does not
+apply) is the one genuine rules fork the whole cluster shares; every other difference is captured
+by `types` (a token set consumed by `target_solver._matches_type` — the removal-spell slice's own
+type-matching primitive, reused directly rather than re-derived) and an optional `filter_fn(game,
+controller, permanent) -> bool` for a per-card resolution-time condition (Wrath's mana-value
+ceiling via `_wrath_of_the_skies_mv_filter`, All Is Dust's color check via
+`_all_is_dust_has_color`). `_board_sweep_pool(game, types)` walks BOTH players' battlefields — a
+sweep is symmetric by definition, unlike the removal cluster's `owner_scope="opponent"` default.
+Deliberately does NOT route through `target_solver.enumerate_legal_targets` (which layers hexproof
+filtering on top of type filtering): a board sweep is not a targeted effect at all (CR 701.6a/
+701.20a name no "target"), so CR 702.11d hexproof — which protects only against being the target of
+a spell or ability — is correctly irrelevant here. Zone dispatch (`game._creature_dies`/
+`game._permanent_destroyed`) is identical for both `action` values; only ELIGIBILITY (which
+permanents make it into the sweep) differs by action, never HOW an eligible permanent leaves the
+battlefield.
+
+**Files:**
+- `engine/card_effects.py` — new `_board_sweep_pool`, `_resolve_board_sweep`,
+  `_wrath_of_the_skies_mv_filter`, `_all_is_dust_has_color`. Damnation and Supreme Verdict shrink to
+  one-line calls (`action="destroy", types={"creature"}`). All Is Dust shrinks to one call
+  (`action="sacrifice", types={"permanent_nonland"}, filter_fn=_all_is_dust_has_color`). Wrath of
+  the Skies keeps its energy get/spend bookkeeping (genuine per-card quirk, same pattern as Unholy
+  Heat) followed by one call (`action="destroy", types={"artifact","creature","enchantment"},
+  filter_fn=_wrath_of_the_skies_mv_filter(x_val)`).
+- No `tools/zone_mutation_baseline.json` change — none of the four handlers had a raw `.zone =`
+  mutation outside the funnel to begin with (all four already routed through `_creature_dies`/
+  `_permanent_destroyed` pre-migration; the bugs found were in ELIGIBILITY checks, not zone-mutation
+  bypass), so there was nothing to ratchet down. Per this program's precedent ("don't force a
+  reduction that isn't there"), left unchanged.
+
+**Tests (failing-first):** `tests/test_board_sweep_shared_resolver.py` (16 tests) —
+`TestDestroySweepRespectsIndestructible` (Damnation spares an indestructible creature — the real
+bug, confirmed genuinely red pre-fix by extracting the old handler body into a standalone repro
+script and running it against a synthetic indestructible creature; Supreme Verdict regression
+anchor), `TestSacrificeSweepIgnoresIndestructible` (All Is Dust still sacrifices an indestructible
+COLORED creature — CR 701.20a), `TestAllIsDustUsesRealColorNotColorIdentity` (the `colors` vs.
+`color_identity` bug, both a live-game integration case and a direct unit test of
+`_all_is_dust_has_color`), `TestBoardSweepHitsBothPlayers` (symmetry), `TestBoardSweepTypeFilter`
+(Wrath spares lands), `TestBoardSweepManaValueThreshold` (Wrath's X=0 spares above-threshold
+permanents, plus a direct unit test of `_wrath_of_the_skies_mv_filter`),
+`TestBoardSweepRoutesThroughDeathFunnel` (Undying still returns a creature Damnation sweeps — CR
+702.92d, proving the shared resolver funnels through the same replacement-effect-aware primitive as
+every other destroy effect in the engine), `TestRealCardsMatchClusterShape` (oracle-text structured
+assertions guarding the migration's assumptions against a future DB refresh), and
+`TestBoardSweepPoolTypeMatching` (direct `_board_sweep_pool` unit coverage). The import itself
+(`from engine.card_effects import _all_is_dust_has_color, ...`) fails against the pre-migration
+module (those names didn't exist), confirming red-before-green at the collection level; the
+indestructible-Damnation bug was additionally verified red via the standalone extraction method
+above (the pre-fix handler body, run in isolation against the same fixture the new test uses,
+destroys the indestructible creature — the post-fix resolver spares it).
+
+Existing tests referencing these four cards (`tests/test_card_features.py`,
+`tests/test_gameplan_loader_derives_card_lists.py`, `tests/test_llm_sideboard_advisor.py`,
+`tests/test_march_x_from_item_not_lands.py`, `tests/test_panic_gearshift_reaches_play_selection.py`,
+`tests/test_removal_tag_generic_derivation.py`,
+`tests/test_removal_tag_no_self_bounce_false_positives.py`,
+`tests/test_sideboard_manager_slm_dispatch.py`, `tests/test_stax_ev.py`,
+`tests/test_sweeper_held_when_single_kill_and_opponent_developing.py`,
+`tests/test_target_solver_legality.py`, `tests/test_wrath_x_optimizes_sweep.py`,
+`tests/test_x_cost_board_wipe_gate.py`) were checked in full — none exercises the resolve
+handlers' actual sweep behavior (they pin tag derivation, cast-time X-selection, or AI
+scoring-gate logic upstream of resolution) — all still green, no observable-behavior drift.
+
+All 4 ratchets clean.
+
+**WR-anchor drift (expected, absorbed):** `Pinnacle Affinity vs 4/5c Control` seed 50000 — winner
+unchanged (`4/5c Control`), turn count shifted 9 → 10. 4/5c Control's list carries board-sweep
+cluster cards; a real correctness change to sweep eligibility (Damnation's indestructible-check fix
+being the most likely direct cause, given Affinity's artifact-heavy indestructible-adjacent
+permanents) legitimately changes which permanents survive a wipe and therefore how many turns the
+follow-up clock takes to close out — exactly the kind of "real AI-visible outcome from a real engine
+fix" this program's precedent (0e, the removal-spell slice) already establishes as expected and
+absorbable, not a regression. Verified via `git stash` A/B on `engine/card_effects.py` alone: the
+anchor test passes against pre-fix code and fails against post-fix code, isolating this branch's
+change (not some other pre-existing issue) as the cause. Refreshed via
+`python tools/refresh_wr_baseline.py`; snapshot committed alongside this fix.
+
+Full suite: 2444 passed, 22 skipped, 4 deselected, 2 xfailed, 0 failed (after the WR-baseline
+refresh above — the pre-refresh run reported exactly 1 failure, the anchor entry described here).
 ### EFFECT_REGISTRY removal-spell cluster consolidation — DONE
 
 **Problem confirmed, and extended past the original scope.** The prior patch census claimed a
@@ -1217,7 +1359,6 @@ does not match `EFFECT_REGISTRY.register(...)` calls at all, so this migration i
 it in both directions).
 
 ## Verification convention (every item)
-
 Failing test first, rule-phrased name (mechanic, not card — card names live only in fixture-carrier
 constants/docstrings). `python -m pytest tests/ -q` full suite (now feasible in ~4-5 min per-session,
 not the ~80 min CLAUDE.md describes from before the shared-DB-fixture consolidation) +
