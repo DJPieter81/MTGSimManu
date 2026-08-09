@@ -50,6 +50,12 @@ ALLOWED_UNHANDLED: set[tuple[str, str]] = {
     # Newly registered via Eldrazi Ramp / Broodscale Bloodchief (Aug 2026
     # meta-gap fill, PR #486).
     ("Ancient Stirrings", "spell"),
+    # "Each player draws 3, then discards 3 at random" — symmetric
+    # wheel/hellbent effect, not modeled by any handler/oracle branch:
+    # the spell resolves without drawing/discarding for either player.
+    # Newly registered via Hollow One (Aug 2026 meta-gap fill, unblocked
+    # by refresh_card_db.yml) as a core graveyard-fill enabler.
+    ("Burning Inquiry", "spell"),
 }
 
 

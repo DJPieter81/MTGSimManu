@@ -69,6 +69,9 @@ MATCHUPS: list[tuple[str, str, int]] = [
     ("Azorius Blink",         "Eldrazi Ramp",            52500),
     ("Broodscale Bloodchief", "Creatures Toolbox",       52500),
     ("Grixis Reanimator",     "Azorius Blink",           53000),
+    # Hollow One (Aug 2026, unblocked by refresh_card_db.yml).
+    ("Hollow One",            "Eldrazi Ramp",            53500),
+    ("Broodscale Bloodchief", "Hollow One",              53500),
 ]
 
 
