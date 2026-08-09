@@ -642,6 +642,169 @@ cluster consolidation (burn-N-damage, destroy/exile-nonland-MV≤X, board-sweep,
 ~40-50 of 104 registrations) + remaining `ai/` patch retirement using 2a/2b's primitives + remaining
 raw zone-mutation sites + CDA coverage extension (Death's Shadow, Mortivore/Bonehoard, Multani).
 
+## Phase 3
+
+Tracked sweep of the long tail. This section accumulates independent Phase 3 slices as they land;
+each slice gets its own `###` subsection. Multiple slices may run concurrently on separate
+`claude/rules-foundation-phase3-*` branches — see each subsection's own scope note for what it
+does and does not cover.
+
+### EFFECT_REGISTRY burn-damage cluster consolidation — DONE
+
+**Problem confirmed exactly as scoped:** `engine/card_effects.py` registered four independent
+SPELL_RESOLVE handlers for the "deal N damage to any target" mechanic shape — Lightning Bolt, Lava
+Dart, Unholy Heat, Grapeshot — plus one ETB handler (Phlage, Titan of Fire's Fury) with the same
+shape bundled into a larger multi-effect trigger. `EFFECT_REGISTRY.register("Card Name", ...)`
+calls are literal per-card-name registrations, invisible to `tools/check_abstraction.py`'s regex
+(confirmed: `python tools/check_abstraction.py --list` reports 0 hits before AND after this
+change — the ratchet does not see registry keys at all), but bespoke per-card logic living
+*inside* the handler bodies is the same anti-pattern the ratchet targets for `card.name ==`
+checks. This item holds registry-handler bodies to that same bar.
+
+**Research pass (read every candidate in full before designing anything):**
+
+- **Lightning Bolt** (`deals 3 damage to any target`) and **Lava Dart** (`deals 1 damage to any
+  target`, plus a Flashback cost handled entirely elsewhere) were already near-identical: walk
+  `targets`, apply to the first battlefield creature-or-planeswalker hit via `deal_damage`, else
+  face. No per-card quirk beyond the fixed amount.
+- **Unholy Heat** has one real quirk: the printed amount is conditional on delirium (2 damage, or
+  6 if 4+ card types are in the caster's graveyard) — a card-specific AMOUNT computation,
+  orthogonal to target resolution. Its real oracle text is "deals 2 damage to **target creature or
+  planeswalker**", not "any target" — confirmed this does not change target-eligibility handling
+  (creature-or-planeswalker is exactly what the shared filter already checks; the wording
+  difference only matters for the DB's `OracleTextParser.DAMAGE_PATTERNS`, which is not part of
+  this migration's dispatch path).
+- **Grapeshot** had a real, pre-existing bug: its handler ignored `targets` entirely and always
+  mutated `game.players[opponent].life` directly, bypassing `deal_damage` altogether — the spell's
+  actual oracle ("deals 1 damage to **any target**") supports targeting a creature or
+  planeswalker, but the engine could not do so. Traced the live blast radius before treating this
+  as in-scope: `ai/ev_player.py`'s storm-finisher target policy always casts Grapeshot with
+  `targets=[-1]` ("Grapeshot always goes face (storm copies auto-target)"), so the bug never fired
+  in any current sim — but it is still a real correctness gap (the exact "no single owner" pattern
+  this program targets), and fixing it via the shared resolver costs nothing extra once the
+  resolver exists. `_handle_storm`'s re-invocation of `_execute_spell_effects` per copy was
+  confirmed to re-declare the same `item.targets` on every copy (CR 706.10c: a Storm copy keeps
+  the original targets unless the caster is offered new ones, which this engine does not yet
+  model) — unaffected by this migration either way.
+- **Phlage, Titan of Fire's Fury**'s ETB handler ("deal 3 damage to any target" bundled with a
+  sacrifice-unless-escaped clause and a life-gain rider) turned out to be **dead code**: the card
+  was removed from `ModernAtomic` entirely by the MTGJSON refresh that followed its Modern ban
+  (`d02c543`, already on `main` before this branch). Grepped `tests/*.py`, `engine/*.py`,
+  `ai/*.py` for the exact literal `"Phlage, Titan of Fire's Fury"` — the only hit was the
+  registration itself. No `CardInstance` can ever carry that name, so the handler was unreachable.
+  Deleted rather than migrated (same class-size/dead-code reasoning as 0a's discard-path and
+  Annihilator-sacrifice findings) — a 30-line raw-mutation handler removed for zero behavioural
+  cost, and one fewer raw `card.zone = "graveyard"` site outside the zone-transfer funnel
+  (`tools/zone_mutation_baseline.json`'s `engine/card_effects.py` entry ratcheted 34 → 33).
+- **Excluded, with reasoning** (found while grepping the file for every `damage`/`life -=`
+  mutation, to make sure the cluster was fully enumerated, not just the four named cards):
+  - **Thraben Charm** — a 3-mode charm (damage / destroy enchantment / exile graveyard) whose mode
+    selection is entirely EV-scored inline in the handler via `ai.ev_evaluator.creature_threat_value`
+    (a separate, pre-existing "engine layer scores" violation, out of scope for this item). Not the
+    "deal N damage to any target" shape — it is "destroy target creature" scaled by controlled
+    creature count, one mode among three, never "any target".
+  - **Kolaghan's Command** and **Pick Your Poison** — modal "choose 2 of N" charms where damage is
+    one mode among several, auto-selected by board-state heuristics, not "deal N damage to a
+    player-declared any-target".
+  - **Wrath of the Skies** — despite the "Skies" name, its oracle is an energy-fueled board wipe
+    (destroy each permanent with MV ≤ energy paid); no damage effect at all.
+  - **Orcish Bowmasters** and **Walking Ballista** — both deal damage as one part of a richer ETB
+    (token creation; X-counter-based repeated removal), and both use bespoke auto-target selection
+    (no player-declared `targets` list reaches them the way a cast spell's does) rather than the
+    "declared target, else face" shape this cluster's resolver models. Real drift from the shared
+    funnel (`damage_marked +=` / `life -=` instead of `deal_damage`) still exists in both — flagged
+    here, not fixed, since fixing them means designing (or extending) a second resolver for the
+    "auto-picked ETB damage" shape, which is a different mechanic boundary and its own slice.
+  - **Archon of Cruelty** and **Tribal Flames** — "loses N life" (not damage; no lifelink/
+    prevention interaction, CR 119 does not apply) and a domain-count-derived amount that also
+    ignores `targets` (real bug, same class as Grapeshot's), respectively. Tribal Flames'
+    amount-derivation is a CDA-adjacent mechanic (`_get_domain_count`-shaped), not the
+    fixed/conditional-amount shape this slice's resolver covers — a natural companion to 1d's CDA
+    work rather than this burn cluster; flagged for a future slice.
+  - **`resolve_attack_trigger`'s own "whenever this creature attacks, deal N damage" branch**
+    (`engine/oracle_resolver.py`) has the identical bug class (raw `damage_marked +=` / `life -=`,
+    bypassing `deal_damage`) but is not an `EFFECT_REGISTRY` handler at all — it is already a
+    generic oracle-driven dispatcher. Checked class size before touching it: 0 cards in any of the
+    16 registered decks' 75s have an attack-trigger damage clause (grepped `decks/modern_meta.py`'s
+    full card pool against every card's oracle text for `attacks` + `damage` co-occurrence).
+    Zero blast radius — left as a documented follow-up rather than fixed speculatively, per this
+    program's class-size discipline (0a's identical reasoning for the discard-path and
+    Annihilator-sacrifice findings).
+
+**Design:** `engine.oracle_resolver.resolve_damage_to_chosen_target(game, source, controller,
+amount, targets)` is the new single owner for "given an already-resolved amount and a declared
+target list, apply the damage" — the one piece of this mechanic shape that generalizes across
+every card in the cluster. It walks `targets` for the first battlefield creature-or-planeswalker
+hit (mirroring CR 601.2c's "any target" = creature/player/planeswalker), applies damage via
+`engine.damage.deal_damage` (this program's shared damage primitive; already exists, not
+reimplemented — see its own docstring for what it does and does not yet implement, notably a
+lifelink hook it reserves but does not populate until the separate damage-funnel activation work
+lands), and falls through to the opponent's face on no declared/no eligible target. The AMOUNT
+computation stays per-card (fixed constants for Bolt/Dart/Grapeshot, the delirium check for
+Unholy Heat) — that half of the mechanic is genuinely card-specific and does not belong in a
+shared resolver.
+
+**Files:**
+- `engine/oracle_resolver.py` — new `resolve_damage_to_chosen_target`, placed next to the existing
+  `_pick_damage_target` (the oracle-driven auto-target picker used by ETB/attack-trigger callers
+  that can legitimately re-fire without a declared target list; this new function does not
+  duplicate that picker — callers needing the auto-pick fallback resolve a target via
+  `_pick_damage_target` themselves and pass it in as an explicit id).
+- `engine/card_effects.py` — Lightning Bolt and Lava Dart shrink to one-line calls into the shared
+  resolver with a fixed amount; Unholy Heat shrinks to its delirium-amount computation followed by
+  one call; Grapeshot shrinks to one call plus its own log line (its only remaining bespoke code:
+  which log message to print, not how damage is applied); Phlage's handler and registration are
+  deleted (dead code, see above).
+- `tools/zone_mutation_baseline.json` — `engine/card_effects.py` ratcheted 34 → 33 (Phlage's raw
+  `card.zone = "graveyard"` mutation deleted along with the handler).
+
+**Registrations were not deleted for Lightning Bolt/Lava Dart** despite the generic per-ability-
+loop fallback in `spell_resolution.py::_execute_spell_effects` already implementing the same
+target-filter+`deal_damage` logic independently (confirmed by inspection: for a single-target
+spell the two implementations are behaviourally identical). Kept because
+`tests/test_burn_spell_damage_resolves_on_creature.py` (pre-existing, not authored by this item)
+pins `EFFECT_REGISTRY.execute("Lightning Bolt", ...)` returning `True` via direct registry
+dispatch — deleting the registration would silently reroute through a more fragile fallback path
+(the ability-loop parses the damage amount by scanning a synthesized description string for the
+first int-parseable word) for no reduction in duplicated logic, since the one-line shrink already
+eliminates 100% of the bespoke target-filter code that mattered. The ability-loop's own damage
+branch was deliberately left untouched (not also pointed at the new shared resolver): several
+Modern "divided damage" spells (Arc Lightning, Electrolyze, Boulderfall, ...) reach that fallback
+today and rely on its loop-over-every-declared-target semantics, which the new resolver's
+single-target CR 601.2c-shaped return contract does not preserve — unifying that path is a
+separate, differently-scoped mechanic ("divided damage among any number of targets") and was
+explicitly not pulled into this slice's blast radius.
+
+**Tests (failing-first):** `tests/test_burn_damage_shared_resolver.py` — resolver-unit tests
+(declared-creature-target hit, face sentinel, no-declared-targets defaults to face, a non-creature/
+non-planeswalker declared target falls through to face, zero-amount no-op, and two "routes through
+`deal_damage` rather than a raw mutation" pins via monkeypatching the primitive), plus real-DB
+integration tests for the migrated handlers: Lava Dart (new coverage — no prior test exercised its
+resolve handler directly), Unholy Heat's two delirium branches (new coverage), and
+`TestGrapeshotRespectsDeclaredTarget` (the one genuinely red-before-green case — a declared
+creature target was ignored pre-fix, confirmed via `git diff`/manual revert during development;
+the face-sentinel and no-declared-targets cases are regression anchors pinning the AI's actual
+current call shape, both passing before and after since the bug only affected the untaken
+creature-target branch). A `TestDeadCardRegistrationRemoved` case pins the Phlage deletion (asserts
+the card is absent from the DB and the handler is no longer registered — regression guard in case
+Phlage or a functional reprint re-enters the pool, at which point the registration should come
+back pointing at the shared resolver, not the old raw-mutation version).
+
+23 tests, all green after the fix; 2 (`TestGrapeshotRespectsDeclaredTarget::test_grapeshot_damages_declared_creature_target`
+and `TestDeadCardRegistrationRemoved::test_phlage_etb_handler_no_longer_registered`) confirmed
+genuinely red before the corresponding fix landed.
+
+Full suite: see the session's final run below. All 4 ratchets clean (`check_abstraction.py`:
+0 hits before and after — registry keys are outside its regex scope, confirmed by inspection, not
+assumption; `check_magic_numbers.py`: unaffected, this slice is `engine/`-only;
+`check_zone_mutation.py`: 103 → 102 total, baseline ratcheted down in the same commit;
+`check_doc_hygiene.py`: clean). No replay demonstrates this fix specifically — the one real bug
+found (Grapeshot's ignored-target case) never fires in any current sim (the AI always casts
+Grapeshot face-only, confirmed above), so the unit/integration tests are the authoritative
+verification, matching this program's precedent for fixes whose live-game trigger conditions
+don't reliably occur under the deck's own AI policy (see 1a's Metallic Rebuke note for the same
+pattern).
+
 ## Verification convention (every item)
 
 Failing test first, rule-phrased name (mechanic, not card — card names live only in fixture-carrier

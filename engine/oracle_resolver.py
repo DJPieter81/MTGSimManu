@@ -93,6 +93,84 @@ def _pick_damage_target(game: "GameState", controller: int,
     return best if threat_score(best) > amount * FACE_VALUE_PER_DAMAGE else None
 
 
+def resolve_damage_to_chosen_target(
+        game: "GameState", source: "CardInstance", controller: int,
+        amount: int, targets: Optional[list] = None
+) -> Optional["CardInstance"]:
+    """Resolve "[source] deals `amount` damage to any target" (CR 601.2c
+    target declaration already resolved to `targets`; this is the
+    application step, CR 119).
+
+    This is the ONE shared owner for the "fixed/derived-amount damage
+    to a chosen target" mechanic shape — every EFFECT_REGISTRY handler
+    for a "deal N damage to any target / creature / player" spell
+    (Lightning Bolt, Lava Dart, Grapeshot, Unholy Heat's post-delirium
+    amount, ...) calls this instead of re-implementing target
+    filtering + mutation inline. Class size: ~150+ printed Modern
+    "deals N damage" spells share this exact target-resolution shape
+    (see `tests/test_burn_targets_planeswalker_when_loyalty_le_damage.py`
+    for the fuller enumeration) — the amount itself is card-specific
+    (fixed, or computed from a card-specific condition like delirium)
+    and stays the caller's responsibility; only the "given an amount
+    and a declared target list, apply the damage" step is generic.
+
+    Target resolution mirrors CR 601.2c "any target" (creature,
+    player, or planeswalker — battle targets are a future target
+    type, not yet modelled):
+
+    - `targets` is walked in order; the first id that resolves to a
+      battlefield creature or planeswalker receives the damage and is
+      returned.
+    - A `None`/`-1` entry (the engine's "AI chose face" sentinel) or
+      an exhausted/empty `targets` list falls through to the
+      opponent's face — this matches the existing spell-resolution
+      contract (an "any target" spell with no legal/declared
+      permanent target simply goes face; CR 608.2b's "spell with no
+      legal target" case does not apply here since the player is
+      always a legal target for "any target").
+
+    Every branch routes through `engine.damage.deal_damage` so the
+    deathtouch SBA marker (CR 702.2c) and the state-based-actions
+    scheduling hook are correct by construction for every caller — no
+    reader of this mechanic reimplements `damage_marked +=` / `life
+    -=` by hand (the exact "no single owner" pattern this
+    remediation program targets; see
+    `docs/design/rules-foundation-sweep-tracker.md`). `deal_damage`'s
+    own docstring reserves (but does not yet implement — that is
+    separate, in-flight work) a lifelink (CR 702.15) hook; every
+    caller of this function inherits that behaviour automatically the
+    moment it lands, with zero changes here — which is the entire
+    point of routing through the shared primitive instead of each
+    handler owning its own mutation.
+
+    Returns the `CardInstance` actually damaged, or `None` when the
+    damage went to the opponent's face. Callers that want a log line
+    naming the target/face outcome use this return value; this
+    function does not log (engine primitives compose freely without
+    forcing a specific log shape on every caller — see the two
+    different log-message conventions already in `card_effects.py`).
+    """
+    from .damage import deal_damage
+    from .cards import CardType
+    opponent = 1 - controller
+    if amount <= 0:
+        # CR 119.4: 0 (or negative) damage is not dealt. Mirrors the
+        # no-op guard `deal_damage` itself applies; checked here too
+        # so callers never construct a spurious "hit face for 0" log.
+        return None
+    for tid in (targets or []):
+        if tid is None or tid == -1:
+            break  # explicit "go face" sentinel
+        target = game.get_card_by_id(tid)
+        if (target is not None and target.zone == "battlefield"
+                and (target.template.is_creature
+                     or CardType.PLANESWALKER in target.template.card_types)):
+            deal_damage(source, target, amount)
+            return target
+    deal_damage(source, game.players[opponent], amount)
+    return None
+
+
 def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
                              controller: int) -> bool:
     """Resolve ETB effects via classifier-tag dispatch.
