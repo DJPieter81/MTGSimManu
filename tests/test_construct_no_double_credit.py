@@ -115,7 +115,7 @@ def test_construct_threat_equals_clock_impact_only(card_db):
     the clock-impact-from-card baseline (plus ceiling lift).
     """
     from ai.clock import creature_clock_impact_from_card
-    from ai.ev_evaluator import _DEFAULT_SNAP, CREATURE_VALUE_OUTER_SCALE
+    from ai.ev_evaluator import BASELINE_SNAPSHOT, CREATURE_VALUE_OUTER_SCALE
     from ai.permanent_threat import _equipment_ceiling_for_creature
 
     game = GameState(rng=random.Random(0))
@@ -126,13 +126,13 @@ def test_construct_threat_equals_clock_impact_only(card_db):
     assert construct.power == 4
 
     # Decompose the threat:
-    base = creature_clock_impact_from_card(construct, _DEFAULT_SNAP) \
+    base = creature_clock_impact_from_card(construct, BASELINE_SNAPSHOT) \
         * CREATURE_VALUE_OUTER_SCALE
     ceiling_lift = _equipment_ceiling_for_creature(
         construct, game.players[0], game)
     expected_threat = base + ceiling_lift
 
-    actual_threat = creature_threat_value(construct)
+    actual_threat = creature_threat_value(construct, BASELINE_SNAPSHOT)
 
     delta = actual_threat - expected_threat
     assert abs(delta) < 0.5, (
@@ -160,6 +160,7 @@ def test_construct_in_hand_keeps_virtual_power(card_db):
     """
     from engine.cards import CardTemplate
     from engine.mana import ManaCost
+    from ai.ev_evaluator import BASELINE_SNAPSHOT
 
     # Synthesized in-hand fixture mirroring Construct's oracle text.
     construct_t = CardTemplate(
@@ -182,7 +183,7 @@ def test_construct_in_hand_keeps_virtual_power(card_db):
 
     # In-hand: card.power = template.power = 0 (no dynamic). The loose
     # "for each artifact" regex matches → virtual_power should fire.
-    threat_in_hand = creature_threat_value(in_hand)
+    threat_in_hand = creature_threat_value(in_hand, BASELINE_SNAPSHOT)
 
     # Vanilla 0/0 in hand for baseline (no scaling oracle).
     vanilla_t = CardTemplate(
@@ -197,7 +198,7 @@ def test_construct_in_hand_keeps_virtual_power(card_db):
     )
     vanilla_h._game_state = game
 
-    threat_vanilla = creature_threat_value(vanilla_h)
+    threat_vanilla = creature_threat_value(vanilla_h, BASELINE_SNAPSHOT)
 
     # The synth Construct in hand should score HIGHER than the vanilla
     # 0/0 because virtual_power's anticipatory scaling fires.

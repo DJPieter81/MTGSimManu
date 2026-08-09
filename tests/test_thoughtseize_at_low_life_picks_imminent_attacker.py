@@ -228,7 +228,7 @@ class TestGrindLifeFallsBackToStaticScore:
         Without the panic switch, ``score_card_for_opponent_strip``
         ranks the cards by their tag-based and creature-threat
         scores. The advisor must respect that ranking."""
-        from ai.ev_evaluator import score_card_for_opponent_strip
+        from ai.ev_evaluator import score_card_for_opponent_strip, snapshot_from_game
 
         game = _make_game()
         defender = game.players[0]
@@ -236,6 +236,7 @@ class TestGrindLifeFallsBackToStaticScore:
         defender.deck_name = "Dimir Midrange"
 
         victim_idx = 1
+        caster_idx = 1 - victim_idx
         # Vanilla 3/3 → opp_avg_attack=3.0.
         _put_vanilla_attacker_on_battlefield(game, controller=victim_idx,
                                               power=3, toughness=3)
@@ -251,8 +252,11 @@ class TestGrindLifeFallsBackToStaticScore:
         )
 
         # Predict the static-score winner so the assertion stays
-        # data-driven (not a hardcoded card name).
-        scores = [(score_card_for_opponent_strip(c), c) for c in hand]
+        # data-driven (not a hardcoded card name). Use the same
+        # caster-perspective snapshot the real discard path builds
+        # (ai/discard_advisor.py: caster_idx = 1 - victim_idx).
+        snap = snapshot_from_game(game, caster_idx)
+        scores = [(score_card_for_opponent_strip(c, snap), c) for c in hand]
         scores.sort(key=lambda kv: -kv[0])
         expected_static_pick = scores[0][1].name
 

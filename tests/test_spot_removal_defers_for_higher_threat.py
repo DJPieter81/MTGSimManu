@@ -149,7 +149,7 @@ def _make_game_for_boros_vs_affinity_t1(card_db, opp_lib_names):
     _add_to_hand(game, card_db, "Galvanic Discharge", controller=0)
     # A second card in hand so "no candidate" doesn't trigger an early
     # return path; we want the AI to actually rank Discharge vs. pass.
-    _add_to_hand(game, card_db, "Phlage, Titan of Fire's Fury", controller=0)
+    _add_to_hand(game, card_db, "Lightning Helix", controller=0)
 
     # Affinity side (P1).  Memnite is a vanilla 1/1 — the pro-annotated
     # misplay target.  Signal Pest is a 0/1 with battle cry — useful as

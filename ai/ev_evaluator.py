@@ -586,34 +586,48 @@ def _has_artifact_scaling_card(hand, battlefield) -> bool:
 # Creature value — clock-based, derived from game mechanics
 # ─────────────────────────────────────────────────────────────
 
-# Default snapshot for context-free creature valuation
-# Represents "average mid-game board" — used when no game state available
-_DEFAULT_SNAP = EVSnapshot(
+# Baseline snapshot for GENUINELY context-free creature valuation —
+# call sites with no live game/board state available at all (e.g.
+# sideboard deck-list analysis with no game in progress, or oracle-only
+# evaluation paths documented as "legacy callsites that don't have the
+# game in scope"). Represents an "average mid-game board".
+#
+# This must be passed EXPLICITLY by name at each such call site — it
+# is deliberately NOT a default parameter value on creature_value/
+# creature_threat_value below. The previous design (`snap:
+# Optional[EVSnapshot] = None`, silently substituting this constant)
+# meant a caller who OMITTED snap by mistake — with a real snapshot
+# sitting in scope three lines above — got no error, just a silently
+# wrong answer scored against a fictional life=20/power=3 board. See
+# docs/design/rules-foundation-sweep-tracker.md (0e) for the audit
+# that found this: ai/ev_player.py's emergency-block portfolio cap
+# was the concrete case that surfaced it.
+BASELINE_SNAPSHOT = EVSnapshot(
     opp_life=20, opp_power=3, opp_creature_count=1,
     my_life=20, my_power=3, opp_toughness=3,
     opp_evasion_power=0,
 )
 
-def creature_value(card: "CardInstance", snap: Optional[EVSnapshot] = None) -> float:
+def creature_value(card: "CardInstance", snap: EVSnapshot) -> float:
     """Evaluate a creature's worth on the battlefield.
 
     Uses clock-based impact: how much does this creature change
     the turns-to-win calculation? Scaled to ~3-10 range for
     compatibility with targeting/blocking comparisons.
 
-    When `snap` is provided, the value reflects the *current* game
-    state (life totals, existing board power, blockers) — so small
-    creatures aren't overvalued on a blank default board and large
-    ones aren't undervalued against heavy pressure. Falls back to
-    `_DEFAULT_SNAP` when caller has no snapshot in scope.
+    `snap` reflects the *current* game state (life totals, existing
+    board power, blockers) — so small creatures aren't overvalued on
+    a blank default board and large ones aren't undervalued against
+    heavy pressure. REQUIRED: pass `BASELINE_SNAPSHOT` explicitly at
+    call sites with no live game state, rather than omitting the
+    argument — see that constant's docstring for why.
     """
     from ai.clock import creature_clock_impact_from_card
-    effective_snap = snap if snap is not None else _DEFAULT_SNAP
     # Clock impact is ~0.05-0.5; scale by 20 (opp_life) to get ~1-10 range
-    return creature_clock_impact_from_card(card, effective_snap) * CREATURE_VALUE_OUTER_SCALE
+    return creature_clock_impact_from_card(card, snap) * CREATURE_VALUE_OUTER_SCALE
 
 
-def creature_threat_value(card: "CardInstance", snap: Optional[EVSnapshot] = None) -> float:
+def creature_threat_value(card: "CardInstance", snap: EVSnapshot) -> float:
     """Evaluate a creature's threat level for removal-priority decisions.
 
     Extends `creature_value()` with oracle-driven premiums that raw P/T
@@ -676,12 +690,11 @@ def creature_threat_value(card: "CardInstance", snap: Optional[EVSnapshot] = Non
     # creature_clock_impact_from_card — reuse that path to keep all
     # scoring in a single principled formula.
     from ai.clock import creature_clock_impact_from_card
-    effective_snap = snap if snap is not None else _DEFAULT_SNAP
-    base = creature_clock_impact_from_card(card, effective_snap) * CREATURE_VALUE_OUTER_SCALE
+    base = creature_clock_impact_from_card(card, snap) * CREATURE_VALUE_OUTER_SCALE
     # The call above used card.power; add the virtual-power contribution
     # separately via the same clock formula so it scales identically.
-    vp_impact = (creature_clock_impact(p, tough, kws, effective_snap)
-                 - creature_clock_impact(card.power or 0, tough, kws, effective_snap)) * CREATURE_VALUE_OUTER_SCALE
+    vp_impact = (creature_clock_impact(p, tough, kws, snap)
+                 - creature_clock_impact(card.power or 0, tough, kws, snap)) * CREATURE_VALUE_OUTER_SCALE
 
     # PR-L3: equipment-ceiling lift. If the controller has an
     # unattached / rebindable Equipment with a `gets +N/+M …` static
@@ -2138,7 +2151,8 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
             # highest-power one. This ensures battle-cry / scaling threats
             # (e.g. Signal Pest, Ragavan) project correctly as removal-worthy
             # even when their raw power is 0.
-            best_target = max(opp.creatures, key=creature_threat_value)
+            best_target = max(opp.creatures,
+                               key=lambda c: creature_threat_value(c, snap))
             # Effective power removed includes a threat-equivalent bonus
             # for triggered abilities the raw P/T doesn't capture.
             eff_power = best_target.power or 0
@@ -3354,7 +3368,7 @@ _DISCARD_TAG_WEIGHTS = {
 }
 
 
-def score_card_for_opponent_strip(card: "CardInstance",
+def score_card_for_opponent_strip(card: "CardInstance", snap: EVSnapshot,
                                   opp_gameplan=None) -> float:
     """Score how badly the CASTER of a discard spell wants this card
     out of the victim's hand. Higher = strip first.
@@ -3388,7 +3402,7 @@ def score_card_for_opponent_strip(card: "CardInstance",
     # threats can score higher. We do NOT add a creature-only bonus
     # here — `creature_threat_value` already credits ETB / scaling.
     if getattr(t, 'is_creature', False):
-        return float(creature_threat_value(card))
+        return float(creature_threat_value(card, snap))
 
     # Non-creatures: gameplan signal first (data-driven, no card
     # names in this file), then tag-based weighting.
@@ -3412,7 +3426,7 @@ def score_card_for_opponent_strip(card: "CardInstance",
     return score
 
 
-def choose_card_to_strip(hand: List["CardInstance"],
+def choose_card_to_strip(hand: List["CardInstance"], snap: EVSnapshot,
                           opp_gameplan=None) -> Optional["CardInstance"]:
     """Pick the card a Thoughtseize-style discard spell should take
     from the victim's hand. Lands are excluded (Thoughtseize reads
@@ -3433,7 +3447,7 @@ def choose_card_to_strip(hand: List["CardInstance"],
     if not nonland:
         return None
     scored = [
-        (score_card_for_opponent_strip(c, opp_gameplan),
+        (score_card_for_opponent_strip(c, snap, opp_gameplan),
          getattr(c.template, 'cmc', 0) or 0,
          idx, c)
         for idx, c in enumerate(nonland)

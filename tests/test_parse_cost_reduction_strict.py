@@ -162,7 +162,7 @@ def test_two_mana_reduction_is_parsed():
         "Leyline Binding",
         "Demonic Dread",
         "Shardless Agent",
-        "Phlage, Titan of Fire's Fury",
+        "Kroxa, Titan of Death's Hunger",
     ],
 )
 def test_known_non_reducers_parse_to_none(card_db, card_name):

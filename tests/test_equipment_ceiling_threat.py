@@ -96,17 +96,17 @@ def test_plus_N_per_artifact_equipment_ceiling_lifts_recipient_threat(card_db):
     Removal-targeting code must see this future value, not just the
     current 1/1.
     """
-    from ai.ev_evaluator import creature_threat_value
+    from ai.ev_evaluator import creature_threat_value, BASELINE_SNAPSHOT
 
     game, memnite, plating = _setup_affinity_board(card_db, True)
-    threat = creature_threat_value(memnite)
+    threat = creature_threat_value(memnite, BASELINE_SNAPSHOT)
 
     # Sanity baseline — same Memnite on a board with NO Plating
     # should score the vanilla 1/1 floor (~1.15).
     game_no_plating, memnite_no_plating, _ = _setup_affinity_board(
         card_db, with_unattached_plating=False
     )
-    baseline = creature_threat_value(memnite_no_plating)
+    baseline = creature_threat_value(memnite_no_plating, BASELINE_SNAPSHOT)
     assert baseline < 2.5, (
         f"Vanilla 1/1 Memnite baseline on a Plating-free board scored "
         f"{baseline:.2f}; expected < 2.5. Test environment changed."
@@ -141,7 +141,7 @@ def test_plus_N_per_artifact_ceiling_does_not_apply_when_equipment_committed_els
     proxy via Phyrexian Walker), Plating already attached to Memnite.
     Walker's threat must NOT include the full Plating ceiling.
     """
-    from ai.ev_evaluator import creature_threat_value
+    from ai.ev_evaluator import creature_threat_value, BASELINE_SNAPSHOT
 
     game = GameState(rng=random.Random(0))
     # Two creatures so we have a non-equipped target whose threat we
@@ -163,8 +163,8 @@ def test_plus_N_per_artifact_ceiling_does_not_apply_when_equipment_committed_els
 
     # Walker (the non-equipped target) should not get the full lift —
     # the equipment is already attached to a different creature.
-    threat_walker = creature_threat_value(walker)
-    threat_memnite = creature_threat_value(memnite)
+    threat_walker = creature_threat_value(walker, BASELINE_SNAPSHOT)
+    threat_memnite = creature_threat_value(memnite, BASELINE_SNAPSHOT)
     # Memnite (the currently equipped) has its dynamic P/T already
     # reflecting the buff. Walker has no buff applied — threat must
     # be bounded below Memnite's.
@@ -185,7 +185,7 @@ def test_flat_plus_N_equipment_lifts_threat(card_db):
     a 1/1 today, an 11/11 next turn. Threat must be substantially
     lifted.
     """
-    from ai.ev_evaluator import creature_threat_value
+    from ai.ev_evaluator import creature_threat_value, BASELINE_SNAPSHOT
 
     game = GameState(rng=random.Random(0))
     memnite = _battlefield(game, card_db, "Memnite", 0)
@@ -193,7 +193,7 @@ def test_flat_plus_N_equipment_lifts_threat(card_db):
     hammer.instance_tags.discard("equipment_attached")
     hammer.instance_tags.add("equipment_unattached")
 
-    threat = creature_threat_value(memnite)
+    threat = creature_threat_value(memnite, BASELINE_SNAPSHOT)
     # +10/+10 makes Memnite an 11/11 = roughly equivalent to the full
     # opp_life clock on the standard 20-life board. Threat must be
     # comparable to a top-end Modern threat (≥ 8.0).
@@ -250,7 +250,7 @@ def test_equipment_with_no_modifier_does_not_lift_threat(card_db):
     the lift fires only when the oracle text contains a `gets +N/+M`
     pattern.
     """
-    from ai.ev_evaluator import creature_threat_value
+    from ai.ev_evaluator import creature_threat_value, BASELINE_SNAPSHOT
 
     game = GameState(rng=random.Random(0))
     # Vanilla 1/1
@@ -262,7 +262,7 @@ def test_equipment_with_no_modifier_does_not_lift_threat(card_db):
     greaves.instance_tags.discard("equipment_attached")
     greaves.instance_tags.add("equipment_unattached")
 
-    threat = creature_threat_value(memnite)
+    threat = creature_threat_value(memnite, BASELINE_SNAPSHOT)
 
     # Greaves has no `gets +N/+M` clause — no ceiling lift expected.
     # Threat should remain near the vanilla 1/1 baseline (~1.15).

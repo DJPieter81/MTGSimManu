@@ -335,10 +335,11 @@ def _eval_evoke(game, me, a: BoardAssessment, ctx: dict,
     if 'removal' in tags and card.template.is_creature:
         prior = getattr(me, 'removal_evokes_resolved_this_turn', 0)
         if prior > 0 and opp.creatures:
-            from ai.ev_evaluator import creature_threat_value
+            from ai.ev_evaluator import creature_threat_value, snapshot_from_game
             from ai.scoring_constants import evoke_budget_penalty
+            snap = snapshot_from_game(game, player_idx)
             best_target_threat = max(
-                creature_threat_value(c) for c in opp.creatures
+                creature_threat_value(c, snap) for c in opp.creatures
             )
             budget_penalty = evoke_budget_penalty(prior, best_target_threat)
 

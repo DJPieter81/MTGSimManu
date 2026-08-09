@@ -172,13 +172,13 @@ def _ceiling_per_turn_lift(equipment: "CardInstance",
         return 0.0
 
     from ai.clock import creature_clock_impact
-    from ai.ev_evaluator import CREATURE_VALUE_OUTER_SCALE, _DEFAULT_SNAP
+    from ai.ev_evaluator import CREATURE_VALUE_OUTER_SCALE, BASELINE_SNAPSHOT
 
     # Use the same context-free snapshot as `creature_threat_value`
     # so the ceiling-lift scale is comparable to the baseline threat
     # values produced by the rest of the threat-targeting pipeline
     # (Goblin Guide ≈ 8.3, Memnite-vanilla ≈ 1.15).
-    snap = _DEFAULT_SNAP
+    snap = BASELINE_SNAPSHOT
 
     p_now = creature.power or 0
     tough = creature.toughness or 0

@@ -4,16 +4,16 @@
 Background. ``engine/card_effects.py::phelia_attack`` previously
 contained::
 
-    priority = {'Solitude': 10, "Phlage, Titan of Fire's Fury": 8,
+    priority = {'Solitude': 10, "Kroxa, Titan of Death's Hunger": 8,
                 'Omnath, Locus of Creation': 7}
     target = max(own_etb, key=lambda c: priority.get(c.name, _threat_score(c)))
 
 This violates the abstraction contract: card-name keys baked into
 engine code, ranking three specific Modern creatures.  The same
 ranking falls out of the existing AI primitive
-``ai.ev_evaluator.creature_threat_value`` (Solitude 15.3 > Phlage 8.4
+``ai.ev_evaluator.creature_threat_value`` (Solitude 15.3 > Kroxa 8.4
 > Omnath 6.4) because Solitude's exile-ETB scores higher than
-Phlage's burn-ETB which in turn scores higher than Omnath's cantrip
+Kroxa's burn-ETB which in turn scores higher than Omnath's cantrip
 ETB.  The dict is fully redundant.
 
 Mechanic-level rule encoded:
@@ -56,7 +56,7 @@ def test_phelia_blinks_highest_threat_etb_creature(card_db):
     of the board, ranked by creature_threat_value (the AI primitive),
     not by a hardcoded card-name priority dict.
 
-    Setup: P0 controls Phelia (attacker), Solitude, Phlage, Omnath.
+    Setup: P0 controls Phelia (attacker), Solitude, Kroxa, Omnath.
     P1 controls a single creature (so the opp-target branch is NOT
     taken — Phelia must choose among own ETBs).
 
@@ -70,7 +70,7 @@ def test_phelia_blinks_highest_threat_etb_creature(card_db):
 
     phelia = _battlefield(game, db, "Phelia, Exuberant Shepherd", 0)
     solitude = _battlefield(game, db, "Solitude", 0)
-    phlage = _battlefield(game, db, "Phlage, Titan of Fire's Fury", 0)
+    kroxa = _battlefield(game, db, "Kroxa, Titan of Death's Hunger", 0)
     omnath = _battlefield(game, db, "Omnath, Locus of Creation", 0)
     # Opp creature exists so Phelia is a legal attacker, but the AI's
     # blink choice must not flip to opp-side because we have own ETBs.
@@ -83,11 +83,11 @@ def test_phelia_blinks_highest_threat_etb_creature(card_db):
     exiled_names = {c.name for c in game.players[0].exile}
     assert exiled_names, (
         "Phelia attack handler exiled nothing — expected one of "
-        "Solitude / Phlage / Omnath to be blinked for value."
+        "Solitude / Kroxa / Omnath to be blinked for value."
     )
     assert "Solitude" in exiled_names, (
         f"Phelia blinked {exiled_names} instead of Solitude. "
-        f"creature_threat_value ranks Solitude (~15) > Phlage (~8) > "
+        f"creature_threat_value ranks Solitude (~15) > Kroxa (~8) > "
         f"Omnath (~6); the principled AI primitive picks Solitude. "
         f"If a hardcoded card-name dict is reintroduced into "
         f"phelia_attack this test will fail."
@@ -111,8 +111,8 @@ def test_phelia_handler_has_no_hardcoded_card_priority_dict():
     forbidden_substrings = [
         "'Solitude':",
         '"Solitude":',
-        "'Phlage",
-        '"Phlage',
+        "'Kroxa",
+        '"Kroxa',
         "'Omnath",
         '"Omnath',
     ]

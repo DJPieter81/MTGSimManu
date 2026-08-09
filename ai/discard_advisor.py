@@ -70,7 +70,7 @@ def choose_discard(game: "GameState", player_idx: int,
         # Inquisition / Grief). Delegate to the AI threat-scoring helper,
         # passing the victim's gameplan so its declared keystones can be
         # consulted. No hardcoded card names here.
-        from ai.ev_evaluator import choose_card_to_strip
+        from ai.ev_evaluator import choose_card_to_strip, snapshot_from_game
         opp_gameplan = None
         player = game.players[player_idx]
         deck_name = getattr(player, 'deck_name', '') or ''
@@ -80,6 +80,8 @@ def choose_discard(game: "GameState", player_idx: int,
                 opp_gameplan = get_gameplan(deck_name)
             except Exception:
                 opp_gameplan = None
+        caster_idx = 1 - player_idx
+        caster_snap = snapshot_from_game(game, caster_idx)
         # W1b-11 attack-imminence shim:
         #
         # When the discard CASTER (the player who is *not* the
@@ -106,7 +108,7 @@ def choose_discard(game: "GameState", player_idx: int,
         return _choose_for_caster(
             game, victim_idx=player_idx, hand=hand,
             opp_gameplan=opp_gameplan,
-        ) or choose_card_to_strip(hand, opp_gameplan)
+        ) or choose_card_to_strip(hand, caster_snap, opp_gameplan)
 
     # Self-discard: score-based choice, highest score = discard first.
     from ai.predicates import count_lands
@@ -322,7 +324,7 @@ def _choose_for_caster(game: "GameState", victim_idx: int,
         turn = predicted_turn_of_cast(c, snap,
                                        victim_idx=victim_idx,
                                        victim_player=victim_player)
-        score = score_card_for_opponent_strip(c, opp_gameplan)
+        score = score_card_for_opponent_strip(c, snap, opp_gameplan)
         return (turn, -score, idx)
 
     ranked = sorted(enumerate(nonland), key=_key)

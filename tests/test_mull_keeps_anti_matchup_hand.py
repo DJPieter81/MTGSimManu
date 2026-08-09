@@ -8,7 +8,7 @@ mulligan."  The rule is reasonable for a curve-out aggro deck in a
 typical matchup, but blind to matchup context.
 
 Observed in replays/boros_rarakkyo_vs_affinity_s63000_bo3.txt G2:
-Boros shipped a hand of {3 lands, 2× Phlage, Wear // Tear, Galvanic
+Boros shipped a hand of {3 lands, 2× Ranger-Captain, Wear // Tear, Galvanic
 Discharge} back — a hand with two 3-CMC threats, artifact hate,
 and removal.  That is arguably the best possible keep vs Affinity.
 
@@ -51,10 +51,10 @@ class TestMullKeepsAntiMatchupHand:
     """Strong anti-matchup hand must keep, even without a ≤2-CMC
     creature.  Obvious mulls must still be caught."""
 
-    def test_boros_keeps_phlage_wear_discharge_hand(self, card_db):
-        """Seven-card Boros hand: 3 lands + 2 Phlage + Wear // Tear +
+    def test_boros_keeps_ranger_captain_wear_discharge_hand(self, card_db):
+        """Seven-card Boros hand: 3 lands + 2 Ranger-Captain + Wear // Tear +
         Galvanic Discharge.  No creature with CMC ≤ 2, but: 2 threats
-        (Phlages at 3), one instant removal (Discharge), and one
+        (Ranger-Captains at 3), one instant removal (Discharge), and one
         artifact/enchantment answer (Wear // Tear).  That is a very
         reasonable keep — maximum interaction + on-curve finishers.
 
@@ -66,9 +66,9 @@ class TestMullKeepsAntiMatchupHand:
             _make_card_in_hand(card_db, "Mountain", iid=1),
             _make_card_in_hand(card_db, "Plains", iid=2),
             _make_card_in_hand(card_db, "Sacred Foundry", iid=3),
-            _make_card_in_hand(card_db, "Phlage, Titan of Fire's Fury",
+            _make_card_in_hand(card_db, "Ranger-Captain of Eos",
                                iid=4),
-            _make_card_in_hand(card_db, "Phlage, Titan of Fire's Fury",
+            _make_card_in_hand(card_db, "Ranger-Captain of Eos",
                                iid=5),
             _make_card_in_hand(card_db, "Wear // Tear", iid=6),
             _make_card_in_hand(card_db, "Galvanic Discharge", iid=7),
@@ -77,7 +77,7 @@ class TestMullKeepsAntiMatchupHand:
         keep = decider.decide(hand, cards_in_hand=7)
         assert keep, (
             f"Boros shipped a {len(hand)}-card hand of 3 lands + 2× "
-            f"Phlage + Wear//Tear + Discharge back to mulligan.  "
+            f"Ranger-Captain + Wear//Tear + Discharge back to mulligan.  "
             f"Reason logged: '{decider.last_reason}'.  This is the "
             f"rigid-CMC-2 rule firing blindly — the hand has two "
             f"on-curve finishers, a removal spell, and artifact hate.  "
@@ -86,10 +86,10 @@ class TestMullKeepsAntiMatchupHand:
             f"and keep this hand."
         )
 
-    def test_boros_mulls_land_flood_six_lands_one_phlage(
+    def test_boros_mulls_land_flood_six_lands_one_ranger_captain(
             self, card_db):
         """Regression: the obvious mull case must still fire.  Six
-        lands + one Phlage is too many lands; the hand will struggle
+        lands + one Ranger-Captain is too many lands; the hand will struggle
         to develop.  decide() should return False regardless of the
         looser keep criteria."""
         hand = [
@@ -99,13 +99,13 @@ class TestMullKeepsAntiMatchupHand:
             _make_card_in_hand(card_db, "Plains", iid=13),
             _make_card_in_hand(card_db, "Sacred Foundry", iid=14),
             _make_card_in_hand(card_db, "Arid Mesa", iid=15),
-            _make_card_in_hand(card_db, "Phlage, Titan of Fire's Fury",
+            _make_card_in_hand(card_db, "Ranger-Captain of Eos",
                                iid=16),
         ]
         decider = _boros_decider()
         keep = decider.decide(hand, cards_in_hand=7)
         assert not keep, (
-            f"Regression: six lands + one Phlage kept as a 7-card "
+            f"Regression: six lands + one Ranger-Captain kept as a 7-card "
             f"hand.  Reason: '{decider.last_reason}'.  The fix must "
             f"still catch land-flood hands — this one has too much "
             f"mana and too few spells."
@@ -114,7 +114,7 @@ class TestMullKeepsAntiMatchupHand:
     def test_boros_mulls_zero_land_hand(self, card_db):
         """Regression: the 0-lands hard floor still fires."""
         hand = [
-            _make_card_in_hand(card_db, "Phlage, Titan of Fire's Fury",
+            _make_card_in_hand(card_db, "Ranger-Captain of Eos",
                                iid=20),
             _make_card_in_hand(card_db, "Galvanic Discharge", iid=21),
             _make_card_in_hand(card_db, "Guide of Souls", iid=22),

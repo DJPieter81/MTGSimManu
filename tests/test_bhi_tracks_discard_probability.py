@@ -69,7 +69,7 @@ def _make_game(card_db, my_deck, opp_deck, opp_library_cards):
 BOROS_LIB = [
     "Guide of Souls",
     "Ajani, Nacatl Pariah",
-    "Phlage, Titan of Fire's Fury",
+    "Lightning Helix",
     "Lightning Bolt",
     "Galvanic Discharge",
     "Static Prison",

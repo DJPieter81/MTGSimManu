@@ -248,19 +248,131 @@ zero-loyalty death. Kiki-Jiki survives on the battlefield as a creature until la
 destroyed by Eldrazi Tron's Kozilek's Command (a real artifact/enchantment-destruction mode X=3) —
 correct, since Kiki-Jiki really is an Enchantment Creature. Bug #3 confirmed fixed end-to-end.
 
-### 0d. Finish SBA unification — NOT STARTED (but exact scope already authored)
+### 0d. Finish SBA unification — fixpoint loop DONE; static consolidation deferred to Phase 3
 
-`docs/proposals/resolver_sba_unification.md` (status: active) already documents this exact task as
+`docs/proposals/resolver_sba_unification.md` (status: active) already documents the fuller task as
 its own named follow-up (§6): every 704.5x rule becomes a `SBAManager.perform_*` static (3/9 done:
 poison, deathtouch, token-cleanup), `check_state_based_actions` collapses into the CR 704.3 fixpoint
-loop over those statics. Remaining 6: zero-toughness (704.5g), lethal-damage (704.5h — the
-INDESTRUCTIBLE exemption part is already fixed at the single owning site, `CardInstance.is_dead`;
-what remains is consolidating into a shared static), legend rule (704.5j), planeswalker-loyalty
-(704.5p), player-life (704.5a), empty-library-decking (704.5b — currently an inline instant-loss in
-`draw_cards`, not deferred to the next SBA window; `_drew_from_empty` is read at `sba_manager.py:101`
-and written nowhere in the repo).
+loop. **Landed the fixpoint loop** — the highest-value, cleanly-testable piece — and investigated
+704.5b before implementing it (found zero blast radius, same pattern as the discard/annihilator
+findings in 0a).
 
-### 0e. Make snapshot mandatory in ai/ — NOT STARTED
+**Fixpoint loop**: `GameState.check_state_based_actions` ran its full rule sequence exactly ONCE
+per call — no CR 704.3 repeat-until-stable. This became a REAL (not just latent) gap the moment 0b
+activated `ContinuousEffectsManager`: a legend-rule sacrifice (checked LAST in the sequence) can
+retract a continuous toughness/keyword grant a DIFFERENT creature depended on — but the toughness/
+lethal-damage checks (rules g/h) already ran EARLIER in that same pass, so the cascade was only
+caught on the NEXT external call (13 call sites throughout the engine — not guaranteed to fire
+before other same-step logic reads the now-stale state). Fixed by extracting the existing single-
+pass body into `_check_sba_once()` and wrapping `check_state_based_actions()` around it in a loop
+bounded by `SBA_MAX_ITERATIONS` (already imported, previously unused — the exact constant/pattern
+the dead `SBAManager.check_and_perform_loop` already used). Also added
+`self.continuous_effects.recalculate(self)` at the top of each pass, so a prior pass's retraction
+is visible before the P/T-dependent checks run.
+
+Tests: `tests/test_sba_fixpoint_loop.py` — a REAL cascading-SBA integration test (two same-named
+Legendary creatures, one granting a continuous +0/+2 toughness bonus to a third creature via
+`ContinuousEffectsManager`; sacrificing the older one via legend rule must retract the bonus and
+kill the third creature in the SAME `check_state_based_actions()` call), plus a mocked loop-bound
+test mirroring `tests/test_sba_uses_max_iterations_constant.py`'s existing style for the dead loop.
+Full suite + all pre-existing SBA-pinning tests (indestructible, poison, deathtouch, the dead-loop
+iteration-bound test) green; the dead loop itself untouched (still pinned, still dead, unaffected).
+
+**704.5b (draw from empty library) — investigated, deprioritized.** Currently an inline instant-
+loss in `draw_cards` rather than deferred to the next SBA window (the technically-correct CR 704.5b
+behavior, which matters for Thassa's Oracle/Laboratory Maniac-class "win the game" interactions).
+Checked the registered 16-deck pool programmatically for any "win the game" or library-empty-
+interaction card: **zero hits**. Without such a card, the instant-vs-deferred distinction is
+outcome-neutral — the player who'd draw from empty still loses either way, just via a different
+CR-technical path. Per the same class-size reasoning as 0a's discard/annihilator findings,
+deprioritized rather than implemented now; re-open if a mill/self-deck win-condition card enters
+the pool. `_drew_from_empty` (the dead flag in `sba_manager.py`, never written anywhere) is left
+as-is — it's part of the untouched dead loop, not a live-path concern.
+
+**Deferred to Phase 3**: consolidating the remaining inline rules (704.5a life, 704.5g/h toughness/
+lethal-damage, 704.5j legend rule, 704.5p planeswalker-loyalty) into shared `SBAManager` statics
+matching the poison/deathtouch/token-cleanup pattern, and — only once every rule is shared —
+retiring `SBAManager.check_and_perform_loop`/`_check_and_perform_once` (blocked today by
+`tests/test_sba_uses_max_iterations_constant.py` pinning the dead loop via `inspect.getsource`;
+retiring requires moving that pinned rule to the now-live `check_state_based_actions` fixpoint
+loop in the same change). Real, separate migration work — the live path is already correct and
+now has its own fixpoint; consolidating for code-sharing's sake alone isn't urgent.
+
+### 0e. Make snapshot mandatory in ai/ — DONE
+
+`creature_value`/`creature_threat_value` (`ai/ev_evaluator.py`) took `snap: EVSnapshot` behind an
+optional-parameter default (`_DEFAULT_SNAP`, life=20/power=3 fiction). Every omitted call silently
+scored against that fiction instead of the live board — confirmed live at
+`ai/ev_player.py`'s emergency-block portfolio cap (`sacrificed_value += creature_value(best_chump)`,
+called with `me.life`/`my_power_total`/`opp_power_total` all live in scope three lines above and
+ignored).
+
+Fix: `snap` is now a required positional parameter on `creature_value`/`creature_threat_value`;
+`_DEFAULT_SNAP` is deleted (renamed callers that used it intentionally — `ai/sideboard_solver.py`,
+`ai/permanent_threat.py`'s scale-consistency baseline — to the public `BASELINE_SNAPSHOT`, so the
+context-free comparison points are named and visible, not a silent fallback). Every call site the
+resulting `TypeError` sweep surfaced was fixed by threading the snapshot already in scope (the
+`ev_player.py:3095` chump-block fix — the flagship bug — plus ~15 other production sites across
+`ai/ev_player.py`, `ai/board_eval.py`, `ai/response.py`, `ai/discard_advisor.py`, `engine/card_effects.py`)
+or, for `ai/bhi.py`'s `p_higher_threat_in_n_turns` (deliberately test-ergonomic — callable from unit
+tests without a live game), given an optional `snap=None` parameter that falls back to
+`BASELINE_SNAPSHOT` explicitly, with its one production caller (`ev_player.py:1414`) threading the
+real snapshot already in scope. `choose_card_to_strip`/`score_card_for_opponent_strip`
+(`ai/ev_evaluator.py`) also gained a required `snap` — both callers (`ai/discard_advisor.py`'s
+opponent-forced-discard path, `_choose_for_caster`'s panic-mode picker) now build a caster-perspective
+snapshot (`snapshot_from_game(game, 1 - victim_idx)`) instead of scoring blind.
+
+**Cascading test-debt fixed in the same pass** (surfaced by the mandatory-snapshot `TypeError` sweep,
+not new regressions): `tests/test_construct_no_double_credit.py`,
+`tests/test_equipment_ceiling_threat.py`, `tests/test_thoughtseize_at_low_life_picks_imminent_attacker.py`
+had bare `creature_threat_value(card)`/`score_card_for_opponent_strip(c)` calls on synthetic/context-free
+fixtures — threaded `BASELINE_SNAPSHOT` (synthetic-fixture tests) or a real `snapshot_from_game(...)`
+(the Thoughtseize test, matching the real discard path's caster-perspective construction) into each.
+
+**Separate pre-existing CI debt fixed alongside** (PR #488, unrelated to 0e itself but blocking its
+green suite): 13 test files referenced `Phlage, Titan of Fire's Fury`, which a fresh MTGJSON refresh
+(commit `d02c543`) removed from the DB entirely following its Modern ban. Representative/incidental
+uses (a red/white card filling a hand slot, a library-density filler) were swapped for
+`Lightning Helix`; uses that depended on Phlage's *specific* mechanics were swapped for a real card
+with the same mechanic shape rather than deleted: `Kroxa, Titan of Death's Hunger` for the
+"Escape—" oracle-text protected-piece tests (`test_decide_blockers_protects_engines.py`) and the
+threat-ranking test (`test_phelia_blink_picks_highest_threat_etb.py` — Kroxa's
+`creature_threat_value` of 8.45 lands almost exactly where Phlage's ~8.4 did, preserving the
+Solitude > mid > Omnath ordering the test pins), `Kroxa` again for the "unless...cost" substring-
+collision trap in `test_parse_cost_reduction_strict.py` (same "unless it escaped" / "escape cost"
+text shape as Phlage), and `Ranger-Captain of Eos` (a real CMC-3 creature threat still in Boros
+Energy's current mainboard) for the mulligan signal-evaluation hand in
+`test_mull_keeps_anti_matchup_hand.py`. `tests/invariants/test_target_fidelity.py` and
+`tests/test_affinity_cost_mechanics.py::test_phlage_does_not_reduce_other_spells` needed a synthetic
+`CardTemplate` fixture replicating Phlage's exact real oracle text (preserved from pre-ban data)
+because they pin specific historical bugs (ETB target re-picking, cost-reducer false-positive) that
+no other real card reproduces. `tests/invariants/test_sb_value.py` swapped Phlage for
+`Lightning Helix` in a sideboard-value decklist stub.
+
+`tests/test_waker_of_waves_oracle.py` was a **separate, unrelated root cause**, not a Phlage/DB-refresh
+casualty: the test asserted Waker of Waves has a "Cycling {X}{1}{U}" keyword and an ETB graveyard-size
+power buff, attributing their absence to DB corruption. Web verification (Scryfall/Gatherer listings)
+confirms neither ability exists on any real printing — Waker of Waves is the Core Set 2021 7/7 Whale
+with a static -1/-0 debuff and a discard-cost "look at the top two cards" activated ability; it has
+never had Cycling and was never reprinted in MH3. The local DB's oracle text was correct; the test
+was pinning a fabricated card ability, the same class of bug CLAUDE.md documents for the "unprovenanced
+ninth part shipped 30 fabricated card texts" incident. Rewrote the test to pin the real oracle text
+instead of hand-patching the DB with fictional text (which would have reintroduced that exact
+anti-pattern). **Follow-up, not fixed here**: `decks/gameplans/living_end.json` sets
+`prefer_cycling: true` and lists Waker of Waves among Living End's cyclers — since Waker's real
+ability isn't the Cycling keyword, `engine/cycling.py:CyclingManager.can_cycle` correctly returns
+False for it, so the AI cannot use Waker's discard ability via the cycling code path today. Doesn't
+crash anything (Waker is simply unused by the AI in its current plan), but the deck-plan/engine
+mismatch is real and worth a dedicated look — out of scope for this CI-green pass.
+
+Full suite: 2359 passed, 22 skipped, 4 deselected (the pre-existing `test_etb_graveyard_return.py`
+gap), 2 xfailed, 0 failed. All ratchets clean. `tools/refresh_wr_baseline.py` re-run to absorb 2
+expected WR-anchor drifts from Phase 0's real engine/AI behavior changes (`Living End vs Jeskai Blink`
+seed 50500, `Azorius Control (WST) vs Azorius Control (WST v2)` seed 50500) — both are legitimate
+decision changes from 0a-0e landing, not regressions.
+
+**Phase 0 is now fully merged (0a-0e complete).** Per the approved plan's sequencing, Phase 1 can
+start.
 
 ## Phase 1 / 2 / 3
 

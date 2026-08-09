@@ -33,7 +33,7 @@ def _deck_templates(card_db, decklist):
 BOROS_STUB = {
     "Lightning Bolt": 4, "Galvanic Discharge": 4,  # red damage
     "Ragavan, Nimble Pilferer": 4,                  # red creature
-    "Phlage, Titan of Fire's Fury": 3,              # red/white damage
+    "Lightning Helix": 3,                            # red/white damage
     "Sacred Foundry": 4, "Arid Mesa": 4,            # red-producing lands
 }
 
