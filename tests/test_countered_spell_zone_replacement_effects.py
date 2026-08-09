@@ -47,6 +47,7 @@ def _counterspell_template():
                            description="Counter target spell.")],
         color_identity=set(), produces_mana=[], enters_tapped=False,
         oracle_text="Counter target spell.", tags={"counterspell"},
+        is_counterspell=True, counter_target_kind="spell",
     )
 
 

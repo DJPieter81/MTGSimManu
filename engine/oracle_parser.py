@@ -317,6 +317,72 @@ def parse_cost_reduction(oracle: str) -> Optional[Dict]:
     return {'target': target, 'amount': amount, 'color': color}
 
 
+def parse_counter_tax(oracle: str) -> int:
+    """Parse a "soft counter" tax amount from oracle text.
+
+    Rule: "Counter target spell unless its controller pays {N}" gives
+    the targeted spell's controller a real choice — pay {N} generic
+    mana or the spell is countered. Modern examples: Metallic Rebuke,
+    Mana Leak, Countersquall (Mana Leak/Countersquall have no "improvise"
+    prefix; the pattern below only anchors on the counter+unless+pays
+    clause, not on any particular preceding ability).
+
+    Returns 0 (no tax — an unconditional "hard" counter like
+    Counterspell/Essence Scatter) when the clause is absent.
+
+    Scoped to a single ability paragraph via `split_abilities` so an
+    unrelated "unless...pays" clause elsewhere on a multi-ability card
+    (e.g. a land's "enters tapped unless you pay {N} life") cannot be
+    mistaken for a counter tax on a card that also happens to counter
+    something in a separate ability.
+    """
+    for clause in split_abilities(oracle or ''):
+        low = clause.lower()
+        if 'counter target' not in low:
+            continue
+        m = re.search(
+            r"unless\s+(?:its|their)\s+controller\s+pays\s*\{(\d+)\}",
+            low,
+        )
+        if m:
+            return int(m.group(1))
+    return 0
+
+
+def parse_protection_from(oracle: str) -> frozenset:
+    """Parse "protection from <color>" clauses (CR 702.16), including
+    the compound "protection from X and from Y" form (e.g. Sanctifier
+    en-Vec's "Protection from black and from red").
+
+    Returns a frozenset of `engine.mana.Color` values a blocker/target
+    with this protection can't be blocked-by/targeted-by (CR 702.16d,
+    702.16e). Type-based protection ("protection from artifacts") and
+    "protection from everything" are not covered here — 0 cards in
+    the registered 16-deck pool use those forms; extend when one
+    enters the pool (same class-size discipline as every other
+    oracle-derived field in this module).
+    """
+    from engine.mana import Color
+    color_words = {
+        'red': Color.RED, 'blue': Color.BLUE, 'black': Color.BLACK,
+        'white': Color.WHITE, 'green': Color.GREEN,
+    }
+    _COLOR_ALT = r'(?:red|blue|black|white|green)'
+    # Match the whole compound span ("protection from black and from
+    # red") first, then pull every color word out of just that span —
+    # a plain findall on the whole oracle would miss the second color
+    # in the compound form, since only the FIRST one is preceded by
+    # the word "protection" (the rest are "and from <color>").
+    clause = re.search(
+        rf'protection from {_COLOR_ALT}(?:\s+and\s+from\s+{_COLOR_ALT})*',
+        (oracle or '').lower(),
+    )
+    if not clause:
+        return frozenset()
+    found = re.findall(_COLOR_ALT, clause.group(0))
+    return frozenset(color_words[c] for c in found)
+
+
 def parse_domain_reduction(oracle: str) -> Optional[int]:
     """Parse domain-based cost reduction.
 
@@ -332,18 +398,56 @@ def parse_domain_reduction(oracle: str) -> Optional[int]:
 def detect_power_scaling(oracle: str) -> str:
     """Detect dynamic P/T scaling from oracle text.
 
-    Returns: "domain", "tarmogoyf", "delirium", "graveyard", or "".
+    Returns: "domain", "permanent_count:<word>", "tarmogoyf",
+    "delirium", "graveyard", or "".
     """
     oracle = oracle.lower()
     if 'basic land type' in oracle and ('power' in oracle or 'toughness' in oracle or 'equal' in oracle):
         return "domain"
+    # "X's power and toughness are each equal to the number of <Y>
+    # you control" — the single most common CDA shape in Magic
+    # (Cultivator Colossus/Crusader of Odric/Master of Etherium/
+    # Darksteel Juggernaut/... — 47 cards share this exact phrasing
+    # in this DB). <Y> is a card type ("lands"), the generic
+    # "permanents", or a tribal/land subtype ("Soldiers", "Islands"):
+    # resolved generically by CardInstance._get_permanent_type_count,
+    # not enumerated here.
+    m = re.search(
+        r'power and toughness are each equal to the number of (\w+) you control',
+        oracle,
+    )
+    if m:
+        return f"permanent_count:{m.group(1)}"
     if 'card type' in oracle and ('power' in oracle or 'equal' in oracle) and 'graveyard' in oracle:
         return "tarmogoyf"
     if ('delirium' in oracle or 'four or more card types' in oracle) and 'graveyard' in oracle:
         return "delirium"
-    if ('exile' in oracle and ('instant' in oracle or 'sorcery' in oracle)
-            and ('graveyard' in oracle or 'from your graveyard' in oracle)):
-        return "graveyard"
+    # "graveyard" scaling requires the actual CDA phrase shape —
+    # power/toughness, then "equal to", then "number of", then
+    # instant/sorcery, then graveyard, all in that order within one
+    # SENTENCE ([^.]*? never crosses a period). The bare co-occurrence
+    # of 'exile' + 'instant'/'sorcery' + 'graveyard' anywhere in a
+    # clause false-positives on every Embalm/Eternalize reminder-text
+    # card (293/21795 in this DB) AND, more subtly, on Scavenge
+    # reminder text specifically ("Exile this card from your
+    # graveyard: Put a number of +1/+1 counters equal to this card's
+    # power ... Scavenge only as a SORCERY.") — 'power', 'equal',
+    # 'graveyard', and 'sorcery' all co-occur in that one clause, but
+    # in the WRONG order (power precedes "equal to", not "equal to
+    # ... number of ... graveyard") and "sorcery" refers to the
+    # activation timing restriction, not a CDA. The ordered,
+    # sentence-scoped pattern rejects this shape while still matching
+    # every real graveyard-count CDA (Enigma Drake, Haughty Djinn,
+    # Crackling Drake, Melek, Magnivore, ...) and correctly excludes
+    # live-pool card Murktide Regent (delve-triggered +1/+1 counters,
+    # not a continuous graveyard-count CDA at all).
+    gy_pattern = re.compile(
+        r'(?:power|toughness)[^.]*?equal to[^.]*?number of'
+        r'[^.]*?(?:instant|sorcery)[^.]*?graveyard'
+    )
+    for clause in split_abilities(oracle):
+        if gy_pattern.search(clause):
+            return "graveyard"
     return ""
 
 

@@ -374,12 +374,269 @@ decision changes from 0a-0e landing, not regressions.
 **Phase 0 is now fully merged (0a-0e complete).** Per the approved plan's sequencing, Phase 1 can
 start.
 
-## Phase 1 / 2 / 3
+## Phase 1
 
-Not started. See the approved plan (`/root/.claude/plans/lets-create-plan-and-typed-flurry.md` at
-authoring time — copy the plan content here if that path is not durable across sessions) for full
-item-by-item design. Phase 1: 1a cost/counter framework, 1b combat legality, 1c damage funnel,
-1d CDA generalization. Phase 2: 2a `opportunity_cost` primitive, 2b joint block-assignment, 2c
+See the approved plan (`/root/.claude/plans/lets-create-plan-and-typed-flurry.md` at authoring
+time — copy the plan content here if that path is not durable across sessions) for full
+item-by-item design. 1c damage funnel, 1d CDA generalization: not started.
+
+### 1a. "Unless controller pays {N}" counter/tax framework — DONE
+
+**Problem confirmed exactly as scoped:** `spell_resolution.py`'s counter dispatch synthesized a
+"Counter target X" ability description from the parsed `OracleEffect`, discarding the
+"unless...pays {N}" clause entirely — Metallic Rebuke, Mana Leak, and Countersquall counter
+every spell unconditionally, identical to Counterspell. Confirmed via the DB: `Metallic Rebuke`
+oracle is `"...Counter target spell unless its controller pays {3}."`.
+
+**Two additional bugs found and fixed in the same class** (both surfaced by tracing why the
+fix didn't reach real cards):
+
+1. **Dispatch fragility** — the `elif "counter" in desc:` gate was a raw substring match.
+   Empirically zero false positives exist today (no synthesized ability description happens to
+   contain "counter" outside real counter effects), but the plan's concern generalizes to a real
+   structural bug: gating on a **template-level** `is_counterspell` flag with no per-ability
+   scoping would mis-fire on every OTHER ability of a **multi-ability counterspell** — 58
+   Modern-legal counterspells (Cryptic Command, Absorb, Censor, Bone to Ash, Confirm Suspicions,
+   Exclude, ...) carry a second synthesized ability (usually "Draw 1 card(s)") alongside the
+   counter effect. Fixed by gating on **both** `card.template.is_counterspell` (new structured
+   field, populated at load time from the same `OracleEffect` the ability description is
+   synthesized from — never re-derived from raw oracle text at resolution time) **and** the
+   specific ability's own synthesized description starting with `"counter target"` — this binds
+   the branch to the ONE ability entry that's actually the counter effect, not every ability on
+   a multi-ability card. `counter_target_kind` (structured: `"spell"`/`"creature_spell"`/
+   `"noncreature_spell"`/`"instant_or_sorcery_spell"`) replaces the `'noncreature' in
+   counter_oracle` / `'instant or sorcery' in counter_oracle` substring checks for the same
+   reason.
+2. **`resolve_spell_from_oracle` intercepts multi-ability counterspells before they ever reach
+   the counter dispatch at all** — its "draw N cards" pattern (`engine/oracle_resolver.py`)
+   matches the WHOLE oracle string, not a single clause (the function's own docstring claims
+   clause-scoping via `split_abilities`, but this specific branch uses the raw `oracle` string).
+   On a real "draw + counter" counterspell it fires the draw, returns `True`, and the caller
+   (`_execute_spell_effects`) skips the per-ability loop entirely — **the counter effect never
+   runs at all**. Confirmed empirically: `Cryptic Command`, `Censor`, `Confirm Suspicions`, and
+   `Exclude` are intercepted this way (`Absorb`/`Countersquall`/`Counterspell`/`Mana Leak` are
+   not, since they have no separate draw-pattern-matching clause). This is a worse bug than the
+   tax issue — these 4 cards countered NOTHING before this fix, tax or no tax. Fixed by skipping
+   `resolve_spell_from_oracle` entirely for any `is_counterspell` card, always routing through
+   the per-ability loop (which correctly fires both the draw ability AND the counter ability as
+   independent entries, since it iterates the synthesized abilities list rather than pattern-
+   matching the whole oracle string once).
+
+**Design, following the plan:** `engine/oracle_parser.py::parse_counter_tax` (scoped to the
+single ability paragraph containing "counter target" via `split_abilities`, so an unrelated
+"unless...pays" clause elsewhere on a multi-ability card — e.g. a land's optional-untapped-entry
+cost — can't leak in) → `CardTemplate.counter_tax_amount` (populated at load time, `0` = hard
+counter). At resolution, a nonzero tax routes through `engine/optional_costs.py`'s NEW
+`offer_counter_tax`/`parse_counter_tax_cost` — reusing the EXISTING `OptionalCost` typed schema
+and the EXISTING `decide_optional_cost` AI callback (both already existed, unused for this shape,
+per `ai/schemas.py`'s `CostKind = Literal["life", "mana", ...]` / `EffectKind = Literal[...,
+"counter_target", ...]` already anticipating exactly this), not a new mechanic-named callback —
+just a new discovery+offer pair for the case where the decision-maker (targeted spell's
+controller) differs from the source card's own controller (the counter's caster). Affordability
+(`player.available_mana_estimate < amount`) is an engine-side rules gate checked BEFORE offering
+the decision at all — an unpayable tax never becomes a choice, matching a real game where an
+unaffordable "unless" clause auto-resolves to the default (countered). The strategic "would I
+want to" question is decided by `ai.ev_evaluator.project_counter_tax_payment` (new function,
+reuses the existing `_project_spell` oracle-driven resolution projection rather than a second
+bespoke value model — pre-compensates for `_project_spell`'s "still in hand" assumption since the
+targeted spell already left the hand and already paid its own cost) feeding `best_choice` via the
+same `[pay, skip]` `Choice` list `decide_optional_cost` already builds for every other optional
+cost — no new AI decision-kernel code.
+
+**Tests (failing-first):** `tests/test_counter_tax_framework.py` — `parse_counter_tax` unit tests
+(hard vs soft, ability-paragraph scoping), structured-field tests on real DB cards (Metallic
+Rebuke tax=3, Counterspell tax=0, Essence Scatter kind=creature_spell, DB-wide zero-false-positive
+regression on the old substring-collision concern), resolution-engine integration
+(`TestSoftCounterResolution`: pay→not countered, don't-pay→countered, unaffordable→auto-countered
+with the AI callback never even asked, hard-counter regression), `TestMultiAbilityCounterDoesNotDoubleFire`
+(synthetic Cryptic-Command-shape fixture — counters exactly once, doesn't re-fire on the second
+ability), `TestRealMultiAbilityCounterspellsActuallyCounter::test_censor_counters_its_target` (real
+DB card, pins the `resolve_spell_from_oracle` interception fix specifically). 15 tests, all
+failing red before the fix (verified via the substring/template-flag-only intermediate states
+during development), green after.
+
+**Replay:** `python run_meta.py --bo3 "Pinnacle Affinity" "Izzet Prowess" -s 55506` does NOT
+demonstrate the fix — traced via `sys.settrace` to a genuinely separate, pre-existing bug: the AI
+decides to cast Metallic Rebuke based on a color-blind mana-availability estimate, then the
+engine's real (correctly color-aware) mana-payment step rejects the cast because no blue source
+is actually untapped at that moment (`CastManager.cast_spell` returns `False` at its final
+`tap_lands_for_mana` call — confirmed identical on `origin/main` before this branch's changes via
+a `git stash` A/B comparison, so this is not a regression from this work). Deprioritized per
+class-size reasoning — this is a general "AI overestimates castability of colored spells" gap,
+not specific to counterspells, and out of scope for 1a. **Seed `55507` does demonstrate the fix
+working end-to-end in a real game**: `T4: Resolve Metallic Rebuke` → `T4: Dragon's Rage Channeler
+is countered`. Unit tests are the authoritative verification for the pay/don't-pay/unaffordable
+branches specifically, since live-game RNG doesn't reliably hit the tax-paid branch on demand.
+
+**Follow-up filed, not fixed here:** the color-blind mana-availability estimate in the AI
+response-cast decision path (`ai/response.py` / whatever feeds `game_runner.py`'s
+`opponent_ai.decide_response`) — worth its own investigation given the class size (affects any
+colored spell's response-cast decision, not just counterspells).
+
+### 1b. Combat legality enforcement — DONE (evasion, menace, protection-blocking, hexproof-targeting)
+
+**Problem confirmed exactly as scoped:** `CombatManager.declare_blockers`'s docstring said
+"validates and records" blocking assignments; the body only recorded them. Flying/reach/menace/
+protection were entirely unenforced at the engine layer — `ai/ev_player.py::decide_blockers`
+already filters candidates by these same rules before proposing a block, but that only means the
+AI is polite to itself; nothing stopped an illegal assignment from being recorded and acted on as
+legal if it reached this layer any other way. Confirmed `engine/target_solver.py` (the unified
+targeting module Phase 1-3 of a prior migration already routes cast-legality checks through) had
+matching zero coverage for hexproof/protection as illegal-target filters.
+
+**Design:** New oracle-derived `CardTemplate.protection_from_colors: frozenset` (populated at
+load time via new `engine/oracle_parser.py::parse_protection_from`, which handles the compound
+"protection from X and from Y" form — e.g. Sanctifier en-Vec's "Protection from black and from
+red" — by matching the whole clause span first, then extracting every color word from within it,
+since only the FIRST color in the compound form is preceded by the word "protection"). Scope:
+color-based protection only (matches the precedent already set by `ai/sideboard_solver.py`'s
+`_clause_protection_color`); type-based ("protection from artifacts") and "protection from
+everything" are 0-card gaps in the registered 16-deck pool today — extend when one enters.
+
+`CombatManager.declare_blockers` now filters `blocker_ids` per attacker: CR 702.9b (flying needs
+flying/reach to block), CR 702.16d (protection blocks a same-quality blocker), both per-blocker;
+CR 702.111b (menace needs ≥2 blockers) is a whole-assignment rule checked after the per-blocker
+filter — a single surviving blocker against a menace attacker drops the ENTIRE block (menace
+isn't "one fewer legal blocker", it's "this block never happened"). Every drop is logged so AI
+behavior stays debuggable (a silently-dropped illegal block is indistinguishable from a
+deliberate no-block decision in the log).
+
+`engine/target_solver.py` gains `_blocked_by_hexproof(card, controller)` (CR 702.11d — hexproof
+blocks OPPONENT spells/abilities only, not the controller's own), wired into both
+`has_legal_target` and `enumerate_legal_targets`'s per-candidate filtering loop, scoped to
+`req.zone == "battlefield"` (hexproof has no meaning for cards in other zones — a reanimation
+spell targeting a hexproof creature CARD in a graveyard is unaffected).
+
+**Deferred, not fixed here:** Shadow (CR 702.27) — zero Modern-legal cards have this keyword
+(Nemesis-block mechanic, never reprinted into Modern legality), so building enforcement for it
+would be speculative machinery for a 0-card class; skip until proven otherwise. Ward (CR 702.21)
+— structurally a "cost imposed on the caster when targeting" mechanic, much closer in shape to
+1a's counter-tax framework (`OptionalCost`/`decide_optional_cost`) than to a simple illegal-target
+filter; the plan's original framing grouped it with hexproof/protection, but that's not
+rules-accurate (ward doesn't make a target illegal, it imposes a consequence for targeting
+anyway). 4 cards with "ward" in the registered 16-deck pool. Worth its own properly-scoped
+test-first pass reusing 1a's cost/decision primitives rather than rushing it into this commit.
+Protection as a TARGETING restriction (not just a blocking restriction — CR 702.16e, a removal
+spell of the protected quality can't target the protected permanent either) is also deferred:
+needs the source spell's own color threaded through `TargetRequirement`/`has_legal_target`, which
+neither function currently receives — a real but separable extension.
+
+**Tests (failing-first):** `tests/test_combat_block_legality.py` (11 tests — flying/reach
+evasion, menace whole-block illegality, protection-from-color blocking, real-card structured-field
+integration on Sanctifier en-Vec, illegal-block logging) and 4 new tests appended to the existing
+`tests/test_target_solver_legality.py` (opponent's hexproof creature excluded from both
+`has_legal_target` and `enumerate_legal_targets`; own hexproof creature still targetable by own
+spells; a second non-hexproof candidate keeps the requirement satisfiable). 15 new tests total.
+
+Full suite: 2389 passed, 22 skipped, 4 deselected, 2 xfailed, 0 failed. All ratchets clean.
+
+### 1c. Combat damage funnel unification — DONE
+
+**Problem confirmed exactly as scoped:** `CombatManager._deal_combat_damage` never routed through
+`engine/damage.py:deal_damage` — it mutated `damage_marked`/`life` directly at 5 sites,
+reimplementing a parallel, incomplete copy of what `deal_damage` already does correctly for every
+OTHER damage source (burn spells, oracle-resolver damage triggers). Two concrete bugs:
+
+1. **Lifelink was only ever checked for the attacker.** `has_lifelink = Keyword.LIFELINK in
+   attacker.keywords`, applied once at the end via `game.players[active_player].life +=
+   total_damage_dealt` — a BLOCKER with lifelink dealing damage back to the attacker gained its
+   controller nothing. Verified failing-first: `test_lifelink_blocker_gains_controller_life`
+   failed on pre-fix code (`life=20`, expected `23`) via a `git stash` A/B check.
+2. **Deathtouch was faked**, not modeled. The assignment logic correctly computes a 1-point
+   "lethal" hit for deathtouch (CR 702.2c), but then force-set `damage_marked = toughness`
+   afterward to guarantee SBA destruction, rather than using the real `_deathtouch_damage` marker
+   `deal_damage` already writes and `SBAManager.perform_deathtouch_check` (migrated live in 0d)
+   already consumes. Functionally equivalent outcome pre- and post-fix (both destroy the
+   creature), but via a bespoke combat-only mechanism instead of the shared one — the exact
+   "no single owner" pattern this whole program targets.
+
+**Design:** Damage *assignment* (how many points each blocker/the player receives — CR 510.1c
+ordering, deathtouch's 1-point threshold, trample overflow) stays in `combat_manager.py`; that
+part is genuinely combat-specific. Damage *application* now calls `deal_damage(source, target,
+amount, is_combat=True)` for every one of the 5 sites (blocker takes damage, attacker takes
+damage back, trample overflow to player, unblocked attacker to player). This required completing
+the "lifelink hook" `engine/damage.py`'s own docstring had documented as reserved-but-unimplemented
+since the W0-D commit: added `CardInstance.has_lifelink` (mirroring the existing `has_deathtouch`
+property) and real CR 702.15 life-gain logic inside `deal_damage` itself, so lifelink is now
+correct for EVERY damage source in the engine (burn spells included), not just combat, and not
+just attackers. The old combat-only lifelink block and both deathtouch-faking loops were deleted
+entirely — no longer needed once the real markers are written by the shared primitive. Also fixed
+a dead `total_player_damage` accumulator (`_deal_combat_damage` always returned 0 due to a no-op
+`sum()` expression computing `life - life`; harmless because the one caller discards the return
+value, but directly in the code being rewritten, so fixed alongside).
+
+**Tests (failing-first):** `tests/test_combat_damage_funnel.py` (6 tests) —
+`TestLifelinkBlocker` (blocker-side lifelink, attacker-side regression, both-sides-independent),
+`TestDeathtouchRealMarker` (attacker/blocker deathtouch destruction via the real marker at
+mismatched toughness, non-deathtouch regression pinning `damage_marked` reflects actual damage
+dealt, not a fake). Verified the 2 lifelink tests genuinely fail pre-fix via `git stash`; the
+deathtouch tests pass both pre- and post-fix (same observable outcome, different mechanism —
+legitimate behavior-preservation coverage for the internal-mechanism change).
+
+Full suite: 2395 passed, 22 skipped, 4 deselected, 2 xfailed, 0 failed. All ratchets clean.
+Replay: `python run_meta.py --bo3 "Boros Energy" "Dimir Midrange" -s 55501` — combat resolves
+correctly end-to-end (blocks, trades, trample, lethal damage) with no regressions.
+
+### 1d. Generalize `detect_power_scaling` (CDA) — DONE
+
+**Problem confirmed exactly as scoped:** `detect_power_scaling` had 4 buckets (domain, tarmogoyf,
+delirium, graveyard) but no bucket for "power and toughness are each equal to the number of X you
+control" — the single most common CDA shape in Magic (47 cards share this exact phrasing in this
+DB: Cultivator Colossus, Crusader of Odric, Darksteel Juggernaut, Master of Etherium, Katilda,
+...). Cultivator Colossus fell through to `template.power or 0` = 0/0 and died to state-based
+actions the instant it resolved — the audited bug (replay seed 55505/55515).
+
+Independently confirmed the plan's second claim: the `"graveyard"` branch had **no P/T anchor at
+all** — bare co-occurrence of `'exile'` + `'instant'/'sorcery'` + `'graveyard'` matched
+**293/21795 cards** in the DB, almost all Embalm/Eternalize reminder text ("Exile this card from
+your graveyard: Create a token..."). This included live-pool card **Murktide Regent**, whose real
+scaling mechanism is delve-triggered +1/+1 counters (`plus_counters`), not a continuous
+graveyard-count CDA at all — it was being *actively mismodeled*, not just harmlessly mistagged.
+
+**Design:** New `permanent_count:<word>` bucket in `detect_power_scaling`, matched via one regex
+capturing the noun after "you control" — no enumeration of which nouns are valid at parse time.
+Resolution is generic: new `CardInstance._get_permanent_type_count(type_word)` on `cards.py`
+(mirroring the existing `_get_domain_count`/`_get_artifact_count` shape per the plan's explicit
+design) handles card types (land/creature/artifact/enchantment/planeswalker), the literal word
+"permanent(s)", and land/tribal SUBTYPES via naive regular-plural singularization ("Islands" →
+"Island", "Soldiers" → "Soldier") — irregular plurals (Elves, Wolves) are a documented 0-card gap
+in the registered pool today, extend if one enters. `_dynamic_base_power`/`_dynamic_base_toughness`
+both dispatch to the same count for power AND toughness (the oracle text says "each equal to" —
+no ceiling/multiplier, unlike domain's `min(count, 4)` or tarmogoyf's `+1` toughness offset).
+
+The `"graveyard"` branch's false-positive fix went through two iterations — the first attempt
+(require `'power'`/`'toughness'` + `'graveyard'` + `'instant'/'sorcery'` + `'equal'` co-occurring
+in the same `split_abilities` paragraph) cut 293 → 24 false positives but still matched Scavenge
+reminder text ("Exile this card from your graveyard: Put a number of +1/+1 counters equal to this
+card's power ... Scavenge only as a **sorcery**.") — all four words are present, just in the wrong
+relationship (the CDA phrase requires "power ... equal to ... number of ... instant/sorcery ...
+graveyard" IN THAT ORDER; Scavenge text has "graveyard" before "equal to this card's **power**",
+with "sorcery" describing the activation timing restriction, not a P/T definition). Final fix: an
+ordered, sentence-scoped regex (`[^.]*?` between each anchor, never crossing a period) requiring
+that exact phrase sequence. Cuts 293 → **8** real graveyard-count CDAs (Enigma Drake, Haughty
+Djinn, Crackling Drake, Kinetic Augur, Magnivore, Melek, Spellheart Chimera, a Seize the Storm
+token) — all genuine, none currently in the registered 16-deck pool, but Murktide Regent (which
+IS in the pool) is correctly excluded.
+
+**Tests (failing-first):** `tests/test_permanent_count_cda.py` (18 tests) — parser unit tests for
+the new bucket (card types, "permanents", subtypes), the graveyard-anchor fix (Eternalize
+reminder-text regression, Murktide-shaped delve-counter regression, a positive-control real CDA
+to guard against overcorrecting into a false negative), real-DB structured-field integration
+(Cultivator Colossus, Crusader of Odric, Murktide Regent, a DB-wide false-positive-count bound),
+and live P/T computation (survives-own-ETB with lands present — the audited bug itself — zero-count
+edge case, creature-count excludes noncreatures, subtype count, "permanents" counts everything
+including itself).
+
+Full suite: 2413 passed, 22 skipped, 4 deselected, 2 xfailed, 0 failed. All ratchets clean.
+Replay: `python run_meta.py --bo3 "Eldrazi Tron" "Amulet Titan" -s 55515` — Cultivator Colossus
+cast T6, resolves, and lives on the board as a correct **9/9** (9 lands controlled) instead of
+dying to its own 0/0 on cast.
+
+**Phase 1 is now fully done (1a-1d complete).**
+
+## Phase 2 / 3
+
+Not started. Phase 2: 2a `opportunity_cost` primitive, 2b joint block-assignment, 2c
 unify 3 combat models. Phase 3: this tracker doc (item 1, now done) + EFFECT_REGISTRY mechanic-
 cluster consolidation (burn-N-damage, destroy/exile-nonland-MV≤X, board-sweep, draw-N clusters —
 ~40-50 of 104 registrations) + remaining `ai/` patch retirement using 2a/2b's primitives + remaining

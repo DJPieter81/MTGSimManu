@@ -14,7 +14,7 @@ This module is the engine→AI seam for optional payments.  Sites in
 questions per mechanic.
 """
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING
 
 from ai.schemas import CostDescriptor, EffectDescriptor, OptionalCost
 
@@ -143,3 +143,70 @@ def offer_optional_costs(game: "GameState", player_idx: int,
     for opt in parse_optional_costs(card, trigger):
         if game.callbacks.decide_optional_cost(game, player_idx, opt):
             opt.apply_to_game(game, player_idx)
+
+
+# ─────────────────────────────────────────────────────────────
+# Counter tax — "counter target spell unless its controller pays {N}"
+# ─────────────────────────────────────────────────────────────
+#
+# Same shape as any other optional cost ("pay X to gain/avoid Y"),
+# just decided by a DIFFERENT player than the source card's own
+# controller: the counter's caster controls `source_card`, but the
+# decision ("do I pay to save my spell?") belongs to `targeted_card`'s
+# controller. `parse_optional_costs`/`offer_optional_costs` above
+# assume decision-maker == card's own controller, so this gets its
+# own discovery+offer pair — but still routes through the same typed
+# `OptionalCost` schema and the same `decide_optional_cost` callback,
+# not a new mechanic-named decision channel.
+
+def parse_counter_tax_cost(source_card: "CardInstance",
+                            targeted_card: "CardInstance"
+                            ) -> Optional[OptionalCost]:
+    """Build the OptionalCost for `source_card`'s counter-tax clause,
+    from `targeted_card`'s controller's perspective. None if
+    `source_card` is a hard (unconditional) counter."""
+    amount = getattr(source_card.template, "counter_tax_amount", 0) or 0
+    if amount <= 0:
+        return None
+
+    cost = CostDescriptor(kind="mana", amount=amount)
+    effect = EffectDescriptor(kind="counter_target", magnitude=1)
+
+    def _to_game(g, p, amt=amount):
+        from .mana import ManaCost
+        from .mana_payment import ManaPayment
+        return ManaPayment.tap_lands_for_mana(g, p, ManaCost(generic=amt))
+
+    def _to_snap(s, tc=targeted_card, amt=amount):
+        from ai.ev_evaluator import project_counter_tax_payment
+        return project_counter_tax_payment(tc, s, amt)
+
+    return OptionalCost(
+        name=(f"{source_card.template.name}: pay {amount} to save "
+              f"{targeted_card.template.name} from being countered"),
+        cost=cost, effect=effect,
+        apply_to_game=_to_game, apply_to_snap=_to_snap,
+    )
+
+
+def offer_counter_tax(game: "GameState", source_card: "CardInstance",
+                       targeted_card: "CardInstance") -> bool:
+    """Ask `targeted_card`'s controller whether to pay `source_card`'s
+    counter tax. Returns True iff paid (the spell is saved, not
+    countered).
+
+    Affordability is an engine-side rules gate, not a strategic
+    choice: if the controller cannot produce the mana, no decision is
+    offered at all — the spell is simply countered, matching a real
+    game where an unpayable "unless" clause never triggers a choice.
+    """
+    opt = parse_counter_tax_cost(source_card, targeted_card)
+    if opt is None:
+        return False
+    targeted_player_idx = targeted_card.controller
+    player = game.players[targeted_player_idx]
+    if player.available_mana_estimate < opt.cost.amount:
+        return False
+    if not game.callbacks.decide_optional_cost(game, targeted_player_idx, opt):
+        return False
+    return bool(opt.apply_to_game(game, targeted_player_idx))
