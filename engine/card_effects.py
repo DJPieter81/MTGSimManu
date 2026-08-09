@@ -273,13 +273,16 @@ def endurance_etb(game, card, controller, targets=None, item=None):
                         f"from GY into library")
 
 
-@EFFECT_REGISTRY.register("Omnath, Locus of Creation", EffectTiming.ETB,
-                           description="Draw a card")
-def omnath_etb(game, card, controller, targets=None, item=None):
-    """Omnath ETB: draw a card. The +4 life is the 1st LANDFALL trigger, not ETB."""
-    game.draw_cards(controller, 1)
-    game.log.append(f"T{game.display_turn} P{controller+1}: "
-                    f"Omnath ETB: draw a card")
+# "Omnath, Locus of Creation" (ETB: draw a card; the +4 life is the
+# 1st LANDFALL trigger, a separate ability, not ETB) used to be
+# registered here. Removed as part of the EFFECT_REGISTRY draw-N ETB
+# cluster consolidation (docs/design/rules-foundation-sweep-tracker.md,
+# Phase 3) — its one-line body ("When Omnath enters, draw a card.") is
+# now covered end-to-end by the generic
+# `engine.oracle_resolver.resolve_etb_from_oracle` fallback's
+# "when ~ enters, draw N card(s)" branch, confirmed redundant by
+# `tests/test_etb_draw_n_shared_resolver.py::TestGenericResolverCoversRegisteredHandlers`
+# before deletion.
 
 
 @EFFECT_REGISTRY.register("Murktide Regent", EffectTiming.ETB,
@@ -296,16 +299,18 @@ def murktike_etb(game, card, controller, targets=None, item=None):
                     f" ({delved_spells} +1/+1 counters from delved instants/sorceries)")
 
 
-@EFFECT_REGISTRY.register("Quantum Riddler", EffectTiming.ETB,
-                           description="Draw a card")
-def quantum_riddler_etb(game, card, controller, targets=None, item=None):
-    # Oracle: "When this creature enters, draw a card."
-    # Static replacement: "As long as you have one or fewer cards in hand,
-    # if you would draw one or more cards, you draw that many cards plus one instead."
-    # The ETB draws 1. The static replacement (if applicable) is a separate effect.
-    game.draw_cards(controller, 1)
-    game.log.append(f"T{game.display_turn} P{controller+1}: "
-                    f"Quantum Riddler ETB: draw a card")
+# "Quantum Riddler" (ETB: draw a card; a separate static ability —
+# "As long as you have one or fewer cards in hand, if you would draw
+# one or more cards, you draw that many cards plus one instead." —
+# is its own effect, not part of the ETB trigger) used to be
+# registered here. Removed as part of the EFFECT_REGISTRY draw-N ETB
+# cluster consolidation (docs/design/rules-foundation-sweep-tracker.md,
+# Phase 3) — its one-line body ("When this creature enters, draw a
+# card.") is now covered end-to-end by the generic
+# `engine.oracle_resolver.resolve_etb_from_oracle` fallback's
+# "when ~ enters, draw N card(s)" branch, confirmed redundant by
+# `tests/test_etb_draw_n_shared_resolver.py::TestGenericResolverCoversRegisteredHandlers`
+# before deletion.
 
 
 @EFFECT_REGISTRY.register("Mox Opal", EffectTiming.ETB,
@@ -2025,13 +2030,15 @@ def spell_queller_etb(game, card, controller, targets=None, item=None):
 
 # ─── Affinity cards ─────────────────────────────────────────────────────
 
-@EFFECT_REGISTRY.register("Thought Monitor", EffectTiming.ETB,
-                           description="Draw 2 cards")
-def thought_monitor_etb(game, card, controller, targets=None, item=None):
-    drawn = game.draw_cards(controller, 2)
-    names = ", ".join(c.name for c in drawn)
-    game.log.append(f"T{game.display_turn} P{controller+1}: "
-                    f"Thought Monitor ETB: draw 2 ({names})")
+# "Thought Monitor" (ETB: draw two cards) used to be registered here.
+# Removed as part of the EFFECT_REGISTRY draw-N ETB cluster
+# consolidation (docs/design/rules-foundation-sweep-tracker.md, Phase
+# 3) — its one-line body ("When this creature enters, draw two
+# cards.") is now covered end-to-end by the generic
+# `engine.oracle_resolver.resolve_etb_from_oracle` fallback's
+# "when ~ enters, draw N card(s)" branch, confirmed redundant by
+# `tests/test_etb_draw_n_shared_resolver.py::TestGenericResolverCoversRegisteredHandlers`
+# before deletion.
 
 
 @EFFECT_REGISTRY.register("Dispatch", EffectTiming.SPELL_RESOLVE,
