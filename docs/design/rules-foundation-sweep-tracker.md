@@ -374,16 +374,204 @@ decision changes from 0a-0e landing, not regressions.
 **Phase 0 is now fully merged (0a-0e complete).** Per the approved plan's sequencing, Phase 1 can
 start.
 
-## Phase 1 / 2 / 3
+## Phase 1 / 3
 
-Not started. See the approved plan (`/root/.claude/plans/lets-create-plan-and-typed-flurry.md` at
+Phase 1 (1a cost/counter framework, 1b combat legality, 1c damage funnel, 1d CDA generalization) was
+done in this program's session on a separate branch (`claude/rules-foundation-phase1`, PR #490,
+CI green, still draft/unmerged as of this Phase 2 branch's creation) — not reflected in this copy
+of the tracker doc yet since that PR hasn't merged; see that PR's own commits for 1a-1d detail.
+Phase 3 (this tracker doc item 1, now done) + EFFECT_REGISTRY mechanic-cluster consolidation
+(burn-N-damage, destroy/exile-nonland-MV≤X, board-sweep, draw-N clusters — ~40-50 of 104
+registrations) + remaining `ai/` patch retirement using 2a/2b's primitives + remaining raw
+zone-mutation sites + CDA coverage extension (Death's Shadow, Mortivore/Bonehoard, Multani) — not
+started. See the approved plan (`/root/.claude/plans/lets-create-plan-and-typed-flurry.md` at
 authoring time — copy the plan content here if that path is not durable across sessions) for full
-item-by-item design. Phase 1: 1a cost/counter framework, 1b combat legality, 1c damage funnel,
-1d CDA generalization. Phase 2: 2a `opportunity_cost` primitive, 2b joint block-assignment, 2c
-unify 3 combat models. Phase 3: this tracker doc (item 1, now done) + EFFECT_REGISTRY mechanic-
-cluster consolidation (burn-N-damage, destroy/exile-nonland-MV≤X, board-sweep, draw-N clusters —
-~40-50 of 104 registrations) + remaining `ai/` patch retirement using 2a/2b's primitives + remaining
-raw zone-mutation sites + CDA coverage extension (Death's Shadow, Mortivore/Bonehoard, Multani).
+item-by-item design.
+
+## Phase 2 — AI decision kernel (opportunity cost + joint block assignment)
+
+> **Concurrent-edit note**: sibling agents may be editing this same tracker doc file on separate
+> Phase 3 branches at the same time as this Phase 2 section was written. If a PR merge conflicts
+> here, it is a low-risk prose-only conflict — resolve by keeping both sections.
+
+### 2a. `ai.clock.opportunity_cost` primitive — DONE
+
+**The specimen bug, re-examined.** `ai/ev_player.py`'s non-emergency block loop had
+`if b_pow == 0: continue  # 0-power non-kill = pure waste` — a categorical veto standing in for a
+computation `ai/clock.py` already had all the pieces for. Empirical check before writing any fix
+(per this program's own "verify, don't assume" rule): the emergency path's chump-selection loop
+was NOT gated by this veto at all — it already scored every candidate via
+`_score_block_lifespan_delta` regardless of power. The veto lived only in the non-emergency
+("normal") path. Bugs #5/#6 (won't chump-block a 0-power creature at healthy life) are therefore
+non-emergency-path bugs; bug #4 (joint block assignment) is an emergency-path bug — different
+mechanisms, same root class (a proxy standing in for a real computation), which is why the plan
+groups them under "2a/2b" together rather than either phase alone.
+
+**The primitive.** `opportunity_cost(card, board, snap)` (`ai/clock.py`) answers "what do I lose by
+spending this permanent right now" as a single computation, in the same "value" units as
+`ai.ev_evaluator.creature_value` (clock-impact × `CREATURE_VALUE_OUTER_SCALE`). Three additive
+terms, each reusing an existing primitive rather than reimplementing it:
+
+1. **Ongoing combat/keyword clock impact** — `creature_clock_impact_from_card` (already existed,
+   already prices a 0-power creature's blocking value via `PURE_BLOCKER_TOUGHNESS_VALUE` when it
+   has real toughness, and prices keyword-bearing 0-power creatures like Walking Ballista's damage
+   ability separately — see below).
+2. **Un-exhausted activated ability** — one card's worth of future clock impact
+   (`card_clock_impact`, the SAME conversion `creature_clock_impact_from_card` already uses for its
+   "card_advantage" tag bonus) when the oracle text exposes a CR 602.1a-shaped activated ability
+   (`"[Cost]: [Effect]"`). **Real gap found while implementing this term**: the obvious existing
+   candidate, `ai.response_enumeration._battlefield_has_activatable`, checks
+   `AbilityType.ACTIVATED` on `CardTemplate.abilities` — verified empirically that this is
+   populated for **zero of 12972 creatures** in the live DB (`card_database.py` only extracts
+   `CAST`/`ETB`/`ATTACK`/`DIES` ability shapes at load time; `ACTIVATED`/`MANA_ABILITY` are never
+   written). That helper is unreachable dead code for every real card today. `opportunity_cost`
+   instead scans oracle text directly with a small CR 602.1a cost-separator regex
+   (`_ACTIVATED_ABILITY_RE`, deliberately not excluding mana abilities — losing a mana source to a
+   needless chump block is a real cost, unlike `_battlefield_has_activatable`'s instant-speed-
+   response framing where mana abilities are irrelevant noise).
+3. **Equipment ceiling** — `_equipment_ceiling_for_creature` (`ai.permanent_threat`, PR-L3), already
+   expressed in the same "value" units (previously summed directly into `creature_threat_value`).
+
+`creature_value`/`creature_threat_value` (`ai/ev_evaluator.py`) are now CALLERS of `opportunity_cost`
+rather than parallel implementations — `creature_value` is now a one-line delegation (via a small
+shared `_controller_board` helper resolving the controller `PlayerState` from `card._game_state`);
+`creature_threat_value` calls `opportunity_cost` for its base+ceiling terms and keeps only its own
+virtual-power (battle-cry/scaling) premium as an additive term on top.
+
+Tests (`tests/test_opportunity_cost_primitive.py`): a genuinely-dead 0-power creature (real
+Ornithopter — the literal "stripped Ornithopter" shape from bug #6, Affinity vs 4c Omnath) prices
+near zero; the SAME Ornithopter with an unattached Cranial Plating nearby (Affinity-board equipment-
+ceiling shape) prices strictly above that baseline; a 0/0 Walking Ballista (real card, isolates the
+activated-ability term specifically since its raw clock impact is exactly 0) prices above zero via
+its un-exhausted ability alone; a non-creature permanent returns 0.0; `creature_value` is proven to
+literally equal `opportunity_cost` on the same fixture. Verified genuinely red pre-fix via
+`git stash` (the primitive didn't exist — `ImportError`, not a soft assertion failure) before
+implementing.
+
+### 2b. Joint block-assignment — DONE (fixes audited bug #4)
+
+**Root cause, confirmed by reproduction, not by re-reading the old writeup.** The emergency path's
+per-attacker `my_life_now` was `me.life - max(0, total_incoming - already_absorbed -
+attacker.power)` — for the FIRST attacker processed, this subtracts every OTHER still-undecided
+attacker's power on top of the current one, which can drive `my_life_now` deeply negative. Built a
+minimal empirical reproduction (`life=8`, two 8/8 attackers, two 4/4 blockers — see the probe script
+history in this branch's session, encoded permanently as
+`tests/test_decide_blockers_joint_assignment.py`): `my_life_now` comes out to `8 - max(0, 16-0-8) =
+-8` for the first attacker. Both the hypothetical "block" and "no-block" post-states then read as
+already-dead (`ai.clock.life_as_resource` floors at -100 for `life <= 0`), so the delta is exactly
+`-100 - (-100) = 0` — which fails the strict `delta > 0` selection threshold for EVERY candidate.
+`emergency_blocks` ends up completely empty, and the function falls through — ungated — into the
+non-emergency path below, which scores against a static `me.life` and happily spends BOTH available
+blockers double-blocking the FIRST attacker for a "clean kill" (4+4=8 meets the 8 toughness) while
+the second, equally dangerous attacker gets zero blockers. Defending player takes 8 unblocked
+damage at 8 life and dies — to damage that was trivially preventable by single-blocking each
+attacker once. Confirmed via `git stash` that this reproduction genuinely fails pre-fix (not
+assumed from the audit's prose).
+
+**Fix: two-pass joint assignment**, replacing the single greedy per-attacker loop:
+
+- **Pass 1 (coverage, emergency turns only)**: force-block attackers (biggest power first) with the
+  CHEAPEST available blocker — ranked by `opportunity_cost` (2a) ascending — until the actual JOINT
+  remaining damage from attackers NOT yet covered is survivable. "Joint" is the fix:
+  `unblocked_damage` is recomputed each iteration directly from the current coverage set (`sum of
+  power for every attacker whose instance_id is not yet a key in blocks`), never from a per-attacker
+  guess about what the others will do. This is also where bugs #5/#6's veto retirement actually
+  lands for the emergency path: a 0-power creature with near-zero `opportunity_cost` is now the
+  FIRST choice for coverage, not a banned candidate.
+- **Pass 2 (optimization / swap-upgrade)**: once survival is secured for a covered attacker, check
+  whether a different UNUSED blocker scores a strictly better `_score_block_lifespan_delta` (a clean
+  kill / favorable trade the cheap coverage pick couldn't achieve) and swap it in. Deliberately
+  bounded to attackers pass 1 already committed to — NOT extended to attackers pass 1 left
+  deliberately unblocked (verified against `tests/test_decide_blockers_emergency_gate.py`'s
+  portfolio-cap test: extending pass 2 to uncovered attackers made that test fail, since every
+  "avoid a little more face damage" block looks locally positive under
+  `_score_block_lifespan_delta` even when the danger has already passed — the old portfolio cap's
+  *intent*, just implemented on the correct joint quantity instead of a mismatched one).
+- **Non-emergency turns**: pass 1 is skipped entirely (unchanged trigger — `emergency`'s three
+  conditions are untouched) and pass 2 runs over every attacker, replacing the old "normal path"
+  loop exactly, minus the two categorical vetoes (0-power blocker, hard battle-cry exclusion —
+  the latter subsumed by `_is_protected_piece`, which already covers the same "whenever this/<name>
+  creature attacks" oracle shape plus escape/planeswalker, so the separate battle-cry check was
+  redundant). The positive-`_score_block_lifespan_delta` threshold is the only remaining gate;
+  `_is_protected_piece` keeps a SOFT preference (unprotected-candidates-first, fall back to
+  protected only if no alternative exists) rather than a hard veto, via the same `_candidate_pool`
+  helper pass 1 and pass 2 both use.
+
+**Unit-mismatch found and removed, not patched.** The old emergency loop's "portfolio cap"
+(`sacrificed_value > max(remaining, 1.0)`) compared `creature_value` output (clock-impact ×
+`CREATURE_VALUE_OUTER_SCALE`, a "value" unit) directly against `remaining` (raw damage points) — a
+real unit mismatch flagged by the Phase 2 plan. The two-pass redesign doesn't need this comparison
+at all: pass 1's survivability check (`unblocked_damage` vs `me.life`) is dimensionally consistent
+on its own (both sides are damage/life points), so the mismatched term is deleted rather than
+threaded through `life_as_resource`. No new constant was needed for this half of the fix.
+
+**Emergency/normal collapse — partially warranted, not fully forced.** Verified (per the task's
+"don't force a refactor that isn't warranted") that the two paths share one `_candidate_pool` helper,
+one `_log_block_assignments` helper, and pass 2's optimization logic — but the emergency/non-
+emergency SPLIT itself is preserved (pass 1 only runs `if emergency:`), because collapsing it
+further (running pass 1's forced-coverage logic even on comfortable non-emergency turns) is
+unnecessary: pass 1's own `unblocked_damage < me.life` stabilize check already no-ops on comfortable
+boards, so the two code paths already share everything they safely can without changing behavior on
+non-emergency turns.
+
+Tests (`tests/test_decide_blockers_joint_assignment.py`):
+`test_two_jointly_lethal_attackers_both_get_blocked` — the exact bug-#4 reproduction above, replayed
+as a deterministic unit test (two 8/8 attackers, two 4/4 blockers, life=8; both attackers must be
+blocked, one blocker each, defender survives). Verified genuinely red pre-fix via `git stash` (old
+code: `blocks={atk_a: [blk1, blk2]}`, `atk_b` completely unblocked, `final_life=0`).
+`test_favorable_clean_kill_trade_still_happens_when_survival_not_compromised` — regression guard:
+a strictly-dominant trader (survives AND kills) must still be selected over a merely-adequate cheap
+chump once survival is secured — this is the "swap in favorable trades" half of the two-pass design,
+and it was ALREADY passing pre-fix (pinned by the pre-existing
+`tests/test_decide_blockers_protects_engines.py`-adjacent `TestDefenderTakesFavorableTradeOverChump`
+shape), so this test's job is to prove the refactor didn't regress it, not to prove a new bug fixed.
+Full existing block-decision test suite (`test_block_scoring_is_lifespan_delta_formula.py`,
+`test_blocking_equipment_aware.py`, `test_chump_block_plating_when_lethal_range.py`,
+`test_decide_blockers_emergency_gate.py`, `test_decide_blockers_plating_aware.py`,
+`test_decide_blockers_protects_engines.py`, `test_decide_blockers_race_when_winning.py`,
+`test_defender_chumps_when_no_block_means_lethal_next_turn.py`,
+`test_virtualboard_respects_summoning_sickness.py`) re-run green — 37 tests, 0 regressions.
+
+**WR-baseline-anchor drift (expected, refreshed — same class as 0e's two drifts).** Because
+`opportunity_cost` changes `creature_value`/`creature_threat_value` for every caller across `ai/`
+(targeting, discard, mulligan hand evaluation — not just `decide_blockers`), the full suite surfaced
+2 `tests/test_wr_baseline_anchor.py` entries that drifted from real decision-quality changes: `Amulet
+Titan vs Living End` (seed 50000) flips winner Amulet Titan → Living End; `Pinnacle Affinity vs 4/5c
+Control` (seed 50000) keeps its winner but shifts turns 9 → 10. **Verified these are caused by this
+Phase's changes, not pre-existing debt**, via `git stash` on `ai/clock.py`/`ai/ev_evaluator.py`/
+`ai/ev_player.py` before refreshing: all 19 currently-tested anchor entries pass on unmodified code.
+Refreshed via `python tools/refresh_wr_baseline.py` (same tool 0e used) — the script recomputes the
+full 27-entry fixture deterministically from seeds, so it also updated 2 entries outside the
+currently-parametrized `range(17)` (`Instant Reanimator vs Boros Ponza` turns 11→13, `Grixis
+Reanimator vs Creatures Toolbox` turns 8→9 — both winner-unchanged, consistent with the same
+broad creature-valuation ripple). All 19 tested entries green post-refresh.
+
+**Replay verification** (all three audited seeds, `python run_meta.py --bo3 ...`):
+
+- `"Eldrazi Tron" "Amulet Titan" -s 55505` — match completes cleanly (Eldrazi Tron wins 2-0). Direct
+  live evidence of the 0-power-veto retirement: T4 `[BLOCK] Arboreal Grazer (0/3) blocks Glaring
+  Fleshraker (2/2) — lifespan_delta=+1.00` — a 0-power creature chump-blocking, which the old
+  categorical veto would have refused outright regardless of the delta formula's (correctly
+  positive) answer.
+- `"Boros Energy" "Dimir Midrange" -s 55501` (Dash-Ragavan-class chump-blocker shape) — match
+  completes cleanly (Boros wins 2-1), multiple `[BLOCK]`/`[BLOCK-EMERGENCY]` lines across both
+  players, no crashes, no anomalous double-block-starves-a-sibling patterns.
+- `"Affinity" "4c Omnath" -s 55504` (stripped-Ornithopter shape) — match completes cleanly (4c
+  Omnath wins 2-0). This particular seed's games didn't reach a beneficial-block decision point
+  (races/mulligans didn't produce a blocking scenario) — no `[BLOCK]` lines at all, which is a
+  legitimate outcome, not a gap; the mechanic itself is covered directly by
+  `test_opportunity_cost_primitive.py`'s dedicated Ornithopter fixtures (2a) rather than depending
+  on one seed's RNG to exercise it.
+
+### 2c. Unify turn_planner/board_eval block-prediction models — NOT STARTED
+
+Stretch goal, explicitly deferred per the task's own instruction ("if you don't have time for this,
+leave it explicitly marked not started — do not half-implement it"). `ai/turn_planner.py`'s
+opponent-block-prediction model and `ai/board_eval.py`'s CMC-weighted scorer were not investigated
+in this pass; unifying them onto the same joint-assignment primitive `decide_blockers` now uses (2b)
+is real, separate work for a future session. Verify first (per this program's own repeated finding
+that claims about `ai/`'s block-related code have drifted from what's actually there) before
+assuming either module's current shape.
 
 ## Verification convention (every item)
 

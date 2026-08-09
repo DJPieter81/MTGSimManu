@@ -26,8 +26,8 @@
       "deck1": "Amulet Titan",
       "deck2": "Living End",
       "seed": 50000,
-      "winner": "Amulet Titan",
-      "turns": 8
+      "winner": "Living End",
+      "turns": 11
     },
     {
       "deck1": "Jeskai Blink",
@@ -48,7 +48,7 @@
       "deck2": "4/5c Control",
       "seed": 50000,
       "winner": "4/5c Control",
-      "turns": 9
+      "turns": 10
     },
     {
       "deck1": "Azorius Control",
@@ -139,7 +139,7 @@
       "deck2": "Boros Ponza",
       "seed": 51500,
       "winner": "Instant Reanimator",
-      "turns": 11
+      "turns": 13
     },
     {
       "deck1": "Eldrazi Ramp",
@@ -167,7 +167,7 @@
       "deck2": "Creatures Toolbox",
       "seed": 52500,
       "winner": "Broodscale Bloodchief",
-      "turns": 8
+      "turns": 9
     },
     {
       "deck1": "Grixis Reanimator",
