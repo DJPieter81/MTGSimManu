@@ -530,6 +530,53 @@ spells; a second non-hexproof candidate keeps the requirement satisfiable). 15 n
 
 Full suite: 2389 passed, 22 skipped, 4 deselected, 2 xfailed, 0 failed. All ratchets clean.
 
+### 1c. Combat damage funnel unification — DONE
+
+**Problem confirmed exactly as scoped:** `CombatManager._deal_combat_damage` never routed through
+`engine/damage.py:deal_damage` — it mutated `damage_marked`/`life` directly at 5 sites,
+reimplementing a parallel, incomplete copy of what `deal_damage` already does correctly for every
+OTHER damage source (burn spells, oracle-resolver damage triggers). Two concrete bugs:
+
+1. **Lifelink was only ever checked for the attacker.** `has_lifelink = Keyword.LIFELINK in
+   attacker.keywords`, applied once at the end via `game.players[active_player].life +=
+   total_damage_dealt` — a BLOCKER with lifelink dealing damage back to the attacker gained its
+   controller nothing. Verified failing-first: `test_lifelink_blocker_gains_controller_life`
+   failed on pre-fix code (`life=20`, expected `23`) via a `git stash` A/B check.
+2. **Deathtouch was faked**, not modeled. The assignment logic correctly computes a 1-point
+   "lethal" hit for deathtouch (CR 702.2c), but then force-set `damage_marked = toughness`
+   afterward to guarantee SBA destruction, rather than using the real `_deathtouch_damage` marker
+   `deal_damage` already writes and `SBAManager.perform_deathtouch_check` (migrated live in 0d)
+   already consumes. Functionally equivalent outcome pre- and post-fix (both destroy the
+   creature), but via a bespoke combat-only mechanism instead of the shared one — the exact
+   "no single owner" pattern this whole program targets.
+
+**Design:** Damage *assignment* (how many points each blocker/the player receives — CR 510.1c
+ordering, deathtouch's 1-point threshold, trample overflow) stays in `combat_manager.py`; that
+part is genuinely combat-specific. Damage *application* now calls `deal_damage(source, target,
+amount, is_combat=True)` for every one of the 5 sites (blocker takes damage, attacker takes
+damage back, trample overflow to player, unblocked attacker to player). This required completing
+the "lifelink hook" `engine/damage.py`'s own docstring had documented as reserved-but-unimplemented
+since the W0-D commit: added `CardInstance.has_lifelink` (mirroring the existing `has_deathtouch`
+property) and real CR 702.15 life-gain logic inside `deal_damage` itself, so lifelink is now
+correct for EVERY damage source in the engine (burn spells included), not just combat, and not
+just attackers. The old combat-only lifelink block and both deathtouch-faking loops were deleted
+entirely — no longer needed once the real markers are written by the shared primitive. Also fixed
+a dead `total_player_damage` accumulator (`_deal_combat_damage` always returned 0 due to a no-op
+`sum()` expression computing `life - life`; harmless because the one caller discards the return
+value, but directly in the code being rewritten, so fixed alongside).
+
+**Tests (failing-first):** `tests/test_combat_damage_funnel.py` (6 tests) —
+`TestLifelinkBlocker` (blocker-side lifelink, attacker-side regression, both-sides-independent),
+`TestDeathtouchRealMarker` (attacker/blocker deathtouch destruction via the real marker at
+mismatched toughness, non-deathtouch regression pinning `damage_marked` reflects actual damage
+dealt, not a fake). Verified the 2 lifelink tests genuinely fail pre-fix via `git stash`; the
+deathtouch tests pass both pre- and post-fix (same observable outcome, different mechanism —
+legitimate behavior-preservation coverage for the internal-mechanism change).
+
+Full suite: 2395 passed, 22 skipped, 4 deselected, 2 xfailed, 0 failed. All ratchets clean.
+Replay: `python run_meta.py --bo3 "Boros Energy" "Dimir Midrange" -s 55501` — combat resolves
+correctly end-to-end (blocks, trades, trample, lethal damage) with no regressions.
+
 ## Phase 2 / 3
 
 Not started. Phase 2: 2a `opportunity_cost` primitive, 2b joint block-assignment, 2c

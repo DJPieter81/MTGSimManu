@@ -657,6 +657,13 @@ class CardInstance:
         return Keyword.DEATHTOUCH in self.keywords
 
     @property
+    def has_lifelink(self) -> bool:
+        """DamageSource protocol hook (engine/damage.py:deal_damage
+        reads `source.has_lifelink` to apply CR 702.15 life gain).
+        Keyword-derived — includes temp-granted lifelink."""
+        return Keyword.LIFELINK in self.keywords
+
+    @property
     def has_summoning_sickness(self) -> bool:
         """A creature has summoning sickness if it entered this turn and doesn't have haste."""
         if not (self.template.is_creature or self.is_animated):

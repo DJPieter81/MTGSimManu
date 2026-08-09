@@ -245,8 +245,25 @@ class CombatManager:
         CR 510.1c: If blocked by multiple creatures, damage is assigned in order.
         CR 702.2c + 702.19c: Deathtouch + trample = 1 lethal to each blocker.
 
+        Damage *assignment* (how many points each blocker/the player
+        receives) is decided here — that's genuinely combat-specific
+        (CR 510.1c ordering, deathtouch's 1-point lethal threshold,
+        trample overflow). Damage *application* routes through
+        `engine.damage.deal_damage(..., is_combat=True)` instead of
+        direct `damage_marked`/`life` mutation, so deathtouch marking
+        and lifelink life-gain are the single primitive's job for
+        combat exactly as they already are for every other damage
+        source — previously combat used a parallel fake: lifelink was
+        only ever checked for the ATTACKER (a blocker with lifelink
+        dealing damage back gained its controller nothing), and
+        deathtouch was faked by force-setting `damage_marked` to the
+        full toughness rather than using the real `_deathtouch_damage`
+        SBA marker `deal_damage` already writes correctly.
+
         Returns total damage dealt to defending player.
         """
+        from .damage import deal_damage
+
         total_player_damage = 0
 
         for assignment in assignments:
@@ -260,8 +277,7 @@ class CombatManager:
 
             has_deathtouch = Keyword.DEATHTOUCH in attacker.keywords
             has_trample = Keyword.TRAMPLE in attacker.keywords
-            has_lifelink = Keyword.LIFELINK in attacker.keywords
-            total_damage_dealt = 0
+            player_damage = 0
 
             if assignment.blocker_ids:
                 # CR 510.1a: Blocked creature assigns damage to blockers
@@ -286,9 +302,9 @@ class CombatManager:
                             # Not enough to kill — assign all remaining
                             damage_to_blocker = remaining_damage
 
-                    blocker.damage_marked += damage_to_blocker
+                    deal_damage(attacker, blocker, damage_to_blocker,
+                               is_combat=True)
                     remaining_damage -= damage_to_blocker
-                    total_damage_dealt += damage_to_blocker
 
                     # Blocker deals damage back
                     blocker_has_fs = (Keyword.FIRST_STRIKE in blocker.keywords or
@@ -300,21 +316,15 @@ class CombatManager:
                          Keyword.DOUBLE_STRIKE in blocker.keywords)
                     )
                     if should_deal_back and blocker.power > 0:
-                        attacker.damage_marked += blocker.power
-
-                    # Deathtouch from blocker
-                    if (Keyword.DEATHTOUCH in blocker.keywords and
-                            blocker.power > 0 and should_deal_back):
-                        attacker.damage_marked = max(
-                            attacker.damage_marked, attacker.toughness
-                        )
+                        deal_damage(blocker, attacker, blocker.power,
+                                   is_combat=True)
 
                 # CR 702.19c: Trample — excess damage to defending player
-                player_damage = 0
                 if has_trample and remaining_damage > 0:
-                    game.players[self._defending_player].life -= remaining_damage
+                    deal_damage(attacker,
+                               game.players[self._defending_player],
+                               remaining_damage, is_combat=True)
                     game.players[self._active_player].damage_dealt_this_turn += remaining_damage
-                    total_damage_dealt += remaining_damage
                     player_damage = remaining_damage
                     game.log.append(
                         f"T{game.display_turn} P{self._active_player+1}: "
@@ -322,20 +332,11 @@ class CombatManager:
                         f" → {remaining_damage} dmg to player (trample)"
                     )
 
-                # Deathtouch from attacker — ensure blocker is marked as dead
-                if has_deathtouch:
-                    for blocker_id in assignment.blocker_ids:
-                        blocker = game.get_card_by_id(blocker_id)
-                        if blocker and blocker.zone == "battlefield" and blocker.damage_marked > 0:
-                            blocker.damage_marked = max(
-                                blocker.damage_marked, blocker.toughness
-                            )
-
             else:
                 # CR 510.1b: Unblocked creature assigns damage to defending player
-                game.players[self._defending_player].life -= attacker_power
+                deal_damage(attacker, game.players[self._defending_player],
+                           attacker_power, is_combat=True)
                 game.players[self._active_player].damage_dealt_this_turn += attacker_power
-                total_damage_dealt = attacker_power
                 player_damage = attacker_power
                 game.log.append(
                     f"T{game.display_turn} P{self._active_player+1}: "
@@ -343,10 +344,7 @@ class CombatManager:
                     f" → {attacker_power} dmg to player"
                 )
 
-            # CR 702.15: Lifelink — gain life equal to ALL damage dealt
-            if has_lifelink and total_damage_dealt > 0:
-                game.players[self._active_player].life += total_damage_dealt
-                game.players[self._active_player].life_gained_this_turn += total_damage_dealt
+            total_player_damage += player_damage
 
             # "Deals combat damage to a player" triggers (oracle-based)
             if player_damage > 0:
@@ -390,10 +388,7 @@ class CombatManager:
                             f"{attacker.name} deals combat damage — draw a card"
                         )
 
-        return total_player_damage + sum(
-            max(0, game.players[self._defending_player].life - game.players[self._defending_player].life)
-            for _ in [0]  # dummy — we already tracked via direct mutation
-        )
+        return total_player_damage
 
     def _apply_battle_cry(self, game: "GameState",
                            attackers: List["CardInstance"]):
