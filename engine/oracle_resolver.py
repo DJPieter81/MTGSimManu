@@ -28,6 +28,15 @@ if TYPE_CHECKING:
     from engine.cards import CardInstance, CardTemplate
 
 
+# Shared word-form → integer table for oracle-text amount parsing
+# ("draw a card", "draw two cards", ...). Single owner for both the
+# ETB draw-N branch (`resolve_etb_from_oracle`) and the spell-
+# resolution draw-N branch (`resolve_spell_from_oracle`) — both read
+# the identical CR 121.1 "draw N cards" phrasing, just from different
+# trigger contexts (ETB vs. cast resolution).
+_WORD_TO_NUM = {'a': 1, 'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5}
+
+
 def _pick_damage_target(game: "GameState", controller: int,
                          amount: int) -> Optional["CardInstance"]:
     """Oracle-driven target picker for "deal N damage to any target".
@@ -278,6 +287,63 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
             f"{best.name} from graveyard to hand")
         return True
 
+    # ── "When ~ enters, draw N card(s)" (fixed-amount, unconditional
+    #     card draw — CR 121.1) ──
+    # Class size: 103 Modern-legal permanents carry an ability
+    # paragraph matching this exact template with nothing else in it
+    # (grepped `ModernAtomic.json` split into ability paragraphs via
+    # `split_abilities`; the raw "enters"+"draw" co-occurrence is
+    # 283 cards, but most of those have a rider — see below). Sample:
+    # Elvish Visionary, Wall of Omens, Mulldrifter, Silvergill Adept,
+    # Skyscanner — plus 3 already registered in this pool's own
+    # EFFECT_REGISTRY (Omnath Locus of Creation, Quantum Riddler,
+    # Thought Monitor), whose handlers were deleted once this branch
+    # was proven to cover them (see
+    # `docs/design/rules-foundation-sweep-tracker.md`, Phase 3).
+    #
+    # `re.fullmatch` on the WHOLE ability paragraph (not a co-occurrence
+    # search) is deliberate and stricter than the analogous branch in
+    # `resolve_spell_from_oracle` below: an ETB ability with ANY extra
+    # clause — a rider cost ("discard a card"), a life-gain rider
+    # ("gain 2 life and draw a card" — Cloudblazer, Dovin's Acuity), a
+    # conditional amount ("if it was kicked, draw two cards" —
+    # Citanul Woodreaders), an oracle-derived count ("draw a card for
+    # each ..." — Earthshaker Dreadmaw), or a damage rider ("deals 1
+    # damage to you and you draw a card" — Blade Juggler) — must NOT
+    # silently drop that rider by matching here; those stay on their
+    # own EFFECT_REGISTRY handler (or a future dedicated resolver for
+    # that rider's own mechanic shape). `startswith('when ')` (not
+    # `'whenever '`) additionally excludes repeatable "whenever
+    # [something else] enters, draw a card" watcher triggers (Risen
+    # Reef-class), which are not this permanent's own one-shot ETB.
+    for ability in split_abilities(oracle):
+        ability = ability.strip()
+        if not ability.startswith('when '):
+            continue
+        m = re.fullmatch(
+            r"when [^,]+ enters,\s*draw\s+(\w+)\s+cards?\.?", ability)
+        if m is None:
+            continue
+        tok = m.group(1)
+        try:
+            draw_n = int(tok)
+        except ValueError:
+            draw_n = _WORD_TO_NUM.get(tok, 0)
+        if draw_n <= 0:
+            # Unparsed token (e.g. "draw x cards" — an X-cost amount
+            # this branch does not resolve, matching the identical
+            # limitation `resolve_spell_from_oracle`'s draw-N branch
+            # already has for X-cost spells). No-op rather than a
+            # wrong guess.
+            return False
+        drawn = game.draw_cards(controller, draw_n)
+        names = ", ".join(c.name for c in drawn) if drawn else ""
+        if drawn:
+            game.log.append(
+                f"T{game.display_turn} P{controller+1}: "
+                f"{card.name} ETB: draw {draw_n} ({names})")
+        return True
+
     return False
 
 
@@ -509,8 +575,7 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
     #     from the 2026-05-16 audit (storm_vs_dimir G1T4 self-kill).
     #
     # The numerical count is parsed from oracle text in both cases.
-    word_to_num = {'a': 1, 'one': 1, 'two': 2, 'three': 3,
-                   'four': 4, 'five': 5}
+    word_to_num = _WORD_TO_NUM
 
     # Impulse-reveal path — gated by classifier tag, not regex chain.
     from ai.oracle_classifier import Tag, tags_for

@@ -982,6 +982,118 @@ verification, matching this program's precedent for fixes whose live-game trigge
 don't reliably occur under the deck's own AI policy (see 1a's Metallic Rebuke note for the same
 pattern).
 
+### EFFECT_REGISTRY draw-N ETB cluster consolidation — DONE
+
+**Problem confirmed exactly as scoped:** `engine/card_effects.py` registered three independent
+`EffectTiming.ETB` handlers — Omnath, Locus of Creation; Quantum Riddler; Thought Monitor — whose
+bodies were each a single `game.draw_cards(controller, N)` call plus a log line, differing only in
+the fixed N. Same duplicated-mechanic smell the burn-damage and nonland-permanent-removal slices
+already targeted, even though `EFFECT_REGISTRY.register(...)` calls stay invisible to
+`tools/check_abstraction.py`'s regex either way (confirmed again here, 0 hits before and after).
+
+**Research pass (read every registered ETB handler in full before designing anything; also
+enumerated the class size from the raw DB, not from memory):**
+
+- Grepped every `game.draw_cards(...)` call site in `engine/card_effects.py` (13 total) and read
+  each surrounding handler. Three were pure fixed-amount ETB draws with no rider: Omnath (`draw a
+  card`), Quantum Riddler (`draw a card`), Thought Monitor (`draw two cards`) — all `re.fullmatch`
+  against the template `"when [^,]+ enters,\s*draw\s+(\w+)\s+cards?\.?"` on the card's own single
+  ability paragraph.
+- The rest were excluded, with reasoning, none forced into the cluster:
+  - **Seasoned Pyromancer** (ETB: discard 2, draw 2, create tokens for nonland discards) — a rider
+    (discard-then-draw with conditional token creation) genuinely more complex than "draw N";
+    its own raw hand→graveyard mutation (`worst.zone = "graveyard"`) is a separate, pre-existing
+    zone-transfer-funnel gap, out of this slice's scope.
+  - **Wan Shi Tong, Librarian** (ETB: `+1/+1` counters = opponent's library-search count, then draw
+    `X // 2`) — an oracle-derived amount tied to a stateful game counter, not a fixed constant;
+    class size 1 (no other card in the DB shares this exact "counters-then-half-draw" shape),
+    doesn't meet the "≥10 legitimate cards" bar for its own generalization.
+  - **Galvanic Relay**, **Faithful Mending**, **Valakut Awakening // Valakut Stoneforge**,
+    **Explore** — all `EffectTiming.SPELL_RESOLVE` (instant/sorcery), not ETB; out of this slice's
+    named scope (the task is specifically the ETB cluster). `Explore`'s and `Valakut Awakening`'s
+    draw call is bundled with an unrelated rider (extra land drop; hand-selection heuristic)
+    anyway, so they would not have qualified even if timing matched.
+  - **Griselbrand** — its draw-7 is an *activated* ability (pay life, tap), not a cast or ETB
+    trigger; the `SPELL_RESOLVE` handler registered for it is an explicit no-op with a comment
+    explaining why. Unrelated mechanic.
+- **Class-size check on the generalization itself** (not just the 3 registered cards): grepped
+  `ModernAtomic.json`'s full 22k+ card pool for ability paragraphs matching the exact fullmatch
+  template used below. **103 real Modern-legal cards** match cleanly (Elvish Visionary, Wall of
+  Omens, Mulldrifter, Silvergill Adept, Skyscanner, Gadwick the Wizened, ...) — comfortably above
+  CLAUDE.md's "fewer than 10 ⇒ you are patching" threshold. A broader co-occurrence search (`enters`
+  + `draw`+`card` anywhere in the same ability paragraph, no fullmatch) hits 142 cards; the
+  remaining 39 all carry a rider (life-gain, conditional amount, damage-on-draw, oracle-derived
+  count) that the strict template deliberately excludes — see the "no swallowing" reasoning below.
+- **Checked whether an existing generic path already covers this, per the task's explicit
+  instruction.** `engine.oracle_resolver.resolve_spell_from_oracle`'s own "draw N cards" branch
+  (lines ~563-582) already handles the identical CR 121.1 phrasing correctly, but ONLY for
+  `EffectTiming.SPELL_RESOLVE` (called from `spell_resolution.py`'s cast-resolution path) — it is
+  never invoked for ETB. The actual ETB-context generic fallback,
+  `engine.oracle_resolver.resolve_etb_from_oracle` (dispatched identically by both
+  `zone_transfer._fire_etb_triggers` and `spell_resolution.ResolutionManager._handle_permanent_etb`
+  whenever no card-specific `EffectTiming.ETB` handler is registered), already existed as a module
+  with two classifier-tag-gated branches (surveil-N, return-from-graveyard-to-hand) but had **no**
+  draw-N branch at all — the gap this item fills.
+
+**Design:** New branch in `resolve_etb_from_oracle` (`engine/oracle_resolver.py`), NOT a new
+top-level function — the correct single owner for "an ETB ability that is nothing but a fixed-N
+card draw" already exists as this resolver's job; the fix extends it rather than adding a fourth
+oracle-parsing entry point next to `resolve_damage_to_chosen_target` /
+`_resolve_nonland_permanent_removal` / the SPELL_RESOLVE draw-N branch. Deliberately **stricter**
+than the SPELL_RESOLVE sibling: `re.fullmatch` against the WHOLE ability paragraph
+(`"when [^,]+ enters,\s*draw\s+(\w+)\s+cards?\.?"`), not a co-occurrence search — an ETB ability
+with ANY extra clause (a discard rider, a life-gain rider, a conditional or oracle-derived amount,
+a damage rider) must not be silently reduced to "just draw N" and drop the rider; those stay on
+their own `EFFECT_REGISTRY` handler or a future dedicated resolver for that rider's own mechanic
+shape. `ability.startswith('when ')` (not `'whenever '`) additionally excludes repeatable "whenever
+[something else] enters, draw a card" watcher triggers (the Risen Reef class) — those describe a
+different permanent's entry, not this one's own one-shot ETB, and firing this branch on them would
+misfire every time *any* permanent enters, not just this one. `_WORD_TO_NUM` (the `'a'/'two'/...→
+int` table) is now a single module-level constant in `oracle_resolver.py`, shared by both the new
+ETB branch and the pre-existing SPELL_RESOLVE branch (previously a function-local dict duplicated
+inline) — same "no single owner" fix pattern this whole program targets, applied to the amount
+parser itself.
+
+**Files:**
+- `engine/oracle_resolver.py` — new `_WORD_TO_NUM` module constant; new draw-N branch appended to
+  `resolve_etb_from_oracle` (before its final `return False`); `resolve_spell_from_oracle`'s local
+  `word_to_num` now aliases the shared constant instead of redefining it.
+- `engine/card_effects.py` — Omnath's, Quantum Riddler's, and Thought Monitor's `EffectTiming.ETB`
+  registrations deleted, each replaced by a comment pointing at the generic resolver and the test
+  that proved the deletion safe. No zone-mutation-baseline change (none of the three deleted
+  handlers had a raw `.zone =` mutation — all three were `draw_cards` + log only).
+
+**Tests (failing-first, verify-before-delete):** `tests/test_etb_draw_n_shared_resolver.py` — 12
+tests. `TestResolveEtbDrawNUnit` (7): fixed word-amount draws (one/two) on synthetic fixtures,
+`whenever`-watcher-trigger rejection, 5 parametrized "rider must not be swallowed" cases (discard,
+life-gain, conditional/kicked, oracle-derived-count, damage rider), and the `draw x cards`
+unresolved-amount no-op. `TestGenericResolverCoversRegisteredHandlers` (3, real DB cards, parametrized):
+Omnath/Quantum Riddler/Thought Monitor each resolved via the real `_handle_permanent_etb` dispatch
+path with **zero** dedicated `EffectTiming.ETB` handler present, asserting both `has_handler(...)
+is False` (pins the deletion) and the correct draw count purely through the generic fallback. Per
+CLAUDE.md's "verify before deleting" instruction, this redundancy was additionally confirmed with a
+throwaway script BEFORE the registrations were removed (temporarily popping each entry from
+`EFFECT_REGISTRY._handlers`, firing `_handle_permanent_etb`, confirming the correct draw count, then
+restoring the entry) — all three drew correctly through the fallback pre-deletion, so the deletion
+in this commit changes zero observable behavior for any of the three cards.
+
+Full suite: 2440 passed, 22 skipped, 4 deselected, 2 xfailed, 0 failed (`--deselect
+tests/test_etb_graveyard_return.py`, 431s). All 4 ratchets clean: `check_abstraction.py` 0 hits before and
+after (unaffected — registry keys stay outside its regex scope in both directions);
+`check_magic_numbers.py` unaffected (`engine/`-only slice, `ai/` untouched); `check_zone_mutation.py`
+102 → 102 (no change — none of the three deleted handlers had a raw zone mutation to remove from the
+baseline); `check_doc_hygiene.py` clean.
+
+No WR-anchor drift: the three migrated cards' draw amount and log-line semantics are unchanged
+(same `game.draw_cards` call, same count, same net effect); the only observable difference is which
+code path performs the call, which is not something `ai/`'s decision kernel or `tests/fixtures/
+wr_baseline_anchor.json` can see. No dedicated replay needed for the same reason — this is a
+pure internal-mechanism consolidation (three duplicate implementations → one shared owner) with a
+verified-identical observable outcome, not a behavior fix; the unit/integration tests above are the
+authoritative verification, matching this program's precedent for internal-refactor-only slices
+(see 1c's deathtouch-marker rewrite, which is the same "same outcome, different mechanism" shape).
+
+### EFFECT_REGISTRY board-sweep cluster consolidation — DONE
 
 **Scope:** the EFFECT_REGISTRY "destroy/sacrifice all [matching] permanents" cluster — a symmetric
 mass effect hitting every eligible permanent on every player's battlefield, as opposed to the
