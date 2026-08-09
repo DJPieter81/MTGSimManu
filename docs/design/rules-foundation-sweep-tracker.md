@@ -806,12 +806,14 @@ pattern).
 
 **Scope:** the EFFECT_REGISTRY "destroy/sacrifice all [matching] permanents" cluster — a symmetric
 mass effect hitting every eligible permanent on every player's battlefield, as opposed to the
-target-picking "destroy/exile ONE chosen permanent" shape the removal-spell slice (a separate,
-concurrent, not-yet-merged branch — `claude/rules-foundation-phase3-removal`) already generalizes.
-This branch was cut from `origin/main` at the Phase 1 tip and does not depend on that branch
-landing first; the two clusters share no code (removal's `_resolve_nonland_permanent_removal`
-picks one legal target and honors `targets`, board-sweep never receives a meaningful `targets` list
-at all — it is not a targeted effect).
+target-picking "destroy/exile ONE chosen permanent" shape the removal-spell slice (immediately
+above this subsection) already generalizes. This branch was cut from `origin/main` at the Phase 1
+tip, before the removal-spell slice merged, and was developed independently of it; the two clusters
+share no code (removal's `_resolve_nonland_permanent_removal` picks one legal target and honors
+`targets`, board-sweep never receives a meaningful `targets` list at all — it is not a targeted
+effect) and merged cleanly with no code-level conflict, only the expected prose-only conflict in
+this doc (both slices append a `###` subsection to the same `## Phase 3` section — resolved by
+keeping both, this one placed after removal's per this doc's edit-time ordering).
 
 **Research pass (read every candidate in full before designing anything):** grepped
 `engine/card_effects.py` for every handler shaped like "destroy/exile all creatures" or
