@@ -11,7 +11,6 @@
         "Striped Riverwinder": 26.0,
         "Architects of Will": 26.0,
         "Curator of Mysteries": 26.0,
-        "Waker of Waves": 24.0,
         "Shardless Agent": 15.0,
         "Demonic Dread": 15.0
       },
@@ -20,8 +19,7 @@
           "Architects of Will",
           "Curator of Mysteries",
           "Street Wraith",
-          "Striped Riverwinder",
-          "Waker of Waves"
+          "Striped Riverwinder"
         ],
         "payoffs": [
           "Demonic Dread",
@@ -40,8 +38,7 @@
         "Street Wraith": 12.0,
         "Striped Riverwinder": 10.0,
         "Architects of Will": 10.0,
-        "Curator of Mysteries": 10.0,
-        "Waker of Waves": 10.0
+        "Curator of Mysteries": 10.0
       },
       "card_roles": {
         "payoffs": [
@@ -52,8 +49,7 @@
           "Architects of Will",
           "Curator of Mysteries",
           "Street Wraith",
-          "Striped Riverwinder",
-          "Waker of Waves"
+          "Striped Riverwinder"
         ]
       },
       "prefer_cycling": true
@@ -84,8 +80,7 @@
       "Architects of Will",
       "Curator of Mysteries",
       "Street Wraith",
-      "Striped Riverwinder",
-      "Waker of Waves"
+      "Striped Riverwinder"
     ]
   ],
   "land_priorities": {
