@@ -608,6 +608,21 @@ BASELINE_SNAPSHOT = EVSnapshot(
     opp_evasion_power=0,
 )
 
+def _controller_board(card: "CardInstance") -> Optional["PlayerState"]:
+    """The controller's ``PlayerState`` for ``card``, or ``None`` when
+    no live game is bound (context-free fixture / sideboard-analysis
+    call site). Small shared helper so ``creature_value`` /
+    ``creature_threat_value`` don't each re-derive this lookup.
+    """
+    game = getattr(card, '_game_state', None)
+    if game is None:
+        return None
+    try:
+        return game.players[card.controller]
+    except (IndexError, AttributeError):
+        return None
+
+
 def creature_value(card: "CardInstance", snap: EVSnapshot) -> float:
     """Evaluate a creature's worth on the battlefield.
 
@@ -621,10 +636,15 @@ def creature_value(card: "CardInstance", snap: EVSnapshot) -> float:
     heavy pressure. REQUIRED: pass `BASELINE_SNAPSHOT` explicitly at
     call sites with no live game state, rather than omitting the
     argument — see that constant's docstring for why.
+
+    Phase 2a: this is now a thin caller of `ai.clock.opportunity_cost`
+    (docs/design/rules-foundation-sweep-tracker.md) rather than a
+    parallel clock-impact computation — "what is this creature worth
+    on the battlefield" and "what do I lose by spending it" are the
+    same question, and `opportunity_cost` is the single owner.
     """
-    from ai.clock import creature_clock_impact_from_card
-    # Clock impact is ~0.05-0.5; scale by 20 (opp_life) to get ~1-10 range
-    return creature_clock_impact_from_card(card, snap) * CREATURE_VALUE_OUTER_SCALE
+    from ai.clock import opportunity_cost
+    return opportunity_cost(card, _controller_board(card), snap)
 
 
 def creature_threat_value(card: "CardInstance", snap: EVSnapshot) -> float:
@@ -686,35 +706,21 @@ def creature_threat_value(card: "CardInstance", snap: EVSnapshot) -> float:
            for kw in getattr(t, 'keywords', set())}
 
     # Feed the virtual-power-augmented stats through the clock pipeline.
-    # Tag-based ETB/token_maker/card_advantage bonuses are added inside
-    # creature_clock_impact_from_card — reuse that path to keep all
-    # scoring in a single principled formula.
-    from ai.clock import creature_clock_impact_from_card
-    base = creature_clock_impact_from_card(card, snap) * CREATURE_VALUE_OUTER_SCALE
+    # Tag-based ETB/token_maker/card_advantage bonuses, the un-exhausted-
+    # activated-ability bonus, and the PR-L3 equipment-ceiling lift are
+    # all folded into `opportunity_cost` (Phase 2a) — reuse that single
+    # owner rather than re-deriving the base+ceiling terms in parallel.
+    # See `docs/diagnostics/2026-05-04_affinity_plating_threat_undervaluation_audit.md`
+    # for the equipment-ceiling term's original motivation.
+    from ai.clock import opportunity_cost
+    board = _controller_board(card) if card.zone == 'battlefield' else None
+    base_and_ceiling = opportunity_cost(card, board, snap)
     # The call above used card.power; add the virtual-power contribution
     # separately via the same clock formula so it scales identically.
     vp_impact = (creature_clock_impact(p, tough, kws, snap)
                  - creature_clock_impact(card.power or 0, tough, kws, snap)) * CREATURE_VALUE_OUTER_SCALE
 
-    # PR-L3: equipment-ceiling lift. If the controller has an
-    # unattached / rebindable Equipment with a `gets +N/+M …` static
-    # oracle modifier, project the option-to-equip threat onto this
-    # creature.  Oracle-driven, generalizes across every Modern
-    # Equipment with a static buff (Cranial Plating, Nettlecyst,
-    # Colossus Hammer, Bonesplitter, Sword cycle, future printings).
-    # See `docs/diagnostics/2026-05-04_affinity_plating_threat_undervaluation_audit.md`.
-    ceiling_lift = 0.0
-    game = getattr(card, '_game_state', None)
-    if game is not None and card.zone == 'battlefield':
-        try:
-            controller = game.players[card.controller]
-        except (IndexError, AttributeError):
-            controller = None
-        if controller is not None:
-            from ai.permanent_threat import _equipment_ceiling_for_creature
-            ceiling_lift = _equipment_ceiling_for_creature(
-                card, controller, game)
-    return base + vp_impact + ceiling_lift
+    return base_and_ceiling + vp_impact
 
 
 # ─────────────────────────────────────────────────────────────
