@@ -398,18 +398,56 @@ def parse_domain_reduction(oracle: str) -> Optional[int]:
 def detect_power_scaling(oracle: str) -> str:
     """Detect dynamic P/T scaling from oracle text.
 
-    Returns: "domain", "tarmogoyf", "delirium", "graveyard", or "".
+    Returns: "domain", "permanent_count:<word>", "tarmogoyf",
+    "delirium", "graveyard", or "".
     """
     oracle = oracle.lower()
     if 'basic land type' in oracle and ('power' in oracle or 'toughness' in oracle or 'equal' in oracle):
         return "domain"
+    # "X's power and toughness are each equal to the number of <Y>
+    # you control" — the single most common CDA shape in Magic
+    # (Cultivator Colossus/Crusader of Odric/Master of Etherium/
+    # Darksteel Juggernaut/... — 47 cards share this exact phrasing
+    # in this DB). <Y> is a card type ("lands"), the generic
+    # "permanents", or a tribal/land subtype ("Soldiers", "Islands"):
+    # resolved generically by CardInstance._get_permanent_type_count,
+    # not enumerated here.
+    m = re.search(
+        r'power and toughness are each equal to the number of (\w+) you control',
+        oracle,
+    )
+    if m:
+        return f"permanent_count:{m.group(1)}"
     if 'card type' in oracle and ('power' in oracle or 'equal' in oracle) and 'graveyard' in oracle:
         return "tarmogoyf"
     if ('delirium' in oracle or 'four or more card types' in oracle) and 'graveyard' in oracle:
         return "delirium"
-    if ('exile' in oracle and ('instant' in oracle or 'sorcery' in oracle)
-            and ('graveyard' in oracle or 'from your graveyard' in oracle)):
-        return "graveyard"
+    # "graveyard" scaling requires the actual CDA phrase shape —
+    # power/toughness, then "equal to", then "number of", then
+    # instant/sorcery, then graveyard, all in that order within one
+    # SENTENCE ([^.]*? never crosses a period). The bare co-occurrence
+    # of 'exile' + 'instant'/'sorcery' + 'graveyard' anywhere in a
+    # clause false-positives on every Embalm/Eternalize reminder-text
+    # card (293/21795 in this DB) AND, more subtly, on Scavenge
+    # reminder text specifically ("Exile this card from your
+    # graveyard: Put a number of +1/+1 counters equal to this card's
+    # power ... Scavenge only as a SORCERY.") — 'power', 'equal',
+    # 'graveyard', and 'sorcery' all co-occur in that one clause, but
+    # in the WRONG order (power precedes "equal to", not "equal to
+    # ... number of ... graveyard") and "sorcery" refers to the
+    # activation timing restriction, not a CDA. The ordered,
+    # sentence-scoped pattern rejects this shape while still matching
+    # every real graveyard-count CDA (Enigma Drake, Haughty Djinn,
+    # Crackling Drake, Melek, Magnivore, ...) and correctly excludes
+    # live-pool card Murktide Regent (delve-triggered +1/+1 counters,
+    # not a continuous graveyard-count CDA at all).
+    gy_pattern = re.compile(
+        r'(?:power|toughness)[^.]*?equal to[^.]*?number of'
+        r'[^.]*?(?:instant|sorcery)[^.]*?graveyard'
+    )
+    for clause in split_abilities(oracle):
+        if gy_pattern.search(clause):
+            return "graveyard"
     return ""
 
 

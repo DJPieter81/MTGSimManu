@@ -577,6 +577,63 @@ Full suite: 2395 passed, 22 skipped, 4 deselected, 2 xfailed, 0 failed. All ratc
 Replay: `python run_meta.py --bo3 "Boros Energy" "Dimir Midrange" -s 55501` — combat resolves
 correctly end-to-end (blocks, trades, trample, lethal damage) with no regressions.
 
+### 1d. Generalize `detect_power_scaling` (CDA) — DONE
+
+**Problem confirmed exactly as scoped:** `detect_power_scaling` had 4 buckets (domain, tarmogoyf,
+delirium, graveyard) but no bucket for "power and toughness are each equal to the number of X you
+control" — the single most common CDA shape in Magic (47 cards share this exact phrasing in this
+DB: Cultivator Colossus, Crusader of Odric, Darksteel Juggernaut, Master of Etherium, Katilda,
+...). Cultivator Colossus fell through to `template.power or 0` = 0/0 and died to state-based
+actions the instant it resolved — the audited bug (replay seed 55505/55515).
+
+Independently confirmed the plan's second claim: the `"graveyard"` branch had **no P/T anchor at
+all** — bare co-occurrence of `'exile'` + `'instant'/'sorcery'` + `'graveyard'` matched
+**293/21795 cards** in the DB, almost all Embalm/Eternalize reminder text ("Exile this card from
+your graveyard: Create a token..."). This included live-pool card **Murktide Regent**, whose real
+scaling mechanism is delve-triggered +1/+1 counters (`plus_counters`), not a continuous
+graveyard-count CDA at all — it was being *actively mismodeled*, not just harmlessly mistagged.
+
+**Design:** New `permanent_count:<word>` bucket in `detect_power_scaling`, matched via one regex
+capturing the noun after "you control" — no enumeration of which nouns are valid at parse time.
+Resolution is generic: new `CardInstance._get_permanent_type_count(type_word)` on `cards.py`
+(mirroring the existing `_get_domain_count`/`_get_artifact_count` shape per the plan's explicit
+design) handles card types (land/creature/artifact/enchantment/planeswalker), the literal word
+"permanent(s)", and land/tribal SUBTYPES via naive regular-plural singularization ("Islands" →
+"Island", "Soldiers" → "Soldier") — irregular plurals (Elves, Wolves) are a documented 0-card gap
+in the registered pool today, extend if one enters. `_dynamic_base_power`/`_dynamic_base_toughness`
+both dispatch to the same count for power AND toughness (the oracle text says "each equal to" —
+no ceiling/multiplier, unlike domain's `min(count, 4)` or tarmogoyf's `+1` toughness offset).
+
+The `"graveyard"` branch's false-positive fix went through two iterations — the first attempt
+(require `'power'`/`'toughness'` + `'graveyard'` + `'instant'/'sorcery'` + `'equal'` co-occurring
+in the same `split_abilities` paragraph) cut 293 → 24 false positives but still matched Scavenge
+reminder text ("Exile this card from your graveyard: Put a number of +1/+1 counters equal to this
+card's power ... Scavenge only as a **sorcery**.") — all four words are present, just in the wrong
+relationship (the CDA phrase requires "power ... equal to ... number of ... instant/sorcery ...
+graveyard" IN THAT ORDER; Scavenge text has "graveyard" before "equal to this card's **power**",
+with "sorcery" describing the activation timing restriction, not a P/T definition). Final fix: an
+ordered, sentence-scoped regex (`[^.]*?` between each anchor, never crossing a period) requiring
+that exact phrase sequence. Cuts 293 → **8** real graveyard-count CDAs (Enigma Drake, Haughty
+Djinn, Crackling Drake, Kinetic Augur, Magnivore, Melek, Spellheart Chimera, a Seize the Storm
+token) — all genuine, none currently in the registered 16-deck pool, but Murktide Regent (which
+IS in the pool) is correctly excluded.
+
+**Tests (failing-first):** `tests/test_permanent_count_cda.py` (18 tests) — parser unit tests for
+the new bucket (card types, "permanents", subtypes), the graveyard-anchor fix (Eternalize
+reminder-text regression, Murktide-shaped delve-counter regression, a positive-control real CDA
+to guard against overcorrecting into a false negative), real-DB structured-field integration
+(Cultivator Colossus, Crusader of Odric, Murktide Regent, a DB-wide false-positive-count bound),
+and live P/T computation (survives-own-ETB with lands present — the audited bug itself — zero-count
+edge case, creature-count excludes noncreatures, subtype count, "permanents" counts everything
+including itself).
+
+Full suite: 2413 passed, 22 skipped, 4 deselected, 2 xfailed, 0 failed. All ratchets clean.
+Replay: `python run_meta.py --bo3 "Eldrazi Tron" "Amulet Titan" -s 55515` — Cultivator Colossus
+cast T6, resolves, and lives on the board as a correct **9/9** (9 lands controlled) instead of
+dying to its own 0/0 on cast.
+
+**Phase 1 is now fully done (1a-1d complete).**
+
 ## Phase 2 / 3
 
 Not started. Phase 2: 2a `opportunity_cost` primitive, 2b joint block-assignment, 2c

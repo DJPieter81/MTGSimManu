@@ -476,6 +476,47 @@ class CardInstance:
         player = self._game_state.players[self.controller]
         return sum(1 for c in player.battlefield if CardType.ARTIFACT in c.template.card_types)
 
+    _PERMANENT_TYPE_WORDS = {
+        'land': CardType.LAND, 'lands': CardType.LAND,
+        'creature': CardType.CREATURE, 'creatures': CardType.CREATURE,
+        'artifact': CardType.ARTIFACT, 'artifacts': CardType.ARTIFACT,
+        'enchantment': CardType.ENCHANTMENT, 'enchantments': CardType.ENCHANTMENT,
+        'planeswalker': CardType.PLANESWALKER, 'planeswalkers': CardType.PLANESWALKER,
+    }
+
+    def _get_permanent_type_count(self, type_word: str) -> int:
+        """Count permanents controlled by this card's controller that
+        match `type_word` — a card type ("land", "creature",
+        "artifact", "enchantment", "planeswalker"), the generic
+        "permanent"/"permanents", or a subtype (a land type like
+        "Island", or a creature type like "Soldier").
+
+        Generalizes `_get_domain_count` (land subtypes) /
+        `_get_artifact_count` (artifact card type) into one
+        oracle-driven dispatch for "the number of X you control" CDAs
+        (Cultivator Colossus-class effects — 47 cards in the DB share
+        this exact oracle-text shape).
+        """
+        if self._game_state is None:
+            return 0
+        player = self._game_state.players[self.controller]
+        word = type_word.lower()
+        if word in ('permanent', 'permanents'):
+            return len(player.battlefield)
+        card_type = self._PERMANENT_TYPE_WORDS.get(word)
+        if card_type is not None:
+            return sum(1 for c in player.battlefield
+                      if card_type in c.template.card_types)
+        # Subtype match (tribal / land-type CDAs) — naive regular-
+        # plural strip ("Islands" -> "Island", "Soldiers" ->
+        # "Soldier"). Irregular plurals (Elves, Wolves) are a
+        # documented gap: 0 such cards in the registered 16-deck pool
+        # today; extend if one enters.
+        singular = type_word[:-1] if type_word.endswith('s') else type_word
+        subtype = singular[:1].upper() + singular[1:]
+        return sum(1 for c in player.battlefield
+                  if subtype in c.template.subtypes)
+
     def _get_artifact_or_enchantment_count(self) -> int:
         """Count permanents that are artifacts OR enchantments,
         controlled by this card's controller (no double-count of
@@ -536,6 +577,8 @@ class CardInstance:
 
         if scaling == "domain":
             return min(self._get_domain_count(), 4)
+        if scaling.startswith("permanent_count:"):
+            return self._get_permanent_type_count(scaling.split(":", 1)[1])
         if scaling == "tarmogoyf":
             return self._get_tarmogoyf_count()
         if scaling == "delirium":
@@ -593,6 +636,8 @@ class CardInstance:
 
         if scaling == "domain":
             return min(self._get_domain_count(), 4)
+        if scaling.startswith("permanent_count:"):
+            return self._get_permanent_type_count(scaling.split(":", 1)[1])
         if scaling == "tarmogoyf":
             return self._get_tarmogoyf_count() + 1
         if scaling == "delirium":
