@@ -3005,9 +3005,26 @@ class EVPlayer:
         patched: pass 1's survivability check is dimensionally
         consistent (both sides are damage/life points), so the
         mismatched comparison is no longer needed at all.
+
+        Phase 2c (docs/design/rules-foundation-sweep-tracker.md): the
+        coverage/optimization passes themselves are extracted into
+        ``ai.block_assignment.coverage_pass``/``optimize_pass`` — pure,
+        side-effect-free functions with no dependency on ``self`` or a
+        real ``GameState`` — so ``ai.turn_planner.CombatPlanner.
+        _predict_blocks`` (which PREDICTS how an opponent will block
+        during turn-planning EV comparisons) can drive the identical
+        algorithm instead of maintaining its own independent
+        must-block/trade-up/trade-even heuristic. This function is now
+        a thin wrapper: it supplies the real cost/score/legality
+        callables (``ai.clock.opportunity_cost``, ``_score_block_
+        lifespan_delta``, ``_flying_ok``, ``_is_protected_piece``) and
+        keeps everything that's genuinely specific to COMMITTING a
+        real decision — the plating-futile skip (RC-2), the non-
+        emergency double-block-if-needed extension, and logging.
         """
         from engine.cards import Keyword
         from ai.clock import opportunity_cost
+        from ai.block_assignment import coverage_pass, optimize_pass
 
         valid_blockers = game.get_valid_blockers(self.player_idx)
         if not valid_blockers or not attackers:
@@ -3054,18 +3071,21 @@ class EVPlayer:
                         or Keyword.REACH in blocker.keywords)
             return True
 
-        def _candidate_pool(attacker, excl):
-            """Legal blockers for ``attacker``, excluding ``excl``.
-            Soft preference (fallback, not exclusion) for candidates
-            that aren't a protected piece / battle-cry source —
-            ``_is_protected_piece`` already covers both (its
-            "whenever this/<name> creature attacks" checks subsume
-            the narrower battle-cry predicate the old code checked
-            separately)."""
-            cands = [b for b in valid_blockers
-                     if b.instance_id not in excl and _flying_ok(attacker, b)]
-            unprotected = [b for b in cands if not self._is_protected_piece(b)]
-            return unprotected if unprotected else cands
+        def _cost_fn(blocker):
+            # The audited fix: rank by ai.clock.opportunity_cost
+            # (Phase 2a) ascending — the cheapest-to-lose blocker
+            # is the FIRST choice for forced coverage, not a
+            # candidate a raw-power veto excluded outright. A
+            # 0-power creature with no future value now wins this
+            # ranking instead of being banned from it.
+            return opportunity_cost(blocker, me, block_snap)
+
+        def _score_fn(attacker, blocker):
+            return self._score_block_lifespan_delta(
+                game, attacker, blocker,
+                my_life=me.life, my_power=my_power_total,
+                opp_power=opp_power_total,
+            )
 
         # EMERGENCY: block when incoming damage is dangerous.
         # Triggers: lethal this turn, drop-below-5, or projected lethal across 2 turns
@@ -3076,74 +3096,52 @@ class EVPlayer:
                          and total_incoming >= EMERGENCY_BLOCK_INCOMING_FLOOR)
                      or self._two_turn_lethal(game, me, opp, attackers))
 
-        blocks: Dict[int, List[int]] = {}
-        used: Set[int] = set()
-
         if emergency:
-            # ── PASS 1: coverage ──────────────────────────────────
-            plating_skipped_any = False
-            for attacker in sorted_attackers:
-                # Joint, not per-attacker-guessed: damage from every
-                # attacker NOT yet covered by a committed block,
-                # recomputed fresh each iteration from the actual
-                # current coverage set.
-                unblocked_damage = sum(
-                    (a.power or 0) for a in sorted_attackers
-                    if a.instance_id not in blocks
-                )
-                still_lethal = unblocked_damage >= me.life
-                if not still_lethal and (
-                        me.life - unblocked_damage > EMERGENCY_BLOCK_STABILIZE_LIFE_GAIN
-                        or unblocked_damage == 0):
-                    break  # already safe — no further forced coverage needed
+            # RC-2: if this attacker's power is dominated by equipment/aura
+            # bonuses AND we can't remove those next turn, chumping is
+            # futile — the plating rebinds. Skip unless skipping is
+            # lethal NOW or lethal NEXT turn from a rebound swing.
+            #
+            # Derived from the attacker's own damage; no magic number.
+            # Bug origin: s=50500 G1 T5 — Boros at 23 life facing 21/1
+            # Memnite (double-Plating) DID NOT chump because
+            # still_lethal_if_skipped was False (21 < 23). Boros took
+            # 21, dropped to 2, died T6 to a rebound swing. Under this
+            # derivation: 23 - 21 = 2 ≤ 21, so the rebound-swing-lethal
+            # clause fires, chump assigned, Boros lives.
+            plating_skipped_any = [False]
 
-                # RC-2: if this attacker's power is dominated by equipment/aura
-                # bonuses AND we can't remove those next turn, chumping is
-                # futile — the plating rebinds. Skip unless skipping is
-                # lethal NOW or lethal NEXT turn from a rebound swing.
-                #
-                # Derived from the attacker's own damage; no magic number.
-                # Bug origin: s=50500 G1 T5 — Boros at 23 life facing 21/1
-                # Memnite (double-Plating) DID NOT chump because
-                # still_lethal_if_skipped was False (21 < 23). Boros took
-                # 21, dropped to 2, died T6 to a rebound swing. Under this
-                # derivation: 23 - 21 = 2 ≤ 21, so the rebound-swing-lethal
-                # clause fires, chump assigned, Boros lives.
+            def _skip_fn(attacker, unblocked_damage):
                 equip_bonus = self._attacker_equipment_bonus(game, opp, attacker)
-                if (equip_bonus >= PLATING_REBOUND_EQUIP_BONUS
+                if not (equip_bonus >= PLATING_REBOUND_EQUIP_BONUS
                         and not self._equipment_breakable(game, me)):
-                    damage_if_skipped = unblocked_damage
-                    still_lethal_if_skipped = damage_if_skipped >= me.life
-                    rebound_swing_lethal_if_skipped = (
-                        me.life - damage_if_skipped <= damage_if_skipped
-                    )
-                    if not still_lethal_if_skipped and not rebound_swing_lethal_if_skipped:
-                        plating_skipped_any = True
-                        continue
+                    return False
+                damage_if_skipped = unblocked_damage
+                still_lethal_if_skipped = damage_if_skipped >= me.life
+                rebound_swing_lethal_if_skipped = (
+                    me.life - damage_if_skipped <= damage_if_skipped
+                )
+                if not still_lethal_if_skipped and not rebound_swing_lethal_if_skipped:
+                    plating_skipped_any[0] = True
+                    return True
+                return False
 
-                candidates = _candidate_pool(attacker, used)
-                if not candidates:
-                    continue  # nothing left to block with — forced to eat it
-
-                # The audited fix: rank by ai.clock.opportunity_cost
-                # (Phase 2a) ascending — the cheapest-to-lose blocker
-                # is the FIRST choice for forced coverage, not a
-                # candidate a raw-power veto excluded outright. A
-                # 0-power creature with no future value now wins this
-                # ranking instead of being banned from it.
-                chosen = min(candidates,
-                             key=lambda b: opportunity_cost(b, me, block_snap))
-                blocks[attacker.instance_id] = [chosen.instance_id]
-                used.add(chosen.instance_id)
+            # ── PASS 1: coverage ────────────────────────────────────
+            blocks, used = coverage_pass(
+                sorted_attackers, valid_blockers,
+                my_life=me.life, can_block_fn=_flying_ok, cost_fn=_cost_fn,
+                stabilize_margin=EMERGENCY_BLOCK_STABILIZE_LIFE_GAIN,
+                skip_fn=_skip_fn,
+            )
 
             # RC-2: if coverage skipped every attacker via the
             # plating-futile gate and assigned no blocks, accept the
             # damage rather than falling through to a value-driven
             # pass that would re-block the same plated attackers.
-            if not blocks and plating_skipped_any:
+            if not blocks and plating_skipped_any[0]:
                 return {}
 
-            # ── PASS 2: optimization (swap-upgrade) ────────────────
+            # ── PASS 2: optimization (swap-upgrade) ─────────────────
             # For each attacker pass 1 already committed a blocker to,
             # check whether a different unused blocker scores a
             # strictly better lifespan-delta (a clean kill / favorable
@@ -3154,35 +3152,12 @@ class EVPlayer:
             # the "stop once stabilized" behaviour the old portfolio
             # cap was trying (with a unit-mismatched formula) to
             # express.
-            for attacker in sorted_attackers:
-                if attacker.instance_id not in blocks:
-                    continue
-                current_id = blocks[attacker.instance_id][0]
-                current_blocker = id_to_blocker[current_id]
-                pool = _candidate_pool(attacker, used - {current_id})
-                if not any(b.instance_id == current_id for b in pool):
-                    pool = pool + [current_blocker]
-                best_blocker = current_blocker
-                best_val = self._score_block_lifespan_delta(
-                    game, attacker, current_blocker,
-                    my_life=me.life, my_power=my_power_total,
-                    opp_power=opp_power_total,
-                )
-                for cand in pool:
-                    if cand.instance_id == current_id:
-                        continue
-                    val = self._score_block_lifespan_delta(
-                        game, attacker, cand,
-                        my_life=me.life, my_power=my_power_total,
-                        opp_power=opp_power_total,
-                    )
-                    if val > best_val:
-                        best_val = val
-                        best_blocker = cand
-                if best_blocker.instance_id != current_id:
-                    used.discard(current_id)
-                    used.add(best_blocker.instance_id)
-                    blocks[attacker.instance_id] = [best_blocker.instance_id]
+            blocks, used = optimize_pass(
+                sorted_attackers, valid_blockers, blocks, used,
+                can_block_fn=_flying_ok, score_fn=_score_fn,
+                bounded_to_covered=True,
+                protected_fn=self._is_protected_piece,
+            )
 
             self._log_block_assignments(
                 game, blocks, id_to_attacker, id_to_blocker,
@@ -3194,40 +3169,29 @@ class EVPlayer:
         # 0-power-blocker and hard battle-cry vetoes are retired
         # (Phase 2b) — the positive-lifespan-delta threshold below is
         # the single gate, with the same soft protected-piece
-        # preference `_candidate_pool` applies everywhere else in this
-        # function.
-        for attacker in sorted_attackers:
-            best_blocker = None
-            best_val = 0.0  # neutral threshold — positive ⇒ block helps.
+        # preference every candidate pool in this function applies.
+        def _double_block_if_needed(attacker, blocker_ids, used_set):
+            best_blocker = id_to_blocker[blocker_ids[0]]
+            a_tough = attacker.toughness or 0
+            b_power = best_blocker.power or 0
+            if b_power < a_tough and Keyword.DEATHTOUCH not in best_blocker.keywords:
+                for b2 in valid_blockers:
+                    if b2.instance_id in used_set:
+                        continue
+                    if not _flying_ok(attacker, b2):
+                        continue
+                    if b_power + (b2.power or 0) >= a_tough:
+                        blocker_ids.append(b2.instance_id)
+                        used_set.add(b2.instance_id)
+                        break
 
-            for blocker in _candidate_pool(attacker, used):
-                val = self._score_block_lifespan_delta(
-                    game, attacker, blocker,
-                    my_life=me.life,
-                    my_power=my_power_total,
-                    opp_power=opp_power_total,
-                )
-                if val > best_val:
-                    best_val = val
-                    best_blocker = blocker
-
-            if best_blocker:
-                blocks[attacker.instance_id] = [best_blocker.instance_id]
-                used.add(best_blocker.instance_id)
-
-                # Double-block if needed
-                a_tough = attacker.toughness or 0
-                b_power = best_blocker.power or 0
-                if b_power < a_tough and Keyword.DEATHTOUCH not in best_blocker.keywords:
-                    for b2 in valid_blockers:
-                        if b2.instance_id in used:
-                            continue
-                        if not _flying_ok(attacker, b2):
-                            continue
-                        if b_power + (b2.power or 0) >= a_tough:
-                            blocks[attacker.instance_id].append(b2.instance_id)
-                            used.add(b2.instance_id)
-                            break
+        blocks, used = optimize_pass(
+            sorted_attackers, valid_blockers, {}, set(),
+            can_block_fn=_flying_ok, score_fn=_score_fn,
+            bounded_to_covered=False,
+            protected_fn=self._is_protected_piece,
+            on_assigned=_double_block_if_needed,
+        )
 
         self._log_block_assignments(
             game, blocks, id_to_attacker, id_to_blocker,

@@ -17,7 +17,7 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import TYPE_CHECKING, Set, Optional
+from typing import TYPE_CHECKING, Set
 
 from ai.scoring_constants import (
     BOARD_EVAL_COMBO_DEFAULT_WAIT,
@@ -40,8 +40,6 @@ from ai.scoring_constants import (
     BOARD_EVAL_PRESSURE_NO_OWN_CLOCK,
     BOARD_EVAL_PRESSURE_RELAXED,
     BOARD_EVAL_PRESSURE_SIGMOID_SCALE,
-    CREATURE_VALUE_CMC_MULT,
-    CREATURE_VALUE_TOUGH_WEIGHT,
     DOMAIN_BASIC_TYPE_CAP,
     LIFE_VALUE_DEAD_SENTINEL,
     LIFE_VALUE_NO_OPP_CLOCK_SCARCITY,
@@ -155,11 +153,24 @@ def assess_board(game: "GameState", player_idx: int) -> BoardAssessment:
 # ─────────────────────────────────────────────────────────────
 
 class ActionType(Enum):
-    """Every binary decision in the engine."""
+    """Every binary decision in the engine.
+
+    Phase 2c (docs/design/rules-foundation-sweep-tracker.md): BLOCK
+    was removed — investigated and confirmed to have ZERO callers
+    anywhere in engine/, ai/, or tests/ (nothing ever constructed
+    Action(ActionType.BLOCK, ...)). It was a THIRD, independently-
+    maintained "should I block" algorithm (CMC-weighted) alongside
+    ai.ev_player.EVPlayer.decide_blockers (the real decision) and
+    ai.turn_planner.CombatPlanner._predict_blocks (the live prediction
+    of it) — both of which now share ai.block_assignment's joint-
+    assignment primitive. Deleting the dead duplicate, rather than
+    building unification machinery no caller would ever invoke,
+    completes the "single owner" fix this program targets. See
+    tests/test_board_eval_block_dead_code_removed.py.
+    """
     EVOKE = auto()           # Sacrifice for ETB vs wait for hard-cast
     DASH = auto()            # Haste+bounce vs permanent body
     COMBO_NOW = auto()       # Fire win condition vs keep building
-    BLOCK = auto()           # Assign blocker vs take damage
 
 
 @dataclass
@@ -195,10 +206,6 @@ def evaluate_action(game: "GameState", player_idx: int, action: Action) -> float
 
     elif action.action_type == ActionType.COMBO_NOW:
         return _eval_combo(game, me, assessment, action.context,
-                           player_idx=player_idx)
-
-    elif action.action_type == ActionType.BLOCK:
-        return _eval_block(game, me, assessment, action.context,
                            player_idx=player_idx)
 
     return 0.0
@@ -468,93 +475,6 @@ def _eval_combo(game, me, a: BoardAssessment, ctx: dict,
         score = max(score, BOARD_EVAL_COMBO_DESPERATION_FIRE)  # Desperation attempt
 
     return score
-
-
-def _eval_block(game, me, a: BoardAssessment, ctx: dict,
-                player_idx: Optional[int] = None) -> float:
-    """Block this attacker with this blocker?
-    Returns positive = block, negative = don't.
-
-    Score = damage_prevented + attacker_killed_value - blocker_lost_value.
-    Blocker survives → free block → always positive.
-    """
-    from engine.cards import Keyword
-
-    attacker = ctx.get('attacker')
-    blocker = ctx.get('blocker')
-    if not attacker or not blocker:
-        return 0.0
-
-    a_power = attacker.power or 0
-    a_tough = attacker.toughness or 0
-    b_power = blocker.power or 0
-    b_tough = blocker.toughness or 0
-
-    # --- Combat outcome ---
-    has_deathtouch = Keyword.DEATHTOUCH in blocker.keywords
-    has_first_strike = Keyword.FIRST_STRIKE in blocker.keywords
-    attacker_has_deathtouch = Keyword.DEATHTOUCH in attacker.keywords
-    attacker_has_first_strike = Keyword.FIRST_STRIKE in attacker.keywords
-
-    # First strike: if blocker has it and kills attacker, blocker takes no damage
-    if has_first_strike and (b_power >= a_tough or has_deathtouch):
-        blocker_survives = True
-        attacker_dies = True
-    elif attacker_has_first_strike and (a_power >= b_tough or attacker_has_deathtouch):
-        blocker_survives = False
-        attacker_dies = (b_power >= a_tough or has_deathtouch)  # only if blocker survives to deal damage
-        # Blocker dies before dealing damage
-        attacker_dies = False
-    else:
-        blocker_survives = a_power < b_tough and not attacker_has_deathtouch
-        attacker_dies = b_power >= a_tough or has_deathtouch
-
-    # --- Damage prevented ---
-    damage_prevented = a_power
-    if Keyword.TRAMPLE in attacker.keywords:
-        # Trample: excess damage over blocker toughness tramples through
-        damage_prevented = min(a_power, b_tough)
-
-    # --- Creature values (CMC-weighted) ---
-    a_cmc = attacker.template.cmc or 0
-    b_cmc = blocker.template.cmc or 0
-    attacker_val = (max(a_cmc, a_power + a_tough * CREATURE_VALUE_TOUGH_WEIGHT)
-                    * CREATURE_VALUE_CMC_MULT)
-    blocker_val = (max(b_cmc, b_power + b_tough * CREATURE_VALUE_TOUGH_WEIGHT)
-                   * CREATURE_VALUE_CMC_MULT)
-
-    # --- Score: benefit - cost ---
-    # Benefit 1: life saved (direct value, 1 point per life point)
-    value = float(damage_prevented)
-
-    # Scale life value by urgency — shorter opponent clock = each life point matters more
-    if a.opp_clock < BOARD_EVAL_NO_CLOCK_FLOAT:
-        value *= (1.0 + 1.0 / max(a.opp_clock, 1))
-    # Scale by fraction of life this hit represents
-    life_fraction = damage_prevented / max(a.my_life, 1)
-    value *= (1.0 + life_fraction)
-    if a.my_life <= damage_prevented:
-        value = 100.0  # this block prevents lethal — always block
-
-    # Benefit 2: killing the attacker
-    if attacker_dies:
-        value += attacker_val
-
-    # Cost: losing the blocker
-    if not blocker_survives:
-        value -= blocker_val
-
-    # Blocker survives = free block, always positive (value >= damage_prevented)
-    # 1-for-1 trade: positive when attacker_val > blocker_val
-    # Chump block: positive when damage_prevented > blocker_val
-
-    # Keywords
-    if has_deathtouch:
-        value += 2.0  # deathtouch blocker always kills, extra value
-    if has_first_strike and attacker_dies:
-        value += 1.0  # kills before taking damage
-
-    return value
 
 
 # ─────────────────────────────────────────────────────────────

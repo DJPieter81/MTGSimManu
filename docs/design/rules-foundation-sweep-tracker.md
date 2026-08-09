@@ -809,15 +809,149 @@ broad creature-valuation ripple). All 19 tested entries green post-refresh.
   `test_opportunity_cost_primitive.py`'s dedicated Ornithopter fixtures (2a) rather than depending
   on one seed's RNG to exercise it.
 
-### 2c. Unify turn_planner/board_eval block-prediction models — NOT STARTED
+### 2c. Unify turn_planner/board_eval block-prediction models — DONE
 
-Stretch goal, explicitly deferred per the task's own instruction ("if you don't have time for this,
-leave it explicitly marked not started — do not half-implement it"). `ai/turn_planner.py`'s
-opponent-block-prediction model and `ai/board_eval.py`'s CMC-weighted scorer were not investigated
-in this pass; unifying them onto the same joint-assignment primitive `decide_blockers` now uses (2b)
-is real, separate work for a future session. Verify first (per this program's own repeated finding
-that claims about `ai/`'s block-related code have drifted from what's actually there) before
-assuming either module's current shape.
+**Problem confirmed, and one assumption from the stretch-goal write-up corrected by investigation.**
+Two of the three "how will/should blocks be assigned" implementations named in the original problem
+statement were real:
+
+- `ai.turn_planner.CombatPlanner._predict_blocks` — a LIVE, reachable five-phase heuristic (must-
+  block / trade-up / trade-even / double-block / chump), consumed by `plan_attack`'s per-attack-
+  config EV comparison via `_simulate_combat`. This predicts how the OPPONENT will block MY
+  attackers during turn planning — genuinely independent of `ai.ev_player.EVPlayer.decide_blockers`
+  (Phase 2b's real two-pass joint-assignment DECISION), using a totally different valuation
+  (`ai.evaluator._permanent_value`'s CMC-weighted `.value`, not `ai.clock.opportunity_cost`) and
+  fixed trade-ratio constants (`BLOCK_TRADE_UP_VALUE_RATIO`, `BLOCK_EVEN_TRADE_VALUE_RATIO`) instead
+  of `ai.clock.score_block_assignment`'s lifespan-delta formula.
+- `ai.board_eval.py`'s `ActionType.BLOCK` / `_eval_block` — a THIRD, CMC-weighted block-scoring
+  algorithm, matching the stretch-goal write-up's description exactly. **Investigation (grepping
+  `engine/`, `ai/`, and `tests/` for every `Action(ActionType.BLOCK, ...)` construction and every
+  `_eval_block` reference) found ZERO callers anywhere** — unlike `ActionType.EVOKE`/`DASH` (real
+  production callers: `engine.game_runner.DefaultCallbacks.should_evoke`/`should_dash`) and
+  `COMBO_NOW` (dispatched from `evaluate_action`'s own body, reachable), `BLOCK` was never
+  constructed by any caller and had zero test coverage. Per this program's own repeated finding that
+  claims about `ai/`'s block-related code drift from what's actually there (the original stretch-
+  goal write-up assumed this was a live third algorithm — it was dead), and per CLAUDE.md's dead-
+  code discipline (0a's `engine/priority_system.py`/`oracle_parser.py` deletions, the burn-damage
+  cluster's Phlage handler deletion — "same class-size/dead-code reasoning"): building unification
+  machinery for code nothing can ever call would be speculative work with no observable effect.
+  **Deleted** `ActionType.BLOCK` and `_eval_block` instead — this still directly serves the "single
+  owner" goal (a duplicate algorithm sitting in source, even if unreachable, is exactly the anti-
+  pattern this program targets), and is lower-risk than leaving it to silently bit-rot alongside two
+  newly-unified real implementations.
+
+**Design.** Read `ai.ev_player.EVPlayer.decide_blockers`'s real Phase 2b body in full before
+touching anything (per this item's own instruction) and extracted its two-pass shape into
+`ai.block_assignment` (`coverage_pass`, `optimize_pass`) — pure, side-effect-free functions with no
+dependency on `self`, a real `GameState`, or `CardInstance` specifically. Every mechanic-specific
+judgment is injected by the caller as a callable:
+
+- `can_block_fn(attacker, blocker) -> bool` — legality (flying/reach only, matching `decide_blockers`'s
+  existing narrower `_flying_ok`; the engine's full CR 702.9b/702.111b enforcement already runs at
+  the `CombatManager.declare_blockers` layer per Phase 1b — this AI-side check was never meant to be
+  the sole legality gate).
+- `cost_fn(blocker) -> float` — ranks candidates ascending for PASS 1 coverage (cheapest-to-lose
+  first). `decide_blockers` supplies `ai.clock.opportunity_cost`; `_predict_blocks` supplies the
+  pre-computed `.value` already attached to every lightweight `VirtualCreature` (turn-planning's
+  fast simulation has no `CardInstance.template` to run `opportunity_cost` against).
+- `score_fn(attacker, blocker) -> float` — pairwise lifespan-delta for PASS 2 optimization.
+  `decide_blockers` supplies (unchanged) `_score_block_lifespan_delta`; `_predict_blocks` supplies a
+  new `_predict_block_score`, which composes the SAME `ai.clock.score_block_assignment` formula
+  adapted to `VirtualCreature`'s shape (string keywords, no oracle access) — replacing the old fixed
+  `BLOCK_TRADE_UP_VALUE_RATIO`/`BLOCK_EVEN_TRADE_VALUE_RATIO` thresholds entirely, not just relocating
+  them.
+- `skip_fn(attacker, unblocked_damage) -> bool` (coverage only) and `on_assigned(attacker,
+  blocker_ids, used)` (optimize only, non-bounded assignments only) — extension hooks so
+  `decide_blockers` keeps its two COMMIT-specific behaviours (RC-2's plating-futile skip; the non-
+  emergency double-block-if-needed extension) fully interleaved with the shared loop's own live
+  bookkeeping, rather than as a separate post-process that would see a different (already-fully-
+  resolved) `used` set and change which blockers are available to a later attacker. `_predict_blocks`
+  doesn't use either hook — it has no plating-equivalent concept (no oracle access), and its own
+  Phase-4 double-block search (a pair-search extension, not part of the "joint SINGLE assignment"
+  either shared caller drives) stays exactly where it was, as a final loop over whatever the shared
+  passes above left uncovered.
+- `protected_fn(blocker) -> bool` (optional soft preference) — `decide_blockers` supplies
+  `_is_protected_piece`; `_predict_blocks` omits it (same "no oracle access" reason as above,
+  documented as a deliberate simplification, not an oversight).
+
+`_predict_blocks`'s own emergency-equivalent trigger stays `total_incoming >= board.opp_life` (its
+pre-existing bare-lethal-only check) rather than reproducing `decide_blockers`'s three-way OR
+(literal lethal / low-life-with-incoming-floor / two-turn-lethal) — the lightweight `VirtualCreature`
+projection has no path to `_two_turn_lethal`'s oracle-driven lookahead, and widening the trigger
+without also widening the underlying model would be exactly the kind of "half-implement it" the
+original stretch-goal note warned against. This is the one place prediction and decision can still
+legitimately diverge (a defender at low-but-not-lethal life the real AI would chump but the
+prediction won't foresee) — documented, not hidden, and covered by the structural test below, which
+deliberately targets this exact shape to make the remaining gap visible rather than assuming it away.
+
+**Files:**
+- `ai/block_assignment.py` (new) — `coverage_pass`, `optimize_pass`. No `GameState`/`CardInstance`
+  dependency; duck-typed on `.instance_id`/`.power`.
+- `ai/ev_player.py` — `decide_blockers` is now a thin wrapper: builds `_cost_fn`/`_score_fn`/
+  `_skip_fn`/`_double_block_if_needed` closures over its real board state, calls `coverage_pass`/
+  `optimize_pass`, keeps the RC-2 plating-skip check, the emergency-vs-non-emergency gate, and
+  `_log_block_assignments` logging exactly as before. Zero change to `_score_block_lifespan_delta`,
+  `_is_protected_piece`, `_attacker_equipment_bonus`, `_equipment_breakable`, `_two_turn_lethal`,
+  `_racing_to_win`, or `_log_block_assignments` — only the coverage/optimize loop bodies moved.
+- `ai/turn_planner.py` — `CombatPlanner._predict_blocks` now calls `coverage_pass`/`optimize_pass`
+  instead of its own Phases 1–3; Phase 4 (double-block) is unchanged. New `_predict_block_score`
+  (the `VirtualCreature`-shaped `score_block_assignment` composition) and `_OppLifeSnap` (a minimal
+  duck-typed `opp_life`-only stand-in for `EVSnapshot`, since `score_block_assignment` only reads
+  that one field and `VirtualBoard` doesn't carry a real snapshot). `BLOCK_TRADE_UP_VALUE_RATIO`/
+  `BLOCK_EVEN_TRADE_VALUE_RATIO` imports removed (no longer referenced anywhere in the file); the
+  constants themselves are left defined in `ai/scoring_constants.py` (no test or other caller
+  depends on their removal, and CLAUDE.md's ratchets don't penalize an unused named constant — only
+  bare literals).
+- `ai/board_eval.py` — `ActionType.BLOCK` and `_eval_block` deleted; `CREATURE_VALUE_CMC_MULT`/
+  `CREATURE_VALUE_TOUGH_WEIGHT` imports removed (both were `_eval_block`-only).
+- `tools/magic_numbers_baseline.json` — `ai/block_assignment.py` added at `0` (new file, zero bare
+  literals — every numeric value it touches arrives via a caller-supplied constant/primitive).
+
+**Tests (failing-first).** `tests/test_block_prediction_matches_decision.py` — the structural test
+this item's task explicitly asked for: same board state (one low-toughness-immune attacker, one
+lone chump blocker, defender at low-but-not-literally-lethal life — chosen specifically because it
+is the one fixture class that reliably distinguished the two OLD independent algorithms; a
+symmetric fully-forced-coverage fixture like bug #4's turned out to produce identical output on
+both old algorithms by coincidence and would not have been a genuine red-before-green test),
+resolved through BOTH `ai.ev_player.EVPlayer.decide_blockers` (the real decision) and
+`ai.turn_planner.CombatPlanner._predict_blocks` (fed via `extract_virtual_board` exactly as the real
+`plan_attack` call site does), asserting the two dicts are identical. **Verified genuinely red
+pre-fix**: old `_predict_blocks`'s bare-lethal-only Phase 1 doesn't fire on this fixture and its
+trade-up/trade-even phases require a KILL the lone 1-power chump can never land on a 10-toughness
+attacker, so it predicted `{}` (no block) while the real `decide_blockers` (Phase 2b's low-life-
+emergency branch, unchanged by this item) chumps anyway — `decided={2: [1]}` vs `predicted={}`.
+Green after the fix (both resolve through the identical shared algorithm on the identical inputs).
+`tests/test_board_eval_block_dead_code_removed.py` — 3 tests pinning the `ActionType.BLOCK`/
+`_eval_block` deletion (enum member absent, function absent, dispatch body no longer mentions
+`BLOCK`), all verified genuinely red before the deletion (the enum member and function still
+existed).
+
+Full existing block-decision suite re-run green with zero behaviour change for `decide_blockers`
+(`tests/test_decide_blockers_joint_assignment.py`, `test_block_scoring_is_lifespan_delta_formula.py`,
+`test_chump_block_plating_when_lethal_range.py`, `test_decide_blockers_emergency_gate.py`,
+`test_decide_blockers_plating_aware.py`, `test_decide_blockers_protects_engines.py`,
+`test_decide_blockers_race_when_winning.py`,
+`test_defender_chumps_when_no_block_means_lethal_next_turn.py`) and for `_predict_blocks`
+(`test_blocking_equipment_aware.py`, `test_virtualboard_respects_summoning_sickness.py`,
+`test_turn_planner_constants_linkage.py`) — the extraction is behaviour-preserving for every
+pre-existing pinned case; only the NEW structural test's low-life-chump fixture changes observable
+prediction output (by design — that was the bug).
+
+All 4 ratchets clean: `check_abstraction.py` (0 hits, this item touches no card-name/deck-gate
+conditionals), `check_magic_numbers.py` (13/13, `ai/block_assignment.py` added to the baseline at 0
+— every numeric value flows through a caller-injected callable or an existing named constant),
+`check_zone_mutation.py` (102/102, unaffected — pure `ai/` decision-kernel work, no zone mutation
+anywhere in this slice), `check_doc_hygiene.py` clean.
+
+**Replay.** `python run_meta.py --bo3 "Boros Energy" "Dimir Midrange" -s 55501` — match completes
+cleanly (Boros wins 2-1, matching Phase 2b's own replay note for this exact seed), `[BLOCK-EMERGENCY]`
+log lines still fire correctly (`Psychic Frog (1/2) blocks Cat Token (2/1) — lifespan_delta=+0.32`),
+confirming the internal-mechanism refactor changed no observable in-game behaviour for the real
+decision path. No dedicated replay demonstrates `_predict_blocks`'s corrected prediction specifically
+— it is consumed only by `plan_attack`'s internal EV comparison between attack configurations, never
+logged directly, so the unit-level structural test is the authoritative verification (same precedent
+as 1a's Metallic Rebuke note and the burn-damage/draw-N cluster slices' internal-refactor-only
+verification approach).
 
 ## Phase 3
 

@@ -63,8 +63,6 @@ from ai.scoring_constants import (
     ATTACK_SHIELDS_DOWN_TOTAL_FLOOR,
     ATTACK_SHIELDS_DOWN_DAMAGE_RELIEF,
     ATTACK_RISKY_PAIR_LIMIT,
-    BLOCK_TRADE_UP_VALUE_RATIO,
-    BLOCK_EVEN_TRADE_VALUE_RATIO,
     BLOCK_DOUBLE_VALUE_RATIO,
     COUNTER_CMC_PENALTY,
     COUNTER_TAP_OUT_RISK_PENALTY,
@@ -88,6 +86,17 @@ from ai.scoring_constants import (
 # ═══════════════════════════════════════════════════════════════════
 # Virtual Board State — lightweight simulation without game cloning
 # ═══════════════════════════════════════════════════════════════════
+
+@dataclass(frozen=True)
+class _OppLifeSnap:
+    """Minimal duck-typed stand-in for ``ai.ev_evaluator.EVSnapshot``,
+    exposing only the one field ``ai.clock.score_block_assignment``
+    reads directly (``opp_life``). Used by ``CombatPlanner.
+    _predict_block_score`` (Phase 2c) to reuse that primitive without
+    constructing a full ``EVSnapshot`` from a ``VirtualBoard``, which
+    doesn't carry one."""
+    opp_life: float
+
 
 @dataclass
 class VirtualCreature:
@@ -575,75 +584,91 @@ class CombatPlanner:
                          board: VirtualBoard) -> Dict[int, List[int]]:
         """Predict how the opponent would block.
 
-        Opponent blocking priorities:
-        1. Block lethal damage (must-block)
-        2. Trade up (kill attacker with cheaper blocker)
-        3. Trade even (kill attacker, lose blocker of similar value)
-        4. Double-block to kill a threat that can't be handled 1v1
-        5. Chump-block only to prevent lethal
-        """
-        blocks: Dict[int, List[int]] = {}
-        used_blockers: Set[int] = set()
-        total_incoming = sum(a.power for a in attackers)
+        Phase 2c (docs/design/rules-foundation-sweep-tracker.md):
+        this now drives ``ai.block_assignment.coverage_pass``/
+        ``optimize_pass`` — the SAME joint-assignment primitive
+        ``ai.ev_player.EVPlayer.decide_blockers`` uses to make a real
+        block DECISION — instead of an independently-maintained
+        five-phase must-block/trade-up/trade-even/double-block/chump
+        heuristic. Before this, the two could (and, per the audited
+        low-life-chump shape now pinned by ``tests/
+        test_block_prediction_matches_decision.py``, DID) disagree:
+        the old Phase 1 only checked bare lethal-this-turn (``total_
+        incoming >= board.opp_life``), so a defender at low-but-not-
+        literally-lethal life who the real AI would chump anyway (Phase
+        2b's low-life-emergency branch) was predicted to take the hit
+        unblocked.
 
-        # Sort attackers by threat (highest power first)
+        Coverage (``if total_incoming >= board.opp_life``, matching
+        the old Phase 1's own trigger — turn-planning's lightweight
+        ``VirtualCreature`` projection has no oracle-text access, so
+        it can't reproduce ``decide_blockers``'s low-life/two-turn-
+        lethal emergency branches; this predicts the bare-lethal case
+        only, a documented, deliberate simplification) ranks by
+        ``.value`` (the pre-computed ``ai.evaluator._permanent_value``
+        already attached to every ``VirtualCreature`` — the cheapest-
+        to-lose blocker for this lightweight projection, mirroring
+        ``opportunity_cost``'s role in the real decision).
+
+        Optimization (unconditional — matches the old Phases 2/3,
+        which only ever considered attackers coverage left uncovered)
+        scores each candidate pair via ``_predict_block_score``: the
+        SAME ``ai.clock.score_block_assignment`` lifespan-delta formula
+        ``ai.ev_player.EVPlayer._score_block_lifespan_delta`` uses,
+        replacing the fixed ``BLOCK_TRADE_UP_VALUE_RATIO``/``BLOCK_
+        EVEN_TRADE_VALUE_RATIO`` thresholds.
+
+        Phase 4 (double-block) is unchanged — a distinct, pair-search
+        extension neither ``decide_blockers`` nor the shared primitive
+        model (``decide_blockers`` has its own, simpler double-block-
+        if-needed extension for the exact same reason: double-blocking
+        is not part of the "joint SINGLE assignment" algorithm these
+        two callers now share).
+        """
+        from ai.block_assignment import coverage_pass, optimize_pass
+
+        total_incoming = sum(a.power for a in attackers)
         sorted_attackers = sorted(attackers, key=lambda a: a.power, reverse=True)
 
-        # Phase 1: Must-block to survive
+        def _can_block_fn(attacker, blocker):
+            return self._can_block(blocker, attacker)
+
+        def _cost_fn(blocker):
+            return blocker.value
+
+        defender_power_total = sum(c.power for c in board.opp_creatures)
+        attacker_power_total = sum(c.power for c in board.my_creatures)
+
+        def _score_fn(attacker, blocker):
+            return self._predict_block_score(
+                attacker, blocker, board,
+                defender_power_total, attacker_power_total,
+            )
+
+        blocks: Dict[int, List[int]] = {}
+        used: Set[int] = set()
         if total_incoming >= board.opp_life:
-            damage_needed_to_prevent = total_incoming - board.opp_life + 1
-            prevented = 0
-            for attacker in sorted_attackers:
-                if prevented >= damage_needed_to_prevent:
-                    break
-                # Find cheapest blocker that can block this
-                available = [b for b in blockers if b.instance_id not in used_blockers
-                            and self._can_block(b, attacker)]
-                if available:
-                    best = min(available, key=lambda b: b.value)
-                    blocks[attacker.instance_id] = [best.instance_id]
-                    used_blockers.add(best.instance_id)
-                    prevented += attacker.power
+            blocks, used = coverage_pass(
+                sorted_attackers, blockers,
+                my_life=board.opp_life, can_block_fn=_can_block_fn,
+                cost_fn=_cost_fn,
+            )
 
-        # Phase 2: Profitable trades (kill attacker, lose less value)
-        for attacker in sorted_attackers:
-            if attacker.instance_id in blocks:
-                continue
-            available = [b for b in blockers if b.instance_id not in used_blockers
-                        and self._can_block(b, attacker)]
-            for blocker in sorted(available, key=lambda b: b.value):
-                # Can this blocker kill the attacker?
-                can_kill = (blocker.power >= attacker.toughness or
-                           "deathtouch" in blocker.keywords)
-                # Is it a trade-up? (we lose less value)
-                if can_kill and blocker.value < attacker.value * BLOCK_TRADE_UP_VALUE_RATIO:
-                    blocks[attacker.instance_id] = [blocker.instance_id]
-                    used_blockers.add(blocker.instance_id)
-                    break
+        blocks, used = optimize_pass(
+            sorted_attackers, blockers, blocks, used,
+            can_block_fn=_can_block_fn, score_fn=_score_fn,
+            bounded_to_covered=False,
+        )
 
-        # Phase 3: Even trades (kill attacker, lose similar value)
-        for attacker in sorted_attackers:
-            if attacker.instance_id in blocks:
-                continue
-            available = [b for b in blockers if b.instance_id not in used_blockers
-                        and self._can_block(b, attacker)]
-            for blocker in sorted(available, key=lambda b: b.value):
-                can_kill = (blocker.power >= attacker.toughness or
-                           "deathtouch" in blocker.keywords)
-                survives = attacker.power < blocker.toughness
-                if can_kill and (survives
-                                  or blocker.value <= attacker.value * BLOCK_EVEN_TRADE_VALUE_RATIO):
-                    blocks[attacker.instance_id] = [blocker.instance_id]
-                    used_blockers.add(blocker.instance_id)
-                    break
-
-        # Phase 4: Double-block high-value threats
+        # Phase 4: Double-block high-value threats — unchanged, its
+        # own pair-search extension over whatever the shared passes
+        # above left uncovered.
         for attacker in sorted_attackers:
             if attacker.instance_id in blocks:
                 continue
             if attacker.value < DOUBLE_BLOCK_VALUE_THRESHOLD:
                 continue  # only double-block high-value threats
-            available = [b for b in blockers if b.instance_id not in used_blockers
+            available = [b for b in blockers if b.instance_id not in used
                         and self._can_block(b, attacker)]
             if len(available) >= 2:
                 # Find cheapest pair that can kill the attacker
@@ -658,8 +683,8 @@ class CombatPlanner:
                                 available[i].instance_id,
                                 available[j].instance_id
                             ]
-                            used_blockers.add(available[i].instance_id)
-                            used_blockers.add(available[j].instance_id)
+                            used.add(available[i].instance_id)
+                            used.add(available[j].instance_id)
                             break
                     if attacker.instance_id in blocks:
                         break
@@ -674,6 +699,63 @@ class CombatPlanner:
         if "menace" in attacker.keywords:
             return True  # menace needs 2 blockers, handled in double-block
         return True
+
+    def _predict_block_score(self, attacker: VirtualCreature,
+                              blocker: VirtualCreature, board: VirtualBoard,
+                              defender_power_total: float,
+                              attacker_power_total: float) -> float:
+        """Pairwise lifespan-delta score for a predicted (attacker,
+        blocker) pair — the SAME ``ai.clock.score_block_assignment``
+        formula ``ai.ev_player.EVPlayer._score_block_lifespan_delta``
+        uses for a real block decision (Phase 2c unification), adapted
+        to ``VirtualCreature``'s lightweight shape (string keywords, no
+        ``.template``/oracle-text access) instead of a live
+        ``CardInstance``.
+
+        ``board`` is captured from the ATTACKING pilot's own
+        perspective (``extract_virtual_board(game, attacker_idx)`` —
+        matching every real production call site of ``plan_attack``),
+        so ``board.opp_life`` is the DEFENDER's life (the side being
+        predicted to block) and ``board.my_life`` is the attacking
+        pilot's own life.
+        """
+        from ai.clock import score_block_assignment
+
+        a_pow = attacker.power or 0
+        a_tou = attacker.toughness or 0
+        b_pow = blocker.power or 0
+        b_tou = blocker.toughness or 0
+
+        b_kills_attacker = (b_pow >= a_tou) or ("deathtouch" in blocker.keywords)
+        a_kills_blocker = (a_pow >= b_tou) or ("deathtouch" in attacker.keywords)
+
+        has_trample = "trample" in attacker.keywords
+        damage_through = max(0, a_pow - b_tou) if has_trample else 0
+
+        defender_life = board.opp_life
+        my_life_after_block = defender_life - damage_through
+        opp_power_after_block = attacker_power_total - (a_pow if b_kills_attacker else 0)
+        my_power_after_block = defender_power_total - (b_pow if a_kills_blocker else 0)
+
+        my_life_after_no_block = defender_life - a_pow
+
+        # ``score_block_assignment`` only reads ``snap.opp_life`` (the
+        # attacking pilot's life — unaffected by a blocking decision);
+        # a minimal duck-typed shim avoids constructing a full
+        # ``EVSnapshot`` from a ``VirtualBoard``, which doesn't carry one.
+        snap = _OppLifeSnap(board.my_life)
+
+        block = score_block_assignment(
+            snap, my_life_after=my_life_after_block,
+            opp_power_after=opp_power_after_block,
+            my_power_after=my_power_after_block,
+        )
+        no_block = score_block_assignment(
+            snap, my_life_after=my_life_after_no_block,
+            opp_power_after=attacker_power_total,
+            my_power_after=defender_power_total,
+        )
+        return block - no_block
 
 
 # ═══════════════════════════════════════════════════════════════════
