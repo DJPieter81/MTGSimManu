@@ -222,6 +222,14 @@ class CardTemplate:
     # engine.optional_costs.offer_ward_tax via the resolve_stack hook.
     ward_cost: int = 0                         # {N} from "Ward {N}"; 0 = no mana-shaped ward
 
+    def __post_init__(self) -> None:
+        # Derive warp_cost from oracle text for templates not loaded through
+        # CardDatabase (e.g. synthetic templates in tests). CardDatabase sets
+        # warp_cost explicitly; this fires only when it was left at None.
+        if self.warp_cost is None and self.oracle_text:
+            from .oracle_parser import parse_warp_cost as _pwc
+            self.warp_cost = _pwc(self.oracle_text)
+
     @property
     def is_creature(self) -> bool:
         return CardType.CREATURE in self.card_types
