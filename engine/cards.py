@@ -195,7 +195,7 @@ class CardTemplate:
                                                 # "permanent_count:<word>",
                                                 # "graveyard_count:<formula>:<type>:<scope>"
     # Splice onto Arcane: oracle-derived from "Splice onto Arcane {cost}"
-    splice_cost: Optional[int] = None          # mana cost to splice (None = no splice)
+    splice_cost: Optional["ManaCost"] = None   # full mana cost to splice (None = no splice)
     is_arcane: bool = False                    # True if subtype includes Arcane
     # Counter/tax framework — structured replacement for the old
     # "'counter' in ability.description" substring dispatch. Populated
@@ -229,7 +229,8 @@ class CardTemplate:
         if self.oracle_text:
             from .oracle_parser import (parse_warp_cost as _pwc,
                                         parse_dash_cost as _pdc,
-                                        parse_escape_cost as _pec)
+                                        parse_escape_cost as _pec,
+                                        parse_splice_cost as _psc)
             if self.warp_cost is None:
                 self.warp_cost = _pwc(self.oracle_text)
             if self.dash_cost is None:
@@ -240,6 +241,8 @@ class CardTemplate:
                     self.escape_cost = _esc['cost']
                     if self.escape_exile_count == 0:
                         self.escape_exile_count = _esc['exile']
+            if self.splice_cost is None:
+                self.splice_cost = _psc(self.oracle_text)
 
     @property
     def is_creature(self) -> bool:

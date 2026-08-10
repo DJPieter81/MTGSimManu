@@ -1,5 +1,11 @@
 """Alternative-cost parsers must return ManaCost objects, not raw CMC integers.
 
+Also covers splice-onto-Arcane, which has the same root cause:
+``parse_splice_cost`` returned ``Optional[int]`` (total CMC), so the splice
+payment in ``cast_spell`` was hardcoded as ``ManaCost(generic=N-1, red=1)``
+— a card-specific assumption invisible to the engine.  After the fix,
+``parse_splice_cost`` returns a ``ManaCost`` and the payment uses it directly.
+
 Root cause of the alternative-cost color-blindness class (Track H):
 
   ``parse_dash_cost`` returned ``Optional[int]`` — a plain CMC value that
@@ -32,7 +38,7 @@ import random
 
 import pytest
 
-from engine.oracle_parser import parse_dash_cost, parse_escape_cost
+from engine.oracle_parser import parse_dash_cost, parse_escape_cost, parse_splice_cost
 from engine.mana import ManaCost
 from engine.cards import CardInstance, CardTemplate, CardType
 from engine.game_state import GameState, Phase
@@ -274,6 +280,41 @@ def test_escape_color_pip_requires_real_colored_source():
         "escape {R}{R}{W}{W} requires red and white sources; 4 colorless lands "
         "cover the CMC but not the coloured pips — color-blind int check returns True (wrong)"
     )
+
+
+class TestParseSpliceCostPreservesColor:
+    """parse_splice_cost must return ManaCost, not int."""
+
+    def test_red_splice_has_correct_pip(self):
+        cost = parse_splice_cost(
+            "Add {R}{R}{R}.\nSplice onto Arcane {1}{R}"
+        )
+        assert cost is not None, "splice cost must be parsed from oracle"
+        assert hasattr(cost, 'red'), (
+            "parse_splice_cost must return ManaCost — returned int loses color info"
+        )
+        assert cost.red == 1
+        assert cost.generic == 1
+
+    def test_white_splice_has_correct_pip(self):
+        cost = parse_splice_cost(
+            "Prevent the next 3 damage. Splice onto Arcane {2}{W}"
+        )
+        assert cost is not None
+        assert hasattr(cost, 'white')
+        assert cost.white == 1
+        assert cost.generic == 2
+
+    def test_no_splice_returns_none(self):
+        assert parse_splice_cost("Flying\nWhen this enters, draw a card.") is None
+
+    def test_splice_cost_returns_mana_cost_not_int(self):
+        cost = parse_splice_cost("Splice onto Arcane {1}{R}")
+        assert cost is not None
+        assert not isinstance(cost, int), (
+            "parse_splice_cost must return ManaCost, not int — "
+            "int loses all colour information"
+        )
 
 
 def test_escape_castable_when_colored_pips_have_real_sources():

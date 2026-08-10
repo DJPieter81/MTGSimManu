@@ -300,6 +300,136 @@ class TestCastSpellWarpPayment:
             "Warp creature must be in exile after end-of-turn cleanup"
         )
 
+    def test_warp_color_pip_requires_real_colored_source(self, fresh_game, db):
+        """can_cast must reject warp {1}{W} when only colorless mana is available.
+
+        All-Fates Stalker has Warp {1}{W} — two mana but the {W} pip requires
+        a white source.  Colorless-only lands cover the CMC (2) but not the
+        colour pip.  The colour-blind quantity check returns True (wrong).
+        """
+        game = fresh_game
+        # Warp card with a real white pip in warp cost
+        t_stalker = db.cards.get("All-Fates Stalker")
+        if t_stalker is None or t_stalker.warp_cost is None:
+            pytest.skip("All-Fates Stalker not in DB or has no warp cost")
+        if t_stalker.warp_cost.white == 0:
+            pytest.skip("All-Fates Stalker warp cost has no white pip — test needs updating")
+
+        stalker = _make_card(game, t_stalker)
+        _add_to_zone(game, stalker, 0, "hand")
+
+        t_artifact = db.cards["Mox Opal"]
+        artifact = _make_card(game, t_artifact, zone="battlefield")
+        _add_to_zone(game, artifact, 0, "battlefield")
+
+        # Enough colorless mana to cover CMC of warp_cost but no white source
+        cmc = t_stalker.warp_cost.cmc
+        for i in range(cmc):
+            from engine.cards import CardTemplate, CardType, CardInstance
+            t_land = CardTemplate(
+                name=f"Colorless Land {i}", card_types=[CardType.LAND],
+                mana_cost=ManaCost(), supertypes=[], subtypes=[],
+                power=None, toughness=None, loyalty=None,
+                keywords=set(), abilities=[],
+                color_identity=set(), produces_mana=["C"],
+                enters_tapped=False, oracle_text="", tags=set(),
+            )
+            land = CardInstance(
+                template=t_land, owner=0, controller=0,
+                instance_id=game.next_instance_id(), zone="battlefield",
+            )
+            land._game_state = game
+            land.enter_battlefield()
+            land.summoning_sick = False
+            game.players[0].battlefield.append(land)
+
+        assert not game.can_cast(0, stalker), (
+            "warp {1}{W} requires a white source; colorless lands cover the CMC "
+            "but not the {W} pip — colour-blind quantity check returns True (wrong)"
+        )
+
+    def test_warp_castable_with_correct_colored_source(self, fresh_game, db):
+        """can_cast allows warp {1}{W} when a white-producing land is present."""
+        game = fresh_game
+        t_stalker = db.cards.get("All-Fates Stalker")
+        if t_stalker is None or t_stalker.warp_cost is None or t_stalker.warp_cost.white == 0:
+            pytest.skip("All-Fates Stalker not in DB or wrong warp cost shape")
+
+        stalker = _make_card(game, t_stalker)
+        _add_to_zone(game, stalker, 0, "hand")
+
+        t_artifact = db.cards["Mox Opal"]
+        artifact = _make_card(game, t_artifact, zone="battlefield")
+        _add_to_zone(game, artifact, 0, "battlefield")
+
+        # Add a white land + colorless for generic
+        from engine.cards import CardTemplate, CardType, CardInstance
+        for color in ["W", "C"]:
+            t_land = CardTemplate(
+                name=f"Synth {color} Land", card_types=[CardType.LAND],
+                mana_cost=ManaCost(), supertypes=[], subtypes=[],
+                power=None, toughness=None, loyalty=None,
+                keywords=set(), abilities=[],
+                color_identity=set(), produces_mana=[color],
+                enters_tapped=False, oracle_text="", tags=set(),
+            )
+            land = CardInstance(
+                template=t_land, owner=0, controller=0,
+                instance_id=game.next_instance_id(), zone="battlefield",
+            )
+            land._game_state = game
+            land.enter_battlefield()
+            land.summoning_sick = False
+            game.players[0].battlefield.append(land)
+
+        assert game.can_cast(0, stalker), (
+            "warp {1}{W} must be castable with 1 white land + 1 colorless land"
+        )
+
+    def test_warp_exile_recast_color_pip_requires_real_source(self, fresh_game, db):
+        """can_cast rejects exile-recast of warp card when colored pip unmet.
+
+        All-Fates Stalker in exile with _warped=True; player has an artifact
+        but only colorless mana — the white pip in warp {1}{W} is unmet.
+        """
+        game = fresh_game
+        t_stalker = db.cards.get("All-Fates Stalker")
+        if t_stalker is None or t_stalker.warp_cost is None or t_stalker.warp_cost.white == 0:
+            pytest.skip("All-Fates Stalker not in DB or wrong warp cost shape")
+
+        stalker = _make_card(game, t_stalker, zone="exile")
+        stalker._warped = True
+        _add_to_zone(game, stalker, 0, "exile")
+
+        t_artifact = db.cards["Mox Opal"]
+        artifact = _make_card(game, t_artifact, zone="battlefield")
+        _add_to_zone(game, artifact, 0, "battlefield")
+
+        # Colorless mana covers CMC but not the white pip
+        from engine.cards import CardTemplate, CardType, CardInstance
+        cmc = t_stalker.warp_cost.cmc
+        for i in range(cmc):
+            t_land = CardTemplate(
+                name=f"Colorless Land {i}", card_types=[CardType.LAND],
+                mana_cost=ManaCost(), supertypes=[], subtypes=[],
+                power=None, toughness=None, loyalty=None,
+                keywords=set(), abilities=[],
+                color_identity=set(), produces_mana=["C"],
+                enters_tapped=False, oracle_text="", tags=set(),
+            )
+            land = CardInstance(
+                template=t_land, owner=0, controller=0,
+                instance_id=game.next_instance_id(), zone="battlefield",
+            )
+            land._game_state = game
+            land.enter_battlefield()
+            land.summoning_sick = False
+            game.players[0].battlefield.append(land)
+
+        assert not game.can_cast(0, stalker), (
+            "exile-recast warp {1}{W} must fail when only colorless mana available"
+        )
+
     def test_normal_cast_not_interrupted_when_warp_available(self, fresh_game, db):
         """If the player can afford the normal cost, the normal cast proceeds (no warp)."""
         game = fresh_game
