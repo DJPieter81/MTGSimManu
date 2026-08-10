@@ -842,6 +842,21 @@ Used by `_choose_targets` burn-vs-creature decision in
 # `COMBO_FORCE_PAYOFF_STORM_THRESHOLD` (was 5) is now sourced from
 # `ai.llm_decision_scorer.weight(arch, CTX_COMBO_FORCE_PAYOFF_STORM_THRESHOLD)`.
 
+ETB_LAND_FROM_HAND_MANA_VALUE: float = 1.0
+"""Rules-constant: mana-equivalent credit applied to the projected snapshot
+when a creature's ETB puts a land card from the player's hand onto the
+battlefield ('etb_land_from_hand' tag -- oracle-driven, no card names).
+
+Derivation: the land enters tapped, so it produces zero mana the turn it
+enters.  On every subsequent turn ``my_mana`` is reset to ``my_total_lands``
+(snapshot_adapter.py pass action; finisher_simulator.py land-drop action).
+One extra land is therefore worth exactly 1.0 mana in the next turn's budget
+-- the same unit finisher_simulator.py uses when crediting a land-drop action
+(``my_mana += 1, my_total_lands += 1``).
+
+Used by ``_project_spell`` in ``ai/ev_evaluator.py``.
+"""
+
 LANDFALL_TRIGGER_VALUE: float = 3.0
 """Derived: per-landfall-trigger EV. Each landfall trigger ≈ ETB
 effect value (1 life, 1 damage, 1 ramp event). 3.0 matches the

@@ -38,6 +38,7 @@ from ai.predicates import (
 )
 from ai.scoring_constants import (
     AMASS_WORD_MAP,
+    ETB_LAND_FROM_HAND_MANA_VALUE,
     ENERGY_TO_POWER_EQUIVALENT,
     LIFE_TO_POWER_EQUIVALENT,
     NONLAND_PERMANENT_ENTERS_PER_TURN,
@@ -2038,6 +2039,28 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
             projected.my_power += p_imm
             projected.my_creature_count += count_imm
             projected.persistent_power += p_persist
+
+    # ETB land-from-hand: creature enters and lets the controller put a land
+    # card from their hand onto the battlefield (oracle tag 'etb_land_from_hand',
+    # e.g. Arboreal Grazer pattern).  The land enters tapped so it contributes
+    # zero mana this turn, but on every subsequent turn `my_mana` is reset to
+    # `my_total_lands` (snapshot_adapter.py pass action) — so one extra land is
+    # worth ETB_LAND_FROM_HAND_MANA_VALUE mana per turn going forward.  We also
+    # spend one card (the land) from hand.  Gate: skip if no land in hand (when
+    # game is available for inspection; optimistic when game is None).
+    if t.is_creature and 'etb_land_from_hand' in tags:
+        has_land_in_hand = True  # optimistic: assume land available if no game
+        if game is not None:
+            from engine.cards import CardType as _CTLand
+            me_player = game.players[player_idx]
+            has_land_in_hand = any(
+                _CTLand.LAND in getattr(c.template, 'card_types', set())
+                for c in me_player.hand
+            )
+        if has_land_in_hand:
+            projected.my_total_lands += 1
+            projected.my_mana += ETB_LAND_FROM_HAND_MANA_VALUE
+            projected.my_hand_size -= 1  # land card leaves hand onto battlefield
 
     # Permanent-pool projection — composable across permanent types.
     # Today: planeswalker loyalty pools (loyalty × per-tick clock impact,
