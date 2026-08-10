@@ -102,9 +102,17 @@ Completed:
   migration below proceeds incrementally — does not require the full migration to land first.
 
 Remaining (tracked here, not yet started):
-- [ ] Migrate `_creature_dies` to route the battlefield→graveyard zone-list mutation through
-  `zone_manager.move_card` (currently raw-mutates then separately calls the trigger dispatch, which
-  is now correct but still bypasses the funnel's own bookkeeping/logging).
+- [x] **Migrate `_creature_dies` through zone_manager** — `PermanentEffects._creature_dies` now calls
+  `game.zone_mgr.move_card(game, creature, "battlefield", "graveyard")` for the normal death path
+  instead of raw `.zone= "graveyard"` + `graveyard.append()`. The pre-removal from battlefield (line
+  226-228 of the old code) is also removed since `move_card` owns the list mutation. Undying/persist
+  replacement effects retain their direct-mutation paths (checked BEFORE any `move_card` call so
+  counter values are still readable; they redirect back to battlefield, making them structurally
+  different from a graveyard transition). Equipment tags are read BEFORE `move_card` clears
+  `instance_tags` via `_cleanup_leaving_battlefield`. Zone-mutation baseline updated 102 → 101 in
+  the same commit (`python tools/check_zone_mutation.py --update`). Tests:
+  `tests/test_creature_death_zone_funnel.py` (3 tests — funnel-routing mock assertion RED pre-fix,
+  graveyard-landing regression, died-this-turn counter).
 - [x] **Investigated, deprioritized**: discard-path migration (madness/Containment Construct-class
   triggers). Finding: `_force_discard` (`game_state.py:537`) *already* routes through
   `zone_mgr.move_card` — this tranche is further along than the plan assumed. What's actually missing
