@@ -59,6 +59,7 @@ KEYWORD_MAP = {
     "Suspend": Keyword.SUSPEND,
     "Storm": Keyword.STORM,
     "Annihilator": Keyword.ANNIHILATOR,
+    "Improvise": Keyword.IMPROVISE,
 }
 
 COLOR_CHARS = {"W", "U", "B", "R", "G"}

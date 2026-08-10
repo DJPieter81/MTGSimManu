@@ -55,6 +55,7 @@ class Keyword(Enum):
     SUSPEND = "suspend"
     STORM = "storm"
     ANNIHILATOR = "annihilator"
+    IMPROVISE = "improvise"
 
 
 class AbilityType(Enum):
