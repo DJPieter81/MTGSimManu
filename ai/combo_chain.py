@@ -115,8 +115,9 @@ def classify_card(card, available_mana: int, medallion_count: int,
 
     # Splice onto Arcane: detect from template properties (set by oracle parser)
     is_arcane = getattr(t, 'is_arcane', False)
-    splice_cost = getattr(t, 'splice_cost', None) or 0
-    splice_mana = ritual_data[1] if (ritual_data and splice_cost > 0) else 0
+    _sc = getattr(t, 'splice_cost', None)
+    splice_cost_cmc = _sc.cmc if _sc is not None else 0
+    splice_mana = ritual_data[1] if (ritual_data and splice_cost_cmc > 0) else 0
 
     return CardRole(
         name=t.name,
@@ -128,7 +129,7 @@ def classify_card(card, available_mana: int, medallion_count: int,
         is_payoff=is_payoff,
         deals_direct_damage=deals_direct,
         is_arcane=is_arcane,
-        splice_cost=splice_cost,
+        splice_cost=splice_cost_cmc,
         splice_mana=splice_mana,
     )
 
