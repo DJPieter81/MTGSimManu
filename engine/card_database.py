@@ -1576,7 +1576,7 @@ class CardDatabase:
         # Escape
         escape_data = parse_escape_cost(oracle_text)
         if escape_data:
-            template.escape_cost = escape_data['cmc']
+            template.escape_cost = escape_data['cost']
             template.escape_exile_count = escape_data['exile']
 
         # Equip cost

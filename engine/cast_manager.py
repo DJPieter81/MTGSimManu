@@ -166,13 +166,14 @@ class CastManager:
                 other_gy_cards = sum(1 for c in player.graveyard if c != card)
                 if other_gy_cards < template.escape_exile_count:
                     return False  # Not enough cards to exile
-                # Check mana for escape cost
+                # Check mana for escape cost — quantity then colour (CR 702.19)
                 untapped_lands = player.untapped_lands
                 total_mana = (player.untapped_mana_capacity() + player.mana_pool.total()
                               + player._tron_mana_bonus())
-                if total_mana < template.escape_cost:
+                if total_mana < template.escape_cost.cmc:
                     return False
-                return True  # Can escape
+                return CastManager._can_pay_colored_pips(
+                    game, player_idx, untapped_lands, template.escape_cost)
             elif not card.has_flashback:
                 return False  # No flashback, no escape — can't cast from GY
             else:
@@ -361,10 +362,12 @@ class CastManager:
         if can_evoke:
             return True  # Can cast via evoke
 
-        # Dash alternative cost
-        if (template.dash_cost is not None
-                and total_mana >= template.dash_cost):
-            return True
+        # Dash alternative cost — verify quantity then colour (CR 702.32)
+        if template.dash_cost is not None:
+            if (total_mana >= template.dash_cost.cmc
+                    and CastManager._can_pay_colored_pips(
+                        game, player_idx, untapped_lands, template.dash_cost)):
+                return True
 
         # Warp alternative cost — check payability against parsed warp_cost,
         # not just "total_mana >= 1" (the old check caused infinite loops when
@@ -397,7 +400,9 @@ class CastManager:
             improvise_cmc = max(colored_floor,
                                 effective_cmc - untapped_artifacts)
             if total_mana >= improvise_cmc:
-                return True
+                effective_cmc = improvise_cmc
+                # Improvise reduces generic only (CR 702.125a); coloured pips
+                # still require real coloured sources — fall through to MRV.
 
         # Force alternate cost: "exile a [color] card from your hand
         # rather than pay this spell's mana cost" — only on opp's turn
@@ -493,6 +498,62 @@ class CastManager:
         if 'blink' in (template.tags or set()):
             if not player.creatures:
                 return False
+
+        return True
+
+    # ─── Shared colour-verification helper ────────────────────────────
+
+    @staticmethod
+    def _can_pay_colored_pips(game: "GameState", player_idx: int,
+                              untapped_lands, cost: "ManaCost") -> bool:
+        """Return True iff lands + mana pool can satisfy cost's coloured pips.
+
+        Used by alternative-cost mechanics (dash, escape) that replace the
+        normal mana cost with a different ManaCost object.  Applies the same
+        MRV (minimum-remaining-values) greedy algorithm as the main can_cast
+        colour check.  Does NOT verify total quantity — callers confirm
+        ``total_mana >= cost.cmc`` first.
+        """
+        from .mana_payment import ManaPayment as _MP
+        player = game.players[player_idx]
+        sources = []
+        for land in untapped_lands:
+            for options in _MP.land_mana_units(game, player_idx, land):
+                sources.append(set(options))
+        for color in ["W", "U", "B", "R", "G", "C"]:
+            pool_amount = player.mana_pool.get(color)
+            for _ in range(pool_amount):
+                sources.append({color})
+
+        color_needs = []
+        for color, needed in [("W", cost.white), ("U", cost.blue),
+                              ("B", cost.black), ("R", cost.red),
+                              ("G", cost.green), ("C", cost.colorless)]:
+            for _ in range(needed):
+                color_needs.append(color)
+
+        if not color_needs:
+            return True  # No coloured pips — quantity check already done
+
+        used = [False] * len(sources)
+        remaining_needs = list(color_needs)
+        while remaining_needs:
+            remaining_needs.sort(
+                key=lambda c: sum(
+                    1 for i, s in enumerate(sources)
+                    if c in s and not used[i])
+            )
+            c = remaining_needs.pop(0)
+            best_idx = -1
+            best_flex = 999
+            for i, s in enumerate(sources):
+                if not used[i] and c in s:
+                    if len(s) < best_flex:
+                        best_flex = len(s)
+                        best_idx = i
+            if best_idx == -1:
+                return False
+            used[best_idx] = True
 
         return True
 
@@ -808,7 +869,7 @@ class CastManager:
             #   2) We're low on mana and Dash costs more than normal
             if template.dash_cost is not None:
                 can_normal = untapped >= template.mana_cost.cmc
-                can_dash = untapped >= template.dash_cost
+                can_dash = untapped >= template.dash_cost.cmc
 
                 if not can_dash and not can_normal:
                     return False
@@ -965,18 +1026,15 @@ class CastManager:
                     f"T{game.display_turn} P{player_idx+1}: "
                     f"Warp {card.name} (pays {template.warp_cost})")
             elif escaped:
-                # Pay escape cost instead of normal cost
-                from .mana import ManaCost
-                # Escape cost for Phlage: {R}{R}{W}{W} = 4 CMC (2R + 2W)
-                escape_mana = ManaCost(red=2, white=2)  # Phlage-specific
-                if not game.tap_lands_for_mana(player_idx, escape_mana,
+                # Pay escape cost using the template's ManaCost directly —
+                # no per-card hardcoding; colour pips verified by can_cast.
+                if not game.tap_lands_for_mana(player_idx, template.escape_cost,
                                                  card_name=template.name):
                     return False
             elif dashed:
-                # Pay Dash cost instead of normal cost
-                from .mana import ManaCost
-                dash_mana = ManaCost(generic=template.dash_cost - 1, red=1)  # {1}{R} for Ragavan
-                if not game.tap_lands_for_mana(player_idx, dash_mana,
+                # Pay dash cost using the template's ManaCost directly —
+                # no per-card hardcoding; colour pips verified by can_cast.
+                if not game.tap_lands_for_mana(player_idx, template.dash_cost,
                                                  card_name=template.name):
                     return False
             elif not evoked:
