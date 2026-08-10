@@ -215,9 +215,10 @@ def _is_chain_fuel(card) -> bool:
             return True
         if Kw.STORM in keywords:
             return True
-        # PiF-pattern chain extender
-        if ('flashback' in oracle and 'graveyard' in oracle
-                and ('instant' in oracle or 'sorcery' in oracle)):
+        # PiF-pattern chain extender: past-in-flames / snapcaster pattern,
+        # detected at DB load via grants_flashback_to_gy_spells() in
+        # oracle_parser.py — no runtime oracle inspection.
+        if getattr(t, 'grants_flashback_to_gy_spells', False):
             return True
         # Cycling payoff: "all creature cards from graveyards to bf"
         if ('all creature cards' in oracle

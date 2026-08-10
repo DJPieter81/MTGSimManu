@@ -122,17 +122,19 @@ def _has_flashback_recursion_pattern(card: "CardInstance") -> bool:
     sorceries from the graveyard via flashback.
 
     Generic oracle predicate. Matches Past in Flames (the
-    canonical Modern case), Yawgmoth's Will-style effects, and
-    any future card sharing the pattern. No card-name gate.
+    canonical Modern case), Snapcaster Mage, and any future card
+    sharing the pattern. No card-name gate.
+
+    Detection reads `template.grants_flashback_to_gy_spells`, a typed
+    bool field populated at DB load time by
+    `oracle_parser.grants_flashback_to_gy_spells()`.  No runtime oracle
+    inspection.
 
     Used by both v2 (this module's `_project_storm` reachable-
     but-unprojected branch) and v3 (the orchestrator's empty-
     library guard).
     """
-    oracle = (getattr(card.template, 'oracle_text', '') or '').lower()
-    return ('flashback' in oracle
-            and 'graveyard' in oracle
-            and ('instant' in oracle or 'sorcery' in oracle))
+    return getattr(card.template, 'grants_flashback_to_gy_spells', False)
 
 
 def _has_cascade_keyword(card: "CardInstance") -> bool:

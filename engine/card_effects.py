@@ -1145,10 +1145,10 @@ def wish_resolve(game, card, controller, targets=None, item=None):
     # push the chain to lethal, fetching the extender first is
     # correct.  Detection is oracle-driven — no card-name gate.
     def _is_chain_extender(c):
-        oracle = (c.template.oracle_text or '').lower()
-        return ('flashback' in oracle
-                and 'graveyard' in oracle
-                and ('instant' in oracle or 'sorcery' in oracle))
+        # Reads template.grants_flashback_to_gy_spells, populated at DB
+        # load by oracle_parser.grants_flashback_to_gy_spells() — no
+        # runtime oracle inspection.
+        return getattr(c.template, 'grants_flashback_to_gy_spells', False)
     extender = next((c for c in sb if _is_chain_extender(c)), None) \
         or next((c for c in lib if _is_chain_extender(c)), None)
     pif_in_reach = extender is not None

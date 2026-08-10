@@ -218,6 +218,26 @@ def has_cascade(oracle: str) -> bool:
     return 'cascade' in oracle.lower()
 
 
+def grants_flashback_to_gy_spells(oracle: str) -> bool:
+    """True for cards that grant flashback to instant/sorcery cards in the graveyard.
+
+    Matches Past in Flames, Snapcaster Mage, and any other card whose oracle
+    text combines all three signals: flashback, graveyard, and instant/sorcery.
+    Used to identify "chain extender" cards in combo scoring without re-reading
+    oracle text at decision time.
+
+    Class size: every card that grants flashback to GY instants/sorceries in
+    Modern — PiF, Snapcaster Mage, and any future printings of the pattern.
+    Stored as CardTemplate.grants_flashback_to_gy_spells (bool) at DB load.
+    """
+    o = oracle.lower()
+    return (
+        'flashback' in o
+        and 'graveyard' in o
+        and ('instant' in o or 'sorcery' in o)
+    )
+
+
 def parse_x_cost(oracle: str, name: str, mana_cost_str: str = "") -> Optional[Dict]:
     """Parse X-cost spell properties from the printed mana cost.
 

@@ -1698,6 +1698,7 @@ class CardDatabase:
             parse_energy_production, has_cascade, parse_x_cost,
             parse_domain_reduction, detect_power_scaling, parse_splice_cost,
             parse_counter_tax, parse_protection_from, parse_ward_cost,
+            grants_flashback_to_gy_spells,
         )
         oracle = template.oracle_text or ''
         template.ritual_mana = parse_ritual_mana(oracle)
@@ -1705,6 +1706,7 @@ class CardDatabase:
         template.cycling_variant_data = parse_cycling_variant(oracle)
         template.energy_production = parse_energy_production(oracle)
         template.is_cascade = has_cascade(oracle)
+        template.grants_flashback_to_gy_spells = grants_flashback_to_gy_spells(oracle)
         template.x_cost_data = parse_x_cost(oracle, name, data.get("manaCost", ""))
         template.is_cost_reducer = 'cost_reducer' in template.tags
         template.domain_reduction = parse_domain_reduction(oracle) or 0
