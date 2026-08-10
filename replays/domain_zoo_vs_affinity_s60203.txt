@@ -1,0 +1,888 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+======================================================================
+  GAME 1: Domain Zoo (P1) vs Affinity (P2)  —  seed 60203
+  Series: Domain Zoo 0 - 0 Affinity
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Domain Zoo wins → chooses to play first
+║ P1 (on play): Domain Zoo
+║ P2 (on draw): Affinity
+╚═══════════════════════════════════════════════════════
+
+P1 (Domain Zoo) opening hand (2 lands, 5 spells):
+  • Thundering Falls [Land, CMC 0]
+  • Leyline Binding [Spell, CMC 6]
+  • Indatha Triome [Land, CMC 0]
+  • Territorial Kavu [Creature, CMC 2]
+  • Doorkeeper Thrull [Creature, CMC 2]
+  • Wild Nacatl [Creature, CMC 1]
+  • Territorial Kavu [Creature, CMC 2]
+→ P1 KEEPS 7 — has key card(s): Doorkeeper Thrull, Leyline Binding, Territorial Kavu, 4 cheap spells
+
+P2 (Affinity) opening hand (3 lands, 4 spells):
+  • Spirebluff Canal [Land, CMC 0]
+  • Fiery Islet [Land, CMC 0]
+  • Fiery Islet [Land, CMC 0]
+  • Engineered Explosives [Spell, CMC 0]
+  • Metallic Rebuke [Spell, CMC 3]
+  • Skateboard [Spell, CMC 1]
+  • Mox Opal [Spell, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Mox Opal, 4 cheap spells
+
+
+╔══ TURN 1 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Indatha Triome (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Domain Zoo 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Indatha Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mox Opal
+  [Main 1]
+T1 P2: Play Fiery Islet
+    → Goal: deploy_engine [engines]
+T1 P2: Cast Mox Opal (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Mox Opal
+    → Goal: curve_out
+    [Mana] Tap Fiery Islet→R (paying for Skateboard, 1 mana remaining)
+T1 P2: Cast Skateboard (1)
+    [Priority] P1 passes (no response)
+T1: Resolve Skateboard
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 20  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Indatha Triome
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Skateboard
+║   Lands: Fiery Islet [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Wooded Foothills
+  [Main 1]
+T2 P1: Play Wooded Foothills
+T2 P1: Crack Wooded Foothills (pay 1 life) -> Steam Vents (tapped, life: 19)
+    → Goal: curve_out
+    [Mana] Tap Indatha Triome→G (paying for Wild Nacatl, 1 mana remaining)
+T2 P1: Cast Wild Nacatl (G)
+    [Priority] P2 passes (no response)
+T2: Resolve Wild Nacatl
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Domain Zoo 19
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Skateboard
+║   Lands: Fiery Islet
+║ Domain Zoo board:
+║   Creatures: Wild Nacatl (1/1)
+║   Lands: Indatha Triome [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Kappa Cannoneer
+  [Main 1]
+T2 P2: Play Fiery Islet
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 19  |  Affinity 20
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: Wild Nacatl (1/1)
+║   Lands: Indatha Triome, Steam Vents
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Skateboard
+║   Lands: Fiery Islet, Fiery Islet
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Leyline of the Guildpact
+  [Main 1]
+T3 P1: surveil 1 → Lightning Bolt to GY
+T3 P1: Play Thundering Falls (enters tapped)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Steam Vents→R, Indatha Triome→G (paying for Territorial Kavu, 2 mana remaining)
+T3 P1: Cast Territorial Kavu (RG)
+    [Priority] P2 responds with Metallic Rebuke
+T3 P2: Improvise — tap 1 artifact(s) for Metallic Rebuke
+    [Mana] Tap Fiery Islet→U, Fiery Islet→R (paying for Metallic Rebuke, 2 mana remaining)
+T3 P2: Cast Metallic Rebuke (2U)
+T3: Resolve Metallic Rebuke
+T3: Territorial Kavu is countered
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Wild Nacatl
+T3 P1: Attack with Wild Nacatl
+  [Declare Blockers] P2 does not block
+T3 P1:   Wild Nacatl (1/1) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P2 life: 20 → 19
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 19  |  Domain Zoo 19
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Skateboard
+║   Lands: Fiery Islet, Fiery Islet
+║ Domain Zoo board:
+║   Creatures: Wild Nacatl (1/1) [tapped]
+║   Lands: Indatha Triome [T], Steam Vents [T], Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Weapons Manufacturing
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Fiery Islet→R, Fiery Islet→R (paying for Weapons Manufacturing, 2 mana remaining)
+T3 P2: Cast Weapons Manufacturing (1R)
+    [Priority] P1 passes (no response)
+T3: Resolve Weapons Manufacturing
+T3 P2: Play Spirebluff Canal (untapped, 2 other lands)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 19  |  Affinity 19
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 3
+║ Domain Zoo board:
+║   Creatures: Wild Nacatl (1/1)
+║   Lands: Indatha Triome, Steam Vents, Thundering Falls
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Skateboard, Weapons Manufacturing
+║   Lands: Fiery Islet [T], Fiery Islet [T], Spirebluff Canal
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Scion of Draco
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Steam Vents→R, Thundering Falls→R (paying for Scion of Draco, 3 mana remaining)
+T4 P1: Cast Scion of Draco (12)
+    [Priority] P2 passes (no response)
+T4: Resolve Scion of Draco
+T4 P1: Scion of Draco enters — creatures gain vigilance/hexproof/lifelink/first strike/trample if white/blue/black/red/green
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Wild Nacatl
+T4 P1: Attack with Wild Nacatl
+  [Declare Blockers] P2 does not block
+T4 P1:   Wild Nacatl (1/1) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P2 life: 19 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 18  |  Domain Zoo 19
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Skateboard, Weapons Manufacturing
+║   Lands: Fiery Islet, Fiery Islet, Spirebluff Canal
+║ Domain Zoo board:
+║   Creatures: Wild Nacatl (1/1) [tapped], Scion of Draco (4/4)
+║   Lands: Indatha Triome, Steam Vents [T], Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Pithing Needle
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Fiery Islet→R (paying for Pithing Needle, 3 mana remaining)
+T4 P2: Cast Pithing Needle (1)
+    [Priority] P1 passes (no response)
+T4: Resolve Pithing Needle
+T4 P2: Activate Fiery Islet (sacrifice)
+T4 P2: Activate Fiery Islet (sacrifice)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+    → Goal: curve_out
+    [Mana] Tap Spirebluff Canal→U (paying for Preordain, 1 mana remaining)
+T4 P2: Cast Preordain (U)
+    [Priority] P1 passes (no response)
+T4: Resolve Preordain
+T4 P2: Preordain → draw 1 (Mishra's Bauble)
+    → Goal: curve_out
+T4 P2: Cast Mishra's Bauble (0)
+    [Priority] P1 passes (no response)
+T4: Resolve Mishra's Bauble
+  [End Step]
+
+╔══ TURN 5 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 19  |  Affinity 18
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 1
+║ Library: 48  |  Graveyard: 3
+║ Domain Zoo board:
+║   Creatures: Wild Nacatl (1/1), Scion of Draco (4/4)
+║   Lands: Indatha Triome, Steam Vents, Thundering Falls
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Skateboard, Weapons Manufacturing, Pithing Needle, Mishra's Bauble
+║   Lands: Spirebluff Canal [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Leyline Binding
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Steam Vents→R, Indatha Triome→W (paying for Doorkeeper Thrull, 3 mana remaining)
+T5 P1: Cast Doorkeeper Thrull (1W)
+    [Priority] P2 passes (no response)
+T5: Resolve Doorkeeper Thrull
+T5 P1: Doorkeeper Thrull: opponent ETB triggers suppressed
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Wild Nacatl, Scion of Draco
+T5 P1: Attack with Wild Nacatl, Scion of Draco
+  [Declare Blockers] P2 does not block
+T5 P1:   Wild Nacatl (1/1) → 1 dmg to player
+T5 P1:   Scion of Draco (4/4) → 4 dmg to player
+  [Combat Damage] 5 damage dealt → P2 life: 18 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 13  |  Domain Zoo 19
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 3
+║ Library: 46  |  Graveyard: 4
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Skateboard, Weapons Manufacturing, Pithing Needle, Mishra's Bauble
+║   Lands: Spirebluff Canal
+║ Domain Zoo board:
+║   Creatures: Wild Nacatl (1/1) [tapped], Scion of Draco (4/4) [tapped], Doorkeeper Thrull (1/2)
+║   Lands: Indatha Triome [T], Steam Vents [T], Thundering Falls
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Urza's Saga
+  [Main 1]
+T5 P2: Play Urza's Saga
+    → Goal: curve_out
+T5 P2: Improvise — tap 4 artifact(s) for Kappa Cannoneer
+    [Mana] Tap Urza's Saga→C, Spirebluff Canal→U (paying for Kappa Cannoneer, 2 mana remaining)
+T5 P2: Cast Kappa Cannoneer (5U)
+    [Priority] P1 passes (no response)
+T5: Resolve Kappa Cannoneer
+T5: Kappa Cannoneer ETB suppressed by Doorkeeper Thrull
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 19  |  Affinity 13
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 47  |  Graveyard: 3
+║ Domain Zoo board:
+║   Creatures: Wild Nacatl (1/1), Scion of Draco (4/4), Doorkeeper Thrull (1/2)
+║   Lands: Indatha Triome, Steam Vents, Thundering Falls
+║ Affinity board:
+║   Creatures: Kappa Cannoneer (4/4)
+║   Other: Mox Opal, Skateboard, Weapons Manufacturing, Pithing Needle, Mishra's Bauble
+║   Lands: Spirebluff Canal [T], Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Wooded Foothills
+  [Main 1]
+T6 P1: Play Wooded Foothills
+T6 P1: Crack Wooded Foothills (pay 1 life) -> Temple Garden (tapped, life: 18)
+    → Goal: curve_out
+    [Mana] Tap Indatha Triome→W (paying for Leyline Binding, 3 mana remaining)
+T6 P1: Cast Leyline Binding (5W)
+    [Priority] P2 passes (no response)
+T6: Resolve Leyline Binding
+T6: Skateboard moved battlefield -> exile (exiled)
+T6 P1: Leyline Binding exiles Skateboard
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Scion of Draco, Doorkeeper Thrull
+T6 P1: Attack with Scion of Draco, Doorkeeper Thrull
+  [Declare Blockers] P2 does not block
+T6 P1:   Scion of Draco (4/4) → 4 dmg to player
+T6 P1:   Doorkeeper Thrull (1/2) → 1 dmg to player
+  [Combat Damage] 5 damage dealt → P2 life: 13 → 8
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 8  |  Domain Zoo 18
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 4
+║ Affinity board:
+║   Creatures: Kappa Cannoneer (4/4)
+║   Other: Mox Opal, Weapons Manufacturing, Pithing Needle, Mishra's Bauble
+║   Lands: Spirebluff Canal, Urza's Saga
+║ Domain Zoo board:
+║   Creatures: Wild Nacatl (1/1), Scion of Draco (4/4) [tapped], Doorkeeper Thrull (1/2)
+║   Other: Leyline Binding
+║   Lands: Indatha Triome [T], Steam Vents, Thundering Falls, Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T6 P2: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P2 draws: Spirebluff Canal
+  [Main 1]
+T6 P2: Play Spirebluff Canal (untapped, 2 other lands)
+    → Goal: curve_out
+T6 P2: Improvise — tap 3 artifact(s) for Kappa Cannoneer
+    [Mana] Tap Urza's Saga→C, Spirebluff Canal→U, Spirebluff Canal→U (paying for Kappa Cannoneer, 3 mana remaining)
+T6 P2: Cast Kappa Cannoneer (5U)
+    [Priority] P1 passes (no response)
+T6: Resolve Kappa Cannoneer
+T6: Kappa Cannoneer ETB suppressed by Doorkeeper Thrull
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Kappa Cannoneer
+T6 P2: Attack with Kappa Cannoneer
+  [Declare Blockers] P1 does not block
+T6 P2:   Kappa Cannoneer (4/4) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 18 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 14  |  Affinity 8
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 45  |  Graveyard: 4
+║ Domain Zoo board:
+║   Creatures: Wild Nacatl (1/1), Scion of Draco (4/4), Doorkeeper Thrull (1/2)
+║   Other: Leyline Binding
+║   Lands: Indatha Triome, Steam Vents, Thundering Falls, Temple Garden
+║ Affinity board:
+║   Creatures: Kappa Cannoneer (4/4) [tapped], Kappa Cannoneer (4/4)
+║   Other: Mox Opal, Weapons Manufacturing, Pithing Needle, Mishra's Bauble
+║   Lands: Spirebluff Canal [T], Urza's Saga [T], Spirebluff Canal [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Lightning Bolt
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Temple Garden→W (paying for Leyline Binding, 4 mana remaining)
+T7 P1: Cast Leyline Binding (5W)
+    [Priority] P2 passes (no response)
+T7: Leyline Binding is countered by Kappa Cannoneer's ward
+    → Goal: curve_out
+    [Target] → face (3 dmg, life 8 → 5): face value 7.50
+    [Mana] Tap Steam Vents→R (paying for Lightning Bolt, 3 mana remaining)
+T7 P1: Cast Lightning Bolt (R)
+    [Priority] P2 passes (no response)
+T7: Resolve Lightning Bolt
+T7 P1: Lightning Bolt → 3 damage → life 5
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Thundering Falls→R, Indatha Triome→G (paying for Territorial Kavu, 2 mana remaining)
+T7 P1: Cast Territorial Kavu (RG)
+    [Priority] P2 passes (no response)
+T7: Resolve Territorial Kavu
+T7: Territorial Kavu ETB suppressed by Doorkeeper Thrull
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Wild Nacatl, Scion of Draco, Doorkeeper Thrull
+T7 P1: Attack with Wild Nacatl, Scion of Draco, Doorkeeper Thrull
+T7 P2:   [BLOCK-EMERGENCY] Kappa Cannoneer (4/4) blocks Wild Nacatl (1/1) — lifespan_delta=+0.16
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T7 P1:   Scion of Draco (4/4) → 4 dmg to player
+T7 P1:   Doorkeeper Thrull (1/2) → 1 dmg to player
+P2 loses: life total 0
+  [Combat Damage] 5 damage dealt → P2 life: 5 → 0
+
+>>> Domain Zoo wins Game 1 on turn 7 via damage
+    Final life: Domain Zoo=14  Affinity=0
+
+======================================================================
+  GAME 2: Affinity (P1) vs Domain Zoo (P2)  —  seed 60204
+  Series: Domain Zoo 1 - 0 Affinity
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Domain Zoo wins → chooses to play first
+║ P1 (on play): Domain Zoo
+║ P2 (on draw): Affinity
+╚═══════════════════════════════════════════════════════
+
+P1 (Affinity) opening hand (3 lands, 4 spells):
+  • Fiery Islet [Land, CMC 0]
+  • Skateboard [Spell, CMC 1]
+  • Claws of Gix [Spell, CMC 0]
+  • Fiery Islet [Land, CMC 0]
+  • Tormod's Crypt [Spell, CMC 0]
+  • Preordain [Spell, CMC 1]
+  • Urza's Saga [Land, CMC 0]
+→ P1 KEEPS 7 — 3 lands, 4 castable spells
+
+P2 (Domain Zoo) opening hand (3 lands, 4 spells):
+  • Leyline of the Guildpact [Spell, CMC 4]
+  • Leyline of the Guildpact [Spell, CMC 4]
+  • Flooded Strand [Land, CMC 0]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Arid Mesa [Land, CMC 0]
+  • Flooded Strand [Land, CMC 0]
+  • Wild Nacatl [Creature, CMC 1]
+→ P2 KEEPS 7 — has key card(s): Ragavan, Nimble Pilferer, 2 cheap spells
+
+T0 P2: Leyline of the Guildpact begins the game on the battlefield (leyline)
+T0 P2: Leyline of the Guildpact begins the game on the battlefield (leyline)
+
+╔══ TURN 1 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 20  |  Affinity 20
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact, Leyline of the Guildpact
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Arid Mesa
+T1 P2: Crack Arid Mesa (pay 1 life) -> Blood Crypt (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Domain Zoo 19
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact, Leyline of the Guildpact
+║   Lands: Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Mox Opal
+  [Main 1]
+T1 P1: Play Fiery Islet
+    → Goal: deploy_engine
+T1 P1: Cast Claws of Gix (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Claws of Gix
+    → Goal: deploy_engine
+T1 P1: Cast Tormod's Crypt (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Tormod's Crypt
+    → Goal: deploy_engine [engines]
+T1 P1: Cast Mox Opal (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Mox Opal
+    → Goal: curve_out
+    [Mana] Tap Fiery Islet→R (paying for Skateboard, 1 mana remaining)
+T1 P1: Cast Skateboard (1)
+    [Priority] P2 passes (no response)
+T1: Resolve Skateboard
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 19  |  Affinity 20
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact, Leyline of the Guildpact
+║   Lands: Blood Crypt
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Claws of Gix, Tormod's Crypt, Mox Opal, Skateboard
+║   Lands: Fiery Islet [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Scion of Draco
+  [Main 1]
+T2 P2: Play Flooded Strand
+T2 P2: Crack Flooded Strand (pay 1 life) -> Temple Garden (tapped, life: 18)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Blood Crypt→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T2 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T2: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Domain Zoo 18
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Claws of Gix, Tormod's Crypt, Mox Opal, Skateboard
+║   Lands: Fiery Islet
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Other: Leyline of the Guildpact, Leyline of the Guildpact
+║   Lands: Blood Crypt [T], Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Engineered Explosives
+  [Main 1]
+T2 P1: Play Urza's Saga
+    → Goal: curve_out
+    [Mana] Tap Fiery Islet→U (paying for Preordain, 2 mana remaining)
+T2 P1: Cast Preordain (U)
+    [Priority] P2 passes (no response)
+T2: Resolve Preordain
+T2 P1: Preordain → draw 1 (Preordain)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 18  |  Affinity 20
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Other: Leyline of the Guildpact, Leyline of the Guildpact
+║   Lands: Blood Crypt, Temple Garden
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Claws of Gix, Tormod's Crypt, Mox Opal, Skateboard
+║   Lands: Fiery Islet [T], Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Stubborn Denial
+  [Main 1]
+T3 P2: Play Flooded Strand
+T3 P2: Crack Flooded Strand (pay 1 life) -> Steam Vents (tapped, life: 17)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Blood Crypt→W, Temple Garden→W (paying for Scion of Draco, 2 mana remaining)
+T3 P2: Cast Scion of Draco (12)
+    [Priority] P1 passes (no response)
+T3: Resolve Scion of Draco
+T3 P2: Scion of Draco enters — creatures gain vigilance/hexproof/lifelink/first strike/trample if white/blue/black/red/green
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T3 P2: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T3 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T3 P2: Create 1x Treasure token(s)
+T3 P2: Ragavan, Nimble Pilferer exiles Pinnacle Emissary from top of P1's library
+T3 P2: Ragavan, Nimble Pilferer — may cast Pinnacle Emissary this turn
+  [Combat Damage] 2 damage dealt → P1 life: 20 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+T3: Pinnacle Emissary returned to exile (uncast)
+
+╔══ TURN 3 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 18  |  Domain Zoo 17
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Claws of Gix, Tormod's Crypt, Mox Opal, Skateboard
+║   Lands: Fiery Islet, Urza's Saga
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Scion of Draco (4/4)
+║   Other: Leyline of the Guildpact, Leyline of the Guildpact, Treasure Token
+║   Lands: Blood Crypt [T], Temple Garden [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T3 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P1 draws: Mishra's Bauble
+  [Main 1]
+T3 P1: Play Fiery Islet
+    → Goal: curve_out
+T3 P1: Cast Engineered Explosives (3) (X=3)
+    [Priority] P2 passes (no response)
+T3: Resolve Engineered Explosives
+T3 P1: Engineered Explosives enters with 3 charge counters
+    → Goal: curve_out
+T3 P1: Cast Mishra's Bauble (0)
+    [Priority] P2 passes (no response)
+T3: Resolve Mishra's Bauble
+T3 P1: Activate Fiery Islet (sacrifice)
+T3 P1: Activate Fiery Islet (sacrifice)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T3: Leyline of the Guildpact moved battlefield -> graveyard (destroyed)
+T3: Leyline of the Guildpact moved battlefield -> graveyard (destroyed)
+T3 P1: Ratchet Bomb (4) destroys 2 permanents
+
+╔══ TURN 4 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 17  |  Affinity 18
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 1
+║ Library: 48  |  Graveyard: 5
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Scion of Draco (4/4)
+║   Other: Treasure Token
+║   Lands: Blood Crypt, Temple Garden, Steam Vents
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Claws of Gix, Tormod's Crypt, Mox Opal, Skateboard, Mishra's Bauble
+║   Lands: Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+T4 P2: Play Arid Mesa
+T4 P2: Crack Arid Mesa (pay 1 life) -> Steam Vents (tapped, life: 16)
+    → Goal: curve_out
+    [Mana] Tap Temple Garden→G (paying for Wild Nacatl, 3 mana remaining)
+T4 P2: Cast Wild Nacatl (G)
+    [Priority] P1 passes (no response)
+T4: Resolve Wild Nacatl
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer, Scion of Draco
+T4 P2: Attack with Ragavan, Nimble Pilferer, Scion of Draco
+  [Declare Blockers] P1 does not block
+T4 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T4 P2: Create 1x Treasure token(s)
+T4 P2: Ragavan, Nimble Pilferer exiles Kappa Cannoneer from top of P1's library
+T4 P2: Ragavan, Nimble Pilferer — may cast Kappa Cannoneer this turn
+T4 P2:   Scion of Draco (4/4) → 4 dmg to player
+  [Combat Damage] 6 damage dealt → P1 life: 18 → 12
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Kappa Cannoneer returned to exile (uncast)
+
+╔══ TURN 4 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 12  |  Domain Zoo 16
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 1  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 4
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Claws of Gix, Tormod's Crypt, Mox Opal, Skateboard, Mishra's Bauble
+║   Lands: Urza's Saga
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Scion of Draco (4/4) [tapped], Wild Nacatl (1/1)
+║   Other: Treasure Token, Treasure Token
+║   Lands: Blood Crypt, Temple Garden [T], Steam Vents, Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T4 P1: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+  [Draw] P1 draws: Emry, Lurker of the Loch
+  [Main 1]
+T4 P1: Activate Tormod's Crypt (sacrifice)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 16  |  Affinity 12
+║ Hand: 1 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 1
+║ Library: 46  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Scion of Draco (4/4), Wild Nacatl (1/1)
+║   Other: Treasure Token, Treasure Token
+║   Lands: Blood Crypt, Temple Garden, Steam Vents, Steam Vents
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Claws of Gix, Mox Opal, Skateboard, Mishra's Bauble
+║   Lands: Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arena of Glory
+  [Main 1]
+T5 P2: Play Arena of Glory (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer, Scion of Draco, Wild Nacatl
+T5 P2: Attack with Ragavan, Nimble Pilferer, Scion of Draco, Wild Nacatl
+  [Declare Blockers] P1 does not block
+T5 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T5 P2: Create 1x Treasure token(s)
+T5 P2: Ragavan, Nimble Pilferer exiles Engineered Explosives from top of P1's library
+T5 P2: Ragavan, Nimble Pilferer — may cast Engineered Explosives this turn
+T5 P2:   Scion of Draco (4/4) → 4 dmg to player
+T5 P2:   Wild Nacatl (1/1) → 1 dmg to player
+  [Combat Damage] 7 damage dealt → P1 life: 12 → 5
+  [End Combat]
+  [Main 2]
+    → Goal: curve_out
+T5 P2: Cast Engineered Explosives (4) (X=4)
+    [Priority] P1 passes (no response)
+T5: Resolve Engineered Explosives
+T5 P2: Engineered Explosives enters with 5 charge counters
+  [End Step]
+
+╔══ TURN 5 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 5  |  Domain Zoo 16
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 1  |  Opp lands: 5
+║ Library: 43  |  Graveyard: 5
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Claws of Gix, Mox Opal, Skateboard, Mishra's Bauble
+║   Lands: Urza's Saga
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Scion of Draco (4/4) [tapped], Wild Nacatl (1/1) [tapped]
+║   Other: Treasure Token, Treasure Token, Treasure Token, Engineered Explosives
+║   Lands: Blood Crypt [T], Temple Garden [T], Steam Vents [T], Steam Vents [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T5 P1: Urza's Saga tutors Pithing Needle
+T5 P1: Sacrifice Urza's Saga (final chapter)
+  [Draw] P1 draws: Spirebluff Canal
+  [Main 1]
+T5 P1: Play Spirebluff Canal (untapped, 0 other lands)
+    → Goal: curve_out
+    [Mana] Tap Spirebluff Canal→U (paying for Preordain, 1 mana remaining)
+T5 P1: Cast Preordain (U)
+    [Priority] P2 passes (no response)
+T5: Resolve Preordain
+T5 P1: Preordain → draw 1 (Steam Vents)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 16  |  Affinity 5
+║ Hand: 1 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 1
+║ Library: 45  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Scion of Draco (4/4), Wild Nacatl (1/1)
+║   Other: Treasure Token, Treasure Token, Treasure Token, Engineered Explosives
+║   Lands: Blood Crypt, Temple Garden, Steam Vents, Steam Vents, Arena of Glory
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Claws of Gix, Mox Opal, Skateboard, Mishra's Bauble, Pithing Needle
+║   Lands: Spirebluff Canal [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Leyline of the Guildpact
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer, Scion of Draco, Wild Nacatl
+T6 P2: Attack with Ragavan, Nimble Pilferer, Scion of Draco, Wild Nacatl
+  [Declare Blockers] P1 does not block
+T6 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T6 P2: Create 1x Treasure token(s)
+T6 P2: Ragavan, Nimble Pilferer exiles Tormod's Crypt from top of P1's library
+T6 P2: Ragavan, Nimble Pilferer — may cast Tormod's Crypt this turn
+T6 P2:   Scion of Draco (4/4) → 4 dmg to player
+T6 P2:   Wild Nacatl (1/1) → 1 dmg to player
+P1 loses: life total -2
+  [Combat Damage] 7 damage dealt → P1 life: 5 → -2
+
+>>> Domain Zoo wins Game 2 on turn 6 via damage
+    Final life: Affinity=-2  Domain Zoo=16
+
+======================================================================
+  MATCH RESULT: Domain Zoo wins 2-0
+======================================================================
