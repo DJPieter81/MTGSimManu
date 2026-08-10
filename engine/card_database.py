@@ -1692,7 +1692,7 @@ class CardDatabase:
             parse_ritual_mana, parse_cycling_cost, parse_cycling_variant,
             parse_energy_production, has_cascade, parse_x_cost,
             parse_domain_reduction, detect_power_scaling, parse_splice_cost,
-            parse_counter_tax, parse_protection_from,
+            parse_counter_tax, parse_protection_from, parse_ward_cost,
         )
         oracle = template.oracle_text or ''
         template.ritual_mana = parse_ritual_mana(oracle)
@@ -1717,6 +1717,7 @@ class CardDatabase:
             template.counter_target_kind = counter_effect.target_type
         template.counter_tax_amount = parse_counter_tax(oracle)
         template.protection_from_colors = parse_protection_from(oracle)
+        template.ward_cost = parse_ward_cost(oracle)
 
         return template
 

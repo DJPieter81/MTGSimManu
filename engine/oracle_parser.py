@@ -15,7 +15,7 @@ from __future__ import annotations
 import re
 from typing import Dict, Optional, Tuple
 
-from engine.oracle_clauses import split_abilities
+from engine.oracle_clauses import split_abilities, split_clauses
 
 
 def parse_ritual_mana(oracle: str) -> Optional[Tuple[str, int]]:
@@ -344,6 +344,55 @@ def parse_counter_tax(oracle: str) -> int:
             r"unless\s+(?:its|their)\s+controller\s+pays\s*\{(\d+)\}",
             low,
         )
+        if m:
+            return int(m.group(1))
+    return 0
+
+
+def parse_ward_cost(oracle: str) -> int:
+    """Parse a Ward {N} mana-cost tax from oracle text (CR 702.21a).
+
+    Ward is a triggered ability that lives on the PERMANENT itself:
+    "Whenever this permanent becomes the target of a spell or ability
+    an opponent controls, counter that spell or ability unless its
+    controller pays [cost]." Structurally this is the mirror image of
+    `parse_counter_tax`/1a's counter-tax framework: there, a
+    counterSPELL taxes the TARGETED spell's controller; here, the
+    TARGETED PERMANENT taxes the SOURCE spell/ability's own caster
+    for having chosen it as a target at all.
+
+    Scoped to a clause (`split_clauses` — sentence-level, not
+    `split_abilities`'s paragraph level) that STARTS with "ward",
+    matching how the keyword is always printed as its own standalone
+    ability line ("Ward {2}"). This deliberately excludes ward
+    CONFERRED to another object mid-sentence — "Equipped creature...
+    has ward {1}" (an Equipment granting ward to whatever it's
+    attached to), "...becomes a 7/7 ... creature with ward {3}" (an
+    activated ability that temporarily grants ward to its source) —
+    since those clauses don't start with "ward" they never match
+    here. That's a real, separate mechanism (dynamically granted
+    keyword, same class as 0b's `ContinuousEffectsManager` migration,
+    not a static field on the granting card's own template) —
+    deferred; see the rules-foundation tracker doc's Ward section.
+
+    Scope: mana-cost shape only ("Ward {N}"). DB-wide census (a card
+    whose oracle has any clause literally starting with "ward"): 76
+    are mana-cost-shaped, 15 are "Ward—Pay N life" (life-shaped), 26
+    are other cost shapes (discard/sacrifice/exile/collect evidence/
+    etc, several with no fixed numeric amount at all — "pay life
+    equal to this creature's power" has no static {N} to tax with).
+    Mana-shape is the dominant, most clearly-scoped bucket (per
+    CLAUDE.md's class-size discipline) and the only one implemented
+    in this first pass. Returns 0 for every excluded shape too (same
+    "0 = no tax to enforce" contract `parse_counter_tax` uses for
+    hard counters) — callers must not read a 0 as proof the card has
+    no ward at all, only that this parser doesn't yet enforce it.
+    """
+    for clause in split_clauses(oracle or ''):
+        low = clause.strip().lower()
+        if not low.startswith('ward'):
+            continue
+        m = re.search(r'ward\s*[\{—-]*\s*\{(\d+)\}', low)
         if m:
             return int(m.group(1))
     return 0
