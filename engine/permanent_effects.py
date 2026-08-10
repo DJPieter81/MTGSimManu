@@ -223,15 +223,14 @@ class PermanentEffects:
         owner = creature.owner
         controller = creature.controller
 
-        if creature in game.players[controller].battlefield:
-            game.players[controller].battlefield.remove(creature)
-
-        # Undying: return with +1/+1 counter
+        # Replacement effects: counters must be readable BEFORE any cleanup.
+        # Undying (CR 702.94): return to battlefield with +1/+1 counter if no +1/+1 counter.
         if Keyword.UNDYING in creature.keywords and creature.plus_counters == 0:
-            creature.zone = "graveyard"
+            if creature in game.players[controller].battlefield:
+                game.players[controller].battlefield.remove(creature)
+            creature.zone = "graveyard"  # transitional; CR 701.12 replacement redirects to BTL
             creature.reset_combat()
             creature.cleanup_damage()
-            # Return to battlefield with +1/+1 counter
             creature.controller = controller
             creature.enter_battlefield()
             creature.plus_counters += 1
@@ -239,9 +238,11 @@ class PermanentEffects:
             game.log.append(f"T{game.display_turn}: {creature.name} returns (undying)")
             return
 
-        # Persist: return with -1/-1 counter
+        # Persist (CR 702.78): return to battlefield with -1/-1 counter if no -1/-1 counter.
         if Keyword.PERSIST in creature.keywords and creature.minus_counters == 0:
-            creature.zone = "graveyard"
+            if creature in game.players[controller].battlefield:
+                game.players[controller].battlefield.remove(creature)
+            creature.zone = "graveyard"  # transitional; CR 701.12 replacement redirects to BTL
             creature.reset_combat()
             creature.cleanup_damage()
             creature.controller = controller
@@ -251,15 +252,13 @@ class PermanentEffects:
             game.log.append(f"T{game.display_turn}: {creature.name} returns (persist)")
             return
 
-        # Equipment falls off: when equipped creature dies, mark equipment
-        # as unattached so the AI must pay to re-equip
+        # Equipment falls off: read instance_tags BEFORE move_card clears them.
         equip_tags_on_creature = [
             t for t in creature.instance_tags
             if t.startswith("equipped_")
         ]
         if equip_tags_on_creature:
             for tag in equip_tags_on_creature:
-                # Parse the equipment instance_id from the tag
                 try:
                     equip_iid = int(tag[len("equipped_"):])
                     equip_perm = game.get_card_by_id(equip_iid)
@@ -272,24 +271,16 @@ class PermanentEffects:
                 except (ValueError, AttributeError):
                     pass
 
-        creature.zone = "graveyard"
-        creature.reset_combat()
-        creature.cleanup_damage()
-        creature._dashed = False  # Clear Dash flag on death
-        creature._evoked = False  # Clear Evoke flag on death
-        game.players[owner].graveyard.append(creature)
+        # Route zone mutation through the funnel: single owner of battlefield→graveyard
+        # list mutation, zone attribute, and leaving-battlefield cleanup.
+        game.zone_mgr.move_card(game, creature, "battlefield", "graveyard")
         game.players[controller].creatures_died_this_turn += 1
 
         # Dies triggers: a registered EffectTiming.DIES handler owns
         # this card's dies behavior (mirrors the ETB execute-then-
         # fallback pattern at card_effects.py:69); only fall back to
         # the generic oracle-derived path when no DIES-specific
-        # handler is registered. The previous gate tested "does this
-        # NAME have any handler at all" — a card with only an ETB or
-        # SPELL_RESOLVE registration (the vast majority) had its
-        # unrelated oracle-derived dies clause silently skipped, and
-        # the one real DIES registration (Haywire Mite) was never
-        # invoked by anything.
+        # handler is registered.
         if not EFFECT_REGISTRY.execute(creature.template.name, EffectTiming.DIES,
                                        game, creature, controller):
             from .oracle_resolver import resolve_dies_trigger
