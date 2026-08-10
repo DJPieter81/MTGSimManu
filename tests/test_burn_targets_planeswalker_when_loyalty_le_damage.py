@@ -134,26 +134,32 @@ class TestBurnTargetsPlaneswalkerWhenLoyaltyLeDamage:
             f"against face damage value."
         )
 
-    def test_burn_to_face_when_opp_low_life_no_pw_threat(self, card_db):
-        """Regression anchor: at low opp life with no PW on board, face
-        damage still wins. The PW-extension must not regress the
-        existing low-life-go-face heuristic."""
+    def test_permanent_only_spell_has_no_targets_when_board_empty(self, card_db):
+        """Regression anchor: a 'target creature or planeswalker' spell
+        with no opp permanents on board has NO legal targets and must
+        return [] from _choose_targets (not [-1]).
+
+        Galvanic Discharge oracle: 'Choose target creature or
+        planeswalker' — no player targeting even at low opp life.
+        The fix gating face on a can_hit_player oracle predicate must
+        not cause a fallback to illegal face-targeting."""
         game = GameState(rng=random.Random(0))
         _add_to_battlefield(game, card_db, "Mountain", controller=0)
         discharge = _add_to_hand(game, card_db, "Galvanic Discharge",
                                   controller=0)
-        # Opp at 4 life — well within burn-kill range.
+        # Opp at 4 life — within burn-kill range, but the spell cannot
+        # legally target a player so this is irrelevant.
         game.players[1].life = 4
         # No creatures, no planeswalkers on opp side.
 
         player = EVPlayer(player_idx=0, deck_name="Boros Energy",
                           rng=random.Random(0))
         targets = player._choose_targets(game, discharge)
-        assert targets == [-1], (
-            f"With opp at 4 life and no PW/creature on board, face "
-            f"is the only valuable target. Got targets={targets}. "
-            f"The PW enumerator extension must not change behaviour "
-            f"in the absence of PWs."
+        assert targets == [], (
+            f"With opp at 4 life and no creature/PW on board, a "
+            f"'target creature or planeswalker' spell has NO legal "
+            f"targets and must return []. Got targets={targets}. "
+            f"Returning [-1] would be an illegal player-targeting cast."
         )
 
     def test_burn_targets_pw_when_advantage_per_turn_exceeds_face_value(
@@ -192,15 +198,15 @@ class TestBurnTargetsPlaneswalkerWhenLoyaltyLeDamage:
             f"outranks per-life-point value when the PW is high-impact."
         )
 
-    def test_pw_target_enumerated_alongside_creatures_and_face(
+    def test_pw_and_creature_enumerated_without_face_for_permanent_only_spell(
             self, card_db):
-        """The candidate enumeration must include all three: face (-1),
-        opp creatures, AND opp planeswalkers, when the spell oracle
-        permits a PW target. This is the structural assertion that
-        the candidate set is correct, independent of which one wins.
+        """The candidate enumeration for a 'target creature or
+        planeswalker' spell must include opp creatures AND opp
+        planeswalkers — but NOT face (-1), because the oracle wording
+        does not permit player targeting.
 
-        Encodes the rule: "any target" / "creature or planeswalker"
-        oracle text → PWs are in the candidate set.
+        Encodes the rule: "creature or planeswalker" oracle text →
+        PWs + creatures are in the candidate set; face is NOT.
         """
         from ai.ev_player import EVPlayer
         game = GameState(rng=random.Random(0))
@@ -218,18 +224,19 @@ class TestBurnTargetsPlaneswalkerWhenLoyaltyLeDamage:
                           rng=random.Random(0))
         candidates = player._enumerate_burn_targets(game, discharge,
                                                     damage=3)
-        # Candidate set must contain face, the creature, AND the PW.
+        # Candidate set must contain the creature AND the PW, but NOT face.
         # Each entry is (target_id, value, reason).
         candidate_ids = {entry[0] for entry in candidates}
-        assert -1 in candidate_ids, (
-            f"Face must be enumerated as a candidate target. "
+        assert -1 not in candidate_ids, (
+            f"Face (-1) must NOT be enumerated as a candidate target "
+            f"for a 'target creature or planeswalker' spell. "
             f"Got: {candidate_ids}")
         assert memnite.instance_id in candidate_ids, (
             f"Killable creature {memnite.instance_id} (Memnite) must "
             f"be in candidates. Got: {candidate_ids}")
         assert teferi.instance_id in candidate_ids, (
-            f"Killable planeswalker {teferi.instance_id} (Teferi, "
-            f"loyalty 4 ≥ 3 damage = chip damage value) must be in "
+            f"Planeswalker {teferi.instance_id} (Teferi, "
+            f"loyalty 4 — chip damage value) must be in "
             f"candidates. Got: {candidate_ids}. M10 fix: extend the "
             f"enumerator to iterate opp.planeswalkers."
         )
