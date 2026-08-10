@@ -152,6 +152,8 @@ class CardTemplate:
     evoke_cost: Optional[ManaCost] = None
     # Dash cost (alternative cast: gains haste, returns to hand at end of turn)
     dash_cost: Optional[int] = None  # CMC of dash cost, e.g. 2 for {1}{R}
+    # Warp cost (alternative cast from hand for less mana; creature exiles at end of turn)
+    warp_cost: Optional[ManaCost] = None
     # Escape cost (alternative cast from graveyard)
     escape_cost: Optional[int] = None  # CMC of escape cost, e.g. 4 for {R}{R}{W}{W}
     escape_exile_count: int = 0  # Number of other cards to exile from graveyard

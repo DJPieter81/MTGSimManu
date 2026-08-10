@@ -208,6 +208,20 @@ class TurnManager:
                 game.log.append(
                     f"T{game.display_turn}: {card.name} returned to hand (Dash)")
 
+        # Warp: exile warped permanents at the beginning of the end step.
+        # The creature may be cast again from exile on a later turn (the
+        # _warped flag persists on the CardInstance so can_cast recognises it).
+        for player in game.players:
+            warped_creatures = [c for c in player.battlefield
+                                if getattr(c, '_warped', False)]
+            for card in warped_creatures:
+                game.zone_mgr.move_card(
+                    game, card, "battlefield", "exile",
+                    cause="Warp exile"
+                )
+                game.log.append(
+                    f"T{game.display_turn}: {card.name} exiled (Warp)")
+
         # Delayed "exile it at the beginning of the next end step" riders
         # (temporary reanimation / put-onto-battlefield effects).
         # CR 400.7: the rider tracks an OBJECT. If the tracked permanent

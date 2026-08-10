@@ -132,6 +132,21 @@ class CastManager:
         if getattr(player, 'silenced_this_turn', False):
             return False
 
+        # Warp: previously warped permanents may be cast again from exile.
+        if card.zone == "exile" and getattr(card, '_warped', False):
+            has_artifact = any(
+                CardType.ARTIFACT in c.template.card_types
+                for c in player.battlefield
+            )
+            if (template.warp_cost is not None
+                    and has_artifact):
+                total_mana = (player.untapped_mana_capacity()
+                              + player.mana_pool.total()
+                              + player._tron_mana_bonus())
+                if total_mana >= template.warp_cost.cmc:
+                    return True
+            return False  # in exile but not a re-castable warp card
+
         if card.zone != "hand" and card.zone != "graveyard":
             return False
 
@@ -351,17 +366,17 @@ class CastManager:
                 and total_mana >= template.dash_cost):
             return True
 
-        # Warp alternative cost (early cast for artifact-synergy decks).
-        # Track H handoff fix: the previous check tested
-        # `'Artifact' in str(card_types)`, which never matches the
-        # CardType enum's string form — the branch was dead code.
+        # Warp alternative cost — check payability against parsed warp_cost,
+        # not just "total_mana >= 1" (the old check caused infinite loops when
+        # the warp cost could be quoted as castable but the normal-cost payment
+        # path failed for color reasons inside cast_spell).
         oracle = (template.oracle_text or "").lower()
-        if "warp" in oracle:
+        if template.warp_cost is not None:
             has_artifact = any(
                 CardType.ARTIFACT in c.template.card_types
                 for c in player.battlefield
             )
-            if has_artifact and total_mana >= 1:
+            if has_artifact and total_mana >= template.warp_cost.cmc:
                 return True
 
         # Improvise: tap artifacts to pay generic. Same Track H fix as
@@ -759,8 +774,29 @@ class CastManager:
         # Pay mana cost (unless free cast)
         evoked = False
         dashed = False
+        warped = False
         if not free_cast:
             untapped = player.untapped_mana_capacity() + player.mana_pool.total() + player._tron_mana_bonus()
+
+            # Warp: cast from hand for cheaper alternative cost; creature exiles
+            # at beginning of the next end step.  Use Warp when we have an
+            # artifact on the battlefield AND cannot afford the normal cost
+            # (or prefer the temporary body).  The warp_cost was parsed at
+            # load time, so no oracle-substring re-parsing here.
+            if (template.warp_cost is not None
+                    and card.zone == "hand"
+                    and not dashed):
+                has_artifact = any(
+                    CardType.ARTIFACT in c.template.card_types
+                    for c in player.battlefield
+                )
+                can_normal = untapped >= template.mana_cost.cmc
+                can_warp = has_artifact and untapped >= template.warp_cost.cmc
+                if not can_warp and not can_normal:
+                    return False
+                # Prefer Warp only when normal cost is unaffordable
+                if can_warp and not can_normal:
+                    warped = True
 
             # Decide whether to use Dash (e.g., Ragavan)
             # Dash strategy: use Dash when...
@@ -920,7 +956,15 @@ class CastManager:
                                    f"Delve {delve_exiled} cards for {card.name}")
 
             # Pay mana
-            if escaped:
+            if warped:
+                # Pay Warp cost instead of normal cost
+                if not game.tap_lands_for_mana(player_idx, template.warp_cost,
+                                                 card_name=template.name):
+                    return False
+                game.log.append(
+                    f"T{game.display_turn} P{player_idx+1}: "
+                    f"Warp {card.name} (pays {template.warp_cost})")
+            elif escaped:
                 # Pay escape cost instead of normal cost
                 from .mana import ManaCost
                 # Escape cost for Phlage: {R}{R}{W}{W} = 4 CMC (2R + 2W)
@@ -1009,7 +1053,9 @@ class CastManager:
 
         # Remove from zone and track cast-from-graveyard for flashback exile
         cast_with_flashback = False
-        if card in player.hand:
+        if card in player.exile:
+            player.exile.remove(card)
+        elif card in player.hand:
             player.hand.remove(card)
         elif card in player.graveyard:
             player.graveyard.remove(card)
@@ -1042,6 +1088,7 @@ class CastManager:
         card._evoked = evoked  # Track for sacrifice after ETB
         card._dashed = dashed  # Track for haste + return to hand at end of turn
         card._escaped = getattr(card, '_escaped', False) or (escaped if not free_cast else False)  # Track for sacrifice-unless-escaped
+        card._warped = warped  # Track for exile at beginning of next end step
         # Turn-scoped budget for `_eval_evoke`: each removal-class
         # evoke ramps the cost of the next one. Increment at cast
         # time (not on resolve) — even a fizzling evoke pitches the

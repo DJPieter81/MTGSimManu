@@ -724,6 +724,44 @@ def parse_escape_cost(oracle: str) -> Optional[Dict]:
     return {'cmc': cmc, 'exile': exile_count or 5}
 
 
+def parse_warp_cost(oracle: str) -> Optional["ManaCost"]:
+    """Parse Warp alternative-cast cost from oracle text.
+
+    "Warp {U/R}" → ManaCost(generic=1)    — hybrid: any 1 mana
+    "Warp {3}"   → ManaCost(generic=3)    — pure generic
+    "Warp {1}{G}" → ManaCost(generic=1, green=1) — mixed
+
+    Hybrid symbols like {U/R} are treated as generic=1 (any mana satisfies
+    a hybrid pip), which is correct for payment purposes since the caster
+    chooses which color to pay.
+    """
+    m = re.search(r'[Ww]arp\s+((?:\{[^}]+\})+)', oracle)
+    if not m:
+        return None
+    from .mana import ManaCost
+    cost = ManaCost()
+    for sym in re.findall(r'\{([^}]+)\}', m.group(1)):
+        if sym.isdigit():
+            cost.generic += int(sym)
+        elif '/' in sym:          # hybrid like U/R, W/U, etc.
+            cost.generic += 1     # 1 mana of either type
+        elif sym == 'W':
+            cost.white += 1
+        elif sym == 'U':
+            cost.blue += 1
+        elif sym == 'B':
+            cost.black += 1
+        elif sym == 'R':
+            cost.red += 1
+        elif sym == 'G':
+            cost.green += 1
+        elif sym == 'C':
+            cost.colorless += 1
+        else:
+            cost.generic += 1
+    return cost if cost.cmc > 0 else None
+
+
 def parse_equip_cost(oracle: str) -> Optional[int]:
     """Parse Equip cost from oracle text.
 
