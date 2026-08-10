@@ -1358,6 +1358,188 @@ Full suite: 2376 passed, 22 skipped, 4 deselected, 2 xfailed, 0 failed. All ratc
 does not match `EFFECT_REGISTRY.register(...)` calls at all, so this migration is invisible to
 it in both directions).
 
+### CDA coverage extension — PARTIAL (1 of 3 named shapes clears the class-size bar; the
+### mechanic it generalizes into covers the named shape plus 2 pre-existing bugs)
+
+**Scope, as assigned:** extend Phase 1d's `detect_power_scaling`/`_dynamic_base_power`/
+`_dynamic_base_toughness` with three named CDA shapes — Death's Shadow-class negative
+life-scaling, Mortivore/Bonehoard-class "creature cards in all graveyards", Multani-class
+land+graveyard compound. Per this program's own discipline ("verify each against real oracle
+text... don't force a fix that isn't warranted"), all three were researched against the real DB
+before any regex was written.
+
+**Shape 1 — Death's Shadow-class negative life scaling: EXCLUDED, class size too small.**
+Verified real oracle text via `CardDatabase`: Death's Shadow is genuinely printed **13/13** (not
+1/2, as memory would suggest) with `"This creature gets -X/-X, where X is your life total."` —
+confirmed by inspecting the raw MTGJSON part file, not assumed. DB-wide census of the literal
+phrase (`-X/-X, where X is your life total`): **2 cards** (Death's Shadow, The Last Ride).
+Broadened the search to the whole "life total defines a creature's stats" family regardless of
+exact formula (any card where `power`/`toughness`/`+X/+X`/`-X/-X` co-occurs with `life total`):
+**18 hits**, but the family splits into genuinely different formulas, each too narrow on its own
+to be "the mechanic" and not a coincidental grouping — `-X/-X where X = life total` (2: Death's
+Shadow, The Last Ride), `power/toughness = life total` (1: Serra Avatar), `power/toughness = half
+the highest opponent life total` (1: Malignus), `power/toughness = your life total minus an
+opponent's` (1: Roiling Horror), `power/toughness = 20 minus the highest life total among
+players` (1: Scourge of the Skyclaves) — the rest of the 18 hits are unrelated mechanics
+(life-total-based activated abilities, life-total-conditional removal, life-total exchange
+effects) that don't touch a creature's own continuous P/T at all. Even the most generous possible
+grouping (every card whose OWN P/T is ever derived from ANY life total, any formula) totals **6
+real cards** — well under CLAUDE.md's "fewer than 10 ⇒ you are patching" bar. No bucket built.
+Regression guard: `TestExcludedShapesUncaught::test_negative_life_scaling_not_detected`
+(`tests/test_graveyard_count_cda.py`) pins that Death's Shadow stays uncaught (`power_scales_with
+== ""`) so a future parser change doesn't silently sweep it into an unrelated bucket.
+
+**Shape 3 — Multani-class land+graveyard compound: EXCLUDED, class size too small.** Verified
+real oracle text: `"Multani gets +1/+1 for each land you control and each land card in your
+graveyard."` DB-wide census of the exact compound shape (`<type> you control ... and each <same
+type> card in your graveyard`): **1 card** (Multani, Yavimaya's Avatar) — no other Modern-legal
+card shares the land-specific version. Broadened to ANY type word sharing the same compound-count
+structure (battlefield count of type X + graveyard count of cards of type X, contributing to the
+SAME creature's own stats): 3 real cards (Multani/land, Moon-Vigil Adherents/creature, Desmond
+Miles/Assassin subtype) — a related shape (Cid, Timeless Artificer/Artificer) was excluded from
+even that count because it pumps OTHER permanents, not itself (an anthem effect, not a CDA).
+3 cards is still well under the bar. No bucket built. Regression guard:
+`TestExcludedShapesUncaught::test_land_plus_graveyard_compound_not_detected` pins Multani staying
+uncaught.
+
+**Shape 2 — Mortivore/Bonehoard-class "creature cards in all graveyards": the literal shape is
+ALSO too narrow standalone (6 cards: Bonehoard, Cruel Somnophage, Lhurgoyf, Mortivore, Necrogoyf,
+Nighthowler) — but it is one member of a family the EXISTING "graveyard" bucket (1d) had already
+partially built, just hardcoded to one type (instant/sorcery) and one scope (controller's
+graveyard only).** Per this task's explicit instruction to check whether the existing bucket "can
+be extended with a sub-parameter", generalized its TYPE and SCOPE into parameters the same way 1d
+generalized `_get_artifact_count` into `_get_permanent_type_count`'s noun parameter. DB-wide
+census of the generalized shape (`power[/toughness] ... equal to ... number of <TYPE?> card(s) in
+<SCOPE> graveyard(s)`, TYPE and SCOPE both variable): **26 real cards** — comfortably clears the
+bar, and Mortivore/Necrogoyf/Lhurgoyf (the creature-count/all-graveyards slice this task named)
+are a proper subset of it, not a separate mechanism. Bonehoard and Nighthowler were investigated
+and confirmed OUT of scope for this bucket specifically — both grant `+X/+X` to a DIFFERENT
+creature (equipped/enchanted) using this count, which is the equipment/aura-pump mechanism
+`_dynamic_base_power`'s `equipped_` tag scan already owns (a different code path from
+`power_scales_with` CDA buckets), not a card's own characteristic-defining ability; extending that
+scan to recognize this count shape is real, separable follow-up work, not done here.
+
+Generalizing the bucket also surfaced and fixed two real, previously-shipped mismodelings in 1d's
+narrow "graveyard" bucket (found via full-DB oracle-text inspection while building the TYPE/SCOPE
+extraction, not assumed):
+
+1. **Enigma Drake, Haughty Djinn, Kinetic Augur, and Spellheart Chimera are POWER-ONLY CDAs**
+   (`"power is equal to the number of instant and sorcery cards in your graveyard"` — no toughness
+   clause at all; each is printed with a real fixed toughness, e.g. Enigma Drake 0/**4**). The old
+   bucket applied the SAME graveyard count to BOTH power and toughness unconditionally (`if scaling
+   == "graveyard": return effective_printed_toughness() + gy_count()`), inflating these four cards'
+   toughness by their graveyard count on top of the printed value. The new bucket's `formula`
+   parameter (`sym`/`goyf`/`power_only`, detected from whether the clause has a toughness sub-clause
+   at all) fixes this: these four now correctly classify as `power_only`, leaving toughness at its
+   printed value.
+2. **Magnivore's real oracle is `"power and toughness are each equal to the number of SORCERY
+   cards in ALL graveyards"`** — sorcery-only, both-players. The old bucket's single hardcoded
+   `_get_gy_instants_sorceries()` resolver counted instant-OR-sorcery in the CONTROLLER'S graveyard
+   only — wrong on BOTH axes for this one real member. The new bucket correctly resolves Magnivore
+   to `graveyard_count:sym:sorcery:all`.
+
+None of the 8 pre-existing "graveyard"-bucket cards (Crackling Drake, Enigma Drake, Haughty Djinn,
+Kinetic Augur, Magnivore, Melek, a Seize the Storm token, Spellheart Chimera) nor any of the newly-
+covered 26 are in the registered 16-deck pool today (checked programmatically against
+`decks/modern_meta.py`), so this fix has no live matchup blast radius this session — same
+"no WR-anchor drift expected" situation 1d itself was in for the graveyard bucket.
+
+**Design:** New helper functions in `engine/oracle_parser.py` — `_normalize_gy_type` (canonical
+token from a captured type phrase; "" → `"any"`, spaces → underscores), `_normalize_gy_scope`
+(`"your opponents'"` → `"opponents"`; `"your"`/`"all"` pass through), `_detect_gy_formula`
+(`sym`/`goyf`/`power_only`, from whether the clause states a symmetric "power and toughness are
+each equal to", an asymmetric goyf-style "toughness is equal to that number plus 1", or neither).
+New `_GY_COUNT_RE` regex captures TYPE (0-3 words, non-greedy, directly before `card(s)` — same
+"parse generically, no enumeration at parse time" discipline as 1d's `permanent_count` word
+capture) and SCOPE (`your`/`all`/`your opponents'`). `detect_power_scaling` tries the new
+structured regex FIRST inside the existing per-clause loop; if it matches, returns
+`graveyard_count:<formula>:<type>:<scope>`. If it doesn't (a compound clause the structured shape
+can't parse — Crackling Drake's `"...you own in exile and in your graveyard"`, which breaks the
+required `cards? in <scope> graveyard(s)` adjacency), falls through to the ORIGINAL `gy_pattern`
+anchor check unchanged, returning the legacy bare `"graveyard"` string — zero behavior change for
+the one card (Crackling Drake) that doesn't fit the structured shape. Seize the Storm and Melek DO
+match the new structured regex (their "twice"/"plus flashback cards" extra clauses sit outside the
+`cards? in <scope> graveyard(s)` span the regex anchors on) but the extra clause's contribution
+isn't modeled by either the old or the new bucket — numerically identical output before and after,
+just under a more precisely-parameterized bucket name; documented here as a known, unchanged gap
+rather than silently left ambiguous.
+
+`CardInstance._get_graveyard_type_count(type_word, scope)` (`engine/cards.py`) is the resolution
+side, generalizing `_get_gy_instants_sorceries` (hardcoded instant-or-sorcery, controller-only) the
+same way 1d's `_get_permanent_type_count` generalized `_get_artifact_count`. Scope dispatch:
+`your` → controller's graveyard only; `opponents` → every OTHER player's graveyard; `all` → every
+player's graveyard. Type dispatch recognizes `any`/`card` (no filter), `creature`, `artifact`,
+`land`, `nonbasic_land` (land minus `Supertype.BASIC`), `sorcery`, `instant`,
+`instant_and_sorcery`/`instant_sorcery`, `enchantment`, `planeswalker`, `permanent` (any card type
+except instant/sorcery), and `noncreature_nonland` (Dragonfly Swarm's real shape, found during the
+DB census); an unrecognized token falls back to counting every card, matching
+`_get_permanent_type_count`'s "don't return a silent 0 for a word this dispatch doesn't know"
+discipline. `_dynamic_base_power`/`_dynamic_base_toughness` both dispatch on a
+`scaling.startswith("graveyard_count:")` check placed immediately after the (unchanged) legacy
+`scaling == "graveyard"` check — power always returns the raw count (`sym` and `goyf` agree on
+power; only toughness differs), toughness returns the count for `sym`, `count + 1` for `goyf`
+(mirroring `tarmogoyf`'s own `+1` offset), and the untouched `_effective_printed_toughness()` for
+`power_only` — the fix for bug 1 above.
+
+**No double-credit risk** (per `tests/test_construct_no_double_credit.py`'s precedent, which this
+task was explicitly told to be aware of): the graveyard-census family and the Construct-token
+`for each artifact you control` pattern are mutually exclusive regex branches inside
+`_dynamic_base_power`/`_dynamic_base_toughness` — a card can only take ONE of the `if
+scaling == ...` branches per call, so a graveyard-count creature can never ALSO pick up the
+artifact-scaling fallback's bonus. `ai/ev_evaluator.py::creature_threat_value`'s
+`THREAT_SCALING_FUTURE_VP` virtual-power bonus (the mechanism that test file guards) only fires on
+oracle text matching `for each (artifact|creature|land|card)` — none of the 26 graveyard-count
+cards' oracle text contains the literal words "for each" adjacent to a type word in that shape
+(verified: the phrase these cards use is "the number of ... in ... graveyard", never "for each"),
+so no double-credit path exists between this fix and that AI-side bonus either.
+
+**Tests (failing-first):** `tests/test_graveyard_count_cda.py` (26 tests) —
+`TestDetectGraveyardCountScaling` (6, parser unit tests: symmetric/power-only/goyf formula
+detection, artifact type, all/your/opponents scope, no-scaling negative control),
+`TestGraveyardCountFallbackPreservesLegacyBehavior` (2, Crackling Drake's compound-zone shape
+still resolves to the legacy `"graveyard"` string, both a synthetic fixture and the real DB card),
+`TestExcludedShapesUncaught` (2, Death's Shadow and Multani regression guards for shapes 1 and 3),
+`TestRealCardsGetGraveyardCountBucket` (7, real-DB structured-field integration: Mortivore,
+Necrogoyf, Lhurgoyf, Consuming Aberration, Magnivore's fixed-bug assertion, Enigma Drake's
+fixed-bug assertion, a DB-wide class-size floor of 15), `TestLiveGraveyardCountPT` (9, live P/T
+computation: symmetric both-stats-equal-count, goyf toughness-plus-one, power-only toughness-stays-
+printed — the bug-1 fix, made concrete — your/opponents/all scope filtering, any-type counts
+everything, nonbasic-land excludes basics, zero-graveyard-cards edge case). Also extended
+`tests/test_permanent_count_cda.py`'s pre-existing positive-control test (now asserts the new
+parameterized bucket name instead of the old bare `"graveyard"` string, since that specific
+fixture — "power is equal to the number of instant and sorcery cards in your graveyard" — is
+exactly the power-only shape bug 1 above fixes) and its Murktide Regent regression guard (now also
+checks the card doesn't fall into the new `graveyard_count:` family, not just the old literal
+string).
+
+Full suite (`python -m pytest tests/ -q --deselect tests/test_etb_graveyard_return.py`): 2506
+passed, 22 skipped, 4 deselected, 2 xfailed, 0 failed (332.64s), including the 26 new tests in
+this item. All 4 ratchets clean (`check_abstraction.py`: 0 hits, unaffected —
+this item touches no card names; `check_magic_numbers.py`: 13/13, unaffected — `engine/`-only;
+`check_zone_mutation.py`: 102/102, unaffected — no zone mutation in this item;
+`check_doc_hygiene.py`: clean). No WR-anchor drift: none of the affected cards (8 pre-existing +
+26 newly-covered) are in the registered 16-deck pool, so `tools/refresh_wr_baseline.py` was not
+needed — verified by grepping `decks/modern_meta.py`'s full card pool against every name this item
+touches, zero hits (344 unique card names checked across all registered decks' main+sideboards).
+
+**Flaky-test note, investigated and ruled out:** one full-suite run surfaced a single
+`tests/test_wr_baseline_anchor.py` failure (`Boros Energy vs Ruby Storm`, seed 50500 — baseline
+`Ruby Storm` win, actual `draw`) that did NOT reproduce on any of 5 subsequent runs (4× isolated,
+1× via `git stash` A/B against clean HEAD — both pre- and post-fix code pass this exact case every
+time it was re-run). Neither deck carries a card this item touches (confirmed by the same
+zero-hits sweep above), so there is no causal path from this fix to that matchup's outcome; the
+single failure is attributed to transient load on a machine running several concurrent
+rules-foundation sessions in parallel (visible via `git worktree list` — 5+ sibling worktrees
+active), not a regression. No baseline refresh performed for this entry.
+
+No replay demonstrates this fix for the same reason 1d's own graveyard-bucket
+false-positive fix had none: the affected cards aren't in any currently-simulated deck; the
+unit/integration tests above (plus the real-DB structured-field assertions) are the authoritative
+verification, matching this program's established precedent for fixes whose trigger conditions
+don't occur under the current 16-deck pool's own AI policy (see 1a's Metallic Rebuke note, the
+burn-damage cluster's Grapeshot note, and 1d's own graveyard-bucket precedent for the same
+pattern).
+
 ## Verification convention (every item)
 Failing test first, rule-phrased name (mechanic, not card — card names live only in fixture-carrier
 constants/docstrings). `python -m pytest tests/ -q` full suite (now feasible in ~4-5 min per-session,

@@ -113,13 +113,26 @@ class TestGraveyardScalingRequiresPTAnchor:
         """Positive control: a genuine continuous CDA in this family
         (power is equal to the number of instant/sorcery cards in
         your graveyard) must still be detected — the P/T-anchor guard
-        must not overcorrect into a false negative."""
+        must not overcorrect into a false negative.
+
+        Returns the structured `graveyard_count:power_only:
+        instant_and_sorcery:your` bucket (the CDA coverage extension
+        generalized the old bare "graveyard" string into a
+        formula/type/scope-parameterized bucket — see
+        tests/test_graveyard_count_cda.py). This is a power-ONLY CDA
+        (no toughness clause), which the new bucket now tracks
+        correctly; the old bare "graveyard" bucket applied the same
+        count to toughness too, which was wrong for exactly this
+        shape (Enigma Drake/Haughty Djinn/Kinetic Augur/Spellheart
+        Chimera all share it in the real DB)."""
         oracle = (
             "Flying\n"
             "This creature's power is equal to the number of instant "
             "and sorcery cards in your graveyard."
         )
-        assert detect_power_scaling(oracle) == "graveyard"
+        assert detect_power_scaling(oracle) == (
+            "graveyard_count:power_only:instant_and_sorcery:your"
+        )
 
     def test_real_db_murktide_regent_not_graveyard_scaling(self, card_db):
         murktide = card_db.get_card("Murktide Regent")
@@ -130,6 +143,12 @@ class TestGraveyardScalingRequiresPTAnchor:
             "'graveyard' — its actual mechanism is delve-triggered "
             "+1/+1 counters (already modeled via plus_counters), not "
             "a continuous graveyard-count CDA."
+        )
+        assert not murktide.power_scales_with.startswith("graveyard_count:"), (
+            "Murktide Regent must also not fall into the generalized "
+            "graveyard_count:<formula>:<type>:<scope> bucket — same "
+            "reasoning as above, just re-checked against the new "
+            "bucket family."
         )
 
 

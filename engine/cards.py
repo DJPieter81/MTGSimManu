@@ -189,7 +189,9 @@ class CardTemplate:
     back_face_power: Optional[int] = None
     back_face_toughness: Optional[int] = None
     back_face_keywords: Set[Keyword] = field(default_factory=set)
-    power_scales_with: str = ""               # "domain", "tarmogoyf", "delirium", "graveyard"
+    power_scales_with: str = ""               # "domain", "tarmogoyf", "delirium", "graveyard",
+                                                # "permanent_count:<word>",
+                                                # "graveyard_count:<formula>:<type>:<scope>"
     # Splice onto Arcane: oracle-derived from "Splice onto Arcane {cost}"
     splice_cost: Optional[int] = None          # mana cost to splice (None = no splice)
     is_arcane: bool = False                    # True if subtype includes Arcane
@@ -561,6 +563,67 @@ class CardInstance:
         return sum(1 for c in player.graveyard
                    if c.template.is_instant or c.template.is_sorcery)
 
+    _GY_NONPERMANENT_TYPES = {CardType.INSTANT, CardType.SORCERY}
+
+    def _get_graveyard_type_count(self, type_word: str, scope: str) -> int:
+        """Count graveyard cards matching `type_word` across `scope`
+        — resolution side of the `graveyard_count:<formula>:<type>:
+        <scope>` CDA bucket (Mortivore/Bonehoard-class: "power and
+        toughness are each equal to the number of creature cards in
+        all graveyards"). Generalizes the narrow, hardcoded
+        `_get_gy_instants_sorceries` (instant/sorcery, controller-
+        only) the same way `_get_permanent_type_count` generalized
+        `_get_artifact_count` — parse generically, resolve
+        specifically, fall back to counting every card for an
+        unrecognized type word rather than returning 0.
+        """
+        if self._game_state is None:
+            return 0
+        if scope == 'your':
+            graveyards = [self._game_state.players[self.controller].graveyard]
+        elif scope == 'opponents':
+            graveyards = [p.graveyard for i, p in enumerate(self._game_state.players)
+                          if i != self.controller]
+        else:  # 'all'
+            graveyards = [p.graveyard for p in self._game_state.players]
+        cards = [c for gy in graveyards for c in gy]
+
+        word = type_word.lower()
+        if word in ('any', 'card'):
+            return len(cards)
+        if word == 'creature':
+            return sum(1 for c in cards if CardType.CREATURE in c.template.card_types)
+        if word == 'artifact':
+            return sum(1 for c in cards if CardType.ARTIFACT in c.template.card_types)
+        if word == 'land':
+            return sum(1 for c in cards if CardType.LAND in c.template.card_types)
+        if word == 'nonbasic_land':
+            return sum(1 for c in cards if CardType.LAND in c.template.card_types
+                       and Supertype.BASIC not in c.template.supertypes)
+        if word == 'sorcery':
+            return sum(1 for c in cards if CardType.SORCERY in c.template.card_types)
+        if word == 'instant':
+            return sum(1 for c in cards if CardType.INSTANT in c.template.card_types)
+        if word == 'enchantment':
+            return sum(1 for c in cards if CardType.ENCHANTMENT in c.template.card_types)
+        if word == 'planeswalker':
+            return sum(1 for c in cards if CardType.PLANESWALKER in c.template.card_types)
+        if word in ('instant_and_sorcery', 'instant_sorcery'):
+            return sum(1 for c in cards
+                       if CardType.INSTANT in c.template.card_types
+                       or CardType.SORCERY in c.template.card_types)
+        if word == 'permanent':
+            return sum(1 for c in cards
+                       if not (set(c.template.card_types) & self._GY_NONPERMANENT_TYPES))
+        if word == 'noncreature_nonland':
+            return sum(1 for c in cards
+                       if CardType.CREATURE not in c.template.card_types
+                       and CardType.LAND not in c.template.card_types)
+        # Unrecognized type word: count every card, matching
+        # _get_permanent_type_count's "don't return a silent 0"
+        # fallback discipline for words this dispatch doesn't know.
+        return len(cards)
+
     def _dynamic_base_power(self) -> int:
         """Calculate base power, accounting for domain and similar effects.
         Scaling type is detected at template load time from oracle text
@@ -592,6 +655,11 @@ class CardInstance:
             return self._effective_printed_power()
         if scaling == "graveyard":
             return self._effective_printed_power() + self._get_gy_instants_sorceries()
+        if scaling.startswith("graveyard_count:"):
+            formula, type_word, scope = scaling.split(":", 1)[1].split(":")
+            # "sym" and "goyf" both define power as the raw count —
+            # they differ only in toughness (see _dynamic_base_toughness).
+            return self._get_graveyard_type_count(type_word, scope)
 
         base = self._effective_printed_power()
         # Construct Token and similar: "gets +N/+N for each artifact you control"
@@ -650,6 +718,17 @@ class CardInstance:
             return self._effective_printed_toughness()
         if scaling == "graveyard":
             return self._effective_printed_toughness() + self._get_gy_instants_sorceries()
+        if scaling.startswith("graveyard_count:"):
+            formula, type_word, scope = scaling.split(":", 1)[1].split(":")
+            count = self._get_graveyard_type_count(type_word, scope)
+            if formula == "sym":
+                return count
+            if formula == "goyf":
+                return count + 1
+            # "power_only": toughness is NOT derived from the count at
+            # all (Enigma Drake-class — only power is a CDA; toughness
+            # stays at whatever the card is actually printed with).
+            return self._effective_printed_toughness()
 
         base = self._effective_printed_toughness()
         import re as _re

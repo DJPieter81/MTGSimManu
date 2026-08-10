@@ -395,11 +395,78 @@ def parse_domain_reduction(oracle: str) -> Optional[int]:
     return int(m.group(1)) if m else 1
 
 
+def _normalize_gy_type(raw: str) -> str:
+    """Turn a captured card-type phrase ("creature", "instant and
+    sorcery", "nonbasic land", "" for bare "cards") into a canonical
+    bucket token. Resolution-side dispatch (CardInstance._get_
+    graveyard_type_count) decides what each token means; this is
+    pure text normalization, mirroring _get_permanent_type_count's
+    "parse generically, resolve specifically" split."""
+    raw = raw.strip().lower().replace(',', '')
+    if not raw:
+        return "any"
+    return re.sub(r'\s+', '_', raw)
+
+
+def _normalize_gy_scope(raw: str) -> str:
+    """"your opponents'"/"your opponents" -> "opponents"; "your" and
+    "all" pass through unchanged."""
+    raw = raw.strip().lower()
+    if raw.startswith("your opponent"):
+        return "opponents"
+    return raw
+
+
+def _detect_gy_formula(clause: str) -> str:
+    """Which of the three real graveyard-census P/T shapes a clause
+    uses:
+    - "sym": "power and toughness are each equal to <count>" (both
+      stats share the same value — Mortivore, Apocalypse Demon, ...).
+    - "goyf": "power is equal to <count> and its toughness is equal
+      to that number plus 1" (Tarmogoyf's own asymmetric offset,
+      reused by Lhurgoyf/Urborg Lhurgoyf/Souls of the Lost — but NOT
+      Tarmogoyf itself, which is claimed by the earlier "card type"
+      bucket check before this function ever runs).
+    - "power_only": only power is defined by the count; toughness
+      stays at its own fixed printed value (Enigma Drake-class —
+      "power is equal to <count>" with no toughness clause at all).
+    """
+    if 'power and toughness are each equal to' in clause:
+        return 'sym'
+    if re.search(r'toughness is equal to that number plus (?:1|one)', clause):
+        return 'goyf'
+    return 'power_only'
+
+
+# "X's power [and toughness] [is/are each] equal to the number of
+# <TYPE?> card(s) in <SCOPE> graveyard(s)" — the generalized shape of
+# the graveyard-census CDA family (Mortivore/Bonehoard's "creature
+# cards in all graveyards" is one member of this family, not a shape
+# unto itself: verified against the full DB, 26 real cards share this
+# structure once TYPE and SCOPE are treated as parameters instead of
+# the original bucket's hardcoded "instant/sorcery, your graveyard
+# only"). TYPE is captured generically (0-3 words directly before
+# "card(s)") the same way permanent_count captures its noun — no
+# enumeration of which words are valid at parse time; resolution
+# (CardInstance._get_graveyard_type_count) decides what each token
+# means and falls back to counting every card for an unrecognized
+# token, matching permanent_count's fallback discipline.
+_GY_COUNT_RE = re.compile(
+    r'(?:power|toughness)[^.]*?equal to[^.]*?number of\s+'
+    r'((?:\S+\s+){0,3}?)cards?\s+in\s+'
+    r"(your opponents['’]?|your|all)\s+graveyards?"
+)
+
+
 def detect_power_scaling(oracle: str) -> str:
     """Detect dynamic P/T scaling from oracle text.
 
     Returns: "domain", "permanent_count:<word>", "tarmogoyf",
-    "delirium", "graveyard", or "".
+    "delirium", "graveyard_count:<formula>:<type>:<scope>",
+    "graveyard" (legacy fallback for graveyard-census clauses that
+    don't fit the structured TYPE/SCOPE shape — e.g. Crackling
+    Drake's "you own in exile and in your graveyard" compound zone),
+    or "".
     """
     oracle = oracle.lower()
     if 'basic land type' in oracle and ('power' in oracle or 'toughness' in oracle or 'equal' in oracle):
@@ -446,6 +513,12 @@ def detect_power_scaling(oracle: str) -> str:
         r'[^.]*?(?:instant|sorcery)[^.]*?graveyard'
     )
     for clause in split_abilities(oracle):
+        m = _GY_COUNT_RE.search(clause)
+        if m:
+            gy_type = _normalize_gy_type(m.group(1))
+            gy_scope = _normalize_gy_scope(m.group(2))
+            gy_formula = _detect_gy_formula(clause)
+            return f"graveyard_count:{gy_formula}:{gy_type}:{gy_scope}"
         if gy_pattern.search(clause):
             return "graveyard"
     return ""
