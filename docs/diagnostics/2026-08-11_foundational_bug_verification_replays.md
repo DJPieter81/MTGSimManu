@@ -11,13 +11,16 @@ tags: [verification, replay, foundational-bugs, combat, counterspell, dfc-transf
 summary: >
   Re-ran the 5 audit-seed Bo3 replays that exposed the 6 foundational bugs,
   against main after the Phase 0–2 remediation and the batch5 oracle migration
-  merged. 2 of 6 bugs are directly confirmed fixed by log evidence (Metallic
-  Rebuke now counters; Fable→Kiki-Jiki survives its transform as a creature).
-  The other 4 are inconclusive-by-replay because the merged fixes changed the
-  AI's plays, so the seeds no longer reproduce the exact board states that
-  exposed them — their deterministic per-bug unit tests remain the binding gate
-  and are green in the full CI suite. All 5 matches complete without crashes,
-  confirming the merged foundational code is stable across these matchups.
+  merged. 4 of 6 bugs are directly confirmed fixed by log evidence (#1 Cultivator
+  Colossus survives its CDA ETB as a 5/5; #2 Metallic Rebuke now counters;
+  #3 Fable→Kiki-Jiki survives its transform as a creature; #6 the 0-power-blocker
+  veto is retired — Ornithopter 0/2 and Arboreal Grazer 0/3 now block). #5's
+  class is active (emergency chump path fires with low-value creatures). #4
+  (two simultaneous lethal attackers vs a defender with blockers) was not
+  reproduced by a natural-game seed sweep — a rare board state — and remains
+  gated by its deterministic unit test. All per-bug unit tests are green in the
+  full CI suite. Every match completed without crashes, confirming the merged
+  foundational code is stable across these matchups.
 ---
 
 # Foundational bug-fix verification — audit-seed replays
@@ -70,9 +73,29 @@ artifact paths — confirming the Phase 0–2 merge plus the batch5 oracle migra
 
 ## Seed-sweep results (#1, #4)
 
-_Filled in when the focused sweep completes (Amulet vs slow shells for Colossus;
-big-creature vs blocker-fielding decks for the double-lethal state). Only logs
-containing confirming evidence are kept; the rest are discarded._
+Focused sweep: Amulet Titan vs slow shells (for Colossus to resolve) and
+big-creature vs blocker-fielding decks (for the double-lethal state). Kept only
+logs with confirming evidence.
+
+- **#1 Cultivator Colossus — CONFIRMED (multiple independent seeds).**
+  `replays/sweep_colossus_Dimir_Midrange_s61500.txt` and `…_s63000.txt` both show
+  `T8: Cast Cultivator Colossus` → `Resolve` → `Cultivator Colossus (5/5)` present
+  on the `Creatures:` board line across several subsequent turns (tapped from
+  attacking). The CDA resolves P/T = lands controlled (5) and the creature
+  survives its own ETB. `…_Azorius_Control_s61500.txt` is the removal-target
+  variant (resolves, then exiled by opponent Solitude — only possible on a live
+  creature). Zero `zero-toughness` self-destruct SBAs on any Colossus.
+- **#4 double-lethal block — NOT reproduced by the sweep.** The state (a defender
+  that *has* blockers, at ≤ 2×attacker-power life, facing two simultaneous lethal
+  attackers) did not occur in the sampled games; the one multi-attacker turn
+  observed had the defender at empty board (nothing to block with) or not at
+  lethal. This is expected — it is a narrow board state. It remains gated by its
+  deterministic unit test (`test_two_simultaneous_lethal_attackers_both_get_blocked_when_survivable`,
+  green in full CI); the optional mini-scenario harness below is the way to make
+  it replay-reproducible on demand.
+
+**Tally: 4 of 6 replay-confirmed** (#1, #2, #3, #6), **#5 class-active**,
+**#4 unit-test-only** (not reproduced by natural-game sweep).
 
 ## Follow-up (optional)
 

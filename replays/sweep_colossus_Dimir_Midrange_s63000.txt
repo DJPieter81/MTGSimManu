@@ -1,0 +1,1136 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+  Sideboard (Dimir Midrange vs Amulet Titan): +2 Flusterstorm, +2 Mystical Dispute, -2 Archmage's Charm, -2 Fatal Push
+======================================================================
+  GAME 1: Amulet Titan (P1) vs Dimir Midrange (P2)  —  seed 63000
+  Series: Amulet Titan 0 - 0 Dimir Midrange
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Dimir Midrange wins → chooses to play first
+║ P1 (on play): Dimir Midrange
+║ P2 (on draw): Amulet Titan
+╚═══════════════════════════════════════════════════════
+
+P1 (Amulet Titan) opening hand (3 lands, 4 spells):
+  • Malevolent Rumble [Spell, CMC 2]
+  • Spelunking [Spell, CMC 3]
+  • Green Sun's Zenith [Spell, CMC 1]
+  • Arboreal Grazer [Creature, CMC 1]
+  • Boseiju, Who Endures [Land, CMC 0]
+  • Boseiju, Who Endures [Land, CMC 0]
+  • Urza's Saga [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Arboreal Grazer, Green Sun's Zenith, Spelunking, 4 cheap spells
+
+P2 (Dimir Midrange) opening hand (3 lands, 4 spells):
+  • Island [Land, CMC 0]
+  • Polluted Delta [Land, CMC 0]
+  • Thoughtseize [Spell, CMC 1]
+  • Darkslick Shores [Land, CMC 0]
+  • Archmage's Charm [Spell, CMC 3]
+  • Consider [Spell, CMC 1]
+  • Psychic Frog [Creature, CMC 2]
+→ P2 KEEPS 7 — has key card(s): Consider, Psychic Frog, Thoughtseize, 4 cheap spells
+
+
+╔══ TURN 1 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Polluted Delta
+T1 P2: Crack Polluted Delta (pay 1 life) -> Watery Grave (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Dimir Midrange 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Simic Growth Chamber
+  [Main 1]
+T1 P1: Play Boseiju, Who Endures
+    → Goal: deploy_engine [enablers]
+    [Mana] Tap Boseiju, Who Endures→G (paying for Arboreal Grazer, 1 mana remaining)
+T1 P1: Cast Arboreal Grazer (G)
+    [Priority] P2 passes (no response)
+T1: Resolve Arboreal Grazer
+T1 P1: Simic Growth Chamber ETB returns Boseiju, Who Endures to hand
+T1 P1: Arboreal Grazer puts Simic Growth Chamber onto battlefield
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Lands: Simic Growth Chamber [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Counterspell
+  [Main 1]
+T2 P2: Play Island
+    → Goal: grind_value [enablers]
+    [Mana] Tap Island→U (paying for Consider, 2 mana remaining)
+T2 P2: Cast Consider (U)
+    [Priority] P1 passes (no response)
+T2: Resolve Consider
+T2 P2: Consider → draw 1 (Counterspell)
+    → Goal: grind_value
+    [Mana] Tap Watery Grave→B (paying for Thoughtseize, 1 mana remaining)
+T2 P2: Cast Thoughtseize (B)
+    [Priority] P1 passes (no response)
+T2: Resolve Thoughtseize
+T2: Spelunking moved hand -> graveyard (forced discard)
+T2 P2: Thoughtseize → opponent discards 1
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Dimir Midrange 17
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Lands: Simic Growth Chamber
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Primeval Titan
+  [Main 1]
+T2 P1: Play Urza's Saga
+    → Goal: deploy_engine [enablers]
+    [Mana] Tap Simic Growth Chamber→GU (paying for Green Sun's Zenith, 3 mana remaining)
+T2 P1: Cast Green Sun's Zenith (2G) (X=2)
+    [Priority] P2 passes (no response)
+T2: Resolve Green Sun's Zenith
+T2 P1: Green Sun's Zenith finds Dryad Arbor
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 17  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 3
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Island
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Dryad Arbor (1/1)
+║   Lands: Simic Growth Chamber [T], Urza's Saga [T], Dryad Arbor
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Dauthi Voidwalker
+  [Main 1]
+T3 P2: Play Darkslick Shores (untapped, 2 other lands)
+    → Goal: grind_value
+    [Mana] Tap Watery Grave→B, Darkslick Shores→B (paying for Dauthi Voidwalker, 3 mana remaining)
+T3 P2: Cast Dauthi Voidwalker (BB)
+    [Priority] P1 passes (no response)
+T3: Resolve Dauthi Voidwalker
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Dimir Midrange 17
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Dryad Arbor (1/1)
+║   Lands: Simic Growth Chamber, Urza's Saga, Dryad Arbor
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2)
+║   Lands: Watery Grave [T], Island, Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T3 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P1 draws: Spelunking
+  [Main 1]
+T3 P1: Play Boseiju, Who Endures
+    → Goal: ramp [enablers]
+    [Mana] Tap Urza's Saga→C, Dryad Arbor→G, Boseiju, Who Endures→G (paying for Spelunking, 5 mana remaining)
+T3 P1: Cast Spelunking (2G)
+    [Priority] P2 passes (no response)
+T3: Resolve Spelunking
+    → Goal: ramp
+    [Mana] Tap Simic Growth Chamber→GU (paying for Malevolent Rumble, 2 mana remaining)
+T3 P1: Cast Malevolent Rumble (1G)
+    [Priority] P2 passes (no response)
+T3: Resolve Malevolent Rumble
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 17  |  Amulet Titan 20
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 3
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2)
+║   Lands: Watery Grave, Island, Darkslick Shores
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Dryad Arbor (1/1) [tapped]
+║   Other: Spelunking
+║   Lands: Simic Growth Chamber [T], Urza's Saga [T], Dryad Arbor [T], Boseiju, Who Endures [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Spell Pierce
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Dauthi Voidwalker
+T4 P2: Attack with Dauthi Voidwalker
+T4 P1:   [BLOCK] Arboreal Grazer (0/3) blocks Dauthi Voidwalker (3/2) — lifespan_delta=+1.00
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T4: Arboreal Grazer dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Dimir Midrange 17
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 4
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1)
+║   Other: Spelunking
+║   Lands: Simic Growth Chamber, Urza's Saga, Dryad Arbor, Boseiju, Who Endures
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2) [tapped]
+║   Lands: Watery Grave, Island, Darkslick Shores
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T4 P1: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+  [Draw] P1 draws: Arboreal Grazer
+  [Main 1]
+T4 P1: Play Boseiju, Who Endures
+T4: Boseiju, Who Endures moved battlefield -> graveyard (SBA 704.5j: legend rule (Boseiju, Who Endures))
+    → Goal: ramp [enablers]
+    [Mana] Tap Dryad Arbor→G (paying for Arboreal Grazer, 5 mana remaining)
+T4 P1: Cast Arboreal Grazer (G)
+    [Priority] P2 responds with Counterspell
+    [Mana] Tap Island→U, Watery Grave→U (paying for Counterspell, 3 mana remaining)
+T4 P2: Cast Counterspell (UU)
+T4: Resolve Counterspell
+T4: Arboreal Grazer is countered
+T4 P1: Create 1x Construct token(s)
+T4 P1: Urza's Saga activates "{2}, {T}: Create a 0/0 colorless Constru..." (pays {2}, {T})
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 17  |  Amulet Titan 20
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 4
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2)
+║   Lands: Watery Grave, Island, Darkslick Shores
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1) [tapped], Construct Token (1/1)
+║   Other: Spelunking
+║   Lands: Simic Growth Chamber [T], Urza's Saga [T], Dryad Arbor [T], Boseiju, Who Endures [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Polluted Delta
+  [Main 1]
+T5 P2: Play Polluted Delta
+T5 P2: Crack Polluted Delta (pay 1 life) -> Watery Grave (tapped, life: 16)
+    → Goal: close_game
+    [Mana] Tap Island→U, Watery Grave→B (paying for Psychic Frog, 3 mana remaining)
+T5 P2: Cast Psychic Frog (UB)
+    [Priority] P1 passes (no response)
+T5: Resolve Psychic Frog
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Dauthi Voidwalker
+T5 P2: Attack with Dauthi Voidwalker
+T5 P1:   [BLOCK] Construct Token (1/1) blocks Dauthi Voidwalker (3/2) — lifespan_delta=+0.75
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T5: Construct Token dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Dimir Midrange 16
+║ Hand: 1 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 6
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1)
+║   Other: Spelunking
+║   Lands: Simic Growth Chamber, Urza's Saga, Dryad Arbor, Boseiju, Who Endures
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2) [tapped], Psychic Frog (1/2)
+║   Lands: Watery Grave [T], Island [T], Darkslick Shores, Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T5 P1: Urza's Saga tutors Amulet of Vigor
+T5 P1: Sacrifice Urza's Saga (final chapter)
+  [Draw] P1 draws: Gruul Turf
+  [Main 1]
+T5 P1: Play Gruul Turf (enters tapped)
+T5 P1: Amulet of Vigor untaps Gruul Turf
+T5 P1: Gruul Turf ETB returns Dryad Arbor to hand
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 16  |  Amulet Titan 20
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 46  |  Graveyard: 5
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2), Psychic Frog (1/2)
+║   Lands: Watery Grave, Island, Darkslick Shores, Watery Grave
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Spelunking, Amulet of Vigor
+║   Lands: Simic Growth Chamber, Boseiju, Who Endures, Gruul Turf
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Fatal Push
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Watery Grave→B (paying for Fatal Push, 4 mana remaining)
+T6 P2: Cast Fatal Push (B)
+    [Priority] P1 passes (no response)
+T6: Resolve Fatal Push
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Dauthi Voidwalker, Psychic Frog
+T6 P2: Attack with Dauthi Voidwalker, Psychic Frog
+  [Declare Blockers] P1 does not block
+T6 P2:   Dauthi Voidwalker (3/2) → 3 dmg to player
+T6 P2:   Psychic Frog (1/2) → 1 dmg to player
+T6 P2: Psychic Frog deals combat damage — draw a card
+  [Combat Damage] 4 damage dealt → P1 life: 20 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 16  |  Dimir Midrange 16
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 7
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Spelunking, Amulet of Vigor
+║   Lands: Simic Growth Chamber, Boseiju, Who Endures, Gruul Turf
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2) [tapped], Psychic Frog (1/2) [tapped]
+║   Lands: Watery Grave [T], Island, Darkslick Shores, Watery Grave
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Cultivator Colossus
+  [Main 1]
+T6 P1: Play Dryad Arbor
+    → Goal: ramp [payoffs]
+    [Mana] Tap Boseiju, Who Endures→G, Dryad Arbor→G, Simic Growth Chamber→GU, Gruul Turf→RG (paying for Primeval Titan, 6 mana remaining)
+T6 P1: Cast Primeval Titan (4GG)
+    [Priority] P2 responds with Counterspell
+    [Mana] Tap Island→U, Darkslick Shores→U (paying for Counterspell, 3 mana remaining)
+T6 P2: Cast Counterspell (UU)
+T6: Resolve Counterspell
+T6: Primeval Titan is countered
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 16  |  Amulet Titan 16
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 44  |  Graveyard: 7
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2), Psychic Frog (1/2)
+║   Lands: Watery Grave, Island, Darkslick Shores, Watery Grave
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1) [tapped]
+║   Other: Spelunking, Amulet of Vigor
+║   Lands: Simic Growth Chamber [T], Boseiju, Who Endures [T], Gruul Turf [T], Dryad Arbor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Fatal Push
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Watery Grave→B (paying for Fatal Push, 4 mana remaining)
+T7 P2: Cast Fatal Push (B)
+    [Priority] P1 passes (no response)
+T7: Resolve Fatal Push
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Dauthi Voidwalker, Psychic Frog
+T7 P2: Attack with Dauthi Voidwalker, Psychic Frog
+  [Declare Blockers] P1 does not block
+T7 P2:   Dauthi Voidwalker (3/2) → 3 dmg to player
+T7 P2:   Psychic Frog (1/2) → 1 dmg to player
+T7 P2: Psychic Frog deals combat damage — draw a card
+  [Combat Damage] 4 damage dealt → P1 life: 16 → 12
+  [End Combat]
+  [Main 2]
+T7 P2: Play Underground River
+  [End Step]
+
+╔══ TURN 7 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 12  |  Dimir Midrange 16
+║ Hand: 1 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 8
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1)
+║   Other: Spelunking, Amulet of Vigor
+║   Lands: Simic Growth Chamber, Boseiju, Who Endures, Gruul Turf, Dryad Arbor
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2) [tapped], Psychic Frog (1/2) [tapped]
+║   Lands: Watery Grave [T], Island, Darkslick Shores, Watery Grave, Underground River
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Spelunking
+  [Main 1]
+    → Goal: ramp [enablers]
+    [Mana] Tap Boseiju, Who Endures→G, Dryad Arbor→G, Simic Growth Chamber→GU (paying for Spelunking, 6 mana remaining)
+T7 P1: Cast Spelunking (2G)
+    [Priority] P2 passes (no response)
+T7: Resolve Spelunking
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 16  |  Amulet Titan 12
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 42  |  Graveyard: 8
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2), Psychic Frog (1/2)
+║   Lands: Watery Grave, Island, Darkslick Shores, Watery Grave, Underground River
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1) [tapped]
+║   Other: Spelunking, Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber [T], Boseiju, Who Endures [T], Gruul Turf, Dryad Arbor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Fatal Push
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Watery Grave→B (paying for Fatal Push, 5 mana remaining)
+T8 P2: Cast Fatal Push (B)
+    [Priority] P1 passes (no response)
+T8: Resolve Fatal Push
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Dauthi Voidwalker, Psychic Frog
+T8 P2: Attack with Dauthi Voidwalker, Psychic Frog
+  [Declare Blockers] P1 does not block
+T8 P2:   Dauthi Voidwalker (3/2) → 3 dmg to player
+T8 P2:   Psychic Frog (1/2) → 1 dmg to player
+T8 P2: Psychic Frog deals combat damage — draw a card
+  [Combat Damage] 4 damage dealt → P1 life: 12 → 8
+  [End Combat]
+  [Main 2]
+T8 P2: Play Island
+  [End Step]
+
+╔══ TURN 8 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 8  |  Dimir Midrange 16
+║ Hand: 1 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 44  |  Graveyard: 8
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1)
+║   Other: Spelunking, Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber, Boseiju, Who Endures, Gruul Turf, Dryad Arbor
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2) [tapped], Psychic Frog (1/2) [tapped]
+║   Lands: Watery Grave [T], Island, Darkslick Shores, Watery Grave, Underground River, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Urza's Saga
+  [Main 1]
+T8 P1: Play Urza's Saga
+    → Goal: ramp [payoffs]
+    [Mana] Tap Boseiju, Who Endures→G, Dryad Arbor→G, Urza's Saga→C, Simic Growth Chamber→GU, Gruul Turf→RG (paying for Cultivator Colossus, 7 mana remaining)
+T8 P1: Cast Cultivator Colossus (4GGG)
+    [Priority] P2 passes (no response)
+T8: Resolve Cultivator Colossus
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 16  |  Amulet Titan 8
+║ Hand: 3 cards  |  Opp hand: 0 cards
+║ Lands: 6  |  Opp lands: 5
+║ Library: 40  |  Graveyard: 9
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2), Psychic Frog (1/2)
+║   Lands: Watery Grave, Island, Darkslick Shores, Watery Grave, Underground River, Island
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1) [tapped], Cultivator Colossus (5/5)
+║   Other: Spelunking, Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber [T], Boseiju, Who Endures [T], Gruul Turf [T], Dryad Arbor [T], Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Darkslick Shores
+  [Main 1]
+T9 P2: Play Darkslick Shores (tapped, 6 other lands)
+    → Goal: close_game
+    [Mana] Tap Island→U, Island→U, Watery Grave→U (paying for Archmage's Charm, 6 mana remaining)
+T9 P2: Cast Archmage's Charm (UUU)
+    [Priority] P1 passes (no response)
+T9: Resolve Archmage's Charm
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Dauthi Voidwalker, Psychic Frog
+T9 P2: Attack with Dauthi Voidwalker, Psychic Frog
+T9 P1:   [BLOCK-EMERGENCY] Cultivator Colossus (5/5) blocks Dauthi Voidwalker (3/2) — lifespan_delta=+2.75
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T9 P2:   Psychic Frog (1/2) → 1 dmg to player
+T9 P2: Psychic Frog deals combat damage — draw a card
+T9: Dauthi Voidwalker dies
+  [Combat Damage] 1 damage dealt → P1 life: 8 → 7
+  [End Combat]
+  [Main 2]
+    → Goal: close_game
+T9 P2: Delve 5 cards for Murktide Regent
+    [Mana] Tap Darkslick Shores→U, Watery Grave→U (paying for Murktide Regent, 3 mana remaining)
+T9 P2: Cast Murktide Regent (5UU)
+    [Priority] P1 passes (no response)
+T9: Resolve Murktide Regent
+T9 P2: Murktide Regent enters as 6/6 (3 +1/+1 counters from delved instants/sorceries)
+  [End Step]
+
+╔══ TURN 9 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 7  |  Dimir Midrange 16
+║ Hand: 0 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 7
+║ Library: 43  |  Graveyard: 8
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1), Cultivator Colossus (5/5)
+║   Other: Spelunking, Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber, Boseiju, Who Endures, Gruul Turf, Dryad Arbor, Urza's Saga
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (1/2) [tapped], Murktide Regent (6/6)
+║   Lands: Watery Grave [T], Island [T], Darkslick Shores [T], Watery Grave [T], Underground River, Island [T], Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T9 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P1 draws: Crumbling Vestige
+  [Main 1]
+T9 P1: Play Crumbling Vestige (enters tapped)
+T9 P1: Amulet of Vigor untaps Crumbling Vestige
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Dryad Arbor, Cultivator Colossus
+T9 P1: Attack with Dryad Arbor, Cultivator Colossus
+  [Declare Blockers] P2 does not block
+T9 P1:   Dryad Arbor (1/1) → 1 dmg to player
+T9 P1:   Cultivator Colossus (6/6) → 6 dmg to player
+  [Combat Damage] 7 damage dealt → P2 life: 16 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 9  |  Amulet Titan 7
+║ Hand: 2 cards  |  Opp hand: 0 cards
+║ Lands: 7  |  Opp lands: 6
+║ Library: 38  |  Graveyard: 6
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (1/2), Murktide Regent (6/6)
+║   Lands: Watery Grave, Island, Darkslick Shores, Watery Grave, Underground River, Island, Darkslick Shores
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1) [tapped], Cultivator Colossus (6/6) [tapped]
+║   Other: Spelunking, Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber, Boseiju, Who Endures, Gruul Turf, Dryad Arbor [T], Urza's Saga, Crumbling Vestige
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Counterspell
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Island→U, Island→U, Watery Grave→U (paying for Archmage's Charm, 7 mana remaining)
+T10 P2: Cast Archmage's Charm (UUU)
+    [Priority] P1 passes (no response)
+T10: Resolve Archmage's Charm
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Psychic Frog, Murktide Regent
+T10 P2: Attack with Psychic Frog, Murktide Regent
+  [Declare Blockers] P1 does not block
+T10 P2:   Psychic Frog (1/2) → 1 dmg to player
+T10 P2: Psychic Frog deals combat damage — draw a card
+T10 P2:   Murktide Regent (6/6) → 6 dmg to player
+P1 loses: life total 0
+  [Combat Damage] 7 damage dealt → P1 life: 7 → 0
+
+>>> Dimir Midrange wins Game 1 on turn 10 via damage
+    Final life: Amulet Titan=0  Dimir Midrange=9
+
+======================================================================
+  GAME 2: Amulet Titan (P1) vs Dimir Midrange (P2)  —  seed 63001
+  Series: Amulet Titan 0 - 1 Dimir Midrange
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Dimir Midrange wins → chooses to play first
+║ P1 (on play): Dimir Midrange
+║ P2 (on draw): Amulet Titan
+╚═══════════════════════════════════════════════════════
+
+P1 (Amulet Titan) opening hand (4 lands, 3 spells):
+  • Green Sun's Zenith [Spell, CMC 1]
+  • Arboreal Grazer [Creature, CMC 1]
+  • Primeval Titan [Creature, CMC 6]
+  • Gruul Turf [Land, CMC 0]
+  • Urza's Saga [Land, CMC 0]
+  • Gruul Turf [Land, CMC 0]
+  • Urza's Cave [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Arboreal Grazer, Green Sun's Zenith, 2 cheap spells
+
+P2 (Dimir Midrange) opening hand (3 lands, 4 spells):
+  • Thoughtseize [Spell, CMC 1]
+  • Polluted Delta [Land, CMC 0]
+  • Fatal Push [Spell, CMC 1]
+  • Flusterstorm [Spell, CMC 1]
+  • Drown in the Loch [Spell, CMC 2]
+  • Swamp [Land, CMC 0]
+  • Scalding Tarn [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Fatal Push, Thoughtseize, 4 cheap spells
+
+
+╔══ TURN 1 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Polluted Delta
+T1 P2: Crack Polluted Delta (pay 1 life) -> Watery Grave (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Dimir Midrange 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Forest
+  [Main 1]
+T1 P1: Play Forest
+    → Goal: deploy_engine [enablers]
+    [Mana] Tap Forest→G (paying for Arboreal Grazer, 1 mana remaining)
+T1 P1: Cast Arboreal Grazer (G)
+    [Priority] P2 passes (no response)
+T1: Resolve Arboreal Grazer
+T1 P1: Gruul Turf ETB returns Forest to hand
+T1 P1: Arboreal Grazer puts Gruul Turf onto battlefield
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Lands: Gruul Turf [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Darkslick Shores
+  [Main 1]
+T2 P2: Play Scalding Tarn
+T2 P2: Crack Scalding Tarn (pay 1 life) -> Watery Grave (tapped, life: 18)
+    → Goal: grind_value
+    [Mana] Tap Watery Grave→B (paying for Fatal Push, 1 mana remaining)
+T2 P2: Cast Fatal Push (B)
+    [Priority] P1 passes (no response)
+T2: Resolve Fatal Push
+T2: Arboreal Grazer dies
+T2 P2: Fatal Push destroys Arboreal Grazer
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Dimir Midrange 18
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Gruul Turf
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T], Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Green Sun's Zenith
+  [Main 1]
+T2 P1: Play Urza's Saga
+    → Goal: deploy_engine [enablers]
+    [Mana] Tap Gruul Turf→RG (paying for Green Sun's Zenith, 3 mana remaining)
+T2 P1: Cast Green Sun's Zenith (2G) (X=2)
+    [Priority] P2 passes (no response)
+T2: Resolve Green Sun's Zenith
+T2 P1: Green Sun's Zenith finds Dryad Arbor
+    → Goal: deploy_engine [enablers]
+    [Mana] Tap Dryad Arbor→G (paying for Green Sun's Zenith, 1 mana remaining)
+T2 P1: Cast Green Sun's Zenith (G)
+    [Priority] P2 passes (no response)
+T2: Resolve Green Sun's Zenith
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 18  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 3
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Watery Grave
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1) [tapped]
+║   Lands: Gruul Turf [T], Urza's Saga [T], Dryad Arbor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Murktide Regent
+  [Main 1]
+T3 P2: Play Swamp
+    → Goal: grind_value
+    [Mana] Tap Swamp→B (paying for Thoughtseize, 3 mana remaining)
+T3 P2: Cast Thoughtseize (B)
+    [Priority] P1 passes (no response)
+T3: Resolve Thoughtseize
+T3: Primeval Titan moved hand -> graveyard (forced discard)
+T3 P2: Thoughtseize → opponent discards 1
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Dimir Midrange 16
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 4
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1)
+║   Lands: Gruul Turf, Urza's Saga, Dryad Arbor
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Watery Grave, Swamp [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T3 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P1 draws: Urza's Saga
+  [Main 1]
+T3 P1: Play Urza's Cave
+  [Begin Combat]
+    [Mana] Tap Watery Grave→U, Watery Grave→B (paying for Drown in the Loch, 2 mana remaining)
+T3 P2: Cast Drown in the Loch (UB)
+T3: Resolve Drown in the Loch
+T3: Dryad Arbor dies
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 16  |  Amulet Titan 20
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 49  |  Graveyard: 5
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Watery Grave, Swamp
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Gruul Turf [T], Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Darkslick Shores
+  [Main 1]
+    → Goal: close_game
+T4 P2: Delve 5 cards for Murktide Regent
+    [Mana] Tap Watery Grave→U, Watery Grave→U (paying for Murktide Regent, 3 mana remaining)
+T4 P2: Cast Murktide Regent (5UU)
+    [Priority] P1 passes (no response)
+T4: Resolve Murktide Regent
+T4 P2: Murktide Regent enters as 6/6 (3 +1/+1 counters from delved instants/sorceries)
+T4 P2: Play Darkslick Shores (tapped, 3 other lands)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Dimir Midrange 16
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 6
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Gruul Turf, Urza's Saga
+║ Dimir Midrange board:
+║   Creatures: Murktide Regent (6/6)
+║   Lands: Watery Grave [T], Watery Grave [T], Swamp, Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T4 P1: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+  [Draw] P1 draws: Arboreal Grazer
+  [Main 1]
+T4 P1: Play Urza's Saga
+    → Goal: ramp [enablers]
+    [Mana] Tap Gruul Turf→RG (paying for Arboreal Grazer, 4 mana remaining)
+T4 P1: Cast Arboreal Grazer (G)
+    [Priority] P2 passes (no response)
+T4: Resolve Arboreal Grazer
+T4 P1: Gruul Turf ETB returns Gruul Turf to hand
+T4 P1: Arboreal Grazer puts Gruul Turf onto battlefield
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 16  |  Amulet Titan 20
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: Murktide Regent (6/6)
+║   Lands: Watery Grave, Watery Grave, Swamp, Darkslick Shores
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Lands: Urza's Saga, Urza's Saga, Gruul Turf [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Dauthi Voidwalker
+  [Main 1]
+T5 P2: Play Darkslick Shores (tapped, 4 other lands)
+    → Goal: close_game
+    [Mana] Tap Swamp→B, Watery Grave→B (paying for Dauthi Voidwalker, 4 mana remaining)
+T5 P2: Cast Dauthi Voidwalker (BB)
+    [Priority] P1 passes (no response)
+T5: Resolve Dauthi Voidwalker
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Murktide Regent
+T5 P2: Attack with Murktide Regent
+T5 P1:   [BLOCK] Arboreal Grazer (0/3) blocks Murktide Regent (6/6) — lifespan_delta=+0.67
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T5: Arboreal Grazer dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Dimir Midrange 16
+║ Hand: 2 cards  |  Opp hand: 1 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 48  |  Graveyard: 7
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Urza's Saga, Urza's Saga, Gruul Turf
+║ Dimir Midrange board:
+║   Creatures: Murktide Regent (6/6) [tapped], Dauthi Voidwalker (3/2)
+║   Lands: Watery Grave [T], Watery Grave, Swamp [T], Darkslick Shores, Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T5 P1: Urza's Saga tutors Amulet of Vigor
+T5 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+T5 P1: Sacrifice Urza's Saga (final chapter)
+  [Draw] P1 draws: Scapeshift
+  [Main 1]
+T5 P1: Play Gruul Turf (enters tapped)
+T5 P1: Amulet of Vigor untaps Gruul Turf
+T5 P1: Gruul Turf ETB returns Urza's Saga to hand
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 16  |  Amulet Titan 20
+║ Hand: 1 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 2
+║ Library: 47  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: Murktide Regent (6/6), Dauthi Voidwalker (3/2)
+║   Lands: Watery Grave, Watery Grave, Swamp, Darkslick Shores, Darkslick Shores
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor
+║   Lands: Gruul Turf, Gruul Turf
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Underground River
+  [Main 1]
+T6 P2: Play Underground River
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Murktide Regent, Dauthi Voidwalker
+T6 P2: Attack with Murktide Regent, Dauthi Voidwalker
+  [Declare Blockers] P1 does not block
+T6 P2:   Murktide Regent (6/6) → 6 dmg to player
+T6 P2:   Dauthi Voidwalker (3/2) → 3 dmg to player
+  [Combat Damage] 9 damage dealt → P1 life: 20 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 11  |  Dimir Midrange 16
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 2  |  Opp lands: 6
+║ Library: 46  |  Graveyard: 8
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor
+║   Lands: Gruul Turf, Gruul Turf
+║ Dimir Midrange board:
+║   Creatures: Murktide Regent (6/6) [tapped], Dauthi Voidwalker (3/2) [tapped]
+║   Lands: Watery Grave, Watery Grave, Swamp, Darkslick Shores, Darkslick Shores, Underground River
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Crumbling Vestige
+  [Main 1]
+T6 P1: Play Crumbling Vestige (enters tapped)
+T6 P1: Amulet of Vigor untaps Crumbling Vestige
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 16  |  Amulet Titan 11
+║ Hand: 1 cards  |  Opp hand: 3 cards
+║ Lands: 6  |  Opp lands: 3
+║ Library: 46  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: Murktide Regent (6/6), Dauthi Voidwalker (3/2)
+║   Lands: Watery Grave, Watery Grave, Swamp, Darkslick Shores, Darkslick Shores, Underground River
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor
+║   Lands: Gruul Turf, Gruul Turf, Crumbling Vestige
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Murktide Regent
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Murktide Regent, Dauthi Voidwalker
+T7 P2: Attack with Murktide Regent, Dauthi Voidwalker
+  [Declare Blockers] P1 does not block
+T7 P2:   Murktide Regent (6/6) → 6 dmg to player
+T7 P2:   Dauthi Voidwalker (3/2) → 3 dmg to player
+  [Combat Damage] 9 damage dealt → P1 life: 11 → 2
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 2  |  Dimir Midrange 16
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 6
+║ Library: 45  |  Graveyard: 8
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor
+║   Lands: Gruul Turf, Gruul Turf, Crumbling Vestige
+║ Dimir Midrange board:
+║   Creatures: Murktide Regent (6/6) [tapped], Dauthi Voidwalker (3/2) [tapped]
+║   Lands: Watery Grave, Watery Grave, Swamp, Darkslick Shores, Darkslick Shores, Underground River
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arboreal Grazer
+  [Main 1]
+T7 P1: Play Urza's Saga
+    → Goal: ramp [enablers]
+    [Mana] Tap Gruul Turf→RG (paying for Arboreal Grazer, 6 mana remaining)
+T7 P1: Cast Arboreal Grazer (G)
+    [Priority] P2 passes (no response)
+T7: Resolve Arboreal Grazer
+T7 P1: Amulet of Vigor untaps Forest
+T7 P1: Arboreal Grazer puts Forest onto battlefield
+    → Goal: ramp
+    [Mana] Tap Forest→G, Gruul Turf→RG (paying for Scapeshift, 6 mana remaining)
+T7 P1: Cast Scapeshift (2GG)
+    [Priority] P2 responds with Flusterstorm
+    [Mana] Tap Watery Grave→U (paying for Flusterstorm, 6 mana remaining)
+T7 P2: Cast Flusterstorm (U)
+T7: Resolve Flusterstorm
+T7: Scapeshift's controller pays 1 — not countered by Flusterstorm
+T7: Storm copies: 2
+T7: Scapeshift's controller pays 1 — not countered by Flusterstorm
+T7: Scapeshift is countered
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 16  |  Amulet Titan 2
+║ Hand: 1 cards  |  Opp hand: 0 cards
+║ Lands: 6  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: Murktide Regent (6/6), Dauthi Voidwalker (3/2)
+║   Lands: Watery Grave, Watery Grave, Swamp, Darkslick Shores, Darkslick Shores, Underground River
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor
+║   Lands: Gruul Turf [T], Gruul Turf [T], Crumbling Vestige [T], Urza's Saga [T], Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Counterspell
+  [Main 1]
+    → Goal: close_game
+T8 P2: Delve 1 cards for Murktide Regent
+    [Mana] Tap Swamp→B, Watery Grave→U, Watery Grave→U, Darkslick Shores→U, Darkslick Shores→U, Underground River→C (paying for Murktide Regent, 6 mana remaining)
+T8 P2: Cast Murktide Regent (5UU)
+    [Priority] P1 passes (no response)
+T8: Resolve Murktide Regent
+T8 P2: Murktide Regent enters as 4/4 (1 +1/+1 counters from delved instants/sorceries)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Murktide Regent, Dauthi Voidwalker
+T8 P2: Attack with Murktide Regent, Dauthi Voidwalker
+T8 P1:   [BLOCK-EMERGENCY] Arboreal Grazer (0/3) blocks Murktide Regent (6/6) — lifespan_delta=+100.15
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T8 P2:   Dauthi Voidwalker (3/2) → 3 dmg to player
+P1 loses: life total -1
+  [Combat Damage] 3 damage dealt → P1 life: 2 → -1
+
+>>> Dimir Midrange wins Game 2 on turn 8 via damage
+    Final life: Amulet Titan=-1  Dimir Midrange=16
+
+======================================================================
+  MATCH RESULT: Dimir Midrange wins 2-0
+======================================================================
