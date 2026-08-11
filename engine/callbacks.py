@@ -153,7 +153,7 @@ class DefaultCallbacks:
                 or "add {" in oracle
             )
             is_artifact_scaler = (
-                "for each artifact" in oracle
+                c.template.has_artifact_synergy
                 and ("equip {" in oracle or "equipped creature gets" in oracle)
             )
             cmc = c.template.cmc or 0

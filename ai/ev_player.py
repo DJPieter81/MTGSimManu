@@ -1344,8 +1344,7 @@ class EVPlayer:
         # Dovin's Veto / Negate can't target creature spells.
         # Gate positive EV when opponent's board is all creatures and hand
         # is likely all creatures too (aggro decks like Boros).
-        oracle_lower = (t.oracle_text or '').lower()
-        if ('counterspell' in tags and 'noncreature' in oracle_lower
+        if ('counterspell' in tags and t.counter_target_kind == 'noncreature_spell'
                 and snap.opp_creature_count >= 2
                 and snap.opp_power >= NONCREATURE_COUNTER_AGGRO_POWER
                 and snap.opp_hand_size <= NONCREATURE_COUNTER_AGGRO_HAND):
@@ -1993,10 +1992,7 @@ class EVPlayer:
             for c in me.battlefield:
                 if c is land:
                     continue
-                c_oracle = (c.template.oracle_text or '').lower()
-                if ('for each artifact' in c_oracle
-                        or 'metalcraft' in c_oracle
-                        or 'affinity for artifacts' in c_oracle):
+                if c.template.has_artifact_synergy:
                     synergy_signals += 1
             if synergy_signals > 0:
                 ev += synergy_signals * ARTIFACT_LAND_SYNERGY_BONUS
@@ -2509,9 +2505,8 @@ class EVPlayer:
             """
             if (c.power or 0) > 0:
                 return True
-            oracle = (c.template.oracle_text or '').lower()
-            # Damage-on-hit triggers (Ragavan, etc.)
-            if 'combat damage to a player' in oracle:
+            # Damage-on-hit triggers (Ragavan, etc.) — typed field from oracle_parser.
+            if c.template.has_combat_damage_player_trigger:
                 return True
             # On-attack triggers — typed field set at DB load time by
             # oracle_parser.parse_has_attack_trigger.
@@ -2538,15 +2533,15 @@ class EVPlayer:
         free_attackers = []
         non_free = []
         for c in valid:
-            # A creature with a triggered combat-damage ability (oracle-detected)
-            # has value even at 0 power (e.g. future designs). Pure 0-power
-            # creatures with no such trigger are excluded from free_attackers.
-            _oracle = (c.template.oracle_text or '').lower()
-            _cname = (c.template.name or '').lower().split(' //')[0].strip()
+            # A creature with a triggered combat-damage ability has value even at
+            # 0 power (e.g. future designs).  Pure 0-power creatures with no such
+            # trigger are excluded from free_attackers.
+            # Typed fields replace runtime oracle checks:
+            #   has_combat_damage_player_trigger — on-hit trigger (Ragavan class)
+            #   has_attack_trigger               — on-attack trigger (all forms)
             has_combat_trigger = (
-                'combat damage to a player' in _oracle
-                or 'whenever this creature attacks' in _oracle
-                or (_cname and f'whenever {_cname} attacks' in _oracle)
+                c.template.has_combat_damage_player_trigger
+                or getattr(c.template, 'has_attack_trigger', False)
             )
             deals_damage = (c.power or 0) > 0 or has_combat_trigger
 
@@ -2650,11 +2645,13 @@ class EVPlayer:
             trigger_bonus = 0.0
             if attack_plan:
                 for vc in attack_plan:
-                    c_oracle = (getattr(vc, 'oracle', None) or '').lower()
-                    if 'combat damage to a player' in c_oracle:
+                    # Typed field on VirtualCreature — replaces dead getattr(vc, 'oracle', None) check.
+                    if vc.has_combat_damage_player_trigger:
                         trigger_bonus += COMBAT_TRIGGER_DAMAGE_BONUS  # Ragavan: Treasure + exile ≈ 1.5 EV
-                    if 'whenever' in c_oracle and 'attacks' in c_oracle and '{e}' in c_oracle:
-                        trigger_bonus += COMBAT_ENERGY_TRIGGER_BONUS  # Guide of Souls energy
+                    # Energy-on-attack trigger (Guide of Souls) — different mechanic,
+                    # no typed field in batch-5 schema; left for a future batch.
+                    # Note: c_oracle was always '' on VirtualCreature (no oracle attr),
+                    # so this bonus was dead code; it remains a no-op until migrated.
 
             if attack_plan and (score_delta + trigger_bonus) > threshold:
                 attack_ids = {vc.instance_id for vc in attack_plan}
@@ -2671,8 +2668,7 @@ class EVPlayer:
         # Fallback: always send free attackers + creatures that can trade favorably
         safe = list(free_attackers)
         for c in non_free:
-            c_oracle = (c.template.oracle_text or "").lower()
-            has_combat_trigger = 'combat damage to a player' in c_oracle
+            has_combat_trigger = c.template.has_combat_damage_player_trigger
             if has_combat_trigger and (c.power or 0) > 0:
                 # e.g. Ragavan: attack if our power kills their best blocker (even trade gains trigger)
                 killable = [b for b in opp_blockers if (c.power or 0) >= (b.toughness or 0)]
@@ -2803,8 +2799,8 @@ class EVPlayer:
         t = card.template
         if CardType.PLANESWALKER in t.card_types:
             return True
-        oracle = (t.oracle_text or '').lower()
-        if 'escape—' in oracle:  # em-dash U+2014
+        # Escape creatures are expensive to recur — typed field replaces em-dash oracle check.
+        if t.escape_cost is not None:
             return True
         if getattr(t, 'has_attack_trigger', False):
             return True
@@ -2853,12 +2849,10 @@ class EVPlayer:
             tags = getattr(card.template, 'tags', None) or set()
             if 'wrath' in tags or 'board_wipe' in tags:
                 return True
-            oracle = (card.template.oracle_text or '').lower()
             if 'removal' in tags and (
-                'destroy target artifact' in oracle
-                or 'destroy target enchantment' in oracle
-                or 'destroy target nonland permanent' in oracle
-                or 'destroy all artifacts' in oracle
+                card.template.can_destroy_artifact
+                or card.template.can_destroy_enchantment
+                or card.template.can_destroy_nonland_permanent
             ):
                 return True
         return False

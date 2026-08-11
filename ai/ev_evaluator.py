@@ -889,19 +889,44 @@ def _has_self_etb_effect(oracle: str) -> bool:
     return False
 
 
-def _is_immediate_interaction(oracle: str, tags) -> bool:
+class _ImmediateInteractionTemplate:
+    """Minimal template shim for ``_is_immediate_interaction`` unit tests.
+
+    Production callers always pass the real ``CardTemplate``; tests that
+    call the function directly without a full DB load use this shim to
+    set only the two fields the function reads.  Using a class (not a
+    dataclass) to keep the import footprint zero.
+    """
+
+    def __init__(self, is_counterspell: bool = False,
+                 can_target_player: bool = False) -> None:
+        self.is_counterspell = is_counterspell
+        self.can_target_player = can_target_player
+
+
+def _is_immediate_interaction(oracle: str, tags, template) -> bool:
     """True if the spell directly affects stack / board on resolution:
     damage to a target, destroy/exile/counter a target permanent or
-    spell, or force a discard."""
+    spell, or force a discard.
+
+    ``template`` is a :class:`CardTemplate` whose pre-parsed typed fields
+    drive counterspell and player-targeting detection.  The caller in
+    `_enumerate_this_turn_signals` always has ``t = card.template``
+    available and passes it here; tests that exercise this function
+    directly should build a minimal template via
+    ``_ImmediateInteractionTemplate``.
+    """
     if 'removal' in tags or 'board_wipe' in tags or 'counterspell' in tags:
         return True
-    # Oracle-driven fallbacks.
+    # Oracle-driven fallbacks (damage, destroy, exile).
     if 'target' in oracle and (
             'deals' in oracle and 'damage' in oracle):
         return True
     if 'destroy target' in oracle or 'exile target' in oracle:
         return True
-    if 'counter target' in oracle:
+    # ``template.is_counterspell`` is the pre-parsed typed field covering
+    # all "counter target …" oracle wordings (oracle_parser.parse_is_counterspell).
+    if template.is_counterspell:
         return True
     # Targeted forced discard — Modern templating uses BOTH
     # "target opponent" (Duress form) and "target player"
@@ -910,8 +935,10 @@ def _is_immediate_interaction(oracle: str, tags) -> bool:
     # class forever (RC-2, docs/diagnostics/
     # 2026-07-05_goryos_field_13pct_root_cause.md).  Own-hand
     # looting has neither phrase, so it does not ride this branch.
-    if (('target player' in oracle or 'target opponent' in oracle)
-            and 'discard' in oracle):
+    # ``template.can_target_player`` covers all three oracle patterns
+    # ("any target" / "target player" / "target opponent") — the union
+    # is a strict superset of the old two-phrase OR.
+    if template.can_target_player and 'discard' in oracle:
         return True
     return False
 
@@ -1060,7 +1087,7 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
         signals.append('haste_dash_flash')
 
     # 4. Immediate interaction — damage, removal, counter, forced discard.
-    if _is_immediate_interaction(oracle, tags):
+    if _is_immediate_interaction(oracle, tags, t):
         signals.append('immediate_interaction')
 
     # 5. Card draw this turn — includes true draw, library-dig
@@ -1082,12 +1109,11 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
     # from a tutorable zone: library, sideboard, or outside-the-game
     # (Wish, Burning Wish, Living Wish, Glittering Wish).  The
     # signal fires unconditionally; gating on "is there a target?"
-    # belongs to the EV layer, not the deferral predicate (the
-    # existing `search your library` branch is the same — it does
-    # not check whether the library contains a hit).
-    if ('search your library' in oracle
-            or 'from outside the game' in oracle
-            or 'from your sideboard' in oracle):
+    # belongs to the EV layer, not the deferral predicate.
+    # ``t.is_tutor`` covers all three oracle patterns at parse time:
+    # "search your library" / "from outside the game" / "from your
+    # sideboard" (oracle_parser.parse_is_tutor).
+    if t.is_tutor:
         signals.append('tutor')
 
     # 7. Creature body with power > 0 (future combat clock contribution).
@@ -1148,7 +1174,10 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
             signals.append('cost_reducer_active')
 
     # 11. Counterspell with a counterable stack target.
-    if (('counter target' in oracle or 'counterspell' in tags)
+    # ``t.is_counterspell`` is the pre-parsed typed field; the
+    # 'counterspell' tag membership check covers cards that carry the
+    # tag without the exact "counter target" oracle wording.
+    if ((t.is_counterspell or 'counterspell' in tags)
             and game is not None and not game.stack.is_empty):
         signals.append('counterspell_with_target')
 
@@ -1366,7 +1395,8 @@ def _is_real_dig(card: "CardInstance") -> bool:
     of your library" / "look at the top N cards" / "search your
     library".  No card names; covers any future printing using the
     same templated wording."""
-    oracle = (card.template.oracle_text or '').lower()
+    t = card.template
+    oracle = (t.oracle_text or '').lower()
     if 'draw a card' in oracle or 'draw two card' in oracle:
         return True
     if 'draw three card' in oracle or 'draw cards' in oracle:
@@ -1376,7 +1406,9 @@ def _is_real_dig(card: "CardInstance") -> bool:
         return True
     if 'look at the top' in oracle:
         return True
-    if 'search your library' in oracle:
+    # ``t.is_tutor`` covers "search your library" and Wish-style
+    # fetch patterns at parse time (oracle_parser.parse_is_tutor).
+    if t.is_tutor:
         return True
     return False
 
@@ -2336,7 +2368,7 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
                 r'cards?', oracle)
             if m:
                 draws_n = max(draws_n, _parse_oracle_count(m.group(1)))
-        elif ('search your library' in oracle
+        elif (t.is_tutor
               and 'put them into your hand' in oracle):
             # Library-search tutors where ALL N searched cards go to
             # hand: Squadron Hawk ("put them into your hand"),
@@ -2513,13 +2545,16 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
         for creature in me.creatures:
             if _Kw.PROWESS in creature.keywords:
                 prowess_bonus += 1
-            else:
+            elif creature.template.has_noncreature_spell_cast_trigger:
+                # Prowess-variant: stat pump on noncreature-spell cast
+                # (e.g. Slickshot Show-Off +2/+0). Read pump size from
+                # oracle text; default +1 if the regex finds no explicit
+                # value (covers future "gets +1/+0" phrasings not matching
+                # the gets? pattern).
                 c_oracle = (creature.template.oracle_text or '').lower()
-                if 'noncreature spell' in c_oracle:
-                    import re
-                    pump = re.search(r'gets?\s+\+(\d+)/\+(\d+)', c_oracle)
-                    if pump:
-                        prowess_bonus += int(pump.group(1))
+                pump = re.search(r'gets?\s+\+(\d+)/\+(\d+)', c_oracle)
+                if pump:
+                    prowess_bonus += int(pump.group(1))
         if prowess_bonus > 0:
             projected.my_power += prowess_bonus
             # Prowess creatures are typically evasive (flying, haste)

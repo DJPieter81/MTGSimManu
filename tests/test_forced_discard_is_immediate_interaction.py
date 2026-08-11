@@ -21,7 +21,7 @@ the deferral predicate to the same rule.
 """
 from __future__ import annotations
 
-from ai.ev_evaluator import _is_immediate_interaction
+from ai.ev_evaluator import _is_immediate_interaction, _ImmediateInteractionTemplate
 
 
 # Oracle texts are the *templating forms*, lower-cased as the caller
@@ -50,31 +50,46 @@ PLAIN_CANTRIP = (
 )
 
 
+def _tmpl(can_target_player: bool = False,
+          is_counterspell: bool = False) -> _ImmediateInteractionTemplate:
+    """Convenience factory so tests can be written concisely."""
+    return _ImmediateInteractionTemplate(
+        is_counterspell=is_counterspell,
+        can_target_player=can_target_player,
+    )
+
+
 class TestForcedDiscardIsImmediateInteraction:
 
     def test_target_player_reveal_discard_is_immediate(self):
         assert _is_immediate_interaction(
-            TARGET_PLAYER_REVEAL_DISCARD, set()) is True
+            TARGET_PLAYER_REVEAL_DISCARD, set(),
+            _tmpl(can_target_player=True)) is True
 
     def test_target_player_reveal_discard_with_cmc_cap_is_immediate(self):
         assert _is_immediate_interaction(
-            TARGET_PLAYER_REVEAL_DISCARD_CMC_CAP, set()) is True
+            TARGET_PLAYER_REVEAL_DISCARD_CMC_CAP, set(),
+            _tmpl(can_target_player=True)) is True
 
     def test_target_opponent_reveal_discard_is_immediate(self):
         """Regression guard: the previously-covered templating stays
         covered."""
         assert _is_immediate_interaction(
-            TARGET_OPPONENT_REVEAL_DISCARD, set()) is True
+            TARGET_OPPONENT_REVEAL_DISCARD, set(),
+            _tmpl(can_target_player=True)) is True
 
     def test_target_player_random_discard_is_immediate(self):
         assert _is_immediate_interaction(
-            TARGET_PLAYER_RANDOM_DISCARD, set()) is True
+            TARGET_PLAYER_RANDOM_DISCARD, set(),
+            _tmpl(can_target_player=True)) is True
 
     def test_self_loot_is_not_forced_discard_interaction(self):
         """Own-hand looting (draw N, discard N) is card selection, not
         opponent interaction — it must NOT ride this branch.  (It has
         its own card_draw signal.)"""
-        assert _is_immediate_interaction(SELF_LOOT, set()) is False
+        assert _is_immediate_interaction(
+            SELF_LOOT, set(), _tmpl(can_target_player=False)) is False
 
     def test_plain_cantrip_is_not_immediate_interaction(self):
-        assert _is_immediate_interaction(PLAIN_CANTRIP, set()) is False
+        assert _is_immediate_interaction(
+            PLAIN_CANTRIP, set(), _tmpl(can_target_player=False)) is False
