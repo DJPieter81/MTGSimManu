@@ -167,19 +167,15 @@ def _threat_score(card, game=None, owner=None) -> float:
     remains monotonic without requiring game state.
     """
     t = card.template
-    oracle = (t.oracle_text or '').lower()
 
     # Preferred path: marginal-contribution formula on a single scale.
     if game is not None and owner is not None:
         from ai.permanent_threat import permanent_threat
         base = permanent_threat(card, owner, game)
-        if t.is_creature and 'ward' in oracle:
-            import re as _re
+        if t.is_creature and t.ward_cost > 0:
             from ai.clock import mana_clock_impact
             from ai.ev_evaluator import BASELINE_SNAPSHOT
-            m = _re.search(r'ward\s*\{?(\d+)\}?', oracle)
-            ward_cost = int(m.group(1)) if m else 3
-            base -= ward_cost * mana_clock_impact(BASELINE_SNAPSHOT) * 20.0
+            base -= t.ward_cost * mana_clock_impact(BASELINE_SNAPSHOT) * 20.0
         return base
 
     # Context-free fallback path (legacy callsites with no game in
@@ -188,12 +184,9 @@ def _threat_score(card, game=None, owner=None) -> float:
     if t.is_creature:
         from ai.ev_evaluator import creature_threat_value, BASELINE_SNAPSHOT
         base = creature_threat_value(card, BASELINE_SNAPSHOT)
-        if 'ward' in oracle:
-            import re as _re
+        if t.ward_cost > 0:
             from ai.clock import mana_clock_impact
-            m = _re.search(r'ward\s*\{?(\d+)\}?', oracle)
-            ward_cost = int(m.group(1)) if m else 3
-            base -= ward_cost * mana_clock_impact(BASELINE_SNAPSHOT) * 20.0
+            base -= t.ward_cost * mana_clock_impact(BASELINE_SNAPSHOT) * 20.0
         return base
     return float(t.cmc or 0)
 

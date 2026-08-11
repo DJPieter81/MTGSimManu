@@ -440,13 +440,13 @@ class ResponseDecider:
             if (skip_counter_for_this_creature
                     and cost > PITCH_COUNTER_FREE_COST):
                 continue
-            # Targeting restrictions from oracle text
-            oracle = (instant.template.oracle_text or '').lower()
+            # Targeting restrictions from typed field (counter_target_kind).
             target_spell = stack_item.source.template
-            if 'noncreature' in oracle and target_spell.is_creature:
+            if (instant.template.counter_target_kind == 'noncreature_spell'
+                    and target_spell.is_creature):
                 continue
-            if ('instant or sorcery' in oracle
-                and not (target_spell.is_instant or target_spell.is_sorcery)):
+            if (instant.template.counter_target_kind == 'instant_or_sorcery_spell'
+                    and not (target_spell.is_instant or target_spell.is_sorcery)):
                 continue
             counter_candidates.append((cost, instant))
 
@@ -1042,7 +1042,7 @@ class ResponseDecider:
                 power_bonus = int(m.group(1))
             # Scaling equipment (Cranial Plating / Nettlecyst): count
             # matching permanents for a truer virtual-power estimate.
-            if 'for each artifact' in oracle:
+            if template.has_artifact_synergy:
                 # Scaler grows with opponent's (caster's) artifact board.
                 from engine.cards import CardType as _CT
                 power_bonus += sum(1 for c in opp_player.battlefield

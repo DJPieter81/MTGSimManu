@@ -112,6 +112,9 @@ class VirtualCreature:
     cmc: int = 0
     damage_marked: int = 0
     has_etb: bool = False
+    # Typed field — replaces getattr(vc, 'oracle', None) oracle check in ev_player.py.
+    # Populated by extract_virtual_board from card.template.has_combat_damage_player_trigger.
+    has_combat_damage_player_trigger: bool = False
 
     @property
     def is_dead(self) -> bool:
@@ -130,6 +133,7 @@ class VirtualCreature:
             cmc=self.cmc,
             damage_marked=self.damage_marked,
             has_etb=self.has_etb,
+            has_combat_damage_player_trigger=self.has_combat_damage_player_trigger,
         )
 
 
@@ -1204,6 +1208,8 @@ def extract_virtual_board(game: "GameState", player_idx: int) -> VirtualBoard:
             value=_permanent_value(card, controller, game, controller_idx),
             cmc=card.template.cmc or 0,
             has_etb="etb_value" in card.template.tags,
+            has_combat_damage_player_trigger=getattr(
+                card.template, 'has_combat_damage_player_trigger', False),
         )
 
     def to_virtual_spell(card) -> VirtualSpell:

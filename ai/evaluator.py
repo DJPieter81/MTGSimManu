@@ -327,7 +327,7 @@ def _ability_bonus(card, template=None) -> float:
     # same as `search for up to 3 cards` (Squadron Hawk) — same
     # blindspot the audit doc names. Singular `search for a card`
     # falls through to baseline +1.
-    if 'search your library' in oracle:
+    if template.is_tutor:
         tutor_match = re.search(
             r'search your library for (?:up to\s+)?(\w+)\s+cards?',
             oracle)

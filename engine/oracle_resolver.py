@@ -921,7 +921,8 @@ def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
 
         # ── "Whenever you cast a noncreature spell, you get {E}" ──
         # Matches Ocelot Pride and any future card with this exact trigger.
-        if ('noncreature spell' in oracle and 'you get' in oracle
+        if (permanent.template.has_noncreature_spell_cast_trigger
+                and 'you get' in oracle
                 and '{e}' in oracle and not spell_cast.template.is_creature
                 and permanent.controller == caster_idx
                 and 'create' not in oracle):  # exclude token-creators to avoid double-fire
@@ -931,7 +932,8 @@ def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
             game.produce_energy(caster_idx, energy_count, permanent.name)
 
         # ── "Whenever you cast a noncreature spell, create a token" ──
-        if ('noncreature spell' in oracle and 'create' in oracle
+        if (permanent.template.has_noncreature_spell_cast_trigger
+                and 'create' in oracle
                 and 'token' in oracle and not spell_cast.template.is_creature):
             m = re.search(r'create\s+(?:a|(\d+))\s+(\d+)/(\d+)', oracle)
             if m:
@@ -956,7 +958,8 @@ def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
         # docs/history/audits/2026-05-16_rules_audit.md, the surveil
         # mechanic now has a single dispatch path used by both
         # spell-cast-triggered permanents AND land/permanent ETBs.
-        if ('noncreature spell' in oracle and 'surveil' in oracle
+        if (permanent.template.has_noncreature_spell_cast_trigger
+                and 'surveil' in oracle
                 and not spell_cast.template.is_creature
                 and permanent.controller == caster_idx):
             m = re.search(r'surveil\s+(\d+)', oracle)
