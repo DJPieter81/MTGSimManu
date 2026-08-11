@@ -3265,21 +3265,30 @@ class EVPlayer:
         # in older sets) gate by oracle text rather than card name.
         can_hit_pw = ("any target" in oracle_text
                       or "planeswalker" in oracle_text)
+        # CR 601.2c: "target player" / "target opponent" / "any target" are
+        # the oracle phrases that permit direct-player targeting.  Spells
+        # worded "target creature or planeswalker" (Galvanic Discharge,
+        # Unholy Heat, etc.) cannot target players — excluding face from
+        # the candidate set for those spells is the fix for M10.
+        can_hit_player = ("any target" in oracle_text
+                          or "target player" in oracle_text
+                          or "target opponent" in oracle_text)
 
         candidates: List[Tuple[int, float, str]] = []
 
-        # ── Face (-1) ──
-        face_val = damage * self.profile.burn_face_mult
-        if opp.life <= self.profile.burn_low_life_threshold:
-            face_val = damage * self.profile.burn_face_low_life_mult
-        if not me.creatures and opp.life > self.profile.burn_low_life_threshold:
-            # No clock → face damage is near-worthless until we deploy.
-            face_val *= NO_CLOCK_FACE_VAL_MULTIPLIER
-        candidates.append((
-            -1, face_val,
-            f"→ face ({damage} dmg, life {opp.life} → "
-            f"{opp.life - damage}): face value {face_val:.2f}",
-        ))
+        # ── Face (-1) — only when the spell can legally target a player ──
+        if can_hit_player:
+            face_val = damage * self.profile.burn_face_mult
+            if opp.life <= self.profile.burn_low_life_threshold:
+                face_val = damage * self.profile.burn_face_low_life_mult
+            if not me.creatures and opp.life > self.profile.burn_low_life_threshold:
+                # No clock → face damage is near-worthless until we deploy.
+                face_val *= NO_CLOCK_FACE_VAL_MULTIPLIER
+            candidates.append((
+                -1, face_val,
+                f"→ face ({damage} dmg, life {opp.life} → "
+                f"{opp.life - damage}): face value {face_val:.2f}",
+            ))
 
         # ── Opp creatures (only if killable by this damage) ──
         for c in opp.creatures:
@@ -3346,22 +3355,28 @@ class EVPlayer:
         if Kw2.STORM in getattr(t, 'keywords', set()) and 'removal' in tags:
             return [-1]  # Grapeshot always goes face (storm copies auto-target)
         if dmg > 0:
-            if dmg >= opp.life:
-                return [-1]  # face = lethal, always go face
+            _oracle_ct = (t.oracle_text or "").lower()
+            _can_hit_player_ct = (
+                "any target" in _oracle_ct
+                or "target player" in _oracle_ct
+                or "target opponent" in _oracle_ct
+            )
+            if dmg >= opp.life and _can_hit_player_ct:
+                return [-1]  # face = lethal AND legal to target player
 
             # M10 (Aggro Pattern D / Fix 4): enumerate the FULL candidate
-            # set — face, opp creatures, AND opp planeswalkers (when the
-            # spell can target a PW per oracle) — and pick by a single
-            # comparator. The previous implementation iterated
+            # set — face (when legal), opp creatures, AND opp planeswalkers
+            # (when the spell can target a PW per oracle) — and pick by a
+            # single comparator. The previous implementation iterated
             # `opp.creatures` only, so a 3-loyalty Teferi never appeared
             # as a candidate and Boros sent Galvanic Discharge to face
             # instead of killing the planeswalker.
             candidates = self._enumerate_burn_targets(game, spell, dmg)
             if not candidates:
-                self._last_target_reason = (
-                    f"→ face ({dmg} dmg, life {opp.life} → "
-                    f"{opp.life - dmg}): no targets")
-                return [-1]
+                # No legal targets found — return empty list.  The caller
+                # (turn-planner / cast loop) skips spells with no targets
+                # rather than illegally directing them at a player.
+                return []
             best_id, best_val, best_why = max(candidates, key=lambda x: x[1])
             self._last_target_reason = best_why
             return [best_id]

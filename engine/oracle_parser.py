@@ -824,6 +824,17 @@ def derive_tags_from_oracle(oracle: str, keywords: set, card_types: set,
     if 'untap' in lower and 'enters tapped' in lower:
         tags.add("ramp")
 
+    # ETB land-from-hand: creature ETB puts a land card from hand onto the
+    # battlefield (Arboreal Grazer pattern). Clause-scoped so all five
+    # substrings must appear in the SAME ability paragraph (CR 603.1).
+    for ability in split_abilities(lower):
+        if ('when ' in ability and 'enters' in ability
+                and 'put' in ability and 'land' in ability
+                and 'from your hand' in ability
+                and 'onto the battlefield' in ability):
+            tags.add("etb_land_from_hand")
+            break
+
     # Token maker
     if 'create' in lower and 'token' in lower:
         tags.add("token_maker")

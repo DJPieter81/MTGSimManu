@@ -109,22 +109,30 @@ class TestGalvanicDischargeArtifactTargeting:
             f"Ornithopter effective power was {ornithopter.power}."
         )
 
-    def test_discharge_targets_face_when_opp_has_no_scaling_on_board(
+    def test_discharge_targets_creature_not_face_when_opp_has_no_scaling(
             self, card_db):
-        """Regression anchor — with no synergy currently in play, a
-        0/2 Ornithopter is a low-threat target and face damage is
-        worth more."""
+        """Regression anchor — with no scaling synergy in play, a
+        0/2 Ornithopter is the ONLY legal target for a
+        'target creature or planeswalker' spell (face is not a legal
+        target for that oracle wording). The spell must target the
+        creature, not face."""
         game = GameState(rng=random.Random(0))
         _add_to_battlefield(game, card_db, "Sacred Foundry", controller=0)
         discharge = _add_to_hand(game, card_db, "Galvanic Discharge",
                                   controller=0)
-        _add_to_battlefield(game, card_db, "Ornithopter", controller=1)
+        ornithopter = _add_to_battlefield(game, card_db, "Ornithopter",
+                                           controller=1)
         # No Plating, no scaling creatures, no metalcraft activation.
 
         player = EVPlayer(player_idx=0, deck_name="Boros Energy",
                           rng=random.Random(0))
         targets = player._choose_targets(game, discharge)
-        assert targets == [-1], (
-            f"Without a scaling synergy on opp's board, a 0/2 body is "
-            f"a worse target than face.  Got targets={targets}."
+        assert -1 not in targets, (
+            f"'target creature or planeswalker' spells must not target "
+            f"face (-1). Got targets={targets}."
+        )
+        assert targets == [ornithopter.instance_id], (
+            f"With only a 0/2 Ornithopter on board and a 'target "
+            f"creature or planeswalker' spell, the creature is the sole "
+            f"legal target. Got targets={targets}."
         )
