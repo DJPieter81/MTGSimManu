@@ -493,6 +493,41 @@ def parse_has_attack_trigger(oracle: str, name: str = "") -> bool:
     return False
 
 
+def parse_targets_creature_spell(oracle: str) -> bool:
+    """Return True when oracle text contains 'target creature spell'.
+
+    Matches any card (counterspell, ETB effect, triggered ability) whose
+    effect explicitly targets a creature spell on the stack — as opposed
+    to 'target creature' which hits the battlefield.  The 'spell' suffix
+    is the discriminator.
+
+    Examples: Essence Scatter ("Counter target creature spell."),
+    Subtlety ETB ("target creature spell or planeswalker spell").
+    """
+    return bool(oracle and 'target creature spell' in oracle.lower())
+
+
+def parse_targets_planeswalker_spell(oracle: str) -> bool:
+    """Return True when oracle text targets a planeswalker spell on the stack.
+
+    Two oracle phrasings qualify:
+      - 'target planeswalker spell'   — direct form (hypothetical; no widely
+                                        printed Modern card uses this phrasing
+                                        alone, but the parser must cover it)
+      - 'or planeswalker spell'       — chained-clause form used when the same
+                                        ability targets both types in sequence,
+                                        e.g. "target creature spell or planeswalker
+                                        spell" (Subtlety, Fangkeeper's Familiar).
+
+    Intentionally excluded: 'target creature or planeswalker' (no 'spell'
+    suffix) — that phrasing targets battlefield permanents, not stack objects.
+    """
+    if not oracle:
+        return False
+    lower = oracle.lower()
+    return 'target planeswalker spell' in lower or 'or planeswalker spell' in lower
+
+
 def parse_protection_from(oracle: str) -> frozenset:
     """Parse "protection from <color>" clauses (CR 702.16), including
     the compound "protection from X and from Y" form (e.g. Sanctifier
