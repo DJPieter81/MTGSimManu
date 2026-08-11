@@ -696,3 +696,42 @@ done
 - Test suite: `python -m pytest tests/ -q` — record N/M passing
 - Primary matchup WR: Boros vs Affinity N=20 @ seed 50000 (record current WR when changed)
 - Current Boros list: `grep -A1 "# rarakkyo\|# Rashek\|# RandomOctopus" decks/modern_meta.py | head -3`
+
+## Parallel Agent Merge Patterns
+
+When parallel agents touch overlapping files, sequential rebasing produces merge conflicts that are error-prone to resolve manually (orphan conflict markers, dropped lines). Two patterns eliminate this.
+
+### Pattern A — Schema/Consumer split (best for oracle migration and typed-field batches)
+
+Files like `oracle_parser.py`, `engine/cards.py`, `engine/card_database.py` are "schema" files touched by every batch. Consumer files (`land_manager.py`, `board_eval.py`, `permanent_effects.py`, etc.) are each touched by at most one batch.
+
+**Step 1 — one sequential commit on main:**
+Add ALL new parse functions, CardTemplate fields, and card_database.py population calls for the entire fan-out in a single commit. Update the ratchet baseline once.
+
+**Step 2 — parallel agents, each touching only their consumer file:**
+Each agent writes only the consumer-side change (replacing runtime oracle checks with typed-field reads). Consumer files are disjoint, so merges are conflict-free.
+
+Use this whenever a batch of work shares "schema" files but has independent "consumer" files.
+
+### Pattern B — Workflow pipeline with synthesis phase (for heterogeneous parallel work)
+
+When work cannot be cleanly partitioned by file, use the `Workflow` tool:
+
+```javascript
+// Phase 1: fan out agents, each in their own worktree
+const patches = await parallel(BATCHES.map(b => () =>
+  agent(b.prompt, {isolation: "worktree", schema: PATCH_SCHEMA})
+))
+// Phase 2: one synthesis agent applies all patches in sequence,
+// with full context of every other agent's changes — far better
+// at conflict resolution than a human doing sequential rebases.
+await agent(`Apply these patches cleanly in order: ${JSON.stringify(patches)}`)
+```
+
+Use this when the fan-out agents touch overlapping files and cannot be partitioned, or when the merge logic itself is non-trivial (e.g. a baseline.json must reflect the sum of all changes).
+
+### Decision rule
+
+- Work splits cleanly by consumer file → **Pattern A** (simpler, no Workflow overhead)
+- Work overlaps on shared files unavoidably → **Pattern B** (synthesis agent handles the merge)
+- Never: launch N parallel agents that all independently modify the same schema files and merge by hand — that's how orphaned conflict markers end up committed to a branch.
