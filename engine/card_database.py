@@ -1706,6 +1706,11 @@ class CardDatabase:
             parse_has_landfall, parse_has_library_search_opponent_trigger,
             parse_library_search_trigger_draws_card, parse_landfall_first_life_gain,
             parse_landfall_third_damage, parse_landfall_second_mana_colors,
+            parse_has_combat_damage_player_trigger,
+            parse_can_destroy_artifact, parse_can_destroy_enchantment,
+            parse_can_destroy_nonland_permanent,
+            parse_is_tutor, parse_has_noncreature_spell_cast_trigger,
+            parse_has_artifact_synergy,
         )
         oracle = template.oracle_text or ''
         template.ritual_mana = parse_ritual_mana(oracle)
@@ -1747,6 +1752,13 @@ class CardDatabase:
         template.landfall_first_life_gain = parse_landfall_first_life_gain(oracle)
         template.landfall_third_damage = parse_landfall_third_damage(oracle)
         template.landfall_second_mana_colors = parse_landfall_second_mana_colors(oracle)
+        template.has_combat_damage_player_trigger = parse_has_combat_damage_player_trigger(oracle)
+        template.can_destroy_artifact = parse_can_destroy_artifact(oracle)
+        template.can_destroy_enchantment = parse_can_destroy_enchantment(oracle)
+        template.can_destroy_nonland_permanent = parse_can_destroy_nonland_permanent(oracle)
+        template.is_tutor = parse_is_tutor(oracle)
+        template.has_noncreature_spell_cast_trigger = parse_has_noncreature_spell_cast_trigger(oracle)
+        template.has_artifact_synergy = parse_has_artifact_synergy(oracle)
 
         return template
 
