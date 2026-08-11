@@ -326,13 +326,11 @@ class PermanentEffects:
         player.life_gained_this_turn += amount
         game.log.append(f"T{game.display_turn} P{player_idx+1}: "
                         f"Gain {amount} life from {source} (life: {player.life})")
-        # Generic "whenever you gain life" triggers from oracle
+        # Generic "whenever you gain life, create a token" triggers — typed field,
+        # no runtime oracle-text inspection (see CardTemplate.has_lifegain_token_trigger).
         for creature in list(player.creatures):
-            oracle = (creature.template.oracle_text or '').lower()
-            if 'whenever you gain life' in oracle and 'create' in oracle and 'token' in oracle:
-                # Parse token type from oracle if possible
-                token_type = "cat" if "cat" in oracle else "creature"
-                game.create_token(player_idx, token_type, count=1)
+            if creature.template.has_lifegain_token_trigger:
+                game.create_token(player_idx, creature.template.lifegain_token_type, count=1)
                 break  # once per lifegain event
 
     # ─── SPELL EFFECTS ───────────────────────────────────────────

@@ -1133,3 +1133,41 @@ def extract_granted_ability(chapter_text: Optional[str]) -> Optional[str]:
     if ":" not in ability:
         return None
     return ability
+
+
+def parse_has_lifegain_token_trigger(oracle: str) -> bool:
+    """Return True if oracle creates a token whenever the controller gains life.
+
+    Three substrings must all appear in the oracle text:
+      - 'whenever you gain life'  — the trigger condition
+      - 'create'                  — the token-creation verb
+      - 'token'                   — the created object type
+
+    This replaces the runtime inline check in permanent_effects.gain_life()
+    that inspected oracle_text at every lifegain event.  Cards that merely
+    mention gaining life (Starscape Cleric) or creating tokens for other
+    reasons (activated abilities) do not match all three conditions and
+    return False.
+    """
+    if not oracle:
+        return False
+    lower = oracle.lower()
+    return ('whenever you gain life' in lower
+            and 'create' in lower
+            and 'token' in lower)
+
+
+def parse_lifegain_token_type(oracle: str) -> str:
+    """Return the creature subtype string for a lifegain-token trigger.
+
+    Examines the oracle text for a named creature subtype.  Currently
+    distinguishes 'cat' (Attended Healer, Cat Collector) from the generic
+    'creature' default.  The returned string is passed directly to
+    game.create_token() as the token_type argument.
+    """
+    if not oracle:
+        return 'creature'
+    lower = oracle.lower()
+    if 'cat' in lower:
+        return 'cat'
+    return 'creature'

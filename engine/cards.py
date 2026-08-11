@@ -237,6 +237,13 @@ class CardTemplate:
     # "Whenever [Card Name] attacks". Replaces runtime 'whenever...attacks'
     # in-oracle substring checks in ai/ and engine/.
     has_attack_trigger: bool = False
+    # Lifegain-token trigger (CR 603.2) — True when oracle creates a token
+    # whenever the controller gains life ("whenever you gain life … create …
+    # token").  Replaces the runtime oracle substring check in
+    # permanent_effects.gain_life().  Populated at load time by
+    # oracle_parser.parse_has_lifegain_token_trigger.
+    has_lifegain_token_trigger: bool = False
+    lifegain_token_type: str = "creature"  # subtype passed to create_token()
 
     def __post_init__(self) -> None:
         # Derive fields from oracle text for templates not loaded through
@@ -249,7 +256,9 @@ class CardTemplate:
                                         parse_splice_cost as _psc,
                                         parse_can_target_player as _pctp,
                                         parse_can_target_planeswalker as _pctpw,
-                                        parse_has_attack_trigger as _phat)
+                                        parse_has_attack_trigger as _phat,
+                                        parse_has_lifegain_token_trigger as _phltt,
+                                        parse_lifegain_token_type as _pltt)
             from .card_database import KEYWORD_MAP as _KM
             import re as _re
             if self.warp_cost is None:
@@ -273,6 +282,10 @@ class CardTemplate:
                 self.can_target_planeswalker = _pctpw(self.oracle_text)
             if not self.has_attack_trigger:
                 self.has_attack_trigger = _phat(self.oracle_text, self.name)
+            if not self.has_lifegain_token_trigger:
+                self.has_lifegain_token_trigger = _phltt(self.oracle_text)
+            if self.has_lifegain_token_trigger and self.lifegain_token_type == 'creature':
+                self.lifegain_token_type = _pltt(self.oracle_text)
             # Derive keywords from oracle text for synthetic templates that
             # were constructed with keywords=set(). DB-loaded templates
             # already have complete keyword sets from KEYWORD_MAP scanning;
