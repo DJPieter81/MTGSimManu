@@ -1,0 +1,1315 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+  Sideboard (Azorius Control vs Amulet Titan): +2 Mystical Dispute, -2 Prismatic Ending
+======================================================================
+  GAME 1: Amulet Titan (P1) vs Azorius Control (P2)  —  seed 61500
+  Series: Amulet Titan 0 - 0 Azorius Control
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Azorius Control wins → chooses to play first
+║ P1 (on play): Azorius Control
+║ P2 (on draw): Amulet Titan
+╚═══════════════════════════════════════════════════════
+
+P1 (Amulet Titan) opening hand (4 lands, 3 spells):
+  • Mirrorpool [Land, CMC 0]
+  • Amulet of Vigor [Spell, CMC 1]
+  • Echoing Deeps [Land, CMC 0]
+  • Shifting Woodland [Land, CMC 0]
+  • Crumbling Vestige [Land, CMC 0]
+  • Cultivator Colossus [Creature, CMC 7]
+  • Green Sun's Zenith [Spell, CMC 1]
+→ P1 KEEPS 7 — has key card(s): Amulet of Vigor, Green Sun's Zenith, 2 cheap spells
+
+P2 (Azorius Control) opening hand (2 lands, 5 spells):
+  • Teferi, Time Raveler [Spell, CMC 3]
+  • Flooded Strand [Land, CMC 0]
+  • Solitude [Creature, CMC 5]
+  • Counterspell [Spell, CMC 2]
+  • Flooded Strand [Land, CMC 0]
+  • Supreme Verdict [Spell, CMC 4]
+  • Isochron Scepter [Spell, CMC 2]
+→ P2 KEEPS 7 — has key card(s): Counterspell, Isochron Scepter, Solitude, Teferi, Time Raveler, 3 cheap spells
+
+
+╔══ TURN 1 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 20  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Flooded Strand
+T1 P2: Crack Flooded Strand (pay 1 life) -> Hallowed Fountain (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Azorius Control 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Urza's Saga
+  [Main 1]
+T1 P1: Play Crumbling Vestige (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 19  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Orim's Chant
+  [Main 1]
+T2 P2: Play Flooded Strand
+T2 P2: Crack Flooded Strand (pay 1 life) -> Hallowed Fountain (tapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Azorius Control 18
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arboreal Grazer
+  [Main 1]
+T2 P1: Play Urza's Saga
+    → Goal: deploy_engine [engines]
+    [Mana] Tap Urza's Saga→C (paying for Amulet of Vigor, 2 mana remaining)
+T2 P1: Cast Amulet of Vigor (1)
+    [Priority] P2 passes (no response)
+T2: Resolve Amulet of Vigor
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 18  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Hallowed Fountain
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige, Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Supreme Verdict
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Azorius Control 18
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige, Urza's Saga
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Hallowed Fountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T3 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P1 draws: Simic Growth Chamber
+  [Main 1]
+T3 P1: Play Simic Growth Chamber (enters tapped)
+T3 P1: Amulet of Vigor untaps Simic Growth Chamber
+T3 P1: Simic Growth Chamber ETB returns Urza's Saga to hand
+    → Goal: ramp [enablers]
+    [Mana] Tap Simic Growth Chamber→GU (paying for Arboreal Grazer, 3 mana remaining)
+T3 P1: Cast Arboreal Grazer (G)
+    [Priority] P2 passes (no response)
+T3: Resolve Arboreal Grazer
+T3 P1: Amulet of Vigor untaps Mirrorpool
+T3 P1: Arboreal Grazer puts Mirrorpool onto battlefield
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 18  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Hallowed Fountain
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige, Simic Growth Chamber [T], Mirrorpool
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wrath of the Skies
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Counterspell moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 4 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Azorius Control 18
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige, Simic Growth Chamber, Mirrorpool
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Hallowed Fountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Simic Growth Chamber
+  [Main 1]
+T4 P1: Play Simic Growth Chamber (enters tapped)
+T4 P1: Amulet of Vigor untaps Simic Growth Chamber
+T4 P1: Simic Growth Chamber ETB returns Mirrorpool to hand
+    → Goal: ramp
+    [Mana] Tap Simic Growth Chamber→GU (paying for Green Sun's Zenith, 5 mana remaining)
+T4 P1: Cast Green Sun's Zenith (4G) (X=4)
+    [Priority] P2 passes (no response)
+T4: Resolve Green Sun's Zenith
+T4 P1: Green Sun's Zenith finds Dryad Arbor
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 18  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 3
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Hallowed Fountain
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Dryad Arbor (1/1)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige [T], Simic Growth Chamber [T], Simic Growth Chamber [T], Dryad Arbor
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Teferi, Hero of Dominaria
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T5: Supreme Verdict moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 5 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Azorius Control 18
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 2
+║ Library: 48  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Dryad Arbor (1/1)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige, Simic Growth Chamber, Simic Growth Chamber, Dryad Arbor
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Hallowed Fountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Boseiju, Who Endures
+  [Main 1]
+T5 P1: Play Urza's Saga
+    → Goal: ramp [payoffs]
+    [Mana] Tap Dryad Arbor→G, Urza's Saga→C, Simic Growth Chamber→GU, Simic Growth Chamber→GU, Crumbling Vestige→C (paying for Cultivator Colossus, 7 mana remaining)
+T5 P1: Cast Cultivator Colossus (4GGG)
+    [Priority] P2 passes (no response)
+T5: Resolve Cultivator Colossus
+  [Begin Combat]
+T5 P2: Evoke Solitude (exile Orim's Chant)
+T5 P2: Cast Solitude (3WW)
+T5: Resolve Solitude
+T5: Cultivator Colossus moved battlefield -> exile (exiled)
+T5 P2: Solitude exiles Cultivator Colossus (opponent gains 5 life, now 25)
+T5 P2: Solitude sacrificed (evoke)
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 18  |  Amulet Titan 25
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 5
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Hallowed Fountain
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Dryad Arbor (1/1) [tapped]
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige [T], Simic Growth Chamber [T], Simic Growth Chamber [T], Dryad Arbor [T], Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Prismatic Ending
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→U, Hallowed Fountain→U (paying for Isochron Scepter, 2 mana remaining)
+T6 P2: Cast Isochron Scepter (2)
+    [Priority] P1 passes (no response)
+T6: Resolve Isochron Scepter
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 25  |  Azorius Control 18
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 2
+║ Library: 47  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Dryad Arbor (1/1)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige, Simic Growth Chamber, Simic Growth Chamber, Dryad Arbor, Urza's Saga
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Isochron Scepter
+║   Lands: Hallowed Fountain [T], Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T6 P1: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+  [Draw] P1 draws: Malevolent Rumble
+  [Main 1]
+T6 P1: Play Echoing Deeps
+    → Goal: ramp
+    [Mana] Tap Dryad Arbor→G, Urza's Saga→C (paying for Malevolent Rumble, 8 mana remaining)
+T6 P1: Cast Malevolent Rumble (1G)
+    [Priority] P2 passes (no response)
+T6: Resolve Malevolent Rumble
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 18  |  Amulet Titan 25
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 6
+║ Library: 46  |  Graveyard: 5
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Isochron Scepter
+║   Lands: Hallowed Fountain, Hallowed Fountain
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Dryad Arbor (1/1) [tapped]
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige, Simic Growth Chamber, Simic Growth Chamber, Dryad Arbor [T], Urza's Saga [T], Echoing Deeps
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Lórien Revealed
+  [Main 1]
+T7 P2: Cycle Lórien Revealed (pay 1 mana, tutor: Steam Vents)
+T7 P2: Play Steam Vents (untapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 25  |  Azorius Control 18
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 6  |  Opp lands: 3
+║ Library: 46  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Dryad Arbor (1/1)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige, Simic Growth Chamber, Simic Growth Chamber, Dryad Arbor, Urza's Saga, Echoing Deeps
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Isochron Scepter
+║   Lands: Hallowed Fountain [T], Hallowed Fountain, Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T7 P1: Urza's Saga tutors Zuran Orb
+T7 P1: Sacrifice Urza's Saga (final chapter)
+  [Draw] P1 draws: Gruul Turf
+  [Main 1]
+T7 P1: Play Gruul Turf (enters tapped)
+T7 P1: Amulet of Vigor untaps Gruul Turf
+T7 P1: Gruul Turf ETB returns Dryad Arbor to hand
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 18  |  Amulet Titan 25
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 44  |  Graveyard: 6
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Isochron Scepter
+║   Lands: Hallowed Fountain, Hallowed Fountain, Steam Vents
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor, Zuran Orb
+║   Lands: Crumbling Vestige, Simic Growth Chamber, Simic Growth Chamber, Echoing Deeps, Gruul Turf
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Demolition Field
+  [Main 1]
+T8 P2: Play Demolition Field
+T8 P2: Crack Demolition Field -> Plains (untapped)
+    → Goal: close_game
+    [Mana] Tap Plains→W, Hallowed Fountain→U, Hallowed Fountain→U (paying for Teferi, Time Raveler, 4 mana remaining)
+T8 P2: Cast Teferi, Time Raveler (1WU)
+    [Priority] P1 passes (no response)
+T8: Resolve Teferi, Time Raveler
+T8 P2: Teferi bounces Amulet of Vigor
+T8 P2: Teferi draws Flooded Strand
+T8 P2: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 25  |  Azorius Control 17
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 44  |  Graveyard: 3
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Zuran Orb
+║   Lands: Crumbling Vestige, Simic Growth Chamber, Simic Growth Chamber, Echoing Deeps, Gruul Turf
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Isochron Scepter, Teferi, Time Raveler
+║   Lands: Hallowed Fountain [T], Hallowed Fountain [T], Steam Vents, Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Forest
+  [Main 1]
+T8 P1: Play Forest
+    → Goal: ramp
+    [Mana] Tap Echoing Deeps→C (paying for Amulet of Vigor, 9 mana remaining)
+T8 P1: Cast Amulet of Vigor (1)
+    [Priority] P2 passes (no response)
+T8: Resolve Amulet of Vigor
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 17  |  Amulet Titan 25
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 41  |  Graveyard: 7
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Isochron Scepter, Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Hallowed Fountain, Steam Vents, Plains
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Zuran Orb, Amulet of Vigor
+║   Lands: Crumbling Vestige, Simic Growth Chamber, Simic Growth Chamber, Echoing Deeps [T], Gruul Turf, Forest
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Monumental Henge
+  [Main 1]
+T9 P2: Play Flooded Strand
+T9 P2: Crack Flooded Strand -> Plains (untapped)
+    → Goal: close_game
+    [Mana] Tap Plains→W, Plains→W, Hallowed Fountain→U, Hallowed Fountain→U, Steam Vents→R (paying for Teferi, Hero of Dominaria, 5 mana remaining)
+T9 P2: Cast Teferi, Hero of Dominaria (3WU)
+T9: Resolve Teferi, Hero of Dominaria
+T9 P2: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+T9 P2: Teferi, Hero of Dominaria [+1] -> Draw a card. At the beginning of the next end step, untap up to two lands
+T9 P2:   untap 2 lands
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 25  |  Azorius Control 16
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 6  |  Opp lands: 5
+║ Library: 43  |  Graveyard: 3
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Zuran Orb, Amulet of Vigor
+║   Lands: Crumbling Vestige, Simic Growth Chamber, Simic Growth Chamber, Echoing Deeps, Gruul Turf, Forest
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Isochron Scepter, Teferi, Time Raveler, Teferi, Hero of Dominaria
+║   Lands: Hallowed Fountain, Hallowed Fountain, Steam Vents [T], Plains [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Spelunking
+  [Main 1]
+T9 P1: Play Shifting Woodland (enters tapped)
+T9 P1: Amulet of Vigor untaps Shifting Woodland
+    → Goal: ramp [enablers]
+    [Mana] Tap Echoing Deeps→C, Forest→G, Shifting Woodland→G (paying for Spelunking, 10 mana remaining)
+T9 P1: Cast Spelunking (2G)
+    [Priority] P2 passes (no response)
+T9: Resolve Spelunking
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 16  |  Amulet Titan 25
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 7
+║ Library: 38  |  Graveyard: 8
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Isochron Scepter, Teferi, Time Raveler, Teferi, Hero of Dominaria
+║   Lands: Hallowed Fountain, Hallowed Fountain, Steam Vents, Plains, Plains
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Zuran Orb, Amulet of Vigor, Spelunking
+║   Lands: Crumbling Vestige, Simic Growth Chamber, Simic Growth Chamber, Echoing Deeps [T], Gruul Turf, Forest [T], Shifting Woodland [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Sanctifier en-Vec
+  [Main 1]
+T10 P2: Play Arid Mesa
+T10 P2: Crack Arid Mesa -> Meticulous Archive (tapped)
+T10 P2: surveil 1 → Teferi, Time Raveler to GY
+    → Goal: close_game
+    [Mana] Tap Plains→W, Plains→W (paying for Sanctifier en-Vec, 5 mana remaining)
+T10 P2: Cast Sanctifier en-Vec (WW)
+T10: Resolve Sanctifier en-Vec
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→W, Hallowed Fountain→W (paying for Wrath of the Skies, 3 mana remaining)
+T10 P2: Cast Wrath of the Skies (WW)
+T10: Resolve Wrath of the Skies
+T10: Zuran Orb moved battlefield -> graveyard (destroyed)
+T10 P2: Wrath of the Skies (X=0) sweeps the board, destroying 1 permanents
+T10 P2: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+T10 P2: Teferi, Hero of Dominaria [+1] -> Draw a card. At the beginning of the next end step, untap up to two lands
+T10 P2:   untap 2 lands
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 25  |  Azorius Control 15
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 7  |  Opp lands: 6
+║ Library: 42  |  Graveyard: 4
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Crumbling Vestige, Simic Growth Chamber, Simic Growth Chamber, Echoing Deeps, Gruul Turf, Forest, Shifting Woodland
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2)
+║   Other: Isochron Scepter, Teferi, Time Raveler, Teferi, Hero of Dominaria
+║   Lands: Hallowed Fountain, Hallowed Fountain, Steam Vents, Plains [T], Plains [T], Meticulous Archive [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Urza's Saga
+  [Main 1]
+T10 P1: Play Urza's Saga
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 15  |  Amulet Titan 25
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 6  |  Opp lands: 8
+║ Library: 34  |  Graveyard: 11
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2)
+║   Other: Isochron Scepter, Teferi, Time Raveler, Teferi, Hero of Dominaria
+║   Lands: Hallowed Fountain, Hallowed Fountain, Steam Vents, Plains, Plains, Meticulous Archive
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Crumbling Vestige, Simic Growth Chamber, Simic Growth Chamber, Echoing Deeps, Gruul Turf, Forest, Shifting Woodland, Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Hall of Storm Giants
+  [Main 1]
+T11 P2: Play Monumental Henge (enters tapped)
+T11 P2: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
+T11: Teferi, Time Raveler moved battlefield -> graveyard (SBA 704.5p: zero loyalty)
+T11 P2: Teferi, Hero of Dominaria [+1] -> Draw a card. At the beginning of the next end step, untap up to two lands
+T11 P2:   untap 1 lands
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Sanctifier en-Vec
+T11 P2: Attack with Sanctifier en-Vec
+  [Declare Blockers] P1 does not block
+T11 P2:   Sanctifier en-Vec (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 25 → 23
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 23  |  Azorius Control 15
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 8  |  Opp lands: 7
+║ Library: 41  |  Graveyard: 4
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Crumbling Vestige, Simic Growth Chamber, Simic Growth Chamber, Echoing Deeps, Gruul Turf, Forest, Shifting Woodland, Urza's Saga
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2) [tapped]
+║   Other: Isochron Scepter, Teferi, Hero of Dominaria
+║   Lands: Hallowed Fountain, Hallowed Fountain, Steam Vents, Plains, Plains, Meticulous Archive, Monumental Henge
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T11 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P1 draws: Urza's Cave
+  [Main 1]
+T11 P1: Play Urza's Cave
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 15  |  Amulet Titan 23
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 7  |  Opp lands: 8
+║ Library: 32  |  Graveyard: 12
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2)
+║   Other: Isochron Scepter, Teferi, Hero of Dominaria
+║   Lands: Hallowed Fountain, Hallowed Fountain, Steam Vents, Plains, Plains, Meticulous Archive, Monumental Henge
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Crumbling Vestige [T], Simic Growth Chamber [T], Simic Growth Chamber, Echoing Deeps, Gruul Turf, Forest, Shifting Woodland, Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Counterspell
+  [Main 1]
+T12 P2: Play Mystic Gate
+T12 P2: Teferi, Hero of Dominaria [+1] -> Draw a card. At the beginning of the next end step, untap up to two lands
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Sanctifier en-Vec
+T12 P2: Attack with Sanctifier en-Vec
+  [Declare Blockers] P1 does not block
+T12 P2:   Sanctifier en-Vec (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 23 → 21
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 21  |  Azorius Control 15
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 8  |  Opp lands: 8
+║ Library: 40  |  Graveyard: 5
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Crumbling Vestige, Simic Growth Chamber, Simic Growth Chamber, Echoing Deeps, Gruul Turf, Forest, Shifting Woodland, Urza's Saga
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2) [tapped]
+║   Other: Isochron Scepter, Teferi, Hero of Dominaria
+║   Lands: Hallowed Fountain, Hallowed Fountain, Steam Vents, Plains, Plains, Meticulous Archive, Monumental Henge, Mystic Gate
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T12 P1: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+  [Draw] P1 draws: Otawara, Soaring City
+  [Main 1]
+T12 P1: Play Mirrorpool (enters tapped)
+T12 P1: Amulet of Vigor untaps Mirrorpool
+T12 P1: Create 1x Construct token(s)
+T12 P1: Urza's Saga activates "{2}, {T}: Create a 0/0 colorless Constru..." (pays {2}, {T})
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+>>> Amulet Titan wins Game 1 on turn 13 via timeout
+    Final life: Amulet Titan=21  Azorius Control=15
+
+======================================================================
+  GAME 2: Azorius Control (P1) vs Amulet Titan (P2)  —  seed 61501
+  Series: Amulet Titan 1 - 0 Azorius Control
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Azorius Control wins → chooses to play first
+║ P1 (on play): Azorius Control
+║ P2 (on draw): Amulet Titan
+╚═══════════════════════════════════════════════════════
+
+P1 (Azorius Control) opening hand (2 lands, 5 spells):
+  • Stock Up [Spell, CMC 3]
+  • Hallowed Fountain [Land, CMC 0]
+  • Supreme Verdict [Spell, CMC 4]
+  • Consult the Star Charts [Spell, CMC 2]
+  • Wrath of the Skies [Spell, CMC 2]
+  • Mystical Dispute [Spell, CMC 3]
+  • Mystic Gate [Land, CMC 0]
+→ P1 KEEPS 7 — 2 lands, 4 castable spells
+
+P2 (Amulet Titan) opening hand (4 lands, 3 spells):
+  • Summoner's Pact [Spell, CMC 0]
+  • Simic Growth Chamber [Land, CMC 0]
+  • Urza's Saga [Land, CMC 0]
+  • Forest [Land, CMC 0]
+  • Malevolent Rumble [Spell, CMC 2]
+  • Simic Growth Chamber [Land, CMC 0]
+  • Green Sun's Zenith [Spell, CMC 1]
+→ P2 MULLIGANS (no cost reducer and no ritual+cantrip+finisher backup)
+  New hand (3 lands, 4 spells): ['The Mycosynth Gardens', 'Aftermath Analyst', 'Arboreal Grazer', 'Simic Growth Chamber', "Urza's Saga", 'Zuran Orb', 'Spelunking']
+→ P2 mulligans to 6, bottoms: ['Aftermath Analyst']
+  Keeps: ['The Mycosynth Gardens', 'Arboreal Grazer', 'Simic Growth Chamber', "Urza's Saga", 'Zuran Orb', 'Spelunking']
+
+
+╔══ TURN 1 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 20  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Mystic Gate
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Azorius Control 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Mystic Gate
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Crumbling Vestige
+  [Main 1]
+T1 P2: Play The Mycosynth Gardens
+    → Goal: deploy_engine
+T1 P2: Cast Zuran Orb (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Zuran Orb
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 20  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Mystic Gate
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Zuran Orb
+║   Lands: The Mycosynth Gardens
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Counterspell
+  [Main 1]
+T2 P1: Play Hallowed Fountain (untapped, life: 20)
+    → Goal: grind_value [engines]
+    [Mana] Tap Hallowed Fountain→U, Mystic Gate→C (paying for Consult the Star Charts, 2 mana remaining)
+T2 P1: Cast Consult the Star Charts (1U)
+    [Priority] P2 passes (no response)
+T2: Resolve Consult the Star Charts
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Azorius Control 20
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Zuran Orb
+║   Lands: The Mycosynth Gardens
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Mystic Gate [T], Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Simic Growth Chamber
+  [Main 1]
+T2 P2: Play Urza's Saga
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 20  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 1
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Mystic Gate, Hallowed Fountain
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Zuran Orb
+║   Lands: The Mycosynth Gardens, Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Isochron Scepter
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Azorius Control 20
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Zuran Orb
+║   Lands: The Mycosynth Gardens, Urza's Saga
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Mystic Gate, Hallowed Fountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T3 P2: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P2 draws: Summoner's Pact
+  [Main 1]
+T3 P2: Play Simic Growth Chamber (enters tapped)
+T3 P2: Simic Growth Chamber ETB returns Urza's Saga to hand
+    → Goal: ramp
+T3 P2: Cast Summoner's Pact (0)
+    [Priority] P1 passes (no response)
+T3: Resolve Summoner's Pact
+T3 P2: Summoner's Pact finds Primeval Titan
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 20  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Mystic Gate, Hallowed Fountain
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Zuran Orb
+║   Lands: The Mycosynth Gardens, Simic Growth Chamber [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Teferi, Time Raveler
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Azorius Control 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Zuran Orb
+║   Lands: The Mycosynth Gardens, Simic Growth Chamber
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Mystic Gate, Hallowed Fountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Aftermath Analyst
+  [Main 1]
+T4 P2: Play Urza's Saga
+    → Goal: ramp [enablers]
+    [Mana] Tap Urza's Saga→C, Simic Growth Chamber→GU (paying for Spelunking, 4 mana remaining)
+T4 P2: Cast Spelunking (2G)
+    [Priority] P1 passes (no response)
+T4: Resolve Spelunking
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 20  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Mystic Gate, Hallowed Fountain
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Zuran Orb, Spelunking
+║   Lands: The Mycosynth Gardens, Simic Growth Chamber [T], Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Orim's Chant
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T5: Mystical Dispute moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 5 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Azorius Control 20
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 49  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Zuran Orb, Spelunking
+║   Lands: The Mycosynth Gardens, Simic Growth Chamber, Urza's Saga
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Mystic Gate, Hallowed Fountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T5 P2: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+  [Draw] P2 draws: Green Sun's Zenith
+  [Main 1]
+T5 P2: Play Simic Growth Chamber (enters tapped)
+T5 P2: Simic Growth Chamber ETB returns Urza's Saga to hand
+T5 P2: Spelunking — Simic Growth Chamber enters untapped
+    → Goal: ramp
+    [Mana] Tap Simic Growth Chamber→GU (paying for Green Sun's Zenith, 5 mana remaining)
+T5 P2: Cast Green Sun's Zenith (4G) (X=4)
+    [Priority] P1 passes (no response)
+T5: Resolve Green Sun's Zenith
+T5 P2: Green Sun's Zenith finds Dryad Arbor
+    → Goal: ramp [enablers]
+    [Mana] Tap Dryad Arbor→G (paying for Arboreal Grazer, 1 mana remaining)
+T5 P2: Cast Arboreal Grazer (G)
+    [Priority] P1 passes (no response)
+T5: Resolve Arboreal Grazer
+T5 P2: Spelunking — Crumbling Vestige enters untapped
+T5 P2: Arboreal Grazer puts Crumbling Vestige onto battlefield
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 20  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 5
+║ Library: 49  |  Graveyard: 2
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Mystic Gate, Hallowed Fountain
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1) [tapped], Arboreal Grazer (0/3)
+║   Other: Zuran Orb, Spelunking
+║   Lands: The Mycosynth Gardens [T], Simic Growth Chamber [T], Simic Growth Chamber [T], Dryad Arbor [T], Crumbling Vestige
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Isochron Scepter
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T6: Counterspell moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 6 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Azorius Control 20
+║ Hand: 3 cards  |  Opp hand: 7 cards
+║ Lands: 5  |  Opp lands: 2
+║ Library: 47  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1), Arboreal Grazer (0/3)
+║   Other: Zuran Orb, Spelunking
+║   Lands: The Mycosynth Gardens, Simic Growth Chamber, Simic Growth Chamber, Dryad Arbor, Crumbling Vestige
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Mystic Gate, Hallowed Fountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Green Sun's Zenith
+  [Main 1]
+T6 P2: Play Urza's Saga
+    → Goal: ramp [payoffs]
+    [Mana] Tap Dryad Arbor→G, Urza's Saga→C, Simic Growth Chamber→GU, Simic Growth Chamber→GU (paying for Primeval Titan, 8 mana remaining)
+T6 P2: Cast Primeval Titan (4GG)
+    [Priority] P1 passes (no response)
+T6: Resolve Primeval Titan
+T6 P2: Spelunking — Crumbling Vestige enters untapped
+T6 P2: Primeval Titan searches for Crumbling Vestige
+T6 P2: Simic Growth Chamber ETB returns Dryad Arbor to hand
+T6 P2: Spelunking — Simic Growth Chamber enters untapped
+T6 P2: Primeval Titan searches for Simic Growth Chamber
+    → Goal: ramp
+    [Mana] Tap Simic Growth Chamber→GU (paying for Aftermath Analyst, 5 mana remaining)
+T6 P2: Cast Aftermath Analyst (1G)
+    [Priority] P1 passes (no response)
+T6: Resolve Aftermath Analyst
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 20  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 7
+║ Library: 48  |  Graveyard: 3
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Mystic Gate, Hallowed Fountain
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Primeval Titan (6/6), Aftermath Analyst (1/3)
+║   Other: Zuran Orb, Spelunking
+║   Lands: The Mycosynth Gardens, Simic Growth Chamber [T], Simic Growth Chamber [T], Crumbling Vestige, Urza's Saga [T], Crumbling Vestige, Simic Growth Chamber [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Sanctifier en-Vec
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→U, Mystic Gate→C (paying for Isochron Scepter, 2 mana remaining)
+T7 P1: Cast Isochron Scepter (2)
+    [Priority] P2 passes (no response)
+T7: Resolve Isochron Scepter
+T7 P1: Isochron Scepter imprints Orim's Chant
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Azorius Control 20
+║ Hand: 2 cards  |  Opp hand: 6 cards
+║ Lands: 7  |  Opp lands: 2
+║ Library: 44  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Primeval Titan (6/6), Aftermath Analyst (1/3)
+║   Other: Zuran Orb, Spelunking
+║   Lands: The Mycosynth Gardens, Simic Growth Chamber, Simic Growth Chamber, Crumbling Vestige, Urza's Saga, Crumbling Vestige, Simic Growth Chamber
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Isochron Scepter
+║   Lands: Mystic Gate [T], Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T7 P2: Urza's Saga tutors Amulet of Vigor
+T7 P2: Sacrifice Urza's Saga (final chapter)
+  [Draw] P2 draws: Gruul Turf
+  [Main 1]
+T7 P2: Play Gruul Turf (enters tapped)
+T7 P2: Amulet of Vigor untaps Gruul Turf
+T7 P2: Gruul Turf ETB returns The Mycosynth Gardens to hand
+    → Goal: ramp
+    [Mana] Tap Simic Growth Chamber→GU (paying for Green Sun's Zenith, 10 mana remaining)
+T7 P2: Cast Green Sun's Zenith (9G) (X=9)
+    [Priority] P1 passes (no response)
+T7: Resolve Green Sun's Zenith
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Primeval Titan, Aftermath Analyst
+T7 P2: Amulet of Vigor untaps Crumbling Vestige
+T7 P2: Primeval Titan searches for Crumbling Vestige
+T7 P2: Amulet of Vigor untaps Gruul Turf
+T7 P2: Gruul Turf ETB returns Crumbling Vestige to hand
+T7 P2: Primeval Titan searches for Gruul Turf
+T7 P2: Attack with Primeval Titan, Aftermath Analyst
+  [Declare Blockers] P1 does not block
+T7 P2:   Primeval Titan (6/6) → 6 dmg to player
+T7 P2:   Aftermath Analyst (1/3) → 1 dmg to player
+  [Combat Damage] 7 damage dealt → P1 life: 20 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 13  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 7
+║ Library: 47  |  Graveyard: 3
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Isochron Scepter
+║   Lands: Mystic Gate, Hallowed Fountain
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Primeval Titan (6/6) [tapped], Aftermath Analyst (1/3) [tapped]
+║   Other: Zuran Orb, Spelunking, Amulet of Vigor
+║   Lands: Simic Growth Chamber [T], Simic Growth Chamber [T], Crumbling Vestige [T], Simic Growth Chamber [T], Gruul Turf [T], Crumbling Vestige, Gruul Turf
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Meticulous Archive
+  [Main 1]
+    [Mana] Tap Hallowed Fountain→U, Mystic Gate→C (paying for Isochron Scepter, 2 mana remaining)
+T8 P1: Cast Orim's Chant (W)
+T8 P1: Isochron Scepter copies Orim's Chant
+T8: Resolve Orim's Chant
+T8 P1: Orim's Chant silences P2 this turn
+T8 P1: surveil 1 → Solitude to GY
+T8 P1: Play Meticulous Archive (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Azorius Control 13
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 7  |  Opp lands: 3
+║ Library: 40  |  Graveyard: 4
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Primeval Titan (6/6), Aftermath Analyst (1/3)
+║   Other: Zuran Orb, Spelunking, Amulet of Vigor
+║   Lands: Simic Growth Chamber, Simic Growth Chamber, Crumbling Vestige, Simic Growth Chamber, Gruul Turf, Crumbling Vestige, Gruul Turf
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Isochron Scepter
+║   Lands: Mystic Gate [T], Hallowed Fountain [T], Meticulous Archive [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Shifting Woodland
+  [Main 1]
+T8 P2: Play Crumbling Vestige (enters tapped)
+T8 P2: Amulet of Vigor untaps Crumbling Vestige
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Primeval Titan, Aftermath Analyst
+T8 P2: Amulet of Vigor untaps Tolaria West
+T8 P2: Primeval Titan searches for Tolaria West
+T8 P2: Amulet of Vigor untaps Gruul Turf
+T8 P2: Gruul Turf ETB returns Tolaria West to hand
+T8 P2: Primeval Titan searches for Gruul Turf
+T8 P2: Attack with Primeval Titan, Aftermath Analyst
+  [Declare Blockers] P1 does not block
+T8 P2:   Primeval Titan (6/6) → 6 dmg to player
+T8 P2:   Aftermath Analyst (1/3) → 1 dmg to player
+  [Combat Damage] 7 damage dealt → P1 life: 13 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 6  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 9
+║ Library: 45  |  Graveyard: 4
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Isochron Scepter
+║   Lands: Mystic Gate, Hallowed Fountain, Meticulous Archive
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Primeval Titan (6/6) [tapped], Aftermath Analyst (1/3) [tapped]
+║   Other: Zuran Orb, Spelunking, Amulet of Vigor
+║   Lands: Simic Growth Chamber, Simic Growth Chamber, Crumbling Vestige, Simic Growth Chamber, Gruul Turf, Crumbling Vestige, Gruul Turf, Crumbling Vestige, Gruul Turf
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Flooded Strand
+  [Main 1]
+    [Mana] Tap Hallowed Fountain→U, Mystic Gate→C (paying for Isochron Scepter, 3 mana remaining)
+T9 P1: Cast Orim's Chant (W)
+T9 P1: Isochron Scepter copies Orim's Chant
+T9: Resolve Orim's Chant
+T9 P1: Orim's Chant silences P2 this turn
+T9 P1: Play Flooded Strand
+T9 P1: Crack Flooded Strand (pay 1 life) -> Hallowed Fountain (tapped, life: 5)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Azorius Control 5
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 9  |  Opp lands: 4
+║ Library: 37  |  Graveyard: 4
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Primeval Titan (6/6), Aftermath Analyst (1/3)
+║   Other: Zuran Orb, Spelunking, Amulet of Vigor
+║   Lands: Simic Growth Chamber, Simic Growth Chamber, Crumbling Vestige, Simic Growth Chamber, Gruul Turf, Crumbling Vestige, Gruul Turf, Crumbling Vestige, Gruul Turf
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Isochron Scepter
+║   Lands: Mystic Gate [T], Hallowed Fountain [T], Meticulous Archive, Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Forest
+  [Main 1]
+T9 P2: Play Forest
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Primeval Titan, Aftermath Analyst
+T9 P2: Amulet of Vigor untaps Simic Growth Chamber
+T9 P2: Simic Growth Chamber ETB returns Forest to hand
+T9 P2: Primeval Titan searches for Simic Growth Chamber
+T9 P2: Amulet of Vigor untaps Mirrorpool
+T9 P2: Primeval Titan searches for Mirrorpool
+T9 P2: Attack with Primeval Titan, Aftermath Analyst
+  [Declare Blockers] P1 does not block
+T9 P2:   Primeval Titan (6/6) → 6 dmg to player
+T9 P2:   Aftermath Analyst (1/3) → 1 dmg to player
+P1 loses: life total -2
+  [Combat Damage] 7 damage dealt → P1 life: 5 → -2
+
+>>> Amulet Titan wins Game 2 on turn 9 via damage
+    Final life: Azorius Control=-2  Amulet Titan=20
+
+======================================================================
+  MATCH RESULT: Amulet Titan wins 2-0
+======================================================================
