@@ -1699,6 +1699,7 @@ class CardDatabase:
             parse_energy_production, has_cascade, parse_x_cost,
             parse_domain_reduction, detect_power_scaling, parse_splice_cost,
             parse_counter_tax, parse_protection_from, parse_ward_cost,
+            parse_can_target_player, parse_can_target_planeswalker,
             grants_flashback_to_gy_spells,
         )
         oracle = template.oracle_text or ''
@@ -1726,6 +1727,8 @@ class CardDatabase:
         template.counter_tax_amount = parse_counter_tax(oracle)
         template.protection_from_colors = parse_protection_from(oracle)
         template.ward_cost = parse_ward_cost(oracle)
+        template.can_target_player = parse_can_target_player(oracle)
+        template.can_target_planeswalker = parse_can_target_planeswalker(oracle)
 
         return template
 

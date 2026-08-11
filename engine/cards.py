@@ -226,6 +226,11 @@ class CardTemplate:
     # parse_ward_cost's docstring). Consumed by
     # engine.optional_costs.offer_ward_tax via the resolve_stack hook.
     ward_cost: int = 0                         # {N} from "Ward {N}"; 0 = no mana-shaped ward
+    # Spell targeting capability (CR 601.2c) — derived at load time by
+    # engine.oracle_parser.parse_can_target_player/planeswalker.
+    # Replace runtime `'any target' in oracle_text` inline checks in ai/.
+    can_target_player: bool = False            # "any target"/"target player"/"target opponent"
+    can_target_planeswalker: bool = False      # "any target"/"planeswalker" in oracle
 
     def __post_init__(self) -> None:
         # Derive fields from oracle text for templates not loaded through
@@ -235,7 +240,9 @@ class CardTemplate:
             from .oracle_parser import (parse_warp_cost as _pwc,
                                         parse_dash_cost as _pdc,
                                         parse_escape_cost as _pec,
-                                        parse_splice_cost as _psc)
+                                        parse_splice_cost as _psc,
+                                        parse_can_target_player as _pctp,
+                                        parse_can_target_planeswalker as _pctpw)
             from .card_database import KEYWORD_MAP as _KM
             import re as _re
             if self.warp_cost is None:
@@ -250,6 +257,13 @@ class CardTemplate:
                         self.escape_exile_count = _esc['exile']
             if self.splice_cost is None:
                 self.splice_cost = _psc(self.oracle_text)
+            # Targeting capability flags — always derived (not gated on
+            # a sentinel) since they default False and any oracle text
+            # can contain the relevant phrases.
+            if not self.can_target_player:
+                self.can_target_player = _pctp(self.oracle_text)
+            if not self.can_target_planeswalker:
+                self.can_target_planeswalker = _pctpw(self.oracle_text)
             # Derive keywords from oracle text for synthetic templates that
             # were constructed with keywords=set(). DB-loaded templates
             # already have complete keyword sets from KEYWORD_MAP scanning;

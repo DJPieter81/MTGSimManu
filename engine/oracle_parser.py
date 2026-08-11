@@ -413,6 +413,47 @@ def parse_ward_cost(oracle: str) -> int:
     return 0
 
 
+def parse_can_target_player(oracle: str) -> bool:
+    """Return True when the spell can legally target a player (CR 601.2c).
+
+    Oracle phrases that permit player targeting:
+      - "any target"        (Lightning Bolt, Grapeshot, Lava Dart)
+      - "target player"     (Thoughtseize, Geistflame, Thought Erasure)
+      - "target opponent"   (Thoughtseize, Inquisition of Kozilek)
+
+    "target creature or planeswalker" (Galvanic Discharge, Unholy Heat)
+    is intentionally excluded — that wording cannot target players.
+    The function is a pure oracle-text read at load time; no substring
+    matching inside comments or reminder text is needed since the
+    canonical phrasing is always identical across printings.
+    """
+    low = (oracle or '').lower()
+    return (
+        'any target' in low
+        or 'target player' in low
+        or 'target opponent' in low
+    )
+
+
+def parse_can_target_planeswalker(oracle: str) -> bool:
+    """Return True when the spell can legally target a planeswalker.
+
+    Oracle phrases that permit planeswalker targeting:
+      - "any target"        (Lightning Bolt — hits players, creatures, PWs)
+      - "planeswalker"      (Hero's Downfall, Dreadbore, creature-or-PW burns)
+
+    A spell with "any target" reaches all three legal target categories
+    (player, creature, planeswalker) so the first check alone suffices;
+    the second catches the "target creature or planeswalker" form.
+    Reminder text like "planeswalker (It must be attacking...)" will
+    not match the "planeswalker" substring here as a false positive
+    because that reminder text appears on creatures/enchantments, not
+    on spells that have the "target ... planeswalker" targeting pattern.
+    """
+    low = (oracle or '').lower()
+    return 'any target' in low or 'planeswalker' in low
+
+
 def parse_protection_from(oracle: str) -> frozenset:
     """Parse "protection from <color>" clauses (CR 702.16), including
     the compound "protection from X and from Y" form (e.g. Sanctifier

@@ -3256,23 +3256,11 @@ class EVPlayer:
         me = game.players[self.player_idx]
         snap = snapshot_from_game(game, self.player_idx)
         t = spell.template
-        oracle_text = (t.oracle_text or "").lower()
-        # Oracle gate for PW targeting: "any target" or "planeswalker"
-        # wording.  Pure "target creature" spells (Cut Down, most
-        # creature-only removal) get burn_damage=0 and don't enter this
-        # path; the few burn-tagged spells that DO target creature-only
-        # (Lightning Strike-class "target creature or player" variants
-        # in older sets) gate by oracle text rather than card name.
-        can_hit_pw = ("any target" in oracle_text
-                      or "planeswalker" in oracle_text)
-        # CR 601.2c: "target player" / "target opponent" / "any target" are
-        # the oracle phrases that permit direct-player targeting.  Spells
-        # worded "target creature or planeswalker" (Galvanic Discharge,
-        # Unholy Heat, etc.) cannot target players — excluding face from
-        # the candidate set for those spells is the fix for M10.
-        can_hit_player = ("any target" in oracle_text
-                          or "target player" in oracle_text
-                          or "target opponent" in oracle_text)
+        # Typed fields populated at DB load time by
+        # oracle_parser.parse_can_target_player/planeswalker — no
+        # runtime oracle-text inspection needed here (CR 601.2c).
+        can_hit_pw = t.can_target_planeswalker
+        can_hit_player = t.can_target_player
 
         candidates: List[Tuple[int, float, str]] = []
 
@@ -3355,13 +3343,7 @@ class EVPlayer:
         if Kw2.STORM in getattr(t, 'keywords', set()) and 'removal' in tags:
             return [-1]  # Grapeshot always goes face (storm copies auto-target)
         if dmg > 0:
-            _oracle_ct = (t.oracle_text or "").lower()
-            _can_hit_player_ct = (
-                "any target" in _oracle_ct
-                or "target player" in _oracle_ct
-                or "target opponent" in _oracle_ct
-            )
-            if dmg >= opp.life and _can_hit_player_ct:
+            if dmg >= opp.life and t.can_target_player:
                 return [-1]  # face = lethal AND legal to target player
 
             # M10 (Aggro Pattern D / Fix 4): enumerate the FULL candidate
