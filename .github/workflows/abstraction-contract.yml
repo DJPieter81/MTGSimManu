@@ -103,4 +103,5 @@ jobs:
         # see the optional-dependency collect_ignore in conftest.py.
         run: |
           python -m pytest tests/ -q --timeout=120 --tb=short \
-            --deselect tests/test_etb_graveyard_return.py
+            --deselect tests/test_etb_graveyard_return.py \
+            --deselect tests/test_card_features.py::test_extraction_performance

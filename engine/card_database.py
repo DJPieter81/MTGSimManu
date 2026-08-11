@@ -1703,6 +1703,9 @@ class CardDatabase:
             grants_flashback_to_gy_spells, parse_has_attack_trigger,
             parse_has_lifegain_token_trigger, parse_lifegain_token_type,
             parse_targets_creature_spell, parse_targets_planeswalker_spell,
+            parse_has_landfall, parse_has_library_search_opponent_trigger,
+            parse_library_search_trigger_draws_card, parse_landfall_first_life_gain,
+            parse_landfall_third_damage, parse_landfall_second_mana_colors,
         )
         oracle = template.oracle_text or ''
         template.ritual_mana = parse_ritual_mana(oracle)
@@ -1736,6 +1739,14 @@ class CardDatabase:
         template.lifegain_token_type = parse_lifegain_token_type(oracle)
         template.targets_creature_spell = parse_targets_creature_spell(oracle)
         template.targets_planeswalker_spell = parse_targets_planeswalker_spell(oracle)
+        template.has_landfall = parse_has_landfall(oracle)
+        template.has_library_search_opponent_trigger = (
+            parse_has_library_search_opponent_trigger(oracle))
+        template.library_search_trigger_draws_card = (
+            parse_library_search_trigger_draws_card(oracle))
+        template.landfall_first_life_gain = parse_landfall_first_life_gain(oracle)
+        template.landfall_third_damage = parse_landfall_third_damage(oracle)
+        template.landfall_second_mana_colors = parse_landfall_second_mana_colors(oracle)
 
         return template
 
