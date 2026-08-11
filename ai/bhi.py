@@ -167,15 +167,12 @@ class HandBeliefs:
                 if creature_threat_value(c, snap) > current_target_value:
                     higher += 1
             else:
-                oracle = (getattr(t, 'oracle_text', '') or '').lower()
-                if 'equipped creature gets' in oracle or 'equip ' in oracle:
-                    # Equipment that pumps - any opp creature wearing
-                    # it becomes a higher-threat target than the naked
-                    # current one. Count it once.
+                if getattr(t, 'equip_cost', None) is not None:
+                    # Equipment — any opp creature wearing it becomes a
+                    # higher-threat target than the naked current one.
                     higher += 1
-                # Saga-style "create [...] token" non-land permanents
-                # also produce future creature threats.
-                elif 'create' in oracle and 'token' in oracle:
+                # Saga-style token-makers also produce future creature threats.
+                elif 'token_maker' in getattr(t, 'tags', set()):
                     higher += 1
 
         total_pool = max(1, non_land + max(0, opp_hand_size))
@@ -360,11 +357,10 @@ class BayesianHandTracker:
             t = templates_by_name.get(name)
             if t is None:
                 continue
-            oracle = (getattr(t, 'oracle_text', '') or '').lower()
-            # Canonical discard pattern: "target player ... discards"
-            # (covers Thoughtseize, Inquisition of Kozilek, and any
-            # similar effect added later - purely oracle-driven).
-            if 'target player' in oracle and 'discards' in oracle:
+            # Detect via the pre-computed 'discard' tag (card_database.py
+            # regex covers both 'target player' and 'target opponent'
+            # phrasings — Thoughtseize, Inquisition, Duress, etc.).
+            if 'discard' in getattr(t, 'tags', set()):
                 return self._DISCARD_PRIOR
 
         return 0.0
