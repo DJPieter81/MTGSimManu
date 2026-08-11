@@ -1701,7 +1701,6 @@ class CardDatabase:
             parse_counter_tax, parse_protection_from, parse_ward_cost,
             parse_can_target_player, parse_can_target_planeswalker,
             grants_flashback_to_gy_spells, parse_has_attack_trigger,
-<<<<<<< HEAD
             parse_has_lifegain_token_trigger, parse_lifegain_token_type,
             parse_targets_creature_spell, parse_targets_planeswalker_spell,
         )
@@ -1733,7 +1732,6 @@ class CardDatabase:
         template.can_target_player = parse_can_target_player(oracle)
         template.can_target_planeswalker = parse_can_target_planeswalker(oracle)
         template.has_attack_trigger = parse_has_attack_trigger(oracle, name)
-<<<<<<< HEAD
         template.has_lifegain_token_trigger = parse_has_lifegain_token_trigger(oracle)
         template.lifegain_token_type = parse_lifegain_token_type(oracle)
         template.targets_creature_spell = parse_targets_creature_spell(oracle)
