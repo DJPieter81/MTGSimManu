@@ -43,8 +43,13 @@ def test_oracle_runtime_parse_check_script_exists():
 
 def test_oracle_runtime_parse_ratchet():
     """Oracle-text substring checks in engine/ or ai/ outside oracle_parser.py
-    and card_database.py do not exceed the baseline in
+    and card_database.py must equal the baseline in
     tools/oracle_runtime_parse_baseline.json.
+
+    Baseline must equal actual count exactly:
+    - total > baseline: regression (new check added) → fail
+    - total < baseline: improvement unclaimed (baseline stale) → fail
+    - total == baseline: pass
 
     To migrate a violation: move the oracle-text inspection into
     engine/oracle_parser.py, add a typed field on CardTemplate, populate it
@@ -62,6 +67,42 @@ def test_oracle_runtime_parse_ratchet():
         raise AssertionError(
             f"Oracle-runtime-parse ratchet failed:\n{msg}\n\n"
             f"To see all violations: python tools/check_oracle_runtime_parse.py --list\n"
-            f"To lower the baseline, migrate the check to a typed CardTemplate "
-            f"field populated in oracle_parser.py at load time."
+            f"To update the baseline, set tools/oracle_runtime_parse_baseline.json "
+            f"'total' to the actual violation count in the same commit as your changes."
         )
+
+
+def test_oracle_runtime_parse_stale_high_baseline_fails():
+    """Ratchet must fail when baseline > actual count (improvement made but not claimed).
+
+    This enforces the strict-decrease rule: every oracle-migration PR must
+    update the baseline to the new lower count, so the next PR cannot silently
+    re-add checks up to the old inflated limit.
+    """
+    import os
+    import tempfile
+
+    with tempfile.NamedTemporaryFile(
+        mode="w", suffix=".json", delete=False
+    ) as f:
+        json.dump({"total": 999_999}, f)
+        temp_path = f.name
+
+    try:
+        result = subprocess.run(
+            [sys.executable, str(SCRIPT), "--baseline", temp_path],
+            capture_output=True,
+            text=True,
+            cwd=ROOT,
+        )
+        assert result.returncode != 0, (
+            "Ratchet should fail when baseline total is higher than the actual "
+            "violation count — the improvement must be claimed by updating the baseline."
+        )
+        combined = (result.stdout + result.stderr).lower()
+        assert "stale" in combined, (
+            f"Error message should contain 'stale' to explain the baseline-too-high "
+            f"scenario. Got:\n{result.stdout}{result.stderr}"
+        )
+    finally:
+        os.unlink(temp_path)
