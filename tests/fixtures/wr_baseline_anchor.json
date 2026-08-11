@@ -33,8 +33,8 @@
       "deck1": "Jeskai Blink",
       "deck2": "4c Omnath",
       "seed": 50000,
-      "winner": "Jeskai Blink",
-      "turns": 13
+      "winner": "4c Omnath",
+      "turns": 10
     },
     {
       "deck1": "Goryo's Vengeance",
@@ -132,7 +132,7 @@
       "deck2": "Boros Energy",
       "seed": 51000,
       "winner": "Boros Energy",
-      "turns": 7
+      "turns": 9
     },
     {
       "deck1": "Instant Reanimator",
@@ -167,7 +167,7 @@
       "deck2": "Creatures Toolbox",
       "seed": 52500,
       "winner": "Broodscale Bloodchief",
-      "turns": 9
+      "turns": 10
     },
     {
       "deck1": "Grixis Reanimator",
