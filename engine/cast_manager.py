@@ -132,6 +132,24 @@ class CastManager:
         if getattr(player, 'silenced_this_turn', False):
             return False
 
+        # Warp: previously warped permanents may be cast again from exile.
+        if card.zone == "exile" and getattr(card, '_warped', False):
+            has_artifact = any(
+                CardType.ARTIFACT in c.template.card_types
+                for c in player.battlefield
+            )
+            if (template.warp_cost is not None
+                    and has_artifact):
+                total_mana = (player.untapped_mana_capacity()
+                              + player.mana_pool.total()
+                              + player._tron_mana_bonus())
+                if (total_mana >= template.warp_cost.cmc
+                        and CastManager._can_pay_colored_pips(
+                            game, player_idx, player.untapped_lands,
+                            template.warp_cost)):
+                    return True
+            return False  # in exile but not a re-castable warp card
+
         if card.zone != "hand" and card.zone != "graveyard":
             return False
 
@@ -151,13 +169,14 @@ class CastManager:
                 other_gy_cards = sum(1 for c in player.graveyard if c != card)
                 if other_gy_cards < template.escape_exile_count:
                     return False  # Not enough cards to exile
-                # Check mana for escape cost
+                # Check mana for escape cost — quantity then colour (CR 702.19)
                 untapped_lands = player.untapped_lands
                 total_mana = (player.untapped_mana_capacity() + player.mana_pool.total()
                               + player._tron_mana_bonus())
-                if total_mana < template.escape_cost:
+                if total_mana < template.escape_cost.cmc:
                     return False
-                return True  # Can escape
+                return CastManager._can_pay_colored_pips(
+                    game, player_idx, untapped_lands, template.escape_cost)
             elif not card.has_flashback:
                 return False  # No flashback, no escape — can't cast from GY
             else:
@@ -346,22 +365,27 @@ class CastManager:
         if can_evoke:
             return True  # Can cast via evoke
 
-        # Dash alternative cost
-        if (template.dash_cost is not None
-                and total_mana >= template.dash_cost):
-            return True
+        # Dash alternative cost — verify quantity then colour (CR 702.32)
+        if template.dash_cost is not None:
+            if (total_mana >= template.dash_cost.cmc
+                    and CastManager._can_pay_colored_pips(
+                        game, player_idx, untapped_lands, template.dash_cost)):
+                return True
 
-        # Warp alternative cost (early cast for artifact-synergy decks).
-        # Track H handoff fix: the previous check tested
-        # `'Artifact' in str(card_types)`, which never matches the
-        # CardType enum's string form — the branch was dead code.
+        # Warp alternative cost — check payability against parsed warp_cost,
+        # not just "total_mana >= 1" (the old check caused infinite loops when
+        # the warp cost could be quoted as castable but the normal-cost payment
+        # path failed for color reasons inside cast_spell).
         oracle = (template.oracle_text or "").lower()
-        if "warp" in oracle:
+        if template.warp_cost is not None:
             has_artifact = any(
                 CardType.ARTIFACT in c.template.card_types
                 for c in player.battlefield
             )
-            if has_artifact and total_mana >= 1:
+            if (has_artifact and total_mana >= template.warp_cost.cmc
+                    and CastManager._can_pay_colored_pips(
+                        game, player_idx, player.untapped_lands,
+                        template.warp_cost)):
                 return True
 
         # Improvise: tap artifacts to pay generic. Same Track H fix as
@@ -382,7 +406,9 @@ class CastManager:
             improvise_cmc = max(colored_floor,
                                 effective_cmc - untapped_artifacts)
             if total_mana >= improvise_cmc:
-                return True
+                effective_cmc = improvise_cmc
+                # Improvise reduces generic only (CR 702.125a); coloured pips
+                # still require real coloured sources — fall through to MRV.
 
         # Force alternate cost: "exile a [color] card from your hand
         # rather than pay this spell's mana cost" — only on opp's turn
@@ -478,6 +504,62 @@ class CastManager:
         if 'blink' in (template.tags or set()):
             if not player.creatures:
                 return False
+
+        return True
+
+    # ─── Shared colour-verification helper ────────────────────────────
+
+    @staticmethod
+    def _can_pay_colored_pips(game: "GameState", player_idx: int,
+                              untapped_lands, cost: "ManaCost") -> bool:
+        """Return True iff lands + mana pool can satisfy cost's coloured pips.
+
+        Used by alternative-cost mechanics (dash, escape) that replace the
+        normal mana cost with a different ManaCost object.  Applies the same
+        MRV (minimum-remaining-values) greedy algorithm as the main can_cast
+        colour check.  Does NOT verify total quantity — callers confirm
+        ``total_mana >= cost.cmc`` first.
+        """
+        from .mana_payment import ManaPayment as _MP
+        player = game.players[player_idx]
+        sources = []
+        for land in untapped_lands:
+            for options in _MP.land_mana_units(game, player_idx, land):
+                sources.append(set(options))
+        for color in ["W", "U", "B", "R", "G", "C"]:
+            pool_amount = player.mana_pool.get(color)
+            for _ in range(pool_amount):
+                sources.append({color})
+
+        color_needs = []
+        for color, needed in [("W", cost.white), ("U", cost.blue),
+                              ("B", cost.black), ("R", cost.red),
+                              ("G", cost.green), ("C", cost.colorless)]:
+            for _ in range(needed):
+                color_needs.append(color)
+
+        if not color_needs:
+            return True  # No coloured pips — quantity check already done
+
+        used = [False] * len(sources)
+        remaining_needs = list(color_needs)
+        while remaining_needs:
+            remaining_needs.sort(
+                key=lambda c: sum(
+                    1 for i, s in enumerate(sources)
+                    if c in s and not used[i])
+            )
+            c = remaining_needs.pop(0)
+            best_idx = -1
+            best_flex = 999
+            for i, s in enumerate(sources):
+                if not used[i] and c in s:
+                    if len(s) < best_flex:
+                        best_flex = len(s)
+                        best_idx = i
+            if best_idx == -1:
+                return False
+            used[best_idx] = True
 
         return True
 
@@ -759,8 +841,29 @@ class CastManager:
         # Pay mana cost (unless free cast)
         evoked = False
         dashed = False
+        warped = False
         if not free_cast:
             untapped = player.untapped_mana_capacity() + player.mana_pool.total() + player._tron_mana_bonus()
+
+            # Warp: cast from hand for cheaper alternative cost; creature exiles
+            # at beginning of the next end step.  Use Warp when we have an
+            # artifact on the battlefield AND cannot afford the normal cost
+            # (or prefer the temporary body).  The warp_cost was parsed at
+            # load time, so no oracle-substring re-parsing here.
+            if (template.warp_cost is not None
+                    and card.zone == "hand"
+                    and not dashed):
+                has_artifact = any(
+                    CardType.ARTIFACT in c.template.card_types
+                    for c in player.battlefield
+                )
+                can_normal = untapped >= template.mana_cost.cmc
+                can_warp = has_artifact and untapped >= template.warp_cost.cmc
+                if not can_warp and not can_normal:
+                    return False
+                # Prefer Warp only when normal cost is unaffordable
+                if can_warp and not can_normal:
+                    warped = True
 
             # Decide whether to use Dash (e.g., Ragavan)
             # Dash strategy: use Dash when...
@@ -772,7 +875,7 @@ class CastManager:
             #   2) We're low on mana and Dash costs more than normal
             if template.dash_cost is not None:
                 can_normal = untapped >= template.mana_cost.cmc
-                can_dash = untapped >= template.dash_cost
+                can_dash = untapped >= template.dash_cost.cmc
 
                 if not can_dash and not can_normal:
                     return False
@@ -920,19 +1023,24 @@ class CastManager:
                                    f"Delve {delve_exiled} cards for {card.name}")
 
             # Pay mana
-            if escaped:
-                # Pay escape cost instead of normal cost
-                from .mana import ManaCost
-                # Escape cost for Phlage: {R}{R}{W}{W} = 4 CMC (2R + 2W)
-                escape_mana = ManaCost(red=2, white=2)  # Phlage-specific
-                if not game.tap_lands_for_mana(player_idx, escape_mana,
+            if warped:
+                # Pay Warp cost instead of normal cost
+                if not game.tap_lands_for_mana(player_idx, template.warp_cost,
+                                                 card_name=template.name):
+                    return False
+                game.log.append(
+                    f"T{game.display_turn} P{player_idx+1}: "
+                    f"Warp {card.name} (pays {template.warp_cost})")
+            elif escaped:
+                # Pay escape cost using the template's ManaCost directly —
+                # no per-card hardcoding; colour pips verified by can_cast.
+                if not game.tap_lands_for_mana(player_idx, template.escape_cost,
                                                  card_name=template.name):
                     return False
             elif dashed:
-                # Pay Dash cost instead of normal cost
-                from .mana import ManaCost
-                dash_mana = ManaCost(generic=template.dash_cost - 1, red=1)  # {1}{R} for Ragavan
-                if not game.tap_lands_for_mana(player_idx, dash_mana,
+                # Pay dash cost using the template's ManaCost directly —
+                # no per-card hardcoding; colour pips verified by can_cast.
+                if not game.tap_lands_for_mana(player_idx, template.dash_cost,
                                                  card_name=template.name):
                     return False
             elif not evoked:
@@ -1009,7 +1117,9 @@ class CastManager:
 
         # Remove from zone and track cast-from-graveyard for flashback exile
         cast_with_flashback = False
-        if card in player.hand:
+        if card in player.exile:
+            player.exile.remove(card)
+        elif card in player.hand:
             player.hand.remove(card)
         elif card in player.graveyard:
             player.graveyard.remove(card)
@@ -1042,6 +1152,7 @@ class CastManager:
         card._evoked = evoked  # Track for sacrifice after ETB
         card._dashed = dashed  # Track for haste + return to hand at end of turn
         card._escaped = getattr(card, '_escaped', False) or (escaped if not free_cast else False)  # Track for sacrifice-unless-escaped
+        card._warped = warped  # Track for exile at beginning of next end step
         # Turn-scoped budget for `_eval_evoke`: each removal-class
         # evoke ramps the cost of the next one. Increment at cast
         # time (not on resolve) — even a fizzling evoke pitches the
@@ -1210,19 +1321,18 @@ class CastManager:
                 splice = sc.template.splice_cost
                 if not splice:
                     continue
-                # splice is total CMC (int) — apply cost reduction
+                # splice is a ManaCost — apply cost reduction to generic portion
                 reduction = count_cost_reducers(game, player_idx, sc.template)
                 reduction += player.temp_cost_reduction
-                effective_splice = max(0, splice - reduction)
+                from .mana import ManaCost as MC
+                effective_splice = MC(
+                    generic=max(0, splice.generic - reduction),
+                    white=splice.white, blue=splice.blue, black=splice.black,
+                    red=splice.red, green=splice.green, colorless=splice.colorless,
+                )
                 available_mana = player.mana_pool.total() + player.untapped_mana_capacity()
-                if available_mana >= effective_splice:
-                    # Pay splice cost from mana pool/lands
-                    from .mana import ManaCost as MC
-                    # Splice for rituals: {1}{R} = generic + 1 red
-                    red_portion = min(1, effective_splice)
-                    generic_portion = max(0, effective_splice - red_portion)
-                    splice_mc = MC(generic=generic_portion, red=red_portion)
-                    if not game.tap_lands_for_mana(player_idx, splice_mc,
+                if available_mana >= effective_splice.cmc:
+                    if not game.tap_lands_for_mana(player_idx, effective_splice,
                                                    sc.template.name):
                         continue
                     stack_item.spliced.append(sc.template)

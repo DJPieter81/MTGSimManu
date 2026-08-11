@@ -151,9 +151,11 @@ class CardTemplate:
     # Evoke cost
     evoke_cost: Optional[ManaCost] = None
     # Dash cost (alternative cast: gains haste, returns to hand at end of turn)
-    dash_cost: Optional[int] = None  # CMC of dash cost, e.g. 2 for {1}{R}
+    dash_cost: Optional[ManaCost] = None  # Full ManaCost preserving colour pips
+    # Warp cost (alternative cast from hand for less mana; creature exiles at end of turn)
+    warp_cost: Optional[ManaCost] = None
     # Escape cost (alternative cast from graveyard)
-    escape_cost: Optional[int] = None  # CMC of escape cost, e.g. 4 for {R}{R}{W}{W}
+    escape_cost: Optional[ManaCost] = None  # Full ManaCost preserving colour pips
     escape_exile_count: int = 0  # Number of other cards to exile from graveyard
     # Equipment
     equip_cost: Optional[int] = None  # CMC to equip, e.g. 1 for Cranial Plating
@@ -193,7 +195,7 @@ class CardTemplate:
                                                 # "permanent_count:<word>",
                                                 # "graveyard_count:<formula>:<type>:<scope>"
     # Splice onto Arcane: oracle-derived from "Splice onto Arcane {cost}"
-    splice_cost: Optional[int] = None          # mana cost to splice (None = no splice)
+    splice_cost: Optional["ManaCost"] = None   # full mana cost to splice (None = no splice)
     is_arcane: bool = False                    # True if subtype includes Arcane
     # Counter/tax framework — structured replacement for the old
     # "'counter' in ability.description" substring dispatch. Populated
@@ -219,6 +221,28 @@ class CardTemplate:
     # parse_ward_cost's docstring). Consumed by
     # engine.optional_costs.offer_ward_tax via the resolve_stack hook.
     ward_cost: int = 0                         # {N} from "Ward {N}"; 0 = no mana-shaped ward
+
+    def __post_init__(self) -> None:
+        # Derive alternative-cost fields from oracle text for templates not
+        # loaded through CardDatabase (e.g. synthetic templates in tests).
+        # CardDatabase sets these explicitly; this fires only for None fields.
+        if self.oracle_text:
+            from .oracle_parser import (parse_warp_cost as _pwc,
+                                        parse_dash_cost as _pdc,
+                                        parse_escape_cost as _pec,
+                                        parse_splice_cost as _psc)
+            if self.warp_cost is None:
+                self.warp_cost = _pwc(self.oracle_text)
+            if self.dash_cost is None:
+                self.dash_cost = _pdc(self.oracle_text)
+            if self.escape_cost is None:
+                _esc = _pec(self.oracle_text)
+                if _esc:
+                    self.escape_cost = _esc['cost']
+                    if self.escape_exile_count == 0:
+                        self.escape_exile_count = _esc['exile']
+            if self.splice_cost is None:
+                self.splice_cost = _psc(self.oracle_text)
 
     @property
     def is_creature(self) -> bool:

@@ -1546,7 +1546,7 @@ class CardDatabase:
         from .oracle_parser import (
             has_delve, parse_dash_cost, parse_extra_land_drops,
             parse_escape_cost, parse_equip_cost, derive_tags_from_oracle,
-            parse_splice_cost,
+            parse_splice_cost, parse_warp_cost,
         )
         oracle_text = template.oracle_text or ''
         oracle_lower = oracle_text.lower()
@@ -1576,7 +1576,7 @@ class CardDatabase:
         # Escape
         escape_data = parse_escape_cost(oracle_text)
         if escape_data:
-            template.escape_cost = escape_data['cmc']
+            template.escape_cost = escape_data['cost']
             template.escape_exile_count = escape_data['exile']
 
         # Equip cost
@@ -1584,6 +1584,11 @@ class CardDatabase:
         if equip is not None:
             template.equip_cost = equip
             template.tags.add("equipment")
+
+        # Warp cost (alternative cast from hand; creature exiles at end of turn)
+        warp = parse_warp_cost(oracle_text)
+        if warp is not None:
+            template.warp_cost = warp
 
         # Prowess from oracle (backup: "noncreature spell" + "+1/+1" pump only)
         # Note: "surveil" alone does NOT indicate prowess — DRC has surveil but

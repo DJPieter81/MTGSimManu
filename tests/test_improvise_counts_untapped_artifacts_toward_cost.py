@@ -198,6 +198,71 @@ def test_effective_cmc_applies_improvise_discount_structurally():
     )
 
 
+def test_improvise_cannot_substitute_colorless_for_colored_pip():
+    """Improvise reduces generic cost only (CR 702.125a).
+
+    A spell with one mandatory colored pip ({U}) is uncastable when the
+    controller has artifact taps to cover the generic portion but only
+    colorless land sources — total_mana passes the improvise_cmc check
+    (1 colorless ≥ 1) but the {U} pip cannot be satisfied.
+
+    Root cause of classic Affinity's 23.9% regression: the improvise
+    branch in can_cast returned True after a colorblind total_mana ≥
+    improvise_cmc check, then tap_lands_for_mana failed silently having
+    already tapped the artifacts as a side effect.
+    """
+    game = _fresh_game()
+    # 1 colorless land + 2 untapped artifacts, but NO blue source.
+    _board(game, lands=1, artifacts=2)
+    # Metallic Rebuke-style: {2}{U} with Improvise.
+    # Improvise reduces generic: max(1, 3-2) = 1. total_mana = 1.
+    # 1 >= 1 → old code returned True (WRONG). Fix: color check fails.
+    spell = _instance(
+        game, _template("Synthetic Rebuke", generic=2,
+                        card_types=[CardType.INSTANT],
+                        oracle_text=_IMPROVISE_ORACLE,
+                        # ManaCost(generic=2, blue=1) = {2}{U}
+                        ),
+        0, "hand")
+    # Force blue pip in mana cost
+    spell.template.mana_cost.blue = 1
+
+    assert not game.can_cast(0, spell), (
+        "improvise must not satisfy a mandatory blue pip with colorless "
+        "mana — {2}{U} is uncastable with 2 artifacts + 1 colorless land"
+    )
+
+
+def test_improvise_castable_when_colored_pip_has_real_source():
+    """Improvise succeeds when the mandatory colored pip has a real source.
+
+    Same {2}{U} spell, same 2 artifacts, but the land produces U (not C).
+    The colored pip is satisfied; improvise covers the generic portion.
+    """
+    game = _fresh_game()
+    # Add a blue-producing land instead of colorless
+    _instance(game, _template("Synthetic Island", generic=0,
+                               card_types=[CardType.LAND],
+                               produces_mana=["U"]),
+              0, "battlefield")
+    # Add 2 untapped artifacts
+    for i in range(2):
+        _instance(game, _template(f"Synthetic Mox {i}", generic=1,
+                                   card_types=[CardType.ARTIFACT]),
+                  0, "battlefield")
+    spell = _instance(
+        game, _template("Synthetic Rebuke", generic=2,
+                        card_types=[CardType.INSTANT],
+                        oracle_text=_IMPROVISE_ORACLE),
+        0, "hand")
+    spell.template.mana_cost.blue = 1
+
+    assert game.can_cast(0, spell), (
+        "improvise must allow casting {2}{U} when 1 blue land + 2 "
+        "artifact taps cover the full cost"
+    )
+
+
 def test_warp_alternative_recognizes_artifact_presence():
     game = _fresh_game()
     _board(game, lands=2, artifacts=1)

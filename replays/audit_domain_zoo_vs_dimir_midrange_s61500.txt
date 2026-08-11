@@ -1,0 +1,1750 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+  Sideboard (Dimir Midrange vs Domain Zoo): +1 Mystical Dispute, +2 Flusterstorm, +2 Sheoldred, the Apocalypse, -1 Archmage's Charm, -2 Consider, -2 Drown in the Loch
+  Sideboard (Dimir Midrange vs Domain Zoo): +1 Mystical Dispute, +2 Flusterstorm, +2 Sheoldred, the Apocalypse, -1 Archmage's Charm, -2 Consider, -2 Drown in the Loch
+======================================================================
+  GAME 1: Domain Zoo (P1) vs Dimir Midrange (P2)  —  seed 61500
+  Series: Domain Zoo 0 - 0 Dimir Midrange
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Dimir Midrange wins → chooses to play first
+║ P1 (on play): Dimir Midrange
+║ P2 (on draw): Domain Zoo
+╚═══════════════════════════════════════════════════════
+
+P1 (Domain Zoo) opening hand (4 lands, 3 spells):
+  • Blood Crypt [Land, CMC 0]
+  • Wild Nacatl [Creature, CMC 1]
+  • Steam Vents [Land, CMC 0]
+  • Indatha Triome [Land, CMC 0]
+  • Arid Mesa [Land, CMC 0]
+  • Doorkeeper Thrull [Creature, CMC 2]
+  • Lightning Bolt [Spell, CMC 1]
+→ P1 MULLIGANS (too many lands (4 > 3); first-turn value 4 < 5)
+  New hand (5 lands, 2 spells): ['Thundering Falls', 'Mountain', 'Lush Portico', 'Indatha Triome', 'Leyline of the Guildpact', 'Blood Crypt', 'Scion of Draco']
+→ P1 MULLIGANS (too many lands (5 > 3); first-turn value 1 < 5)
+  New hand (3 lands, 4 spells): ['Arid Mesa', 'Wild Nacatl', 'Doorkeeper Thrull', 'Arena of Glory', 'Lush Portico', 'Lightning Bolt', 'Doorkeeper Thrull']
+→ P1 mulligans to 5, bottoms: ['Wild Nacatl', 'Lightning Bolt']
+  Keeps: ['Arid Mesa', 'Doorkeeper Thrull', 'Arena of Glory', 'Lush Portico', 'Doorkeeper Thrull']
+
+P2 (Dimir Midrange) opening hand (2 lands, 5 spells):
+  • Archmage's Charm [Spell, CMC 3]
+  • Watery Grave [Land, CMC 0]
+  • Orcish Bowmasters [Creature, CMC 2]
+  • Subtlety [Creature, CMC 4]
+  • Watery Grave [Land, CMC 0]
+  • Drown in the Loch [Spell, CMC 2]
+  • Consider [Spell, CMC 1]
+→ P2 KEEPS 7 — has key card(s): Consider, Orcish Bowmasters, 4 cheap spells
+
+
+╔══ TURN 1 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Domain Zoo 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Watery Grave (untapped, life: 20)
+    → Goal: disrupt [enablers]
+    [Mana] Tap Watery Grave→U (paying for Consider, 1 mana remaining)
+T1 P2: Cast Consider (U)
+    [Priority] P1 passes (no response)
+T1: Resolve Consider
+T1 P2: Consider → draw 1 (Darkslick Shores)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 20  |  Dimir Midrange 20
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 55  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Mountain
+  [Main 1]
+T1 P1: Play Arid Mesa
+T1 P1: Crack Arid Mesa (pay 1 life) -> Temple Garden (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Domain Zoo 19
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Counterspell
+  [Main 1]
+T2 P2: Play Watery Grave (untapped, life: 20)
+    → Goal: grind_value
+    [Mana] Tap Watery Grave→B, Watery Grave→B (paying for Orcish Bowmasters, 2 mana remaining)
+T2 P2: Cast Orcish Bowmasters (1B)
+    [Priority] P1 passes (no response)
+T2: Resolve Orcish Bowmasters
+T2 P2: Bowmasters deals 1 damage to opponent (life: 18)
+T2 P2: Bowmasters creates 1/1 Orc Army token
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 18  |  Dimir Midrange 20
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 53  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Temple Garden
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave [T], Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arena of Glory
+  [Main 1]
+T2 P1: Play Mountain
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Mountain→R, Temple Garden→W (paying for Doorkeeper Thrull, 2 mana remaining)
+T2 P1: Cast Doorkeeper Thrull (1W)
+    [Priority] P2 passes (no response)
+T2: Resolve Doorkeeper Thrull
+T2 P1: Doorkeeper Thrull: opponent ETB triggers suppressed
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Domain Zoo 18
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave, Watery Grave
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2)
+║   Lands: Temple Garden [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Spell Pierce
+  [Main 1]
+T3 P2: Play Darkslick Shores (untapped, 2 other lands)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 18  |  Dimir Midrange 20
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 52  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2)
+║   Lands: Temple Garden, Mountain
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave, Watery Grave, Darkslick Shores
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Leyline of the Guildpact
+  [Main 1]
+T3 P1: Play Arena of Glory (enters tapped)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Mountain→R, Temple Garden→W (paying for Doorkeeper Thrull, 2 mana remaining)
+T3 P1: Cast Doorkeeper Thrull (1W)
+    [Priority] P2 responds with Drown in the Loch
+    [Mana] Tap Watery Grave→U, Watery Grave→B (paying for Drown in the Loch, 3 mana remaining)
+T3 P2: Cast Drown in the Loch (UB)
+T3: Resolve Drown in the Loch
+T3: Doorkeeper Thrull is countered
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Doorkeeper Thrull
+T3 P1: Attack with Doorkeeper Thrull
+  [Declare Blockers] P2 does not block
+T3 P1:   Doorkeeper Thrull (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P2 life: 20 → 19
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Domain Zoo 18
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 2
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave, Watery Grave, Darkslick Shores
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2) [tapped]
+║   Lands: Temple Garden [T], Mountain [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Murktide Regent
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army
+T4 P2: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P1 does not block
+T4 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T4 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 18 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 16  |  Dimir Midrange 19
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 2
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2)
+║   Lands: Temple Garden, Mountain, Arena of Glory
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped]
+║   Lands: Watery Grave, Watery Grave, Darkslick Shores
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Territorial Kavu
+  [Main 1]
+T4 P1: surveil 1 → Flooded Strand to GY
+T4 P1: Play Lush Portico (enters tapped)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Mountain→R, Temple Garden→G (paying for Territorial Kavu, 3 mana remaining)
+T4 P1: Cast Territorial Kavu (RG)
+    [Priority] P2 responds with Counterspell
+    [Mana] Tap Watery Grave→U, Watery Grave→U (paying for Counterspell, 3 mana remaining)
+T4 P2: Cast Counterspell (UU)
+T4: Resolve Counterspell
+T4: Territorial Kavu is countered
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Doorkeeper Thrull
+T4 P1: Attack with Doorkeeper Thrull
+  [Declare Blockers] P2 does not block
+T4 P1:   Doorkeeper Thrull (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P2 life: 19 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 18  |  Domain Zoo 16
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 3
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave, Watery Grave, Darkslick Shores
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2) [tapped]
+║   Lands: Temple Garden [T], Mountain [T], Arena of Glory, Lush Portico [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Fatal Push
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army
+T5 P2: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P1 does not block
+T5 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T5 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 16 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 14  |  Dimir Midrange 18
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 4
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2)
+║   Lands: Temple Garden, Mountain, Arena of Glory, Lush Portico
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped]
+║   Lands: Watery Grave, Watery Grave, Darkslick Shores
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Flooded Strand
+  [Main 1]
+T5 P1: Play Flooded Strand
+T5 P1: Crack Flooded Strand (pay 1 life) -> Steam Vents (tapped, life: 13)
+  [Begin Combat]
+    [Mana] Tap Watery Grave→B (paying for Fatal Push, 3 mana remaining)
+T5 P2: Cast Fatal Push (B)
+T5: Resolve Fatal Push
+T5: Doorkeeper Thrull dies
+T5 P2: Fatal Push destroys Doorkeeper Thrull
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 18  |  Domain Zoo 13
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 48  |  Graveyard: 4
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave, Watery Grave, Darkslick Shores
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Temple Garden, Mountain, Arena of Glory, Lush Portico, Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Fatal Push
+  [Main 1]
+    → Goal: close_game
+T6 P2: Delve 4 cards for Murktide Regent
+    [Mana] Tap Watery Grave→U, Watery Grave→U, Darkslick Shores→U (paying for Murktide Regent, 3 mana remaining)
+T6 P2: Cast Murktide Regent (5UU)
+    [Priority] P1 passes (no response)
+T6: Resolve Murktide Regent
+T6 P2: Murktide Regent enters as 7/7 (4 +1/+1 counters from delved instants/sorceries)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army
+T6 P2: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P1 does not block
+T6 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T6 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 13 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 11  |  Dimir Midrange 18
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 6
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Temple Garden, Mountain, Arena of Glory, Lush Portico, Steam Vents
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped], Murktide Regent (7/7)
+║   Lands: Watery Grave [T], Watery Grave [T], Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Doorkeeper Thrull
+  [Main 1]
+T6 P1: Play Arena of Glory (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 18  |  Domain Zoo 11
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 6
+║ Library: 47  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1), Murktide Regent (7/7)
+║   Lands: Watery Grave, Watery Grave, Darkslick Shores
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Temple Garden, Mountain, Arena of Glory, Lush Portico, Steam Vents, Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Polluted Delta
+  [Main 1]
+T7 P2: Play Polluted Delta
+T7 P2: Crack Polluted Delta -> Island (untapped)
+    → Goal: close_game
+    [Mana] Tap Island→U, Watery Grave→U, Watery Grave→B, Darkslick Shores→U (paying for Subtlety, 4 mana remaining)
+T7 P2: Cast Subtlety (2UU)
+    [Priority] P1 passes (no response)
+T7: Resolve Subtlety
+T7 P2: Subtlety enters (no creature/PW spell on stack to target)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army, Murktide Regent
+T7 P2: Attack with Orcish Bowmasters, Orc Army, Murktide Regent
+  [Declare Blockers] P1 does not block
+T7 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T7 P2:   Orc Army (1/1) → 1 dmg to player
+T7 P2:   Murktide Regent (7/7) → 7 dmg to player
+  [Combat Damage] 9 damage dealt → P1 life: 11 → 2
+  [End Combat]
+  [Main 2]
+  [End Step]
+    [Mana] Tap Mountain→R, Temple Garden→W (paying for Doorkeeper Thrull, 5 mana remaining)
+T7 P1: Cast Doorkeeper Thrull (1W)
+T7: Resolve Doorkeeper Thrull
+T7 P1: Doorkeeper Thrull: opponent ETB triggers suppressed
+
+╔══ TURN 7 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 2  |  Dimir Midrange 17
+║ Hand: 1 cards  |  Opp hand: 3 cards
+║ Lands: 6  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 6
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2)
+║   Lands: Temple Garden, Mountain, Arena of Glory, Lush Portico, Steam Vents, Arena of Glory
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped], Murktide Regent (7/7) [tapped], Subtlety (3/3)
+║   Lands: Watery Grave [T], Watery Grave [T], Darkslick Shores [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Mountain→R, Arena of Glory→R (paying for Ragavan, Nimble Pilferer, 6 mana remaining)
+T7 P1: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P2 passes (no response)
+T7: Resolve Ragavan, Nimble Pilferer
+T7: Ragavan, Nimble Pilferer ETB suppressed by Doorkeeper Thrull
+    → Goal: curve_out [enablers]
+    [Mana] Tap Arena of Glory→R, Temple Garden→G, Lush Portico→G, Steam Vents→R (paying for Leyline of the Guildpact, 4 mana remaining)
+T7 P1: Cast Leyline of the Guildpact (4)
+    [Priority] P2 passes (no response)
+T7: Resolve Leyline of the Guildpact
+T7 P1: Leyline of the Guildpact: all lands are every basic type (domain=5)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Doorkeeper Thrull
+T7 P1: Attack with Doorkeeper Thrull
+  [Declare Blockers] P2 does not block
+T7 P1:   Doorkeeper Thrull (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P2 life: 17 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+T7: Ragavan, Nimble Pilferer moved battlefield -> hand (Dash return)
+T7: Ragavan, Nimble Pilferer returned to hand (Dash)
+
+╔══ TURN 8 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 16  |  Domain Zoo 2
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 45  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1), Murktide Regent (7/7), Subtlety (3/3)
+║   Lands: Watery Grave, Watery Grave, Darkslick Shores, Island
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2) [tapped]
+║   Other: Leyline of the Guildpact
+║   Lands: Temple Garden [T], Mountain [T], Arena of Glory [T], Lush Portico [T], Steam Vents [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Psychic Frog
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Watery Grave→B (paying for Fatal Push, 4 mana remaining)
+T8 P2: Cast Fatal Push (B)
+    [Priority] P1 passes (no response)
+T8: Resolve Fatal Push
+    → Goal: close_game
+    [Mana] Tap Island→U, Watery Grave→B (paying for Psychic Frog, 3 mana remaining)
+T8 P2: Cast Psychic Frog (UB)
+    [Priority] P1 passes (no response)
+T8: Resolve Psychic Frog
+T8: Psychic Frog ETB suppressed by Doorkeeper Thrull
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army, Murktide Regent, Subtlety
+T8 P2: Attack with Orcish Bowmasters, Orc Army, Murktide Regent, Subtlety
+  [Declare Blockers] P1 does not block
+T8 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T8 P2:   Orc Army (1/1) → 1 dmg to player
+T8 P2:   Murktide Regent (7/7) → 7 dmg to player
+T8 P2:   Subtlety (3/3) → 3 dmg to player
+P1 loses: life total -10
+  [Combat Damage] 12 damage dealt → P1 life: 2 → -10
+
+>>> Dimir Midrange wins Game 1 on turn 8 via damage
+    Final life: Domain Zoo=-10  Dimir Midrange=16
+
+======================================================================
+  GAME 2: Domain Zoo (P1) vs Dimir Midrange (P2)  —  seed 61501
+  Series: Domain Zoo 0 - 1 Dimir Midrange
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Domain Zoo wins → chooses to play first
+║ P1 (on play): Domain Zoo
+║ P2 (on draw): Dimir Midrange
+╚═══════════════════════════════════════════════════════
+
+P1 (Domain Zoo) opening hand (3 lands, 4 spells):
+  • Lightning Bolt [Spell, CMC 1]
+  • Flooded Strand [Land, CMC 0]
+  • Lightning Bolt [Spell, CMC 1]
+  • Territorial Kavu [Creature, CMC 2]
+  • Consign to Memory [Spell, CMC 1]
+  • Mountain [Land, CMC 0]
+  • Steam Vents [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Territorial Kavu, 4 cheap spells
+
+P2 (Dimir Midrange) opening hand (4 lands, 3 spells):
+  • Spell Pierce [Spell, CMC 1]
+  • Darkslick Shores [Land, CMC 0]
+  • Scalding Tarn [Land, CMC 0]
+  • Underground River [Land, CMC 0]
+  • Counterspell [Spell, CMC 2]
+  • Island [Land, CMC 0]
+  • Fatal Push [Spell, CMC 1]
+→ P2 KEEPS 7 — has key card(s): Fatal Push, 3 cheap spells
+
+
+╔══ TURN 1 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 20  |  Dimir Midrange 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Steam Vents (untapped, life: 20)
+    → Goal: curve_out
+    [Target] → face (3 dmg, life 20 → 17): face value 0.45
+    [Mana] Tap Steam Vents→R (paying for Lightning Bolt, 1 mana remaining)
+T1 P1: Cast Lightning Bolt (R)
+    [Priority] P2 passes (no response)
+T1: Resolve Lightning Bolt
+T1 P1: Lightning Bolt → 3 damage → life 17
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 17  |  Domain Zoo 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Island
+  [Main 1]
+T1 P2: Play Underground River
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 20  |  Dimir Midrange 17
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Territorial Kavu
+  [Main 1]
+T2 P1: Play Flooded Strand
+T2 P1: Crack Flooded Strand (pay 1 life) -> Temple Garden (tapped, life: 19)
+    → Goal: curve_out
+    [Target] → face (3 dmg, life 17 → 14): face value 0.45
+    [Mana] Tap Steam Vents→R (paying for Lightning Bolt, 1 mana remaining)
+T2 P1: Cast Lightning Bolt (R)
+    [Priority] P2 passes (no response)
+T2: Resolve Lightning Bolt
+T2 P1: Lightning Bolt → 3 damage → life 14
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 14  |  Domain Zoo 19
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents [T], Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Underground River
+  [Main 1]
+T2 P2: Play Scalding Tarn
+T2 P2: Crack Scalding Tarn (pay 1 life) -> Watery Grave (tapped, life: 13)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 19  |  Dimir Midrange 13
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 3
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Temple Garden
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River, Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Leyline Binding
+  [Main 1]
+T3 P1: Play Mountain
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Mountain→R, Temple Garden→G (paying for Territorial Kavu, 3 mana remaining)
+T3 P1: Cast Territorial Kavu (RG)
+    [Priority] P2 passes (no response)
+T3: Resolve Territorial Kavu
+T3 P1: Territorial Kavu enters as 4/4 (domain=4)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 13  |  Domain Zoo 19
+║ Hand: 7 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River, Watery Grave
+║ Domain Zoo board:
+║   Creatures: Territorial Kavu (4/4)
+║   Lands: Steam Vents, Temple Garden [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Polluted Delta
+  [Main 1]
+T3 P2: Play Polluted Delta
+T3 P2: Crack Polluted Delta (pay 1 life) -> Watery Grave (tapped, life: 12)
+    → Goal: grind_value
+    [Mana] Tap Watery Grave→B (paying for Fatal Push, 2 mana remaining)
+T3 P2: Cast Fatal Push (B)
+    [Priority] P1 responds with Consign to Memory
+    [Mana] Tap Steam Vents→U (paying for Consign to Memory, 1 mana remaining)
+T3 P1: Cast Consign to Memory (U)
+T3: Resolve Consign to Memory
+T3 P1: Consign to Memory fizzles (target has color identity)
+T3: Resolve Fatal Push
+T3: Territorial Kavu dies
+T3 P2: Fatal Push destroys Territorial Kavu
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 19  |  Dimir Midrange 12
+║ Hand: 2 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 5
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Temple Garden, Mountain
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River, Watery Grave [T], Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Leyline of the Guildpact
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Mountain→R, Temple Garden→G (paying for Territorial Kavu, 3 mana remaining)
+T4 P1: Cast Territorial Kavu (RG)
+    [Priority] P2 passes (no response)
+T4: Resolve Territorial Kavu
+T4 P1: Territorial Kavu enters as 4/4 (domain=4)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 12  |  Domain Zoo 19
+║ Hand: 6 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 3
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River, Watery Grave, Watery Grave
+║ Domain Zoo board:
+║   Creatures: Territorial Kavu (4/4)
+║   Lands: Steam Vents, Temple Garden [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Fatal Push
+  [Main 1]
+T4 P2: Play Island
+    → Goal: close_game
+    [Mana] Tap Watery Grave→B (paying for Fatal Push, 4 mana remaining)
+T4 P2: Cast Fatal Push (B)
+    [Priority] P1 passes (no response)
+T4: Resolve Fatal Push
+T4: Territorial Kavu dies
+T4 P2: Fatal Push destroys Territorial Kavu
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 19  |  Dimir Midrange 12
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 6
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Temple Garden, Mountain
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River, Watery Grave [T], Watery Grave, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Wild Nacatl
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Temple Garden→G (paying for Wild Nacatl, 3 mana remaining)
+T5 P1: Cast Wild Nacatl (G)
+    [Priority] P2 responds with Counterspell
+    [Mana] Tap Island→U, Watery Grave→U (paying for Counterspell, 3 mana remaining)
+T5 P2: Cast Counterspell (UU)
+T5: Resolve Counterspell
+T5: Wild Nacatl is countered
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 12  |  Domain Zoo 19
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 5
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River, Watery Grave, Watery Grave, Island
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Temple Garden [T], Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Counterspell
+  [Main 1]
+T5 P2: Play Island
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 19  |  Dimir Midrange 12
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 48  |  Graveyard: 7
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Temple Garden, Mountain
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River, Watery Grave, Watery Grave, Island, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Teferi, Time Raveler
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Mountain→R, Steam Vents→U, Temple Garden→W (paying for Teferi, Time Raveler, 3 mana remaining)
+T6 P1: Cast Teferi, Time Raveler (1WU)
+    [Priority] P2 responds with Spell Pierce
+    [Mana] Tap Island→U (paying for Spell Pierce, 5 mana remaining)
+T6 P2: Cast Spell Pierce (U)
+T6: Resolve Spell Pierce
+T6: Teferi, Time Raveler is countered
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 12  |  Domain Zoo 19
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 46  |  Graveyard: 6
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River, Watery Grave, Watery Grave, Island, Island
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents [T], Temple Garden [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Orcish Bowmasters
+  [Main 1]
+T6 P2: Play Underground River
+    → Goal: close_game
+    [Mana] Tap Island→U, Watery Grave→B (paying for Orcish Bowmasters, 6 mana remaining)
+T6 P2: Cast Orcish Bowmasters (1B)
+    [Priority] P1 passes (no response)
+T6: Resolve Orcish Bowmasters
+T6 P2: Bowmasters deals 1 damage to opponent (life: 18)
+T6 P2: Bowmasters creates 1/1 Orc Army token
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 18  |  Dimir Midrange 12
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 6
+║ Library: 47  |  Graveyard: 8
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Temple Garden, Mountain
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Underground River, Watery Grave [T], Watery Grave, Island [T], Island, Underground River
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arena of Glory
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Mountain→R, Temple Garden→W (paying for Leyline Binding, 3 mana remaining)
+T7 P1: Cast Leyline Binding (5W)
+    [Priority] P2 passes (no response)
+T7: Resolve Leyline Binding
+T7: Orcish Bowmasters moved battlefield -> exile (exiled)
+T7 P1: Leyline Binding exiles Orcish Bowmasters
+T7 P1: Play Arena of Glory (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 12  |  Domain Zoo 18
+║ Hand: 2 cards  |  Opp hand: 1 cards
+║ Lands: 6  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 6
+║ Dimir Midrange board:
+║   Creatures: Orc Army (1/1)
+║   Lands: Underground River, Watery Grave, Watery Grave, Island, Island, Underground River
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline Binding
+║   Lands: Steam Vents, Temple Garden [T], Mountain [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Polluted Delta
+  [Main 1]
+T7 P2: Play Polluted Delta
+T7 P2: Crack Polluted Delta -> Island (untapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orc Army
+T7 P2: Attack with Orc Army
+  [Declare Blockers] P1 does not block
+T7 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 18 → 17
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 17  |  Dimir Midrange 11
+║ Hand: 1 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 7
+║ Library: 46  |  Graveyard: 8
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline Binding
+║   Lands: Steam Vents, Temple Garden, Mountain, Arena of Glory
+║ Dimir Midrange board:
+║   Creatures: Orc Army (1/1) [tapped]
+║   Lands: Underground River, Watery Grave, Watery Grave, Island, Island, Underground River, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Scion of Draco
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Mountain→R, Arena of Glory→R, Steam Vents→R, Temple Garden→G (paying for Scion of Draco, 4 mana remaining)
+T8 P1: Cast Scion of Draco (12)
+    [Priority] P2 responds with Counterspell
+    [Mana] Tap Island→U, Island→U (paying for Counterspell, 7 mana remaining)
+T8 P2: Cast Counterspell (UU)
+T8: Resolve Counterspell
+T8: Scion of Draco is countered
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 11  |  Domain Zoo 17
+║ Hand: 1 cards  |  Opp hand: 1 cards
+║ Lands: 7  |  Opp lands: 4
+║ Library: 43  |  Graveyard: 8
+║ Dimir Midrange board:
+║   Creatures: Orc Army (1/1)
+║   Lands: Underground River, Watery Grave, Watery Grave, Island, Island, Underground River, Island
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline Binding
+║   Lands: Steam Vents [T], Temple Garden [T], Mountain [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thoughtseize
+  [Main 1]
+T8 P2: Play Darkslick Shores (tapped, 7 other lands)
+    → Goal: close_game
+    [Mana] Tap Watery Grave→B (paying for Thoughtseize, 7 mana remaining)
+T8 P2: Cast Thoughtseize (B)
+    [Priority] P1 passes (no response)
+T8: Resolve Thoughtseize
+T8: Leyline of the Guildpact moved hand -> graveyard (forced discard)
+T8 P2: Thoughtseize → opponent discards 1
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orc Army
+T8 P2: Attack with Orc Army
+  [Declare Blockers] P1 does not block
+T8 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 17 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 16  |  Dimir Midrange 9
+║ Hand: 0 cards  |  Opp hand: 0 cards
+║ Lands: 4  |  Opp lands: 8
+║ Library: 45  |  Graveyard: 10
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline Binding
+║   Lands: Steam Vents, Temple Garden, Mountain, Arena of Glory
+║ Dimir Midrange board:
+║   Creatures: Orc Army (1/1) [tapped]
+║   Lands: Underground River, Watery Grave [T], Watery Grave, Island, Island, Underground River, Island, Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Territorial Kavu
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Mountain→R, Temple Garden→G (paying for Territorial Kavu, 4 mana remaining)
+T9 P1: Cast Territorial Kavu (RG)
+    [Priority] P2 passes (no response)
+T9: Resolve Territorial Kavu
+T9 P1: Territorial Kavu enters as 4/4 (domain=4)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 9  |  Domain Zoo 16
+║ Hand: 0 cards  |  Opp hand: 0 cards
+║ Lands: 8  |  Opp lands: 4
+║ Library: 42  |  Graveyard: 9
+║ Dimir Midrange board:
+║   Creatures: Orc Army (1/1)
+║   Lands: Underground River, Watery Grave, Watery Grave, Island, Island, Underground River, Island, Darkslick Shores
+║ Domain Zoo board:
+║   Creatures: Territorial Kavu (4/4)
+║   Other: Leyline Binding
+║   Lands: Steam Vents, Temple Garden [T], Mountain [T], Arena of Glory
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Otawara, Soaring City
+  [Main 1]
+T9 P2: Play Otawara, Soaring City
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orc Army
+T9 P2: Attack with Orc Army
+  [Declare Blockers] P1 does not block
+T9 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 16 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 15  |  Dimir Midrange 9
+║ Hand: 0 cards  |  Opp hand: 0 cards
+║ Lands: 4  |  Opp lands: 9
+║ Library: 44  |  Graveyard: 10
+║ Domain Zoo board:
+║   Creatures: Territorial Kavu (4/4)
+║   Other: Leyline Binding
+║   Lands: Steam Vents, Temple Garden, Mountain, Arena of Glory
+║ Dimir Midrange board:
+║   Creatures: Orc Army (1/1) [tapped]
+║   Lands: Underground River, Watery Grave, Watery Grave, Island, Island, Underground River, Island, Darkslick Shores, Otawara, Soaring City
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Doorkeeper Thrull
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Mountain→R, Temple Garden→W (paying for Doorkeeper Thrull, 4 mana remaining)
+T10 P1: Cast Doorkeeper Thrull (1W)
+    [Priority] P2 passes (no response)
+T10: Resolve Doorkeeper Thrull
+T10 P1: Doorkeeper Thrull: opponent ETB triggers suppressed
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Territorial Kavu
+T10 P1: Territorial Kavu exiles Counterspell from opponent GY
+T10 P1: Attack with Territorial Kavu
+  [Declare Blockers] P2 does not block
+T10 P1:   Territorial Kavu (4/4) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 9 → 5
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 5  |  Domain Zoo 15
+║ Hand: 0 cards  |  Opp hand: 0 cards
+║ Lands: 9  |  Opp lands: 4
+║ Library: 41  |  Graveyard: 8
+║ Dimir Midrange board:
+║   Creatures: Orc Army (1/1)
+║   Lands: Underground River, Watery Grave, Watery Grave, Island, Island, Underground River, Island, Darkslick Shores, Otawara, Soaring City
+║ Domain Zoo board:
+║   Creatures: Territorial Kavu (4/4) [tapped], Doorkeeper Thrull (1/2)
+║   Other: Leyline Binding
+║   Lands: Steam Vents, Temple Garden [T], Mountain [T], Arena of Glory
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Consider
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Island→U (paying for Consider, 9 mana remaining)
+T10 P2: Cast Consider (U)
+    [Priority] P1 passes (no response)
+T10: Resolve Consider
+T10 P2: Consider → draw 1 (Thoughtseize)
+    → Goal: close_game
+    [Mana] Tap Watery Grave→B (paying for Thoughtseize, 8 mana remaining)
+T10 P2: Cast Thoughtseize (B)
+    [Priority] P1 passes (no response)
+T10: Resolve Thoughtseize
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orc Army
+T10 P2: Attack with Orc Army
+  [Declare Blockers] P1 does not block
+T10 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 15 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 14  |  Dimir Midrange 3
+║ Hand: 0 cards  |  Opp hand: 0 cards
+║ Lands: 4  |  Opp lands: 9
+║ Library: 43  |  Graveyard: 10
+║ Domain Zoo board:
+║   Creatures: Territorial Kavu (4/4), Doorkeeper Thrull (1/2)
+║   Other: Leyline Binding
+║   Lands: Steam Vents, Temple Garden, Mountain, Arena of Glory
+║ Dimir Midrange board:
+║   Creatures: Orc Army (1/1) [tapped]
+║   Lands: Underground River, Watery Grave [T], Watery Grave, Island [T], Island, Underground River, Island, Darkslick Shores, Otawara, Soaring City
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Scion of Draco
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Mountain→R, Arena of Glory→R, Steam Vents→R, Temple Garden→G (paying for Scion of Draco, 4 mana remaining)
+T11 P1: Cast Scion of Draco (12)
+    [Priority] P2 passes (no response)
+T11: Resolve Scion of Draco
+T11: Scion of Draco ETB suppressed by Doorkeeper Thrull
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Territorial Kavu, Doorkeeper Thrull
+T11 P1: Territorial Kavu exiles Counterspell from opponent GY
+T11 P1: Attack with Territorial Kavu, Doorkeeper Thrull
+  [Declare Blockers] P2 does not block
+T11 P1:   Territorial Kavu (4/4) → 4 dmg to player
+T11 P1:   Doorkeeper Thrull (1/2) → 1 dmg to player
+P2 loses: life total -2
+  [Combat Damage] 5 damage dealt → P2 life: 3 → -2
+
+>>> Domain Zoo wins Game 2 on turn 11 via damage
+    Final life: Domain Zoo=14  Dimir Midrange=-2
+
+======================================================================
+  GAME 3: Dimir Midrange (P1) vs Domain Zoo (P2)  —  seed 61502
+  Series: Domain Zoo 1 - 1 Dimir Midrange
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Dimir Midrange wins → chooses to play first
+║ P1 (on play): Dimir Midrange
+║ P2 (on draw): Domain Zoo
+╚═══════════════════════════════════════════════════════
+
+P1 (Dimir Midrange) opening hand (4 lands, 3 spells):
+  • Scalding Tarn [Land, CMC 0]
+  • Counterspell [Spell, CMC 2]
+  • Subtlety [Creature, CMC 4]
+  • Fatal Push [Spell, CMC 1]
+  • Creeping Tar Pit [Land, CMC 0]
+  • Darkslick Shores [Land, CMC 0]
+  • Darkslick Shores [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Fatal Push, 2 cheap spells
+
+P2 (Domain Zoo) opening hand (3 lands, 4 spells):
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Arena of Glory [Land, CMC 0]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Doorkeeper Thrull [Creature, CMC 2]
+  • Plains [Land, CMC 0]
+  • Arid Mesa [Land, CMC 0]
+  • Lightning Bolt [Spell, CMC 1]
+→ P2 KEEPS 7 — has key card(s): Doorkeeper Thrull, Ragavan, Nimble Pilferer, 3 cheap spells
+
+
+╔══ TURN 1 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Domain Zoo 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Scalding Tarn
+T1 P1: Crack Scalding Tarn (pay 1 life) -> Watery Grave (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 20  |  Dimir Midrange 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wooded Foothills
+  [Main 1]
+T1 P2: Play Arid Mesa
+T1 P2: Crack Arid Mesa (pay 1 life) -> Steam Vents (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Domain Zoo 19
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Flusterstorm
+  [Main 1]
+T2 P1: Play Creeping Tar Pit (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 19  |  Dimir Midrange 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Creeping Tar Pit [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Scion of Draco
+  [Main 1]
+T2 P2: Play Plains
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Plains→W, Steam Vents→R (paying for Doorkeeper Thrull, 2 mana remaining)
+T2 P2: Cast Doorkeeper Thrull (1W)
+    [Priority] P1 passes (no response)
+T2: Resolve Doorkeeper Thrull
+T2 P2: Doorkeeper Thrull: opponent ETB triggers suppressed
+  [Begin Combat]
+    [Mana] Tap Watery Grave→B (paying for Fatal Push, 1 mana remaining)
+T2 P1: Cast Fatal Push (B)
+T2: Resolve Fatal Push
+T2: Doorkeeper Thrull dies
+T2 P1: Fatal Push destroys Doorkeeper Thrull
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Domain Zoo 19
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 2
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Creeping Tar Pit
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Dauthi Voidwalker
+  [Main 1]
+T3 P1: Play Darkslick Shores (untapped, 2 other lands)
+    → Goal: grind_value
+    [Mana] Tap Watery Grave→B, Creeping Tar Pit→B (paying for Dauthi Voidwalker, 3 mana remaining)
+T3 P1: Cast Dauthi Voidwalker (BB)
+    [Priority] P2 passes (no response)
+T3: Resolve Dauthi Voidwalker
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 19  |  Dimir Midrange 19
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 2
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Plains
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2)
+║   Lands: Watery Grave [T], Creeping Tar Pit [T], Darkslick Shores
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Leyline of the Guildpact
+  [Main 1]
+T3 P2: Play Wooded Foothills
+T3 P2: Crack Wooded Foothills (pay 1 life) -> Blood Crypt (tapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Domain Zoo 18
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 2
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2)
+║   Lands: Watery Grave, Creeping Tar Pit, Darkslick Shores
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Plains, Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Subtlety
+  [Main 1]
+T4 P1: Play Darkslick Shores (tapped, 3 other lands)
+  [Begin Combat]
+    [Mana] Tap Steam Vents→R (paying for Lightning Bolt, 2 mana remaining)
+T4 P2: Cast Lightning Bolt (R)
+T4: Resolve Lightning Bolt
+T4: Dauthi Voidwalker dies
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 18  |  Dimir Midrange 19
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 4
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Plains, Blood Crypt
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Creeping Tar Pit, Darkslick Shores, Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+T4 P2: Play Arid Mesa
+T4 P2: Crack Arid Mesa (pay 1 life) -> Temple Garden (tapped, life: 17)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Plains→W, Steam Vents→R (paying for Scion of Draco, 3 mana remaining)
+T4 P2: Cast Scion of Draco (12)
+    [Priority] P1 responds with Counterspell
+    [Mana] Tap Watery Grave→U, Creeping Tar Pit→U (paying for Counterspell, 3 mana remaining)
+T4 P1: Cast Counterspell (UU)
+T4: Resolve Counterspell
+T4: Scion of Draco is countered
+    → Goal: curve_out [enablers]
+    [Mana] Tap Blood Crypt→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T4 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T4: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Domain Zoo 17
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 4
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Creeping Tar Pit, Darkslick Shores, Darkslick Shores
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Steam Vents [T], Plains [T], Blood Crypt [T], Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Fatal Push
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Watery Grave→U, Creeping Tar Pit→U, Darkslick Shores→U, Darkslick Shores→U (paying for Subtlety, 4 mana remaining)
+T5 P1: Cast Subtlety (2UU)
+    [Priority] P2 passes (no response)
+T5: Resolve Subtlety
+T5 P1: Subtlety enters (no creature/PW spell on stack to target)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 17  |  Dimir Midrange 19
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 6
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Steam Vents, Plains, Blood Crypt, Temple Garden
+║ Dimir Midrange board:
+║   Creatures: Subtlety (3/3)
+║   Lands: Watery Grave [T], Creeping Tar Pit [T], Darkslick Shores [T], Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Territorial Kavu
+  [Main 1]
+T5 P2: Play Arena of Glory (enters tapped)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Steam Vents→R, Temple Garden→G (paying for Territorial Kavu, 4 mana remaining)
+T5 P2: Cast Territorial Kavu (RG)
+    [Priority] P1 passes (no response)
+T5: Resolve Territorial Kavu
+T5 P2: Territorial Kavu enters as 5/5 (domain=5)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Domain Zoo 17
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 48  |  Graveyard: 4
+║ Dimir Midrange board:
+║   Creatures: Subtlety (3/3)
+║   Lands: Watery Grave, Creeping Tar Pit, Darkslick Shores, Darkslick Shores
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Territorial Kavu (4/4)
+║   Lands: Steam Vents [T], Plains, Blood Crypt, Temple Garden [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Psychic Frog
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Watery Grave→B (paying for Fatal Push, 4 mana remaining)
+T6 P1: Cast Fatal Push (B)
+    [Priority] P2 passes (no response)
+T6: Resolve Fatal Push
+T6: Territorial Kavu dies
+T6 P1: Fatal Push destroys Territorial Kavu
+    → Goal: close_game
+    [Mana] Tap Creeping Tar Pit→U, Darkslick Shores→B (paying for Psychic Frog, 3 mana remaining)
+T6 P1: Cast Psychic Frog (UB)
+    [Priority] P2 passes (no response)
+T6: Resolve Psychic Frog
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Subtlety
+T6 P1: Attack with Subtlety
+  [Declare Blockers] P2 does not block
+T6 P1:   Subtlety (3/3) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 17 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 14  |  Dimir Midrange 19
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 7
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Steam Vents, Plains, Blood Crypt, Temple Garden, Arena of Glory
+║ Dimir Midrange board:
+║   Creatures: Subtlety (3/3) [tapped], Psychic Frog (1/2)
+║   Lands: Watery Grave [T], Creeping Tar Pit [T], Darkslick Shores [T], Darkslick Shores
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wild Nacatl
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Temple Garden→G (paying for Wild Nacatl, 5 mana remaining)
+T6 P2: Cast Wild Nacatl (G)
+    [Priority] P1 passes (no response)
+T6: Resolve Wild Nacatl
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T6 P2: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T6 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T6 P2: Create 1x Treasure token(s)
+T6 P2: Ragavan, Nimble Pilferer exiles Island from top of P1's library
+T6 P2: Ragavan, Nimble Pilferer — may cast Island this turn
+  [Combat Damage] 2 damage dealt → P1 life: 19 → 17
+  [End Combat]
+  [Main 2]
+T6 P2: Play Island
+  [End Step]
+
+╔══ TURN 7 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 17  |  Domain Zoo 14
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 46  |  Graveyard: 5
+║ Dimir Midrange board:
+║   Creatures: Subtlety (3/3), Psychic Frog (1/2)
+║   Lands: Watery Grave, Creeping Tar Pit, Darkslick Shores, Darkslick Shores
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Wild Nacatl (1/1)
+║   Other: Treasure Token
+║   Lands: Steam Vents, Plains, Blood Crypt, Temple Garden [T], Arena of Glory, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Thoughtseize
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Watery Grave→U, Creeping Tar Pit→U, Darkslick Shores→U, Darkslick Shores→U (paying for Subtlety, 4 mana remaining)
+T7 P1: Cast Subtlety (2UU)
+    [Priority] P2 passes (no response)
+T7: Resolve Subtlety
+T7 P1: Subtlety enters (no creature/PW spell on stack to target)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Subtlety, Psychic Frog
+T7 P1: Attack with Subtlety, Psychic Frog
+  [Declare Blockers] P2 does not block
+T7 P1:   Subtlety (3/3) → 3 dmg to player
+T7 P1:   Psychic Frog (1/2) → 1 dmg to player
+T7 P1: Psychic Frog deals combat damage — draw a card
+  [Combat Damage] 4 damage dealt → P2 life: 14 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 10  |  Dimir Midrange 17
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 6  |  Opp lands: 4
+║ Library: 44  |  Graveyard: 7
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Wild Nacatl (1/1)
+║   Other: Treasure Token
+║   Lands: Steam Vents, Plains, Blood Crypt, Temple Garden, Arena of Glory, Island
+║ Dimir Midrange board:
+║   Creatures: Subtlety (3/3) [tapped], Psychic Frog (1/2) [tapped], Subtlety (3/3)
+║   Lands: Watery Grave [T], Creeping Tar Pit [T], Darkslick Shores [T], Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+T7 P2: Play Flooded Strand
+T7 P2: Crack Flooded Strand (pay 1 life) -> Steam Vents (tapped, life: 9)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 17  |  Domain Zoo 9
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 7
+║ Library: 44  |  Graveyard: 5
+║ Dimir Midrange board:
+║   Creatures: Subtlety (3/3), Psychic Frog (1/2), Subtlety (3/3)
+║   Lands: Watery Grave, Creeping Tar Pit, Darkslick Shores, Darkslick Shores
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Wild Nacatl (1/1)
+║   Other: Treasure Token
+║   Lands: Steam Vents, Plains, Blood Crypt, Temple Garden, Arena of Glory, Island, Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Polluted Delta
+  [Main 1]
+T8 P1: Play Polluted Delta
+T8 P1: Crack Polluted Delta (pay 1 life) -> Watery Grave (tapped, life: 16)
+T8 P1: Creeping Tar Pit becomes a 3/2 creature until end of turn (pays 3 mana)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Creeping Tar Pit, Subtlety, Psychic Frog, Subtlety
+T8 P1: Attack with Creeping Tar Pit, Subtlety, Psychic Frog, Subtlety
+T8 P2:   [BLOCK-EMERGENCY] Wild Nacatl (1/1) blocks Creeping Tar Pit (3/2) — lifespan_delta=-2.39
+T8 P2:   [BLOCK-EMERGENCY] Ragavan, Nimble Pilferer (2/1) blocks Psychic Frog (2/3) — lifespan_delta=-2.48
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T8 P1:   Subtlety (3/3) → 3 dmg to player
+T8 P1:   Subtlety (3/3) → 3 dmg to player
+T8: Ragavan, Nimble Pilferer dies
+T8: Wild Nacatl dies
+  [Combat Damage] 6 damage dealt → P2 life: 9 → 3
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 3  |  Dimir Midrange 16
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 7  |  Opp lands: 5
+║ Library: 42  |  Graveyard: 10
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Treasure Token
+║   Lands: Steam Vents, Plains, Blood Crypt, Temple Garden, Arena of Glory, Island, Steam Vents
+║ Dimir Midrange board:
+║   Creatures: Subtlety (3/3) [tapped], Psychic Frog (2/3) [tapped], Subtlety (3/3) [tapped]
+║   Lands: Watery Grave [T], Creeping Tar Pit [T], Darkslick Shores [T], Darkslick Shores [T], Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Leyline Binding
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Plains→W (paying for Leyline Binding, 7 mana remaining)
+T8 P2: Cast Leyline Binding (5W)
+    [Priority] P1 passes (no response)
+T8: Resolve Leyline Binding
+T8: Subtlety moved battlefield -> exile (exiled)
+T8 P2: Leyline Binding exiles Subtlety
+    → Goal: curve_out [enablers]
+    [Mana] Tap Arena of Glory→R, Island→U (paying for Ragavan, Nimble Pilferer, 6 mana remaining)
+T8 P2: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P1 passes (no response)
+T8: Resolve Ragavan, Nimble Pilferer
+    → Goal: curve_out [enablers]
+    [Mana] Tap Steam Vents→R, Blood Crypt→B, Temple Garden→G, Steam Vents→R (paying for Leyline of the Guildpact, 4 mana remaining)
+T8 P2: Cast Leyline of the Guildpact (4)
+    [Priority] P1 passes (no response)
+T8: Resolve Leyline of the Guildpact
+T8 P2: Leyline of the Guildpact: all lands are every basic type (domain=5)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T8 P2: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T8 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T8 P2: Create 1x Treasure token(s)
+T8 P2: Ragavan, Nimble Pilferer exiles Fatal Push from top of P1's library
+T8 P2: Ragavan, Nimble Pilferer — may cast Fatal Push this turn
+  [Combat Damage] 2 damage dealt → P1 life: 16 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+T8: Fatal Push returned to exile (uncast)
+T8: Ragavan, Nimble Pilferer moved battlefield -> hand (Dash return)
+T8: Ragavan, Nimble Pilferer returned to hand (Dash)
+
+╔══ TURN 9 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 14  |  Domain Zoo 3
+║ Hand: 2 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 7
+║ Library: 41  |  Graveyard: 7
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (2/3), Subtlety (3/3)
+║   Lands: Watery Grave, Creeping Tar Pit, Darkslick Shores, Darkslick Shores, Watery Grave
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Treasure Token, Leyline Binding, Leyline of the Guildpact, Treasure Token
+║   Lands: Steam Vents [T], Plains [T], Blood Crypt [T], Temple Garden [T], Arena of Glory [T], Island [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Murktide Regent
+  [Main 1]
+    → Goal: close_game
+T9 P1: Delve 5 cards for Murktide Regent
+    [Mana] Tap Watery Grave→U, Creeping Tar Pit→U (paying for Murktide Regent, 5 mana remaining)
+T9 P1: Cast Murktide Regent (5UU)
+    [Priority] P2 passes (no response)
+T9: Resolve Murktide Regent
+T9 P1: Murktide Regent enters as 5/5 (2 +1/+1 counters from delved instants/sorceries)
+    → Goal: close_game
+    [Mana] Tap Darkslick Shores→B (paying for Thoughtseize, 3 mana remaining)
+T9 P1: Cast Thoughtseize (B)
+    [Priority] P2 passes (no response)
+T9: Resolve Thoughtseize
+T9: Ragavan, Nimble Pilferer moved hand -> graveyard (forced discard)
+T9 P1: Thoughtseize → opponent discards 1
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Psychic Frog, Subtlety
+T9 P1: Attack with Psychic Frog, Subtlety
+  [Declare Blockers] P2 does not block
+T9 P1:   Psychic Frog (2/3) → 2 dmg to player
+T9 P1: Psychic Frog deals combat damage — draw a card
+T9 P1:   Subtlety (3/3) → 3 dmg to player
+P2 loses: life total -2
+  [Combat Damage] 5 damage dealt → P2 life: 3 → -2
+
+>>> Dimir Midrange wins Game 3 on turn 9 via damage
+    Final life: Dimir Midrange=12  Domain Zoo=-2
+
+======================================================================
+  MATCH RESULT: Dimir Midrange wins 2-1
+======================================================================
