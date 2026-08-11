@@ -237,6 +237,7 @@ class CardTemplate:
     # "Whenever [Card Name] attacks". Replaces runtime 'whenever...attacks'
     # in-oracle substring checks in ai/ and engine/.
     has_attack_trigger: bool = False
+<<<<<<< HEAD
     # Lifegain-token trigger (CR 603.2) — True when oracle creates a token
     # whenever the controller gains life ("whenever you gain life … create …
     # token").  Replaces the runtime oracle substring check in
@@ -244,6 +245,13 @@ class CardTemplate:
     # oracle_parser.parse_has_lifegain_token_trigger.
     has_lifegain_token_trigger: bool = False
     lifegain_token_type: str = "creature"  # subtype passed to create_token()
+    # Stack-spell targeting (e.g. ETBs that target a spell on the stack) —
+    # populated at load time by oracle_parser.parse_targets_creature_spell /
+    # parse_targets_planeswalker_spell. Replaces runtime oracle substring
+    # checks in ai/board_eval.py (_eval_evoke stack-check gate).
+    targets_creature_spell: bool = False      # oracle contains "target creature spell"
+    targets_planeswalker_spell: bool = False  # oracle contains "target planeswalker spell"
+                                              # or "or planeswalker spell" (chained form)
 
     def __post_init__(self) -> None:
         # Derive fields from oracle text for templates not loaded through
@@ -257,8 +265,11 @@ class CardTemplate:
                                         parse_can_target_player as _pctp,
                                         parse_can_target_planeswalker as _pctpw,
                                         parse_has_attack_trigger as _phat,
+<<<<<<< HEAD
                                         parse_has_lifegain_token_trigger as _phltt,
-                                        parse_lifegain_token_type as _pltt)
+                                        parse_lifegain_token_type as _pltt,
+                                        parse_targets_creature_spell as _ptcs,
+                                        parse_targets_planeswalker_spell as _ptpws)
             from .card_database import KEYWORD_MAP as _KM
             import re as _re
             if self.warp_cost is None:
@@ -282,10 +293,15 @@ class CardTemplate:
                 self.can_target_planeswalker = _pctpw(self.oracle_text)
             if not self.has_attack_trigger:
                 self.has_attack_trigger = _phat(self.oracle_text, self.name)
+<<<<<<< HEAD
             if not self.has_lifegain_token_trigger:
                 self.has_lifegain_token_trigger = _phltt(self.oracle_text)
             if self.has_lifegain_token_trigger and self.lifegain_token_type == 'creature':
                 self.lifegain_token_type = _pltt(self.oracle_text)
+            if not self.targets_creature_spell:
+                self.targets_creature_spell = _ptcs(self.oracle_text)
+            if not self.targets_planeswalker_spell:
+                self.targets_planeswalker_spell = _ptpws(self.oracle_text)
             # Derive keywords from oracle text for synthetic templates that
             # were constructed with keywords=set(). DB-loaded templates
             # already have complete keyword sets from KEYWORD_MAP scanning;

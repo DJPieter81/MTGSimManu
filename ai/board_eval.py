@@ -256,11 +256,8 @@ def _eval_evoke(game, me, a: BoardAssessment, ctx: dict,
     # Subtlety's wording is "target creature spell or planeswalker
     # spell" (one "target", two clauses); accept the chained "or
     # planeswalker spell" form too.
-    targets_creature_spell = 'target creature spell' in oracle
-    targets_pw_spell = (
-        'target planeswalker spell' in oracle
-        or 'or planeswalker spell' in oracle  # Subtlety-style chained clause
-    )
+    targets_creature_spell = card.template.targets_creature_spell
+    targets_pw_spell = card.template.targets_planeswalker_spell
     if (targets_creature_spell or targets_pw_spell) and 'removal' not in tags:
         # Walk the stack — does it contain an opponent spell whose type
         # matches what the ETB can target?  Self-controlled spells are
