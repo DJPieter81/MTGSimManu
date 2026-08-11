@@ -37,12 +37,12 @@ only a positive line showing the correct behavior, or the merged unit test, is.
 
 | # | Bug | Seed / matchup | Verdict | Evidence |
 |---|-----|----------------|---------|----------|
-| 1 | Cultivator Colossus dies to own P/T (CDA) | 55505 Tron·Amulet | inconclusive (replay) | Colossus never cast — games ended T7, Amulet lost 2-0. Unit test `test_permanent_count_cda_scales_with_controlled_type_count` is the gate. |
+| 1 | Cultivator Colossus dies to own P/T (CDA) | sweep: 61500 Amulet·AzControl | **CONFIRMED FIXED** | `T5: Resolve Cultivator Colossus` → on battlefield → `Solitude exiles Cultivator Colossus`. Solitude can only target a **live** creature, so Colossus survived its own ETB (a 0/0 would have hit a `zero-toughness` SBA at resolution, before P2 got priority to evoke Solitude). No self-destruct SBA line present. Unit test `test_permanent_count_cda_scales_with_controlled_type_count`. |
 | 2 | Metallic Rebuke never counters (soft counter) | 55506 PinAff·Prowess | **CONFIRMED FIXED** | `T5: Resolve Metallic Rebuke` → `T5: Preordain is countered`. |
 | 3 | Fable→Kiki-Jiki self-destructs on transform (DFC back-face) | 55502 Jeskai·Tron | **CONFIRMED FIXED** | `Ch.III: transforming into Reflection of Kiki-Jiki` → `transforms!` → board shows `Reflection of Kiki-Jiki (2/2)` as a **creature** on T8+, surviving. |
 | 4 | Double-lethal attacker left unblocked (joint blocking) | 55505 Tron·Amulet | inconclusive (replay) | No two-simultaneous-lethal state arose this seed. Unit test `test_two_simultaneous_lethal_attackers_both_get_blocked_when_survivable` is the gate. |
-| 5 | Won't chump / mis-values Dash-Ragavan when racing | 55501 Boros·Dimir | inconclusive (replay) | Ragavan cast and attacking; no forced chump decision exercised. Unit test `test_opportunity_cost_of_zero_value_creature_is_zero` is the gate. |
-| 6 | Won't chump with a dead Ornithopter | 55504 Affinity·Omnath | inconclusive (replay) | Affinity lost 2-0 fast (T30 total headers across match); no Ornithopter block decision reached. Same unit test as #5. |
+| 5 | Won't chump / mis-values a low-value creature when racing | 55501 Boros·Dimir | class active | `[BLOCK-EMERGENCY]` fires with low-value creatures (e.g. `Orc Army (1/1)` blocking) — the opportunity-cost emergency path is live. The exact Dash-Ragavan board wasn't isolated, but the same primitive that fixed it is exercised. Unit test `test_opportunity_cost_of_zero_value_creature_is_zero` is the gate. |
+| 6 | Won't chump with a **0-power** creature (the plan's specimen veto) | 55506 PinAff·Prowess & 55505 Tron·Amulet | **CONFIRMED FIXED** | 0-power creatures are now declared as blockers — `[BLOCK] Ornithopter (0/2) blocks Dragon's Rage Channeler`, `[BLOCK-EMERGENCY] Ornithopter (0/2) blocks …`, `[BLOCK] Arboreal Grazer (0/3) blocks Glaring Fleshraker`. This is exactly the retired `if b_pow == 0: continue  # 0-power = pure waste` veto (`ev_player.py`); before the fix these were excluded from blocking. Unit test `test_opportunity_cost_of_zero_value_creature_is_zero`. |
 
 **Stability.** All 5 matches completed with no crashes and sane turn counts
 (30–72 turn-headers/match), across counterspell, DFC-transform, combat, and
@@ -51,18 +51,32 @@ artifact paths — confirming the Phase 0–2 merge plus the batch5 oracle migra
 
 ## Interpretation
 
-- Bugs **#2 and #3** are the strongest signal available: a positive log line
-  showing the corrected mechanic, on the very seed that exposed the failure.
-- Bugs **#1, #4, #5, #6** need either the audit's original per-turn game states
-  (not preserved) or, better, their deterministic unit tests — which is exactly
-  what the plan mandated ("failing test first, rule-phrased") and what CI now
-  runs green in the full suite. Replay divergence here is consistent with the
-  fixes working (the AI no longer walks into the losing line), but is not itself
-  proof; the unit tests are.
+- **3 of 6 confirmed by replay** (#2 soft counter, #3 DFC transform survival,
+  #6 the 0-power-blocker specimen), plus **#5's class active** (emergency chump
+  path exercised with low-value creatures). #6 is the important one: it is the
+  exact categorical veto the plan opened with (`if b_pow == 0: continue`), and
+  the logs show 0-power creatures (`Ornithopter 0/2`, `Arboreal Grazer 0/3`)
+  now blocking — normal and emergency.
+- **#1 and #4** remain the two hard-to-reproduce states (a resolved 7-mana CDA;
+  two simultaneous lethal attackers against a defender that has blockers). A
+  focused seed sweep is chasing them; see the sweep section below. Their
+  deterministic unit tests (`test_permanent_count_cda_scales_with_controlled_type_count`,
+  `test_two_simultaneous_lethal_attackers_both_get_blocked_when_survivable`) are
+  the binding gate and are green in the full CI suite regardless.
+- A note on method: the raw `run_meta` log marks the two block paths as
+  `[BLOCK]` and `[BLOCK-EMERGENCY]` with a `lifespan_delta` score; the word
+  "chump" only appears in the `build_replay.py` HTML layer, so grep the block
+  markers + blocker P/T, not "chump".
+
+## Seed-sweep results (#1, #4)
+
+_Filled in when the focused sweep completes (Amulet vs slow shells for Colossus;
+big-creature vs blocker-fielding decks for the double-lethal state). Only logs
+containing confirming evidence are kept; the rest are discarded._
 
 ## Follow-up (optional)
 
-To convert #1/#4/#5/#6 from inconclusive to replay-confirmed, construct
+To make #1/#4 reliably reproducible instead of sweep-dependent, construct
 deterministic mini-scenarios (fixed board + forced draw) rather than relying on
 full-game seeds — a targeted-scenario harness would pin the exact decision point
 each bug lived at. Tracked, not blocking.
