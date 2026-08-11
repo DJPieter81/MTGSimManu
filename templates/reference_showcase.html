@@ -235,11 +235,11 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
 <div class="hero">
   <div class="hero-eyebrow">Pure Python · Zero Dependencies · Full Bo3</div>
   <h1>The <em>Modern</em> metagame,<br>simulated.</h1>
-  <p class="hero-sub">21,795 cards. 19 decks. 3,420 Bo3 matches across 171 pairings. An EV-based AI brain that mulligans, sequences spells, predicts blocks, and tracks what your opponent is holding — all in 0.68 seconds per match.</p>
+  <p class="hero-sub">21,795 cards. 19 decks. 2,052 Bo3 matches across 171 pairings. An EV-based AI brain that mulligans, sequences spells, predicts blocks, and tracks what your opponent is holding — all in 0.68 seconds per match.</p>
   <div class="counter-row">
     <div class="counter"><div class="num" data-target="21795">0</div><div class="unit">Cards in DB</div></div>
     <div class="counter"><div class="num" data-target="19">0</div><div class="unit">Modern Decks</div></div>
-    <div class="counter"><div class="num" data-target="3420">0</div><div class="unit">Bo3 Matches</div></div>
+    <div class="counter"><div class="num" data-target="2052">0</div><div class="unit">Bo3 Matches</div></div>
     <div class="counter"><div class="num" data-target="49722">0</div><div class="unit">Lines of Python</div></div>
   </div>
 </div>
@@ -473,8 +473,8 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
 <section>
   <div class="reveal">
     <div class="sec-label">Performance</div>
-    <div class="sec-title">3,420 matches under the microscope</div>
-    <div class="sec-desc">Every metric traceable to a game log. Every win rate backed by 20 Bo3 matches per pairing (120 pairings).</div>
+    <div class="sec-title">2,052 matches under the microscope</div>
+    <div class="sec-desc">Every metric traceable to a game log. Every win rate backed by 12 Bo3 matches per pairing (171 pairings).</div>
   </div>
   <div class="chart-grid reveal">
     <div class="chart-card">
@@ -484,7 +484,7 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
     </div>
     <div class="chart-card">
       <h4>Game resolution</h4>
-      <div class="chart-sub">How 3,420 simulated Bo3 matches ended</div>
+      <div class="chart-sub">How 2,052 simulated Bo3 matches ended</div>
       <div class="chart-wrap"><canvas id="resChart"></canvas></div>
     </div>
     <div class="chart-card">
@@ -794,9 +794,9 @@ let selectedDeck=null;
 // WR chart labels → full names
 const wrLabels=['Boros','Zoo','Storm','Dimir','Prowess','Omnath','Azoriu','4/5c','LivEnd','WST','Boros ','ETron','Jeskai','P.Affin','Instan','Goryo','AzCtrl','Affinity','Amulet'];
 const wrFull=['Boros Energy','Domain Zoo','Ruby Storm','Dimir Midrange','Izzet Prowess','4c Omnath','Azorius Control (WST v2)','4/5c Control','Living End','Azorius Control (WST)','Boros Ponza','Eldrazi Tron','Jeskai Blink','Pinnacle Affinity','Instant Reanimator',"Goryo's Vengeance",'Azorius Control','Affinity','Amulet Titan'];
-const wrData=[78.5,77.9,76.8,66.8,64.1,62.9,59.9,58.7,47.5,45.0,43.7,42.3,41.1,39.7,34.5,33.8,31.4,18.4,16.8];
-const wrBgDef=['#fdf5e6','#fdf5e6','#e6f5ee','#fdf5e6','#e6f5ee','#fdf5e6','#fdf5e6','#e6f5ee','#e6f5ee','#e6f5ee','#e6f5ee','#fde8e8','#e6f5ee','#fde8e8','#fde8e8','#fde8e8'];
-const wrBrDef=[amber,amber,teal,amber,teal,amber,amber,teal,teal,teal,teal,red,teal,red,red,red];
+const wrData=[77.8,74.1,76.9,69.4,60.2,62.0,53.2,39.8,47.2,39.8,49.1,49.5,48.6,48.6,42.1,30.6,39.4,23.6,18.1];
+const wrBgDef=['#fdf5e6','#fdf5e6','#fdf5e6','#fdf5e6','#fdf5e6','#fdf5e6','#e6f5ee','#fde8e8','#e6f5ee','#fde8e8','#e6f5ee','#e6f5ee','#e6f5ee','#e6f5ee','#fde8e8','#fde8e8','#fde8e8','#fde8e8','#fde8e8'];
+const wrBrDef=[amber,amber,amber,amber,amber,amber,teal,red,teal,red,teal,teal,teal,teal,red,red,red,red,red];
 
 // Per-deck win resolution (damage%, combo%, timeout%) — in this engine, combo decks win via damage spells (Grapeshot, Archon trigger), not separate combo categories.
 const deckRes={'Boros Energy':{"d": 92, "c": 1, "t": 7},'Jeskai Blink':{"d": 85, "c": 0, "t": 15},'Ruby Storm':{"d": 55, "c": 35, "t": 10},'Affinity':{"d": 92, "c": 1, "t": 7},'Eldrazi Tron':{"d": 80, "c": 10, "t": 10},'Amulet Titan':{"d": 55, "c": 35, "t": 10},"Goryo's Vengeance":{"d": 55, "c": 35, "t": 10},'Domain Zoo':{"d": 92, "c": 1, "t": 7},'Living End':{"d": 55, "c": 35, "t": 10},'Izzet Prowess':{"d": 92, "c": 1, "t": 7},'Dimir Midrange':{"d": 85, "c": 0, "t": 15},'4c Omnath':{"d": 85, "c": 0, "t": 15},'4/5c Control':{"d": 65, "c": 0, "t": 35},'Azorius Control (WST)':{"d": 65, "c": 0, "t": 35},'Azorius Control':{"d": 65, "c": 0, "t": 35},'Pinnacle Affinity':{"d": 92, "c": 1, "t": 7},'Azorius Control (WST v2)':{"d": 85, "c": 0, "t": 15},'Instant Reanimator':{"d": 85, "c": 0, "t": 15},'Boros Ponza':{"d": 85, "c": 0, "t": 15}};
@@ -900,7 +900,7 @@ function clearSelection(){
 // Heatmap — full interactivity
 const decksFull=['Boros Energy','Jeskai Blink','Ruby Storm','Affinity','Eldrazi Tron','Amulet Titan',"Goryo's Vengeance",'Domain Zoo','Living End','Izzet Prowess','Dimir Midrange','4c Omnath','4/5c Control','Azorius Control (WST)','Azorius Control'];
 const decks=['Boros','Jesk','Storm','Affi','ETron','AmTi','Gory','Zoo','LivE','Prow','Dimir','4cOm','4/5c','WST','AzCtrl'];
-const wins=[[0,90,35,100,85,100,90,30,75,65,60,50,45,45,95],[10,0,10,65,60,90,70,30,20,35,25,25,40,45,50],[65,90,0,75,90,100,85,60,80,65,40,90,85,40,90],[0,35,25,0,25,50,30,0,20,5,10,20,10,55,50],[15,40,10,75,0,80,55,5,45,50,30,25,65,95,75],[0,10,0,50,20,0,50,5,30,5,0,5,10,40,20],[10,30,15,70,45,50,0,20,75,5,0,20,35,30,45],[70,70,40,100,95,95,80,0,70,70,35,55,85,80,90],[25,80,20,80,55,70,25,30,0,35,35,35,55,45,35],[35,65,35,95,50,95,95,30,65,0,45,65,70,35,90],[40,75,60,90,70,100,100,65,65,55,0,45,45,85,85],[50,75,10,80,75,95,80,45,65,35,55,0,65,85,90],[55,60,15,90,35,90,65,15,45,30,55,35,0,65,80],[55,55,60,45,5,60,70,20,55,65,15,15,35,0,35],[5,50,10,50,25,80,55,10,65,10,15,10,20,65,0]];
+const wins=[[0,100,42,100,92,100,92,33,75,67,58,67,92,58,100],[0,0,0,75,67,75,50,25,50,67,50,8,50,42,67],[58,100,0,92,83,92,83,67,75,75,50,92,92,50,83],[0,25,8,0,25,50,58,0,33,17,0,25,33,33,42],[8,33,17,75,0,83,42,8,42,75,42,33,58,100,75],[0,25,8,50,17,0,67,8,33,17,0,0,17,42,0],[8,50,17,42,58,33,0,25,83,17,0,25,42,25,33],[67,75,33,100,92,92,75,0,50,67,33,50,100,75,100],[25,50,25,67,58,67,17,50,0,42,33,58,75,50,17],[33,33,25,83,25,83,83,33,58,0,42,75,83,42,92],[42,50,50,100,58,100,100,67,67,58,0,58,58,83,75],[33,92,8,75,67,100,75,50,42,25,42,0,92,83,100],[8,50,8,67,42,83,58,0,25,17,42,8,0,58,50],[42,58,50,67,0,58,75,25,50,58,17,17,42,0,25],[0,33,17,58,25,100,67,0,83,8,25,0,50,75,0]];
 const archetype=['aggro','midrange','combo','aggro','ramp','combo','combo','aggro','combo','aggro','midrange','midrange','control','control','control'];
 const avgTurns=[[0,8,5,6,8,7,6,6,6,6,7,7,6,7,7],[8,0,6,7,8,9,8,7,7,6,8,9,8,10,9],[5,6,0,5,6,7,8,6,6,5,6,8,7,9,8],[6,7,5,0,7,6,6,6,6,6,6,6,6,8,6],[8,8,6,7,0,9,8,7,0,7,8,8,8,8,8],[7,9,7,6,9,0,8,8,9,7,8,11,10,10,10],[6,8,8,6,8,8,0,7,8,7,7,10,10,10,10],[6,7,6,6,7,8,7,0,7,6,7,8,8,9,8],[6,7,6,6,0,9,8,7,0,6,7,9,9,0,10],[6,6,5,6,7,7,7,6,6,0,7,6,6,9,8],[7,8,6,6,8,8,7,7,7,7,0,8,8,9,9],[7,9,8,6,8,11,10,8,9,6,8,0,10,10,11],[6,8,7,6,8,10,10,8,9,6,8,10,0,10,10],[7,10,9,8,8,10,10,9,0,9,9,10,10,0,12],[7,9,8,6,8,10,10,8,10,8,9,11,10,12,0]];
 
@@ -993,15 +993,15 @@ document.querySelectorAll('.deck-chip').forEach(chip=>{
   });
 });
 
-// Validation bars with expected ranges (May 2026 matrix, n=20 per pair)
+// Validation bars with expected ranges (Aug 2026 matrix, n=12 per pair)
 const valData=[
-  {name:'Domain Zoo',wr:75,lo:50,hi:65,pass:0,detail:'<strong>Above expected range (50-65%).</strong> Actual 75% — structural advantage or sim artifact.'},
-  {name:'Ruby Storm',wr:73,lo:40,hi:55,pass:0,detail:'<strong>Above expected range (40-55%).</strong> Actual 73% — structural advantage or sim artifact.'},
-  {name:'Dimir Midrange',wr:72,lo:45,hi:60,pass:0,detail:'<strong>Above expected range (45-60%).</strong> Actual 72% — structural advantage or sim artifact.'},
-  {name:'Boros Energy',wr:70,lo:50,hi:70,pass:1,detail:'In range (50-70%). Performing as expected at 70%.'},
-  {name:'Izzet Prowess',wr:64,lo:45,hi:60,pass:0,detail:'<strong>Above expected range (45-60%).</strong> Actual 64% — structural advantage or sim artifact.'},
-  {name:'Eldrazi Tron',wr:48,lo:50,hi:65,pass:0,detail:'<strong>Below expected range (50-65%).</strong> Actual 48% — possible engine weakness.'},
-  {name:'Jeskai Blink',wr:44,lo:45,hi:60,pass:0,detail:'<strong>Below expected range (45-60%).</strong> Actual 44% — possible engine weakness.'},
+  {name:'Domain Zoo',wr:74,lo:50,hi:65,pass:0,detail:'<strong>Above expected range (50-65%).</strong> Actual 74% — structural advantage or sim artifact.'},
+  {name:'Ruby Storm',wr:77,lo:40,hi:55,pass:0,detail:'<strong>Above expected range (40-55%).</strong> Actual 77% — structural advantage or sim artifact.'},
+  {name:'Dimir Midrange',wr:69,lo:45,hi:60,pass:0,detail:'<strong>Above expected range (45-60%).</strong> Actual 69% — structural advantage or sim artifact.'},
+  {name:'Boros Energy',wr:78,lo:50,hi:70,pass:0,detail:'<strong>Above expected range (50-70%).</strong> Actual 78% — structural advantage or sim artifact.'},
+  {name:'Izzet Prowess',wr:60,lo:45,hi:60,pass:1,detail:'In range (45-60%). Performing as expected at 60%.'},
+  {name:'Eldrazi Tron',wr:50,lo:50,hi:65,pass:1,detail:'In range (50-65%). Performing as expected at 50%.'},
+  {name:'Jeskai Blink',wr:49,lo:45,hi:60,pass:1,detail:'In range (45-60%). Performing as expected at 49%.'},
   {name:'Affinity',wr:24,lo:45,hi:60,pass:0,detail:'<strong>Below expected range (45-60%).</strong> Actual 24% — possible engine weakness.'}
 ];
 const valEl=document.getElementById('valBars'),valDet=document.getElementById('valDetail');
