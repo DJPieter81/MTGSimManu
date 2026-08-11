@@ -83,7 +83,13 @@ def main(argv: list[str] | None = None) -> int:
     args = argv if argv is not None else sys.argv[1:]
     list_mode = "--list" in args
 
+    # Allow --baseline PATH for testing different scenarios
     baseline_path = ROOT / "tools" / "oracle_runtime_parse_baseline.json"
+    for i, arg in enumerate(args):
+        if arg == "--baseline" and i + 1 < len(args):
+            baseline_path = pathlib.Path(args[i + 1])
+            break
+
     if not baseline_path.exists():
         print("ERROR: tools/oracle_runtime_parse_baseline.json not found.")
         return 1
@@ -116,23 +122,32 @@ def main(argv: list[str] | None = None) -> int:
 
     if total > allowed:
         print(
-            f"Oracle-runtime-parse ratchet FAILED: "
-            f"{total} violations found, {allowed} allowed (baseline)."
-        )
-        print(
-            "Oracle text must be parsed in engine/oracle_parser.py at load time,\n"
-            "not inspected inline in engine/ or ai/ decision code.\n"
-            "Add a typed field to CardTemplate and populate it in CardDatabase.\n"
-            "To see all violations: python tools/check_oracle_runtime_parse.py --list"
+            f"Oracle-runtime-parse ratchet FAILED: regression.\n"
+            f"{total} violations found, baseline allows {allowed}.\n"
+            f"Oracle text must be parsed in engine/oracle_parser.py at load time,\n"
+            f"not inspected inline in engine/ or ai/ decision code.\n"
+            f"Add a typed field to CardTemplate and populate it in CardDatabase.\n"
+            f"Then update tools/oracle_runtime_parse_baseline.json total to {total}.\n"
+            f"To see all violations: python tools/check_oracle_runtime_parse.py --list"
         )
         for rel, hits in sorted(violations.items()):
             for lineno, text in hits[:3]:
                 print(f"  {rel}:{lineno}  {text}")
         return 1
 
+    if total < allowed:
+        print(
+            f"Oracle-runtime-parse ratchet FAILED: baseline is stale.\n"
+            f"{total} violations remain but baseline claims {allowed} are allowed.\n"
+            f"You removed {allowed - total} oracle check(s) — claim the improvement:\n"
+            f"  Update tools/oracle_runtime_parse_baseline.json total from {allowed} to {total}.\n"
+            f"This prevents future PRs from silently re-adding checks up to the old limit."
+        )
+        return 1
+
     print(
         f"Oracle-runtime-parse ratchet OK — "
-        f"total = {total} (baseline allowed = {allowed})"
+        f"total = {total} (baseline = {allowed})"
     )
     return 0
 
