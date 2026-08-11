@@ -1298,3 +1298,117 @@ def parse_landfall_second_mana_colors(oracle: str) -> tuple:
             clause = clause[:pos]
             break
     return tuple(c for c in _MANA_COLORS if '{' + c + '}' in clause)
+
+
+# ---------------------------------------------------------------------------
+# Batch 5 typed fields: on-hit triggers, destroy capability, tutor detection,
+# noncreature-spell-cast triggers, artifact synergy
+# (oracle-migrate batch 5 — replaces runtime substring checks in ai/ and engine/)
+# ---------------------------------------------------------------------------
+
+
+def parse_has_combat_damage_player_trigger(oracle: str) -> bool:
+    """Return True if the permanent triggers when it deals combat damage to a player.
+
+    Matches "whenever [this] deals combat damage to a player" — the on-hit
+    trigger pattern shared by Ragavan, Thieving Skydiver, Dreadhorde Arcanist,
+    and similar cards.  Replaces runtime 'combat damage to a player' in oracle
+    substring checks in ai/ev_player.py.
+    """
+    if not oracle:
+        return False
+    return 'combat damage to a player' in oracle.lower()
+
+
+def parse_can_destroy_artifact(oracle: str) -> bool:
+    """Return True if the card can destroy one or more artifacts.
+
+    Matches 'destroy target artifact' or 'destroy all artifacts' — the two
+    operative patterns for artifact-removal spells and ETB effects (Ancient
+    Grudge, Abrupt Decay, Collector Ouphe's triggered ability).  Replaces
+    runtime 'destroy target artifact' / 'destroy all artifacts' inline checks
+    in ai/ev_player.py.
+    """
+    if not oracle:
+        return False
+    lower = oracle.lower()
+    return 'destroy target artifact' in lower or 'destroy all artifacts' in lower
+
+
+def parse_can_destroy_enchantment(oracle: str) -> bool:
+    """Return True if the card can destroy an enchantment.
+
+    Matches 'destroy target enchantment'.  Replaces the runtime substring
+    check in ai/ev_player.py.
+    """
+    if not oracle:
+        return False
+    return 'destroy target enchantment' in oracle.lower()
+
+
+def parse_can_destroy_nonland_permanent(oracle: str) -> bool:
+    """Return True if the card can destroy a nonland permanent.
+
+    Matches 'destroy target nonland permanent' — the broadest non-land removal
+    pattern (Abrupt Decay, Leyline Binding, etc.).  Replaces the runtime
+    substring check in ai/ev_player.py.
+    """
+    if not oracle:
+        return False
+    return 'destroy target nonland permanent' in oracle.lower()
+
+
+def parse_is_tutor(oracle: str) -> bool:
+    """Return True if the card searches the library or fetches from outside the game.
+
+    Matches any of:
+      - 'search your library'  — classic tutor pattern
+      - 'from outside the game' — Wish-type fetch
+      - 'from your sideboard'  — explicit sideboard-fetch wording
+
+    Replaces the three-way 'search your library' / 'from outside the game' /
+    'from your sideboard' runtime OR checks in ai/ev_evaluator.py.
+    """
+    if not oracle:
+        return False
+    lower = oracle.lower()
+    return ('search your library' in lower
+            or 'from outside the game' in lower
+            or 'from your sideboard' in lower)
+
+
+def parse_has_noncreature_spell_cast_trigger(oracle: str) -> bool:
+    """Return True if the permanent triggers whenever a noncreature spell is cast.
+
+    Matches the three-word conjunction 'whenever … cast … noncreature spell' in
+    any order, which covers the two main formulations:
+      - "Whenever you cast a noncreature spell" (Young Pyromancer, Monastery
+        Swiftspear, Dragon's Rage Channeler, Ocelot Pride)
+      - "Whenever a player casts a noncreature spell" (Spellstutter Sprite)
+
+    Replaces runtime 'noncreature spell' in oracle checks in engine/oracle_resolver.py
+    and ai/ev_evaluator.py that dispatch or score noncreature-spell-cast triggers.
+    """
+    if not oracle:
+        return False
+    lower = oracle.lower()
+    return 'whenever' in lower and 'cast' in lower and 'noncreature spell' in lower
+
+
+def parse_has_artifact_synergy(oracle: str) -> bool:
+    """Return True if the card scales with or requires artifacts (synergy flag).
+
+    Matches:
+      - 'for each artifact'   — power/toughness or damage that scales with artifacts
+      - 'metalcraft'          — explicit Metalcraft keyword
+      - 'affinity for artifacts' — Affinity mechanic
+
+    Replaces runtime 'for each artifact' / 'metalcraft' / 'affinity for artifacts'
+    inline checks in ai/ev_player.py, ai/response.py, and engine/callbacks.py.
+    """
+    if not oracle:
+        return False
+    lower = oracle.lower()
+    return ('for each artifact' in lower
+            or 'metalcraft' in lower
+            or 'affinity for artifacts' in lower)

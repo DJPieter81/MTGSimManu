@@ -271,6 +271,27 @@ class CardTemplate:
     # Mana colors added on the SECOND landfall trigger (empty = none).
     # Omnath pattern: ('R', 'G') means add {R} and {G}. Populated at load time.
     landfall_second_mana_colors: tuple = ()
+    # On-hit trigger — True when oracle contains "combat damage to a player"
+    # (Ragavan, Thieving Skydiver pattern).  Populated at load time by
+    # oracle_parser.parse_has_combat_damage_player_trigger.
+    has_combat_damage_player_trigger: bool = False
+    # Destroy-target capability flags — True when the card's oracle text can
+    # destroy the named permanent type.  Populated by
+    # oracle_parser.parse_can_destroy_{artifact,enchantment,nonland_permanent}.
+    can_destroy_artifact: bool = False
+    can_destroy_enchantment: bool = False
+    can_destroy_nonland_permanent: bool = False
+    # Tutor / Wish flag — True when oracle searches the library or fetches
+    # from outside the game.  Populated by oracle_parser.parse_is_tutor.
+    is_tutor: bool = False
+    # Noncreature-spell-cast trigger — True when oracle contains "whenever …
+    # cast … noncreature spell" (Young Pyromancer, Monastery Swiftspear, etc.).
+    # Populated by oracle_parser.parse_has_noncreature_spell_cast_trigger.
+    has_noncreature_spell_cast_trigger: bool = False
+    # Artifact synergy — True when oracle has 'for each artifact', 'metalcraft',
+    # or 'affinity for artifacts'.  Populated by
+    # oracle_parser.parse_has_artifact_synergy.
+    has_artifact_synergy: bool = False
 
     def __post_init__(self) -> None:
         # Derive fields from oracle text for templates not loaded through
@@ -293,7 +314,14 @@ class CardTemplate:
                                         parse_library_search_trigger_draws_card as _plstdc,
                                         parse_landfall_first_life_gain as _plflg,
                                         parse_landfall_third_damage as _pltd,
-                                        parse_landfall_second_mana_colors as _plsmc)
+                                        parse_landfall_second_mana_colors as _plsmc,
+                                        parse_has_combat_damage_player_trigger as _phcdpt,
+                                        parse_can_destroy_artifact as _pcda,
+                                        parse_can_destroy_enchantment as _pcde,
+                                        parse_can_destroy_nonland_permanent as _pcdnp,
+                                        parse_is_tutor as _pit,
+                                        parse_has_noncreature_spell_cast_trigger as _phnsct,
+                                        parse_has_artifact_synergy as _phas)
             from .card_database import KEYWORD_MAP as _KM
             import re as _re
             if self.warp_cost is None:
@@ -337,6 +365,20 @@ class CardTemplate:
                 self.landfall_third_damage = _pltd(self.oracle_text)
             if not self.landfall_second_mana_colors:
                 self.landfall_second_mana_colors = _plsmc(self.oracle_text)
+            if not self.has_combat_damage_player_trigger:
+                self.has_combat_damage_player_trigger = _phcdpt(self.oracle_text)
+            if not self.can_destroy_artifact:
+                self.can_destroy_artifact = _pcda(self.oracle_text)
+            if not self.can_destroy_enchantment:
+                self.can_destroy_enchantment = _pcde(self.oracle_text)
+            if not self.can_destroy_nonland_permanent:
+                self.can_destroy_nonland_permanent = _pcdnp(self.oracle_text)
+            if not self.is_tutor:
+                self.is_tutor = _pit(self.oracle_text)
+            if not self.has_noncreature_spell_cast_trigger:
+                self.has_noncreature_spell_cast_trigger = _phnsct(self.oracle_text)
+            if not self.has_artifact_synergy:
+                self.has_artifact_synergy = _phas(self.oracle_text)
             # Derive keywords from oracle text for synthetic templates that
             # were constructed with keywords=set(). DB-loaded templates
             # already have complete keyword sets from KEYWORD_MAP scanning;
