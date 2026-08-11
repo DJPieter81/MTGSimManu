@@ -314,9 +314,10 @@ def _clause_body_value(template: "CardTemplate") -> float:
     # Cascade spells cast a free spell on resolution. Their body value
     # equals roughly one cast's EV. Approximate via creature_threat_value
     # of an average creature (same mid-game default scale).
-    oracle = (template.oracle_text or '').lower()
     tags = template.tags or set()
-    if 'cascade' in oracle or 'cascade' in tags:
+    # template.is_cascade is a typed field populated at DB load time by
+    # has_cascade() in oracle_parser.py — no runtime oracle inspection.
+    if template.is_cascade or 'cascade' in tags:
         from ai.clock import mana_clock_impact
         from ai.ev_evaluator import BASELINE_SNAPSHOT
         # One free cast ≈ cmc-limit worth of mana advantage.

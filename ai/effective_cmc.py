@@ -344,18 +344,18 @@ def effective_cmc(
         remaining_generic = max(0, remaining_generic - affinity_reduction)
 
     # ── Step 6: improvise ───────────────────────────────────────────
-    # Tag-driven dispatch via the W0-A oracle classifier, with a
-    # STRUCTURAL fallback (Track H handoff): Improvise is a printed
-    # rules keyword — a card missing from the LLM tag cache (e.g. an
-    # empty cache entry) still has it. The keyword line starts the
-    # oracle text or its own line, which keeps ability-granting cards
-    # ("spells you cast have improvise" mid-sentence) out of the match.
+    # Keyword.IMPROVISE is populated at DB load via KEYWORD_MAP in
+    # card_database.py — the typed keyword set is the canonical source.
+    # The W0-A oracle-classifier Tag.IMPROVISE is kept as a secondary
+    # signal for cards that the KEYWORD_MAP word-boundary regex might
+    # miss (e.g. "spells you cast have improvise" from an ability-
+    # granting source).  No runtime regex over oracle_text.
+    from engine.cards import Keyword as _Kw
     from ai.oracle_classifier import Tag, has_tag
 
     _has_improvise = (
-        has_tag(card.name, Tag.IMPROVISE)
-        or re.search(r'(?:^|\n)improvise\b',
-                     (template.oracle_text or ''), re.IGNORECASE) is not None
+        _Kw.IMPROVISE in (template.keywords or set())
+        or has_tag(card.name, Tag.IMPROVISE)
     )
     if _has_improvise and game is not None:
         untapped_artifacts = _count_untapped_artifacts(

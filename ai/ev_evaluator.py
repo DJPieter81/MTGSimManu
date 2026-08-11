@@ -2522,7 +2522,7 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
     # path above (Living End cascaded through Shardless Agent will
     # surface the big graveyard swing).  Compact proxy: net power +
     # net creature count.  No per-card tables, no magic numbers.
-    is_cascade = getattr(t, 'is_cascade', False) or 'cascade' in oracle_lower
+    is_cascade = t.is_cascade  # typed field on CardTemplate, populated at DB load
     if is_cascade and game:
         cascade_cmc = t.cmc or 0
         me = game.players[player_idx]

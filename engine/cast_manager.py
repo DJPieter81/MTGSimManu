@@ -388,11 +388,11 @@ class CastManager:
                         template.warp_cost)):
                 return True
 
-        # Improvise: tap artifacts to pay generic. Same Track H fix as
-        # the warp branch (dead enum-string check → real membership
-        # test). Improvise pays GENERIC only, so the colored portion
+        # Improvise: tap artifacts to pay generic. Keyword.IMPROVISE is
+        # populated at DB load via KEYWORD_MAP — no runtime oracle
+        # inspection.  Improvise pays GENERIC only, so the colored portion
         # of the cost is a floor the artifact taps cannot reduce.
-        if "improvise" in oracle:
+        if Keyword.IMPROVISE in template.keywords:
             untapped_artifacts = sum(
                 1 for c in player.battlefield
                 if CardType.ARTIFACT in c.template.card_types

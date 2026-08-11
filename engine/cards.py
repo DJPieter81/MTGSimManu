@@ -55,6 +55,7 @@ class Keyword(Enum):
     SUSPEND = "suspend"
     STORM = "storm"
     ANNIHILATOR = "annihilator"
+    IMPROVISE = "improvise"
 
 
 class AbilityType(Enum):
@@ -176,6 +177,10 @@ class CardTemplate:
     cycling_variant_data: Optional[Dict] = None
     energy_production: int = 0                # number of {E} symbols
     is_cascade: bool = False                  # has cascade keyword
+    # True for cards that grant flashback to instant/sorcery cards in the
+    # graveyard (Past in Flames, Snapcaster Mage pattern).  Populated at
+    # DB load by grants_flashback_to_gy_spells() in oracle_parser.py.
+    grants_flashback_to_gy_spells: bool = False
     x_cost_data: Optional[Dict] = None        # {multiplier, min_x}
     is_cost_reducer: bool = False             # reduces spell costs (from tags)
     domain_reduction: int = 0                 # cost reduction per basic land type
@@ -223,14 +228,16 @@ class CardTemplate:
     ward_cost: int = 0                         # {N} from "Ward {N}"; 0 = no mana-shaped ward
 
     def __post_init__(self) -> None:
-        # Derive alternative-cost fields from oracle text for templates not
-        # loaded through CardDatabase (e.g. synthetic templates in tests).
-        # CardDatabase sets these explicitly; this fires only for None fields.
+        # Derive fields from oracle text for templates not loaded through
+        # CardDatabase (e.g. synthetic templates in tests). CardDatabase sets
+        # these explicitly; this fires only for empty/None fields.
         if self.oracle_text:
             from .oracle_parser import (parse_warp_cost as _pwc,
                                         parse_dash_cost as _pdc,
                                         parse_escape_cost as _pec,
                                         parse_splice_cost as _psc)
+            from .card_database import KEYWORD_MAP as _KM
+            import re as _re
             if self.warp_cost is None:
                 self.warp_cost = _pwc(self.oracle_text)
             if self.dash_cost is None:
@@ -243,6 +250,17 @@ class CardTemplate:
                         self.escape_exile_count = _esc['exile']
             if self.splice_cost is None:
                 self.splice_cost = _psc(self.oracle_text)
+            # Derive keywords from oracle text for synthetic templates that
+            # were constructed with keywords=set(). DB-loaded templates
+            # already have complete keyword sets from KEYWORD_MAP scanning;
+            # this catches only templates whose keywords field is still empty.
+            if not self.keywords:
+                _tl = self.oracle_text.lower()
+                for _ks, _ke in _KM.items():
+                    if _ks.lower() in _tl:
+                        _pat = r'(?:^|\n)' + _re.escape(_ks.lower()) + r'(?:\s|$|,|\n)'
+                        if _re.search(_pat, _tl):
+                            self.keywords.add(_ke)
 
     @property
     def is_creature(self) -> bool:

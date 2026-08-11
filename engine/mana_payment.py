@@ -189,8 +189,8 @@ class ManaPayment:
                     # is NOT a static discount — artifacts must be
                     # TAPPED to pay. Handled below after the static
                     # reductions are applied.
-                    has_improvise = (
-                        'improvise' in (c.template.oracle_text or '').lower())
+                    # Keyword.IMPROVISE populated at DB load via KEYWORD_MAP.
+                    has_improvise = Keyword.IMPROVISE in c.template.keywords
                     break
         if reduction > 0:
             from .mana import ManaCost as MC
