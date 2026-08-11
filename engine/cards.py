@@ -251,6 +251,26 @@ class CardTemplate:
     targets_creature_spell: bool = False      # oracle contains "target creature spell"
     targets_planeswalker_spell: bool = False  # oracle contains "target planeswalker spell"
                                               # or "or planeswalker spell" (chained form)
+    # Landfall trigger (CR 603.2) — populated at load time by
+    # oracle_parser.parse_has_landfall(). True for cards matching
+    # "landfall" / "land enters" / "whenever a land" oracle patterns.
+    # Replaces runtime 'landfall' in oracle checks in engine/land_manager.py.
+    has_landfall: bool = False
+    # Library-search opponent trigger — "whenever an opponent searches …
+    # library" (Wan Shi Tong pattern). Populated by
+    # oracle_parser.parse_has_library_search_opponent_trigger().
+    has_library_search_opponent_trigger: bool = False
+    # Whether the library-search opponent trigger also draws a card.
+    # Populated by oracle_parser.parse_library_search_trigger_draws_card().
+    library_search_trigger_draws_card: bool = False
+    # Life gained on the FIRST landfall trigger (0 = no first-landfall life
+    # gain). Omnath, Locus of Creation pattern. Populated at load time.
+    landfall_first_life_gain: int = 0
+    # Damage dealt on the THIRD landfall trigger (0 = none). Omnath pattern.
+    landfall_third_damage: int = 0
+    # Mana colors added on the SECOND landfall trigger (empty = none).
+    # Omnath pattern: ('R', 'G') means add {R} and {G}. Populated at load time.
+    landfall_second_mana_colors: tuple = ()
 
     def __post_init__(self) -> None:
         # Derive fields from oracle text for templates not loaded through
@@ -267,7 +287,13 @@ class CardTemplate:
                                         parse_has_lifegain_token_trigger as _phltt,
                                         parse_lifegain_token_type as _pltt,
                                         parse_targets_creature_spell as _ptcs,
-                                        parse_targets_planeswalker_spell as _ptpws)
+                                        parse_targets_planeswalker_spell as _ptpws,
+                                        parse_has_landfall as _phl,
+                                        parse_has_library_search_opponent_trigger as _phlsot,
+                                        parse_library_search_trigger_draws_card as _plstdc,
+                                        parse_landfall_first_life_gain as _plflg,
+                                        parse_landfall_third_damage as _pltd,
+                                        parse_landfall_second_mana_colors as _plsmc)
             from .card_database import KEYWORD_MAP as _KM
             import re as _re
             if self.warp_cost is None:
@@ -299,6 +325,18 @@ class CardTemplate:
                 self.targets_creature_spell = _ptcs(self.oracle_text)
             if not self.targets_planeswalker_spell:
                 self.targets_planeswalker_spell = _ptpws(self.oracle_text)
+            if not self.has_landfall:
+                self.has_landfall = _phl(self.oracle_text)
+            if not self.has_library_search_opponent_trigger:
+                self.has_library_search_opponent_trigger = _phlsot(self.oracle_text)
+            if not self.library_search_trigger_draws_card:
+                self.library_search_trigger_draws_card = _plstdc(self.oracle_text)
+            if not self.landfall_first_life_gain:
+                self.landfall_first_life_gain = _plflg(self.oracle_text)
+            if not self.landfall_third_damage:
+                self.landfall_third_damage = _pltd(self.oracle_text)
+            if not self.landfall_second_mana_colors:
+                self.landfall_second_mana_colors = _plsmc(self.oracle_text)
             # Derive keywords from oracle text for synthetic templates that
             # were constructed with keywords=set(). DB-loaded templates
             # already have complete keyword sets from KEYWORD_MAP scanning;

@@ -1206,3 +1206,95 @@ def parse_lifegain_token_type(oracle: str) -> str:
     if 'cat' in lower:
         return 'cat'
     return 'creature'
+
+
+# ---------------------------------------------------------------------------
+# Landfall and library-search opponent trigger typed fields
+# (oracle-migrate batch 4b — replaces runtime substring checks in
+# engine/land_manager.py trigger_landfall / trigger_library_search)
+# ---------------------------------------------------------------------------
+
+_MANA_COLORS = ('W', 'U', 'B', 'R', 'G')
+
+
+def parse_has_landfall(oracle: str) -> bool:
+    """Return True if the card's oracle text carries a landfall trigger.
+
+    Covers three equivalent phrasings used across printed sets:
+      - "Landfall" keyword header (most common: Omnath, Hedron Crab, etc.)
+      - "land enters" (non-keyword phrasing for the same trigger)
+      - "whenever a land" (older or alternate templates)
+    """
+    if not oracle:
+        return False
+    lower = oracle.lower()
+    return (
+        'landfall' in lower
+        or 'land enters' in lower
+        or 'whenever a land' in lower
+    )
+
+
+def parse_has_library_search_opponent_trigger(oracle: str) -> bool:
+    """Return True if the card triggers when an opponent searches their library.
+
+    Covers "whenever an opponent searches … library" (Wan Shi Tong pattern).
+    """
+    if not oracle:
+        return False
+    lower = oracle.lower()
+    return 'whenever an opponent searches' in lower and 'library' in lower
+
+
+def parse_library_search_trigger_draws_card(oracle: str) -> bool:
+    """Return True when the library-search-opponent trigger also draws a card."""
+    if not oracle:
+        return False
+    lower = oracle.lower()
+    return (
+        parse_has_library_search_opponent_trigger(oracle)
+        and 'draw a card' in lower
+    )
+
+
+def parse_landfall_first_life_gain(oracle: str) -> int:
+    """Return life gained on the first landfall trigger (0 if no such clause).
+
+    Parses "first time … gain N life" (Omnath, Locus of Creation pattern).
+    """
+    if not oracle or 'first time' not in oracle.lower():
+        return 0
+    m = re.search(r'first time[^.]*gain\s+(\d+)\s+life', oracle, re.IGNORECASE)
+    return int(m.group(1)) if m else 0
+
+
+def parse_landfall_third_damage(oracle: str) -> int:
+    """Return damage dealt on the third landfall trigger (0 if no such clause).
+
+    Parses "third time … deals N damage" (Omnath, Locus of Creation pattern).
+    """
+    if not oracle or 'third time' not in oracle.lower():
+        return 0
+    m = re.search(r'third time[^.]*deals?\s+(\d+)\s+damage', oracle, re.IGNORECASE)
+    return int(m.group(1)) if m else 0
+
+
+def parse_landfall_second_mana_colors(oracle: str) -> tuple:
+    """Return mana colors added on the second landfall trigger (empty tuple = none).
+
+    Parses "{R}", "{G}", "{W}", "{U}", "{B}" symbols in the "second time" clause
+    (Omnath, Locus of Creation pattern).
+    """
+    if not oracle or 'second time' not in oracle.lower():
+        return ()
+    lower = oracle.lower()
+    second_idx = lower.index('second time')
+    # Extract text from 'second time' to the next sentence boundary (period or
+    # newline), capped at 200 chars to avoid runaway matching.
+    clause = oracle[second_idx:second_idx + 200]
+    for sep in ('.', '\n'):
+        pos = clause.find(sep)
+        if pos > 0:
+            clause = clause[:pos]
+            break
+    return tuple(c for c in _MANA_COLORS if '{' + c + '}' in clause)

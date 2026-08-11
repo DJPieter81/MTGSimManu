@@ -20,7 +20,6 @@ argument, matching the CombatManager / ManaPayment pattern.
 """
 from __future__ import annotations
 
-import re
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -245,13 +244,11 @@ class LandManager:
         opp_idx = 1 - searcher_idx
         opp = game.players[opp_idx]
         for c in opp.battlefield:
-            oracle = (c.template.oracle_text or '').lower()
-            if ('whenever an opponent searches' in oracle
-                    and 'library' in oracle):
+            if c.template.has_library_search_opponent_trigger:
                 # +1/+1 counter
                 c.plus_counters += 1
-                # Draw a card if oracle says so
-                if 'draw a card' in oracle:
+                # Draw a card if the trigger says so (pre-computed at load time)
+                if c.template.library_search_trigger_draws_card:
                     game.draw_cards(opp_idx, 1)
                 game.log.append(
                     f"T{game.display_turn} P{opp_idx+1}: "
@@ -270,44 +267,37 @@ class LandManager:
         player._landfall_count_this_turn += 1
         landfall_num = player._landfall_count_this_turn
 
-        # Generic multi-landfall triggers from oracle text.
-        # Handles: "first time...gain life", "second time...add mana",
-        # "third time...damage"
+        # Generic multi-landfall triggers — amounts pre-computed at load time.
+        # Handles: "first time…gain life", "second time…add mana",
+        # "third time…damage" (Omnath, Locus of Creation pattern).
         for perm in player.battlefield:
-            oracle = (perm.template.oracle_text or '').lower()
-            if ('landfall' not in oracle
-                    and 'land enters' not in oracle
-                    and 'whenever a land' not in oracle):
+            t = perm.template
+            if not t.has_landfall:
                 continue
-            if ('first time' in oracle
-                    or 'second time' in oracle
-                    or 'third time' in oracle):
+            if (t.landfall_first_life_gain
+                    or t.landfall_second_mana_colors
+                    or t.landfall_third_damage):
                 # Multi-trigger landfall (Omnath pattern)
-                if landfall_num == 1 and 'first time' in oracle:
-                    m = re.search(r'gain\s+(\d+)\s+life', oracle)
-                    if m:
-                        game.gain_life(player_idx, int(m.group(1)),
-                                        f"{perm.name} landfall")
-                        game.log.append(
-                            f"T{game.display_turn} P{player_idx+1}: "
-                            f"{perm.name} 1st landfall: +{m.group(1)} life")
-                elif landfall_num == 2 and 'second time' in oracle:
-                    # Add mana — parse colors from oracle
-                    for color in ['R', 'G', 'W', 'U', 'B']:
-                        if '{' + color.lower() + '}' in oracle:
-                            player.mana_pool.add(color, 1)
+                if landfall_num == 1 and t.landfall_first_life_gain:
+                    gain = t.landfall_first_life_gain
+                    game.gain_life(player_idx, gain, f"{perm.name} landfall")
+                    game.log.append(
+                        f"T{game.display_turn} P{player_idx+1}: "
+                        f"{perm.name} 1st landfall: +{gain} life")
+                elif landfall_num == 2 and t.landfall_second_mana_colors:
+                    # Add mana — colors pre-computed at load time
+                    for color in t.landfall_second_mana_colors:
+                        player.mana_pool.add(color, 1)
                     game.log.append(
                         f"T{game.display_turn} P{player_idx+1}: "
                         f"{perm.name} 2nd landfall: add mana")
-                elif landfall_num == 3 and 'third time' in oracle:
-                    m = re.search(r'deals?\s+(\d+)\s+damage', oracle)
-                    if m:
-                        dmg = int(m.group(1))
-                        game.players[opponent_idx].life -= dmg
-                        player.damage_dealt_this_turn += dmg
-                        game.log.append(
-                            f"T{game.display_turn} P{player_idx+1}: "
-                            f"{perm.name} 3rd landfall: {dmg} damage")
+                elif landfall_num == 3 and t.landfall_third_damage:
+                    dmg = t.landfall_third_damage
+                    game.players[opponent_idx].life -= dmg
+                    player.damage_dealt_this_turn += dmg
+                    game.log.append(
+                        f"T{game.display_turn} P{player_idx+1}: "
+                        f"{perm.name} 3rd landfall: {dmg} damage")
 
     @staticmethod
     def apply_land_etb_static(game: "GameState",
