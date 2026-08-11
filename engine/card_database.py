@@ -1701,6 +1701,7 @@ class CardDatabase:
             parse_counter_tax, parse_protection_from, parse_ward_cost,
             parse_can_target_player, parse_can_target_planeswalker,
             grants_flashback_to_gy_spells, parse_has_attack_trigger,
+            parse_has_lifegain_token_trigger, parse_lifegain_token_type,
         )
         oracle = template.oracle_text or ''
         template.ritual_mana = parse_ritual_mana(oracle)
@@ -1730,6 +1731,8 @@ class CardDatabase:
         template.can_target_player = parse_can_target_player(oracle)
         template.can_target_planeswalker = parse_can_target_planeswalker(oracle)
         template.has_attack_trigger = parse_has_attack_trigger(oracle, name)
+        template.has_lifegain_token_trigger = parse_has_lifegain_token_trigger(oracle)
+        template.lifegain_token_type = parse_lifegain_token_type(oracle)
 
         return template
 
