@@ -68,15 +68,11 @@ def _pick_damage_target(game: "GameState", controller: int,
         # Raw body
         val = (c.power or 0) + (c.toughness or 0) * 0.3
         oracle = (c.template.oracle_text or '').lower()
-        name = (c.template.name or '').lower().split(' //')[0].strip()
-        # Attack-trigger amplifiers (battle cry, self-named attack triggers).
-        # +3 matches the BATTLE_CRY_AMPLIFIER_VP convention used in
-        # creature_threat_value (ai/ev_evaluator.py) so engine-level
-        # targeting picks the same "high-threat" creatures the AI would
-        # prioritise for proactive removal.
-        if 'whenever this creature attacks' in oracle:
-            val += 3.0
-        elif name and f'whenever {name} attacks' in oracle:
+        # Attack-trigger amplifiers — typed field set at DB load time by
+        # oracle_parser.parse_has_attack_trigger; mirrors BATTLE_CRY_AMPLIFIER_VP
+        # used in creature_threat_value (ai/ev_evaluator.py) so engine-level
+        # targeting ranks the same "high-threat" creatures as the AI scorer.
+        if getattr(c.template, 'has_attack_trigger', False):
             val += 3.0
         # Scaling clauses (for each artifact/creature/land/card)
         if re.search(r'for each (artifact|creature|land|card)', oracle):

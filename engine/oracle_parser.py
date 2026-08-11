@@ -454,6 +454,45 @@ def parse_can_target_planeswalker(oracle: str) -> bool:
     return 'any target' in low or 'planeswalker' in low
 
 
+def parse_has_attack_trigger(oracle: str, name: str = "") -> bool:
+    """Return True when the card has an on-attack triggered ability that
+    belongs to the card itself (CR 603.2).
+
+    Two oracle phrasings identify self-attack triggers:
+      - "Whenever this creature attacks" — the generic self-referential form
+        used by most printed cards (Goblin Rabblemaster, Hero of Bladehold,
+        Brutal Cathar, etc.)
+      - "Whenever [Card Name] attacks" — the self-named form used by legendary
+        creatures (Ragavan, Nimble Pilferer; Satoru Umezawa; etc.)
+
+    Deliberately excluded: "Whenever a creature attacks" / "Whenever a creature
+    attacks you" / "Whenever you attack" — those are triggers on *other* cards
+    (blockers, defensive permanents) that fire when any attacker attacks, not
+    just when this card does. The 'this creature' / self-name anchor is the
+    discriminator between the two classes (same logic the callers in
+    ev_player.py / ev_evaluator.py / oracle_resolver.py use).
+
+    `name` is the card's printed name (first face for DFCs, split before
+    ' // '). Passing it enables the self-named form to be detected at load
+    time rather than requiring a runtime string-format check.
+    """
+    low = (oracle or '').lower()
+    if 'whenever this creature attacks' in low:
+        return True
+    if name:
+        # Full name minus alternate-face suffix (DFCs use "Front // Back").
+        cname = name.lower().split(' //')[0].strip()
+        if cname and f'whenever {cname} attacks' in low:
+            return True
+        # Legendary creatures with a title ("Ragavan, Nimble Pilferer") refer
+        # to themselves in oracle text by just the personal name before the
+        # comma ("Whenever Ragavan attacks"). Check both forms.
+        short = cname.split(',')[0].strip()
+        if short and short != cname and f'whenever {short} attacks' in low:
+            return True
+    return False
+
+
 def parse_protection_from(oracle: str) -> frozenset:
     """Parse "protection from <color>" clauses (CR 702.16), including
     the compound "protection from X and from Y" form (e.g. Sanctifier

@@ -231,6 +231,12 @@ class CardTemplate:
     # Replace runtime `'any target' in oracle_text` inline checks in ai/.
     can_target_player: bool = False            # "any target"/"target player"/"target opponent"
     can_target_planeswalker: bool = False      # "any target"/"planeswalker" in oracle
+    # On-attack triggered ability (CR 603.2) — populated at load time by
+    # oracle_parser.parse_has_attack_trigger(oracle, name). True for cards
+    # whose oracle text contains "Whenever this creature attacks" or
+    # "Whenever [Card Name] attacks". Replaces runtime 'whenever...attacks'
+    # in-oracle substring checks in ai/ and engine/.
+    has_attack_trigger: bool = False
 
     def __post_init__(self) -> None:
         # Derive fields from oracle text for templates not loaded through
@@ -242,7 +248,8 @@ class CardTemplate:
                                         parse_escape_cost as _pec,
                                         parse_splice_cost as _psc,
                                         parse_can_target_player as _pctp,
-                                        parse_can_target_planeswalker as _pctpw)
+                                        parse_can_target_planeswalker as _pctpw,
+                                        parse_has_attack_trigger as _phat)
             from .card_database import KEYWORD_MAP as _KM
             import re as _re
             if self.warp_cost is None:
@@ -264,6 +271,8 @@ class CardTemplate:
                 self.can_target_player = _pctp(self.oracle_text)
             if not self.can_target_planeswalker:
                 self.can_target_planeswalker = _pctpw(self.oracle_text)
+            if not self.has_attack_trigger:
+                self.has_attack_trigger = _phat(self.oracle_text, self.name)
             # Derive keywords from oracle text for synthetic templates that
             # were constructed with keywords=set(). DB-loaded templates
             # already have complete keyword sets from KEYWORD_MAP scanning;

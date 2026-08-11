@@ -678,9 +678,7 @@ def creature_threat_value(card: "CardInstance", snap: EVSnapshot) -> float:
     #   THREAT_BATTLE_CRY_AMPLIFIER_VP — typical count of other attackers
     #   THREAT_SCALING_FUTURE_VP       — avg future power gain
     virtual_power = 0
-    if 'whenever this creature attacks' in oracle:
-        virtual_power += THREAT_BATTLE_CRY_AMPLIFIER_VP
-    elif name and f'whenever {name} attacks' in oracle:
+    if getattr(t, 'has_attack_trigger', False):
         virtual_power += THREAT_BATTLE_CRY_AMPLIFIER_VP
     if re.search(r'for each (artifact|creature|land|card)', oracle):
         # Phase 1C: skip the future-scaling bonus when the dynamic P/T

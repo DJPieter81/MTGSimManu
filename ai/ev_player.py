@@ -2513,15 +2513,9 @@ class EVPlayer:
             # Damage-on-hit triggers (Ragavan, etc.)
             if 'combat damage to a player' in oracle:
                 return True
-            # On-attack triggers: battle cry, tapping permanents, draining, etc.
-            # Use 'whenever this creature attacks' to avoid false positives like
-            # 'whenever a creature attacks you, gain 1 life'.
-            if 'whenever this creature attacks' in oracle:
-                return True
-            # Some legends use their own name: 'whenever [Name] attacks'
-            # Detect by checking if the card name appears before 'attacks'
-            cname = (c.template.name or '').lower().split(' //')[0].strip()
-            if cname and f'whenever {cname} attacks' in oracle:
+            # On-attack triggers — typed field set at DB load time by
+            # oracle_parser.parse_has_attack_trigger.
+            if getattr(c.template, 'has_attack_trigger', False):
                 return True
             return False
         total_power = sum(c.power for c in valid if (c.power or 0) > 0)
@@ -2812,10 +2806,7 @@ class EVPlayer:
         oracle = (t.oracle_text or '').lower()
         if 'escape—' in oracle:  # em-dash U+2014
             return True
-        if 'whenever this creature attacks' in oracle:
-            return True
-        name = (t.name or '').lower().split(' //')[0].strip()
-        if name and f'whenever {name} attacks' in oracle:
+        if getattr(t, 'has_attack_trigger', False):
             return True
         return False
 
