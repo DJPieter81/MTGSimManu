@@ -1,0 +1,2320 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+  Sideboard (Jeskai Blink vs Eldrazi Tron): +2 Wear // Tear, -2 Witch Enchanter
+  Sideboard (Jeskai Blink vs Eldrazi Tron): +2 Wear // Tear, -2 Witch Enchanter
+======================================================================
+  GAME 1: Jeskai Blink (P1) vs Eldrazi Tron (P2)  —  seed 55502
+  Series: Jeskai Blink 0 - 0 Eldrazi Tron
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Jeskai Blink wins → chooses to play first
+║ P1 (on play): Jeskai Blink
+║ P2 (on draw): Eldrazi Tron
+╚═══════════════════════════════════════════════════════
+
+P1 (Jeskai Blink) opening hand (4 lands, 3 spells):
+  • Arena of Glory [Land, CMC 0]
+  • Arid Mesa [Land, CMC 0]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Phelia, Exuberant Shepherd [Creature, CMC 2]
+  • Quantum Riddler [Creature, CMC 5]
+  • Scalding Tarn [Land, CMC 0]
+  • Mountain [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Quantum Riddler, Ragavan, Nimble Pilferer, 2 cheap spells
+
+P2 (Eldrazi Tron) opening hand (3 lands, 4 spells):
+  • Eldrazi Temple [Land, CMC 0]
+  • Urza's Power Plant [Land, CMC 0]
+  • Chalice of the Void [Spell, CMC 0]
+  • Mind Stone [Spell, CMC 2]
+  • Kozilek's Command [Spell, CMC 2]
+  • Expedition Map [Spell, CMC 1]
+  • Ugin's Labyrinth [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Chalice of the Void, Eldrazi Temple, Expedition Map, 4 cheap spells
+
+
+╔══ TURN 1 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 20  |  Eldrazi Tron 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Arid Mesa
+T1 P1: Crack Arid Mesa (pay 1 life) -> Steam Vents (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Jeskai Blink 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Urza's Mine
+  [Main 1]
+T1 P2: Play Urza's Power Plant
+    → Goal: ramp [engines]
+    [Mana] Tap Urza's Power Plant→C (paying for Expedition Map, 1 mana remaining)
+T1 P2: Cast Expedition Map (1)
+    [Priority] P1 passes (no response)
+T1: Resolve Expedition Map
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 19  |  Eldrazi Tron 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Steam Vents
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Expedition Map
+║   Lands: Urza's Power Plant [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Flooded Strand
+  [Main 1]
+T2 P1: Play Flooded Strand
+T2 P1: Crack Flooded Strand (pay 1 life) -> Hallowed Fountain (tapped, life: 18)
+    → Goal: grind_value
+    [Mana] Tap Steam Vents→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T2 P1: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P2 passes (no response)
+T2: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Jeskai Blink 18
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Expedition Map
+║   Lands: Urza's Power Plant
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Steam Vents [T], Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Kozilek's Command
+  [Main 1]
+T2 P2: Play Urza's Mine
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C, Urza's Mine→C (paying for Kozilek's Command, 2 mana remaining)
+T2 P2: Cast Kozilek's Command (0)
+    [Priority] P1 passes (no response)
+T2: Resolve Kozilek's Command
+T2: Ragavan, Nimble Pilferer moved battlefield -> exile (exiled)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 18  |  Eldrazi Tron 20
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Hallowed Fountain
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Expedition Map
+║   Lands: Urza's Power Plant [T], Urza's Mine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arena of Glory
+  [Main 1]
+T3 P1: Play Scalding Tarn
+T3 P1: Crack Scalding Tarn (pay 1 life) -> Sacred Foundry (tapped, life: 17)
+    → Goal: grind_value [enablers]
+    [Mana] Tap Steam Vents→R, Hallowed Fountain→W (paying for Phelia, Exuberant Shepherd, 2 mana remaining)
+T3 P1: Cast Phelia, Exuberant Shepherd (1W)
+    [Priority] P2 passes (no response)
+T3: Resolve Phelia, Exuberant Shepherd
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Jeskai Blink 17
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 1
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Expedition Map
+║   Lands: Urza's Power Plant, Urza's Mine
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Lands: Steam Vents [T], Hallowed Fountain [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ugin's Labyrinth
+  [Main 1]
+T3 P2: Play Eldrazi Temple
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C, Urza's Mine→C (paying for Kozilek's Command, 3 mana remaining)
+T3 P2: Cast Kozilek's Command (1) (X=1)
+    [Priority] P1 passes (no response)
+T3: Resolve Kozilek's Command
+T3: Phelia, Exuberant Shepherd moved battlefield -> exile (exiled)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 17  |  Eldrazi Tron 20
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 3
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Hallowed Fountain, Sacred Foundry
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Expedition Map
+║   Lands: Urza's Power Plant [T], Urza's Mine [T], Eldrazi Temple [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Consign to Memory
+  [Main 1]
+T4 P1: Play Mountain
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Jeskai Blink 17
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 50  |  Graveyard: 2
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Expedition Map
+║   Lands: Urza's Power Plant, Urza's Mine, Eldrazi Temple
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Hallowed Fountain, Sacred Foundry, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Kozilek's Command
+  [Main 1]
+T4 P2: Play Ugin's Labyrinth
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C, Urza's Mine→C (paying for Mind Stone, 4 mana remaining)
+T4 P2: Cast Mind Stone (2)
+    [Priority] P1 passes (no response)
+T4: Resolve Mind Stone
+    → Goal: ramp [enablers]
+T4 P2: Cast Chalice of the Void (2) (X=1)
+    [Priority] P1 passes (no response)
+T4: Resolve Chalice of the Void
+T4 P2: Chalice of the Void enters with 1 charge counter(s)
+T4 P2: Activate Mind Stone (sacrifice)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 17  |  Eldrazi Tron 20
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 3
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Hallowed Fountain, Sacred Foundry, Mountain
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Expedition Map, Chalice of the Void
+║   Lands: Urza's Power Plant [T], Urza's Mine [T], Eldrazi Temple [T], Ugin's Labyrinth [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Galvanic Discharge
+  [Main 1]
+T5 P1: Play Arena of Glory (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Jeskai Blink 17
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 48  |  Graveyard: 3
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Expedition Map, Chalice of the Void
+║   Lands: Urza's Power Plant, Urza's Mine, Eldrazi Temple, Ugin's Labyrinth
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Hallowed Fountain, Sacred Foundry, Mountain, Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ugin's Labyrinth
+  [Main 1]
+T5 P2: Play Ugin's Labyrinth
+T5 P2: Activate Expedition Map (sacrifice)
+T5 P2:   finds Urza's Tower
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 17  |  Eldrazi Tron 20
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 3
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Hallowed Fountain, Sacred Foundry, Mountain, Arena of Glory
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant, Urza's Mine, Eldrazi Temple, Ugin's Labyrinth, Ugin's Labyrinth
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+  [Main 1]
+T6 P1: Play Arena of Glory (enters tapped)
+    → Goal: close_game
+    [Mana] Tap Mountain→R, Arena of Glory→R, Steam Vents→R (paying for Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, 5 mana remaining)
+T6 P1: Cast Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2R)
+    [Priority] P2 passes (no response)
+T6: Resolve Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+T6 P1: Create 1x Goblin token(s)
+T6 P1: Fable Ch.I: Create 2/2 Goblin Shaman with haste
+  [Begin Combat]
+    [Mana] Tap Urza's Power Plant→C, Urza's Mine→C (paying for Kozilek's Command, 5 mana remaining)
+T6 P2: Cast Kozilek's Command (3) (X=3)
+T6: Resolve Kozilek's Command
+T6: Goblin Token moved battlefield -> exile (exiled)
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Jeskai Blink 17
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 46  |  Graveyard: 5
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant, Urza's Mine, Eldrazi Temple, Ugin's Labyrinth, Ugin's Labyrinth
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Other: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+║   Lands: Steam Vents [T], Hallowed Fountain, Sacred Foundry, Mountain [T], Arena of Glory [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thought-Knot Seer
+  [Main 1]
+T6 P2: Play Urza's Tower
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C, Urza's Mine→C, Eldrazi Temple→C (paying for Thought-Knot Seer, 8 mana remaining)
+T6 P2: Cast Thought-Knot Seer (3)
+    [Priority] P1 responds with Consign to Memory
+    [Mana] Tap Hallowed Fountain→U (paying for Consign to Memory, 2 mana remaining)
+T6 P2: Chalice of the Void (X=1) counters Consign to Memory
+T6: Resolve Thought-Knot Seer
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 17  |  Eldrazi Tron 20
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 6  |  Opp lands: 6
+║ Library: 45  |  Graveyard: 4
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Other: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+║   Lands: Steam Vents, Hallowed Fountain, Sacred Foundry, Mountain, Arena of Glory, Arena of Glory
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant [T], Urza's Mine [T], Eldrazi Temple [T], Ugin's Labyrinth, Ugin's Labyrinth, Urza's Tower
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T7: Galvanic Discharge moved hand -> graveyard (discard)
+T7: Quantum Riddler moved hand -> graveyard (discard)
+T7 P1: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki Ch.II: loot 2 (drew: Ephemerate, Flooded Strand)
+  [Draw] P1 draws: Solitude
+  [Main 1]
+T7 P1: Play Flooded Strand
+T7 P1: Crack Flooded Strand -> Plains (untapped)
+    → Goal: close_game
+    [Mana] Tap Mountain→R, Arena of Glory→R, Arena of Glory→R, Plains→W, Hallowed Fountain→W (paying for Solitude, 7 mana remaining)
+T7 P1: Cast Solitude (3WW)
+    [Priority] P2 passes (no response)
+T7: Resolve Solitude
+T7: Thought-Knot Seer moved battlefield -> exile (exiled)
+T7 P1: Solitude exiles Thought-Knot Seer (opponent gains 4 life, now 24)
+    → Goal: close_game
+    [Mana] Tap Sacred Foundry→W (paying for Ephemerate, 2 mana remaining)
+T7 P2: Chalice of the Void (X=1) counters Ephemerate
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 24  |  Jeskai Blink 16
+║ Hand: 2 cards  |  Opp hand: 0 cards
+║ Lands: 6  |  Opp lands: 7
+║ Library: 45  |  Graveyard: 5
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant, Urza's Mine, Eldrazi Temple, Ugin's Labyrinth, Ugin's Labyrinth, Urza's Tower
+║ Jeskai Blink board:
+║   Creatures: Solitude (3/2)
+║   Other: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+║   Lands: Steam Vents, Hallowed Fountain [T], Sacred Foundry [T], Mountain [T], Arena of Glory [T], Arena of Glory [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Urza's Power Plant
+  [Main 1]
+T7 P2: Play Urza's Power Plant
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C, Urza's Mine→C, Eldrazi Temple→C, Ugin's Labyrinth→C, Ugin's Labyrinth→C (paying for Ugin, Eye of the Storms, 9 mana remaining)
+T7 P2: Cast Ugin, Eye of the Storms (7)
+    [Priority] P1 passes (no response)
+T7: Resolve Ugin, Eye of the Storms
+T7 P2: Ugin, Eye of the Storms [+2] -> You gain 3 life and draw a card
+T7 P2: Gain 3 life from Ugin, Eye of the Storms (life: 27)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 16  |  Eldrazi Tron 27
+║ Hand: 0 cards  |  Opp hand: 1 cards
+║ Lands: 7  |  Opp lands: 7
+║ Library: 41  |  Graveyard: 8
+║ Jeskai Blink board:
+║   Creatures: Solitude (3/2)
+║   Other: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+║   Lands: Steam Vents, Hallowed Fountain, Sacred Foundry, Mountain, Arena of Glory, Arena of Glory, Plains
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void, Ugin, Eye of the Storms
+║   Lands: Urza's Power Plant [T], Urza's Mine [T], Eldrazi Temple [T], Ugin's Labyrinth [T], Ugin's Labyrinth [T], Urza's Tower, Urza's Power Plant
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T8 P1: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki Ch.III: transforming into Reflection of Kiki-Jiki
+T8 P1: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki transforms!
+  [Draw] P1 draws: Scalding Tarn
+  [Main 1]
+T8 P1: Play Scalding Tarn
+T8 P1: Crack Scalding Tarn -> Island (untapped)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Solitude
+T8 P1: Attack with Solitude
+  [Declare Blockers] P2 does not block
+T8 P1:   Solitude (3/2) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 27 → 24
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 24  |  Jeskai Blink 18
+║ Hand: 1 cards  |  Opp hand: 0 cards
+║ Lands: 7  |  Opp lands: 8
+║ Library: 44  |  Graveyard: 5
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void, Ugin, Eye of the Storms
+║   Lands: Urza's Power Plant, Urza's Mine, Eldrazi Temple, Ugin's Labyrinth, Ugin's Labyrinth, Urza's Tower, Urza's Power Plant
+║ Jeskai Blink board:
+║   Creatures: Solitude (3/2) [tapped], Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2/2)
+║   Other: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+║   Lands: Steam Vents, Hallowed Fountain, Sacred Foundry, Mountain, Arena of Glory, Arena of Glory, Plains, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Kozilek's Command
+  [Main 1]
+T8 P2: Play Ugin's Labyrinth
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C, Urza's Mine→C (paying for Kozilek's Command, 10 mana remaining)
+T8 P2: Cast Kozilek's Command (11) (X=11)
+    [Priority] P1 passes (no response)
+T8: Resolve Kozilek's Command
+T8: Solitude moved battlefield -> exile (exiled)
+T8 P2: Ugin, Eye of the Storms [+2] -> You gain 3 life and draw a card
+T8 P2: Gain 3 life from Ugin, Eye of the Storms (life: 27)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 18  |  Eldrazi Tron 27
+║ Hand: 0 cards  |  Opp hand: 0 cards
+║ Lands: 8  |  Opp lands: 8
+║ Library: 39  |  Graveyard: 9
+║ Jeskai Blink board:
+║   Creatures: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2/2)
+║   Other: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+║   Lands: Steam Vents, Hallowed Fountain, Sacred Foundry, Mountain, Arena of Glory, Arena of Glory, Plains, Island
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void, Ugin, Eye of the Storms
+║   Lands: Urza's Power Plant [T], Urza's Mine [T], Eldrazi Temple [T], Ugin's Labyrinth [T], Ugin's Labyrinth [T], Urza's Tower [T], Urza's Power Plant [T], Ugin's Labyrinth [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T9 P1: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki Ch.III: transforming into Reflection of Kiki-Jiki
+T9 P1: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki transforms!
+  [Draw] P1 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Mountain→R (paying for Ragavan, Nimble Pilferer, 8 mana remaining)
+T9 P2: Chalice of the Void (X=1) counters Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 27  |  Jeskai Blink 18
+║ Hand: 0 cards  |  Opp hand: 0 cards
+║ Lands: 8  |  Opp lands: 8
+║ Library: 43  |  Graveyard: 6
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void, Ugin, Eye of the Storms
+║   Lands: Urza's Power Plant, Urza's Mine, Eldrazi Temple, Ugin's Labyrinth, Ugin's Labyrinth, Urza's Tower, Urza's Power Plant, Ugin's Labyrinth
+║ Jeskai Blink board:
+║   Creatures: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2/2)
+║   Other: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+║   Lands: Steam Vents, Hallowed Fountain, Sacred Foundry, Mountain [T], Arena of Glory, Arena of Glory, Plains, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ugin, Eye of the Storms
+  [Main 1]
+T9 P2: Ugin, Eye of the Storms [+2] -> You gain 3 life and draw a card
+T9 P2: Gain 3 life from Ugin, Eye of the Storms (life: 30)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 18  |  Eldrazi Tron 30
+║ Hand: 0 cards  |  Opp hand: 1 cards
+║ Lands: 8  |  Opp lands: 8
+║ Library: 38  |  Graveyard: 10
+║ Jeskai Blink board:
+║   Creatures: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2/2)
+║   Other: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+║   Lands: Steam Vents, Hallowed Fountain, Sacred Foundry, Mountain, Arena of Glory, Arena of Glory, Plains, Island
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void, Ugin, Eye of the Storms
+║   Lands: Urza's Power Plant, Urza's Mine, Eldrazi Temple, Ugin's Labyrinth, Ugin's Labyrinth, Urza's Tower, Urza's Power Plant, Ugin's Labyrinth
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T10 P1: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki Ch.III: transforming into Reflection of Kiki-Jiki
+T10 P1: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki transforms!
+  [Draw] P1 draws: Galvanic Discharge
+  [Main 1]
+    → Goal: close_game
+    [Target] → Ugin, Eye of the Storms: chip PW (3 of 13 loyalty) — value 1.50
+    [Mana] Tap Mountain→R (paying for Galvanic Discharge, 8 mana remaining)
+T10 P2: Chalice of the Void (X=1) counters Galvanic Discharge
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 30  |  Jeskai Blink 18
+║ Hand: 1 cards  |  Opp hand: 0 cards
+║ Lands: 8  |  Opp lands: 8
+║ Library: 42  |  Graveyard: 6
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void, Ugin, Eye of the Storms
+║   Lands: Urza's Power Plant, Urza's Mine, Eldrazi Temple, Ugin's Labyrinth, Ugin's Labyrinth, Urza's Tower, Urza's Power Plant, Ugin's Labyrinth
+║ Jeskai Blink board:
+║   Creatures: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2/2)
+║   Other: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+║   Lands: Steam Vents, Hallowed Fountain, Sacred Foundry, Mountain [T], Arena of Glory, Arena of Glory, Plains, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ugin, Eye of the Storms
+  [Main 1]
+T10 P2: Ugin, Eye of the Storms [+2] -> You gain 3 life and draw a card
+T10 P2: Gain 3 life from Ugin, Eye of the Storms (life: 33)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 18  |  Eldrazi Tron 33
+║ Hand: 0 cards  |  Opp hand: 2 cards
+║ Lands: 8  |  Opp lands: 8
+║ Library: 37  |  Graveyard: 11
+║ Jeskai Blink board:
+║   Creatures: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2/2)
+║   Other: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+║   Lands: Steam Vents, Hallowed Fountain, Sacred Foundry, Mountain, Arena of Glory, Arena of Glory, Plains, Island
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void, Ugin, Eye of the Storms
+║   Lands: Urza's Power Plant, Urza's Mine, Eldrazi Temple, Ugin's Labyrinth, Ugin's Labyrinth, Urza's Tower, Urza's Power Plant, Ugin's Labyrinth
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T11 P1: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki Ch.III: transforming into Reflection of Kiki-Jiki
+T11 P1: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki transforms!
+  [Draw] P1 draws: Solitude
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Mountain→R, Arena of Glory→R, Arena of Glory→R, Plains→W, Hallowed Fountain→W (paying for Solitude, 8 mana remaining)
+T11 P1: Cast Solitude (3WW)
+    [Priority] P2 passes (no response)
+T11: Resolve Solitude
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 33  |  Jeskai Blink 18
+║ Hand: 2 cards  |  Opp hand: 0 cards
+║ Lands: 8  |  Opp lands: 8
+║ Library: 41  |  Graveyard: 6
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void, Ugin, Eye of the Storms
+║   Lands: Urza's Power Plant, Urza's Mine, Eldrazi Temple, Ugin's Labyrinth, Ugin's Labyrinth, Urza's Tower, Urza's Power Plant, Ugin's Labyrinth
+║ Jeskai Blink board:
+║   Creatures: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2/2), Solitude (3/2)
+║   Other: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+║   Lands: Steam Vents, Hallowed Fountain [T], Sacred Foundry, Mountain [T], Arena of Glory [T], Arena of Glory [T], Plains [T], Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Relic of Progenitus
+  [Main 1]
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C (paying for Relic of Progenitus, 9 mana remaining)
+T11 P2: Cast Relic of Progenitus (1)
+    [Priority] P1 passes (no response)
+T11: Resolve Relic of Progenitus
+T11 P2: Relic of Progenitus exiles 11 cards from P1's graveyard
+T11 P2: Relic of Progenitus: draw 1 card
+T11 P2: Play Eldrazi Temple
+T11 P2: Ugin, Eye of the Storms [+2] -> You gain 3 life and draw a card
+T11 P2: Gain 3 life from Ugin, Eye of the Storms (life: 36)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 18  |  Eldrazi Tron 36
+║ Hand: 0 cards  |  Opp hand: 2 cards
+║ Lands: 8  |  Opp lands: 9
+║ Library: 36  |  Graveyard: 0
+║ Jeskai Blink board:
+║   Creatures: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2/2), Solitude (3/2)
+║   Other: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+║   Lands: Steam Vents, Hallowed Fountain, Sacred Foundry, Mountain, Arena of Glory, Arena of Glory, Plains, Island
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void, Ugin, Eye of the Storms, Relic of Progenitus
+║   Lands: Urza's Power Plant [T], Urza's Mine, Eldrazi Temple, Ugin's Labyrinth, Ugin's Labyrinth, Urza's Tower, Urza's Power Plant, Ugin's Labyrinth, Eldrazi Temple
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T12 P1: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki Ch.III: transforming into Reflection of Kiki-Jiki
+T12 P1: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki transforms!
+  [Draw] P1 draws: Flooded Strand
+  [Main 1]
+T12 P1: Play Flooded Strand
+T12 P1: Crack Flooded Strand -> Thundering Falls (tapped)
+T12 P1: surveil 1 → Solitude to GY
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Solitude
+T12 P1: Attack with Solitude
+  [Declare Blockers] P2 does not block
+T12 P1:   Solitude (3/2) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 36 → 33
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 33  |  Jeskai Blink 20
+║ Hand: 2 cards  |  Opp hand: 0 cards
+║ Lands: 9  |  Opp lands: 9
+║ Library: 39  |  Graveyard: 6
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void, Ugin, Eye of the Storms, Relic of Progenitus
+║   Lands: Urza's Power Plant, Urza's Mine, Eldrazi Temple, Ugin's Labyrinth, Ugin's Labyrinth, Urza's Tower, Urza's Power Plant, Ugin's Labyrinth, Eldrazi Temple
+║ Jeskai Blink board:
+║   Creatures: Solitude (3/2) [tapped], Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2/2)
+║   Other: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+║   Lands: Steam Vents, Hallowed Fountain, Sacred Foundry, Mountain, Arena of Glory, Arena of Glory, Plains, Island, Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Glaring Fleshraker
+  [Main 1]
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C, Urza's Mine→C (paying for Glaring Fleshraker, 11 mana remaining)
+T12 P2: Cast Glaring Fleshraker (2)
+    [Priority] P1 passes (no response)
+T12: Resolve Glaring Fleshraker
+T12 P2: Ugin, Eye of the Storms [+2] -> You gain 3 life and draw a card
+T12 P2: Gain 3 life from Ugin, Eye of the Storms (life: 36)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+>>> Eldrazi Tron wins Game 1 on turn 13 via timeout
+    Final life: Jeskai Blink=20  Eldrazi Tron=36
+
+======================================================================
+  GAME 2: Jeskai Blink (P1) vs Eldrazi Tron (P2)  —  seed 55503
+  Series: Jeskai Blink 0 - 1 Eldrazi Tron
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Jeskai Blink wins → chooses to play first
+║ P1 (on play): Jeskai Blink
+║ P2 (on draw): Eldrazi Tron
+╚═══════════════════════════════════════════════════════
+
+P1 (Jeskai Blink) opening hand (2 lands, 5 spells):
+  • Galvanic Discharge [Spell, CMC 1]
+  • Fable of the Mirror-Breaker // Reflection of Kiki-Jiki [Spell, CMC 3]
+  • Arid Mesa [Land, CMC 0]
+  • Sacred Foundry [Land, CMC 0]
+  • Solitude [Creature, CMC 5]
+  • Fable of the Mirror-Breaker // Reflection of Kiki-Jiki [Spell, CMC 3]
+  • Prismatic Ending [Spell, CMC 1]
+→ P1 KEEPS 7 — has key card(s): Galvanic Discharge, Solitude, 4 cheap spells
+
+P2 (Eldrazi Tron) opening hand (3 lands, 4 spells):
+  • Expedition Map [Spell, CMC 1]
+  • Ugin's Labyrinth [Land, CMC 0]
+  • Karn, the Great Creator [Spell, CMC 4]
+  • Devourer of Destiny [Creature, CMC 7]
+  • Wastes [Land, CMC 0]
+  • Dismember [Spell, CMC 3]
+  • Ugin's Labyrinth [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Expedition Map, 3 cheap spells
+
+
+╔══ TURN 1 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 20  |  Eldrazi Tron 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Arid Mesa
+T1 P1: Crack Arid Mesa (pay 1 life) -> Steam Vents (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Jeskai Blink 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Dismember
+  [Main 1]
+T1 P2: Play Ugin's Labyrinth
+    → Goal: ramp [engines]
+    [Mana] Tap Ugin's Labyrinth→C (paying for Expedition Map, 1 mana remaining)
+T1 P2: Cast Expedition Map (1)
+    [Priority] P1 passes (no response)
+T1: Resolve Expedition Map
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 19  |  Eldrazi Tron 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Steam Vents
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Expedition Map
+║   Lands: Ugin's Labyrinth [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Consign to Memory
+  [Main 1]
+T2 P1: Play Sacred Foundry (untapped, life: 19)
+    → Goal: grind_value
+    [Mana] Tap Sacred Foundry→W (paying for Prismatic Ending, 2 mana remaining)
+T2 P1: Cast Prismatic Ending (1W) (X=1)
+    [Priority] P2 passes (no response)
+T2: Resolve Prismatic Ending
+T2: Expedition Map moved battlefield -> exile (exiled)
+T2 P1: Prismatic Ending exiles Expedition Map
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Jeskai Blink 19
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Ugin's Labyrinth
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Steam Vents [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mind Stone
+  [Main 1]
+T2 P2: Play Wastes
+    → Goal: ramp
+    [Mana] Tap Ugin's Labyrinth→C, Wastes→C (paying for Mind Stone, 2 mana remaining)
+T2 P2: Cast Mind Stone (2)
+    [Priority] P1 passes (no response)
+T2: Resolve Mind Stone
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 19  |  Eldrazi Tron 20
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 2
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Sacred Foundry
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Mind Stone
+║   Lands: Ugin's Labyrinth [T], Wastes [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Galvanic Discharge
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Jeskai Blink 19
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Mind Stone
+║   Lands: Ugin's Labyrinth, Wastes
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Urza's Power Plant
+  [Main 1]
+T3 P2: Play Urza's Power Plant
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 19  |  Eldrazi Tron 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 2
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Sacred Foundry
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Mind Stone
+║   Lands: Ugin's Labyrinth, Wastes, Urza's Power Plant
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Phelia, Exuberant Shepherd
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Steam Vents→R, Sacred Foundry→W (paying for Phelia, Exuberant Shepherd, 2 mana remaining)
+T4 P1: Cast Phelia, Exuberant Shepherd (1W)
+    [Priority] P2 passes (no response)
+T4: Resolve Phelia, Exuberant Shepherd
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Jeskai Blink 19
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Mind Stone
+║   Lands: Ugin's Labyrinth, Wastes, Urza's Power Plant
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Lands: Steam Vents [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thought-Knot Seer
+  [Main 1]
+T4 P2: Play Ugin's Labyrinth
+    → Goal: ramp
+    [Mana] Tap Ugin's Labyrinth→C, Wastes→C, Urza's Power Plant→C, Ugin's Labyrinth→C (paying for Thought-Knot Seer, 4 mana remaining)
+T4 P2: Cast Thought-Knot Seer (3)
+    [Priority] P1 passes (no response)
+T4: Resolve Thought-Knot Seer
+T4 P2: Activate Mind Stone (sacrifice)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 19  |  Eldrazi Tron 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 2
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Lands: Steam Vents, Sacred Foundry
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4)
+║   Lands: Ugin's Labyrinth [T], Wastes [T], Urza's Power Plant [T], Ugin's Labyrinth [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Flooded Strand
+  [Main 1]
+T5 P1: Play Flooded Strand
+T5 P1: Crack Flooded Strand (pay 1 life) -> Hallowed Fountain (tapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Jeskai Blink 18
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 1
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4)
+║   Lands: Ugin's Labyrinth, Wastes, Urza's Power Plant, Ugin's Labyrinth
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Lands: Steam Vents, Sacred Foundry, Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Eldrazi Temple
+  [Main 1]
+T5 P2: Play Eldrazi Temple
+    → Goal: ramp
+    [Mana] Tap Ugin's Labyrinth→C, Wastes→C, Urza's Power Plant→C, Ugin's Labyrinth→C (paying for Karn, the Great Creator, 5 mana remaining)
+T5 P2: Cast Karn, the Great Creator (4)
+    [Priority] P1 responds with Consign to Memory
+    [Mana] Tap Steam Vents→U (paying for Consign to Memory, 2 mana remaining)
+T5 P1: Cast Consign to Memory (U)
+T5: Resolve Consign to Memory
+T5 P1: Consign to Memory counters Karn, the Great Creator
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Thought-Knot Seer
+T5 P2: Attack with Thought-Knot Seer
+T5 P1:   [BLOCK] Phelia, Exuberant Shepherd (2/2) blocks Thought-Knot Seer (4/4) — lifespan_delta=+1.00
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T5: Phelia, Exuberant Shepherd dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+    [Mana] Tap Sacred Foundry→R (paying for Galvanic Discharge, 1 mana remaining)
+T5 P1: Cast Galvanic Discharge (R)
+T5: Resolve Galvanic Discharge
+T5: Thought-Knot Seer dies
+T5 P1: Galvanic Discharge deals 2 to Thought-Knot Seer (base 0 + 2 energy)
+
+╔══ TURN 6 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 18  |  Eldrazi Tron 20
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 6
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Sacred Foundry, Hallowed Fountain
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Ugin's Labyrinth [T], Wastes [T], Urza's Power Plant [T], Ugin's Labyrinth [T], Eldrazi Temple
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ephemerate
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Jeskai Blink 18
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 3
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Ugin's Labyrinth, Wastes, Urza's Power Plant, Ugin's Labyrinth, Eldrazi Temple
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Sacred Foundry, Hallowed Fountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Chalice of the Void
+  [Main 1]
+    → Goal: ramp [enablers]
+T6 P2: Cast Chalice of the Void (2) (X=1)
+    [Priority] P1 passes (no response)
+T6: Resolve Chalice of the Void
+T6 P2: Chalice of the Void enters with 1 charge counter(s)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 18  |  Eldrazi Tron 20
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 6
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Sacred Foundry, Hallowed Fountain
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void
+║   Lands: Ugin's Labyrinth [T], Wastes [T], Urza's Power Plant, Ugin's Labyrinth, Eldrazi Temple
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Plains
+  [Main 1]
+T7 P1: Play Plains
+    → Goal: close_game
+    [Mana] Tap Plains→W, Steam Vents→R, Sacred Foundry→R (paying for Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, 4 mana remaining)
+T7 P1: Cast Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2R)
+    [Priority] P2 passes (no response)
+T7: Resolve Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+T7 P1: Create 1x Goblin token(s)
+T7 P1: Fable Ch.I: Create 2/2 Goblin Shaman with haste
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→W (paying for Ephemerate, 1 mana remaining)
+T7 P2: Chalice of the Void (X=1) counters Ephemerate
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Goblin Token
+T7 P1: Attack with Goblin Token
+  [Declare Blockers] P2 does not block
+T7 P1:   Goblin Token (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 20 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 18  |  Jeskai Blink 18
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 3
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void
+║   Lands: Ugin's Labyrinth, Wastes, Urza's Power Plant, Ugin's Labyrinth, Eldrazi Temple
+║ Jeskai Blink board:
+║   Creatures: Goblin Token (2/2) [tapped]
+║   Other: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+║   Lands: Steam Vents [T], Sacred Foundry [T], Hallowed Fountain [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thought-Knot Seer
+  [Main 1]
+    → Goal: ramp
+    [Mana] Tap Ugin's Labyrinth→C, Wastes→C, Urza's Power Plant→C, Ugin's Labyrinth→C (paying for Thought-Knot Seer, 5 mana remaining)
+T7 P2: Cast Thought-Knot Seer (3)
+    [Priority] P1 passes (no response)
+T7: Resolve Thought-Knot Seer
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 18  |  Eldrazi Tron 18
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 44  |  Graveyard: 7
+║ Jeskai Blink board:
+║   Creatures: Goblin Token (2/2)
+║   Other: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+║   Lands: Steam Vents, Sacred Foundry, Hallowed Fountain, Plains
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4)
+║   Other: Chalice of the Void
+║   Lands: Ugin's Labyrinth [T], Wastes [T], Urza's Power Plant [T], Ugin's Labyrinth [T], Eldrazi Temple
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T8: Galvanic Discharge moved hand -> graveyard (discard)
+T8: Galvanic Discharge moved hand -> graveyard (discard)
+T8 P1: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki Ch.II: loot 2 (drew: Wrath of the Skies, Scalding Tarn)
+  [Draw] P1 draws: Flooded Strand
+  [Main 1]
+    → Goal: close_game
+T8 P1: Evoke Solitude (exile Wrath of the Skies)
+T8 P1: Cast Solitude (3WW)
+    [Priority] P2 passes (no response)
+T8: Resolve Solitude
+T8: Thought-Knot Seer moved battlefield -> exile (exiled)
+T8 P1: Solitude exiles Thought-Knot Seer (opponent gains 4 life, now 22)
+T8 P1: Solitude sacrificed (evoke)
+T8 P1: Play Scalding Tarn
+T8 P1: Crack Scalding Tarn -> Mountain (untapped)
+    → Goal: close_game
+    [Mana] Tap Plains→W, Mountain→R, Steam Vents→R (paying for Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, 5 mana remaining)
+T8 P1: Cast Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2R)
+    [Priority] P2 passes (no response)
+T8: Resolve Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+T8 P1: Create 1x Goblin token(s)
+T8 P1: Fable Ch.I: Create 2/2 Goblin Shaman with haste
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Goblin Token, Goblin Token
+T8 P1: Attack with Goblin Token, Goblin Token
+  [Declare Blockers] P2 does not block
+T8 P1:   Goblin Token (2/2) → 2 dmg to player
+T8 P1:   Goblin Token (2/2) → 2 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 22 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 18  |  Jeskai Blink 17
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 3
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void
+║   Lands: Ugin's Labyrinth, Wastes, Urza's Power Plant, Ugin's Labyrinth, Eldrazi Temple
+║ Jeskai Blink board:
+║   Creatures: Goblin Token (2/2) [tapped], Goblin Token (2/2) [tapped]
+║   Other: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+║   Lands: Steam Vents [T], Sacred Foundry, Hallowed Fountain, Plains [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Devourer of Destiny
+  [Main 1]
+    → Goal: ramp
+    [Mana] Tap Ugin's Labyrinth→C, Wastes→C, Urza's Power Plant→C, Ugin's Labyrinth→C (paying for Karn, the Great Creator, 5 mana remaining)
+T8 P2: Cast Karn, the Great Creator (4)
+    [Priority] P1 passes (no response)
+T8: Resolve Karn, the Great Creator
+T8 P2: Karn, the Great Creator [+1] -> Until your next turn, up to one target noncreature artifact becomes an artifact creature with power and toughness each equal to its mana value
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 17  |  Eldrazi Tron 18
+║ Hand: 1 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 40  |  Graveyard: 11
+║ Jeskai Blink board:
+║   Creatures: Goblin Token (2/2), Goblin Token (2/2)
+║   Other: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+║   Lands: Steam Vents, Sacred Foundry, Hallowed Fountain, Plains, Mountain
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void, Karn, the Great Creator
+║   Lands: Ugin's Labyrinth [T], Wastes [T], Urza's Power Plant [T], Ugin's Labyrinth [T], Eldrazi Temple
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T9 P1: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki Ch.III: transforming into Reflection of Kiki-Jiki
+T9 P1: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki transforms!
+T9: Flooded Strand moved hand -> graveyard (discard)
+T9 P1: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki Ch.II: loot 1 (drew: Arena of Glory)
+  [Draw] P1 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+T9 P1: Play Arena of Glory (enters tapped)
+    → Goal: close_game
+    [Mana] Tap Mountain→R (paying for Ragavan, Nimble Pilferer, 5 mana remaining)
+T9 P2: Chalice of the Void (X=1) counters Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Goblin Token, Goblin Token
+T9 P1: Attack with Goblin Token, Goblin Token
+  [Declare Blockers] P2 does not block
+T9 P1:   Goblin Token (2/2) → 2 dmg to player
+T9 P1:   Goblin Token (2/2) → 2 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 18 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 14  |  Jeskai Blink 17
+║ Hand: 4 cards  |  Opp hand: 0 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 44  |  Graveyard: 3
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void, Karn, the Great Creator
+║   Lands: Ugin's Labyrinth, Wastes, Urza's Power Plant, Ugin's Labyrinth, Eldrazi Temple
+║ Jeskai Blink board:
+║   Creatures: Goblin Token (2/2) [tapped], Goblin Token (2/2) [tapped], Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2/2)
+║   Other: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+║   Lands: Steam Vents, Sacred Foundry, Hallowed Fountain, Plains, Mountain [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Eldrazi Temple
+  [Main 1]
+T9 P2: Play Eldrazi Temple
+T9 P2: Karn, the Great Creator [+1] -> Until your next turn, up to one target noncreature artifact becomes an artifact creature with power and toughness each equal to its mana value
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 17  |  Eldrazi Tron 14
+║ Hand: 0 cards  |  Opp hand: 4 cards
+║ Lands: 6  |  Opp lands: 6
+║ Library: 38  |  Graveyard: 13
+║ Jeskai Blink board:
+║   Creatures: Goblin Token (2/2), Goblin Token (2/2), Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2/2)
+║   Other: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+║   Lands: Steam Vents, Sacred Foundry, Hallowed Fountain, Plains, Mountain, Arena of Glory
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void, Karn, the Great Creator
+║   Lands: Ugin's Labyrinth, Wastes, Urza's Power Plant, Ugin's Labyrinth, Eldrazi Temple, Eldrazi Temple
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T10 P1: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki Ch.III: transforming into Reflection of Kiki-Jiki
+T10 P1: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki transforms!
+T10 P1: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki Ch.III: transforming into Reflection of Kiki-Jiki
+T10 P1: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki transforms!
+  [Draw] P1 draws: Thundering Falls
+  [Main 1]
+T10 P1: surveil 1 → Ragavan, Nimble Pilferer to GY
+T10 P1: Play Thundering Falls (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Goblin Token, Goblin Token
+T10 P1: Attack with Goblin Token, Goblin Token
+  [Declare Blockers] P2 does not block
+T10 P1:   Goblin Token (2/2) → 2 dmg to player
+T10 P1:   Goblin Token (2/2) → 2 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 14 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 10  |  Jeskai Blink 17
+║ Hand: 4 cards  |  Opp hand: 0 cards
+║ Lands: 6  |  Opp lands: 7
+║ Library: 43  |  Graveyard: 3
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void, Karn, the Great Creator
+║   Lands: Ugin's Labyrinth, Wastes, Urza's Power Plant, Ugin's Labyrinth, Eldrazi Temple, Eldrazi Temple
+║ Jeskai Blink board:
+║   Creatures: Goblin Token (2/2) [tapped], Goblin Token (2/2) [tapped], Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2/2), Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2/2)
+║   Other: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+║   Lands: Steam Vents, Sacred Foundry, Hallowed Fountain, Plains, Mountain, Arena of Glory, Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mind Stone
+  [Main 1]
+    → Goal: ramp
+    [Mana] Tap Ugin's Labyrinth→C, Wastes→C (paying for Mind Stone, 6 mana remaining)
+T10 P2: Cast Mind Stone (2)
+    [Priority] P1 passes (no response)
+T10: Resolve Mind Stone
+T10 P2: Karn, the Great Creator [+1] -> Until your next turn, up to one target noncreature artifact becomes an artifact creature with power and toughness each equal to its mana value
+T10 P2: Activate Mind Stone (sacrifice)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 17  |  Eldrazi Tron 10
+║ Hand: 0 cards  |  Opp hand: 5 cards
+║ Lands: 7  |  Opp lands: 6
+║ Library: 36  |  Graveyard: 14
+║ Jeskai Blink board:
+║   Creatures: Goblin Token (2/2), Goblin Token (2/2), Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2/2), Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2/2)
+║   Other: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+║   Lands: Steam Vents, Sacred Foundry, Hallowed Fountain, Plains, Mountain, Arena of Glory, Thundering Falls
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void, Karn, the Great Creator
+║   Lands: Ugin's Labyrinth [T], Wastes [T], Urza's Power Plant, Ugin's Labyrinth, Eldrazi Temple, Eldrazi Temple
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T11 P1: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki Ch.III: transforming into Reflection of Kiki-Jiki
+T11 P1: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki transforms!
+T11 P1: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki Ch.III: transforming into Reflection of Kiki-Jiki
+T11 P1: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki transforms!
+  [Draw] P1 draws: Prismatic Ending
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W (paying for Prismatic Ending, 7 mana remaining)
+T11 P2: Chalice of the Void (X=1) counters Prismatic Ending
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Goblin Token, Goblin Token
+T11 P1: Attack with Goblin Token, Goblin Token
+  [Declare Blockers] P2 does not block
+T11 P1:   Goblin Token (2/2) → 2 dmg to player
+T11 P1:   Goblin Token (2/2) → 2 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 10 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 6  |  Jeskai Blink 17
+║ Hand: 5 cards  |  Opp hand: 0 cards
+║ Lands: 6  |  Opp lands: 7
+║ Library: 41  |  Graveyard: 4
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void, Karn, the Great Creator
+║   Lands: Ugin's Labyrinth, Wastes, Urza's Power Plant, Ugin's Labyrinth, Eldrazi Temple, Eldrazi Temple
+║ Jeskai Blink board:
+║   Creatures: Goblin Token (2/2) [tapped], Goblin Token (2/2) [tapped], Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2/2), Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2/2)
+║   Other: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+║   Lands: Steam Vents [T], Sacred Foundry [T], Hallowed Fountain [T], Plains [T], Mountain [T], Arena of Glory [T], Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Urza's Tower
+  [Main 1]
+T11 P2: Play Urza's Tower
+    → Goal: ramp
+    [Mana] Tap Ugin's Labyrinth→C, Wastes→C, Urza's Power Plant→C, Ugin's Labyrinth→C, Eldrazi Temple→C, Eldrazi Temple→C, Urza's Tower→C (paying for Devourer of Destiny, 7 mana remaining)
+T11 P2: Cast Devourer of Destiny (5)
+    [Priority] P1 passes (no response)
+T11: Resolve Devourer of Destiny
+T11 P2: Karn, the Great Creator [+1] -> Until your next turn, up to one target noncreature artifact becomes an artifact creature with power and toughness each equal to its mana value
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 17  |  Eldrazi Tron 6
+║ Hand: 0 cards  |  Opp hand: 4 cards
+║ Lands: 7  |  Opp lands: 7
+║ Library: 35  |  Graveyard: 15
+║ Jeskai Blink board:
+║   Creatures: Goblin Token (2/2), Goblin Token (2/2), Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2/2), Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2/2)
+║   Other: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+║   Lands: Steam Vents, Sacred Foundry, Hallowed Fountain, Plains, Mountain, Arena of Glory, Thundering Falls
+║ Eldrazi Tron board:
+║   Creatures: Devourer of Destiny (6/6)
+║   Other: Chalice of the Void, Karn, the Great Creator
+║   Lands: Ugin's Labyrinth [T], Wastes [T], Urza's Power Plant [T], Ugin's Labyrinth [T], Eldrazi Temple [T], Eldrazi Temple [T], Urza's Tower [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T12 P1: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki Ch.III: transforming into Reflection of Kiki-Jiki
+T12 P1: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki transforms!
+T12 P1: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki Ch.III: transforming into Reflection of Kiki-Jiki
+T12 P1: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki transforms!
+  [Draw] P1 draws: Phelia, Exuberant Shepherd
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Mountain→R (paying for Phelia, Exuberant Shepherd, 7 mana remaining)
+T12 P1: Cast Phelia, Exuberant Shepherd (1W)
+    [Priority] P2 passes (no response)
+T12: Resolve Phelia, Exuberant Shepherd
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Goblin Token, Goblin Token
+T12 P1: Attack with Goblin Token, Goblin Token
+T12 P2:   [BLOCK-EMERGENCY] Devourer of Destiny (6/6) blocks Goblin Token (2/2) — lifespan_delta=+0.35
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T12 P1:   Goblin Token (2/2) → 2 dmg to player
+T12: Goblin Token dies
+  [Combat Damage] 2 damage dealt → P2 life: 6 → 4
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 4  |  Jeskai Blink 17
+║ Hand: 4 cards  |  Opp hand: 0 cards
+║ Lands: 7  |  Opp lands: 7
+║ Library: 40  |  Graveyard: 4
+║ Eldrazi Tron board:
+║   Creatures: Devourer of Destiny (6/6)
+║   Other: Chalice of the Void, Karn, the Great Creator
+║   Lands: Ugin's Labyrinth, Wastes, Urza's Power Plant, Ugin's Labyrinth, Eldrazi Temple, Eldrazi Temple, Urza's Tower
+║ Jeskai Blink board:
+║   Creatures: Goblin Token (2/2) [tapped], Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2/2), Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2/2), Phelia, Exuberant Shepherd (2/2)
+║   Other: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+║   Lands: Steam Vents, Sacred Foundry, Hallowed Fountain, Plains [T], Mountain [T], Arena of Glory, Thundering Falls
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Urza's Power Plant
+  [Main 1]
+T12 P2: Play Urza's Power Plant
+    → Goal: ramp
+    [Mana] Tap Ugin's Labyrinth→C, Wastes→C, Urza's Power Plant→C, Ugin's Labyrinth→C, Eldrazi Temple→C, Eldrazi Temple→C, Urza's Tower→C (paying for Devourer of Destiny, 8 mana remaining)
+T12 P2: Cast Devourer of Destiny (5)
+    [Priority] P1 passes (no response)
+T12: Resolve Devourer of Destiny
+T12 P2: Karn, the Great Creator [+1] -> Until your next turn, up to one target noncreature artifact becomes an artifact creature with power and toughness each equal to its mana value
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Devourer of Destiny
+T12 P2: Attack with Devourer of Destiny
+  [Declare Blockers] P1 does not block
+T12 P2:   Devourer of Destiny (6/6) → 6 dmg to player
+  [Combat Damage] 6 damage dealt → P1 life: 17 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+>>> Jeskai Blink wins Game 2 on turn 13 via timeout
+    Final life: Jeskai Blink=11  Eldrazi Tron=4
+
+======================================================================
+  GAME 3: Eldrazi Tron (P1) vs Jeskai Blink (P2)  —  seed 55504
+  Series: Jeskai Blink 1 - 1 Eldrazi Tron
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Jeskai Blink wins → chooses to play first
+║ P1 (on play): Jeskai Blink
+║ P2 (on draw): Eldrazi Tron
+╚═══════════════════════════════════════════════════════
+
+P1 (Eldrazi Tron) opening hand (2 lands, 5 spells):
+  • Urza's Tower [Land, CMC 0]
+  • Kozilek's Command [Spell, CMC 2]
+  • Glaring Fleshraker [Creature, CMC 3]
+  • Ugin, Eye of the Storms [Spell, CMC 7]
+  • Kozilek's Command [Spell, CMC 2]
+  • Expedition Map [Spell, CMC 1]
+  • Wastes [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Expedition Map, 4 cheap spells
+
+P2 (Jeskai Blink) opening hand (5 lands, 2 spells):
+  • Scalding Tarn [Land, CMC 0]
+  • Scalding Tarn [Land, CMC 0]
+  • Meticulous Archive [Land, CMC 0]
+  • Fable of the Mirror-Breaker // Reflection of Kiki-Jiki [Spell, CMC 3]
+  • Solitude [Creature, CMC 5]
+  • Hallowed Fountain [Land, CMC 0]
+  • Thundering Falls [Land, CMC 0]
+→ P2 MULLIGANS (too many lands (5 > 4); first-turn value 2 < 5)
+  New hand (2 lands, 5 spells): ['Solitude', 'Fable of the Mirror-Breaker // Reflection of Kiki-Jiki', 'Galvanic Discharge', 'Scalding Tarn', 'Phelia, Exuberant Shepherd', 'Fable of the Mirror-Breaker // Reflection of Kiki-Jiki', 'Mountain']
+→ P2 mulligans to 6, bottoms: ['Fable of the Mirror-Breaker // Reflection of Kiki-Jiki']
+  Keeps: ['Solitude', 'Galvanic Discharge', 'Scalding Tarn', 'Phelia, Exuberant Shepherd', 'Fable of the Mirror-Breaker // Reflection of Kiki-Jiki', 'Mountain']
+
+
+╔══ TURN 1 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 20  |  Eldrazi Tron 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 54  |  Graveyard: 0
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Scalding Tarn
+T1 P2: Crack Scalding Tarn (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Jeskai Blink 19
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Kozilek's Command
+  [Main 1]
+T1 P1: Play Urza's Tower
+    → Goal: ramp [engines]
+    [Mana] Tap Urza's Tower→C (paying for Expedition Map, 1 mana remaining)
+T1 P1: Cast Expedition Map (1)
+    [Priority] P2 passes (no response)
+T1: Resolve Expedition Map
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 19  |  Eldrazi Tron 20
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 1
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Expedition Map
+║   Lands: Urza's Tower [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+T2 P2: Play Arid Mesa
+T2 P2: Crack Arid Mesa (pay 1 life) -> Hallowed Fountain (tapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Jeskai Blink 18
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Expedition Map
+║   Lands: Urza's Tower
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ugin, Eye of the Storms
+  [Main 1]
+T2 P1: Play Wastes
+T2 P1: Activate Expedition Map (sacrifice)
+T2 P1:   finds Urza's Power Plant
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 18  |  Eldrazi Tron 20
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 2
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Hallowed Fountain
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Tower, Wastes
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Prismatic Ending
+  [Main 1]
+T3 P2: Play Mountain
+    → Goal: grind_value [enablers]
+    [Mana] Tap Mountain→R, Sacred Foundry→W (paying for Phelia, Exuberant Shepherd, 3 mana remaining)
+T3 P2: Cast Phelia, Exuberant Shepherd (1W)
+    [Priority] P1 passes (no response)
+T3: Resolve Phelia, Exuberant Shepherd
+  [Begin Combat]
+    [Mana] Tap Urza's Tower→C, Wastes→C (paying for Kozilek's Command, 2 mana remaining)
+T3 P1: Cast Kozilek's Command (0)
+T3: Resolve Kozilek's Command
+T3: Phelia, Exuberant Shepherd moved battlefield -> exile (exiled)
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Jeskai Blink 18
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 2
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Tower, Wastes
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T], Hallowed Fountain, Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Karn, the Great Creator
+  [Main 1]
+T3 P1: Play Urza's Power Plant
+    → Goal: ramp
+    [Mana] Tap Urza's Tower→C, Wastes→C, Urza's Power Plant→C (paying for Glaring Fleshraker, 3 mana remaining)
+T3 P1: Cast Glaring Fleshraker (2)
+    [Priority] P2 passes (no response)
+T3: Resolve Glaring Fleshraker
+  [Begin Combat]
+T3 P2: Evoke Solitude (exile Prismatic Ending)
+T3 P2: Cast Solitude (3WW)
+T3: Resolve Solitude
+T3: Glaring Fleshraker moved battlefield -> exile (exiled)
+T3 P2: Solitude exiles Glaring Fleshraker (opponent gains 2 life, now 22)
+T3 P2: Solitude sacrificed (evoke)
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 18  |  Eldrazi Tron 22
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 3
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Hallowed Fountain, Mountain
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Tower [T], Wastes [T], Urza's Power Plant [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Galvanic Discharge
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 22  |  Jeskai Blink 18
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Tower, Wastes, Urza's Power Plant
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Hallowed Fountain, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: All Is Dust
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 18  |  Eldrazi Tron 22
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 3
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Hallowed Fountain, Mountain
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Tower, Wastes, Urza's Power Plant
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Galvanic Discharge
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 22  |  Jeskai Blink 18
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 2
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Tower, Wastes, Urza's Power Plant
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Hallowed Fountain, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Devourer of Destiny
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 18  |  Eldrazi Tron 22
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 3
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Hallowed Fountain, Mountain
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Tower, Wastes, Urza's Power Plant
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+T6 P2: Play Arid Mesa
+T6 P2: Crack Arid Mesa (pay 1 life) -> Steam Vents (tapped, life: 17)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 22  |  Jeskai Blink 17
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 2
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Tower, Wastes, Urza's Power Plant
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Hallowed Fountain, Mountain, Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Eldrazi Temple
+  [Main 1]
+T6 P1: Play Eldrazi Temple
+    → Goal: ramp
+    [Mana] Tap Urza's Tower→C, Wastes→C, Urza's Power Plant→C, Eldrazi Temple→C (paying for Karn, the Great Creator, 4 mana remaining)
+T6 P1: Cast Karn, the Great Creator (4)
+    [Priority] P2 passes (no response)
+T6: Resolve Karn, the Great Creator
+T6 P1: Karn, the Great Creator [+1] -> Until your next turn, up to one target noncreature artifact becomes an artifact creature with power and toughness each equal to its mana value
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 17  |  Eldrazi Tron 22
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 4
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Hallowed Fountain, Mountain, Steam Vents
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Karn, the Great Creator
+║   Lands: Urza's Tower [T], Wastes [T], Urza's Power Plant [T], Eldrazi Temple [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Consign to Memory
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Mountain→R, Sacred Foundry→R, Hallowed Fountain→U (paying for Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, 4 mana remaining)
+T7 P2: Cast Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2R)
+    [Priority] P1 passes (no response)
+T7: Resolve Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+T7 P2: Create 1x Goblin token(s)
+T7 P2: Fable Ch.I: Create 2/2 Goblin Shaman with haste
+    → Goal: close_game
+    [Target] → Karn, the Great Creator: chip PW (3 of 6 loyalty) — value 1.50
+    [Mana] Tap Steam Vents→R (paying for Galvanic Discharge, 1 mana remaining)
+T7 P2: Cast Galvanic Discharge (R)
+    [Priority] P1 passes (no response)
+T7: Resolve Galvanic Discharge
+T7 P2: Galvanic Discharge deals 3 to Karn, the Great Creator (base 0 + 3 energy)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Goblin Token
+T7 P2: Attack with Goblin Token
+  [Declare Blockers] P1 does not block
+T7 P2:   Goblin Token (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 22 → 20
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Jeskai Blink 17
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 2
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Karn, the Great Creator
+║   Lands: Urza's Tower, Wastes, Urza's Power Plant, Eldrazi Temple
+║ Jeskai Blink board:
+║   Creatures: Goblin Token (2/2) [tapped]
+║   Other: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+║   Lands: Sacred Foundry [T], Hallowed Fountain [T], Mountain [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Mind Stone
+  [Main 1]
+    → Goal: ramp
+    [Mana] Tap Urza's Tower→C, Wastes→C (paying for Kozilek's Command, 4 mana remaining)
+T7 P1: Cast Kozilek's Command (2) (X=2)
+    [Priority] P2 passes (no response)
+T7: Resolve Kozilek's Command
+T7: Goblin Token moved battlefield -> exile (exiled)
+T7 P1: Karn, the Great Creator [+1] -> Until your next turn, up to one target noncreature artifact becomes an artifact creature with power and toughness each equal to its mana value
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 17  |  Eldrazi Tron 20
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 5
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Other: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+║   Lands: Sacred Foundry, Hallowed Fountain, Mountain, Steam Vents
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Karn, the Great Creator
+║   Lands: Urza's Tower [T], Wastes [T], Urza's Power Plant [T], Eldrazi Temple [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T8: Consign to Memory moved hand -> graveyard (discard)
+T8: Galvanic Discharge moved hand -> graveyard (discard)
+T8 P2: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki Ch.II: loot 2 (drew: Arena of Glory, Thundering Falls)
+  [Draw] P2 draws: Quantum Riddler
+  [Main 1]
+T8 P2: Play Arena of Glory (enters tapped)
+    → Goal: close_game
+    [Target] → Karn, the Great Creator: chip PW (3 of 4 loyalty) — value 1.50
+    [Mana] Tap Mountain→R (paying for Galvanic Discharge, 4 mana remaining)
+T8 P2: Cast Galvanic Discharge (R)
+    [Priority] P1 passes (no response)
+T8: Resolve Galvanic Discharge
+T8 P2: Galvanic Discharge deals 3 to Karn, the Great Creator (base 0 + 3 energy)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Jeskai Blink 17
+║ Hand: 6 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 3
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Karn, the Great Creator
+║   Lands: Urza's Tower, Wastes, Urza's Power Plant, Eldrazi Temple
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Other: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+║   Lands: Sacred Foundry, Hallowed Fountain, Mountain [T], Steam Vents, Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Thought-Knot Seer
+  [Main 1]
+    → Goal: ramp
+    [Mana] Tap Urza's Tower→C, Wastes→C, Urza's Power Plant→C, Eldrazi Temple→C (paying for Thought-Knot Seer, 4 mana remaining)
+T8 P1: Cast Thought-Knot Seer (3)
+    [Priority] P2 passes (no response)
+T8: Resolve Thought-Knot Seer
+T8 P1: Karn, the Great Creator [+1] -> Until your next turn, up to one target noncreature artifact becomes an artifact creature with power and toughness each equal to its mana value
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 17  |  Eldrazi Tron 20
+║ Hand: 2 cards  |  Opp hand: 6 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 42  |  Graveyard: 8
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Other: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+║   Lands: Sacred Foundry, Hallowed Fountain, Mountain, Steam Vents, Arena of Glory
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4)
+║   Other: Karn, the Great Creator
+║   Lands: Urza's Tower [T], Wastes [T], Urza's Power Plant [T], Eldrazi Temple [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T9 P2: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki Ch.III: transforming into Reflection of Kiki-Jiki
+T9 P2: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki transforms!
+  [Draw] P2 draws: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Mountain→R, Arena of Glory→R, Sacred Foundry→R, Hallowed Fountain→U, Steam Vents→U (paying for Quantum Riddler, 5 mana remaining)
+T9 P2: Cast Quantum Riddler (3UU)
+    [Priority] P1 passes (no response)
+T9: Resolve Quantum Riddler
+T9 P2: Quantum Riddler ETB: draw 1 (Ephemerate)
+T9 P2: surveil 1 → Ragavan, Nimble Pilferer to GY
+T9 P2: Play Thundering Falls (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Jeskai Blink 17
+║ Hand: 6 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 44  |  Graveyard: 3
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4)
+║   Other: Karn, the Great Creator
+║   Lands: Urza's Tower, Wastes, Urza's Power Plant, Eldrazi Temple
+║ Jeskai Blink board:
+║   Creatures: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2/2), Quantum Riddler (4/6)
+║   Other: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+║   Lands: Sacred Foundry [T], Hallowed Fountain [T], Mountain [T], Steam Vents [T], Arena of Glory [T], Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Urza's Mine
+  [Main 1]
+T9 P1: Play Urza's Mine
+    → Goal: ramp
+    [Mana] Tap Urza's Tower→C, Wastes→C (paying for Kozilek's Command, 7 mana remaining)
+T9 P1: Cast Kozilek's Command (7) (X=7)
+    [Priority] P2 passes (no response)
+T9: Resolve Kozilek's Command
+T9: Quantum Riddler moved battlefield -> exile (exiled)
+T9 P1: Karn, the Great Creator [+1] -> Until your next turn, up to one target noncreature artifact becomes an artifact creature with power and toughness each equal to its mana value
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Thought-Knot Seer
+T9 P1: Attack with Thought-Knot Seer
+  [Declare Blockers] P2 does not block
+T9 P1:   Thought-Knot Seer (4/4) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 17 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 13  |  Eldrazi Tron 20
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 6  |  Opp lands: 5
+║ Library: 39  |  Graveyard: 9
+║ Jeskai Blink board:
+║   Creatures: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2/2)
+║   Other: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+║   Lands: Sacred Foundry, Hallowed Fountain, Mountain, Steam Vents, Arena of Glory, Thundering Falls
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4) [tapped]
+║   Other: Karn, the Great Creator
+║   Lands: Urza's Tower [T], Wastes [T], Urza's Power Plant [T], Eldrazi Temple [T], Urza's Mine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T10 P2: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki Ch.III: transforming into Reflection of Kiki-Jiki
+T10 P2: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki transforms!
+  [Draw] P2 draws: Wrath of the Skies
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Sacred Foundry→W, Hallowed Fountain→W (paying for Wrath of the Skies, 6 mana remaining)
+T10 P2: Cast Wrath of the Skies (4WW) (X=4)
+    [Priority] P1 passes (no response)
+T10: Resolve Wrath of the Skies
+T10: Thought-Knot Seer dies
+T10: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki moved battlefield -> graveyard (destroyed)
+T10 P2: Wrath of the Skies (X=4) sweeps the board, destroying 2 permanents
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Jeskai Blink 13
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 43  |  Graveyard: 5
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Karn, the Great Creator
+║   Lands: Urza's Tower, Wastes, Urza's Power Plant, Eldrazi Temple, Urza's Mine
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T], Hallowed Fountain [T], Mountain [T], Steam Vents [T], Arena of Glory [T], Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Urza's Mine
+  [Main 1]
+T10 P1: Play Urza's Mine
+    → Goal: ramp
+    [Mana] Tap Urza's Tower→C (paying for Mind Stone, 8 mana remaining)
+T10 P1: Cast Mind Stone (2)
+    [Priority] P2 passes (no response)
+T10: Resolve Mind Stone
+T10 P1: Karn, the Great Creator [+1] -> Until your next turn, up to one target noncreature artifact becomes an artifact creature with power and toughness each equal to its mana value
+T10 P1: Activate Mind Stone (sacrifice)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+    → Goal: ramp [engines]
+    [Mana] Tap Wastes→C (paying for Expedition Map, 5 mana remaining)
+T10 P1: Cast Expedition Map (1)
+    [Priority] P2 passes (no response)
+T10: Resolve Expedition Map
+  [End Step]
+T10 P1: Expedition Map finds Swamp
+
+╔══ TURN 11 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 13  |  Eldrazi Tron 20
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 6  |  Opp lands: 6
+║ Library: 37  |  Graveyard: 11
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Hallowed Fountain, Mountain, Steam Vents, Arena of Glory, Thundering Falls
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Karn, the Great Creator
+║   Lands: Urza's Tower [T], Wastes [T], Urza's Power Plant [T], Eldrazi Temple [T], Urza's Mine, Urza's Mine
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Plains
+  [Main 1]
+T11 P2: Play Plains
+    → Goal: close_game
+    [Mana] Tap Mountain→R, Arena of Glory→R, Plains→W (paying for Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, 7 mana remaining)
+T11 P2: Cast Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2R)
+    [Priority] P1 passes (no response)
+T11: Resolve Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+T11 P2: Create 1x Goblin token(s)
+T11 P2: Fable Ch.I: Create 2/2 Goblin Shaman with haste
+    → Goal: close_game
+    [Mana] Tap Sacred Foundry→R, Hallowed Fountain→U, Steam Vents→R (paying for Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, 4 mana remaining)
+T11 P2: Cast Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2R)
+    [Priority] P1 passes (no response)
+T11: Resolve Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+T11 P2: Create 1x Goblin token(s)
+T11 P2: Fable Ch.I: Create 2/2 Goblin Shaman with haste
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Goblin Token, Goblin Token
+T11 P2: Attack with Goblin Token, Goblin Token
+  [Declare Blockers] P1 does not block
+T11 P2:   Goblin Token (2/2) → 2 dmg to player
+T11 P2:   Goblin Token (2/2) → 2 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 20 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 16  |  Jeskai Blink 13
+║ Hand: 5 cards  |  Opp hand: 1 cards
+║ Lands: 6  |  Opp lands: 7
+║ Library: 40  |  Graveyard: 7
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Karn, the Great Creator
+║   Lands: Urza's Tower, Wastes, Urza's Power Plant, Eldrazi Temple, Urza's Mine, Urza's Mine
+║ Jeskai Blink board:
+║   Creatures: Goblin Token (2/2) [tapped], Goblin Token (2/2) [tapped]
+║   Other: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+║   Lands: Sacred Foundry [T], Hallowed Fountain [T], Mountain [T], Steam Vents [T], Arena of Glory [T], Thundering Falls, Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ugin, Eye of the Storms
+  [Main 1]
+T11 P1: Play Swamp
+    → Goal: ramp
+    [Mana] Tap Urza's Tower→C, Wastes→C, Urza's Power Plant→C, Eldrazi Temple→C, Urza's Mine→C (paying for Devourer of Destiny, 11 mana remaining)
+T11 P1: Cast Devourer of Destiny (5)
+    [Priority] P2 passes (no response)
+T11: Resolve Devourer of Destiny
+T11 P1: Karn, the Great Creator [+1] -> Until your next turn, up to one target noncreature artifact becomes an artifact creature with power and toughness each equal to its mana value
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 13  |  Eldrazi Tron 16
+║ Hand: 1 cards  |  Opp hand: 4 cards
+║ Lands: 7  |  Opp lands: 7
+║ Library: 36  |  Graveyard: 11
+║ Jeskai Blink board:
+║   Creatures: Goblin Token (2/2), Goblin Token (2/2)
+║   Other: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+║   Lands: Sacred Foundry, Hallowed Fountain, Mountain, Steam Vents, Arena of Glory, Thundering Falls, Plains
+║ Eldrazi Tron board:
+║   Creatures: Devourer of Destiny (6/6)
+║   Other: Karn, the Great Creator
+║   Lands: Urza's Tower [T], Wastes [T], Urza's Power Plant [T], Eldrazi Temple [T], Urza's Mine [T], Urza's Mine, Swamp
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T12: Ephemerate moved hand -> graveyard (discard)
+T12 P2: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki Ch.II: loot 1 (drew: Phelia, Exuberant Shepherd)
+T12: Phelia, Exuberant Shepherd moved hand -> graveyard (discard)
+T12 P2: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki Ch.II: loot 1 (drew: Consign to Memory)
+  [Draw] P2 draws: Solitude
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Mountain→R, Arena of Glory→R, Plains→W, Sacred Foundry→W, Hallowed Fountain→U (paying for Solitude, 7 mana remaining)
+T12 P2: Cast Solitude (3WW)
+    [Priority] P1 passes (no response)
+T12: Resolve Solitude
+T12: Devourer of Destiny moved battlefield -> exile (exiled)
+T12 P2: Solitude exiles Devourer of Destiny (opponent gains 6 life, now 22)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Goblin Token, Goblin Token
+T12 P2: Attack with Goblin Token, Goblin Token
+  [Declare Blockers] P1 does not block
+T12 P2:   Goblin Token (2/2) → 2 dmg to player
+T12 P2:   Goblin Token (2/2) → 2 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 22 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 18  |  Jeskai Blink 13
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 7  |  Opp lands: 7
+║ Library: 39  |  Graveyard: 7
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Karn, the Great Creator
+║   Lands: Urza's Tower, Wastes, Urza's Power Plant, Eldrazi Temple, Urza's Mine, Urza's Mine, Swamp
+║ Jeskai Blink board:
+║   Creatures: Goblin Token (2/2) [tapped], Goblin Token (2/2) [tapped], Solitude (3/2)
+║   Other: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+║   Lands: Sacred Foundry [T], Hallowed Fountain [T], Mountain [T], Steam Vents, Arena of Glory [T], Thundering Falls, Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Urza's Mine
+  [Main 1]
+T12 P1: Play Urza's Mine
+    → Goal: ramp
+    [Mana] Tap Urza's Tower→C, Wastes→C, Urza's Power Plant→C, Eldrazi Temple→C (paying for All Is Dust, 11 mana remaining)
+T12 P1: Cast All Is Dust (7)
+    [Priority] P2 responds with Consign to Memory
+    [Mana] Tap Steam Vents→U (paying for Consign to Memory, 2 mana remaining)
+T12 P2: Cast Consign to Memory (U)
+T12: Resolve Consign to Memory
+T12 P2: Consign to Memory counters All Is Dust
+T12 P1: Karn, the Great Creator [+1] -> Until your next turn, up to one target noncreature artifact becomes an artifact creature with power and toughness each equal to its mana value
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+>>> Eldrazi Tron wins Game 3 on turn 13 via timeout
+    Final life: Eldrazi Tron=18  Jeskai Blink=13
+
+======================================================================
+  MATCH RESULT: Eldrazi Tron wins 2-1
+======================================================================
