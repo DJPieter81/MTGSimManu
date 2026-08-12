@@ -69,15 +69,12 @@ def _classify_anti_artifact_priority(template) -> int:
     )
     if any(p in oracle for p in destruction_phrases):
         return 10
-    # "destroy target artifact, enchantment, or nonbasic" — Boseiju
-    # channel idiom (and similar mass-removal-with-artifact-clause).
-    if "destroy target artifact," in oracle:
+    # "destroy target artifact," — Boseiju channel and similar;
+    # "and/or enchantment" idiom — Force of Vigor — both covered by
+    # batch6 typed fields (can_destroy_artifact, can_destroy_enchantment).
+    if template.can_destroy_artifact:
         return 10
-    # "destroy target ... artifact ..." (Force of Vigor: "destroy up
-    # to two target artifacts and/or enchantments")
-    if "destroy" in oracle and "artifact" in oracle and (
-        "and/or enchantment" in oracle or "or enchantment" in oracle
-    ):
+    if template.can_destroy_enchantment:
         return 10
 
     # 9 — Stax / cost-tax. The cardinal pattern is "activated
