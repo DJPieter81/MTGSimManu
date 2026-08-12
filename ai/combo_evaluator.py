@@ -203,8 +203,6 @@ def _is_chain_fuel(card) -> bool:
     t = card.template
     tags = getattr(t, 'tags', set())
     keywords = getattr(t, 'keywords', set())
-    oracle = (getattr(t, 'oracle_text', '') or '').lower()
-
     # Storm/reanimation-style fuel: instant/sorcery spells with
     # chain-relevant tags, or the STORM keyword closer itself
     if t.is_instant or t.is_sorcery:
@@ -220,10 +218,9 @@ def _is_chain_fuel(card) -> bool:
         # oracle_parser.py — no runtime oracle inspection.
         if getattr(t, 'grants_flashback_to_gy_spells', False):
             return True
-        # Cycling payoff: "all creature cards from graveyards to bf"
-        if ('all creature cards' in oracle
-                and 'graveyard' in oracle
-                and 'to the battlefield' in oracle):
+        # Cycling payoff: mass reanimation (Living End class) — typed field
+        # populated by parse_has_symmetric_reanimation() at DB load.
+        if t.has_symmetric_reanimation:
             return True
 
     # Cascade enablers (creatures or spells with cascade keyword)
