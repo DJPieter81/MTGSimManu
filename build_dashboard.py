@@ -46,7 +46,21 @@ def build(jsx_path='metagame_data.jsx', out_path=None):
     d_json = json.dumps(D, separators=(',', ':'))
     arch_json = json.dumps(ARCH, separators=(', ', ': '))
 
-    html = (HEAD
+    import datetime
+    n_decks = len(D.get('decks', []))
+    n_games = D.get('matches_per_pair', '?')
+    n_pairings = n_decks * (n_decks - 1) // 2
+    total_matches = n_games * n_pairings if isinstance(n_games, int) else '?'
+    today = datetime.date.today().strftime('%b %Y')
+    head = HEAD.replace(
+        'Modern Metagame Matrix — April 2026',
+        f'Modern Metagame Matrix — {today}'
+    ).replace(
+        '15 decks · 500 Bo3/pair · 52,500 total games · Post-PR#85 · Apr 12 2026 · click cells or deck names',
+        f'{n_decks} decks · {n_games} Bo3/pair · {total_matches:,} total matches · {today} · click cells or deck names'
+    )
+
+    html = (head
             + '<script>\nconst D = ' + d_json + ';\n'
             + 'const ARCH = ' + arch_json + ';\n'
             + ENGINE)
