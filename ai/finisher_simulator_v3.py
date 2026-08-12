@@ -208,12 +208,7 @@ def _is_cycling_payoff_v3(card: "CardInstance") -> bool:
     Oracle pattern: 'all creature cards' + 'graveyard' + 'to the
     battlefield'.  Living-End-style.
     """
-    oracle = (getattr(card.template, "oracle_text", "") or "").lower()
-    return (
-        "all creature cards" in oracle
-        and "graveyard" in oracle
-        and "to the battlefield" in oracle
-    )
+    return getattr(card.template, "has_symmetric_reanimation", False)
 
 
 def _is_cascade_payoff_v3(card: "CardInstance") -> bool:
@@ -764,11 +759,7 @@ def _closer_in_hand_probability(hand: list["CardInstance"]) -> float:
         if 'create' in oracle and 'tokens' in oracle and 'for each' in oracle:
             return 1.0
         # Cycling payoff (Living End pattern).
-        if (
-            'all creature cards' in oracle
-            and 'graveyard' in oracle
-            and 'to the battlefield' in oracle
-        ):
+        if getattr(tmpl, 'has_symmetric_reanimation', False):
             return 1.0
         # Reanimator (Goryo's Vengeance pattern).
         tags = getattr(tmpl, 'tags', set())
