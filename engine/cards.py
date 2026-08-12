@@ -292,6 +292,22 @@ class CardTemplate:
     # or 'affinity for artifacts'.  Populated by
     # oracle_parser.parse_has_artifact_synergy.
     has_artifact_synergy: bool = False
+    # Draw effect — True when oracle draws or impulse-draws cards (draw a card,
+    # look at the top, exile top N and play/cast).
+    # Populated by oracle_parser.parse_has_draw_effect.
+    has_draw_effect: bool = False
+    # Exile permanent — True when oracle has 'exile target <permanent-type>'.
+    # Covers instant/sorcery removal that exiles rather than destroys.
+    # Populated by oracle_parser.parse_can_exile_permanent.
+    can_exile_permanent: bool = False
+    # Symmetric reanimation — True for Living End-class mass reanimation from
+    # all graveyards simultaneously.
+    # Populated by oracle_parser.parse_has_symmetric_reanimation.
+    has_symmetric_reanimation: bool = False
+    # Phyrexian pip count — number of {X/P} Phyrexian mana symbols; each
+    # allows paying 2 life instead of 1 mana.
+    # Populated by oracle_parser.parse_phyrexian_pip_count.
+    phyrexian_pip_count: int = 0
 
     def __post_init__(self) -> None:
         # Derive fields from oracle text for templates not loaded through
@@ -321,7 +337,11 @@ class CardTemplate:
                                         parse_can_destroy_nonland_permanent as _pcdnp,
                                         parse_is_tutor as _pit,
                                         parse_has_noncreature_spell_cast_trigger as _phnsct,
-                                        parse_has_artifact_synergy as _phas)
+                                        parse_has_artifact_synergy as _phas,
+                                        parse_has_draw_effect as _phde,
+                                        parse_can_exile_permanent as _pcep,
+                                        parse_has_symmetric_reanimation as _phsr,
+                                        parse_phyrexian_pip_count as _pppc)
             from .card_database import KEYWORD_MAP as _KM
             import re as _re
             if self.warp_cost is None:
@@ -379,6 +399,14 @@ class CardTemplate:
                 self.has_noncreature_spell_cast_trigger = _phnsct(self.oracle_text)
             if not self.has_artifact_synergy:
                 self.has_artifact_synergy = _phas(self.oracle_text)
+            if not self.has_draw_effect:
+                self.has_draw_effect = _phde(self.oracle_text)
+            if not self.can_exile_permanent:
+                self.can_exile_permanent = _pcep(self.oracle_text)
+            if not self.has_symmetric_reanimation:
+                self.has_symmetric_reanimation = _phsr(self.oracle_text)
+            if self.phyrexian_pip_count == 0:
+                self.phyrexian_pip_count = _pppc(self.oracle_text)
             # Derive keywords from oracle text for synthetic templates that
             # were constructed with keywords=set(). DB-loaded templates
             # already have complete keyword sets from KEYWORD_MAP scanning;

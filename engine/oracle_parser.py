@@ -1412,3 +1412,81 @@ def parse_has_artifact_synergy(oracle: str) -> bool:
     return ('for each artifact' in lower
             or 'metalcraft' in lower
             or 'affinity for artifacts' in lower)
+
+
+def parse_has_draw_effect(oracle: str) -> bool:
+    """Return True if the card draws or impulse-draws cards.
+
+    Covers the _oracle_signals_card_draw cluster in ev_evaluator.py:
+      - 'draw a card' / 'draw two cards' / 'draw three cards' / 'draw cards'
+      - 'look at the top' (surveil/scry family that can put to hand)
+      - 'exile the top ... play/cast' (impulse draw: Reckless Impulse pattern)
+
+    Replaces runtime 'draw' / 'look at the top' / 'exile the top' checks in
+    ai/ev_evaluator.py:1400-1407 and the tag-gated 'draw' in oracle fallback
+    at ev_evaluator.py:1098.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    if ('draw a card' in lo or 'draw two card' in lo or 'draw three card' in lo
+            or 'draw cards' in lo or 'draws cards' in lo or 'look at the top' in lo):
+        return True
+    # Impulse draw: exile top N and play/cast (Reckless Impulse, Wrenn's Resolve)
+    # Use 'you may play' / 'you may cast' to avoid matching 'player' in milling text
+    if 'exile the top' in lo and ('you may play' in lo or 'you may cast' in lo
+                                   or 'play those cards' in lo or 'cast them' in lo):
+        return True
+    return False
+
+
+def parse_can_exile_permanent(oracle: str) -> bool:
+    """Return True if the card can exile a targeted permanent.
+
+    Matches 'exile target <permanent-type>' — the class of cards that remove
+    something from the battlefield by exile rather than destroy. Replaces
+    'exile target' in oracle substring checks in ev_evaluator.py and
+    ev_player.py (removal-path detection).
+
+    Conservative: requires a permanent-type noun (creature / artifact /
+    enchantment / permanent / nonland / planeswalker) to avoid matching
+    graveyard-exile or hand-exile spells (Thoughtseize, Remand are not
+    permanent removal).
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    if 'exile target' not in lo:
+        return False
+    return any(k in lo for k in (
+        'creature', 'artifact', 'enchantment', 'permanent',
+        'nonland', 'planeswalker', 'token',
+    ))
+
+
+def parse_has_symmetric_reanimation(oracle: str) -> bool:
+    """Return True if the card returns creatures from ALL graveyards simultaneously.
+
+    The Living End class: 'each player returns ... creature cards from their
+    graveyard to the battlefield' and 'all creature cards in all graveyards'.
+    Distinct from one-sided reanimation (Goryo's Vengeance).
+
+    Replaces the 4-clause runtime check at ai/ev_evaluator.py:2118-2121.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    if not (('each player' in lo or 'all graveyards' in lo) and 'graveyard' in lo):
+        return False
+    return (('return' in lo or 'battlefield' in lo) and 'creature' in lo)
+
+
+def parse_phyrexian_pip_count(oracle: str) -> int:
+    """Count Phyrexian mana pips ({X/P} symbols) in the oracle text.
+
+    Each pip allows the controller to pay 2 life instead of the mana cost.
+    Replaces oracle_lower.count('/p}') at ai/ev_player.py:1504.
+    """
+    if not oracle:
+        return 0
+    return oracle.lower().count('/p}')
