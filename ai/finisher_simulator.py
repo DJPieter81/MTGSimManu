@@ -204,17 +204,12 @@ def _is_cascade_payoff(card: "CardInstance") -> bool:
 def _is_cycling_payoff(card: "CardInstance") -> bool:
     """True when the card pays off "cycle to fill graveyard".
 
-    Living End is the canonical example: oracle returns "all creature
-    cards from all graveyards to the battlefield" — the GY-fill
-    arithmetic is what the cycling chain enables.  Detection: oracle
-    phrase "all creature cards" + "graveyards" + "to the battlefield".
+    Living End is the canonical example: its template field
+    `has_symmetric_reanimation` is True for cards that return all creature
+    cards from all graveyards to the battlefield — the GY-fill arithmetic
+    is what the cycling chain enables.
     """
-    oracle = (getattr(card.template, 'oracle_text', '') or '').lower()
-    return (
-        'all creature cards' in oracle
-        and 'graveyard' in oracle
-        and 'to the battlefield' in oracle
-    )
+    return bool(getattr(card.template, 'has_symmetric_reanimation', False))
 
 
 def _payoff_names_from_hand(hand: List["CardInstance"]) -> set:
