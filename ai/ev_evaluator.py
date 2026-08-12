@@ -1095,7 +1095,13 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
     #    play".  All three deliver same-turn card advantage even
     #    though only the first uses the literal verb "draw".
     if (_oracle_signals_card_draw(oracle)
-            or t.has_draw_effect):
+            or ('draw' in oracle
+                and ('cantrip' in tags or 'card_advantage' in tags))):
+        signals.append('card_draw')
+    elif ('exile' in oracle and 'may play' in oracle
+          and ('cantrip' in tags or 'card_advantage' in tags)):
+        # Impulse draw: Reckless Impulse, Wrenn's Resolve, Light Up the
+        # Stage — exile top N cards and may play them this turn.
         signals.append('card_draw')
 
     # 6. Tutor — library search OR Wish-style play-from-outside.
@@ -1384,17 +1390,27 @@ def _is_real_dig(card: "CardInstance") -> bool:
     tagged cantrip/card_advantage that don't draw (Past in Flames
     grants flashback, Goblin Bombardment is sometimes mistagged).
 
-    Detection via pre-parsed typed fields on CardTemplate — generic
-    across the printed Modern pool.  ``has_draw_effect`` covers
-    draw verbs and impulse-draw ("exile the top N … may play/cast")
-    at parse time; ``is_tutor`` covers "search your library" and
-    Wish-style fetch patterns.  No runtime oracle substring checks;
-    no card names."""
+    Detection by oracle text — generic across the printed Modern
+    pool: "draw a card" / "draw N cards" / "exile the top N cards
+    of your library" / "look at the top N cards" / "search your
+    library".  No card names; covers any future printing using the
+    same templated wording."""
     t = card.template
-    # ``has_draw_effect`` covers: "draw a card", "draw N cards",
-    # "look at the top", "exile the top … you may play/cast".
-    # ``is_tutor`` covers: "search your library", Wish-style fetch.
-    return t.has_draw_effect or t.is_tutor
+    oracle = (t.oracle_text or '').lower()
+    if 'draw a card' in oracle or 'draw two card' in oracle:
+        return True
+    if 'draw three card' in oracle or 'draw cards' in oracle:
+        return True
+    if 'exile the top' in oracle and 'card' in oracle and (
+            'play' in oracle or 'cast' in oracle):
+        return True
+    if 'look at the top' in oracle:
+        return True
+    # ``t.is_tutor`` covers "search your library" and Wish-style
+    # fetch patterns at parse time (oracle_parser.parse_is_tutor).
+    if t.is_tutor:
+        return True
+    return False
 
 
 def _payoff_reachable_this_turn(card: "CardInstance",
@@ -2097,7 +2113,13 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
     #     Detected via oracle text — "each player" + graveyard-return
     #     phrasing.  Crediting my GY without subtracting opp's GY
     #     overvalues the spell when opp has a bigger graveyard.  LE-A2.
-    is_symmetric_reanimation = t.has_symmetric_reanimation
+    oracle_lower = (t.oracle_text or '').lower()
+    is_symmetric_reanimation = (
+        ('each player' in oracle_lower or 'all graveyards' in oracle_lower)
+        and 'graveyard' in oracle_lower
+        and ('return' in oracle_lower or 'battlefield' in oracle_lower)
+        and 'creature' in oracle_lower
+    )
 
     if is_symmetric_reanimation and game:
         # Credit my side using actual GY contents, same as the one-sided
