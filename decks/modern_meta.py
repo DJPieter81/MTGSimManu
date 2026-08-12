@@ -24,15 +24,22 @@ from typing import Dict, List, Tuple
 # meta table (Eldrazi Tron 4.78, Living End 3.47, Domain Aggro 2.78,
 # Dimir Frog 2.14, Azorius Control 2.13) or a small residual share.
 # "Izzet Prowess" carries the real "UR Cutter Prowess" share; "Jeskai
-# Blink" carries the "Jeskai Control" share (same Jeskai bucket);
-# "4/5c Control" carries the "4/5c Aggro" bucket (closest registered
-# archetype). Raw percentages, not normalized to 100 — same convention
-# as before (weighting normalizes by the sum). NOTE (2026-08-08): the
-# mtgtop8 "4/5c Aggro" decklist pulled for this same date is actually a
-# near-exact match for our registered "Domain Zoo" (Ragavan/Territorial
-# Kavu/Leyline Binding core), not "4/5c Control" (an Omnath/Wrath shell
-# with zero card overlap) — the July mapping above was likely wrong.
-# Not corrected here; flagging for a follow-up share rebalance.
+# Blink" carries the "Jeskai Control" share (same Jeskai bucket).
+# Raw percentages, not normalized to 100 — same convention as before
+# (weighting normalizes by the sum).
+#
+# RESOLVED (2026-08-09): "4/5c Control" originally carried the
+# mtgdecks.net "4/5c Aggro" bucket (3.29%) as its "closest registered
+# archetype" stand-in — but the mtgtop8 "4/5c Aggro" decklist pulled
+# 2026-08-08 is a near-exact card match for our registered "Domain
+# Zoo" (Ragavan/Territorial Kavu/Leyline Binding core), not "4/5c
+# Control" (an Omnath/Wrath shell with zero card overlap). "4/5c
+# Aggro" and "Domain Aggro" (the bucket Domain Zoo already carries,
+# 2.78%) both look like community aliases for the same Naya/Domain
+# beatdown archetype, so Domain Zoo now carries the combined 6.07%
+# (2.78 + 3.29) and "4/5c Control" drops to the same small-residual
+# share already used for Goryo's Vengeance/4c Omnath/Pinnacle
+# Affinity (1.50%) — it has no confirmed real-world bucket of its own.
 #
 # Aug 2026 addition — mtgtop8.com Modern top-16 breakdown (retrieved
 # 2026-08-08 via tools/fetch_tier1_decklists.py), a second, differently-
@@ -55,8 +62,8 @@ METAGAME_SHARES = {
     "Izzet Prowess": 3.99,
     "Jeskai Blink": 3.80,
     "Living End": 3.47,
-    "4/5c Control": 3.29,
-    "Domain Zoo": 2.78,
+    "4/5c Control": 1.50,
+    "Domain Zoo": 6.07,
     "Boros Ponza": 2.75,
     "Dimir Midrange": 2.14,
     "Azorius Control": 2.13,
@@ -236,11 +243,18 @@ MODERN_DECKS: Dict[str, Dict[str, Dict[str, int]]] = {
         # (event=89263 and event=89289) both field the Kappa Cannoneer /
         # Pinnacle Emissary UR shell with ZERO overlap against the old
         # artifact-creature core. The classic build appears to no longer
-        # be what's winning under the "Affinity" archetype tag. NOTE:
-        # this now largely duplicates the separately-registered "Pinnacle
-        # Affinity" entry below (same shell, same description at
-        # registration time) — needs a human call on whether to merge/
-        # dedupe the two registrations or keep them as build variants.
+        # be what's winning under the "Affinity" archetype tag.
+        #
+        # RESOLVED (2026-08-09): full card-level diff against "Pinnacle
+        # Affinity" below shows these are two genuinely distinct builds,
+        # not duplicates — no merge needed. Shared payoff core (Kappa
+        # Cannoneer, Pinnacle Emissary, Urza's Saga, Emry, Mox Opal,
+        # Mishra's Bauble, Tormod's Crypt, Metallic Rebuke), but this
+        # entry is a spells/tempo shell (Preordain, Claws of Gix, extra
+        # cantrips/counters, zero cheap-artifact-creature package) while
+        # "Pinnacle Affinity" hybridizes the same payoffs with the
+        # classic robots creature base (Ornithopter, Memnite, Cranial
+        # Plating, Springleaf Drum). Different game plans, same core.
         "mainboard": {
             "Fiery Islet": 4,
             "Island": 2,
