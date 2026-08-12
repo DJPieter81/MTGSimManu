@@ -2341,54 +2341,23 @@ def fable_etb(game, card, controller, targets=None, item=None):
 
 
 # ═══════════════════════════════════════════════════════════════════
-# Kappa Cannoneer — artifact-enters trigger: +1/+1 counter + unblockable
-# Sim approximation: ETB with ward 4 stats, grows over time
-# ═══════════════════════════════════════════════════════════════════
-@EFFECT_REGISTRY.register("Kappa Cannoneer", EffectTiming.ETB,
-                           description="Kappa enters: ward 4 turtle, grows with artifacts")
-def kappa_etb(game, card, controller, targets=None, item=None):
-    """Kappa Cannoneer ETB: count artifacts for immediate power boost."""
-    player = game.players[controller]
-    artifact_count = sum(1 for c in player.battlefield
-                        if hasattr(c, 'template') and 'Artifact' in str(getattr(c.template, 'card_types', [])))
-    # Each artifact that entered this turn gives +1/+1
-    # Approximate: add counters equal to half the artifacts on board (those played this turn)
-    bonus = min(artifact_count // 2, 4)
-    if bonus > 0:
-        # Use plus_counters on the INSTANCE — assigning to card.template.power
-        # mutated the shared CardDatabase template, so every future game's
-        # Kappa Cannoneer grew another +bonus (matrix-wide corruption, same
-        # class of bug as the Blood Moon leak fixed in 2380126).
-        card.plus_counters += bonus
-    # Read through the P/T properties (which apply plus_counters) for logging.
-    game.log.append(
-        f"T{game.display_turn} P{controller+1}: "
-        f"Kappa Cannoneer enters as {card.power}/{card.toughness} (ward 4, grows with artifacts)")
-
-
-# ═══════════════════════════════════════════════════════════════════
-# Pinnacle Emissary — creates 1/1 flying Drone tokens when artifacts enter
-# Sim approximation: ETB creates tokens based on cheap artifacts in hand
-# ═══════════════════════════════════════════════════════════════════
-@EFFECT_REGISTRY.register("Pinnacle Emissary", EffectTiming.ETB,
-                           description="Pinnacle Emissary: create Drone tokens for artifacts played")
-def pinnacle_emissary_etb(game, card, controller, targets=None, item=None):
-    """Pinnacle Emissary ETB: count 0-cost artifacts in hand that will generate drones."""
-    player = game.players[controller]
-    free_artifacts = sum(1 for c in player.hand
-                        if hasattr(c, 'template')
-                        and 'Artifact' in str(getattr(c.template, 'card_types', []))
-                        and (c.template.cmc or 0) == 0)
-    # Create drone tokens for each free artifact (they'll be played this turn)
-    drone_count = min(free_artifacts, 4)
-    if drone_count > 0:
-        game.create_token(
-            controller, "drone", count=drone_count,
-            source_oracle=card.template.oracle_text,
-        )
-    game.log.append(
-        f"T{game.display_turn} P{controller+1}: "
-        f"Pinnacle Emissary enters — {drone_count} Drone tokens projected from free artifacts")
+# Kappa Cannoneer & Pinnacle Emissary — recurring CR 603 triggers, NOT
+# one-time ETB self-effects. Their dedicated EffectTiming.ETB handlers
+# were removed (docs/design/2026-08-12_recurring_trigger_dispatch_gap.md):
+#   * Kappa ("whenever this creature or another artifact you control
+#     enters, put a +1/+1 counter on it; it can't be blocked this turn")
+#     is now dispatched per qualifying ETB by
+#     engine.triggers.TriggerManager.trigger_etb via the typed field
+#     template.enters_type_counter — one counter per artifact ETB, the
+#     self-ETB counted exactly once (no more approximate "half the
+#     artifacts on board" one-shot).
+#   * Pinnacle Emissary ("whenever you cast an artifact spell, create a
+#     1/1 flying Drone") is now dispatched per artifact cast by
+#     engine.oracle_resolver.resolve_spell_cast_trigger via the typed
+#     field template.cast_trigger_token — one Drone per artifact spell,
+#     not a one-shot projection of free artifacts in hand.
+# The same two dispatchers serve every card of each shape (Young
+# Pyromancer, Monastery Mentor, Talrand, …), artifact or not.
 
 
 # ═══════════════════════════════════════════════════════════════════

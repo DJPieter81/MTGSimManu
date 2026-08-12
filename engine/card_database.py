@@ -1716,6 +1716,7 @@ class CardDatabase:
             parse_has_token_effect, parse_has_graveyard_recursion,
             parse_has_discard_effect, parse_is_storm_spell,
             parse_has_charge_counter_ability,
+            parse_cast_trigger_token, parse_enters_type_counter,
         )
         oracle = template.oracle_text or ''
         template.ritual_mana = parse_ritual_mana(oracle)
@@ -1773,6 +1774,8 @@ class CardDatabase:
         template.has_discard_effect = parse_has_discard_effect(oracle)
         template.is_storm_spell = parse_is_storm_spell(oracle)
         template.has_charge_counter_ability = parse_has_charge_counter_ability(oracle)
+        template.cast_trigger_token = parse_cast_trigger_token(oracle)
+        template.enters_type_counter = parse_enters_type_counter(oracle)
 
         return template
 

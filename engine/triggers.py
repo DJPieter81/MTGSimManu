@@ -118,6 +118,34 @@ class TriggerManager:
                             f"T{game.display_turn} P{controller+1}: "
                             f"{watcher.name} → draws a card")
 
+        # Generic "whenever this creature or another [Type] you control
+        # enters, put a +1/+1 counter on it [and it can't be blocked this
+        # turn]" (CR 603 permanent-enters trigger, by card TYPE). Covers
+        # Kappa Cannoneer (artifact) and any future card with the same
+        # shape. Mirrors the subtype scan above; the condition + counter
+        # amount + unblockable clause are parsed once at DB load into
+        # `template.enters_type_counter`. The self-ETB counts EXACTLY once
+        # (watcher IS the entering card) — a single OR guard fires the
+        # trigger once per qualifying ETB, never double-crediting.
+        entering_types = {t.value for t in card.effective_card_types}
+        for watcher in list(player.battlefield):
+            spec = watcher.template.enters_type_counter
+            if not spec:
+                continue
+            required_type = spec['permanent_type']
+            if not (watcher.instance_id == card.instance_id
+                    or required_type in entering_types):
+                continue
+            for _ in range(trigger_multiplier):
+                watcher.plus_counters += spec['counter_power']
+                if spec.get('unblockable_this_turn'):
+                    watcher.cannot_be_blocked_this_turn = True
+            game.log.append(
+                f"T{game.display_turn} P{controller+1}: "
+                f"{watcher.name} gets +{spec['counter_power']}/"
+                f"+{spec['counter_toughness']} counter "
+                f"({card.name} entered) → {watcher.power}/{watcher.toughness}")
+
 
     @staticmethod
     def trigger_attack(game: "GameState", attacker: CardInstance, controller: int):
