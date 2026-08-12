@@ -1711,6 +1711,8 @@ class CardDatabase:
             parse_can_destroy_nonland_permanent,
             parse_is_tutor, parse_has_noncreature_spell_cast_trigger,
             parse_has_artifact_synergy,
+            parse_has_draw_effect, parse_can_exile_permanent,
+            parse_has_symmetric_reanimation, parse_phyrexian_pip_count,
         )
         oracle = template.oracle_text or ''
         template.ritual_mana = parse_ritual_mana(oracle)
@@ -1759,6 +1761,10 @@ class CardDatabase:
         template.is_tutor = parse_is_tutor(oracle)
         template.has_noncreature_spell_cast_trigger = parse_has_noncreature_spell_cast_trigger(oracle)
         template.has_artifact_synergy = parse_has_artifact_synergy(oracle)
+        template.has_draw_effect = parse_has_draw_effect(oracle)
+        template.can_exile_permanent = parse_can_exile_permanent(oracle)
+        template.has_symmetric_reanimation = parse_has_symmetric_reanimation(oracle)
+        template.phyrexian_pip_count = parse_phyrexian_pip_count(oracle)
 
         return template
 
