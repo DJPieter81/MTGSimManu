@@ -34,7 +34,7 @@
       "deck2": "4c Omnath",
       "seed": 50000,
       "winner": "4c Omnath",
-      "turns": 10
+      "turns": 11
     },
     {
       "deck1": "Goryo's Vengeance",
@@ -69,7 +69,7 @@
       "deck2": "Ruby Storm",
       "seed": 50500,
       "winner": "Ruby Storm",
-      "turns": 5
+      "turns": 3
     },
     {
       "deck1": "Affinity",
@@ -132,7 +132,7 @@
       "deck2": "Boros Energy",
       "seed": 51000,
       "winner": "Boros Energy",
-      "turns": 9
+      "turns": 8
     },
     {
       "deck1": "Instant Reanimator",
