@@ -308,6 +308,24 @@ class CardTemplate:
     # allows paying 2 life instead of 1 mana.
     # Populated by oracle_parser.parse_phyrexian_pip_count.
     phyrexian_pip_count: int = 0
+    # -- Batch 7 typed fields -----------------------------------------------
+    # Token-creation effect -- True when oracle contains "create ... token" /
+    # "put a ... token".
+    # Populated by oracle_parser.parse_has_token_effect.
+    has_token_effect: bool = False
+    # Graveyard recursion -- True when oracle returns cards from a graveyard
+    # to hand or battlefield.
+    # Populated by oracle_parser.parse_has_graveyard_recursion.
+    has_graveyard_recursion: bool = False
+    # Discard effect -- True when oracle causes the target to discard cards.
+    # Populated by oracle_parser.parse_has_discard_effect.
+    has_discard_effect: bool = False
+    # Storm keyword (CR 702.39) -- True when oracle contains standalone "storm".
+    # Populated by oracle_parser.parse_is_storm_spell.
+    is_storm_spell: bool = False
+    # Charge-counter ability -- True when oracle mentions "charge counter".
+    # Populated by oracle_parser.parse_has_charge_counter_ability.
+    has_charge_counter_ability: bool = False
 
     def __post_init__(self) -> None:
         # Derive fields from oracle text for templates not loaded through
@@ -341,7 +359,12 @@ class CardTemplate:
                                         parse_has_draw_effect as _phde,
                                         parse_can_exile_permanent as _pcep,
                                         parse_has_symmetric_reanimation as _phsr,
-                                        parse_phyrexian_pip_count as _pppc)
+                                        parse_phyrexian_pip_count as _pppc,
+                                        parse_has_token_effect as _phte,
+                                        parse_has_graveyard_recursion as _phgr,
+                                        parse_has_discard_effect as _phde2,
+                                        parse_is_storm_spell as _piss,
+                                        parse_has_charge_counter_ability as _phcca)
             from .card_database import KEYWORD_MAP as _KM
             import re as _re
             if self.warp_cost is None:
@@ -407,6 +430,16 @@ class CardTemplate:
                 self.has_symmetric_reanimation = _phsr(self.oracle_text)
             if self.phyrexian_pip_count == 0:
                 self.phyrexian_pip_count = _pppc(self.oracle_text)
+            if not self.has_token_effect:
+                self.has_token_effect = _phte(self.oracle_text)
+            if not self.has_graveyard_recursion:
+                self.has_graveyard_recursion = _phgr(self.oracle_text)
+            if not self.has_discard_effect:
+                self.has_discard_effect = _phde2(self.oracle_text)
+            if not self.is_storm_spell:
+                self.is_storm_spell = _piss(self.oracle_text)
+            if not self.has_charge_counter_ability:
+                self.has_charge_counter_ability = _phcca(self.oracle_text)
             # Derive keywords from oracle text for synthetic templates that
             # were constructed with keywords=set(). DB-loaded templates
             # already have complete keyword sets from KEYWORD_MAP scanning;
