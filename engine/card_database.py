@@ -1713,6 +1713,9 @@ class CardDatabase:
             parse_has_artifact_synergy,
             parse_has_draw_effect, parse_can_exile_permanent,
             parse_has_symmetric_reanimation, parse_phyrexian_pip_count,
+            parse_has_token_effect, parse_has_graveyard_recursion,
+            parse_has_discard_effect, parse_is_storm_spell,
+            parse_has_charge_counter_ability,
         )
         oracle = template.oracle_text or ''
         template.ritual_mana = parse_ritual_mana(oracle)
@@ -1765,6 +1768,11 @@ class CardDatabase:
         template.can_exile_permanent = parse_can_exile_permanent(oracle)
         template.has_symmetric_reanimation = parse_has_symmetric_reanimation(oracle)
         template.phyrexian_pip_count = parse_phyrexian_pip_count(oracle)
+        template.has_token_effect = parse_has_token_effect(oracle)
+        template.has_graveyard_recursion = parse_has_graveyard_recursion(oracle)
+        template.has_discard_effect = parse_has_discard_effect(oracle)
+        template.is_storm_spell = parse_is_storm_spell(oracle)
+        template.has_charge_counter_ability = parse_has_charge_counter_ability(oracle)
 
         return template
 

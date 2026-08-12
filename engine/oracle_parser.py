@@ -1490,3 +1490,120 @@ def parse_phyrexian_pip_count(oracle: str) -> int:
     if not oracle:
         return 0
     return oracle.lower().count('/p}')
+
+
+# -- Batch 7 typed fields --------------------------------------------------
+
+def parse_has_token_effect(oracle: str) -> bool:
+    """Return True when the card creates tokens.
+
+    Matches oracle phrasings that create tokens:
+      - "create a/create two/create three ... token"
+      - "creates a ... token"
+      - "put a ... token [onto the battlefield]"
+    Checks for co-occurrence of "create"/"put a" and "token" rather than
+    the narrower "create a" to cover plural-creation phrasings
+    ("Create two 2/2 Zombies").  Pure "put a" without "token" (e.g.
+    "put a counter") returns False because the "token" guard rules it out.
+
+    Replaces runtime 'create' + 'token' substring checks in
+    finisher_simulator, finisher_simulator_v3, combo_calc, ev_evaluator,
+    and oracle_resolver.
+
+    Class size: all token-creating permanents and spells in Modern (hundreds).
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    if 'token' not in lo:
+        return False
+    return 'create' in lo or 'put a' in lo
+
+
+def parse_has_graveyard_recursion(oracle: str) -> bool:
+    """Return True when the card returns cards from a graveyard to hand or battlefield.
+
+    Matches "from your graveyard", "from their graveyard", "from a graveyard",
+    and "from an opponent's graveyard" -- the canonical phrasing for any
+    reanimation or recursion effect (Goryo's Vengeance, Unburial Rites,
+    Eternal Witness, etc.).  Replaces runtime graveyard-return detection in
+    sideboard_solver (~3 violations).
+
+    Class size: all reanimation / recursion spells in Modern (dozens).
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return (
+        'from your graveyard' in lo
+        or 'from their graveyard' in lo
+        or 'from a graveyard' in lo
+        or "from an opponent's graveyard" in lo
+    )
+
+
+def parse_has_discard_effect(oracle: str) -> bool:
+    """Return True when the card causes discard.
+
+    Matches both first-person ("discard a card") and third-person
+    ("discards a card", "discards two cards") phrasing, plus the
+    "discard/discards your/their hand" whole-hand-dump forms.
+
+    Covers hand disruption spells (Thoughtseize, Inquisition of Kozilek),
+    repeatable discarders (Liliana of the Veil), and mass-discard effects
+    (Wheel of Fortune-class), regardless of whose hand is discarded.
+
+    Replaces runtime 'discard a card' substring checks in finisher_simulator
+    and ev_player.
+
+    Class size: all discard-effect spells and permanents in Modern (dozens).
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return (
+        'discard a card' in lo
+        or 'discards a card' in lo
+        or 'discard your hand' in lo
+        or 'discards your hand' in lo
+        or 'discard their hand' in lo
+        or 'discards their hand' in lo
+        or 'discard two cards' in lo
+        or 'discards two cards' in lo
+    )
+
+
+def parse_is_storm_spell(oracle: str) -> bool:
+    """Return True when the card has the Storm keyword (CR 702.39).
+
+    Matches any oracle text containing the word "storm" as a standalone
+    word boundary token (Grapeshot, Empty the Warrens, Brain Freeze,
+    Tendrils of Agony, etc.).  The word-boundary anchor prevents false
+    positives from card names that contain "storm" as a substring
+    (e.g. "Brainstorm", "Thunderstorm").
+
+    Replaces runtime 'storm' in oracle check in sideboard_solver.
+
+    Class size: all storm spells in Modern (approximately 10-15 across the
+    card pool, touching every storm-deck archetype).
+    """
+    import re as _re
+    if not oracle:
+        return False
+    return bool(_re.search(r'\bstorm\b', oracle.lower()))
+
+
+def parse_has_charge_counter_ability(oracle: str) -> bool:
+    """Return True when the card uses charge counters.
+
+    Matches "charge counter" in oracle text -- the canonical phrasing for
+    Chalice of the Void, Aether Vial, and any other card that accumulates
+    or checks charge counters.  Replaces runtime 'charge counter' in oracle
+    checks in cast_manager, game_runner, and stax_ev.
+
+    Class size: all charge-counter permanent cards in Modern (approximately
+    10-20, covering both accelerating artifacts and lock pieces).
+    """
+    if not oracle:
+        return False
+    return 'charge counter' in oracle.lower()
