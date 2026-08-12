@@ -258,6 +258,120 @@ def combo_clock(snap: "EVSnapshot") -> float:
 
 
 # ─────────────────────────────────────────────────────────────
+# Commit-vs-develop gate — spend a scarce one-shot payoff now, or
+# hold to assemble a larger line? (decision-kernel primitive)
+# ─────────────────────────────────────────────────────────────
+# The single place that answers a question every deck faces the
+# instant it is about to spend a resource it cannot get back: a
+# one-shot burn finisher, a tutor that fetches one, any closer whose
+# effect ends when it resolves. Before this primitive existed the
+# answer lived only inside the storm-specific fuel-counting heuristic
+# in `ai/combo_calc.py`, which fired the payoff whenever no fuel sat in
+# hand *this turn* — with no notion of "is a decisive line executable
+# now vs. developing toward a bigger one." That gap let the AI cash a
+# scarce payoff for damage far below the clock-derived lethal
+# threshold (a tutor -> burn finisher for 2 into 19) while a future
+# turn could still assemble lethal. The gate is deck-agnostic: every
+# input is a clock-derived fact, so it applies to any archetype facing
+# a commit-vs-build choice, not a storm code path.
+
+
+def scarce_payoff_commit_ev(
+    fire_now_damage: float,
+    opp_life: int,
+    combo_value: float,
+    develop_reach_probability: float,
+) -> float:
+    """Build-vs-combo EV: ``EV(commit the payoff now) − EV(develop a
+    larger line)``, in the combo-value units the scorer adds to a play.
+    Positive → committing now is worth more (fire); negative → the
+    developed line is worth more (hold). This is the EV comparison the
+    commit/hold decision reduces to — no literal threshold; the caller
+    sources every term from clock / library resource-math / (later) BHI.
+
+      * ``EV(now)`` = ``min(1, fire_now_damage / opp_life) × combo_value``
+        — the fraction of a kill the scarce payoff secures immediately.
+        A payoff whose damage reaches ``opp_life`` (CR 104.3a lethal)
+        caps at a full ``combo_value``; it cannot be worth more than a
+        kill, so overshoot damage adds nothing (this is why cashing a
+        finisher for 2 into 19 scores a twentieth of a kill, not "some
+        progress").
+      * ``EV(develop)`` = ``develop_reach_probability × combo_value`` —
+        the developed line IS the deck's assembled combo, worth a full
+        kill, discounted by the probability we actually reach it.
+        ``develop_reach_probability`` folds survival (we live to take
+        the turn), growth headroom (a larger line is still assemblable),
+        and — when a hand-tracker is threaded in — the chance the line
+        is not disrupted. It is 0 when developing is impossible or
+        pointless (already lethal now, dead next turn, this turn's
+        per-turn resource already sunk, or no fuel left to grow), which
+        makes ``EV(develop)`` collapse to 0 and firing dominate.
+
+    Because both sides are expressed in the same kill-fraction ×
+    combo_value units, the sign of the difference is the decision and
+    its magnitude is the EV at stake — no arbitrary hold penalty.
+    """
+    ev_now = min(1.0, fire_now_damage / max(1, opp_life)) * combo_value
+    ev_develop = develop_reach_probability * combo_value
+    return ev_now - ev_develop
+
+
+def should_commit_scarce_payoff(
+    fire_now_damage: float,
+    opp_life: int,
+    *,
+    line_can_grow: bool,
+    chain_uncommitted: bool,
+    survives_to_next_turn: bool,
+) -> bool:
+    """Spend a scarce, one-shot payoff NOW, or hold to develop a larger
+    line? Returns True to commit (fire), False to hold. Thin boolean
+    reduction of :func:`scarce_payoff_commit_ev` (``EV(commit) −
+    EV(develop) >= 0``) for callers that only need the decision, not the
+    magnitude — the decision itself is the EV comparison.
+
+    A *scarce payoff* is consumed when cast and cannot be replayed — a
+    one-shot burn finisher (Grapeshot class), a tutor that fetches one
+    (Wish class), any closer whose effect ends on resolution. For such
+    a resource "chip a little now and finish later" is a fiction:
+    firing below lethal forfeits the larger line a future turn would
+    assemble. Every argument is a clock-derived fact:
+
+      * ``fire_now_damage`` — damage the payoff deals if cast now,
+        measured against opponent life (the clock resource).
+      * ``opp_life`` — the clock-derived lethal threshold (CR 104.3a:
+        a player at 0 life loses).
+      * ``line_can_grow`` — a future turn can make the line strictly
+        larger (e.g. the library still holds chain fuel to draw).
+      * ``chain_uncommitted`` — no part of THIS turn's line is sunk
+        yet. A per-turn chain resource (storm count) empties at end of
+        turn, so once spells are sunk into it, holding the payoff
+        forfeits them; while nothing is sunk, holding costs nothing.
+      * ``survives_to_next_turn`` — we live to take the turn that would
+        grow the line (``not EVSnapshot.am_dead_next``).
+
+    The developed line is reachable (``develop_reach = 1``) only when a
+    strictly larger, still-assemblable line survives to a turn we take
+    with nothing yet sunk — and is never reachable once the payoff is
+    already lethal now. In every other case ``develop_reach = 0`` and
+    ``EV(develop)`` is 0, so the payoff commits. Terminating by
+    construction: the opponent's clock eventually removes survival, the
+    library eventually empties, or the first sunk spell flips
+    ``chain_uncommitted``, so the AI cannot stall forever.
+    """
+    lethal_now = fire_now_damage >= opp_life
+    develop_reachable = (
+        not lethal_now
+        and survives_to_next_turn
+        and line_can_grow
+        and chain_uncommitted
+    )
+    develop_reach = 1.0 if develop_reachable else 0.0
+    return scarce_payoff_commit_ev(
+        fire_now_damage, opp_life, 1.0, develop_reach) >= 0.0
+
+
+# ─────────────────────────────────────────────────────────────
 # Creature clock impact — what one creature contributes
 # ─────────────────────────────────────────────────────────────
 

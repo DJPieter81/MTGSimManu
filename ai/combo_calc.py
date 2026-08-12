@@ -900,6 +900,7 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
     Everything else returns 0.0 — let arithmetic flow naturally.
     """
     from engine.cards import Keyword as Kw
+    from ai.clock import scarce_payoff_commit_ev
 
     a = assessment
     if not a or not a.resource_zone:
@@ -970,47 +971,45 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
             # Hold: each remaining fuel adds 1/opp_life of a kill × combo_value.
             # This is the opportunity cost of firing early instead of chaining more.
             return -total_fuel / opp_life * a.combo_value
-        # No chain-extending fuel in HAND.  But if the chain has not
-        # begun this turn (storm == 0), opp is not at 1 life, and the
-        # library can still supply chain fuel via a future draw, then
-        # firing the closer for `storm + 1 = 1` damage is dominated by
-        # holding.  At storm=0 the cast is exactly 1 damage; the
-        # closer is the deck's only path to lethal — burning it for 1
-        # damage strands future chains.  Magnitude is symmetric to
-        # the `total_fuel > 0` branch above: that branch returns
-        # `-total_fuel/opp_life × combo_value` as opportunity cost
-        # for fuel-in-hand-now; this branch returns the equivalent
-        # for fuel-that-will-exist-after-one-draw.  Conservative
-        # equivalence: `2` units of in-hand fuel (one for the
-        # fire-now baseline, one for expected next-turn draw growth).
-        # See tests/test_storm_holds_finisher_at_storm_zero_with_no_chain.py
-        # and seed 50500 T9 trace (Storm vs Eldrazi Tron).
-        if storm == 0 and opp_life > 1:
-            non_land_lib = [c for c in me.library
-                            if not c.template.is_land
-                            and Kw.STORM not in getattr(c.template, 'keywords', set())]
-            fuel_in_lib = sum(1 for c in non_land_lib if is_chain_fuel(c))
-            if fuel_in_lib > 0:
-                # Symmetric to the `total_fuel > 0` branch above, but
-                # for fuel that WILL exist in hand after future draws
-                # rather than fuel that DOES exist now.  Conservative
-                # estimate of equivalent in-hand fuel:
-                #   * 1 unit accounts for the fire-now baseline (the
-                #     `(storm+1)/opp_life × combo_value` we'd return
-                #     in the empty-library case).
-                #   * 1 unit for one expected drawn chain-fuel card
-                #     (the natural-draw step on the next turn).
-                # Total = 2 units, mirroring `total_fuel = 1` where the
-                # branch returns `-1/opp_life × combo_value` against a
-                # symmetric fire-now `+1/opp_life × combo_value` for
-                # net `-2/opp_life × combo_value` discount.  This must
-                # exceed the projection's heuristic lift for the cast
-                # (one-damage clock impact, ~`1/opp_life × win_swing`),
-                # which the `2` factor reliably does for any combo
-                # archetype where `combo_value > position_swing`.
-                return -2 / opp_life * a.combo_value  # magic-allow: 1 = fire-now baseline + 1 = expected chain-fuel from one natural draw (symmetric to total_fuel=1 branch)
-        # Truly no chain-extending fuel left — fire now
-        return (storm + 1) / opp_life * a.combo_value
+        # No chain-extending fuel in HAND.  A storm-keyword closer is a
+        # one-shot payoff; score it as the build-vs-combo EV comparison
+        # (ai.clock.scarce_payoff_commit_ev = EV(fire now) − EV(develop
+        # a larger line)) rather than firing unconditionally.  Every
+        # input is a clock/library-derived fact — no literal threshold:
+        #   * fire_now_damage = storm + 1 (the closer's output now).
+        #   * combo_value     = the assembled combo's value = a kill.
+        #   * develop_reach   = probability the larger line is reached.
+        #     It is 1.0 only when developing both helps and is possible:
+        #       - not already lethal now (min-capped EV(now) would tie),
+        #       - storm == 0: the storm count empties each turn (per-turn
+        #         resource), so once a spell is sunk this turn holding
+        #         forfeits it → develop unreachable → "cash in what you
+        #         built"; while nothing is sunk, developing is free,
+        #       - not snap.am_dead_next: we survive to develop,
+        #       - the library still holds chain fuel a future turn adds.
+        #     Otherwise 0.0 → EV(develop) collapses to 0 → fire.
+        # This preserves BOTH the storm-zero library-fuel hold
+        # (tests/test_storm_holds_finisher_at_storm_zero_with_no_chain.py)
+        # and the storm>=1 "fire to close the chain you built" behaviour
+        # (test_grapeshot_still_fires_when_chain_in_progress).  The
+        # graded develop_reach is a hook for a later BHI disruption
+        # discount without reintroducing a hold-penalty literal.
+        develop_possible = (
+            (storm + 1) < opp_life     # not already lethal now
+            and storm == 0             # nothing sunk into this turn's chain
+            and not snap.am_dead_next  # we survive to develop
+        )
+        # Only scan the library when developing could still matter; a
+        # larger line needs chain fuel left to draw.  Guard against any
+        # None/blank library entry so the scan is robust.
+        line_can_grow = develop_possible and any(
+            is_chain_fuel(c) for c in me.library
+            if c is not None and c.template is not None
+            and not c.template.is_land
+            and Kw.STORM not in getattr(c.template, 'keywords', set()))
+        develop_reach = 1.0 if line_can_grow else 0.0
+        return scarce_payoff_commit_ev(
+            storm + 1, opp_life, a.combo_value, develop_reach)
 
     # ═══ TUTOR-AS-FINISHER-ACCESS ═══
     # A tutor card whose target deck (SB ∪ library) contains a real
@@ -1062,9 +1061,39 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
         )
         if non_tutor_fuel > 0:
             return -non_tutor_fuel / opp_life * a.combo_value
-        # No more chain-extending fuel — fire the tutor now to close.
+        # No chain-extending fuel in HAND.  The tutor + its fetched
+        # payoff is itself a scarce one-shot closer (two sunk cards for
+        # `storm + 2` damage).  This branch previously fired it
+        # unconditionally — the storm-keyword branch above got the
+        # storm-zero hold but the tutor branch never did, so a
+        # tutor-led no-fuel hand cashed the payoff for trivial damage
+        # (Storm vs WST s55501 T10: Wish->Grapeshot for 2 into 19)
+        # while a future turn could still assemble lethal.  Score it as
+        # the same build-vs-combo EV comparison as the storm-keyword
+        # branch (EV(fire now) − EV(develop)); develop is reachable only
+        # when it helps and is possible (not lethal now, storm == 0 so
+        # nothing is sunk, we survive, and the library can still grow
+        # the line).  storm == 0 keeps the "cash in a chain already in
+        # progress" behaviour that test_wish_fires_when_fuel_depleted
+        # pins at storm = 8 (there storm > 0 → develop unreachable →
+        # fire).
+        develop_possible = (
+            (storm + 2) < opp_life     # not already lethal now
+            and storm == 0             # nothing sunk into this turn's chain
+            and not snap.am_dead_next  # we survive to develop
+        )
+        # Only scan the library when developing could still matter; a
+        # larger line needs chain fuel left to draw.  Guard against any
+        # None/blank library entry so the scan is robust.
+        line_can_grow = develop_possible and any(
+            is_chain_fuel(c) for c in me.library
+            if c is not None and c.template is not None
+            and not c.template.is_land
+            and Kw.STORM not in getattr(c.template, 'keywords', set()))
+        develop_reach = 1.0 if line_can_grow else 0.0
         # +2 spells: the tutor + the fetched payoff.
-        return (storm + 2) / opp_life * a.combo_value
+        return scarce_payoff_commit_ev(
+            storm + 2, opp_life, a.combo_value, develop_reach)
 
     # ═══ NON-STORM PAYOFF: hold until resources ready ═══
     if role == 'payoff' and Kw.CASCADE not in getattr(card.template, 'keywords', set()):
