@@ -3352,11 +3352,10 @@ class EVPlayer:
         # For creature-only removal: pick best creature
         # For "nonland permanent" removal: consider artifacts/enchantments too
         if 'removal' in tags and 'board_wipe' not in tags:
-            oracle = (spell.template.oracle_text or '').lower()
-            can_hit_noncreature = ('nonland permanent' in oracle
-                                   or 'nonland' in oracle
-                                   or 'permanent' in oracle
-                                   or 'artifact' in oracle)
+            t = spell.template
+            can_hit_noncreature = (t.can_destroy_nonland_permanent
+                                   or t.can_exile_permanent
+                                   or t.can_destroy_artifact)
 
             if can_hit_noncreature:
                 # Evaluate all nonland permanents via marginal threat
@@ -3413,8 +3412,7 @@ class EVPlayer:
         # "exile target creature you control ... return" is a self-blink
         # (same exclusion the card DB applies to the 'removal' tag) —
         # they fall through to the blink branch below.
-        oracle = (spell.template.oracle_text or '').lower()
-        if 'exile target' in oracle and 'blink' not in tags:
+        if spell.template.can_exile_permanent and 'blink' not in tags:
             from engine.cards import CardType
             nonland = [c for c in opp.battlefield if not c.template.is_land]
             if nonland:
@@ -3493,12 +3491,9 @@ class EVPlayer:
         # Removal that ALSO destroys the equipment artifact (Abrupt Decay,
         # Prismatic Ending at X≥2, Nature's Claim, etc.) doubles the value
         # of hitting a carrier — the artifact is gone, not just dropped.
-        oracle = ((card.template.oracle_text if card.template else '') or '').lower()
-        also_destroys_artifact = (
-            'destroy target artifact' in oracle
-            or 'destroy target nonland permanent' in oracle
-            or 'destroy target permanent' in oracle
-        )
+        ct = card.template
+        also_destroys_artifact = bool(ct and (ct.can_destroy_artifact
+                                               or ct.can_destroy_nonland_permanent))
 
         def _rank(c) -> float:
             # Use `permanent_threat` (marginal-contribution via
@@ -3736,12 +3731,11 @@ class EVPlayer:
             if creature_threat_value(c, snap) >= floor:
                 return True
 
-        oracle = (spell.template.oracle_text or '').lower()
-        hits_noncreature = ('target artifact' in oracle
-                            or 'target enchantment' in oracle
-                            or 'target nonland permanent' in oracle
-                            or 'target noncreature' in oracle
-                            or 'target permanent' in oracle)
+        t = spell.template
+        hits_noncreature = (t.can_destroy_nonland_permanent
+                            or t.can_exile_permanent
+                            or t.can_destroy_artifact
+                            or t.can_destroy_enchantment)
         if hits_noncreature:
             from ai.permanent_threat import permanent_threat
             for perm in opp.battlefield:
@@ -3770,15 +3764,14 @@ class EVPlayer:
             return False
 
         # Modal spells with draw mode don't require targets (can choose draw)
-        oracle = (t.oracle_text or '').lower()
         if 'counterspell' in tags:
-            if 'draw' in oracle and ('choose' in oracle or '•' in oracle):
+            if t.has_draw_effect and ('choose' in (t.oracle_text or '').lower() or '•' in (t.oracle_text or '')):
                 return False  # modal spell with draw mode (Archmage's Charm)
             return True
         if 'removal' in tags and 'board_wipe' not in tags:
             return True
         # Exile effects that target opponent's permanents (March of Otherworldly Light, etc.)
-        if 'exile target' in oracle and ('artifact' in oracle or 'creature' in oracle or 'permanent' in oracle):
+        if t.can_exile_permanent:
             return True
         if 'blink' in tags:
             return True
