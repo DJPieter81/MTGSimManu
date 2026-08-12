@@ -183,7 +183,7 @@ def _clause_creature_removal(oracle: str,
     return _avg_creature_threat(opp_templates) * creature_density * PERMANENT_VALUE_WINDOW
 
 
-def _clause_counterspell(oracle: str,
+def _clause_counterspell(template: "CardTemplate",
                           opp_templates: List["CardTemplate"]) -> float:
     """Value of counterspells.
 
@@ -192,17 +192,22 @@ def _clause_counterspell(oracle: str,
     only principled composition-free signal for "spell bigness" without
     invoking per-card EV evaluation (which is expensive here).
     """
-    if 'counter target' not in oracle:
+    # template.is_counterspell is the pre-parsed typed field; populated by
+    # CardDatabase at load time via oracle_parser.parse_is_counterspell.
+    if not template.is_counterspell:
         return 0.0
 
-    if 'counter target noncreature spell' in oracle:
+    # counter_target_kind: "noncreature_spell" / "creature_spell" /
+    # "instant_or_sorcery_spell" / "spell" / "" (generic all-spells).
+    # Populated by CardDatabase at load time; no runtime oracle inspection.
+    kind = template.counter_target_kind
+    if kind == 'noncreature_spell':
         target_pred = lambda t: not t.is_creature and not t.is_land
-    elif 'counter target creature spell' in oracle:
+    elif kind == 'creature_spell':
         target_pred = lambda t: t.is_creature
-    elif 'counter target spell' in oracle:
-        target_pred = lambda t: not t.is_land
     else:
-        return 0.0
+        # "spell", "instant_or_sorcery_spell", "" — treat as any nonland spell
+        target_pred = lambda t: not t.is_land
 
     targets = [t for t in _nonland(opp_templates) if target_pred(t)]
     if not targets:
@@ -398,7 +403,7 @@ def sb_value(template: "CardTemplate",
     value = 0.0
     value += _clause_body_value(template)
     value += _clause_creature_removal(oracle, opp_templates)
-    value += _clause_counterspell(oracle, opp_templates)
+    value += _clause_counterspell(template, opp_templates)
     value += _clause_protection_color(oracle, opp_templates, body_power)
     value += _clause_gy_hate(oracle, opp_templates, opp_gameplan)
     value += _clause_artifact_removal(template, opp_templates)
