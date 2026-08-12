@@ -1,1 +1,899 @@
 Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+  Sideboard (Jeskai Blink vs Ruby Storm): +1 Mystical Dispute, -1 Galvanic Discharge
+======================================================================
+  GAME 1: Jeskai Blink (P1) vs Ruby Storm (P2)  —  seed 55502
+  Series: Jeskai Blink 0 - 0 Ruby Storm
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Jeskai Blink wins → chooses to play first
+║ P1 (on play): Jeskai Blink
+║ P2 (on draw): Ruby Storm
+╚═══════════════════════════════════════════════════════
+
+P1 (Jeskai Blink) opening hand (4 lands, 3 spells):
+  • Arena of Glory [Land, CMC 0]
+  • Arid Mesa [Land, CMC 0]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Phelia, Exuberant Shepherd [Creature, CMC 2]
+  • Quantum Riddler [Creature, CMC 5]
+  • Scalding Tarn [Land, CMC 0]
+  • Mountain [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Quantum Riddler, Ragavan, Nimble Pilferer, 2 cheap spells
+
+P2 (Ruby Storm) opening hand (3 lands, 4 spells):
+  • Ral, Monsoon Mage // Ral, Leyline Prodigy [Creature, CMC 2]
+  • Desperate Ritual [Spell, CMC 2]
+  • Scalding Tarn [Land, CMC 0]
+  • Thundering Falls [Land, CMC 0]
+  • Grapeshot [Spell, CMC 2]
+  • Bloodstained Mire [Land, CMC 0]
+  • Pyretic Ritual [Spell, CMC 2]
+→ P2 MULLIGANS (no cost reducer and no ritual+cantrip+finisher backup)
+  New hand (4 lands, 3 spells): ['Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Desperate Ritual', 'Elegant Parlor', 'Wooded Foothills', 'Bloodstained Mire', 'Thundering Falls', 'Reckless Impulse']
+→ P2 MULLIGANS (too many lands (4 > 3); first-turn value 3 < 5)
+  New hand (3 lands, 4 spells): ['Past in Flames', 'Grapeshot', 'Elegant Parlor', 'Glimpse the Impossible', 'Ruby Medallion', 'Mountain', 'Elegant Parlor']
+→ P2 mulligans to 5, bottoms: ['Mountain', 'Elegant Parlor']
+  Keeps: ['Past in Flames', 'Grapeshot', 'Glimpse the Impossible', 'Ruby Medallion', 'Elegant Parlor']
+
+
+╔══ TURN 1 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 20  |  Ruby Storm 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Arid Mesa
+T1 P1: Crack Arid Mesa (pay 1 life) -> Steam Vents (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 20  |  Jeskai Blink 19
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 55  |  Graveyard: 0
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Scalding Tarn
+  [Main 1]
+T1 P2: Play Scalding Tarn
+T1 P2: Crack Scalding Tarn (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 19  |  Ruby Storm 19
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Steam Vents
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Meticulous Archive
+  [Main 1]
+T2 P1: Play Scalding Tarn
+T2 P1: Crack Scalding Tarn (pay 1 life) -> Hallowed Fountain (tapped, life: 18)
+    → Goal: grind_value
+    [Mana] Tap Steam Vents→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T2 P1: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P2 passes (no response)
+T2: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 19  |  Jeskai Blink 18
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 53  |  Graveyard: 1
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Steam Vents [T], Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mountain
+  [Main 1]
+T2 P2: Play Mountain
+    → Goal: deploy_engine [engines]
+    [Mana] Tap Mountain→R, Sacred Foundry→R (paying for Ruby Medallion, 2 mana remaining)
+T2 P2: Cast Ruby Medallion (2)
+    [Priority] P1 passes (no response)
+T2: Resolve Ruby Medallion
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 18  |  Ruby Storm 19
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Steam Vents, Hallowed Fountain
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Solitude
+  [Main 1]
+T3 P1: Play Mountain
+    → Goal: grind_value [enablers]
+    [Mana] Tap Mountain→R, Hallowed Fountain→W (paying for Phelia, Exuberant Shepherd, 3 mana remaining)
+T3 P1: Cast Phelia, Exuberant Shepherd (1W)
+    [Priority] P2 passes (no response)
+T3: Resolve Phelia, Exuberant Shepherd
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ragavan, Nimble Pilferer
+T3 P1: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P2 does not block
+T3 P1:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T3 P1: Create 1x Treasure token(s)
+T3 P1: Ragavan, Nimble Pilferer exiles Wrenn's Resolve from top of P2's library
+T3 P1: Ragavan, Nimble Pilferer — may cast Wrenn's Resolve this turn
+  [Combat Damage] 2 damage dealt → P2 life: 19 → 17
+  [End Combat]
+  [Main 2]
+  [End Step]
+T3: Wrenn's Resolve returned to exile (uncast)
+
+╔══ TURN 3 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 17  |  Jeskai Blink 18
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 1
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry, Mountain
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Phelia, Exuberant Shepherd (2/2)
+║   Other: Treasure Token
+║   Lands: Steam Vents, Hallowed Fountain [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Valakut Awakening // Valakut Stoneforge
+  [Main 1]
+T3 P2: surveil 1 → Wish to GY
+T3 P2: Play Elegant Parlor (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 18  |  Ruby Storm 17
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Phelia, Exuberant Shepherd (2/2)
+║   Other: Treasure Token
+║   Lands: Steam Vents, Hallowed Fountain, Mountain
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry, Mountain, Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arid Mesa
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Mountain→R, Steam Vents→U (paying for Quantum Riddler, 3 mana remaining)
+T4 P1: Warp Quantum Riddler (pays 1U)
+T4 P1: Cast Quantum Riddler (3UU)
+    [Priority] P2 passes (no response)
+T4: Resolve Quantum Riddler
+T4 P1: Quantum Riddler ETB: draw 1 (Arid Mesa)
+T4 P1: Play Arid Mesa
+T4 P1: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (tapped, life: 17)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ragavan, Nimble Pilferer, Phelia, Exuberant Shepherd
+T4 P1: Phelia exiles Quantum Riddler (P1's)
+T4 P1: Phelia gets +1/+1 counter (3/3)
+T4 P1: Attack with Ragavan, Nimble Pilferer, Phelia, Exuberant Shepherd
+  [Declare Blockers] P2 does not block
+T4 P1:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T4 P1: Create 1x Treasure token(s)
+T4 P1: Ragavan, Nimble Pilferer exiles Elegant Parlor from top of P2's library
+T4 P1: Ragavan, Nimble Pilferer — may cast Elegant Parlor this turn
+T4 P1:   Phelia, Exuberant Shepherd (3/3) → 3 dmg to player
+  [Combat Damage] 5 damage dealt → P2 life: 17 → 12
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Elegant Parlor returned to exile (uncast)
+
+╔══ TURN 4 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 12  |  Jeskai Blink 17
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 2
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry, Mountain, Elegant Parlor
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Phelia, Exuberant Shepherd (3/3) [tapped]
+║   Other: Treasure Token, Treasure Token
+║   Lands: Steam Vents [T], Hallowed Fountain, Mountain [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mountain
+  [Main 1]
+T4 P2: Play Mountain
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R, Mountain→R (paying for Glimpse the Impossible, 4 mana remaining)
+T4 P2: Cast Glimpse the Impossible (2R)
+    [Priority] P1 passes (no response)
+T4: Resolve Glimpse the Impossible
+T4 P2: Glimpse the Impossible → impulse-reveal 3 (Arid Mesa, Wooded Foothills, Desperate Ritual)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Desperate Ritual, 2 mana remaining)
+T4 P2: Cast Desperate Ritual (1R)
+    [Priority] P1 passes (no response)
+T4: Resolve Desperate Ritual
+T4 P2: Desperate Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T4 P2: Cast Past in Flames (3R)
+    [Priority] P1 passes (no response)
+T4: Resolve Past in Flames
+T4 P2: Past in Flames grants flashback
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Elegant Parlor→R (paying for Desperate Ritual, 1 mana remaining)
+T4 P2: Cast Desperate Ritual (1R)
+    [Priority] P1 passes (no response)
+T4: Resolve Desperate Ritual
+T4 P2: Desperate Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T4 P2: Cast Glimpse the Impossible (2R)
+    [Priority] P1 passes (no response)
+T4: Resolve Glimpse the Impossible
+T4 P2: Glimpse the Impossible → impulse-reveal 3 (Pyretic Ritual, Arid Mesa, Bloodstained Mire)
+    → Goal: execute_payoff [enablers]
+T4 P2: Cast Pyretic Ritual (1R)
+    [Priority] P1 passes (no response)
+T4: Resolve Pyretic Ritual
+T4 P2: Pyretic Ritual adds 3 R mana
+    → Goal: execute_payoff [payoffs]
+T4 P2: Cast Grapeshot (1R)
+    [Priority] P1 passes (no response)
+T4: Resolve Grapeshot
+T4 P2: Grapeshot deals 1 damage (opponent life: 16)
+T4: Storm copies: 6
+T4 P2: Grapeshot deals 1 damage (opponent life: 15)
+T4 P2: Grapeshot deals 1 damage (opponent life: 14)
+T4 P2: Grapeshot deals 1 damage (opponent life: 13)
+T4 P2: Grapeshot deals 1 damage (opponent life: 12)
+T4 P2: Grapeshot deals 1 damage (opponent life: 11)
+T4 P2: Grapeshot deals 1 damage (opponent life: 10)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 10  |  Ruby Storm 12
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 3
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Phelia, Exuberant Shepherd (3/3)
+║   Other: Treasure Token, Treasure Token
+║   Lands: Steam Vents, Hallowed Fountain, Mountain, Sacred Foundry
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry [T], Mountain [T], Elegant Parlor [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Consign to Memory
+  [Main 1]
+T5 P1: Play Arid Mesa
+T5 P1: Crack Arid Mesa -> Plains (untapped)
+    → Goal: close_game
+    [Mana] Tap Mountain→R, Plains→W, Steam Vents→R, Hallowed Fountain→W, Sacred Foundry→R (paying for Solitude, 5 mana remaining)
+T5 P1: Cast Solitude (3WW)
+    [Priority] P2 passes (no response)
+T5: Resolve Solitude
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ragavan, Nimble Pilferer, Phelia, Exuberant Shepherd
+T5 P1: Phelia exiles Solitude (P1's)
+T5 P1: Phelia gets +1/+1 counter (4/4)
+T5 P1: Attack with Ragavan, Nimble Pilferer, Phelia, Exuberant Shepherd
+  [Declare Blockers] P2 does not block
+T5 P1:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T5 P1: Create 1x Treasure token(s)
+T5 P1: Ragavan, Nimble Pilferer exiles Pyretic Ritual from top of P2's library
+T5 P1: Ragavan, Nimble Pilferer — may cast Pyretic Ritual this turn
+T5 P1:   Phelia, Exuberant Shepherd (4/4) → 4 dmg to player
+  [Combat Damage] 6 damage dealt → P2 life: 12 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+T5: Pyretic Ritual returned to exile (uncast)
+
+╔══ TURN 5 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 6  |  Jeskai Blink 9
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 40  |  Graveyard: 5
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry, Mountain, Elegant Parlor, Mountain
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Phelia, Exuberant Shepherd (4/4) [tapped]
+║   Other: Treasure Token, Treasure Token, Treasure Token
+║   Lands: Steam Vents [T], Hallowed Fountain [T], Mountain [T], Sacred Foundry [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thundering Falls
+  [Main 1]
+T5 P2: Play Wooded Foothills
+T5 P2: Crack Wooded Foothills -> Mountain (untapped)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R, Mountain→R (paying for Valakut Awakening // Valakut Stoneforge, 5 mana remaining)
+T5 P2: Cast Valakut Awakening // Valakut Stoneforge (2R)
+    [Priority] P1 passes (no response)
+T5: Resolve Valakut Awakening // Valakut Stoneforge
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Desperate Ritual, 3 mana remaining)
+T5 P2: Cast Desperate Ritual (1R)
+    [Priority] P1 passes (no response)
+T5: Resolve Desperate Ritual
+T5 P2: Desperate Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T5 P2: Cast Reckless Impulse (1R)
+    [Priority] P1 passes (no response)
+T5: Resolve Reckless Impulse
+T5 P2: Reckless Impulse → impulse-reveal 2 (Valakut Awakening // Valakut Stoneforge, March of Reckless Joy)
+    → Goal: execute_payoff [enablers]
+T5 P2: Cast March of Reckless Joy (3R) (X=3)
+    [Priority] P1 passes (no response)
+T5: Resolve March of Reckless Joy
+T5 P2: March of Reckless Joy → impulse-reveal 2 (Grapeshot, Wrenn's Resolve)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 9  |  Ruby Storm 5
+║ Hand: 3 cards  |  Opp hand: 7 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 44  |  Graveyard: 4
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Phelia, Exuberant Shepherd (4/4)
+║   Other: Treasure Token, Treasure Token, Treasure Token
+║   Lands: Steam Vents, Hallowed Fountain, Mountain, Sacred Foundry, Plains
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry [T], Mountain [T], Elegant Parlor [T], Mountain [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Galvanic Discharge
+  [Main 1]
+T6 P1: Play Arena of Glory (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ragavan, Nimble Pilferer, Phelia, Exuberant Shepherd
+T6 P1: Phelia exiles Ruby Medallion (P2's)
+T6 P1: Attack with Ragavan, Nimble Pilferer, Phelia, Exuberant Shepherd
+  [Declare Blockers] P2 does not block
+T6 P1:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T6 P1: Create 1x Treasure token(s)
+T6 P1: Ragavan, Nimble Pilferer exiles Mountain from top of P2's library
+T6 P1: Ragavan, Nimble Pilferer — may cast Mountain this turn
+T6 P1:   Phelia, Exuberant Shepherd (4/4) → 4 dmg to player
+P2 loses: life total -1
+  [Combat Damage] 6 damage dealt → P2 life: 5 → -1
+
+>>> Jeskai Blink wins Game 1 on turn 6 via damage
+    Final life: Jeskai Blink=9  Ruby Storm=-1
+
+======================================================================
+  GAME 2: Ruby Storm (P1) vs Jeskai Blink (P2)  —  seed 55503
+  Series: Jeskai Blink 1 - 0 Ruby Storm
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Ruby Storm wins → chooses to play first
+║ P1 (on play): Ruby Storm
+║ P2 (on draw): Jeskai Blink
+╚═══════════════════════════════════════════════════════
+
+P1 (Ruby Storm) opening hand (1 lands, 6 spells):
+  • Reckless Impulse [Spell, CMC 2]
+  • Valakut Awakening // Valakut Stoneforge [Spell, CMC 3]
+  • Grapeshot [Spell, CMC 2]
+  • Mountain [Land, CMC 0]
+  • Desperate Ritual [Spell, CMC 2]
+  • Past in Flames [Spell, CMC 4]
+  • Wrenn's Resolve [Spell, CMC 2]
+→ P1 KEEPS 7 — has key card(s): Desperate Ritual, Past in Flames, Reckless Impulse, Wrenn's Resolve, 5 cheap spells
+
+P2 (Jeskai Blink) opening hand (2 lands, 5 spells):
+  • Flooded Strand [Land, CMC 0]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Meticulous Archive [Land, CMC 0]
+  • Galvanic Discharge [Spell, CMC 1]
+  • Consign to Memory [Spell, CMC 1]
+  • Fable of the Mirror-Breaker // Reflection of Kiki-Jiki [Spell, CMC 3]
+  • Quantum Riddler [Creature, CMC 5]
+→ P2 KEEPS 7 — has key card(s): Galvanic Discharge, Quantum Riddler, Ragavan, Nimble Pilferer, 4 cheap spells
+
+
+╔══ TURN 1 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 20  |  Jeskai Blink 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Mountain
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 20  |  Ruby Storm 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+  [Main 1]
+T1 P2: Play Flooded Strand
+T1 P2: Crack Flooded Strand (pay 1 life) -> Steam Vents (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 20  |  Jeskai Blink 19
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Mountain
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Pyretic Ritual
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 19  |  Ruby Storm 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 51  |  Graveyard: 1
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Steam Vents
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+T2 P2: surveil 1 → Solitude to GY
+T2 P2: Play Meticulous Archive (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 20  |  Jeskai Blink 19
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Mountain
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Meticulous Archive [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ral, Monsoon Mage // Ral, Leyline Prodigy
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T3: Past in Flames moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 3 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 19  |  Ruby Storm 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 1
+║ Library: 49  |  Graveyard: 2
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Meticulous Archive
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Phelia, Exuberant Shepherd
+  [Main 1]
+    → Goal: grind_value
+    [Mana] Tap Steam Vents→R (paying for Ragavan, Nimble Pilferer, 2 mana remaining)
+T3 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T3: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 20  |  Jeskai Blink 19
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Mountain
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Steam Vents [T], Meticulous Archive
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Wooded Foothills
+  [Main 1]
+T4 P1: Play Wooded Foothills
+T4 P1: Crack Wooded Foothills (pay 1 life) -> Sacred Foundry (untapped, life: 17)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 19  |  Ruby Storm 17
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 48  |  Graveyard: 2
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Steam Vents, Meticulous Archive
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Mountain, Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arena of Glory
+  [Main 1]
+T4 P2: Play Arena of Glory (enters tapped)
+    → Goal: close_game
+    [Mana] Tap Steam Vents→R, Meticulous Archive→W (paying for Phelia, Exuberant Shepherd, 2 mana remaining)
+T4 P2: Cast Phelia, Exuberant Shepherd (1W)
+    [Priority] P1 passes (no response)
+T4: Resolve Phelia, Exuberant Shepherd
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T4 P2: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T4 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T4 P2: Create 1x Treasure token(s)
+T4 P2: Ragavan, Nimble Pilferer exiles Ruby Medallion from top of P1's library
+T4 P2: Ragavan, Nimble Pilferer — may cast Ruby Medallion this turn
+  [Combat Damage] 2 damage dealt → P1 life: 17 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Ruby Medallion returned to exile (uncast)
+
+╔══ TURN 5 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 15  |  Jeskai Blink 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 2
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Mountain, Sacred Foundry
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Phelia, Exuberant Shepherd (2/2)
+║   Other: Treasure Token
+║   Lands: Steam Vents [T], Meticulous Archive [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Past in Flames
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T5: Past in Flames moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 5 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 19  |  Ruby Storm 15
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 47  |  Graveyard: 2
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Phelia, Exuberant Shepherd (2/2)
+║   Other: Treasure Token
+║   Lands: Steam Vents, Meticulous Archive, Arena of Glory
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Mountain, Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Arena of Glory→R, Steam Vents→U (paying for Quantum Riddler, 3 mana remaining)
+T5 P2: Warp Quantum Riddler (pays 1U)
+T5 P2: Cast Quantum Riddler (3UU)
+    [Priority] P1 passes (no response)
+T5: Resolve Quantum Riddler
+T5 P2: Quantum Riddler ETB: draw 1 (Phelia, Exuberant Shepherd)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer, Phelia, Exuberant Shepherd
+T5 P2: Phelia exiles Quantum Riddler (P2's)
+T5 P2: Phelia gets +1/+1 counter (3/3)
+T5 P2: Attack with Ragavan, Nimble Pilferer, Phelia, Exuberant Shepherd
+  [Declare Blockers] P1 does not block
+T5 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T5 P2: Create 1x Treasure token(s)
+T5 P2: Ragavan, Nimble Pilferer exiles Scalding Tarn from top of P1's library
+T5 P2: Ragavan, Nimble Pilferer — may cast Scalding Tarn this turn
+T5 P2:   Phelia, Exuberant Shepherd (3/3) → 3 dmg to player
+  [Combat Damage] 5 damage dealt → P1 life: 15 → 10
+  [End Combat]
+  [Main 2]
+T5 P2: Play Scalding Tarn
+T5 P2: Crack Scalding Tarn (pay 1 life) -> Sacred Foundry (tapped, life: 18)
+  [End Step]
+
+╔══ TURN 6 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 10  |  Jeskai Blink 18
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 3
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Mountain, Sacred Foundry
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Phelia, Exuberant Shepherd (3/3) [tapped]
+║   Other: Treasure Token, Treasure Token
+║   Lands: Steam Vents [T], Meticulous Archive, Arena of Glory [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ral, Monsoon Mage // Ral, Leyline Prodigy
+  [Main 1]
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R, Sacred Foundry→R (paying for Reckless Impulse, 2 mana remaining)
+T6 P1: Cast Reckless Impulse (1R)
+    [Priority] P2 passes (no response)
+T6: Resolve Reckless Impulse
+T6 P1: Reckless Impulse → impulse-reveal 2 (Ruby Medallion, Thundering Falls)
+T6 P1: surveil 1 → Ruby Medallion to GY
+T6 P1: Play Thundering Falls (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T6: Valakut Awakening // Valakut Stoneforge moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 6 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 18  |  Ruby Storm 10
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 44  |  Graveyard: 3
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Phelia, Exuberant Shepherd (3/3)
+║   Other: Treasure Token, Treasure Token
+║   Lands: Steam Vents, Meticulous Archive, Arena of Glory, Sacred Foundry
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Mountain [T], Sacred Foundry [T], Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Prismatic Ending
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer, Phelia, Exuberant Shepherd
+T6 P2: Attack with Ragavan, Nimble Pilferer, Phelia, Exuberant Shepherd
+  [Declare Blockers] P1 does not block
+T6 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T6 P2: Create 1x Treasure token(s)
+T6 P2: Ragavan, Nimble Pilferer exiles Gemstone Caverns from top of P1's library
+T6 P2: Ragavan, Nimble Pilferer — may cast Gemstone Caverns this turn
+T6 P2:   Phelia, Exuberant Shepherd (3/3) → 3 dmg to player
+  [Combat Damage] 5 damage dealt → P1 life: 10 → 5
+  [End Combat]
+  [Main 2]
+T6 P2: Play Gemstone Caverns
+  [End Step]
+T6: Consign to Memory moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 7 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 5  |  Jeskai Blink 18
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 41  |  Graveyard: 6
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Mountain, Sacred Foundry, Thundering Falls
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Phelia, Exuberant Shepherd (3/3) [tapped]
+║   Other: Treasure Token, Treasure Token, Treasure Token
+║   Lands: Steam Vents, Meticulous Archive, Arena of Glory, Sacred Foundry, Gemstone Caverns
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Grapeshot
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Mountain→R, Sacred Foundry→R (paying for Ruby Medallion, 3 mana remaining)
+T7 P1: Cast Ruby Medallion (2)
+    [Priority] P2 passes (no response)
+T7: Resolve Ruby Medallion
+    → Goal: execute_payoff
+    [Mana] Tap Thundering Falls→R (paying for Ral, Monsoon Mage // Ral, Leyline Prodigy, 1 mana remaining)
+T7 P1: Cast Ral, Monsoon Mage // Ral, Leyline Prodigy (1R)
+    [Priority] P2 passes (no response)
+T7: Resolve Ral, Monsoon Mage // Ral, Leyline Prodigy
+T7 P1: Ral, Monsoon Mage enters — instants/sorceries cost {1} less
+  [Begin Combat]
+    [Mana] Tap Arena of Glory→R (paying for Galvanic Discharge, 5 mana remaining)
+T7 P2: Cast Galvanic Discharge (R)
+T7: Resolve Galvanic Discharge
+T7: Ral, Monsoon Mage // Ral, Leyline Prodigy dies
+T7 P2: Galvanic Discharge deals 3 to Ral, Monsoon Mage // Ral, Leyline Prodigy (base 0 + 3 energy)
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+    [Mana] Tap Meticulous Archive→W, Gemstone Caverns→C (paying for Phelia, Exuberant Shepherd, 4 mana remaining)
+T7 P2: Cast Phelia, Exuberant Shepherd (1W)
+T7: Resolve Phelia, Exuberant Shepherd
+T7: Phelia, Exuberant Shepherd moved battlefield -> graveyard (SBA 704.5j: legend rule (Phelia, Exuberant Shepherd))
+
+╔══ TURN 7 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 18  |  Ruby Storm 5
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 43  |  Graveyard: 6
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Phelia, Exuberant Shepherd (2/2)
+║   Other: Treasure Token, Treasure Token, Treasure Token
+║   Lands: Steam Vents, Meticulous Archive, Arena of Glory, Sacred Foundry, Gemstone Caverns
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Mountain [T], Sacred Foundry [T], Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Quantum Riddler
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Arena of Glory→R, Steam Vents→U, Meticulous Archive→U, Sacred Foundry→R, Gemstone Caverns→C (paying for Quantum Riddler, 5 mana remaining)
+T7 P2: Cast Quantum Riddler (3UU)
+    [Priority] P1 passes (no response)
+T7: Resolve Quantum Riddler
+T7 P2: Quantum Riddler ETB: draw 1 (Galvanic Discharge)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer, Phelia, Exuberant Shepherd
+T7 P2: Phelia exiles Quantum Riddler (P2's)
+T7 P2: Phelia gets +1/+1 counter (3/3)
+T7 P2: Attack with Ragavan, Nimble Pilferer, Phelia, Exuberant Shepherd
+  [Declare Blockers] P1 does not block
+T7 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T7 P2: Create 1x Treasure token(s)
+T7 P2: Ragavan, Nimble Pilferer exiles Elegant Parlor from top of P1's library
+T7 P2: Ragavan, Nimble Pilferer — may cast Elegant Parlor this turn
+T7 P2:   Phelia, Exuberant Shepherd (3/3) → 3 dmg to player
+P1 loses: life total 0
+  [Combat Damage] 5 damage dealt → P1 life: 5 → 0
+
+>>> Jeskai Blink wins Game 2 on turn 7 via damage
+    Final life: Ruby Storm=0  Jeskai Blink=18
+
+======================================================================
+  MATCH RESULT: Jeskai Blink wins 2-0
+======================================================================

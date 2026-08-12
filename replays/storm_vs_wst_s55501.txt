@@ -1,1 +1,1051 @@
 Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+  Sideboard (Azorius Control (WST) vs Ruby Storm): +1 Celestial Purge, +1 Force of Negation, -2 Wrath of the Skies
+======================================================================
+  GAME 1: Ruby Storm (P1) vs Azorius Control (WST) (P2)  —  seed 55501
+  Series: Ruby Storm 0 - 0 Azorius Control (WST)
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Azorius Control (WST) wins → chooses to play first
+║ P1 (on play): Azorius Control (WST)
+║ P2 (on draw): Ruby Storm
+╚═══════════════════════════════════════════════════════
+
+P1 (Ruby Storm) opening hand (1 lands, 6 spells):
+  • Manamorphose [Spell, CMC 2]
+  • Ruby Medallion [Spell, CMC 2]
+  • Desperate Ritual [Spell, CMC 2]
+  • Elegant Parlor [Land, CMC 0]
+  • Wish [Spell, CMC 3]
+  • Pyretic Ritual [Spell, CMC 2]
+  • Ral, Monsoon Mage // Ral, Leyline Prodigy [Creature, CMC 2]
+→ P1 KEEPS 7 — has key card(s): Desperate Ritual, Manamorphose, Pyretic Ritual, Ruby Medallion, Wish, 6 cheap spells
+
+P2 (Azorius Control (WST)) opening hand (3 lands, 4 spells):
+  • Plains [Land, CMC 0]
+  • Sanctifier en-Vec [Creature, CMC 2]
+  • Wan Shi Tong, Librarian [Creature, CMC 2]
+  • Wan Shi Tong, Librarian [Creature, CMC 2]
+  • Island [Land, CMC 0]
+  • Wrath of the Skies [Spell, CMC 2]
+  • Plains [Land, CMC 0]
+→ P2 KEEPS 7 — 3 lands, 3 castable spells
+
+
+╔══ TURN 1 — Azorius Control (WST) (P2) ══════════════════════════
+║ Life: Azorius Control (WST) 20  |  Ruby Storm 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Plains
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 20  |  Azorius Control (WST) 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Lands: Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Elegant Parlor
+  [Main 1]
+T1 P1: surveil 1 → Scalding Tarn to GY
+T1 P1: Play Elegant Parlor (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Azorius Control (WST) (P2) ══════════════════════════
+║ Life: Azorius Control (WST) 20  |  Ruby Storm 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Lands: Plains
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Island
+  [Main 1]
+T2 P2: Play Island
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 20  |  Azorius Control (WST) 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Elegant Parlor
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Lands: Plains, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Reckless Impulse
+  [Main 1]
+T2 P1: surveil 1 → Scalding Tarn to GY
+T2 P1: Play Elegant Parlor (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Azorius Control (WST) (P2) ══════════════════════════
+║ Life: Azorius Control (WST) 20  |  Ruby Storm 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Lands: Plains, Island
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Elegant Parlor, Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Prismatic Ending
+  [Main 1]
+T3 P2: Play Plains
+    → Goal: grind_value [payoffs]
+    [Mana] Tap Plains→W, Plains→W (paying for Sanctifier en-Vec, 3 mana remaining)
+T3 P2: Cast Sanctifier en-Vec (WW)
+    [Priority] P1 passes (no response)
+T3: Resolve Sanctifier en-Vec
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 20  |  Azorius Control (WST) 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Elegant Parlor, Elegant Parlor
+║ Azorius Control (WST) board:
+║   Creatures: Sanctifier en-Vec (2/2)
+║   Lands: Plains [T], Island, Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Gemstone Caverns
+  [Main 1]
+T3 P1: Play Gemstone Caverns
+    → Goal: execute_payoff
+    [Mana] Tap Elegant Parlor→R, Gemstone Caverns→C (paying for Ruby Medallion, 3 mana remaining)
+T3 P1: Cast Ruby Medallion (2)
+    [Priority] P2 passes (no response)
+T3: Resolve Ruby Medallion
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Elegant Parlor→R (paying for Manamorphose, 1 mana remaining)
+T3 P1: Cast Manamorphose (2)
+    [Priority] P2 passes (no response)
+T3: Resolve Manamorphose
+T3 P1: Manamorphose adds 2 any mana
+    → Goal: execute_payoff [enablers]
+T3 P1: Cast Manamorphose (2)
+    [Priority] P2 passes (no response)
+T3: Resolve Manamorphose
+T3 P1: Manamorphose adds 2 any mana
+    → Goal: execute_payoff [enablers]
+T3 P1: Cast Reckless Impulse (1R)
+    [Priority] P2 passes (no response)
+T3: Resolve Reckless Impulse
+T3 P1: Reckless Impulse → impulse-reveal 2 (Reckless Impulse, Sacred Foundry)
+    → Goal: execute_payoff [enablers]
+T3 P1: Cast Desperate Ritual (1R)
+    [Priority] P2 passes (no response)
+T3: Resolve Desperate Ritual
+T3 P1: Desperate Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T3 P1: Cast Wrenn's Resolve (1R)
+    [Priority] P2 passes (no response)
+T3: Resolve Wrenn's Resolve
+T3 P1: Wrenn's Resolve → impulse-reveal 2 (Glimpse the Impossible, Past in Flames)
+    → Goal: execute_payoff [enablers]
+T3 P1: Cast Pyretic Ritual (1R)
+    [Priority] P2 passes (no response)
+T3: Resolve Pyretic Ritual
+T3 P1: Pyretic Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T3 P1: Cast Glimpse the Impossible (2R)
+    [Priority] P2 passes (no response)
+T3: Resolve Glimpse the Impossible
+T3 P1: Glimpse the Impossible → impulse-reveal 3 (March of Reckless Joy, Arid Mesa, Pyretic Ritual)
+    → Goal: execute_payoff [enablers]
+T3 P1: Cast March of Reckless Joy (2R) (X=2)
+    [Priority] P2 passes (no response)
+T3: Resolve March of Reckless Joy
+T3 P1: March of Reckless Joy → impulse-reveal 2 (Mountain, Desperate Ritual)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T3: Past in Flames moved hand -> graveyard (discard to hand size)
+T3: Sacred Foundry moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 4 — Azorius Control (WST) (P2) ══════════════════════════
+║ Life: Azorius Control (WST) 20  |  Ruby Storm 20
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 0
+║ Azorius Control (WST) board:
+║   Creatures: Sanctifier en-Vec (2/2)
+║   Lands: Plains, Island, Plains
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Elegant Parlor [T], Elegant Parlor [T], Gemstone Caverns [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Polluted Delta
+  [Main 1]
+T4 P2: Play Polluted Delta
+T4 P2: Crack Polluted Delta (pay 1 life) -> Hallowed Fountain (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Sanctifier en-Vec
+T4 P2: Attack with Sanctifier en-Vec
+  [Declare Blockers] P1 does not block
+T4 P2:   Sanctifier en-Vec (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 20 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 18  |  Azorius Control (WST) 19
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 37  |  Graveyard: 12
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Elegant Parlor, Elegant Parlor, Gemstone Caverns
+║ Azorius Control (WST) board:
+║   Creatures: Sanctifier en-Vec (2/2) [tapped]
+║   Lands: Plains, Island, Plains, Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ral, Monsoon Mage // Ral, Leyline Prodigy
+  [Main 1]
+T4 P1: Play Arid Mesa
+T4 P1: Crack Arid Mesa -> Mountain (untapped)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Reckless Impulse, 4 mana remaining)
+T4 P1: Cast Reckless Impulse (1R)
+    [Priority] P2 passes (no response)
+T4: Resolve Reckless Impulse
+T4 P1: Reckless Impulse → impulse-reveal 2 (Glimpse the Impossible, Bloodstained Mire)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Elegant Parlor→R (paying for Pyretic Ritual, 3 mana remaining)
+T4 P1: Cast Pyretic Ritual (1R)
+    [Priority] P2 passes (no response)
+T4: Resolve Pyretic Ritual
+T4 P1: Pyretic Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T4 P1: Cast Glimpse the Impossible (2R)
+    [Priority] P2 passes (no response)
+T4: Resolve Glimpse the Impossible
+T4 P1: Glimpse the Impossible → impulse-reveal 3 (Wish, Wrenn's Resolve, Arid Mesa)
+    → Goal: execute_payoff [enablers]
+T4 P1: Cast Desperate Ritual (1R)
+    [Priority] P2 passes (no response)
+T4: Resolve Desperate Ritual
+T4 P1: Desperate Ritual adds 3 R mana
+    → Goal: execute_payoff [enablers]
+T4 P1: Cast Wrenn's Resolve (1R)
+    [Priority] P2 passes (no response)
+T4: Resolve Wrenn's Resolve
+T4 P1: Wrenn's Resolve → impulse-reveal 2 (Thundering Falls, Bloodstained Mire)
+    → Goal: execute_payoff [enablers]
+T4 P1: Cast Wish (2R)
+    [Priority] P2 passes (no response)
+T4: Resolve Wish
+T4 P1: Wish finds Past in Flames (from sideboard)
+    → Goal: execute_payoff
+    [Mana] Tap Elegant Parlor→R (paying for Ral, Monsoon Mage // Ral, Leyline Prodigy, 2 mana remaining)
+T4 P1: Cast Ral, Monsoon Mage // Ral, Leyline Prodigy (1R)
+    [Priority] P2 passes (no response)
+T4: Resolve Ral, Monsoon Mage // Ral, Leyline Prodigy
+T4 P1: Ral, Monsoon Mage enters — instants/sorceries cost {1} less
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Past in Flames moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 5 — Azorius Control (WST) (P2) ══════════════════════════
+║ Life: Azorius Control (WST) 19  |  Ruby Storm 17
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 1
+║ Azorius Control (WST) board:
+║   Creatures: Sanctifier en-Vec (2/2)
+║   Lands: Plains, Island, Plains, Hallowed Fountain
+║ Ruby Storm board:
+║   Creatures: Ral, Monsoon Mage // Ral, Leyline Prodigy (1/3)
+║   Other: Ruby Medallion
+║   Lands: Elegant Parlor [T], Elegant Parlor [T], Gemstone Caverns, Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Sanctifier en-Vec
+  [Main 1]
+T5 P2: Play Island
+    → Goal: close_game
+    [Mana] Tap Plains→W, Plains→W (paying for Sanctifier en-Vec, 5 mana remaining)
+T5 P2: Cast Sanctifier en-Vec (WW)
+    [Priority] P1 passes (no response)
+T5: Resolve Sanctifier en-Vec
+T5 P2: Sanctifier en-Vec exiles 17 black/red cards from graveyards
+    → Goal: close_game
+    [Mana] Tap Island→U, Island→U (paying for Wan Shi Tong, Librarian, 3 mana remaining)
+T5 P2: Cast Wan Shi Tong, Librarian (1UU) (X=1)
+    [Priority] P1 passes (no response)
+T5: Resolve Wan Shi Tong, Librarian
+T5 P2: Wan Shi Tong, Librarian enters with 1 +1/+1 counter(s)
+T5 P2: Wan Shi Tong enters with 1 +1/+1 counters (3/3), draws 0 cards
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Sanctifier en-Vec
+T5 P2: Attack with Sanctifier en-Vec
+T5 P1:   [BLOCK] Ral, Monsoon Mage // Ral, Leyline Prodigy (1/3) blocks Sanctifier en-Vec (2/2) — lifespan_delta=+0.29
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T5: illegal block dropped — Ral, Monsoon Mage // Ral, Leyline Prodigy cannot legally block Sanctifier en-Vec
+T5 P2:   Sanctifier en-Vec (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 17 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 15  |  Azorius Control (WST) 19
+║ Hand: 7 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 28  |  Graveyard: 3
+║ Ruby Storm board:
+║   Creatures: Ral, Monsoon Mage // Ral, Leyline Prodigy (1/3)
+║   Other: Ruby Medallion
+║   Lands: Elegant Parlor, Elegant Parlor, Gemstone Caverns, Mountain
+║ Azorius Control (WST) board:
+║   Creatures: Sanctifier en-Vec (2/2) [tapped], Sanctifier en-Vec (2/2), Wan Shi Tong, Librarian (3/3)
+║   Lands: Plains [T], Island [T], Plains [T], Hallowed Fountain [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Mountain
+  [Main 1]
+T5 P1: Play Arid Mesa
+T5 P1: Crack Arid Mesa -> Mountain (untapped)
+T5 P2: Wan Shi Tong, Librarian triggers (opponent searched) — +1/+1 counter (4/4), draw a card
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Wish, 5 mana remaining)
+T5 P1: Cast Wish (2R)
+T5 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy — lost coin flip, takes 1 damage
+    [Priority] P2 passes (no response)
+T5: Resolve Wish
+T5 P1: Wish finds Grapeshot (from sideboard)
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Mountain→R (paying for Grapeshot, 4 mana remaining)
+T5 P1: Cast Grapeshot (1R)
+T5 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy — won coin flip!
+T5 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy transforms! (loyalty: 4) [+2 extra]
+    [Priority] P2 passes (no response)
+T5: Resolve Grapeshot
+T5 P1: Grapeshot deals 1 damage (opponent life: 18)
+T5: Storm copies: 1
+T5 P1: Grapeshot deals 1 damage (opponent life: 17)
+T5 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy [-2] -> Ral deals 2 damage divided as you choose among one or two targets. Draw a card if you control a blue permanent other than Ral
+T5 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy deals 2 to Sanctifier en-Vec
+T5: Sanctifier en-Vec dies
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Azorius Control (WST) (P2) ══════════════════════════
+║ Life: Azorius Control (WST) 17  |  Ruby Storm 14
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 2
+║ Azorius Control (WST) board:
+║   Creatures: Sanctifier en-Vec (2/2), Wan Shi Tong, Librarian (4/4)
+║   Lands: Plains, Island, Plains, Hallowed Fountain, Island
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Elegant Parlor, Elegant Parlor, Gemstone Caverns, Mountain [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Chalice of the Void
+  [Main 1]
+T6 P2: Play Polluted Delta
+T6 P2: Crack Polluted Delta (pay 1 life) -> Hallowed Fountain (tapped, life: 16)
+    → Goal: close_game
+T6 P2: Cast Chalice of the Void (4) (X=2)
+    [Priority] P1 passes (no response)
+T6: Resolve Chalice of the Void
+T6 P2: Chalice of the Void enters with 2 charge counter(s)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Sanctifier en-Vec, Wan Shi Tong, Librarian
+T6 P2: Attack with Sanctifier en-Vec, Wan Shi Tong, Librarian
+  [Declare Blockers] P1 does not block
+T6 P2:   Sanctifier en-Vec (2/2) → 2 dmg to player
+T6 P2:   Wan Shi Tong, Librarian (4/4) → 4 dmg to player
+  [Combat Damage] 6 damage dealt → P1 life: 14 → 8
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 8  |  Azorius Control (WST) 16
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 26  |  Graveyard: 6
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Elegant Parlor, Elegant Parlor, Gemstone Caverns, Mountain, Mountain
+║ Azorius Control (WST) board:
+║   Creatures: Sanctifier en-Vec (2/2) [tapped], Wan Shi Tong, Librarian (4/4)
+║   Other: Chalice of the Void
+║   Lands: Plains [T], Island [T], Plains [T], Hallowed Fountain [T], Island, Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arid Mesa
+  [Main 1]
+T6 P1: Play Arid Mesa
+T6 P2: Wan Shi Tong, Librarian triggers (opponent searched) — +1/+1 counter (5/5), draw a card
+T6 P1: Crack Arid Mesa (no valid land found)
+T6 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy [-2] -> Ral deals 2 damage divided as you choose among one or two targets. Draw a card if you control a blue permanent other than Ral
+T6 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy deals 2 to Sanctifier en-Vec
+T6: Sanctifier en-Vec dies
+T6: Ral, Monsoon Mage // Ral, Leyline Prodigy moved battlefield -> graveyard (SBA 704.5p: zero loyalty)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+    → Goal: execute_payoff
+    [Mana] Tap Mountain→R (paying for Ral, Monsoon Mage // Ral, Leyline Prodigy, 5 mana remaining)
+T6 P2: Chalice of the Void (X=2) counters Ral, Monsoon Mage // Ral, Leyline Prodigy
+  [End Step]
+
+╔══ TURN 7 — Azorius Control (WST) (P2) ══════════════════════════
+║ Life: Azorius Control (WST) 16  |  Ruby Storm 7
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 6  |  Opp lands: 5
+║ Library: 44  |  Graveyard: 4
+║ Azorius Control (WST) board:
+║   Creatures: Wan Shi Tong, Librarian (5/5)
+║   Other: Chalice of the Void
+║   Lands: Plains, Island, Plains, Hallowed Fountain, Island, Hallowed Fountain
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Elegant Parlor, Elegant Parlor, Gemstone Caverns, Mountain [T], Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Island
+  [Main 1]
+T7 P2: Play Hallowed Fountain (untapped, life: 16)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Wan Shi Tong, Librarian
+T7 P2: Attack with Wan Shi Tong, Librarian
+  [Declare Blockers] P1 does not block
+T7 P2:   Wan Shi Tong, Librarian (5/5) → 5 dmg to player
+  [Combat Damage] 5 damage dealt → P1 life: 7 → 2
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 2  |  Azorius Control (WST) 16
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 7
+║ Library: 25  |  Graveyard: 9
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Elegant Parlor, Elegant Parlor, Gemstone Caverns, Mountain, Mountain
+║ Azorius Control (WST) board:
+║   Creatures: Wan Shi Tong, Librarian (5/5)
+║   Other: Chalice of the Void
+║   Lands: Plains, Island, Plains, Hallowed Fountain, Island, Hallowed Fountain, Hallowed Fountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Manamorphose
+  [Main 1]
+T7 P1: Play Bloodstained Mire
+T7 P2: Wan Shi Tong, Librarian triggers (opponent searched) — +1/+1 counter (6/6), draw a card
+T7 P1: Crack Bloodstained Mire (no valid land found)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Manamorphose, 5 mana remaining)
+T7 P2: Chalice of the Void (X=2) counters Manamorphose
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+    [Mana] Tap Island→U, Island→U (paying for Wan Shi Tong, Librarian, 7 mana remaining)
+T7 P2: Cast Wan Shi Tong, Librarian (5UU) (X=5)
+T7: Resolve Wan Shi Tong, Librarian
+T7 P2: Wan Shi Tong, Librarian enters with 5 +1/+1 counter(s)
+T7 P2: Wan Shi Tong enters with 4 +1/+1 counters (10/10), draws 2 cards
+T7: Wan Shi Tong, Librarian moved battlefield -> graveyard (SBA 704.5j: legend rule (Wan Shi Tong, Librarian))
+
+╔══ TURN 8 — Azorius Control (WST) (P2) ══════════════════════════
+║ Life: Azorius Control (WST) 16  |  Ruby Storm 1
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 7  |  Opp lands: 5
+║ Library: 40  |  Graveyard: 5
+║ Azorius Control (WST) board:
+║   Creatures: Wan Shi Tong, Librarian (6/6)
+║   Other: Chalice of the Void
+║   Lands: Plains, Island, Plains, Hallowed Fountain, Island, Hallowed Fountain, Hallowed Fountain
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Elegant Parlor, Elegant Parlor, Gemstone Caverns, Mountain [T], Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Counterspell
+  [Main 1]
+T8 P2: Play Island
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Wan Shi Tong, Librarian
+T8 P2: Attack with Wan Shi Tong, Librarian
+  [Declare Blockers] P1 does not block
+T8 P2:   Wan Shi Tong, Librarian (6/6) → 6 dmg to player
+P1 loses: life total -5
+  [Combat Damage] 6 damage dealt → P1 life: 1 → -5
+
+>>> Azorius Control (WST) wins Game 1 on turn 8 via damage
+    Final life: Ruby Storm=-5  Azorius Control (WST)=16
+
+======================================================================
+  GAME 2: Ruby Storm (P1) vs Azorius Control (WST) (P2)  —  seed 55502
+  Series: Ruby Storm 0 - 1 Azorius Control (WST)
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Ruby Storm wins → chooses to play first
+║ P1 (on play): Ruby Storm
+║ P2 (on draw): Azorius Control (WST)
+╚═══════════════════════════════════════════════════════
+
+P1 (Ruby Storm) opening hand (3 lands, 4 spells):
+  • Grapeshot [Spell, CMC 2]
+  • Scalding Tarn [Land, CMC 0]
+  • Pyretic Ritual [Spell, CMC 2]
+  • Ral, Monsoon Mage // Ral, Leyline Prodigy [Creature, CMC 2]
+  • Ruby Medallion [Spell, CMC 2]
+  • Sunbaked Canyon [Land, CMC 0]
+  • Mountain [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Pyretic Ritual, Ruby Medallion, 4 cheap spells
+
+P2 (Azorius Control (WST)) opening hand (4 lands, 3 spells):
+  • Wan Shi Tong, Librarian [Creature, CMC 2]
+  • Counterspell [Spell, CMC 2]
+  • Hallowed Fountain [Land, CMC 0]
+  • Plains [Land, CMC 0]
+  • Polluted Delta [Land, CMC 0]
+  • Meticulous Archive [Land, CMC 0]
+  • Chalice of the Void [Spell, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Chalice of the Void, Counterspell, 3 cheap spells
+
+
+╔══ TURN 1 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 20  |  Azorius Control (WST) 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Scalding Tarn
+T1 P1: Crack Scalding Tarn (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Azorius Control (WST) (P2) ══════════════════════════
+║ Life: Azorius Control (WST) 20  |  Ruby Storm 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wrath of the Skies
+  [Main 1]
+T1 P2: Play Hallowed Fountain (untapped, life: 20)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 19  |  Azorius Control (WST) 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arid Mesa
+  [Main 1]
+T2 P1: Play Arid Mesa
+T2 P1: Crack Arid Mesa -> Mountain (untapped)
+    → Goal: deploy_engine [engines]
+    [Mana] Tap Mountain→R, Sacred Foundry→R (paying for Ruby Medallion, 2 mana remaining)
+T2 P1: Cast Ruby Medallion (2)
+    [Priority] P2 passes (no response)
+T2: Resolve Ruby Medallion
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Azorius Control (WST) (P2) ══════════════════════════
+║ Life: Azorius Control (WST) 20  |  Ruby Storm 18
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Polluted Delta
+  [Main 1]
+T2 P2: Play Polluted Delta
+T2 P2: Crack Polluted Delta (pay 1 life) -> Hallowed Fountain (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 18  |  Azorius Control (WST) 19
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry, Mountain
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Grapeshot
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Mountain→R (paying for Ral, Monsoon Mage // Ral, Leyline Prodigy, 2 mana remaining)
+T3 P1: Cast Ral, Monsoon Mage // Ral, Leyline Prodigy (1R)
+    [Priority] P2 passes (no response)
+T3: Resolve Ral, Monsoon Mage // Ral, Leyline Prodigy
+T3 P1: Ral, Monsoon Mage enters — instants/sorceries cost {1} less
+T3 P1: Play Sunbaked Canyon
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Pyretic Ritual, 2 mana remaining)
+T3 P1: Cast Pyretic Ritual (1R)
+T3 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy — won coin flip!
+T3 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy transforms! (loyalty: 4) [+2 extra]
+    [Priority] P2 passes (no response)
+T3: Resolve Pyretic Ritual
+T3 P1: Pyretic Ritual adds 3 R mana
+    → Goal: execute_payoff [payoffs]
+T3 P1: Cast Grapeshot (1R)
+    [Priority] P2 passes (no response)
+T3: Resolve Grapeshot
+T3 P1: Grapeshot deals 1 damage (opponent life: 18)
+T3: Storm copies: 2
+T3 P1: Grapeshot deals 1 damage (opponent life: 17)
+T3 P1: Grapeshot deals 1 damage (opponent life: 16)
+    → Goal: execute_payoff [payoffs]
+T3 P1: Cast Grapeshot (1R)
+    [Priority] P2 passes (no response)
+T3: Resolve Grapeshot
+T3 P1: Grapeshot deals 1 damage (opponent life: 15)
+T3: Storm copies: 3
+T3 P1: Grapeshot deals 1 damage (opponent life: 14)
+T3 P1: Grapeshot deals 1 damage (opponent life: 13)
+T3 P1: Grapeshot deals 1 damage (opponent life: 12)
+T3 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy [+1] -> Until your next turn, instant and sorcery spells you cast cost {1} less to cast
+T3 P1: Activate Sunbaked Canyon (sacrifice)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Azorius Control (WST) (P2) ══════════════════════════
+║ Life: Azorius Control (WST) 12  |  Ruby Storm 18
+║ Hand: 7 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 1
+║ Azorius Control (WST) board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Hallowed Fountain
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Hallowed Fountain
+  [Main 1]
+T3 P2: Play Polluted Delta
+T3 P2: Crack Polluted Delta (pay 1 life) -> Hallowed Fountain (tapped, life: 11)
+    → Goal: grind_value [engines]
+    [Mana] Tap Hallowed Fountain→U, Hallowed Fountain→U (paying for Wan Shi Tong, Librarian, 2 mana remaining)
+T3 P2: Cast Wan Shi Tong, Librarian (UU)
+    [Priority] P1 passes (no response)
+T3: Resolve Wan Shi Tong, Librarian
+T3 P2: Wan Shi Tong enters with 2 +1/+1 counters (3/3), draws 1 cards
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 18  |  Azorius Control (WST) 11
+║ Hand: 2 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 6
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry, Mountain
+║ Azorius Control (WST) board:
+║   Creatures: Wan Shi Tong, Librarian (3/3)
+║   Lands: Hallowed Fountain [T], Hallowed Fountain [T], Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ruby Medallion
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Mountain→R, Sacred Foundry→R (paying for Ruby Medallion, 2 mana remaining)
+T4 P1: Cast Ruby Medallion (2)
+    [Priority] P2 passes (no response)
+T4: Resolve Ruby Medallion
+T4 P1: Play Bloodstained Mire
+T4 P1: Crack Bloodstained Mire -> Mountain (untapped)
+T4 P2: Wan Shi Tong, Librarian triggers (opponent searched) — +1/+1 counter (4/4), draw a card
+T4 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy [+1] -> Until your next turn, instant and sorcery spells you cast cost {1} less to cast
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Azorius Control (WST) (P2) ══════════════════════════
+║ Life: Azorius Control (WST) 11  |  Ruby Storm 17
+║ Hand: 8 cards  |  Opp hand: 1 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 46  |  Graveyard: 2
+║ Azorius Control (WST) board:
+║   Creatures: Wan Shi Tong, Librarian (4/4)
+║   Lands: Hallowed Fountain, Hallowed Fountain, Hallowed Fountain
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion, Ruby Medallion
+║   Lands: Sacred Foundry [T], Mountain [T], Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+T4 P2: Play Flooded Strand
+T4 P2: Crack Flooded Strand -> Island (untapped)
+    → Goal: close_game
+T4 P2: Cast Chalice of the Void (4) (X=2)
+    [Priority] P1 passes (no response)
+T4: Resolve Chalice of the Void
+T4 P2: Chalice of the Void enters with 2 charge counter(s)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Wan Shi Tong, Librarian
+T4 P2: Attack with Wan Shi Tong, Librarian
+  [Declare Blockers] P1 does not block
+T4 P2:   Wan Shi Tong, Librarian (4/4) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 17 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 13  |  Azorius Control (WST) 10
+║ Hand: 1 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 7
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion, Ruby Medallion
+║   Lands: Sacred Foundry, Mountain, Mountain
+║ Azorius Control (WST) board:
+║   Creatures: Wan Shi Tong, Librarian (4/4)
+║   Other: Chalice of the Void
+║   Lands: Hallowed Fountain [T], Hallowed Fountain [T], Hallowed Fountain [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Pyretic Ritual
+  [Main 1]
+T5 P1: Play Mountain
+T5 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy [+1] -> Until your next turn, instant and sorcery spells you cast cost {1} less to cast
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Azorius Control (WST) (P2) ══════════════════════════
+║ Life: Azorius Control (WST) 10  |  Ruby Storm 13
+║ Hand: 7 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 44  |  Graveyard: 3
+║ Azorius Control (WST) board:
+║   Creatures: Wan Shi Tong, Librarian (4/4)
+║   Other: Chalice of the Void
+║   Lands: Hallowed Fountain, Hallowed Fountain, Hallowed Fountain, Island
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion, Ruby Medallion
+║   Lands: Sacred Foundry, Mountain, Mountain, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Chalice of the Void
+  [Main 1]
+T5 P2: Play Flooded Strand
+T5 P2: Crack Flooded Strand -> Island (untapped)
+    → Goal: close_game
+T5 P2: Cast Chalice of the Void (4) (X=2)
+    [Priority] P1 passes (no response)
+T5: Resolve Chalice of the Void
+T5 P2: Chalice of the Void enters with 2 charge counter(s)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Wan Shi Tong, Librarian
+T5 P2: Attack with Wan Shi Tong, Librarian
+  [Declare Blockers] P1 does not block
+T5 P2:   Wan Shi Tong, Librarian (4/4) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 13 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 9  |  Azorius Control (WST) 9
+║ Hand: 1 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 7
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion, Ruby Medallion
+║   Lands: Sacred Foundry, Mountain, Mountain, Mountain
+║ Azorius Control (WST) board:
+║   Creatures: Wan Shi Tong, Librarian (4/4)
+║   Other: Chalice of the Void, Chalice of the Void
+║   Lands: Hallowed Fountain [T], Hallowed Fountain [T], Hallowed Fountain [T], Island [T], Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Desperate Ritual
+  [Main 1]
+T6 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy [+1] -> Until your next turn, instant and sorcery spells you cast cost {1} less to cast
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Azorius Control (WST) (P2) ══════════════════════════
+║ Life: Azorius Control (WST) 9  |  Ruby Storm 9
+║ Hand: 6 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 42  |  Graveyard: 4
+║ Azorius Control (WST) board:
+║   Creatures: Wan Shi Tong, Librarian (4/4)
+║   Other: Chalice of the Void, Chalice of the Void
+║   Lands: Hallowed Fountain, Hallowed Fountain, Hallowed Fountain, Island, Island
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion, Ruby Medallion
+║   Lands: Sacred Foundry, Mountain, Mountain, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Counterspell
+  [Main 1]
+T6 P2: Play Plains
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Wan Shi Tong, Librarian
+T6 P2: Attack with Wan Shi Tong, Librarian
+  [Declare Blockers] P1 does not block
+T6 P2:   Wan Shi Tong, Librarian (4/4) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 9 → 5
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 5  |  Azorius Control (WST) 9
+║ Hand: 2 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 44  |  Graveyard: 7
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion, Ruby Medallion
+║   Lands: Sacred Foundry, Mountain, Mountain, Mountain
+║ Azorius Control (WST) board:
+║   Creatures: Wan Shi Tong, Librarian (4/4)
+║   Other: Chalice of the Void, Chalice of the Void
+║   Lands: Hallowed Fountain, Hallowed Fountain, Hallowed Fountain, Island, Island, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Scalding Tarn
+  [Main 1]
+T7 P1: Play Scalding Tarn
+T7 P1: Crack Scalding Tarn -> Mountain (untapped)
+T7 P2: Wan Shi Tong, Librarian triggers (opponent searched) — +1/+1 counter (5/5), draw a card
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Pyretic Ritual, 5 mana remaining)
+T7 P2: Chalice of the Void (X=2) counters Pyretic Ritual
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Desperate Ritual, 4 mana remaining)
+T7 P2: Chalice of the Void (X=2) counters Desperate Ritual
+T7 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy [-8] -> Exile the top eight cards of your library. You may cast instant and sorcery spells from among them this turn without paying their mana costs
+T7: Ral, Monsoon Mage // Ral, Leyline Prodigy moved battlefield -> graveyard (SBA 704.5p: zero loyalty)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+    [Mana] Tap Island→U, Island→U (paying for Wan Shi Tong, Librarian, 6 mana remaining)
+T7 P2: Cast Wan Shi Tong, Librarian (4UU) (X=4)
+T7: Resolve Wan Shi Tong, Librarian
+T7 P2: Wan Shi Tong, Librarian enters with 4 +1/+1 counter(s)
+T7 P2: Wan Shi Tong enters with 4 +1/+1 counters (9/9), draws 2 cards
+T7: Wan Shi Tong, Librarian moved battlefield -> graveyard (SBA 704.5j: legend rule (Wan Shi Tong, Librarian))
+
+╔══ TURN 7 — Azorius Control (WST) (P2) ══════════════════════════
+║ Life: Azorius Control (WST) 9  |  Ruby Storm 4
+║ Hand: 8 cards  |  Opp hand: 0 cards
+║ Lands: 6  |  Opp lands: 5
+║ Library: 38  |  Graveyard: 5
+║ Azorius Control (WST) board:
+║   Creatures: Wan Shi Tong, Librarian (5/5)
+║   Other: Chalice of the Void, Chalice of the Void
+║   Lands: Hallowed Fountain, Hallowed Fountain, Hallowed Fountain, Island, Island, Plains
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion, Ruby Medallion
+║   Lands: Sacred Foundry, Mountain [T], Mountain [T], Mountain, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+T7 P2: Play Polluted Delta
+T7 P2: Crack Polluted Delta -> Island (untapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Wan Shi Tong, Librarian
+T7 P2: Attack with Wan Shi Tong, Librarian
+  [Declare Blockers] P1 does not block
+T7 P2:   Wan Shi Tong, Librarian (5/5) → 5 dmg to player
+P1 loses: life total -1
+  [Combat Damage] 5 damage dealt → P1 life: 4 → -1
+
+>>> Azorius Control (WST) wins Game 2 on turn 7 via damage
+    Final life: Ruby Storm=-1  Azorius Control (WST)=8
+
+======================================================================
+  MATCH RESULT: Azorius Control (WST) wins 2-0
+======================================================================
