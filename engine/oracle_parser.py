@@ -1073,6 +1073,108 @@ def parse_token_spec(oracle: str) -> Optional[Dict]:
     }
 
 
+# Card-type words that can qualify a "cast a[n] <type> spell" trigger or a
+# "another <type> you control enters" trigger. These are card TYPES (CR
+# 205.2), distinct from subtypes (Elemental, Turtle, …).
+_CARD_TYPE_WORDS = {"artifact", "creature", "enchantment", "instant",
+                    "sorcery", "planeswalker", "battle", "land"}
+
+# Permanent card types (a subset of the above — instants/sorceries are
+# never permanents, so a permanent-enters trigger can only name these).
+_PERMANENT_TYPE_WORDS = {"artifact", "creature", "enchantment", "land",
+                         "planeswalker", "battle"}
+
+_NUM_WORDS = {"a": 1, "an": 1, "one": 1, "two": 2, "three": 3, "four": 4}
+
+
+def parse_cast_trigger_token(oracle: str) -> Optional[Dict]:
+    """Parse "whenever you cast a[n] <type> spell, create ... token"
+    (CR 603 cast-triggered token), generalised across spell TYPE.
+
+    Returns::
+
+        {"spell_types": frozenset[str], "count": int}
+
+    or None when the oracle has no such trigger.
+
+    ``spell_types`` is the SET of spell types that satisfy the trigger's
+    condition:
+
+      - "noncreature spell"        -> {"noncreature"}  (sentinel: any
+                                        spell that is not a creature)
+      - "artifact spell"           -> {"artifact"}
+      - "instant or sorcery spell" -> {"instant", "sorcery"}
+
+    The dispatcher matches ``spell_types`` against the cast spell's card
+    types (or, for the ``noncreature`` sentinel, against "not a creature
+    spell"). The token's P/T / subtype / keywords are NOT stored here —
+    the dispatcher passes the source oracle to ``create_token``, which
+    extracts the token spec via ``parse_token_spec``. This keeps ONE
+    owner for the token-shape parse.
+    """
+    if not oracle:
+        return None
+    lo = oracle.lower()
+    if "whenever" not in lo or "cast" not in lo:
+        return None
+    if "create" not in lo or "token" not in lo:
+        return None
+    m = re.search(r"cast (?:a|an|your first|another) ([a-z /]*?)spell", lo)
+    if not m:
+        return None
+    qualifier = m.group(1).strip()
+    if "noncreature" in qualifier:
+        spell_types = frozenset({"noncreature"})
+    else:
+        spell_types = frozenset(
+            w for w in re.split(r"\s+or\s+|\s+and\s+|\s+", qualifier)
+            if w in _CARD_TYPE_WORDS)
+    if not spell_types:
+        return None
+    count = 1
+    cm = re.search(r"create (a|an|one|two|three|four|\d+)\b", lo)
+    if cm:
+        tok = cm.group(1)
+        count = int(tok) if tok.isdigit() else _NUM_WORDS.get(tok, 1)
+    return {"spell_types": spell_types, "count": count}
+
+
+def parse_enters_type_counter(oracle: str) -> Optional[Dict]:
+    """Parse "whenever this creature or another <type> you control
+    enters, put a +N/+N counter on this creature[. It can't be blocked
+    this turn.]" (CR 603 permanent-enters trigger, dispatched by card
+    TYPE).
+
+    Returns::
+
+        {"permanent_type": str, "counter_power": int,
+         "counter_toughness": int, "unblockable_this_turn": bool}
+
+    or None. Only card TYPES (artifact, creature, …) are handled here;
+    the SUBTYPE variant ("another Elemental you control enters" — Risen
+    Reef) stays on the subtype scan in engine/triggers.py, so a captured
+    word that is not a permanent card type returns None.
+    """
+    if not oracle:
+        return None
+    lo = oracle.lower()
+    m = re.search(
+        r"whenever this creature or another (\w+) you control enters,\s*"
+        r"put a \+(\d+)/\+(\d+) counter on (?:this creature|it)", lo)
+    if not m:
+        return None
+    ptype = m.group(1)
+    if ptype not in _PERMANENT_TYPE_WORDS:
+        return None
+    tail = lo[m.end():m.end() + 60]
+    return {
+        "permanent_type": ptype,
+        "counter_power": int(m.group(2)),
+        "counter_toughness": int(m.group(3)),
+        "unblockable_this_turn": "can't be blocked this turn" in tail,
+    }
+
+
 def is_metalcraft_mana_any_color(oracle: str) -> bool:
     """True iff the oracle text declares a metalcraft-gated
     "{T}: Add one mana of any color" ability.

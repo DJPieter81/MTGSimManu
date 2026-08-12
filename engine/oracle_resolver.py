@@ -931,16 +931,28 @@ def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
             energy_count = m.group(1).count('{e}') if m else 1
             game.produce_energy(caster_idx, energy_count, permanent.name)
 
-        # ── "Whenever you cast a noncreature spell, create a token" ──
-        if (permanent.template.has_noncreature_spell_cast_trigger
-                and 'create' in oracle
-                and 'token' in oracle and not spell_cast.template.is_creature):
-            m = re.search(r'create\s+(?:a|(\d+))\s+(\d+)/(\d+)', oracle)
-            if m:
-                count = int(m.group(1) or 1)
-                p, t = int(m.group(2)), int(m.group(3))
-                game.create_token(caster_idx, "creature", count=count,
-                                  power=p, toughness=t)
+        # ── "Whenever you cast a[n] <type> spell, create a token" ──
+        # CR 603 cast-triggered token, generalised across spell TYPE.
+        # The spell-type condition + count are parsed once at DB load into
+        # `template.cast_trigger_token` (a set of qualifying types plus a
+        # count); this dispatch fires the token when the cast spell
+        # matches. Serves Pinnacle Emissary (artifact-cast → Drone),
+        # Monastery Mentor (noncreature-cast → Monk), Young Pyromancer and
+        # Talrand (instant/sorcery-cast). The token's P/T/subtype/keywords
+        # come from `source_oracle` via `create_token`'s parse_token_spec,
+        # so this branch owns only the "does the cast qualify?" decision.
+        cast_spec = permanent.template.cast_trigger_token
+        if cast_spec and permanent.controller == caster_idx:
+            spell_types = cast_spec['spell_types']
+            if 'noncreature' in spell_types:
+                qualifies = not spell_cast.template.is_creature
+            else:
+                cast_types = {t.value for t in spell_cast.template.card_types}
+                qualifies = bool(spell_types & cast_types)
+            if qualifies:
+                game.create_token(
+                    caster_idx, "creature", count=cast_spec['count'],
+                    source_oracle=permanent.template.oracle_text)
 
         # ── "Whenever you cast a spell, [scry/surveil/draw]" ──
         if ('cast a spell' in oracle or 'cast an instant or sorcery' in oracle):

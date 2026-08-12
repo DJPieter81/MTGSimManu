@@ -326,6 +326,21 @@ class CardTemplate:
     # Charge-counter ability -- True when oracle mentions "charge counter".
     # Populated by oracle_parser.parse_has_charge_counter_ability.
     has_charge_counter_ability: bool = False
+    # Cast-triggered token by spell TYPE (CR 603) -- dict
+    # {"spell_types": frozenset[str], "count": int} for
+    # "whenever you cast a[n] <type> spell, create a token" (Pinnacle
+    # Emissary/artifact, Monastery Mentor/noncreature, Young Pyromancer &
+    # Talrand/instant-or-sorcery). None when absent.
+    # Populated by oracle_parser.parse_cast_trigger_token.
+    cast_trigger_token: Optional[dict] = None
+    # Permanent-enters counter by card TYPE (CR 603) -- dict
+    # {"permanent_type": str, "counter_power": int,
+    #  "counter_toughness": int, "unblockable_this_turn": bool} for
+    # "whenever this creature or another <type> you control enters, put a
+    # +N/+N counter on this creature[. It can't be blocked this turn.]"
+    # (Kappa Cannoneer/artifact). None when absent.
+    # Populated by oracle_parser.parse_enters_type_counter.
+    enters_type_counter: Optional[dict] = None
 
     def __post_init__(self) -> None:
         # Derive fields from oracle text for templates not loaded through
@@ -364,7 +379,9 @@ class CardTemplate:
                                         parse_has_graveyard_recursion as _phgr,
                                         parse_has_discard_effect as _phde2,
                                         parse_is_storm_spell as _piss,
-                                        parse_has_charge_counter_ability as _phcca)
+                                        parse_has_charge_counter_ability as _phcca,
+                                        parse_cast_trigger_token as _pctt,
+                                        parse_enters_type_counter as _petc)
             from .card_database import KEYWORD_MAP as _KM
             import re as _re
             if self.warp_cost is None:
@@ -440,6 +457,10 @@ class CardTemplate:
                 self.is_storm_spell = _piss(self.oracle_text)
             if not self.has_charge_counter_ability:
                 self.has_charge_counter_ability = _phcca(self.oracle_text)
+            if self.cast_trigger_token is None:
+                self.cast_trigger_token = _pctt(self.oracle_text)
+            if self.enters_type_counter is None:
+                self.enters_type_counter = _petc(self.oracle_text)
             # Derive keywords from oracle text for synthetic templates that
             # were constructed with keywords=set(). DB-loaded templates
             # already have complete keyword sets from KEYWORD_MAP scanning;
@@ -573,6 +594,10 @@ class CardInstance:
     turned_face_up: bool = True
     entered_battlefield_this_turn: bool = False
     attacked_this_turn: bool = False
+    # CR 509.1b turn-scoped evasion: set True by a "it can't be blocked
+    # this turn" trigger (Kappa Cannoneer's enters-counter). Read by
+    # CombatManager._can_block; reset at the controller's next turn start.
+    cannot_be_blocked_this_turn: bool = False
     # CR 400.7 object identity: a card that changes zones becomes a new
     # object. The engine reuses one CardInstance across zones, so each
     # battlefield entry bumps this sequence; delayed one-shot riders
@@ -1143,6 +1168,7 @@ class CardInstance:
         self.summoning_sick = False
         self.entered_battlefield_this_turn = False
         self.attacked_this_turn = False
+        self.cannot_be_blocked_this_turn = False
 
     def enter_battlefield(self):
         self.zone = "battlefield"
