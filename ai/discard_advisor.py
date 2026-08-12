@@ -153,7 +153,17 @@ def choose_discard(game: "GameState", player_idx: int,
         # Cards with flashback/escape WANT to be in the graveyard.
         if t.escape_cost is not None:
             score += 100  # Escape (Phlage) — great to discard
-        if 'flashback' in t.tags:
+        # A plain flashback card is happy in the graveyard — you flash
+        # it back later, so binning it to hand size loses nothing.
+        # EXCEPT a card that GRANTS flashback to the whole graveyard
+        # (Past-in-Flames pattern): its value comes from being CAST
+        # FROM HAND to replay the yard as a chain payoff, so binning it
+        # discards a live line piece, not fuel.  Detection is the typed
+        # field populated at DB load (grants_flashback_to_gy_spells) —
+        # no runtime oracle parse, no card names; the class is every
+        # card that hands the graveyard back to you.
+        if ('flashback' in t.tags
+                and not getattr(t, 'grants_flashback_to_gy_spells', False)):
             score += DISCARD_FLASHBACK_BONUS
 
         # High-CMC creatures are reanimation targets (generic fallback

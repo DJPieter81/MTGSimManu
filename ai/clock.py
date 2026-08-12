@@ -258,6 +258,82 @@ def combo_clock(snap: "EVSnapshot") -> float:
 
 
 # ─────────────────────────────────────────────────────────────
+# Commit-vs-develop gate — spend a scarce one-shot payoff now, or
+# hold to assemble a larger line? (decision-kernel primitive)
+# ─────────────────────────────────────────────────────────────
+# The single place that answers a question every deck faces the
+# instant it is about to spend a resource it cannot get back: a
+# one-shot burn finisher, a tutor that fetches one, any closer whose
+# effect ends when it resolves. Before this primitive existed the
+# answer lived only inside the storm-specific fuel-counting heuristic
+# in `ai/combo_calc.py`, which fired the payoff whenever no fuel sat in
+# hand *this turn* — with no notion of "is a decisive line executable
+# now vs. developing toward a bigger one." That gap let the AI cash a
+# scarce payoff for damage far below the clock-derived lethal
+# threshold (a tutor -> burn finisher for 2 into 19) while a future
+# turn could still assemble lethal. The gate is deck-agnostic: every
+# input is a clock-derived fact, so it applies to any archetype facing
+# a commit-vs-build choice, not a storm code path.
+
+
+def should_commit_scarce_payoff(
+    fire_now_damage: float,
+    opp_life: int,
+    *,
+    line_can_grow: bool,
+    chain_uncommitted: bool,
+    survives_to_next_turn: bool,
+) -> bool:
+    """Spend a scarce, one-shot payoff NOW, or hold to develop a
+    larger line? Returns True to commit (fire), False to hold.
+
+    A *scarce payoff* is consumed when cast and cannot be replayed — a
+    one-shot burn finisher (Grapeshot class), a tutor that fetches one
+    (Wish class), any closer whose effect ends on resolution. For such
+    a resource "chip a little now and finish later" is a fiction:
+    firing below lethal forfeits the larger line a future turn would
+    assemble. Every argument is a clock-derived fact; the rule
+    introduces no numeric threshold of its own:
+
+      * ``fire_now_damage`` — damage the payoff deals if cast now,
+        measured against opponent life (the clock resource).
+      * ``opp_life`` — the clock-derived lethal threshold (CR 104.3a:
+        a player at 0 life loses).
+      * ``line_can_grow`` — a future turn can make the line strictly
+        larger (e.g. the library still holds chain fuel to draw).
+      * ``chain_uncommitted`` — no part of THIS turn's line is sunk
+        yet. A per-turn chain resource (storm count) empties at end of
+        turn, so once spells are sunk into it, holding the payoff
+        forfeits them; while nothing is sunk, holding costs nothing.
+      * ``survives_to_next_turn`` — we live to take the turn that would
+        grow the line (``not EVSnapshot.am_dead_next``).
+
+    Commit (True) iff ANY of:
+      1. ``fire_now_damage >= opp_life`` — lethal now; firing wins.
+      2. ``not survives_to_next_turn`` — no future turn exists; now is
+         the only window, so take what is available.
+      3. ``not (line_can_grow and chain_uncommitted)`` — holding cannot
+         strictly dominate: either the line can't grow, or this turn's
+         investment is already sunk and holding would forfeit it.
+
+    Hold (False) only when a strictly larger, still-assemblable line is
+    reachable on a turn we survive to take, with nothing yet sunk into
+    the current turn's line.
+
+    Terminating by construction: the hold branch needs BOTH growth
+    headroom AND survival AND an uncommitted chain. The opponent's
+    clock eventually removes survival, the library eventually empties,
+    or the first sunk spell flips ``chain_uncommitted`` — so the AI
+    cannot stall forever.
+    """
+    if fire_now_damage >= opp_life:
+        return True
+    if not survives_to_next_turn:
+        return True
+    return not (line_can_grow and chain_uncommitted)
+
+
+# ─────────────────────────────────────────────────────────────
 # Creature clock impact — what one creature contributes
 # ─────────────────────────────────────────────────────────────
 
