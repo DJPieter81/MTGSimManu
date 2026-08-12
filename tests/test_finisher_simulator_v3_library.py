@@ -58,6 +58,7 @@ class MockTemplate:
     is_cascade: bool = False
     is_arcane: bool = False
     splice_cost: Optional[int] = None
+    has_symmetric_reanimation: bool = False
 
 
 @dataclass
@@ -153,6 +154,7 @@ def _cycling_payoff(iid: int = 6, name: str = "CyclingPayoffMock") -> MockCard:
                 "battlefield"
             ),
             tags={"combo"},
+            has_symmetric_reanimation=True,
         ),
         instance_id=iid,
     )
