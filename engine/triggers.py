@@ -128,7 +128,7 @@ class TriggerManager:
         # you may PAY {E}{E}{E}" clause — the old loose regex matched the
         # former and fired on attacks, giving Boros free energy every swing.
         oracle = (attacker.template.oracle_text or '').lower()
-        if '{e}' in oracle and 'attack' in oracle and 'get' in oracle:
+        if '{e}' in oracle and attacker.template.has_attack_trigger and 'get' in oracle:
             import re
             for m in re.finditer(r'(?:get|gets?)\s+((?:\{e\})+)', oracle):
                 # Find this sentence's bounds
@@ -185,7 +185,7 @@ class TriggerManager:
 
         # Complex attack-trigger land search (oracle: "search...two land cards")
         oracle = (attacker.template.oracle_text or '').lower()
-        if 'attack' in oracle and 'search' in oracle and 'two land' in oracle:
+        if attacker.template.has_attack_trigger and 'search' in oracle and 'two land' in oracle:
             from .card_effects import _primeval_titan_search
             _primeval_titan_search(game, controller)
 
