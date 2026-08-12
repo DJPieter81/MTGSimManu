@@ -40,7 +40,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Optional, Set
 
-from ai.clock import should_commit_scarce_payoff
+from ai.clock import should_commit_scarce_payoff, scarce_payoff_commit_ev
 from ai.combo_calc import ComboAssessment, card_combo_modifier
 from ai.ev_evaluator import EVSnapshot
 
@@ -99,6 +99,58 @@ class TestCommitGatePrimitive:
             line_can_grow=True, chain_uncommitted=False,
             survives_to_next_turn=True,
         ) is True
+
+
+# ─── Part 1b: the decision is an EV comparison, not a flat penalty ──
+#
+# The commit/hold choice reduces to EV(fire now) − EV(develop a larger
+# line), both in kill-fraction × combo_value units. These pin that the
+# score IS that EV difference — its sign is the decision and its
+# magnitude is the EV at stake — so there is no arbitrary hold penalty.
+
+class TestBuildVsComboEV:
+    CV = 80.0  # a combo whose completion is worth a kill
+
+    def test_ev_now_is_capped_at_a_full_kill(self):
+        """A payoff that reaches lethal is worth exactly one kill —
+        overshoot damage adds nothing (min-cap at combo_value)."""
+        # reach lethal (fire == opp), develop unreachable → EV = full kill.
+        delta = scarce_payoff_commit_ev(20, opp_life=20, combo_value=self.CV,
+                                        develop_reach_probability=0.0)
+        assert delta == self.CV
+        # overshoot (fire >> opp) is not worth more than a kill.
+        over = scarce_payoff_commit_ev(40, opp_life=20, combo_value=self.CV,
+                                       develop_reach_probability=0.0)
+        assert over == self.CV
+
+    def test_developed_line_outscores_a_trivial_fire(self):
+        """Sub-lethal fire (2 into 19) vs a reachable developed combo:
+        EV(develop) = 1×CV dominates EV(now) = (2/19)×CV, so the EV
+        difference is negative (hold) and its size is the real gap."""
+        delta = scarce_payoff_commit_ev(2, opp_life=19, combo_value=self.CV,
+                                        develop_reach_probability=1.0)
+        assert delta < 0
+        assert delta == (2 / 19) * self.CV - self.CV
+
+    def test_unreachable_develop_leaves_only_fire_value(self):
+        """When the developed line cannot be reached (probability 0) the
+        EV difference is exactly EV(now) — non-negative, so fire."""
+        delta = scarce_payoff_commit_ev(2, opp_life=19, combo_value=self.CV,
+                                        develop_reach_probability=0.0)
+        assert delta == (2 / 19) * self.CV
+        assert delta >= 0
+
+    def test_develop_reach_probability_scales_the_hold_incentive(self):
+        """The decision is graded, not a cliff: as the probability of
+        reaching the developed line falls, EV(develop) shrinks, so the
+        incentive to hold shrinks monotonically toward firing. This is
+        the hook a BHI disruption discount plugs into."""
+        certain = scarce_payoff_commit_ev(2, opp_life=19, combo_value=self.CV,
+                                          develop_reach_probability=1.0)
+        halved = scarce_payoff_commit_ev(2, opp_life=19, combo_value=self.CV,
+                                         develop_reach_probability=0.5)
+        assert halved > certain            # less sure → less negative
+        assert halved == (2 / 19) * self.CV - 0.5 * self.CV
 
 
 # ─── Part 2: integration through the tutor-as-finisher-access branch ─
