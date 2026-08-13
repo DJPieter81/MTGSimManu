@@ -296,6 +296,9 @@ class CardTemplate:
     # look at the top, exile top N and play/cast).
     # Populated by oracle_parser.parse_has_draw_effect.
     has_draw_effect: bool = False
+    # Deals damage to a target/each/any — direct-damage finisher shape
+    # (Grapeshot). Populated by oracle_parser.parse_deals_targeted_damage.
+    deals_targeted_damage: bool = False
     # Exile permanent — True when oracle has 'exile target <permanent-type>'.
     # Covers instant/sorcery removal that exiles rather than destroys.
     # Populated by oracle_parser.parse_can_exile_permanent.

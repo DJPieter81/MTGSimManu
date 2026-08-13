@@ -1516,6 +1516,24 @@ def parse_has_artifact_synergy(oracle: str) -> bool:
             or 'affinity for artifacts' in lower)
 
 
+def parse_deals_targeted_damage(oracle: str) -> bool:
+    """Return True if the card deals damage to a target / to each player /
+    to any target — the direct-damage finisher shape (Grapeshot pattern).
+
+    Replaces the identical runtime predicate ("damage" present AND one of
+    target / each / any present) duplicated in
+    ai/combo_calc._payoff_deals_direct_damage and ai/combo_chain's
+    classify_card deals_direct flag. Stored as
+    CardTemplate.deals_targeted_damage (bool) at DB load. Semantics are
+    byte-for-byte the old inline predicate — no behavior change.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return ('damage' in lo
+            and ('target' in lo or 'each' in lo or 'any' in lo))
+
+
 def parse_has_draw_effect(oracle: str) -> bool:
     """Return True if the card draws or impulse-draws cards.
 

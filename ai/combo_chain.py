@@ -109,9 +109,9 @@ def classify_card(card, available_mana: int, medallion_count: int,
     # Is this a payoff for the combo?
     is_payoff = t.name in payoff_names or has_storm
 
-    # Direct damage detection from oracle text
-    deals_direct = ('damage' in oracle and
-                    ('target' in oracle or 'each' in oracle or 'any' in oracle))
+    # Direct damage detection — typed field parsed once at DB load
+    # (oracle_parser.parse_deals_targeted_damage); identical predicate.
+    deals_direct = getattr(t, 'deals_targeted_damage', False)
 
     # Splice onto Arcane: detect from template properties (set by oracle parser)
     is_arcane = getattr(t, 'is_arcane', False)

@@ -1700,7 +1700,8 @@ class CardDatabase:
             parse_domain_reduction, detect_power_scaling, parse_splice_cost,
             parse_counter_tax, parse_protection_from, parse_ward_cost,
             parse_can_target_player, parse_can_target_planeswalker,
-            grants_flashback_to_gy_spells, parse_has_attack_trigger,
+            grants_flashback_to_gy_spells, parse_deals_targeted_damage,
+            parse_has_attack_trigger,
             parse_has_lifegain_token_trigger, parse_lifegain_token_type,
             parse_targets_creature_spell, parse_targets_planeswalker_spell,
             parse_has_landfall, parse_has_library_search_opponent_trigger,
@@ -1766,6 +1767,7 @@ class CardDatabase:
         template.has_noncreature_spell_cast_trigger = parse_has_noncreature_spell_cast_trigger(oracle)
         template.has_artifact_synergy = parse_has_artifact_synergy(oracle)
         template.has_draw_effect = parse_has_draw_effect(oracle)
+        template.deals_targeted_damage = parse_deals_targeted_damage(oracle)
         template.can_exile_permanent = parse_can_exile_permanent(oracle)
         template.has_symmetric_reanimation = parse_has_symmetric_reanimation(oracle)
         template.phyrexian_pip_count = parse_phyrexian_pip_count(oracle)
