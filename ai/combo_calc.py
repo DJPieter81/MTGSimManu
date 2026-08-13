@@ -737,9 +737,7 @@ def _has_storm_finisher(card, me) -> bool:
     for c in list(sb) + list(me.library):
         if Kw.STORM in getattr(c.template, 'keywords', set()):
             return True
-        oracle = (c.template.oracle_text or '').lower()
-        if ('create' in oracle and 'tokens' in oracle
-                and 'for each' in oracle):
+        if getattr(c.template, 'has_scaling_token_finisher', False):
             return True
     return False
 
@@ -772,9 +770,7 @@ def _tutor_has_payoff_access(card, me) -> bool:
             continue
         if Kw.STORM in getattr(tmpl, 'keywords', set()):
             return True
-        oracle = (tmpl.oracle_text or '').lower()
-        if ('create' in oracle and 'tokens' in oracle
-                and 'for each' in oracle):
+        if getattr(tmpl, 'has_scaling_token_finisher', False):
             return True
     return False
 

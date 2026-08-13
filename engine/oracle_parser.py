@@ -1460,6 +1460,21 @@ def parse_can_destroy_nonland_permanent(oracle: str) -> bool:
     return 'destroy target nonland permanent' in oracle.lower()
 
 
+def parse_has_scaling_token_finisher(oracle: str) -> bool:
+    """Return True if the card creates a storm-scaled number of tokens.
+
+    Detection: oracle text contains all of 'create', 'tokens', and 'for each'
+    — the Empty-the-Warrens template ("Create two 1/1 … tokens for each spell
+    cast before it this turn").  Replaces nine identical runtime substring
+    checks in ai/combo_calc.py, ai/finisher_simulator.py, and
+    ai/finisher_simulator_v3.py.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'create' in lo and 'tokens' in lo and 'for each' in lo
+
+
 def parse_is_tutor(oracle: str) -> bool:
     """Return True if the card searches the library or fetches from outside the game.
 

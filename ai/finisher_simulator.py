@@ -243,8 +243,7 @@ def _tutor_has_payoff(
             continue
         if _has_storm_keyword(c):
             return True
-        oracle = (tmpl.oracle_text or '').lower()
-        if 'create' in oracle and 'tokens' in oracle and 'for each' in oracle:
+        if getattr(tmpl, 'has_scaling_token_finisher', False):
             return True
     return False
 
@@ -463,14 +462,13 @@ def _project_storm(
 def _has_token_finisher_oracle(template) -> bool:
     """Token-spawning finisher pattern (Empty-the-Warrens).
 
-    Detection: oracle text contains 'create … tokens' + 'for each'.
-    Mirrors the predicate at `combo_calc.py:514-516` so the
-    simulator agrees with the live combo modifier on what counts
-    as a finisher.  No card names.
+    Detection: reads the typed field parsed once at DB load
+    (oracle_parser.parse_has_scaling_token_finisher).  Mirrors
+    the predicate at `combo_calc.py` so the simulator agrees with
+    the live combo modifier on what counts as a finisher.  No
+    card names.
     """
-    oracle = (getattr(template, 'oracle_text', '') or '').lower()
-    return ('create' in oracle and 'tokens' in oracle
-            and 'for each' in oracle)
+    return getattr(template, 'has_scaling_token_finisher', False)
 
 
 def _scan_zone_for_storm_closer(zone: List["CardInstance"]):

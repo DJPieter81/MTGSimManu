@@ -299,6 +299,9 @@ class CardTemplate:
     # Deals damage to a target/each/any — direct-damage finisher shape
     # (Grapeshot). Populated by oracle_parser.parse_deals_targeted_damage.
     deals_targeted_damage: bool = False
+    # Creates a storm-scaled token count ("create … tokens for each …").
+    # Populated by oracle_parser.parse_has_scaling_token_finisher.
+    has_scaling_token_finisher: bool = False
     # Exile permanent — True when oracle has 'exile target <permanent-type>'.
     # Covers instant/sorcery removal that exiles rather than destroys.
     # Populated by oracle_parser.parse_can_exile_permanent.
