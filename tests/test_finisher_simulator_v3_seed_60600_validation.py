@@ -83,6 +83,7 @@ class MockTemplate:
     is_cascade: bool = False
     is_arcane: bool = False
     splice_cost: Optional[int] = None
+    deals_targeted_damage: bool = False
 
 
 @dataclass
@@ -112,6 +113,7 @@ def _grapeshot(iid: int) -> MockCard:
             keywords={Kw.STORM},
             oracle_text="storm — deal 1 damage to any target",
             tags={"finisher"},
+            deals_targeted_damage=True,
         ),
         instance_id=iid,
     )
