@@ -247,27 +247,5 @@ class TriggerManager:
             )
             game.stack.push(stack_item)
 
-    # ─── TRIGGER QUEUE (for ZoneManager integration) ──────────────
-
-
-    @staticmethod
-    def queue_trigger(game: "GameState", trigger_reg):
-        """Queue a triggered ability from the event system.
-
-        This bridges the new EventBus trigger system with the existing
-        _triggers_queue / process_triggers workflow.
-        """
-        from .event_system import TriggerRegistration
-        if isinstance(trigger_reg, TriggerRegistration):
-            # Create a synthetic Ability to wrap the event-based trigger
-            ability = Ability(
-                ability_type=AbilityType.TRIGGERED,
-                description=trigger_reg.description,
-                effect=trigger_reg.effect,
-            )
-            game._triggers_queue.append(
-                (ability, trigger_reg.card, trigger_reg.controller)
-            )
-
     # ─── STATE-BASED ACTIONS ─────────────────────────────────────
 

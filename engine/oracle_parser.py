@@ -277,11 +277,6 @@ def parse_x_cost(oracle: str, name: str, mana_cost_str: str = "") -> Optional[Di
     }
 
 
-def is_living_end_cascader(oracle: str, card_types: list) -> bool:
-    """Check if this card cascades into Living End."""
-    return has_cascade(oracle)
-
-
 def parse_splice_cost(oracle: str) -> "Optional[ManaCost]":
     """Parse splice onto Arcane cost from oracle text.
 
@@ -701,41 +696,6 @@ def detect_power_scaling(oracle: str) -> str:
         if gy_pattern.search(clause):
             return "graveyard"
     return ""
-
-
-def parse_planeswalker_abilities(oracle: str) -> Optional[Dict]:
-    """Parse planeswalker loyalty abilities from oracle text.
-
-    Returns dict with 'plus', 'minus', 'ult', 'starting_loyalty'.
-    """
-    oracle_lower = oracle.lower()
-    if not any(f'[{sign}' in oracle_lower for sign in ['+', '−', '-', '0']):
-        return None
-
-    abilities = {}
-
-    # Parse [+N]: effect
-    plus_m = re.search(r'\[([+])(\d+)\]\s*:\s*(.+?)(?:\n|\[|$)', oracle, re.IGNORECASE)
-    if plus_m:
-        abilities['plus'] = (int(plus_m.group(2)), plus_m.group(3).strip()[:60])
-
-    # Parse [−N]: effect or [-N]: effect
-    minus_m = re.search(r'\[[−\-](\d+)\]\s*:\s*(.+?)(?:\n|\[|$)', oracle, re.IGNORECASE)
-    if minus_m:
-        cost = -int(minus_m.group(1))
-        abilities['minus'] = (cost, minus_m.group(2).strip()[:60])
-
-    # Parse ultimate (largest negative)
-    ult_matches = re.findall(r'\[[−\-](\d+)\]\s*:\s*(.+?)(?:\n|\[|$)', oracle, re.IGNORECASE)
-    if len(ult_matches) >= 2:
-        # Ultimate is the one with highest cost
-        ult = max(ult_matches, key=lambda m: int(m[0]))
-        abilities['ult'] = (-int(ult[0]), ult[1].strip()[:60])
-
-    if not abilities:
-        return None
-
-    return abilities
 
 
 def has_delve(oracle: str) -> bool:

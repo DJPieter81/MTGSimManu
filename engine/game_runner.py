@@ -14,7 +14,7 @@ from .cards import CardTemplate, CardInstance, Keyword, CardType, Supertype
 from .card_database import CardDatabase
 from .stack import StackItem
 from .turn_manager import TurnManager, TurnStep
-from .priority_system import PrioritySystem
+
 from .combat_manager import CombatManager
 from .callbacks import GameCallbacks
 
@@ -1187,7 +1187,6 @@ class GameRunner:
         # of the main phase. They can play lands, cast spells, or pass.
         # After each spell, opponent gets a response window (CR 117.3d).
         # Both must pass for the stack to resolve (CR 117.4).
-        priority = game.priority
         # Auto-fire imprint-copy artifacts at sorcery speed (moved out
         # of the pre-draw upkeep — see
         # _process_imprint_copy_activations for the CR rationale).
@@ -1211,16 +1210,11 @@ class GameRunner:
         while actions < max_actions and not game.game_over:
             if hasattr(game, '_game_deadline') and _time.monotonic() > game._game_deadline:
                 return
-            # Active player gets priority (CR 117.3a)
-            priority.give_priority(game, ai.player_idx)
-
             decision = ai.decide_main_phase(game)
             if decision is None:
-                # Active player passes priority
                 break
 
             action, card, targets = decision
-            priority.take_action(game)  # CR 117.3c
 
             # Structured PLAY event — fired BEFORE the engine applies
             # the play so the consumer sees `chosen.card` in the
@@ -1304,7 +1298,6 @@ class GameRunner:
                     elif not game.stack.is_empty:
                         top = game.stack.top
                         if top:
-                            priority.give_priority(game, opponent_ai.player_idx)
                             response = opponent_ai.decide_response(game, top)
                             # Emit RESPONSE_DECISION onto the structured
                             # replay log (W0-H). The decider stores its
@@ -1319,7 +1312,6 @@ class GameRunner:
                                     game.log.append(f'    [Priority] P{opponent_ai.player_idx+1} responds with {resp_card.name}')
                                 game.cast_spell(opponent_ai.player_idx,
                                                 resp_card, resp_targets)
-                                priority.take_action(game)
                                 if hasattr(ai, 'bhi'):
                                     ai.bhi.observe_spell_cast(
                                         game, getattr(resp_card.template, 'tags', set()))

@@ -26,11 +26,9 @@ from .cards import (
     CardTemplate, CardInstance, CardType, Keyword, Ability, AbilityType, Supertype
 )
 from .stack import Stack, StackItem, StackItemType
-from .event_system import EventBus, EventType, GameEvent
 from .zone_manager import ZoneManager
 from .sba_manager import SBAManager
 from .turn_manager import TurnManager, TurnStep
-from .priority_system import PrioritySystem
 from .card_effects import EFFECT_REGISTRY, EffectTiming
 from .continuous_effects import ContinuousEffectsManager
 from .callbacks import GameCallbacks, DefaultCallbacks
@@ -110,11 +108,9 @@ class GameState:
         self.log: List[str] = []
         self.max_turns: int = MAX_TURNS
         # ── New rules engine modules ──
-        self.event_bus = EventBus()
-        self.zone_mgr = ZoneManager(self.event_bus)
+        self.zone_mgr = ZoneManager()
         self.sba_mgr = SBAManager(self.zone_mgr)
         self.turn_mgr = TurnManager()
-        self.priority = PrioritySystem()
         self.continuous_effects = ContinuousEffectsManager()
 
     def next_instance_id(self) -> int:
