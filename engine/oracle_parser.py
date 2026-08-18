@@ -1859,3 +1859,99 @@ def parse_has_charge_counter_ability(oracle: str) -> bool:
     if not oracle:
         return False
     return 'charge counter' in oracle.lower()
+
+
+def parse_has_cast_trigger(oracle: str) -> bool:
+    """Return True when the card has a 'when you cast' triggered ability.
+
+    Covers cast-trigger permanents (Amulet of Vigor, Kiln Fiend-class
+    creatures, cascade permanents) and cast-trigger sorceries.  Replaces
+    'when you cast' in oracle runtime checks.
+
+    Class size: cast-trigger cards in Modern (Amulet, Bloodbraid Elf,
+    Searing Wind, approximately 30-50 cards).
+    """
+    if not oracle:
+        return False
+    return 'when you cast' in oracle.lower()
+
+
+def parse_has_recurring_trigger(oracle: str) -> bool:
+    """Return True when the card has a non-ETB recurring triggered ability.
+
+    Matches 'whenever' trigger patterns (excluding ETB text that already
+    fires as an ETB trigger) and 'at the beginning of' upkeep/draw triggers.
+    Covers anthem-style lords, Amulet untap triggers, draw engines, and
+    recurring damage/life triggers.  Replaces runtime 'whenever' in oracle
+    and 'at the beginning of' in oracle checks.
+
+    Class size: ~hundreds of Modern cards with triggered abilities.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    if 'at the beginning of' in lo:
+        return True
+    return bool(re.search(r'whenever ', lo))
+
+
+def parse_limits_opponent_spell_timing(oracle: str) -> bool:
+    """Return True for cards that restrict opponents to sorcery-speed casts.
+
+    Matches Teferi, Time Raveler's static: 'cast spells only any time they
+    could cast a sorcery'.  Replaces the full-phrase runtime substring check.
+
+    Class size: ~5-10 Modern-legal cards with this static (Teferi family).
+    """
+    if not oracle:
+        return False
+    return 'cast spells only any time they could cast a sorcery' in oracle.lower()
+
+
+def parse_has_charge_counter_wipe(oracle: str) -> bool:
+    """Return True for charge-counter permanents that destroy by mana value.
+
+    Matches Ratchet Bomb / Engineered Explosives pattern: 'charge counter'
+    + 'destroy' + 'mana value'.  Distinct from the Chalice pattern (which
+    counters spells rather than destroying permanents).
+
+    Class size: ~5 Modern cards (Ratchet Bomb, Engineered Explosives,
+    and variants).
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'charge counter' in lo and 'destroy' in lo and 'mana value' in lo
+
+
+def parse_has_mana_value_wipe(oracle: str) -> bool:
+    """Return True for X-cost spells that destroy permanents by mana value.
+
+    Matches Wrath of the Skies / Engineered Explosives wipe pattern:
+    'destroy each' combined with 'mana value less than or equal to'.
+    Distinct from Chalice (which counters spells) and charge-counter wipes
+    (which check charge counts, not paid X).
+
+    Class size: ~5 Modern-legal mana-value-wipe cards (EE, Wrath of the
+    Skies, Engineered Explosives, Suncleanser variants).
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'destroy each' in lo and 'mana value less than or equal to' in lo
+
+
+def parse_has_sacrifice_for_damage(oracle: str) -> bool:
+    """Return True for activated abilities that sacrifice a creature to deal damage.
+
+    Matches Goblin Bombardment / Blasting Station pattern: 'sacrifice a
+    creature' combined with a damage-dealing clause.  Used to detect
+    delayed-value permanents whose damage engine consumes creatures rather
+    than producing them.
+
+    Class size: ~10-20 Modern-legal sacrifice-outlet + damage cards.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'sacrifice a creature' in lo and 'damage' in lo

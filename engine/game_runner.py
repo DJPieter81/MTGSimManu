@@ -67,8 +67,7 @@ def _sorcery_speed_only_active(player: PlayerState) -> bool:
     player's turn.
     """
     for c in player.battlefield:
-        oracle = (c.template.oracle_text or '').lower()
-        if 'cast spells only any time they could cast a sorcery' in oracle:
+        if getattr(c.template, 'limits_opponent_spell_timing', False):
             return True
     return False
 
@@ -1876,8 +1875,7 @@ class GameRunner:
 
             # Charge counter artifact that ticks up and pops to destroy
             # (Ratchet Bomb, Engineered Explosives, etc.)
-            if ('charge counter' in oracle and 'destroy' in oracle
-                    and 'mana value' in oracle):
+            if getattr(perm.template, 'has_charge_counter_wipe', False):
                 charges = perm.other_counters.get("charge", 0)
                 # Tick up
                 perm.other_counters["charge"] = charges + 1

@@ -1168,9 +1168,8 @@ class CastManager:
             # For XX spells, X = mana / 2; for X spells, X = mana
             available_for_x = player.untapped_mana_capacity() + player.mana_pool.total() + player._tron_mana_bonus()
             x_value = available_for_x // x_info["multiplier"]
-            # AI chooses optimal X based on oracle text:
-            oracle = (template.oracle_text or '').lower()
-            if 'charge counter' in oracle and 'whenever' in oracle:
+            # AI chooses optimal X based on typed fields:
+            if getattr(template, 'stax_class', None) == 'chalice':
                 # Hate permanent (Chalice-style): pick X to maximize NET
                 # disruption = opp_count(X) − my_count(X). Counting only
                 # opp's CMCs (audit F-R3-1's first pass) picks the CMC
@@ -1212,8 +1211,7 @@ class CastManager:
                     x_value = best_cmc
                 elif x_value >= 1:
                     x_value = 1  # fallback when no data
-            elif ('destroy each' in oracle
-                  and 'mana value less than or equal to' in oracle):
+            elif getattr(template, 'has_mana_value_wipe', False):
                 # Scaling board-wipe-by-X (Wrath of the Skies pattern):
                 # "Destroy each artifact, creature, and enchantment with
                 # mana value less than or equal to the amount of {E} paid

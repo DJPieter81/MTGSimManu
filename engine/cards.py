@@ -336,6 +336,25 @@ class CardTemplate:
     # Blood Moon forced basic land type ('mountain', 'island', etc.), or None.
     # Populated by oracle_parser.parse_stax_forced_basic.
     stax_forced_basic: Optional[str] = None
+    # Cast trigger -- True when oracle has a 'when you cast' triggered ability.
+    # Populated by oracle_parser.parse_has_cast_trigger.
+    has_cast_trigger: bool = False
+    # Recurring trigger -- True when oracle has a non-ETB periodic trigger
+    # ('whenever ...' or 'at the beginning of ...').
+    # Populated by oracle_parser.parse_has_recurring_trigger.
+    has_recurring_trigger: bool = False
+    # Limits opponent spell timing -- True for Teferi-style 'cast only as sorcery' statics.
+    # Populated by oracle_parser.parse_limits_opponent_spell_timing.
+    limits_opponent_spell_timing: bool = False
+    # Charge-counter board wipe -- True for Ratchet Bomb / EE pattern.
+    # Populated by oracle_parser.parse_has_charge_counter_wipe.
+    has_charge_counter_wipe: bool = False
+    # Mana-value wipe -- True for X-cost wipes that destroy by mana value.
+    # Populated by oracle_parser.parse_has_mana_value_wipe.
+    has_mana_value_wipe: bool = False
+    # Sacrifice-for-damage -- True for Goblin Bombardment / Blasting Station pattern.
+    # Populated by oracle_parser.parse_has_sacrifice_for_damage.
+    has_sacrifice_for_damage: bool = False
     # Discard effect -- True when oracle causes the target to discard cards.
     # Populated by oracle_parser.parse_has_discard_effect.
     has_discard_effect: bool = False

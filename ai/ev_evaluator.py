@@ -817,7 +817,7 @@ def _has_immediate_effect(card: "CardInstance") -> bool:
     #     multiple turns).
     #   '{t}:' without mana production → tap-activated engines whose value
     #     requires future untaps (Urza's Saga constructs, card-draw engines).
-    if 'sacrifice a creature' in oracle and 'damage' in oracle:
+    if getattr(t, 'has_sacrifice_for_damage', False):
         return False
     if '{t}:' in oracle and 'add' not in oracle and 'draw' not in oracle:
         return False
@@ -1081,7 +1081,7 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
         signals.append('etb_trigger')
 
     # 2. Cast trigger or storm keyword (spell counts its chain).
-    if 'storm' in keywords or 'when you cast' in oracle:
+    if 'storm' in keywords or getattr(t, 'has_cast_trigger', False):
         signals.append('cast_trigger')
 
     # 3. Haste / dash path / flash (immediate board impact).
@@ -1229,15 +1229,11 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
     #     not an activated ability (`{cost}:` form).  Activated
     #     abilities require external setup (carrier, sac fodder, etc.)
     #     handled by other signals.
-    is_triggered_engine = (
-        re.search(r'whenever (?:a |an |another |[a-z\'\-]+ )', oracle)
-        is not None
-        or 'at the beginning of' in oracle
-    )
+    is_triggered_engine = getattr(t, 'has_recurring_trigger', False)
     is_activated_only = (
         ':' in oracle
         and not is_triggered_engine
-        and 'whenever' not in oracle
+        and not getattr(t, 'has_recurring_trigger', False)
     )
     if is_triggered_engine and not is_activated_only:
         # Reject pure self-ETB matches that already fire signal #1
@@ -2048,7 +2044,7 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
         # which was missed by the token-only gate.
         oracle_l = (t.oracle_text or '').lower()
         if ('token_maker' in tags
-                or 'whenever' in oracle_l
+                or getattr(t, 'has_recurring_trigger', False)
                 or '{e}' in oracle_l):
             p_imm, count_imm, p_persist = _project_token_bonus(
                 oracle_l, snap
