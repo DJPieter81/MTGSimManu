@@ -139,11 +139,11 @@ class TestCanTargetPlayerField:
 
     def test_immediate_interaction_uses_can_target_player_field(self):
         """Forced-discard is classified as immediate interaction via
-        template.can_target_player, not by substring matching."""
+        template.can_target_player + template.has_discard_effect fields."""
         oracle = "that player discards that card."  # no 'target player' substring
         tmpl = _ImmediateInteractionTemplate(is_counterspell=False,
-                                             can_target_player=True)
-        # 'discard' is still matched in the oracle; the field gates the branch
+                                             can_target_player=True,
+                                             has_discard_effect=True)
         assert _is_immediate_interaction(oracle, set(), tmpl) is True
 
     def test_self_loot_not_immediate_even_with_discard_oracle(self):

@@ -899,9 +899,11 @@ class _ImmediateInteractionTemplate:
     """
 
     def __init__(self, is_counterspell: bool = False,
-                 can_target_player: bool = False) -> None:
+                 can_target_player: bool = False,
+                 has_discard_effect: bool = False) -> None:
         self.is_counterspell = is_counterspell
         self.can_target_player = can_target_player
+        self.has_discard_effect = has_discard_effect
 
 
 def _is_immediate_interaction(oracle: str, tags, template) -> bool:
