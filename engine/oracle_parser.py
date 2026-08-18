@@ -2206,3 +2206,104 @@ def parse_has_destroy_or_exile(oracle: str) -> bool:
         return False
     lo = oracle.lower()
     return 'destroy' in lo or 'exile' in lo
+
+
+def parse_has_artifact_count_scaling(oracle: str) -> bool:
+    """Return True when P/T scales with artifact count you control.
+
+    Replaces the tight regex r'\\+\\d+/\\+\\d+\\s+for\\s+each\\s+artifact\\s+you\\s+control'
+    used in cards.py _dynamic_base_power/_dynamic_base_toughness. The tighter
+    form is preserved at parse time to avoid the Affinity-reminder-text false
+    positive documented in cards.py:1019-1022.
+
+    Class size: Construct tokens (Urza's Saga), Nettlecyst, Steel Overseer-class.
+    """
+    if not oracle:
+        return False
+    import re
+    return bool(re.search(r'\+\d+/\+\d+\s+for\s+each\s+artifact\s+you\s+control',
+                           oracle.lower()))
+
+
+def parse_has_surveil(oracle: str) -> bool:
+    """Return True when oracle contains the surveil keyword.
+
+    Replaces 'surveil' in oracle in oracle_resolver.py.
+    Class size: dozens of Dimir and multicolor cards (Consider, Thought Erasure, etc.).
+    """
+    if not oracle:
+        return False
+    return 'surveil' in oracle.lower()
+
+
+def parse_has_coin_flip(oracle: str) -> bool:
+    """Return True when oracle involves flipping a coin.
+
+    Replaces 'flip a coin' in oracle in oracle_resolver.py.
+    Class size: Ral, Izzet Viceroy and similar transform-on-coin-flip cards.
+    """
+    if not oracle:
+        return False
+    return 'flip a coin' in oracle.lower()
+
+
+def parse_has_mobilize(oracle: str) -> bool:
+    """Return True when oracle contains the mobilize keyword.
+
+    Replaces 'mobilize' in oracle in oracle_resolver.py attack trigger dispatch.
+    Class size: cards with the mobilize keyword (Kellan, etc.).
+    """
+    if not oracle:
+        return False
+    return 'mobilize' in oracle.lower()
+
+
+def parse_has_transform_effect(oracle: str) -> bool:
+    """Return True when oracle references transforming.
+
+    Replaces 'transformed' in oracle in oracle_resolver.py.
+    Class size: all DFC cards that transform as an effect (Fable, Ral, etc.).
+    """
+    if not oracle:
+        return False
+    return 'transform' in oracle.lower()
+
+
+def parse_has_instant_or_sorcery_reference(oracle: str) -> bool:
+    """Return True when oracle counts or references instants or sorceries.
+
+    Replaces three compound checks in oracle_resolver.py:
+      'instant or sorcery' | 'instant and/or sorcery' | 'instant and sorcery'
+    Used to detect spells-matter trigger conditions on permanents like Fable.
+
+    Class size: dozens of Izzet/spells-matter cards.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return ('instant or sorcery' in lo
+            or 'instant and/or sorcery' in lo
+            or 'instant and sorcery' in lo)
+
+
+def parse_has_graveyard_target(oracle: str) -> bool:
+    """Return True when oracle targets something from a graveyard.
+
+    Replaces 'from a graveyard' in oracle in target_solver.py.
+    Class size: reanimation, exile-from-graveyard, delve, and escape cards.
+    """
+    if not oracle:
+        return False
+    return 'from a graveyard' in oracle.lower()
+
+
+def parse_has_dual_land_search(oracle: str) -> bool:
+    """Return True when oracle searches for two land cards (Primeval Titan pattern).
+
+    Replaces the compound check 'search' and 'two land' in oracle in triggers.py.
+    Class size: Primeval Titan and any future double-land-search attack triggers.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'search' in lo and 'two land' in lo

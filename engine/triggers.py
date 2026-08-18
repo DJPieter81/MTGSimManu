@@ -212,8 +212,7 @@ class TriggerManager:
                                 f"P{opponent+1} sacrifices {sacrificed} permanents")
 
         # Complex attack-trigger land search (oracle: "search...two land cards")
-        oracle = (attacker.template.oracle_text or '').lower()
-        if attacker.template.has_attack_trigger and 'search' in oracle and 'two land' in oracle:
+        if attacker.template.has_attack_trigger and getattr(attacker.template, 'has_dual_land_search', False):
             from .card_effects import _primeval_titan_search
             _primeval_titan_search(game, controller)
 

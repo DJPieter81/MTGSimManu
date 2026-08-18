@@ -406,6 +406,30 @@ class CardTemplate:
     # Destroy or exile -- True when oracle destroys or exiles a permanent.
     # Populated by oracle_parser.parse_has_destroy_or_exile.
     has_destroy_or_exile: bool = False
+    # Artifact-count P/T scaling -- "gets +N/+N for each artifact you control".
+    # Populated by oracle_parser.parse_has_artifact_count_scaling.
+    has_artifact_count_scaling: bool = False
+    # Surveil keyword -- True when oracle contains the surveil keyword.
+    # Populated by oracle_parser.parse_has_surveil.
+    has_surveil: bool = False
+    # Coin-flip effect -- True when oracle involves flipping a coin.
+    # Populated by oracle_parser.parse_has_coin_flip.
+    has_coin_flip: bool = False
+    # Mobilize keyword -- True when oracle contains the mobilize keyword.
+    # Populated by oracle_parser.parse_has_mobilize.
+    has_mobilize: bool = False
+    # Transform effect -- True when oracle references transforming.
+    # Populated by oracle_parser.parse_has_transform_effect.
+    has_transform_effect: bool = False
+    # Instant/sorcery reference -- True when oracle counts instants or sorceries.
+    # Populated by oracle_parser.parse_has_instant_or_sorcery_reference.
+    has_instant_or_sorcery_reference: bool = False
+    # Graveyard targeting -- True when oracle targets from a graveyard.
+    # Populated by oracle_parser.parse_has_graveyard_target.
+    has_graveyard_target: bool = False
+    # Dual land search (Primeval Titan pattern) -- True when oracle searches for two lands.
+    # Populated by oracle_parser.parse_has_dual_land_search.
+    has_dual_land_search: bool = False
     # Storm keyword (CR 702.39) -- True when oracle contains standalone "storm".
     # Populated by oracle_parser.parse_is_storm_spell.
     is_storm_spell: bool = False
@@ -1020,9 +1044,7 @@ class CardInstance:
         # text ("costs {1} less to cast for each artifact you control") and
         # inflated every Affinity creature's power to the controller's artifact
         # count. Scope the match to the actual Construct/Plating pattern.
-        import re as _re
-        oracle = self._effective_oracle_text().lower()
-        if _re.search(r'\+\d+/\+\d+\s+for\s+each\s+artifact\s+you\s+control', oracle):
+        if getattr(self.template, 'has_artifact_count_scaling', False):
             base = self._effective_printed_power() + self._get_artifact_count()
         # Equipment scaling (Cranial Plating, Nettlecyst, etc.)
         # Tags are equipped_{instance_id} — unique per equipment, supports stacking.
@@ -1083,10 +1105,8 @@ class CardInstance:
             return self._effective_printed_toughness()
 
         base = self._effective_printed_toughness()
-        import re as _re
-        oracle = self._effective_oracle_text().lower()
         # Same tightening as _dynamic_base_power — see note above.
-        if _re.search(r'\+\d+/\+\d+\s+for\s+each\s+artifact\s+you\s+control', oracle):
+        if getattr(self.template, 'has_artifact_count_scaling', False):
             base = self._effective_printed_toughness() + self._get_artifact_count()
         # Equipment toughness scaling — only applies when toughness component is non-zero.
         # e.g. Nettlecyst: +1/+1 for each artifact → toughness bonus applies

@@ -698,7 +698,7 @@ def resolve_attack_trigger(game: "GameState", attacker: "CardInstance",
             game.gain_life(controller, int(m.group(1)), attacker.name)
 
     # ── Mobilize: "create N tapped and attacking tokens" ──
-    if 'mobilize' in oracle:
+    if getattr(attacker.template, 'has_mobilize', False):
         m = re.search(r'mobilize\s+(\d+)', oracle)
         if m:
             count = int(m.group(1))
@@ -971,7 +971,7 @@ def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
         # mechanic now has a single dispatch path used by both
         # spell-cast-triggered permanents AND land/permanent ETBs.
         if (permanent.template.has_noncreature_spell_cast_trigger
-                and 'surveil' in oracle
+                and getattr(permanent.template, 'has_surveil', False)
                 and not spell_cast.template.is_creature
                 and permanent.controller == caster_idx):
             m = re.search(r'surveil\s+(\d+)', oracle)
@@ -985,12 +985,10 @@ def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
         #      transformed" (deterministic variant; no card names).
         if ((spell_cast.template.is_instant or spell_cast.template.is_sorcery)
                 and permanent.template.is_creature
-                and 'transformed' in oracle
+                and getattr(permanent.template, 'has_transform_effect', False)
                 and not getattr(permanent, 'is_transformed', False)
-                and ('instant or sorcery' in oracle
-                     or 'instant and/or sorcery' in oracle
-                     or 'instant and sorcery' in oracle)):
-            if 'flip a coin' in oracle:
+                and getattr(permanent.template, 'has_instant_or_sorcery_reference', False)):
+            if getattr(permanent.template, 'has_coin_flip', False):
                 _handle_coin_flip_transform(game, caster_idx, permanent)
             else:
                 threshold = _parse_count_threshold(oracle)

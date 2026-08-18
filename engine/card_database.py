@@ -1726,6 +1726,10 @@ class CardDatabase:
             parse_has_exile_own_creature, parse_has_converge,
             parse_has_delirium, parse_has_all_basic_land_types,
             parse_has_destroy_or_exile,
+            parse_has_artifact_count_scaling, parse_has_surveil,
+            parse_has_coin_flip, parse_has_mobilize, parse_has_transform_effect,
+            parse_has_instant_or_sorcery_reference, parse_has_graveyard_target,
+            parse_has_dual_land_search,
             parse_limits_opponent_spell_timing, parse_has_charge_counter_wipe,
             parse_has_mana_value_wipe, parse_has_sacrifice_for_damage,
             parse_prevents_graveyard_etb, parse_requires_creature_target,
@@ -1808,6 +1812,14 @@ class CardDatabase:
         template.has_delirium = parse_has_delirium(oracle)
         template.has_all_basic_land_types = parse_has_all_basic_land_types(oracle)
         template.has_destroy_or_exile = parse_has_destroy_or_exile(oracle)
+        template.has_artifact_count_scaling = parse_has_artifact_count_scaling(oracle)
+        template.has_surveil = parse_has_surveil(oracle)
+        template.has_coin_flip = parse_has_coin_flip(oracle)
+        template.has_mobilize = parse_has_mobilize(oracle)
+        template.has_transform_effect = parse_has_transform_effect(oracle)
+        template.has_instant_or_sorcery_reference = parse_has_instant_or_sorcery_reference(oracle)
+        template.has_graveyard_target = parse_has_graveyard_target(oracle)
+        template.has_dual_land_search = parse_has_dual_land_search(oracle)
         template.limits_opponent_spell_timing = parse_limits_opponent_spell_timing(oracle)
         template.has_charge_counter_wipe = parse_has_charge_counter_wipe(oracle)
         template.has_mana_value_wipe = parse_has_mana_value_wipe(oracle)
