@@ -1222,8 +1222,8 @@ class EVPlayer:
                 stacks = (
                     'for each' in oracle_lower
                     or 'for every' in oracle_lower
-                    or 'cost {' in oracle_lower         # cost reducers
-                    or 'whenever' in oracle_lower       # triggered
+                    or getattr(t, 'is_cost_reducer', False)  # cost reducers
+                    or getattr(t, 'has_recurring_trigger', False)  # triggered
                     or 'when this' in oracle_lower      # ETB triggers
                     or 'when ' + t.name.lower() + ' enters' in oracle_lower
                     or '{t}:' in oracle_lower           # tap abilities

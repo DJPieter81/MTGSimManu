@@ -303,7 +303,7 @@ def _ability_bonus(card, template=None) -> float:
     token_match = re.search(
         r'create\s+(?:up to\s+)?(\w+)\s+', oracle)
     token_n = 1
-    if token_match and 'token' in oracle:
+    if token_match and 'token_maker' in tags:
         word = token_match.group(1)
         if word.isdigit():
             token_n = int(word)
@@ -316,7 +316,7 @@ def _ability_bonus(card, template=None) -> float:
                 token_n = _NUMERALS.index(word)
             elif word in ('a', 'an'):
                 token_n = 1
-    if 'create' in oracle and 'token' in oracle:
+    if 'token_maker' in tags:
         bonus += token_n * ORACLE_TOKEN_CREATION_BONUS
 
     # Search library (tutor effect) — credit the actual N from
