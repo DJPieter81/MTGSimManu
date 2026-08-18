@@ -347,12 +347,9 @@ class CastManager:
                     # Target validation: don't allow evoke if the card
                     # needs a target and no valid target exists
                     from decks.card_knowledge_loader import requires_target as _req_target
-                    oracle_lower = (template.oracle_text or "").lower()
                     needs_target = (
                         _req_target(template.name)
-                        or ('target creature' in oracle_lower)
-                        or ('creature spell' in oracle_lower
-                            and 'removal' not in (template.tags or set()))
+                        or getattr(template, 'requires_creature_target', False)
                     )
                     if needs_target:
                         opp_idx = 1 - player_idx
@@ -413,7 +410,7 @@ class CastManager:
         # Force alternate cost: "exile a [color] card from your hand
         # rather than pay this spell's mana cost" — only on opp's turn
         oracle_lower = (template.oracle_text or '').lower()
-        if 'exile a' in oracle_lower and 'rather than pay' in oracle_lower:
+        if getattr(template, 'has_alternate_exile_cost', False):
             if game.active_player != player_idx:
                 import re
                 m = re.search(
@@ -912,11 +909,9 @@ class CastManager:
             # Target validation: don't evoke if the card needs a target and none exists
             if should_evoke:
                 from decks.card_knowledge_loader import requires_target as _requires_target
-                oracle_lower = (template.oracle_text or "").lower()
                 needs_target = (
                     _requires_target(template.name)
-                    or ('target creature' in oracle_lower)
-                    or ('creature spell' in oracle_lower and 'removal' not in (template.tags or set()))
+                    or getattr(template, 'requires_creature_target', False)
                 )
                 if needs_target:
                     opp_idx = 1 - player_idx
@@ -1047,7 +1042,7 @@ class CastManager:
                 # Force alternate cost: exile a card from hand instead of mana
                 oracle_lower = (template.oracle_text or '').lower()
                 force_cast = False
-                if ('exile a' in oracle_lower and 'rather than pay' in oracle_lower
+                if (getattr(template, 'has_alternate_exile_cost', False)
                         and game.active_player != player_idx):
                     import re
                     m = re.search(r'exile an? (\w+) card from your hand', oracle_lower)

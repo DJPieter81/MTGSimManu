@@ -146,15 +146,10 @@ class DefaultCallbacks:
             return None
 
         def _rank(c: CardInstance) -> tuple:
-            oracle = (c.template.oracle_text or "").lower()
-            is_mana = (
-                "{t}: add" in oracle
-                or "add one mana" in oracle
-                or "add {" in oracle
-            )
+            is_mana = bool(c.template.produces_mana)
             is_artifact_scaler = (
                 c.template.has_artifact_synergy
-                and ("equip {" in oracle or "equipped creature gets" in oracle)
+                and c.template.equip_cost is not None
             )
             cmc = c.template.cmc or 0
             return (is_mana, is_artifact_scaler, cmc)

@@ -355,6 +355,15 @@ class CardTemplate:
     # Sacrifice-for-damage -- True for Goblin Bombardment / Blasting Station pattern.
     # Populated by oracle_parser.parse_has_sacrifice_for_damage.
     has_sacrifice_for_damage: bool = False
+    # Prevents graveyard ETB -- True for Grafdigger's Cage pattern.
+    # Populated by oracle_parser.parse_prevents_graveyard_etb.
+    prevents_graveyard_etb: bool = False
+    # Requires creature target -- True when oracle needs a creature or creature-spell target.
+    # Populated by oracle_parser.parse_requires_creature_target.
+    requires_creature_target: bool = False
+    # Alternate exile cost -- True for Grief/Solitude 'exile a ... rather than pay' pattern.
+    # Populated by oracle_parser.parse_has_alternate_exile_cost.
+    has_alternate_exile_cost: bool = False
     # Discard effect -- True when oracle causes the target to discard cards.
     # Populated by oracle_parser.parse_has_discard_effect.
     has_discard_effect: bool = False

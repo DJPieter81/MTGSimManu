@@ -1721,6 +1721,8 @@ class CardDatabase:
             parse_has_cast_trigger, parse_has_recurring_trigger,
             parse_limits_opponent_spell_timing, parse_has_charge_counter_wipe,
             parse_has_mana_value_wipe, parse_has_sacrifice_for_damage,
+            parse_prevents_graveyard_etb, parse_requires_creature_target,
+            parse_has_alternate_exile_cost,
             parse_has_discard_effect, parse_is_storm_spell,
             parse_has_charge_counter_ability,
             parse_cast_trigger_token, parse_enters_type_counter,
@@ -1790,6 +1792,9 @@ class CardDatabase:
         template.has_charge_counter_wipe = parse_has_charge_counter_wipe(oracle)
         template.has_mana_value_wipe = parse_has_mana_value_wipe(oracle)
         template.has_sacrifice_for_damage = parse_has_sacrifice_for_damage(oracle)
+        template.prevents_graveyard_etb = parse_prevents_graveyard_etb(oracle)
+        template.requires_creature_target = parse_requires_creature_target(oracle)
+        template.has_alternate_exile_cost = parse_has_alternate_exile_cost(oracle)
         template.has_discard_effect = parse_has_discard_effect(oracle)
         template.is_storm_spell = parse_is_storm_spell(oracle)
         template.has_charge_counter_ability = parse_has_charge_counter_ability(oracle)

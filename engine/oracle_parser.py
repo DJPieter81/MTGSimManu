@@ -1924,6 +1924,52 @@ def parse_has_charge_counter_wipe(oracle: str) -> bool:
     return 'charge counter' in lo and 'destroy' in lo and 'mana value' in lo
 
 
+def parse_prevents_graveyard_etb(oracle: str) -> bool:
+    """Return True for permanents that prevent creatures from entering via graveyards.
+
+    Matches Grafdigger's Cage pattern: 'creature cards in graveyards' +
+    "can't enter the battlefield".  Distinct from has_graveyard_hate (exile-based
+    hate) — this is a static ETB-prevention effect.
+
+    Class size: ~5 Modern-legal cards (Grafdigger's Cage, Opposition Agent,
+    Containment Priest family).
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return ("creature cards in graveyards" in lo
+            and "can't enter the battlefield" in lo)
+
+
+def parse_requires_creature_target(oracle: str) -> bool:
+    """Return True when the card requires a creature or creature-spell target.
+
+    Matches 'target creature' or 'creature spell' in oracle text — used by
+    evoke target validation to skip evoke when no valid target exists.
+
+    Class size: hundreds of Modern cards that target creatures.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'target creature' in lo or 'creature spell' in lo
+
+
+def parse_has_alternate_exile_cost(oracle: str) -> bool:
+    """Return True for spells with an 'exile a card from your hand' alternate cost.
+
+    Matches Grief / Solitude / Ephemerate-family pattern: 'exile a' +
+    'rather than pay' in oracle text.
+
+    Class size: ~10 Modern-legal Evoke elementals and similar (Grief,
+    Subtlety, Solitude, Endurance, Fury).
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'exile a' in lo and 'rather than pay' in lo
+
+
 def parse_has_mana_value_wipe(oracle: str) -> bool:
     """Return True for X-cost spells that destroy permanents by mana value.
 
