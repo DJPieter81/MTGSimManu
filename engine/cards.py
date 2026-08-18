@@ -430,6 +430,24 @@ class CardTemplate:
     # Dual land search (Primeval Titan pattern) -- True when oracle searches for two lands.
     # Populated by oracle_parser.parse_has_dual_land_search.
     has_dual_land_search: bool = False
+    # Energy-damage target -- True when oracle deals energy-scaled damage to a creature/pw.
+    # Populated by oracle_parser.parse_has_energy_damage_target.
+    has_energy_damage_target: bool = False
+    # Energy production -- True when oracle produces energy (you get {E}).
+    # Populated by oracle_parser.parse_has_energy_production.
+    has_energy_production: bool = False
+    # Look-at-top + hand selection -- True when oracle puts selected card(s) into hand.
+    # Populated by oracle_parser.parse_has_look_hand_selection.
+    has_look_hand_selection: bool = False
+    # Cast-spell draw -- True when oracle draws on casting any spell (not noncreature-only).
+    # Populated by oracle_parser.parse_has_cast_spell_draw.
+    has_cast_spell_draw: bool = False
+    # Opponent-cast damage -- True when oracle damages on opponent casting a spell.
+    # Populated by oracle_parser.parse_has_opponent_cast_damage.
+    has_opponent_cast_damage: bool = False
+    # Mana add text -- True when oracle adds mana (mana rocks, rituals, etc.).
+    # Populated by oracle_parser.parse_has_mana_add_text.
+    has_mana_add_text: bool = False
     # Storm keyword (CR 702.39) -- True when oracle contains standalone "storm".
     # Populated by oracle_parser.parse_is_storm_spell.
     is_storm_spell: bool = False

@@ -2307,3 +2307,107 @@ def parse_has_dual_land_search(oracle: str) -> bool:
         return False
     lo = oracle.lower()
     return 'search' in lo and 'two land' in lo
+
+
+def parse_has_energy_damage_target(oracle: str) -> bool:
+    """Return True when oracle deals energy-scaled damage to a creature or planeswalker.
+
+    Replaces the five-condition compound check in oracle_resolver.py
+    for the Aetherworks Marvel / Electrostatic Pummeler energy-damage pattern:
+    targets a creature or planeswalker, gains {E} energy, pays {E} for bonus
+    damage, and the amount scales with the energy paid ('that much').
+
+    Class size: energy-damage cards from Kaladesh block and any future printings.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return (('target creature or planeswalker' in lo
+             or 'choose target creature or planeswalker' in lo)
+            and 'you get {e}' in lo
+            and 'pay any amount of {e}' in lo
+            and 'that much' in lo
+            and 'damage' in lo)
+
+
+def parse_has_energy_production(oracle: str) -> bool:
+    """Return True when oracle produces energy counters ({E}).
+
+    Replaces 'you get' in oracle in oracle_resolver.py's noncreature-cast
+    energy-trigger branch (lines 925-932). The '{e}' symbol check is already
+    not ratchet-flagged; this typed field captures the 'you get' half of the
+    compound.
+
+    Class size: Boros Energy cards — Guide of Souls, Ocelot Pride, etc.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'you get' in lo and '{e}' in lo
+
+
+def parse_has_look_hand_selection(oracle: str) -> bool:
+    """Return True when oracle lets you look at cards and put one into your hand.
+
+    Replaces two related checks:
+    - 'put one of them into your hand' (Sleight of Hand / Opt pattern)
+    - 'put them into your hand' (pile selection / look top N keep all)
+
+    Used in oracle_resolver.py (sorcery draw dispatch) and
+    ai/ev_evaluator.py (card selection EV estimation).
+
+    Class size: Sleight of Hand, Abundant Harvest, pile-of-N selection cards.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'put one of them into your hand' in lo or 'put them into your hand' in lo
+
+
+def parse_has_cast_spell_draw(oracle: str) -> bool:
+    """Return True when oracle draws a card whenever a spell is cast.
+
+    Replaces the two-condition check in oracle_resolver.py lines 958-959:
+    'cast a spell' or 'cast an instant or sorcery' PLUS 'draw a card'
+    with no 'noncreature' restriction (which gates a narrower variant).
+    The noncreature exclusion is encoded here at parse time so the consumer
+    needs no runtime oracle reads.
+
+    Class size: Curiosity-class enchantments, Riddleform, future spell-draw cards.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    has_trigger = 'cast a spell' in lo or 'cast an instant or sorcery' in lo
+    has_draw = 'draw a card' in lo
+    has_noncreature = 'noncreature' in lo
+    return has_trigger and has_draw and not has_noncreature
+
+
+def parse_has_opponent_cast_damage(oracle: str) -> bool:
+    """Return True when oracle deals damage whenever an opponent casts a spell.
+
+    Replaces the compound 'opponent casts' + 'damage' check in oracle_resolver.py
+    lines 1011-1012 (Orcish Bowmasters / opponent-cast trigger).
+
+    Class size: Orcish Bowmasters and any future opponent-cast damage triggers.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'opponent casts' in lo and 'damage' in lo
+
+
+def parse_has_mana_add_text(oracle: str) -> bool:
+    """Return True when oracle contains mana-adding text.
+
+    Replaces three 'add' in oracle checks in ai/ev_evaluator.py that detect
+    mana-producing cards (urgency scoring, ritual gate). Uses a tighter
+    pattern than bare 'add' to avoid false positives on 'add a counter' etc.
+
+    Class size: all mana rocks, rituals, and land-fetch spells.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'add {' in lo or 'mana of any' in lo

@@ -1729,7 +1729,10 @@ class CardDatabase:
             parse_has_artifact_count_scaling, parse_has_surveil,
             parse_has_coin_flip, parse_has_mobilize, parse_has_transform_effect,
             parse_has_instant_or_sorcery_reference, parse_has_graveyard_target,
-            parse_has_dual_land_search,
+            parse_has_dual_land_search, parse_has_energy_damage_target,
+            parse_has_energy_production, parse_has_look_hand_selection,
+            parse_has_cast_spell_draw, parse_has_opponent_cast_damage,
+            parse_has_mana_add_text,
             parse_limits_opponent_spell_timing, parse_has_charge_counter_wipe,
             parse_has_mana_value_wipe, parse_has_sacrifice_for_damage,
             parse_prevents_graveyard_etb, parse_requires_creature_target,
@@ -1820,6 +1823,12 @@ class CardDatabase:
         template.has_instant_or_sorcery_reference = parse_has_instant_or_sorcery_reference(oracle)
         template.has_graveyard_target = parse_has_graveyard_target(oracle)
         template.has_dual_land_search = parse_has_dual_land_search(oracle)
+        template.has_energy_damage_target = parse_has_energy_damage_target(oracle)
+        template.has_energy_production = parse_has_energy_production(oracle)
+        template.has_look_hand_selection = parse_has_look_hand_selection(oracle)
+        template.has_cast_spell_draw = parse_has_cast_spell_draw(oracle)
+        template.has_opponent_cast_damage = parse_has_opponent_cast_damage(oracle)
+        template.has_mana_add_text = parse_has_mana_add_text(oracle)
         template.limits_opponent_spell_timing = parse_limits_opponent_spell_timing(oracle)
         template.has_charge_counter_wipe = parse_has_charge_counter_wipe(oracle)
         template.has_mana_value_wipe = parse_has_mana_value_wipe(oracle)

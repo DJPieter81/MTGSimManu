@@ -792,8 +792,7 @@ def _has_immediate_effect(card: "CardInstance") -> bool:
     # tag): any spell whose text adds coloured mana contributes to THIS
     # turn's mana pool and must not be urgency-discounted. Catches future
     # mana-enabler cards whose tags don't include 'ritual'.
-    if 'add' in oracle and any(sym in oracle for sym in (
-            '{r}', '{g}', '{b}', '{u}', '{w}', 'mana of any')):
+    if getattr(t, 'has_mana_add_text', False):
         return True
     # ETB value (Omnath, Thragtusk, PW ETB effects) — resolves immediately
     if 'etb_value' in tags:
@@ -1201,9 +1200,9 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
     #     resolve once and the mana evaporates at end of turn.  Gate
     #     ONLY the ritual branch.
     produces = getattr(t, 'produces_mana', None) or []
-    if produces or ('{t}:' in oracle and 'add' in oracle):
+    if produces or ('{t}:' in oracle and getattr(t, 'has_mana_add_text', False)):
         signals.append('mana_source')
-    elif is_ritual(card) and 'add' in oracle:
+    elif is_ritual(card) and getattr(t, 'has_mana_add_text', False):
         # Ritual mana sources gate on whether a payoff is reachable
         # THIS turn — but only for chain-scoring decks (combo / storm
         # archetypes that pre-declare `uses_combo_chain_scoring=True`).
@@ -2349,7 +2348,7 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
             if m:
                 draws_n = max(draws_n, _parse_oracle_count(m.group(1)))
         elif (t.is_tutor
-              and 'put them into your hand' in oracle):
+              and getattr(t, 'has_look_hand_selection', False)):
             # Library-search tutors where ALL N searched cards go to
             # hand: Squadron Hawk ("put them into your hand"),
             # Increasing Ambition flashback mode, Plea for Guidance
@@ -2708,7 +2707,7 @@ def _projected_real_draws(card: "CardInstance") -> int:
             return int(tok)
         except ValueError:
             return word_to_num.get(tok, 0)
-    if 'put one of them into your hand' in oracle:
+    if getattr(card.template, 'has_look_hand_selection', False):
         return 1  # magic-allow: look-and-keep shape is one draw (CR 121.1), mirrors engine real-draw branch
     return 0
 
