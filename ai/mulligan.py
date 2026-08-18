@@ -35,17 +35,15 @@ from ai.scoring_constants import (
     MULLIGAN_CURVE_SUBSTITUTE_FLOOR,
     MULLIGAN_FIRST_MULL_HAND_SIZE,
     MULLIGAN_FLOOD_LAND_COUNT,
-    MULLIGAN_GENERIC_AGGRO_CHEAP_DEV,
-    MULLIGAN_GENERIC_AGGRO_CHEAP_FLOOR,
-    MULLIGAN_GENERIC_LAND_FLOOR_AGGRO,
-    MULLIGAN_GENERIC_LAND_FLOOR_CONTROL,
-    MULLIGAN_GENERIC_MIDRANGE_LAND_HIGH,
-    MULLIGAN_GENERIC_MIDRANGE_LAND_LOW,
-    MULLIGAN_GENERIC_MIDRANGE_MED_DEV,
     MULLIGAN_KEY_DEVELOPMENT_REQUIRED,
     MULLIGAN_LAND_SLACK_FIRST_TURN_VALUE_FLOOR,
     MULLIGAN_MIN_SPELLS_BASIC,
     MULLIGAN_STARTING_HAND_SIZE,
+    MULLIGAN_HAND_LAND_FUNCTIONAL_VALUE,
+    MULLIGAN_HAND_OPTIMAL_LAND_COUNT,
+    MULLIGAN_EXCESS_LAND_PENALTY,
+    MULLIGAN_MIN_HAND_SCORE_7,
+    MULLIGAN_MIN_HAND_SCORE_6,
 )
 from ai.predicates import hand_first_turn_value
 
@@ -653,11 +651,22 @@ class MulliganDecider:
                         )
                         return True
 
-            # Generic check
-            if cheap_spells >= 1:
-                self.last_reason = f"{land_count} lands, {cheap_spells} castable spells"
+            # Scored gate: hand EV replaces the cheap-spell-count boolean.
+            # A hand with high-CMC interaction (e.g., CMC-4 counterspells with
+            # medium_cmc=3) was incorrectly mulled by the old gate because
+            # cheap_spells=0; the scored path correctly keeps it when the
+            # spell EV clears the floor.
+            score = self._hand_ev_score(hand, spells, lands, cards_in_hand)
+            floor = (MULLIGAN_MIN_HAND_SCORE_7
+                     if cards_in_hand >= MULLIGAN_STARTING_HAND_SIZE
+                     else MULLIGAN_MIN_HAND_SCORE_6)
+            if score >= floor:
+                self.last_reason = (
+                    f"{land_count} lands, {len(spells)} spells, "
+                    f"score {score:.1f}"
+                )
                 return True
-            self.last_reason = "no castable spells"
+            self.last_reason = f"hand score {score:.1f} below floor {floor:.1f}"
             return False
 
         # Fallback: generic heuristic
@@ -665,59 +674,60 @@ class MulliganDecider:
         self.last_reason = f"generic: {land_count} lands, {len(spells)} spells" + (" — keep" if result else " — mulligan")
         return result
 
+    def _hand_ev_score(
+        self,
+        hand: List["CardInstance"],
+        spells: List["CardInstance"],
+        lands: List["CardInstance"],
+        cards_in_hand: int = MULLIGAN_STARTING_HAND_SIZE,
+    ) -> float:
+        """Score a full opening hand for keep/mull decisions.
+
+        Land contribution is capped at MULLIGAN_HAND_OPTIMAL_LAND_COUNT (3)
+        with a small per-excess-land penalty beyond that.  Spell contribution
+        is the sum of _card_keep_score for each non-land card.
+
+        Calibration (at MULLIGAN_MIN_HAND_SCORE_7 = 24.0):
+          3 lands + 4 CMC-4 counterspells → 18 + 16 = 34 → keep.
+          7 lands → 18 - 4 = 14 → mull.
+          2 lands + 5 mixed-EV spells → 12 + 40 → keep.
+        """
+        land_count = len(lands)
+        land_score = (
+            min(land_count, MULLIGAN_HAND_OPTIMAL_LAND_COUNT)
+            * MULLIGAN_HAND_LAND_FUNCTIONAL_VALUE
+        )
+        excess_penalty = (
+            max(0, land_count - MULLIGAN_HAND_OPTIMAL_LAND_COUNT)
+            * MULLIGAN_EXCESS_LAND_PENALTY
+        )
+        spell_score = sum(self._card_keep_score(s, hand) for s in spells)
+        return land_score - excess_penalty + spell_score
+
     def _generic(self, hand: List["CardInstance"], lands: List["CardInstance"], spells: List["CardInstance"], cards_in_hand: int) -> bool:
         """Generic mulligan heuristic when no gameplan is available.
 
-        Phase 2 sweep: this method previously branched on
-        ``self.archetype == ArchetypeStrategy.X``.  It now reads
-        ``self._policy().generic_branch`` — a per-deck string ("combo",
-        "aggro", "control", "midrange") chosen by the gameplan and
-        defaulting to the archetype's name.  No archetype enum
-        membership checks remain.
+        Phase 3 sweep: this method previously applied hard land-count ceilings
+        per archetype (aggro ≤ 3, midrange ≤ 4) and a global flood gate
+        (≥ 5 lands → always mull at 7 cards).  These gates rejected keepable
+        hands — e.g., four lands + three CMC-1 plays for aggro — because they
+        proxied "too few spells" via a land count rather than measuring spell EV.
+
+        Replacement: ``_hand_ev_score`` sums capped land contribution and
+        per-spell scores, keeping when the result meets the hand-size-calibrated
+        floor.  Legality checks (0 lands) are preserved.
         """
-        from ai.gameplan import DEFAULT_MULLIGAN_CMC_PROFILE
-
-        # No-gameplan fallback uses the default CMC profile — same brackets
-        # the gp-aware path reads from `gp.mulligan_cmc_profile`.
-        cheap_cmc = DEFAULT_MULLIGAN_CMC_PROFILE["cheap"]
-        medium_cmc = DEFAULT_MULLIGAN_CMC_PROFILE["medium"]
-
-        branch = self._policy().generic_branch
         land_count = len(lands)
-        # P1 fix: 0 lands = always mulligan (no free-spell exception needed
-        # since decks using Evoke/Living End have gameplans with min_lands)
         if land_count == 0:
             self.last_reason = "0 lands — auto-mulligan"
             return False
-        if land_count == 1 and cards_in_hand == MULLIGAN_STARTING_HAND_SIZE:
-            if branch == "aggro":
-                return (sum(1 for s in spells if s.template.cmc <= cheap_cmc)
-                        >= MULLIGAN_GENERIC_AGGRO_CHEAP_FLOOR)
-            return False
-        if (land_count >= MULLIGAN_FLOOD_LAND_COUNT
-                and cards_in_hand == MULLIGAN_STARTING_HAND_SIZE):
-            return False
-        if branch == "combo":
-            has_piece = any("combo" in c.template.tags for c in spells)
-            if land_count >= DEFAULT_MULLIGAN_MIN_LANDS and has_piece:
-                return True
-            return (cards_in_hand <= MULLIGAN_FIRST_MULL_HAND_SIZE
-                    or land_count >= DEFAULT_MULLIGAN_MIN_LANDS)
-        if branch == "aggro":
-            return (1 <= land_count <= MULLIGAN_GENERIC_LAND_FLOOR_AGGRO
-                    and sum(1 for s in spells if s.template.cmc <= cheap_cmc)
-                    >= MULLIGAN_GENERIC_AGGRO_CHEAP_DEV)
-        if branch == "control":
-            if land_count >= MULLIGAN_GENERIC_LAND_FLOOR_CONTROL:
-                return sum(1 for s in spells
-                           if "removal" in s.template.tags or
-                           "counterspell" in s.template.tags) >= 1
-            return False
-        if (MULLIGAN_GENERIC_MIDRANGE_LAND_LOW <= land_count
-                <= MULLIGAN_GENERIC_MIDRANGE_LAND_HIGH):
-            return (sum(1 for s in spells if s.template.cmc <= medium_cmc)
-                    >= MULLIGAN_GENERIC_MIDRANGE_MED_DEV)
-        return cards_in_hand <= MULLIGAN_FIRST_MULL_HAND_SIZE
+        score = self._hand_ev_score(hand, spells, lands, cards_in_hand)
+        floor = (MULLIGAN_MIN_HAND_SCORE_7
+                 if cards_in_hand >= MULLIGAN_STARTING_HAND_SIZE
+                 else MULLIGAN_MIN_HAND_SCORE_6)
+        if score >= floor:
+            return True
+        return False
 
     def _declared_piece_names(self) -> set:
         """Union of every card name the gameplan declares as part of
