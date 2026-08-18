@@ -2439,7 +2439,7 @@ class EVPlayer:
         # Pre-combat pump (Psychic Frog etc.)
         for creature in valid:
             oracle = (creature.template.oracle_text or "").lower()
-            if "discard a card" in oracle and "+1/+1" in oracle:
+            if getattr(creature.template, 'has_discard_effect', False) and "+1/+1" in oracle:
                 prof = self.profile
                 # Smart discard: protect removal/counters, discard excess lands/dupes/uncastable
                 hand_lands = [c for c in me.hand if c.template.is_land]

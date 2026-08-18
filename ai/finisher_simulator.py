@@ -185,8 +185,7 @@ def _is_discard_outlet(card: "CardInstance") -> bool:
     tags = getattr(card.template, 'tags', set())
     if 'discard' in tags or 'looter' in tags:
         return True
-    oracle = (getattr(card.template, 'oracle_text', '') or '').lower()
-    return 'discard a card' in oracle
+    return getattr(card.template, 'has_discard_effect', False)
 
 
 def _is_cascade_payoff(card: "CardInstance") -> bool:

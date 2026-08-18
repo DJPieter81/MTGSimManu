@@ -283,7 +283,7 @@ def _eval_evoke(game, me, a: BoardAssessment, ctx: dict,
 
     # Battlefield-targeting ETBs (e.g. "target creature" — no "spell"):
     # if the opponent has no creatures, the ETB fizzles.
-    elif 'target creature' in oracle and 'removal' not in tags:
+    elif getattr(card.template, 'requires_creature_target', False) and 'removal' not in tags:
         if not opp.creatures:
             return -BOARD_EVAL_HARD_VETO  # No valid targets, evoke would waste a card
     

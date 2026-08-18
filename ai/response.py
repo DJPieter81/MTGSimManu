@@ -837,9 +837,8 @@ class ResponseDecider:
         ranking) and the chain-fuel hold exemption in
         `decide_response` (M2 Wave-2) both consult this predicate.
         """
-        oracle = (instant.template.oracle_text or '').lower()
         return (
-            'exile a' in oracle and 'rather than pay' in oracle
+            getattr(instant.template, 'has_alternate_exile_cost', False)
             and getattr(game, 'active_player', None) != self.player_idx
         )
 
@@ -1148,7 +1147,8 @@ class ResponseDecider:
         # Token generators / engines: value = ongoing bodies over time.
         # card_clock_impact already expresses "future card as clock change",
         # so one trigger per turn over a few turns.
-        if 'whenever' in oracle and ('create' in oracle or 'token' in oracle):
+        if (getattr(template, 'has_recurring_trigger', False)
+                and 'token_maker' in getattr(template, 'tags', set())):
             threat += card_clock_impact(snap_for_clock) * CLOCK_IMPACT_LIFE_SCALING
 
         # Card advantage engines (Thought Monitor draws 2): value = one
