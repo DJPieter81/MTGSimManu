@@ -1818,7 +1818,7 @@ class GameRunner:
             oracle = (perm.template.oracle_text or '').lower()
 
             # Artifact with "sacrifice, search for a land" (Expedition Map, etc.)
-            if ('sacrifice' in oracle and 'search' in oracle and 'land' in oracle
+            if (getattr(perm.template, 'has_sacrifice_search_land', False)
                     and not getattr(perm, 'tapped', False)
                     and not perm.template.is_creature):
                 # Need 2 mana to activate
@@ -1999,7 +1999,7 @@ class GameRunner:
             # ── {C}{C}, {T}: Draw a card. ──
             # Generic colourless-only card-draw activation. Gated on hand
             # size or losing-on-clock so we don't burn mana fixing for nothing.
-            if re.search(r'\{c\}\{c\}\s*,\s*\{t\}\s*:\s*draw a card', oracle):
+            if getattr(perm.template, 'has_cc_tap_draw', False):
                 if len(player.untapped_lands) < 2:
                     continue
                 from ai.ev_evaluator import snapshot_from_game
@@ -2029,7 +2029,7 @@ class GameRunner:
 
             # ── {T}: Choose target artifact card in your graveyard.
             #        You may cast that card this turn. (Emry pattern) ──
-            if 'choose target artifact card in your graveyard' in oracle:
+            if getattr(perm.template, 'has_emry_graveyard_cast', False):
                 artifacts = [
                     c for c in player.graveyard
                     if CardType.ARTIFACT in c.template.card_types

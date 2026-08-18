@@ -84,18 +84,15 @@ def _classify_anti_artifact_priority(template) -> int:
     # match the leading clause loosely. Karn variant restricts to
     # "your opponents control".  Damping Sphere uses the
     # "tapped for two or more mana, it produces {c} instead" idiom.
-    if "activated abilities of artifacts" in oracle and "can't be activated" in oracle:
-        return 9
-    if "tapped for two or more mana, it produces {c} instead" in oracle:
+    if getattr(template, 'has_stax_ability', False):
         return 9
 
     # 5 — Single-target activated-ability lock. The Pithing-Needle
     # / Phyrexian-Revoker idiom: name a card, lock its activated
     # abilities. Useful situationally (Mox Opal lock) but doesn't
     # pressure the artifact base.
-    if "choose a card name" in oracle or "choose a nonland card name" in oracle:
-        if "activated abilities of sources with the chosen name" in oracle:
-            return 5
+    if getattr(template, 'has_pithing_needle_lock', False):
+        return 5
 
     return 0
 

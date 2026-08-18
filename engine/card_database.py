@@ -1733,6 +1733,14 @@ class CardDatabase:
             parse_has_energy_production, parse_has_look_hand_selection,
             parse_has_cast_spell_draw, parse_has_opponent_cast_damage,
             parse_has_mana_add_text,
+            parse_has_bounce_land_oracle, parse_has_sacrifice_search_land,
+            parse_has_emry_graveyard_cast, parse_has_cc_tap_draw,
+            parse_has_stax_ability, parse_has_pithing_needle_lock,
+            parse_has_another_creature_enters_trigger,
+            parse_has_another_creature_enters_lifegain,
+            parse_has_may_play_or_cast, parse_has_damage_equal_scaling,
+            parse_has_x_damage, parse_has_artifact_pump_equipment,
+            parse_has_artifact_or_enchantment_scaling,
             parse_limits_opponent_spell_timing, parse_has_charge_counter_wipe,
             parse_has_mana_value_wipe, parse_has_sacrifice_for_damage,
             parse_prevents_graveyard_etb, parse_requires_creature_target,
@@ -1829,6 +1837,19 @@ class CardDatabase:
         template.has_cast_spell_draw = parse_has_cast_spell_draw(oracle)
         template.has_opponent_cast_damage = parse_has_opponent_cast_damage(oracle)
         template.has_mana_add_text = parse_has_mana_add_text(oracle)
+        template.has_bounce_land_oracle = parse_has_bounce_land_oracle(oracle)
+        template.has_sacrifice_search_land = parse_has_sacrifice_search_land(oracle)
+        template.has_emry_graveyard_cast = parse_has_emry_graveyard_cast(oracle)
+        template.has_cc_tap_draw = parse_has_cc_tap_draw(oracle)
+        template.has_stax_ability = parse_has_stax_ability(oracle)
+        template.has_pithing_needle_lock = parse_has_pithing_needle_lock(oracle)
+        template.has_another_creature_enters_trigger = parse_has_another_creature_enters_trigger(oracle)
+        template.has_another_creature_enters_lifegain = parse_has_another_creature_enters_lifegain(oracle)
+        template.has_may_play_or_cast = parse_has_may_play_or_cast(oracle)
+        template.has_damage_equal_scaling = parse_has_damage_equal_scaling(oracle)
+        template.has_x_damage = parse_has_x_damage(oracle)
+        template.has_artifact_pump_equipment = parse_has_artifact_pump_equipment(oracle)
+        template.has_artifact_or_enchantment_scaling = parse_has_artifact_or_enchantment_scaling(oracle)
         template.limits_opponent_spell_timing = parse_limits_opponent_spell_timing(oracle)
         template.has_charge_counter_wipe = parse_has_charge_counter_wipe(oracle)
         template.has_mana_value_wipe = parse_has_mana_value_wipe(oracle)

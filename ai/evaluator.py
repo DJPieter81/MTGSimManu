@@ -474,8 +474,7 @@ def _estimate_spell_damage_for_eval(spell: "CardInstance") -> int:
 
     # Domain-scaling damage (e.g. Tribal Flames)
     if 'domain' in tags:
-        m = re.search(r'deals?.*damage.*equal', oracle)
-        if m:
+        if getattr(template, 'has_damage_equal_scaling', False):
             return SPELL_DAMAGE_DOMAIN_MAX
 
     # Check ability descriptions for destroy/exile
@@ -497,7 +496,7 @@ def _estimate_spell_damage_for_eval(spell: "CardInstance") -> int:
         return int(m.group(1))
 
     # X damage spells
-    if re.search(r'deals?\s+x\s+damage', oracle):
+    if getattr(template, 'has_x_damage', False):
         return SPELL_DAMAGE_X_SPELL_FALLBACK
 
     return SPELL_DAMAGE_DESTROY_EXILE_SENTINEL  # default: assume destroy/exile

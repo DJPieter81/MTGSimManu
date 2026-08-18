@@ -448,6 +448,45 @@ class CardTemplate:
     # Mana add text -- True when oracle adds mana (mana rocks, rituals, etc.).
     # Populated by oracle_parser.parse_has_mana_add_text.
     has_mana_add_text: bool = False
+    # Bounce land -- True when oracle contains 'return a land you control'.
+    # Populated by oracle_parser.parse_has_bounce_land_oracle.
+    has_bounce_land_oracle: bool = False
+    # Sacrifice-search-land -- True for Expedition Map / Wayfarer's Bauble pattern.
+    # Populated by oracle_parser.parse_has_sacrifice_search_land.
+    has_sacrifice_search_land: bool = False
+    # Emry graveyard cast -- True for 'choose target artifact card in your graveyard'.
+    # Populated by oracle_parser.parse_has_emry_graveyard_cast.
+    has_emry_graveyard_cast: bool = False
+    # {C}{C},{T}: draw a card -- True for Endbringer pattern.
+    # Populated by oracle_parser.parse_has_cc_tap_draw.
+    has_cc_tap_draw: bool = False
+    # Stax ability -- True for Stony Silence / Damping Sphere pattern.
+    # Populated by oracle_parser.parse_has_stax_ability.
+    has_stax_ability: bool = False
+    # Pithing Needle lock -- True for Pithing Needle / Revoker pattern.
+    # Populated by oracle_parser.parse_has_pithing_needle_lock.
+    has_pithing_needle_lock: bool = False
+    # Another-creature-enters trigger -- outer gate for ETB fan-out.
+    # Populated by oracle_parser.parse_has_another_creature_enters_trigger.
+    has_another_creature_enters_trigger: bool = False
+    # Another-creature-enters lifegain -- conjunction: another creature+enters+gain+life.
+    # Populated by oracle_parser.parse_has_another_creature_enters_lifegain.
+    has_another_creature_enters_lifegain: bool = False
+    # May-play-or-cast -- True for exile-and-play effects.
+    # Populated by oracle_parser.parse_has_may_play_or_cast.
+    has_may_play_or_cast: bool = False
+    # Damage-equal scaling -- True for domain-scaling damage (Tribal Flames pattern).
+    # Populated by oracle_parser.parse_has_damage_equal_scaling.
+    has_damage_equal_scaling: bool = False
+    # X-damage spell -- True for 'deals X damage' spells.
+    # Populated by oracle_parser.parse_has_x_damage.
+    has_x_damage: bool = False
+    # Artifact pump equipment -- True for +1/+0 per-artifact equipment (Cranial Plating).
+    # Populated by oracle_parser.parse_has_artifact_pump_equipment.
+    has_artifact_pump_equipment: bool = False
+    # Artifact-or-enchantment scaling -- True for Nettlecyst pattern.
+    # Populated by oracle_parser.parse_has_artifact_or_enchantment_scaling.
+    has_artifact_or_enchantment_scaling: bool = False
     # Storm keyword (CR 702.39) -- True when oracle contains standalone "storm".
     # Populated by oracle_parser.parse_is_storm_spell.
     is_storm_spell: bool = False

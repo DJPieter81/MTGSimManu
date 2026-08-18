@@ -390,7 +390,7 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
     #     both derived from oracle text. Engine commits a deterministic
     #     min-to-kill energy spend (CR 117.2 — cost paid at cast; with
     #     no AI hook yet, this is the engine-rational commitment).
-    if getattr(permanent.template, 'has_energy_damage_target', False):
+    if getattr(card.template, 'has_energy_damage_target', False):
         base_match = re.search(
             r'deals?\s+(\d+)\s+damage\s+to\s+target\s+creature\s+or\s+planeswalker',
             oracle)

@@ -1462,8 +1462,7 @@ def _nonland_permanent_threat(c, opp_battlefield):
     # Equipment with artifact-scaling: value = artifact count on board
     tags = getattr(t, 'tags', set())
     if 'pump' in tags or 'equipment' in tags:
-        oracle = (t.oracle_text or '').lower()
-        if 'artifact' in oracle and ('+1/+0' in oracle or 'gets' in oracle):
+        if getattr(t, 'has_artifact_pump_equipment', False):
             artifact_count = sum(1 for b in opp_battlefield
                                  if CardType.ARTIFACT in b.template.card_types)
             score = artifact_count + 2  # Plating with 8 artifacts = 10
@@ -3099,7 +3098,7 @@ def scapeshift_resolve(game, card, controller, targets=None, item=None):
     # Prioritize: bounce lands > utility lands > basics
     def land_priority(c):
         oracle = (c.template.oracle_text or '').lower()
-        if 'return a land you control' in oracle:
+        if getattr(c.template, 'has_bounce_land_oracle', False):
             return 3  # bounce land
         if len(c.template.produces_mana) >= 2:
             return 2  # dual land

@@ -53,8 +53,8 @@ class TriggerManager:
                 if c.instance_id == card.instance_id:
                     continue
                 oracle = (c.template.oracle_text or '').lower()
-                if 'another creature' in oracle and 'enters' in oracle:
-                    if 'gain' in oracle and 'life' in oracle:
+                if c.template.has_another_creature_enters_trigger:
+                    if c.template.has_another_creature_enters_lifegain:
                         import re
                         m = re.search(r'gain\s+(\d+)\s+life', oracle)
                         gain = int(m.group(1)) if m else 1

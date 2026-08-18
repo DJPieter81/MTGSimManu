@@ -2341,7 +2341,7 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
             r'draws? (one|two|three|four|five|six|seven|\d+) ', oracle)
         if m:
             draws_n = max(draws_n, _parse_oracle_count(m.group(1)))
-        elif ('may play' in oracle or 'may cast' in oracle):
+        elif getattr(t, 'has_may_play_or_cast', False):
             m = _re.search(
                 r'exile the top (one|two|three|four|five|six|seven|\d+) '
                 r'cards?', oracle)

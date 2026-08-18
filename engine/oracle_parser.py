@@ -2411,3 +2411,194 @@ def parse_has_mana_add_text(oracle: str) -> bool:
         return False
     lo = oracle.lower()
     return 'add {' in lo or 'mana of any' in lo
+
+
+def parse_has_bounce_land_oracle(oracle: str) -> bool:
+    """Return True when oracle contains 'return a land you control'.
+
+    Replaces 'return a land you control' in oracle in engine/card_effects.py
+    line 3102 (Scapeshift land-priority helper: bounce lands get priority 3).
+
+    Class size: all bounce lands (Karoo, Gruul Turf, Azorius Chancery, etc.)
+    plus any future cards with this ETB replacement effect.
+    """
+    if not oracle:
+        return False
+    return 'return a land you control' in oracle.lower()
+
+
+def parse_has_sacrifice_search_land(oracle: str) -> bool:
+    """Return True for artifact sacrifice-then-search-for-land abilities.
+
+    Replaces the compound 'sacrifice' + 'search' + 'land' in oracle check in
+    engine/game_runner.py line 1821 (Expedition Map / Wayfarer's Bauble pattern).
+
+    Class size: Expedition Map, Wayfarer's Bauble, Weathered Wayfarer (activated),
+    and any future sacrifice-to-tutor-land effects.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'sacrifice' in lo and 'search' in lo and 'land' in lo
+
+
+def parse_has_emry_graveyard_cast(oracle: str) -> bool:
+    """Return True for 'choose target artifact card in your graveyard' abilities.
+
+    Replaces the exact phrase check in engine/game_runner.py line 2032
+    (Emry, Lurker of the Loch pattern: tap to cast artifact from graveyard).
+
+    Class size: Emry and any future cards with this specific clause wording.
+    """
+    if not oracle:
+        return False
+    return 'choose target artifact card in your graveyard' in oracle.lower()
+
+
+def parse_has_cc_tap_draw(oracle: str) -> bool:
+    """Return True for {C}{C},{T}: draw a card activated abilities.
+
+    Replaces re.search(r'\\{c\\}\\{c\\}\\s*,\\s*\\{t\\}\\s*:\\s*draw a card', oracle)
+    in engine/game_runner.py line 2002 (Endbringer / colorless-tap-draw pattern).
+
+    Class size: Endbringer and any future artifact with this exact mana-cost draw ability.
+    """
+    if not oracle:
+        return False
+    import re
+    return bool(re.search(r'\{c\}\{c\}\s*,\s*\{t\}\s*:\s*draw a card', oracle.lower()))
+
+
+def parse_has_stax_ability(oracle: str) -> bool:
+    """Return True for stax/cost-tax abilities (Stony Silence, Damping Sphere pattern).
+
+    Replaces two checks in engine/sideboard_manager.py lines 87-89:
+    - 'activated abilities of artifacts ... can't be activated' (Stony Silence, Collector Ouphe)
+    - 'tapped for two or more mana, it produces {c} instead' (Damping Sphere)
+
+    Class size: all stax hate pieces that lock activated abilities or constrain mana production.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return (("activated abilities of artifacts" in lo and "can't be activated" in lo)
+            or "tapped for two or more mana, it produces {c} instead" in lo)
+
+
+def parse_has_pithing_needle_lock(oracle: str) -> bool:
+    """Return True for Pithing Needle / Phyrexian Revoker ability-lock effects.
+
+    Replaces two checks in engine/sideboard_manager.py lines 96-97:
+    - 'choose a card name' (or 'nonland card name')
+    - 'activated abilities of sources with the chosen name'
+
+    Class size: Pithing Needle, Phyrexian Revoker, and any future name-lock effects.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return (("choose a card name" in lo or "choose a nonland card name" in lo)
+            and "activated abilities of sources with the chosen name" in lo)
+
+
+def parse_has_another_creature_enters_trigger(oracle: str) -> bool:
+    """Return True for 'whenever another creature enters' triggers.
+
+    Replaces 'another creature' in oracle in engine/triggers.py line 56 —
+    outer gate for both lifegain and energy-production ETB fan-out triggers.
+
+    Class size: Soul Warden, Soul's Attendant, Guide of Souls, and any future
+    'whenever another creature enters' ETB watchers.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'another creature' in lo and 'enters' in lo
+
+
+def parse_has_another_creature_enters_lifegain(oracle: str) -> bool:
+    """Return True when 'whenever another creature enters ... gain N life'.
+
+    Replaces 'gain' in oracle in engine/triggers.py line 57 — inner guard
+    (conjunction: another creature + enters + gain + life).
+
+    Class size: Soul Warden, Soul's Attendant, Suture Priest (and similar),
+    and any future cards with this exact ETB lifegain pattern.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return ('another creature' in lo and 'enters' in lo
+            and 'gain' in lo and 'life' in lo)
+
+
+def parse_has_may_play_or_cast(oracle: str) -> bool:
+    """Return True for 'may play' or 'may cast' exile-and-play effects.
+
+    Replaces 'may play' in oracle in ai/ev_evaluator.py line 2344 —
+    used to estimate card-draw equivalent from exile-top-and-play effects
+    (Outpost Siege, Light Up the Stage, Chandra planeswalker abilities, etc.).
+
+    Class size: all exile-and-play or exile-and-cast effects in Modern.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'may play' in lo or 'may cast' in lo
+
+
+def parse_has_damage_equal_scaling(oracle: str) -> bool:
+    """Return True for domain-scaling damage ('deals damage ... equal to ...').
+
+    Replaces re.search(r'deals?.*damage.*equal', oracle) in ai/evaluator.py
+    line 477 (Tribal Flames / scaling-damage-spell detection).
+
+    Class size: Tribal Flames and other CDAs or spells where damage = some count.
+    """
+    if not oracle:
+        return False
+    import re
+    return bool(re.search(r'deals?.*damage.*equal', oracle.lower()))
+
+
+def parse_has_x_damage(oracle: str) -> bool:
+    """Return True for 'deals X damage' spells (X-cost damage).
+
+    Replaces re.search(r'deals?\\s+x\\s+damage', oracle) in ai/evaluator.py
+    line 500 (Blaze / Lightning Storm / Rolling Thunder fallback detection).
+
+    Class size: all X-cost direct-damage spells in Modern.
+    """
+    if not oracle:
+        return False
+    import re
+    return bool(re.search(r'deals?\s+x\s+damage', oracle.lower()))
+
+
+def parse_has_artifact_pump_equipment(oracle: str) -> bool:
+    """Return True for equipment that grants +1/+0 scaling with artifacts.
+
+    Replaces 'artifact' in oracle combined check in engine/card_effects.py
+    line 1466 (Cranial Plating / artifact-count-pump equipment detection).
+
+    Class size: Cranial Plating and any future equipment with '+1/+0 for each
+    artifact' or 'gets ... for each artifact' power-scaling text.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'artifact' in lo and ('+1/+0' in lo or ('gets' in lo and '+' in lo))
+
+
+def parse_has_artifact_or_enchantment_scaling(oracle: str) -> bool:
+    """Return True for scaling based on artifact and/or enchantment count.
+
+    Replaces 'artifact and/or enchantment' in oracle in ai/ev_player.py
+    line 3890 (Nettlecyst / artifact+enchantment combined scaling detection).
+
+    Class size: Nettlecyst and any future cards counting artifacts+enchantments.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'artifact and/or enchantment' in lo or 'artifact or enchantment' in lo

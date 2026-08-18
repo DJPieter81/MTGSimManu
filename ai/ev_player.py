@@ -3887,7 +3887,7 @@ class EVPlayer:
         m = re.search(r'\+(\d+)/[+\-]\d+ for each (artifact|enchantment)', oracle)
         if m:
             per_bonus = int(m.group(1))
-            if 'artifact and/or enchantment' in oracle or 'artifact or enchantment' in oracle:
+            if getattr(equip.template, 'has_artifact_or_enchantment_scaling', False):
                 count = sum(1 for b in player.battlefield
                             if CardType.ARTIFACT in b.template.card_types
                             or CardType.ENCHANTMENT in b.template.card_types)
