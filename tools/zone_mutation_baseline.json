@@ -29,7 +29,7 @@
   "engine/replay_log.py": 0,
   "engine/sba_manager.py": 1,
   "engine/sideboard_manager.py": 0,
-  "engine/spell_resolution.py": 11,
+  "engine/spell_resolution.py": 0,
   "engine/stack.py": 0,
   "engine/target_solver.py": 0,
   "engine/triggers.py": 2,
