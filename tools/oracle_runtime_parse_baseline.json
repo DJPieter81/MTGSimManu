@@ -1,1 +1,1 @@
-{"total": 55, "description": "oracle-text substring checks outside oracle_parser.py \u2014 baseline must equal actual count; both regressions (total > baseline) and stale baselines (total < baseline) fail CI"}
+{"total": 50, "description": "oracle-text substring checks outside oracle_parser.py \u2014 baseline must equal actual count; both regressions (total > baseline) and stale baselines (total < baseline) fail CI"}

@@ -2144,3 +2144,65 @@ def parse_has_exile_own_creature(oracle: str) -> bool:
     if not oracle:
         return False
     return 'exile target creature you control' in oracle.lower()
+
+
+def parse_has_converge(oracle: str) -> bool:
+    """Return True when oracle has the Converge keyword or its reminder text.
+
+    Converge spells scale their effect with the number of colors of mana
+    spent to cast them.  At cast time the engine sorts available lands to
+    maximize color diversity when this flag is True.  Replaces runtime
+    'converge' and 'colors of mana spent' substring checks in cast_manager.py.
+
+    Class size: ~10-15 Modern-legal converge spells.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'converge' in lo or 'colors of mana spent' in lo
+
+
+def parse_has_delirium(oracle: str) -> bool:
+    """Return True when oracle has the Delirium keyword or its condition text.
+
+    Delirium abilities activate when the controller has four or more card
+    types in their graveyard.  Used in cast_manager.py to grant conditional
+    keywords (e.g., Traverse the Ulvenwald flying grant) only when delirium
+    is active.  Replaces runtime 'delirium' substring check.
+
+    Class size: ~20-40 Modern-legal delirium cards.
+    """
+    if not oracle:
+        return False
+    return 'delirium' in oracle.lower()
+
+
+def parse_has_all_basic_land_types(oracle: str) -> bool:
+    """Return True when oracle grants all basic land types to controlled lands.
+
+    Covers Leyline of the Guildpact pattern ('lands you control are every
+    basic land type') which gives the controller 5 domain for domain spells
+    and converge.  Used in cards.py _get_domain_count to short-circuit the
+    land-type enumeration.  Replaces the runtime substring check there.
+
+    Class size: ~5-10 Modern-legal land-type-granting cards.
+    """
+    if not oracle:
+        return False
+    return 'lands you control are every basic land type' in oracle.lower()
+
+
+def parse_has_destroy_or_exile(oracle: str) -> bool:
+    """Return True when oracle destroys or exiles a permanent.
+
+    Covers the broad removal signal: any card whose text contains 'destroy'
+    or 'exile' is a candidate for removal scoring.  Used in evaluator.py
+    _spell_damage as a fallback sentinel when no damage-number clause is
+    found.  Replaces the runtime 'destroy'/'exile' compound check.
+
+    Class size: hundreds of Modern-legal removal spells and effects.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'destroy' in lo or 'exile' in lo

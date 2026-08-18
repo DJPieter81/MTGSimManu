@@ -488,8 +488,8 @@ def _estimate_spell_damage_for_eval(spell: "CardInstance") -> int:
             if nums:
                 return int(nums[0])
 
-    # Fallback: parse oracle text directly
-    if 'destroy' in oracle or 'exile' in oracle:
+    # Fallback: typed field (populated at load time from oracle text)
+    if getattr(template, 'has_destroy_or_exile', False):
         return SPELL_DAMAGE_DESTROY_EXILE_SENTINEL
 
     m = re.search(r'deals?\s+(\d+)\s+damage', oracle)

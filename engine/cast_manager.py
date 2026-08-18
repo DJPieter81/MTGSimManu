@@ -1244,8 +1244,7 @@ class CastManager:
             # For non-Converge X-spells this reduces to arbitrary selection
             # (same as the old behavior because set-difference is 0-or-more).
             xpay_colors = set(getattr(game, '_last_colors_spent', set()))
-            oracle = (template.oracle_text or '').lower()
-            is_converge = 'converge' in oracle or 'colors of mana spent' in oracle
+            is_converge = getattr(template, 'has_converge', False)
             lands_pool = list(player.untapped_lands)
             while remaining > 0 and lands_pool:
                 if is_converge:
@@ -1394,7 +1393,7 @@ class CastManager:
                 # Delirium — check actual GY card types via _has_delirium()
                 # _dynamic_base_power() already scales to 3 with delirium; we also
                 # need to grant FLYING as a keyword so combat logic sees it.
-                if 'delirium' in c_oracle and hasattr(creature, '_has_delirium'):
+                if getattr(creature.template, 'has_delirium', False) and hasattr(creature, '_has_delirium'):
                     if creature._has_delirium():
                         if Keyword.FLYING not in creature.keywords:
                             creature.keywords.add(Keyword.FLYING)

@@ -1723,7 +1723,9 @@ class CardDatabase:
             parse_has_recurring_draw_trigger, parse_has_each_opponent_effect,
             parse_has_pump_grant, parse_has_x_counter_scaling,
             parse_has_lifegain_equal_power, parse_has_lifegain_effect,
-            parse_has_exile_own_creature,
+            parse_has_exile_own_creature, parse_has_converge,
+            parse_has_delirium, parse_has_all_basic_land_types,
+            parse_has_destroy_or_exile,
             parse_limits_opponent_spell_timing, parse_has_charge_counter_wipe,
             parse_has_mana_value_wipe, parse_has_sacrifice_for_damage,
             parse_prevents_graveyard_etb, parse_requires_creature_target,
@@ -1802,6 +1804,10 @@ class CardDatabase:
         template.has_lifegain_equal_power = parse_has_lifegain_equal_power(oracle)
         template.has_lifegain_effect = parse_has_lifegain_effect(oracle)
         template.has_exile_own_creature = parse_has_exile_own_creature(oracle)
+        template.has_converge = parse_has_converge(oracle)
+        template.has_delirium = parse_has_delirium(oracle)
+        template.has_all_basic_land_types = parse_has_all_basic_land_types(oracle)
+        template.has_destroy_or_exile = parse_has_destroy_or_exile(oracle)
         template.limits_opponent_spell_timing = parse_limits_opponent_spell_timing(oracle)
         template.has_charge_counter_wipe = parse_has_charge_counter_wipe(oracle)
         template.has_mana_value_wipe = parse_has_mana_value_wipe(oracle)

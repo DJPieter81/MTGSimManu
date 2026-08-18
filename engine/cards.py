@@ -230,7 +230,7 @@ class CardTemplate:
     # engine.oracle_parser.parse_can_target_player/planeswalker.
     # Replace runtime `'any target' in oracle_text` inline checks in ai/.
     can_target_player: bool = False            # "any target"/"target player"/"target opponent"
-    can_target_planeswalker: bool = False      # "any target"/"planeswalker" in oracle
+    can_target_planeswalker: bool = False      # "any target" or planeswalker oracle patterns
     # On-attack triggered ability (CR 603.2) — populated at load time by
     # oracle_parser.parse_has_attack_trigger(oracle, name). True for cards
     # whose oracle text contains "Whenever this creature attacks" or
@@ -394,6 +394,18 @@ class CardTemplate:
     # Exile own creature -- True when oracle exiles a creature the controller controls.
     # Populated by oracle_parser.parse_has_exile_own_creature.
     has_exile_own_creature: bool = False
+    # Converge keyword -- True when oracle has 'converge'/'colors of mana spent'.
+    # Populated by oracle_parser.parse_has_converge.
+    has_converge: bool = False
+    # Delirium keyword -- True when oracle has 'delirium' condition.
+    # Populated by oracle_parser.parse_has_delirium.
+    has_delirium: bool = False
+    # All basic land types -- True when oracle grants all basic land types to lands.
+    # Populated by oracle_parser.parse_has_all_basic_land_types.
+    has_all_basic_land_types: bool = False
+    # Destroy or exile -- True when oracle destroys or exiles a permanent.
+    # Populated by oracle_parser.parse_has_destroy_or_exile.
+    has_destroy_or_exile: bool = False
     # Storm keyword (CR 702.39) -- True when oracle contains standalone "storm".
     # Populated by oracle_parser.parse_is_storm_spell.
     is_storm_spell: bool = False
@@ -789,8 +801,7 @@ class CardInstance:
         # land type" (Leyline of the Guildpact pattern). Same predicate
         # as engine/mana_payment.py::ManaPayment.has_leyline_of_guildpact.
         for c in player.battlefield:
-            oracle = (c.template.oracle_text or '').lower()
-            if 'lands you control are every basic land type' in oracle:
+            if getattr(c.template, 'has_all_basic_land_types', False):
                 if any(l.template.is_land for l in player.battlefield):
                     return 5
         found_types: set = set()
