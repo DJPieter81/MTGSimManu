@@ -2001,3 +2001,82 @@ def parse_has_sacrifice_for_damage(oracle: str) -> bool:
         return False
     lo = oracle.lower()
     return 'sacrifice a creature' in lo and 'damage' in lo
+
+
+def parse_has_scaling_effect(oracle: str) -> bool:
+    """Return True when oracle contains a 'for each' or 'for every' scaling clause.
+
+    Identifies cards whose effect magnitude scales with a count of permanents,
+    cards, or other game objects.  A second copy of such a card stacks its
+    scaling independently, making duplicates useful.  Replaces runtime
+    'for each'/'for every' substring checks in ev_player.py stacks detection.
+
+    Class size: hundreds of Modern-legal cards with 'for each' clauses.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'for each' in lo or 'for every' in lo
+
+
+def parse_has_self_trigger(oracle: str) -> bool:
+    """Return True when oracle contains a 'when this' self-referential trigger.
+
+    Covers ETB triggers ('when this enters'), attack triggers ('when this
+    attacks'), death triggers ('when this dies'), and any other 'when this'
+    pattern.  Each copy of such a card fires its own trigger, so duplicates
+    stack in value.  Replaces runtime 'when this' substring check in
+    ev_player.py stacks detection.
+
+    Class size: hundreds of Modern-legal creatures with self-triggered abilities.
+    """
+    if not oracle:
+        return False
+    return 'when this' in oracle.lower()
+
+
+def parse_has_recurring_draw_trigger(oracle: str) -> bool:
+    """Return True when oracle has a repeatable draw triggered ability.
+
+    Combines the 'whenever' recurring-trigger signal with an explicit draw
+    clause, targeting engines like 'Whenever you cast a spell, draw a card'
+    (Rhystic Study, Mystic Remora pattern).  Replaces the runtime two-field
+    AND check ('whenever' in oracle and 'draw' in oracle) in evaluator.py.
+
+    Class size: dozens of Modern-legal draw-engine permanents.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'whenever' in lo and 'draw' in lo
+
+
+def parse_has_each_opponent_effect(oracle: str) -> bool:
+    """Return True when oracle targets 'each opponent' or 'each player'.
+
+    Identifies cards whose damage or effect hits every opponent simultaneously,
+    making them scale with multiplayer headcount and highly efficient in 1v1.
+    Replaces the runtime 'each opponent'/'each player' check in evaluator.py.
+
+    Class size: dozens of Modern-legal burn/damage-each-opponent effects.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'each opponent' in lo or 'each player' in lo
+
+
+def parse_has_pump_grant(oracle: str) -> bool:
+    """Return True when oracle grants a +X/+Y bonus to a creature.
+
+    Covers 'gets +N/+M' (temporary combat boost) and 'additional +N/+M'
+    (extra-attack/double-strike style bonus) patterns.  Replaces runtime
+    'gets +' and 'additional +' substring checks in evaluator.py pump
+    detection.  The '+1/+1 counter' form is left as a non-flagged literal.
+
+    Class size: hundreds of Modern-legal pump spells, auras, and abilities.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'gets +' in lo or 'additional +' in lo

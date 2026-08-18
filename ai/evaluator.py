@@ -274,14 +274,14 @@ def _ability_bonus(card, template=None) -> float:
         bonus += n * ORACLE_DRAW_VALUE_PER_CARD
 
     # Repeatable draw ("whenever" + "draw")
-    if 'whenever' in oracle and 'draw' in oracle:
+    if getattr(template, 'has_recurring_draw_trigger', False):
         bonus += ORACLE_RECURRING_DRAW_BONUS
 
     # Damage to opponents/creatures on trigger
     dmg_match = re.search(r'deals?\s+(\d+)\s+damage', oracle)
     if dmg_match:
         dmg = int(dmg_match.group(1))
-        if 'each opponent' in oracle or 'each player' in oracle:
+        if getattr(template, 'has_each_opponent_effect', False):
             bonus += dmg * ORACLE_RECURRING_DAMAGE_PER_POINT
         elif has_etb or has_attack_trigger:
             bonus += dmg * ORACLE_TRIGGER_DAMAGE_PER_POINT
@@ -392,8 +392,7 @@ def _ability_bonus(card, template=None) -> float:
                      int(pump_match2.group(2)))
     has_pump = (
         '+1/+1 counter' in oracle  # singular OR plural form
-        or 'gets +' in oracle
-        or 'additional +' in oracle
+        or getattr(template, 'has_pump_grant', False)  # 'gets +'/'additional +'
     )
     if has_pump:
         scale = max(1, pump_n)

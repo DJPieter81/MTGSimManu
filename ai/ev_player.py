@@ -1220,11 +1220,10 @@ class EVPlayer:
             if same_name_on_bf:
                 oracle_lower = (t.oracle_text or '').lower()
                 stacks = (
-                    'for each' in oracle_lower
-                    or 'for every' in oracle_lower
+                    getattr(t, 'has_scaling_effect', False)  # for each/every
                     or getattr(t, 'is_cost_reducer', False)  # cost reducers
                     or getattr(t, 'has_recurring_trigger', False)  # triggered
-                    or 'when this' in oracle_lower      # ETB triggers
+                    or getattr(t, 'has_self_trigger', False)  # ETB/attack/die triggers
                     or 'when ' + t.name.lower() + ' enters' in oracle_lower
                     or '{t}:' in oracle_lower           # tap abilities
                 )

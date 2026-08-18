@@ -1719,6 +1719,9 @@ class CardDatabase:
             parse_has_graveyard_hate, parse_has_spell_chain_hate,
             parse_stax_class, parse_stax_forced_basic,
             parse_has_cast_trigger, parse_has_recurring_trigger,
+            parse_has_scaling_effect, parse_has_self_trigger,
+            parse_has_recurring_draw_trigger, parse_has_each_opponent_effect,
+            parse_has_pump_grant,
             parse_limits_opponent_spell_timing, parse_has_charge_counter_wipe,
             parse_has_mana_value_wipe, parse_has_sacrifice_for_damage,
             parse_prevents_graveyard_etb, parse_requires_creature_target,
@@ -1788,6 +1791,11 @@ class CardDatabase:
         template.stax_forced_basic = parse_stax_forced_basic(oracle)
         template.has_cast_trigger = parse_has_cast_trigger(oracle)
         template.has_recurring_trigger = parse_has_recurring_trigger(oracle)
+        template.has_scaling_effect = parse_has_scaling_effect(oracle)
+        template.has_self_trigger = parse_has_self_trigger(oracle)
+        template.has_recurring_draw_trigger = parse_has_recurring_draw_trigger(oracle)
+        template.has_each_opponent_effect = parse_has_each_opponent_effect(oracle)
+        template.has_pump_grant = parse_has_pump_grant(oracle)
         template.limits_opponent_spell_timing = parse_limits_opponent_spell_timing(oracle)
         template.has_charge_counter_wipe = parse_has_charge_counter_wipe(oracle)
         template.has_mana_value_wipe = parse_has_mana_value_wipe(oracle)

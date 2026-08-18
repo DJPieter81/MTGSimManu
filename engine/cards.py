@@ -367,6 +367,21 @@ class CardTemplate:
     # Discard effect -- True when oracle causes the target to discard cards.
     # Populated by oracle_parser.parse_has_discard_effect.
     has_discard_effect: bool = False
+    # Scaling effect -- True when oracle has 'for each'/'for every' clause.
+    # Populated by oracle_parser.parse_has_scaling_effect.
+    has_scaling_effect: bool = False
+    # Self trigger -- True when oracle has a 'when this' self-referential trigger.
+    # Populated by oracle_parser.parse_has_self_trigger.
+    has_self_trigger: bool = False
+    # Recurring draw trigger -- True when oracle has 'whenever' + 'draw' pattern.
+    # Populated by oracle_parser.parse_has_recurring_draw_trigger.
+    has_recurring_draw_trigger: bool = False
+    # Each-opponent effect -- True when oracle targets 'each opponent'/'each player'.
+    # Populated by oracle_parser.parse_has_each_opponent_effect.
+    has_each_opponent_effect: bool = False
+    # Pump grant -- True when oracle grants +X/+Y bonus ('gets +'/'additional +').
+    # Populated by oracle_parser.parse_has_pump_grant.
+    has_pump_grant: bool = False
     # Storm keyword (CR 702.39) -- True when oracle contains standalone "storm".
     # Populated by oracle_parser.parse_is_storm_spell.
     is_storm_spell: bool = False
