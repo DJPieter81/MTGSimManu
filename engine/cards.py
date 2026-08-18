@@ -382,6 +382,18 @@ class CardTemplate:
     # Pump grant -- True when oracle grants +X/+Y bonus ('gets +'/'additional +').
     # Populated by oracle_parser.parse_has_pump_grant.
     has_pump_grant: bool = False
+    # X-counter scaling -- True when oracle grants 'X +1/+1 counter(s)' (Ballista pattern).
+    # Populated by oracle_parser.parse_has_x_counter_scaling.
+    has_x_counter_scaling: bool = False
+    # Lifegain equal to power -- True when oracle grants life equal to a creature's power.
+    # Populated by oracle_parser.parse_has_lifegain_equal_power.
+    has_lifegain_equal_power: bool = False
+    # Lifegain effect -- True when oracle causes a player or creature to gain life.
+    # Populated by oracle_parser.parse_has_lifegain_effect.
+    has_lifegain_effect: bool = False
+    # Exile own creature -- True when oracle exiles a creature the controller controls.
+    # Populated by oracle_parser.parse_has_exile_own_creature.
+    has_exile_own_creature: bool = False
     # Storm keyword (CR 702.39) -- True when oracle contains standalone "storm".
     # Populated by oracle_parser.parse_is_storm_spell.
     is_storm_spell: bool = False

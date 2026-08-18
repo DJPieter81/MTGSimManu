@@ -1283,8 +1283,7 @@ class EVPlayer:
         # Engine safely bails (Ephemerate returns early), but AI should never
         # score a mana-wasting fizzle as positive EV. Detect by oracle pattern
         # "target creature you control" on an instant/sorcery.
-        oracle_lower_full = (t.oracle_text or '').lower()
-        if ('blink' in tags or 'exile target creature you control' in oracle_lower_full) \
+        if ('blink' in tags or getattr(t, 'has_exile_own_creature', False)) \
                 and (t.is_instant or t.is_sorcery) \
                 and len(me.creatures) == 0:
             return min(ev, BLINK_FIZZLE_FLOOR)

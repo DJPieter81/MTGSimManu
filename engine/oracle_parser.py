@@ -2080,3 +2080,67 @@ def parse_has_pump_grant(oracle: str) -> bool:
         return False
     lo = oracle.lower()
     return 'gets +' in lo or 'additional +' in lo
+
+
+def parse_has_x_counter_scaling(oracle: str) -> bool:
+    """Return True when oracle grants X +1/+1 counters based on mana paid.
+
+    Identifies Walking Ballista / Hangarback Walker class of X-cost creatures
+    that enter with a number of +1/+1 counters equal to X.  Used in
+    response.py to project the expected power of such creatures when the
+    opponent is about to play them.  Replaces runtime 'x +1/+1 counter' and
+    'x +1/+1 counters' substring checks.
+
+    Class size: ~20-40 Modern-legal X-cost counter creatures.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'x +1/+1 counter' in lo or 'x +1/+1 counters' in lo
+
+
+def parse_has_lifegain_equal_power(oracle: str) -> bool:
+    """Return True when oracle grants lifegain equal to a creature's power.
+
+    Covers the Solitude/Fury evoke pattern: removing a creature causes its
+    controller to gain life equal to its power.  Used in board_eval.py to
+    detect removal ETBs that incidentally heal the opponent, lowering their
+    value against small targets.  Replaces runtime 'gains life' + 'power'
+    compound check.
+
+    Class size: ~10-20 Modern-legal cards with power-scaling lifegain.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'gains life' in lo and 'power' in lo
+
+
+def parse_has_lifegain_effect(oracle: str) -> bool:
+    """Return True when oracle causes a player or creature to gain life.
+
+    Catches any 'gain N life' or 'gains N life' pattern in oracle text.
+    Used in ev_evaluator.py to detect ETB lifegain on creatures without
+    the lifelink keyword.  Replaces runtime 'gain' + 'life' compound check.
+
+    Class size: hundreds of Modern-legal cards with lifegain clauses.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'gain' in lo and 'life' in lo
+
+
+def parse_has_exile_own_creature(oracle: str) -> bool:
+    """Return True when oracle exiles a creature the caster controls.
+
+    Covers blink / flicker effects ('exile target creature you control') used
+    for ETB-value re-triggers.  Used in ev_player.py to detect blink spells
+    that fizzle when the caster has no creatures.  Replaces runtime oracle
+    substring check; the 'blink' tag is checked first as a faster path.
+
+    Class size: ~30-50 Modern-legal blink/flicker instant and sorcery cards.
+    """
+    if not oracle:
+        return False
+    return 'exile target creature you control' in oracle.lower()

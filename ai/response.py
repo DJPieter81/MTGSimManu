@@ -1095,9 +1095,8 @@ class ResponseDecider:
         # the explicit `{X}` mana symbol or the 'X +1/+1 counter' / 'for
         # each' patterns embedded in oracle text.
         x_scaler = ('{x}' in oracle
-                    or 'x +1/+1 counter' in oracle
-                    or 'x +1/+1 counters' in oracle
-                    or 'for each' in oracle)
+                    or getattr(template, 'has_x_counter_scaling', False)
+                    or getattr(template, 'has_scaling_effect', False))
         if template.is_creature and x_scaler:
             # Expected X = opp's available mana minus the fixed portion of
             # the cost. cmc==0 for {X}-only cards (Ballista); for cards
@@ -1106,13 +1105,13 @@ class ResponseDecider:
             # opp_idx's perspective, so `snap.my_mana` == opp's mana.
             fixed_cost = template.cmc or 0
             expected_x = max(0, snap_for_clock.my_mana - fixed_cost)
-            if 'x +1/+1 counter' in oracle or 'x +1/+1 counters' in oracle:
+            if getattr(template, 'has_x_counter_scaling', False):
                 # Each counter = +1 power on the body. Treat the projected
                 # body as a creature attacking over EQUIPMENT_RESIDENCY_TURNS
                 # (same residency primitive used elsewhere in this fn).
                 threat += (expected_x * EQUIPMENT_RESIDENCY_TURNS
                            * mana_clock_impact(snap_for_clock) * CLOCK_IMPACT_LIFE_SCALING)
-            elif 'for each' in oracle:
+            elif getattr(template, 'has_scaling_effect', False):
                 # Generic 'for each X' creature scaler — count opp's
                 # matching permanents and credit one power per match.
                 fe = re.search(

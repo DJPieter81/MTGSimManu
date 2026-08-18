@@ -2439,7 +2439,7 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
     # `docs/design/2026-05-10_oracle_pattern_projection_blindspot_audit.md`.
     if 'etb_value' in tags and 'lifelink' not in tags:
         oracle = (t.oracle_text or '').lower()
-        if 'gain' in oracle and 'life' in oracle:
+        if getattr(t, 'has_lifegain_effect', False):
             _LIFE_NUMERALS = ('zero', 'one', 'two', 'three', 'four',
                               'five', 'six', 'seven')
 
