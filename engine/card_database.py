@@ -1717,6 +1717,7 @@ class CardDatabase:
             parse_has_symmetric_reanimation, parse_phyrexian_pip_count,
             parse_has_token_effect, parse_has_graveyard_recursion,
             parse_has_graveyard_hate, parse_has_spell_chain_hate,
+            parse_stax_class, parse_stax_forced_basic,
             parse_has_discard_effect, parse_is_storm_spell,
             parse_has_charge_counter_ability,
             parse_cast_trigger_token, parse_enters_type_counter,
@@ -1778,6 +1779,8 @@ class CardDatabase:
         template.has_graveyard_recursion = parse_has_graveyard_recursion(oracle)
         template.has_graveyard_hate = parse_has_graveyard_hate(oracle)
         template.has_spell_chain_hate = parse_has_spell_chain_hate(oracle)
+        template.stax_class = parse_stax_class(oracle)
+        template.stax_forced_basic = parse_stax_forced_basic(oracle)
         template.has_discard_effect = parse_has_discard_effect(oracle)
         template.is_storm_spell = parse_is_storm_spell(oracle)
         template.has_charge_counter_ability = parse_has_charge_counter_ability(oracle)

@@ -329,6 +329,13 @@ class CardTemplate:
     # Spell-chain hate -- True when oracle limits spells per turn or taxes each spell.
     # Populated by oracle_parser.parse_has_spell_chain_hate.
     has_spell_chain_hate: bool = False
+    # Stax classification -- which locking/taxing family this card belongs to:
+    # 'chalice', 'blood_moon', 'canonist', 'torpor_orb', or None.
+    # Populated by oracle_parser.parse_stax_class.
+    stax_class: Optional[str] = None
+    # Blood Moon forced basic land type ('mountain', 'island', etc.), or None.
+    # Populated by oracle_parser.parse_stax_forced_basic.
+    stax_forced_basic: Optional[str] = None
     # Discard effect -- True when oracle causes the target to discard cards.
     # Populated by oracle_parser.parse_has_discard_effect.
     has_discard_effect: bool = False

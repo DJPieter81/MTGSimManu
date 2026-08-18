@@ -1739,6 +1739,61 @@ def parse_has_spell_chain_hate(oracle: str) -> bool:
     return False
 
 
+def parse_stax_class(oracle: str) -> Optional[str]:
+    """Return the stax family name for locking / taxing permanents, or None.
+
+    Families:
+    - 'chalice'    — Chalice of the Void: counter spells whose mana value
+                     equals the permanent's charge counters
+    - 'blood_moon' — Blood Moon: nonbasic lands become a basic type
+    - 'canonist'   — Ethersworn Canonist / Rule of Law: one-spell-per-turn lock
+    - 'torpor_orb' — Torpor Orb / Cursed Totem: ETB abilities don't trigger
+
+    Replaces 9 runtime oracle checks in ai/stax_ev.classify_stax.
+    Class size: all Modern-legal stax pieces (~20 cards across 4 families).
+    """
+    if not oracle:
+        return None
+    lo = oracle.lower()
+    # Chalice of the Void family
+    if ('charge counter' in lo and 'mana value' in lo
+            and ('counter that spell' in lo or 'counter it' in lo)):
+        return 'chalice'
+    # Blood Moon family
+    if 'nonbasic lands are' in lo:
+        for basic in ('mountain', 'island', 'plains', 'swamp', 'forest'):
+            if basic in lo:
+                return 'blood_moon'
+    # Canonist / Rule of Law family
+    if (("can't cast more than one" in lo and 'each turn' in lo)
+            or ("can't cast additional" in lo)):
+        return 'canonist'
+    # Torpor Orb / Cursed Totem family
+    if ('entering' in lo and 'abilities' in lo
+            and ("don't cause" in lo or "don't trigger" in lo)):
+        return 'torpor_orb'
+    return None
+
+
+def parse_stax_forced_basic(oracle: str) -> Optional[str]:
+    """Return the basic land type forced by Blood-Moon-type effects, or None.
+
+    Blood Moon forces 'mountain'; a hypothetical Island-Moon variant would
+    return 'island'. Returns None for all non-Blood-Moon cards.
+
+    Replaces 1 runtime oracle check in ai/stax_ev._blood_moon_lock_ev.
+    """
+    if not oracle:
+        return None
+    lo = oracle.lower()
+    if 'nonbasic lands are' not in lo:
+        return None
+    for basic in ('mountain', 'island', 'plains', 'swamp', 'forest'):
+        if f'are {basic}s' in lo or f'are {basic}.' in lo:
+            return basic
+    return None
+
+
 def parse_has_discard_effect(oracle: str) -> bool:
     """Return True when the card causes discard.
 
