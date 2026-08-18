@@ -1498,8 +1498,7 @@ class EVPlayer:
             from ai.stax_ev import stax_lock_ev
             ev += stax_lock_ev(t, me, opp, snap)
 
-        oracle_lower = (t.oracle_text or '').lower()
-        phyrexian_count = oracle_lower.count('/p}')
+        phyrexian_count = getattr(t, 'phyrexian_pip_count', 0)
         if phyrexian_count > 0:
             life_cost = phyrexian_count * 2
             ev -= life_cost / max(1, snap.my_life) * PHYREXIAN_LIFE_PENALTY_SCALE

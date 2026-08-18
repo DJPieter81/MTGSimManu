@@ -2602,3 +2602,46 @@ def parse_has_artifact_or_enchantment_scaling(oracle: str) -> bool:
         return False
     lo = oracle.lower()
     return 'artifact and/or enchantment' in lo or 'artifact or enchantment' in lo
+
+
+# -- Batch 21 typed fields -------------------------------------------------
+
+def parse_phyrexian_mana_symbol_count(oracle: str) -> int:
+    """Count Phyrexian mana symbols ({X/P}) in oracle text.
+
+    Replaces oracle_lower.count('/p}') at ai/ev_player.py:1502 (life-cost
+    discount) and engine/cast_manager.py:1093 (Phyrexian payment at cast).
+
+    Class size: every Phyrexian mana card — Gitaxian Probe, Mutagenic Growth,
+    Gut Shot, Phyrexian Metamorph, etc.
+    """
+    if not oracle:
+        return 0
+    return oracle.lower().count('/p}')
+
+
+# Alias for backwards compatibility with phyrexian_pip_count field.
+# parse_phyrexian_pip_count and this function are identical; the typed field
+# on CardTemplate is named phyrexian_pip_count (populated before batch 21).
+parse_phyrexian_mana_symbol_count = parse_phyrexian_mana_symbol_count  # noqa: keep alias distinct
+
+
+def parse_channel_clause(oracle: str) -> str:
+    """Extract the channel ability clause from oracle text.
+
+    Returns the substring from 'channel —' or 'channel -' to the end of
+    oracle, lowercased.  Returns '' when no channel clause is present.
+
+    Replaces oracle.find('channel —') / oracle.find('channel -') at
+    ai/response_enumeration.py:232 (channel target extraction).
+
+    Class size: every channel land — Otawara, Boseiju, Sokenzan, Takenuma,
+    Eiganjo, and any future channel cards.
+    """
+    if not oracle:
+        return ''
+    lo = oracle.lower()
+    idx = max(lo.find("channel —"), lo.find("channel -"))
+    if idx < 0:
+        return ''
+    return lo[idx:]

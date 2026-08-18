@@ -1089,8 +1089,7 @@ class CastManager:
                             return False
                     else:
                         # Phyrexian mana: pay 2 life per Phyrexian symbol instead of colored mana
-                        oracle_lower = (template.oracle_text or '').lower()
-                        phyrexian_count = oracle_lower.count('/p}')
+                        phyrexian_count = getattr(template, 'phyrexian_pip_count', 0)
                         if phyrexian_count > 0 and player.life > phyrexian_count * 2:
                             life_cost = phyrexian_count * 2
                             player.life -= life_cost

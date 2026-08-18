@@ -156,7 +156,7 @@ class TriggerManager:
         # you may PAY {E}{E}{E}" clause — the old loose regex matched the
         # former and fired on attacks, giving Boros free energy every swing.
         oracle = (attacker.template.oracle_text or '').lower()
-        if '{e}' in oracle and attacker.template.has_attack_trigger and 'get' in oracle:
+        if '{e}' in oracle and attacker.template.has_attack_trigger:
             import re
             for m in re.finditer(r'(?:get|gets?)\s+((?:\{e\})+)', oracle):
                 # Find this sentence's bounds
@@ -167,8 +167,10 @@ class TriggerManager:
                 ) + 1
                 sentence_end = m.end()
                 # Look for the sentence's full text from start to end
+                tail = oracle[m.end():]
                 for term in ('.', '\n'):
-                    idx = oracle.find(term, m.end())
+                    raw = tail.find(term)
+                    idx = (m.end() + raw) if raw != -1 else -1
                     if idx != -1:
                         sentence_end = min(sentence_end if sentence_end > m.end() else idx, idx)
                         break

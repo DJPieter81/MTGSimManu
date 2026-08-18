@@ -227,12 +227,9 @@ def _channel_has_legal_target(
     Boseiju, Sokenzan, Takenuma, Eiganjo, etc.  The predicate is
     text-driven, not name-driven.
     """
-    oracle = (card.template.oracle_text or "").lower()
-    # 'Channel —' (em-dash) or 'Channel -' (ASCII hyphen); both occur.
-    idx = max(oracle.find("channel —"), oracle.find("channel -"))
-    if idx < 0:
+    clause = getattr(card.template, 'channel_clause', '')
+    if not clause:
         return True  # no channel clause — defensive default
-    clause = oracle[idx:]
     if "target" not in clause:
         return True  # targetless channel (Sokenzan)
 

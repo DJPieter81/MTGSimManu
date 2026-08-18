@@ -487,6 +487,10 @@ class CardTemplate:
     # Artifact-or-enchantment scaling -- True for Nettlecyst pattern.
     # Populated by oracle_parser.parse_has_artifact_or_enchantment_scaling.
     has_artifact_or_enchantment_scaling: bool = False
+    # Channel ability clause -- substring from 'channel —'/'channel -' to end.
+    # Empty string when card has no channel ability.
+    # Populated by oracle_parser.parse_channel_clause.
+    channel_clause: str = ""
     # Storm keyword (CR 702.39) -- True when oracle contains standalone "storm".
     # Populated by oracle_parser.parse_is_storm_spell.
     is_storm_spell: bool = False
