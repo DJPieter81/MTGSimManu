@@ -918,11 +918,11 @@ def _is_immediate_interaction(oracle: str, tags, template) -> bool:
     """
     if 'removal' in tags or 'board_wipe' in tags or 'counterspell' in tags:
         return True
-    # Oracle-driven fallbacks (damage, destroy, exile).
-    if 'target' in oracle and (
-            'deals' in oracle and 'damage' in oracle):
+    # Typed-field fallbacks (damage, destroy, exile) — parsed once at DB load.
+    if getattr(template, 'deals_targeted_damage', False):
         return True
-    if 'destroy target' in oracle or 'exile target' in oracle:
+    if (getattr(template, 'can_destroy_nonland_permanent', False)
+            or getattr(template, 'can_exile_permanent', False)):
         return True
     # ``template.is_counterspell`` is the pre-parsed typed field covering
     # all "counter target …" oracle wordings (oracle_parser.parse_is_counterspell).
@@ -938,7 +938,9 @@ def _is_immediate_interaction(oracle: str, tags, template) -> bool:
     # ``template.can_target_player`` covers all three oracle patterns
     # ("any target" / "target player" / "target opponent") — the union
     # is a strict superset of the old two-phrase OR.
-    if template.can_target_player and 'discard' in oracle:
+    # ``template.has_discard_effect`` is the pre-parsed typed field
+    # (oracle_parser.parse_has_discard_effect) — no runtime oracle scan.
+    if template.can_target_player and getattr(template, 'has_discard_effect', False):
         return True
     return False
 
@@ -1212,7 +1214,8 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
 
     # 15. X-cost hate permanent (Chalice-style "cost X, get X charge
     #     counters") — cast-now locks opp spells at the chosen CMC.
-    if t.x_cost_data and 'charge counter' in oracle:
+    #     has_charge_counter_ability is the typed field parsed at DB load.
+    if t.x_cost_data and getattr(t, 'has_charge_counter_ability', False):
         signals.append('x_cost_hate_permanent')
 
     # 16. Recurring-engine triggered ability — permanents whose oracle
@@ -2247,10 +2250,11 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
         # table for these cards keeps the prior behaviour for state-
         # scaled effects intact.
         from engine.cards import Keyword as _Kw
+        # x_cost_data typed field covers "where x is" X-cost scaling.
         is_state_scaled = (
             _Kw.STORM in getattr(t, 'keywords', set())
             or '{x}' in oracle
-            or 'where x is' in oracle
+            or getattr(t, 'x_cost_data', None) is not None
         )
         # Generic extractor: literal "deals N damage" (Lightning
         # Bolt 3, Lava Spike 3, Boros Charm 4, Unholy Heat 6 in
