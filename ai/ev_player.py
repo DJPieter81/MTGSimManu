@@ -101,6 +101,7 @@ from ai.scoring_constants import (
     LOW_LIFE_BURN_DEFAULT,
     PUMP_DISCARD_LAND_FLOOR,
     PUMP_DISCARD_SPELL_GLUT,
+    ATTACK_TRIGGER_OC_MAX,
 )
 
 # RC-2 — parse "equipped/enchanted creature gets +X/+Y" bonuses from
@@ -2559,9 +2560,23 @@ class EVPlayer:
                     Keyword.FLYING in b.keywords or Keyword.REACH in b.keywords
                     for b in opp_blockers if not b.tapped)
             )
-            if deals_damage and (not can_die_to_block or is_evasive):
+            # Phase 3 veto retirement: evasion removes combat risk regardless
+            # of power.  A creature that is genuinely unblockable (is_evasive)
+            # will not die to any legal block — its "free" status comes from
+            # evasion, not from the damage it deals.  Removing the deals_damage
+            # gate allows 0-power flyers to be scored by the planner rather
+            # than categorically excluded.
+            #
+            # Non-evasive creatures still require deals_damage to join the free
+            # pool: without damage they contribute nothing to the clock, and a
+            # tap is a real cost if the creature has blocking/ability value.
+            if is_evasive or (deals_damage and not can_die_to_block):
                 free_attackers.append(c)
+            elif deals_damage:
+                non_free.append(c)
             else:
+                # 0-power, 0-trigger, non-evasive, not safe from blocks:
+                # attack EV ≈ 0, leave out of the pool entirely.
                 non_free.append(c)
 
         # If ALL our creatures are free attackers, just send them all
@@ -2668,11 +2683,27 @@ class EVPlayer:
         # Fallback: always send free attackers + creatures that can trade favorably
         safe = list(free_attackers)
         for c in non_free:
-            has_combat_trigger = c.template.has_combat_damage_player_trigger
-            if has_combat_trigger and (c.power or 0) > 0:
-                # e.g. Ragavan: attack if our power kills their best blocker (even trade gains trigger)
+            has_dmg_trigger = c.template.has_combat_damage_player_trigger
+            has_atk_trigger = getattr(c.template, 'has_attack_trigger', False)
+            if has_dmg_trigger and (c.power or 0) > 0:
+                # e.g. Ragavan: attack if our power kills their best blocker
+                # (even trade gains the on-hit trigger).
                 killable = [b for b in opp_blockers if (c.power or 0) >= (b.toughness or 0)]
                 if killable:
+                    safe.append(c)
+            elif has_atk_trigger and not has_dmg_trigger:
+                # On-attack trigger fires on declaration — value is delivered
+                # before blockers are chosen, so even a creature that dies in
+                # combat still fires.  Use opportunity_cost to gate: only send
+                # the creature if its ongoing board value is below the trigger-
+                # value threshold (ATTACK_TRIGGER_OC_MAX).  This replaces the
+                # old "power > 0 AND has_combat_damage_player_trigger" veto
+                # which categorically excluded every 0-power trigger source.
+                from ai.ev_evaluator import snapshot_from_game
+                from ai.clock import opportunity_cost
+                _snap = snapshot_from_game(game, self.player_idx)
+                _oc = opportunity_cost(c, me, _snap)
+                if _oc < ATTACK_TRIGGER_OC_MAX:
                     safe.append(c)
 
         # If racing, desperate, or vs combo, send everything even if risky.
