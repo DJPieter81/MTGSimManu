@@ -40,10 +40,11 @@ class _MockTemplate:
         self.is_land = False
         self.is_instant = False
         self.is_sorcery = False
-        # Typed field the evaluator now reads — derive faithfully from
+        # Typed fields the evaluator now reads — derive faithfully from
         # oracle text via the real parser so the mock matches production.
-        from engine.oracle_parser import parse_is_tutor
+        from engine.oracle_parser import parse_is_tutor, parse_has_pump_grant
         self.is_tutor = parse_is_tutor(oracle_text)
+        self.has_pump_grant = parse_has_pump_grant(oracle_text)
 
 
 class TestScaleOverTimeBonusScalesWithN:
