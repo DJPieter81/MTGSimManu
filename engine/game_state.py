@@ -320,9 +320,7 @@ class GameState:
         # Policy: bin all of them. The library indices shift as we
         # remove, so iterate over the slice (which is a separate list).
         for card in looked:
-            player.library.remove(card)
-            card.zone = "graveyard"
-            player.graveyard.append(card)
+            self.zone_mgr.move_card(self, card, "library", "graveyard")
             binned.append(card)
         if binned:
             names = ", ".join(c.name for c in binned)

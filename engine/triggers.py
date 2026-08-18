@@ -104,13 +104,12 @@ class TriggerManager:
                 if ('top card' in w_oracle or 'top of your library' in w_oracle) and player.library:
                     top = player.library[0]
                     if top.template.is_land:
-                        player.library.pop(0)
-                        top.zone = 'battlefield'
+                        game.zone_mgr.move_card(
+                            game, top, "library", "battlefield",
+                            cause=f"{watcher.name} → {top.name} enters tapped (land)",
+                            controller_override=controller,
+                        )
                         top.tapped = True
-                        player.battlefield.append(top)
-                        game.log.append(
-                            f"T{game.display_turn} P{controller+1}: "
-                            f"{watcher.name} → {top.name} enters tapped (land)")
                         game._trigger_landfall(controller)
                     else:
                         game.draw_cards(controller, 1)
@@ -205,9 +204,8 @@ class TriggerManager:
             sortable = sorted(opp.battlefield, key=lambda c: c.template.cmc)
             for perm in sortable[:ann_amount]:
                 if perm in opp.battlefield:
-                    opp.battlefield.remove(perm)
-                    perm.zone = "graveyard"
-                    game.players[perm.owner].graveyard.append(perm)
+                    game.zone_mgr.move_card(game, perm, "battlefield", "graveyard",
+                                            cause=f"Annihilator {ann_amount}")
                     sacrificed += 1
             if sacrificed:
                 game.log.append(f"T{game.display_turn}: Annihilator {ann_amount} - "
