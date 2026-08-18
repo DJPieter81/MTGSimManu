@@ -323,6 +323,12 @@ class CardTemplate:
     # to hand or battlefield.
     # Populated by oracle_parser.parse_has_graveyard_recursion.
     has_graveyard_recursion: bool = False
+    # Graveyard hate -- True when oracle exiles graveyards or prevents GY casting.
+    # Populated by oracle_parser.parse_has_graveyard_hate.
+    has_graveyard_hate: bool = False
+    # Spell-chain hate -- True when oracle limits spells per turn or taxes each spell.
+    # Populated by oracle_parser.parse_has_spell_chain_hate.
+    has_spell_chain_hate: bool = False
     # Discard effect -- True when oracle causes the target to discard cards.
     # Populated by oracle_parser.parse_has_discard_effect.
     has_discard_effect: bool = False

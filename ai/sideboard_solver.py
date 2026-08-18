@@ -88,9 +88,8 @@ def _color_damage_density(color: str,
         # ManaCost has attributes red/blue/black/white/green; str form also works
         if mc is None or getattr(mc, color, 0) == 0:
             return False
-        oracle = (t.oracle_text or '').lower()
-        # Burn / damage spell
-        if 'damage' in oracle and ('deal' in oracle or 'dealt' in oracle):
+        # Burn / damage spell — typed field parsed once at DB load.
+        if getattr(t, 'deals_targeted_damage', False):
             return True
         # Creature attacks — any creature with positive power and the colour
         if t.is_creature and (t.power or 0) > 0:
@@ -131,12 +130,8 @@ def _gy_reliance(opp_templates: List["CardTemplate"],
                 'embalm', 'eternalize', 'threshold', 'delirium',
         )):
             return True
-        # Reanimator / return-from-GY / graveyard-as-resource patterns
-        if 'from your graveyard' in oracle:
-            return True
-        if 'from their graveyard' in oracle and 'battlefield' in oracle:
-            return True  # Living End's own oracle
-        if 'from a graveyard' in oracle and 'battlefield' in oracle:
+        # Reanimator / return-from-GY — typed field parsed once at DB load.
+        if getattr(t, 'has_graveyard_recursion', False):
             return True
         return False
 
@@ -153,13 +148,16 @@ def _chain_reliance(opp_templates: List["CardTemplate"]) -> float:
     composition, not deck names.
     """
     def pred(t):
-        oracle = (t.oracle_text or '').lower()
-        if 'storm' in oracle and 'copy' in oracle:
-            return True  # storm keyword reminder text / payoffs
-        if (t.is_instant or t.is_sorcery) and re.search(r'add \{', oracle):
-            return True  # ritual class
-        if re.search(r'cost \{\d\} less', oracle):
-            return True  # cost-reducer class
+        from engine.cards import Keyword as _Kw
+        # Storm payoffs — typed keyword field.
+        if _Kw.STORM in getattr(t, 'keywords', set()):
+            return True
+        # Ritual class — typed field parsed once at DB load.
+        if (t.is_instant or t.is_sorcery) and getattr(t, 'ritual_mana', None) is not None:
+            return True
+        # Cost-reducer class — typed field parsed once at DB load.
+        if getattr(t, 'is_cost_reducer', False):
+            return True
         return False
 
     return _density(pred, opp_templates)
@@ -238,28 +236,19 @@ def _clause_protection_color(oracle: str,
     return max(1, card_body_power) * density * PERMANENT_VALUE_WINDOW
 
 
-def _clause_gy_hate(oracle: str,
+def _clause_gy_hate(template: "CardTemplate",
                      opp_templates: List["CardTemplate"],
                      opp_gameplan: Optional["object"] = None) -> float:
     """Value of graveyard hate (exile graveyard, can't cast from GY).
 
     Scales with opp's GY reliance. Against a deck that doesn't use GY at all,
     returns 0. Against Living End / Goryo's / Dredge, high value.
+
+    Detection reads the typed field CardTemplate.has_graveyard_hate parsed
+    once at DB load (oracle_parser.parse_has_graveyard_hate). No runtime
+    oracle scans.
     """
-    # True GY hate: exile opponent's GY or shut off GY-casting mechanics.
-    # Must NOT match cards that MOVE cards out of GY onto the battlefield
-    # (Living End, reanimation spells — those are reanimator enablers).
-    hates_gy = False
-    if re.search(r"exile [\w\s']*?graveyard", oracle) \
-            and 'onto the battlefield' not in oracle:
-        hates_gy = True
-    if re.search(r'exile all (cards from )?graveyards?', oracle):
-        hates_gy = True
-    if re.search(r"can'?t (be )?cast (spells )?from", oracle) and 'graveyard' in oracle:
-        hates_gy = True
-    if 'if a card would be put into' in oracle and 'graveyard' in oracle and 'exile' in oracle:
-        hates_gy = True
-    if not hates_gy:
+    if not getattr(template, 'has_graveyard_hate', False):
         return 0.0
     reliance = _gy_reliance(opp_templates, opp_gameplan)
     if reliance <= 0:
@@ -270,26 +259,19 @@ def _clause_gy_hate(oracle: str,
     return reliance * SB_EXPECTED_GY_CREATURES_DENIED * PERMANENT_VALUE_WINDOW
 
 
-def _clause_spell_chain_hate(oracle: str,
+def _clause_spell_chain_hate(template: "CardTemplate",
                              opp_templates: List["CardTemplate"]) -> float:
     """Value of cast-rate denial vs spell-chain (storm-class) decks.
 
-    Patterns: one-spell-per-turn locks ("can't cast more than one
-    spell"), per-spell surcharges ("costs {1} more to cast for each
-    other spell"), and storm-trigger answers ("counter target
-    triggered/activated ability"). Scales with the opponent's measured
-    chain reliance — the same clause-family shape as `_clause_gy_hate`
-    (hate value = reliance x expected-denied x residency). Zero against
-    a deck with no chain components.
+    Patterns: one-spell-per-turn locks, per-spell surcharges, and
+    storm-trigger answers. Scales with the opponent's measured chain
+    reliance. Zero against a deck with no chain components.
+
+    Detection reads the typed field CardTemplate.has_spell_chain_hate
+    parsed once at DB load (oracle_parser.parse_has_spell_chain_hate).
+    No runtime oracle scans.
     """
-    hates_chain = False
-    if re.search(r"can'?t cast more than one spell", oracle):
-        hates_chain = True
-    if re.search(r"costs? \{1\} more to cast for each other spell", oracle):
-        hates_chain = True
-    if re.search(r"counter target (?:triggered|activated)", oracle):
-        hates_chain = True
-    if not hates_chain:
+    if not getattr(template, 'has_spell_chain_hate', False):
         return 0.0
     reliance = _chain_reliance(opp_templates)
     if reliance <= 0:
@@ -405,9 +387,9 @@ def sb_value(template: "CardTemplate",
     value += _clause_creature_removal(oracle, opp_templates)
     value += _clause_counterspell(template, opp_templates)
     value += _clause_protection_color(oracle, opp_templates, body_power)
-    value += _clause_gy_hate(oracle, opp_templates, opp_gameplan)
+    value += _clause_gy_hate(template, opp_templates, opp_gameplan)
     value += _clause_artifact_removal(template, opp_templates)
-    value += _clause_spell_chain_hate(oracle, opp_templates)
+    value += _clause_spell_chain_hate(template, opp_templates)
 
     return value
 

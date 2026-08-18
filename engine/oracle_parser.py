@@ -1677,6 +1677,68 @@ def parse_has_graveyard_recursion(oracle: str) -> bool:
     )
 
 
+def parse_has_graveyard_hate(oracle: str) -> bool:
+    """Return True when the card exiles graveyards or prevents graveyard casting.
+
+    Matches four canonical shapes:
+    - "exile … graveyard" without "onto the battlefield" (Relic of Progenitus,
+      Tormod's Crypt, Bojuka Bog — targeted/mass exile)
+    - "exile all (cards from) graveyards" (Rest in Peace, Scavenging Ooze)
+    - "can't … cast … from … graveyard" (Grafdigger's Cage)
+    - "if a card would be put into … graveyard … exile" (Leyline of the Void,
+      Anafenza)
+
+    Explicitly excludes "onto the battlefield" to avoid false-positives on
+    mass reanimation (Living End, See the Unwritten).
+
+    Replaces 4 runtime re.search calls in ai/sideboard_solver._clause_gy_hate.
+    Class size: all Modern-legal hate pieces (20+ cards).
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    # Targeted / mass graveyard exile — excluding reanimation effects.
+    # Both "onto the battlefield" and "to the battlefield" mark reanimation.
+    has_battlefield = 'onto the battlefield' in lo or 'to the battlefield' in lo
+    if not has_battlefield:
+        if re.search(r"exile [\w\s']*?graveyard", lo):
+            return True
+        if re.search(r'exile all (cards from )?graveyards?', lo):
+            return True
+    # Cast-prevention ("Grafdigger's Cage" pattern).
+    if re.search(r"can'?t (be )?cast (spells )?from", lo) and 'graveyard' in lo:
+        return True
+    # Replacement-to-exile ("Leyline of the Void" / "Anafenza" pattern).
+    if 'if a card would be put into' in lo and 'graveyard' in lo and 'exile' in lo:
+        return True
+    return False
+
+
+def parse_has_spell_chain_hate(oracle: str) -> bool:
+    """Return True when the card denies spell-chain / storm-class decks.
+
+    Matches three canonical shapes:
+    - "can't cast more than one spell" (Rule of Law, Ethersworn Canonist)
+    - "costs {1} more to cast for each other spell" (per-spell surcharge)
+    - "counter target triggered ability" (Trickbind / Squelch — answers storm
+      triggers without countering the spell itself)
+
+    Replaces 3 runtime re.search calls in
+    ai/sideboard_solver._clause_spell_chain_hate.
+    Class size: all Modern-legal spell-chain hate pieces (10+ cards).
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    if re.search(r"can'?t cast more than one spell", lo):
+        return True
+    if re.search(r"costs? \{1\} more to cast for each other spell", lo):
+        return True
+    if re.search(r"counter target (?:triggered|activated)", lo):
+        return True
+    return False
+
+
 def parse_has_discard_effect(oracle: str) -> bool:
     """Return True when the card causes discard.
 
