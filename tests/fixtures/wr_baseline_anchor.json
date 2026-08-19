@@ -5,8 +5,8 @@
       "deck1": "Boros Energy",
       "deck2": "Affinity",
       "seed": 50000,
-      "winner": "Boros Energy",
-      "turns": 10
+      "winner": "Affinity",
+      "turns": 7
     },
     {
       "deck1": "Ruby Storm",
@@ -97,7 +97,7 @@
       "deck2": "Goryo's Vengeance",
       "seed": 50500,
       "winner": "4c Omnath",
-      "turns": 9
+      "turns": 10
     },
     {
       "deck1": "Izzet Prowess",
