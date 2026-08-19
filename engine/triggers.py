@@ -145,6 +145,69 @@ class TriggerManager:
                 f"+{spec['counter_toughness']} counter "
                 f"({card.name} entered) → {watcher.power}/{watcher.toughness}")
 
+        # Generic "whenever a[n] [nontoken] [type] you control enters,
+        # create … token" watcher trigger (CR 603.6).
+        #
+        # Pattern: any permanent on the controller's battlefield that watches
+        # for other permanents of a specific type entering and creates tokens.
+        # Covers Weapons Manufacturing (nontoken artifact → Munitions token),
+        # and every future card with the same oracle trigger shape.
+        #
+        # The dispatch is type-driven: it matches the entering permanent's card
+        # types against the required type in the watcher's oracle text — no
+        # card names are compared.  The "nontoken" qualifier gates on whether
+        # the entering card is a token (card.is_token).  Token creation
+        # delegates to game.create_token so TOKEN_DEFS / parse_token_spec
+        # determine the actual token shape.
+        is_entering_token = getattr(card, 'is_token', False)
+        # entering_types already computed above for enters_type_counter
+        _NUM_TO_INT = {"a": 1, "an": 1, "one": 1, "two": 2,
+                       "three": 3, "four": 4}
+        for watcher in list(player.battlefield):
+            if watcher.instance_id == card.instance_id:
+                continue  # self-watching handled separately above
+            w_oracle = (watcher.template.oracle_text or '').lower()
+            if 'whenever' not in w_oracle or 'enters' not in w_oracle:
+                continue
+            if 'create' not in w_oracle or 'token' not in w_oracle:
+                continue
+            # Match "whenever a[n] [nontoken] <type> you control enters"
+            # _re is always bound at function scope (import re as _re, line ~80)
+            m_watcher = _re.search(
+                r'whenever an? (nontoken\s+)?(\w+) you control enters',
+                w_oracle,
+            )
+            if not m_watcher:
+                continue
+            nontoken_only = bool(m_watcher.group(1))
+            req_type = m_watcher.group(2)
+            # Filter: nontoken condition
+            if nontoken_only and is_entering_token:
+                continue
+            # Filter: permanent type condition
+            if req_type not in entering_types:
+                continue
+            # Count tokens to create
+            count_m = _re.search(
+                r'create (a|an|one|two|three|four|\d+)\b', w_oracle)
+            count = 1
+            if count_m:
+                tok = count_m.group(1)
+                count = int(tok) if tok.isdigit() else _NUM_TO_INT.get(tok, 1)
+            # Determine token type: prefer artifact creature tokens when the
+            # watcher oracle mentions "artifact token" so the token counts
+            # toward Improvise and metalcraft; otherwise default to creature.
+            token_type = "drone" if "artifact token" in w_oracle else "creature"
+            # Fire trigger (respects Panharmonicon-style trigger doublers)
+            for _ in range(trigger_multiplier):
+                game.create_token(controller, token_type, count=count,
+                                  source_oracle=watcher.template.oracle_text)
+            game.log.append(
+                f"T{game.display_turn} P{controller+1}: "
+                f"{watcher.name} trigger → create {count} token(s) "
+                f"({card.name} entered as nontoken={not is_entering_token} "
+                f"{req_type})")
+
 
     @staticmethod
     def trigger_attack(game: "GameState", attacker: CardInstance, controller: int):
