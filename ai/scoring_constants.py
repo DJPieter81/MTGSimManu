@@ -1333,6 +1333,35 @@ the planner's per-decision budget.
 Used by `CombatPlanner._generate_attack_configs` in `ai/turn_planner.py`.
 """
 
+ATTACK_TRIGGER_OC_MAX: float = 2.0
+"""Derived: maximum opportunity-cost (creature-value units) below which
+a creature in the ``non_free`` attacker pool with an on-attack trigger
+(``has_attack_trigger=True``) is added to the safe-to-attack list in
+``decide_attackers``'s fallback path.
+
+On-attack triggers fire on declaration — the trigger resolves before
+blockers are chosen, so the creature's value is delivered independent of
+combat outcome.  A creature whose ongoing board value is below this
+threshold is EV-positive to send in: the trigger value exceeds the
+opportunity-cost of the tap.
+
+Derived from ``COMBAT_TRIGGER_DAMAGE_BONUS`` (≈ 1.5 EV) with a +0.5
+buffer for the latent up-side of the trigger reaching the stack when
+the opponent cannot immediately answer it.  Creatures with
+opportunity_cost ≥ 2.0 (≈ a 2-power creature's clock contribution)
+are NOT sent in blind — their removal represents real value loss that
+the trigger may not recoup.
+
+Class size: any creature whose oracle text matches
+``parse_has_attack_trigger`` and whose power is 0 — Guide of Souls,
+trigger-bearing tokens, future 0-power support creatures.
+
+Used by the fallback ``non_free`` loop in
+``ai/ev_player.py::decide_attackers``.  Replaces the bare
+``power > 0 AND has_combat_damage_player_trigger`` gate that categorically
+excluded every on-attack trigger creature with 0 power.
+"""
+
 # ── Block-prioritisation trade ratios ───────────────────────────
 
 BLOCK_TRADE_UP_VALUE_RATIO: float = 0.9
