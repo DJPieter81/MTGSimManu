@@ -1932,10 +1932,17 @@ class GameRunner:
                 if not m_grant or 'token' not in g:
                     continue
                 cost_n = int(m_grant.group(1) or 0)
+                # {N} generic can be paid from mana pool OR untapped lands.
+                # Use pool first (Mox Opal, Springleaf Drum etc.), then tap lands.
+                from engine.mana import ManaCost as _ManaCost
+                pool_cover = min(player.mana_pool.total(), cost_n)
+                still_needed = cost_n - pool_cover
                 payers = [l for l in player.untapped_lands if l is not perm]
-                if len(payers) < cost_n:
+                if len(payers) < still_needed:
                     continue
-                for land in payers[:cost_n]:
+                if pool_cover:
+                    player.mana_pool.pay(_ManaCost(generic=pool_cover))
+                for land in payers[:still_needed]:
                     land.tapped = True
                 perm.tapped = True
                 tokens = game.create_token(

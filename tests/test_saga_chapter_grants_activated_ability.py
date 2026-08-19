@@ -234,3 +234,38 @@ def test_granted_abilities_cleared_when_saga_leaves_battlefield(
     game_runner._process_saga_chapters(game, active=0)  # ch III + sac
     assert saga.zone == "graveyard"
     assert saga.granted_abilities == []
+
+
+def test_granted_ability_usable_with_mana_pool_instead_of_lands(
+        card_db, game_runner):
+    """Generic cost of a granted saga ability can be paid from the mana
+    pool, not only by tapping additional lands.
+
+    Rule: {N} in a cost means any N mana regardless of source — tapping
+    N extra lands is one way to pay but not the only way.  Affinity
+    players often hold mana in their pool from Mox Opal or similar
+    sources before activating Urza's Saga Ch.II.
+
+    Regression guard for the land-count-only check that required
+    len(untapped_lands) >= cost_n and ignored pool.total()."""
+    from engine.mana import ManaPool
+    game = GameState(rng=random.Random(0))
+    saga = _put_in_play(game, card_db, SAGA_NAME, controller=0)
+    saga.other_counters["lore"] = 1  # trigger ch II grant
+    # NO untapped lands — all mana comes from the pool (Mox Opal etc.)
+    game_runner._process_saga_chapters(game, active=0)  # grants the ability
+    assert any("create" in g.lower() for g in saga.granted_abilities), (
+        "ch II must grant the {2},{T}: Create ability")
+
+    # Simulate 2 mana already in the pool from artifact mana sources
+    player = game.players[0]
+    player.mana_pool.add("C", 2)
+
+    game_runner._activate_tap_abilities(game, active=0)
+
+    toks = _tokens(game, 0)
+    assert len(toks) == 1, (
+        "granted ability must fire when mana pool covers the generic cost "
+        "even with zero untapped lands")
+    assert player.mana_pool.total() == 0, "pool mana must be spent"
+    assert saga.tapped, "the {T} part of the cost still taps the source"
