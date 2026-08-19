@@ -2492,6 +2492,59 @@ def parse_has_another_creature_enters_lifegain(oracle: str) -> bool:
             and 'gain' in lo and 'life' in lo)
 
 
+def parse_has_cycling_watch_trigger(oracle: str) -> bool:
+    """Return True for 'whenever you cycle' global cycling-watch triggers.
+
+    Matches battlefield permanents whose oracle text says they trigger
+    whenever their controller cycles any (other) card.  Covers the
+    damage, life-gain, counter, and scry subtypes — all share the same
+    oracle phrase 'whenever you cycle'.
+
+    Class size: Drannith Stinger, Drannith Healer, Flourishing Fox,
+    Curator of Mysteries, Archfiend of Ifnir, Drake Haven, and any
+    future Modern-legal cycling-watch permanent.
+    """
+    if not oracle:
+        return False
+    return bool(re.search(r'whenever you cycle\b', oracle.lower()))
+
+
+def parse_cycling_watch_trigger_damage(oracle: str) -> int:
+    """Return damage dealt to each opponent per cycling-watch trigger fire.
+
+    Matches 'this creature deals N damage to each opponent' on
+    cycling-watch permanents.  Returns 0 if no such clause exists.
+
+    Class size: Drannith Stinger ('deals 1 damage to each opponent'),
+    and any future Modern-legal cycling-watch damage permanent.
+    """
+    if not oracle:
+        return 0
+    lo = oracle.lower()
+    if not re.search(r'whenever you cycle\b', lo):
+        return 0
+    m = re.search(r'deals?\s+(\d+)\s+damage\s+to\s+each\s+opponent', lo)
+    return int(m.group(1)) if m else 0
+
+
+def parse_cycling_watch_trigger_life_gain(oracle: str) -> int:
+    """Return life gained per cycling-watch trigger fire.
+
+    Matches 'you gain N life' on cycling-watch permanents.
+    Returns 0 if no such clause exists.
+
+    Class size: Drannith Healer ('you gain 1 life') and any future
+    Modern-legal cycling-watch life-gain permanent.
+    """
+    if not oracle:
+        return 0
+    lo = oracle.lower()
+    if not re.search(r'whenever you cycle\b', lo):
+        return 0
+    m = re.search(r'you gain\s+(\d+)\s+life', lo)
+    return int(m.group(1)) if m else 0
+
+
 def parse_has_may_play_or_cast(oracle: str) -> bool:
     """Return True for 'may play' or 'may cast' exile-and-play effects.
 

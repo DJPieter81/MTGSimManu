@@ -2359,23 +2359,13 @@ def fable_etb(game, card, controller, targets=None, item=None):
 # Pyromancer, Monastery Mentor, Talrand, …), artifact or not.
 
 
-# ═══════════════════════════════════════════════════════════════════
-# Arcbound Ravager — modular: sac artifacts for counters
-# Sim approximation: grows by sacrificing artifacts
-# ═══════════════════════════════════════════════════════════════════
-@EFFECT_REGISTRY.register("Arcbound Ravager", EffectTiming.ETB,
-                           description="Arcbound Ravager: 0/0 + modular 1, grows by sacrificing artifacts")
-def arcbound_ravager_etb(game, card, controller, targets=None, item=None):
-    """Arcbound Ravager ETB: starts as 1/1 (modular 1), grows later.
-
-    Uses plus_counters on the instance instead of writing to the shared
-    template (prior impl mutated template.power/toughness, leaking across
-    games the same way Blood Moon did).
-    """
-    card.plus_counters += 1
-    game.log.append(
-        f"T{game.display_turn} P{controller+1}: "
-        f"Arcbound Ravager enters as {card.power}/{card.toughness} (modular 1)")
+# Arcbound Ravager — modular 1.
+# ETB counter placement and death-trigger counter transfer are handled by the
+# generic Modular mechanic in engine/spell_resolution.py (_handle_permanent_etb)
+# and engine/oracle_resolver.py (resolve_dies_trigger), keyed on Keyword.MODULAR
+# and template.modular_n — no card-name dispatch needed.
+# Sacrifice-an-artifact activated ability is a sim approximation only
+# (not fully simulated; the ETB counter covers the base modular 1 case).
 
 
 # ═══════════════════════════════════════════════════════════════════
