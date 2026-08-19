@@ -694,25 +694,20 @@ def bottleneck_probability(stack_item, game, defender_idx) -> float:
 
 
 def _payoff_deals_direct_damage(card) -> bool:
-    """Oracle-driven detection: does this payoff deal damage to a
-    target/each player same-turn (Grapeshot pattern), or does it
-    create creature tokens (Empty-the-Warrens pattern)?
+    """Does this payoff deal damage to a target / each player / any
+    target same-turn (Grapeshot pattern)?
 
-    Same classification as `combo_chain.classify_card`'s
-    `deals_direct_damage` flag — kept on the same oracle predicate
-    (`'damage' in oracle AND ('target'|'each'|'any')`) so any future
-    storm reprint follows the same rule by mechanic, not by name.
+    Reads the ``CardTemplate.deals_targeted_damage`` typed field parsed
+    once at DB load by ``oracle_parser.parse_deals_targeted_damage`` —
+    the same classification ``combo_chain.classify_card`` uses, so any
+    future storm reprint follows the rule by mechanic, not by name.
 
     The combat-step distinction matters at lethal range: a damage
     finisher closes the game on resolution; a token finisher leaves
     opp alive because creatures cast this turn cannot attack the
     same turn (CR 302.1 — summoning sickness).
     """
-    oracle = (getattr(card.template, 'oracle_text', '') or '').lower()
-    return ('damage' in oracle
-            and ('target' in oracle
-                 or 'each' in oracle
-                 or 'any' in oracle))
+    return getattr(card.template, 'deals_targeted_damage', False)
 
 
 def _has_storm_finisher(card, me) -> bool:
@@ -742,9 +737,7 @@ def _has_storm_finisher(card, me) -> bool:
     for c in list(sb) + list(me.library):
         if Kw.STORM in getattr(c.template, 'keywords', set()):
             return True
-        oracle = (c.template.oracle_text or '').lower()
-        if ('create' in oracle and 'tokens' in oracle
-                and 'for each' in oracle):
+        if getattr(c.template, 'has_scaling_token_finisher', False):
             return True
     return False
 
@@ -777,9 +770,7 @@ def _tutor_has_payoff_access(card, me) -> bool:
             continue
         if Kw.STORM in getattr(tmpl, 'keywords', set()):
             return True
-        oracle = (tmpl.oracle_text or '').lower()
-        if ('create' in oracle and 'tokens' in oracle
-                and 'for each' in oracle):
+        if getattr(tmpl, 'has_scaling_token_finisher', False):
             return True
     return False
 

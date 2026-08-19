@@ -277,11 +277,6 @@ def parse_x_cost(oracle: str, name: str, mana_cost_str: str = "") -> Optional[Di
     }
 
 
-def is_living_end_cascader(oracle: str, card_types: list) -> bool:
-    """Check if this card cascades into Living End."""
-    return has_cascade(oracle)
-
-
 def parse_splice_cost(oracle: str) -> "Optional[ManaCost]":
     """Parse splice onto Arcane cost from oracle text.
 
@@ -701,41 +696,6 @@ def detect_power_scaling(oracle: str) -> str:
         if gy_pattern.search(clause):
             return "graveyard"
     return ""
-
-
-def parse_planeswalker_abilities(oracle: str) -> Optional[Dict]:
-    """Parse planeswalker loyalty abilities from oracle text.
-
-    Returns dict with 'plus', 'minus', 'ult', 'starting_loyalty'.
-    """
-    oracle_lower = oracle.lower()
-    if not any(f'[{sign}' in oracle_lower for sign in ['+', '−', '-', '0']):
-        return None
-
-    abilities = {}
-
-    # Parse [+N]: effect
-    plus_m = re.search(r'\[([+])(\d+)\]\s*:\s*(.+?)(?:\n|\[|$)', oracle, re.IGNORECASE)
-    if plus_m:
-        abilities['plus'] = (int(plus_m.group(2)), plus_m.group(3).strip()[:60])
-
-    # Parse [−N]: effect or [-N]: effect
-    minus_m = re.search(r'\[[−\-](\d+)\]\s*:\s*(.+?)(?:\n|\[|$)', oracle, re.IGNORECASE)
-    if minus_m:
-        cost = -int(minus_m.group(1))
-        abilities['minus'] = (cost, minus_m.group(2).strip()[:60])
-
-    # Parse ultimate (largest negative)
-    ult_matches = re.findall(r'\[[−\-](\d+)\]\s*:\s*(.+?)(?:\n|\[|$)', oracle, re.IGNORECASE)
-    if len(ult_matches) >= 2:
-        # Ultimate is the one with highest cost
-        ult = max(ult_matches, key=lambda m: int(m[0]))
-        abilities['ult'] = (-int(ult[0]), ult[1].strip()[:60])
-
-    if not abilities:
-        return None
-
-    return abilities
 
 
 def has_delve(oracle: str) -> bool:
@@ -1460,6 +1420,21 @@ def parse_can_destroy_nonland_permanent(oracle: str) -> bool:
     return 'destroy target nonland permanent' in oracle.lower()
 
 
+def parse_has_scaling_token_finisher(oracle: str) -> bool:
+    """Return True if the card creates a storm-scaled number of tokens.
+
+    Detection: oracle text contains all of 'create', 'tokens', and 'for each'
+    — the Empty-the-Warrens template ("Create two 1/1 … tokens for each spell
+    cast before it this turn").  Replaces nine identical runtime substring
+    checks in ai/combo_calc.py, ai/finisher_simulator.py, and
+    ai/finisher_simulator_v3.py.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'create' in lo and 'tokens' in lo and 'for each' in lo
+
+
 def parse_is_tutor(oracle: str) -> bool:
     """Return True if the card searches the library or fetches from outside the game.
 
@@ -1514,6 +1489,24 @@ def parse_has_artifact_synergy(oracle: str) -> bool:
     return ('for each artifact' in lower
             or 'metalcraft' in lower
             or 'affinity for artifacts' in lower)
+
+
+def parse_deals_targeted_damage(oracle: str) -> bool:
+    """Return True if the card deals damage to a target / to each player /
+    to any target — the direct-damage finisher shape (Grapeshot pattern).
+
+    Replaces the identical runtime predicate ("damage" present AND one of
+    target / each / any present) duplicated in
+    ai/combo_calc._payoff_deals_direct_damage and ai/combo_chain's
+    classify_card deals_direct flag. Stored as
+    CardTemplate.deals_targeted_damage (bool) at DB load. Semantics are
+    byte-for-byte the old inline predicate — no behavior change.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return ('damage' in lo
+            and ('target' in lo or 'each' in lo or 'any' in lo))
 
 
 def parse_has_draw_effect(oracle: str) -> bool:
@@ -1644,6 +1637,123 @@ def parse_has_graveyard_recursion(oracle: str) -> bool:
     )
 
 
+def parse_has_graveyard_hate(oracle: str) -> bool:
+    """Return True when the card exiles graveyards or prevents graveyard casting.
+
+    Matches four canonical shapes:
+    - "exile … graveyard" without "onto the battlefield" (Relic of Progenitus,
+      Tormod's Crypt, Bojuka Bog — targeted/mass exile)
+    - "exile all (cards from) graveyards" (Rest in Peace, Scavenging Ooze)
+    - "can't … cast … from … graveyard" (Grafdigger's Cage)
+    - "if a card would be put into … graveyard … exile" (Leyline of the Void,
+      Anafenza)
+
+    Explicitly excludes "onto the battlefield" to avoid false-positives on
+    mass reanimation (Living End, See the Unwritten).
+
+    Replaces 4 runtime re.search calls in ai/sideboard_solver._clause_gy_hate.
+    Class size: all Modern-legal hate pieces (20+ cards).
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    # Targeted / mass graveyard exile — excluding reanimation effects.
+    # Both "onto the battlefield" and "to the battlefield" mark reanimation.
+    has_battlefield = 'onto the battlefield' in lo or 'to the battlefield' in lo
+    if not has_battlefield:
+        if re.search(r"exile [\w\s']*?graveyard", lo):
+            return True
+        if re.search(r'exile all (cards from )?graveyards?', lo):
+            return True
+    # Cast-prevention ("Grafdigger's Cage" pattern).
+    if re.search(r"can'?t (be )?cast (spells )?from", lo) and 'graveyard' in lo:
+        return True
+    # Replacement-to-exile ("Leyline of the Void" / "Anafenza" pattern).
+    if 'if a card would be put into' in lo and 'graveyard' in lo and 'exile' in lo:
+        return True
+    return False
+
+
+def parse_has_spell_chain_hate(oracle: str) -> bool:
+    """Return True when the card denies spell-chain / storm-class decks.
+
+    Matches three canonical shapes:
+    - "can't cast more than one spell" (Rule of Law, Ethersworn Canonist)
+    - "costs {1} more to cast for each other spell" (per-spell surcharge)
+    - "counter target triggered ability" (Trickbind / Squelch — answers storm
+      triggers without countering the spell itself)
+
+    Replaces 3 runtime re.search calls in
+    ai/sideboard_solver._clause_spell_chain_hate.
+    Class size: all Modern-legal spell-chain hate pieces (10+ cards).
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    if re.search(r"can'?t cast more than one spell", lo):
+        return True
+    if re.search(r"costs? \{1\} more to cast for each other spell", lo):
+        return True
+    if re.search(r"counter target (?:triggered|activated)", lo):
+        return True
+    return False
+
+
+def parse_stax_class(oracle: str) -> Optional[str]:
+    """Return the stax family name for locking / taxing permanents, or None.
+
+    Families:
+    - 'chalice'    — Chalice of the Void: counter spells whose mana value
+                     equals the permanent's charge counters
+    - 'blood_moon' — Blood Moon: nonbasic lands become a basic type
+    - 'canonist'   — Ethersworn Canonist / Rule of Law: one-spell-per-turn lock
+    - 'torpor_orb' — Torpor Orb / Cursed Totem: ETB abilities don't trigger
+
+    Replaces 9 runtime oracle checks in ai/stax_ev.classify_stax.
+    Class size: all Modern-legal stax pieces (~20 cards across 4 families).
+    """
+    if not oracle:
+        return None
+    lo = oracle.lower()
+    # Chalice of the Void family
+    if ('charge counter' in lo and 'mana value' in lo
+            and ('counter that spell' in lo or 'counter it' in lo)):
+        return 'chalice'
+    # Blood Moon family
+    if 'nonbasic lands are' in lo:
+        for basic in ('mountain', 'island', 'plains', 'swamp', 'forest'):
+            if basic in lo:
+                return 'blood_moon'
+    # Canonist / Rule of Law family
+    if (("can't cast more than one" in lo and 'each turn' in lo)
+            or ("can't cast additional" in lo)):
+        return 'canonist'
+    # Torpor Orb / Cursed Totem family
+    if ('entering' in lo and 'abilities' in lo
+            and ("don't cause" in lo or "don't trigger" in lo)):
+        return 'torpor_orb'
+    return None
+
+
+def parse_stax_forced_basic(oracle: str) -> Optional[str]:
+    """Return the basic land type forced by Blood-Moon-type effects, or None.
+
+    Blood Moon forces 'mountain'; a hypothetical Island-Moon variant would
+    return 'island'. Returns None for all non-Blood-Moon cards.
+
+    Replaces 1 runtime oracle check in ai/stax_ev._blood_moon_lock_ev.
+    """
+    if not oracle:
+        return None
+    lo = oracle.lower()
+    if 'nonbasic lands are' not in lo:
+        return None
+    for basic in ('mountain', 'island', 'plains', 'swamp', 'forest'):
+        if f'are {basic}s' in lo or f'are {basic}.' in lo:
+            return basic
+    return None
+
+
 def parse_has_discard_effect(oracle: str) -> bool:
     """Return True when the card causes discard.
 
@@ -1709,3 +1819,789 @@ def parse_has_charge_counter_ability(oracle: str) -> bool:
     if not oracle:
         return False
     return 'charge counter' in oracle.lower()
+
+
+def parse_has_cast_trigger(oracle: str) -> bool:
+    """Return True when the card has a 'when you cast' triggered ability.
+
+    Covers cast-trigger permanents (Amulet of Vigor, Kiln Fiend-class
+    creatures, cascade permanents) and cast-trigger sorceries.  Replaces
+    'when you cast' in oracle runtime checks.
+
+    Class size: cast-trigger cards in Modern (Amulet, Bloodbraid Elf,
+    Searing Wind, approximately 30-50 cards).
+    """
+    if not oracle:
+        return False
+    return 'when you cast' in oracle.lower()
+
+
+def parse_has_recurring_trigger(oracle: str) -> bool:
+    """Return True when the card has a non-ETB recurring triggered ability.
+
+    Matches 'whenever' trigger patterns (excluding ETB text that already
+    fires as an ETB trigger) and 'at the beginning of' upkeep/draw triggers.
+    Covers anthem-style lords, Amulet untap triggers, draw engines, and
+    recurring damage/life triggers.  Replaces runtime 'whenever' in oracle
+    and 'at the beginning of' in oracle checks.
+
+    Class size: ~hundreds of Modern cards with triggered abilities.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    if 'at the beginning of' in lo:
+        return True
+    return bool(re.search(r'whenever ', lo))
+
+
+def parse_limits_opponent_spell_timing(oracle: str) -> bool:
+    """Return True for cards that restrict opponents to sorcery-speed casts.
+
+    Matches Teferi, Time Raveler's static: 'cast spells only any time they
+    could cast a sorcery'.  Replaces the full-phrase runtime substring check.
+
+    Class size: ~5-10 Modern-legal cards with this static (Teferi family).
+    """
+    if not oracle:
+        return False
+    return 'cast spells only any time they could cast a sorcery' in oracle.lower()
+
+
+def parse_has_charge_counter_wipe(oracle: str) -> bool:
+    """Return True for charge-counter permanents that destroy by mana value.
+
+    Matches Ratchet Bomb / Engineered Explosives pattern: 'charge counter'
+    + 'destroy' + 'mana value'.  Distinct from the Chalice pattern (which
+    counters spells rather than destroying permanents).
+
+    Class size: ~5 Modern cards (Ratchet Bomb, Engineered Explosives,
+    and variants).
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'charge counter' in lo and 'destroy' in lo and 'mana value' in lo
+
+
+def parse_prevents_graveyard_etb(oracle: str) -> bool:
+    """Return True for permanents that prevent creatures from entering via graveyards.
+
+    Matches Grafdigger's Cage pattern: 'creature cards in graveyards' +
+    "can't enter the battlefield".  Distinct from has_graveyard_hate (exile-based
+    hate) — this is a static ETB-prevention effect.
+
+    Class size: ~5 Modern-legal cards (Grafdigger's Cage, Opposition Agent,
+    Containment Priest family).
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return ("creature cards in graveyards" in lo
+            and "can't enter the battlefield" in lo)
+
+
+def parse_requires_creature_target(oracle: str) -> bool:
+    """Return True when the card requires a creature or creature-spell target.
+
+    Matches 'target creature' or 'creature spell' in oracle text — used by
+    evoke target validation to skip evoke when no valid target exists.
+
+    Class size: hundreds of Modern cards that target creatures.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'target creature' in lo or 'creature spell' in lo
+
+
+def parse_has_alternate_exile_cost(oracle: str) -> bool:
+    """Return True for spells with an 'exile a card from your hand' alternate cost.
+
+    Matches Grief / Solitude / Ephemerate-family pattern: 'exile a' +
+    'rather than pay' in oracle text.
+
+    Class size: ~10 Modern-legal Evoke elementals and similar (Grief,
+    Subtlety, Solitude, Endurance, Fury).
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'exile a' in lo and 'rather than pay' in lo
+
+
+def parse_has_mana_value_wipe(oracle: str) -> bool:
+    """Return True for X-cost spells that destroy permanents by mana value.
+
+    Matches Wrath of the Skies / Engineered Explosives wipe pattern:
+    'destroy each' combined with 'mana value less than or equal to'.
+    Distinct from Chalice (which counters spells) and charge-counter wipes
+    (which check charge counts, not paid X).
+
+    Class size: ~5 Modern-legal mana-value-wipe cards (EE, Wrath of the
+    Skies, Engineered Explosives, Suncleanser variants).
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'destroy each' in lo and 'mana value less than or equal to' in lo
+
+
+def parse_has_sacrifice_for_damage(oracle: str) -> bool:
+    """Return True for activated abilities that sacrifice a creature to deal damage.
+
+    Matches Goblin Bombardment / Blasting Station pattern: 'sacrifice a
+    creature' combined with a damage-dealing clause.  Used to detect
+    delayed-value permanents whose damage engine consumes creatures rather
+    than producing them.
+
+    Class size: ~10-20 Modern-legal sacrifice-outlet + damage cards.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'sacrifice a creature' in lo and 'damage' in lo
+
+
+def parse_has_scaling_effect(oracle: str) -> bool:
+    """Return True when oracle contains a 'for each' or 'for every' scaling clause.
+
+    Identifies cards whose effect magnitude scales with a count of permanents,
+    cards, or other game objects.  A second copy of such a card stacks its
+    scaling independently, making duplicates useful.  Replaces runtime
+    'for each'/'for every' substring checks in ev_player.py stacks detection.
+
+    Class size: hundreds of Modern-legal cards with 'for each' clauses.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'for each' in lo or 'for every' in lo
+
+
+def parse_has_self_trigger(oracle: str) -> bool:
+    """Return True when oracle contains a 'when this' self-referential trigger.
+
+    Covers ETB triggers ('when this enters'), attack triggers ('when this
+    attacks'), death triggers ('when this dies'), and any other 'when this'
+    pattern.  Each copy of such a card fires its own trigger, so duplicates
+    stack in value.  Replaces runtime 'when this' substring check in
+    ev_player.py stacks detection.
+
+    Class size: hundreds of Modern-legal creatures with self-triggered abilities.
+    """
+    if not oracle:
+        return False
+    return 'when this' in oracle.lower()
+
+
+def parse_has_recurring_draw_trigger(oracle: str) -> bool:
+    """Return True when oracle has a repeatable draw triggered ability.
+
+    Combines the 'whenever' recurring-trigger signal with an explicit draw
+    clause, targeting engines like 'Whenever you cast a spell, draw a card'
+    (Rhystic Study, Mystic Remora pattern).  Replaces the runtime two-field
+    AND check ('whenever' in oracle and 'draw' in oracle) in evaluator.py.
+
+    Class size: dozens of Modern-legal draw-engine permanents.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'whenever' in lo and 'draw' in lo
+
+
+def parse_has_each_opponent_effect(oracle: str) -> bool:
+    """Return True when oracle targets 'each opponent' or 'each player'.
+
+    Identifies cards whose damage or effect hits every opponent simultaneously,
+    making them scale with multiplayer headcount and highly efficient in 1v1.
+    Replaces the runtime 'each opponent'/'each player' check in evaluator.py.
+
+    Class size: dozens of Modern-legal burn/damage-each-opponent effects.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'each opponent' in lo or 'each player' in lo
+
+
+def parse_has_pump_grant(oracle: str) -> bool:
+    """Return True when oracle grants a +X/+Y bonus to a creature.
+
+    Covers 'gets +N/+M' (temporary combat boost) and 'additional +N/+M'
+    (extra-attack/double-strike style bonus) patterns.  Replaces runtime
+    'gets +' and 'additional +' substring checks in evaluator.py pump
+    detection.  The '+1/+1 counter' form is left as a non-flagged literal.
+
+    Class size: hundreds of Modern-legal pump spells, auras, and abilities.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'gets +' in lo or 'additional +' in lo
+
+
+def parse_has_x_counter_scaling(oracle: str) -> bool:
+    """Return True when oracle grants X +1/+1 counters based on mana paid.
+
+    Identifies Walking Ballista / Hangarback Walker class of X-cost creatures
+    that enter with a number of +1/+1 counters equal to X.  Used in
+    response.py to project the expected power of such creatures when the
+    opponent is about to play them.  Replaces runtime 'x +1/+1 counter' and
+    'x +1/+1 counters' substring checks.
+
+    Class size: ~20-40 Modern-legal X-cost counter creatures.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'x +1/+1 counter' in lo or 'x +1/+1 counters' in lo
+
+
+def parse_has_lifegain_equal_power(oracle: str) -> bool:
+    """Return True when oracle grants lifegain equal to a creature's power.
+
+    Covers the Solitude/Fury evoke pattern: removing a creature causes its
+    controller to gain life equal to its power.  Used in board_eval.py to
+    detect removal ETBs that incidentally heal the opponent, lowering their
+    value against small targets.  Replaces runtime 'gains life' + 'power'
+    compound check.
+
+    Class size: ~10-20 Modern-legal cards with power-scaling lifegain.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'gains life' in lo and 'power' in lo
+
+
+def parse_has_lifegain_effect(oracle: str) -> bool:
+    """Return True when oracle causes a player or creature to gain life.
+
+    Catches any 'gain N life' or 'gains N life' pattern in oracle text.
+    Used in ev_evaluator.py to detect ETB lifegain on creatures without
+    the lifelink keyword.  Replaces runtime 'gain' + 'life' compound check.
+
+    Class size: hundreds of Modern-legal cards with lifegain clauses.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'gain' in lo and 'life' in lo
+
+
+def parse_has_exile_own_creature(oracle: str) -> bool:
+    """Return True when oracle exiles a creature the caster controls.
+
+    Covers blink / flicker effects ('exile target creature you control') used
+    for ETB-value re-triggers.  Used in ev_player.py to detect blink spells
+    that fizzle when the caster has no creatures.  Replaces runtime oracle
+    substring check; the 'blink' tag is checked first as a faster path.
+
+    Class size: ~30-50 Modern-legal blink/flicker instant and sorcery cards.
+    """
+    if not oracle:
+        return False
+    return 'exile target creature you control' in oracle.lower()
+
+
+def parse_has_converge(oracle: str) -> bool:
+    """Return True when oracle has the Converge keyword or its reminder text.
+
+    Converge spells scale their effect with the number of colors of mana
+    spent to cast them.  At cast time the engine sorts available lands to
+    maximize color diversity when this flag is True.  Replaces runtime
+    'converge' and 'colors of mana spent' substring checks in cast_manager.py.
+
+    Class size: ~10-15 Modern-legal converge spells.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'converge' in lo or 'colors of mana spent' in lo
+
+
+def parse_has_delirium(oracle: str) -> bool:
+    """Return True when oracle has the Delirium keyword or its condition text.
+
+    Delirium abilities activate when the controller has four or more card
+    types in their graveyard.  Used in cast_manager.py to grant conditional
+    keywords (e.g., Traverse the Ulvenwald flying grant) only when delirium
+    is active.  Replaces runtime 'delirium' substring check.
+
+    Class size: ~20-40 Modern-legal delirium cards.
+    """
+    if not oracle:
+        return False
+    return 'delirium' in oracle.lower()
+
+
+def parse_has_all_basic_land_types(oracle: str) -> bool:
+    """Return True when oracle grants all basic land types to controlled lands.
+
+    Covers Leyline of the Guildpact pattern ('lands you control are every
+    basic land type') which gives the controller 5 domain for domain spells
+    and converge.  Used in cards.py _get_domain_count to short-circuit the
+    land-type enumeration.  Replaces the runtime substring check there.
+
+    Class size: ~5-10 Modern-legal land-type-granting cards.
+    """
+    if not oracle:
+        return False
+    return 'lands you control are every basic land type' in oracle.lower()
+
+
+def parse_has_destroy_or_exile(oracle: str) -> bool:
+    """Return True when oracle destroys or exiles a permanent.
+
+    Covers the broad removal signal: any card whose text contains 'destroy'
+    or 'exile' is a candidate for removal scoring.  Used in evaluator.py
+    _spell_damage as a fallback sentinel when no damage-number clause is
+    found.  Replaces the runtime 'destroy'/'exile' compound check.
+
+    Class size: hundreds of Modern-legal removal spells and effects.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'destroy' in lo or 'exile' in lo
+
+
+def parse_has_artifact_count_scaling(oracle: str) -> bool:
+    """Return True when P/T scales with artifact count you control.
+
+    Replaces the tight regex r'\\+\\d+/\\+\\d+\\s+for\\s+each\\s+artifact\\s+you\\s+control'
+    used in cards.py _dynamic_base_power/_dynamic_base_toughness. The tighter
+    form is preserved at parse time to avoid the Affinity-reminder-text false
+    positive documented in cards.py:1019-1022.
+
+    Class size: Construct tokens (Urza's Saga), Nettlecyst, Steel Overseer-class.
+    """
+    if not oracle:
+        return False
+    import re
+    return bool(re.search(r'\+\d+/\+\d+\s+for\s+each\s+artifact\s+you\s+control',
+                           oracle.lower()))
+
+
+def parse_has_surveil(oracle: str) -> bool:
+    """Return True when oracle contains the surveil keyword.
+
+    Replaces 'surveil' in oracle in oracle_resolver.py.
+    Class size: dozens of Dimir and multicolor cards (Consider, Thought Erasure, etc.).
+    """
+    if not oracle:
+        return False
+    return 'surveil' in oracle.lower()
+
+
+def parse_has_coin_flip(oracle: str) -> bool:
+    """Return True when oracle involves flipping a coin.
+
+    Replaces 'flip a coin' in oracle in oracle_resolver.py.
+    Class size: Ral, Izzet Viceroy and similar transform-on-coin-flip cards.
+    """
+    if not oracle:
+        return False
+    return 'flip a coin' in oracle.lower()
+
+
+def parse_has_mobilize(oracle: str) -> bool:
+    """Return True when oracle contains the mobilize keyword.
+
+    Replaces 'mobilize' in oracle in oracle_resolver.py attack trigger dispatch.
+    Class size: cards with the mobilize keyword (Kellan, etc.).
+    """
+    if not oracle:
+        return False
+    return 'mobilize' in oracle.lower()
+
+
+def parse_has_transform_effect(oracle: str) -> bool:
+    """Return True when oracle references transforming.
+
+    Replaces 'transformed' in oracle in oracle_resolver.py.
+    Class size: all DFC cards that transform as an effect (Fable, Ral, etc.).
+    """
+    if not oracle:
+        return False
+    return 'transform' in oracle.lower()
+
+
+def parse_has_instant_or_sorcery_reference(oracle: str) -> bool:
+    """Return True when oracle counts or references instants or sorceries.
+
+    Replaces three compound checks in oracle_resolver.py:
+      'instant or sorcery' | 'instant and/or sorcery' | 'instant and sorcery'
+    Used to detect spells-matter trigger conditions on permanents like Fable.
+
+    Class size: dozens of Izzet/spells-matter cards.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return ('instant or sorcery' in lo
+            or 'instant and/or sorcery' in lo
+            or 'instant and sorcery' in lo)
+
+
+def parse_has_graveyard_target(oracle: str) -> bool:
+    """Return True when oracle targets something from a graveyard.
+
+    Replaces 'from a graveyard' in oracle in target_solver.py.
+    Class size: reanimation, exile-from-graveyard, delve, and escape cards.
+    """
+    if not oracle:
+        return False
+    return 'from a graveyard' in oracle.lower()
+
+
+def parse_has_dual_land_search(oracle: str) -> bool:
+    """Return True when oracle searches for two land cards (Primeval Titan pattern).
+
+    Replaces the compound check 'search' and 'two land' in oracle in triggers.py.
+    Class size: Primeval Titan and any future double-land-search attack triggers.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'search' in lo and 'two land' in lo
+
+
+def parse_has_energy_damage_target(oracle: str) -> bool:
+    """Return True when oracle deals energy-scaled damage to a creature or planeswalker.
+
+    Replaces the five-condition compound check in oracle_resolver.py
+    for the Aetherworks Marvel / Electrostatic Pummeler energy-damage pattern:
+    targets a creature or planeswalker, gains {E} energy, pays {E} for bonus
+    damage, and the amount scales with the energy paid ('that much').
+
+    Class size: energy-damage cards from Kaladesh block and any future printings.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return (('target creature or planeswalker' in lo
+             or 'choose target creature or planeswalker' in lo)
+            and 'you get {e}' in lo
+            and 'pay any amount of {e}' in lo
+            and 'that much' in lo
+            and 'damage' in lo)
+
+
+def parse_has_energy_production(oracle: str) -> bool:
+    """Return True when oracle produces energy counters ({E}).
+
+    Replaces 'you get' in oracle in oracle_resolver.py's noncreature-cast
+    energy-trigger branch (lines 925-932). The '{e}' symbol check is already
+    not ratchet-flagged; this typed field captures the 'you get' half of the
+    compound.
+
+    Class size: Boros Energy cards — Guide of Souls, Ocelot Pride, etc.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'you get' in lo and '{e}' in lo
+
+
+def parse_has_look_hand_selection(oracle: str) -> bool:
+    """Return True when oracle lets you look at cards and put one into your hand.
+
+    Replaces two related checks:
+    - 'put one of them into your hand' (Sleight of Hand / Opt pattern)
+    - 'put them into your hand' (pile selection / look top N keep all)
+
+    Used in oracle_resolver.py (sorcery draw dispatch) and
+    ai/ev_evaluator.py (card selection EV estimation).
+
+    Class size: Sleight of Hand, Abundant Harvest, pile-of-N selection cards.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'put one of them into your hand' in lo or 'put them into your hand' in lo
+
+
+def parse_has_cast_spell_draw(oracle: str) -> bool:
+    """Return True when oracle draws a card whenever a spell is cast.
+
+    Replaces the two-condition check in oracle_resolver.py lines 958-959:
+    'cast a spell' or 'cast an instant or sorcery' PLUS 'draw a card'
+    with no 'noncreature' restriction (which gates a narrower variant).
+    The noncreature exclusion is encoded here at parse time so the consumer
+    needs no runtime oracle reads.
+
+    Class size: Curiosity-class enchantments, Riddleform, future spell-draw cards.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    has_trigger = 'cast a spell' in lo or 'cast an instant or sorcery' in lo
+    has_draw = 'draw a card' in lo
+    has_noncreature = 'noncreature' in lo
+    return has_trigger and has_draw and not has_noncreature
+
+
+def parse_has_opponent_cast_damage(oracle: str) -> bool:
+    """Return True when oracle deals damage whenever an opponent casts a spell.
+
+    Replaces the compound 'opponent casts' + 'damage' check in oracle_resolver.py
+    lines 1011-1012 (Orcish Bowmasters / opponent-cast trigger).
+
+    Class size: Orcish Bowmasters and any future opponent-cast damage triggers.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'opponent casts' in lo and 'damage' in lo
+
+
+def parse_has_mana_add_text(oracle: str) -> bool:
+    """Return True when oracle contains mana-adding text.
+
+    Replaces three 'add' in oracle checks in ai/ev_evaluator.py that detect
+    mana-producing cards (urgency scoring, ritual gate). Uses a tighter
+    pattern than bare 'add' to avoid false positives on 'add a counter' etc.
+
+    Class size: all mana rocks, rituals, and land-fetch spells.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'add {' in lo or 'mana of any' in lo
+
+
+def parse_has_bounce_land_oracle(oracle: str) -> bool:
+    """Return True when oracle contains 'return a land you control'.
+
+    Replaces 'return a land you control' in oracle in engine/card_effects.py
+    line 3102 (Scapeshift land-priority helper: bounce lands get priority 3).
+
+    Class size: all bounce lands (Karoo, Gruul Turf, Azorius Chancery, etc.)
+    plus any future cards with this ETB replacement effect.
+    """
+    if not oracle:
+        return False
+    return 'return a land you control' in oracle.lower()
+
+
+def parse_has_sacrifice_search_land(oracle: str) -> bool:
+    """Return True for artifact sacrifice-then-search-for-land abilities.
+
+    Replaces the compound 'sacrifice' + 'search' + 'land' in oracle check in
+    engine/game_runner.py line 1821 (Expedition Map / Wayfarer's Bauble pattern).
+
+    Class size: Expedition Map, Wayfarer's Bauble, Weathered Wayfarer (activated),
+    and any future sacrifice-to-tutor-land effects.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'sacrifice' in lo and 'search' in lo and 'land' in lo
+
+
+def parse_has_emry_graveyard_cast(oracle: str) -> bool:
+    """Return True for 'choose target artifact card in your graveyard' abilities.
+
+    Replaces the exact phrase check in engine/game_runner.py line 2032
+    (Emry, Lurker of the Loch pattern: tap to cast artifact from graveyard).
+
+    Class size: Emry and any future cards with this specific clause wording.
+    """
+    if not oracle:
+        return False
+    return 'choose target artifact card in your graveyard' in oracle.lower()
+
+
+def parse_has_cc_tap_draw(oracle: str) -> bool:
+    """Return True for {C}{C},{T}: draw a card activated abilities.
+
+    Replaces re.search(r'\\{c\\}\\{c\\}\\s*,\\s*\\{t\\}\\s*:\\s*draw a card', oracle)
+    in engine/game_runner.py line 2002 (Endbringer / colorless-tap-draw pattern).
+
+    Class size: Endbringer and any future artifact with this exact mana-cost draw ability.
+    """
+    if not oracle:
+        return False
+    import re
+    return bool(re.search(r'\{c\}\{c\}\s*,\s*\{t\}\s*:\s*draw a card', oracle.lower()))
+
+
+def parse_has_stax_ability(oracle: str) -> bool:
+    """Return True for stax/cost-tax abilities (Stony Silence, Damping Sphere pattern).
+
+    Replaces two checks in engine/sideboard_manager.py lines 87-89:
+    - 'activated abilities of artifacts ... can't be activated' (Stony Silence, Collector Ouphe)
+    - 'tapped for two or more mana, it produces {c} instead' (Damping Sphere)
+
+    Class size: all stax hate pieces that lock activated abilities or constrain mana production.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return (("activated abilities of artifacts" in lo and "can't be activated" in lo)
+            or "tapped for two or more mana, it produces {c} instead" in lo)
+
+
+def parse_has_pithing_needle_lock(oracle: str) -> bool:
+    """Return True for Pithing Needle / Phyrexian Revoker ability-lock effects.
+
+    Replaces two checks in engine/sideboard_manager.py lines 96-97:
+    - 'choose a card name' (or 'nonland card name')
+    - 'activated abilities of sources with the chosen name'
+
+    Class size: Pithing Needle, Phyrexian Revoker, and any future name-lock effects.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return (("choose a card name" in lo or "choose a nonland card name" in lo)
+            and "activated abilities of sources with the chosen name" in lo)
+
+
+def parse_has_another_creature_enters_trigger(oracle: str) -> bool:
+    """Return True for 'whenever another creature enters' triggers.
+
+    Replaces 'another creature' in oracle in engine/triggers.py line 56 —
+    outer gate for both lifegain and energy-production ETB fan-out triggers.
+
+    Class size: Soul Warden, Soul's Attendant, Guide of Souls, and any future
+    'whenever another creature enters' ETB watchers.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'another creature' in lo and 'enters' in lo
+
+
+def parse_has_another_creature_enters_lifegain(oracle: str) -> bool:
+    """Return True when 'whenever another creature enters ... gain N life'.
+
+    Replaces 'gain' in oracle in engine/triggers.py line 57 — inner guard
+    (conjunction: another creature + enters + gain + life).
+
+    Class size: Soul Warden, Soul's Attendant, Suture Priest (and similar),
+    and any future cards with this exact ETB lifegain pattern.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return ('another creature' in lo and 'enters' in lo
+            and 'gain' in lo and 'life' in lo)
+
+
+def parse_has_may_play_or_cast(oracle: str) -> bool:
+    """Return True for 'may play' or 'may cast' exile-and-play effects.
+
+    Replaces 'may play' in oracle in ai/ev_evaluator.py line 2344 —
+    used to estimate card-draw equivalent from exile-top-and-play effects
+    (Outpost Siege, Light Up the Stage, Chandra planeswalker abilities, etc.).
+
+    Class size: all exile-and-play or exile-and-cast effects in Modern.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'may play' in lo or 'may cast' in lo
+
+
+def parse_has_damage_equal_scaling(oracle: str) -> bool:
+    """Return True for domain-scaling damage ('deals damage ... equal to ...').
+
+    Replaces re.search(r'deals?.*damage.*equal', oracle) in ai/evaluator.py
+    line 477 (Tribal Flames / scaling-damage-spell detection).
+
+    Class size: Tribal Flames and other CDAs or spells where damage = some count.
+    """
+    if not oracle:
+        return False
+    import re
+    return bool(re.search(r'deals?.*damage.*equal', oracle.lower()))
+
+
+def parse_has_x_damage(oracle: str) -> bool:
+    """Return True for 'deals X damage' spells (X-cost damage).
+
+    Replaces re.search(r'deals?\\s+x\\s+damage', oracle) in ai/evaluator.py
+    line 500 (Blaze / Lightning Storm / Rolling Thunder fallback detection).
+
+    Class size: all X-cost direct-damage spells in Modern.
+    """
+    if not oracle:
+        return False
+    import re
+    return bool(re.search(r'deals?\s+x\s+damage', oracle.lower()))
+
+
+def parse_has_artifact_pump_equipment(oracle: str) -> bool:
+    """Return True for equipment that grants +1/+0 scaling with artifacts.
+
+    Replaces 'artifact' in oracle combined check in engine/card_effects.py
+    line 1466 (Cranial Plating / artifact-count-pump equipment detection).
+
+    Class size: Cranial Plating and any future equipment with '+1/+0 for each
+    artifact' or 'gets ... for each artifact' power-scaling text.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'artifact' in lo and ('+1/+0' in lo or ('gets' in lo and '+' in lo))
+
+
+def parse_has_artifact_or_enchantment_scaling(oracle: str) -> bool:
+    """Return True for scaling based on artifact and/or enchantment count.
+
+    Replaces 'artifact and/or enchantment' in oracle in ai/ev_player.py
+    line 3890 (Nettlecyst / artifact+enchantment combined scaling detection).
+
+    Class size: Nettlecyst and any future cards counting artifacts+enchantments.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return 'artifact and/or enchantment' in lo or 'artifact or enchantment' in lo
+
+
+# -- Batch 21 typed fields -------------------------------------------------
+
+def parse_phyrexian_mana_symbol_count(oracle: str) -> int:
+    """Count Phyrexian mana symbols ({X/P}) in oracle text.
+
+    Replaces oracle_lower.count('/p}') at ai/ev_player.py:1502 (life-cost
+    discount) and engine/cast_manager.py:1093 (Phyrexian payment at cast).
+
+    Class size: every Phyrexian mana card — Gitaxian Probe, Mutagenic Growth,
+    Gut Shot, Phyrexian Metamorph, etc.
+    """
+    if not oracle:
+        return 0
+    return oracle.lower().count('/p}')
+
+
+# Alias for backwards compatibility with phyrexian_pip_count field.
+# parse_phyrexian_pip_count and this function are identical; the typed field
+# on CardTemplate is named phyrexian_pip_count (populated before batch 21).
+parse_phyrexian_mana_symbol_count = parse_phyrexian_mana_symbol_count  # noqa: keep alias distinct
+
+
+def parse_channel_clause(oracle: str) -> str:
+    """Extract the channel ability clause from oracle text.
+
+    Returns the substring from 'channel —' or 'channel -' to the end of
+    oracle, lowercased.  Returns '' when no channel clause is present.
+
+    Replaces oracle.find('channel —') / oracle.find('channel -') at
+    ai/response_enumeration.py:232 (channel target extraction).
+
+    Class size: every channel land — Otawara, Boseiju, Sokenzan, Takenuma,
+    Eiganjo, and any future channel cards.
+    """
+    if not oracle:
+        return ''
+    lo = oracle.lower()
+    idx = max(lo.find("channel —"), lo.find("channel -"))
+    if idx < 0:
+        return ''
+    return lo[idx:]

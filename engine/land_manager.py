@@ -166,10 +166,8 @@ class LandManager:
             player.life -= 1
 
         # Sacrifice the fetchland (triggers revolt)
-        if fetch_card in player.battlefield:
-            player.battlefield.remove(fetch_card)
-        fetch_card.zone = "graveyard"
-        player.graveyard.append(fetch_card)
+        game.zone_mgr.move_card(game, fetch_card, "battlefield", "graveyard",
+                                cause="fetchland sacrifice")
         # Track that a permanent left the battlefield (for revolt)
         player.creatures_died_this_turn = max(
             player.creatures_died_this_turn, 1)
@@ -339,13 +337,8 @@ class LandManager:
         else:
             # Mandatory trigger, one legal object: itself.
             target = land
-        player.battlefield.remove(target)
-        target.zone = "hand"
-        target.tapped = False
-        player.hand.append(target)
-        game.log.append(
-            f"T{game.display_turn} P{controller+1}: "
-            f"{land.name} ETB returns {target.name} to hand")
+        game.zone_mgr.move_card(game, target, "battlefield", "hand",
+                                cause=f"{land.name} ETB returns {target.name} to hand")
 
     @staticmethod
     def apply_untap_on_enter_triggers(game: "GameState",

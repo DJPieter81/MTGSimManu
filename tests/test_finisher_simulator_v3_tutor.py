@@ -53,6 +53,7 @@ class MockTemplate:
     is_cascade: bool = False
     is_arcane: bool = False
     splice_cost: Optional[int] = None
+    has_scaling_token_finisher: bool = False
 
 
 @dataclass
@@ -131,8 +132,8 @@ def _storm_closer(iid: int = 100, name: str = "StormBurnSB") -> MockCard:
 def _token_finisher(iid: int = 101) -> MockCard:
     """Empty-the-Warrens-pattern token finisher.
 
-    Detected via the oracle predicate `_has_token_finisher_oracle_v3`:
-    'create … tokens … for each'.
+    Detected via the typed field `has_scaling_token_finisher` parsed
+    once at DB load (oracle_parser.parse_has_scaling_token_finisher).
     """
     return MockCard(
         template=MockTemplate(
@@ -144,6 +145,7 @@ def _token_finisher(iid: int = 101) -> MockCard:
                 "for each spell cast this turn"
             ),
             tags={"finisher"},
+            has_scaling_token_finisher=True,
         ),
         instance_id=iid,
     )

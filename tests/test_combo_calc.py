@@ -53,6 +53,7 @@ class MockTemplate:
     power: Optional[int] = None
     toughness: Optional[int] = None
     x_cost_data: Optional[dict] = None
+    deals_targeted_damage: bool = False
 
 
 @dataclass
@@ -314,7 +315,8 @@ class TestCardComboModifier:
         # adds the per-point-of-damage premium.
         card = MockCard(name="Grapeshot", template=MockTemplate(
             name="Grapeshot", keywords={Kw.STORM},
-            oracle_text="Grapeshot deals 1 damage to any target."))
+            oracle_text="Grapeshot deals 1 damage to any target.",
+            deals_targeted_damage=True))
         snap = _make_snap(opp_life=4)
         me = type('', (), {'spells_cast_this_turn': 4, 'hand': [], 'library': [None]*30,
                            'graveyard': [], 'battlefield': []})()

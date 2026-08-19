@@ -26,11 +26,9 @@ from .cards import (
     CardTemplate, CardInstance, CardType, Keyword, Ability, AbilityType, Supertype
 )
 from .stack import Stack, StackItem, StackItemType
-from .event_system import EventBus, EventType, GameEvent
 from .zone_manager import ZoneManager
 from .sba_manager import SBAManager
 from .turn_manager import TurnManager, TurnStep
-from .priority_system import PrioritySystem
 from .card_effects import EFFECT_REGISTRY, EffectTiming
 from .continuous_effects import ContinuousEffectsManager
 from .callbacks import GameCallbacks, DefaultCallbacks
@@ -110,11 +108,9 @@ class GameState:
         self.log: List[str] = []
         self.max_turns: int = MAX_TURNS
         # ── New rules engine modules ──
-        self.event_bus = EventBus()
-        self.zone_mgr = ZoneManager(self.event_bus)
+        self.zone_mgr = ZoneManager()
         self.sba_mgr = SBAManager(self.zone_mgr)
         self.turn_mgr = TurnManager()
-        self.priority = PrioritySystem()
         self.continuous_effects = ContinuousEffectsManager()
 
     def next_instance_id(self) -> int:
@@ -170,13 +166,8 @@ class GameState:
         None if no such permanent is in play."""
         for player in self.players:
             for card in player.battlefield:
-                oracle = (card.template.oracle_text or "").lower()
-                # Match the Cage clause shape without binding to a
-                # specific card name. The phrase "creature cards in
-                # graveyards" + "can't enter the battlefield" is the
-                # distinguishing form.
-                if ("creature cards in graveyards" in oracle
-                        and "can't enter the battlefield" in oracle):
+                # Grafdigger's Cage pattern: typed field parsed at DB load.
+                if getattr(card.template, 'prevents_graveyard_etb', False):
                     return card
         return None
 
@@ -186,9 +177,7 @@ class GameState:
         no such permanent is in play."""
         for player in self.players:
             for card in player.battlefield:
-                oracle = (card.template.oracle_text or "").lower()
-                if ("can't cast spells from graveyards" in oracle
-                        or "can't cast cards in graveyards" in oracle):
+                if getattr(card.template, 'has_graveyard_hate', False):
                     return card
         return None
 
@@ -331,9 +320,7 @@ class GameState:
         # Policy: bin all of them. The library indices shift as we
         # remove, so iterate over the slice (which is a separate list).
         for card in looked:
-            player.library.remove(card)
-            card.zone = "graveyard"
-            player.graveyard.append(card)
+            self.zone_mgr.move_card(self, card, "library", "graveyard")
             binned.append(card)
         if binned:
             names = ", ".join(c.name for c in binned)

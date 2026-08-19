@@ -792,8 +792,7 @@ def _has_immediate_effect(card: "CardInstance") -> bool:
     # tag): any spell whose text adds coloured mana contributes to THIS
     # turn's mana pool and must not be urgency-discounted. Catches future
     # mana-enabler cards whose tags don't include 'ritual'.
-    if 'add' in oracle and any(sym in oracle for sym in (
-            '{r}', '{g}', '{b}', '{u}', '{w}', 'mana of any')):
+    if getattr(t, 'has_mana_add_text', False):
         return True
     # ETB value (Omnath, Thragtusk, PW ETB effects) — resolves immediately
     if 'etb_value' in tags:
@@ -817,7 +816,7 @@ def _has_immediate_effect(card: "CardInstance") -> bool:
     #     multiple turns).
     #   '{t}:' without mana production → tap-activated engines whose value
     #     requires future untaps (Urza's Saga constructs, card-draw engines).
-    if 'sacrifice a creature' in oracle and 'damage' in oracle:
+    if getattr(t, 'has_sacrifice_for_damage', False):
         return False
     if '{t}:' in oracle and 'add' not in oracle and 'draw' not in oracle:
         return False
@@ -899,9 +898,11 @@ class _ImmediateInteractionTemplate:
     """
 
     def __init__(self, is_counterspell: bool = False,
-                 can_target_player: bool = False) -> None:
+                 can_target_player: bool = False,
+                 has_discard_effect: bool = False) -> None:
         self.is_counterspell = is_counterspell
         self.can_target_player = can_target_player
+        self.has_discard_effect = has_discard_effect
 
 
 def _is_immediate_interaction(oracle: str, tags, template) -> bool:
@@ -918,11 +919,11 @@ def _is_immediate_interaction(oracle: str, tags, template) -> bool:
     """
     if 'removal' in tags or 'board_wipe' in tags or 'counterspell' in tags:
         return True
-    # Oracle-driven fallbacks (damage, destroy, exile).
-    if 'target' in oracle and (
-            'deals' in oracle and 'damage' in oracle):
+    # Typed-field fallbacks (damage, destroy, exile) — parsed once at DB load.
+    if getattr(template, 'deals_targeted_damage', False):
         return True
-    if 'destroy target' in oracle or 'exile target' in oracle:
+    if (getattr(template, 'can_destroy_nonland_permanent', False)
+            or getattr(template, 'can_exile_permanent', False)):
         return True
     # ``template.is_counterspell`` is the pre-parsed typed field covering
     # all "counter target …" oracle wordings (oracle_parser.parse_is_counterspell).
@@ -938,7 +939,9 @@ def _is_immediate_interaction(oracle: str, tags, template) -> bool:
     # ``template.can_target_player`` covers all three oracle patterns
     # ("any target" / "target player" / "target opponent") — the union
     # is a strict superset of the old two-phrase OR.
-    if template.can_target_player and 'discard' in oracle:
+    # ``template.has_discard_effect`` is the pre-parsed typed field
+    # (oracle_parser.parse_has_discard_effect) — no runtime oracle scan.
+    if template.can_target_player and getattr(template, 'has_discard_effect', False):
         return True
     return False
 
@@ -1079,7 +1082,7 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
         signals.append('etb_trigger')
 
     # 2. Cast trigger or storm keyword (spell counts its chain).
-    if 'storm' in keywords or 'when you cast' in oracle:
+    if 'storm' in keywords or getattr(t, 'has_cast_trigger', False):
         signals.append('cast_trigger')
 
     # 3. Haste / dash path / flash (immediate board impact).
@@ -1197,9 +1200,9 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
     #     resolve once and the mana evaporates at end of turn.  Gate
     #     ONLY the ritual branch.
     produces = getattr(t, 'produces_mana', None) or []
-    if produces or ('{t}:' in oracle and 'add' in oracle):
+    if produces or ('{t}:' in oracle and getattr(t, 'has_mana_add_text', False)):
         signals.append('mana_source')
-    elif is_ritual(card) and 'add' in oracle:
+    elif is_ritual(card) and getattr(t, 'has_mana_add_text', False):
         # Ritual mana sources gate on whether a payoff is reachable
         # THIS turn — but only for chain-scoring decks (combo / storm
         # archetypes that pre-declare `uses_combo_chain_scoring=True`).
@@ -1212,7 +1215,8 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
 
     # 15. X-cost hate permanent (Chalice-style "cost X, get X charge
     #     counters") — cast-now locks opp spells at the chosen CMC.
-    if t.x_cost_data and 'charge counter' in oracle:
+    #     has_charge_counter_ability is the typed field parsed at DB load.
+    if t.x_cost_data and getattr(t, 'has_charge_counter_ability', False):
         signals.append('x_cost_hate_permanent')
 
     # 16. Recurring-engine triggered ability — permanents whose oracle
@@ -1226,15 +1230,11 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
     #     not an activated ability (`{cost}:` form).  Activated
     #     abilities require external setup (carrier, sac fodder, etc.)
     #     handled by other signals.
-    is_triggered_engine = (
-        re.search(r'whenever (?:a |an |another |[a-z\'\-]+ )', oracle)
-        is not None
-        or 'at the beginning of' in oracle
-    )
+    is_triggered_engine = getattr(t, 'has_recurring_trigger', False)
     is_activated_only = (
         ':' in oracle
         and not is_triggered_engine
-        and 'whenever' not in oracle
+        and not getattr(t, 'has_recurring_trigger', False)
     )
     if is_triggered_engine and not is_activated_only:
         # Reject pure self-ETB matches that already fire signal #1
@@ -2045,7 +2045,7 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
         # which was missed by the token-only gate.
         oracle_l = (t.oracle_text or '').lower()
         if ('token_maker' in tags
-                or 'whenever' in oracle_l
+                or getattr(t, 'has_recurring_trigger', False)
                 or '{e}' in oracle_l):
             p_imm, count_imm, p_persist = _project_token_bonus(
                 oracle_l, snap
@@ -2247,10 +2247,11 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
         # table for these cards keeps the prior behaviour for state-
         # scaled effects intact.
         from engine.cards import Keyword as _Kw
+        # x_cost_data typed field covers "where x is" X-cost scaling.
         is_state_scaled = (
             _Kw.STORM in getattr(t, 'keywords', set())
             or '{x}' in oracle
-            or 'where x is' in oracle
+            or getattr(t, 'x_cost_data', None) is not None
         )
         # Generic extractor: literal "deals N damage" (Lightning
         # Bolt 3, Lava Spike 3, Boros Charm 4, Unholy Heat 6 in
@@ -2340,14 +2341,14 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
             r'draws? (one|two|three|four|five|six|seven|\d+) ', oracle)
         if m:
             draws_n = max(draws_n, _parse_oracle_count(m.group(1)))
-        elif ('may play' in oracle or 'may cast' in oracle):
+        elif getattr(t, 'has_may_play_or_cast', False):
             m = _re.search(
                 r'exile the top (one|two|three|four|five|six|seven|\d+) '
                 r'cards?', oracle)
             if m:
                 draws_n = max(draws_n, _parse_oracle_count(m.group(1)))
         elif (t.is_tutor
-              and 'put them into your hand' in oracle):
+              and getattr(t, 'has_look_hand_selection', False)):
             # Library-search tutors where ALL N searched cards go to
             # hand: Squadron Hawk ("put them into your hand"),
             # Increasing Ambition flashback mode, Plea for Guidance
@@ -2437,7 +2438,7 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
     # `docs/design/2026-05-10_oracle_pattern_projection_blindspot_audit.md`.
     if 'etb_value' in tags and 'lifelink' not in tags:
         oracle = (t.oracle_text or '').lower()
-        if 'gain' in oracle and 'life' in oracle:
+        if getattr(t, 'has_lifegain_effect', False):
             _LIFE_NUMERALS = ('zero', 'one', 'two', 'three', 'four',
                               'five', 'six', 'seven')
 
@@ -2706,7 +2707,7 @@ def _projected_real_draws(card: "CardInstance") -> int:
             return int(tok)
         except ValueError:
             return word_to_num.get(tok, 0)
-    if 'put one of them into your hand' in oracle:
+    if getattr(card.template, 'has_look_hand_selection', False):
         return 1  # magic-allow: look-and-keep shape is one draw (CR 121.1), mirrors engine real-draw branch
     return 0
 

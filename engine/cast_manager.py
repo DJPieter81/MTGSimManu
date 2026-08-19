@@ -347,12 +347,9 @@ class CastManager:
                     # Target validation: don't allow evoke if the card
                     # needs a target and no valid target exists
                     from decks.card_knowledge_loader import requires_target as _req_target
-                    oracle_lower = (template.oracle_text or "").lower()
                     needs_target = (
                         _req_target(template.name)
-                        or ('target creature' in oracle_lower)
-                        or ('creature spell' in oracle_lower
-                            and 'removal' not in (template.tags or set()))
+                        or getattr(template, 'requires_creature_target', False)
                     )
                     if needs_target:
                         opp_idx = 1 - player_idx
@@ -413,7 +410,7 @@ class CastManager:
         # Force alternate cost: "exile a [color] card from your hand
         # rather than pay this spell's mana cost" — only on opp's turn
         oracle_lower = (template.oracle_text or '').lower()
-        if 'exile a' in oracle_lower and 'rather than pay' in oracle_lower:
+        if getattr(template, 'has_alternate_exile_cost', False):
             if game.active_player != player_idx:
                 import re
                 m = re.search(
@@ -912,11 +909,9 @@ class CastManager:
             # Target validation: don't evoke if the card needs a target and none exists
             if should_evoke:
                 from decks.card_knowledge_loader import requires_target as _requires_target
-                oracle_lower = (template.oracle_text or "").lower()
                 needs_target = (
                     _requires_target(template.name)
-                    or ('target creature' in oracle_lower)
-                    or ('creature spell' in oracle_lower and 'removal' not in (template.tags or set()))
+                    or getattr(template, 'requires_creature_target', False)
                 )
                 if needs_target:
                     opp_idx = 1 - player_idx
@@ -1047,7 +1042,7 @@ class CastManager:
                 # Force alternate cost: exile a card from hand instead of mana
                 oracle_lower = (template.oracle_text or '').lower()
                 force_cast = False
-                if ('exile a' in oracle_lower and 'rather than pay' in oracle_lower
+                if (getattr(template, 'has_alternate_exile_cost', False)
                         and game.active_player != player_idx):
                     import re
                     m = re.search(r'exile an? (\w+) card from your hand', oracle_lower)
@@ -1094,8 +1089,7 @@ class CastManager:
                             return False
                     else:
                         # Phyrexian mana: pay 2 life per Phyrexian symbol instead of colored mana
-                        oracle_lower = (template.oracle_text or '').lower()
-                        phyrexian_count = oracle_lower.count('/p}')
+                        phyrexian_count = getattr(template, 'phyrexian_pip_count', 0)
                         if phyrexian_count > 0 and player.life > phyrexian_count * 2:
                             life_cost = phyrexian_count * 2
                             player.life -= life_cost
@@ -1168,9 +1162,8 @@ class CastManager:
             # For XX spells, X = mana / 2; for X spells, X = mana
             available_for_x = player.untapped_mana_capacity() + player.mana_pool.total() + player._tron_mana_bonus()
             x_value = available_for_x // x_info["multiplier"]
-            # AI chooses optimal X based on oracle text:
-            oracle = (template.oracle_text or '').lower()
-            if 'charge counter' in oracle and 'whenever' in oracle:
+            # AI chooses optimal X based on typed fields:
+            if getattr(template, 'stax_class', None) == 'chalice':
                 # Hate permanent (Chalice-style): pick X to maximize NET
                 # disruption = opp_count(X) − my_count(X). Counting only
                 # opp's CMCs (audit F-R3-1's first pass) picks the CMC
@@ -1212,8 +1205,7 @@ class CastManager:
                     x_value = best_cmc
                 elif x_value >= 1:
                     x_value = 1  # fallback when no data
-            elif ('destroy each' in oracle
-                  and 'mana value less than or equal to' in oracle):
+            elif getattr(template, 'has_mana_value_wipe', False):
                 # Scaling board-wipe-by-X (Wrath of the Skies pattern):
                 # "Destroy each artifact, creature, and enchantment with
                 # mana value less than or equal to the amount of {E} paid
@@ -1251,8 +1243,7 @@ class CastManager:
             # For non-Converge X-spells this reduces to arbitrary selection
             # (same as the old behavior because set-difference is 0-or-more).
             xpay_colors = set(getattr(game, '_last_colors_spent', set()))
-            oracle = (template.oracle_text or '').lower()
-            is_converge = 'converge' in oracle or 'colors of mana spent' in oracle
+            is_converge = getattr(template, 'has_converge', False)
             lands_pool = list(player.untapped_lands)
             while remaining > 0 and lands_pool:
                 if is_converge:
@@ -1401,7 +1392,7 @@ class CastManager:
                 # Delirium — check actual GY card types via _has_delirium()
                 # _dynamic_base_power() already scales to 3 with delirium; we also
                 # need to grant FLYING as a keyword so combat logic sees it.
-                if 'delirium' in c_oracle and hasattr(creature, '_has_delirium'):
+                if getattr(creature.template, 'has_delirium', False) and hasattr(creature, '_has_delirium'):
                     if creature._has_delirium():
                         if Keyword.FLYING not in creature.keywords:
                             creature.keywords.add(Keyword.FLYING)

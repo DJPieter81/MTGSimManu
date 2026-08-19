@@ -837,9 +837,8 @@ class ResponseDecider:
         ranking) and the chain-fuel hold exemption in
         `decide_response` (M2 Wave-2) both consult this predicate.
         """
-        oracle = (instant.template.oracle_text or '').lower()
         return (
-            'exile a' in oracle and 'rather than pay' in oracle
+            getattr(instant.template, 'has_alternate_exile_cost', False)
             and getattr(game, 'active_player', None) != self.player_idx
         )
 
@@ -1096,9 +1095,8 @@ class ResponseDecider:
         # the explicit `{X}` mana symbol or the 'X +1/+1 counter' / 'for
         # each' patterns embedded in oracle text.
         x_scaler = ('{x}' in oracle
-                    or 'x +1/+1 counter' in oracle
-                    or 'x +1/+1 counters' in oracle
-                    or 'for each' in oracle)
+                    or getattr(template, 'has_x_counter_scaling', False)
+                    or getattr(template, 'has_scaling_effect', False))
         if template.is_creature and x_scaler:
             # Expected X = opp's available mana minus the fixed portion of
             # the cost. cmc==0 for {X}-only cards (Ballista); for cards
@@ -1107,13 +1105,13 @@ class ResponseDecider:
             # opp_idx's perspective, so `snap.my_mana` == opp's mana.
             fixed_cost = template.cmc or 0
             expected_x = max(0, snap_for_clock.my_mana - fixed_cost)
-            if 'x +1/+1 counter' in oracle or 'x +1/+1 counters' in oracle:
+            if getattr(template, 'has_x_counter_scaling', False):
                 # Each counter = +1 power on the body. Treat the projected
                 # body as a creature attacking over EQUIPMENT_RESIDENCY_TURNS
                 # (same residency primitive used elsewhere in this fn).
                 threat += (expected_x * EQUIPMENT_RESIDENCY_TURNS
                            * mana_clock_impact(snap_for_clock) * CLOCK_IMPACT_LIFE_SCALING)
-            elif 'for each' in oracle:
+            elif getattr(template, 'has_scaling_effect', False):
                 # Generic 'for each X' creature scaler — count opp's
                 # matching permanents and credit one power per match.
                 fe = re.search(
@@ -1148,7 +1146,8 @@ class ResponseDecider:
         # Token generators / engines: value = ongoing bodies over time.
         # card_clock_impact already expresses "future card as clock change",
         # so one trigger per turn over a few turns.
-        if 'whenever' in oracle and ('create' in oracle or 'token' in oracle):
+        if (getattr(template, 'has_recurring_trigger', False)
+                and 'token_maker' in getattr(template, 'tags', set())):
             threat += card_clock_impact(snap_for_clock) * CLOCK_IMPACT_LIFE_SCALING
 
         # Card advantage engines (Thought Monitor draws 2): value = one

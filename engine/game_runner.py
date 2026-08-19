@@ -14,7 +14,7 @@ from .cards import CardTemplate, CardInstance, Keyword, CardType, Supertype
 from .card_database import CardDatabase
 from .stack import StackItem
 from .turn_manager import TurnManager, TurnStep
-from .priority_system import PrioritySystem
+
 from .combat_manager import CombatManager
 from .callbacks import GameCallbacks
 
@@ -67,8 +67,7 @@ def _sorcery_speed_only_active(player: PlayerState) -> bool:
     player's turn.
     """
     for c in player.battlefield:
-        oracle = (c.template.oracle_text or '').lower()
-        if 'cast spells only any time they could cast a sorcery' in oracle:
+        if getattr(c.template, 'limits_opponent_spell_timing', False):
             return True
     return False
 
@@ -1188,7 +1187,6 @@ class GameRunner:
         # of the main phase. They can play lands, cast spells, or pass.
         # After each spell, opponent gets a response window (CR 117.3d).
         # Both must pass for the stack to resolve (CR 117.4).
-        priority = game.priority
         # Auto-fire imprint-copy artifacts at sorcery speed (moved out
         # of the pre-draw upkeep — see
         # _process_imprint_copy_activations for the CR rationale).
@@ -1212,16 +1210,11 @@ class GameRunner:
         while actions < max_actions and not game.game_over:
             if hasattr(game, '_game_deadline') and _time.monotonic() > game._game_deadline:
                 return
-            # Active player gets priority (CR 117.3a)
-            priority.give_priority(game, ai.player_idx)
-
             decision = ai.decide_main_phase(game)
             if decision is None:
-                # Active player passes priority
                 break
 
             action, card, targets = decision
-            priority.take_action(game)  # CR 117.3c
 
             # Structured PLAY event — fired BEFORE the engine applies
             # the play so the consumer sees `chosen.card` in the
@@ -1305,7 +1298,6 @@ class GameRunner:
                     elif not game.stack.is_empty:
                         top = game.stack.top
                         if top:
-                            priority.give_priority(game, opponent_ai.player_idx)
                             response = opponent_ai.decide_response(game, top)
                             # Emit RESPONSE_DECISION onto the structured
                             # replay log (W0-H). The decider stores its
@@ -1320,7 +1312,6 @@ class GameRunner:
                                     game.log.append(f'    [Priority] P{opponent_ai.player_idx+1} responds with {resp_card.name}')
                                 game.cast_spell(opponent_ai.player_idx,
                                                 resp_card, resp_targets)
-                                priority.take_action(game)
                                 if hasattr(ai, 'bhi'):
                                     ai.bhi.observe_spell_cast(
                                         game, getattr(resp_card.template, 'tags', set()))
@@ -1819,7 +1810,7 @@ class GameRunner:
             oracle = (perm.template.oracle_text or '').lower()
 
             # Artifact with "sacrifice, search for a land" (Expedition Map, etc.)
-            if ('sacrifice' in oracle and 'search' in oracle and 'land' in oracle
+            if (getattr(perm.template, 'has_sacrifice_search_land', False)
                     and not getattr(perm, 'tapped', False)
                     and not perm.template.is_creature):
                 # Need 2 mana to activate
@@ -1876,8 +1867,7 @@ class GameRunner:
 
             # Charge counter artifact that ticks up and pops to destroy
             # (Ratchet Bomb, Engineered Explosives, etc.)
-            if ('charge counter' in oracle and 'destroy' in oracle
-                    and 'mana value' in oracle):
+            if getattr(perm.template, 'has_charge_counter_wipe', False):
                 charges = perm.other_counters.get("charge", 0)
                 # Tick up
                 perm.other_counters["charge"] = charges + 1
@@ -2001,7 +1991,7 @@ class GameRunner:
             # ── {C}{C}, {T}: Draw a card. ──
             # Generic colourless-only card-draw activation. Gated on hand
             # size or losing-on-clock so we don't burn mana fixing for nothing.
-            if re.search(r'\{c\}\{c\}\s*,\s*\{t\}\s*:\s*draw a card', oracle):
+            if getattr(perm.template, 'has_cc_tap_draw', False):
                 if len(player.untapped_lands) < 2:
                     continue
                 from ai.ev_evaluator import snapshot_from_game
@@ -2031,7 +2021,7 @@ class GameRunner:
 
             # ── {T}: Choose target artifact card in your graveyard.
             #        You may cast that card this turn. (Emry pattern) ──
-            if 'choose target artifact card in your graveyard' in oracle:
+            if getattr(perm.template, 'has_emry_graveyard_cast', False):
                 artifacts = [
                     c for c in player.graveyard
                     if CardType.ARTIFACT in c.template.card_types

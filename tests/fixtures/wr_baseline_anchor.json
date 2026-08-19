@@ -97,14 +97,14 @@
       "deck2": "Goryo's Vengeance",
       "seed": 50500,
       "winner": "4c Omnath",
-      "turns": 8
+      "turns": 9
     },
     {
       "deck1": "Izzet Prowess",
       "deck2": "Dimir Midrange",
       "seed": 50500,
       "winner": "Izzet Prowess",
-      "turns": 5
+      "turns": 6
     },
     {
       "deck1": "4/5c Control",
@@ -124,7 +124,7 @@
       "deck1": "Instant Reanimator",
       "deck2": "Dimir Midrange",
       "seed": 51000,
-      "winner": "Dimir Midrange",
+      "winner": "Instant Reanimator",
       "turns": 10
     },
     {
@@ -167,7 +167,7 @@
       "deck2": "Creatures Toolbox",
       "seed": 52500,
       "winner": "Broodscale Bloodchief",
-      "turns": 10
+      "turns": 9
     },
     {
       "deck1": "Grixis Reanimator",

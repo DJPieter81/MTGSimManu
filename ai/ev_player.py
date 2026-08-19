@@ -1220,11 +1220,10 @@ class EVPlayer:
             if same_name_on_bf:
                 oracle_lower = (t.oracle_text or '').lower()
                 stacks = (
-                    'for each' in oracle_lower
-                    or 'for every' in oracle_lower
-                    or 'cost {' in oracle_lower         # cost reducers
-                    or 'whenever' in oracle_lower       # triggered
-                    or 'when this' in oracle_lower      # ETB triggers
+                    getattr(t, 'has_scaling_effect', False)  # for each/every
+                    or getattr(t, 'is_cost_reducer', False)  # cost reducers
+                    or getattr(t, 'has_recurring_trigger', False)  # triggered
+                    or getattr(t, 'has_self_trigger', False)  # ETB/attack/die triggers
                     or 'when ' + t.name.lower() + ' enters' in oracle_lower
                     or '{t}:' in oracle_lower           # tap abilities
                 )
@@ -1284,8 +1283,7 @@ class EVPlayer:
         # Engine safely bails (Ephemerate returns early), but AI should never
         # score a mana-wasting fizzle as positive EV. Detect by oracle pattern
         # "target creature you control" on an instant/sorcery.
-        oracle_lower_full = (t.oracle_text or '').lower()
-        if ('blink' in tags or 'exile target creature you control' in oracle_lower_full) \
+        if ('blink' in tags or getattr(t, 'has_exile_own_creature', False)) \
                 and (t.is_instant or t.is_sorcery) \
                 and len(me.creatures) == 0:
             return min(ev, BLINK_FIZZLE_FLOOR)
@@ -1500,8 +1498,7 @@ class EVPlayer:
             from ai.stax_ev import stax_lock_ev
             ev += stax_lock_ev(t, me, opp, snap)
 
-        oracle_lower = (t.oracle_text or '').lower()
-        phyrexian_count = oracle_lower.count('/p}')
+        phyrexian_count = getattr(t, 'phyrexian_pip_count', 0)
         if phyrexian_count > 0:
             life_cost = phyrexian_count * 2
             ev -= life_cost / max(1, snap.my_life) * PHYREXIAN_LIFE_PENALTY_SCALE
@@ -2439,7 +2436,7 @@ class EVPlayer:
         # Pre-combat pump (Psychic Frog etc.)
         for creature in valid:
             oracle = (creature.template.oracle_text or "").lower()
-            if "discard a card" in oracle and "+1/+1" in oracle:
+            if getattr(creature.template, 'has_discard_effect', False) and "+1/+1" in oracle:
                 prof = self.profile
                 # Smart discard: protect removal/counters, discard excess lands/dupes/uncastable
                 hand_lands = [c for c in me.hand if c.template.is_land]
@@ -3889,7 +3886,7 @@ class EVPlayer:
         m = re.search(r'\+(\d+)/[+\-]\d+ for each (artifact|enchantment)', oracle)
         if m:
             per_bonus = int(m.group(1))
-            if 'artifact and/or enchantment' in oracle or 'artifact or enchantment' in oracle:
+            if getattr(equip.template, 'has_artifact_or_enchantment_scaling', False):
                 count = sum(1 for b in player.battlefield
                             if CardType.ARTIFACT in b.template.card_types
                             or CardType.ENCHANTMENT in b.template.card_types)

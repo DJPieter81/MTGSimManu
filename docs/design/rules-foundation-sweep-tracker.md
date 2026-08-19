@@ -58,12 +58,12 @@ call happen. Proof the gap is plumbing, not modelling.
 
 | Module | Verdict | Status |
 |---|---|---|
-| `engine/continuous_effects.py` (`ContinuousEffectsManager`) | **Activate** | Pending (0b) |
-| `engine/sba_manager.py` (`SBAManager.check_and_perform_loop`) | **Finish migration** (live proposal, 3/9 rules done: poison, deathtouch, token-cleanup) | Pending (0d) |
-| `engine/event_system.py` (`EventBus`) | **Delete** — registered-closure API mismatches `oracle_resolver.py`'s imperative-function style everywhere | Pending, deferred until 0a's remaining trigger-dispatch consolidation makes it provably unused |
-| `engine/priority_system.py` | **Delete** — `resolve_priority_round` (sole caller of `pass_priority`/`both_passed`) confirmed to have zero callers anywhere, including via the doc that once claimed otherwise | Pending |
-| `engine/oracle_parser.py:260 is_living_end_cascader` | Delete, 0 callers | Pending |
-| `engine/oracle_parser.py:350 parse_planeswalker_abilities` | Delete, superseded by `player_state.py:272` | Pending |
+| `engine/continuous_effects.py` (`ContinuousEffectsManager`) | **Activate** | Done (0b) |
+| `engine/sba_manager.py` (`SBAManager.check_and_perform_loop`) | **Finish migration** (live proposal, 3/9 rules done: poison, deathtouch, token-cleanup) | Done (0d) |
+| `engine/event_system.py` (`EventBus`) | **Delete** — registered-closure API mismatches `oracle_resolver.py`'s imperative-function style everywhere | Done — deleted commit `dc3bf4d`; zone_manager, game_state, triggers.py all cleaned up |
+| `engine/priority_system.py` | **Delete** — `resolve_priority_round` (sole caller of `pass_priority`/`both_passed`) confirmed to have zero callers anywhere | Done — deleted commit `dc3bf4d`; game_state and game_runner cleaned up |
+| `engine/oracle_parser.py:260 is_living_end_cascader` | Delete, 0 callers | Done — deleted commit `dc3bf4d` |
+| `engine/oracle_parser.py:350 parse_planeswalker_abilities` | Delete, superseded by `player_state.py:272` | Done — deleted commit `dc3bf4d` |
 | `engine/stack.py` legacy resolver/priority methods | Already deleted (pre-existing work, `docs/proposals/resolver_sba_unification.md`) | Done, verified |
 | `engine/log_export.py` | Already deleted (pre-existing work) | Done, verified |
 
@@ -132,11 +132,10 @@ Remaining (tracked here, not yet started):
   stack→zone transitions (the ~11 remaining `spell_resolution.py` sites) can route through the real
   funnel instead of file-local helpers. Architecturally larger than the counter-fizzle fix already
   landed; scope this as its own slice.
-- [ ] Delete `engine/event_system.py` once the remaining trigger-dispatch consolidation proves
-  `zone_manager.move_card`'s `EventBus.fire_event` calls are provably redundant with the direct
-  imperative-function calls (currently both exist; the EventBus path never accomplishes anything
-  since its registries are empty, but removing it needs the direct-call path to cover every case
-  it currently silently no-ops for).
+- [x] Delete `engine/event_system.py` — done commit `dc3bf4d`. Zero registrations confirmed by
+  grep; fire_event always returned (event, []) — a confirmed no-op at all 4 call sites in
+  zone_manager.py. Cleaned up zone_manager, game_state, and the queue_event_trigger bridge in
+  triggers.py in the same commit.
 - [ ] Per-file baseline reduction in `tools/zone_mutation_baseline.json` as each tranche above lands
   (`python tools/check_zone_mutation.py --update` after migrating, in the same commit as the migration).
 

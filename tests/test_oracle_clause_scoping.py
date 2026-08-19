@@ -42,6 +42,7 @@ from engine.oracle_clauses import (
     split_abilities,
     split_clauses,
 )
+from engine.oracle_parser import parse_has_sacrifice_for_damage
 
 
 # ─── helpers ────────────────────────────────────────────────────────
@@ -66,6 +67,7 @@ def _make_card(game, name: str, oracle: str, controller: int = 0,
         enters_tapped=False,
         oracle_text=oracle,
         tags=set(),
+        has_sacrifice_for_damage=parse_has_sacrifice_for_damage(oracle),
     )
     card = CardInstance(
         template=tmpl, owner=controller, controller=controller,

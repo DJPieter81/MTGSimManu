@@ -108,10 +108,7 @@ class CyclingManager:
                     land.tapped = True
                     remaining -= 1
         # Move card from hand to graveyard
-        if card in player.hand:
-            player.hand.remove(card)
-        card.zone = "graveyard"
-        player.graveyard.append(card)
+        game.zone_mgr.move_card(game, card, "hand", "graveyard", cause="cycling")
         # Landcycling / typecycling tutors; plain cycling draws.
         variant = card.template.cycling_variant_data
         cost_desc = f"pay {cost['life']} life" if cost["life"] > 0 else f"pay {cost['mana']} mana"
@@ -172,9 +169,8 @@ class CyclingManager:
             if req_subs and not req_subs.issubset(subtypes):
                 continue
             # Match — tutor it to hand.
-            player.library.remove(lib_card)
-            lib_card.zone = "hand"
-            player.hand.append(lib_card)
+            game.zone_mgr.move_card(game, lib_card, "library", "hand",
+                                    cause="cycling tutor")
             return lib_card
         return None
 

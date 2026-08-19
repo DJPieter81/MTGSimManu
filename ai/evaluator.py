@@ -274,14 +274,14 @@ def _ability_bonus(card, template=None) -> float:
         bonus += n * ORACLE_DRAW_VALUE_PER_CARD
 
     # Repeatable draw ("whenever" + "draw")
-    if 'whenever' in oracle and 'draw' in oracle:
+    if getattr(template, 'has_recurring_draw_trigger', False):
         bonus += ORACLE_RECURRING_DRAW_BONUS
 
     # Damage to opponents/creatures on trigger
     dmg_match = re.search(r'deals?\s+(\d+)\s+damage', oracle)
     if dmg_match:
         dmg = int(dmg_match.group(1))
-        if 'each opponent' in oracle or 'each player' in oracle:
+        if getattr(template, 'has_each_opponent_effect', False):
             bonus += dmg * ORACLE_RECURRING_DAMAGE_PER_POINT
         elif has_etb or has_attack_trigger:
             bonus += dmg * ORACLE_TRIGGER_DAMAGE_PER_POINT
@@ -303,7 +303,7 @@ def _ability_bonus(card, template=None) -> float:
     token_match = re.search(
         r'create\s+(?:up to\s+)?(\w+)\s+', oracle)
     token_n = 1
-    if token_match and 'token' in oracle:
+    if token_match and 'token_maker' in tags:
         word = token_match.group(1)
         if word.isdigit():
             token_n = int(word)
@@ -316,7 +316,7 @@ def _ability_bonus(card, template=None) -> float:
                 token_n = _NUMERALS.index(word)
             elif word in ('a', 'an'):
                 token_n = 1
-    if 'create' in oracle and 'token' in oracle:
+    if 'token_maker' in tags:
         bonus += token_n * ORACLE_TOKEN_CREATION_BONUS
 
     # Search library (tutor effect) — credit the actual N from
@@ -392,8 +392,7 @@ def _ability_bonus(card, template=None) -> float:
                      int(pump_match2.group(2)))
     has_pump = (
         '+1/+1 counter' in oracle  # singular OR plural form
-        or 'gets +' in oracle
-        or 'additional +' in oracle
+        or getattr(template, 'has_pump_grant', False)  # 'gets +'/'additional +'
     )
     if has_pump:
         scale = max(1, pump_n)
@@ -475,8 +474,7 @@ def _estimate_spell_damage_for_eval(spell: "CardInstance") -> int:
 
     # Domain-scaling damage (e.g. Tribal Flames)
     if 'domain' in tags:
-        m = re.search(r'deals?.*damage.*equal', oracle)
-        if m:
+        if getattr(template, 'has_damage_equal_scaling', False):
             return SPELL_DAMAGE_DOMAIN_MAX
 
     # Check ability descriptions for destroy/exile
@@ -489,8 +487,8 @@ def _estimate_spell_damage_for_eval(spell: "CardInstance") -> int:
             if nums:
                 return int(nums[0])
 
-    # Fallback: parse oracle text directly
-    if 'destroy' in oracle or 'exile' in oracle:
+    # Fallback: typed field (populated at load time from oracle text)
+    if getattr(template, 'has_destroy_or_exile', False):
         return SPELL_DAMAGE_DESTROY_EXILE_SENTINEL
 
     m = re.search(r'deals?\s+(\d+)\s+damage', oracle)
@@ -498,7 +496,7 @@ def _estimate_spell_damage_for_eval(spell: "CardInstance") -> int:
         return int(m.group(1))
 
     # X damage spells
-    if re.search(r'deals?\s+x\s+damage', oracle):
+    if getattr(template, 'has_x_damage', False):
         return SPELL_DAMAGE_X_SPELL_FALLBACK
 
     return SPELL_DAMAGE_DESTROY_EXILE_SENTINEL  # default: assume destroy/exile
