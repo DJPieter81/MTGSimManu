@@ -6,6 +6,7 @@ instant removal, and threat evaluation for stack items.
 """
 from __future__ import annotations
 
+import math
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple
 
 from ai.scoring_constants import (
@@ -268,6 +269,53 @@ class ResponseDecider:
             # burn in `evaluate_stack_threat`; using the same constant
             # avoids introducing a new bare numeric literal.
             threat = max(threat, LETHAL_THREAT)
+        elif math.isnan(bp):
+            # NaN mid-chain guard: bottleneck_probability cannot classify
+            # the stack spell (neither chain-fuel nor payoff-accessor) but
+            # the chain IS in flight.  Case: a cost-reducer permanent cast
+            # mid-chain (Ruby Medallion, Goblin Electromancer, Baral, etc.)
+            # — it buffs the remaining chain without being its fuel or its
+            # payoff, so bp falls through to NaN.  The legacy threat scorer
+            # assigns it a high score via the is_cost_reducer component
+            # (~25+, above COUNTER_GATE_HIGH), firing the counter wastefully
+            # before the actual payoff (Past in Flames / Grapeshot) resolves
+            # unchallenged.
+            #
+            # Guard: if the chain is mid-cast (≥ CHAIN_MIDCAST_MIN_STORM_COUNT)
+            # AND payoff is reachable in opp's pool, hold a hard-paid counter
+            # for the upcoming payoff.  Pitch counters are exempt (near-zero
+            # card opportunity cost).  Near-lethal threats override the hold.
+            from ai.combo_calc import (_opp_chain_mid_cast,
+                                       _opp_payoff_reachable)
+            opp_idx_nan = 1 - self.player_idx
+            if (_opp_chain_mid_cast(game, opp_idx_nan)
+                    and _opp_payoff_reachable(game, opp_idx_nan)
+                    and threat < NEAR_LETHAL_CUTOFF):
+                cheap_pitch = any(
+                    "counterspell" in c.template.tags
+                    and self._is_pitch_counter(game, c)
+                    for c in instants
+                )
+                if not cheap_pitch:
+                    if self.strategic_logger:
+                        self.strategic_logger.log_no_response(
+                            self.player_idx, stack_item.source.name, game,
+                            "NaN mid-chain hold: non-fuel non-payoff enabler "
+                            "(cost-reducer class); counter reserved for payoff")
+                    self._record_decision(
+                        game, stack_item,
+                        chosen_inst=None, chosen_targets=[],
+                        chosen_reason=(
+                            "NaN mid-chain hold: counter reserved for "
+                            "upcoming chain payoff (non-fuel non-payoff "
+                            "enabler — cost-reducer class)"
+                        ),
+                        alternatives=[], instants=instants,
+                        threat=threat,
+                        held_counter_floor_ev=self._held_counter_floor_ev(game),
+                        triage_skip=False,
+                    )
+                    return None
 
         # Triage rule (counter vs. flash creature-exile):
         # If the stack threat is a creature AND a flash/instant
