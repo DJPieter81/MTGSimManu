@@ -186,6 +186,11 @@ _ANY_TARGET = re.compile(r"\bany\s+target\b")
 _PLAYER_TARGET = re.compile(r"\btarget\s+(player|opponent)\b")
 
 # Spell targeting — counterspells.
+# Compound "instant or sorcery spell" is checked first so the
+# single-type regex below does not greedily capture only "instant".
+_SPELL_TARGET_INSTANT_OR_SORCERY = re.compile(
+    r"\btarget\s+instant\s+or\s+sorcery\s+spell\b"
+)
 _SPELL_TARGET = re.compile(
     r"\btarget\s+(?:(creature|instant|sorcery|noncreature)\s+)?spell\b"
 )
@@ -272,7 +277,20 @@ def parse(oracle_text: str) -> List[TargetRequirement]:
         return out
 
     # ── 2. Stack-target spells (counterspells) ──────────────────────
-    spell_match = _SPELL_TARGET.search(oracle_l)
+    # Check compound "instant or sorcery spell" before the single-type regex
+    # so "instant" is not captured alone, leaving "or sorcery spell" unmatched.
+    ios_match = _SPELL_TARGET_INSTANT_OR_SORCERY.search(oracle_l)
+    if ios_match is not None:
+        out.append(TargetRequirement(
+            zone="stack",
+            types=frozenset({"instant_or_sorcery_spell"}),
+            owner_scope="any",
+            is_optional=_is_optional_at(oracle_l, ios_match.start()),
+            mode_group=_detect_mode_group(oracle_l, ios_match.start(),
+                                          modal_start),
+            raw_phrase=ios_match.group(0),
+        ))
+    spell_match = _SPELL_TARGET.search(oracle_l) if ios_match is None else None
     if spell_match is not None:
         sub = spell_match.group(1) or ""
         if sub == "noncreature":
@@ -617,6 +635,8 @@ def _spell_token_matches(item_source: "CardInstance",
         if tok == "instant_spell" and t.is_instant:
             return True
         if tok == "sorcery_spell" and t.is_sorcery:
+            return True
+        if tok == "instant_or_sorcery_spell" and (t.is_instant or t.is_sorcery):
             return True
     return False
 
