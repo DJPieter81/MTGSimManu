@@ -49,16 +49,22 @@ class ResolutionManager:
         spell resolves normally or is countered. Single owner of this
         logic so both call sites (normal resolution and the
         counterspell branch in `_execute_spell_effects`) stay in sync.
+
+        All zone mutations go through ``game.zone_mgr.move_card_from_stack``
+        so that CR 614 replacement effects (e.g. Rest in Peace) can
+        intercept the destination, and CR 603 zone-change triggers fire.
         """
         if getattr(card, '_cast_with_flashback', False):
             # Flashback: exile instead of going to graveyard (CR 702.33a)
-            card.zone = "exile"
-            game.players[card.owner].exile.append(card)
+            game.zone_mgr.move_card_from_stack(
+                game, card, "exile", cause="flashback resolution (CR 702.33a)"
+            )
             card.has_flashback = False  # no longer has flashback
         elif hasattr(card, '_rebound_controller'):
             # Rebound: exile instead of graveyard, cast for free next upkeep
-            card.zone = "exile"
-            game.players[card.owner].exile.append(card)
+            game.zone_mgr.move_card_from_stack(
+                game, card, "exile", cause="rebound (CR 702.86)"
+            )
             if not hasattr(game, '_rebound_cards'):
                 game._rebound_cards = []
             game._rebound_cards.append(card)
@@ -66,10 +72,13 @@ class ResolutionManager:
             # CR 707.10a — a resolved (or countered) spell COPY ceases
             # to exist; it never enters the graveyard (imprint-copy
             # artifacts, storm copies routed here, …).
-            card.zone = "expired_copy"
+            game.zone_mgr.move_card_from_stack(
+                game, card, "expired_copy", cause="spell copy ceases (CR 707.10a)"
+            )
         else:
-            card.zone = "graveyard"
-            game.players[card.owner].graveyard.append(card)
+            game.zone_mgr.move_card_from_stack(
+                game, card, "graveyard", cause="resolution"
+            )
 
     @staticmethod
     def _move_countered_stack_item(game: "GameState", stack_item: "StackItem",
@@ -88,8 +97,12 @@ class ResolutionManager:
         if stack_item.item_type == StackItemType.SPELL:
             ResolutionManager._move_resolved_spell_off_stack(game, countered_card)
         else:
-            countered_card.zone = "graveyard"
-            game.players[countered_card.owner].graveyard.append(countered_card)
+            # Countered activated/triggered ability: the source is a permanent
+            # still on the battlefield — it does not move (CR: abilities have
+            # no physical card separate from their source permanent). The
+            # ability item has already been removed from the stack by the
+            # caller; no zone mutation is needed here.
+            pass
 
     @staticmethod
     def resolve_stack(game: "GameState"):
@@ -152,15 +165,13 @@ class ResolutionManager:
             game.log.append(
                 f"T{game.display_turn}: {card.name} fizzles "
                 f"(all targets illegal, CR 608.2b)")
-            if getattr(card, '_cast_with_flashback', False):
-                # CR 702.33a: flashback replaces graveyard with exile
-                # even when the spell doesn't resolve.
-                card.zone = "exile"
-                game.players[card.owner].exile.append(card)
-                card.has_flashback = False
-            else:
-                card.zone = "graveyard"
-                game.players[card.owner].graveyard.append(card)
+            # CR 702.33a / 702.86 / 707.10a: the same zone-replacement
+            # effects that apply on normal resolution also apply when a
+            # spell fizzles — "fizzle to the graveyard" is still a
+            # "would be put into a graveyard from the stack" event.
+            # Delegate to the single-owner helper so both code paths
+            # stay in sync and route through the zone funnel.
+            ResolutionManager._move_resolved_spell_off_stack(game, card)
             return
 
         # Only log "Resolve" for spells — not for triggered/activated abilities
@@ -207,9 +218,9 @@ class ResolutionManager:
                 # Evoke: sacrifice after ETB triggers
                 if getattr(card, '_evoked', False):
                     if card in game.players[item.controller].battlefield:
-                        game.players[item.controller].battlefield.remove(card)
-                        card.zone = "graveyard"
-                        game.players[card.owner].graveyard.append(card)
+                        game.zone_mgr.move_card_to_graveyard(
+                            game, card, cause="evoke sacrifice"
+                        )
                         game.log.append(f"T{game.display_turn} P{item.controller+1}: "
                                        f"{card.name} sacrificed (evoke)")
                 # Phlage sacrifice-unless-escaped: if cast normally (not escaped),
@@ -217,9 +228,9 @@ class ResolutionManager:
                 if (template.escape_cost is not None
                         and not getattr(card, '_escaped', False)):
                     if card in game.players[item.controller].battlefield:
-                        game.players[item.controller].battlefield.remove(card)
-                        card.zone = "graveyard"
-                        game.players[card.owner].graveyard.append(card)
+                        game.zone_mgr.move_card_to_graveyard(
+                            game, card, cause="sacrifice (not escaped)"
+                        )
                         game.log.append(f"T{game.display_turn} P{item.controller+1}: "
                                        f"{card.name} sacrificed (not escaped)")
 
@@ -419,13 +430,13 @@ class ResolutionManager:
             # Collect creatures in graveyard to return
             gy_creatures = [c for c in player.graveyard if c.template.is_creature]
 
-            # Exile battlefield creatures
+            # Exile battlefield creatures (zone funnel handles removal,
+            # cleanup, and exile-list append).
             for creature in bf_creatures:
-                player.battlefield.remove(creature)
-                creature.zone = "exile"
-                creature.reset_combat()
-                creature.cleanup_damage()
-                player.exile.append(creature)
+                game.zone_mgr.move_card(
+                    game, creature, "battlefield", "exile",
+                    cause="living end"
+                )
 
             # Return graveyard creatures to battlefield (gated by Cage)
             if hate_card is not None:
@@ -796,14 +807,14 @@ class ResolutionManager:
 
     @staticmethod
     def _blink_permanent(game: "GameState", card: CardInstance, controller: int):
-        """Exile a permanent and return it to the battlefield immediately."""
-        if card in game.players[card.controller].battlefield:
-            game.players[card.controller].battlefield.remove(card)
-        card.zone = "exile"
-        # Return immediately
-        card.controller = controller
-        card.enter_battlefield()
-        game.players[controller].battlefield.append(card)
+        """Exile a permanent and return it to the battlefield immediately.
+
+        Zone bookkeeping (battlefield → exile → battlefield) is handled by
+        ``zone_mgr._blink_zone_transition``, which lives inside the zone-
+        transfer funnel (excluded from the zone-mutation ratchet). The caller
+        is responsible for ETB effects via ``_handle_permanent_etb``.
+        """
+        game.zone_mgr._blink_zone_transition(game, card, controller)
         game._handle_permanent_etb(card, controller)
         game.log.append(f"T{game.display_turn}: Blink {card.name}")
 
