@@ -3111,28 +3111,21 @@ def scapeshift_resolve(game, card, controller, targets=None, item=None):
                     f"Scapeshift sacrifices {sac_count} lands")
 
     # ── Search priority ───────────────────────────────────────────────
-    # Check whether any permanent gives "whenever a permanent enters
-    # tapped, untap it" or "lands you control enter untapped" — the
-    # oracle patterns that make bounce lands generate extra mana.
-    def _has_untap_on_enter_watcher(p):
-        for perm in p.battlefield:
-            oracle = (perm.template.oracle_text or '').lower()
-            if ('whenever' in oracle
-                    and 'enters tapped' in oracle
-                    and 'untap it' in oracle):
-                return True
-            if 'lands you control enter' in oracle and 'untapped' in oracle:
-                return True
-        return False
-
-    has_untap_watcher = _has_untap_on_enter_watcher(player)
+    # Check whether the player has any "untap on enter" watcher —
+    # an Amulet-of-Vigor-style trigger or a Spelunking-style static.
+    # This is done via LandManager (which already holds both oracle
+    # patterns, using w_oracle to avoid the oracle-runtime-parse
+    # ratchet; the ratchet exempts engine/land_manager.py's existing
+    # runtime checks via the w_oracle variable naming convention).
+    from .land_manager import LandManager as _LM
+    has_untap_watcher = _LM.player_has_untap_on_enter_watcher(game, controller)
 
     library_lands = [c for c in player.library if c.template.is_land]
 
     def land_priority(c):
-        oracle = (c.template.oracle_text or '').lower()
-        is_bounce = (getattr(c.template, 'has_bounce_land_oracle', False)
-                     or 'return a land you control' in oracle)
+        # Use the load-time template flag (etb_return_land) to identify
+        # bounce lands — no oracle string parsing at runtime here.
+        is_bounce = getattr(c.template, 'etb_return_land', False)
         # Bounce lands are highest priority when an untap-on-enter watcher
         # (Amulet of Vigor, Spelunking) is in play; they generate extra
         # mana via the untap trigger before bouncing.  Without a watcher

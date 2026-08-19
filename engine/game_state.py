@@ -732,6 +732,13 @@ class GameState:
             if (card.has_flashback or card.template.escape_cost is not None) and \
                self.can_cast(player_idx, card):
                 legal.append(card)
+        # Include Warp-exiled cards: a creature cast via Warp is exiled at end
+        # of turn with card._warped=True and may be re-cast from exile on
+        # later turns (CR 702.Warp). can_cast handles the has-artifact + cost
+        # gate; this branch surfaces those cards to the legal-play set.
+        for card in player.exile:
+            if getattr(card, '_warped', False) and self.can_cast(player_idx, card):
+                legal.append(card)
         # Include cycling cards from hand (cycling is a special action, not casting)
         for card in player.hand:
             if card not in legal and self.can_cycle(player_idx, card):

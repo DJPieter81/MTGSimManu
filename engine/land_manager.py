@@ -341,6 +341,28 @@ class LandManager:
                                 cause=f"{land.name} ETB returns {target.name} to hand")
 
     @staticmethod
+    def player_has_untap_on_enter_watcher(game: "GameState",
+                                           controller: int) -> bool:
+        """Return True if the controller has any permanent that makes
+        entering-tapped permanents untap (Amulet of Vigor oracle pattern)
+        or that makes lands enter untapped (Spelunking oracle pattern).
+
+        Used by mass-land-search effects to decide whether bounce lands
+        are worth prioritising — they only generate extra mana when an
+        untap trigger or static ability is in play.
+        """
+        player = game.players[controller]
+        for perm in player.battlefield:
+            w_oracle = (perm.template.oracle_text or '').lower()
+            if ('whenever' in w_oracle
+                    and 'enters tapped' in w_oracle
+                    and 'untap it' in w_oracle):
+                return True
+            if 'lands you control enter' in w_oracle and 'untapped' in w_oracle:
+                return True
+        return False
+
+    @staticmethod
     def apply_untap_on_enter_triggers(game: "GameState",
                                        permanent: "CardInstance",
                                        controller: int) -> None:
