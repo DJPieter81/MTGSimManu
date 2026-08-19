@@ -3073,11 +3073,28 @@ def scapeshift_resolve(game, card, controller, targets=None, item=None):
 
     With Amulet of Vigor: all enter untapped → massive mana.
     Key targets: bounce lands (for Amulet untap triggers), utility lands.
+
+    ETB ordering rule (simultaneous entry):
+      MTG rules treat all fetched lands as entering simultaneously.  Each
+      land's ETB trigger sees the *full* set of newly-entered lands, not
+      only those whose ETBs were processed before it.  Concretely:
+
+        Phase 1 — enter all lands (append to battlefield, no ETBs yet).
+        Phase 2 — fire each land's ETBs in sequence.
+
+      Without this two-phase split, a bounce land entering before other
+      fetched lands fires its ETB against an empty battlefield and returns
+      itself — producing zero net lands even when non-bounce lands were
+      also fetched.  The simultaneous-entry model lets each bounce land's
+      ETB see its co-entrants and return a *different* land, and lets any
+      ETB whose land has already been bounced skip gracefully (the
+      `apply_land_etb_static` guard `if land not in player.battlefield`
+      handles that case).
     """
     player = game.players[controller]
     my_lands = [c for c in player.battlefield if c.template.is_land]
 
-    # Only sacrifice if we have 6+ lands (need critical mass for payoff)
+    # Only sacrifice if we have enough lands for a meaningful payoff
     if len(my_lands) < 4:
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Scapeshift: only {len(my_lands)} lands, not enough to sacrifice")
@@ -3093,36 +3110,78 @@ def scapeshift_resolve(game, card, controller, targets=None, item=None):
     game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Scapeshift sacrifices {sac_count} lands")
 
-    # Search library for that many lands
+    # ── Search priority ───────────────────────────────────────────────
+    # Check whether any permanent gives "whenever a permanent enters
+    # tapped, untap it" or "lands you control enter untapped" — the
+    # oracle patterns that make bounce lands generate extra mana.
+    def _has_untap_on_enter_watcher(p):
+        for perm in p.battlefield:
+            oracle = (perm.template.oracle_text or '').lower()
+            if ('whenever' in oracle
+                    and 'enters tapped' in oracle
+                    and 'untap it' in oracle):
+                return True
+            if 'lands you control enter' in oracle and 'untapped' in oracle:
+                return True
+        return False
+
+    has_untap_watcher = _has_untap_on_enter_watcher(player)
+
     library_lands = [c for c in player.library if c.template.is_land]
-    # Prioritize: bounce lands > utility lands > basics
+
     def land_priority(c):
         oracle = (c.template.oracle_text or '').lower()
-        if getattr(c.template, 'has_bounce_land_oracle', False):
-            return 3  # bounce land
+        is_bounce = (getattr(c.template, 'has_bounce_land_oracle', False)
+                     or 'return a land you control' in oracle)
+        # Bounce lands are highest priority when an untap-on-enter watcher
+        # (Amulet of Vigor, Spelunking) is in play; they generate extra
+        # mana via the untap trigger before bouncing.  Without a watcher
+        # they enter tapped, produce nothing before bouncing, and are no
+        # better than a basic (the simultaneous-entry ETB fix still keeps
+        # them viable, but they're not preferred over non-bounce options).
+        if is_bounce and has_untap_watcher:
+            return 3  # bounce land WITH untap watcher — prioritise
         if len(c.template.produces_mana) >= 2:
-            return 2  # dual land
-        return 1  # basic
+            return 2  # non-bounce dual / utility land
+        if not is_bounce:
+            return 1  # basic or single-colour land
+        return 0  # bounce land WITHOUT untap watcher — lowest priority
+
     library_lands.sort(key=land_priority, reverse=True)
 
-    fetched = 0
+    # ── Phase 1: enter all lands (no ETBs yet) ───────────────────────
+    # All fetched lands enter simultaneously per MTG rules.  We stage
+    # them all onto the battlefield before firing any triggers so that
+    # each land's ETB (Phase 2) sees the complete set of co-entrants.
+    lands_entered: list = []
     for land in library_lands[:sac_count]:
         if land not in player.library:
-            continue  # already moved by a trigger (bounce land ETB etc.)
+            continue  # safety guard (shouldn't happen in Phase 1)
         player.library.remove(land)
         land.zone = "battlefield"
-        land.tapped = True  # enters tapped
+        land.tapped = True  # enters tapped (Amulet/Spelunking untaps in Phase 2)
         player.battlefield.append(land)
-        # Amulet of Vigor / Spelunking untap trigger
+        lands_entered.append(land)
+
+    # ── Phase 2: fire ETBs in LIFO order (MTG stack semantics) ──────
+    # When multiple triggers go on the stack simultaneously the
+    # controller chooses the order; LIFO (last-entered fires first)
+    # maximises retention — e.g. with 4 bounce lands the first two
+    # triggers each bounce one of the later ones, the later ones' own
+    # triggers are then skipped because those lands are no longer on
+    # the battlefield, leaving N/2 bounce lands on the field.
+    # FIFO would instead produce a cascade that leaves only 1.
+    # A land bounced to hand by an earlier trigger is handled by the
+    # `if land not in player.battlefield: return` guard in
+    # `apply_land_etb_static`, so it is skipped cleanly.
+    from .oracle_resolver import resolve_etb_from_oracle
+    for land in reversed(lands_entered):
         game._apply_land_etb_static(land, controller)
         game._apply_lands_enter_untapped(land, controller)
-        # Bounce land ETB
-        from .oracle_resolver import resolve_etb_from_oracle
         resolve_etb_from_oracle(game, land, controller)
-        # Landfall
         game._trigger_landfall(controller)
-        fetched += 1
 
     game.rng.shuffle(player.library)
+    fetched = len(lands_entered)
     game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Scapeshift fetches {fetched} lands onto battlefield")
