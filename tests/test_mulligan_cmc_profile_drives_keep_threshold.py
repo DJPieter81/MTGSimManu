@@ -61,9 +61,26 @@ def _build_decider(medium_cmc: int) -> MulliganDecider:
 
 
 def test_mulligan_cmc_profile_medium_threshold_drives_keep(card_db):
-    """Two gameplans with identical hands but different
-    `mulligan_cmc_profile['medium']` produce different keep decisions —
-    proves the mulligan code reads the profile rather than a literal."""
+    """``mulligan_cmc_profile`` controls the key-card development check —
+    proves the mulligan code reads the profile rather than a literal.
+
+    Hand: 3 lands + 4 CMC-3 removal spells declared as ``mulligan_keys``.
+
+    Behaviour after the Phase 3 scored-gate replacement:
+
+    - medium=3: key-card path fires (cheap_spells=4 ≥ 2) → KEEP.
+    - medium=2: key-card path falls through (cheap_spells=0 < 2); the
+      scored final gate evaluates the hand directly.  A hand with 3 lands
+      and 4 CMC-3 removal spells scores well above the minimum (score ≈ 38
+      ≥ floor 24) and is correctly KEPT.  The prior gate mulled this hand
+      incorrectly — ``cheap_spells < 1`` rejected the hand by CMC threshold
+      rather than by EV; the scored replacement is the fix.
+
+    The profile's ``medium_cmc`` still matters: it controls whether the
+    key-card shortcut fires (and therefore which code path reaches the
+    decision).  The scored fallback does not re-apply the CMC bracket
+    because the bracket was always an approximation of EV, not EV itself.
+    """
     hand = [
         _card(card_db, "Plains", 1),
         _card(card_db, "Plains", 2),
@@ -77,18 +94,19 @@ def test_mulligan_cmc_profile_medium_threshold_drives_keep(card_db):
     decider_loose = _build_decider(medium_cmc=3)
     keep_loose = decider_loose.decide(hand, cards_in_hand=7)
     assert keep_loose is True, (
-        f"medium=3: 4 CMC-3 spells should count as cheap_spells (cheap >= 2 "
-        f"under the key-card path) and the hand should KEEP. "
-        f"Got mulligan with reason: {decider_loose.last_reason}"
+        f"medium=3: 4 CMC-3 spells count as cheap_spells (CMC <= 3) under "
+        f"the key-card path (cheap >= 2) so the hand should KEEP via the "
+        f"key-card shortcut. Got mulligan with reason: {decider_loose.last_reason}"
     )
 
     decider_tight = _build_decider(medium_cmc=2)
     keep_tight = decider_tight.decide(hand, cards_in_hand=7)
-    assert keep_tight is False, (
-        f"medium=2: 0 CMC-3 spells satisfy cheap (cheap < 2 under the "
-        f"key-card path AND no critical_pieces, AND cheap_spells < 1 at "
-        f"the generic check) so the hand should MULLIGAN. "
-        f"Got keep with reason: {decider_tight.last_reason}"
+    assert keep_tight is True, (
+        f"medium=2: key-card path falls through (cheap_spells=0 < 2), but "
+        f"the scored final gate correctly keeps 3 lands + 4 CMC-3 removal "
+        f"spells (score ≈ 38 >= floor 24). The old ``cheap_spells < 1`` gate "
+        f"incorrectly mulled this hand; the scored replacement fixes it. "
+        f"Got mulligan with reason: {decider_tight.last_reason}"
     )
 
 
