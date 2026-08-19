@@ -166,24 +166,7 @@ class ZoneManager:
             card.zone = to_zone
             return True
 
-        # Fire ZONE_CHANGE event for replacement effects (CR 614).
-        event = GameEvent(
-            event_type=EventType.ZONE_CHANGE,
-            source=card,
-            player=owner,
-            extra={
-                "from": "stack",
-                "to": to_zone,
-                "cause": cause,
-                "turn": game.display_turn,
-            },
-        )
-        event, _ = self.event_bus.fire_event(event, game)
-
-        if event.prevented:
-            return False
-
-        actual_to = event.extra.get("to", to_zone)
+        actual_to = to_zone
 
         card.zone = actual_to
         dest_list = self._get_zone_list(game, owner, actual_to)
