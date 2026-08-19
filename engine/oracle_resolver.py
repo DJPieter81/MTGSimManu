@@ -726,7 +726,32 @@ def resolve_dies_trigger(game: "GameState", card: "CardInstance",
 
     Called when a creature dies or leaves the battlefield.
     """
+    from engine.cards import Keyword, CardType  # noqa: PLC0415 (lazy to avoid cycle)
+
     oracle = (card.template.oracle_text or '').lower()
+
+    # ── Modular (CR 702.43): "When it dies, you may put its +1/+1 counters
+    #    on target artifact creature." ──
+    # Keyed on Keyword.MODULAR (populated at DB load from KEYWORD_MAP / oracle
+    # word-boundary scan) — no card name involved.  The AI always takes the
+    # optional transfer when a valid target exists (unconditionally beneficial).
+    if Keyword.MODULAR in card.template.keywords and card.plus_counters > 0:
+        _artifact_creatures = [
+            c for c in game.players[controller].battlefield
+            if CardType.CREATURE in c.effective_card_types
+            and CardType.ARTIFACT in c.effective_card_types
+        ]
+        if _artifact_creatures:
+            # Heuristic: transfer to the artifact creature with the highest
+            # current power (maximises board presence).
+            target = max(_artifact_creatures, key=lambda c: c.power)
+            target.plus_counters += card.plus_counters
+            game.log.append(
+                f"T{game.display_turn}: {card.name} modular — "
+                f"move {card.plus_counters} counter(s) to {target.name}"
+            )
+            card.plus_counters = 0
+
     if not oracle:
         return
 

@@ -294,6 +294,19 @@ class ResolutionManager:
         if CardType.PLANESWALKER in template.card_types:
             card.loyalty_counters = template.loyalty or 0
 
+        # Modular (CR 702.43): enters with N +1/+1 counters.
+        # Keyed on Keyword.MODULAR in template.keywords (populated at DB load via
+        # KEYWORD_MAP / word-boundary scan) and template.modular_n > 0 (parsed
+        # from "Modular N" in oracle text). Works for all modular cards — no card
+        # names involved.  "Modular—Sunburst" has modular_n == 0 and is skipped.
+        if Keyword.MODULAR in template.keywords and template.modular_n > 0:
+            card.plus_counters += template.modular_n
+            game.log.append(
+                f"T{game.display_turn} P{controller+1}: "
+                f"{template.name} enters with {template.modular_n} "
+                f"+1/+1 counter(s) (modular)"
+            )
+
         # Energy production on ETB (from oracle-derived template property)
         if template.energy_production > 0:
             game.players[controller].add_energy(template.energy_production)

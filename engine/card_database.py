@@ -60,6 +60,7 @@ KEYWORD_MAP = {
     "Storm": Keyword.STORM,
     "Annihilator": Keyword.ANNIHILATOR,
     "Improvise": Keyword.IMPROVISE,
+    "Modular": Keyword.MODULAR,
 }
 
 COLOR_CHARS = {"W", "U", "B", "R", "G"}
@@ -1591,6 +1592,16 @@ class CardDatabase:
         if warp is not None:
             template.warp_cost = warp
 
+        # Modular N (CR 702.43): parse the counter count from "Modular N" in oracle text.
+        # The KEYWORD_MAP / word-boundary scan already added Keyword.MODULAR to keywords;
+        # this step extracts the integer N so ETB placement and death-trigger transfer
+        # can use it without re-parsing oracle text at runtime.
+        # "Modular—Sunburst" has no fixed N → modular_n stays 0.
+        if Keyword.MODULAR in template.keywords:
+            _mod_m = re.search(r'(?:^|\n)modular\s+(\d+)', oracle_lower)
+            if _mod_m:
+                template.modular_n = int(_mod_m.group(1))
+
         # Prowess from oracle (backup: "noncreature spell" + "+1/+1" pump only)
         # Note: "surveil" alone does NOT indicate prowess — DRC has surveil but
         # its size bonus comes from delirium, not a +1/+1 pump on spells.
@@ -1738,6 +1749,9 @@ class CardDatabase:
             parse_has_stax_ability, parse_has_pithing_needle_lock,
             parse_has_another_creature_enters_trigger,
             parse_has_another_creature_enters_lifegain,
+            parse_has_cycling_watch_trigger,
+            parse_cycling_watch_trigger_damage,
+            parse_cycling_watch_trigger_life_gain,
             parse_has_may_play_or_cast, parse_has_damage_equal_scaling,
             parse_has_x_damage, parse_has_artifact_pump_equipment,
             parse_has_artifact_or_enchantment_scaling,
@@ -1846,6 +1860,9 @@ class CardDatabase:
         template.has_pithing_needle_lock = parse_has_pithing_needle_lock(oracle)
         template.has_another_creature_enters_trigger = parse_has_another_creature_enters_trigger(oracle)
         template.has_another_creature_enters_lifegain = parse_has_another_creature_enters_lifegain(oracle)
+        template.has_cycling_watch_trigger = parse_has_cycling_watch_trigger(oracle)
+        template.cycling_watch_trigger_damage = parse_cycling_watch_trigger_damage(oracle)
+        template.cycling_watch_trigger_life_gain = parse_cycling_watch_trigger_life_gain(oracle)
         template.has_may_play_or_cast = parse_has_may_play_or_cast(oracle)
         template.has_damage_equal_scaling = parse_has_damage_equal_scaling(oracle)
         template.has_x_damage = parse_has_x_damage(oracle)

@@ -56,6 +56,7 @@ class Keyword(Enum):
     STORM = "storm"
     ANNIHILATOR = "annihilator"
     IMPROVISE = "improvise"
+    MODULAR = "modular"
 
 
 class AbilityType(Enum):
@@ -472,6 +473,16 @@ class CardTemplate:
     # Another-creature-enters lifegain -- conjunction: another creature+enters+gain+life.
     # Populated by oracle_parser.parse_has_another_creature_enters_lifegain.
     has_another_creature_enters_lifegain: bool = False
+    # Cycling-watch trigger -- True for 'whenever you cycle (another card)'
+    # battlefield permanents.  Populated by
+    # oracle_parser.parse_has_cycling_watch_trigger.
+    has_cycling_watch_trigger: bool = False
+    # Damage dealt to each opponent when cycling-watch trigger fires.
+    # Populated by oracle_parser.parse_cycling_watch_trigger_damage.
+    cycling_watch_trigger_damage: int = 0
+    # Life gained by controller when cycling-watch trigger fires.
+    # Populated by oracle_parser.parse_cycling_watch_trigger_life_gain.
+    cycling_watch_trigger_life_gain: int = 0
     # May-play-or-cast -- True for exile-and-play effects.
     # Populated by oracle_parser.parse_has_may_play_or_cast.
     has_may_play_or_cast: bool = False
@@ -512,6 +523,12 @@ class CardTemplate:
     # (Kappa Cannoneer/artifact). None when absent.
     # Populated by oracle_parser.parse_enters_type_counter.
     enters_type_counter: Optional[dict] = None
+    # Modular keyword (CR 702.43) -- N from "Modular N" in oracle text.
+    # 0 when absent or when N cannot be parsed (e.g. Modular—Sunburst).
+    # ETB: card enters with this many +1/+1 counters.
+    # DIES: its +1/+1 counters may be placed on a target artifact creature.
+    # Populated by card_database.py oracle-derived properties section.
+    modular_n: int = 0
 
     def __post_init__(self) -> None:
         # Derive fields from oracle text for templates not loaded through
@@ -643,6 +660,14 @@ class CardTemplate:
                         _pat = r'(?:^|\n)' + _re.escape(_ks.lower()) + r'(?:\s|$|,|\n)'
                         if _re.search(_pat, _tl):
                             self.keywords.add(_ke)
+            # Derive modular_n for synthetic templates constructed with oracle_text.
+            # DB-loaded templates have modular_n set explicitly by card_database.py;
+            # this fires only when the field is still at its zero default.
+            if self.modular_n == 0 and Keyword.MODULAR in self.keywords:
+                _m = _re.search(r'(?:^|\n)modular\s+(\d+)',
+                                self.oracle_text.lower())
+                if _m:
+                    self.modular_n = int(_m.group(1))
 
     @property
     def is_creature(self) -> bool:

@@ -274,10 +274,37 @@ class PermanentEffects:
                 except (ValueError, AttributeError):
                     pass
 
+        # Modular (CR 702.43): capture +1/+1 counters BEFORE zone_mgr.move_card
+        # clears them via _cleanup_leaving_battlefield.  The triggered ability
+        # fires after the creature is in the graveyard, but the counter count
+        # must be read while the creature is still on the battlefield.
+        # Keyed on Keyword.MODULAR — no card name involved.
+        _modular_counters = 0
+        if Keyword.MODULAR in creature.keywords and creature.plus_counters > 0:
+            _modular_counters = creature.plus_counters
+
         # Route zone mutation through the funnel: single owner of battlefield→graveyard
         # list mutation, zone attribute, and leaving-battlefield cleanup.
         game.zone_mgr.move_card(game, creature, "battlefield", "graveyard")
         game.players[controller].creatures_died_this_turn += 1
+
+        # Modular death trigger: transfer captured counters to best artifact creature.
+        # The AI always takes the optional transfer when a valid target exists
+        # (unconditionally beneficial). Runs after zone move so the dead creature
+        # is no longer a valid target for itself.
+        if _modular_counters > 0:
+            _artifact_creatures = [
+                c for c in game.players[controller].battlefield
+                if CardType.CREATURE in c.effective_card_types
+                and CardType.ARTIFACT in c.effective_card_types
+            ]
+            if _artifact_creatures:
+                _target = max(_artifact_creatures, key=lambda c: c.power)
+                _target.plus_counters += _modular_counters
+                game.log.append(
+                    f"T{game.display_turn}: {creature.name} modular — "
+                    f"move {_modular_counters} counter(s) to {_target.name}"
+                )
 
         # Dies triggers: a registered EffectTiming.DIES handler owns
         # this card's dies behavior (mirrors the ETB execute-then-

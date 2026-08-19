@@ -109,6 +109,12 @@ class CyclingManager:
                     remaining -= 1
         # Move card from hand to graveyard
         game.zone_mgr.move_card(game, card, "hand", "graveyard", cause="cycling")
+        # Fire "whenever you cycle (another card)" triggers from
+        # battlefield permanents controlled by the cycling player.
+        # CR 702.28c family: Drannith Stinger, Drannith Healer,
+        # Flourishing Fox, Curator of Mysteries, and any future card
+        # with has_cycling_watch_trigger=True on its template.
+        CyclingManager._fire_cycling_watch_triggers(game, player_idx)
         # Landcycling / typecycling tutors; plain cycling draws.
         variant = card.template.cycling_variant_data
         cost_desc = f"pay {cost['life']} life" if cost["life"] > 0 else f"pay {cost['mana']} mana"
@@ -173,6 +179,52 @@ class CyclingManager:
                                     cause="cycling tutor")
             return lib_card
         return None
+
+    @staticmethod
+    def _fire_cycling_watch_triggers(game: "GameState", controller: int) -> None:
+        """Resolve 'whenever you cycle (another card)' effects from
+        battlefield permanents controlled by ``controller``.
+
+        Scans the controller's battlefield for any permanent whose
+        template has ``has_cycling_watch_trigger=True`` and resolves
+        the supported effect subtypes:
+
+        - damage subtype: ``cycling_watch_trigger_damage > 0``
+          → deal that much damage to each opponent (CR 702.28c pattern:
+          "this creature deals N damage to each opponent").
+        - life-gain subtype: ``cycling_watch_trigger_life_gain > 0``
+          → controller gains that many life points (pattern:
+          "you gain N life").
+
+        Additional subtypes (scry, +1/+1 counters, tokens) are not
+        yet implemented; they are silent no-ops until a test and
+        implementation are added for each mechanic.
+        """
+        from .damage import deal_damage  # local import avoids circular dep
+
+        for watcher in game.players[controller].battlefield[:]:
+            tmpl = watcher.template
+            if not tmpl.has_cycling_watch_trigger:
+                continue
+            # Damage subtype — deal to each opponent.
+            if tmpl.cycling_watch_trigger_damage > 0:
+                dmg = tmpl.cycling_watch_trigger_damage
+                opp_idx = 1 - controller
+                deal_damage(watcher, game.players[opp_idx], dmg)
+                game.log.append(
+                    f"T{game.display_turn} P{controller+1}: "
+                    f"{watcher.name} cycle-watch trigger — "
+                    f"deals {dmg} to P{opp_idx+1}"
+                )
+            # Life-gain subtype — controller gains life.
+            if tmpl.cycling_watch_trigger_life_gain > 0:
+                gain = tmpl.cycling_watch_trigger_life_gain
+                game.gain_life(controller, gain, watcher.name)
+                game.log.append(
+                    f"T{game.display_turn} P{controller+1}: "
+                    f"{watcher.name} cycle-watch trigger — "
+                    f"P{controller+1} gains {gain} life"
+                )
 
     ALL_COLORS = ["W", "U", "B", "R", "G"]
 
