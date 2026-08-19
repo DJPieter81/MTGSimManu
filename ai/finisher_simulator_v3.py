@@ -192,14 +192,11 @@ def _has_storm_keyword_v3(card: "CardInstance") -> bool:
 def _has_token_finisher_oracle_v3(card: "CardInstance") -> bool:
     """Mirror of ``ai.finisher_simulator._has_token_finisher_oracle``.
 
-    Detection: oracle text contains 'create … tokens' + 'for each'.
-    Matches the predicate at ``ai/combo_calc.py:514-516`` and at
-    ``ai/finisher_simulator.py:424``.
+    Detection: reads the typed field parsed once at DB load
+    (oracle_parser.parse_has_scaling_token_finisher).  Matches the
+    predicate at ``ai/combo_calc.py`` and ``ai/finisher_simulator.py``.
     """
-    oracle = (getattr(card.template, "oracle_text", "") or "").lower()
-    return (
-        "create" in oracle and "tokens" in oracle and "for each" in oracle
-    )
+    return getattr(card.template, "has_scaling_token_finisher", False)
 
 
 def _is_cycling_payoff_v3(card: "CardInstance") -> bool:
@@ -208,12 +205,7 @@ def _is_cycling_payoff_v3(card: "CardInstance") -> bool:
     Oracle pattern: 'all creature cards' + 'graveyard' + 'to the
     battlefield'.  Living-End-style.
     """
-    oracle = (getattr(card.template, "oracle_text", "") or "").lower()
-    return (
-        "all creature cards" in oracle
-        and "graveyard" in oracle
-        and "to the battlefield" in oracle
-    )
+    return getattr(card.template, "has_symmetric_reanimation", False)
 
 
 def _is_cascade_payoff_v3(card: "CardInstance") -> bool:
@@ -759,16 +751,11 @@ def _closer_in_hand_probability(hand: list["CardInstance"]) -> float:
             continue
         if Kw.STORM in getattr(tmpl, 'keywords', set()):
             return 1.0
-        oracle = (getattr(tmpl, 'oracle_text', '') or '').lower()
-        # Token-spawning finisher (Empty-the-Warrens pattern).
-        if 'create' in oracle and 'tokens' in oracle and 'for each' in oracle:
+        # Token-spawning finisher (Empty-the-Warrens pattern) — typed field.
+        if getattr(tmpl, 'has_scaling_token_finisher', False):
             return 1.0
         # Cycling payoff (Living End pattern).
-        if (
-            'all creature cards' in oracle
-            and 'graveyard' in oracle
-            and 'to the battlefield' in oracle
-        ):
+        if getattr(tmpl, 'has_symmetric_reanimation', False):
             return 1.0
         # Reanimator (Goryo's Vengeance pattern).
         tags = getattr(tmpl, 'tags', set())

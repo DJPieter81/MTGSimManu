@@ -101,6 +101,7 @@ from ai.scoring_constants import (
     LOW_LIFE_BURN_DEFAULT,
     PUMP_DISCARD_LAND_FLOOR,
     PUMP_DISCARD_SPELL_GLUT,
+    ATTACK_TRIGGER_OC_MAX,
 )
 
 # RC-2 — parse "equipped/enchanted creature gets +X/+Y" bonuses from
@@ -1220,11 +1221,10 @@ class EVPlayer:
             if same_name_on_bf:
                 oracle_lower = (t.oracle_text or '').lower()
                 stacks = (
-                    'for each' in oracle_lower
-                    or 'for every' in oracle_lower
-                    or 'cost {' in oracle_lower         # cost reducers
-                    or 'whenever' in oracle_lower       # triggered
-                    or 'when this' in oracle_lower      # ETB triggers
+                    getattr(t, 'has_scaling_effect', False)  # for each/every
+                    or getattr(t, 'is_cost_reducer', False)  # cost reducers
+                    or getattr(t, 'has_recurring_trigger', False)  # triggered
+                    or getattr(t, 'has_self_trigger', False)  # ETB/attack/die triggers
                     or 'when ' + t.name.lower() + ' enters' in oracle_lower
                     or '{t}:' in oracle_lower           # tap abilities
                 )
@@ -1284,8 +1284,7 @@ class EVPlayer:
         # Engine safely bails (Ephemerate returns early), but AI should never
         # score a mana-wasting fizzle as positive EV. Detect by oracle pattern
         # "target creature you control" on an instant/sorcery.
-        oracle_lower_full = (t.oracle_text or '').lower()
-        if ('blink' in tags or 'exile target creature you control' in oracle_lower_full) \
+        if ('blink' in tags or getattr(t, 'has_exile_own_creature', False)) \
                 and (t.is_instant or t.is_sorcery) \
                 and len(me.creatures) == 0:
             return min(ev, BLINK_FIZZLE_FLOOR)
@@ -1500,8 +1499,7 @@ class EVPlayer:
             from ai.stax_ev import stax_lock_ev
             ev += stax_lock_ev(t, me, opp, snap)
 
-        oracle_lower = (t.oracle_text or '').lower()
-        phyrexian_count = oracle_lower.count('/p}')
+        phyrexian_count = getattr(t, 'phyrexian_pip_count', 0)
         if phyrexian_count > 0:
             life_cost = phyrexian_count * 2
             ev -= life_cost / max(1, snap.my_life) * PHYREXIAN_LIFE_PENALTY_SCALE
@@ -2439,7 +2437,7 @@ class EVPlayer:
         # Pre-combat pump (Psychic Frog etc.)
         for creature in valid:
             oracle = (creature.template.oracle_text or "").lower()
-            if "discard a card" in oracle and "+1/+1" in oracle:
+            if getattr(creature.template, 'has_discard_effect', False) and "+1/+1" in oracle:
                 prof = self.profile
                 # Smart discard: protect removal/counters, discard excess lands/dupes/uncastable
                 hand_lands = [c for c in me.hand if c.template.is_land]
@@ -2559,9 +2557,23 @@ class EVPlayer:
                     Keyword.FLYING in b.keywords or Keyword.REACH in b.keywords
                     for b in opp_blockers if not b.tapped)
             )
-            if deals_damage and (not can_die_to_block or is_evasive):
+            # Phase 3 veto retirement: evasion removes combat risk regardless
+            # of power.  A creature that is genuinely unblockable (is_evasive)
+            # will not die to any legal block — its "free" status comes from
+            # evasion, not from the damage it deals.  Removing the deals_damage
+            # gate allows 0-power flyers to be scored by the planner rather
+            # than categorically excluded.
+            #
+            # Non-evasive creatures still require deals_damage to join the free
+            # pool: without damage they contribute nothing to the clock, and a
+            # tap is a real cost if the creature has blocking/ability value.
+            if is_evasive or (deals_damage and not can_die_to_block):
                 free_attackers.append(c)
+            elif deals_damage:
+                non_free.append(c)
             else:
+                # 0-power, 0-trigger, non-evasive, not safe from blocks:
+                # attack EV ≈ 0, leave out of the pool entirely.
                 non_free.append(c)
 
         # If ALL our creatures are free attackers, just send them all
@@ -2668,11 +2680,27 @@ class EVPlayer:
         # Fallback: always send free attackers + creatures that can trade favorably
         safe = list(free_attackers)
         for c in non_free:
-            has_combat_trigger = c.template.has_combat_damage_player_trigger
-            if has_combat_trigger and (c.power or 0) > 0:
-                # e.g. Ragavan: attack if our power kills their best blocker (even trade gains trigger)
+            has_dmg_trigger = c.template.has_combat_damage_player_trigger
+            has_atk_trigger = getattr(c.template, 'has_attack_trigger', False)
+            if has_dmg_trigger and (c.power or 0) > 0:
+                # e.g. Ragavan: attack if our power kills their best blocker
+                # (even trade gains the on-hit trigger).
                 killable = [b for b in opp_blockers if (c.power or 0) >= (b.toughness or 0)]
                 if killable:
+                    safe.append(c)
+            elif has_atk_trigger and not has_dmg_trigger:
+                # On-attack trigger fires on declaration — value is delivered
+                # before blockers are chosen, so even a creature that dies in
+                # combat still fires.  Use opportunity_cost to gate: only send
+                # the creature if its ongoing board value is below the trigger-
+                # value threshold (ATTACK_TRIGGER_OC_MAX).  This replaces the
+                # old "power > 0 AND has_combat_damage_player_trigger" veto
+                # which categorically excluded every 0-power trigger source.
+                from ai.ev_evaluator import snapshot_from_game
+                from ai.clock import opportunity_cost
+                _snap = snapshot_from_game(game, self.player_idx)
+                _oc = opportunity_cost(c, me, _snap)
+                if _oc < ATTACK_TRIGGER_OC_MAX:
                     safe.append(c)
 
         # If racing, desperate, or vs combo, send everything even if risky.
@@ -3352,11 +3380,10 @@ class EVPlayer:
         # For creature-only removal: pick best creature
         # For "nonland permanent" removal: consider artifacts/enchantments too
         if 'removal' in tags and 'board_wipe' not in tags:
-            oracle = (spell.template.oracle_text or '').lower()
-            can_hit_noncreature = ('nonland permanent' in oracle
-                                   or 'nonland' in oracle
-                                   or 'permanent' in oracle
-                                   or 'artifact' in oracle)
+            t = spell.template
+            can_hit_noncreature = (t.can_destroy_nonland_permanent
+                                   or t.can_exile_permanent
+                                   or t.can_destroy_artifact)
 
             if can_hit_noncreature:
                 # Evaluate all nonland permanents via marginal threat
@@ -3413,8 +3440,7 @@ class EVPlayer:
         # "exile target creature you control ... return" is a self-blink
         # (same exclusion the card DB applies to the 'removal' tag) —
         # they fall through to the blink branch below.
-        oracle = (spell.template.oracle_text or '').lower()
-        if 'exile target' in oracle and 'blink' not in tags:
+        if spell.template.can_exile_permanent and 'blink' not in tags:
             from engine.cards import CardType
             nonland = [c for c in opp.battlefield if not c.template.is_land]
             if nonland:
@@ -3493,12 +3519,9 @@ class EVPlayer:
         # Removal that ALSO destroys the equipment artifact (Abrupt Decay,
         # Prismatic Ending at X≥2, Nature's Claim, etc.) doubles the value
         # of hitting a carrier — the artifact is gone, not just dropped.
-        oracle = ((card.template.oracle_text if card.template else '') or '').lower()
-        also_destroys_artifact = (
-            'destroy target artifact' in oracle
-            or 'destroy target nonland permanent' in oracle
-            or 'destroy target permanent' in oracle
-        )
+        ct = card.template
+        also_destroys_artifact = bool(ct and (ct.can_destroy_artifact
+                                               or ct.can_destroy_nonland_permanent))
 
         def _rank(c) -> float:
             # Use `permanent_threat` (marginal-contribution via
@@ -3736,12 +3759,11 @@ class EVPlayer:
             if creature_threat_value(c, snap) >= floor:
                 return True
 
-        oracle = (spell.template.oracle_text or '').lower()
-        hits_noncreature = ('target artifact' in oracle
-                            or 'target enchantment' in oracle
-                            or 'target nonland permanent' in oracle
-                            or 'target noncreature' in oracle
-                            or 'target permanent' in oracle)
+        t = spell.template
+        hits_noncreature = (t.can_destroy_nonland_permanent
+                            or t.can_exile_permanent
+                            or t.can_destroy_artifact
+                            or t.can_destroy_enchantment)
         if hits_noncreature:
             from ai.permanent_threat import permanent_threat
             for perm in opp.battlefield:
@@ -3770,15 +3792,14 @@ class EVPlayer:
             return False
 
         # Modal spells with draw mode don't require targets (can choose draw)
-        oracle = (t.oracle_text or '').lower()
         if 'counterspell' in tags:
-            if 'draw' in oracle and ('choose' in oracle or '•' in oracle):
+            if t.has_draw_effect and ('choose' in (t.oracle_text or '').lower() or '•' in (t.oracle_text or '')):
                 return False  # modal spell with draw mode (Archmage's Charm)
             return True
         if 'removal' in tags and 'board_wipe' not in tags:
             return True
         # Exile effects that target opponent's permanents (March of Otherworldly Light, etc.)
-        if 'exile target' in oracle and ('artifact' in oracle or 'creature' in oracle or 'permanent' in oracle):
+        if t.can_exile_permanent:
             return True
         if 'blink' in tags:
             return True
@@ -3896,7 +3917,7 @@ class EVPlayer:
         m = re.search(r'\+(\d+)/[+\-]\d+ for each (artifact|enchantment)', oracle)
         if m:
             per_bonus = int(m.group(1))
-            if 'artifact and/or enchantment' in oracle or 'artifact or enchantment' in oracle:
+            if getattr(equip.template, 'has_artifact_or_enchantment_scaling', False):
                 count = sum(1 for b in player.battlefield
                             if CardType.ARTIFACT in b.template.card_types
                             or CardType.ENCHANTMENT in b.template.card_types)

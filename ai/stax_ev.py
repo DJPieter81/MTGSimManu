@@ -100,43 +100,10 @@ def classify_stax(template: 'CardTemplate') -> Optional[str]:
     """Return stax family name, or None if template isn't a stax permanent.
 
     Returns one of: 'chalice', 'blood_moon', 'canonist', 'torpor_orb', None.
+    Detection reads the typed field CardTemplate.stax_class parsed once at
+    DB load (oracle_parser.parse_stax_class). No runtime oracle scan.
     """
-    oracle = (template.oracle_text or '').lower()
-
-    # Chalice family: triggered ability counters spells with mana value
-    # equal to the permanent's charge counters.
-    # Real oracle: "Whenever a player casts a spell with mana value equal
-    # to the number of charge counters on this artifact, counter that spell."
-    if ('charge counter' in oracle
-            and 'mana value' in oracle
-            and ('counter that spell' in oracle or 'counter it' in oracle)):
-        return 'chalice'
-
-    # Blood Moon family: nonbasic lands become basics of one type.
-    # Oracle: "Nonbasic lands are Mountains." (or Islands, Plains, etc.)
-    if 'nonbasic lands are' in oracle:
-        for basic in ('mountain', 'island', 'plains', 'swamp', 'forest'):
-            if basic in oracle:
-                return 'blood_moon'
-
-    # Canonist / Rule of Law family: hard limit on spells per turn.
-    # Canonist real oracle: "Each player who has cast a nonartifact spell
-    # this turn can't cast additional nonartifact spells."
-    # Rule of Law real oracle: "Each player can't cast more than one
-    # spell each turn."
-    # Both are one-spell-per-turn effects; unify via two patterns.
-    if (("can't cast more than one" in oracle and 'each turn' in oracle)
-            or ("can't cast additional" in oracle)):
-        return 'canonist'
-
-    # Torpor Orb / Cursed Totem family: ETB triggers don't trigger.
-    # Oracle: "Creatures entering the battlefield don't cause abilities to trigger."
-    if ('entering' in oracle
-            and 'abilities' in oracle
-            and ("don't cause" in oracle or "don't trigger" in oracle)):
-        return 'torpor_orb'
-
-    return None
+    return getattr(template, 'stax_class', None)
 
 
 # ──────────────────────────────────────────────────────────────────────
@@ -205,13 +172,8 @@ def _blood_moon_lock_ev(template, me, opp, snap) -> float:
     """
     from ai.clock import card_clock_impact
 
-    oracle = (template.oracle_text or '').lower()
-    forced_basic = None
-    for basic in ('mountain', 'island', 'plains', 'swamp', 'forest'):
-        # "are Mountains" / "are Islands" / etc.
-        if f'are {basic}s' in oracle or f'are {basic}.' in oracle:
-            forced_basic = basic
-            break
+    # Typed field parsed once at DB load (oracle_parser.parse_stax_forced_basic).
+    forced_basic = getattr(template, 'stax_forced_basic', None)
     if forced_basic is None:
         return 0.0
 

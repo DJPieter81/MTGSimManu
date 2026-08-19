@@ -770,9 +770,11 @@ def audit_deck(deck_name: str, n_games: int = 30, opponents: List[str] = None,
                     attackers = line.split('Attack with ')[1] if 'Attack with ' in line else ''
                     creatures_attacking = len(attackers.split(', ')) if attackers else 0
 
-                # ETB damage: "ETB: deal N damage" or "ETB: draw N cards"
+                # ETB draw: the generic draw-N ETB resolver logs
+                # "<card> ETB: draw N (names)" (no "cards" word), while
+                # older handlers logged "draw N cards" — match both.
                 if 'P1:' in line and 'ETB' in line and 'draw' in line:
-                    m5 = re.search(r'draw (\d+) card', line)
+                    m5 = re.search(r'draw (\d+)', line)
                     if m5:
                         cards_drawn_total += int(m5.group(1))
 

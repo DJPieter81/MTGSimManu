@@ -69,15 +69,12 @@ def _classify_anti_artifact_priority(template) -> int:
     )
     if any(p in oracle for p in destruction_phrases):
         return 10
-    # "destroy target artifact, enchantment, or nonbasic" — Boseiju
-    # channel idiom (and similar mass-removal-with-artifact-clause).
-    if "destroy target artifact," in oracle:
+    # "destroy target artifact," — Boseiju channel and similar;
+    # "and/or enchantment" idiom — Force of Vigor — both covered by
+    # batch6 typed fields (can_destroy_artifact, can_destroy_enchantment).
+    if template.can_destroy_artifact:
         return 10
-    # "destroy target ... artifact ..." (Force of Vigor: "destroy up
-    # to two target artifacts and/or enchantments")
-    if "destroy" in oracle and "artifact" in oracle and (
-        "and/or enchantment" in oracle or "or enchantment" in oracle
-    ):
+    if template.can_destroy_enchantment:
         return 10
 
     # 9 — Stax / cost-tax. The cardinal pattern is "activated
@@ -87,18 +84,15 @@ def _classify_anti_artifact_priority(template) -> int:
     # match the leading clause loosely. Karn variant restricts to
     # "your opponents control".  Damping Sphere uses the
     # "tapped for two or more mana, it produces {c} instead" idiom.
-    if "activated abilities of artifacts" in oracle and "can't be activated" in oracle:
-        return 9
-    if "tapped for two or more mana, it produces {c} instead" in oracle:
+    if getattr(template, 'has_stax_ability', False):
         return 9
 
     # 5 — Single-target activated-ability lock. The Pithing-Needle
     # / Phyrexian-Revoker idiom: name a card, lock its activated
     # abilities. Useful situationally (Mox Opal lock) but doesn't
     # pressure the artifact base.
-    if "choose a card name" in oracle or "choose a nonland card name" in oracle:
-        if "activated abilities of sources with the chosen name" in oracle:
-            return 5
+    if getattr(template, 'has_pithing_needle_lock', False):
+        return 5
 
     return 0
 

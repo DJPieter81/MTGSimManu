@@ -185,8 +185,7 @@ def _is_discard_outlet(card: "CardInstance") -> bool:
     tags = getattr(card.template, 'tags', set())
     if 'discard' in tags or 'looter' in tags:
         return True
-    oracle = (getattr(card.template, 'oracle_text', '') or '').lower()
-    return 'discard a card' in oracle
+    return getattr(card.template, 'has_discard_effect', False)
 
 
 def _is_cascade_payoff(card: "CardInstance") -> bool:
@@ -204,17 +203,12 @@ def _is_cascade_payoff(card: "CardInstance") -> bool:
 def _is_cycling_payoff(card: "CardInstance") -> bool:
     """True when the card pays off "cycle to fill graveyard".
 
-    Living End is the canonical example: oracle returns "all creature
-    cards from all graveyards to the battlefield" — the GY-fill
-    arithmetic is what the cycling chain enables.  Detection: oracle
-    phrase "all creature cards" + "graveyards" + "to the battlefield".
+    Living End is the canonical example: its template field
+    `has_symmetric_reanimation` is True for cards that return all creature
+    cards from all graveyards to the battlefield — the GY-fill arithmetic
+    is what the cycling chain enables.
     """
-    oracle = (getattr(card.template, 'oracle_text', '') or '').lower()
-    return (
-        'all creature cards' in oracle
-        and 'graveyard' in oracle
-        and 'to the battlefield' in oracle
-    )
+    return bool(getattr(card.template, 'has_symmetric_reanimation', False))
 
 
 def _payoff_names_from_hand(hand: List["CardInstance"]) -> set:
@@ -248,8 +242,7 @@ def _tutor_has_payoff(
             continue
         if _has_storm_keyword(c):
             return True
-        oracle = (tmpl.oracle_text or '').lower()
-        if 'create' in oracle and 'tokens' in oracle and 'for each' in oracle:
+        if getattr(tmpl, 'has_scaling_token_finisher', False):
             return True
     return False
 
@@ -468,14 +461,13 @@ def _project_storm(
 def _has_token_finisher_oracle(template) -> bool:
     """Token-spawning finisher pattern (Empty-the-Warrens).
 
-    Detection: oracle text contains 'create … tokens' + 'for each'.
-    Mirrors the predicate at `combo_calc.py:514-516` so the
-    simulator agrees with the live combo modifier on what counts
-    as a finisher.  No card names.
+    Detection: reads the typed field parsed once at DB load
+    (oracle_parser.parse_has_scaling_token_finisher).  Mirrors
+    the predicate at `combo_calc.py` so the simulator agrees with
+    the live combo modifier on what counts as a finisher.  No
+    card names.
     """
-    oracle = (getattr(template, 'oracle_text', '') or '').lower()
-    return ('create' in oracle and 'tokens' in oracle
-            and 'for each' in oracle)
+    return getattr(template, 'has_scaling_token_finisher', False)
 
 
 def _scan_zone_for_storm_closer(zone: List["CardInstance"]):

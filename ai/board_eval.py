@@ -241,7 +241,6 @@ def _eval_evoke(game, me, a: BoardAssessment, ctx: dict,
 
     cmc = card.template.cmc or 0
     tags = getattr(card.template, 'tags', set())
-    oracle = (card.template.oracle_text or "").lower()
 
     opp_idx = 1 - player_idx
     opp = game.players[opp_idx]
@@ -283,7 +282,7 @@ def _eval_evoke(game, me, a: BoardAssessment, ctx: dict,
 
     # Battlefield-targeting ETBs (e.g. "target creature" — no "spell"):
     # if the opponent has no creatures, the ETB fizzles.
-    elif 'target creature' in oracle and 'removal' not in tags:
+    elif getattr(card.template, 'requires_creature_target', False) and 'removal' not in tags:
         if not opp.creatures:
             return -BOARD_EVAL_HARD_VETO  # No valid targets, evoke would waste a card
     
@@ -294,7 +293,7 @@ def _eval_evoke(game, me, a: BoardAssessment, ctx: dict,
         # Removal ETBs that heal the opponent (oracle: "gains life equal to its power")
         # are a poor trade when the target is small: 2 cards spent to exile a 1/1
         # while healing the opponent. Only worthwhile against meaningful threats.
-        heals_opponent = "gains life" in oracle and "power" in oracle
+        heals_opponent = getattr(card.template, 'has_lifegain_equal_power', False)
         if heals_opponent and opp.creatures:
             best_target = max(opp.creatures, key=lambda c: (c.power or 0, c.template.cmc))
             target_power = best_target.power or best_target.template.power or 0

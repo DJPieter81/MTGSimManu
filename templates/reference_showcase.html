@@ -203,7 +203,7 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
 
 /* Deck cloud */
 .deck-cloud{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:2rem 0}
-.deck-chip{font-family:var(--font-mono);font-size:11px;padding:6px 14px;border-radius:100px;border:1px solid rgba(0,0,0,.08);background:var(--card);color:var(--ink2);cursor:default;transition:all .25s}
+.deck-chip{font-family:var(--font-mono);font-size:11px;padding:6px 14px;border-radius:100px;border:1px solid rgba(0,0,0,.08);background:var(--card);color:var(--ink2);cursor:pointer;transition:all .25s}
 .deck-chip:hover{border-color:var(--gold);color:var(--ink);box-shadow:0 4px 12px rgba(184,148,30,.1);transform:translateY(-2px)}
 .deck-chip .meta{color:var(--gold);font-weight:600;margin-left:4px}
 .replay-grid{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:1rem 0}
@@ -235,7 +235,7 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
 <div class="hero">
   <div class="hero-eyebrow">Pure Python · Zero Dependencies · Full Bo3</div>
   <h1>The <em>Modern</em> metagame,<br>simulated.</h1>
-  <p class="hero-sub">21,795 cards. 19 decks. 2,052 Bo3 matches across 171 pairings. An EV-based AI brain that mulligans, sequences spells, predicts blocks, and tracks what your opponent is holding — all in 0.68 seconds per match.</p>
+  <p class="hero-sub">21,795 cards. 19 decks. 3,420 Bo3 matches across 171 pairings. An EV-based AI brain that mulligans, sequences spells, predicts blocks, and tracks what your opponent is holding — all in 0.68 seconds per match.</p>
   <div class="counter-row">
     <div class="counter"><div class="num" data-target="21795">0</div><div class="unit">Cards in DB</div></div>
     <div class="counter"><div class="num" data-target="19">0</div><div class="unit">Modern Decks</div></div>
@@ -364,25 +364,25 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
     <div class="sec-desc" style="margin:0 auto 2rem">Decklists from Modern Challenge and League results. July 2026 meta shares (post May-18 B&R: Phlage and Lotus Field banned) — includes Instant Reanimator and Boros Ponza.</div>
   </div>
   <div class="deck-cloud reveal">
-    <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_boros_energy.html" class="deck-chip t1" style="text-decoration:none;color:inherit">Boros Energy<span class="meta">16%</span></a>
-    <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_domain_zoo.html" class="deck-chip t1" style="text-decoration:none;color:inherit">Domain Zoo<span class="meta">3%</span></a>
-    <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_ruby_storm.html" class="deck-chip t1" style="text-decoration:none;color:inherit">Ruby Storm<span class="meta">4%</span></a>
-    <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_dimir_midrange.html" class="deck-chip t1" style="text-decoration:none;color:inherit">Dimir Midrange<span class="meta">2%</span></a>
-    <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_izzet_prowess.html" class="deck-chip t1" style="text-decoration:none;color:inherit">Izzet Prowess<span class="meta">4%</span></a>
-    <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_4c_omnath.html" class="deck-chip t1" style="text-decoration:none;color:inherit">4c Omnath</a>
-    <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_azorius_control_wst_v2.html" class="deck-chip t2" style="text-decoration:none;color:inherit">Azorius Control (WST v2)</a>
-    <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_45c_control.html" class="deck-chip t2" style="text-decoration:none;color:inherit">4/5c Control<span class="meta">3%</span></a>
-    <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_living_end.html" class="deck-chip t2" style="text-decoration:none;color:inherit">Living End<span class="meta">3%</span></a>
-    <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_azorius_control_wst.html" class="deck-chip t2" style="text-decoration:none;color:inherit">Azorius Control (WST)</a>
-    <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_boros_ponza.html" class="deck-chip " style="text-decoration:none;color:inherit">Boros Ponza<span class="meta">3%</span></a>
-    <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_eldrazi_tron.html" class="deck-chip " style="text-decoration:none;color:inherit">Eldrazi Tron<span class="meta">5%</span></a>
-    <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_jeskai_blink.html" class="deck-chip " style="text-decoration:none;color:inherit">Jeskai Blink<span class="meta">4%</span></a>
-    <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_pinnacle_affinity.html" class="deck-chip " style="text-decoration:none;color:inherit">Pinnacle Affinity</a>
-    <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_instant_reanimator.html" class="deck-chip " style="text-decoration:none;color:inherit">Instant Reanimator<span class="meta">5%</span></a>
-    <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_goryos_vengeance.html" class="deck-chip " style="text-decoration:none;color:inherit">Goryo's Vengeance</a>
-    <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_azorius_control.html" class="deck-chip " style="text-decoration:none;color:inherit">Azorius Control<span class="meta">2%</span></a>
-    <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_affinity.html" class="deck-chip " style="text-decoration:none;color:inherit">Affinity<span class="meta">10%</span></a>
-    <a href="https://djpieter81.github.io/MTGSimManu/guides/guide_amulet_titan.html" class="deck-chip " style="text-decoration:none;color:inherit">Amulet Titan<span class="meta">5%</span></a>
+    <a target="_blank" rel="noopener" href="https://djpieter81.github.io/MTGSimManu/guides/guide_boros_energy.html" class="deck-chip t1" style="text-decoration:none;color:inherit">Boros Energy<span class="meta">16%</span></a>
+    <a target="_blank" rel="noopener" href="https://djpieter81.github.io/MTGSimManu/guides/guide_domain_zoo.html" class="deck-chip t1" style="text-decoration:none;color:inherit">Domain Zoo<span class="meta">3%</span></a>
+    <a target="_blank" rel="noopener" href="https://djpieter81.github.io/MTGSimManu/guides/guide_ruby_storm.html" class="deck-chip t1" style="text-decoration:none;color:inherit">Ruby Storm<span class="meta">4%</span></a>
+    <a target="_blank" rel="noopener" href="https://djpieter81.github.io/MTGSimManu/guides/guide_dimir_midrange.html" class="deck-chip t1" style="text-decoration:none;color:inherit">Dimir Midrange<span class="meta">2%</span></a>
+    <a target="_blank" rel="noopener" href="https://djpieter81.github.io/MTGSimManu/guides/guide_izzet_prowess.html" class="deck-chip t1" style="text-decoration:none;color:inherit">Izzet Prowess<span class="meta">4%</span></a>
+    <a target="_blank" rel="noopener" href="https://djpieter81.github.io/MTGSimManu/guides/guide_4c_omnath.html" class="deck-chip t1" style="text-decoration:none;color:inherit">4c Omnath</a>
+    <a target="_blank" rel="noopener" href="https://djpieter81.github.io/MTGSimManu/guides/guide_azorius_control_wst_v2.html" class="deck-chip t2" style="text-decoration:none;color:inherit">Azorius Control (WST v2)</a>
+    <a target="_blank" rel="noopener" href="https://djpieter81.github.io/MTGSimManu/guides/guide_45c_control.html" class="deck-chip t2" style="text-decoration:none;color:inherit">4/5c Control<span class="meta">3%</span></a>
+    <a target="_blank" rel="noopener" href="https://djpieter81.github.io/MTGSimManu/guides/guide_living_end.html" class="deck-chip t2" style="text-decoration:none;color:inherit">Living End<span class="meta">3%</span></a>
+    <a target="_blank" rel="noopener" href="https://djpieter81.github.io/MTGSimManu/guides/guide_azorius_control_wst.html" class="deck-chip t2" style="text-decoration:none;color:inherit">Azorius Control (WST)</a>
+    <a target="_blank" rel="noopener" href="https://djpieter81.github.io/MTGSimManu/guides/guide_boros_ponza.html" class="deck-chip " style="text-decoration:none;color:inherit">Boros Ponza<span class="meta">3%</span></a>
+    <a target="_blank" rel="noopener" href="https://djpieter81.github.io/MTGSimManu/guides/guide_eldrazi_tron.html" class="deck-chip " style="text-decoration:none;color:inherit">Eldrazi Tron<span class="meta">5%</span></a>
+    <a target="_blank" rel="noopener" href="https://djpieter81.github.io/MTGSimManu/guides/guide_jeskai_blink.html" class="deck-chip " style="text-decoration:none;color:inherit">Jeskai Blink<span class="meta">4%</span></a>
+    <a target="_blank" rel="noopener" href="https://djpieter81.github.io/MTGSimManu/guides/guide_pinnacle_affinity.html" class="deck-chip " style="text-decoration:none;color:inherit">Pinnacle Affinity</a>
+    <a target="_blank" rel="noopener" href="https://djpieter81.github.io/MTGSimManu/guides/guide_instant_reanimator.html" class="deck-chip " style="text-decoration:none;color:inherit">Instant Reanimator<span class="meta">5%</span></a>
+    <a target="_blank" rel="noopener" href="https://djpieter81.github.io/MTGSimManu/guides/guide_goryos_vengeance.html" class="deck-chip " style="text-decoration:none;color:inherit">Goryo's Vengeance</a>
+    <a target="_blank" rel="noopener" href="https://djpieter81.github.io/MTGSimManu/guides/guide_azorius_control.html" class="deck-chip " style="text-decoration:none;color:inherit">Azorius Control<span class="meta">2%</span></a>
+    <a target="_blank" rel="noopener" href="https://djpieter81.github.io/MTGSimManu/guides/guide_affinity.html" class="deck-chip " style="text-decoration:none;color:inherit">Affinity<span class="meta">10%</span></a>
+    <a target="_blank" rel="noopener" href="https://djpieter81.github.io/MTGSimManu/guides/guide_amulet_titan.html" class="deck-chip " style="text-decoration:none;color:inherit">Amulet Titan<span class="meta">5%</span></a>
   </div>
   <div class="reveal" style="display:flex;justify-content:center;gap:16px;margin-top:8px;font-size:11px;color:var(--ink3)">
     <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:50%;background:var(--gold-bg);border:1px solid rgba(184,148,30,.3)"></span> T1 (5%+)</span>
@@ -473,8 +473,8 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
 <section>
   <div class="reveal">
     <div class="sec-label">Performance</div>
-    <div class="sec-title">2,052 matches under the microscope</div>
-    <div class="sec-desc">Every metric traceable to a game log. Every win rate backed by 12 Bo3 matches per pairing (171 pairings).</div>
+    <div class="sec-title">3,420 matches under the microscope</div>
+    <div class="sec-desc">Every metric traceable to a game log. Every win rate backed by 20 Bo3 matches per pairing (171 pairings).</div>
   </div>
   <div class="chart-grid reveal">
     <div class="chart-card">
@@ -484,7 +484,7 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
     </div>
     <div class="chart-card">
       <h4>Game resolution</h4>
-      <div class="chart-sub">How 2,052 simulated Bo3 matches ended</div>
+      <div class="chart-sub">How 3,420 simulated Bo3 matches ended</div>
       <div class="chart-wrap"><canvas id="resChart"></canvas></div>
     </div>
     <div class="chart-card">
@@ -794,9 +794,9 @@ let selectedDeck=null;
 // WR chart labels → full names
 const wrLabels=['Boros','Zoo','Storm','Dimir','Prowess','Omnath','Azoriu','4/5c','LivEnd','WST','Boros ','ETron','Jeskai','P.Affin','Instan','Goryo','AzCtrl','Affinity','Amulet'];
 const wrFull=['Boros Energy','Domain Zoo','Ruby Storm','Dimir Midrange','Izzet Prowess','4c Omnath','Azorius Control (WST v2)','4/5c Control','Living End','Azorius Control (WST)','Boros Ponza','Eldrazi Tron','Jeskai Blink','Pinnacle Affinity','Instant Reanimator',"Goryo's Vengeance",'Azorius Control','Affinity','Amulet Titan'];
-const wrData=[77.8,74.1,76.9,69.4,60.2,62.0,53.2,39.8,47.2,39.8,49.1,49.5,48.6,48.6,42.1,30.6,39.4,23.6,18.1];
-const wrBgDef=['#fdf5e6','#fdf5e6','#fdf5e6','#fdf5e6','#fdf5e6','#fdf5e6','#e6f5ee','#fde8e8','#e6f5ee','#fde8e8','#e6f5ee','#e6f5ee','#e6f5ee','#e6f5ee','#fde8e8','#fde8e8','#fde8e8','#fde8e8','#fde8e8'];
-const wrBrDef=[amber,amber,amber,amber,amber,amber,teal,red,teal,red,teal,teal,teal,teal,red,red,red,red,red];
+const wrData=[74.7,75.6,64.7,74.2,63.1,60.8,57.8,43.6,49.2,46.1,47.2,51.1,35.3,45.0,41.7,33.6,38.9,28.1,19.4];
+const wrBgDef=['#fdf5e6','#fdf5e6','#fdf5e6','#fdf5e6','#fdf5e6','#fdf5e6','#e6f5ee','#fde8e8','#e6f5ee','#e6f5ee','#e6f5ee','#e6f5ee','#fde8e8','#e6f5ee','#fde8e8','#fde8e8','#fde8e8','#fde8e8','#fde8e8'];
+const wrBrDef=[amber,amber,amber,amber,amber,amber,teal,red,teal,teal,teal,teal,red,teal,red,red,red,red,red];
 
 // Per-deck win resolution (damage%, combo%, timeout%) — in this engine, combo decks win via damage spells (Grapeshot, Archon trigger), not separate combo categories.
 const deckRes={'Boros Energy':{"d": 92, "c": 1, "t": 7},'Jeskai Blink':{"d": 85, "c": 0, "t": 15},'Ruby Storm':{"d": 55, "c": 35, "t": 10},'Affinity':{"d": 92, "c": 1, "t": 7},'Eldrazi Tron':{"d": 80, "c": 10, "t": 10},'Amulet Titan':{"d": 55, "c": 35, "t": 10},"Goryo's Vengeance":{"d": 55, "c": 35, "t": 10},'Domain Zoo':{"d": 92, "c": 1, "t": 7},'Living End':{"d": 55, "c": 35, "t": 10},'Izzet Prowess':{"d": 92, "c": 1, "t": 7},'Dimir Midrange':{"d": 85, "c": 0, "t": 15},'4c Omnath':{"d": 85, "c": 0, "t": 15},'4/5c Control':{"d": 65, "c": 0, "t": 35},'Azorius Control (WST)':{"d": 65, "c": 0, "t": 35},'Azorius Control':{"d": 65, "c": 0, "t": 35},'Pinnacle Affinity':{"d": 92, "c": 1, "t": 7},'Azorius Control (WST v2)':{"d": 85, "c": 0, "t": 15},'Instant Reanimator':{"d": 85, "c": 0, "t": 15},'Boros Ponza':{"d": 85, "c": 0, "t": 15}};
@@ -993,16 +993,16 @@ document.querySelectorAll('.deck-chip').forEach(chip=>{
   });
 });
 
-// Validation bars with expected ranges (Aug 2026 matrix, n=12 per pair)
+// Validation bars with expected ranges (Aug 2026 matrix, n=20 per pair)
 const valData=[
-  {name:'Domain Zoo',wr:74,lo:50,hi:65,pass:0,detail:'<strong>Above expected range (50-65%).</strong> Actual 74% — structural advantage or sim artifact.'},
-  {name:'Ruby Storm',wr:77,lo:40,hi:55,pass:0,detail:'<strong>Above expected range (40-55%).</strong> Actual 77% — structural advantage or sim artifact.'},
-  {name:'Dimir Midrange',wr:69,lo:45,hi:60,pass:0,detail:'<strong>Above expected range (45-60%).</strong> Actual 69% — structural advantage or sim artifact.'},
-  {name:'Boros Energy',wr:78,lo:50,hi:70,pass:0,detail:'<strong>Above expected range (50-70%).</strong> Actual 78% — structural advantage or sim artifact.'},
-  {name:'Izzet Prowess',wr:60,lo:45,hi:60,pass:1,detail:'In range (45-60%). Performing as expected at 60%.'},
-  {name:'Eldrazi Tron',wr:50,lo:50,hi:65,pass:1,detail:'In range (50-65%). Performing as expected at 50%.'},
-  {name:'Jeskai Blink',wr:49,lo:45,hi:60,pass:1,detail:'In range (45-60%). Performing as expected at 49%.'},
-  {name:'Affinity',wr:24,lo:45,hi:60,pass:0,detail:'<strong>Below expected range (45-60%).</strong> Actual 24% — possible engine weakness.'}
+  {name:'Domain Zoo',wr:76,lo:50,hi:65,pass:0,detail:'<strong>Above expected range (50-65%).</strong> Actual 76% — structural advantage or sim artifact.'},
+  {name:'Ruby Storm',wr:65,lo:40,hi:55,pass:0,detail:'<strong>Above expected range (40-55%).</strong> Actual 65% — structural advantage or sim artifact.'},
+  {name:'Dimir Midrange',wr:74,lo:45,hi:60,pass:0,detail:'<strong>Above expected range (45-60%).</strong> Actual 74% — structural advantage or sim artifact.'},
+  {name:'Boros Energy',wr:75,lo:50,hi:70,pass:0,detail:'<strong>Above expected range (50-70%).</strong> Actual 75% — structural advantage or sim artifact.'},
+  {name:'Izzet Prowess',wr:63,lo:45,hi:60,pass:0,detail:'<strong>Above expected range (45-60%).</strong> Actual 63% — slightly above band.'},
+  {name:'Eldrazi Tron',wr:51,lo:50,hi:65,pass:1,detail:'In range (50-65%). Performing as expected at 51%.'},
+  {name:'Jeskai Blink',wr:35,lo:45,hi:60,pass:0,detail:'<strong>Below expected range (45-60%).</strong> Actual 35% — possible engine weakness.'},
+  {name:'Affinity',wr:28,lo:45,hi:60,pass:0,detail:'<strong>Below expected range (45-60%).</strong> Actual 28% — possible engine weakness.'}
 ];
 const valEl=document.getElementById('valBars'),valDet=document.getElementById('valDetail');
 valData.forEach((d,i)=>{

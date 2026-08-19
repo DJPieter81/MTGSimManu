@@ -185,6 +185,8 @@ class PermanentEffects:
                 "This creature gets +1/+1 for each artifact you control."
             )
 
+        from .oracle_parser import parse_has_artifact_count_scaling as _parse_art_scale
+        _art_scale = _parse_art_scale(token_oracle)
         for _ in range(count):
             template = CardTemplate(
                 name=f"{t_name} Token",
@@ -196,6 +198,7 @@ class PermanentEffects:
                 tags={"token", "creature"},
                 oracle_text=token_oracle,
             )
+            template.has_artifact_count_scaling = _art_scale
             instance = CardInstance(
                 template=template,
                 owner=controller,

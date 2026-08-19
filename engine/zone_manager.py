@@ -17,8 +17,6 @@ Replaces the scattered pattern of:
 from __future__ import annotations
 from typing import List, Optional, TYPE_CHECKING
 
-from .event_system import EventBus, EventType, GameEvent
-
 if TYPE_CHECKING:
     from .cards import CardInstance
     from .game_state import GameState
@@ -27,8 +25,8 @@ if TYPE_CHECKING:
 class ZoneManager:
     """Handles all card movement between zones."""
 
-    def __init__(self, event_bus: EventBus):
-        self.event_bus = event_bus
+    def __init__(self):
+        pass
 
     # ── Public API ──────────────────────────────────────────────────
 
@@ -68,25 +66,7 @@ class ZoneManager:
             from_zone = actual_zone
             source_list = self._get_zone_list(game, owner, from_zone)
 
-        # Fire ZONE_CHANGE event for replacement effects
-        event = GameEvent(
-            event_type=EventType.ZONE_CHANGE,
-            source=card,
-            player=owner,
-            extra={
-                "from": from_zone,
-                "to": to_zone,
-                "cause": cause,
-                "turn": game.display_turn,
-            },
-        )
-        event, _ = self.event_bus.fire_event(event, game)
-
-        if event.prevented:
-            return False
-
-        # Replacement effects may have changed the destination
-        actual_to = event.extra.get("to", to_zone)
+        actual_to = to_zone
 
         # ── Remove from source zone ────────────────────────────────
         if card in source_list:
@@ -95,8 +75,6 @@ class ZoneManager:
         # ── Clean up state when leaving battlefield ─────────────────
         if from_zone == "battlefield":
             self._cleanup_leaving_battlefield(card)
-            # Unregister triggers/replacements for this card
-            self.event_bus.unregister_card(card)
 
         # ── Add to destination zone ─────────────────────────────────
         card.zone = actual_to
@@ -109,45 +87,6 @@ class ZoneManager:
                 card.controller = controller_override
             card.enter_battlefield()
             card._game_state = game
-
-        # ── Fire post-move events ───────────────────────────────────
-        triggered = []
-
-        if actual_to == "battlefield":
-            etb_event = GameEvent(
-                event_type=EventType.ENTERS_BATTLEFIELD,
-                source=card,
-                player=card.controller,
-                extra={"turn": game.display_turn, "cause": cause},
-            )
-            _, etb_triggers = self.event_bus.fire_event(etb_event, game)
-            triggered.extend(etb_triggers)
-
-        if from_zone == "battlefield":
-            ltb_event = GameEvent(
-                event_type=EventType.LEAVES_BATTLEFIELD,
-                source=card,
-                player=card.controller,
-                extra={"turn": game.display_turn, "cause": cause},
-            )
-            _, ltb_triggers = self.event_bus.fire_event(ltb_event, game)
-            triggered.extend(ltb_triggers)
-
-            # "Dies" = creature goes from battlefield to graveyard
-            if actual_to == "graveyard" and card.template.is_creature:
-                dies_event = GameEvent(
-                    event_type=EventType.DIES,
-                    source=card,
-                    player=card.controller,
-                    extra={"turn": game.display_turn, "cause": cause},
-                )
-                _, dies_triggers = self.event_bus.fire_event(dies_event, game)
-                triggered.extend(dies_triggers)
-
-        # Queue triggered abilities (the caller or rules engine puts them on stack)
-        for trig in triggered:
-            if trig.goes_on_stack:
-                game.queue_trigger(trig)
 
         # Log the move
         if cause:
@@ -186,6 +125,104 @@ class ZoneManager:
             game, card, from_zone, "battlefield",
             cause=cause, controller_override=controller,
         )
+
+    def move_card_from_stack(
+        self,
+        game: "GameState",
+        card: "CardInstance",
+        to_zone: str,
+        cause: str = "",
+    ) -> bool:
+        """Move a card that has already been popped from the stack.
+
+        Spell resolution and counterspell targeting both pop the
+        StackItem *before* moving the source card to its new home —
+        so the card is not in any zone list at this point, even though
+        ``card.zone`` is still ``"stack"``.  This method is the
+        sanctioned exit path for those transitions:
+
+        * Fires a ZONE_CHANGE event so CR 614 replacement effects
+          (e.g. Rest in Peace → exile instead of graveyard) can
+          redirect the destination.
+        * Sets ``card.zone`` to the (possibly redirected) destination.
+        * Appends the card to the destination zone list on the card's
+          owner.
+
+        Special case — ``to_zone == "expired_copy"`` (CR 707.10a):
+        a resolved or countered spell *copy* ceases to exist; it never
+        enters any zone list.  ``card.zone`` is set to ``"expired_copy"``
+        and True is returned with no list mutation.
+
+        Does NOT fire ETB or LTB events — those belong to
+        ``move_card()``.  Stack-exit transitions are instant/sorcery
+        resolution paths where neither ETB nor LTB applies.
+        """
+        owner = card.owner
+
+        if to_zone == "expired_copy":
+            # CR 707.10a: spell copies cease to exist on resolution or counter.
+            # They don't enter any zone — mark as expired so callers can
+            # detect this state and take no further list action.
+            card.zone = to_zone
+            return True
+
+        actual_to = to_zone
+
+        card.zone = actual_to
+        dest_list = self._get_zone_list(game, owner, actual_to)
+        dest_list.append(card)
+
+        if cause:
+            game.log.append(
+                f"T{game.display_turn}: {card.name} moved "
+                f"stack -> {actual_to} ({cause})"
+            )
+        return True
+
+    def _blink_zone_transition(
+        self,
+        game: "GameState",
+        card: "CardInstance",
+        to_controller: int,
+    ) -> None:
+        """Perform the zone bookkeeping for a blink effect (battlefield →
+        exile → battlefield) as a single atomic operation.
+
+        The caller is responsible for:
+        - Calling ``game._handle_permanent_etb(card, to_controller)``
+          to fire ETB effects after this returns.
+        - Logging the blink event.
+
+        Rules notes:
+        - The card briefly "passes through" exile but never truly
+          occupies it long enough for any player to receive priority —
+          Ephemerate-style blinks are simultaneous leave-and-return.
+          We therefore do *not* add the card to the exile list.
+        - We call ``_cleanup_leaving_battlefield`` so all combat flags,
+          counters, and temporary effects are reset before re-entry.
+        - We call ``card.enter_battlefield()`` to re-apply summoning
+          sickness and similar entry-state setup.
+        - ``card.zone`` is updated to reflect the transit through
+          ``"exile"`` and then ``"battlefield"``; both assignments live
+          here inside zone_manager.py which is excluded from the
+          zone-mutation ratchet (as the sanctioned funnel
+          implementation).
+        """
+        from_controller = card.controller
+
+        # ── Leave battlefield ───────────────────────────────────────
+        if card in game.players[from_controller].battlefield:
+            game.players[from_controller].battlefield.remove(card)
+        self._cleanup_leaving_battlefield(card)
+        # Transit through exile — no list entry (simultaneous return).
+        card.zone = "exile"
+
+        # ── Re-enter battlefield under new controller ───────────────
+        card.controller = to_controller
+        card.enter_battlefield()
+        card._game_state = game
+        card.zone = "battlefield"
+        game.players[to_controller].battlefield.append(card)
 
     # ── Internal Helpers ────────────────────────────────────────────
 

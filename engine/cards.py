@@ -230,7 +230,7 @@ class CardTemplate:
     # engine.oracle_parser.parse_can_target_player/planeswalker.
     # Replace runtime `'any target' in oracle_text` inline checks in ai/.
     can_target_player: bool = False            # "any target"/"target player"/"target opponent"
-    can_target_planeswalker: bool = False      # "any target"/"planeswalker" in oracle
+    can_target_planeswalker: bool = False      # "any target" or planeswalker oracle patterns
     # On-attack triggered ability (CR 603.2) — populated at load time by
     # oracle_parser.parse_has_attack_trigger(oracle, name). True for cards
     # whose oracle text contains "Whenever this creature attacks" or
@@ -292,6 +292,226 @@ class CardTemplate:
     # or 'affinity for artifacts'.  Populated by
     # oracle_parser.parse_has_artifact_synergy.
     has_artifact_synergy: bool = False
+    # Draw effect — True when oracle draws or impulse-draws cards (draw a card,
+    # look at the top, exile top N and play/cast).
+    # Populated by oracle_parser.parse_has_draw_effect.
+    has_draw_effect: bool = False
+    # Deals damage to a target/each/any — direct-damage finisher shape
+    # (Grapeshot). Populated by oracle_parser.parse_deals_targeted_damage.
+    deals_targeted_damage: bool = False
+    # Creates a storm-scaled token count ("create … tokens for each …").
+    # Populated by oracle_parser.parse_has_scaling_token_finisher.
+    has_scaling_token_finisher: bool = False
+    # Exile permanent — True when oracle has 'exile target <permanent-type>'.
+    # Covers instant/sorcery removal that exiles rather than destroys.
+    # Populated by oracle_parser.parse_can_exile_permanent.
+    can_exile_permanent: bool = False
+    # Symmetric reanimation — True for Living End-class mass reanimation from
+    # all graveyards simultaneously.
+    # Populated by oracle_parser.parse_has_symmetric_reanimation.
+    has_symmetric_reanimation: bool = False
+    # Phyrexian pip count — number of {X/P} Phyrexian mana symbols; each
+    # allows paying 2 life instead of 1 mana.
+    # Populated by oracle_parser.parse_phyrexian_pip_count.
+    phyrexian_pip_count: int = 0
+    # -- Batch 7 typed fields -----------------------------------------------
+    # Token-creation effect -- True when oracle contains "create ... token" /
+    # "put a ... token".
+    # Populated by oracle_parser.parse_has_token_effect.
+    has_token_effect: bool = False
+    # Graveyard recursion -- True when oracle returns cards from a graveyard
+    # to hand or battlefield.
+    # Populated by oracle_parser.parse_has_graveyard_recursion.
+    has_graveyard_recursion: bool = False
+    # Graveyard hate -- True when oracle exiles graveyards or prevents GY casting.
+    # Populated by oracle_parser.parse_has_graveyard_hate.
+    has_graveyard_hate: bool = False
+    # Spell-chain hate -- True when oracle limits spells per turn or taxes each spell.
+    # Populated by oracle_parser.parse_has_spell_chain_hate.
+    has_spell_chain_hate: bool = False
+    # Stax classification -- which locking/taxing family this card belongs to:
+    # 'chalice', 'blood_moon', 'canonist', 'torpor_orb', or None.
+    # Populated by oracle_parser.parse_stax_class.
+    stax_class: Optional[str] = None
+    # Blood Moon forced basic land type ('mountain', 'island', etc.), or None.
+    # Populated by oracle_parser.parse_stax_forced_basic.
+    stax_forced_basic: Optional[str] = None
+    # Cast trigger -- True when oracle has a 'when you cast' triggered ability.
+    # Populated by oracle_parser.parse_has_cast_trigger.
+    has_cast_trigger: bool = False
+    # Recurring trigger -- True when oracle has a non-ETB periodic trigger
+    # ('whenever ...' or 'at the beginning of ...').
+    # Populated by oracle_parser.parse_has_recurring_trigger.
+    has_recurring_trigger: bool = False
+    # Limits opponent spell timing -- True for Teferi-style 'cast only as sorcery' statics.
+    # Populated by oracle_parser.parse_limits_opponent_spell_timing.
+    limits_opponent_spell_timing: bool = False
+    # Charge-counter board wipe -- True for Ratchet Bomb / EE pattern.
+    # Populated by oracle_parser.parse_has_charge_counter_wipe.
+    has_charge_counter_wipe: bool = False
+    # Mana-value wipe -- True for X-cost wipes that destroy by mana value.
+    # Populated by oracle_parser.parse_has_mana_value_wipe.
+    has_mana_value_wipe: bool = False
+    # Sacrifice-for-damage -- True for Goblin Bombardment / Blasting Station pattern.
+    # Populated by oracle_parser.parse_has_sacrifice_for_damage.
+    has_sacrifice_for_damage: bool = False
+    # Prevents graveyard ETB -- True for Grafdigger's Cage pattern.
+    # Populated by oracle_parser.parse_prevents_graveyard_etb.
+    prevents_graveyard_etb: bool = False
+    # Requires creature target -- True when oracle needs a creature or creature-spell target.
+    # Populated by oracle_parser.parse_requires_creature_target.
+    requires_creature_target: bool = False
+    # Alternate exile cost -- True for Grief/Solitude 'exile a ... rather than pay' pattern.
+    # Populated by oracle_parser.parse_has_alternate_exile_cost.
+    has_alternate_exile_cost: bool = False
+    # Discard effect -- True when oracle causes the target to discard cards.
+    # Populated by oracle_parser.parse_has_discard_effect.
+    has_discard_effect: bool = False
+    # Scaling effect -- True when oracle has 'for each'/'for every' clause.
+    # Populated by oracle_parser.parse_has_scaling_effect.
+    has_scaling_effect: bool = False
+    # Self trigger -- True when oracle has a 'when this' self-referential trigger.
+    # Populated by oracle_parser.parse_has_self_trigger.
+    has_self_trigger: bool = False
+    # Recurring draw trigger -- True when oracle has 'whenever' + 'draw' pattern.
+    # Populated by oracle_parser.parse_has_recurring_draw_trigger.
+    has_recurring_draw_trigger: bool = False
+    # Each-opponent effect -- True when oracle targets 'each opponent'/'each player'.
+    # Populated by oracle_parser.parse_has_each_opponent_effect.
+    has_each_opponent_effect: bool = False
+    # Pump grant -- True when oracle grants +X/+Y bonus ('gets +'/'additional +').
+    # Populated by oracle_parser.parse_has_pump_grant.
+    has_pump_grant: bool = False
+    # X-counter scaling -- True when oracle grants 'X +1/+1 counter(s)' (Ballista pattern).
+    # Populated by oracle_parser.parse_has_x_counter_scaling.
+    has_x_counter_scaling: bool = False
+    # Lifegain equal to power -- True when oracle grants life equal to a creature's power.
+    # Populated by oracle_parser.parse_has_lifegain_equal_power.
+    has_lifegain_equal_power: bool = False
+    # Lifegain effect -- True when oracle causes a player or creature to gain life.
+    # Populated by oracle_parser.parse_has_lifegain_effect.
+    has_lifegain_effect: bool = False
+    # Exile own creature -- True when oracle exiles a creature the controller controls.
+    # Populated by oracle_parser.parse_has_exile_own_creature.
+    has_exile_own_creature: bool = False
+    # Converge keyword -- True when oracle has 'converge'/'colors of mana spent'.
+    # Populated by oracle_parser.parse_has_converge.
+    has_converge: bool = False
+    # Delirium keyword -- True when oracle has 'delirium' condition.
+    # Populated by oracle_parser.parse_has_delirium.
+    has_delirium: bool = False
+    # All basic land types -- True when oracle grants all basic land types to lands.
+    # Populated by oracle_parser.parse_has_all_basic_land_types.
+    has_all_basic_land_types: bool = False
+    # Destroy or exile -- True when oracle destroys or exiles a permanent.
+    # Populated by oracle_parser.parse_has_destroy_or_exile.
+    has_destroy_or_exile: bool = False
+    # Artifact-count P/T scaling -- "gets +N/+N for each artifact you control".
+    # Populated by oracle_parser.parse_has_artifact_count_scaling.
+    has_artifact_count_scaling: bool = False
+    # Surveil keyword -- True when oracle contains the surveil keyword.
+    # Populated by oracle_parser.parse_has_surveil.
+    has_surveil: bool = False
+    # Coin-flip effect -- True when oracle involves flipping a coin.
+    # Populated by oracle_parser.parse_has_coin_flip.
+    has_coin_flip: bool = False
+    # Mobilize keyword -- True when oracle contains the mobilize keyword.
+    # Populated by oracle_parser.parse_has_mobilize.
+    has_mobilize: bool = False
+    # Transform effect -- True when oracle references transforming.
+    # Populated by oracle_parser.parse_has_transform_effect.
+    has_transform_effect: bool = False
+    # Instant/sorcery reference -- True when oracle counts instants or sorceries.
+    # Populated by oracle_parser.parse_has_instant_or_sorcery_reference.
+    has_instant_or_sorcery_reference: bool = False
+    # Graveyard targeting -- True when oracle targets from a graveyard.
+    # Populated by oracle_parser.parse_has_graveyard_target.
+    has_graveyard_target: bool = False
+    # Dual land search (Primeval Titan pattern) -- True when oracle searches for two lands.
+    # Populated by oracle_parser.parse_has_dual_land_search.
+    has_dual_land_search: bool = False
+    # Energy-damage target -- True when oracle deals energy-scaled damage to a creature/pw.
+    # Populated by oracle_parser.parse_has_energy_damage_target.
+    has_energy_damage_target: bool = False
+    # Energy production -- True when oracle produces energy (you get {E}).
+    # Populated by oracle_parser.parse_has_energy_production.
+    has_energy_production: bool = False
+    # Look-at-top + hand selection -- True when oracle puts selected card(s) into hand.
+    # Populated by oracle_parser.parse_has_look_hand_selection.
+    has_look_hand_selection: bool = False
+    # Cast-spell draw -- True when oracle draws on casting any spell (not noncreature-only).
+    # Populated by oracle_parser.parse_has_cast_spell_draw.
+    has_cast_spell_draw: bool = False
+    # Opponent-cast damage -- True when oracle damages on opponent casting a spell.
+    # Populated by oracle_parser.parse_has_opponent_cast_damage.
+    has_opponent_cast_damage: bool = False
+    # Mana add text -- True when oracle adds mana (mana rocks, rituals, etc.).
+    # Populated by oracle_parser.parse_has_mana_add_text.
+    has_mana_add_text: bool = False
+    # Bounce land -- True when oracle contains 'return a land you control'.
+    # Populated by oracle_parser.parse_has_bounce_land_oracle.
+    has_bounce_land_oracle: bool = False
+    # Sacrifice-search-land -- True for Expedition Map / Wayfarer's Bauble pattern.
+    # Populated by oracle_parser.parse_has_sacrifice_search_land.
+    has_sacrifice_search_land: bool = False
+    # Emry graveyard cast -- True for 'choose target artifact card in your graveyard'.
+    # Populated by oracle_parser.parse_has_emry_graveyard_cast.
+    has_emry_graveyard_cast: bool = False
+    # {C}{C},{T}: draw a card -- True for Endbringer pattern.
+    # Populated by oracle_parser.parse_has_cc_tap_draw.
+    has_cc_tap_draw: bool = False
+    # Stax ability -- True for Stony Silence / Damping Sphere pattern.
+    # Populated by oracle_parser.parse_has_stax_ability.
+    has_stax_ability: bool = False
+    # Pithing Needle lock -- True for Pithing Needle / Revoker pattern.
+    # Populated by oracle_parser.parse_has_pithing_needle_lock.
+    has_pithing_needle_lock: bool = False
+    # Another-creature-enters trigger -- outer gate for ETB fan-out.
+    # Populated by oracle_parser.parse_has_another_creature_enters_trigger.
+    has_another_creature_enters_trigger: bool = False
+    # Another-creature-enters lifegain -- conjunction: another creature+enters+gain+life.
+    # Populated by oracle_parser.parse_has_another_creature_enters_lifegain.
+    has_another_creature_enters_lifegain: bool = False
+    # May-play-or-cast -- True for exile-and-play effects.
+    # Populated by oracle_parser.parse_has_may_play_or_cast.
+    has_may_play_or_cast: bool = False
+    # Damage-equal scaling -- True for domain-scaling damage (Tribal Flames pattern).
+    # Populated by oracle_parser.parse_has_damage_equal_scaling.
+    has_damage_equal_scaling: bool = False
+    # X-damage spell -- True for 'deals X damage' spells.
+    # Populated by oracle_parser.parse_has_x_damage.
+    has_x_damage: bool = False
+    # Artifact pump equipment -- True for +1/+0 per-artifact equipment (Cranial Plating).
+    # Populated by oracle_parser.parse_has_artifact_pump_equipment.
+    has_artifact_pump_equipment: bool = False
+    # Artifact-or-enchantment scaling -- True for Nettlecyst pattern.
+    # Populated by oracle_parser.parse_has_artifact_or_enchantment_scaling.
+    has_artifact_or_enchantment_scaling: bool = False
+    # Channel ability clause -- substring from 'channel —'/'channel -' to end.
+    # Empty string when card has no channel ability.
+    # Populated by oracle_parser.parse_channel_clause.
+    channel_clause: str = ""
+    # Storm keyword (CR 702.39) -- True when oracle contains standalone "storm".
+    # Populated by oracle_parser.parse_is_storm_spell.
+    is_storm_spell: bool = False
+    # Charge-counter ability -- True when oracle mentions "charge counter".
+    # Populated by oracle_parser.parse_has_charge_counter_ability.
+    has_charge_counter_ability: bool = False
+    # Cast-triggered token by spell TYPE (CR 603) -- dict
+    # {"spell_types": frozenset[str], "count": int} for
+    # "whenever you cast a[n] <type> spell, create a token" (Pinnacle
+    # Emissary/artifact, Monastery Mentor/noncreature, Young Pyromancer &
+    # Talrand/instant-or-sorcery). None when absent.
+    # Populated by oracle_parser.parse_cast_trigger_token.
+    cast_trigger_token: Optional[dict] = None
+    # Permanent-enters counter by card TYPE (CR 603) -- dict
+    # {"permanent_type": str, "counter_power": int,
+    #  "counter_toughness": int, "unblockable_this_turn": bool} for
+    # "whenever this creature or another <type> you control enters, put a
+    # +N/+N counter on this creature[. It can't be blocked this turn.]"
+    # (Kappa Cannoneer/artifact). None when absent.
+    # Populated by oracle_parser.parse_enters_type_counter.
+    enters_type_counter: Optional[dict] = None
 
     def __post_init__(self) -> None:
         # Derive fields from oracle text for templates not loaded through
@@ -321,7 +541,18 @@ class CardTemplate:
                                         parse_can_destroy_nonland_permanent as _pcdnp,
                                         parse_is_tutor as _pit,
                                         parse_has_noncreature_spell_cast_trigger as _phnsct,
-                                        parse_has_artifact_synergy as _phas)
+                                        parse_has_artifact_synergy as _phas,
+                                        parse_has_draw_effect as _phde,
+                                        parse_can_exile_permanent as _pcep,
+                                        parse_has_symmetric_reanimation as _phsr,
+                                        parse_phyrexian_pip_count as _pppc,
+                                        parse_has_token_effect as _phte,
+                                        parse_has_graveyard_recursion as _phgr,
+                                        parse_has_discard_effect as _phde2,
+                                        parse_is_storm_spell as _piss,
+                                        parse_has_charge_counter_ability as _phcca,
+                                        parse_cast_trigger_token as _pctt,
+                                        parse_enters_type_counter as _petc)
             from .card_database import KEYWORD_MAP as _KM
             import re as _re
             if self.warp_cost is None:
@@ -379,6 +610,28 @@ class CardTemplate:
                 self.has_noncreature_spell_cast_trigger = _phnsct(self.oracle_text)
             if not self.has_artifact_synergy:
                 self.has_artifact_synergy = _phas(self.oracle_text)
+            if not self.has_draw_effect:
+                self.has_draw_effect = _phde(self.oracle_text)
+            if not self.can_exile_permanent:
+                self.can_exile_permanent = _pcep(self.oracle_text)
+            if not self.has_symmetric_reanimation:
+                self.has_symmetric_reanimation = _phsr(self.oracle_text)
+            if self.phyrexian_pip_count == 0:
+                self.phyrexian_pip_count = _pppc(self.oracle_text)
+            if not self.has_token_effect:
+                self.has_token_effect = _phte(self.oracle_text)
+            if not self.has_graveyard_recursion:
+                self.has_graveyard_recursion = _phgr(self.oracle_text)
+            if not self.has_discard_effect:
+                self.has_discard_effect = _phde2(self.oracle_text)
+            if not self.is_storm_spell:
+                self.is_storm_spell = _piss(self.oracle_text)
+            if not self.has_charge_counter_ability:
+                self.has_charge_counter_ability = _phcca(self.oracle_text)
+            if self.cast_trigger_token is None:
+                self.cast_trigger_token = _pctt(self.oracle_text)
+            if self.enters_type_counter is None:
+                self.enters_type_counter = _petc(self.oracle_text)
             # Derive keywords from oracle text for synthetic templates that
             # were constructed with keywords=set(). DB-loaded templates
             # already have complete keyword sets from KEYWORD_MAP scanning;
@@ -512,6 +765,10 @@ class CardInstance:
     turned_face_up: bool = True
     entered_battlefield_this_turn: bool = False
     attacked_this_turn: bool = False
+    # CR 509.1b turn-scoped evasion: set True by a "it can't be blocked
+    # this turn" trigger (Kappa Cannoneer's enters-counter). Read by
+    # CombatManager._can_block; reset at the controller's next turn start.
+    cannot_be_blocked_this_turn: bool = False
     # CR 400.7 object identity: a card that changes zones becomes a new
     # object. The engine reuses one CardInstance across zones, so each
     # battlefield entry bumps this sequence; delayed one-shot riders
@@ -629,8 +886,7 @@ class CardInstance:
         # land type" (Leyline of the Guildpact pattern). Same predicate
         # as engine/mana_payment.py::ManaPayment.has_leyline_of_guildpact.
         for c in player.battlefield:
-            oracle = (c.template.oracle_text or '').lower()
-            if 'lands you control are every basic land type' in oracle:
+            if getattr(c.template, 'has_all_basic_land_types', False):
                 if any(l.template.is_land for l in player.battlefield):
                     return 5
         found_types: set = set()
@@ -849,9 +1105,7 @@ class CardInstance:
         # text ("costs {1} less to cast for each artifact you control") and
         # inflated every Affinity creature's power to the controller's artifact
         # count. Scope the match to the actual Construct/Plating pattern.
-        import re as _re
-        oracle = self._effective_oracle_text().lower()
-        if _re.search(r'\+\d+/\+\d+\s+for\s+each\s+artifact\s+you\s+control', oracle):
+        if getattr(self.template, 'has_artifact_count_scaling', False):
             base = self._effective_printed_power() + self._get_artifact_count()
         # Equipment scaling (Cranial Plating, Nettlecyst, etc.)
         # Tags are equipped_{instance_id} — unique per equipment, supports stacking.
@@ -912,10 +1166,8 @@ class CardInstance:
             return self._effective_printed_toughness()
 
         base = self._effective_printed_toughness()
-        import re as _re
-        oracle = self._effective_oracle_text().lower()
         # Same tightening as _dynamic_base_power — see note above.
-        if _re.search(r'\+\d+/\+\d+\s+for\s+each\s+artifact\s+you\s+control', oracle):
+        if getattr(self.template, 'has_artifact_count_scaling', False):
             base = self._effective_printed_toughness() + self._get_artifact_count()
         # Equipment toughness scaling — only applies when toughness component is non-zero.
         # e.g. Nettlecyst: +1/+1 for each artifact → toughness bonus applies
@@ -1082,6 +1334,7 @@ class CardInstance:
         self.summoning_sick = False
         self.entered_battlefield_this_turn = False
         self.attacked_this_turn = False
+        self.cannot_be_blocked_this_turn = False
 
     def enter_battlefield(self):
         self.zone = "battlefield"

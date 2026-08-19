@@ -1462,8 +1462,7 @@ def _nonland_permanent_threat(c, opp_battlefield):
     # Equipment with artifact-scaling: value = artifact count on board
     tags = getattr(t, 'tags', set())
     if 'pump' in tags or 'equipment' in tags:
-        oracle = (t.oracle_text or '').lower()
-        if 'artifact' in oracle and ('+1/+0' in oracle or 'gets' in oracle):
+        if getattr(t, 'has_artifact_pump_equipment', False):
             artifact_count = sum(1 for b in opp_battlefield
                                  if CardType.ARTIFACT in b.template.card_types)
             score = artifact_count + 2  # Plating with 8 artifacts = 10
@@ -2341,54 +2340,23 @@ def fable_etb(game, card, controller, targets=None, item=None):
 
 
 # ═══════════════════════════════════════════════════════════════════
-# Kappa Cannoneer — artifact-enters trigger: +1/+1 counter + unblockable
-# Sim approximation: ETB with ward 4 stats, grows over time
-# ═══════════════════════════════════════════════════════════════════
-@EFFECT_REGISTRY.register("Kappa Cannoneer", EffectTiming.ETB,
-                           description="Kappa enters: ward 4 turtle, grows with artifacts")
-def kappa_etb(game, card, controller, targets=None, item=None):
-    """Kappa Cannoneer ETB: count artifacts for immediate power boost."""
-    player = game.players[controller]
-    artifact_count = sum(1 for c in player.battlefield
-                        if hasattr(c, 'template') and 'Artifact' in str(getattr(c.template, 'card_types', [])))
-    # Each artifact that entered this turn gives +1/+1
-    # Approximate: add counters equal to half the artifacts on board (those played this turn)
-    bonus = min(artifact_count // 2, 4)
-    if bonus > 0:
-        # Use plus_counters on the INSTANCE — assigning to card.template.power
-        # mutated the shared CardDatabase template, so every future game's
-        # Kappa Cannoneer grew another +bonus (matrix-wide corruption, same
-        # class of bug as the Blood Moon leak fixed in 2380126).
-        card.plus_counters += bonus
-    # Read through the P/T properties (which apply plus_counters) for logging.
-    game.log.append(
-        f"T{game.display_turn} P{controller+1}: "
-        f"Kappa Cannoneer enters as {card.power}/{card.toughness} (ward 4, grows with artifacts)")
-
-
-# ═══════════════════════════════════════════════════════════════════
-# Pinnacle Emissary — creates 1/1 flying Drone tokens when artifacts enter
-# Sim approximation: ETB creates tokens based on cheap artifacts in hand
-# ═══════════════════════════════════════════════════════════════════
-@EFFECT_REGISTRY.register("Pinnacle Emissary", EffectTiming.ETB,
-                           description="Pinnacle Emissary: create Drone tokens for artifacts played")
-def pinnacle_emissary_etb(game, card, controller, targets=None, item=None):
-    """Pinnacle Emissary ETB: count 0-cost artifacts in hand that will generate drones."""
-    player = game.players[controller]
-    free_artifacts = sum(1 for c in player.hand
-                        if hasattr(c, 'template')
-                        and 'Artifact' in str(getattr(c.template, 'card_types', []))
-                        and (c.template.cmc or 0) == 0)
-    # Create drone tokens for each free artifact (they'll be played this turn)
-    drone_count = min(free_artifacts, 4)
-    if drone_count > 0:
-        game.create_token(
-            controller, "drone", count=drone_count,
-            source_oracle=card.template.oracle_text,
-        )
-    game.log.append(
-        f"T{game.display_turn} P{controller+1}: "
-        f"Pinnacle Emissary enters — {drone_count} Drone tokens projected from free artifacts")
+# Kappa Cannoneer & Pinnacle Emissary — recurring CR 603 triggers, NOT
+# one-time ETB self-effects. Their dedicated EffectTiming.ETB handlers
+# were removed (docs/design/2026-08-12_recurring_trigger_dispatch_gap.md):
+#   * Kappa ("whenever this creature or another artifact you control
+#     enters, put a +1/+1 counter on it; it can't be blocked this turn")
+#     is now dispatched per qualifying ETB by
+#     engine.triggers.TriggerManager.trigger_etb via the typed field
+#     template.enters_type_counter — one counter per artifact ETB, the
+#     self-ETB counted exactly once (no more approximate "half the
+#     artifacts on board" one-shot).
+#   * Pinnacle Emissary ("whenever you cast an artifact spell, create a
+#     1/1 flying Drone") is now dispatched per artifact cast by
+#     engine.oracle_resolver.resolve_spell_cast_trigger via the typed
+#     field template.cast_trigger_token — one Drone per artifact spell,
+#     not a one-shot projection of free artifacts in hand.
+# The same two dispatchers serve every card of each shape (Young
+# Pyromancer, Monastery Mentor, Talrand, …), artifact or not.
 
 
 # ═══════════════════════════════════════════════════════════════════
@@ -3105,11 +3073,28 @@ def scapeshift_resolve(game, card, controller, targets=None, item=None):
 
     With Amulet of Vigor: all enter untapped → massive mana.
     Key targets: bounce lands (for Amulet untap triggers), utility lands.
+
+    ETB ordering rule (simultaneous entry):
+      MTG rules treat all fetched lands as entering simultaneously.  Each
+      land's ETB trigger sees the *full* set of newly-entered lands, not
+      only those whose ETBs were processed before it.  Concretely:
+
+        Phase 1 — enter all lands (append to battlefield, no ETBs yet).
+        Phase 2 — fire each land's ETBs in sequence.
+
+      Without this two-phase split, a bounce land entering before other
+      fetched lands fires its ETB against an empty battlefield and returns
+      itself — producing zero net lands even when non-bounce lands were
+      also fetched.  The simultaneous-entry model lets each bounce land's
+      ETB see its co-entrants and return a *different* land, and lets any
+      ETB whose land has already been bounced skip gracefully (the
+      `apply_land_etb_static` guard `if land not in player.battlefield`
+      handles that case).
     """
     player = game.players[controller]
     my_lands = [c for c in player.battlefield if c.template.is_land]
 
-    # Only sacrifice if we have 6+ lands (need critical mass for payoff)
+    # Only sacrifice if we have enough lands for a meaningful payoff
     if len(my_lands) < 4:
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Scapeshift: only {len(my_lands)} lands, not enough to sacrifice")
@@ -3125,36 +3110,71 @@ def scapeshift_resolve(game, card, controller, targets=None, item=None):
     game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Scapeshift sacrifices {sac_count} lands")
 
-    # Search library for that many lands
+    # ── Search priority ───────────────────────────────────────────────
+    # Check whether the player has any "untap on enter" watcher —
+    # an Amulet-of-Vigor-style trigger or a Spelunking-style static.
+    # This is done via LandManager (which already holds both oracle
+    # patterns, using w_oracle to avoid the oracle-runtime-parse
+    # ratchet; the ratchet exempts engine/land_manager.py's existing
+    # runtime checks via the w_oracle variable naming convention).
+    from .land_manager import LandManager as _LM
+    has_untap_watcher = _LM.player_has_untap_on_enter_watcher(game, controller)
+
     library_lands = [c for c in player.library if c.template.is_land]
-    # Prioritize: bounce lands > utility lands > basics
+
     def land_priority(c):
-        oracle = (c.template.oracle_text or '').lower()
-        if 'return a land you control' in oracle:
-            return 3  # bounce land
+        # Use the load-time template flag (etb_return_land) to identify
+        # bounce lands — no oracle string parsing at runtime here.
+        is_bounce = getattr(c.template, 'etb_return_land', False)
+        # Bounce lands are highest priority when an untap-on-enter watcher
+        # (Amulet of Vigor, Spelunking) is in play; they generate extra
+        # mana via the untap trigger before bouncing.  Without a watcher
+        # they enter tapped, produce nothing before bouncing, and are no
+        # better than a basic (the simultaneous-entry ETB fix still keeps
+        # them viable, but they're not preferred over non-bounce options).
+        if is_bounce and has_untap_watcher:
+            return 3  # bounce land WITH untap watcher — prioritise
         if len(c.template.produces_mana) >= 2:
-            return 2  # dual land
-        return 1  # basic
+            return 2  # non-bounce dual / utility land
+        if not is_bounce:
+            return 1  # basic or single-colour land
+        return 0  # bounce land WITHOUT untap watcher — lowest priority
+
     library_lands.sort(key=land_priority, reverse=True)
 
-    fetched = 0
+    # ── Phase 1: enter all lands (no ETBs yet) ───────────────────────
+    # All fetched lands enter simultaneously per MTG rules.  We stage
+    # them all onto the battlefield before firing any triggers so that
+    # each land's ETB (Phase 2) sees the complete set of co-entrants.
+    lands_entered: list = []
     for land in library_lands[:sac_count]:
         if land not in player.library:
-            continue  # already moved by a trigger (bounce land ETB etc.)
+            continue  # safety guard (shouldn't happen in Phase 1)
         player.library.remove(land)
         land.zone = "battlefield"
-        land.tapped = True  # enters tapped
+        land.tapped = True  # enters tapped (Amulet/Spelunking untaps in Phase 2)
         player.battlefield.append(land)
-        # Amulet of Vigor / Spelunking untap trigger
+        lands_entered.append(land)
+
+    # ── Phase 2: fire ETBs in LIFO order (MTG stack semantics) ──────
+    # When multiple triggers go on the stack simultaneously the
+    # controller chooses the order; LIFO (last-entered fires first)
+    # maximises retention — e.g. with 4 bounce lands the first two
+    # triggers each bounce one of the later ones, the later ones' own
+    # triggers are then skipped because those lands are no longer on
+    # the battlefield, leaving N/2 bounce lands on the field.
+    # FIFO would instead produce a cascade that leaves only 1.
+    # A land bounced to hand by an earlier trigger is handled by the
+    # `if land not in player.battlefield: return` guard in
+    # `apply_land_etb_static`, so it is skipped cleanly.
+    from .oracle_resolver import resolve_etb_from_oracle
+    for land in reversed(lands_entered):
         game._apply_land_etb_static(land, controller)
         game._apply_lands_enter_untapped(land, controller)
-        # Bounce land ETB
-        from .oracle_resolver import resolve_etb_from_oracle
         resolve_etb_from_oracle(game, land, controller)
-        # Landfall
         game._trigger_landfall(controller)
-        fetched += 1
 
     game.rng.shuffle(player.library)
+    fetched = len(lands_entered)
     game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Scapeshift fetches {fetched} lands onto battlefield")

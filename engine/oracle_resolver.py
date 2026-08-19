@@ -198,9 +198,9 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
       4. Add a tag-gated branch here whose only oracle parse is
          for the rule's numeric amount (assert-fail on mismatch).
 
-    Inline `if "phrase" in oracle and "other" in oracle: …` chains are
-    forbidden by the abstraction contract — they are the patchwork
-    pattern Wave 2 will delete elsewhere; we don't ADD them here.
+    Inline oracle substring chains are forbidden by the abstraction
+    contract — they are the patchwork pattern Wave 2 will delete
+    elsewhere; we don't ADD them here.
     """
     oracle = (card.template.oracle_text or '').lower()
     if not oracle:
@@ -390,11 +390,7 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
     #     both derived from oracle text. Engine commits a deterministic
     #     min-to-kill energy spend (CR 117.2 — cost paid at cast; with
     #     no AI hook yet, this is the engine-rational commitment).
-    if (('target creature or planeswalker' in oracle
-            or 'choose target creature or planeswalker' in oracle)
-            and 'you get {e}' in oracle
-            and 'pay any amount of {e}' in oracle
-            and 'that much' in oracle and 'damage' in oracle):
+    if getattr(card.template, 'has_energy_damage_target', False):
         base_match = re.search(
             r'deals?\s+(\d+)\s+damage\s+to\s+target\s+creature\s+or\s+planeswalker',
             oracle)
@@ -630,7 +626,7 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
             draw_n = int(tok)
         except ValueError:
             draw_n = word_to_num.get(tok, 0)
-    elif 'put one of them into your hand' in oracle:
+    elif getattr(card.template, 'has_look_hand_selection', False):
         # Look-at-top-N keep-1 → draw 1 (Sleight of Hand pattern)
         draw_n = 1
     if draw_n > 0:
@@ -698,7 +694,7 @@ def resolve_attack_trigger(game: "GameState", attacker: "CardInstance",
             game.gain_life(controller, int(m.group(1)), attacker.name)
 
     # ── Mobilize: "create N tapped and attacking tokens" ──
-    if 'mobilize' in oracle:
+    if getattr(attacker.template, 'has_mobilize', False):
         m = re.search(r'mobilize\s+(\d+)', oracle)
         if m:
             count = int(m.group(1))
@@ -922,8 +918,8 @@ def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
         # ── "Whenever you cast a noncreature spell, you get {E}" ──
         # Matches Ocelot Pride and any future card with this exact trigger.
         if (permanent.template.has_noncreature_spell_cast_trigger
-                and 'you get' in oracle
-                and '{e}' in oracle and not spell_cast.template.is_creature
+                and getattr(permanent.template, 'has_energy_production', False)
+                and not spell_cast.template.is_creature
                 and permanent.controller == caster_idx
                 and 'create' not in oracle):  # exclude token-creators to avoid double-fire
             import re as _re
@@ -931,21 +927,32 @@ def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
             energy_count = m.group(1).count('{e}') if m else 1
             game.produce_energy(caster_idx, energy_count, permanent.name)
 
-        # ── "Whenever you cast a noncreature spell, create a token" ──
-        if (permanent.template.has_noncreature_spell_cast_trigger
-                and 'create' in oracle
-                and 'token' in oracle and not spell_cast.template.is_creature):
-            m = re.search(r'create\s+(?:a|(\d+))\s+(\d+)/(\d+)', oracle)
-            if m:
-                count = int(m.group(1) or 1)
-                p, t = int(m.group(2)), int(m.group(3))
-                game.create_token(caster_idx, "creature", count=count,
-                                  power=p, toughness=t)
+        # ── "Whenever you cast a[n] <type> spell, create a token" ──
+        # CR 603 cast-triggered token, generalised across spell TYPE.
+        # The spell-type condition + count are parsed once at DB load into
+        # `template.cast_trigger_token` (a set of qualifying types plus a
+        # count); this dispatch fires the token when the cast spell
+        # matches. Serves Pinnacle Emissary (artifact-cast → Drone),
+        # Monastery Mentor (noncreature-cast → Monk), Young Pyromancer and
+        # Talrand (instant/sorcery-cast). The token's P/T/subtype/keywords
+        # come from `source_oracle` via `create_token`'s parse_token_spec,
+        # so this branch owns only the "does the cast qualify?" decision.
+        cast_spec = permanent.template.cast_trigger_token
+        if cast_spec and permanent.controller == caster_idx:
+            spell_types = cast_spec['spell_types']
+            if 'noncreature' in spell_types:
+                qualifies = not spell_cast.template.is_creature
+            else:
+                cast_types = {t.value for t in spell_cast.template.card_types}
+                qualifies = bool(spell_types & cast_types)
+            if qualifies:
+                game.create_token(
+                    caster_idx, "creature", count=cast_spec['count'],
+                    source_oracle=permanent.template.oracle_text)
 
-        # ── "Whenever you cast a spell, [scry/surveil/draw]" ──
-        if ('cast a spell' in oracle or 'cast an instant or sorcery' in oracle):
-            if 'draw a card' in oracle and 'noncreature' not in oracle:
-                game.draw_cards(caster_idx, 1)
+        # ── "Whenever you cast a spell, draw a card" ──
+        if getattr(permanent.template, 'has_cast_spell_draw', False):
+            game.draw_cards(caster_idx, 1)
 
         # ── "Whenever you cast a noncreature spell, surveil N" ──
         # Class size: Dragon's Rage Channeler, Lightshell Duo, Garland
@@ -959,7 +966,7 @@ def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
         # mechanic now has a single dispatch path used by both
         # spell-cast-triggered permanents AND land/permanent ETBs.
         if (permanent.template.has_noncreature_spell_cast_trigger
-                and 'surveil' in oracle
+                and getattr(permanent.template, 'has_surveil', False)
                 and not spell_cast.template.is_creature
                 and permanent.controller == caster_idx):
             m = re.search(r'surveil\s+(\d+)', oracle)
@@ -973,12 +980,10 @@ def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
         #      transformed" (deterministic variant; no card names).
         if ((spell_cast.template.is_instant or spell_cast.template.is_sorcery)
                 and permanent.template.is_creature
-                and 'transformed' in oracle
+                and getattr(permanent.template, 'has_transform_effect', False)
                 and not getattr(permanent, 'is_transformed', False)
-                and ('instant or sorcery' in oracle
-                     or 'instant and/or sorcery' in oracle
-                     or 'instant and sorcery' in oracle)):
-            if 'flip a coin' in oracle:
+                and getattr(permanent.template, 'has_instant_or_sorcery_reference', False)):
+            if getattr(permanent.template, 'has_coin_flip', False):
                 _handle_coin_flip_transform(game, caster_idx, permanent)
             else:
                 threshold = _parse_count_threshold(oracle)
@@ -997,12 +1002,11 @@ def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
         if not oracle or 'whenever' not in oracle:
             continue
 
-        # ── "Whenever an opponent casts a spell, [effect]" ──
-        if 'opponent casts' in oracle:
-            if 'damage' in oracle:
-                m = re.search(r'deals?\s+(\d+)\s+damage', oracle)
-                if m:
-                    game.players[caster_idx].life -= int(m.group(1))
+        # ── "Whenever an opponent casts a spell, deal damage" ──
+        if getattr(permanent.template, 'has_opponent_cast_damage', False):
+            m = re.search(r'deals?\s+(\d+)\s+damage', oracle)
+            if m:
+                game.players[caster_idx].life -= int(m.group(1))
 
 
 def check_static_ability(game: "GameState", card: "CardInstance",

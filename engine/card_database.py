@@ -1700,7 +1700,9 @@ class CardDatabase:
             parse_domain_reduction, detect_power_scaling, parse_splice_cost,
             parse_counter_tax, parse_protection_from, parse_ward_cost,
             parse_can_target_player, parse_can_target_planeswalker,
-            grants_flashback_to_gy_spells, parse_has_attack_trigger,
+            grants_flashback_to_gy_spells, parse_deals_targeted_damage,
+            parse_has_scaling_token_finisher,
+            parse_has_attack_trigger,
             parse_has_lifegain_token_trigger, parse_lifegain_token_type,
             parse_targets_creature_spell, parse_targets_planeswalker_spell,
             parse_has_landfall, parse_has_library_search_opponent_trigger,
@@ -1711,6 +1713,42 @@ class CardDatabase:
             parse_can_destroy_nonland_permanent,
             parse_is_tutor, parse_has_noncreature_spell_cast_trigger,
             parse_has_artifact_synergy,
+            parse_has_draw_effect, parse_can_exile_permanent,
+            parse_has_symmetric_reanimation, parse_phyrexian_pip_count,
+            parse_has_token_effect, parse_has_graveyard_recursion,
+            parse_has_graveyard_hate, parse_has_spell_chain_hate,
+            parse_stax_class, parse_stax_forced_basic,
+            parse_has_cast_trigger, parse_has_recurring_trigger,
+            parse_has_scaling_effect, parse_has_self_trigger,
+            parse_has_recurring_draw_trigger, parse_has_each_opponent_effect,
+            parse_has_pump_grant, parse_has_x_counter_scaling,
+            parse_has_lifegain_equal_power, parse_has_lifegain_effect,
+            parse_has_exile_own_creature, parse_has_converge,
+            parse_has_delirium, parse_has_all_basic_land_types,
+            parse_has_destroy_or_exile,
+            parse_has_artifact_count_scaling, parse_has_surveil,
+            parse_has_coin_flip, parse_has_mobilize, parse_has_transform_effect,
+            parse_has_instant_or_sorcery_reference, parse_has_graveyard_target,
+            parse_has_dual_land_search, parse_has_energy_damage_target,
+            parse_has_energy_production, parse_has_look_hand_selection,
+            parse_has_cast_spell_draw, parse_has_opponent_cast_damage,
+            parse_has_mana_add_text,
+            parse_has_bounce_land_oracle, parse_has_sacrifice_search_land,
+            parse_has_emry_graveyard_cast, parse_has_cc_tap_draw,
+            parse_has_stax_ability, parse_has_pithing_needle_lock,
+            parse_has_another_creature_enters_trigger,
+            parse_has_another_creature_enters_lifegain,
+            parse_has_may_play_or_cast, parse_has_damage_equal_scaling,
+            parse_has_x_damage, parse_has_artifact_pump_equipment,
+            parse_has_artifact_or_enchantment_scaling,
+            parse_channel_clause,
+            parse_limits_opponent_spell_timing, parse_has_charge_counter_wipe,
+            parse_has_mana_value_wipe, parse_has_sacrifice_for_damage,
+            parse_prevents_graveyard_etb, parse_requires_creature_target,
+            parse_has_alternate_exile_cost,
+            parse_has_discard_effect, parse_is_storm_spell,
+            parse_has_charge_counter_ability,
+            parse_cast_trigger_token, parse_enters_type_counter,
         )
         oracle = template.oracle_text or ''
         template.ritual_mana = parse_ritual_mana(oracle)
@@ -1759,6 +1797,73 @@ class CardDatabase:
         template.is_tutor = parse_is_tutor(oracle)
         template.has_noncreature_spell_cast_trigger = parse_has_noncreature_spell_cast_trigger(oracle)
         template.has_artifact_synergy = parse_has_artifact_synergy(oracle)
+        template.has_draw_effect = parse_has_draw_effect(oracle)
+        template.deals_targeted_damage = parse_deals_targeted_damage(oracle)
+        template.has_scaling_token_finisher = parse_has_scaling_token_finisher(oracle)
+        template.can_exile_permanent = parse_can_exile_permanent(oracle)
+        template.has_symmetric_reanimation = parse_has_symmetric_reanimation(oracle)
+        template.phyrexian_pip_count = parse_phyrexian_pip_count(oracle)
+        template.has_token_effect = parse_has_token_effect(oracle)
+        template.has_graveyard_recursion = parse_has_graveyard_recursion(oracle)
+        template.has_graveyard_hate = parse_has_graveyard_hate(oracle)
+        template.has_spell_chain_hate = parse_has_spell_chain_hate(oracle)
+        template.stax_class = parse_stax_class(oracle)
+        template.stax_forced_basic = parse_stax_forced_basic(oracle)
+        template.has_cast_trigger = parse_has_cast_trigger(oracle)
+        template.has_recurring_trigger = parse_has_recurring_trigger(oracle)
+        template.has_scaling_effect = parse_has_scaling_effect(oracle)
+        template.has_self_trigger = parse_has_self_trigger(oracle)
+        template.has_recurring_draw_trigger = parse_has_recurring_draw_trigger(oracle)
+        template.has_each_opponent_effect = parse_has_each_opponent_effect(oracle)
+        template.has_pump_grant = parse_has_pump_grant(oracle)
+        template.has_x_counter_scaling = parse_has_x_counter_scaling(oracle)
+        template.has_lifegain_equal_power = parse_has_lifegain_equal_power(oracle)
+        template.has_lifegain_effect = parse_has_lifegain_effect(oracle)
+        template.has_exile_own_creature = parse_has_exile_own_creature(oracle)
+        template.has_converge = parse_has_converge(oracle)
+        template.has_delirium = parse_has_delirium(oracle)
+        template.has_all_basic_land_types = parse_has_all_basic_land_types(oracle)
+        template.has_destroy_or_exile = parse_has_destroy_or_exile(oracle)
+        template.has_artifact_count_scaling = parse_has_artifact_count_scaling(oracle)
+        template.has_surveil = parse_has_surveil(oracle)
+        template.has_coin_flip = parse_has_coin_flip(oracle)
+        template.has_mobilize = parse_has_mobilize(oracle)
+        template.has_transform_effect = parse_has_transform_effect(oracle)
+        template.has_instant_or_sorcery_reference = parse_has_instant_or_sorcery_reference(oracle)
+        template.has_graveyard_target = parse_has_graveyard_target(oracle)
+        template.has_dual_land_search = parse_has_dual_land_search(oracle)
+        template.has_energy_damage_target = parse_has_energy_damage_target(oracle)
+        template.has_energy_production = parse_has_energy_production(oracle)
+        template.has_look_hand_selection = parse_has_look_hand_selection(oracle)
+        template.has_cast_spell_draw = parse_has_cast_spell_draw(oracle)
+        template.has_opponent_cast_damage = parse_has_opponent_cast_damage(oracle)
+        template.has_mana_add_text = parse_has_mana_add_text(oracle)
+        template.has_bounce_land_oracle = parse_has_bounce_land_oracle(oracle)
+        template.has_sacrifice_search_land = parse_has_sacrifice_search_land(oracle)
+        template.has_emry_graveyard_cast = parse_has_emry_graveyard_cast(oracle)
+        template.has_cc_tap_draw = parse_has_cc_tap_draw(oracle)
+        template.has_stax_ability = parse_has_stax_ability(oracle)
+        template.has_pithing_needle_lock = parse_has_pithing_needle_lock(oracle)
+        template.has_another_creature_enters_trigger = parse_has_another_creature_enters_trigger(oracle)
+        template.has_another_creature_enters_lifegain = parse_has_another_creature_enters_lifegain(oracle)
+        template.has_may_play_or_cast = parse_has_may_play_or_cast(oracle)
+        template.has_damage_equal_scaling = parse_has_damage_equal_scaling(oracle)
+        template.has_x_damage = parse_has_x_damage(oracle)
+        template.has_artifact_pump_equipment = parse_has_artifact_pump_equipment(oracle)
+        template.has_artifact_or_enchantment_scaling = parse_has_artifact_or_enchantment_scaling(oracle)
+        template.channel_clause = parse_channel_clause(oracle)
+        template.limits_opponent_spell_timing = parse_limits_opponent_spell_timing(oracle)
+        template.has_charge_counter_wipe = parse_has_charge_counter_wipe(oracle)
+        template.has_mana_value_wipe = parse_has_mana_value_wipe(oracle)
+        template.has_sacrifice_for_damage = parse_has_sacrifice_for_damage(oracle)
+        template.prevents_graveyard_etb = parse_prevents_graveyard_etb(oracle)
+        template.requires_creature_target = parse_requires_creature_target(oracle)
+        template.has_alternate_exile_cost = parse_has_alternate_exile_cost(oracle)
+        template.has_discard_effect = parse_has_discard_effect(oracle)
+        template.is_storm_spell = parse_is_storm_spell(oracle)
+        template.has_charge_counter_ability = parse_has_charge_counter_ability(oracle)
+        template.cast_trigger_token = parse_cast_trigger_token(oracle)
+        template.enters_type_counter = parse_enters_type_counter(oracle)
 
         return template
 

@@ -149,6 +149,10 @@ class CombatManager:
         protection. Menace's ≥2-blocker requirement is a whole-
         assignment rule, checked by the caller, not here.
         """
+        # Turn-scoped "can't be blocked this turn" (Kappa Cannoneer's
+        # enters-counter clause). No legal blocker exists while set.
+        if getattr(attacker, 'cannot_be_blocked_this_turn', False):
+            return False
         # CR 702.9b — a flying attacker can only be blocked by a
         # creature with flying and/or reach.
         if (Keyword.FLYING in attacker.keywords

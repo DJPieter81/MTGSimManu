@@ -1333,6 +1333,35 @@ the planner's per-decision budget.
 Used by `CombatPlanner._generate_attack_configs` in `ai/turn_planner.py`.
 """
 
+ATTACK_TRIGGER_OC_MAX: float = 2.0
+"""Derived: maximum opportunity-cost (creature-value units) below which
+a creature in the ``non_free`` attacker pool with an on-attack trigger
+(``has_attack_trigger=True``) is added to the safe-to-attack list in
+``decide_attackers``'s fallback path.
+
+On-attack triggers fire on declaration — the trigger resolves before
+blockers are chosen, so the creature's value is delivered independent of
+combat outcome.  A creature whose ongoing board value is below this
+threshold is EV-positive to send in: the trigger value exceeds the
+opportunity-cost of the tap.
+
+Derived from ``COMBAT_TRIGGER_DAMAGE_BONUS`` (≈ 1.5 EV) with a +0.5
+buffer for the latent up-side of the trigger reaching the stack when
+the opponent cannot immediately answer it.  Creatures with
+opportunity_cost ≥ 2.0 (≈ a 2-power creature's clock contribution)
+are NOT sent in blind — their removal represents real value loss that
+the trigger may not recoup.
+
+Class size: any creature whose oracle text matches
+``parse_has_attack_trigger`` and whose power is 0 — Guide of Souls,
+trigger-bearing tokens, future 0-power support creatures.
+
+Used by the fallback ``non_free`` loop in
+``ai/ev_player.py::decide_attackers``.  Replaces the bare
+``power > 0 AND has_combat_damage_player_trigger`` gate that categorically
+excluded every on-attack trigger creature with 0 power.
+"""
+
 # ── Block-prioritisation trade ratios ───────────────────────────
 
 BLOCK_TRADE_UP_VALUE_RATIO: float = 0.9
@@ -5535,4 +5564,102 @@ Used by ``build_combo_distribution`` in ``ai/outcome_ev.py`` for the
 Sister primitive: ``HandBeliefs.p_higher_threat_in_n_turns(turns=2)``
 in ``ai/bhi.py`` — same lookahead window for the spot-removal-timing
 decision.
+"""
+
+
+# ─── Scored hand evaluation constants (ai/mulligan.py) ───────────────────
+# Used by `_hand_ev_score()` in `MulliganDecider` to replace the boolean
+# land-count ceilings and cheap-spell-count floors in `_generic()` and the
+# GoalEngine final gate.  The scoring approach sums a capped land component
+# plus per-spell scores from `_card_keep_score`, then compares to a hand-
+# size-calibrated floor.  All values below are derived from the existing
+# keep-score scale (KEEP_SCORE_LAND_NEEDED / KEEP_SCORE_CMC_INVERTED_CEIL /
+# KEEP_SCORE_REMOVAL_TAG family in this file) so the "EV" units are
+# internally consistent.
+
+MULLIGAN_HAND_LAND_FUNCTIONAL_VALUE: float = 6.0
+"""Derived: per-land contribution to hand EV for the keep/mull decision,
+applied to each functional land up to MULLIGAN_HAND_OPTIMAL_LAND_COUNT.
+
+Derivation: sits between KEEP_SCORE_LAND_FLOOD (2.0, bottoming-side for
+excess land) and KEEP_SCORE_LAND_NEEDED (10.0, bottoming-side for needed
+land). For keep/mull we want a middle value: a land is necessary but not
+the dominant hand-quality signal — the spell component determines whether a
+land-sufficient hand is actually keepable.
+
+A minimum keepable hand requires 3 functional lands (3×6=18) and at least
+one role-positive spell (CMC 1, KEEP_SCORE_EARLY_PLAY_AWAY=2 → 4+2=6)
+totalling 24 — that 24 is the MULLIGAN_MIN_HAND_SCORE_7 floor.
+
+Used by `_hand_ev_score` in `ai/mulligan.py`.
+"""
+
+MULLIGAN_HAND_OPTIMAL_LAND_COUNT: int = 3
+"""Rules-constant: optimal land count for scoring purposes in most Modern
+hands. The first three lands contribute their full MULLIGAN_HAND_LAND_
+FUNCTIONAL_VALUE; additional lands contribute 0 from the functional term
+but are penalised by MULLIGAN_EXCESS_LAND_PENALTY.
+
+3 lands covers the T1-T3 curve (land on each of the first three turns),
+matching the Modern heuristic that a playable hand must resolve at least
+three consecutive land drops to cast medium-CMC threats. Above 3, each
+additional land trades a draw-step action (a future spell) for mana
+redundancy.
+
+Used by `_hand_ev_score` in `ai/mulligan.py`.
+"""
+
+MULLIGAN_EXCESS_LAND_PENALTY: float = 1.0
+"""Derived: per-excess-land penalty in `_hand_ev_score` for each land
+beyond MULLIGAN_HAND_OPTIMAL_LAND_COUNT.
+
+1.0 is a light penalty — one excess land reduces the score by 1.0 while
+the spell component can easily compensate. This reflects the real-game
+logic: four lands is fine, five lands is acceptable with good spells, six
+lands needs exceptional spells. The penalty scales linearly so a seven-land
+hand (4 excess × 1.0 = 4 penalty) paired with zero spells scores 14,
+safely below the 24-point floor.
+
+Calibration examples at MULLIGAN_MIN_HAND_SCORE_7=24.0:
+  5 lands + 2 role-tagged CMC-2 spells: 18−2+2×5 = 26 → keep (correct)
+  6 lands + 1 CMC-1 early_play spell:  18−3+8  = 23 → mull (correct)
+  7 lands + 0 spells:                  18−4+0  = 14 → mull (correct)
+  4 lands + 3 CMC-1 early_play spells: 18−1+24 = 41 → keep (correct)
+
+Used by `_hand_ev_score` in `ai/mulligan.py`.
+"""
+
+MULLIGAN_MIN_HAND_SCORE_7: float = 24.0
+"""Derived: minimum `_hand_ev_score` for a 7-card hand to be kept.
+
+Calibration: 3 functional lands (3×6=18) + 1 role-positive CMC-1 spell
+(max(0,5-1)+KEEP_SCORE_EARLY_PLAY_AWAY = 4+2 = 6) = 24.  Any 7-card hand
+that does not reach this total lacks either functional mana or meaningful
+spells — both are necessary for development.
+
+Replaces the categorical gates in `_generic()` (aggro land-ceiling ≤3,
+midrange land-ceiling ≤4, flood gate ≥5, cheap-spell floors) and the
+GoalEngine final gate (`cheap_spells >= 1`) that rejected valid hands
+whose spells cleared role-criteria but not an arbitrary CMC threshold.
+
+Sister constant: MULLIGAN_MIN_HAND_SCORE_6 — lower floor for after-mull
+hands (cards_in_hand < MULLIGAN_STARTING_HAND_SIZE).
+
+Used by `_hand_ev_score` decision gate in `ai/mulligan.py`.
+"""
+
+MULLIGAN_MIN_HAND_SCORE_6: float = 18.0
+"""Derived: minimum `_hand_ev_score` for a 6-card hand (after one mull).
+
+After the first mulligan the deck's weakest card will be bottomed, so
+the kept 6-card hand is the best 6 of 7 drawn.  The floor is lower than
+the 7-card floor: 3 functional lands alone (3×6=18) meets the threshold,
+meaning any hand with ≥3 lands and positive spell contribution keeps.
+This reflects the London-mulligan's design intent: after mulligan we
+accept more marginal hands because the bottom card has already improved
+the hand.
+
+Sister constant: MULLIGAN_MIN_HAND_SCORE_7.
+
+Used by `_hand_ev_score` decision gate in `ai/mulligan.py`.
 """

@@ -53,8 +53,8 @@ class TriggerManager:
                 if c.instance_id == card.instance_id:
                     continue
                 oracle = (c.template.oracle_text or '').lower()
-                if 'another creature' in oracle and 'enters' in oracle:
-                    if 'gain' in oracle and 'life' in oracle:
+                if c.template.has_another_creature_enters_trigger:
+                    if c.template.has_another_creature_enters_lifegain:
                         import re
                         m = re.search(r'gain\s+(\d+)\s+life', oracle)
                         gain = int(m.group(1)) if m else 1
@@ -104,19 +104,109 @@ class TriggerManager:
                 if ('top card' in w_oracle or 'top of your library' in w_oracle) and player.library:
                     top = player.library[0]
                     if top.template.is_land:
-                        player.library.pop(0)
-                        top.zone = 'battlefield'
+                        game.zone_mgr.move_card(
+                            game, top, "library", "battlefield",
+                            cause=f"{watcher.name} → {top.name} enters tapped (land)",
+                            controller_override=controller,
+                        )
                         top.tapped = True
-                        player.battlefield.append(top)
-                        game.log.append(
-                            f"T{game.display_turn} P{controller+1}: "
-                            f"{watcher.name} → {top.name} enters tapped (land)")
                         game._trigger_landfall(controller)
                     else:
                         game.draw_cards(controller, 1)
                         game.log.append(
                             f"T{game.display_turn} P{controller+1}: "
                             f"{watcher.name} → draws a card")
+
+        # Generic "whenever this creature or another [Type] you control
+        # enters, put a +1/+1 counter on it [and it can't be blocked this
+        # turn]" (CR 603 permanent-enters trigger, by card TYPE). Covers
+        # Kappa Cannoneer (artifact) and any future card with the same
+        # shape. Mirrors the subtype scan above; the condition + counter
+        # amount + unblockable clause are parsed once at DB load into
+        # `template.enters_type_counter`. The self-ETB counts EXACTLY once
+        # (watcher IS the entering card) — a single OR guard fires the
+        # trigger once per qualifying ETB, never double-crediting.
+        entering_types = {t.value for t in card.effective_card_types}
+        for watcher in list(player.battlefield):
+            spec = watcher.template.enters_type_counter
+            if not spec:
+                continue
+            required_type = spec['permanent_type']
+            if not (watcher.instance_id == card.instance_id
+                    or required_type in entering_types):
+                continue
+            for _ in range(trigger_multiplier):
+                watcher.plus_counters += spec['counter_power']
+                if spec.get('unblockable_this_turn'):
+                    watcher.cannot_be_blocked_this_turn = True
+            game.log.append(
+                f"T{game.display_turn} P{controller+1}: "
+                f"{watcher.name} gets +{spec['counter_power']}/"
+                f"+{spec['counter_toughness']} counter "
+                f"({card.name} entered) → {watcher.power}/{watcher.toughness}")
+
+        # Generic "whenever a[n] [nontoken] [type] you control enters,
+        # create … token" watcher trigger (CR 603.6).
+        #
+        # Pattern: any permanent on the controller's battlefield that watches
+        # for other permanents of a specific type entering and creates tokens.
+        # Covers Weapons Manufacturing (nontoken artifact → Munitions token),
+        # and every future card with the same oracle trigger shape.
+        #
+        # The dispatch is type-driven: it matches the entering permanent's card
+        # types against the required type in the watcher's oracle text — no
+        # card names are compared.  The "nontoken" qualifier gates on whether
+        # the entering card is a token (card.is_token).  Token creation
+        # delegates to game.create_token so TOKEN_DEFS / parse_token_spec
+        # determine the actual token shape.
+        is_entering_token = getattr(card, 'is_token', False)
+        # entering_types already computed above for enters_type_counter
+        _NUM_TO_INT = {"a": 1, "an": 1, "one": 1, "two": 2,
+                       "three": 3, "four": 4}
+        for watcher in list(player.battlefield):
+            if watcher.instance_id == card.instance_id:
+                continue  # self-watching handled separately above
+            w_oracle = (watcher.template.oracle_text or '').lower()
+            if 'whenever' not in w_oracle or 'enters' not in w_oracle:
+                continue
+            if 'create' not in w_oracle or 'token' not in w_oracle:
+                continue
+            # Match "whenever a[n] [nontoken] <type> you control enters"
+            # _re is always bound at function scope (import re as _re, line ~80)
+            m_watcher = _re.search(
+                r'whenever an? (nontoken\s+)?(\w+) you control enters',
+                w_oracle,
+            )
+            if not m_watcher:
+                continue
+            nontoken_only = bool(m_watcher.group(1))
+            req_type = m_watcher.group(2)
+            # Filter: nontoken condition
+            if nontoken_only and is_entering_token:
+                continue
+            # Filter: permanent type condition
+            if req_type not in entering_types:
+                continue
+            # Count tokens to create
+            count_m = _re.search(
+                r'create (a|an|one|two|three|four|\d+)\b', w_oracle)
+            count = 1
+            if count_m:
+                tok = count_m.group(1)
+                count = int(tok) if tok.isdigit() else _NUM_TO_INT.get(tok, 1)
+            # Determine token type: prefer artifact creature tokens when the
+            # watcher oracle mentions "artifact token" so the token counts
+            # toward Improvise and metalcraft; otherwise default to creature.
+            token_type = "drone" if "artifact token" in w_oracle else "creature"
+            # Fire trigger (respects Panharmonicon-style trigger doublers)
+            for _ in range(trigger_multiplier):
+                game.create_token(controller, token_type, count=count,
+                                  source_oracle=watcher.template.oracle_text)
+            game.log.append(
+                f"T{game.display_turn} P{controller+1}: "
+                f"{watcher.name} trigger → create {count} token(s) "
+                f"({card.name} entered as nontoken={not is_entering_token} "
+                f"{req_type})")
 
 
     @staticmethod
@@ -128,7 +218,7 @@ class TriggerManager:
         # you may PAY {E}{E}{E}" clause — the old loose regex matched the
         # former and fired on attacks, giving Boros free energy every swing.
         oracle = (attacker.template.oracle_text or '').lower()
-        if '{e}' in oracle and 'attack' in oracle and 'get' in oracle:
+        if '{e}' in oracle and attacker.template.has_attack_trigger:
             import re
             for m in re.finditer(r'(?:get|gets?)\s+((?:\{e\})+)', oracle):
                 # Find this sentence's bounds
@@ -139,8 +229,10 @@ class TriggerManager:
                 ) + 1
                 sentence_end = m.end()
                 # Look for the sentence's full text from start to end
+                tail = oracle[m.end():]
                 for term in ('.', '\n'):
-                    idx = oracle.find(term, m.end())
+                    raw = tail.find(term)
+                    idx = (m.end() + raw) if raw != -1 else -1
                     if idx != -1:
                         sentence_end = min(sentence_end if sentence_end > m.end() else idx, idx)
                         break
@@ -175,17 +267,15 @@ class TriggerManager:
             sortable = sorted(opp.battlefield, key=lambda c: c.template.cmc)
             for perm in sortable[:ann_amount]:
                 if perm in opp.battlefield:
-                    opp.battlefield.remove(perm)
-                    perm.zone = "graveyard"
-                    game.players[perm.owner].graveyard.append(perm)
+                    game.zone_mgr.move_card(game, perm, "battlefield", "graveyard",
+                                            cause=f"Annihilator {ann_amount}")
                     sacrificed += 1
             if sacrificed:
                 game.log.append(f"T{game.display_turn}: Annihilator {ann_amount} - "
                                 f"P{opponent+1} sacrifices {sacrificed} permanents")
 
         # Complex attack-trigger land search (oracle: "search...two land cards")
-        oracle = (attacker.template.oracle_text or '').lower()
-        if 'attack' in oracle and 'search' in oracle and 'two land' in oracle:
+        if attacker.template.has_attack_trigger and getattr(attacker.template, 'has_dual_land_search', False):
             from .card_effects import _primeval_titan_search
             _primeval_titan_search(game, controller)
 
@@ -217,28 +307,6 @@ class TriggerManager:
                 description=ability.description,
             )
             game.stack.push(stack_item)
-
-    # ─── TRIGGER QUEUE (for ZoneManager integration) ──────────────
-
-
-    @staticmethod
-    def queue_trigger(game: "GameState", trigger_reg):
-        """Queue a triggered ability from the event system.
-
-        This bridges the new EventBus trigger system with the existing
-        _triggers_queue / process_triggers workflow.
-        """
-        from .event_system import TriggerRegistration
-        if isinstance(trigger_reg, TriggerRegistration):
-            # Create a synthetic Ability to wrap the event-based trigger
-            ability = Ability(
-                ability_type=AbilityType.TRIGGERED,
-                description=trigger_reg.description,
-                effect=trigger_reg.effect,
-            )
-            game._triggers_queue.append(
-                (ability, trigger_reg.card, trigger_reg.controller)
-            )
 
     # ─── STATE-BASED ACTIONS ─────────────────────────────────────
 

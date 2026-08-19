@@ -56,6 +56,12 @@ ALLOWED_UNHANDLED: set[tuple[str, str]] = {
     # Newly registered via Hollow One (Aug 2026 meta-gap fill, unblocked
     # by refresh_card_db.yml) as a core graveyard-fill enabler.
     ("Burning Inquiry", "spell"),
+    # "Search your library for a creature with MV ≤ X, put it onto the
+    # battlefield" with Harmonize alternative cost — the tutor resolves
+    # correctly for the primary mode, but the Harmonize keyword causes
+    # the resolve path to be counted as unhandled for the graveyard-cast
+    # variant (Harmonize cost-reduction/exile sequence not modeled).
+    ("Nature's Rhythm", "spell"),
 }
 
 

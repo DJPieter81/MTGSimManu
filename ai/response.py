@@ -6,6 +6,7 @@ instant removal, and threat evaluation for stack items.
 """
 from __future__ import annotations
 
+import math
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple
 
 from ai.scoring_constants import (
@@ -268,6 +269,53 @@ class ResponseDecider:
             # burn in `evaluate_stack_threat`; using the same constant
             # avoids introducing a new bare numeric literal.
             threat = max(threat, LETHAL_THREAT)
+        elif math.isnan(bp):
+            # NaN mid-chain guard: bottleneck_probability cannot classify
+            # the stack spell (neither chain-fuel nor payoff-accessor) but
+            # the chain IS in flight.  Case: a cost-reducer permanent cast
+            # mid-chain (Ruby Medallion, Goblin Electromancer, Baral, etc.)
+            # — it buffs the remaining chain without being its fuel or its
+            # payoff, so bp falls through to NaN.  The legacy threat scorer
+            # assigns it a high score via the is_cost_reducer component
+            # (~25+, above COUNTER_GATE_HIGH), firing the counter wastefully
+            # before the actual payoff (Past in Flames / Grapeshot) resolves
+            # unchallenged.
+            #
+            # Guard: if the chain is mid-cast (≥ CHAIN_MIDCAST_MIN_STORM_COUNT)
+            # AND payoff is reachable in opp's pool, hold a hard-paid counter
+            # for the upcoming payoff.  Pitch counters are exempt (near-zero
+            # card opportunity cost).  Near-lethal threats override the hold.
+            from ai.combo_calc import (_opp_chain_mid_cast,
+                                       _opp_payoff_reachable)
+            opp_idx_nan = 1 - self.player_idx
+            if (_opp_chain_mid_cast(game, opp_idx_nan)
+                    and _opp_payoff_reachable(game, opp_idx_nan)
+                    and threat < NEAR_LETHAL_CUTOFF):
+                cheap_pitch = any(
+                    "counterspell" in c.template.tags
+                    and self._is_pitch_counter(game, c)
+                    for c in instants
+                )
+                if not cheap_pitch:
+                    if self.strategic_logger:
+                        self.strategic_logger.log_no_response(
+                            self.player_idx, stack_item.source.name, game,
+                            "NaN mid-chain hold: non-fuel non-payoff enabler "
+                            "(cost-reducer class); counter reserved for payoff")
+                    self._record_decision(
+                        game, stack_item,
+                        chosen_inst=None, chosen_targets=[],
+                        chosen_reason=(
+                            "NaN mid-chain hold: counter reserved for "
+                            "upcoming chain payoff (non-fuel non-payoff "
+                            "enabler — cost-reducer class)"
+                        ),
+                        alternatives=[], instants=instants,
+                        threat=threat,
+                        held_counter_floor_ev=self._held_counter_floor_ev(game),
+                        triage_skip=False,
+                    )
+                    return None
 
         # Triage rule (counter vs. flash creature-exile):
         # If the stack threat is a creature AND a flash/instant
@@ -837,9 +885,8 @@ class ResponseDecider:
         ranking) and the chain-fuel hold exemption in
         `decide_response` (M2 Wave-2) both consult this predicate.
         """
-        oracle = (instant.template.oracle_text or '').lower()
         return (
-            'exile a' in oracle and 'rather than pay' in oracle
+            getattr(instant.template, 'has_alternate_exile_cost', False)
             and getattr(game, 'active_player', None) != self.player_idx
         )
 
@@ -1096,9 +1143,8 @@ class ResponseDecider:
         # the explicit `{X}` mana symbol or the 'X +1/+1 counter' / 'for
         # each' patterns embedded in oracle text.
         x_scaler = ('{x}' in oracle
-                    or 'x +1/+1 counter' in oracle
-                    or 'x +1/+1 counters' in oracle
-                    or 'for each' in oracle)
+                    or getattr(template, 'has_x_counter_scaling', False)
+                    or getattr(template, 'has_scaling_effect', False))
         if template.is_creature and x_scaler:
             # Expected X = opp's available mana minus the fixed portion of
             # the cost. cmc==0 for {X}-only cards (Ballista); for cards
@@ -1107,13 +1153,13 @@ class ResponseDecider:
             # opp_idx's perspective, so `snap.my_mana` == opp's mana.
             fixed_cost = template.cmc or 0
             expected_x = max(0, snap_for_clock.my_mana - fixed_cost)
-            if 'x +1/+1 counter' in oracle or 'x +1/+1 counters' in oracle:
+            if getattr(template, 'has_x_counter_scaling', False):
                 # Each counter = +1 power on the body. Treat the projected
                 # body as a creature attacking over EQUIPMENT_RESIDENCY_TURNS
                 # (same residency primitive used elsewhere in this fn).
                 threat += (expected_x * EQUIPMENT_RESIDENCY_TURNS
                            * mana_clock_impact(snap_for_clock) * CLOCK_IMPACT_LIFE_SCALING)
-            elif 'for each' in oracle:
+            elif getattr(template, 'has_scaling_effect', False):
                 # Generic 'for each X' creature scaler — count opp's
                 # matching permanents and credit one power per match.
                 fe = re.search(
@@ -1148,7 +1194,8 @@ class ResponseDecider:
         # Token generators / engines: value = ongoing bodies over time.
         # card_clock_impact already expresses "future card as clock change",
         # so one trigger per turn over a few turns.
-        if 'whenever' in oracle and ('create' in oracle or 'token' in oracle):
+        if (getattr(template, 'has_recurring_trigger', False)
+                and 'token_maker' in getattr(template, 'tags', set())):
             threat += card_clock_impact(snap_for_clock) * CLOCK_IMPACT_LIFE_SCALING
 
         # Card advantage engines (Thought Monitor draws 2): value = one

@@ -58,6 +58,8 @@ class MockTemplate:
     is_cascade: bool = False
     is_arcane: bool = False
     splice_cost: Optional[int] = None
+    has_symmetric_reanimation: bool = False
+    has_scaling_token_finisher: bool = False
 
 
 @dataclass
@@ -136,6 +138,7 @@ def _token_finisher(iid: int = 5, name: str = "TokenFinisherMock") -> MockCard:
                 "spell cast this turn"
             ),
             tags={"finisher"},
+            has_scaling_token_finisher=True,
         ),
         instance_id=iid,
     )
@@ -153,6 +156,7 @@ def _cycling_payoff(iid: int = 6, name: str = "CyclingPayoffMock") -> MockCard:
                 "battlefield"
             ),
             tags={"combo"},
+            has_symmetric_reanimation=True,
         ),
         instance_id=iid,
     )

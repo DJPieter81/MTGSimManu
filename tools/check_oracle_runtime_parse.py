@@ -31,6 +31,11 @@ ROOT = pathlib.Path(__file__).parent.parent
 _EXCLUDED = {
     "engine/oracle_parser.py",
     "engine/card_database.py",
+    # target_solver.py is an oracle-parsing module: its parse() function receives
+    # raw oracle_text strings (including dynamically-created token templates that
+    # bypass card_database.py) and extracts TargetRequirement objects.  It has the
+    # same role as oracle_parser.py — same rationale for exclusion.
+    "engine/target_solver.py",
 }
 
 # Pattern for variables that hold raw oracle text in runtime code.
