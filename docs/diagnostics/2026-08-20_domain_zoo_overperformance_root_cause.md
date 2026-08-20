@@ -68,6 +68,48 @@ decks relying on **held flash removal / sweepers** (4/5c, the three Azorius
 builds) lose 85-100%. The dividing line is exactly "does your removal get
 deployed against a resolved attacker."
 
+## CORRECTION (2026-08-20, instrumented) — it's mana availability, not a missing path
+
+The "held flash removal only answers stack objects" mechanism above is
+**wrong** and is retracted. Env-gated instrumentation of `_cast_instant_removal`
+(engine/game_runner.py) on live Zoo-vs-4/5c games shows:
+
+- The defender's instant window **IS** called every turn and correctly sees the
+  threats (`max_threat` 6.8 → 20.5, far above the 2.0 threshold).
+- But the defender has removal it **cannot cast**: `Lightning Bolt` (1 mana!),
+  `Leyline Binding`, `Wrath` all show `can_cast=False`, because on the critical
+  early turns the control deck has **0 untapped lands** during the opponent's
+  combat — it tapped out on its own turn.
+
+So the real defect is **mana availability**: control decks tap out on their own
+turn (deploying Wrenn and Six / sorceries) and hold up no mana for instant-speed
+interaction, so they cannot answer an aggressive board. The removal-deployment
+window is fine.
+
+### Precise, generic contributing bug (FIXED)
+
+`ai/card_classes.py::is_held_interaction` — which drives `_holdback_penalty`'s
+decision to reserve mana instead of tapping out — gated on `is_instant` **only**.
+Flash removal that is not a plain instant was therefore invisible to holdback:
+
+| Card | is_instant | has_flash | recognized before | after |
+|---|---|---|---|---|
+| Lightning Bolt | ✓ | – | yes | yes |
+| **Solitude** (evoke flash creature) | ✗ | ✓ | **no** | yes |
+| **Leyline Binding** (flash enchantment) | ✗ | ✓ | **no** | yes |
+| Prismatic Ending (sorcery) | ✗ | ✗ | no | no |
+
+Fix: "instant-speed" = `is_instant OR has_flash`. A control deck holding
+Solitude/Leyline Binding now prices tapping-out as a holdback penalty and keeps
+the mana to cast them on the opponent's turn. Failing-test-first in
+`tests/test_held_interaction_includes_flash_removal.py`.
+
+**Measured impact (Bo1 n=10):** Zoo vs 4/5c Control 100% → **80%** (games
+extended T6 → T11, control now interacts); Zoo vs Azorius WST v2 85% → **70%**.
+Zoo vs Azorius Control still 100% — a separate gap (its removal suite / holdback
+differs), tracked for follow-up. This is one correct piece of the systemic
+defensive-play rebalance, not the whole of it.
+
 ## Responsible subsystem
 
 `ai/response.py` (reactive removal deployment) + `ai/ev_player.py` (main-phase

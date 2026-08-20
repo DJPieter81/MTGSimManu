@@ -30,8 +30,20 @@ _HELD_INTERACTION_TAGS = frozenset({"counterspell", "removal", "silence"})
 
 def is_held_interaction(template: "CardTemplate") -> bool:
     """True when the card is instant-speed interaction — something a
-    player holds open mana to cast on the opponent's turn."""
-    if not getattr(template, "is_instant", False):
+    player holds open mana to cast on the opponent's turn.
+
+    "Instant-speed" is castability, not card type: a plain instant
+    (`is_instant`) OR any card with flash (`has_flash`) can be held up.
+    Gating on `is_instant` alone silently dropped flash removal that is
+    not a plain instant — evoke elementals (Solitude / Subtlety /
+    Endurance) and flash enchantment removal (Leyline Binding) — so the
+    holdback pricer tapped out the mana needed to cast them on the
+    opponent's turn. (Root cause: docs/diagnostics/
+    2026-08-20_domain_zoo_overperformance_root_cause.md.)
+    """
+    instant_speed = (getattr(template, "is_instant", False)
+                     or getattr(template, "has_flash", False))
+    if not instant_speed:
         return False
     tags = getattr(template, "tags", None) or set()
     return bool(_HELD_INTERACTION_TAGS & set(tags))
