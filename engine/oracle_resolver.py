@@ -34,7 +34,8 @@ if TYPE_CHECKING:
 # resolution draw-N branch (`resolve_spell_from_oracle`) — both read
 # the identical CR 121.1 "draw N cards" phrasing, just from different
 # trigger contexts (ETB vs. cast resolution).
-_WORD_TO_NUM = {'a': 1, 'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5}
+_WORD_TO_NUM = {'a': 1, 'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5,
+                'six': 6, 'seven': 7, 'eight': 8, 'nine': 9, 'ten': 10}
 
 
 def _pick_damage_target(game: "GameState", controller: int,
@@ -338,6 +339,75 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
             game.log.append(
                 f"T{game.display_turn} P{controller+1}: "
                 f"{card.name} ETB: draw {draw_n} ({names})")
+        return True
+
+    # ── "When ~ enters, reveal the top N cards of your library. For each
+    #     card type, you may put a card of that type ... into your hand.
+    #     Put the rest on the bottom of your library ..." (Atraxa, Grand
+    #     Unifier / selective reveal-to-hand by card type) ──
+    # Class: selective reveal-to-hand grouped by card type. The whole
+    # payoff of the reanimator archetype (Atraxa is the shared reanimation
+    # target of Goryo's Vengeance and Instant Reanimator). Deterministic
+    # engine policy (no AI hook yet, same convention as the GY-return
+    # branch above): for each distinct card type present among the
+    # revealed cards — in a stable type order — take the highest-value
+    # card of that type (nonland first, then highest mana value).
+    for ability in split_abilities(oracle):
+        ability = ability.strip()
+        if not ability.startswith('when '):
+            continue
+        if 'for each card type' not in ability or 'into your hand' not in ability:
+            continue
+        m = re.search(r'reveal the top (\w+) cards? of your library', ability)
+        if m is None:
+            continue
+        tok = m.group(1)
+        try:
+            reveal_n = int(tok)
+        except ValueError:
+            reveal_n = _WORD_TO_NUM.get(tok, 0)
+        if reveal_n <= 0:
+            return False
+        player = game.players[controller]
+        revealed = list(player.library[:reveal_n])
+        # Distinct card types present, in a deterministic order.
+        present_types = []
+        seen = set()
+        for c in revealed:
+            for ct in c.template.card_types:
+                if ct not in seen:
+                    seen.add(ct)
+                    present_types.append(ct)
+        present_types.sort(key=lambda ct: ct.value)
+        remaining = list(revealed)
+        taken = []
+        for ctype in present_types:
+            pool = [c for c in remaining if ctype in c.template.card_types]
+            if not pool:
+                continue
+            best = max(
+                pool,
+                key=lambda c: (not c.template.is_land, c.template.cmc or 0),
+            )
+            remaining.remove(best)
+            taken.append(best)
+        # Move taken cards to hand.
+        for c in taken:
+            player.library.remove(c)
+            c.zone = "hand"
+            player.hand.append(c)
+        # Put the rest on the bottom of the library in a random order.
+        for c in remaining:
+            player.library.remove(c)
+        game.rng.shuffle(remaining)
+        for c in remaining:
+            c.zone = "library"
+            player.library.append(c)
+        if taken:
+            game.log.append(
+                f"T{game.display_turn} P{controller+1}: {card.name} ETB: "
+                f"put {len(taken)} to hand "
+                f"({', '.join(c.name for c in taken)})")
         return True
 
     return False
