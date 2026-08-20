@@ -883,7 +883,10 @@ def resolve_attack_trigger(game: "GameState", attacker: "CardInstance",
     # ── "Whenever this creature attacks, gain N life" ──
     _life_ability = next(
         (a for a in abilities
-         if 'attacks' in a and 'gain' in a and 'life' in a), None)
+         if 'attacks' in a and 'gain' in a and 'life' in a
+         # The drain class ("... loses N life. You gain N life.") owns its
+         # own life-gain below — don't double-apply it here.
+         and not ('sacrifices' in a and 'loses' in a)), None)
     if _life_ability is not None:
         m = re.search(r'gain\s+(\d+)\s+life', _life_ability)
         if m:
@@ -904,6 +907,51 @@ def resolve_attack_trigger(game: "GameState", attacker: "CardInstance",
             game.log.append(
                 f"T{game.display_turn} P{controller+1}: "
                 f"{attacker.name} mobilize {count} — create {count} 1/1 tokens")
+
+    # ── "Whenever this creature enters or attacks, target opponent
+    #     sacrifices a creature or planeswalker, then discards a card, then
+    #     loses N life. You draw a card and gain N life." (Archon of
+    #     Cruelty / attack-drain class) ──
+    # The ETB half is handled by a dedicated ETB handler; this is the
+    # ATTACK half. Scoped to the paragraph that has both 'attacks' and the
+    # 'sacrifices' + 'loses ... life' drain shape.
+    _drain_ability = next(
+        (a for a in abilities
+         if 'attacks' in a and 'target opponent' in a
+         and 'sacrifices' in a and 'loses' in a and 'life' in a), None)
+    if _drain_ability is not None:
+        opp_player = game.players[opponent]
+        # 1. Opponent sacrifices a creature or planeswalker (they choose
+        #    their least-valuable: lowest power, then lowest mana value).
+        if 'creature or planeswalker' in _drain_ability or 'creature' in _drain_ability:
+            from engine.cards import CardType as _CT
+            sac_pool = [
+                c for c in opp_player.battlefield
+                if _CT.CREATURE in c.template.card_types
+                or _CT.PLANESWALKER in c.template.card_types
+            ]
+            if sac_pool:
+                worst = min(sac_pool,
+                            key=lambda c: ((c.power or 0), c.template.cmc or 0))
+                game.zone_mgr.move_card(game, worst, "battlefield", "graveyard",
+                                        cause=f"{attacker.name} attack: sacrifice")
+        # 2. Opponent discards a card.
+        if 'discards' in _drain_ability:
+            game._force_discard(opponent, 1, self_discard=False)
+        # 3. Opponent loses N life; controller draws a card and gains N life.
+        m = re.search(r'loses?\s+(\d+)\s+life', _drain_ability)
+        n_life = int(m.group(1)) if m else 0
+        if n_life > 0:
+            opp_player.life -= n_life
+        if 'draw a card' in _drain_ability or 'draw' in _drain_ability:
+            game.draw_cards(controller, 1)
+        m_gain = re.search(r'gain\s+(\d+)\s+life', _drain_ability)
+        if m_gain:
+            game.gain_life(controller, int(m_gain.group(1)), attacker.name)
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: "
+            f"{attacker.name} attack drain — opp loses {n_life} life")
+        game.check_state_based_actions()
 
     # ── "Whenever this creature attacks, create a token" ──
     # The mobilize exclusion stays whole-text: mobilize's reminder text
