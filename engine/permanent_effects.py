@@ -239,6 +239,9 @@ class PermanentEffects:
             creature.plus_counters += 1
             game.players[controller].battlefield.append(creature)
             game.log.append(f"T{game.display_turn}: {creature.name} returns (undying)")
+            # CR 603.6a: the returned creature is a NEW object entering the
+            # battlefield — its ETB triggers fire again (mirror reanimate()).
+            game._handle_permanent_etb(creature, controller)
             return
 
         # Persist (CR 702.78): return to battlefield with -1/-1 counter if no -1/-1 counter.
@@ -253,6 +256,9 @@ class PermanentEffects:
             creature.minus_counters += 1
             game.players[controller].battlefield.append(creature)
             game.log.append(f"T{game.display_turn}: {creature.name} returns (persist)")
+            # CR 603.6a: the returned creature is a NEW object entering the
+            # battlefield — its ETB triggers fire again (mirror reanimate()).
+            game._handle_permanent_etb(creature, controller)
             return
 
         # Equipment falls off: read instance_tags BEFORE move_card clears them.
