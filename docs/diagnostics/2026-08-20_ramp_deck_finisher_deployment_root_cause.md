@@ -142,4 +142,41 @@ archetype selection or gameplan JSON. A config-layer fix cannot close this gap;
 it requires the ev_player scoring change described above (surplus-mana ramp
 decay + a deployment pull), which is Phase-2-kernel-scale work, not a quick
 win. Do not re-attempt the archetype flip.
+
+## Second data point (2026-08-20) — Creatures Toolbox (21% field WR)
+
+Investigated as a candidate for a genuinely obvious bug. Finding: its win
+condition is **not implemented in the engine.**
+
+- Creatures Toolbox is a Devoted Druid + Vizier of Remedies infinite-mana
+  combo deck (→ Walking Ballista for lethal, or Craterhoof Behemoth overrun),
+  with a Green Sun's Zenith / Nature's Rhythm / Fiend Artisan tutor toolbox.
+- Its auto-generated gameplan declares **none** of the combo-support keys that
+  8 working combo decks use (`critical_pieces`, `mulligan_combo_sets`,
+  `combo_readiness_check`) — empty engines/enablers, payoffs missing Walking
+  Ballista, no combo definition. The AI has no idea it is a combo deck, so it
+  chump-blocks Devoted Druid (a combo piece) into a 7/7 and never assembles.
+- **Root blocker:** the engine models **no** self-untapping mana ability, no
+  -1/-1 counter *replacement* (Vizier), and no infinite-mana loop detection
+  (`grep` for `untap_self`/`infinite_mana`/`self_untap` → 0 hits). Writing the
+  gameplan combo declaration cannot help until the mechanic exists. Generic
+  implementation (parse "untap this" activated abilities, model counter
+  replacement, detect the infinite loop) is real engine work benefiting
+  essentially one registered deck — low ROI vs the systemic scoring fix.
+
+## Consolidated conclusion
+
+Two of the worst free-win decks, investigated to replay-level root cause, both
+require **engine / AI-kernel mechanics work, not config fixes**:
+
+| Deck | Field WR | Root cause | Fix class |
+|---|---|---|---|
+| Eldrazi Ramp | 17% | generic threat-deployment scoring; over-ramps, never slams finisher | `ev_player` scoring (deep) |
+| Creatures Toolbox | 21% | infinite-mana combo (Devoted Druid+Vizier) not modeled in engine | engine mechanic (self-untap + counter replacement) |
+
+The bottom of the table is a **systemic** "AI/engine can't pilot non-linear
+setup decks" gap, not a set of isolated quick-fix bugs. The correct WR-integrity
+move is to merge the verified mechanics fixes (#546), run the honest Bo3
+baseline, and schedule the deployment-scoring + infinite-mana-combo work as
+scoped follow-ups rather than pre-run quick fixes.
 ```
