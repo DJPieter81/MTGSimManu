@@ -1,0 +1,356 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+=== 4/5c Control vs Domain Zoo (seed 50000) ===
+Result: Domain Zoo wins T7 via damage
+Life: P1=-1 P2=23
+
+  [MAIN1]
+
+T1 4/5c Control | life=20 mana=0 hand=5+2L gy=0
+  Hand: ['Eternal Witness', 'Solitude', 'Wrenn and Six', "Orim's Chant", 'Quantum Riddler']
+  Opp board: [] (life=20)
+  EV scores:
+     +32.0  play_land: Breeding Pool <--
+     +17.0  play_land: Elegant Parlor
+  >>> PLAY_LAND: Breeding Pool
+  [MAIN1]
+
+T1 4/5c Control | life=20 mana=1 hand=5+1L gy=0
+  Hand: ['Eternal Witness', 'Solitude', 'Wrenn and Six', "Orim's Chant", 'Quantum Riddler']
+  Opp board: [] (life=20)
+  >>> PASS (play_value <= 0)
+  [MAIN2]
+
+T1 4/5c Control | life=20 mana=1 hand=5+1L gy=0
+  Hand: ['Eternal Witness', 'Solitude', 'Wrenn and Six', "Orim's Chant", 'Quantum Riddler']
+  Opp board: [] (life=20)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T2 Domain Zoo | life=20 mana=0 hand=4+2L gy=0
+  Hand: ['Scion of Draco', 'Ragavan, Nimble Pilferer', 'Doorkeeper Thrull', 'Consign to Memory']
+  Permanents: ['Leyline of the Guildpact']
+  Opp board: [] (life=20)
+  EV scores:
+     +22.0  play_land: Mountain <--
+      +7.0  play_land: Arena of Glory
+  >>> PLAY_LAND: Mountain
+  [MAIN1]
+
+T2 Domain Zoo | life=20 mana=1 hand=4+1L gy=0
+  Hand: ['Scion of Draco', 'Ragavan, Nimble Pilferer', 'Doorkeeper Thrull', 'Consign to Memory']
+  Permanents: ['Leyline of the Guildpact']
+  Opp board: [] (life=20)
+  EV scores:
+      +2.0  cast_spell: Ragavan, Nimble Pilferer <--  [h=+2.0 la=+2.0]
+  >>> CAST_SPELL: Ragavan, Nimble Pilferer
+  [MAIN1]
+
+T2 Domain Zoo | life=20 mana=0 hand=3+1L gy=0
+  Hand: ['Scion of Draco', 'Doorkeeper Thrull', 'Consign to Memory']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Permanents: ['Leyline of the Guildpact']
+  Opp board: [] (life=20)
+  >>> PASS (play_value <= 0)
+  [MAIN2]
+
+T2 Domain Zoo | life=20 mana=0 hand=3+1L gy=0
+  Hand: ['Scion of Draco', 'Doorkeeper Thrull', 'Consign to Memory']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Permanents: ['Leyline of the Guildpact']
+  Opp board: [] (life=20)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T3 4/5c Control | life=20 mana=1 hand=6+1L gy=0
+  Hand: ['Eternal Witness', 'Solitude', 'Wrenn and Six', "Orim's Chant", 'Quantum Riddler', 'Ephemerate']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=20)
+  EV scores:
+     +27.0  play_land: Elegant Parlor <--
+  >>> PLAY_LAND: Elegant Parlor
+  [MAIN1]
+
+T3 4/5c Control | life=20 mana=1 hand=6+0L gy=1
+  Hand: ['Eternal Witness', 'Solitude', 'Wrenn and Six', "Orim's Chant", 'Quantum Riddler', 'Ephemerate']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=20)
+  >>> PASS (play_value <= 0)
+  [MAIN2]
+
+T3 4/5c Control | life=20 mana=1 hand=6+0L gy=1
+  Hand: ['Eternal Witness', 'Solitude', 'Wrenn and Six', "Orim's Chant", 'Quantum Riddler', 'Ephemerate']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=20)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T4 Domain Zoo | life=20 mana=1 hand=4+1L gy=0
+  Hand: ['Scion of Draco', 'Doorkeeper Thrull', 'Consign to Memory', 'Scion of Draco']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Permanents: ['Leyline of the Guildpact']
+  Opp board: [] (life=20)
+  EV scores:
+      +7.0  play_land: Arena of Glory <--
+  >>> PLAY_LAND: Arena of Glory
+  [MAIN1]
+
+T4 Domain Zoo | life=20 mana=1 hand=4+0L gy=0
+  Hand: ['Scion of Draco', 'Doorkeeper Thrull', 'Consign to Memory', 'Scion of Draco']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Permanents: ['Leyline of the Guildpact']
+  Opp board: [] (life=20)
+  >>> PASS (play_value <= 0)
+  >>> ATTACK: ['Ragavan, Nimble Pilferer']
+  [MAIN2]
+
+T4 Domain Zoo | life=20 mana=1 hand=5+0L gy=0
+  Hand: ['Scion of Draco', 'Doorkeeper Thrull', 'Consign to Memory', 'Scion of Draco', 'Prismatic Ending']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Permanents: ['Leyline of the Guildpact', 'Treasure Token']
+  Opp board: [] (life=18)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T5 4/5c Control | life=18 mana=2 hand=7+0L gy=1
+  Hand: ['Eternal Witness', 'Solitude', 'Wrenn and Six', "Orim's Chant", 'Quantum Riddler', 'Ephemerate', 'Prismatic Ending']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=20)
+  EV scores:
+      +9.2  cast_spell: Wrenn and Six <--  [h=+9.2 la=+9.2]
+  >>> CAST_SPELL: Wrenn and Six
+  [MAIN1]
+
+T5 4/5c Control | life=18 mana=0 hand=6+0L gy=1
+  Hand: ['Eternal Witness', 'Solitude', "Orim's Chant", 'Quantum Riddler', 'Ephemerate', 'Prismatic Ending']
+  Permanents: ['Wrenn and Six']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=20)
+  >>> PASS (play_value <= 0)
+  [MAIN2]
+
+T5 4/5c Control | life=18 mana=0 hand=6+0L gy=1
+  Hand: ['Eternal Witness', 'Solitude', "Orim's Chant", 'Quantum Riddler', 'Ephemerate', 'Prismatic Ending']
+  Permanents: ['Wrenn and Six']
+  Opp board: [] (life=20)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T6 Domain Zoo | life=20 mana=2 hand=3+1L gy=2
+  Hand: ['Scion of Draco', 'Doorkeeper Thrull', 'Scion of Draco']
+  Permanents: ['Leyline of the Guildpact', 'Treasure Token']
+  Opp board: [] (life=18)
+  EV scores:
+     +25.0  play_land: Arid Mesa <--
+      +8.5  cast_spell: Scion of Draco  [h=+8.5 la=+8.5]
+      +8.5  cast_spell: Scion of Draco  [h=+8.5 la=+8.5]
+      +1.1  cast_spell: Doorkeeper Thrull  [h=+1.1 la=+1.1]
+  >>> PLAY_LAND: Arid Mesa
+  [MAIN1]
+
+T6 Domain Zoo | life=19 mana=2 hand=3+0L gy=3
+  Hand: ['Scion of Draco', 'Doorkeeper Thrull', 'Scion of Draco']
+  Permanents: ['Leyline of the Guildpact', 'Treasure Token']
+  Opp board: [] (life=18)
+  EV scores:
+      +8.6  cast_spell: Scion of Draco <--  [h=+8.6 la=+8.6]
+      +8.6  cast_spell: Scion of Draco  [h=+8.6 la=+8.6]
+      +1.2  cast_spell: Doorkeeper Thrull  [h=+1.2 la=+1.2]
+  >>> CAST_SPELL: Scion of Draco
+  [MAIN1]
+
+T6 Domain Zoo | life=19 mana=0 hand=2+0L gy=3
+  Hand: ['Doorkeeper Thrull', 'Scion of Draco']
+  Board: ['Scion of Draco (4/4)']
+  Permanents: ['Leyline of the Guildpact', 'Treasure Token']
+  Opp board: [] (life=18)
+  >>> PASS (play_value <= 0)
+  [MAIN2]
+
+T6 Domain Zoo | life=23 mana=0 hand=2+0L gy=3
+  Hand: ['Doorkeeper Thrull', 'Scion of Draco']
+  Permanents: ['Leyline of the Guildpact', 'Treasure Token']
+  Opp board: [] (life=18)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T7 4/5c Control | life=18 mana=2 hand=5+0L gy=2
+  Hand: ['Eternal Witness', 'Quantum Riddler', 'Ephemerate', 'Prismatic Ending', 'Stock Up']
+  Permanents: ['Wrenn and Six']
+  Opp board: [] (life=23)
+  >>> PASS (play_value <= 0)
+  [MAIN2]
+
+T7 4/5c Control | life=18 mana=2 hand=5+0L gy=2
+  Hand: ['Eternal Witness', 'Quantum Riddler', 'Ephemerate', 'Prismatic Ending', 'Stock Up']
+  Permanents: ['Wrenn and Six']
+  Opp board: [] (life=23)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T8 Domain Zoo | life=23 mana=3 hand=3+0L gy=3
+  Hand: ['Doorkeeper Thrull', 'Scion of Draco', 'Territorial Kavu']
+  Permanents: ['Leyline of the Guildpact', 'Treasure Token']
+  Opp board: [] (life=18)
+  EV scores:
+      +6.5  cast_spell: Scion of Draco <--  [h=+6.5 la=+6.5]
+      +0.2  cast_spell: Territorial Kavu  [h=+0.2 la=+0.2]
+      +0.1  cast_spell: Doorkeeper Thrull  [h=+0.1 la=+0.1]
+  >>> CAST_SPELL: Scion of Draco
+  [MAIN1]
+
+T8 Domain Zoo | life=23 mana=1 hand=2+0L gy=3
+  Hand: ['Doorkeeper Thrull', 'Territorial Kavu']
+  Board: ['Scion of Draco (4/4)']
+  Permanents: ['Leyline of the Guildpact', 'Treasure Token']
+  Opp board: [] (life=18)
+  >>> PASS (play_value <= 0)
+  [MAIN2]
+
+T8 Domain Zoo | life=23 mana=1 hand=2+0L gy=3
+  Hand: ['Doorkeeper Thrull', 'Territorial Kavu']
+  Board: ['Scion of Draco (4/4)']
+  Permanents: ['Leyline of the Guildpact', 'Treasure Token']
+  Opp board: [] (life=18)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T9 4/5c Control | life=18 mana=2 hand=6+0L gy=2
+  Hand: ['Eternal Witness', 'Quantum Riddler', 'Ephemerate', 'Prismatic Ending', 'Stock Up', 'Wrath of the Skies']
+  Permanents: ['Wrenn and Six']
+  Opp board: ['Scion of Draco (4/4)'] (life=23)
+  EV scores:
+      +9.7  cast_spell: Prismatic Ending <--  [h=+9.7 la=+9.7]
+  >>> CAST_SPELL: Prismatic Ending
+  [MAIN1]
+
+T9 4/5c Control | life=18 mana=0 hand=5+0L gy=3
+  Hand: ['Eternal Witness', 'Quantum Riddler', 'Ephemerate', 'Stock Up', 'Wrath of the Skies']
+  Permanents: ['Wrenn and Six']
+  Opp board: ['Scion of Draco (4/4)'] (life=23)
+  >>> PASS (play_value <= 0)
+  [MAIN2]
+
+T9 4/5c Control | life=18 mana=0 hand=5+0L gy=3
+  Hand: ['Eternal Witness', 'Quantum Riddler', 'Ephemerate', 'Stock Up', 'Wrath of the Skies']
+  Permanents: ['Wrenn and Six']
+  Opp board: ['Scion of Draco (4/4)'] (life=23)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T10 Domain Zoo | life=23 mana=3 hand=3+0L gy=3
+  Hand: ['Doorkeeper Thrull', 'Territorial Kavu', 'Leyline of the Guildpact']
+  Board: ['Scion of Draco (4/4)']
+  Permanents: ['Leyline of the Guildpact', 'Treasure Token']
+  Opp board: [] (life=18)
+  EV scores:
+      +1.9  cast_spell: Doorkeeper Thrull <--  [h=+1.9 la=+1.9]
+      +0.1  cast_spell: Territorial Kavu  [h=+0.1 la=+0.1]
+  >>> CAST_SPELL: Doorkeeper Thrull
+  [MAIN1]
+
+T10 Domain Zoo | life=23 mana=1 hand=2+0L gy=3
+  Hand: ['Territorial Kavu', 'Leyline of the Guildpact']
+  Board: ['Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)']
+  Permanents: ['Leyline of the Guildpact', 'Treasure Token']
+  Opp board: [] (life=18)
+  >>> PASS (play_value <= 0)
+  >>> ATTACK: ['Scion of Draco']
+  [MAIN2]
+
+T10 Domain Zoo | life=23 mana=1 hand=2+0L gy=3
+  Hand: ['Territorial Kavu', 'Leyline of the Guildpact']
+  Board: ['Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)']
+  Permanents: ['Leyline of the Guildpact', 'Treasure Token']
+  Opp board: [] (life=14)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T11 4/5c Control | life=14 mana=2 hand=6+0L gy=3
+  Hand: ['Eternal Witness', 'Quantum Riddler', 'Ephemerate', 'Stock Up', 'Wrath of the Skies', 'Ephemerate']
+  Permanents: ['Wrenn and Six']
+  Opp board: ['Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)'] (life=23)
+  >>> PASS (play_value <= 0)
+  [MAIN2]
+
+T11 4/5c Control | life=14 mana=2 hand=6+0L gy=3
+  Hand: ['Eternal Witness', 'Quantum Riddler', 'Ephemerate', 'Stock Up', 'Wrath of the Skies', 'Ephemerate']
+  Permanents: ['Wrenn and Six']
+  Opp board: ['Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)'] (life=23)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T12 Domain Zoo | life=23 mana=3 hand=3+0L gy=3
+  Hand: ['Territorial Kavu', 'Leyline of the Guildpact', 'Doorkeeper Thrull']
+  Board: ['Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)']
+  Permanents: ['Leyline of the Guildpact', 'Treasure Token']
+  Opp board: [] (life=14)
+  EV scores:
+      +0.5  cast_spell: Territorial Kavu <--  [h=+0.5 la=+0.5]
+      +0.3  cast_spell: Doorkeeper Thrull  [h=+0.3 la=+0.3]
+  >>> CAST_SPELL: Territorial Kavu
+  [MAIN1]
+
+T12 Domain Zoo | life=23 mana=1 hand=2+0L gy=3
+  Hand: ['Leyline of the Guildpact', 'Doorkeeper Thrull']
+  Board: ['Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)', 'Territorial Kavu (5/5)']
+  Permanents: ['Leyline of the Guildpact', 'Treasure Token']
+  Opp board: [] (life=14)
+  >>> PASS (play_value <= 0)
+  >>> ATTACK: ['Scion of Draco', 'Doorkeeper Thrull']
+  [MAIN2]
+
+T12 Domain Zoo | life=23 mana=1 hand=2+0L gy=3
+  Hand: ['Leyline of the Guildpact', 'Doorkeeper Thrull']
+  Board: ['Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)', 'Territorial Kavu (5/5)']
+  Permanents: ['Leyline of the Guildpact', 'Treasure Token']
+  Opp board: [] (life=9)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T13 4/5c Control | life=9 mana=2 hand=7+0L gy=3
+  Hand: ['Eternal Witness', 'Quantum Riddler', 'Ephemerate', 'Stock Up', 'Wrath of the Skies', 'Ephemerate', "Orim's Chant"]
+  Permanents: ['Wrenn and Six']
+  Opp board: ['Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)', 'Territorial Kavu (5/5)'] (life=23)
+  EV scores:
+      -0.3  cast_spell: Orim's Chant <--  [h=-0.3 la=-0.3]
+  >>> CAST_SPELL: Orim's Chant
+  [MAIN1]
+
+T13 4/5c Control | life=9 mana=1 hand=6+0L gy=4
+  Hand: ['Eternal Witness', 'Quantum Riddler', 'Ephemerate', 'Stock Up', 'Wrath of the Skies', 'Ephemerate']
+  Permanents: ['Wrenn and Six']
+  Opp board: ['Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)', 'Territorial Kavu (5/5)'] (life=23)
+  >>> PASS (play_value <= 0)
+  [MAIN2]
+
+T13 4/5c Control | life=9 mana=1 hand=6+0L gy=4
+  Hand: ['Eternal Witness', 'Quantum Riddler', 'Ephemerate', 'Stock Up', 'Wrath of the Skies', 'Ephemerate']
+  Permanents: ['Wrenn and Six']
+  Opp board: ['Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)', 'Territorial Kavu (5/5)'] (life=23)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T14 Domain Zoo | life=23 mana=3 hand=2+1L gy=3
+  Hand: ['Leyline of the Guildpact', 'Doorkeeper Thrull']
+  Board: ['Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)', 'Territorial Kavu (5/5)']
+  Permanents: ['Leyline of the Guildpact', 'Treasure Token']
+  Opp board: [] (life=9)
+  EV scores:
+     +11.0  play_land: Thundering Falls <--
+      +0.4  cast_spell: Doorkeeper Thrull  [h=+0.4 la=+0.4]
+  >>> PLAY_LAND: Thundering Falls
+  [MAIN1]
+
+T14 Domain Zoo | life=23 mana=3 hand=2+0L gy=4
+  Hand: ['Leyline of the Guildpact', 'Doorkeeper Thrull']
+  Board: ['Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)', 'Territorial Kavu (5/5)']
+  Permanents: ['Leyline of the Guildpact', 'Treasure Token']
+  Opp board: [] (life=9)
+  EV scores:
+      +0.6  cast_spell: Doorkeeper Thrull <--  [h=+0.6 la=+0.6]
+  >>> CAST_SPELL: Doorkeeper Thrull
+  [MAIN1]
+
+T14 Domain Zoo | life=23 mana=1 hand=1+0L gy=4
+  Hand: ['Leyline of the Guildpact']
+  Board: ['Scion of Draco (4/4)', 'Doorkeeper Thrull (1/2)', 'Territorial Kavu (5/5)', 'Doorkeeper Thrull (1/2)']
+  Permanents: ['Leyline of the Guildpact', 'Treasure Token']
+  Opp board: [] (life=9)
+  >>> PASS (play_value <= 0)
+  >>> ATTACK: ['Scion of Draco', 'Doorkeeper Thrull', 'Territorial Kavu']

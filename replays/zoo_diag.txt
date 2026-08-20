@@ -1,0 +1,771 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+Result: Dimir Midrange wins T12 via damage
+Life: P1=0 P2=11
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Domain Zoo wins → chooses to play first
+║ P1 (on play): Domain Zoo
+║ P2 (on draw): Dimir Midrange
+╚═══════════════════════════════════════════════════════
+
+P1 (Domain Zoo) opening hand (2 lands, 5 spells):
+  • Lightning Bolt [Spell, CMC 1]
+  • Leyline of the Guildpact [Spell, CMC 4]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Thundering Falls [Land, CMC 0]
+  • Flooded Strand [Land, CMC 0]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Leyline Binding [Spell, CMC 6]
+→ P1 KEEPS 7 — has key card(s): Leyline Binding, Ragavan, Nimble Pilferer, 2 cheap spells
+
+P2 (Dimir Midrange) opening hand (4 lands, 3 spells):
+  • Orcish Bowmasters [Creature, CMC 2]
+  • Darkslick Shores [Land, CMC 0]
+  • Shelldock Isle [Land, CMC 0]
+  • Creeping Tar Pit [Land, CMC 0]
+  • Psychic Frog [Creature, CMC 2]
+  • Counterspell [Spell, CMC 2]
+  • Takenuma, Abandoned Mire [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Orcish Bowmasters, Psychic Frog, 3 cheap spells
+
+T0 P1: Leyline of the Guildpact begins the game on the battlefield (leyline)
+
+╔══ TURN 1 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 20  |  Dimir Midrange 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: (none)
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Flooded Strand
+T1: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Flooded Strand (pay 1 life) -> Steam Vents (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Domain Zoo 19
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Consider
+  [Main 1]
+T1 P2: Play Takenuma, Abandoned Mire
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 19  |  Dimir Midrange 20
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: Steam Vents
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Takenuma, Abandoned Mire
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Doorkeeper Thrull
+  [Main 1]
+T2 P1: surveil 1 → Leyline Binding to GY
+T2 P1: Play Thundering Falls (enters tapped)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Steam Vents→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T2 P1: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P2 passes (no response)
+T2: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Domain Zoo 19
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Takenuma, Abandoned Mire
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Other: Leyline of the Guildpact
+║   Lands: Steam Vents [T], Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Creeping Tar Pit
+  [Main 1]
+T2 P2: Play Darkslick Shores (untapped, 1 other lands)
+    → Goal: grind_value
+    [Mana] Tap Takenuma, Abandoned Mire→B, Darkslick Shores→U (paying for Orcish Bowmasters, 2 mana remaining)
+T2 P2: Cast Orcish Bowmasters (1B)
+    [Priority] P1 passes (no response)
+T2: Resolve Orcish Bowmasters
+T2 P2: Bowmasters deals 1 damage to Ragavan, Nimble Pilferer
+T2 P2: Bowmasters creates 1/1 Orc Army token
+T2: Ragavan, Nimble Pilferer dies
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 19  |  Dimir Midrange 20
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 3
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: Steam Vents, Thundering Falls
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Takenuma, Abandoned Mire [T], Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Doorkeeper Thrull
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Steam Vents→R, Thundering Falls→W (paying for Ragavan, Nimble Pilferer, 2 mana remaining)
+T3 P1: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P2 passes (no response)
+T3: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ragavan, Nimble Pilferer
+T3 P1: Attack with Ragavan, Nimble Pilferer
+T3 P2:   [BLOCK] Orcish Bowmasters (1/1) blocks Ragavan, Nimble Pilferer (2/1) — lifespan_delta=+1.00
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T3: Ragavan, Nimble Pilferer dies
+T3: Orcish Bowmasters dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Domain Zoo 19
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: Orc Army (1/1)
+║   Lands: Takenuma, Abandoned Mire, Darkslick Shores
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: Steam Vents [T], Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Subtlety
+  [Main 1]
+T3 P2: Play Shelldock Isle (enters tapped)
+    → Goal: grind_value [enablers]
+    [Mana] Tap Darkslick Shores→U (paying for Consider, 2 mana remaining)
+T3 P2: Cast Consider (U)
+    [Priority] P1 passes (no response)
+T3: Resolve Consider
+T3 P2: surveil 1 → Underground River to GY
+T3 P2: Consider → draw 1 (Drown in the Loch)
+T3: Consider moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orc Army
+T3 P2: Attack with Orc Army
+  [Declare Blockers] P1 does not block
+T3 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 19 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 18  |  Dimir Midrange 20
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 4
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: Steam Vents, Thundering Falls
+║ Dimir Midrange board:
+║   Creatures: Orc Army (1/1) [tapped]
+║   Lands: Takenuma, Abandoned Mire, Darkslick Shores [T], Shelldock Isle [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Leyline Binding
+  [Main 1]
+    → Goal: curve_out
+    [Target] → Orc Army: marginal threat 1.11 (1/1 body) — better than 3 face dmg
+    [Mana] Tap Steam Vents→R (paying for Lightning Bolt, 2 mana remaining)
+T4 P1: Cast Lightning Bolt (R)
+    [Priority] P2 passes (no response)
+T4: Resolve Lightning Bolt
+T4: Lightning Bolt moved stack -> graveyard (resolution)
+T4: Orc Army dies
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Domain Zoo 18
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 48  |  Graveyard: 4
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Takenuma, Abandoned Mire, Darkslick Shores, Shelldock Isle
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: Steam Vents [T], Thundering Falls
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Watery Grave
+  [Main 1]
+T4 P2: Play Watery Grave (untapped, life: 20)
+    → Goal: close_game
+    [Mana] Tap Takenuma, Abandoned Mire→B, Shelldock Isle→U, Darkslick Shores→U, Watery Grave→B (paying for Subtlety, 4 mana remaining)
+T4 P2: Cast Subtlety (2UU)
+    [Priority] P1 passes (no response)
+T4: Resolve Subtlety
+T4 P2: Subtlety enters (no creature/PW spell on stack to target)
+  [Begin Combat]
+    [Mana] Tap Thundering Falls→W (paying for Leyline Binding, 1 mana remaining)
+T4 P1: Cast Leyline Binding (5W)
+T4: Resolve Leyline Binding
+T4: Subtlety moved battlefield -> exile (exiled)
+T4 P1: Leyline Binding exiles Subtlety
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 18  |  Dimir Midrange 20
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 5
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact, Leyline Binding
+║   Lands: Steam Vents, Thundering Falls
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Takenuma, Abandoned Mire [T], Darkslick Shores [T], Shelldock Isle [T], Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Lightning Bolt
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Steam Vents→W, Thundering Falls→W (paying for Doorkeeper Thrull, 2 mana remaining)
+T5 P1: Cast Doorkeeper Thrull (1W)
+    [Priority] P2 passes (no response)
+T5: Resolve Doorkeeper Thrull
+T5 P1: Doorkeeper Thrull: opponent ETB triggers suppressed
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Domain Zoo 18
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 2
+║ Library: 47  |  Graveyard: 4
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Takenuma, Abandoned Mire, Darkslick Shores, Shelldock Isle, Watery Grave
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2)
+║   Other: Leyline of the Guildpact, Leyline Binding
+║   Lands: Steam Vents [T], Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Murktide Regent
+  [Main 1]
+    → Goal: close_game
+T5 P2: Delve 4 cards for Murktide Regent
+    [Mana] Tap Takenuma, Abandoned Mire→B, Shelldock Isle→U, Darkslick Shores→U (paying for Murktide Regent, 4 mana remaining)
+T5 P2: Cast Murktide Regent (5UU)
+    [Priority] P1 passes (no response)
+T5: Resolve Murktide Regent
+T5: Murktide Regent ETB suppressed by Doorkeeper Thrull
+T5 P2: Play Creeping Tar Pit (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 18  |  Dimir Midrange 20
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 5
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2)
+║   Other: Leyline of the Guildpact, Leyline Binding
+║   Lands: Steam Vents, Thundering Falls
+║ Dimir Midrange board:
+║   Creatures: Murktide Regent (3/3)
+║   Lands: Takenuma, Abandoned Mire [T], Darkslick Shores [T], Shelldock Isle [T], Watery Grave, Creeping Tar Pit [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Leyline of the Guildpact
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Steam Vents→W (paying for Leyline Binding, 2 mana remaining)
+T6 P1: Cast Leyline Binding (5W)
+    [Priority] P2 passes (no response)
+T6: Resolve Leyline Binding
+T6: Murktide Regent moved battlefield -> exile (exiled)
+T6 P1: Leyline Binding exiles Murktide Regent
+    → Goal: curve_out
+    [Target] → face (3 dmg, life 20 → 17): face value 4.50
+    [Mana] Tap Thundering Falls→R (paying for Lightning Bolt, 1 mana remaining)
+T6 P1: Cast Lightning Bolt (R)
+    [Priority] P2 passes (no response)
+T6: Resolve Lightning Bolt
+T6 P1: Lightning Bolt → 3 damage → life 17
+T6: Lightning Bolt moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Doorkeeper Thrull
+T6 P1: Attack with Doorkeeper Thrull
+  [Declare Blockers] P2 does not block
+T6 P1:   Doorkeeper Thrull (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P2 life: 17 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 16  |  Domain Zoo 18
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 2
+║ Library: 46  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Takenuma, Abandoned Mire, Darkslick Shores, Shelldock Isle, Watery Grave, Creeping Tar Pit
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2) [tapped]
+║   Other: Leyline of the Guildpact, Leyline Binding, Leyline Binding
+║   Lands: Steam Vents [T], Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Island
+  [Main 1]
+T6 P2: Play Island
+T6 P2: Creeping Tar Pit becomes a 3/2 creature until end of turn (pays 3 mana)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Creeping Tar Pit
+T6 P2: Attack with Creeping Tar Pit
+  [Declare Blockers] P1 does not block
+T6 P2:   Creeping Tar Pit (3/2) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 18 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 15  |  Dimir Midrange 16
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 6
+║ Library: 46  |  Graveyard: 6
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2)
+║   Other: Leyline of the Guildpact, Leyline Binding, Leyline Binding
+║   Lands: Steam Vents, Thundering Falls
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Takenuma, Abandoned Mire [T], Darkslick Shores [T], Shelldock Isle [T], Watery Grave, Creeping Tar Pit [T], Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Leyline of the Guildpact
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Steam Vents→W, Thundering Falls→W (paying for Doorkeeper Thrull, 2 mana remaining)
+T7 P1: Cast Doorkeeper Thrull (1W)
+    [Priority] P2 responds with Counterspell
+    [Mana] Tap Island→U, Watery Grave→U (paying for Counterspell, 2 mana remaining)
+T7 P2: Cast Counterspell (UU)
+T7: Resolve Counterspell
+T7: Doorkeeper Thrull moved stack -> graveyard (resolution)
+T7: Doorkeeper Thrull is countered
+T7: Counterspell moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Doorkeeper Thrull
+T7 P1: Attack with Doorkeeper Thrull
+  [Declare Blockers] P2 does not block
+T7 P1:   Doorkeeper Thrull (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P2 life: 16 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 15  |  Domain Zoo 15
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 6  |  Opp lands: 2
+║ Library: 45  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Takenuma, Abandoned Mire, Darkslick Shores, Shelldock Isle, Watery Grave, Creeping Tar Pit, Island
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2) [tapped]
+║   Other: Leyline of the Guildpact, Leyline Binding, Leyline Binding
+║   Lands: Steam Vents [T], Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Archmage's Charm
+  [Main 1]
+T7 P2: Play Creeping Tar Pit (enters tapped)
+T7 P2: Creeping Tar Pit becomes a 3/2 creature until end of turn (pays 3 mana)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Creeping Tar Pit
+T7 P2: Attack with Creeping Tar Pit
+  [Declare Blockers] P1 does not block
+T7 P2:   Creeping Tar Pit (3/2) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 15 → 12
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 12  |  Dimir Midrange 15
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 7
+║ Library: 45  |  Graveyard: 7
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2)
+║   Other: Leyline of the Guildpact, Leyline Binding, Leyline Binding
+║   Lands: Steam Vents, Thundering Falls
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Takenuma, Abandoned Mire [T], Darkslick Shores [T], Shelldock Isle [T], Watery Grave, Creeping Tar Pit [T], Island, Creeping Tar Pit [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Leyline Binding
+  [Main 1]
+  [Begin Combat]
+    [Mana] Tap Island→U, Watery Grave→B (paying for Drown in the Loch, 2 mana remaining)
+T8 P2: Cast Drown in the Loch (UB)
+T8: Resolve Drown in the Loch
+T8: Doorkeeper Thrull dies
+T8: Drown in the Loch moved stack -> graveyard (resolution)
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 15  |  Domain Zoo 12
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 7  |  Opp lands: 2
+║ Library: 44  |  Graveyard: 2
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Takenuma, Abandoned Mire, Darkslick Shores, Shelldock Isle, Watery Grave, Creeping Tar Pit, Island, Creeping Tar Pit
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact, Leyline Binding, Leyline Binding
+║   Lands: Steam Vents, Thundering Falls
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Orcish Bowmasters
+  [Main 1]
+T8 P2: Creeping Tar Pit becomes a 3/2 creature until end of turn (pays 3 mana)
+T8 P2: Creeping Tar Pit becomes a 3/2 creature until end of turn (pays 3 mana)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Creeping Tar Pit
+T8 P2: Attack with Creeping Tar Pit
+  [Declare Blockers] P1 does not block
+T8 P2:   Creeping Tar Pit (3/2) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 12 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 9  |  Dimir Midrange 15
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 7
+║ Library: 44  |  Graveyard: 8
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact, Leyline Binding, Leyline Binding
+║   Lands: Steam Vents, Thundering Falls
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Takenuma, Abandoned Mire [T], Darkslick Shores [T], Shelldock Isle [T], Watery Grave [T], Creeping Tar Pit [T], Island [T], Creeping Tar Pit [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Plains
+  [Main 1]
+T9 P1: Play Plains
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 15  |  Domain Zoo 9
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 7  |  Opp lands: 3
+║ Library: 43  |  Graveyard: 2
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Takenuma, Abandoned Mire, Darkslick Shores, Shelldock Isle, Watery Grave, Creeping Tar Pit, Island, Creeping Tar Pit
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact, Leyline Binding, Leyline Binding
+║   Lands: Steam Vents, Thundering Falls, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Scalding Tarn
+  [Main 1]
+T9 P2: Play Scalding Tarn
+T9: Scalding Tarn moved battlefield -> graveyard (fetchland sacrifice)
+T9 P2: Crack Scalding Tarn (pay 1 life) -> Watery Grave (tapped, life: 14)
+T9 P2: Creeping Tar Pit becomes a 3/2 creature until end of turn (pays 3 mana)
+T9 P2: Creeping Tar Pit becomes a 3/2 creature until end of turn (pays 3 mana)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Creeping Tar Pit
+T9 P2: Attack with Creeping Tar Pit
+  [Declare Blockers] P1 does not block
+T9 P2:   Creeping Tar Pit (3/2) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 9 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 6  |  Dimir Midrange 14
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 8
+║ Library: 43  |  Graveyard: 8
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact, Leyline Binding, Leyline Binding
+║   Lands: Steam Vents, Thundering Falls, Plains
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Takenuma, Abandoned Mire [T], Darkslick Shores [T], Shelldock Isle [T], Watery Grave [T], Creeping Tar Pit [T], Island [T], Creeping Tar Pit [T], Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Lightning Bolt
+  [Main 1]
+    → Goal: curve_out
+    [Target] → face (3 dmg, life 14 → 11): face value 0.45
+    [Mana] Tap Steam Vents→R (paying for Lightning Bolt, 3 mana remaining)
+T10 P1: Cast Lightning Bolt (R)
+    [Priority] P2 passes (no response)
+T10: Resolve Lightning Bolt
+T10 P1: Lightning Bolt → 3 damage → life 11
+T10: Lightning Bolt moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 11  |  Domain Zoo 6
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 8  |  Opp lands: 3
+║ Library: 41  |  Graveyard: 3
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Takenuma, Abandoned Mire, Darkslick Shores, Shelldock Isle, Watery Grave, Creeping Tar Pit, Island, Creeping Tar Pit, Watery Grave
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact, Leyline Binding, Leyline Binding
+║   Lands: Steam Vents [T], Thundering Falls, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Darkslick Shores
+  [Main 1]
+T10 P2: Creeping Tar Pit becomes a 3/2 creature until end of turn (pays 3 mana)
+T10 P2: Creeping Tar Pit becomes a 3/2 creature until end of turn (pays 3 mana)
+T10 P2: Play Darkslick Shores (tapped, 8 other lands)
+    → Goal: close_game
+    [Mana] Tap Creeping Tar Pit→U, Watery Grave→B (paying for Psychic Frog, 2 mana remaining)
+T10 P2: Cast Psychic Frog (UB)
+    [Priority] P1 passes (no response)
+T10: Resolve Psychic Frog
+  [Begin Combat]
+    [Mana] Tap Thundering Falls→W (paying for Leyline Binding, 2 mana remaining)
+T10 P1: Cast Leyline Binding (5W)
+T10: Resolve Leyline Binding
+T10: Psychic Frog moved battlefield -> exile (exiled)
+T10 P1: Leyline Binding exiles Psychic Frog
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 6  |  Dimir Midrange 11
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 9
+║ Library: 42  |  Graveyard: 9
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact, Leyline Binding, Leyline Binding, Leyline Binding
+║   Lands: Steam Vents, Thundering Falls, Plains
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Takenuma, Abandoned Mire [T], Darkslick Shores [T], Shelldock Isle [T], Watery Grave [T], Creeping Tar Pit [T], Island [T], Creeping Tar Pit [T], Watery Grave [T], Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Wooded Foothills
+  [Main 1]
+T11 P1: Play Wooded Foothills
+T11: Wooded Foothills moved battlefield -> graveyard (fetchland sacrifice)
+T11 P1: Crack Wooded Foothills (pay 1 life) -> Blood Crypt (tapped, life: 5)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 11  |  Domain Zoo 5
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 9  |  Opp lands: 4
+║ Library: 40  |  Graveyard: 3
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Takenuma, Abandoned Mire, Darkslick Shores, Shelldock Isle, Watery Grave, Creeping Tar Pit, Island, Creeping Tar Pit, Watery Grave, Darkslick Shores
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact, Leyline Binding, Leyline Binding, Leyline Binding
+║   Lands: Steam Vents, Thundering Falls, Plains, Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thoughtseize
+  [Main 1]
+T11 P2: Creeping Tar Pit becomes a 3/2 creature until end of turn (pays 3 mana)
+T11 P2: Creeping Tar Pit becomes a 3/2 creature until end of turn (pays 3 mana)
+    → Goal: close_game
+    [Mana] Tap Creeping Tar Pit→B, Watery Grave→B (paying for Orcish Bowmasters, 3 mana remaining)
+T11 P2: Cast Orcish Bowmasters (1B)
+    [Priority] P1 passes (no response)
+T11: Resolve Orcish Bowmasters
+T11 P2: Bowmasters deals 1 damage to opponent (life: 4)
+T11 P2: Bowmasters creates 1/1 Orc Army token
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 4  |  Dimir Midrange 11
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 9
+║ Library: 40  |  Graveyard: 10
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact, Leyline Binding, Leyline Binding, Leyline Binding
+║   Lands: Steam Vents, Thundering Falls, Plains, Blood Crypt
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Takenuma, Abandoned Mire [T], Darkslick Shores [T], Shelldock Isle [T], Watery Grave [T], Creeping Tar Pit [T], Island [T], Creeping Tar Pit [T], Watery Grave [T], Darkslick Shores
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Temple Garden
+  [Main 1]
+T12 P1: Play Temple Garden (untapped, life: 2)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 11  |  Domain Zoo 2
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 9  |  Opp lands: 5
+║ Library: 39  |  Graveyard: 3
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Takenuma, Abandoned Mire, Darkslick Shores, Shelldock Isle, Watery Grave, Creeping Tar Pit, Island, Creeping Tar Pit, Watery Grave, Darkslick Shores
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact, Leyline Binding, Leyline Binding, Leyline Binding
+║   Lands: Steam Vents, Thundering Falls, Plains, Blood Crypt, Temple Garden
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Murktide Regent
+  [Main 1]
+    → Goal: close_game
+T12 P2: Delve 3 cards for Murktide Regent
+    [Mana] Tap Takenuma, Abandoned Mire→B, Shelldock Isle→U, Island→U, Darkslick Shores→U (paying for Murktide Regent, 9 mana remaining)
+T12 P2: Cast Murktide Regent (5UU)
+    [Priority] P1 passes (no response)
+T12: Resolve Murktide Regent
+T12 P2: Murktide Regent enters as 5/5 (2 +1/+1 counters from delved instants/sorceries)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army
+T12 P2: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P1 does not block
+T12 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T12 P2:   Orc Army (1/1) → 1 dmg to player
+P1 loses: life total 0
+  [Combat Damage] 2 damage dealt → P1 life: 2 → 0
