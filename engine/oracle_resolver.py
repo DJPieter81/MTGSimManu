@@ -408,6 +408,61 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
                 f"({', '.join(c.name for c in taken)})")
         return True
 
+    # ── "When ~ enters, mill N cards" (self-mill, CR 701.13) ──
+    # Class: ~84 Modern permanents (Armored Skaab, Aftermath Analyst, ...).
+    # Also handles the mill-and-select rider "you may put a [type] card from
+    # among the cards milled ... into your hand" (Fallaji Archaeologist).
+    # Scoped to the permanent's own ETB paragraph and to SELF-mill only —
+    # "target player mills" (Hedron Crab landfall) is a different, targeted
+    # trigger and is excluded.
+    for ability in split_abilities(oracle):
+        ability = ability.strip()
+        if not ability.startswith('when ') or 'enters' not in ability:
+            continue
+        if 'target player' in ability or 'target opponent' in ability:
+            continue
+        m = re.search(r'\bmill\s+(\w+)\s+cards?', ability)
+        if m is None:
+            continue
+        tok = m.group(1)
+        try:
+            mill_n = int(tok)
+        except ValueError:
+            mill_n = _WORD_TO_NUM.get(tok, 0)
+        if mill_n <= 0:
+            return False
+        player = game.players[controller]
+        milled = []
+        for _ in range(min(mill_n, len(player.library))):
+            top = player.library[0]
+            game.zone_mgr.move_card(game, top, "library", "graveyard",
+                                    cause=f"{card.name} mill")
+            milled.append(top)
+        # Optional select rider: recover one card of the allowed type.
+        sel = re.search(
+            r'put a ([a-z, ]*?)card from among the cards milled', ability)
+        if sel and milled:
+            restr = sel.group(1)
+            excluded = set()
+            if 'noncreature' in restr:
+                excluded.add('creature')
+            if 'nonland' in restr:
+                excluded.add('land')
+            cands = [
+                c for c in milled
+                if c.zone == 'graveyard'
+                and not (excluded & {ct.value for ct in c.template.card_types})
+            ]
+            if cands:
+                best = max(cands, key=lambda c: c.template.cmc or 0)
+                game.zone_mgr.move_card(game, best, "graveyard", "hand",
+                                        cause=f"{card.name} recover")
+        if milled:
+            game.log.append(
+                f"T{game.display_turn} P{controller+1}: {card.name} ETB: "
+                f"mill {len(milled)}")
+        return True
+
     return False
 
 
