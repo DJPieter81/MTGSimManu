@@ -44,6 +44,7 @@ class PlayerState:
     nonartifact_spells_cast_this_turn: int = 0
     creatures_died_this_turn: int = 0
     life_gained_this_turn: int = 0
+    life_lost_this_turn: int = 0   # CR 702.131 spectacle condition tracker
     damage_dealt_this_turn: int = 0
     cards_drawn_this_turn: int = 0
     # Diminishing-return budget for `_eval_evoke`: each successful
@@ -105,6 +106,7 @@ class PlayerState:
         can read it without changing the call signature.
         """
         self.life -= amount
+        self.life_lost_this_turn += amount  # CR 702.131: spectacle condition
 
     @property
     def creatures(self) -> List[CardInstance]:
@@ -255,6 +257,7 @@ class PlayerState:
         self.nonartifact_spells_cast_this_turn = 0
         self.creatures_died_this_turn = 0
         self.life_gained_this_turn = 0
+        self.life_lost_this_turn = 0
         self.damage_dealt_this_turn = 0
         self.cards_drawn_this_turn = 0
         self.removal_evokes_resolved_this_turn = 0

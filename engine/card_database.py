@@ -1548,7 +1548,8 @@ class CardDatabase:
         from .oracle_parser import (
             has_delve, parse_dash_cost, parse_extra_land_drops,
             parse_escape_cost, parse_equip_cost, derive_tags_from_oracle,
-            parse_splice_cost, parse_warp_cost,
+            parse_splice_cost, parse_warp_cost, parse_spectacle_cost,
+            parse_flashback_mana_cost,
         )
         oracle_text = template.oracle_text or ''
         oracle_lower = oracle_text.lower()
@@ -1601,6 +1602,16 @@ class CardDatabase:
             _mod_m = re.search(r'(?:^|\n)modular\s+(\d+)', oracle_lower)
             if _mod_m:
                 template.modular_n = int(_mod_m.group(1))
+
+        # Spectacle cost (CR 702.131): cast for this cost if an opponent lost life this turn
+        spectacle = parse_spectacle_cost(oracle_text)
+        if spectacle is not None:
+            template.spectacle_cost = spectacle
+
+        # Flashback cost (CR 702.33): mana cost to cast from graveyard (exiles after)
+        fb = parse_flashback_mana_cost(oracle_text)
+        if fb is not None:
+            template.flashback_cost = fb
 
         # Prowess from oracle (backup: "noncreature spell" + "+1/+1" pump only)
         # Note: "surveil" alone does NOT indicate prowess — DRC has surveil but
@@ -1738,6 +1749,7 @@ class CardDatabase:
             parse_has_delirium, parse_has_all_basic_land_types,
             parse_has_destroy_or_exile,
             parse_has_artifact_count_scaling, parse_has_surveil,
+            parse_has_scry,
             parse_has_coin_flip, parse_has_mobilize, parse_has_transform_effect,
             parse_has_instant_or_sorcery_reference, parse_has_graveyard_target,
             parse_has_dual_land_search, parse_has_energy_damage_target,
@@ -1840,6 +1852,7 @@ class CardDatabase:
         template.has_destroy_or_exile = parse_has_destroy_or_exile(oracle)
         template.has_artifact_count_scaling = parse_has_artifact_count_scaling(oracle)
         template.has_surveil = parse_has_surveil(oracle)
+        template.has_scry = parse_has_scry(oracle)
         template.has_coin_flip = parse_has_coin_flip(oracle)
         template.has_mobilize = parse_has_mobilize(oracle)
         template.has_transform_effect = parse_has_transform_effect(oracle)
