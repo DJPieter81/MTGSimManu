@@ -164,6 +164,42 @@ condition is **not implemented in the engine.**
   replacement, detect the infinite loop) is real engine work benefiting
   essentially one registered deck — low ROI vs the systemic scoring fix.
 
+## CORRECTION (2026-08-20, later) — the scorer is fine; it's mana-reaching + deck construction
+
+The "generic threat-deployment scoring" hypothesis above is **wrong** and is
+retracted. Controlled harness (8 untapped Forests, finisher in hand):
+
+```
+_score_spell(Sire of Seven Deaths {7}) = +27.17
+_score_spell(Talisman of Impulse {2})  =  +3.77
+_score_spell(Kozilek's Command)        =  -0.10
+```
+
+The base clock-based scorer ranks the 7/7 finisher **7× above ramp**, gameplan
+or not. It is NOT undervaluing threats. The real failure modes, from the same
+replays:
+
+- **seed 50000**: Sire of Seven Deaths sits in hand from ~T5 to end of game
+  (the entire game), but P1's mana **never exceeds 6** — only 6 lands in play
+  by turn 13 on a 22-land deck. The finisher is never affordable. The scorer
+  would slam it at +27 the instant mana allowed.
+- **seed 50500**: the deck ramps fine but **never draws a finisher** — it flood
+  on its ~19 ramp pieces.
+
+Root pathology is **deck construction / variance**, not engine or scoring:
+the imported list is extremely top-heavy — the *cheapest* threat is `{7}`
+(Sire / Devourer), and 4× Emrakul at CMC 13 are near-uncastable dead cards.
+So the deck either (a) floods ramp with no payoff in hand, or (b) is
+land-light and cannot pay `{7}` for the payoff it is holding. Either way it
+durdles. `can_cast`, colorless payment, mana accounting, and EV scoring are
+all correct.
+
+Implication: this is fixable in **data** (ratchet-safe) — trim the top-end
+(4× Emrakul → 1–2), add a cheaper threat / smoother ramp, and tune the
+mulligan to demand lands+ramp rather than keeping `Emrakul` — not in engine
+or `ev_player` code. The earlier "surplus-mana ramp decay + deployment pull"
+proposal is unnecessary for this deck.
+
 ## Consolidated conclusion
 
 Two of the worst free-win decks, investigated to replay-level root cause, both
@@ -171,12 +207,14 @@ require **engine / AI-kernel mechanics work, not config fixes**:
 
 | Deck | Field WR | Root cause | Fix class |
 |---|---|---|---|
-| Eldrazi Ramp | 17% | generic threat-deployment scoring; over-ramps, never slams finisher | `ev_player` scoring (deep) |
+| Eldrazi Ramp | 17% | top-heavy build (cheapest threat {7}, 4× dead Emrakul); floods ramp or is land-light — scorer & engine are correct | **data** (decklist + mulligan) — ratchet-safe |
 | Creatures Toolbox | 21% | infinite-mana combo (Devoted Druid+Vizier) not modeled in engine | engine mechanic (self-untap + counter replacement) |
 
-The bottom of the table is a **systemic** "AI/engine can't pilot non-linear
-setup decks" gap, not a set of isolated quick-fix bugs. The correct WR-integrity
-move is to merge the verified mechanics fixes (#546), run the honest Bo3
-baseline, and schedule the deployment-scoring + infinite-mana-combo work as
-scoped follow-ups rather than pre-run quick fixes.
+The two decks fail for **different** reasons: Eldrazi Ramp is a decklist-quality
+problem in a freshly auto-imported list (fixable in data), while Creatures
+Toolbox needs a genuinely missing engine mechanic. Neither is a scoring bug —
+the EV kernel values finishers correctly. The WR-integrity move: merge the
+verified mechanics fixes (#546), then either tune the auto-imported decklists /
+mulligans (ratchet-safe, quick) or run the honest Bo3 baseline first and treat
+the infinite-mana-combo engine work as a scoped follow-up.
 ```
