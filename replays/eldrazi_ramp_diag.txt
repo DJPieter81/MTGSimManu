@@ -1,0 +1,758 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+Result: 4/5c Control wins T11 via damage
+Life: P1=-3 P2=27
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Eldrazi Ramp wins → chooses to play first
+║ P1 (on play): Eldrazi Ramp
+║ P2 (on draw): 4/5c Control
+╚═══════════════════════════════════════════════════════
+
+P1 (Eldrazi Ramp) opening hand (1 lands, 6 spells):
+  • Kozilek's Command [Spell, CMC 2]
+  • Sire of Seven Deaths [Creature, CMC 7]
+  • Devourer of Destiny [Creature, CMC 7]
+  • Wooded Foothills [Land, CMC 0]
+  • Talisman of Impulse [Spell, CMC 2]
+  • Devourer of Destiny [Creature, CMC 7]
+  • Kozilek's Return [Spell, CMC 3]
+→ P1 MULLIGANS (too few lands (1 < 2))
+  New hand (3 lands, 4 spells): ['Utopia Sprawl', 'Shifting Woodland', 'Sanctum of Ugin', "Ugin's Labyrinth", 'Icetill Explorer', 'Talisman of Impulse', 'Malevolent Rumble']
+→ P1 mulligans to 6, bottoms: ['Icetill Explorer']
+  Keeps: ['Utopia Sprawl', 'Shifting Woodland', 'Sanctum of Ugin', "Ugin's Labyrinth", 'Talisman of Impulse', 'Malevolent Rumble']
+
+P2 (4/5c Control) opening hand (3 lands, 4 spells):
+  • Arena of Glory [Land, CMC 0]
+  • Orim's Chant [Spell, CMC 1]
+  • Wrath of the Skies [Spell, CMC 2]
+  • Wrenn and Six [Spell, CMC 2]
+  • Flooded Strand [Land, CMC 0]
+  • Windswept Heath [Land, CMC 0]
+  • Teferi, Time Raveler [Spell, CMC 3]
+→ P2 KEEPS 7 — has key card(s): Teferi, Time Raveler, Wrenn and Six, 4 cheap spells
+
+
+╔══ TURN 1 — Eldrazi Ramp (P1) ══════════════════════════
+║ Life: Eldrazi Ramp 20  |  4/5c Control 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 54  |  Graveyard: 0
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Sanctum of Ugin
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 20  |  Eldrazi Ramp 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Lands: Sanctum of Ugin
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Quantum Riddler
+  [Main 1]
+T1 P2: Play Flooded Strand
+T1: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Flooded Strand (pay 1 life) -> Hallowed Fountain (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Eldrazi Ramp (P1) ══════════════════════════
+║ Life: Eldrazi Ramp 20  |  4/5c Control 19
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 0
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Lands: Sanctum of Ugin
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Wooded Foothills
+  [Main 1]
+T2 P1: Play Wooded Foothills
+T2: Wooded Foothills moved battlefield -> graveyard (fetchland sacrifice)
+T2 P1: Crack Wooded Foothills (pay 1 life) -> Stomping Ground (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 19  |  Eldrazi Ramp 19
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Lands: Sanctum of Ugin, Stomping Ground [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Misty Rainforest
+  [Main 1]
+T2 P2: Play Windswept Heath
+T2: Windswept Heath moved battlefield -> graveyard (fetchland sacrifice)
+T2 P2: Crack Windswept Heath (pay 1 life) -> Stomping Ground (tapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Eldrazi Ramp (P1) ══════════════════════════
+║ Life: Eldrazi Ramp 19  |  4/5c Control 18
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 1
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Lands: Sanctum of Ugin, Stomping Ground
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Stomping Ground [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ugin's Labyrinth
+  [Main 1]
+T3 P1: Play Ugin's Labyrinth
+    → Goal: grind_value [enablers]
+    [Mana] Tap Sanctum of Ugin→C, Stomping Ground→G (paying for Malevolent Rumble, 3 mana remaining)
+T3 P1: Cast Malevolent Rumble (1G)
+    [Priority] P2 passes (no response)
+T3: Resolve Malevolent Rumble
+T3: Malevolent Rumble moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 18  |  Eldrazi Ramp 19
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Stomping Ground
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Lands: Sanctum of Ugin [T], Stomping Ground [T], Ugin's Labyrinth
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Solitude
+  [Main 1]
+T3 P2: Play Misty Rainforest
+T3: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T3 P2: Crack Misty Rainforest (pay 1 life) -> Temple Garden (tapped, life: 17)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Eldrazi Ramp (P1) ══════════════════════════
+║ Life: Eldrazi Ramp 19  |  4/5c Control 17
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 2
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Lands: Sanctum of Ugin, Stomping Ground, Ugin's Labyrinth
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Stomping Ground, Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Sire of Seven Deaths
+  [Main 1]
+T4 P1: Play Ugin's Labyrinth
+    → Goal: close_game
+    [Mana] Tap Sanctum of Ugin→C, Ugin's Labyrinth→C (paying for Talisman of Impulse, 4 mana remaining)
+T4 P1: Cast Talisman of Impulse (2)
+    [Priority] P2 passes (no response)
+T4: Resolve Talisman of Impulse
+    → Goal: close_game
+    [Mana] Tap Stomping Ground→G (paying for Utopia Sprawl, 2 mana remaining)
+T4 P1: Cast Utopia Sprawl (G)
+    [Priority] P2 passes (no response)
+T4: Resolve Utopia Sprawl
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 17  |  Eldrazi Ramp 19
+║ Hand: 7 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 3
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Stomping Ground, Temple Garden
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Other: Talisman of Impulse, Utopia Sprawl
+║   Lands: Sanctum of Ugin [T], Stomping Ground [T], Ugin's Labyrinth [T], Ugin's Labyrinth
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Elegant Parlor
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→U, Stomping Ground→G, Temple Garden→W (paying for Teferi, Time Raveler, 3 mana remaining)
+T4 P2: Cast Teferi, Time Raveler (1WU)
+    [Priority] P1 passes (no response)
+T4: Resolve Teferi, Time Raveler
+T4 P2: Teferi bounces Talisman of Impulse
+T4 P2: Teferi draws Galvanic Discharge
+T4 P2: Play Arena of Glory (enters tapped)
+T4 P2: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Eldrazi Ramp (P1) ══════════════════════════
+║ Life: Eldrazi Ramp 19  |  4/5c Control 17
+║ Hand: 3 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 50  |  Graveyard: 2
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Other: Utopia Sprawl
+║   Lands: Sanctum of Ugin, Stomping Ground, Ugin's Labyrinth, Ugin's Labyrinth
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain [T], Stomping Ground [T], Temple Garden [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Kozilek's Command
+  [Main 1]
+T5 P1: Play Shifting Woodland (enters tapped)
+    → Goal: close_game
+    [Mana] Tap Sanctum of Ugin→C, Ugin's Labyrinth→C (paying for Kozilek's Command, 4 mana remaining)
+T5 P1: Cast Kozilek's Command (2) (X=2)
+    [Priority] P2 passes (no response)
+T5: Resolve Kozilek's Command
+T5: Teferi, Time Raveler moved battlefield -> exile (exiled)
+T5: Kozilek's Command moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 17  |  Eldrazi Ramp 19
+║ Hand: 7 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 3
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Stomping Ground, Temple Garden, Arena of Glory
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Other: Utopia Sprawl
+║   Lands: Sanctum of Ugin [T], Stomping Ground [T], Ugin's Labyrinth [T], Ugin's Labyrinth [T], Shifting Woodland [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Quantum Riddler
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Arena of Glory→R, Stomping Ground→G (paying for Wrenn and Six, 4 mana remaining)
+T5 P2: Cast Wrenn and Six (RG)
+    [Priority] P1 passes (no response)
+T5: Resolve Wrenn and Six
+T5 P2: surveil 1 → Wrath of the Skies to GY
+T5 P2: Play Elegant Parlor (enters tapped)
+T5 P2: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Eldrazi Ramp (P1) ══════════════════════════
+║ Life: Eldrazi Ramp 19  |  4/5c Control 17
+║ Hand: 2 cards  |  Opp hand: 6 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 49  |  Graveyard: 3
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Other: Utopia Sprawl
+║   Lands: Sanctum of Ugin, Stomping Ground, Ugin's Labyrinth, Ugin's Labyrinth, Shifting Woodland
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Wrenn and Six
+║   Lands: Hallowed Fountain, Stomping Ground [T], Temple Garden, Arena of Glory [T], Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Icetill Explorer
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Sanctum of Ugin→C, Ugin's Labyrinth→C, Shifting Woodland→G, Stomping Ground→G (paying for Icetill Explorer, 5 mana remaining)
+T6 P1: Cast Icetill Explorer (2GG)
+    [Priority] P2 passes (no response)
+T6: Resolve Icetill Explorer
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 17  |  Eldrazi Ramp 19
+║ Hand: 6 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 43  |  Graveyard: 4
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Wrenn and Six
+║   Lands: Hallowed Fountain, Stomping Ground, Temple Garden, Arena of Glory, Elegant Parlor
+║ Eldrazi Ramp board:
+║   Creatures: Icetill Explorer (2/4)
+║   Other: Utopia Sprawl
+║   Lands: Sanctum of Ugin [T], Stomping Ground [T], Ugin's Labyrinth [T], Ugin's Labyrinth, Shifting Woodland [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Teferi, Time Raveler
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Arena of Glory→R, Hallowed Fountain→W, Stomping Ground→G, Temple Garden→W, Elegant Parlor→R (paying for Solitude, 5 mana remaining)
+T6 P2: Cast Solitude (3WW)
+    [Priority] P1 passes (no response)
+T6: Resolve Solitude
+T6: Icetill Explorer moved battlefield -> exile (exiled)
+T6 P2: Solitude exiles Icetill Explorer (opponent gains 2 life, now 21)
+T6 P2: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Eldrazi Ramp (P1) ══════════════════════════
+║ Life: Eldrazi Ramp 21  |  4/5c Control 17
+║ Hand: 2 cards  |  Opp hand: 6 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 48  |  Graveyard: 3
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Other: Utopia Sprawl
+║   Lands: Sanctum of Ugin, Stomping Ground, Ugin's Labyrinth, Ugin's Labyrinth, Shifting Woodland
+║ 4/5c Control board:
+║   Creatures: Solitude (3/2)
+║   Other: Wrenn and Six
+║   Lands: Hallowed Fountain [T], Stomping Ground [T], Temple Garden [T], Arena of Glory [T], Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Talisman of Impulse
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Sanctum of Ugin→C, Ugin's Labyrinth→C (paying for Talisman of Impulse, 5 mana remaining)
+T7 P1: Cast Talisman of Impulse (2)
+    [Priority] P2 passes (no response)
+T7: Resolve Talisman of Impulse
+    → Goal: close_game
+    [Mana] Tap Ugin's Labyrinth→C, Shifting Woodland→G (paying for Talisman of Impulse, 3 mana remaining)
+T7 P1: Cast Talisman of Impulse (2)
+    [Priority] P2 passes (no response)
+T7: Resolve Talisman of Impulse
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 17  |  Eldrazi Ramp 21
+║ Hand: 6 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 42  |  Graveyard: 4
+║ 4/5c Control board:
+║   Creatures: Solitude (3/2)
+║   Other: Wrenn and Six
+║   Lands: Hallowed Fountain, Stomping Ground, Temple Garden, Arena of Glory, Elegant Parlor
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Other: Utopia Sprawl, Talisman of Impulse, Talisman of Impulse
+║   Lands: Sanctum of Ugin [T], Stomping Ground, Ugin's Labyrinth [T], Ugin's Labyrinth [T], Shifting Woodland [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Omnath, Locus of Creation
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Arena of Glory→R, Hallowed Fountain→U, Stomping Ground→G, Temple Garden→W (paying for Omnath, Locus of Creation, 5 mana remaining)
+T7 P2: Cast Omnath, Locus of Creation (WURG)
+    [Priority] P1 passes (no response)
+T7: Resolve Omnath, Locus of Creation
+T7 P2: Omnath, Locus of Creation ETB: draw 1 (Orim's Chant)
+T7 P2: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Solitude
+T7 P2: Attack with Solitude
+  [Declare Blockers] P1 does not block
+T7 P2:   Solitude (3/2) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 21 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Eldrazi Ramp (P1) ══════════════════════════
+║ Life: Eldrazi Ramp 18  |  4/5c Control 20
+║ Hand: 1 cards  |  Opp hand: 7 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 3
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Other: Utopia Sprawl, Talisman of Impulse, Talisman of Impulse
+║   Lands: Sanctum of Ugin, Stomping Ground, Ugin's Labyrinth, Ugin's Labyrinth, Shifting Woodland
+║ 4/5c Control board:
+║   Creatures: Solitude (3/2) [tapped], Omnath, Locus of Creation (4/4)
+║   Other: Wrenn and Six
+║   Lands: Hallowed Fountain [T], Stomping Ground [T], Temple Garden [T], Arena of Glory [T], Elegant Parlor
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Malevolent Rumble
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Sanctum of Ugin→C, Shifting Woodland→G (paying for Malevolent Rumble, 5 mana remaining)
+T8 P1: Cast Malevolent Rumble (1G)
+    [Priority] P2 passes (no response)
+T8: Resolve Malevolent Rumble
+T8: Malevolent Rumble moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 20  |  Eldrazi Ramp 18
+║ Hand: 7 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 40  |  Graveyard: 4
+║ 4/5c Control board:
+║   Creatures: Solitude (3/2), Omnath, Locus of Creation (4/4)
+║   Other: Wrenn and Six
+║   Lands: Hallowed Fountain, Stomping Ground, Temple Garden, Arena of Glory, Elegant Parlor
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Other: Utopia Sprawl, Talisman of Impulse, Talisman of Impulse
+║   Lands: Sanctum of Ugin [T], Stomping Ground, Ugin's Labyrinth, Ugin's Labyrinth, Shifting Woodland [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Misty Rainforest
+  [Main 1]
+T8 P2: Play Misty Rainforest
+T8: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T8 P2: Crack Misty Rainforest (pay 1 life) -> Steam Vents (tapped, life: 19)
+T8 P2: Omnath, Locus of Creation 2nd landfall: add mana
+    → Goal: close_game
+T8 P2: Cast Teferi, Time Raveler (1WU)
+    [Priority] P1 passes (no response)
+T8: Resolve Teferi, Time Raveler
+T8 P2: Teferi bounces Utopia Sprawl
+T8 P2: Teferi draws Ephemerate
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→W (paying for Ephemerate, 6 mana remaining)
+T8 P2: Cast Ephemerate (W)
+T8: Resolve Ephemerate
+T8 P2: Omnath, Locus of Creation ETB: draw 1 (Galvanic Discharge)
+T8: Blink Omnath, Locus of Creation
+T8: Ephemerate moved stack -> exile (rebound (CR 702.86))
+T8 P2: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+T8 P2: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Solitude
+T8 P2: Attack with Solitude
+  [Declare Blockers] P1 does not block
+T8 P2:   Solitude (3/2) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 18 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Eldrazi Ramp (P1) ══════════════════════════
+║ Life: Eldrazi Ramp 15  |  4/5c Control 22
+║ Hand: 2 cards  |  Opp hand: 7 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 46  |  Graveyard: 4
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Other: Talisman of Impulse, Talisman of Impulse
+║   Lands: Sanctum of Ugin, Stomping Ground, Ugin's Labyrinth, Ugin's Labyrinth, Shifting Woodland
+║ 4/5c Control board:
+║   Creatures: Solitude (3/2) [tapped], Omnath, Locus of Creation (4/4)
+║   Other: Wrenn and Six, Teferi, Time Raveler
+║   Lands: Hallowed Fountain [T], Stomping Ground, Temple Garden, Arena of Glory, Elegant Parlor, Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Eldrazi Temple
+  [Main 1]
+T9 P1: Play Eldrazi Temple
+    → Goal: close_game
+    [Mana] Tap Shifting Woodland→G (paying for Utopia Sprawl, 6 mana remaining)
+T9 P1: Cast Utopia Sprawl (G)
+    [Priority] P2 passes (no response)
+T9: Resolve Utopia Sprawl
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 22  |  Eldrazi Ramp 15
+║ Hand: 7 cards  |  Opp hand: 1 cards
+║ Lands: 6  |  Opp lands: 5
+║ Library: 36  |  Graveyard: 5
+║ 4/5c Control board:
+║   Creatures: Solitude (3/2), Omnath, Locus of Creation (4/4)
+║   Other: Wrenn and Six, Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Stomping Ground, Temple Garden, Arena of Glory, Elegant Parlor, Steam Vents
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Other: Talisman of Impulse, Talisman of Impulse, Utopia Sprawl
+║   Lands: Stomping Ground [T], Ugin's Labyrinth, Ugin's Labyrinth, Shifting Woodland [T], Eldrazi Temple
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T9 P2: Cast Ephemerate (W)
+T9 P2: Rebound Ephemerate
+T9: Resolve Ephemerate
+T9 P2: Omnath, Locus of Creation ETB: draw 1 (Windswept Heath)
+T9: Blink Omnath, Locus of Creation
+T9: Ephemerate moved stack -> exile (rebound (CR 702.86))
+  [Draw] P2 draws: Teferi, Time Raveler
+  [Main 1]
+T9 P2: Play Windswept Heath
+T9: Windswept Heath moved battlefield -> graveyard (fetchland sacrifice)
+T9 P2: Crack Windswept Heath (pay 1 life) -> Sacred Foundry (tapped, life: 21)
+T9 P2: Omnath, Locus of Creation 2nd landfall: add mana
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→U (paying for Quantum Riddler, 10 mana remaining)
+T9 P2: Cast Quantum Riddler (3UU)
+T9: Resolve Quantum Riddler
+T9 P2: Quantum Riddler ETB: draw 1 (Prismatic Ending)
+T9 P2: Wrenn and Six [-7] -> You get an emblem with "Instant and sorcery cards in your graveyard have retrace." (You may cast instant and sorcery cards from your graveyard by discarding a land card in addition to paying their other costs.)
+T9: Wrenn and Six moved battlefield -> graveyard (SBA 704.5p: zero loyalty)
+T9 P2: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Solitude
+T9 P2: Attack with Solitude
+  [Declare Blockers] P1 does not block
+T9 P2:   Solitude (3/2) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 15 → 12
+  [End Combat]
+  [Main 2]
+    → Goal: close_game
+    [Mana] Tap Arena of Glory→R, Stomping Ground→G (paying for Wrenn and Six, 5 mana remaining)
+T9 P2: Cast Wrenn and Six (RG)
+T9: Resolve Wrenn and Six
+  [End Step]
+T9: Wrath of the Skies moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 10 — Eldrazi Ramp (P1) ══════════════════════════
+║ Life: Eldrazi Ramp 12  |  4/5c Control 24
+║ Hand: 1 cards  |  Opp hand: 7 cards
+║ Lands: 5  |  Opp lands: 7
+║ Library: 45  |  Graveyard: 5
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Other: Talisman of Impulse, Talisman of Impulse, Utopia Sprawl
+║   Lands: Stomping Ground, Ugin's Labyrinth, Ugin's Labyrinth, Shifting Woodland, Eldrazi Temple
+║ 4/5c Control board:
+║   Creatures: Solitude (3/2) [tapped], Omnath, Locus of Creation (4/4), Quantum Riddler (4/6)
+║   Other: Teferi, Time Raveler, Wrenn and Six
+║   Lands: Hallowed Fountain [T], Stomping Ground [T], Temple Garden, Arena of Glory [T], Elegant Parlor, Steam Vents, Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Wooded Foothills
+  [Main 1]
+T10 P1: Play Wooded Foothills
+T10: Wooded Foothills moved battlefield -> graveyard (fetchland sacrifice)
+T10 P1: Crack Wooded Foothills (pay 1 life) -> Stomping Ground (tapped, life: 11)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 24  |  Eldrazi Ramp 11
+║ Hand: 7 cards  |  Opp hand: 1 cards
+║ Lands: 7  |  Opp lands: 6
+║ Library: 32  |  Graveyard: 7
+║ 4/5c Control board:
+║   Creatures: Solitude (3/2), Omnath, Locus of Creation (4/4), Quantum Riddler (4/6)
+║   Other: Teferi, Time Raveler, Wrenn and Six
+║   Lands: Hallowed Fountain, Stomping Ground, Temple Garden, Arena of Glory, Elegant Parlor, Steam Vents, Sacred Foundry
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Other: Talisman of Impulse, Talisman of Impulse, Utopia Sprawl
+║   Lands: Stomping Ground, Ugin's Labyrinth, Ugin's Labyrinth, Shifting Woodland, Eldrazi Temple, Stomping Ground [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T10 P2: Cast Ephemerate (W)
+T10 P2: Rebound Ephemerate
+T10: Resolve Ephemerate
+T10 P2: Quantum Riddler ETB: draw 1 (Breeding Pool)
+T10: Blink Quantum Riddler
+T10: Ephemerate moved stack -> exile (rebound (CR 702.86))
+  [Draw] P2 draws: Stock Up
+  [Main 1]
+T10 P2: Play Breeding Pool (untapped, life: 22)
+    → Goal: close_game
+    [Mana] Tap Arena of Glory→R, Hallowed Fountain→U, Stomping Ground→G, Temple Garden→G, Steam Vents→U (paying for Quantum Riddler, 8 mana remaining)
+T10 P2: Cast Quantum Riddler (3UU)
+T10: Resolve Quantum Riddler
+T10 P2: Quantum Riddler ETB: draw 1 (Solitude)
+    → Goal: close_game
+    [Mana] Tap Elegant Parlor→R, Sacred Foundry→R, Breeding Pool→U (paying for Stock Up, 3 mana remaining)
+T10 P2: Cast Stock Up (2U)
+T10: Resolve Stock Up
+T10: Stock Up moved stack -> graveyard (resolution)
+T10 P2: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+T10 P2: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Solitude, Omnath, Locus of Creation
+T10 P2: Attack with Solitude, Omnath, Locus of Creation
+  [Declare Blockers] P1 does not block
+T10 P2:   Solitude (3/2) → 3 dmg to player
+T10 P2:   Omnath, Locus of Creation (4/4) → 4 dmg to player
+  [Combat Damage] 7 damage dealt → P1 life: 11 → 4
+  [End Combat]
+  [Main 2]
+  [End Step]
+T10: Galvanic Discharge moved hand -> graveyard (discard to hand size)
+T10: Galvanic Discharge moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 11 — Eldrazi Ramp (P1) ══════════════════════════
+║ Life: Eldrazi Ramp 4  |  4/5c Control 25
+║ Hand: 1 cards  |  Opp hand: 7 cards
+║ Lands: 6  |  Opp lands: 8
+║ Library: 43  |  Graveyard: 6
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Other: Talisman of Impulse, Talisman of Impulse, Utopia Sprawl
+║   Lands: Stomping Ground, Ugin's Labyrinth, Ugin's Labyrinth, Shifting Woodland, Eldrazi Temple, Stomping Ground
+║ 4/5c Control board:
+║   Creatures: Solitude (3/2) [tapped], Omnath, Locus of Creation (4/4) [tapped], Quantum Riddler (4/6), Quantum Riddler (4/6)
+║   Other: Teferi, Time Raveler, Wrenn and Six
+║   Lands: Hallowed Fountain [T], Stomping Ground [T], Temple Garden [T], Arena of Glory [T], Elegant Parlor [T], Steam Vents [T], Sacred Foundry [T], Breeding Pool [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Kozilek's Command
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Ugin's Labyrinth→C, Ugin's Labyrinth→C (paying for Kozilek's Command, 6 mana remaining)
+T11 P1: Cast Kozilek's Command (4) (X=4)
+    [Priority] P2 passes (no response)
+T11: Resolve Kozilek's Command
+T11: Omnath, Locus of Creation moved battlefield -> exile (exiled)
+T11: Kozilek's Command moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 25  |  Eldrazi Ramp 4
+║ Hand: 7 cards  |  Opp hand: 1 cards
+║ Lands: 8  |  Opp lands: 6
+║ Library: 27  |  Graveyard: 10
+║ 4/5c Control board:
+║   Creatures: Solitude (3/2), Quantum Riddler (4/6), Quantum Riddler (4/6)
+║   Other: Teferi, Time Raveler, Wrenn and Six
+║   Lands: Hallowed Fountain, Stomping Ground, Temple Garden, Arena of Glory, Elegant Parlor, Steam Vents, Sacred Foundry, Breeding Pool
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Other: Talisman of Impulse, Talisman of Impulse, Utopia Sprawl
+║   Lands: Stomping Ground [T], Ugin's Labyrinth [T], Ugin's Labyrinth [T], Shifting Woodland [T], Eldrazi Temple [T], Stomping Ground [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T11 P2: Cast Ephemerate (W)
+T11 P2: Rebound Ephemerate
+T11: Resolve Ephemerate
+T11 P2: Quantum Riddler ETB: draw 1 (Wrenn and Six)
+T11: Blink Quantum Riddler
+T11: Ephemerate moved stack -> exile (rebound (CR 702.86))
+  [Draw] P2 draws: Windswept Heath
+  [Main 1]
+T11 P2: Play Windswept Heath
+T11: Windswept Heath moved battlefield -> graveyard (fetchland sacrifice)
+T11 P2: Crack Windswept Heath -> Plains (untapped)
+    → Goal: close_game
+    [Mana] Tap Arena of Glory→R, Stomping Ground→G, Temple Garden→G (paying for Eternal Witness, 9 mana remaining)
+T11 P2: Cast Eternal Witness (1GG)
+T11: Resolve Eternal Witness
+T11 P2: Eternal Witness returns Stock Up from graveyard to hand
+    → Goal: close_game
+    [Mana] Tap Plains→W, Hallowed Fountain→U, Elegant Parlor→R (paying for Stock Up, 6 mana remaining)
+T11 P2: Cast Stock Up (2U)
+T11: Resolve Stock Up
+T11: Stock Up moved stack -> graveyard (resolution)
+T11 P2: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+T11 P2: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Solitude, Quantum Riddler
+T11 P2: Attack with Solitude, Quantum Riddler
+  [Declare Blockers] P1 does not block
+T11 P2:   Solitude (3/2) → 3 dmg to player
+T11 P2:   Quantum Riddler (4/6) → 4 dmg to player
+P1 loses: life total -3
+  [Combat Damage] 7 damage dealt → P1 life: 4 → -3
