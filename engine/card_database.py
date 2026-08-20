@@ -638,6 +638,17 @@ class OracleTextParser:
                 "all_artifacts", "all_enchantments",
             ):
                 continue
+            # A self-blink effect ("exile target creature you control, then
+            # return it") is a flicker, NOT removal — tag it blink and skip
+            # the removal tagging for THIS effect so it does not pollute
+            # destroy_target_creature / any_removal. Detected per-effect
+            # (the card-level `is_blink` flag can't distinguish a modal
+            # card's blink mode from a real removal mode).
+            _rt = (e.raw_text or "").lower()
+            if (e.effect_type == "exile" and "you control" in _rt
+                    and "return" in _rt):
+                tags.add("blink")
+                continue
             any_removal = True
             if is_blink and e.effect_type == "exile":
                 tags.add("blink")
