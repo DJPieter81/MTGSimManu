@@ -134,6 +134,27 @@ class PlayerState:
         return [c for c in self.lands if not c.tapped]
 
     @property
+    def untapped_mana_sources(self) -> List[CardInstance]:
+        """Untapped permanents that can tap for mana (CR 605): lands plus
+        non-land mana sources — mana rocks (Talisman, Mind Stone) and mana
+        creatures (Birds, Llanowar, Devoted Druid). Creature mana abilities
+        carry the tap symbol, so summoning sickness gates them (CR 302.6).
+        Used by the cast-feasibility solver and mana-capacity estimate so
+        rocks/dorks count exactly like lands."""
+        from .cards import CardType
+        out = [c for c in self.lands if not c.tapped]
+        for c in self.battlefield:
+            if c.tapped or c.template.is_land:
+                continue
+            if not (c.template.mana_units or c.template.produces_mana):
+                continue
+            if (CardType.CREATURE in c.template.card_types
+                    and c.has_summoning_sickness):
+                continue
+            out.append(c)
+        return out
+
+    @property
     def available_mana_estimate(self) -> int:
         """Rough estimate of available mana from untapped lands.
         Includes conditional mana bonuses (e.g., Tron assembly) detected
@@ -227,7 +248,7 @@ class PlayerState:
         separate additive term (`_conditional_mana_bonus`) at the
         call sites that already carry it.
         """
-        return sum(land.template.mana_count for land in self.untapped_lands)
+        return sum(src.template.mana_count for src in self.untapped_mana_sources)
 
     def available_mana_colors(self) -> Dict[str, int]:
         """Get available mana by color from untapped lands."""

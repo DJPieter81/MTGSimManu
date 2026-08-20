@@ -261,8 +261,8 @@ class CastManager:
                     game, player_idx, requirements, exclude=card):
                 return False
 
-        # Check mana (pool + untapped lands + Tron bonus)
-        untapped_lands = player.untapped_lands
+        # Check mana (pool + untapped lands + non-land mana sources + Tron bonus)
+        untapped_lands = player.untapped_mana_sources
         total_mana = (player.untapped_mana_capacity() + player.mana_pool.total()
                       + player._tron_mana_bonus())
 

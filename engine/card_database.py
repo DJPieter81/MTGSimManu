@@ -1499,6 +1499,28 @@ class CardDatabase:
                 if 'deals 1 damage to you' in ot or 'this land deals 1 damage' in ot:
                     tap_damage = 1
 
+        # Non-land mana sources (mana rocks, mana creatures): a plain
+        # "{T}: Add {mana}" ability makes the permanent a mana source
+        # (CR 605.1a). Only lands were populated above, so every rock
+        # (Talisman, Mind Stone) and dork (Birds, Llanowar, Devoted
+        # Druid) produced ZERO usable mana. Gate on detect_land_mana_units
+        # returning a plain tap line so cost-bearing / triggered "add
+        # mana" text (rituals, "{T}, Sacrifice:") does not false-positive.
+        if CardType.LAND not in card_types and oracle_text:
+            nl_units = OracleTextParser.detect_land_mana_units(oracle_text)
+            if nl_units:
+                produces_mana = OracleTextParser.detect_land_mana(
+                    oracle_text, subtypes, card_name=name)
+                if len(nl_units) == 1:
+                    # One mana per tap: the single unit may choose any
+                    # producible color (Talisman's {C} / {R}|{G} lines
+                    # union to one CGR unit; Birds → any color).
+                    mana_units = [produces_mana]
+                else:
+                    # Multi-mana rock (Sol Ring "{C}{C}"): keep the
+                    # per-unit options and count.
+                    mana_units = nl_units
+
         # Detect conditional mana production from oracle text
         # Pattern: "If you control an Urza's ... add {C}{C}{C} instead"
         # This detects Tron lands and any similar conditional mana producers

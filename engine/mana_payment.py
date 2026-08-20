@@ -235,6 +235,22 @@ class ManaPayment:
 
         untapped = [l for l in player.lands if not l.tapped]
 
+        # Non-land mana sources: mana rocks (Talisman, Mind Stone) and mana
+        # creatures (Birds, Llanowar, Devoted Druid). A permanent whose
+        # template exposes a plain "{T}: Add" ability (produces_mana /
+        # mana_units populated for non-lands, CR 605) is tappable for mana
+        # exactly like a land. Creature mana abilities carry the tap symbol,
+        # so summoning sickness gates them (CR 302.6 / 605.3a).
+        for perm in player.battlefield:
+            if perm.tapped or perm.template.is_land:
+                continue
+            if not (perm.template.mana_units or perm.template.produces_mana):
+                continue
+            if (CardType.CREATURE in perm.template.card_types
+                    and perm.has_summoning_sickness):
+                continue
+            untapped.append(perm)
+
         if not untapped and player.mana_pool.total() == 0:
             return cost.cmc == 0
 
