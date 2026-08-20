@@ -104,6 +104,10 @@ class GameState:
         # the seq captures which OBJECT the rider tracks (CR 400.7) — if
         # the card re-enters the battlefield the rider goes stale.
         self._end_of_turn_exiles: List[Tuple[CardInstance, int, int]] = []
+        # Delayed sacrifice rider: "sacrifice at the beginning of the next
+        # end step" (Mobilize, CR 702 Mobilize reminder text). Entries are
+        # CardInstance objects; processed and cleared in end_of_turn_cleanup.
+        self._end_of_turn_sacrifices: List["CardInstance"] = []
         # Game log
         self.log: List[str] = []
         self.max_turns: int = MAX_TURNS
@@ -117,6 +121,13 @@ class GameState:
         iid = self._next_instance_id
         self._next_instance_id += 1
         return iid
+
+    def register_end_of_turn_sacrifice(self, card: "CardInstance") -> None:
+        """Register a token for 'sacrifice at the beginning of the next end
+        step' (Mobilize CR 702).  Only the explicit CardInstance is sacrificed;
+        other tokens are unaffected.
+        """
+        self._end_of_turn_sacrifices.append(card)
 
     def register_end_of_turn_exile(self, card: CardInstance,
                                    controller: int) -> None:

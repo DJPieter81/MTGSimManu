@@ -240,6 +240,20 @@ class TurnManager:
                     f"T{game.display_turn}: {card.name} exiled (end of turn)")
         game._end_of_turn_exiles.clear()
 
+        # Delayed sacrifice rider: Mobilize tokens (CR 702 Mobilize reminder:
+        # "Sacrifice them at the beginning of the next end step.").
+        # Only sacrifice the exact registered CardInstance objects.
+        for card in list(game._end_of_turn_sacrifices):
+            if card.zone == "battlefield":
+                game.zone_mgr.move_card(
+                    game, card, "battlefield", "graveyard",
+                    cause="Mobilize sacrifice"
+                )
+                game.log.append(
+                    f"T{game.display_turn}: {card.name} sacrificed (Mobilize)"
+                )
+        game._end_of_turn_sacrifices.clear()
+
     def cleanup_step(self, game: "GameState") -> None:
         """CR 514: Cleanup step — cleanup continuous effects, discard to
         max hand size, remove combat damage, empty mana pools.
