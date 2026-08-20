@@ -1,0 +1,728 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+=== Eldrazi Ramp vs 4/5c Control (seed 50000) ===
+Result: 4/5c Control wins T11 via damage
+Life: P1=-3 P2=27
+
+  [MAIN1]
+
+T1 Eldrazi Ramp | life=20 mana=0 hand=3+3L gy=0
+  Hand: ['Utopia Sprawl', 'Talisman of Impulse', 'Malevolent Rumble']
+  Opp board: [] (life=20)
+  EV scores:
+     +19.0  play_land: Sanctum of Ugin <--
+     +19.0  play_land: Ugin's Labyrinth
+     +10.0  play_land: Shifting Woodland
+  >>> PLAY_LAND: Sanctum of Ugin
+  [MAIN1]
+
+T1 Eldrazi Ramp | life=20 mana=1 hand=3+2L gy=0
+  Hand: ['Utopia Sprawl', 'Talisman of Impulse', 'Malevolent Rumble']
+  Opp board: [] (life=20)
+  >>> PASS (play_value <= 0)
+  [MAIN2]
+
+T1 Eldrazi Ramp | life=20 mana=1 hand=3+2L gy=0
+  Hand: ['Utopia Sprawl', 'Talisman of Impulse', 'Malevolent Rumble']
+  Opp board: [] (life=20)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T2 4/5c Control | life=20 mana=0 hand=5+3L gy=0
+  Hand: ["Orim's Chant", 'Wrath of the Skies', 'Wrenn and Six', 'Teferi, Time Raveler', 'Quantum Riddler']
+  Opp board: [] (life=20)
+  EV scores:
+     +38.0  play_land: Flooded Strand <--
+     +38.0  play_land: Windswept Heath
+      +7.0  play_land: Arena of Glory
+  >>> PLAY_LAND: Flooded Strand
+  [MAIN1]
+
+T2 4/5c Control | life=19 mana=0 hand=5+2L gy=1
+  Hand: ["Orim's Chant", 'Wrath of the Skies', 'Wrenn and Six', 'Teferi, Time Raveler', 'Quantum Riddler']
+  Opp board: [] (life=20)
+  >>> PASS (play_value <= 0)
+  [MAIN2]
+
+T2 4/5c Control | life=19 mana=0 hand=5+2L gy=1
+  Hand: ["Orim's Chant", 'Wrath of the Skies', 'Wrenn and Six', 'Teferi, Time Raveler', 'Quantum Riddler']
+  Opp board: [] (life=20)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T3 Eldrazi Ramp | life=20 mana=1 hand=3+3L gy=0
+  Hand: ['Utopia Sprawl', 'Talisman of Impulse', 'Malevolent Rumble']
+  Opp board: [] (life=19)
+  EV scores:
+     +32.0  play_land: Wooded Foothills <--
+     +17.0  play_land: Shifting Woodland
+     +15.0  play_land: Ugin's Labyrinth
+  >>> PLAY_LAND: Wooded Foothills
+  [MAIN1]
+
+T3 Eldrazi Ramp | life=19 mana=1 hand=3+2L gy=1
+  Hand: ['Utopia Sprawl', 'Talisman of Impulse', 'Malevolent Rumble']
+  Opp board: [] (life=19)
+  >>> PASS (play_value <= 0)
+  [MAIN2]
+
+T3 Eldrazi Ramp | life=19 mana=1 hand=3+2L gy=1
+  Hand: ['Utopia Sprawl', 'Talisman of Impulse', 'Malevolent Rumble']
+  Opp board: [] (life=19)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T4 4/5c Control | life=19 mana=1 hand=5+3L gy=1
+  Hand: ["Orim's Chant", 'Wrath of the Skies', 'Wrenn and Six', 'Teferi, Time Raveler', 'Quantum Riddler']
+  Opp board: [] (life=19)
+  EV scores:
+     +25.0  play_land: Windswept Heath <--
+     +25.0  play_land: Misty Rainforest
+     +14.0  play_land: Arena of Glory
+  >>> PLAY_LAND: Windswept Heath
+  [MAIN1]
+
+T4 4/5c Control | life=18 mana=1 hand=5+2L gy=2
+  Hand: ["Orim's Chant", 'Wrath of the Skies', 'Wrenn and Six', 'Teferi, Time Raveler', 'Quantum Riddler']
+  Opp board: [] (life=19)
+  >>> PASS (play_value <= 0)
+  [MAIN2]
+
+T4 4/5c Control | life=18 mana=1 hand=5+2L gy=2
+  Hand: ["Orim's Chant", 'Wrath of the Skies', 'Wrenn and Six', 'Teferi, Time Raveler', 'Quantum Riddler']
+  Opp board: [] (life=19)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T5 Eldrazi Ramp | life=19 mana=2 hand=3+3L gy=1
+  Hand: ['Utopia Sprawl', 'Talisman of Impulse', 'Malevolent Rumble']
+  Opp board: [] (life=18)
+  EV scores:
+     +15.0  play_land: Ugin's Labyrinth <--
+     +15.0  play_land: Ugin's Labyrinth
+      +7.0  play_land: Shifting Woodland
+      +0.0  cast_spell: Malevolent Rumble  [h=+0.0 la=+0.0]
+      -0.0  cast_spell: Talisman of Impulse  [h=-0.0 la=-0.0]
+      -0.1  cast_spell: Utopia Sprawl  [h=-0.1 la=-0.1]
+  >>> PLAY_LAND: Ugin's Labyrinth
+  [MAIN1]
+
+T5 Eldrazi Ramp | life=19 mana=3 hand=3+2L gy=1
+  Hand: ['Utopia Sprawl', 'Talisman of Impulse', 'Malevolent Rumble']
+  Opp board: [] (life=18)
+  EV scores:
+      +0.1  cast_spell: Malevolent Rumble <--  [h=+0.1 la=+0.1]
+      +0.0  cast_spell: Talisman of Impulse  [h=+0.0 la=+0.0]
+      -0.1  cast_spell: Utopia Sprawl  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Malevolent Rumble
+  [MAIN1]
+
+T5 Eldrazi Ramp | life=19 mana=1 hand=2+2L gy=2
+  Hand: ['Utopia Sprawl', 'Talisman of Impulse']
+  Opp board: [] (life=18)
+  >>> PASS (play_value <= 0)
+  [MAIN2]
+
+T5 Eldrazi Ramp | life=19 mana=1 hand=2+2L gy=2
+  Hand: ['Utopia Sprawl', 'Talisman of Impulse']
+  Opp board: [] (life=18)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T6 4/5c Control | life=18 mana=2 hand=6+2L gy=2
+  Hand: ["Orim's Chant", 'Wrath of the Skies', 'Wrenn and Six', 'Teferi, Time Raveler', 'Quantum Riddler', 'Solitude']
+  Opp board: [] (life=19)
+  EV scores:
+     +18.0  play_land: Misty Rainforest <--
+      +7.0  play_land: Arena of Glory
+  >>> PLAY_LAND: Misty Rainforest
+  [MAIN1]
+
+T6 4/5c Control | life=17 mana=2 hand=6+1L gy=3
+  Hand: ["Orim's Chant", 'Wrath of the Skies', 'Wrenn and Six', 'Teferi, Time Raveler', 'Quantum Riddler', 'Solitude']
+  Opp board: [] (life=19)
+  >>> PASS (play_value <= 0)
+  [MAIN2]
+
+T6 4/5c Control | life=17 mana=2 hand=6+1L gy=3
+  Hand: ["Orim's Chant", 'Wrath of the Skies', 'Wrenn and Six', 'Teferi, Time Raveler', 'Quantum Riddler', 'Solitude']
+  Opp board: [] (life=19)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T7 Eldrazi Ramp | life=19 mana=3 hand=3+2L gy=2
+  Hand: ['Utopia Sprawl', 'Talisman of Impulse', 'Sire of Seven Deaths']
+  Opp board: [] (life=17)
+  EV scores:
+     +15.0  play_land: Ugin's Labyrinth <--
+      +7.0  play_land: Shifting Woodland
+      +0.1  cast_spell: Talisman of Impulse  [h=+0.1 la=+0.1]
+      -0.0  cast_spell: Utopia Sprawl  [h=-0.0 la=-0.0]
+  >>> PLAY_LAND: Ugin's Labyrinth
+  [MAIN1]
+
+T7 Eldrazi Ramp | life=19 mana=4 hand=3+1L gy=2
+  Hand: ['Utopia Sprawl', 'Talisman of Impulse', 'Sire of Seven Deaths']
+  Opp board: [] (life=17)
+  EV scores:
+      -0.0  cast_spell: Talisman of Impulse <--  [h=-0.0 la=-0.0]
+      -0.2  cast_spell: Utopia Sprawl  [h=-0.2 la=-0.2]
+  >>> CAST_SPELL: Talisman of Impulse
+  [MAIN1]
+
+T7 Eldrazi Ramp | life=19 mana=2 hand=2+1L gy=2
+  Hand: ['Utopia Sprawl', 'Sire of Seven Deaths']
+  Permanents: ['Talisman of Impulse']
+  Opp board: [] (life=17)
+  EV scores:
+      +0.2  cast_spell: Utopia Sprawl <--  [h=+0.2 la=+0.2]
+  >>> CAST_SPELL: Utopia Sprawl
+  [MAIN1]
+
+T7 Eldrazi Ramp | life=19 mana=1 hand=1+1L gy=2
+  Hand: ['Sire of Seven Deaths']
+  Permanents: ['Talisman of Impulse', 'Utopia Sprawl']
+  Opp board: [] (life=17)
+  >>> PASS (play_value <= 0)
+  [MAIN2]
+
+T7 Eldrazi Ramp | life=19 mana=1 hand=1+1L gy=2
+  Hand: ['Sire of Seven Deaths']
+  Permanents: ['Talisman of Impulse', 'Utopia Sprawl']
+  Opp board: [] (life=17)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T8 4/5c Control | life=17 mana=3 hand=6+2L gy=3
+  Hand: ["Orim's Chant", 'Wrath of the Skies', 'Wrenn and Six', 'Teferi, Time Raveler', 'Quantum Riddler', 'Solitude']
+  Opp board: [] (life=19)
+  EV scores:
+     +15.4  cast_spell: Teferi, Time Raveler <--  [h=+15.4 la=+15.4]
+     +12.9  cast_spell: Wrenn and Six  [h=+12.9 la=+12.9]
+      +7.0  play_land: Arena of Glory
+      +7.0  play_land: Elegant Parlor
+     -20.0  cast_spell: Wrath of the Skies  [h=-20.0 la=-20.0]
+  >>> CAST_SPELL: Teferi, Time Raveler
+  [MAIN1]
+
+T8 4/5c Control | life=17 mana=0 hand=6+2L gy=3
+  Hand: ["Orim's Chant", 'Wrath of the Skies', 'Wrenn and Six', 'Quantum Riddler', 'Solitude', 'Galvanic Discharge']
+  Permanents: ['Teferi, Time Raveler']
+  Opp board: [] (life=19)
+  EV scores:
+      +0.0  play_land: Arena of Glory <--
+      +0.0  play_land: Elegant Parlor
+  >>> PLAY_LAND: Arena of Glory
+  [MAIN1]
+
+T8 4/5c Control | life=17 mana=0 hand=6+1L gy=3
+  Hand: ["Orim's Chant", 'Wrath of the Skies', 'Wrenn and Six', 'Quantum Riddler', 'Solitude', 'Galvanic Discharge']
+  Permanents: ['Teferi, Time Raveler']
+  Opp board: [] (life=19)
+  >>> PASS (play_value <= 0)
+  [MAIN2]
+
+T8 4/5c Control | life=17 mana=0 hand=6+1L gy=3
+  Hand: ["Orim's Chant", 'Wrath of the Skies', 'Wrenn and Six', 'Quantum Riddler', 'Solitude', 'Galvanic Discharge']
+  Permanents: ['Teferi, Time Raveler']
+  Opp board: [] (life=19)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T9 Eldrazi Ramp | life=19 mana=4 hand=3+1L gy=2
+  Hand: ['Sire of Seven Deaths', 'Talisman of Impulse', "Kozilek's Command"]
+  Permanents: ['Utopia Sprawl']
+  Opp board: [] (life=17)
+  EV scores:
+      +7.0  play_land: Shifting Woodland <--
+      +0.0  cast_spell: Kozilek's Command  [h=+0.0 la=+0.0]
+      -0.1  cast_spell: Talisman of Impulse  [h=-0.1 la=-0.1]
+  >>> PLAY_LAND: Shifting Woodland
+  [MAIN1]
+
+T9 Eldrazi Ramp | life=19 mana=4 hand=3+0L gy=2
+  Hand: ['Sire of Seven Deaths', 'Talisman of Impulse', "Kozilek's Command"]
+  Permanents: ['Utopia Sprawl']
+  Opp board: [] (life=17)
+  EV scores:
+      +0.1  cast_spell: Kozilek's Command <--  [h=+0.1 la=+0.1]
+      -0.0  cast_spell: Talisman of Impulse  [h=-0.0 la=-0.0]
+  >>> CAST_SPELL: Kozilek's Command
+  [MAIN1]
+
+T9 Eldrazi Ramp | life=19 mana=0 hand=2+0L gy=3
+  Hand: ['Sire of Seven Deaths', 'Talisman of Impulse']
+  Permanents: ['Utopia Sprawl']
+  Opp board: [] (life=17)
+  >>> PASS (play_value <= 0)
+  [MAIN2]
+
+T9 Eldrazi Ramp | life=19 mana=0 hand=2+0L gy=3
+  Hand: ['Sire of Seven Deaths', 'Talisman of Impulse']
+  Permanents: ['Utopia Sprawl']
+  Opp board: [] (life=17)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T10 4/5c Control | life=17 mana=4 hand=7+1L gy=3
+  Hand: ["Orim's Chant", 'Wrath of the Skies', 'Wrenn and Six', 'Quantum Riddler', 'Solitude', 'Galvanic Discharge', 'Quantum Riddler']
+  Opp board: [] (life=19)
+  EV scores:
+      +9.1  cast_spell: Wrenn and Six <--  [h=+9.1 la=+9.1]
+      +7.0  play_land: Elegant Parlor
+     -20.0  cast_spell: Wrath of the Skies  [h=-20.0 la=-20.0]
+  >>> CAST_SPELL: Wrenn and Six
+  [MAIN1]
+
+T10 4/5c Control | life=17 mana=2 hand=6+1L gy=3
+  Hand: ["Orim's Chant", 'Wrath of the Skies', 'Quantum Riddler', 'Solitude', 'Galvanic Discharge', 'Quantum Riddler']
+  Permanents: ['Wrenn and Six']
+  Opp board: [] (life=19)
+  EV scores:
+      +7.0  play_land: Elegant Parlor <--
+     -20.0  cast_spell: Wrath of the Skies  [h=-20.0 la=-20.0]
+  >>> PLAY_LAND: Elegant Parlor
+  [MAIN1]
+
+T10 4/5c Control | life=17 mana=2 hand=6+0L gy=4
+  Hand: ["Orim's Chant", 'Wrath of the Skies', 'Quantum Riddler', 'Solitude', 'Galvanic Discharge', 'Quantum Riddler']
+  Permanents: ['Wrenn and Six']
+  Opp board: [] (life=19)
+  EV scores:
+     -20.0  cast_spell: Wrath of the Skies <--  [h=-20.0 la=-20.0]
+  >>> PASS (play_value <= 0)
+  [MAIN2]
+
+T10 4/5c Control | life=17 mana=2 hand=6+0L gy=4
+  Hand: ["Orim's Chant", 'Wrath of the Skies', 'Quantum Riddler', 'Solitude', 'Galvanic Discharge', 'Quantum Riddler']
+  Permanents: ['Wrenn and Six']
+  Opp board: [] (life=19)
+  EV scores:
+     -20.0  cast_spell: Wrath of the Skies <--  [h=-20.0 la=-20.0]
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T11 Eldrazi Ramp | life=19 mana=5 hand=3+0L gy=3
+  Hand: ['Sire of Seven Deaths', 'Talisman of Impulse', 'Icetill Explorer']
+  Permanents: ['Utopia Sprawl']
+  Opp board: [] (life=17)
+  EV scores:
+      +1.5  cast_spell: Icetill Explorer <--  [h=+1.5 la=+1.5]
+      -0.2  cast_spell: Talisman of Impulse  [h=-0.2 la=-0.2]
+  >>> CAST_SPELL: Icetill Explorer
+  [MAIN1]
+
+T11 Eldrazi Ramp | life=19 mana=1 hand=2+0L gy=3
+  Hand: ['Sire of Seven Deaths', 'Talisman of Impulse']
+  Board: ['Icetill Explorer (2/4)']
+  Permanents: ['Utopia Sprawl']
+  Opp board: [] (life=17)
+  >>> PASS (play_value <= 0)
+  [MAIN2]
+
+T11 Eldrazi Ramp | life=19 mana=1 hand=2+0L gy=3
+  Hand: ['Sire of Seven Deaths', 'Talisman of Impulse']
+  Board: ['Icetill Explorer (2/4)']
+  Permanents: ['Utopia Sprawl']
+  Opp board: [] (life=17)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T12 4/5c Control | life=17 mana=5 hand=7+0L gy=4
+  Hand: ["Orim's Chant", 'Wrath of the Skies', 'Quantum Riddler', 'Solitude', 'Galvanic Discharge', 'Quantum Riddler', 'Teferi, Time Raveler']
+  Permanents: ['Wrenn and Six']
+  Opp board: ['Icetill Explorer (2/4)'] (life=19)
+  EV scores:
+     +10.5  cast_spell: Solitude <--  [h=+10.5 la=+10.5]
+      +6.9  cast_spell: Teferi, Time Raveler  [h=+6.9 la=+6.9]
+     -20.0  cast_spell: Wrath of the Skies  [h=-20.0 la=-20.0]
+  >>> CAST_SPELL: Solitude
+  [MAIN1]
+
+T12 4/5c Control | life=17 mana=0 hand=6+0L gy=4
+  Hand: ["Orim's Chant", 'Wrath of the Skies', 'Quantum Riddler', 'Galvanic Discharge', 'Quantum Riddler', 'Teferi, Time Raveler']
+  Board: ['Solitude (3/2)']
+  Permanents: ['Wrenn and Six']
+  Opp board: [] (life=21)
+  >>> PASS (play_value <= 0)
+  [MAIN2]
+
+T12 4/5c Control | life=17 mana=0 hand=6+0L gy=4
+  Hand: ["Orim's Chant", 'Wrath of the Skies', 'Quantum Riddler', 'Galvanic Discharge', 'Quantum Riddler', 'Teferi, Time Raveler']
+  Board: ['Solitude (3/2)']
+  Permanents: ['Wrenn and Six']
+  Opp board: [] (life=21)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T13 Eldrazi Ramp | life=21 mana=5 hand=3+0L gy=3
+  Hand: ['Sire of Seven Deaths', 'Talisman of Impulse', 'Talisman of Impulse']
+  Permanents: ['Utopia Sprawl']
+  Opp board: ['Solitude (3/2)'] (life=17)
+  EV scores:
+      -0.2  cast_spell: Talisman of Impulse <--  [h=-0.2 la=-0.2]
+      -0.2  cast_spell: Talisman of Impulse  [h=-0.2 la=-0.2]
+  >>> CAST_SPELL: Talisman of Impulse
+  [MAIN1]
+
+T13 Eldrazi Ramp | life=21 mana=3 hand=2+0L gy=3
+  Hand: ['Sire of Seven Deaths', 'Talisman of Impulse']
+  Permanents: ['Utopia Sprawl', 'Talisman of Impulse']
+  Opp board: ['Solitude (3/2)'] (life=17)
+  EV scores:
+      +0.3  cast_spell: Talisman of Impulse <--  [h=+0.3 la=+0.3]
+  >>> CAST_SPELL: Talisman of Impulse
+  [MAIN1]
+
+T13 Eldrazi Ramp | life=21 mana=1 hand=1+0L gy=3
+  Hand: ['Sire of Seven Deaths']
+  Permanents: ['Utopia Sprawl', 'Talisman of Impulse', 'Talisman of Impulse']
+  Opp board: ['Solitude (3/2)'] (life=17)
+  >>> PASS (play_value <= 0)
+  [MAIN2]
+
+T13 Eldrazi Ramp | life=21 mana=1 hand=1+0L gy=3
+  Hand: ['Sire of Seven Deaths']
+  Permanents: ['Utopia Sprawl', 'Talisman of Impulse', 'Talisman of Impulse']
+  Opp board: ['Solitude (3/2)'] (life=17)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T14 4/5c Control | life=17 mana=5 hand=7+0L gy=4
+  Hand: ["Orim's Chant", 'Wrath of the Skies', 'Quantum Riddler', 'Galvanic Discharge', 'Quantum Riddler', 'Teferi, Time Raveler', 'Omnath, Locus of Creation']
+  Board: ['Solitude (3/2)']
+  Permanents: ['Wrenn and Six']
+  Opp board: [] (life=21)
+  EV scores:
+     +14.2  cast_spell: Omnath, Locus of Creation <--  [h=+14.2 la=+14.2]
+     +11.9  cast_spell: Teferi, Time Raveler  [h=+11.9 la=+11.9]
+      -5.3  cast_spell: Wrath of the Skies  [h=-5.3 la=-5.3]
+  >>> CAST_SPELL: Omnath, Locus of Creation
+  [MAIN1]
+
+T14 4/5c Control | life=17 mana=1 hand=7+0L gy=4
+  Hand: ["Orim's Chant", 'Wrath of the Skies', 'Quantum Riddler', 'Galvanic Discharge', 'Quantum Riddler', 'Teferi, Time Raveler', "Orim's Chant"]
+  Board: ['Solitude (3/2)', 'Omnath, Locus of Creation (4/4)']
+  Permanents: ['Wrenn and Six']
+  Opp board: [] (life=21)
+  >>> PASS (play_value <= 0)
+  >>> ATTACK: ['Solitude']
+  [MAIN2]
+
+T14 4/5c Control | life=20 mana=1 hand=7+0L gy=4
+  Hand: ["Orim's Chant", 'Wrath of the Skies', 'Quantum Riddler', 'Galvanic Discharge', 'Quantum Riddler', 'Teferi, Time Raveler', "Orim's Chant"]
+  Board: ['Solitude (3/2)', 'Omnath, Locus of Creation (4/4)']
+  Permanents: ['Wrenn and Six']
+  Opp board: [] (life=18)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T15 Eldrazi Ramp | life=18 mana=5 hand=2+0L gy=3
+  Hand: ['Sire of Seven Deaths', 'Malevolent Rumble']
+  Permanents: ['Utopia Sprawl', 'Talisman of Impulse', 'Talisman of Impulse']
+  Opp board: ['Solitude (3/2)', 'Omnath, Locus of Creation (4/4)'] (life=20)
+  EV scores:
+      -0.1  cast_spell: Malevolent Rumble <--  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Malevolent Rumble
+  [MAIN1]
+
+T15 Eldrazi Ramp | life=18 mana=3 hand=1+0L gy=4
+  Hand: ['Sire of Seven Deaths']
+  Permanents: ['Utopia Sprawl', 'Talisman of Impulse', 'Talisman of Impulse']
+  Opp board: ['Solitude (3/2)', 'Omnath, Locus of Creation (4/4)'] (life=20)
+  >>> PASS (play_value <= 0)
+  [MAIN2]
+
+T15 Eldrazi Ramp | life=18 mana=3 hand=1+0L gy=4
+  Hand: ['Sire of Seven Deaths']
+  Permanents: ['Utopia Sprawl', 'Talisman of Impulse', 'Talisman of Impulse']
+  Opp board: ['Solitude (3/2)', 'Omnath, Locus of Creation (4/4)'] (life=20)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T16 4/5c Control | life=20 mana=5 hand=7+1L gy=4
+  Hand: ["Orim's Chant", 'Wrath of the Skies', 'Quantum Riddler', 'Galvanic Discharge', 'Quantum Riddler', 'Teferi, Time Raveler', "Orim's Chant"]
+  Board: ['Solitude (3/2)', 'Omnath, Locus of Creation (4/4)']
+  Permanents: ['Wrenn and Six']
+  Opp board: [] (life=18)
+  EV scores:
+     +24.0  play_land: Misty Rainforest <--
+     +13.0  cast_spell: Teferi, Time Raveler  [h=+13.0 la=+13.0]
+     -12.9  cast_spell: Wrath of the Skies  [h=-12.9 la=-12.9]
+  >>> PLAY_LAND: Misty Rainforest
+  [MAIN1]
+
+T16 4/5c Control | life=19 mana=9 hand=7+0L gy=5
+  Hand: ["Orim's Chant", 'Wrath of the Skies', 'Quantum Riddler', 'Galvanic Discharge', 'Quantum Riddler', 'Teferi, Time Raveler', "Orim's Chant"]
+  Board: ['Solitude (3/2)', 'Omnath, Locus of Creation (4/4)']
+  Permanents: ['Wrenn and Six']
+  Opp board: [] (life=18)
+  EV scores:
+     +13.1  cast_spell: Teferi, Time Raveler <--  [h=+13.1 la=+13.1]
+     +12.7  cast_spell: Quantum Riddler  [h=+12.7 la=+12.7]
+     +12.7  cast_spell: Quantum Riddler  [h=+12.7 la=+12.7]
+     -12.9  cast_spell: Wrath of the Skies  [h=-12.9 la=-12.9]
+  >>> CAST_SPELL: Teferi, Time Raveler
+  [MAIN1]
+
+T16 4/5c Control | life=19 mana=6 hand=7+0L gy=5
+  Hand: ["Orim's Chant", 'Wrath of the Skies', 'Quantum Riddler', 'Galvanic Discharge', 'Quantum Riddler', "Orim's Chant", 'Ephemerate']
+  Board: ['Solitude (3/2)', 'Omnath, Locus of Creation (4/4)']
+  Permanents: ['Wrenn and Six', 'Teferi, Time Raveler']
+  Opp board: [] (life=18)
+  EV scores:
+      -2.2  cast_spell: Ephemerate <--  [h=-2.2 la=-2.2]
+     -14.9  cast_spell: Wrath of the Skies  [h=-14.9 la=-14.9]
+  >>> CAST_SPELL: Ephemerate
+  [MAIN1]
+
+T16 4/5c Control | life=19 mana=5 hand=7+0L gy=5
+  Hand: ["Orim's Chant", 'Wrath of the Skies', 'Quantum Riddler', 'Galvanic Discharge', 'Quantum Riddler', "Orim's Chant", 'Galvanic Discharge']
+  Board: ['Solitude (3/2)', 'Omnath, Locus of Creation (4/4)']
+  Permanents: ['Wrenn and Six', 'Teferi, Time Raveler']
+  Opp board: [] (life=18)
+  EV scores:
+     -14.9  cast_spell: Wrath of the Skies <--  [h=-14.9 la=-14.9]
+  >>> PASS (play_value <= 0)
+  >>> ATTACK: ['Solitude']
+  [MAIN2]
+
+T16 4/5c Control | life=22 mana=4 hand=7+0L gy=5
+  Hand: ["Orim's Chant", 'Wrath of the Skies', 'Quantum Riddler', 'Galvanic Discharge', 'Quantum Riddler', "Orim's Chant", 'Galvanic Discharge']
+  Board: ['Solitude (3/2)', 'Omnath, Locus of Creation (4/4)']
+  Permanents: ['Wrenn and Six', 'Teferi, Time Raveler']
+  Opp board: [] (life=15)
+  EV scores:
+     -14.5  cast_spell: Wrath of the Skies <--  [h=-14.5 la=-14.5]
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T17 Eldrazi Ramp | life=15 mana=5 hand=2+1L gy=4
+  Hand: ['Sire of Seven Deaths', 'Utopia Sprawl']
+  Permanents: ['Talisman of Impulse', 'Talisman of Impulse']
+  Opp board: ['Solitude (3/2)', 'Omnath, Locus of Creation (4/4)'] (life=22)
+  EV scores:
+     +19.0  play_land: Eldrazi Temple <--
+      -0.1  cast_spell: Utopia Sprawl  [h=-0.1 la=-0.1]
+  >>> PLAY_LAND: Eldrazi Temple
+  [MAIN1]
+
+T17 Eldrazi Ramp | life=15 mana=6 hand=2+0L gy=4
+  Hand: ['Sire of Seven Deaths', 'Utopia Sprawl']
+  Permanents: ['Talisman of Impulse', 'Talisman of Impulse']
+  Opp board: ['Solitude (3/2)', 'Omnath, Locus of Creation (4/4)'] (life=22)
+  EV scores:
+      -0.1  cast_spell: Utopia Sprawl <--  [h=-0.1 la=-0.1]
+  >>> CAST_SPELL: Utopia Sprawl
+  [MAIN1]
+
+T17 Eldrazi Ramp | life=15 mana=5 hand=1+0L gy=4
+  Hand: ['Sire of Seven Deaths']
+  Permanents: ['Talisman of Impulse', 'Talisman of Impulse', 'Utopia Sprawl']
+  Opp board: ['Solitude (3/2)', 'Omnath, Locus of Creation (4/4)'] (life=22)
+  >>> PASS (play_value <= 0)
+  [MAIN2]
+
+T17 Eldrazi Ramp | life=15 mana=5 hand=1+0L gy=4
+  Hand: ['Sire of Seven Deaths']
+  Permanents: ['Talisman of Impulse', 'Talisman of Impulse', 'Utopia Sprawl']
+  Opp board: ['Solitude (3/2)', 'Omnath, Locus of Creation (4/4)'] (life=22)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T18 4/5c Control | life=22 mana=6 hand=8+1L gy=5
+  Hand: ["Orim's Chant", 'Wrath of the Skies', 'Quantum Riddler', 'Galvanic Discharge', 'Quantum Riddler', "Orim's Chant", 'Galvanic Discharge', 'Teferi, Time Raveler']
+  Board: ['Solitude (3/2)', 'Omnath, Locus of Creation (4/4)']
+  Permanents: ['Wrenn and Six', 'Teferi, Time Raveler']
+  Opp board: [] (life=15)
+  EV scores:
+     +24.0  play_land: Windswept Heath <--
+     +11.8  cast_spell: Quantum Riddler  [h=+11.8 la=+11.8]
+     +11.8  cast_spell: Quantum Riddler  [h=+11.8 la=+11.8]
+     -12.3  cast_spell: Wrath of the Skies  [h=-12.3 la=-12.3]
+  >>> PLAY_LAND: Windswept Heath
+  [MAIN1]
+
+T18 4/5c Control | life=21 mana=10 hand=8+0L gy=6
+  Hand: ["Orim's Chant", 'Wrath of the Skies', 'Quantum Riddler', 'Galvanic Discharge', 'Quantum Riddler', "Orim's Chant", 'Galvanic Discharge', 'Teferi, Time Raveler']
+  Board: ['Solitude (3/2)', 'Omnath, Locus of Creation (4/4)']
+  Permanents: ['Wrenn and Six', 'Teferi, Time Raveler']
+  Opp board: [] (life=15)
+  EV scores:
+     +12.6  cast_spell: Quantum Riddler <--  [h=+12.6 la=+12.6]
+     +12.6  cast_spell: Quantum Riddler  [h=+12.6 la=+12.6]
+     -12.3  cast_spell: Wrath of the Skies  [h=-12.3 la=-12.3]
+  >>> CAST_SPELL: Quantum Riddler
+  [MAIN1]
+
+T18 4/5c Control | life=21 mana=5 hand=8+0L gy=6
+  Hand: ["Orim's Chant", 'Wrath of the Skies', 'Galvanic Discharge', 'Quantum Riddler', "Orim's Chant", 'Galvanic Discharge', 'Teferi, Time Raveler', 'Prismatic Ending']
+  Board: ['Solitude (3/2)', 'Omnath, Locus of Creation (4/4)', 'Quantum Riddler (4/6)']
+  Permanents: ['Wrenn and Six', 'Teferi, Time Raveler']
+  Opp board: [] (life=15)
+  EV scores:
+     -16.4  cast_spell: Wrath of the Skies <--  [h=-16.4 la=-16.4]
+  >>> PASS (play_value <= 0)
+  >>> ATTACK: ['Solitude']
+  [MAIN2]
+
+T18 4/5c Control | life=24 mana=5 hand=8+0L gy=7
+  Hand: ["Orim's Chant", 'Wrath of the Skies', 'Galvanic Discharge', 'Quantum Riddler', "Orim's Chant", 'Galvanic Discharge', 'Teferi, Time Raveler', 'Prismatic Ending']
+  Board: ['Solitude (3/2)', 'Omnath, Locus of Creation (4/4)', 'Quantum Riddler (4/6)']
+  Permanents: ['Teferi, Time Raveler']
+  Opp board: [] (life=12)
+  EV scores:
+     -16.0  cast_spell: Wrath of the Skies <--  [h=-16.0 la=-16.0]
+  >>> CAST_SPELL: Wrenn and Six
+  [MAIN2]
+
+T18 4/5c Control | life=24 mana=3 hand=8+0L gy=6
+  Hand: ["Orim's Chant", 'Wrath of the Skies', 'Galvanic Discharge', 'Quantum Riddler', "Orim's Chant", 'Galvanic Discharge', 'Teferi, Time Raveler', 'Prismatic Ending']
+  Board: ['Solitude (3/2)', 'Omnath, Locus of Creation (4/4)', 'Quantum Riddler (4/6)']
+  Permanents: ['Teferi, Time Raveler', 'Wrenn and Six']
+  Opp board: [] (life=12)
+  EV scores:
+     -20.3  cast_spell: Wrath of the Skies <--  [h=-20.3 la=-20.3]
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T19 Eldrazi Ramp | life=12 mana=5 hand=1+1L gy=5
+  Hand: ['Sire of Seven Deaths']
+  Permanents: ['Talisman of Impulse', 'Talisman of Impulse', 'Utopia Sprawl']
+  Opp board: ['Solitude (3/2)', 'Omnath, Locus of Creation (4/4)', 'Quantum Riddler (4/6)'] (life=24)
+  EV scores:
+     +19.0  play_land: Wooded Foothills <--
+  >>> PLAY_LAND: Wooded Foothills
+  [MAIN1]
+
+T19 Eldrazi Ramp | life=11 mana=5 hand=1+0L gy=6
+  Hand: ['Sire of Seven Deaths']
+  Permanents: ['Talisman of Impulse', 'Talisman of Impulse', 'Utopia Sprawl']
+  Opp board: ['Solitude (3/2)', 'Omnath, Locus of Creation (4/4)', 'Quantum Riddler (4/6)'] (life=24)
+  >>> PASS (play_value <= 0)
+  [MAIN2]
+
+T19 Eldrazi Ramp | life=11 mana=5 hand=1+0L gy=6
+  Hand: ['Sire of Seven Deaths']
+  Permanents: ['Talisman of Impulse', 'Talisman of Impulse', 'Utopia Sprawl']
+  Opp board: ['Solitude (3/2)', 'Omnath, Locus of Creation (4/4)', 'Quantum Riddler (4/6)'] (life=24)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T20 4/5c Control | life=24 mana=7 hand=8+1L gy=7
+  Hand: ["Orim's Chant", 'Galvanic Discharge', 'Quantum Riddler', "Orim's Chant", 'Galvanic Discharge', 'Teferi, Time Raveler', 'Prismatic Ending', 'Stock Up']
+  Board: ['Solitude (3/2)', 'Omnath, Locus of Creation (4/4)', 'Quantum Riddler (4/6)']
+  Permanents: ['Teferi, Time Raveler', 'Wrenn and Six']
+  Opp board: [] (life=11)
+  EV scores:
+     +18.0  play_land: Breeding Pool <--
+      +8.7  cast_spell: Quantum Riddler  [h=+8.7 la=+8.7]
+      +5.2  cast_spell: Stock Up  [h=+5.2 la=+5.2]
+  >>> PLAY_LAND: Breeding Pool
+  [MAIN1]
+
+T20 4/5c Control | life=22 mana=8 hand=8+0L gy=7
+  Hand: ["Orim's Chant", 'Galvanic Discharge', 'Quantum Riddler', "Orim's Chant", 'Galvanic Discharge', 'Teferi, Time Raveler', 'Prismatic Ending', 'Stock Up']
+  Board: ['Solitude (3/2)', 'Omnath, Locus of Creation (4/4)', 'Quantum Riddler (4/6)']
+  Permanents: ['Teferi, Time Raveler', 'Wrenn and Six']
+  Opp board: [] (life=11)
+  EV scores:
+      +9.3  cast_spell: Quantum Riddler <--  [h=+9.3 la=+9.3]
+      +5.1  cast_spell: Stock Up  [h=+5.1 la=+5.1]
+  >>> CAST_SPELL: Quantum Riddler
+  [MAIN1]
+
+T20 4/5c Control | life=22 mana=3 hand=8+0L gy=7
+  Hand: ["Orim's Chant", 'Galvanic Discharge', "Orim's Chant", 'Galvanic Discharge', 'Teferi, Time Raveler', 'Prismatic Ending', 'Stock Up', 'Solitude']
+  Board: ['Solitude (3/2)', 'Omnath, Locus of Creation (4/4)', 'Quantum Riddler (4/6)', 'Quantum Riddler (4/6)']
+  Permanents: ['Teferi, Time Raveler', 'Wrenn and Six']
+  Opp board: [] (life=11)
+  EV scores:
+      +3.7  cast_spell: Stock Up <--  [h=+3.7 la=+3.7]
+  >>> CAST_SPELL: Stock Up
+  [MAIN1]
+
+T20 4/5c Control | life=22 mana=0 hand=9+0L gy=8
+  Hand: ["Orim's Chant", 'Galvanic Discharge', "Orim's Chant", 'Galvanic Discharge', 'Teferi, Time Raveler', 'Prismatic Ending', 'Solitude', 'Solitude', 'Eternal Witness']
+  Board: ['Solitude (3/2)', 'Omnath, Locus of Creation (4/4)', 'Quantum Riddler (4/6)', 'Quantum Riddler (4/6)']
+  Permanents: ['Teferi, Time Raveler', 'Wrenn and Six']
+  Opp board: [] (life=11)
+  >>> PASS (play_value <= 0)
+  >>> ATTACK: ['Solitude', 'Omnath, Locus of Creation']
+  [MAIN2]
+
+T20 4/5c Control | life=25 mana=0 hand=9+0L gy=8
+  Hand: ["Orim's Chant", 'Galvanic Discharge', "Orim's Chant", 'Galvanic Discharge', 'Teferi, Time Raveler', 'Prismatic Ending', 'Solitude', 'Solitude', 'Eternal Witness']
+  Board: ['Solitude (3/2)', 'Omnath, Locus of Creation (4/4)', 'Quantum Riddler (4/6)', 'Quantum Riddler (4/6)']
+  Permanents: ['Teferi, Time Raveler', 'Wrenn and Six']
+  Opp board: [] (life=4)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T21 Eldrazi Ramp | life=4 mana=6 hand=2+0L gy=6
+  Hand: ['Sire of Seven Deaths', "Kozilek's Command"]
+  Permanents: ['Talisman of Impulse', 'Talisman of Impulse', 'Utopia Sprawl']
+  Opp board: ['Solitude (3/2)', 'Omnath, Locus of Creation (4/4)', 'Quantum Riddler (4/6)', 'Quantum Riddler (4/6)'] (life=25)
+  EV scores:
+      +0.0  cast_spell: Kozilek's Command <--  [h=+0.0 la=+0.0]
+  >>> CAST_SPELL: Kozilek's Command
+  [MAIN1]
+
+T21 Eldrazi Ramp | life=4 mana=0 hand=1+0L gy=7
+  Hand: ['Sire of Seven Deaths']
+  Permanents: ['Talisman of Impulse', 'Talisman of Impulse', 'Utopia Sprawl']
+  Opp board: ['Solitude (3/2)', 'Quantum Riddler (4/6)', 'Quantum Riddler (4/6)'] (life=25)
+  >>> PASS (play_value <= 0)
+  [MAIN2]
+
+T21 Eldrazi Ramp | life=4 mana=0 hand=1+0L gy=7
+  Hand: ['Sire of Seven Deaths']
+  Permanents: ['Talisman of Impulse', 'Talisman of Impulse', 'Utopia Sprawl']
+  Opp board: ['Solitude (3/2)', 'Quantum Riddler (4/6)', 'Quantum Riddler (4/6)'] (life=25)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T22 4/5c Control | life=25 mana=8 hand=8+1L gy=10
+  Hand: ["Orim's Chant", "Orim's Chant", 'Teferi, Time Raveler', 'Prismatic Ending', 'Solitude', 'Solitude', 'Eternal Witness', 'Wrenn and Six']
+  Board: ['Solitude (3/2)', 'Quantum Riddler (4/6)', 'Quantum Riddler (4/6)']
+  Permanents: ['Teferi, Time Raveler', 'Wrenn and Six']
+  Opp board: [] (life=4)
+  EV scores:
+     +18.0  play_land: Windswept Heath <--
+      +4.2  cast_spell: Eternal Witness  [h=+4.2 la=+4.2]
+      -1.8  cast_spell: Solitude  [h=-1.8 la=-1.8]
+      -1.8  cast_spell: Solitude  [h=-1.8 la=-1.8]
+  >>> PLAY_LAND: Windswept Heath
+  [MAIN1]
+
+T22 4/5c Control | life=24 mana=9 hand=8+0L gy=11
+  Hand: ["Orim's Chant", "Orim's Chant", 'Teferi, Time Raveler', 'Prismatic Ending', 'Solitude', 'Solitude', 'Eternal Witness', 'Wrenn and Six']
+  Board: ['Solitude (3/2)', 'Quantum Riddler (4/6)', 'Quantum Riddler (4/6)']
+  Permanents: ['Teferi, Time Raveler', 'Wrenn and Six']
+  Opp board: [] (life=4)
+  EV scores:
+      +4.2  cast_spell: Eternal Witness <--  [h=+4.2 la=+4.2]
+      -1.8  cast_spell: Solitude  [h=-1.8 la=-1.8]
+      -1.8  cast_spell: Solitude  [h=-1.8 la=-1.8]
+  >>> CAST_SPELL: Eternal Witness
+  [MAIN1]
+
+T22 4/5c Control | life=24 mana=6 hand=8+0L gy=10
+  Hand: ["Orim's Chant", "Orim's Chant", 'Teferi, Time Raveler', 'Prismatic Ending', 'Solitude', 'Solitude', 'Wrenn and Six', 'Stock Up']
+  Board: ['Solitude (3/2)', 'Quantum Riddler (4/6)', 'Quantum Riddler (4/6)', 'Eternal Witness (2/1)']
+  Permanents: ['Teferi, Time Raveler', 'Wrenn and Six']
+  Opp board: [] (life=4)
+  EV scores:
+      +4.4  cast_spell: Stock Up <--  [h=+4.4 la=+4.4]
+      -4.3  cast_spell: Solitude  [h=-4.3 la=-4.3]
+      -4.3  cast_spell: Solitude  [h=-4.3 la=-4.3]
+  >>> CAST_SPELL: Stock Up
+  [MAIN1]
+
+T22 4/5c Control | life=24 mana=3 hand=9+0L gy=11
+  Hand: ["Orim's Chant", "Orim's Chant", 'Teferi, Time Raveler', 'Prismatic Ending', 'Solitude', 'Solitude', 'Wrenn and Six', "Orim's Chant", 'Prismatic Ending']
+  Board: ['Solitude (3/2)', 'Quantum Riddler (4/6)', 'Quantum Riddler (4/6)', 'Eternal Witness (2/1)']
+  Permanents: ['Teferi, Time Raveler', 'Wrenn and Six']
+  Opp board: [] (life=4)
+  >>> PASS (play_value <= 0)
+  >>> ATTACK: ['Solitude', 'Quantum Riddler']

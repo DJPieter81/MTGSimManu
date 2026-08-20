@@ -767,12 +767,17 @@ def resolve_attack_trigger(game: "GameState", attacker: "CardInstance",
             game.gain_life(controller, int(m.group(1)), attacker.name)
 
     # ── Mobilize: "create N tapped and attacking tokens" ──
+    # CR 702 Mobilize: tokens enter tapped and attacking; sacrifice at
+    # the beginning of the next end step.
     if getattr(attacker.template, 'has_mobilize', False):
         m = re.search(r'mobilize\s+(\d+)', oracle)
         if m:
             count = int(m.group(1))
-            game.create_token(controller, "warrior", count=count,
-                              power=1, toughness=1)
+            tokens = game.create_token(controller, "warrior", count=count,
+                                       power=1, toughness=1)
+            for tok in tokens:
+                tok.tapped = True          # enters tapped-and-attacking
+                game.register_end_of_turn_sacrifice(tok)
             game.log.append(
                 f"T{game.display_turn} P{controller+1}: "
                 f"{attacker.name} mobilize {count} — create {count} 1/1 tokens")
