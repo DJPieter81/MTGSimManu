@@ -1,0 +1,749 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+Result: Dimir Midrange wins T13 via timeout
+Life: P1=7 P2=11
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Dimir Midrange wins → chooses to play first
+║ P1 (on play): Dimir Midrange
+║ P2 (on draw): Eldrazi Ramp
+╚═══════════════════════════════════════════════════════
+
+P1 (Eldrazi Ramp) opening hand (1 lands, 6 spells):
+  • Sowing Mycospawn [Creature, CMC 4]
+  • Icetill Explorer [Creature, CMC 4]
+  • Utopia Sprawl [Spell, CMC 1]
+  • Emrakul, the Promised End [Creature, CMC 13]
+  • Emrakul, the Promised End [Creature, CMC 13]
+  • Eldrazi Temple [Land, CMC 0]
+  • Utopia Sprawl [Spell, CMC 1]
+→ P1 MULLIGANS (too few lands (1 < 2))
+  New hand (4 lands, 3 spells): ['Grove of the Burnwillows', 'Utopia Sprawl', "Kozilek's Command", 'Stomping Ground', 'Sowing Mycospawn', 'Eldrazi Temple', 'Eldrazi Temple']
+→ P1 mulligans to 6, bottoms: ['Eldrazi Temple']
+  Keeps: ['Grove of the Burnwillows', 'Utopia Sprawl', "Kozilek's Command", 'Stomping Ground', 'Sowing Mycospawn', 'Eldrazi Temple']
+
+P2 (Dimir Midrange) opening hand (3 lands, 4 spells):
+  • Psychic Frog [Creature, CMC 2]
+  • Counterspell [Spell, CMC 2]
+  • Drown in the Loch [Spell, CMC 2]
+  • Polluted Delta [Land, CMC 0]
+  • Darkslick Shores [Land, CMC 0]
+  • Underground River [Land, CMC 0]
+  • Archmage's Charm [Spell, CMC 3]
+→ P2 KEEPS 7 — has key card(s): Psychic Frog, 4 cheap spells
+
+
+╔══ TURN 1 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Eldrazi Ramp 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Underground River
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Eldrazi Ramp (P1) ══════════════════════════
+║ Life: Eldrazi Ramp 20  |  Dimir Midrange 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 0
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Sire of Seven Deaths
+  [Main 1]
+T1 P1: Play Grove of the Burnwillows
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Eldrazi Ramp 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Lands: Grove of the Burnwillows
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Island
+  [Main 1]
+T2 P2: Play Polluted Delta
+T2: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T2 P2: Crack Polluted Delta (pay 1 life) -> Watery Grave (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Eldrazi Ramp (P1) ══════════════════════════
+║ Life: Eldrazi Ramp 20  |  Dimir Midrange 19
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 53  |  Graveyard: 0
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Lands: Grove of the Burnwillows
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River, Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Stomping Ground
+  [Main 1]
+T2 P1: Play Stomping Ground (untapped, life: 20)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Eldrazi Ramp 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River, Watery Grave
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Lands: Grove of the Burnwillows, Stomping Ground
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Counterspell
+  [Main 1]
+T3 P2: Play Island
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Eldrazi Ramp (P1) ══════════════════════════
+║ Life: Eldrazi Ramp 20  |  Dimir Midrange 19
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 52  |  Graveyard: 0
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Lands: Grove of the Burnwillows, Stomping Ground
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River, Watery Grave, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Sowing Mycospawn
+  [Main 1]
+T3 P1: Play Eldrazi Temple
+    → Goal: grind_value
+    [Mana] Tap Stomping Ground→G (paying for Utopia Sprawl, 3 mana remaining)
+T3 P1: Cast Utopia Sprawl (G)
+    [Priority] P2 passes (no response)
+T3: Resolve Utopia Sprawl
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Eldrazi Ramp 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River, Watery Grave, Island
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Other: Utopia Sprawl
+║   Lands: Grove of the Burnwillows, Stomping Ground [T], Eldrazi Temple
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Consider
+  [Main 1]
+T4 P2: Play Darkslick Shores (tapped, 3 other lands)
+    → Goal: close_game
+    [Mana] Tap Island→U (paying for Consider, 3 mana remaining)
+T4 P2: Cast Consider (U)
+    [Priority] P1 passes (no response)
+T4: Resolve Consider
+T4 P2: surveil 1 → Orcish Bowmasters to GY
+T4 P2: Consider → draw 1 (Murktide Regent)
+T4: Consider moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Eldrazi Ramp (P1) ══════════════════════════
+║ Life: Eldrazi Ramp 20  |  Dimir Midrange 19
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 51  |  Graveyard: 0
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Other: Utopia Sprawl
+║   Lands: Grove of the Burnwillows, Stomping Ground, Eldrazi Temple
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River, Watery Grave, Island [T], Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Malevolent Rumble
+  [Main 1]
+T4 P1: Play Stomping Ground (untapped, life: 20)
+    → Goal: close_game
+    [Mana] Tap Eldrazi Temple→C, Stomping Ground→G (paying for Malevolent Rumble, 4 mana remaining)
+T4 P1: Cast Malevolent Rumble (1G)
+    [Priority] P2 passes (no response)
+T4: Resolve Malevolent Rumble
+T4: Malevolent Rumble moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Eldrazi Ramp 20
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 3
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River, Watery Grave, Island, Darkslick Shores
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Other: Utopia Sprawl
+║   Lands: Grove of the Burnwillows, Stomping Ground [T], Eldrazi Temple [T], Stomping Ground
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Dauthi Voidwalker
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Eldrazi Ramp (P1) ══════════════════════════
+║ Life: Eldrazi Ramp 20  |  Dimir Midrange 19
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 50  |  Graveyard: 1
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Other: Utopia Sprawl
+║   Lands: Grove of the Burnwillows, Stomping Ground, Eldrazi Temple, Stomping Ground
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River, Watery Grave, Island, Darkslick Shores
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Talisman of Impulse
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Eldrazi Temple→C, Grove of the Burnwillows→C (paying for Talisman of Impulse, 4 mana remaining)
+T5 P1: Cast Talisman of Impulse (2)
+    [Priority] P2 passes (no response)
+T5: Resolve Talisman of Impulse
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Eldrazi Ramp 20
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 3
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River, Watery Grave, Island, Darkslick Shores
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Other: Utopia Sprawl, Talisman of Impulse
+║   Lands: Grove of the Burnwillows [T], Stomping Ground, Eldrazi Temple [T], Stomping Ground
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Subtlety
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Island→U, Watery Grave→U, Darkslick Shores→U, Underground River→C (paying for Subtlety, 4 mana remaining)
+T6 P2: Cast Subtlety (2UU)
+    [Priority] P1 passes (no response)
+T6: Resolve Subtlety
+T6 P2: Subtlety enters (no creature/PW spell on stack to target)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Eldrazi Ramp (P1) ══════════════════════════
+║ Life: Eldrazi Ramp 20  |  Dimir Midrange 19
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 1
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Other: Utopia Sprawl, Talisman of Impulse
+║   Lands: Grove of the Burnwillows, Stomping Ground, Eldrazi Temple, Stomping Ground
+║ Dimir Midrange board:
+║   Creatures: Subtlety (3/3)
+║   Lands: Underground River [T], Watery Grave [T], Island [T], Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Sire of Seven Deaths
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Eldrazi Temple→C, Grove of the Burnwillows→C (paying for Kozilek's Command, 5 mana remaining)
+T6 P1: Cast Kozilek's Command (3) (X=3)
+    [Priority] P2 passes (no response)
+T6: Resolve Kozilek's Command
+T6: Subtlety moved battlefield -> exile (exiled)
+T6: Kozilek's Command moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Eldrazi Ramp 20
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 3
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River, Watery Grave, Island, Darkslick Shores
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Other: Utopia Sprawl, Talisman of Impulse
+║   Lands: Grove of the Burnwillows [T], Stomping Ground [T], Eldrazi Temple [T], Stomping Ground [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Otawara, Soaring City
+  [Main 1]
+T7 P2: Play Otawara, Soaring City
+    → Goal: close_game
+    [Mana] Tap Watery Grave→B, Darkslick Shores→B (paying for Dauthi Voidwalker, 5 mana remaining)
+T7 P2: Cast Dauthi Voidwalker (BB)
+    [Priority] P1 passes (no response)
+T7: Resolve Dauthi Voidwalker
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Eldrazi Ramp (P1) ══════════════════════════
+║ Life: Eldrazi Ramp 20  |  Dimir Midrange 19
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 48  |  Graveyard: 2
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Other: Utopia Sprawl, Talisman of Impulse
+║   Lands: Grove of the Burnwillows, Stomping Ground, Eldrazi Temple, Stomping Ground
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2)
+║   Lands: Underground River, Watery Grave [T], Island, Darkslick Shores [T], Otawara, Soaring City
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Malevolent Rumble
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Eldrazi Temple→C, Stomping Ground→G (paying for Malevolent Rumble, 5 mana remaining)
+T7 P1: Cast Malevolent Rumble (1G)
+    [Priority] P2 passes (no response)
+T7: Resolve Malevolent Rumble
+T7: Malevolent Rumble moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Eldrazi Ramp 20
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 44  |  Graveyard: 3
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2)
+║   Lands: Underground River, Watery Grave, Island, Darkslick Shores, Otawara, Soaring City
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Other: Utopia Sprawl, Talisman of Impulse
+║   Lands: Grove of the Burnwillows, Stomping Ground [T], Eldrazi Temple [T], Stomping Ground
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Consider
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Island→U, Watery Grave→B (paying for Psychic Frog, 5 mana remaining)
+T8 P2: Cast Psychic Frog (UB)
+    [Priority] P1 passes (no response)
+T8: Resolve Psychic Frog
+    → Goal: close_game
+    [Mana] Tap Otawara, Soaring City→U (paying for Consider, 3 mana remaining)
+T8 P2: Cast Consider (U)
+    [Priority] P1 passes (no response)
+T8: Resolve Consider
+T8 P2: surveil 1 → Thoughtseize to GY
+T8 P2: Consider → draw 1 (Swamp)
+T8: Consider moved stack -> graveyard (resolution)
+T8 P2: Play Swamp
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Dauthi Voidwalker
+T8 P2: Attack with Dauthi Voidwalker
+  [Declare Blockers] P1 does not block
+T8 P2:   Dauthi Voidwalker (3/2) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 20 → 17
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Eldrazi Ramp (P1) ══════════════════════════
+║ Life: Eldrazi Ramp 17  |  Dimir Midrange 19
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 47  |  Graveyard: 3
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Other: Utopia Sprawl, Talisman of Impulse
+║   Lands: Grove of the Burnwillows, Stomping Ground, Eldrazi Temple, Stomping Ground
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2) [tapped], Psychic Frog (1/2)
+║   Lands: Underground River, Watery Grave [T], Island [T], Darkslick Shores, Otawara, Soaring City [T], Swamp
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Emrakul, the Promised End
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Eldrazi Temple→C, Stomping Ground→G, Stomping Ground→G, Grove of the Burnwillows→C (paying for Sowing Mycospawn, 5 mana remaining)
+T8 P1: Cast Sowing Mycospawn (3G)
+    [Priority] P2 responds with Drown in the Loch
+    [Mana] Tap Swamp→B, Darkslick Shores→U (paying for Drown in the Loch, 3 mana remaining)
+T8 P2: Cast Drown in the Loch (UB)
+T8: Resolve Drown in the Loch
+T8: Sowing Mycospawn moved stack -> graveyard (resolution)
+T8: Sowing Mycospawn is countered
+T8: Drown in the Loch moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Eldrazi Ramp 17
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 6  |  Opp lands: 4
+║ Library: 41  |  Graveyard: 6
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2), Psychic Frog (1/2)
+║   Lands: Underground River, Watery Grave, Island, Darkslick Shores, Otawara, Soaring City, Swamp
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Other: Utopia Sprawl, Talisman of Impulse
+║   Lands: Grove of the Burnwillows [T], Stomping Ground [T], Eldrazi Temple [T], Stomping Ground [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Counterspell
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Dauthi Voidwalker, Psychic Frog
+T9 P2: Attack with Dauthi Voidwalker, Psychic Frog
+  [Declare Blockers] P1 does not block
+T9 P2:   Dauthi Voidwalker (3/2) → 3 dmg to player
+T9 P2:   Psychic Frog (1/2) → 1 dmg to player
+T9 P2: Psychic Frog deals combat damage — draw a card
+  [Combat Damage] 4 damage dealt → P1 life: 17 → 13
+  [End Combat]
+  [Main 2]
+T9 P2: Play Creeping Tar Pit (enters tapped)
+  [End Step]
+
+╔══ TURN 9 — Eldrazi Ramp (P1) ══════════════════════════
+║ Life: Eldrazi Ramp 13  |  Dimir Midrange 19
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 7
+║ Library: 46  |  Graveyard: 4
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Other: Utopia Sprawl, Talisman of Impulse
+║   Lands: Grove of the Burnwillows, Stomping Ground, Eldrazi Temple, Stomping Ground
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2) [tapped], Psychic Frog (1/2) [tapped]
+║   Lands: Underground River, Watery Grave, Island, Darkslick Shores, Otawara, Soaring City, Swamp, Creeping Tar Pit [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Forest
+  [Main 1]
+T9 P1: Play Forest
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Eldrazi Ramp 13
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 7  |  Opp lands: 5
+║ Library: 39  |  Graveyard: 6
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2), Psychic Frog (1/2)
+║   Lands: Underground River, Watery Grave, Island, Darkslick Shores, Otawara, Soaring City, Swamp, Creeping Tar Pit
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Other: Utopia Sprawl, Talisman of Impulse
+║   Lands: Grove of the Burnwillows, Stomping Ground, Eldrazi Temple, Stomping Ground, Forest
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Darkslick Shores
+  [Main 1]
+T10 P2: Play Darkslick Shores (tapped, 7 other lands)
+T10 P2: Creeping Tar Pit becomes a 3/2 creature until end of turn (pays 3 mana)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Dauthi Voidwalker, Psychic Frog, Creeping Tar Pit
+T10 P2: Attack with Dauthi Voidwalker, Psychic Frog, Creeping Tar Pit
+  [Declare Blockers] P1 does not block
+T10 P2:   Dauthi Voidwalker (3/2) → 3 dmg to player
+T10 P2:   Psychic Frog (1/2) → 1 dmg to player
+T10 P2: Psychic Frog deals combat damage — draw a card
+T10 P2:   Creeping Tar Pit (3/2) → 3 dmg to player
+  [Combat Damage] 7 damage dealt → P1 life: 13 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Eldrazi Ramp (P1) ══════════════════════════
+║ Life: Eldrazi Ramp 6  |  Dimir Midrange 19
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 5  |  Opp lands: 8
+║ Library: 45  |  Graveyard: 4
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Other: Utopia Sprawl, Talisman of Impulse
+║   Lands: Grove of the Burnwillows, Stomping Ground, Eldrazi Temple, Stomping Ground, Forest
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2) [tapped], Psychic Frog (1/2) [tapped]
+║   Lands: Underground River [T], Watery Grave [T], Island [T], Darkslick Shores, Otawara, Soaring City, Swamp, Creeping Tar Pit [T], Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Emrakul, the Promised End
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Eldrazi Temple→C, Forest→G, Stomping Ground→G, Grove of the Burnwillows→C (paying for Sowing Mycospawn, 6 mana remaining)
+T10 P1: Cast Sowing Mycospawn (3G)
+    [Priority] P2 passes (no response)
+T10: Resolve Sowing Mycospawn
+  [Begin Combat]
+    [Mana] Tap Swamp→B (paying for Fatal Push, 3 mana remaining)
+T10 P2: Cast Fatal Push (B)
+T10: Resolve Fatal Push
+T10: Fatal Push moved stack -> graveyard (resolution)
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Eldrazi Ramp 6
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 8  |  Opp lands: 5
+║ Library: 37  |  Graveyard: 7
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2), Psychic Frog (1/2)
+║   Lands: Underground River, Watery Grave, Island, Darkslick Shores, Otawara, Soaring City, Swamp, Creeping Tar Pit, Darkslick Shores
+║ Eldrazi Ramp board:
+║   Creatures: Sowing Mycospawn (3/3)
+║   Other: Utopia Sprawl, Talisman of Impulse
+║   Lands: Grove of the Burnwillows [T], Stomping Ground [T], Eldrazi Temple [T], Stomping Ground, Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Polluted Delta
+  [Main 1]
+T11 P2: Play Polluted Delta
+T11: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T11 P2: Crack Polluted Delta (pay 1 life) -> Watery Grave (tapped, life: 18)
+T11 P2: Creeping Tar Pit becomes a 3/2 creature until end of turn (pays 3 mana)
+    → Goal: close_game
+T11 P2: Delve 5 cards for Murktide Regent
+    [Mana] Tap Otawara, Soaring City→U, Darkslick Shores→U (paying for Murktide Regent, 5 mana remaining)
+T11 P2: Cast Murktide Regent (5UU)
+    [Priority] P1 passes (no response)
+T11: Resolve Murktide Regent
+T11 P2: Murktide Regent enters as 6/6 (3 +1/+1 counters from delved instants/sorceries)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Dauthi Voidwalker, Psychic Frog, Creeping Tar Pit
+T11 P2: Attack with Dauthi Voidwalker, Psychic Frog, Creeping Tar Pit
+T11 P1:   [BLOCK-EMERGENCY] Sowing Mycospawn (3/3) blocks Dauthi Voidwalker (3/2) — lifespan_delta=-2.63
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T11 P2:   Psychic Frog (1/2) → 1 dmg to player
+T11 P2: Psychic Frog deals combat damage — draw a card
+T11 P2:   Creeping Tar Pit (3/2) → 3 dmg to player
+T11: Sowing Mycospawn dies
+T11: Dauthi Voidwalker dies
+  [Combat Damage] 4 damage dealt → P1 life: 6 → 2
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Eldrazi Ramp (P1) ══════════════════════════
+║ Life: Eldrazi Ramp 2  |  Dimir Midrange 18
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 9
+║ Library: 44  |  Graveyard: 5
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Other: Utopia Sprawl, Talisman of Impulse
+║   Lands: Grove of the Burnwillows, Stomping Ground, Eldrazi Temple, Stomping Ground, Forest
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (1/2) [tapped], Murktide Regent (6/6)
+║   Lands: Underground River [T], Watery Grave [T], Island [T], Darkslick Shores [T], Otawara, Soaring City [T], Swamp, Creeping Tar Pit [T], Darkslick Shores, Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ugin's Labyrinth
+  [Main 1]
+T11 P1: Play Ugin's Labyrinth
+    → Goal: close_game
+    [Mana] Tap Eldrazi Temple→C, Forest→G, Ugin's Labyrinth→C, Stomping Ground→G, Stomping Ground→G, Grove of the Burnwillows→C, Talisman of Impulse→C (paying for Sire of Seven Deaths, 7 mana remaining)
+T11 P1: Cast Sire of Seven Deaths (7)
+    [Priority] P2 passes (no response)
+T11: Resolve Sire of Seven Deaths
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 18  |  Eldrazi Ramp 2
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 9  |  Opp lands: 6
+║ Library: 34  |  Graveyard: 4
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (1/2), Murktide Regent (6/6)
+║   Lands: Underground River, Watery Grave, Island, Darkslick Shores, Otawara, Soaring City, Swamp, Creeping Tar Pit, Darkslick Shores, Watery Grave
+║ Eldrazi Ramp board:
+║   Creatures: Sire of Seven Deaths (7/7)
+║   Other: Utopia Sprawl, Talisman of Impulse
+║   Lands: Grove of the Burnwillows [T], Stomping Ground [T], Eldrazi Temple [T], Stomping Ground [T], Forest [T], Ugin's Labyrinth [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Darkslick Shores
+  [Main 1]
+T12 P2: Play Darkslick Shores (tapped, 9 other lands)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Psychic Frog, Murktide Regent
+T12 P2: Attack with Psychic Frog, Murktide Regent
+T12 P1:   [BLOCK-EMERGENCY] Sire of Seven Deaths (7/7) blocks Murktide Regent (6/6) — lifespan_delta=+101.00
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T12 P2:   Psychic Frog (1/2) → 1 dmg to player
+T12 P2: Psychic Frog deals combat damage — draw a card
+  [Combat Damage] 1 damage dealt → P1 life: 2 → 1
+  [End Combat]
+  [Main 2]
+    → Goal: close_game
+    [Mana] Tap Swamp→B (paying for Fatal Push, 9 mana remaining)
+T12 P2: Cast Fatal Push (B)
+    [Priority] P1 passes (no response)
+T12: Resolve Fatal Push
+T12: Fatal Push moved stack -> graveyard (resolution)
+  [End Step]
+
+╔══ TURN 12 — Eldrazi Ramp (P1) ══════════════════════════
+║ Life: Eldrazi Ramp 1  |  Dimir Midrange 18
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 6  |  Opp lands: 10
+║ Library: 43  |  Graveyard: 5
+║ Eldrazi Ramp board:
+║   Creatures: Sire of Seven Deaths (7/7)
+║   Other: Utopia Sprawl, Talisman of Impulse
+║   Lands: Grove of the Burnwillows, Stomping Ground, Eldrazi Temple, Stomping Ground, Forest, Ugin's Labyrinth
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (1/2) [tapped], Murktide Regent (6/6) [tapped]
+║   Lands: Underground River, Watery Grave, Island, Darkslick Shores, Otawara, Soaring City, Swamp [T], Creeping Tar Pit, Darkslick Shores, Watery Grave, Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Wooded Foothills
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Eldrazi Temple→C, Forest→G, Ugin's Labyrinth→C, Stomping Ground→G, Stomping Ground→G, Grove of the Burnwillows→C, Talisman of Impulse→C (paying for Sire of Seven Deaths, 7 mana remaining)
+T12 P1: Cast Sire of Seven Deaths (7)
+    [Priority] P2 responds with Counterspell
+    [Mana] Tap Island→U, Otawara, Soaring City→U (paying for Counterspell, 8 mana remaining)
+T12 P2: Cast Counterspell (UU)
+T12: Resolve Counterspell
+T12: Sire of Seven Deaths moved stack -> graveyard (resolution)
+T12: Sire of Seven Deaths is countered
+T12: Counterspell moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Sire of Seven Deaths
+T12 P1: Attack with Sire of Seven Deaths
+  [Declare Blockers] P2 does not block
+T12 P1:   Sire of Seven Deaths (7/7) → 7 dmg to player
+  [Combat Damage] 7 damage dealt → P2 life: 18 → 11
+  [End Combat]
+  [Main 2]
+T12 P1: Play Wooded Foothills
+T12: Wooded Foothills moved battlefield -> graveyard (fetchland sacrifice)
+T12 P1: Crack Wooded Foothills -> Forest (untapped)
+  [End Step]
