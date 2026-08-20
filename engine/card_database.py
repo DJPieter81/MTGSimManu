@@ -1472,6 +1472,28 @@ class CardDatabase:
         if CardType.LAND in card_types:
             produces_mana = OracleTextParser.detect_land_mana(oracle_text, subtypes, card_name=name)
             mana_units = OracleTextParser.detect_land_mana_units(oracle_text)
+            # Spend-restricted ALL-COLORLESS double-mana (Eldrazi Temple,
+            # Ugin's Labyrinth: "{T}: Add {C}{C}. Spend this mana only to cast
+            # colorless Eldrazi spells."). detect_land_mana_units drops
+            # spend-restricted lines, so these rampland engines produced 1
+            # colorless instead of 2. Because the restricted mana is colorless
+            # (usable for any generic/colorless cost) and these are dedicated
+            # ramp lands, model the land's output as its largest colorless tap
+            # line — the same pragmatic simplification as the Tron conditional
+            # bonus (the "only Eldrazi" clause is not separately enforced).
+            # Scoped to all-{C} lines only, so colored restricted mana
+            # (Cavern of Souls "any color, creatures only") is untouched.
+            if oracle_text:
+                _best_c = 0
+                for _ln in oracle_text.splitlines():
+                    _m = re.match(r"\s*\{T\}\s*:\s*Add\s+((?:\{C\})+)\s*\.",
+                                  _ln, re.IGNORECASE)
+                    if _m:
+                        _best_c = max(_best_c, _m.group(1).count("{C}"))
+                if _best_c > len(mana_units):
+                    mana_units = [["C"] for _ in range(_best_c)]
+                    if "C" not in produces_mana:
+                        produces_mana = sorted(set(produces_mana) | {"C"})
             enters_tapped = OracleTextParser.detect_enters_tapped(oracle_text, card_name=name)
             # Karoo-family structural ETB clause (E1b): mandatory
             # "return a land you control to its owner's hand" on entry.
