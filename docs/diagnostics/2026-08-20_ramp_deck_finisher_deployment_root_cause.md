@@ -200,6 +200,33 @@ mulligan to demand lands+ramp rather than keeping `Emrakul` — not in engine
 or `ev_player` code. The earlier "surplus-mana ramp decay + deployment pull"
 proposal is unnecessary for this deck.
 
+## Falsified attempt #2 (2026-08-20) — decklist curve trim also regresses
+
+Tried (per the "fix in data" implication above): trim 4× Emrakul → 1,
+backfill Sire of Seven Deaths 2→4 and Devourer of Destiny 3→4 (every top-end
+card then payable at 7 mana), and retune the mulligan to demand ramp+lands
+instead of keeping Emrakul.
+
+Result: **regression, 16.7% → 9.4% field WR (Bo1 n=4).** Reverted.
+
+Why it failed:
+- Adding more 7-drops does **not** fix the actual blocker (reaching 7 mana);
+  it only changes which 7-drop you are stuck holding. The deck still can't pay.
+- The 4× Emrakul, though near-uncastable, were the deck's **steal-a-game
+  outlier** — "gain control of target opponent during their next turn" wins
+  otherwise-unwinnable games often enough to matter. Cutting to 1 removed most
+  of that equity.
+- The 16.7% baseline appears to be a local optimum: the deck durdles but
+  occasionally steals via Emrakul or grinds via Kozilek's. Both edits removed
+  an outlier-win path and dropped it further.
+
+Conclusion after two falsified data-layer attempts: Eldrazi Ramp does **not**
+have a quick config/decklist fix. Making it competitive needs either a
+ground-up rebuild tuned to the sim's mana model, or deeper AI ramp-consistency
+work (reliably reach 7 mana AND hold a payoff). Do not re-attempt archetype
+flips or naive curve trims. **Two attempts on this outlier — halt per the
+CLAUDE.md loop-break protocol.**
+
 ## Consolidated conclusion
 
 Two of the worst free-win decks, investigated to replay-level root cause, both
