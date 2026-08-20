@@ -431,6 +431,10 @@ class CardTemplate:
     # Mobilize keyword -- True when oracle contains the mobilize keyword.
     # Populated by oracle_parser.parse_has_mobilize.
     has_mobilize: bool = False
+    # Land-type conditional bonuses: "gets +N/+N as long as you control a [Type]".
+    # Maps lowercase land type (e.g. "mountain") to integer P/T bonus.
+    # Populated by oracle_parser.parse_land_type_bonuses.
+    land_type_bonuses: dict = None  # type: ignore[assignment]
     # Transform effect -- True when oracle references transforming.
     # Populated by oracle_parser.parse_has_transform_effect.
     has_transform_effect: bool = False
@@ -664,6 +668,9 @@ class CardTemplate:
                 self.cast_trigger_token = _pctt(self.oracle_text)
             if self.enters_type_counter is None:
                 self.enters_type_counter = _petc(self.oracle_text)
+            if self.land_type_bonuses is None:
+                from .oracle_parser import parse_land_type_bonuses as _pltb
+                self.land_type_bonuses = _pltb(self.oracle_text)
             # Derive keywords from oracle text for synthetic templates that
             # were constructed with keywords=set(). DB-loaded templates
             # already have complete keyword sets from KEYWORD_MAP scanning;
@@ -1116,7 +1123,7 @@ class CardInstance:
         scaling = self.template.power_scales_with
 
         if scaling == "domain":
-            return min(self._get_domain_count(), 4)
+            return self._get_domain_count()
         if scaling.startswith("permanent_count:"):
             return self._get_permanent_type_count(scaling.split(":", 1)[1])
         if scaling == "tarmogoyf":
@@ -1169,6 +1176,19 @@ class CardInstance:
                         base += self._get_artifact_count()
                 except (ValueError, AttributeError):
                     pass
+        # Land-type conditional bonus: "gets +N/+N as long as you control
+        # a [LandType]" (Wild Nacatl / similar creatures). Each bonus fires
+        # when the controller has at least one land of the matching subtype.
+        lt_bonuses = getattr(self.template, 'land_type_bonuses', None) or {}
+        if lt_bonuses and self._game_state is not None:
+            controller = self.controller
+            for land_type, bonus in lt_bonuses.items():
+                if any(
+                    land_type.lower() in (s.lower() for s in c.template.subtypes)
+                    for c in self._game_state.players[controller].battlefield
+                    if CardType.LAND in c.template.card_types
+                ):
+                    base += bonus
         return base
 
     def _dynamic_base_toughness(self) -> int:
@@ -1178,7 +1198,7 @@ class CardInstance:
         scaling = self.template.power_scales_with
 
         if scaling == "domain":
-            return min(self._get_domain_count(), 4)
+            return self._get_domain_count()
         if scaling.startswith("permanent_count:"):
             return self._get_permanent_type_count(scaling.split(":", 1)[1])
         if scaling == "tarmogoyf":
@@ -1236,6 +1256,17 @@ class CardInstance:
                                 base += self._get_artifact_count()
                 except (ValueError, AttributeError):
                     pass
+        # Land-type conditional bonus (mirrors _dynamic_base_power logic).
+        lt_bonuses = getattr(self.template, 'land_type_bonuses', None) or {}
+        if lt_bonuses and self._game_state is not None:
+            controller = self.controller
+            for land_type, bonus in lt_bonuses.items():
+                if any(
+                    land_type.lower() in (s.lower() for s in c.template.subtypes)
+                    for c in self._game_state.players[controller].battlefield
+                    if CardType.LAND in c.template.card_types
+                ):
+                    base += bonus
         return base
 
     @property

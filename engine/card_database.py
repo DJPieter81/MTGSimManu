@@ -1549,7 +1549,7 @@ class CardDatabase:
             has_delve, parse_dash_cost, parse_extra_land_drops,
             parse_escape_cost, parse_equip_cost, derive_tags_from_oracle,
             parse_splice_cost, parse_warp_cost, parse_spectacle_cost,
-            parse_flashback_mana_cost,
+            parse_flashback_mana_cost, parse_land_type_bonuses,
         )
         oracle_text = template.oracle_text or ''
         oracle_lower = oracle_text.lower()
@@ -1612,6 +1612,12 @@ class CardDatabase:
         fb = parse_flashback_mana_cost(oracle_text)
         if fb is not None:
             template.flashback_cost = fb
+
+        # Land-type conditional bonus (Wild Nacatl pattern): "gets +N/+N as long as
+        # you control a [LandType]". Stored in template.land_type_bonuses dict.
+        lt_bonuses = parse_land_type_bonuses(oracle_text)
+        if lt_bonuses:
+            template.land_type_bonuses = lt_bonuses
 
         # Prowess from oracle (backup: "noncreature spell" + "+1/+1" pump only)
         # Note: "surveil" alone does NOT indicate prowess — DRC has surveil but

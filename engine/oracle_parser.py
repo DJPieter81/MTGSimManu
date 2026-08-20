@@ -738,6 +738,39 @@ def has_delve(oracle: str) -> bool:
     return 'delve' in oracle.lower()
 
 
+# Basic land type names for land-type conditional bonus detection.
+_BASIC_LAND_TYPES = frozenset(
+    ["plains", "island", "swamp", "mountain", "forest"]
+)
+
+# "This creature gets +N/+N as long as you control a <LandType>."
+# Also matches "gets +N/+M" (asymmetric) but we only record P bonus here;
+# the toughness bonus is always the same value (+N) in practice.
+_LAND_TYPE_BONUS_RE = re.compile(
+    r'gets?\s+\+(\d+)/\+(\d+)\s+as\s+long\s+as\s+you\s+control\s+a\s+'
+    r'(plains|island|swamp|mountain|forest)\b',
+    re.IGNORECASE,
+)
+
+
+def parse_land_type_bonuses(oracle: str) -> dict:
+    """Parse "gets +N/+N as long as you control a [LandType]" clauses.
+
+    Returns a dict mapping lowercase land-type name to integer power/toughness
+    bonus (assumes symmetric +N/+N; asymmetric cards would need separate
+    power_bonus and toughness_bonus, but no such card exists in the current DB).
+    An empty dict means no such clause is present.
+
+    Class size: Wild Nacatl, and any future creature sharing this oracle shape.
+    """
+    result: dict = {}
+    for m in _LAND_TYPE_BONUS_RE.finditer(oracle):
+        bonus = int(m.group(1))   # power bonus (assume symmetric)
+        land_type = m.group(3).lower()
+        result[land_type] = result.get(land_type, 0) + bonus
+    return result
+
+
 def _parse_mana_symbols_to_cost(symbols: list) -> "ManaCost":
     """Convert a list of mana symbol strings to a ManaCost object.
 
