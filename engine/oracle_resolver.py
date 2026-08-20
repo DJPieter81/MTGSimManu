@@ -391,18 +391,16 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
             )
             remaining.remove(best)
             taken.append(best)
-        # Move taken cards to hand.
+        # Move taken cards to hand through the zone funnel (single-owner
+        # zone-transfer path; the abstraction contract forbids raw .zone=).
         for c in taken:
-            player.library.remove(c)
-            c.zone = "hand"
-            player.hand.append(c)
+            game.zone_mgr.move_card_to_hand(game, c, cause=f"{card.name} reveal")
         # Put the rest on the bottom of the library in a random order.
-        for c in remaining:
-            player.library.remove(c)
+        # move_card appends to the destination list, so a library->library
+        # move relocates a revealed (top) card to the bottom.
         game.rng.shuffle(remaining)
         for c in remaining:
-            c.zone = "library"
-            player.library.append(c)
+            game.zone_mgr.move_card(game, c, "library", "library")
         if taken:
             game.log.append(
                 f"T{game.display_turn} P{controller+1}: {card.name} ETB: "
