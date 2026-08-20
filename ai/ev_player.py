@@ -55,6 +55,7 @@ from ai.scoring_constants import (
     LAND_GAMEPLAN_PRIORITY_SCALE,
     X_BOARD_WIPE_WASTE_FLOOR,
     BLINK_FIZZLE_FLOOR,
+    BLINK_ETB_RETRIGGER_BONUS,
     CHUMP_SENTINEL_VALUE,
     NO_CLOCK_FACE_VAL_MULTIPLIER,
     LANDFALL_TRIGGER_VALUE,
@@ -1288,6 +1289,19 @@ class EVPlayer:
                 and (t.is_instant or t.is_sorcery) \
                 and len(me.creatures) == 0:
             return min(ev, BLINK_FIZZLE_FLOOR)
+
+        # ── Blink credits re-triggering an on-board ETB-value creature ──
+        # Re-firing a value ETB (Solitude re-exile, Quantum Riddler redraw)
+        # while keeping the body is the proactive premise of flicker decks.
+        # The reactive response path already credits BLINK_ETB_RETRIGGER_BONUS
+        # for this; the main-phase scorer did not, so a blink held for value
+        # scored ~0 and was never cast. Credit the re-trigger when we control
+        # an `etb_value` creature the blink could target. Tag-gated — every
+        # flicker spell x every ETB-value creature, no card names.
+        if ('blink' in tags and (t.is_instant or t.is_sorcery)
+                and any('etb_value' in getattr(c.template, 'tags', set())
+                        for c in me.creatures)):
+            ev += BLINK_ETB_RETRIGGER_BONUS
 
         # ── Jeskai / blink M1 hold: prefer M2 blink so combat damage applies ──
         # If we hold a blink instant AND an ETB-value creature, and it is Main1,
