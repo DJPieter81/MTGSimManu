@@ -330,6 +330,77 @@ class GameState:
             )
         return binned
 
+    def scry(self, player_idx: int, n: int) -> List[CardInstance]:
+        """CR 701.18 — Scry N.
+
+        "Look at the top N cards of your library. Put any number of them
+        on the bottom of your library in any order and the rest on top
+        of your library in any order."
+
+        Deterministic AI policy: put card on the bottom when it is a land
+        AND the player already controls SCRY_LAND_STABILITY_THRESHOLD or
+        more lands on the battlefield (mana-stable, doesn't need more
+        sources right now). Everything else goes on top.
+
+        This is principled rather than card-name-keyed — any card type
+        that is a land gets the filter; spells always go on top. A future
+        AI hook can refine via `callbacks.choose_scry_ordering` once the
+        game has a full hand-evaluation pass.
+
+        Class size of callers: Opt (scry 1 before draw), Serum Visions
+        (scry 2 after draw), Deliberate (scry 2), Omen of the Sea (scry
+        2 on ETB and via activation), Telling Time (scry 1), and every
+        other Modern-legal card whose oracle text contains the scry
+        keyword — dozens of blue cantrips, planeswalker abilities, and
+        modal cards.
+
+        Returns the list of cards sent to the bottom. Empty if library
+        was empty.
+        """
+        # Rules constant: minimum lands in play to consider the player
+        # mana-stable for scry filtering purposes. At 4+ lands most
+        # decks have all the mana they need; additional lands have
+        # lower marginal value than any spell. This matches the same
+        # threshold used in the AI's land-drop desperation logic and
+        # is derivable from "turn 4 is typically when most Modern plans
+        # come online", making 4 lands the natural saturation point.
+        SCRY_LAND_STABILITY_THRESHOLD = 4
+
+        player = self.players[player_idx]
+        if not player.library or n <= 0:
+            return []
+
+        # Look at the top N cards (or fewer if library is small)
+        look_count = min(n, len(player.library))
+        looked = player.library[:look_count]
+
+        # Policy: keep spells on top; bottom-deck lands when mana-stable.
+        land_count = sum(1 for c in player.battlefield if c.template.is_land)
+        mana_stable = land_count >= SCRY_LAND_STABILITY_THRESHOLD
+
+        top_cards: List[CardInstance] = []
+        bottom_cards: List[CardInstance] = []
+        for card in looked:
+            if card.template.is_land and mana_stable:
+                bottom_cards.append(card)
+            else:
+                top_cards.append(card)
+
+        # Rebuild library: top_cards on top, rest of library unchanged,
+        # bottom_cards appended at the bottom.
+        rest = player.library[look_count:]
+        player.library = top_cards + rest + bottom_cards
+
+        if looked:
+            looked_names = ", ".join(c.name for c in looked)
+            bottom_desc = (", ".join(c.name for c in bottom_cards)
+                           if bottom_cards else "none")
+            self.log.append(
+                f"T{self.display_turn} P{player_idx+1}: "
+                f"scry {n} ({looked_names}) → bottom: {bottom_desc}"
+            )
+        return bottom_cards
+
     # ─── MANA SYSTEM ─────────────────────────────────────────────
 
     def tap_lands_for_mana(self, player_idx: int, cost: ManaCost,

@@ -238,6 +238,41 @@ def grants_flashback_to_gy_spells(oracle: str) -> bool:
     )
 
 
+def parse_flashback_mana_cost(oracle: str) -> "Optional[ManaCost]":
+    """Parse the mana portion of a native Flashback cost from oracle text.
+
+    Returns a ManaCost for the flashback mana cost if the card has a printed
+    Flashback keyword with a mana-cost component, or None when:
+      - the card has no Flashback keyword, or
+      - the flashback cost is entirely non-mana (e.g. 'Sacrifice a Mountain').
+
+    Supported oracle patterns (MTGJSON uses {X} notation throughout):
+      "Flashback {2}{R}"               -> ManaCost(generic=2, red=1)
+      "Flashback {4}{R}"               -> ManaCost(generic=4, red=1)
+      "Flashback {1}{B}"               -> ManaCost(generic=1, black=1)
+      "Flashback--{1}{U}, Pay 3 life." -> ManaCost(generic=1, blue=1)
+      "Flashback--Sacrifice a Mountain." -> None (no mana component)
+
+    Cards granted flashback by Past in Flames / Snapcaster Mage return None;
+    those pay their regular mana_cost (oracle: 'flashback cost is equal to its
+    mana cost'). None for Lava Dart pattern (sacrifice-only, no mana to pay).
+
+    Class size: every card with a printed Flashback cost in Modern.
+    Subsystem: oracle_parser -> card_database (CardTemplate.flashback_cost).
+    """
+    m = re.search(
+        r'[Ff]lashback[\s—\-]*((?:\{[^}]+\})+)',
+        oracle,
+    )
+    if not m:
+        return None  # No mana-cost component in flashback cost
+    symbols = re.findall(r'\{([^}]+)\}', m.group(1))
+    if not symbols:
+        return None
+    cost = _parse_mana_symbols_to_cost(symbols)
+    return cost if cost.cmc > 0 else None
+
+
 def parse_x_cost(oracle: str, name: str, mana_cost_str: str = "") -> Optional[Dict]:
     """Parse X-cost spell properties from the printed mana cost.
 
@@ -856,6 +891,31 @@ def parse_warp_cost(oracle: str) -> Optional["ManaCost"]:
     if not m:
         return None
     cost = _parse_mana_symbols_to_cost(re.findall(r'\{([^}]+)\}', m.group(1)))
+    return cost if cost.cmc > 0 else None
+
+
+def parse_spectacle_cost(oracle: str) -> "Optional[ManaCost]":
+    """Parse a Spectacle alternate cost from oracle text (CR 702.131).
+
+    Oracle pattern: "Spectacle {cost} (You may cast this spell for its
+    spectacle cost rather than its mana cost if an opponent lost life
+    this turn.)"
+
+    Returns a ManaCost representing the spectacle cost, or None when the
+    card has no spectacle. ManaCost is returned (not int) so that can_cast
+    can perform a proper colour check and cast_spell can pass it directly
+    to tap_lands_for_mana — same contract as parse_dash_cost.
+
+    Class size: ~5–10 Modern-legal cards with spectacle (Light Up the
+    Stage, Skewer the Critics, Rix Maadi Reveler, …). The oracle
+    template is shared across all of them — 'spectacle {cost}' prefix
+    followed by a reminder sentence.
+    """
+    m = re.search(r'spectacle\s+((?:\{[^}]+\})+)', oracle, re.IGNORECASE)
+    if not m:
+        return None
+    symbols = re.findall(r'\{([^}]+)\}', m.group(1))
+    cost = _parse_mana_symbols_to_cost(symbols)
     return cost if cost.cmc > 0 else None
 
 
@@ -2194,6 +2254,24 @@ def parse_has_surveil(oracle: str) -> bool:
     if not oracle:
         return False
     return 'surveil' in oracle.lower()
+
+
+def parse_has_scry(oracle: str) -> bool:
+    """Return True when oracle contains the scry keyword (CR 701.18).
+
+    Replaces runtime 'scry' substring checks in oracle_resolver.py's
+    spell-resolution scry branch.
+
+    Class size: dozens of blue and multicolor spells — Opt (scry 1),
+    Serum Visions (scry 2), Deliberate (scry 2), Telling Time (scry),
+    Omen of the Sea (scry 2), and any future printing with the keyword.
+
+    Distinct from has_surveil (CR 701.42, bins to graveyard). No
+    Modern-legal card oracle text contains both 'scry' and 'surveil'.
+    """
+    if not oracle:
+        return False
+    return 'scry' in oracle.lower()
 
 
 def parse_has_coin_flip(oracle: str) -> bool:

@@ -617,8 +617,58 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
                     f"{card.name} → impulse-reveal {impulse_n} ({names})")
             return True  # impulse-reveal handled; skip real-draw branch
 
-    # Real-draw path — "draw N cards" and look-and-keep variants.
+    # ── Scry N (CR 701.18) and Surveil N (CR 701.42) as spell effects ──
+    #
+    # Class size for scry-as-spell: dozens of blue cantrips and modal
+    # spells — Opt (scry 1), Serum Visions (scry 2), Deliberate (scry
+    # 2), Telling Time (scry 1), Omen of the Sea (scry 2), and any
+    # future printing with the scry keyword in its resolution text.
+    #
+    # Class size for surveil-as-spell: Consider (surveil 1), Thought
+    # Erasure (surveil 1), Sinister Sabotage (surveil 1), and any
+    # future instant/sorcery with a surveil clause in its own oracle
+    # text (distinct from the permanent cast-trigger surveil handled in
+    # the triggered-ability fan-out above).
+    #
+    # Ordering: CR 601.2 requires effects to resolve in oracle-text
+    # order. Opt is "Scry 1. Draw a card." (scry first); Serum Visions
+    # is "Draw a card. Scry 2." (draw first). We dispatch in oracle-text
+    # position order so the right card ends up on top before the draw.
+    #
+    # These branches are gated by typed fields (has_scry, has_surveil)
+    # so the regex only runs on cards that actually have the keyword —
+    # no false matches on unrelated "scry" mentions (e.g. Scavenging
+    # Ooze's oracle has no "scry" token; Sylvan Scrying's oracle
+    # also lacks the keyword). Card names are never tested here.
+
+    # Parse scry count and oracle-text position
+    scry_n = 0
+    scry_pos = len(oracle)  # sentinel: no scry → sort last
+    if getattr(card.template, 'has_scry', False):
+        m_scry = re.search(r'\bscry\s+(\d+)', oracle)
+        if m_scry:
+            try:
+                scry_n = int(m_scry.group(1))
+            except ValueError:
+                scry_n = 0
+            scry_pos = m_scry.start()
+
+    # Parse surveil count and oracle-text position (spell effect only —
+    # not the permanent cast-trigger path, which fires separately).
+    surveil_spell_n = 0
+    surveil_spell_pos = len(oracle)  # sentinel
+    if getattr(card.template, 'has_surveil', False):
+        m_surv = re.search(r'\bsurveil\s+(\d+)', oracle)
+        if m_surv:
+            try:
+                surveil_spell_n = int(m_surv.group(1))
+            except ValueError:
+                surveil_spell_n = 0
+            surveil_spell_pos = m_surv.start()
+
+    # Parse draw count and oracle-text position
     draw_n = 0
+    draw_pos = len(oracle)  # sentinel
     m_draw = re.search(r'draw\s+(\w+)\s+cards?', oracle)
     if m_draw:
         tok = m_draw.group(1)
@@ -626,17 +676,40 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
             draw_n = int(tok)
         except ValueError:
             draw_n = word_to_num.get(tok, 0)
+        draw_pos = m_draw.start()
     elif getattr(card.template, 'has_look_hand_selection', False):
-        # Look-at-top-N keep-1 → draw 1 (Sleight of Hand pattern)
+        # Look-at-top-N keep-1 → draw 1 (Sleight of Hand pattern).
+        # Position: treat as occurring at the start of the oracle text
+        # so it fires before any other effect (look-and-keep cards
+        # typically have no separate scry clause).
         draw_n = 1
+        draw_pos = 0
+
+    # Build ordered effect list — fire in oracle-text position order.
+    effects: list = []
+    if scry_n > 0:
+        effects.append((scry_pos, 'scry', scry_n))
+    if surveil_spell_n > 0:
+        effects.append((surveil_spell_pos, 'surveil', surveil_spell_n))
     if draw_n > 0:
-        drawn = game.draw_cards(controller, draw_n)
-        names = ", ".join(c.name for c in drawn) if drawn else ""
-        if drawn:
-            game.log.append(
-                f"T{game.display_turn} P{controller+1}: "
-                f"{card.name} → draw {draw_n} ({names})")
-        handled = True
+        effects.append((draw_pos, 'draw', draw_n))
+    effects.sort(key=lambda x: x[0])
+
+    for _, effect_kind, count in effects:
+        if effect_kind == 'scry':
+            game.scry(controller, count)
+            handled = True
+        elif effect_kind == 'surveil':
+            game.surveil(controller, count)
+            handled = True
+        elif effect_kind == 'draw':
+            drawn = game.draw_cards(controller, count)
+            if drawn:
+                names = ", ".join(c.name for c in drawn)
+                game.log.append(
+                    f"T{game.display_turn} P{controller+1}: "
+                    f"{card.name} → draw {count} ({names})")
+            handled = True
 
     return handled
 

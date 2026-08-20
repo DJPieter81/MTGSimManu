@@ -274,7 +274,21 @@ class CastManager:
                 return False
 
         # Cost reductions
-        effective_cmc = template.mana_cost.cmc
+        # For graveyard casting via native flashback the player pays the printed
+        # flashback cost, NOT the regular mana cost (CR 702.33a).  Cards granted
+        # flashback by Past in Flames / Snapcaster Mage have flashback_cost=None
+        # and continue to pay their regular mana_cost (oracle: "flashback cost is
+        # equal to its mana cost").  Lava Dart's flashback cost is sacrifice-only
+        # (flashback_cost=None); no mana is needed and the sacrifice is already
+        # checked above in the GY-casting block.
+        _using_flashback_cost = (
+            card.zone == "graveyard"
+            and card.has_flashback
+            and template.flashback_cost is not None
+        )
+        effective_cmc = (template.flashback_cost.cmc
+                         if _using_flashback_cost
+                         else template.mana_cost.cmc)
         # Domain cost reduction (oracle-derived template property)
         if template.domain_reduction > 0:
             domain = game._count_domain(player_idx)
@@ -362,6 +376,20 @@ class CastManager:
         if can_evoke:
             return True  # Can cast via evoke
 
+        # Spectacle alternative cost (CR 702.131): may cast for spectacle cost
+        # if an opponent lost life this turn — quantity then colour check.
+        if template.spectacle_cost is not None:
+            opp_lost_life = any(
+                game.players[i].life_lost_this_turn > 0
+                for i in range(len(game.players))
+                if i != player_idx
+            )
+            if (opp_lost_life
+                    and total_mana >= template.spectacle_cost.cmc
+                    and CastManager._can_pay_colored_pips(
+                        game, player_idx, untapped_lands, template.spectacle_cost)):
+                return True
+
         # Dash alternative cost — verify quantity then colour (CR 702.32)
         if template.dash_cost is not None:
             if (total_mana >= template.dash_cost.cmc
@@ -438,7 +466,10 @@ class CastManager:
             return False
 
         # Detailed color check using greedy constraint solving (MRV).
-        cost = template.mana_cost
+        # Use flashback cost when casting a native-flashback card from GY.
+        cost = (template.flashback_cost
+                if _using_flashback_cost
+                else template.mana_cost)
         color_needs = []
         for color, needed in [("W", cost.white), ("U", cost.blue),
                               ("B", cost.black), ("R", cost.red),
@@ -839,6 +870,7 @@ class CastManager:
         evoked = False
         dashed = False
         warped = False
+        spectacled = False
         if not free_cast:
             untapped = player.untapped_mana_capacity() + player.mana_pool.total() + player._tron_mana_bonus()
 
@@ -861,6 +893,29 @@ class CastManager:
                 # Prefer Warp only when normal cost is unaffordable
                 if can_warp and not can_normal:
                     warped = True
+
+            # Spectacle (CR 702.131): use spectacle cost when an opponent lost
+            # life this turn and the player cannot afford the normal cost —
+            # or when spectacle is strictly cheaper than the normal cost.
+            if template.spectacle_cost is not None and not warped:
+                opp_lost_life_s = any(
+                    game.players[i].life_lost_this_turn > 0
+                    for i in range(len(game.players))
+                    if i != player_idx
+                )
+                can_normal_sp = untapped >= template.mana_cost.cmc
+                can_spectacle = (
+                    opp_lost_life_s
+                    and untapped >= template.spectacle_cost.cmc
+                    and CastManager._can_pay_colored_pips(
+                        game, player_idx, player.untapped_lands,
+                        template.spectacle_cost)
+                )
+                if can_spectacle and not can_normal_sp:
+                    spectacled = True
+                elif (can_spectacle and can_normal_sp
+                      and template.spectacle_cost.cmc < template.mana_cost.cmc):
+                    spectacled = True
 
             # Decide whether to use Dash (e.g., Ragavan)
             # Dash strategy: use Dash when...
@@ -901,7 +956,7 @@ class CastManager:
             # Check if we should evoke instead of paying mana
             # Unified board evaluation: evoke when the body isn't worth waiting for
             should_evoke = (
-                not dashed and not escaped
+                not dashed and not escaped and not spectacled
                 and template.evoke_cost is not None
                 and untapped < template.mana_cost.cmc
                 and game.callbacks.should_evoke(game, player_idx, card)
@@ -1018,7 +1073,15 @@ class CastManager:
                                    f"Delve {delve_exiled} cards for {card.name}")
 
             # Pay mana
-            if warped:
+            if spectacled:
+                # Pay Spectacle cost (CR 702.131) instead of normal cost
+                if not game.tap_lands_for_mana(player_idx, template.spectacle_cost,
+                                                 card_name=template.name):
+                    return False
+                game.log.append(
+                    f"T{game.display_turn} P{player_idx+1}: "
+                    f"Spectacle {card.name} (pays {template.spectacle_cost})")
+            elif warped:
                 # Pay Warp cost instead of normal cost
                 if not game.tap_lands_for_mana(player_idx, template.warp_cost,
                                                  card_name=template.name):
@@ -1295,6 +1358,11 @@ class CastManager:
             targets=targets or [],
             target_zones=target_zones,
             x_value=x_value,
+            # Propagate the evoke flag so StackItem.evoked mirrors
+            # card._evoked — replay logging and any future code that
+            # reads item.evoked (e.g. triggered-ability dispatch) sees
+            # True when the spell was cast for its evoke cost.
+            evoked=evoked,
             # Snapshot the colors actually spent for Converge ("number of
             # colors of mana spent to cast this spell"). Populated by the
             # most recent tap_lands_for_mana() call; empty for free casts.

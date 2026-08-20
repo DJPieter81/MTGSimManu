@@ -365,6 +365,15 @@ class CardTemplate:
     # Alternate exile cost -- True for Grief/Solitude 'exile a ... rather than pay' pattern.
     # Populated by oracle_parser.parse_has_alternate_exile_cost.
     has_alternate_exile_cost: bool = False
+    # Spectacle alternate cost (CR 702.131): cast for this cost instead of mana cost if
+    # an opponent lost life this turn. None when the card has no spectacle.
+    # Populated by oracle_parser.parse_spectacle_cost.
+    spectacle_cost: Optional[ManaCost] = None
+    # Flashback cost (CR 702.33): cast from graveyard for this cost (card exiles after).
+    # None when the card has no printed Flashback. Cards granted flashback by Past in
+    # Flames use template.mana_cost instead (this field stays None for them).
+    # Populated by oracle_parser.parse_flashback_mana_cost.
+    flashback_cost: Optional[ManaCost] = None
     # Discard effect -- True when oracle causes the target to discard cards.
     # Populated by oracle_parser.parse_has_discard_effect.
     has_discard_effect: bool = False
@@ -413,6 +422,9 @@ class CardTemplate:
     # Surveil keyword -- True when oracle contains the surveil keyword.
     # Populated by oracle_parser.parse_has_surveil.
     has_surveil: bool = False
+    # Scry keyword (CR 701.18) -- True when oracle contains the scry keyword.
+    # Populated by oracle_parser.parse_has_scry.
+    has_scry: bool = False
     # Coin-flip effect -- True when oracle involves flipping a coin.
     # Populated by oracle_parser.parse_has_coin_flip.
     has_coin_flip: bool = False
@@ -539,6 +551,7 @@ class CardTemplate:
                                         parse_dash_cost as _pdc,
                                         parse_escape_cost as _pec,
                                         parse_splice_cost as _psc,
+                                        parse_spectacle_cost as _pspc,
                                         parse_can_target_player as _pctp,
                                         parse_can_target_planeswalker as _pctpw,
                                         parse_has_attack_trigger as _phat,
@@ -584,6 +597,8 @@ class CardTemplate:
                         self.escape_exile_count = _esc['exile']
             if self.splice_cost is None:
                 self.splice_cost = _psc(self.oracle_text)
+            if self.spectacle_cost is None:
+                self.spectacle_cost = _pspc(self.oracle_text)
             # Targeting capability flags — always derived (not gated on
             # a sentinel) since they default False and any oracle text
             # can contain the relevant phrases.
