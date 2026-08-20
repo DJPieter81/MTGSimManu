@@ -110,6 +110,19 @@ Zoo vs Azorius Control still 100% — a separate gap (its removal suite / holdba
 differs), tracked for follow-up. This is one correct piece of the systemic
 defensive-play rebalance, not the whole of it.
 
+**Field-level impact (Bo1 n=4, this fix + the two mana fixes combined):**
+
+| Deck | Before | After | Δ |
+|---|---|---|---|
+| Domain Zoo | 86–89% | **64.6%** | −24pp (→ nearly in band 50–65) |
+| Boros Energy | 71–74% | **60.4%** | −12pp |
+| Eldrazi Tron | 52.8% | **61.5%** | +9pp |
+| Eldrazi Ramp | ~13% | **30.2%** | +17pp |
+
+The top of the table falls toward its bands and the bottom rises — the field
+converges from both ends off three generic fixes (flash-removal holdback +
+non-land mana + Eldrazi-Temple restricted double-mana), no card-name gates.
+
 ## Responsible subsystem
 
 `ai/response.py` (reactive removal deployment) + `ai/ev_player.py` (main-phase

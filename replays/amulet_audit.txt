@@ -1,0 +1,578 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+Result: Amulet Titan wins T9 via damage
+Life: P1=4 P2=-1
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Amulet Titan wins → chooses to play first
+║ P1 (on play): Amulet Titan
+║ P2 (on draw): Dimir Midrange
+╚═══════════════════════════════════════════════════════
+
+P1 (Amulet Titan) opening hand (4 lands, 3 spells):
+  • Urza's Cave [Land, CMC 0]
+  • Amulet of Vigor [Spell, CMC 1]
+  • Primeval Titan [Creature, CMC 6]
+  • Mirrorpool [Land, CMC 0]
+  • Aftermath Analyst [Creature, CMC 2]
+  • Urza's Saga [Land, CMC 0]
+  • Simic Growth Chamber [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Amulet of Vigor, 2 cheap spells
+
+P2 (Dimir Midrange) opening hand (3 lands, 4 spells):
+  • Creeping Tar Pit [Land, CMC 0]
+  • Otawara, Soaring City [Land, CMC 0]
+  • Murktide Regent [Creature, CMC 7]
+  • Counterspell [Spell, CMC 2]
+  • Spell Pierce [Spell, CMC 1]
+  • Polluted Delta [Land, CMC 0]
+  • Consider [Spell, CMC 1]
+→ P2 KEEPS 7 — has key card(s): Consider, 3 cheap spells
+
+
+╔══ TURN 1 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Dimir Midrange 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Urza's Saga
+    → Goal: deploy_engine [engines]
+    [Mana] Tap Urza's Saga→C (paying for Amulet of Vigor, 1 mana remaining)
+T1 P1: Cast Amulet of Vigor (1)
+    [Priority] P2 passes (no response)
+T1: Resolve Amulet of Vigor
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor
+║   Lands: Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Underground River
+  [Main 1]
+T1 P2: Play Underground River
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Dimir Midrange 20
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor
+║   Lands: Urza's Saga
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T2 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P1 draws: Simic Growth Chamber
+  [Main 1]
+T2 P1: Play Simic Growth Chamber (enters tapped)
+T2 P1: Amulet of Vigor untaps Simic Growth Chamber
+T2: Urza's Saga moved battlefield -> hand (Simic Growth Chamber ETB returns Urza's Saga to hand)
+    → Goal: ramp
+    [Mana] Tap Simic Growth Chamber→GU (paying for Aftermath Analyst, 2 mana remaining)
+T2 P1: Cast Aftermath Analyst (1G)
+    [Priority] P2 passes (no response)
+T2: Resolve Aftermath Analyst
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River
+║ Amulet Titan board:
+║   Creatures: Aftermath Analyst (1/3)
+║   Other: Amulet of Vigor
+║   Lands: Simic Growth Chamber [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Orcish Bowmasters
+  [Main 1]
+T2 P2: Play Polluted Delta
+T2: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T2 P2: Crack Polluted Delta (pay 1 life) -> Watery Grave (untapped, life: 17)
+    → Goal: grind_value
+    [Mana] Tap Watery Grave→B, Underground River→C (paying for Orcish Bowmasters, 2 mana remaining)
+T2 P2: Cast Orcish Bowmasters (1B)
+    [Priority] P1 passes (no response)
+T2: Resolve Orcish Bowmasters
+T2 P2: Bowmasters deals 1 damage to opponent (life: 19)
+T2 P2: Bowmasters creates 1/1 Orc Army token
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 19  |  Dimir Midrange 17
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: Aftermath Analyst (1/3)
+║   Other: Amulet of Vigor
+║   Lands: Simic Growth Chamber
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Underground River [T], Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Gruul Turf
+  [Main 1]
+T3 P1: Play Gruul Turf (enters tapped)
+T3 P1: Amulet of Vigor untaps Gruul Turf
+T3: Simic Growth Chamber moved battlefield -> hand (Gruul Turf ETB returns Simic Growth Chamber to hand)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Aftermath Analyst
+T3 P1: Attack with Aftermath Analyst
+  [Declare Blockers] P2 does not block
+T3 P1:   Aftermath Analyst (1/3) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P2 life: 17 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 16  |  Amulet Titan 19
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 1
+║ Library: 50  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Underground River, Watery Grave
+║ Amulet Titan board:
+║   Creatures: Aftermath Analyst (1/3) [tapped]
+║   Other: Amulet of Vigor
+║   Lands: Gruul Turf
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Counterspell
+  [Main 1]
+T3 P2: Play Otawara, Soaring City
+    → Goal: grind_value [enablers]
+    [Mana] Tap Otawara, Soaring City→U (paying for Consider, 3 mana remaining)
+T3 P2: Cast Consider (U)
+    [Priority] P1 passes (no response)
+T3: Resolve Consider
+T3 P2: surveil 1 → Psychic Frog to GY
+T3 P2: Consider → draw 1 (Polluted Delta)
+T3: Consider moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army
+T3 P2: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P1 does not block
+T3 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T3 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 19 → 17
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 17  |  Dimir Midrange 16
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: Aftermath Analyst (1/3)
+║   Other: Amulet of Vigor
+║   Lands: Gruul Turf
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped]
+║   Lands: Underground River, Watery Grave, Otawara, Soaring City [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Crumbling Vestige
+  [Main 1]
+T4 P1: Play Crumbling Vestige (enters tapped)
+T4 P1: Amulet of Vigor untaps Crumbling Vestige
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Aftermath Analyst
+T4 P1: Attack with Aftermath Analyst
+  [Declare Blockers] P2 does not block
+T4 P1:   Aftermath Analyst (1/3) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P2 life: 16 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 15  |  Amulet Titan 17
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 47  |  Graveyard: 3
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Underground River, Watery Grave, Otawara, Soaring City
+║ Amulet Titan board:
+║   Creatures: Aftermath Analyst (1/3) [tapped]
+║   Other: Amulet of Vigor
+║   Lands: Gruul Turf, Crumbling Vestige
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Spell Pierce
+  [Main 1]
+T4 P2: Play Polluted Delta
+T4: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T4 P2: Crack Polluted Delta (pay 1 life) -> Watery Grave (tapped, life: 14)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army
+T4 P2: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P1 does not block
+T4 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T4 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 17 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 15  |  Dimir Midrange 14
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 50  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: Aftermath Analyst (1/3)
+║   Other: Amulet of Vigor
+║   Lands: Gruul Turf, Crumbling Vestige
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped]
+║   Lands: Underground River, Watery Grave, Otawara, Soaring City, Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Summoner's Pact
+  [Main 1]
+T5 P1: Play Urza's Saga
+    → Goal: ramp
+T5 P1: Cast Summoner's Pact (0)
+    [Priority] P2 responds with Spell Pierce
+    [Mana] Tap Otawara, Soaring City→U (paying for Spell Pierce, 3 mana remaining)
+T5 P2: Cast Spell Pierce (U)
+T5: Resolve Spell Pierce
+T5: Summoner's Pact moved stack -> graveyard (resolution)
+T5: Summoner's Pact is countered
+T5: Spell Pierce moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Aftermath Analyst
+T5 P1: Attack with Aftermath Analyst
+  [Declare Blockers] P2 does not block
+T5 P1:   Aftermath Analyst (1/3) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P2 life: 14 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 13  |  Amulet Titan 15
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 45  |  Graveyard: 5
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Underground River, Watery Grave, Otawara, Soaring City, Watery Grave
+║ Amulet Titan board:
+║   Creatures: Aftermath Analyst (1/3) [tapped]
+║   Other: Amulet of Vigor
+║   Lands: Gruul Turf, Crumbling Vestige, Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Darkslick Shores
+  [Main 1]
+T5 P2: Play Creeping Tar Pit (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army
+T5 P2: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P1 does not block
+T5 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T5 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 15 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 13  |  Dimir Midrange 13
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 49  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: Aftermath Analyst (1/3)
+║   Other: Amulet of Vigor
+║   Lands: Gruul Turf, Crumbling Vestige, Urza's Saga
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped]
+║   Lands: Underground River, Watery Grave, Otawara, Soaring City, Watery Grave, Creeping Tar Pit [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T6 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P1 draws: Arboreal Grazer
+  [Main 1]
+T6 P1: Play Simic Growth Chamber (enters tapped)
+T6 P1: Amulet of Vigor untaps Simic Growth Chamber
+T6: Urza's Saga moved battlefield -> hand (Simic Growth Chamber ETB returns Urza's Saga to hand)
+    → Goal: ramp [enablers]
+    [Mana] Tap Gruul Turf→RG (paying for Arboreal Grazer, 5 mana remaining)
+T6 P1: Cast Arboreal Grazer (G)
+    [Priority] P2 responds with Counterspell
+    [Mana] Tap Otawara, Soaring City→U, Watery Grave→U (paying for Counterspell, 4 mana remaining)
+T6 P2: Cast Counterspell (UU)
+T6: Resolve Counterspell
+T6: Arboreal Grazer moved stack -> graveyard (resolution)
+T6: Arboreal Grazer is countered
+T6: Counterspell moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Aftermath Analyst
+T6 P1: Attack with Aftermath Analyst
+  [Declare Blockers] P2 does not block
+T6 P1:   Aftermath Analyst (1/3) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P2 life: 13 → 12
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 12  |  Amulet Titan 13
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 44  |  Graveyard: 6
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Underground River, Watery Grave, Otawara, Soaring City, Watery Grave, Creeping Tar Pit
+║ Amulet Titan board:
+║   Creatures: Aftermath Analyst (1/3) [tapped]
+║   Other: Amulet of Vigor
+║   Lands: Gruul Turf [T], Crumbling Vestige, Simic Growth Chamber
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Psychic Frog
+  [Main 1]
+T6 P2: Play Darkslick Shores (tapped, 5 other lands)
+T6 P2: Creeping Tar Pit becomes a 3/2 creature until end of turn (pays 3 mana)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army, Creeping Tar Pit
+T6 P2: Attack with Orcish Bowmasters, Orc Army, Creeping Tar Pit
+  [Declare Blockers] P1 does not block
+T6 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T6 P2:   Orc Army (1/1) → 1 dmg to player
+T6 P2:   Creeping Tar Pit (3/2) → 3 dmg to player
+  [Combat Damage] 5 damage dealt → P1 life: 13 → 8
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 8  |  Dimir Midrange 12
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 6
+║ Library: 48  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: Aftermath Analyst (1/3)
+║   Other: Amulet of Vigor
+║   Lands: Gruul Turf, Crumbling Vestige, Simic Growth Chamber
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped]
+║   Lands: Underground River [T], Watery Grave [T], Otawara, Soaring City [T], Watery Grave, Creeping Tar Pit [T], Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Simic Growth Chamber
+  [Main 1]
+T7 P1: Play Simic Growth Chamber (enters tapped)
+T7 P1: Amulet of Vigor untaps Simic Growth Chamber
+T7: Crumbling Vestige moved battlefield -> hand (Simic Growth Chamber ETB returns Crumbling Vestige to hand)
+    → Goal: ramp [payoffs]
+    [Mana] Tap Gruul Turf→RG, Simic Growth Chamber→GU, Simic Growth Chamber→GU (paying for Primeval Titan, 6 mana remaining)
+T7 P1: Cast Primeval Titan (4GG)
+    [Priority] P2 passes (no response)
+T7: Resolve Primeval Titan
+T7 P1: Amulet of Vigor untaps Crumbling Vestige
+T7 P1: Primeval Titan searches for Crumbling Vestige
+T7 P1: Amulet of Vigor untaps Simic Growth Chamber
+T7: Gruul Turf moved battlefield -> hand (Simic Growth Chamber ETB returns Gruul Turf to hand)
+T7 P1: Primeval Titan searches for Simic Growth Chamber
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Aftermath Analyst
+T7 P1: Attack with Aftermath Analyst
+  [Declare Blockers] P2 does not block
+T7 P1:   Aftermath Analyst (1/3) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P2 life: 12 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 11  |  Amulet Titan 8
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 6  |  Opp lands: 4
+║ Library: 43  |  Graveyard: 6
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Underground River, Watery Grave, Otawara, Soaring City, Watery Grave, Creeping Tar Pit, Darkslick Shores
+║ Amulet Titan board:
+║   Creatures: Aftermath Analyst (1/3) [tapped], Primeval Titan (6/6)
+║   Other: Amulet of Vigor
+║   Lands: Simic Growth Chamber [T], Simic Growth Chamber [T], Crumbling Vestige, Simic Growth Chamber
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Shelldock Isle
+  [Main 1]
+T7 P2: Play Shelldock Isle (enters tapped)
+    → Goal: close_game
+    [Mana] Tap Otawara, Soaring City→U, Watery Grave→B (paying for Psychic Frog, 6 mana remaining)
+T7 P2: Cast Psychic Frog (UB)
+    [Priority] P1 passes (no response)
+T7: Resolve Psychic Frog
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army
+T7 P2: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P1 does not block
+T7 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T7 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 8 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 6  |  Dimir Midrange 11
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 7
+║ Library: 45  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: Aftermath Analyst (1/3), Primeval Titan (6/6)
+║   Other: Amulet of Vigor
+║   Lands: Simic Growth Chamber, Simic Growth Chamber, Crumbling Vestige, Simic Growth Chamber
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped], Psychic Frog (1/2)
+║   Lands: Underground River, Watery Grave [T], Otawara, Soaring City [T], Watery Grave, Creeping Tar Pit, Darkslick Shores, Shelldock Isle [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Vesuva
+  [Main 1]
+T8 P1: Play Simic Growth Chamber (enters tapped)
+T8 P1: Amulet of Vigor untaps Simic Growth Chamber
+T8: Crumbling Vestige moved battlefield -> hand (Simic Growth Chamber ETB returns Crumbling Vestige to hand)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Aftermath Analyst, Primeval Titan
+T8 P1: Attack with Aftermath Analyst, Primeval Titan
+T8 P2:   [BLOCK-EMERGENCY] Psychic Frog (1/2) blocks Primeval Titan (6/6) — lifespan_delta=-0.71
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T8 P1:   Aftermath Analyst (1/3) → 1 dmg to player
+T8 P1:   Primeval Titan (6/6) → 4 dmg to player (trample)
+T8: Psychic Frog dies
+  [Combat Damage] 5 damage dealt → P2 life: 11 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 6  |  Amulet Titan 6
+║ Hand: 3 cards  |  Opp hand: 7 cards
+║ Lands: 7  |  Opp lands: 4
+║ Library: 42  |  Graveyard: 7
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Underground River, Watery Grave, Otawara, Soaring City, Watery Grave, Creeping Tar Pit, Darkslick Shores, Shelldock Isle
+║ Amulet Titan board:
+║   Creatures: Aftermath Analyst (1/3) [tapped], Primeval Titan (6/6) [tapped]
+║   Other: Amulet of Vigor
+║   Lands: Simic Growth Chamber, Simic Growth Chamber, Simic Growth Chamber, Simic Growth Chamber
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Darkslick Shores
+  [Main 1]
+T8 P2: Play Darkslick Shores (tapped, 7 other lands)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army
+T8 P2: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P1 does not block
+T8 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T8 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 6 → 4
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 4  |  Dimir Midrange 6
+║ Hand: 7 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 8
+║ Library: 44  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: Aftermath Analyst (1/3), Primeval Titan (6/6)
+║   Other: Amulet of Vigor
+║   Lands: Simic Growth Chamber, Simic Growth Chamber, Simic Growth Chamber, Simic Growth Chamber
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped]
+║   Lands: Underground River, Watery Grave, Otawara, Soaring City, Watery Grave, Creeping Tar Pit, Darkslick Shores, Shelldock Isle, Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Gruul Turf
+  [Main 1]
+T9 P1: Play Gruul Turf (enters tapped)
+T9 P1: Amulet of Vigor untaps Gruul Turf
+T9: Simic Growth Chamber moved battlefield -> hand (Gruul Turf ETB returns Simic Growth Chamber to hand)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Aftermath Analyst, Primeval Titan
+T9 P1: Attack with Aftermath Analyst, Primeval Titan
+  [Declare Blockers] P2 does not block
+T9 P1:   Aftermath Analyst (1/3) → 1 dmg to player
+T9 P1:   Primeval Titan (6/6) → 6 dmg to player
+P2 loses: life total -1
+  [Combat Damage] 7 damage dealt → P2 life: 6 → -1
