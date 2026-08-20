@@ -219,7 +219,6 @@ class TriggerManager:
         # former and fired on attacks, giving Boros free energy every swing.
         oracle = (attacker.template.oracle_text or '').lower()
         if '{e}' in oracle and attacker.template.has_attack_trigger:
-            import re
             for m in re.finditer(r'(?:get|gets?)\s+((?:\{e\})+)', oracle):
                 # Find this sentence's bounds
                 sentence_start = max(
@@ -248,18 +247,26 @@ class TriggerManager:
                     game.produce_energy(controller, energy_count, f"{attacker.name} attack")
                     break
 
-        # Annihilator
+        # Annihilator (CR 702.86)
         if Keyword.ANNIHILATOR in attacker.keywords:
             opponent = 1 - controller
-            # Parse annihilator amount from oracle text
-            import re
-            oracle = attacker.template.abilities
-            ann_amount = 2  # default
-            for ab in oracle:
-                m = re.search(r'annihilator\s+(\d+)', ab.description.lower())
-                if m:
-                    ann_amount = int(m.group(1))
-                    break
+            # Parse annihilator N from oracle text (CR 702.86a).
+            #
+            # The former code searched template.abilities[*].description for
+            # "annihilator N", but no Ability description ever contains that
+            # text -- Ability objects carry strings like "Attack trigger".  The
+            # search always missed and fell back to the hardcoded default of 2,
+            # producing wrong behaviour for every card whose N != 2
+            # (e.g., Emrakul the Aeons Torn = 6, Kozilek = 4, Ulamog = 4,
+            # Pathrazer of Ulamog = 3, Nulldrifter = 1).
+            #
+            # oracle_text is the authoritative source.  Fallback to 1 on a
+            # malformed template (safest under-estimate).
+            m_ann = re.search(
+                r'annihilator\s+(\d+)',
+                (attacker.template.oracle_text or '').lower(),
+            )
+            ann_amount = int(m_ann.group(1)) if m_ann else 1
             # Opponent sacrifices N permanents
             opp = game.players[opponent]
             sacrificed = 0
