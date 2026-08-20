@@ -2005,6 +2005,21 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
         if CardType.ENCHANTMENT in t.card_types:
             projected.my_enchantment_count += 1
 
+    # Saga chapter value: a Saga's Chapter I fires the moment it enters
+    # (CR 714.2), and later chapters follow on subsequent upkeeps. The
+    # token/ETB projection below is gated behind `is_creature`, so a Saga
+    # (an enchantment) got NO chapter value — Fable of the Mirror-Breaker's
+    # 2/2 Goblin, etc. — and the AI never cast it. Credit a creature token a
+    # chapter creates, using the SAME token-power regex `_clause_token_power`
+    # uses (no new pattern). Detected by the `Saga` subtype (no card names).
+    if 'Saga' in getattr(t, 'subtypes', ()):
+        _saga_oracle = (t.oracle_text or '').lower()
+        _mtok = re.search(
+            r'(\d+)/(\d+)\s+[\w\-\s,]*?creature token', _saga_oracle)
+        if _mtok:
+            projected.my_power += int(_mtok.group(1))
+            projected.my_creature_count += 1
+
     # Creature deployment
     if t.is_creature:
         p = t.power if t.power else 0
