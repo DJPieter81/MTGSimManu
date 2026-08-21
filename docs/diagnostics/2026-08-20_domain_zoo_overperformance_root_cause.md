@@ -110,18 +110,30 @@ Zoo vs Azorius Control still 100% — a separate gap (its removal suite / holdba
 differs), tracked for follow-up. This is one correct piece of the systemic
 defensive-play rebalance, not the whole of it.
 
-**Field-level impact (Bo1 n=4, this fix + the two mana fixes combined):**
+**RETRACTED Bo1 claim (kept for the record):** an earlier pass reported
+`Bo1 n=4` field numbers showing Domain Zoo 86→64.6%, Boros 71→60%, i.e. "the
+field converges from both ends." **The authoritative Bo3 matrix (n=6, 25 decks,
+2026-08-20 22:05) does not support this** — see the correction below. The Bo1
+n=4 field run was too noisy (4 games/opponent) and the holdback benefit is
+seed-dependent; do not cite those numbers.
 
-| Deck | Before | After | Δ |
-|---|---|---|---|
-| Domain Zoo | 86–89% | **64.6%** | −24pp (→ nearly in band 50–65) |
-| Boros Energy | 71–74% | **60.4%** | −12pp |
-| Eldrazi Tron | 52.8% | **61.5%** | +9pp |
-| Eldrazi Ramp | ~13% | **30.2%** | +17pp |
+### AUTHORITATIVE Bo3 result (n=6, post all fixes) — the ceiling held
 
-The top of the table falls toward its bands and the bottom rises — the field
-converges from both ends off three generic fixes (flash-removal holdback +
-non-land mana + Eldrazi-Temple restricted double-mana), no card-name gates.
+| Deck | pre-fix Bo3 field | post-fix Bo3 field |
+|---|---|---|
+| Domain Zoo | 89.5% | **89.5%** (flat) |
+| Eldrazi Ramp | 12.5% | **32.7%** (+20, mana fix) |
+| Jeskai Blink | 28.7% | **37.5%** |
+| Instant Reanimator | 25% | **32%** |
+
+The mechanic fixes lifted the decks whose payoffs were broken (the FLOOR rose),
+but they did **not** tame the aggro overperformers. Live Bo3 Domain Zoo vs 4/5c
+Control is still **100%**. So the `is_held_interaction` flash-removal fix is a
+correct, unit-verified improvement that helps in isolated game-one seeds, but
+it is **not sufficient** to close the aggro-defense gap in a sideboarded match.
+The systemic aggro-overvaluation is still the #1 open problem. Re-diagnosis
+needed on the sideboarded Bo3 path specifically (post-board configs, blocking,
+racing), not just the game-one holdback.
 
 ## Responsible subsystem
 
