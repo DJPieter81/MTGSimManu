@@ -3098,6 +3098,13 @@ class EVPlayer:
                         or Keyword.REACH in blocker.keywords)
             return True
 
+        def _min_blockers(attacker):
+            # Menace (CR 702.111 / 509.1c): can't be blocked except by two
+            # or more creatures. A single-blocker menace assignment is
+            # illegal and the engine drops it, so coverage must field 2 (or
+            # leave the attacker unblocked) — never exactly 1.
+            return 2 if Keyword.MENACE in attacker.keywords else 1
+
         def _cost_fn(blocker):
             # The audited fix: rank by ai.clock.opportunity_cost
             # (Phase 2a) ascending — the cheapest-to-lose blocker
@@ -3158,7 +3165,7 @@ class EVPlayer:
                 sorted_attackers, valid_blockers,
                 my_life=me.life, can_block_fn=_flying_ok, cost_fn=_cost_fn,
                 stabilize_margin=EMERGENCY_BLOCK_STABILIZE_LIFE_GAIN,
-                skip_fn=_skip_fn,
+                skip_fn=_skip_fn, min_blockers_fn=_min_blockers,
             )
 
             # RC-2: if coverage skipped every attacker via the

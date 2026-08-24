@@ -51,6 +51,7 @@ def coverage_pass(
     cost_fn: Callable[[Blockable], float],
     stabilize_margin: float = 0.0,
     skip_fn: Optional[Callable[[Blockable, float], bool]] = None,
+    min_blockers_fn: Optional[Callable[[Blockable], int]] = None,
 ) -> Tuple[Dict[int, List[int]], Set[int]]:
     """PASS 1 — coverage.
 
@@ -95,12 +96,19 @@ def coverage_pass(
             b for b in blockers
             if b.instance_id not in used and can_block_fn(attacker, b)
         ]
-        if not candidates:
-            continue  # nothing left to block with — forced to eat it
+        # Minimum legal blockers for this attacker (menace ⇒ 2, CR 509.1c).
+        # If we can't field that many, do NOT partially block — a single
+        # blocker on a menace attacker is an illegal declaration the engine
+        # drops in its entirety, so the "block" would evaporate and the
+        # attacker would connect for full damage. Leave it uncovered instead.
+        need = min_blockers_fn(attacker) if min_blockers_fn else 1
+        if len(candidates) < need:
+            continue  # can't legally cover it — forced to eat it
 
-        chosen = min(candidates, key=cost_fn)
-        blocks[attacker.instance_id] = [chosen.instance_id]
-        used.add(chosen.instance_id)
+        chosen = sorted(candidates, key=cost_fn)[:need]
+        blocks[attacker.instance_id] = [c.instance_id for c in chosen]
+        for c in chosen:
+            used.add(c.instance_id)
 
     return blocks, used
 
