@@ -1204,13 +1204,17 @@ class GameRunner:
         is_combo = arch == ArchetypeStrategy.COMBO if arch else False
         max_actions = MAX_ACTIONS_COMBO if is_combo else MAX_ACTIONS_NORMAL
         actions = 0
-        _last_failed_card = None  # Track failed casts to prevent infinite loops
-        _consecutive_fails = 0
+        # Cards whose cast_spell REFUSED after can_cast green-lit them
+        # (evoke pitch-value veto, flashback/reanimation gate, color/X
+        # mismatch). Excluding them and re-planning — instead of retrying the
+        # same top pick and ending the phase — is what lets a deck keep
+        # developing when its best play is momentarily un-executable.
+        _excluded: set = set()
 
         while actions < max_actions and not game.game_over:
             if hasattr(game, '_game_deadline') and _time.monotonic() > game._game_deadline:
                 return
-            decision = ai.decide_main_phase(game)
+            decision = ai.decide_main_phase(game, excluded_cards=_excluded)
             if decision is None:
                 break
 
@@ -1278,16 +1282,15 @@ class GameRunner:
                         ai._last_played_target_reason = ''
                 success = game.cast_spell(ai.player_idx, card, targets)
                 if not success:
-                    # Track failed casts to prevent infinite loops.
-                    # Break immediately if the same card name fails twice
-                    # (first attempt + one retry).
-                    if _last_failed_card and card.name == _last_failed_card.name:
-                        break  # Same card failing again — stop
-                    else:
-                        _last_failed_card = card
+                    # can_cast green-lit a play that cast_spell refused.
+                    # Exclude it and re-plan within this phase rather than
+                    # ending development. `decide_main_phase(excluded_cards)`
+                    # returns None once no non-excluded play remains, so the
+                    # loop terminates; `actions` bounds it regardless.
+                    _excluded.add(card.instance_id)
+                    actions += 1
+                    continue
                 if success:
-                    _last_failed_card = None
-                    _consecutive_fails = 0
                     # Opponent gets priority to respond (CR 117.3d) — UNLESS
                     # the active player controls a Teferi-style "cast at
                     # sorcery speed only" effect. In that case, the opponent
