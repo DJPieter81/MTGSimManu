@@ -941,6 +941,39 @@ broad creature-valuation ripple). All 19 tested entries green post-refresh.
   `test_opportunity_cost_primitive.py`'s dedicated Ornithopter fixtures (2a) rather than depending
   on one seed's RNG to exercise it.
 
+#### 2b-follow-up: two coverage-math gaps in `coverage_pass` (menace, trample overflow) — DONE
+
+The two-pass joint assignment shipped correct in aggregate, but `coverage_pass`'s survival
+accounting had two mechanic-level gaps that only surface at lethal life — found by the parallel
+Bo3 combat-defense scan, each fixed as its own rule-phrased class, not as a card patch.
+
+- **Menace (CR 702.111b / 509.1c) — `coverage_pass` would single-block a menace attacker.** Pass 1
+  assigned exactly one cheapest blocker per attacker with no menace awareness, so a defender holding
+  ≥2 legal blockers would commit ONE to a menace attacker; the engine then drops that illegal
+  one-blocker declaration in its entirety and the attacker connects for full damage — a preventable
+  lethal. Fix: an injected `min_blockers_fn(attacker) -> int` (menace ⇒ 2, else 1); if fewer than
+  `need` candidates exist, the attacker is left uncovered rather than partially (and illegally)
+  blocked. Wired from `decide_blockers` via `_min_blockers`. Test:
+  `tests/test_menace_block_requires_two_blockers.py` (`Boggart Brute` 3/2 menace as fixture; two
+  `Wall of Omens` — assigns 2 or 0, never 1). Commit `fe1ff76`.
+- **Trample overflow (CR 702.19) — a blocked trampler dropped out of the survival sum entirely.**
+  `unblocked_damage` summed the power of only attackers NOT in the block map, so a *blocked*
+  trampler counted as zero incoming — its through-damage (power beyond its blockers' combined
+  toughness) was invisible, and the pass stabilized one attacker too early, leaving a sibling
+  unblocked and the defender dead to overflow it never accounted for. Fix: an injected
+  `overflow_fn(attacker, chosen_blockers) -> float` that adds each blocked trampler's through-damage
+  back into the survival total; non-trample blocked attackers return 0 (unchanged). Wired from
+  `decide_blockers` via `_trample_overflow`, reusing the same `max(0, power - soaked)` model already
+  in `_score_block_lifespan_delta`. Test:
+  `tests/test_coverage_survival_counts_trample_overflow.py` (pure `coverage_pass` unit — 6/6
+  trample + 4/4 vanilla vs two 0/3 walls at 5 life must field BOTH walls). Commit `7d2c794`.
+
+Both are `coverage_pass`-local (the pure function in `ai/block_assignment.py`); `optimize_pass`
+already modeled trample per-block via `_score_block_lifespan_delta` and needs no change. No new
+constants; no card names; ratchets stay at baseline (magic=13, abstraction OK). Full
+block/combat suite (`test_menace_block_requires_two_blockers`, `test_coverage_survival_counts_
+trample_overflow`, plus the 26-test joint-assignment/emergency/legality set) green.
+
 ### 2c. Unify turn_planner/board_eval block-prediction models — DONE
 
 **Problem confirmed, and one assumption from the stretch-goal write-up corrected by investigation.**
