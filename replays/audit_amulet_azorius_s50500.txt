@@ -1,0 +1,714 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+Result: Azorius Control wins T13 via timeout
+Life: P1=10 P2=17
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Amulet Titan wins → chooses to play first
+║ P1 (on play): Amulet Titan
+║ P2 (on draw): Azorius Control
+╚═══════════════════════════════════════════════════════
+
+P1 (Amulet Titan) opening hand (4 lands, 3 spells):
+  • Simic Growth Chamber [Land, CMC 0]
+  • Amulet of Vigor [Spell, CMC 1]
+  • Gruul Turf [Land, CMC 0]
+  • Spelunking [Spell, CMC 3]
+  • Amulet of Vigor [Spell, CMC 1]
+  • Shifting Woodland [Land, CMC 0]
+  • Crumbling Vestige [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Amulet of Vigor, Spelunking, 3 cheap spells
+
+P2 (Azorius Control) opening hand (4 lands, 3 spells):
+  • Island [Land, CMC 0]
+  • Orim's Chant [Spell, CMC 1]
+  • Wrath of the Skies [Spell, CMC 2]
+  • Meticulous Archive [Land, CMC 0]
+  • Supreme Verdict [Spell, CMC 4]
+  • Hallowed Fountain [Land, CMC 0]
+  • Arid Mesa [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Orim's Chant, 2 cheap spells
+
+
+╔══ TURN 1 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Azorius Control 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Crumbling Vestige (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 20  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mystic Gate
+  [Main 1]
+T1 P2: Play Mystic Gate
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Azorius Control 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Mystic Gate
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Spelunking
+  [Main 1]
+T2 P1: Play Simic Growth Chamber (enters tapped)
+T2: Crumbling Vestige moved battlefield -> hand (Simic Growth Chamber ETB returns Crumbling Vestige to hand)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 20  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 0
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Mystic Gate
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Simic Growth Chamber [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Steam Vents
+  [Main 1]
+T2 P2: Play Arid Mesa
+T2: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T2 P2: Crack Arid Mesa (pay 1 life) -> Hallowed Fountain (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Azorius Control 19
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Simic Growth Chamber
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Mystic Gate, Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Amulet of Vigor
+  [Main 1]
+T3 P1: Play Crumbling Vestige (enters tapped)
+    → Goal: ramp
+    [Mana] Tap Simic Growth Chamber→GU (paying for Amulet of Vigor, 2 mana remaining)
+T3 P1: Cast Amulet of Vigor (1)
+    [Priority] P2 passes (no response)
+T3: Resolve Amulet of Vigor
+    → Goal: ramp
+T3 P1: Cast Amulet of Vigor (1)
+    [Priority] P2 passes (no response)
+T3: Resolve Amulet of Vigor
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 19  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 1
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Mystic Gate, Hallowed Fountain
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Amulet of Vigor
+║   Lands: Simic Growth Chamber [T], Crumbling Vestige [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Sanctifier en-Vec
+  [Main 1]
+T3 P2: Play Steam Vents (untapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Azorius Control 19
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Amulet of Vigor
+║   Lands: Simic Growth Chamber, Crumbling Vestige
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Mystic Gate, Hallowed Fountain, Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Simic Growth Chamber
+  [Main 1]
+T4 P1: Play Gruul Turf (enters tapped)
+T4 P1: Amulet of Vigor, Amulet of Vigor untaps Gruul Turf (x2)
+T4: Crumbling Vestige moved battlefield -> hand (Gruul Turf ETB returns Crumbling Vestige to hand)
+    → Goal: ramp [enablers]
+    [Mana] Tap Simic Growth Chamber→GU, Gruul Turf→RG (paying for Spelunking, 4 mana remaining)
+T4 P1: Cast Spelunking (2G)
+    [Priority] P2 passes (no response)
+T4: Resolve Spelunking
+    → Goal: ramp
+T4 P1: Cast Amulet of Vigor (1)
+    [Priority] P2 passes (no response)
+T4: Resolve Amulet of Vigor
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 19  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 49  |  Graveyard: 1
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Mystic Gate, Hallowed Fountain, Steam Vents
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking, Amulet of Vigor
+║   Lands: Simic Growth Chamber [T], Gruul Turf [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Orim's Chant
+  [Main 1]
+T4 P2: Play Island
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Azorius Control 19
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 50  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking, Amulet of Vigor
+║   Lands: Simic Growth Chamber, Gruul Turf
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Mystic Gate, Hallowed Fountain, Steam Vents, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Forest
+  [Main 1]
+T5 P1: Play Crumbling Vestige (enters tapped)
+T5 P1: Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Crumbling Vestige (x3)
+    → Goal: ramp [enablers]
+    [Mana] Tap Simic Growth Chamber→GU, Gruul Turf→RG (paying for Spelunking, 5 mana remaining)
+T5 P1: Cast Spelunking (2G)
+    [Priority] P2 passes (no response)
+T5: Resolve Spelunking
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 19  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 1
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Mystic Gate, Hallowed Fountain, Steam Vents, Island
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking, Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber [T], Gruul Turf [T], Crumbling Vestige
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Otawara, Soaring City
+  [Main 1]
+T5 P2: Play Hallowed Fountain (untapped, life: 19)
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→W, Hallowed Fountain→W (paying for Sanctifier en-Vec, 5 mana remaining)
+T5 P2: Cast Sanctifier en-Vec (WW)
+    [Priority] P1 passes (no response)
+T5: Resolve Sanctifier en-Vec
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Azorius Control 19
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 49  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking, Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber, Gruul Turf, Crumbling Vestige
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2)
+║   Lands: Mystic Gate, Hallowed Fountain [T], Steam Vents, Island, Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Crumbling Vestige
+  [Main 1]
+T6 P1: Play Simic Growth Chamber (enters tapped)
+T6 P1: Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Simic Growth Chamber (x3)
+T6: Crumbling Vestige moved battlefield -> hand (Simic Growth Chamber ETB returns Crumbling Vestige to hand)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 19  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 1
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2)
+║   Lands: Mystic Gate, Hallowed Fountain, Steam Vents, Island, Hallowed Fountain
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking, Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber, Gruul Turf, Simic Growth Chamber
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Demolition Field
+  [Main 1]
+T6 P2: Play Demolition Field
+T6: Demolition Field moved battlefield -> graveyard (fetchland sacrifice)
+T6 P2: Crack Demolition Field -> Plains (untapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Sanctifier en-Vec
+T6 P2: Attack with Sanctifier en-Vec
+  [Declare Blockers] P1 does not block
+T6 P2:   Sanctifier en-Vec (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 20 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 18  |  Azorius Control 18
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 6
+║ Library: 48  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking, Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber, Gruul Turf, Simic Growth Chamber
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2) [tapped]
+║   Lands: Mystic Gate, Hallowed Fountain, Steam Vents, Island, Hallowed Fountain, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Boseiju, Who Endures
+  [Main 1]
+T7 P1: Play Crumbling Vestige (enters tapped)
+T7 P1: Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Crumbling Vestige (x3)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 18  |  Amulet Titan 18
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 6  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 2
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2)
+║   Lands: Mystic Gate, Hallowed Fountain, Steam Vents, Island, Hallowed Fountain, Plains
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking, Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber, Gruul Turf, Simic Growth Chamber, Crumbling Vestige
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Meticulous Archive
+  [Main 1]
+T7 P2: Play Otawara, Soaring City
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Sanctifier en-Vec
+T7 P2: Attack with Sanctifier en-Vec
+  [Declare Blockers] P1 does not block
+T7 P2:   Sanctifier en-Vec (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 18 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 16  |  Azorius Control 18
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 7
+║ Library: 47  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking, Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber, Gruul Turf, Simic Growth Chamber, Crumbling Vestige
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2) [tapped]
+║   Lands: Mystic Gate, Hallowed Fountain, Steam Vents, Island, Hallowed Fountain, Plains, Otawara, Soaring City
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Vesuva
+  [Main 1]
+T8 P1: Play Crumbling Vestige (enters tapped)
+T8 P1: Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Crumbling Vestige (x3)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 18  |  Amulet Titan 16
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 7  |  Opp lands: 5
+║ Library: 44  |  Graveyard: 2
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2)
+║   Lands: Mystic Gate, Hallowed Fountain, Steam Vents, Island, Hallowed Fountain, Plains, Otawara, Soaring City
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking, Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber, Gruul Turf, Simic Growth Chamber, Crumbling Vestige, Crumbling Vestige
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thundering Falls
+  [Main 1]
+T8 P2: surveil 1 → Isochron Scepter to GY
+T8 P2: Play Meticulous Archive (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Sanctifier en-Vec
+T8 P2: Attack with Sanctifier en-Vec
+  [Declare Blockers] P1 does not block
+T8 P2:   Sanctifier en-Vec (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 16 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 14  |  Azorius Control 18
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 5  |  Opp lands: 8
+║ Library: 46  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking, Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber, Gruul Turf, Simic Growth Chamber, Crumbling Vestige, Crumbling Vestige
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2) [tapped]
+║   Lands: Mystic Gate, Hallowed Fountain, Steam Vents, Island, Hallowed Fountain, Plains, Otawara, Soaring City, Meticulous Archive [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Gruul Turf
+  [Main 1]
+T9 P1: Play Gruul Turf (enters tapped)
+T9 P1: Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Gruul Turf (x3)
+T9: Crumbling Vestige moved battlefield -> hand (Gruul Turf ETB returns Crumbling Vestige to hand)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 18  |  Amulet Titan 14
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 8  |  Opp lands: 5
+║ Library: 42  |  Graveyard: 3
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2)
+║   Lands: Mystic Gate, Hallowed Fountain, Steam Vents, Island, Hallowed Fountain, Plains, Otawara, Soaring City, Meticulous Archive
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking, Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber, Gruul Turf, Simic Growth Chamber, Crumbling Vestige, Gruul Turf
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Monumental Henge
+  [Main 1]
+T9 P2: surveil 1 → Hall of Storm Giants to GY
+T9 P2: Play Meticulous Archive (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Sanctifier en-Vec
+T9 P2: Attack with Sanctifier en-Vec
+  [Declare Blockers] P1 does not block
+T9 P2:   Sanctifier en-Vec (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 14 → 12
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 12  |  Azorius Control 18
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 5  |  Opp lands: 9
+║ Library: 45  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking, Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber, Gruul Turf, Simic Growth Chamber, Crumbling Vestige, Gruul Turf
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2) [tapped]
+║   Lands: Mystic Gate, Hallowed Fountain, Steam Vents, Island, Hallowed Fountain, Plains, Otawara, Soaring City, Meticulous Archive, Meticulous Archive [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Spelunking
+  [Main 1]
+T10 P1: Play Crumbling Vestige (enters tapped)
+T10 P1: Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Crumbling Vestige (x3)
+    → Goal: ramp [enablers]
+    [Mana] Tap Simic Growth Chamber→GU, Gruul Turf→RG (paying for Spelunking, 10 mana remaining)
+T10 P1: Cast Spelunking (2G)
+    [Priority] P2 passes (no response)
+T10: Resolve Spelunking
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 18  |  Amulet Titan 12
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 9  |  Opp lands: 6
+║ Library: 40  |  Graveyard: 4
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2)
+║   Lands: Mystic Gate, Hallowed Fountain, Steam Vents, Island, Hallowed Fountain, Plains, Otawara, Soaring City, Meticulous Archive, Meticulous Archive
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking, Amulet of Vigor, Spelunking, Spelunking
+║   Lands: Simic Growth Chamber [T], Gruul Turf [T], Simic Growth Chamber, Crumbling Vestige, Gruul Turf, Crumbling Vestige
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Solitude
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Island→U, Plains→W, Otawara, Soaring City→U, Hallowed Fountain→W, Mystic Gate→C (paying for Solitude, 9 mana remaining)
+T10 P2: Cast Solitude (3WW)
+    [Priority] P1 passes (no response)
+T10: Resolve Solitude
+T10 P2: surveil 1 → Flooded Strand to GY
+T10 P2: Play Thundering Falls (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Sanctifier en-Vec
+T10 P2: Attack with Sanctifier en-Vec
+  [Declare Blockers] P1 does not block
+T10 P2:   Sanctifier en-Vec (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 12 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 10  |  Azorius Control 18
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 6  |  Opp lands: 10
+║ Library: 44  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking, Amulet of Vigor, Spelunking, Spelunking
+║   Lands: Simic Growth Chamber, Gruul Turf, Simic Growth Chamber, Crumbling Vestige, Gruul Turf, Crumbling Vestige
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2) [tapped], Solitude (3/2)
+║   Lands: Mystic Gate [T], Hallowed Fountain [T], Steam Vents, Island [T], Hallowed Fountain, Plains [T], Otawara, Soaring City [T], Meticulous Archive, Meticulous Archive, Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Summoner's Pact
+  [Main 1]
+T11 P1: Play Forest
+    → Goal: ramp
+T11 P1: Cast Summoner's Pact (0)
+    [Priority] P2 passes (no response)
+T11: Resolve Summoner's Pact
+T11 P1: Summoner's Pact finds Primeval Titan
+T11: Summoner's Pact moved stack -> graveyard (resolution)
+    → Goal: ramp [payoffs]
+    [Mana] Tap Forest→G, Simic Growth Chamber→GU, Gruul Turf→RG, Simic Growth Chamber→GU (paying for Primeval Titan, 11 mana remaining)
+T11 P1: Cast Primeval Titan (4GG)
+    [Priority] P2 passes (no response)
+T11: Resolve Primeval Titan
+T11 P1: Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Mirrorpool (x3)
+T11 P1: Primeval Titan searches for Mirrorpool
+T11 P1: Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Crumbling Vestige (x3)
+T11 P1: Primeval Titan searches for Crumbling Vestige
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 18  |  Amulet Titan 10
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 10  |  Opp lands: 9
+║ Library: 38  |  Graveyard: 5
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2), Solitude (3/2)
+║   Lands: Mystic Gate, Hallowed Fountain, Steam Vents, Island, Hallowed Fountain, Plains, Otawara, Soaring City, Meticulous Archive, Meticulous Archive, Thundering Falls
+║ Amulet Titan board:
+║   Creatures: Primeval Titan (6/6)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking, Amulet of Vigor, Spelunking, Spelunking
+║   Lands: Simic Growth Chamber [T], Gruul Turf [T], Simic Growth Chamber [T], Crumbling Vestige, Gruul Turf, Crumbling Vestige, Forest [T], Mirrorpool, Crumbling Vestige
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+T11 P2: Play Arid Mesa
+T11: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T11 P2: Crack Arid Mesa -> Plains (untapped)
+    → Goal: close_game
+    [Mana] Tap Plains→W, Plains→W (paying for Wrath of the Skies, 11 mana remaining)
+T11 P2: Cast Wrath of the Skies (WW)
+    [Priority] P1 passes (no response)
+T11: Resolve Wrath of the Skies
+T11 P2: Wrath of the Skies (X=0) sweeps the board, destroying 0 permanents
+T11: Wrath of the Skies moved stack -> graveyard (resolution)
+    → Goal: close_game
+    [Mana] Tap Island→U, Otawara, Soaring City→U, Hallowed Fountain→W, Hallowed Fountain→W (paying for Supreme Verdict, 9 mana remaining)
+T11 P2: Cast Supreme Verdict (1WWU)
+    [Priority] P1 passes (no response)
+T11: Resolve Supreme Verdict
+T11: Primeval Titan dies
+T11: Sanctifier en-Vec dies
+T11: Solitude dies
+T11 P2: Supreme Verdict destroys 3 creatures
+T11: Supreme Verdict moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 10  |  Azorius Control 17
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 9  |  Opp lands: 11
+║ Library: 40  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking, Amulet of Vigor, Spelunking, Spelunking
+║   Lands: Simic Growth Chamber, Gruul Turf, Simic Growth Chamber, Crumbling Vestige, Gruul Turf, Crumbling Vestige, Forest, Mirrorpool, Crumbling Vestige
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Mystic Gate, Hallowed Fountain [T], Steam Vents, Island [T], Hallowed Fountain [T], Plains [T], Otawara, Soaring City [T], Meticulous Archive, Meticulous Archive, Thundering Falls, Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Gruul Turf
+  [Main 1]
+T12 P1: Play Gruul Turf (enters tapped)
+T12 P1: Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Gruul Turf (x3)
+T12: Forest moved battlefield -> hand (Gruul Turf ETB returns Forest to hand)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 17  |  Amulet Titan 10
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 11  |  Opp lands: 9
+║ Library: 36  |  Graveyard: 10
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Mystic Gate, Hallowed Fountain, Steam Vents, Island, Hallowed Fountain, Plains, Otawara, Soaring City, Meticulous Archive, Meticulous Archive, Thundering Falls, Plains
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking, Amulet of Vigor, Spelunking, Spelunking
+║   Lands: Simic Growth Chamber, Gruul Turf, Simic Growth Chamber, Crumbling Vestige, Gruul Turf, Crumbling Vestige, Mirrorpool, Crumbling Vestige, Gruul Turf
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Prismatic Ending
+  [Main 1]
+T12 P2: Play Monumental Henge (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
