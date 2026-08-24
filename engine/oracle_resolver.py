@@ -1174,6 +1174,89 @@ def _transform_permanent(game: "GameState", perm: "CardInstance",
         game._handle_permanent_etb(perm, controller)
 
 
+def _permanent_is_colored(perm: "CardInstance") -> bool:
+    """True when a permanent is one or more colors (CR 105.2)."""
+    colors = getattr(perm.template, 'colors', None) or \
+        getattr(perm.template, 'color_identity', None) or set()
+    return bool(colors)
+
+
+def resolve_self_cast_trigger(game: "GameState", caster_idx: int,
+                              spell_cast: "CardInstance") -> bool:
+    """Resolve the SPELL'S OWN "When you cast this spell, <effect>" triggers
+    (CR 601.2i cast triggers on the object being cast).
+
+    This is distinct from `resolve_spell_cast_trigger`, which fires "whenever
+    you cast a spell" watcher triggers on OTHER permanents. A spell's own
+    on-cast trigger previously had no dispatch and was a silent no-op — this
+    blanked the Eldrazi ramp engine (Sowing Mycospawn's land search) and the
+    Eldrazi interaction suite (Devourer of Destiny / Ugin exile a colored
+    permanent on cast). Oracle-shape-gated; no card names.
+
+    Returns True when at least one self-cast clause was recognised (so the
+    caller can distinguish "handled" from "no such trigger").
+    """
+    oracle = (spell_cast.template.oracle_text or '').lower()
+    if 'when you cast this spell' not in oracle:
+        return False
+
+    from engine.cards import CardType as _CT
+    handled = False
+    player = game.players[caster_idx]
+    opponent = 1 - caster_idx
+
+    for clause in split_abilities(oracle):
+        clause = clause.strip()
+        if not clause.startswith('when you cast this spell'):
+            continue
+        # Conditional riders we don't model (kicker/other cast conditions):
+        # skip the effect but the clause is still "recognised".
+        if 'if it was kicked' in clause or 'if this spell was kicked' in clause:
+            handled = True
+            continue
+
+        # ── "search your library for a land card, put it onto the
+        #     battlefield" (Sowing Mycospawn ramp) ──
+        if 'search your library for a land' in clause \
+                and 'onto the battlefield' in clause:
+            lands = [c for c in player.library
+                     if _CT.LAND in c.template.card_types]
+            if lands:
+                # Deterministic: fetch the highest-output land (Eldrazi
+                # Temple over a basic), tie-break by name.
+                best = max(lands, key=lambda c: (
+                    getattr(c.template, 'mana_count', 0) or 0, c.name))
+                game.zone_mgr.move_card(game, best, "library", "battlefield",
+                                        cause=f"{spell_cast.name} cast: land search")
+                game.log.append(
+                    f"T{game.display_turn} P{caster_idx+1}: {spell_cast.name} "
+                    f"cast — search land ({best.name})")
+            handled = True
+            continue
+
+        # ── "exile [up to one] target permanent that's one or more colors"
+        #     (Devourer of Destiny / Ugin, Eye of the Storms) ──
+        if 'exile' in clause and 'permanent' in clause \
+                and 'one or more colors' in clause:
+            targets = [c for c in game.players[opponent].battlefield
+                       if _permanent_is_colored(c)]
+            if targets:
+                # Exile the opponent's most threatening colored permanent
+                # (highest power, then mana value).
+                worst = max(targets, key=lambda c: (
+                    (c.power or 0) if _CT.CREATURE in c.template.card_types else 0,
+                    c.template.cmc or 0))
+                game.zone_mgr.move_card(game, worst, "battlefield", "exile",
+                                        cause=f"{spell_cast.name} cast: exile")
+                game.log.append(
+                    f"T{game.display_turn} P{caster_idx+1}: {spell_cast.name} "
+                    f"cast — exile {worst.name}")
+            handled = True
+            continue
+
+    return handled
+
+
 def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
                                 spell_cast: "CardInstance"):
     """Resolve "whenever you cast a spell" triggers for all permanents.
