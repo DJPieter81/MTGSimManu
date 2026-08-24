@@ -52,6 +52,7 @@ def coverage_pass(
     stabilize_margin: float = 0.0,
     skip_fn: Optional[Callable[[Blockable, float], bool]] = None,
     min_blockers_fn: Optional[Callable[[Blockable], int]] = None,
+    overflow_fn: Optional[Callable[[Blockable, List[Blockable]], float]] = None,
 ) -> Tuple[Dict[int, List[int]], Set[int]]:
     """PASS 1 — coverage.
 
@@ -72,17 +73,37 @@ def coverage_pass(
     rebinds, chumping is futile" gate) while still contributing that
     attacker's damage to every LATER iteration's ``unblocked_damage``.
 
+    ``overflow_fn(attacker, chosen_blockers) -> float``, if given, is
+    the trample-overflow (CR 702.19) accounting: a *blocked* attacker
+    still contributes its through-damage to ``unblocked_damage`` (power
+    beyond its blockers' combined toughness), instead of dropping out of
+    the survival sum entirely. Without it, a blocked trampler counts as
+    zero incoming — the pass stabilizes one attacker too early and the
+    defender dies to overflow it never accounted for. Non-trample
+    blocked attackers return 0 and so still drop out, unchanged.
+
     Returns ``(blocks, used)`` — a fresh dict/set, never mutates the
     inputs.
     """
     blocks: Dict[int, List[int]] = {}
     used: Set[int] = set()
+    id_to_blocker = {b.instance_id: b for b in blockers}
+
+    def _incoming() -> float:
+        total = 0.0
+        for a in sorted_attackers:
+            if a.instance_id not in blocks:
+                total += (a.power or 0)
+            elif overflow_fn is not None:
+                chosen = [
+                    id_to_blocker[bid] for bid in blocks[a.instance_id]
+                    if bid in id_to_blocker
+                ]
+                total += overflow_fn(a, chosen)
+        return total
 
     for attacker in sorted_attackers:
-        unblocked_damage = sum(
-            (a.power or 0) for a in sorted_attackers
-            if a.instance_id not in blocks
-        )
+        unblocked_damage = _incoming()
         still_lethal = unblocked_damage >= my_life
         if not still_lethal and (
                 my_life - unblocked_damage > stabilize_margin

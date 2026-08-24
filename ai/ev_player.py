@@ -3105,6 +3105,17 @@ class EVPlayer:
             # leave the attacker unblocked) — never exactly 1.
             return 2 if Keyword.MENACE in attacker.keywords else 1
 
+        def _trample_overflow(attacker, chosen_blockers):
+            # Trample (CR 702.19): a blocked trampler still connects for
+            # power beyond its blockers' combined toughness. Coverage must
+            # count that through-damage toward survival, or it stabilizes
+            # one attacker too early and dies to overflow. Same shape as the
+            # per-block model in _score_block_lifespan_delta.
+            if Keyword.TRAMPLE not in attacker.keywords:
+                return 0
+            soaked = sum((b.toughness or 0) for b in chosen_blockers)
+            return max(0, (attacker.power or 0) - soaked)
+
         def _cost_fn(blocker):
             # The audited fix: rank by ai.clock.opportunity_cost
             # (Phase 2a) ascending — the cheapest-to-lose blocker
@@ -3166,6 +3177,7 @@ class EVPlayer:
                 my_life=me.life, can_block_fn=_flying_ok, cost_fn=_cost_fn,
                 stabilize_margin=EMERGENCY_BLOCK_STABILIZE_LIFE_GAIN,
                 skip_fn=_skip_fn, min_blockers_fn=_min_blockers,
+                overflow_fn=_trample_overflow,
             )
 
             # RC-2: if coverage skipped every attacker via the
