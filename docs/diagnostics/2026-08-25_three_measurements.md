@@ -192,3 +192,31 @@ deterministic-sideboard observation stands as a code-quality finding (the
 logic does not adapt), but it is not a WR lever for this matchup. Do not
 re-test it; the decider losses need a different explanation (the post-sweep
 rebuild race documented in the Domain Zoo diagnostic remains the open lead).
+
+---
+
+## FOLLOW-UP — GAME_TIMEOUT sensitivity measured: an idle machine is safe
+
+The full-matrix caveat ("production games carry an 8s wall-clock deadline that
+truncates games on a loaded machine") was tested directly on an OTHERWISE-IDLE
+box: four matchups (control mirror, two slow ramp pairings, one fast aggro
+control case), 6 seeds each, per-seed `(winner, turns)` compared between the
+default `GAME_TIMEOUT_SECONDS = 8.0` and an effectively unlimited budget.
+
+**Result: identical outcomes in all four matchups.** The deadline does not
+bind legitimate games on an idle machine; every game finishes inside the
+budget.
+
+Combined with the anchor incident (a ~4s game exceeding 8s on a loaded 2-core
+CI runner and flipping its winner — fixed for the anchor in `083393b`), the
+picture is:
+
+* Sims on an **idle** machine: trustworthy under the current 8s deadline.
+* Sims under **contention** or on weak shared runners: suspect — the deadline
+  can truncate games and silently change outcomes.
+
+Operational rule recorded here rather than as a code change: **run
+calibration-grade sims (matrix, field sweeps) on an idle box.** Raising the
+production deadline was considered and deliberately NOT done — no legitimate
+game needs it (measured), and a larger budget only makes pathological games
+burn proportionally more wall time.
