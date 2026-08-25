@@ -13,7 +13,7 @@ This replaces the hardcoded data tables in game_state.py
 """
 from __future__ import annotations
 import re
-from typing import Dict, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 from engine.oracle_clauses import split_abilities, split_clauses
 
@@ -538,6 +538,63 @@ def parse_has_attack_trigger(oracle: str, name: str = "") -> bool:
             if any(f'whenever {anchor} {s}' in low for s in suffixes):
                 return True
     return False
+
+
+_ANY_COLOR_UNIT = ['W', 'U', 'B', 'R', 'G']
+
+
+def parse_sacrifice_mana_units(oracle: str) -> Optional[List[List[str]]]:
+    """Parse a "Sacrifice this <thing>: Add <mana>" ability into mana units.
+
+    207 Modern cards create or carry this one-shot mana ability — Eldrazi
+    Spawn/Scion ("Add {C}"), Treasure ("Add one mana of any color"), and
+    Lotus-style multi-mana artifacts. Nothing in the engine recognised it, so
+    every such permanent contributed zero mana; for ramp shells that turns a
+    whole class of accelerant into dead bodies.
+
+    Returns a list of mana UNITS in the same shape as ``template.mana_units``
+    (each unit is the list of colours that unit could produce), or ``None``
+    when the oracle has no such ability.
+
+    Deliberately excluded:
+      * ``{T}: Add …`` — a plain tap ability, already modelled as a normal
+        mana source. Claiming it here would double-count the permanent.
+      * ``Sacrifice a creature: Add …`` / ``Sacrifice another …`` — a cost
+        paid with OTHER permanents, not this permanent converting itself into
+        mana. Different mechanic; the ``this`` anchor is the discriminator
+        (same discriminator the attack-trigger parsers use).
+      * ``Sacrifice this creature: <non-mana effect>`` — no ``Add``.
+    """
+    low = (oracle or '').lower()
+    # Anchor on "sacrifice this <noun>" so other-permanent sacrifice costs and
+    # tap abilities cannot match. The effect must begin with "add".
+    m = re.search(
+        r'sacrifice this [a-z]+[^:.]{0,40}:\s*add\s+([^.\n"]+)', low)
+    if m is None:
+        return None
+    effect = m.group(1).strip()
+
+    # Form 1: an explicit run of mana symbols — {C}, {C}{C}, {B}{B}, {W}{U}…
+    symbols = re.findall(r'\{([wubrgc])\}', effect)
+    if symbols:
+        return [[s.upper()] for s in symbols]
+
+    # Form 2: "<N> mana of any color" / "<N> mana of any one color".
+    m2 = re.search(r'(\w+)\s+mana\s+of\s+any', effect)
+    if m2:
+        tok = m2.group(1)
+        try:
+            count = int(tok)
+        except ValueError:
+            count = _NUM_WORDS.get(tok, 0)
+        if count > 0:
+            # "of any ONE color" additionally constrains every unit to the
+            # same colour; that constraint is not modelled here, so the units
+            # are independently any-colour. The count — which is what mana
+            # capacity is measured in — is exact either way.
+            return [list(_ANY_COLOR_UNIT) for _ in range(count)]
+
+    return None
 
 
 def parse_has_combat_damage_trigger(oracle: str, name: str = "") -> bool:

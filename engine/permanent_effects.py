@@ -199,6 +199,14 @@ class PermanentEffects:
                 oracle_text=token_oracle,
             )
             template.has_artifact_count_scaling = _art_scale
+            # A token created "with '<ability>'" carries that ability. When it
+            # is a sacrifice-for-mana ability (Eldrazi Spawn, Treasure), record
+            # the one-shot units so the token counts as ramp rather than as a
+            # dead 0/1 body.
+            from .oracle_parser import (
+                parse_sacrifice_mana_units as _parse_sac_mana)
+            template.sacrifice_mana_units = (
+                _parse_sac_mana(token_oracle) or [])
             instance = CardInstance(
                 template=template,
                 owner=controller,

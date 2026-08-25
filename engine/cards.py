@@ -131,6 +131,13 @@ class CardTemplate:
     # 'Add {G} or {U}' → [["G", "U"]] (one unit, color choice).
     # Empty ⇒ legacy single unit whose options are `produces_mana`.
     mana_units: List[List[str]] = field(default_factory=list)
+    # ONE-SHOT mana from "Sacrifice this <thing>: Add <mana>" (CR 605) —
+    # Eldrazi Spawn/Scion, Treasure, Lotus-style artifacts (207 Modern cards).
+    # Same unit shape as `mana_units`, but spending it CONSUMES the permanent,
+    # so it is deliberately a separate field: it must never be counted as
+    # repeatable per-turn mana. Populated at load time (and for tokens at
+    # creation time) by oracle_parser.parse_sacrifice_mana_units.
+    sacrifice_mana_units: List[List[str]] = field(default_factory=list)
     # 'When this land enters, return a land you control to its owner's
     # hand' — structural ETB clause of the karoo family (E1b), a
     # sibling of `enters_tapped`.

@@ -233,6 +233,46 @@ class ManaPayment:
                         f"Improvise — tap {n_tap} artifact(s) for "
                         f"{card_name}")
 
+        # One-shot sacrifice-for-mana permanents (CR 605): Eldrazi Spawn/Scion,
+        # Treasure, Lotus-style artifacts — 206 cards in the pool. Spending one
+        # CONSUMES it, so (exactly like Improvise above) only ever spend the
+        # SHORTFALL that repeatable sources plus the pool cannot already cover;
+        # otherwise a deck would eat its own ramp to pay costs its lands
+        # already afford. Tapped state is irrelevant — the cost is sacrifice,
+        # not {T} — which is why these are collected separately from
+        # `untapped` rather than appended to it.
+        sac_sources = [
+            perm for perm in player.battlefield
+            if getattr(perm.template, 'sacrifice_mana_units', None)
+        ]
+        if sac_sources:
+            capacity = (player.untapped_mana_capacity()
+                        + player.mana_pool.total()
+                        + player._tron_mana_bonus())
+            shortfall = max(0, cost.cmc - capacity)
+            if shortfall > 0:
+                spent = 0
+                for perm in sac_sources:
+                    if spent >= shortfall:
+                        break
+                    units = perm.template.sacrifice_mana_units or []
+                    if not units:
+                        continue
+                    # Route through the zone funnel so dies/LTB triggers fire.
+                    game.zone_mgr.move_card_to_graveyard(
+                        game, perm,
+                        cause=f"sacrificed for mana ({card_name})")
+                    for unit in units:
+                        # A unit lists the colours it could produce; a
+                        # single-colour unit is fixed, a multi-colour unit is
+                        # the "any colour" shape. Add the first option and let
+                        # the pool's own payment logic sort out the rest.
+                        player.mana_pool.add(unit[0], 1)
+                        spent += 1
+                    game.log.append(
+                        f"T{game.display_turn} P{player_idx+1}: "
+                        f"sacrifice {perm.name} for mana ({card_name})")
+
         untapped = [l for l in player.lands if not l.tapped]
 
         # Non-land mana sources: mana rocks (Talisman, Mind Stone) and mana

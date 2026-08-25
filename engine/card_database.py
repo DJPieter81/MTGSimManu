@@ -1786,6 +1786,7 @@ class CardDatabase:
             grants_flashback_to_gy_spells, parse_deals_targeted_damage,
             parse_has_scaling_token_finisher,
             parse_has_attack_trigger, parse_has_combat_damage_trigger,
+            parse_sacrifice_mana_units,
             parse_has_lifegain_token_trigger, parse_lifegain_token_type,
             parse_targets_creature_spell, parse_targets_planeswalker_spell,
             parse_has_landfall, parse_has_library_search_opponent_trigger,
@@ -1867,6 +1868,8 @@ class CardDatabase:
         template.has_attack_trigger = parse_has_attack_trigger(oracle, name)
         template.has_combat_damage_trigger = parse_has_combat_damage_trigger(
             oracle, name)
+        template.sacrifice_mana_units = (
+            parse_sacrifice_mana_units(oracle) or [])
         template.has_lifegain_token_trigger = parse_has_lifegain_token_trigger(oracle)
         template.lifegain_token_type = parse_lifegain_token_type(oracle)
         template.targets_creature_spell = parse_targets_creature_spell(oracle)
