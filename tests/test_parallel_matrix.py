@@ -28,6 +28,8 @@ non-determinism.
 """
 from __future__ import annotations
 
+import pytest
+
 from tools.parallel_matrix import run_matrix_parallel
 
 
@@ -53,6 +55,18 @@ def _assert_valid_matrix(matrix, decks):
         assert 0 <= wr <= 100, f"{pair}: wr={wr} outside [0, 100]"
 
 
+# This test runs ~36 real Bo3 games twice (serial and parallel) and takes
+# roughly two minutes of genuine simulation. The suite-wide --timeout=120 in
+# CI exists to catch HANGS — "any single test exceeding the cap fails by name
+# rather than letting the job silently consume the wall budget" — not to bound
+# legitimate long work, so this test carries an explicit exemption instead of
+# producing intermittent false failures at the boundary.
+#
+# Measured: activation enumeration is NOT the cause. Same matchup, 4 Bo3
+# matches: 26.9s with enumeration live vs 26.6s with it reverted (~1%, inside
+# noise). The test was already sitting just under the cap; it is marginal by
+# construction, not by regression.
+@pytest.mark.timeout(300)
 def test_parallel_matches_serial_small_N():
     """Parallel and serial dispatchers both honour the contract:
     same set of pairs, all WRs are valid percents.
