@@ -834,6 +834,42 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
                     f"{card.name} → draw {count} ({names})")
             handled = True
 
+    # ── "Create [N] <P>/<T> … creature token[s] [with '<ability>']" ──
+    # CR 111: a spell whose own effect creates a token. Token creation was
+    # already wired for ATTACK and DIES triggers but had NO spell-resolution
+    # branch, so 522 Modern instants/sorceries carrying this clause resolved
+    # to a complete no-op. For ramp shells the omission is load-bearing: the
+    # created body often carries a mana ability, so a missing token is missing
+    # ramp.
+    #
+    # Safe to run generically here: `resolve_spell_from_oracle` is only
+    # reached after EFFECT_REGISTRY has declined the card, so a card-specific
+    # handler can never double-fire with this branch. `create_token` does the
+    # P/T + subtype + inner-quoted-ability parsing via `parse_token_spec`, so
+    # the only parse here is the COUNT.
+    if not handled and (card.template.is_instant or card.template.is_sorcery):
+        for clause in split_abilities(oracle):
+            m = re.search(
+                r'\bcreate\s+(a|an|one|two|three|four|five|\d+)\s+'
+                r'(\d+)/(\d+)\b[^.]*?\btokens?\b', clause)
+            if m is None:
+                continue
+            tok = m.group(1)
+            try:
+                count = int(tok)
+            except ValueError:
+                count = 1 if tok in ('a', 'an', 'one') else _WORD_TO_NUM.get(tok, 0)
+            if count <= 0:
+                continue
+            created = game.create_token(
+                controller, "creature", count=count,
+                power=int(m.group(2)), toughness=int(m.group(3)),
+                source_oracle=clause)
+            # `create_token` already emits its own log line; don't duplicate it.
+            if created:
+                handled = True
+            break
+
     return handled
 
 
