@@ -238,6 +238,12 @@ class CardTemplate:
     # "Whenever [Card Name] attacks". Replaces runtime 'whenever...attacks'
     # in-oracle substring checks in ai/ and engine/.
     has_attack_trigger: bool = False
+    # On-combat-damage-to-a-player triggered ability (CR 603.2) — populated at
+    # load time by oracle_parser.parse_has_combat_damage_trigger(oracle, name).
+    # A DISTINCT shape from has_attack_trigger: fires on connecting, not on
+    # declaring. Covers the "connects → draw / Treasure / steal" value engines
+    # (331 Modern creatures), which were previously valued as vanilla bodies.
+    has_combat_damage_trigger: bool = False
     # Lifegain-token trigger (CR 603.2) — True when oracle creates a token
     # whenever the controller gains life ("whenever you gain life … create …
     # token").  Replaces the runtime oracle substring check in
@@ -559,6 +565,7 @@ class CardTemplate:
                                         parse_can_target_player as _pctp,
                                         parse_can_target_planeswalker as _pctpw,
                                         parse_has_attack_trigger as _phat,
+                                        parse_has_combat_damage_trigger as _phcdt,
                                         parse_has_lifegain_token_trigger as _phltt,
                                         parse_lifegain_token_type as _pltt,
                                         parse_targets_creature_spell as _ptcs,
@@ -612,6 +619,9 @@ class CardTemplate:
                 self.can_target_planeswalker = _pctpw(self.oracle_text)
             if not self.has_attack_trigger:
                 self.has_attack_trigger = _phat(self.oracle_text, self.name)
+            if not self.has_combat_damage_trigger:
+                self.has_combat_damage_trigger = _phcdt(
+                    self.oracle_text, self.name)
             if not self.has_lifegain_token_trigger:
                 self.has_lifegain_token_trigger = _phltt(self.oracle_text)
             if self.has_lifegain_token_trigger and self.lifegain_token_type == 'creature':

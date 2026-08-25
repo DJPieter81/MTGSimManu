@@ -579,8 +579,24 @@ class EVPlayer:
             if spell.name in self._reactive_only:
                 if not spell.template.is_creature:
                     prof = self.profile
-                    is_dying = snap.am_dead_next or (snap.opp_power >= prof.dying_opp_power
-                                                     and snap.opp_clock_discrete <= prof.dying_opp_clock)
+                    # "Am I dying?" is a LIFE-RELATIVE question, and
+                    # `opp_clock_discrete` (= ceil(my_life / opp_power)) is
+                    # exactly that quantity — it already returns a no-clock
+                    # sentinel when the opponent has no power, so a short clock
+                    # cannot fire on an empty board.
+                    #
+                    # The old form also required `opp_power >=
+                    # prof.dying_opp_power`, an ATTACKER-SIZE floor. That made
+                    # death-by-a-thousand-cuts invisible: a board of small
+                    # creatures never met the floor no matter how short the
+                    # clock, so a control deck bled from 20 to 0 holding its
+                    # removal and deployed it only once one attacker happened
+                    # to grow past the floor — several turns and ~10 life too
+                    # late (post-sweep control-execution audit, seed 50000).
+                    # Size is redundant once the clock is life-relative; the
+                    # floor is dropped rather than patched around.
+                    is_dying = (snap.am_dead_next
+                                or snap.opp_clock_discrete <= prof.dying_opp_clock)
                     has_big_target = self._has_high_threat_target(game, spell, snap)
                     # A blink held "for protection" must be castable
                     # PROACTIVELY when it would clear a live pending

@@ -523,6 +523,52 @@ def parse_has_attack_trigger(oracle: str, name: str = "") -> bool:
     return False
 
 
+def parse_has_combat_damage_trigger(oracle: str, name: str = "") -> bool:
+    """Return True when the card has an on-combat-damage-to-a-player triggered
+    ability that belongs to the card itself (CR 603.2).
+
+    This is a DISTINCT oracle shape from `parse_has_attack_trigger`: an attack
+    trigger fires on declaration, a combat-damage trigger fires only when the
+    creature connects. 331 Modern creatures carry the latter — the "connects →
+    draw a card / make a Treasure / steal a card" value engines that power
+    aggro and tempo decks (Ragavan, Psychic Frog, the ninja cycle, …). They are
+    strictly more than their printed body, and `parse_has_attack_trigger`
+    correctly returns False for them, so without this parser they were valued
+    as vanilla creatures.
+
+    Recognised phrasings mirror `parse_has_attack_trigger`'s self-anchor:
+      - "Whenever this creature deals combat damage to a player" — generic
+        self-referential form.
+      - "Whenever [Card Name] deals combat damage to a player" — self-named
+        form used by legendaries, including the personal-name-only variant
+        ("Whenever Ragavan deals combat damage …" on "Ragavan, Nimble
+        Pilferer").
+
+    Deliberately excluded, same discriminator as the attack-trigger parser:
+    "Whenever a creature you control deals combat damage" / "Whenever another
+    creature …" — those are triggers on *other* permanents that fire off any
+    creature's combat damage, not this body's own recurring value.
+
+    The "to a player" anchor is required: "deals combat damage to a creature"
+    is a fight/deathtouch-style rider, not a per-connection value engine. The
+    common "to a player or planeswalker" phrasing is matched by the prefix.
+    """
+    low = (oracle or '').lower()
+    anchor = 'deals combat damage to a player'
+    if f'whenever this creature {anchor}' in low:
+        return True
+    if name:
+        cname = name.lower().split(' //')[0].strip()
+        if cname and f'whenever {cname} {anchor}' in low:
+            return True
+        # Legendaries refer to themselves by the personal name before the
+        # comma ("Whenever Ragavan deals combat damage to a player, …").
+        short = cname.split(',')[0].strip()
+        if short and short != cname and f'whenever {short} {anchor}' in low:
+            return True
+    return False
+
+
 def parse_targets_creature_spell(oracle: str) -> bool:
     """Return True when oracle text contains 'target creature spell'.
 

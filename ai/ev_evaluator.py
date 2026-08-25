@@ -680,6 +680,15 @@ def creature_threat_value(card: "CardInstance", snap: EVSnapshot) -> float:
     virtual_power = 0
     if getattr(t, 'has_attack_trigger', False):
         virtual_power += THREAT_BATTLE_CRY_AMPLIFIER_VP
+    elif getattr(t, 'has_combat_damage_trigger', False):
+        # "Whenever this deals combat damage to a player, <recurring value>"
+        # is the same per-combat amplifier shape as an attack trigger, so it
+        # reuses that constant rather than introducing a second tunable. It
+        # is strictly NARROWER (requires connecting, not just declaring), so
+        # equal magnitude is conservative. `elif` because the two shapes are
+        # alternative phrasings of "extra value each combat" — a card with
+        # both should not be credited twice for one combat step.
+        virtual_power += THREAT_BATTLE_CRY_AMPLIFIER_VP
     if re.search(r'for each (artifact|creature|land|card)', oracle):
         # Phase 1C: skip the future-scaling bonus when the dynamic P/T
         # already captures the scaling. `engine/cards.py:_dynamic_base_power`
