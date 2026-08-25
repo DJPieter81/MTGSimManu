@@ -104,4 +104,5 @@ jobs:
         run: |
           python -m pytest tests/ -q --timeout=120 --tb=short \
             --deselect tests/test_etb_graveyard_return.py \
-            --deselect tests/test_card_features.py::test_extraction_performance
+            --deselect tests/test_card_features.py::test_extraction_performance \
+            --deselect tests/test_parallel_matrix.py

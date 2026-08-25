@@ -212,6 +212,9 @@ Tests include: deck loading, gameplan loading, matchup balance, card effects, ga
    two deselects:
    - `tests/test_etb_graveyard_return.py`
    - `tests/test_card_features.py::test_extraction_performance`
+   - `tests/test_parallel_matrix.py` — spawns `mp.Pool` workers that each load
+     the full card DB; on a 2-core runner that is enough memory pressure to get
+     the whole job killed. Runs locally.
 
 **Observed run:** 3549 passed, 20 skipped, 5 deselected, 2 xfailed, ~10.7 min.
 
