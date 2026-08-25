@@ -167,3 +167,28 @@ that would have caught this.
 behaviourally identical to a legitimate state will hide a bug indefinitely.
 Where a fallback exists, something must assert that the non-fallback path is
 actually reachable.
+
+---
+
+## FOLLOW-UP (same day) — item 2's open question answered: the swap is NOT the cause
+
+The deterministic sideboard swap was tested for causation with a controlled
+two-arm experiment (paired seeds, Bo3 n=10): baseline (both decks sideboard)
+vs an arm where the CONTROL deck's sideboarding is suppressed entirely (the
+aggro deck still sideboards).
+
+| Arm | 4/5c vs Zoo | control game-wins | Azorius vs Zoo | game-wins |
+|---|---|---|---|---|
+| baseline (swap happens) | 0% | 5 | 0% | 1 |
+| control's SB suppressed | 0% | 4 | 0% | 1 |
+
+Suppressing the swap changes nothing at match level and slightly REDUCES 4/5c's
+game wins (5 → 4) — the boarded configuration is marginally better than not
+sideboarding at all, despite being deterministic and weakly targeted.
+
+**Refuted: the `+2 Mystical Dispute, −2 Orim's Chant` swap is not why control
+loses the deciders.** Control loses them regardless of its sideboard. The
+deterministic-sideboard observation stands as a code-quality finding (the
+logic does not adapt), but it is not a WR lever for this matchup. Do not
+re-test it; the decider losses need a different explanation (the post-sweep
+rebuild race documented in the Domain Zoo diagnostic remains the open lead).
