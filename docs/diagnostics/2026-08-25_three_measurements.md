@@ -111,3 +111,59 @@ rather than the specific flagged ability, giving a different and also
 unreliable picture. Both were discarded. The table above is derived from the
 parsed `ActivatedAbility.cost.unpayable` values directly, which is the only
 reading that reflects what the parser actually produced.
+
+---
+
+## CORRECTION (same day) — item 3 was measured against a bug; the conclusion is REVERSED
+
+The recommendation above ("do not build tranche 2 as scoped; only 3 of 48 are
+payer-unlockable; the real bottleneck is cost-parser coverage") was derived
+from corrupted parser output and is **withdrawn**.
+
+Six of the eleven `_UNPAYABLE_COST_PATTERNS` contained a literal BACKSPACE
+(`0x08`) where a regex word-boundary was intended — written through a non-raw
+Python string literal, which converts `\b` into `\x08`. Fixed in `7246c14`.
+
+Why it survived three separate investigations in this session:
+
+* **Invisible to inspection.** A backspace does not render, so reading the
+  source showed `r'sacrifice this'` — exactly what it was meant to say. That
+  table was read twice without noticing.
+* **Invisible to behaviour.** An unmatched cost falls through to
+  `unrecognised`, which lands in `unpayable`, which `can_activate` refuses —
+  the same outcome as a genuinely unsupported cost. A broken pattern degraded
+  silently into "not supported yet" and no test failed.
+* **The two unreliable probes noted above were chasing this.** They were
+  looking for *what kind of cost* the parser could not handle; the answer was
+  that it could handle them and the regex was damaged.
+
+### Corrected numbers
+
+| Measure | Reported above | Actual |
+|---|---|---|
+| Registered decks: blocked abilities unlockable by PAYERS | 3 of 48 | **41 of 48** |
+| DB-wide abilities marked `unrecognised` | 2017 | **462** |
+| DB-wide `sacrifice_self` correctly named | ~0 | **664** |
+| DB-wide `sacrifice_another` | ~0 | 438 |
+
+### Corrected recommendation
+
+**Activation tranche 2 (cost payers) is worth building.** It would unlock 41 of
+the 48 blocked abilities across the registered decks, not 3. The `unpayable`
+field's design intent — that a later tranche is a payer *addition* rather than
+a re-parse — holds; it simply could not be seen through the escape defect.
+
+The remaining `unrecognised` (462 DB-wide, 1 in registered decks) is now a
+genuine coverage tail rather than the dominant blocker.
+
+### What guards this now
+
+`tests/test_activation_cost_patterns_are_valid.py` asserts no pattern contains
+a control character, and that each pattern classifies a representative cost
+phrase rather than dropping it to `unrecognised`. The first rule is the one
+that would have caught this.
+
+**Lesson worth keeping:** a silent fallback (`unrecognised`) that is
+behaviourally identical to a legitimate state will hide a bug indefinitely.
+Where a fallback exists, something must assert that the non-fallback path is
+actually reachable.
