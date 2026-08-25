@@ -507,19 +507,36 @@ def parse_has_attack_trigger(oracle: str, name: str = "") -> bool:
     time rather than requiring a runtime string-format check.
     """
     low = (oracle or '').lower()
-    if 'whenever this creature attacks' in low:
+    # Modern templating writes the combined form "Whenever this creature enters
+    # or attacks, …" (Grave Titan, Primeval Titan, Archon of Cruelty, the
+    # Overlord cycle — 88 Modern cards). That IS an attack trigger; matching
+    # only the bare "attacks" phrasing left every one of them with
+    # has_attack_trigger == False, which silently disabled the flag-gated
+    # attack-time dispatches (land search, energy) and under-valued all 88 in
+    # `creature_threat_value`'s virtual-power credit.
+    suffixes = ('attacks', 'enters or attacks')
+    # The self-referential subject is not always "this creature": the DB also
+    # uses "this permanent" (the Overlord enchantment-creature cycle), "this
+    # Vehicle", "this land" (creature-lands), "this token" and "this
+    # Spacecraft" — 50 cards beyond the creature phrasing. In modern
+    # templating "this <noun>" is ALWAYS a self-reference, so a single-word
+    # noun is a safe anchor; crucially it still excludes the watcher forms
+    # ("whenever YOUR COMMANDER enters or attacks", "whenever A CREATURE YOU
+    # CONTROL attacks"), which belong to a different trigger class.
+    if re.search(r'whenever this \w+ (?:enters or )?attacks\b', low):
         return True
     if name:
         # Full name minus alternate-face suffix (DFCs use "Front // Back").
         cname = name.lower().split(' //')[0].strip()
-        if cname and f'whenever {cname} attacks' in low:
-            return True
         # Legendary creatures with a title ("Ragavan, Nimble Pilferer") refer
         # to themselves in oracle text by just the personal name before the
         # comma ("Whenever Ragavan attacks"). Check both forms.
         short = cname.split(',')[0].strip()
-        if short and short != cname and f'whenever {short} attacks' in low:
-            return True
+        for anchor in (cname, short):
+            if not anchor:
+                continue
+            if any(f'whenever {anchor} {s}' in low for s in suffixes):
+                return True
     return False
 
 

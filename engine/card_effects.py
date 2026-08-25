@@ -2104,7 +2104,13 @@ def explore_resolve(game, card, controller, targets=None, item=None):
 def green_suns_zenith_resolve(game, card, controller, targets=None, item=None):
     from .cards import Color
     player = game.players[controller]
-    x_value = getattr(card, '_x_value', 0) or 0
+    # The paid X lives on the STACK ITEM (`item.x_value`), the same place every
+    # other X-consuming resolver in this module reads it from. This previously
+    # read `card._x_value`, an attribute nothing in the codebase ever writes —
+    # one read, zero writers — so X was always 0 and the tutor could only find
+    # a mana-value-0 creature regardless of how much mana was actually spent.
+    x_value = (item.x_value if item is not None
+               and getattr(item, 'x_value', None) is not None else 0)
     # Find best green creature with CMC <= X
     candidates = [
         c for c in player.library
@@ -2113,7 +2119,15 @@ def green_suns_zenith_resolve(game, card, controller, targets=None, item=None):
         and (c.template.cmc or 0) <= x_value
     ]
     if candidates:
-        best = max(candidates, key=lambda c: (c.template.power or 0) + (c.template.toughness or 0))
+        # Rank by MANA VALUE, not power+toughness: several premium tutor
+        # targets have a base P/T of 0/0 and get their size from a
+        # characteristic-defining ability, so a P/T ranking picks the wrong
+        # card. Mana value is the size proxy matching what was paid for.
+        # Tie-break on P/T so equal-cost choices still prefer the bigger body.
+        best = max(candidates,
+                   key=lambda c: ((c.template.cmc or 0),
+                                  (c.template.power or 0)
+                                  + (c.template.toughness or 0)))
         player.library.remove(best)
         game.rng.shuffle(player.library)
         best.controller = controller
