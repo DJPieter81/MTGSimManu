@@ -543,6 +543,58 @@ def parse_has_attack_trigger(oracle: str, name: str = "") -> bool:
 _ANY_COLOR_UNIT = ['W', 'U', 'B', 'R', 'G']
 
 
+def parse_aura_enchant_restriction(oracle: str) -> Optional[str]:
+    """Parse an Aura's "Enchant <quality>" ability (CR 303.4).
+
+    Returns the quality lowercased ('land', 'forest', 'creature', 'creature
+    you control', …) or ``None`` when the card has no Enchant ability. The
+    quality is what makes a host legal; 786 Modern cards are Auras, so this is
+    the shared entry point for attachment generally, not just the mana slice.
+    """
+    m = re.search(r'^enchant ([a-z][a-z \']*)$',
+                  (oracle or '').lower(), re.MULTILINE)
+    if m is None:
+        return None
+    return m.group(1).strip()
+
+
+def parse_aura_mana_units(oracle: str) -> Optional[List[List[str]]]:
+    """Parse "Whenever enchanted <X> is tapped for mana, … adds an additional
+    <mana>" into the mana units the Aura GRANTS to its host.
+
+    12 Modern Auras carry this (Utopia Sprawl, Fertile Ground, Wild Growth,
+    Overgrowth, …). Returned in the same unit shape as ``template.mana_units``
+    so the host land's unit list can simply be extended.
+
+    "of the chosen color" is treated as any-colour: the colour is chosen as the
+    Aura enters and is not modelled per-instance, but the COUNT — which is what
+    mana capacity is measured in — is exact either way.
+    """
+    low = (oracle or '').lower()
+    m = re.search(
+        r'whenever enchanted [a-z]+ is tapped for mana[^.]*?'
+        r'adds?\s+(?:an additional\s+)?([^.]+)', low)
+    if m is None:
+        return None
+    effect = m.group(1).strip()
+
+    symbols = re.findall(r'\{([wubrgc])\}', effect)
+    if symbols:
+        return [[s.upper()] for s in symbols]
+
+    # "<N> mana of any color" / "of the chosen color" / "in any combination".
+    m2 = re.search(r'(\w+)\s+mana\s+(?:of|in)\b', effect)
+    if m2:
+        tok = m2.group(1)
+        try:
+            count = int(tok)
+        except ValueError:
+            count = _NUM_WORDS.get(tok, 0)
+        if count > 0:
+            return [list(_ANY_COLOR_UNIT) for _ in range(count)]
+    return None
+
+
 def parse_sacrifice_mana_units(oracle: str) -> Optional[List[List[str]]]:
     """Parse a "Sacrifice this <thing>: Add <mana>" ability into mana units.
 

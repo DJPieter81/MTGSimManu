@@ -138,6 +138,14 @@ class CardTemplate:
     # repeatable per-turn mana. Populated at load time (and for tokens at
     # creation time) by oracle_parser.parse_sacrifice_mana_units.
     sacrifice_mana_units: List[List[str]] = field(default_factory=list)
+    # Aura attachment (CR 303.4). `aura_enchant_restriction` is the quality
+    # from the printed "Enchant <quality>" ability ('land', 'forest',
+    # 'creature', ...) and gates which objects are legal hosts; 786 Modern
+    # cards are Auras, so this is the shared primitive rather than a
+    # mana-specific field. `aura_mana_units` is its first consumer: the units
+    # a mana Aura GRANTS to the land it enchants.
+    aura_enchant_restriction: Optional[str] = None
+    aura_mana_units: List[List[str]] = field(default_factory=list)
     # 'When this land enters, return a land you control to its owner's
     # hand' — structural ETB clause of the karoo family (E1b), a
     # sibling of `enters_tapped`.
@@ -859,6 +867,10 @@ class CardInstance:
     # permanent leaves the battlefield.
     granted_abilities: List[str] = field(default_factory=list)
     # Back-reference to game state (set when entering battlefield)
+    # Aura attachment back-reference (CR 303.4): instance_id of the object
+    # this Aura enchants, or None when unattached. The HOST additionally
+    # carries an `attached_{aura_id}` instance tag, mirroring Equipment.
+    attached_to_id: Optional[int] = None
     _game_state: Any = field(default=None, repr=False)
     # Evoke tracking
     _evoked: bool = False

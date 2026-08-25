@@ -103,6 +103,86 @@ class PermanentEffects:
             f"of turn (pays {spec['cost']} mana)")
         return True
 
+    # ─── AURA ATTACHMENT (CR 303.4) ──────────────────────────────
+
+    @staticmethod
+    def _aura_host_is_legal(host, restriction: str) -> bool:
+        """Does `host` satisfy an Aura's "Enchant <quality>" (CR 303.4a)?
+
+        Handles the two shapes that matter for attachment: a card TYPE
+        ('land', 'creature', 'artifact', 'enchantment', 'planeswalker') and a
+        SUBTYPE ('forest', 'goblin', …). Qualities carrying an additional
+        controller clause ('creature you control') are matched on their type
+        head; the controller check is applied by the caller, which only ever
+        offers its own permanents as candidates.
+        """
+        from .cards import CardType
+        head = (restriction or '').split(' you ')[0].strip()
+        type_map = {
+            'land': CardType.LAND, 'creature': CardType.CREATURE,
+            'artifact': CardType.ARTIFACT, 'enchantment': CardType.ENCHANTMENT,
+            'planeswalker': CardType.PLANESWALKER,
+        }
+        if head in type_map:
+            return type_map[head] in host.template.card_types
+        # Otherwise treat the quality as a subtype ("Enchant Forest").
+        subtypes = {s.lower() for s in getattr(host.template, 'subtypes', [])}
+        return head in subtypes
+
+    @staticmethod
+    def attach_aura(game: "GameState", aura: "CardInstance", controller: int):
+        """Attach an Aura to a legal permanent its controller controls.
+
+        CR 303.4a: an Aura enchants an object chosen by its "Enchant
+        <quality>" ability. Returns the host it attached to, or ``None`` when
+        no legal host exists (CR 303.4c — the Aura then does nothing; the SBA
+        that bins it is a separate concern).
+
+        Attachment reuses the Equipment convention already in this engine —
+        an `attached_{instance_id}` tag on the HOST plus a back-reference on
+        the Aura — so both attachment kinds are discoverable the same way.
+        Among equally legal hosts an untapped one is preferred, since the
+        common case (mana Auras) is only useful on a land that can still tap.
+        """
+        restriction = getattr(aura.template, 'aura_enchant_restriction', None)
+        if not restriction:
+            return None
+        candidates = [
+            c for c in game.players[controller].battlefield
+            if c.instance_id != aura.instance_id
+            and PermanentEffects._aura_host_is_legal(c, restriction)
+        ]
+        if not candidates:
+            return None
+        host = min(candidates, key=lambda c: (1 if c.tapped else 0))
+        host.instance_tags.add(f"attached_{aura.instance_id}")
+        aura.attached_to_id = host.instance_id
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: {aura.name} enchants "
+            f"{host.name}")
+        return host
+
+    @staticmethod
+    def aura_granted_mana_units(game: "GameState", host) -> list:
+        """Mana units granted to `host` by Auras attached to it.
+
+        Read by `ManaPayment.land_mana_units`, the single per-land unit
+        resolver, so every consumer of a land's mana (payment, capacity
+        estimate) sees the Aura's contribution without its own special case.
+        """
+        out = []
+        controller = getattr(host, 'controller', None)
+        if controller is None:
+            return out
+        for perm in game.players[controller].battlefield:
+            units = getattr(perm.template, 'aura_mana_units', None)
+            if not units:
+                continue
+            if getattr(perm, 'attached_to_id', None) != host.instance_id:
+                continue
+            out.extend([list(u) for u in units])
+        return out
+
     # ─── TOKEN GENERATION ────────────────────────────────────────
 
 

@@ -248,7 +248,22 @@ class PlayerState:
         separate additive term (`_conditional_mana_bonus`) at the
         call sites that already carry it.
         """
-        return sum(src.template.mana_count for src in self.untapped_mana_sources)
+        # Route through `ManaPayment.land_mana_units` — the single per-source
+        # unit resolver the PAYMENT path uses — rather than reading
+        # `template.mana_count` directly. Reading the template misses every
+        # dynamic contribution (notably Aura-granted units, CR 303.4), which
+        # made this estimate disagree with what the engine could actually pay.
+        sources = self.untapped_mana_sources
+        # PlayerState holds no game back-reference, but every CardInstance
+        # does — derive it from the sources themselves.
+        game = next((getattr(s, '_game_state', None) for s in sources
+                     if getattr(s, '_game_state', None) is not None), None)
+        if game is not None:
+            from .mana_payment import ManaPayment
+            idx = sources[0].controller
+            return sum(len(ManaPayment.land_mana_units(game, idx, src))
+                       for src in sources)
+        return sum(src.template.mana_count for src in sources)
 
     def available_mana_colors(self) -> Dict[str, int]:
         """Get available mana by color from untapped lands."""

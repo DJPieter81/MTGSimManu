@@ -120,10 +120,18 @@ class ManaPayment:
         legacy single-unit lands)."""
         units = getattr(land.template, "mana_units", None)
         if units:
-            return [list(u) for u in units]
-        produced = ManaPayment.effective_produces_mana(
-            game, player_idx, land)
-        return [list(produced)] if produced else []
+            base = [list(u) for u in units]
+        else:
+            produced = ManaPayment.effective_produces_mana(
+                game, player_idx, land)
+            base = [list(produced)] if produced else []
+        # Auras attached to this land grant additional units (CR 303.4).
+        # Applied here, in the single per-land unit resolver, so payment and
+        # every capacity estimate pick it up without their own special case.
+        if base:
+            from .permanent_effects import PermanentEffects
+            base.extend(PermanentEffects.aura_granted_mana_units(game, land))
+        return base
 
     @staticmethod
     def tap_lands_for_mana(game: "GameState", player_idx: int,
