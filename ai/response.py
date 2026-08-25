@@ -478,7 +478,13 @@ class ResponseDecider:
         for instant in instants:
             if "counterspell" not in instant.template.tags:
                 continue
-            if not stack_item.source.template.is_spell:
+            # CR 701.5: a counterspell counters a SPELL. `template.is_spell`
+            # describes the SOURCE CARD (it is merely `not is_land`), not the
+            # stack object, so it admitted triggered/activated abilities whose
+            # source happens to be a non-land permanent. The stack item's own
+            # type is the correct discriminator.
+            from engine.stack import StackItemType as _SIT
+            if getattr(stack_item, 'item_type', None) != _SIT.SPELL:
                 continue
             # Triage: skip redundant counters when a post-resolution
             # creature-exile in hand can answer the same threat.  Free

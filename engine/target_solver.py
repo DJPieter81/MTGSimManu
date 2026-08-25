@@ -612,7 +612,17 @@ def _zone_cards(game: "GameState", controller: int,
                 continue
             cards.extend(p.library)
     elif req.zone == "stack":
+        # CR 111 / 701.5: only a SPELL on the stack is a legal target for
+        # "target spell". A triggered or activated ability is a distinct kind
+        # of stack object and is answered only by cards that say so (Stifle,
+        # Disallow). Enumerating `item.source` unconditionally offered the
+        # ability's SOURCE CARD as a spell — and that source is typically a
+        # permanent, whose `template.is_spell` (defined as `not is_land`) is
+        # True, so nothing downstream could tell the difference.
+        from .stack import StackItemType as _SIT
         for item in game.stack.items:
+            if item.item_type != _SIT.SPELL:
+                continue
             cards.append(item.source)
     elif req.zone == "any":
         # Players are always present; nothing to enumerate as a card.
@@ -662,7 +672,14 @@ def has_legal_target(game: "GameState", controller: int,
         return True
 
     if req.zone == "stack":
+        # Same CR 111 discriminator as the two enumeration paths below/above:
+        # only a SPELL is a legal target for "target spell". This is the path
+        # `can_cast` reaches, so without the check the ENGINE would let a
+        # counterspell be cast at a triggered ability.
+        from .stack import StackItemType as _SIT
         for item in game.stack.items:
+            if item.item_type != _SIT.SPELL:
+                continue
             if exclude is not None and item.source is exclude:
                 continue
             if _spell_token_matches(item.source, req.types):
@@ -701,7 +718,11 @@ def enumerate_legal_targets(game: "GameState", controller: int,
 
     if req.zone == "stack":
         out: List["CardInstance"] = []
+        from .stack import StackItemType as _SIT
         for item in game.stack.items:
+            # Same CR 111 discriminator as `_zone_cards` above.
+            if item.item_type != _SIT.SPELL:
+                continue
             if exclude is not None and item.source is exclude:
                 continue
             if _spell_token_matches(item.source, req.types):
