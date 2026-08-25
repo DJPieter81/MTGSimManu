@@ -207,3 +207,37 @@ but it does **not** by itself tame the aggro overperformer. The post-sweep
 reactive-execution + own-clock gap named above remains the #1 open problem;
 the colour-deficit fix is a prerequisite that makes the sweeper reachable, not
 the whole cure.
+
+## CORRECTION (2026-08-25, canonical Bo3) — the empty-board wipe fix is game-level, not match-level
+
+The board-wipe fix (`3cab1f4` — the X-cost waste gate no longer disables itself
+when the opposing board is empty) was first reported at **0% → 30%** for
+control vs Domain Zoo. **That number was Bo1 and does not survive canonical
+Bo3.** Per this project's standing directive Bo1 is systematically biased and
+is never the basis for a WR claim; it should not have been reported as the
+result.
+
+Measured, n=10 each:
+
+| Matchup | Bo1 | Bo3 (canonical) |
+|---|---|---|
+| 4/5c Control vs Domain Zoo | 30% | **0%** |
+| Azorius Control vs Domain Zoo | 30% | **0%** |
+| 4/5c Control vs Boros Energy | 30% | **30%** |
+
+The fix is real but its effect is at the GAME level, not the MATCH level.
+Against Zoo, 4/5c now wins individual games it previously never won (game wins
+on turns 9, 10, 11, 11, 12) and **5 of 10 matches went to three**. It converts
+game losses into game wins without converting them into match wins — i.e. it
+wins a game and then loses the decider.
+
+Against Boros Energy the 30% holds in both formats, so the fix is not
+Zoo-specific.
+
+**Open lead, NOT yet verified as causal:** in every post-board game the log
+shows `+2 Mystical Dispute, -2 Orim's Chant`. Mystical Dispute is discounted
+only against blue spells and Domain Zoo runs **4 blue cards in 60**, so it
+boards in as an expensive soft counter rather than efficient interaction.
+Cutting Orim's Chant is correct (it was observed being cast uselessly at 5
+life). Whether this swap explains the lost deciders is unproven — a sideboard
+audit against aggro is the natural next probe, and it must be measured in Bo3.
