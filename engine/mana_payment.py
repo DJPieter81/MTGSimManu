@@ -249,6 +249,34 @@ class ManaPayment:
         # already afford. Tapped state is irrelevant — the cost is sacrifice,
         # not {T} — which is why these are collected separately from
         # `untapped` rather than appended to it.
+        # Permanents whose sacrifice-for-mana ability has been COMMITTED TO but
+        # not yet performed. Filled by the block below, then either performed
+        # (`_commit_sacrifices`, on every success path) or abandoned along with
+        # the mana it produced (`_refund_sacrifices`, on every failure path).
+        pending_sacrifice = []
+
+        def _commit_sacrifices():
+            """Perform the deferred sacrifices — payment succeeded."""
+            for _perm in pending_sacrifice:
+                # NOTE: ZoneManager.move_card does NOT currently dispatch
+                # dies/LTB triggers (zone_manager.py) — an earlier revision of
+                # this code claimed it did. It is still the sanctioned funnel
+                # (single owner of zone mutation), so route through it; when
+                # the funnel gains trigger dispatch this call inherits it.
+                game.zone_mgr.move_card_to_graveyard(
+                    game, _perm, cause=f"sacrificed for mana ({card_name})")
+                game.log.append(
+                    f"T{game.display_turn} P{player_idx+1}: "
+                    f"sacrifice {_perm.name} for mana ({card_name})")
+            pending_sacrifice.clear()
+
+        def _refund_sacrifices():
+            """Payment failed: un-add the mana, leave the permanents alone."""
+            for _perm in pending_sacrifice:
+                for _unit in (_perm.template.sacrifice_mana_units or []):
+                    player.mana_pool.remove(_unit[0], 1)
+            pending_sacrifice.clear()
+
         sac_sources = [
             perm for perm in player.battlefield
             if getattr(perm.template, 'sacrifice_mana_units', None)
@@ -266,10 +294,17 @@ class ManaPayment:
                     units = perm.template.sacrifice_mana_units or []
                     if not units:
                         continue
-                    # Route through the zone funnel so dies/LTB triggers fire.
-                    game.zone_mgr.move_card_to_graveyard(
-                        game, perm,
-                        cause=f"sacrificed for mana ({card_name})")
+                    # DEFERRED: the permanent is NOT moved here. This function
+                    # has failure returns further down (an unmeetable coloured
+                    # requirement; a generic remainder), and destroying a card
+                    # for a spell that then fails to cast is strictly worse
+                    # than declining the cast. Record the intent, add the mana
+                    # so the solver below can use it, and only actually
+                    # sacrifice on a success path (`_commit_sacrifices`).
+                    # Rolling back after the move is not an option: a card
+                    # returning from the graveyard would be a new object
+                    # (CR 400.7) and would re-fire its ETB.
+                    pending_sacrifice.append(perm)
                     for unit in units:
                         # A unit lists the colours it could produce; a
                         # single-colour unit is fixed, a multi-colour unit is
@@ -277,9 +312,6 @@ class ManaPayment:
                         # the pool's own payment logic sort out the rest.
                         player.mana_pool.add(unit[0], 1)
                         spent += 1
-                    game.log.append(
-                        f"T{game.display_turn} P{player_idx+1}: "
-                        f"sacrifice {perm.name} for mana ({card_name})")
 
         untapped = [l for l in player.lands if not l.tapped]
 
@@ -300,11 +332,15 @@ class ManaPayment:
             untapped.append(perm)
 
         if not untapped and player.mana_pool.total() == 0:
-            return cost.cmc == 0
+            _ok = cost.cmc == 0
+            _commit_sacrifices() if _ok else _refund_sacrifices()
+            return _ok
 
         # Check if mana pool already has enough (from rituals)
         if player.mana_pool.can_pay(cost):
-            return player.mana_pool.pay(cost)
+            _paid = player.mana_pool.pay(cost)
+            _commit_sacrifices() if _paid else _refund_sacrifices()
+            return _paid
 
         # Routes through `effective_produces_mana` so Leyline of the
         # Guildpact and dynamic mana abilities (E1: Mox Opal metalcraft,
@@ -395,6 +431,7 @@ class ManaPayment:
                         best_key = key
                         best_unit = unit
             if best_unit is None:
+                _refund_sacrifices()
                 return False
             best_unit[3] = color
 
@@ -443,6 +480,7 @@ class ManaPayment:
                 generic_remaining -= cond_bonus_cache.get(id(land), 0)
 
         if generic_remaining > 0:
+            _refund_sacrifices()
             return False
 
         # Tap lands and add mana.  A land taps ONCE; every assigned
@@ -500,4 +538,6 @@ class ManaPayment:
             for c in ["W", "U", "B", "R", "G"]:
                 if _pre_pool[c] > 0 and player.mana_pool.get(c) < _pre_pool[c]:
                     game._last_colors_spent.add(c)
+        # Final exit: perform the deferred sacrifices only if we actually paid.
+        _commit_sacrifices() if ok else _refund_sacrifices()
         return ok

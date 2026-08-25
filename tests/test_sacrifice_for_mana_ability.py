@@ -163,3 +163,40 @@ def test_sacrifice_mana_is_not_spent_when_lands_already_suffice():
     assert after == before, (
         "a cost the untapped lands already afford must not consume one-shot "
         "mana sources")
+
+
+def test_failed_payment_does_not_consume_a_one_shot_source():
+    """A refused payment must not permanently eat the permanent.
+
+    `tap_lands_for_mana` mutates before two of its failure returns, so a
+    sacrifice performed for a cost that then proves unpayable (a colour the
+    lands cannot produce, or a generic remainder) destroyed the permanent for
+    nothing. One-shot mana is a card; spending it for no effect is strictly
+    worse than declining the cast.
+
+    Rule under test: when payment fails, the board is unchanged.
+    """
+    from engine.mana_payment import ManaPayment
+    from engine.mana import ManaCost
+
+    # Two sac tokens (colourless) and ONE Forest, against a cost demanding
+    # two BLUE pips. The shortfall gate opens (cmc 4 > capacity 1), the
+    # colourless mana cannot satisfy {U}{U}, so payment must fail.
+    game, p = _board_with_sac_sources(1, 2)
+    before_tokens = len([c for c in p.battlefield
+                         if getattr(c, "is_token", False)])
+    before_gy = len(p.graveyard)
+    assert before_tokens == 2
+
+    paid = ManaPayment.tap_lands_for_mana(
+        game, 0, ManaCost(blue=2, generic=2), "UnpayableSpell")
+    after_tokens = len([c for c in p.battlefield
+                        if getattr(c, "is_token", False)])
+
+    assert not paid, "fixture premise: this cost is unpayable on this board"
+    assert after_tokens == before_tokens, (
+        f"a FAILED payment must not consume one-shot mana sources "
+        f"({before_tokens} -> {after_tokens}); the permanent was destroyed "
+        f"for a spell that never resolved")
+    assert len(p.graveyard) == before_gy, (
+        "nothing should have reached the graveyard on a failed payment")
