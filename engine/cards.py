@@ -131,6 +131,13 @@ class ActivationCost:
     mana: "ManaCost" = field(default_factory=lambda: ManaCost())
     tap_self: bool = False
     untap_self: bool = False
+    # Tranche 2 payable costs. `life` is the amount of life paid (CR 118.4:
+    # payable only while the life total covers it). `sacrifice_self` means the
+    # source itself is sacrificed as part of the cost (CR 602.2b) — inherently
+    # self-limiting, so it satisfies the no-free-repeatable rule the way a tap
+    # cost does.
+    life: int = 0
+    sacrifice_self: bool = False
     unpayable: Tuple[str, ...] = ()
 
 

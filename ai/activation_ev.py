@@ -145,14 +145,31 @@ def activation_candidates(game, player_idx, snap, excluded=None):
                                                   ability):
                 continue
 
+            # Cost terms shared by every effect kind. `position_value`'s
+            # mana term is clamped at zero for spending, so holdback (applied
+            # by the caller) carries the mana cost — but LIFE paid and a
+            # SACRIFICED source are real position changes the projection must
+            # charge, or "Pay 7 life: draw seven cards" scores as free.
+            cost_updates = {}
+            if ability.cost.life:
+                cost_updates["my_life"] = snap.my_life - ability.cost.life
+            if ability.cost.sacrifice_self:
+                # What leaves with the source is derived from the permanent
+                # itself: a land is a mana source, a creature is board power.
+                if perm.template.is_land:
+                    cost_updates["my_mana"] = max(0, snap.my_mana - 1)
+                if perm.effective_is_creature:
+                    cost_updates["my_power"] = max(
+                        0, snap.my_power - (perm.power or 0))
+
             kind = ability.effect_kind
             if kind is _K.DRAW_N:
                 after = snap.fast_replace(my_hand_size=snap.my_hand_size
-                                          + ability.amount)
+                                          + ability.amount, **cost_updates)
                 reason = f"activate: draw {ability.amount}"
             elif kind is _K.DAMAGE_ANY_TARGET:
                 after = snap.fast_replace(opp_life=snap.opp_life
-                                          - ability.amount)
+                                          - ability.amount, **cost_updates)
                 reason = f"activate: {ability.amount} damage"
             elif kind is _K.PUMP_SELF_UEOT:
                 # GATED, not merely scored. `position_value` has no

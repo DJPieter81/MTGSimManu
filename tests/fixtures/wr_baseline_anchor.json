@@ -96,7 +96,7 @@
       "deck1": "4c Omnath",
       "deck2": "Goryo's Vengeance",
       "seed": 50500,
-      "winner": "Goryo's Vengeance",
+      "winner": "4c Omnath",
       "turns": 13
     },
     {
@@ -104,7 +104,7 @@
       "deck2": "Dimir Midrange",
       "seed": 50500,
       "winner": "Izzet Prowess",
-      "turns": 6
+      "turns": 10
     },
     {
       "deck1": "4/5c Control",
@@ -138,8 +138,8 @@
       "deck1": "Instant Reanimator",
       "deck2": "Boros Ponza",
       "seed": 51500,
-      "winner": "Boros Ponza",
-      "turns": 13
+      "winner": "Instant Reanimator",
+      "turns": 9
     },
     {
       "deck1": "Eldrazi Ramp",
@@ -153,7 +153,7 @@
       "deck2": "Grixis Reanimator",
       "seed": 52000,
       "winner": "Grixis Reanimator",
-      "turns": 8
+      "turns": 7
     },
     {
       "deck1": "Azorius Blink",

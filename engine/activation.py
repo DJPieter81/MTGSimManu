@@ -80,10 +80,30 @@ class ActivationManager:
 
         # 9. A free, repeatable ability has no resource that depletes, so
         # nothing terminates the loop. Cost exhaustion is the real bound.
-        if ability.cost.mana.cmc == 0 and not ability.cost.tap_self:
+        # Sacrifice-self is inherently self-limiting (the source leaves), and
+        # a life cost depletes the life total — both terminate the loop.
+        if (ability.cost.mana.cmc == 0 and not ability.cost.tap_self
+                and not ability.cost.sacrifice_self
+                and ability.cost.life == 0):
+            return False
+
+        # 9b. An effect kind the resolver cannot execute must be refused
+        # BEFORE any cost is charged — paying a cost for a recorded-unhandled
+        # no-op is strictly worse than refusing. ANIMATE_SELF_UEOT is owned by
+        # the land-animation path and must not be double-executed here.
+        if ability.effect_kind not in (ActivationEffectKind.DAMAGE_ANY_TARGET,
+                                       ActivationEffectKind.DRAW_N,
+                                       ActivationEffectKind.PUMP_SELF_UEOT):
             return False
 
         player = game.players[player_idx]
+
+        # 9c. CR 118.4 — life can be paid only while the life total covers
+        # it. Paying down to exactly 0 is rules-legal (the SBA loss is a
+        # separate event); suicide-avoidance is the AI's judgment, not a
+        # legality question.
+        if ability.cost.life > 0 and player.life < ability.cost.life:
+            return False
 
         # 10. Capacity precondition. THIS is what makes payment atomic: both
         # mutating branches inside `tap_lands_for_mana` are gated on a
@@ -152,6 +172,11 @@ class ActivationManager:
                     exclude_instance_id=perm.instance_id)
                 if not paid:
                     return False
+            if ability.cost.life > 0:
+                game.players[player_idx].life -= ability.cost.life
+                game.log.append(
+                    f"T{game.display_turn} P{player_idx+1}: pays "
+                    f"{ability.cost.life} life ({perm.name} activation)")
             if ability.cost.tap_self:
                 perm.tap()
 
@@ -175,6 +200,15 @@ class ActivationManager:
             # BEFORE `elif item.effect`, so assigning the new dataclass there
             # raises before the partial is ever reached. The ActivatedAbility
             # travels only inside the partial.
+            if ability.cost.sacrifice_self:
+                # CR 602.2b: the sacrifice is part of the COST — the source
+                # leaves the battlefield at activation time; the ability on
+                # the stack resolves independently of it. Routed through the
+                # zone funnel. Placed LAST so nothing that could refuse runs
+                # after the permanent is gone.
+                game.zone_mgr.move_card_to_graveyard(
+                    game, perm, cause=f"activation cost ({perm.name})")
+
             game.stack.items.append(StackItem(
                 item_type=StackItemType.ACTIVATED_ABILITY,
                 source=perm,

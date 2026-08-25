@@ -27,19 +27,35 @@ import pytest
 
 from engine.oracle_parser import _UNPAYABLE_COST_PATTERNS, parse_activation_cost
 
-# (cost phrase, the unpayable name it must be classified as)
+# (cost phrase, the unpayable name it must be classified as).
+# NOTE: sacrifice-self and pay-life graduated to STRUCTURED payable fields in
+# tranche 2 — they are asserted separately below, not via this table.
 REPRESENTATIVE_COSTS = [
-    ("Sacrifice this creature", "sacrifice_self"),
-    ("Sacrifice this artifact", "sacrifice_self"),
-    ("Sacrifice this land", "sacrifice_self"),
     ("Sacrifice a creature", "sacrifice_another"),
     ("Sacrifice another creature", "sacrifice_another"),
     ("Discard a card", "discard"),
-    ("Pay 3 life", "pay_life"),
     ("Exile this card from your graveyard", "exile"),
     ("Return a land you control to its owner's hand", "return"),
     ("Reveal a card from your hand", "reveal"),
 ]
+
+
+@pytest.mark.parametrize("phrase", [
+    "Sacrifice this creature", "Sacrifice this artifact",
+    "Sacrifice this land",
+])
+def test_sacrifice_self_is_a_structured_payable_field(phrase):
+    """Tranche 2: sacrifice-self is charged, not refused."""
+    cost = parse_activation_cost(phrase)
+    assert cost is not None and cost.sacrifice_self is True
+    assert "unrecognised" not in cost.unpayable, (
+        f"{phrase!r} must never fall through to 'unrecognised'")
+
+
+def test_pay_life_is_a_structured_payable_field():
+    cost = parse_activation_cost("Pay 3 life")
+    assert cost is not None and cost.life == 3
+    assert cost.unpayable == ()
 
 
 def test_no_pattern_contains_a_control_character():

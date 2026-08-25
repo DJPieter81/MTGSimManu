@@ -460,10 +460,20 @@ class EVPlayer:
         from ai.activation_ev import activation_candidates
         for _perm, _ab_idx, _tgts, _ev, _reason in activation_candidates(
                 game, self.player_idx, snap, excluded=excluded_activations):
-            # Holdback is the ONLY real cost signal in this score:
+            # Holdback is the ONLY real mana-cost signal in this score:
             # position_value's mana term is clamped by max(0, mana_diff), so
             # spending mana contributes exactly 0.0 to the projection.
-            _ev -= self._holdback_penalty(
+            #
+            # SIGN: `_holdback_penalty` returns a signed ADJUSTMENT and every
+            # cast/cycling/equip call site adds it — negative when open mana
+            # has a defensive use, positive when holding mana serves nothing.
+            # An earlier revision SUBTRACTED it here, which inverted both
+            # branches: on a flooded board with an empty hand the +3.6
+            # "spend it" bonus became a -3.6 penalty and annihilated every
+            # candidate (a horizon-land cash-in scoring +0.075 raw never
+            # survived). Zero activations across four seeded games was the
+            # observable symptom.
+            _ev += self._holdback_penalty(
                 me, opp, snap, _perm.template.activated_abilities[_ab_idx]
                 .cost.mana.cmc)
             if _ev <= 0.0:

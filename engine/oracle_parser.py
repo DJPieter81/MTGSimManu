@@ -548,9 +548,7 @@ _ANY_COLOR_UNIT = ['W', 'U', 'B', 'R', 'G']
 # so the ability is visible-but-refused; a later tranche adds payers without
 # re-parsing the pool.
 _UNPAYABLE_COST_PATTERNS = (
-    ('sacrifice_self', r'sacrifice this\b'),
     ('sacrifice_another', r'sacrifice (a|an|another|two|three)\b'),
-    ('pay_life', r'pay \d+ life'),
     ('discard', r'discard\b'),
     ('remove_counter', r'remove (a|an|one|two|\d+)[^,:]*counter'),
     ('put_counter', r'put (a|an|one|two|\d+)[^,:]*counter'),
@@ -634,12 +632,21 @@ def parse_activation_cost(cost_text: str):
     mana = ManaCost()
     tap_self = False
     untap_self = False
+    life = 0
+    sacrifice_self = False
     unpayable = []
     for part in raw.split(','):
         piece = part.strip()
         if not piece:
             continue
         low = piece.lower()
+        m_life = re.fullmatch(r'pay (\d+) life', low)
+        if m_life:
+            life += int(m_life.group(1))
+            continue
+        if re.match(r'sacrifice this\b', low):
+            sacrifice_self = True
+            continue
         if re.fullmatch(r'(\{[wubrgcxs0-9/]+\}\s*)+', low):
             mana = _add_mana_symbols(mana, low)
             continue
@@ -659,6 +666,7 @@ def parse_activation_cost(cost_text: str):
             unpayable.append('unrecognised')
     return ActivationCost(mana=mana, tap_self=tap_self,
                           untap_self=untap_self,
+                          life=life, sacrifice_self=sacrifice_self,
                           unpayable=tuple(unpayable))
 
 

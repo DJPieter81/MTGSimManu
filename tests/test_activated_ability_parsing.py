@@ -81,8 +81,11 @@ def test_mana_and_tap_cost_is_parsed_as_payable():
 
 
 def test_unpayable_cost_item_is_marked_not_dropped():
+    # NOTE: the fixture uses sacrifice-ANOTHER, which needs a victim choice
+    # and stays unpayable. Sacrifice-SELF graduated to a structured payable
+    # cost in tranche 2 and no longer belongs in this test.
     abilities = parse_activated_abilities(
-        "{1}, Sacrifice this creature: Draw a card.")
+        "{1}, Sacrifice another creature: Draw a card.")
     assert len(abilities) == 1, (
         "an ability whose cost this tranche cannot charge must still be "
         "PARSED — dropping it would force a re-parse in a later tranche")
