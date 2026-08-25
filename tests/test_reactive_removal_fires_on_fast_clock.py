@@ -110,10 +110,18 @@ def test_reactive_removal_enumerated_on_fast_clock_without_a_big_attacker():
 
 
 def test_reactive_removal_still_held_when_clock_is_long():
-    # Regression: at high life the same lone 2/1 gives a long clock
-    # (ceil(20/2)=10) — control should still HOLD, not fire on every small
-    # creature. The fix must not turn patience off wholesale.
-    game, removal = _control_at_life(20, ["Ragavan, Nimble Pilferer"])
+    # Regression: at high life a lone small body gives a long clock
+    # (ceil(20/1)=20) — control should still HOLD, not fire on every creature.
+    # The fix must not turn patience off wholesale.
+    #
+    # The fixture is deliberately a VANILLA body (threat ~1.5, well under the
+    # big-creature floor). An earlier revision used a 2/1 whose combat-damage
+    # trigger converts every connection into card advantage; once that trigger
+    # was correctly credited (see test_combat_damage_trigger_threat_value.py)
+    # its threat rose above the floor and removal was rightly offered against
+    # it — which is correct play, not a patience regression. Using a
+    # value-engine creature here tested the wrong thing.
+    game, removal = _control_at_life(20, ["Doorkeeper Thrull"])
     ai = EVPlayer(player_idx=0, deck_name="4/5c Control", rng=random.Random(0))
     snap = snapshot_from_game(game, 0)
     assert snap.opp_clock_discrete > ai.profile.dying_opp_clock, (
