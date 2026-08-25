@@ -14,3 +14,6 @@ metagame_results.json
 .claude/worktrees/
 cache/embeddings/
 cache/llm/
+
+# Stray tool/agent scratch logs (never deliverables)
+*.log
