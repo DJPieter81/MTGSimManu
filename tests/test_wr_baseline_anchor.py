@@ -42,6 +42,12 @@ import pytest
 
 FIXTURE_PATH = Path(__file__).parent / "fixtures" / "wr_baseline_anchor.json"
 
+# Wall-clock budget used while replaying anchor games. Deliberately far larger
+# than any legitimate seeded match (the longest committed entry runs ~4s on a
+# developer machine) so that the recorded outcome is a function of the SEED
+# alone. See `_replay` for why the production value cannot be used here.
+_ANCHOR_TIMEOUT_SECONDS = 600.0
+
 
 def _baseline_entry_count() -> int:
     """Number of committed baseline entries, read at COLLECTION time.
@@ -80,10 +86,39 @@ def runner():
 
 def _replay(runner, deck1: str, deck2: str, seed: int) -> dict:
     """Re-run a Bo1 match at the given seed and return the
-    deterministic outcome shape used in the fixture."""
-    from run_meta import _run_pair
+    deterministic outcome shape used in the fixture.
 
-    r = _run_pair(runner, deck1, deck2, seed=seed, bo1=True)
+    The engine arms a WALL-CLOCK deadline (`GAME_TIMEOUT_SECONDS`) and, when it
+    fires, breaks out of the turn loop, sets `game_over` and abandons stack
+    resolution. That is correct for production sims — it stops a runaway game —
+    but it makes a seeded outcome a function of MACHINE SPEED as well as of the
+    seed, which is incompatible with this file's whole purpose.
+
+    Observed: `Amulet Titan vs Living End @ 50000` passed locally at 29/29 and
+    simultaneously failed in CI with the winner flipped, on the same commit. A
+    game finishing in ~4s here can exceed the 8s budget on a loaded 2-core
+    runner and terminate in a different state.
+
+    Both directions are damaging: a false failure sends a session chasing a
+    regression that does not exist, and a false pass lets a slow machine hide a
+    real behavioural change behind an early termination.
+
+    So the anchor raises the budget far beyond any legitimate game before
+    replaying, and restores it afterwards. This does NOT change engine
+    behaviour under test — it removes a timing term that was never part of the
+    behaviour being pinned.
+    """
+    from run_meta import _run_pair
+    import ai.constants as _ai_constants
+
+    _saved = getattr(_ai_constants, "GAME_TIMEOUT_SECONDS", None)
+    if _saved is not None:
+        _ai_constants.GAME_TIMEOUT_SECONDS = _ANCHOR_TIMEOUT_SECONDS
+    try:
+        r = _run_pair(runner, deck1, deck2, seed=seed, bo1=True)
+    finally:
+        if _saved is not None:
+            _ai_constants.GAME_TIMEOUT_SECONDS = _saved
     return {"winner": r.winner_deck, "turns": r.turns}
 
 
