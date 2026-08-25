@@ -548,17 +548,17 @@ _ANY_COLOR_UNIT = ['W', 'U', 'B', 'R', 'G']
 # so the ability is visible-but-refused; a later tranche adds payers without
 # re-parsing the pool.
 _UNPAYABLE_COST_PATTERNS = (
-    ('sacrifice_self', r'sacrifice this'),
-    ('sacrifice_another', r'sacrifice (a|an|another|two|three)'),
+    ('sacrifice_self', r'sacrifice this\b'),
+    ('sacrifice_another', r'sacrifice (a|an|another|two|three)\b'),
     ('pay_life', r'pay \d+ life'),
-    ('discard', r'discard'),
+    ('discard', r'discard\b'),
     ('remove_counter', r'remove (a|an|one|two|\d+)[^,:]*counter'),
     ('put_counter', r'put (a|an|one|two|\d+)[^,:]*counter'),
-    ('exile', r'exile'),
+    ('exile', r'exile\b'),
     ('tap_other', r'tap (an?|another|two|three|\d+)\b'),
-    ('return', r'return'),
+    ('return', r'return\b'),
     ('energy', r'\{e\}'),
-    ('reveal', r'reveal'),
+    ('reveal', r'reveal\b'),
 )
 
 
