@@ -27,7 +27,7 @@
       "deck2": "Living End",
       "seed": 50000,
       "winner": "Amulet Titan",
-      "turns": 13
+      "turns": 8
     },
     {
       "deck1": "Jeskai Blink",
@@ -83,7 +83,7 @@
       "deck2": "Amulet Titan",
       "seed": 50500,
       "winner": "Eldrazi Tron",
-      "turns": 13
+      "turns": 11
     },
     {
       "deck1": "Living End",
