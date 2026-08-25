@@ -858,7 +858,15 @@ class EVPlayer:
         destroy/exile clause over all matching nonland permanents (creatures +
         artifacts + enchantments), not creatures alone."""
         opp_nonland = [c for c in opp.battlefield if not c.template.is_land]
-        if not ('board_wipe' in tags and t.x_cost_data and opp_nonland):
+        # NOTE: `opp_nonland` is deliberately NOT part of this guard. An empty
+        # opposing board is not the "gate does not apply" case — it is the
+        # MAXIMALLY wasteful case, and requiring targets here meant the gate
+        # short-circuited precisely when the wipe was most wasteful. The
+        # kill-count checks below already floor a zero-kill sweep; they simply
+        # were never reached. Observed: a control deck cast its sweeper for
+        # X=0 into a creatureless board on turn 4, destroying 0 permanents and
+        # discarding its best answer against aggro.
+        if not ('board_wipe' in tags and t.x_cost_data):
             return None
         from engine.cards import CardType
         total_mana = snap.my_mana
