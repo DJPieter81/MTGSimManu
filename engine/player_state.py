@@ -156,12 +156,23 @@ class PlayerState:
 
     @property
     def available_mana_estimate(self) -> int:
-        """Rough estimate of available mana from untapped lands.
-        Includes conditional mana bonuses (e.g., Tron assembly) detected
-        from oracle text on land card templates."""
-        base = len(self.untapped_lands)
-        bonus = self._conditional_mana_bonus()
-        return base + bonus
+        """Available mana from every untapped source the engine can spend.
+
+        This is the AI-facing number: it feeds `EVSnapshot.my_mana` (and thus
+        the clock / combo / mana-waste layer) and `GoalEngine`'s resource gate.
+        It previously counted `len(untapped_lands)` — LANDS ONLY, one mana
+        each — while the CASTING path checked `untapped_mana_capacity()`, the
+        real per-source unit sum. A board with mana rocks, a land tapping for
+        two, or an Aura-enchanted land therefore reported less mana to the AI
+        than the engine would actually let it spend, so a deck's own goal gate
+        refused to advance to "deploy the payoff" for several turns after the
+        payoff was genuinely castable.
+
+        Delegating to the same capacity the payment path uses makes the two
+        agree by construction. The Tron-style conditional bonus stays a
+        separate additive term, exactly as before.
+        """
+        return self.untapped_mana_capacity() + self._conditional_mana_bonus()
 
     def _conditional_mana_bonus(self) -> int:
         """Calculate bonus mana from lands with conditional mana production.
