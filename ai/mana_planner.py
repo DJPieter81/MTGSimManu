@@ -202,6 +202,15 @@ def analyze_mana_needs(game: "GameState", player_idx: int,
     from engine.cards import DOMAIN_POWER_CREATURES
     # Domain cards detected from template.domain_reduction (oracle-derived)
     # and 'domain' tag for domain-scaled effects
+    #
+    # `max_pip_by_color` records the DEEPEST single-spell colored-pip
+    # requirement per color (e.g. {W}{W} → 2 white), as opposed to
+    # `needed_colors` which sums pips across the whole hand. Casting one
+    # {W}{W} spell needs two white sources simultaneously; holding two
+    # of them does not need four (they cast on separate turns). So the
+    # source-count target for a color is its deepest single-spell pip,
+    # and that is what defines whether the color is under-served below.
+    max_pip_by_color: Dict[str, int] = {}
     for card in player.hand:
         if card.template.is_land:
             continue
@@ -210,6 +219,8 @@ def analyze_mana_needs(game: "GameState", player_idx: int,
             count = getattr(mc, attr, 0)
             if count > 0:
                 needs.needed_colors[code] = needs.needed_colors.get(code, 0) + count
+                if count > max_pip_by_color.get(code, 0):
+                    max_pip_by_color[code] = count
         # Effective CMC = oracle-derived domain reduction + override
         # fallback. Replaces per-card ``effective_cmc_overrides``
         # lookup with the formula derived from
@@ -242,10 +253,15 @@ def analyze_mana_needs(game: "GameState", player_idx: int,
 
     # ── What colors does the battlefield already provide? ──
     all_land_colors = set()  # colors from ALL lands (tapped or untapped)
+    # Source COUNT per color (all lands, tapped or untapped — same basis as
+    # all_land_colors). A color's source count is what a double-pipped cost is
+    # measured against below: one white source does not pay {W}{W}.
+    source_counts: Dict[str, int] = {}
     for bf_card in player.battlefield:
         if bf_card.template.is_land:
             for c in bf_card.template.produces_mana:
                 all_land_colors.add(c)
+                source_counts[c] = source_counts.get(c, 0) + 1
             if not bf_card.tapped:
                 for c in bf_card.template.produces_mana:
                     needs.existing_colors.add(c)
@@ -258,9 +274,19 @@ def analyze_mana_needs(game: "GameState", player_idx: int,
     needs.total_mana = needs.untapped_land_count + player.mana_pool.total()
 
     # ── What colors are missing? ──
-    # Use ALL land colors (not just untapped) so tapped lands aren't treated as missing.
-    # This is critical for fetch decisions: a tapped Steam Vents still provides U/R next turn.
-    needs.missing_colors = set(needs.needed_colors.keys()) - all_land_colors
+    # A color is a deficit when the number of lands that can produce it is
+    # FEWER than the deepest single-spell pip requirement for that color — not
+    # merely when zero sources exist. Holding a {W}{W} spell with one white
+    # source leaves white deficient (need a second source), whereas a single
+    # {W} pip is satisfied by one source. `max_pip_by_color.get(c, 1)` defaults
+    # the depth to 1 for colors needed only via cycling costs (not scanned for
+    # pip depth), preserving the prior "zero sources = missing" behaviour for
+    # every mono-pip case. ALL lands (tapped or untapped) count as sources so a
+    # tapped Steam Vents still provides U/R next turn — same basis as before.
+    needs.missing_colors = {
+        c for c in needs.needed_colors
+        if max_pip_by_color.get(c, 1) > source_counts.get(c, 0)
+    }
 
     # ── Track colors needed by high-CMC multi-color payoffs ──
     # These colors get extra priority in fetch/shock decisions (e.g., Omnath WURG)

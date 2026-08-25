@@ -160,3 +160,50 @@ every aggro deck's WR (Zoo, Boros, Dimir, Izzet) and raise every control/
 midrange deck's WR (the Azorius trio, 4/5c, Jeskai) toward their bands
 simultaneously. It is field-wide and must be validated on the full matrix, not
 a single matchup.
+
+## Bo3 RE-DIAGNOSIS (2026-08-25) — a distinct mana-planner root contributor
+
+Re-ran the sideboarded Bo3 path the "ceiling held" note above called for.
+Seed 50000, `--verbose "Domain Zoo" "4/5c Control"`: the control deck holds
+**Wrath of the Skies** (`{X}{W}{W}`, its board sweeper) in hand from the opening
+and never casts it, dying to a 2/1 Ragavan by T6.
+
+**Ruled out (verified by a controlled `_score_spell` harness):** the scorer and
+the X-cost board-wipe gate are correct. With two white sources present, Wrath
+scores **+10.8** and `can_cast` is `True`; `_gate_x_cost_board_wipe` returns
+`None` (does not floor). The wipe is *wanted*.
+
+**Actual blocker — double-pipped colour requirement invisible to the mana
+planner.** In-game the control deck had only **one** white source (a single
+Hallowed Fountain), because its fetches grabbed non-white duals (Stomping
+Ground RG, Breeding Pool GU). `ai/mana_planner.py::analyze_mana_needs` computed
+`missing_colors = needed_colors.keys() - all_land_colors` — a colour left the
+"missing" set the instant ONE source of it existed. A `{W}{W}` sweeper with one
+white source therefore read as "white covered", so the fetch/land scorer
+(`score_land` block A) gave a *new* colour a strong missing-colour bonus while a
+*second* white source — the one that actually unlocks `{W}{W}` — got only the
+weak redundant-colour weight and lost the fetch. **Set-of-colours representation
+collapses pip depth**; every double/triple-pipped cost in the field
+(`{W}{W}` wraths, `{U}{U}` counters, heavy-black spells) is under-served the
+same way.
+
+**Fix (generic, `ai/mana_planner.py`):** a colour is a deficit when its deepest
+single-spell pip requirement exceeds the number of sources producing it — not
+merely when zero sources exist. `max_pip_by_color` (deepest single-spell pip,
+per colour) vs `source_counts` (lands producing that colour, tapped or
+untapped). Reduces to identical behaviour for every mono-pip case (`get(c, 1)`
+default preserves cycling-only colours); changes only when a held spell's pip
+depth outruns its sources. Failing-test-first:
+`tests/test_double_pip_color_deficit.py` (double-pip-with-one-source flagged
+missing; single-pip and two-source cases unchanged).
+
+**Measured impact (honest):** the control deck now assembles the second white
+and **casts Wrath of the Skies on T4** (sweeps 4 permanents); the seed-50000
+game extends T6 → T9 and Zoo-vs-4/5c Bo3 matches now go to game three 4/10
+times (was 0). **But Zoo still wins the matchup ~100%** — it rebuilds after the
+sweep faster than the control deck answers-and-closes. So this is a real,
+field-wide mana-correctness fix (helps every multi-pip deck reach its colours),
+but it does **not** by itself tame the aggro overperformer. The post-sweep
+reactive-execution + own-clock gap named above remains the #1 open problem;
+the colour-deficit fix is a prerequisite that makes the sweeper reachable, not
+the whole cure.
