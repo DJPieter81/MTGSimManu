@@ -1788,6 +1788,7 @@ class CardDatabase:
             parse_has_attack_trigger, parse_has_combat_damage_trigger,
             parse_sacrifice_mana_units,
             parse_aura_enchant_restriction, parse_aura_mana_units,
+            parse_activated_abilities,
             parse_has_lifegain_token_trigger, parse_lifegain_token_type,
             parse_targets_creature_spell, parse_targets_planeswalker_spell,
             parse_has_landfall, parse_has_library_search_opponent_trigger,
@@ -1873,6 +1874,11 @@ class CardDatabase:
             parse_sacrifice_mana_units(oracle) or [])
         template.aura_enchant_restriction = parse_aura_enchant_restriction(oracle)
         template.aura_mana_units = parse_aura_mana_units(oracle) or []
+        # Parsed "[Cost]: [Effect]" lines (CR 602). Populated at load time so
+        # enumeration is a typed-field read rather than a runtime oracle parse.
+        # NOTE: deliberately a separate field from `abilities` — see
+        # tests/test_activation_schema_is_behaviour_neutral.py.
+        template.activated_abilities = parse_activated_abilities(oracle) or []
         template.has_lifegain_token_trigger = parse_has_lifegain_token_trigger(oracle)
         template.lifegain_token_type = parse_lifegain_token_type(oracle)
         template.targets_creature_spell = parse_targets_creature_spell(oracle)

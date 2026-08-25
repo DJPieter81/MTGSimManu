@@ -100,6 +100,68 @@ class Ability:
         return True
 
 
+class ActivationEffectKind(Enum):
+    """What an activated ability actually does (CR 602).
+
+    Deliberately a CLOSED set with an explicit escape hatch: `UNCLASSIFIED`
+    means the line parsed as an ability but its effect is not one this tranche
+    executes. Visible-but-refused beats silently-dropped — a dropped line would
+    have to be re-parsed by every later tranche.
+
+    `ANIMATE_SELF_UEOT` is present so the enumerator can explicitly SKIP lines
+    that `parse_land_animation` / `animate_land` already own, rather than
+    double-executing them.
+    """
+    DAMAGE_ANY_TARGET = "damage_any_target"
+    DRAW_N = "draw_n"
+    PUMP_SELF_UEOT = "pump_self_ueot"
+    ANIMATE_SELF_UEOT = "animate_self_ueot"
+    UNCLASSIFIED = "unclassified"
+
+
+@dataclass
+class ActivationCost:
+    """The cost half of "[Cost]: [Effect]".
+
+    `unpayable` carries cost items this tranche cannot charge (sacrifice, pay
+    life, discard, remove/put counter, exile, ...). A NON-EMPTY tuple means the
+    ability is fully parsed and visible but must be refused. That is what makes
+    each later tranche a *payer addition* rather than a re-parse of the pool.
+    """
+    mana: "ManaCost" = field(default_factory=lambda: ManaCost())
+    tap_self: bool = False
+    untap_self: bool = False
+    unpayable: Tuple[str, ...] = ()
+
+
+@dataclass
+class ActivatedAbility:
+    """One parsed "[Cost]: [Effect]" line on a permanent (CR 602).
+
+    `index` is a stable ordinal within the template. It is both the ledger key
+    for per-turn activation limits and the value that crosses the AI/engine
+    seam, so it must not be derived from list position at call time.
+
+    `restrictions` holds "Activate only ..." clauses the schema cannot express
+    as booleans. Non-empty means refuse — capturing them verbatim is what stops
+    an unrepresentable restriction from being silently ignored.
+    """
+    index: int
+    cost: ActivationCost
+    effect_text: str
+    effect_kind: ActivationEffectKind
+    amount: int = 0
+    power_mod: int = 0
+    toughness_mod: int = 0
+    targets_required: int = 0
+    target_requirements: List = field(default_factory=list)
+    sorcery_speed_only: bool = False
+    once_each_turn: bool = False
+    restrictions: Tuple[str, ...] = ()
+    from_battlefield: bool = True
+    is_mana_ability: bool = False
+
+
 @dataclass
 class CardTemplate:
     """Template for a card (shared data, not instance-specific)."""
@@ -144,6 +206,12 @@ class CardTemplate:
     # cards are Auras, so this is the shared primitive rather than a
     # mana-specific field. `aura_mana_units` is its first consumer: the units
     # a mana Aura GRANTS to the land it enchants.
+    # Parsed "[Cost]: [Effect]" lines (CR 602). A NEW field: deliberately NOT
+    # merged into `abilities`, because emitting AbilityType.ACTIVATED there
+    # would light up ABILITY_TYPE_ACTIVATED in ai/evaluator for thousands of
+    # templates, feeding estimate_permanent_value — the removal-target sort key
+    # in ai/response.py. See tests/test_activation_schema_is_behaviour_neutral.
+    activated_abilities: List["ActivatedAbility"] = field(default_factory=list)
     aura_enchant_restriction: Optional[str] = None
     aura_mana_units: List[List[str]] = field(default_factory=list)
     # 'When this land enters, return a land you control to its owner's

@@ -543,6 +543,220 @@ def parse_has_attack_trigger(oracle: str, name: str = "") -> bool:
 _ANY_COLOR_UNIT = ['W', 'U', 'B', 'R', 'G']
 
 
+# ── Activated abilities (CR 602): "[Cost]: [Effect]" ──────────────────
+# Cost verbs this tranche cannot charge. Parsed and RECORDED (never dropped)
+# so the ability is visible-but-refused; a later tranche adds payers without
+# re-parsing the pool.
+_UNPAYABLE_COST_PATTERNS = (
+    ('sacrifice_self', r'sacrifice this'),
+    ('sacrifice_another', r'sacrifice (a|an|another|two|three)'),
+    ('pay_life', r'pay \d+ life'),
+    ('discard', r'discard'),
+    ('remove_counter', r'remove (a|an|one|two|\d+)[^,:]*counter'),
+    ('put_counter', r'put (a|an|one|two|\d+)[^,:]*counter'),
+    ('exile', r'exile'),
+    ('tap_other', r'tap (an?|another|two|three|\d+)\b'),
+    ('return', r'return'),
+    ('energy', r'\{e\}'),
+    ('reveal', r'reveal'),
+)
+
+
+def strip_reminder_text(oracle: str) -> str:
+    """Remove parenthesised reminder text, innermost-first.
+
+    Load-bearing for the activated-ability scan: a large fraction of
+    colon-bearing lines in the pool have their ONLY colon inside keyword
+    reminder text — "Equip {3} ({3}: Attach ...)", "Cycling {2} ({2}, Discard
+    this card: Draw a card.)". Without stripping, those parse as real
+    abilities. The engine has no reminder stripper of its own; the repo's only
+    one lives in `ai/`, which `engine/` may not import.
+    """
+    text = oracle or ''
+    while True:
+        stripped = re.sub(r'\([^()]*\)', '', text)
+        if stripped == text:
+            return text
+        text = stripped
+
+
+def split_activation_riders(effect_text: str):
+    """Split "Activate only ..." sentences off an effect clause.
+
+    MUST run before effect classification — otherwise the classifier sees a
+    trailing rider sentence and fails to match legitimate lines.
+
+    Only two riders map to booleans. Everything else is returned verbatim so
+    `can_activate` can REFUSE on it. In particular "Activate only once."
+    (once per GAME) must not be read as once-each-turn, which would silently
+    grant extra activations.
+
+    Returns ``(body, restrictions)``.
+    """
+    text = effect_text or ''
+    restrictions = []
+    sorcery_only = False
+    once_each_turn = False
+
+    def _take(match):
+        nonlocal sorcery_only, once_each_turn
+        sentence = match.group(0).strip()
+        low = sentence.lower()
+        if low == 'activate only as a sorcery.':
+            sorcery_only = True
+        elif low == 'activate only once each turn.':
+            once_each_turn = True
+        else:
+            restrictions.append(sentence)
+        return ''
+
+    body = re.sub(r'Activate only[^.]*\.', _take, text, flags=re.IGNORECASE)
+    return body.strip(), tuple(restrictions), sorcery_only, once_each_turn
+
+
+def parse_activation_cost(cost_text: str):
+    """Parse the cost half of an activated ability.
+
+    Closed grammar with an explicit escape hatch: mana runs and {T}/{Q} are
+    payable; every recognised non-mana verb is appended to `unpayable`.
+    Returns ``None`` for loyalty brackets (planeswalker abilities are owned
+    elsewhere) and for empty costs.
+    """
+    from .cards import ActivationCost
+    from .mana import ManaCost
+    raw = (cost_text or '').strip()
+    if not raw:
+        return None
+    # Loyalty abilities ([+1], [-3], [0]) belong to the planeswalker manager.
+    if re.match(r'^\[[+\-−]?\d*\]', raw):
+        return None
+
+    mana = ManaCost()
+    tap_self = False
+    untap_self = False
+    unpayable = []
+    for part in raw.split(','):
+        piece = part.strip()
+        if not piece:
+            continue
+        low = piece.lower()
+        if re.fullmatch(r'(\{[wubrgcxs0-9/]+\}\s*)+', low):
+            mana = _add_mana_symbols(mana, low)
+            continue
+        if low == '{t}':
+            tap_self = True
+            continue
+        if low == '{q}':
+            untap_self = True
+            continue
+        matched = False
+        for name, pattern in _UNPAYABLE_COST_PATTERNS:
+            if re.search(pattern, low):
+                unpayable.append(name)
+                matched = True
+                break
+        if not matched:
+            unpayable.append('unrecognised')
+    return ActivationCost(mana=mana, tap_self=tap_self,
+                          untap_self=untap_self,
+                          unpayable=tuple(unpayable))
+
+
+def _add_mana_symbols(cost, text):
+    """Fold a run of mana symbols into a ManaCost."""
+    attr = {'w': 'white', 'u': 'blue', 'b': 'black', 'r': 'red', 'g': 'green'}
+    for sym in re.findall(r'\{([wubrgcxs0-9]+)\}', text):
+        if sym.isdigit():
+            cost.generic += int(sym)
+        elif sym in attr:
+            setattr(cost, attr[sym], getattr(cost, attr[sym]) + 1)
+        elif sym == 'c':
+            cost.colorless += 1
+        # {X}/{S} are not chargeable in this tranche; they surface via the
+        # caller's `unpayable` path only when they appear outside a mana run.
+    return cost
+
+
+def classify_activation_effect(effect_text: str):
+    """Classify an effect clause. Returns (kind, amount, power_mod, tough_mod).
+
+    Regexes are ANCHORED to the FULL sentence, not searched. That is not
+    stylistic: a loose draw pattern matches "Draw a card, then exile a card
+    from your hand face down." — a different effect whose rider would be
+    silently dropped if it executed as a plain draw.
+    """
+    from .cards import ActivationEffectKind as K
+    text = (effect_text or '').strip()
+    low = text.lower().rstrip('.')
+
+    m = re.fullmatch(r'(?:this |it )?(?:\w+ )?deals? (\d+) damage to any target', low)
+    if m:
+        return K.DAMAGE_ANY_TARGET, int(m.group(1)), 0, 0
+
+    m = re.fullmatch(r'draw (a|one|two|three|\d+) cards?', low)
+    if m:
+        tok = m.group(1)
+        n = 1 if tok in ('a', 'one') else (int(tok) if tok.isdigit()
+                                           else _NUM_WORDS.get(tok, 0))
+        if n > 0:
+            return K.DRAW_N, n, 0, 0
+
+    m = re.fullmatch(
+        r'(?:this creature|this permanent|it) gets \+(\d+)/\+(\d+) until end of turn',
+        low)
+    if m:
+        return K.PUMP_SELF_UEOT, 0, int(m.group(1)), int(m.group(2))
+
+    if 'becomes a' in low and 'creature until end of turn' in low:
+        return K.ANIMATE_SELF_UEOT, 0, 0, 0
+
+    return K.UNCLASSIFIED, 0, 0, 0
+
+
+def parse_activated_abilities(oracle: str):
+    """Parse every "[Cost]: [Effect]" line a permanent has of its own.
+
+    Excludes, by construction: reminder text (stripped first), abilities
+    GRANTED to other objects via a quoted clause, and loyalty abilities.
+    Mana abilities (CR 605) are parsed but flagged `is_mana_ability` so the
+    enumerator can skip them — mana is produced by the payment path.
+    """
+    from .cards import ActivatedAbility, ActivationEffectKind as K
+    text = strip_reminder_text(oracle or '')
+    if ':' not in text:
+        return []
+
+    out = []
+    idx = 0
+    for line in re.split(r'\n+', text):
+        line = line.strip()
+        if ':' not in line:
+            continue
+        # A colon inside a quoted grant belongs to an ability given to OTHER
+        # objects ("Creatures you control have \"{T}: Add {C}\"") — a
+        # different mechanic, not this permanent's own activation.
+        if '"' in line or '\u201c' in line:
+            continue
+        cost_text, _, effect_text = line.partition(':')
+        cost = parse_activation_cost(cost_text)
+        if cost is None:
+            continue
+        body, restrictions, sorcery_only, once_turn = \
+            split_activation_riders(effect_text)
+        kind, amount, p_mod, t_mod = classify_activation_effect(body)
+        is_mana = bool(re.match(r'^add\b', body.strip().lower()))
+        out.append(ActivatedAbility(
+            index=idx, cost=cost, effect_text=body.strip(),
+            effect_kind=kind, amount=amount,
+            power_mod=p_mod, toughness_mod=t_mod,
+            sorcery_speed_only=sorcery_only, once_each_turn=once_turn,
+            restrictions=restrictions, is_mana_ability=is_mana,
+        ))
+        idx += 1
+    return out
+
+
+
 def parse_aura_enchant_restriction(oracle: str) -> Optional[str]:
     """Parse an Aura's "Enchant <quality>" ability (CR 303.4).
 
