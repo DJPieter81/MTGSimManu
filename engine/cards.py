@@ -938,6 +938,13 @@ class CardInstance:
     # Aura attachment back-reference (CR 303.4): instance_id of the object
     # this Aura enchants, or None when unattached. The HOST additionally
     # carries an `attached_{aura_id}` instance tag, mirroring Equipment.
+    # Per-turn activation ledger, keyed by ActivatedAbility.index. Cleared in
+    # new_turn() and enter_battlefield() (CR 400.7 — battlefield re-entry is a
+    # NEW object, so its budget resets). Deliberately NOT cleared in untap():
+    # turn_manager untaps some opponent permanents without calling new_turn(),
+    # and clearing there would refresh a once-each-turn budget twice per turn
+    # cycle.
+    activations_this_turn: Dict[int, int] = field(default_factory=dict)
     attached_to_id: Optional[int] = None
     _game_state: Any = field(default=None, repr=False)
     # Evoke tracking
@@ -1503,6 +1510,7 @@ class CardInstance:
         self.entered_battlefield_this_turn = False
         self.attacked_this_turn = False
         self.cannot_be_blocked_this_turn = False
+        self.activations_this_turn.clear()
 
     def enter_battlefield(self):
         self.zone = "battlefield"
@@ -1513,6 +1521,8 @@ class CardInstance:
         self.battlefield_entry_seq += 1
         if self.template.is_land and self.template.enters_tapped:
             self.tapped = True
+        # CR 400.7: a new object gets a fresh activation budget.
+        self.activations_this_turn.clear()
 
     def __hash__(self):
         return self.instance_id

@@ -137,8 +137,38 @@ class ManaPayment:
     def tap_lands_for_mana(game: "GameState", player_idx: int,
                            cost: ManaCost,
                            card_name: str = None,
-                           held_instant_colors: Optional[Set[str]] = None
+                           held_instant_colors: Optional[Set[str]] = None,
+                           exclude_instance_id: Optional[int] = None
                            ) -> bool:
+        """Pay a mana cost, guarding against activation re-entry.
+
+        `game._paying_mana` is raised for the whole payment. CR 605.3 allows
+        only MANA abilities to be activated while paying a cost, and this
+        engine produces mana through the payment path itself — so any other
+        activation attempted mid-payment is refused outright by
+        `ActivationManager.can_activate`. That makes the recursion edge
+        non-existent rather than merely bounded: a self-untapping mana source
+        cannot spin here, because the loop that would spin never opens.
+
+        `exclude_instance_id` keeps a permanent from being tapped to pay for
+        its OWN activated ability (the generic form of a guard `game_runner`
+        already hand-rolls for granted abilities).
+        """
+        game._paying_mana = getattr(game, '_paying_mana', 0) + 1
+        try:
+            return ManaPayment._tap_lands_for_mana_inner(
+                game, player_idx, cost, card_name, held_instant_colors,
+                exclude_instance_id)
+        finally:
+            game._paying_mana -= 1
+
+    @staticmethod
+    def _tap_lands_for_mana_inner(game: "GameState", player_idx: int,
+                                  cost: ManaCost,
+                                  card_name: str = None,
+                                  held_instant_colors: Optional[Set[str]] = None,
+                                  exclude_instance_id: Optional[int] = None
+                                  ) -> bool:
         """Tap lands to pay a mana cost. Returns True if successful.
 
         Side effect: sets game._last_colors_spent to the set of colors
@@ -313,7 +343,8 @@ class ManaPayment:
                         player.mana_pool.add(unit[0], 1)
                         spent += 1
 
-        untapped = [l for l in player.lands if not l.tapped]
+        untapped = [l for l in player.lands if not l.tapped
+                    and l.instance_id != exclude_instance_id]
 
         # Non-land mana sources: mana rocks (Talisman, Mind Stone) and mana
         # creatures (Birds, Llanowar, Devoted Druid). A permanent whose
@@ -324,6 +355,8 @@ class ManaPayment:
         for perm in player.battlefield:
             if perm.tapped or perm.template.is_land:
                 continue
+            if perm.instance_id == exclude_instance_id:
+                continue  # cannot tap a permanent to pay for its own ability
             if not (perm.template.mana_units or perm.template.produces_mana):
                 continue
             if (CardType.CREATURE in perm.template.card_types
