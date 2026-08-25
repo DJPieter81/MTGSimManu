@@ -190,12 +190,13 @@ def _build_turn_planner():
 
 class Play:
     """A candidate play with its EV score and lookahead reasoning."""
-    __slots__ = ('action', 'card', 'targets', 'ev', 'reason',
+    __slots__ = ('action', 'card', 'targets', 'ev', 'reason', 'ability_index',
                  'heuristic_ev', 'lookahead_ev', 'counter_pct', 'removal_pct', 'target_reason',
                  'no_signal')
 
     def __init__(self, action: str, card, targets: list, ev: float, reason: str, target_reason: str = ''):
         self.action = action  # "play_land", "cast_spell", "cycle"
+        self.ability_index = None  # set for 'activate' plays only
         self.card = card
         self.targets = targets
         self.ev = ev
@@ -393,7 +394,9 @@ class EVPlayer:
     # ═══════════════════════════════════════════════════════════
 
     def decide_main_phase(self, game: "GameState",
-                          excluded_cards: set = None) -> Optional[Tuple[str, "CardInstance", List[int]]]:
+                          excluded_cards: set = None,
+                          excluded_activations: set = None
+                          ) -> Optional[Tuple[str, "CardInstance", List[int]]]:
         """Score every legal play, pick the best one.
 
         Returns: ("play_land", card, []) or ("cast_spell", card, targets) or None
@@ -405,6 +408,10 @@ class EVPlayer:
         # without clearing, so trace/debug consumers read stale candidates
         # (e.g. `cast_spell: Ajani` after Ajani had already resolved).
         self._last_candidates = []
+        # Reset UNCONDITIONALLY: decide_main_phase has several early-return
+        # paths, and a stale index would make the engine exclude the wrong
+        # (instance_id, ability_index) pair — the case that spins a phase.
+        self._last_activation_ability_index = None
 
         self._init_deck_knowledge(game)
         me = game.players[self.player_idx]
@@ -444,6 +451,26 @@ class EVPlayer:
                     game, self.player_idx, snap):
                 activation_plays.append(
                     Play("activate_ability", perm, [], act_ev, act_reason))
+
+        # Generic activated abilities. Enumerated OUTSIDE the MAIN1 gate
+        # above — that gate belongs to land animation, which exists to attack
+        # this turn. The per-effect timing restriction (pump is MAIN1-only)
+        # lives in `activation_candidates`, where it can be justified per
+        # effect kind rather than applied wholesale.
+        from ai.activation_ev import activation_candidates
+        for _perm, _ab_idx, _tgts, _ev, _reason in activation_candidates(
+                game, self.player_idx, snap, excluded=excluded_activations):
+            # Holdback is the ONLY real cost signal in this score:
+            # position_value's mana term is clamped by max(0, mana_diff), so
+            # spending mana contributes exactly 0.0 to the projection.
+            _ev -= self._holdback_penalty(
+                me, opp, snap, _perm.template.activated_abilities[_ab_idx]
+                .cost.mana.cmc)
+            if _ev <= 0.0:
+                continue
+            _play = Play("activate", _perm, list(_tgts), _ev, _reason)
+            _play.ability_index = _ab_idx
+            activation_plays.append(_play)
 
         legal = game.get_legal_plays(self.player_idx)
         if not legal and not activation_plays:
@@ -705,6 +732,11 @@ class EVPlayer:
             return None
 
         self._last_played_target_reason = getattr(best, "target_reason", "")
+        # Carry the chosen ability index across the AI/engine seam. Set on
+        # EVERY path (None when the chosen play is not an activation) so a
+        # stale value can never reach the engine's exclusion bookkeeping.
+        self._last_activation_ability_index = getattr(
+            best, "ability_index", None)
         self._emit_decision_event(game, candidates, chosen=best)
         return (best.action, best.card, best.targets)
 

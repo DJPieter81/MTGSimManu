@@ -106,3 +106,76 @@ def land_animation_candidates(
         out.append((land, ev, reason))
 
     return out
+
+
+def activation_candidates(game, player_idx, snap, excluded=None):
+    """Enumerate generic activated abilities worth activating right now.
+
+    Returns ``[(permanent, ability_index, targets, ev, reason), ...]`` — a
+    5-tuple, deliberately NOT merged with `land_animation_candidates`'s
+    3-tuple: land animation is a different mechanic with its own call site and
+    its own MAIN1 justification (it exists to attack this turn).
+
+    Legality is NOT decided here. `ActivationManager.can_activate` owns every
+    rules question; this function only asks "is it worth it", and only among
+    abilities the engine has already declared legal. That split is the
+    project's standing engine/AI boundary.
+
+    Scoring is a single `position_value` delta: project the snapshot forward
+    per effect kind and keep the improvement. No bare magnitudes — every number
+    comes from parsed ability data (`amount`, `power_mod`, `toughness_mod`).
+    """
+    from engine.activation import ActivationManager
+    from engine.cards import ActivationEffectKind as _K
+    from engine.game_state import Phase as _Phase
+    from ai.clock import position_value
+
+    excluded = excluded or set()
+    me = game.players[player_idx]
+    out = []
+    base = position_value(snap)
+
+    for perm in list(me.battlefield):
+        abilities = getattr(perm.template, 'activated_abilities', None) or []
+        for ability in abilities:
+            key = (perm.instance_id, ability.index)
+            if key in excluded:
+                continue
+            if not ActivationManager.can_activate(game, player_idx, perm,
+                                                  ability):
+                continue
+
+            kind = ability.effect_kind
+            if kind is _K.DRAW_N:
+                after = snap.fast_replace(my_hand_size=snap.my_hand_size
+                                          + ability.amount)
+                reason = f"activate: draw {ability.amount}"
+            elif kind is _K.DAMAGE_ANY_TARGET:
+                after = snap.fast_replace(opp_life=snap.opp_life
+                                          - ability.amount)
+                reason = f"activate: {ability.amount} damage"
+            elif kind is _K.PUMP_SELF_UEOT:
+                # GATED, not merely scored. `position_value` has no
+                # until-end-of-turn term, so a temporary pump reads as a
+                # permanent gain and would be wildly over-valued. Restrict to
+                # the case where the pump actually improves the combat race
+                # this turn — the same rule already pinned by
+                # tests/test_creature_land_activated_when_it_wins_race.py.
+                if game.current_phase is not _Phase.MAIN1:
+                    continue
+                after = snap.fast_replace(
+                    my_power=snap.my_power + ability.power_mod)
+                if not (after.my_clock_discrete < snap.my_clock_discrete
+                        and after.my_clock_discrete <= snap.opp_clock_discrete):
+                    continue
+                reason = (f"activate: +{ability.power_mod}/"
+                          f"+{ability.toughness_mod} improves the race")
+            else:
+                continue
+
+            ev = position_value(after) - base
+            if ev <= 0.0:
+                continue  # an activation that does not improve position is
+                          # not made; principled, not a tuned threshold
+            out.append((perm, ability.index, [], ev, reason))
+    return out

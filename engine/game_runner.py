@@ -1210,11 +1210,14 @@ class GameRunner:
         # same top pick and ending the phase — is what lets a deck keep
         # developing when its best play is momentarily un-executable.
         _excluded: set = set()
+        _excluded_activations: set = set()
 
         while actions < max_actions and not game.game_over:
             if hasattr(game, '_game_deadline') and _time.monotonic() > game._game_deadline:
                 return
-            decision = ai.decide_main_phase(game, excluded_cards=_excluded)
+            decision = ai.decide_main_phase(
+                game, excluded_cards=_excluded,
+                excluded_activations=_excluded_activations)
             if decision is None:
                 break
 
@@ -1252,6 +1255,35 @@ class GameRunner:
                     creature = game.get_card_by_id(targets[0])
                     if creature:
                         game.equip_creature(ai.player_idx, card, creature)
+            elif action == "activate":
+                # Generic activated ability (CR 602). The AI chose it; the
+                # engine validates, pays, and stacks it.
+                from .activation import ActivationManager
+                _idx = getattr(ai, "_last_activation_ability_index", None)
+                _abilities = getattr(card.template, "activated_abilities",
+                                     None) or []
+                _ab = (_abilities[_idx]
+                       if _idx is not None and _idx < len(_abilities) else None)
+                _ok = False
+                if _ab is not None and ActivationManager.can_activate(
+                        game, ai.player_idx, card, _ab):
+                    _ok = ActivationManager.activate(
+                        game, ai.player_idx, card, _ab, targets)
+                if not _ok:
+                    # Exclude and re-plan rather than ending the phase. A
+                    # missing index excludes every ability on the permanent.
+                    if _idx is None:
+                        for _i in range(len(_abilities)):
+                            _excluded_activations.add((card.instance_id, _i))
+                    else:
+                        _excluded_activations.add((card.instance_id, _idx))
+                    actions += 1
+                    continue
+                # Drain the stack before the next decision, exactly as the
+                # cast arm does. Without this the ability sits on the stack
+                # unresolved and the next decision is made against a board
+                # that has not yet changed.
+                self._resolve_stack_loop(game)
             elif action == "activate_ability":
                 # Activated win-condition line (land animation) — the
                 # AI chose it in the ACTIVATION region; the engine only

@@ -416,7 +416,8 @@ class GameState:
 
     def tap_lands_for_mana(self, player_idx: int, cost: ManaCost,
                            card_name: str = None,
-                           held_instant_colors: Optional[set] = None) -> bool:
+                           held_instant_colors: Optional[set] = None,
+                           exclude_instance_id: Optional[int] = None) -> bool:
         """Delegate to ManaPayment.tap_lands_for_mana.
 
         held_instant_colors (Bundle 3 A5): optional set of color codes
@@ -428,6 +429,7 @@ class GameState:
         return ManaPayment.tap_lands_for_mana(
             self, player_idx, cost, card_name=card_name,
             held_instant_colors=held_instant_colors,
+            exclude_instance_id=exclude_instance_id,
         )
 
     def can_cast(self, player_idx: int, card: CardInstance) -> bool:
