@@ -201,34 +201,44 @@ python -m pytest tests/ -q          # 1975 tests as of 2026-05-16
 
 Tests include: deck loading, gameplan loading, matchup balance, card effects, game completion.
 
-### CI guardrail — what runs and what doesn't (2026-05-16)
+### CI guardrail — what runs (verified 2026-08-25)
 
 `.github/workflows/abstraction-contract.yml` runs on every PR:
 
-1. **Ratchets** — `check_abstraction.py`, `check_magic_numbers.py`, `check_doc_hygiene.py` (each <5s)
-2. **Narrow pytest** — 5 ratchet-related test files
-3. **Curated regression-surface subset** (Track G1, PR #400) — 14 test files covering
-   combo evaluator, sim v3 unit, parity, storm tutor/holds, abstraction-contract
-   bodies, sim v3 acceptance gates. Wall budget ≈30s.
+1. **Ratchets** — `check_abstraction.py`, `check_magic_numbers.py`,
+   `check_doc_hygiene.py`, `check_zone_mutation.py`, `check_oracle_runtime_parse.py`
+2. **Narrow ratchet pytest** — the ratchet-related test files at `--timeout=60`
+3. **The FULL suite** — `python -m pytest tests/ -q --timeout=120` with exactly
+   two deselects:
+   - `tests/test_etb_graveyard_return.py`
+   - `tests/test_card_features.py::test_extraction_performance`
 
-**What CI does NOT run** (gaps to be aware of):
+**Observed run:** 3549 passed, 20 skipped, 5 deselected, 2 xfailed, ~10.7 min.
 
-- **Full 1975-test suite.** Per-test `CardDatabase()` reloads 21759 cards
-  (~1-2s setup × 1975 tests = ~80 min single-threaded). No session-scoped
-  fixture yet. xdist parallel attempt exceeded 6h GitHub Actions cap.
-- **Tests excluded from the curated subset because of slow per-test DB load
-  (>60s per file):**
-  - `tests/test_ability_override_discard_derived_from_oracle.py` (107s)
-  - `tests/test_discard_tag_generic_derivation.py` (>60s)
-  - `tests/test_tag_overrides_pruned_to_novel_only.py` (>60s)
-- **Tests excluded because of pre-existing failures on main** (will be
-  re-added once underlying regressions land fix-PRs):
-  - `tests/test_wr_baseline_anchor.py` — 4 entries drifted; fix via
-    `python tools/refresh_wr_baseline.py` then commit the snapshot.
-  - `tests/test_x_cost_board_wipe_gate.py` — 2 regressions from PR #408;
-    needs deeper fix in `ai/ev_player.py` X-cost wipe + desperation lever.
+**This section previously described a "curated 14-file subset" with a ~30s
+budget, and listed files as excluded. That is stale and was corrected after
+verifying the workflow file and a real CI run.** Specifically:
 
-### Adding a new test file to the curated CI subset
+- There is no curated subset any more; `tests/` runs in full.
+- `tests/test_wr_baseline_anchor.py` and `tests/test_x_cost_board_wipe_gate.py`
+  were listed as "excluded because of pre-existing failures on main". Both run
+  in CI today and both pass. Do not spend time "re-adding" them.
+- The three files listed as excluded for slow DB load
+  (`test_ability_override_discard_derived_from_oracle.py`,
+  `test_discard_tag_generic_derivation.py`,
+  `test_tag_overrides_pruned_to_novel_only.py`) are not deselected either, so
+  they run.
+
+**Per-test timeout.** The suite runs under `--timeout=120`, which exists to
+catch HANGS, not to bound legitimate long work. A test that genuinely needs
+longer carries an explicit `@pytest.mark.timeout(N)` with its measurement
+recorded in a comment — see `tests/test_parallel_matrix.py`. Do NOT shrink a
+test's workload to duck under the cap; that weakens a correctness test to
+satisfy a guard aimed at something else.
+
+**Adding a new test file:** nothing to register — `tests/` runs in full. Keep
+new files fast (<10s) so the suite stays inside the job's wall budget.
+
 
 If you write a test file that pins a mechanism (chain projection, combo
 evaluator, sim v3 behaviour, WR anchor outcome, abstraction contract),
