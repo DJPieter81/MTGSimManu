@@ -362,6 +362,16 @@ def parse_cost_reduction(oracle: str) -> Optional[Dict]:
     return {'target': target, 'amount': amount, 'color': color}
 
 
+def parse_is_land_sacrifice_tutor(oracle: str) -> bool:
+    """True for the Scapeshift shape: a spell that sacrifices any number of
+    the caster's lands and searches the library for that many lands.
+    Parsed once at DB load into `CardTemplate.is_land_sacrifice_tutor`
+    (oracle-runtime-parse ratchet: consumers read the typed field)."""
+    low = (oracle or '').lower()
+    return ('sacrifice any number of lands' in low
+            and 'search your library' in low)
+
+
 def parse_counter_tax(oracle: str) -> int:
     """Parse a "soft counter" tax amount from oracle text.
 

@@ -1782,6 +1782,7 @@ class CardDatabase:
             parse_energy_production, has_cascade, parse_x_cost,
             parse_domain_reduction, detect_power_scaling, parse_splice_cost,
             parse_counter_tax, parse_protection_from, parse_ward_cost,
+            parse_is_land_sacrifice_tutor,
             parse_can_target_player, parse_can_target_planeswalker,
             grants_flashback_to_gy_spells, parse_deals_targeted_damage,
             parse_has_scaling_token_finisher,
@@ -1863,6 +1864,7 @@ class CardDatabase:
             template.is_counterspell = True
             template.counter_target_kind = counter_effect.target_type
         template.counter_tax_amount = parse_counter_tax(oracle)
+        template.is_land_sacrifice_tutor = parse_is_land_sacrifice_tutor(oracle)
         template.protection_from_colors = parse_protection_from(oracle)
         template.ward_cost = parse_ward_cost(oracle)
         template.can_target_player = parse_can_target_player(oracle)

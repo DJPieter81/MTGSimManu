@@ -313,6 +313,7 @@ class CardTemplate:
     is_counterspell: bool = False              # has a "counter target ..." effect
     counter_target_kind: str = ""              # "spell"/"creature_spell"/"noncreature_spell"/"instant_or_sorcery_spell"
     counter_tax_amount: int = 0                # {N} from "unless its controller pays {N}"; 0 = hard counter
+    is_land_sacrifice_tutor: bool = False      # Scapeshift shape: sac any number of lands + search (typed, parse-once)
     # Combat/targeting legality (CR 702.16d/e) — colors this permanent
     # has protection from. Empty = no protection. Populated at load
     # time from oracle text (engine.oracle_parser.parse_protection_from),
@@ -659,6 +660,9 @@ class CardTemplate:
         # CardDatabase (e.g. synthetic templates in tests). CardDatabase sets
         # these explicitly; this fires only for empty/None fields.
         if self.oracle_text:
+            from .oracle_parser import parse_is_land_sacrifice_tutor as _plst
+            if not self.is_land_sacrifice_tutor:
+                self.is_land_sacrifice_tutor = _plst(self.oracle_text)
             from .oracle_parser import (parse_warp_cost as _pwc,
                                         parse_dash_cost as _pdc,
                                         parse_escape_cost as _pec,

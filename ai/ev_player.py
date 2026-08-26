@@ -838,10 +838,11 @@ class EVPlayer:
     # SCORING — per-archetype spell evaluation
     # ═══════════════════════════════════════════════════════════
 
-    def _overlay_land_sacrifice_fizzle(self, ev: float, t_oracle: str, me) -> float:
+    def _overlay_land_sacrifice_fizzle(self, ev: float, t, me) -> float:
         """Clamp land-sacrifice tutors (Scapeshift shape) into the patience-
         reject band when the cast is not worth its own mana base. Two gates,
-        both oracle-driven, no card names:
+        both driven by the parse-once typed field
+        `CardTemplate.is_land_sacrifice_tutor`, no card names:
 
         1. Fizzle floor (original): fewer than the minimum lands and the
            engine fizzles the cast outright.
@@ -863,11 +864,7 @@ class EVPlayer:
            matched by the same oracle predicates the engine's
            LandManager uses.
         """
-        def _is_land_sac_tutor(oracle: str) -> bool:
-            return ('sacrifice any number of lands' in oracle
-                    and 'search your library' in oracle)
-
-        if _is_land_sac_tutor(t_oracle):
+        if getattr(t, 'is_land_sacrifice_tutor', False):
             my_land_count = sum(1 for c in me.battlefield if c.template.is_land)
             if my_land_count < LAND_SACRIFICE_MIN_LANDS:
                 return min(ev, PATIENCE_GATE_REJECT_SENTINEL)
@@ -888,8 +885,8 @@ class EVPlayer:
                 for c in me.hand
                 if c.template.name in self._payoff_names
                 and not c.template.is_land
-                and not _is_land_sac_tutor(
-                    (c.template.oracle_text or '').lower())
+                and not getattr(c.template, 'is_land_sacrifice_tutor',
+                                False)
             ]
             if not payoff_costs or min(payoff_costs) > retained:
                 return min(ev, PATIENCE_GATE_REJECT_SENTINEL)
@@ -1071,7 +1068,7 @@ class EVPlayer:
                                        self.player_idx)
 
         # Land-sacrifice tutor (Scapeshift shape) fizzle gate.
-        ev = self._overlay_land_sacrifice_fizzle(ev, t_oracle, me)
+        ev = self._overlay_land_sacrifice_fizzle(ev, t, me)
 
         # Cascade patience gate (LE-A3).
         ev = self._overlay_cascade_patience(ev, t, snap, me)
