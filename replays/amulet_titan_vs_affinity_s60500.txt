@@ -1,0 +1,1858 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+  Sideboard (Amulet Titan vs Affinity): +2 Force of Vigor, -2 Summoner's Pact
+  Sideboard (Amulet Titan vs Affinity): +2 Force of Vigor, -2 Summoner's Pact
+======================================================================
+  GAME 1: Amulet Titan (P1) vs Affinity (P2)  —  seed 60500
+  Series: Amulet Titan 0 - 0 Affinity
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Affinity wins → chooses to play first
+║ P1 (on play): Affinity
+║ P2 (on draw): Amulet Titan
+╚═══════════════════════════════════════════════════════
+
+P1 (Amulet Titan) opening hand (4 lands, 3 spells):
+  • Boseiju, Who Endures [Land, CMC 0]
+  • Gruul Turf [Land, CMC 0]
+  • Arboreal Grazer [Creature, CMC 1]
+  • Amulet of Vigor [Spell, CMC 1]
+  • Urza's Saga [Land, CMC 0]
+  • Simic Growth Chamber [Land, CMC 0]
+  • Malevolent Rumble [Spell, CMC 2]
+→ P1 KEEPS 7 — has key card(s): Amulet of Vigor, Arboreal Grazer, 3 cheap spells
+
+P2 (Affinity) opening hand (2 lands, 5 spells):
+  • Fiery Islet [Land, CMC 0]
+  • Mox Opal [Spell, CMC 0]
+  • Metallic Rebuke [Spell, CMC 3]
+  • Shivan Reef [Land, CMC 0]
+  • Metallic Rebuke [Spell, CMC 3]
+  • Weapons Manufacturing [Spell, CMC 2]
+  • Mishra's Bauble [Spell, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Mox Opal, 5 cheap spells
+
+
+╔══ TURN 1 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Shivan Reef
+    → Goal: deploy_engine
+T1 P2: Cast Mishra's Bauble (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Mishra's Bauble
+    → Goal: deploy_engine [engines]
+T1 P2: Cast Mox Opal (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Mox Opal
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble, Mox Opal
+║   Lands: Shivan Reef
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Crumbling Vestige
+  [Main 1]
+T1 P1: Play Crumbling Vestige (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Amulet Titan 20
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble, Mox Opal
+║   Lands: Shivan Reef
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Spirebluff Canal
+  [Main 1]
+T2 P2: Play Fiery Islet
+T2: Fiery Islet moved battlefield -> graveyard (activation cost (Fiery Islet))
+T2 P2: activate Fiery Islet — Draw a card.
+T2 P2: Fiery Islet activated — draw 1 (Metallic Rebuke)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble, Mox Opal
+║   Lands: Shivan Reef [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Spelunking
+  [Main 1]
+T2 P1: Play Urza's Saga
+    → Goal: deploy_engine [engines]
+    [Mana] Tap Urza's Saga→C (paying for Amulet of Vigor, 2 mana remaining)
+T2 P1: Cast Amulet of Vigor (1)
+    [Priority] P2 passes (no response)
+T2: Resolve Amulet of Vigor
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble, Mox Opal
+║   Lands: Shivan Reef
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige, Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mox Opal
+  [Main 1]
+T3 P2: Play Spirebluff Canal (untapped, 1 other lands)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige, Urza's Saga
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble, Mox Opal
+║   Lands: Shivan Reef, Spirebluff Canal
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T3 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P1 draws: Arboreal Grazer
+  [Main 1]
+T3 P1: Play Gruul Turf (enters tapped)
+T3 P1: Amulet of Vigor untaps Gruul Turf
+T3: Urza's Saga moved battlefield -> hand (Gruul Turf ETB returns Urza's Saga to hand)
+    → Goal: ramp [enablers]
+    [Mana] Tap Gruul Turf→RG (paying for Arboreal Grazer, 3 mana remaining)
+T3 P1: Cast Arboreal Grazer (G)
+    [Priority] P2 responds with Metallic Rebuke
+T3 P2: Improvise — tap 1 artifact(s) for Metallic Rebuke
+    [Mana] Tap Spirebluff Canal→U, Shivan Reef→C (paying for Metallic Rebuke, 2 mana remaining)
+T3 P2: Cast Metallic Rebuke (2U)
+T3: Resolve Metallic Rebuke
+T3: Arboreal Grazer moved stack -> graveyard (resolution)
+T3: Arboreal Grazer is countered
+T3: Metallic Rebuke moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Amulet Titan 20
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble, Mox Opal
+║   Lands: Shivan Reef, Spirebluff Canal
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige, Gruul Turf [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Pinnacle Emissary
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Shivan Reef→C (paying for Pinnacle Emissary, 2 mana remaining)
+T4 P2: Warp Pinnacle Emissary (pays 1)
+T4 P2: Cast Pinnacle Emissary (1UR)
+    [Priority] P1 passes (no response)
+T4: Resolve Pinnacle Emissary
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Pinnacle Emissary moved battlefield -> exile (Warp exile)
+T4: Pinnacle Emissary exiled (Warp)
+
+╔══ TURN 4 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige, Gruul Turf
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble, Mox Opal
+║   Lands: Shivan Reef [T], Spirebluff Canal
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Gruul Turf
+  [Main 1]
+T4 P1: Play Simic Growth Chamber (enters tapped)
+T4 P1: Amulet of Vigor untaps Simic Growth Chamber
+T4: Crumbling Vestige moved battlefield -> hand (Simic Growth Chamber ETB returns Crumbling Vestige to hand)
+    → Goal: ramp
+    [Mana] Tap Gruul Turf→RG (paying for Malevolent Rumble, 4 mana remaining)
+T4 P1: Cast Malevolent Rumble (1G)
+    [Priority] P2 passes (no response)
+T4: Resolve Malevolent Rumble
+T4 P1: Create 1x spawn token(s)
+T4: Malevolent Rumble moved stack -> graveyard (resolution)
+    → Goal: ramp [enablers]
+    [Mana] Tap Simic Growth Chamber→GU (paying for Arboreal Grazer, 2 mana remaining)
+T4 P1: Cast Arboreal Grazer (G)
+    [Priority] P2 passes (no response)
+T4: Resolve Arboreal Grazer
+T4 P1: Amulet of Vigor untaps Gruul Turf
+T4: Gruul Turf moved battlefield -> hand (Gruul Turf ETB returns Gruul Turf to hand)
+T4 P1: Arboreal Grazer puts Gruul Turf onto battlefield
+    → Goal: ramp [enablers]
+    [Mana] Tap Gruul Turf→RG (paying for Spelunking, 3 mana remaining)
+T4 P1: Cast Spelunking (2G)
+    [Priority] P2 passes (no response)
+T4: Resolve Spelunking
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Amulet Titan 20
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 49  |  Graveyard: 2
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble, Mox Opal
+║   Lands: Shivan Reef, Spirebluff Canal
+║ Amulet Titan board:
+║   Creatures: spawn Token (0/1), Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber [T], Gruul Turf [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Fiery Islet
+  [Main 1]
+T5 P2: Play Fiery Islet
+    → Goal: curve_out
+    [Mana] Tap Spirebluff Canal→U, Fiery Islet→R, Shivan Reef→C (paying for Pinnacle Emissary, 3 mana remaining)
+T5 P2: Cast Pinnacle Emissary (1UR)
+    [Priority] P1 passes (no response)
+T5: Resolve Pinnacle Emissary
+T5 P2: Activate Fiery Islet (sacrifice)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Affinity 20
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 49  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: spawn Token (0/1), Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber, Gruul Turf
+║ Affinity board:
+║   Creatures: Pinnacle Emissary (3/3)
+║   Other: Mishra's Bauble, Mox Opal
+║   Lands: Shivan Reef [T], Spirebluff Canal [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Amulet of Vigor
+  [Main 1]
+T5 P1: Play Gruul Turf (enters tapped)
+T5 P1: Amulet of Vigor untaps Gruul Turf
+T5: Simic Growth Chamber moved battlefield -> hand (Gruul Turf ETB returns Simic Growth Chamber to hand)
+    → Goal: ramp
+    [Mana] Tap Gruul Turf→RG (paying for Amulet of Vigor, 4 mana remaining)
+T5 P1: Cast Amulet of Vigor (1)
+    [Priority] P2 passes (no response)
+T5: Resolve Amulet of Vigor
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 47  |  Graveyard: 3
+║ Affinity board:
+║   Creatures: Pinnacle Emissary (3/3)
+║   Other: Mishra's Bauble, Mox Opal
+║   Lands: Shivan Reef, Spirebluff Canal
+║ Amulet Titan board:
+║   Creatures: spawn Token (0/1), Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor, Spelunking, Amulet of Vigor
+║   Lands: Gruul Turf [T], Gruul Turf
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Kappa Cannoneer
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Spirebluff Canal→R, Shivan Reef→C (paying for Weapons Manufacturing, 2 mana remaining)
+T6 P2: Cast Weapons Manufacturing (1R)
+    [Priority] P1 passes (no response)
+T6: Resolve Weapons Manufacturing
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Pinnacle Emissary
+T6 P2: Attack with Pinnacle Emissary
+T6 P1:   [BLOCK] spawn Token (0/1) blocks Pinnacle Emissary (3/3) — lifespan_delta=+1.00
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T6: spawn Token dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Affinity 20
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 48  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor, Spelunking, Amulet of Vigor
+║   Lands: Gruul Turf, Gruul Turf
+║ Affinity board:
+║   Creatures: Pinnacle Emissary (3/3) [tapped]
+║   Other: Mishra's Bauble, Mox Opal, Weapons Manufacturing
+║   Lands: Shivan Reef [T], Spirebluff Canal [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Summoner's Pact
+  [Main 1]
+T6 P1: Play Simic Growth Chamber (enters tapped)
+T6 P1: Amulet of Vigor, Amulet of Vigor untaps Simic Growth Chamber (x2)
+T6: Gruul Turf moved battlefield -> hand (Simic Growth Chamber ETB returns Gruul Turf to hand)
+    → Goal: ramp
+T6 P1: Cast Summoner's Pact (0)
+    [Priority] P2 passes (no response)
+T6: Resolve Summoner's Pact
+T6 P1: Summoner's Pact finds Primeval Titan
+T6: Summoner's Pact moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 46  |  Graveyard: 3
+║ Affinity board:
+║   Creatures: Pinnacle Emissary (3/3)
+║   Other: Mishra's Bauble, Mox Opal, Weapons Manufacturing
+║   Lands: Shivan Reef, Spirebluff Canal
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor, Spelunking, Amulet of Vigor
+║   Lands: Gruul Turf, Simic Growth Chamber
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Weapons Manufacturing
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Spirebluff Canal→R, Shivan Reef→C (paying for Weapons Manufacturing, 2 mana remaining)
+T7 P2: Cast Weapons Manufacturing (1R)
+    [Priority] P1 passes (no response)
+T7: Resolve Weapons Manufacturing
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Pinnacle Emissary
+T7 P2: Attack with Pinnacle Emissary
+T7 P1:   [BLOCK] Arboreal Grazer (0/3) blocks Pinnacle Emissary (3/3) — lifespan_delta=+1.00
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T7: Arboreal Grazer dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Affinity 20
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 46  |  Graveyard: 4
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Spelunking, Amulet of Vigor
+║   Lands: Gruul Turf, Simic Growth Chamber
+║ Affinity board:
+║   Creatures: Pinnacle Emissary (3/3) [tapped]
+║   Other: Mishra's Bauble, Mox Opal, Weapons Manufacturing, Weapons Manufacturing
+║   Lands: Shivan Reef [T], Spirebluff Canal [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Otawara, Soaring City
+  [Main 1]
+T7 P1: Play Crumbling Vestige (enters tapped)
+T7 P1: Amulet of Vigor, Amulet of Vigor untaps Crumbling Vestige (x2)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 45  |  Graveyard: 3
+║ Affinity board:
+║   Creatures: Pinnacle Emissary (3/3)
+║   Other: Mishra's Bauble, Mox Opal, Weapons Manufacturing, Weapons Manufacturing
+║   Lands: Shivan Reef, Spirebluff Canal
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Spelunking, Amulet of Vigor
+║   Lands: Gruul Turf, Simic Growth Chamber, Crumbling Vestige
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Weapons Manufacturing
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Pinnacle Emissary
+T8 P2: Attack with Pinnacle Emissary
+  [Declare Blockers] P1 does not block
+T8 P2:   Pinnacle Emissary (3/3) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 20 → 17
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 17  |  Affinity 20
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 45  |  Graveyard: 4
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Spelunking, Amulet of Vigor
+║   Lands: Gruul Turf, Simic Growth Chamber, Crumbling Vestige
+║ Affinity board:
+║   Creatures: Pinnacle Emissary (3/3) [tapped]
+║   Other: Mishra's Bauble, Mox Opal, Weapons Manufacturing, Weapons Manufacturing
+║   Lands: Shivan Reef, Spirebluff Canal
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Amulet of Vigor
+  [Main 1]
+T8 P1: Play Gruul Turf (enters tapped)
+T8 P1: Amulet of Vigor, Amulet of Vigor untaps Gruul Turf (x2)
+T8: Crumbling Vestige moved battlefield -> hand (Gruul Turf ETB returns Crumbling Vestige to hand)
+    → Goal: ramp [payoffs]
+    [Mana] Tap Gruul Turf→RG, Simic Growth Chamber→GU, Gruul Turf→RG (paying for Primeval Titan, 6 mana remaining)
+T8 P1: Cast Primeval Titan (4GG)
+    [Priority] P2 responds with Metallic Rebuke
+T8 P2: Improvise — tap 1 artifact(s) for Metallic Rebuke
+    [Mana] Tap Spirebluff Canal→U, Shivan Reef→C (paying for Metallic Rebuke, 2 mana remaining)
+T8 P2: Cast Metallic Rebuke (2U)
+T8: Resolve Metallic Rebuke
+T8: Primeval Titan moved stack -> graveyard (resolution)
+T8: Primeval Titan is countered
+T8: Metallic Rebuke moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Amulet Titan 17
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 44  |  Graveyard: 4
+║ Affinity board:
+║   Creatures: Pinnacle Emissary (3/3)
+║   Other: Mishra's Bauble, Mox Opal, Weapons Manufacturing, Weapons Manufacturing
+║   Lands: Shivan Reef, Spirebluff Canal
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Spelunking, Amulet of Vigor
+║   Lands: Gruul Turf [T], Simic Growth Chamber [T], Gruul Turf [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Tormod's Crypt
+  [Main 1]
+    → Goal: curve_out
+T9 P2: Cast Tormod's Crypt (0)
+T9 P2: Create 1x Drone token(s)
+    [Priority] P1 passes (no response)
+T9: Resolve Tormod's Crypt
+T9 P2: Create 1x Drone token(s)
+T9 P2: Weapons Manufacturing trigger → create 1 token(s) (Tormod's Crypt entered as nontoken=True artifact)
+T9 P2: Create 1x Drone token(s)
+T9 P2: Weapons Manufacturing trigger → create 1 token(s) (Tormod's Crypt entered as nontoken=True artifact)
+    → Goal: curve_out
+T9 P2: Improvise — tap 4 artifact(s) for Kappa Cannoneer
+    [Mana] Tap Spirebluff Canal→U, Shivan Reef→C (paying for Kappa Cannoneer, 2 mana remaining)
+T9 P2: Cast Kappa Cannoneer (5U)
+T9 P2: Create 1x Drone token(s)
+    [Priority] P1 passes (no response)
+T9: Resolve Kappa Cannoneer
+T9 P2: Kappa Cannoneer gets +1/+1 counter (Kappa Cannoneer entered) → 5/5
+T9 P2: Create 1x Drone token(s)
+T9 P2: Weapons Manufacturing trigger → create 1 token(s) (Kappa Cannoneer entered as nontoken=True artifact)
+T9 P2: Create 1x Drone token(s)
+T9 P2: Weapons Manufacturing trigger → create 1 token(s) (Kappa Cannoneer entered as nontoken=True artifact)
+T9 P2: Activate Tormod's Crypt (sacrifice)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 17  |  Affinity 20
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 44  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Spelunking, Amulet of Vigor
+║   Lands: Gruul Turf, Simic Growth Chamber, Gruul Turf
+║ Affinity board:
+║   Creatures: Pinnacle Emissary (3/3) [tapped], Drone Token (1/1) [tapped], Drone Token (1/1), Drone Token (1/1), Drone Token (1/1), Kappa Cannoneer (5/5), Drone Token (1/1), Drone Token (1/1)
+║   Other: Mishra's Bauble, Mox Opal, Weapons Manufacturing, Weapons Manufacturing
+║   Lands: Shivan Reef [T], Spirebluff Canal [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Urza's Cave
+  [Main 1]
+T9 P1: Play Urza's Saga
+    → Goal: ramp
+    [Mana] Tap Urza's Saga→C (paying for Amulet of Vigor, 7 mana remaining)
+T9 P1: Cast Amulet of Vigor (1)
+    [Priority] P2 passes (no response)
+T9: Resolve Amulet of Vigor
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Amulet Titan 17
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 43  |  Graveyard: 5
+║ Affinity board:
+║   Creatures: Pinnacle Emissary (3/3), Drone Token (1/1), Drone Token (1/1), Drone Token (1/1), Drone Token (1/1), Kappa Cannoneer (5/5), Drone Token (1/1), Drone Token (1/1)
+║   Other: Mishra's Bauble, Mox Opal, Weapons Manufacturing, Weapons Manufacturing
+║   Lands: Shivan Reef, Spirebluff Canal
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Spelunking, Amulet of Vigor, Amulet of Vigor
+║   Lands: Gruul Turf, Simic Growth Chamber, Gruul Turf, Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mox Opal
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Pinnacle Emissary, Drone Token, Drone Token, Drone Token, Drone Token, Kappa Cannoneer, Drone Token, Drone Token
+T10 P2: Attack with Pinnacle Emissary, Drone Token, Drone Token, Drone Token, Drone Token, Kappa Cannoneer, Drone Token, Drone Token
+  [Declare Blockers] P1 does not block
+T10 P2:   Pinnacle Emissary (3/3) → 3 dmg to player
+T10 P2:   Drone Token (1/1) → 1 dmg to player
+T10 P2:   Drone Token (1/1) → 1 dmg to player
+T10 P2:   Drone Token (1/1) → 1 dmg to player
+T10 P2:   Drone Token (1/1) → 1 dmg to player
+T10 P2:   Kappa Cannoneer (5/5) → 5 dmg to player
+T10 P2:   Drone Token (1/1) → 1 dmg to player
+T10 P2:   Drone Token (1/1) → 1 dmg to player
+  [Combat Damage] 14 damage dealt → P1 life: 17 → 3
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 3  |  Affinity 20
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 2
+║ Library: 43  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Spelunking, Amulet of Vigor, Amulet of Vigor
+║   Lands: Gruul Turf, Simic Growth Chamber, Gruul Turf, Urza's Saga
+║ Affinity board:
+║   Creatures: Pinnacle Emissary (3/3) [tapped], Drone Token (1/1) [tapped], Drone Token (1/1) [tapped], Drone Token (1/1) [tapped], Drone Token (1/1) [tapped], Kappa Cannoneer (5/5) [tapped], Drone Token (1/1) [tapped], Drone Token (1/1) [tapped]
+║   Other: Mishra's Bauble, Mox Opal, Weapons Manufacturing, Weapons Manufacturing
+║   Lands: Shivan Reef, Spirebluff Canal
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T10 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P1 draws: Scapeshift
+  [Main 1]
+T10 P1: Play Crumbling Vestige (enters tapped)
+T10 P1: Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Crumbling Vestige (x3)
+    → Goal: ramp
+    [Mana] Tap Gruul Turf→RG, Simic Growth Chamber→GU (paying for Scapeshift, 8 mana remaining)
+T10 P1: Cast Scapeshift (2GG)
+    [Priority] P2 passes (no response)
+T10: Resolve Scapeshift
+T10 P1: Scapeshift sacrifices 5 lands
+T10 P1: Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Crumbling Vestige (x3)
+T10 P1: Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Simic Growth Chamber (x3)
+T10: Gruul Turf moved battlefield -> hand (Simic Growth Chamber ETB returns Gruul Turf to hand)
+T10 P1: Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Simic Growth Chamber (x3)
+T10: Simic Growth Chamber moved battlefield -> hand (Simic Growth Chamber ETB returns Simic Growth Chamber to hand)
+T10 P1: Scapeshift fetches 5 lands onto battlefield
+T10: Scapeshift moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Amulet Titan 3
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 42  |  Graveyard: 5
+║ Affinity board:
+║   Creatures: Pinnacle Emissary (3/3), Drone Token (1/1), Drone Token (1/1), Drone Token (1/1), Drone Token (1/1), Kappa Cannoneer (5/5), Drone Token (1/1), Drone Token (1/1)
+║   Other: Mishra's Bauble, Mox Opal, Weapons Manufacturing, Weapons Manufacturing
+║   Lands: Shivan Reef, Spirebluff Canal
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Spelunking, Amulet of Vigor, Amulet of Vigor
+║   Lands: Simic Growth Chamber, Simic Growth Chamber, Crumbling Vestige
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Tormod's Crypt
+  [Main 1]
+    → Goal: curve_out
+T11 P2: Cast Tormod's Crypt (0)
+T11 P2: Create 1x Drone token(s)
+    [Priority] P1 passes (no response)
+T11: Resolve Tormod's Crypt
+T11 P2: Kappa Cannoneer gets +1/+1 counter (Tormod's Crypt entered) → 6/6
+T11 P2: Create 1x Drone token(s)
+T11 P2: Weapons Manufacturing trigger → create 1 token(s) (Tormod's Crypt entered as nontoken=True artifact)
+T11 P2: Create 1x Drone token(s)
+T11 P2: Weapons Manufacturing trigger → create 1 token(s) (Tormod's Crypt entered as nontoken=True artifact)
+T11 P2: Activate Tormod's Crypt (sacrifice)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Pinnacle Emissary, Drone Token, Drone Token, Drone Token, Drone Token, Kappa Cannoneer, Drone Token, Drone Token
+T11 P2: Attack with Pinnacle Emissary, Drone Token, Drone Token, Drone Token, Drone Token, Kappa Cannoneer, Drone Token, Drone Token
+  [Declare Blockers] P1 does not block
+T11 P2:   Pinnacle Emissary (3/3) → 3 dmg to player
+T11 P2:   Drone Token (1/1) → 1 dmg to player
+T11 P2:   Drone Token (1/1) → 1 dmg to player
+T11 P2:   Drone Token (1/1) → 1 dmg to player
+T11 P2:   Drone Token (1/1) → 1 dmg to player
+T11 P2:   Kappa Cannoneer (6/6) → 6 dmg to player
+T11 P2:   Drone Token (1/1) → 1 dmg to player
+T11 P2:   Drone Token (1/1) → 1 dmg to player
+P1 loses: life total -12
+  [Combat Damage] 15 damage dealt → P1 life: 3 → -12
+
+>>> Affinity wins Game 1 on turn 11 via damage
+    Final life: Amulet Titan=-12  Affinity=20
+
+======================================================================
+  GAME 2: Amulet Titan (P1) vs Affinity (P2)  —  seed 60501
+  Series: Amulet Titan 0 - 1 Affinity
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Amulet Titan wins → chooses to play first
+║ P1 (on play): Amulet Titan
+║ P2 (on draw): Affinity
+╚═══════════════════════════════════════════════════════
+
+P1 (Amulet Titan) opening hand (4 lands, 3 spells):
+  • Arboreal Grazer [Creature, CMC 1]
+  • Amulet of Vigor [Spell, CMC 1]
+  • Crumbling Vestige [Land, CMC 0]
+  • Spelunking [Spell, CMC 3]
+  • Forest [Land, CMC 0]
+  • Mirrorpool [Land, CMC 0]
+  • Boseiju, Who Endures [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Amulet of Vigor, Arboreal Grazer, Spelunking, 3 cheap spells
+
+P2 (Affinity) opening hand (0 lands, 7 spells):
+  • Kappa Cannoneer [Creature, CMC 6]
+  • Mox Opal [Spell, CMC 0]
+  • Metallic Rebuke [Spell, CMC 3]
+  • Engineered Explosives [Spell, CMC 0]
+  • Engineered Explosives [Spell, CMC 0]
+  • Emry, Lurker of the Loch [Creature, CMC 3]
+  • Metallic Rebuke [Spell, CMC 3]
+→ P2 MULLIGANS (too few lands (0 < 2))
+  New hand (0 lands, 7 spells): ['Engineered Explosives', 'Pinnacle Emissary', 'Mox Opal', 'Shadowspear', "Mishra's Bauble", 'Preordain', 'Weapons Manufacturing']
+→ P2 MULLIGANS (too few lands (0 < 2))
+  New hand (3 lands, 4 spells): ["Mishra's Bauble", "Mishra's Bauble", 'Fiery Islet', 'Shivan Reef', 'Metallic Rebuke', 'Metallic Rebuke', 'Spirebluff Canal']
+→ P2 mulligans to 5, bottoms: ['Metallic Rebuke', 'Metallic Rebuke']
+  Keeps: ["Mishra's Bauble", "Mishra's Bauble", 'Fiery Islet', 'Shivan Reef', 'Spirebluff Canal']
+
+
+╔══ TURN 1 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Crumbling Vestige (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 55  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Shivan Reef
+  [Main 1]
+T1 P2: Play Fiery Islet
+    → Goal: deploy_engine
+T1 P2: Cast Mishra's Bauble (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Mishra's Bauble
+    → Goal: deploy_engine
+T1 P2: Cast Mishra's Bauble (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Mishra's Bauble
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble, Mishra's Bauble
+║   Lands: Fiery Islet
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Amulet of Vigor
+  [Main 1]
+T2 P1: Play Forest
+    → Goal: deploy_engine [enablers]
+    [Mana] Tap Forest→G (paying for Arboreal Grazer, 2 mana remaining)
+T2 P1: Cast Arboreal Grazer (G)
+    [Priority] P2 passes (no response)
+T2: Resolve Arboreal Grazer
+T2 P1: Arboreal Grazer puts Mirrorpool onto battlefield
+    → Goal: deploy_engine [engines]
+    [Mana] Tap Crumbling Vestige→C (paying for Amulet of Vigor, 1 mana remaining)
+T2 P1: Cast Amulet of Vigor (1)
+    [Priority] P2 passes (no response)
+T2: Resolve Amulet of Vigor
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Amulet Titan 20
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 1  |  Opp lands: 3
+║ Library: 54  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble, Mishra's Bauble
+║   Lands: Fiery Islet
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige [T], Forest [T], Mirrorpool [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Skateboard
+  [Main 1]
+T2 P2: Play Shivan Reef
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Affinity 20
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige, Forest, Mirrorpool
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble, Mishra's Bauble
+║   Lands: Fiery Islet, Shivan Reef
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Forest
+  [Main 1]
+T3 P1: Play Forest
+    → Goal: ramp
+    [Mana] Tap Forest→G (paying for Amulet of Vigor, 4 mana remaining)
+T3 P1: Cast Amulet of Vigor (1)
+    [Priority] P2 passes (no response)
+T3: Resolve Amulet of Vigor
+    → Goal: ramp [enablers]
+    [Mana] Tap Mirrorpool→C, Forest→G, Crumbling Vestige→C (paying for Spelunking, 3 mana remaining)
+T3 P1: Cast Spelunking (2G)
+    [Priority] P2 passes (no response)
+T3: Resolve Spelunking
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Amulet Titan 20
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble, Mishra's Bauble
+║   Lands: Fiery Islet, Shivan Reef
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking
+║   Lands: Crumbling Vestige [T], Forest [T], Mirrorpool [T], Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Pinnacle Emissary
+  [Main 1]
+T3 P2: Play Shivan Reef
+    → Goal: curve_out
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+    → Goal: curve_out
+  [End Step]
+
+╔══ TURN 4 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Affinity 20
+║ Hand: 1 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking
+║   Lands: Crumbling Vestige, Forest, Mirrorpool, Forest
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble, Mishra's Bauble
+║   Lands: Fiery Islet, Shivan Reef, Shivan Reef
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Urza's Saga
+  [Main 1]
+T4 P1: Play Urza's Saga
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Amulet Titan 20
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 52  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble, Mishra's Bauble
+║   Lands: Fiery Islet, Shivan Reef, Shivan Reef
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking
+║   Lands: Crumbling Vestige, Forest, Mirrorpool, Forest, Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mishra's Bauble
+  [Main 1]
+T4 P2: Play Spirebluff Canal (tapped, 3 other lands)
+    → Goal: curve_out
+    → Goal: curve_out
+T4 P2: Cast Mishra's Bauble (0)
+    [Priority] P1 passes (no response)
+T4: Resolve Mishra's Bauble
+T4: Fiery Islet moved battlefield -> graveyard (activation cost (Fiery Islet))
+T4 P2: activate Fiery Islet — Draw a card.
+T4 P2: Fiery Islet activated — draw 1 (Pinnacle Emissary)
+    → Goal: curve_out
+    [Mana] Tap Shivan Reef→C (paying for Pinnacle Emissary, 1 mana remaining)
+T4 P2: Warp Pinnacle Emissary (pays 1)
+T4 P2: Cast Pinnacle Emissary (1UR)
+    [Priority] P1 passes (no response)
+T4: Resolve Pinnacle Emissary
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Pinnacle Emissary moved battlefield -> exile (Warp exile)
+T4: Pinnacle Emissary exiled (Warp)
+
+╔══ TURN 5 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Affinity 20
+║ Hand: 1 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking
+║   Lands: Crumbling Vestige, Forest, Mirrorpool, Forest, Urza's Saga
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
+║   Lands: Shivan Reef [T], Shivan Reef [T], Spirebluff Canal [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T5 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P1 draws: Vesuva
+  [Main 1]
+T5 P1: Play Boseiju, Who Endures
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Amulet Titan 20
+║ Hand: 2 cards  |  Opp hand: 1 cards
+║ Lands: 3  |  Opp lands: 6
+║ Library: 50  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
+║   Lands: Shivan Reef, Shivan Reef, Spirebluff Canal
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking
+║   Lands: Crumbling Vestige, Forest, Mirrorpool, Forest, Urza's Saga, Boseiju, Who Endures
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Fiery Islet
+  [Main 1]
+T5 P2: Play Fiery Islet
+T5: Fiery Islet moved battlefield -> graveyard (activation cost (Fiery Islet))
+T5 P2: activate Fiery Islet — Draw a card.
+T5 P2: Fiery Islet activated — draw 1 (Pinnacle Emissary)
+    → Goal: curve_out
+    [Mana] Tap Shivan Reef→C (paying for Pinnacle Emissary, 2 mana remaining)
+T5 P2: Warp Pinnacle Emissary (pays 1)
+T5 P2: Cast Pinnacle Emissary (1UR)
+    [Priority] P1 passes (no response)
+T5: Resolve Pinnacle Emissary
+    → Goal: curve_out
+    [Mana] Tap Spirebluff Canal→U (paying for Pinnacle Emissary, 1 mana remaining)
+T5 P2: Warp Pinnacle Emissary (pays 1)
+T5 P2: Cast Pinnacle Emissary (1UR)
+T5 P2: Create 1x Drone token(s)
+    [Priority] P1 passes (no response)
+T5: Resolve Pinnacle Emissary
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T5: Pinnacle Emissary moved battlefield -> exile (Warp exile)
+T5: Pinnacle Emissary exiled (Warp)
+T5: Pinnacle Emissary moved battlefield -> exile (Warp exile)
+T5: Pinnacle Emissary exiled (Warp)
+
+╔══ TURN 6 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Affinity 20
+║ Hand: 1 cards  |  Opp hand: 1 cards
+║ Lands: 6  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking
+║   Lands: Crumbling Vestige, Forest, Mirrorpool, Forest, Urza's Saga, Boseiju, Who Endures
+║ Affinity board:
+║   Creatures: Drone Token (1/1)
+║   Other: Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
+║   Lands: Shivan Reef [T], Shivan Reef [T], Spirebluff Canal [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T6 P1: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+  [Draw] P1 draws: Echoing Deeps
+  [Main 1]
+T6 P1: Play Vesuva
+T6 P1: Create 1x Construct token(s)
+T6 P1: Urza's Saga activates "{2}, {T}: Create a 0/0 colorless Constru..." (pays {2}, {T})
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Amulet Titan 20
+║ Hand: 1 cards  |  Opp hand: 1 cards
+║ Lands: 3  |  Opp lands: 7
+║ Library: 48  |  Graveyard: 2
+║ Affinity board:
+║   Creatures: Drone Token (1/1)
+║   Other: Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
+║   Lands: Shivan Reef, Shivan Reef, Spirebluff Canal
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Construct Token (3/3)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking
+║   Lands: Crumbling Vestige [T], Forest [T], Mirrorpool, Forest, Urza's Saga [T], Boseiju, Who Endures, Vesuva
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Engineered Explosives
+  [Main 1]
+    → Goal: curve_out
+    → Goal: curve_out
+    → Goal: curve_out
+    → Goal: curve_out
+    [Mana] Tap Shivan Reef→C (paying for Skateboard, 3 mana remaining)
+T6 P2: Cast Skateboard (1)
+    [Priority] P1 passes (no response)
+T6: Resolve Skateboard
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Drone Token
+T6 P2: Attack with Drone Token
+  [Declare Blockers] P1 does not block
+T6 P2:   Drone Token (1/1) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 20 → 19
+  [End Combat]
+  [Main 2]
+    → Goal: curve_out
+    → Goal: curve_out
+    → Goal: curve_out
+  [End Step]
+
+╔══ TURN 7 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 19  |  Affinity 20
+║ Hand: 1 cards  |  Opp hand: 1 cards
+║ Lands: 7  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Construct Token (3/3)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking
+║   Lands: Crumbling Vestige, Forest, Mirrorpool, Forest, Urza's Saga, Boseiju, Who Endures, Vesuva
+║ Affinity board:
+║   Creatures: Drone Token (1/1) [tapped]
+║   Other: Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Skateboard
+║   Lands: Shivan Reef [T], Shivan Reef, Spirebluff Canal
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T7 P1: Urza's Saga tutors Zuran Orb
+T7 P1: Sacrifice Urza's Saga (final chapter)
+  [Draw] P1 draws: Urza's Saga
+  [Main 1]
+T7 P1: Play Urza's Saga
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Construct Token
+T7 P1: Attack with Construct Token
+  [Declare Blockers] P2 does not block
+T7 P1:   Construct Token (4/4) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 20 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 16  |  Amulet Titan 19
+║ Hand: 1 cards  |  Opp hand: 1 cards
+║ Lands: 3  |  Opp lands: 7
+║ Library: 47  |  Graveyard: 2
+║ Affinity board:
+║   Creatures: Drone Token (1/1)
+║   Other: Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Skateboard
+║   Lands: Shivan Reef, Shivan Reef, Spirebluff Canal
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Construct Token (4/4) [tapped]
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking, Zuran Orb
+║   Lands: Crumbling Vestige, Forest, Mirrorpool, Forest, Boseiju, Who Endures, Vesuva, Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Claws of Gix
+  [Main 1]
+    → Goal: curve_out
+T7 P2: Cast Engineered Explosives (3) (X=3)
+    [Priority] P1 passes (no response)
+T7: Resolve Engineered Explosives
+T7 P2: Engineered Explosives enters with 3 charge counters
+T7 P2: Activate Engineered Explosives (sacrifice)
+T7: Spelunking moved battlefield -> graveyard (destroyed)
+T7 P2:   destroys Spelunking (MV=3)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Drone Token
+T7 P2: Attack with Drone Token
+  [Declare Blockers] P1 does not block
+T7 P2:   Drone Token (1/1) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 19 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 18  |  Affinity 16
+║ Hand: 1 cards  |  Opp hand: 1 cards
+║ Lands: 7  |  Opp lands: 3
+║ Library: 46  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Construct Token (4/4)
+║   Other: Amulet of Vigor, Amulet of Vigor, Zuran Orb
+║   Lands: Crumbling Vestige, Forest, Mirrorpool, Forest, Boseiju, Who Endures, Vesuva, Urza's Saga
+║ Affinity board:
+║   Creatures: Drone Token (1/1) [tapped]
+║   Other: Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Skateboard
+║   Lands: Shivan Reef [T], Shivan Reef [T], Spirebluff Canal [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T8 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P1 draws: Spelunking
+  [Main 1]
+T8 P1: Play Echoing Deeps
+    → Goal: ramp [enablers]
+    [Mana] Tap Forest→G, Mirrorpool→C, Forest→G (paying for Spelunking, 7 mana remaining)
+T8 P1: Cast Spelunking (2G)
+    [Priority] P2 passes (no response)
+T8: Resolve Spelunking
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Construct Token
+T8 P1: Attack with Construct Token
+  [Declare Blockers] P2 does not block
+T8 P1:   Construct Token (4/4) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 16 → 12
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 12  |  Amulet Titan 18
+║ Hand: 1 cards  |  Opp hand: 0 cards
+║ Lands: 3  |  Opp lands: 8
+║ Library: 46  |  Graveyard: 3
+║ Affinity board:
+║   Creatures: Drone Token (1/1)
+║   Other: Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Skateboard
+║   Lands: Shivan Reef, Shivan Reef, Spirebluff Canal
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Construct Token (4/4) [tapped]
+║   Other: Amulet of Vigor, Amulet of Vigor, Zuran Orb, Spelunking
+║   Lands: Crumbling Vestige, Forest [T], Mirrorpool [T], Forest [T], Boseiju, Who Endures, Vesuva, Urza's Saga, Echoing Deeps
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Urza's Saga
+  [Main 1]
+T8 P2: Play Urza's Saga
+    → Goal: curve_out
+    → Goal: curve_out
+    → Goal: curve_out
+    → Goal: curve_out
+T8 P2: Cast Claws of Gix (0)
+    [Priority] P1 passes (no response)
+T8: Resolve Claws of Gix
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Drone Token
+T8 P2: Attack with Drone Token
+  [Declare Blockers] P1 does not block
+T8 P2:   Drone Token (1/1) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 18 → 17
+  [End Combat]
+  [Main 2]
+    → Goal: curve_out
+    → Goal: curve_out
+    → Goal: curve_out
+  [End Step]
+
+╔══ TURN 9 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 17  |  Affinity 12
+║ Hand: 0 cards  |  Opp hand: 0 cards
+║ Lands: 8  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Construct Token (4/4)
+║   Other: Amulet of Vigor, Amulet of Vigor, Zuran Orb, Spelunking
+║   Lands: Crumbling Vestige, Forest, Mirrorpool, Forest, Boseiju, Who Endures, Vesuva, Urza's Saga, Echoing Deeps
+║ Affinity board:
+║   Creatures: Drone Token (1/1) [tapped]
+║   Other: Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Skateboard, Claws of Gix
+║   Lands: Shivan Reef, Shivan Reef, Spirebluff Canal, Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T9 P1: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+  [Draw] P1 draws: Crumbling Vestige
+  [Main 1]
+T9 P1: Play Crumbling Vestige (enters tapped)
+T9 P1: Amulet of Vigor, Amulet of Vigor untaps Crumbling Vestige (x2)
+T9 P1: Create 1x Construct token(s)
+T9 P1: Urza's Saga activates "{2}, {T}: Create a 0/0 colorless Constru..." (pays {2}, {T})
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Construct Token
+T9 P1: Attack with Construct Token
+  [Declare Blockers] P2 does not block
+T9 P1:   Construct Token (5/5) → 5 dmg to player
+  [Combat Damage] 5 damage dealt → P2 life: 12 → 7
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 7  |  Amulet Titan 17
+║ Hand: 0 cards  |  Opp hand: 0 cards
+║ Lands: 4  |  Opp lands: 9
+║ Library: 45  |  Graveyard: 3
+║ Affinity board:
+║   Creatures: Drone Token (1/1)
+║   Other: Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Skateboard, Claws of Gix
+║   Lands: Shivan Reef, Shivan Reef, Spirebluff Canal, Urza's Saga
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Construct Token (5/5) [tapped], Construct Token (5/5)
+║   Other: Amulet of Vigor, Amulet of Vigor, Zuran Orb, Spelunking
+║   Lands: Crumbling Vestige [T], Forest [T], Mirrorpool, Forest, Boseiju, Who Endures, Vesuva, Urza's Saga [T], Echoing Deeps, Crumbling Vestige
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T9 P2: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P2 draws: Welding Jar
+  [Main 1]
+    → Goal: curve_out
+    → Goal: curve_out
+    → Goal: curve_out
+    → Goal: curve_out
+T9 P2: Cast Welding Jar (0)
+    [Priority] P1 passes (no response)
+T9: Resolve Welding Jar
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Drone Token
+T9 P2: Attack with Drone Token
+  [Declare Blockers] P1 does not block
+T9 P2:   Drone Token (1/1) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 17 → 16
+  [End Combat]
+  [Main 2]
+    → Goal: curve_out
+    → Goal: curve_out
+    → Goal: curve_out
+  [End Step]
+
+╔══ TURN 10 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 16  |  Affinity 7
+║ Hand: 0 cards  |  Opp hand: 0 cards
+║ Lands: 9  |  Opp lands: 4
+║ Library: 44  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Construct Token (5/5), Construct Token (5/5)
+║   Other: Amulet of Vigor, Amulet of Vigor, Zuran Orb, Spelunking
+║   Lands: Crumbling Vestige, Forest, Mirrorpool, Forest, Boseiju, Who Endures, Vesuva, Urza's Saga, Echoing Deeps, Crumbling Vestige
+║ Affinity board:
+║   Creatures: Drone Token (1/1) [tapped]
+║   Other: Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Skateboard, Claws of Gix, Welding Jar
+║   Lands: Shivan Reef, Shivan Reef, Spirebluff Canal, Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T10 P1: Urza's Saga tutors Amulet of Vigor
+T10 P1: Sacrifice Urza's Saga (final chapter)
+  [Draw] P1 draws: Primeval Titan
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Construct Token, Construct Token
+T10 P1: Attack with Construct Token, Construct Token
+  [Declare Blockers] P2 does not block
+T10 P1:   Construct Token (6/6) → 6 dmg to player
+T10 P1:   Construct Token (6/6) → 6 dmg to player
+P2 loses: life total -5
+  [Combat Damage] 12 damage dealt → P2 life: 7 → -5
+
+>>> Amulet Titan wins Game 2 on turn 10 via damage
+    Final life: Amulet Titan=16  Affinity=-5
+
+======================================================================
+  GAME 3: Affinity (P1) vs Amulet Titan (P2)  —  seed 60502
+  Series: Amulet Titan 1 - 1 Affinity
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Affinity wins → chooses to play first
+║ P1 (on play): Affinity
+║ P2 (on draw): Amulet Titan
+╚═══════════════════════════════════════════════════════
+
+P1 (Affinity) opening hand (1 lands, 6 spells):
+  • Pinnacle Emissary [Creature, CMC 3]
+  • Fiery Islet [Land, CMC 0]
+  • Pinnacle Emissary [Creature, CMC 3]
+  • Claws of Gix [Spell, CMC 0]
+  • Engineered Explosives [Spell, CMC 0]
+  • Mox Opal [Spell, CMC 0]
+  • Metallic Rebuke [Spell, CMC 3]
+→ P1 MULLIGANS (too few lands (1 < 2))
+  New hand (2 lands, 5 spells): ['Engineered Explosives', 'Kappa Cannoneer', 'Emry, Lurker of the Loch', 'Engineered Explosives', 'Emry, Lurker of the Loch', "Urza's Saga", "Urza's Saga"]
+→ P1 mulligans to 6, bottoms: ['Emry, Lurker of the Loch']
+  Keeps: ['Engineered Explosives', 'Kappa Cannoneer', 'Emry, Lurker of the Loch', 'Engineered Explosives', "Urza's Saga", "Urza's Saga"]
+
+P2 (Amulet Titan) opening hand (4 lands, 3 spells):
+  • Crumbling Vestige [Land, CMC 0]
+  • Gruul Turf [Land, CMC 0]
+  • Spelunking [Spell, CMC 3]
+  • Green Sun's Zenith [Spell, CMC 1]
+  • Scapeshift [Spell, CMC 4]
+  • Shifting Woodland [Land, CMC 0]
+  • Crumbling Vestige [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Green Sun's Zenith, Spelunking, 2 cheap spells
+
+
+╔══ TURN 1 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 54  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Urza's Saga
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Spelunking
+  [Main 1]
+T1 P2: Play Crumbling Vestige (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: Urza's Saga
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T2 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P1 draws: Spirebluff Canal
+  [Main 1]
+T2 P1: Play Spirebluff Canal (untapped, 1 other lands)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: Urza's Saga, Spirebluff Canal
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arboreal Grazer
+  [Main 1]
+T2 P2: Play Gruul Turf (enters tapped)
+T2: Crumbling Vestige moved battlefield -> hand (Gruul Turf ETB returns Crumbling Vestige to hand)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T2: Shifting Woodland moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 3 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: Urza's Saga, Spirebluff Canal
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Gruul Turf [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T3 P1: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+  [Draw] P1 draws: Mox Opal
+  [Main 1]
+T3 P1: Play Urza's Saga
+    → Goal: curve_out
+    [Mana] Tap Urza's Saga→C, Urza's Saga→C, Spirebluff Canal→U (paying for Emry, Lurker of the Loch, 3 mana remaining)
+T3 P1: Cast Emry, Lurker of the Loch (2U)
+    [Priority] P2 passes (no response)
+T3: Resolve Emry, Lurker of the Loch
+T3 P1: Emry mills 4: Pinnacle Emissary, Mishra's Bauble, Tormod's Crypt, Mishra's Bauble
+    → Goal: curve_out
+T3 P1: Cast Mox Opal (0)
+    [Priority] P2 passes (no response)
+T3: Resolve Mox Opal
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 3 cards
+║ Lands: 1  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Gruul Turf
+║ Affinity board:
+║   Creatures: Emry, Lurker of the Loch (1/2)
+║   Other: Mox Opal
+║   Lands: Urza's Saga [T], Spirebluff Canal [T], Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Urza's Saga
+  [Main 1]
+T3 P2: Play Urza's Saga
+    → Goal: ramp [enablers]
+    [Mana] Tap Gruul Turf→RG (paying for Arboreal Grazer, 3 mana remaining)
+T3 P2: Cast Arboreal Grazer (G)
+    [Priority] P1 passes (no response)
+T3: Resolve Arboreal Grazer
+T3 P2: Arboreal Grazer puts Crumbling Vestige onto battlefield
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Amulet Titan 20
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 4
+║ Affinity board:
+║   Creatures: Emry, Lurker of the Loch (1/2)
+║   Other: Mox Opal
+║   Lands: Urza's Saga, Spirebluff Canal, Urza's Saga
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Lands: Gruul Turf [T], Urza's Saga, Crumbling Vestige [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T4 P1: Urza's Saga tutors Shadowspear
+T4 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+T4 P1: Sacrifice Urza's Saga (final chapter)
+  [Draw] P1 draws: Fiery Islet
+  [Main 1]
+T4 P1: Play Fiery Islet
+T4: Fiery Islet moved battlefield -> graveyard (activation cost (Fiery Islet))
+T4 P1: activate Fiery Islet — Draw a card.
+T4 P1: Fiery Islet activated — draw 1 (Mox Opal)
+T4 P1: Emry, Lurker of the Loch {T} → cast Mishra's Bauble from GY
+T4 P1: Cast Mishra's Bauble (0)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Resolve Mishra's Bauble
+
+╔══ TURN 4 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Affinity 20
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Lands: Gruul Turf, Urza's Saga, Crumbling Vestige
+║ Affinity board:
+║   Creatures: Emry, Lurker of the Loch (1/2) [tapped]
+║   Other: Mox Opal, Shadowspear, Mishra's Bauble
+║   Lands: Spirebluff Canal, Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T4 P2: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P2 draws: Crumbling Vestige
+  [Main 1]
+T4 P2: Play Crumbling Vestige (enters tapped)
+    → Goal: ramp
+    [Mana] Tap Gruul Turf→RG (paying for Green Sun's Zenith, 4 mana remaining)
+T4 P2: Cast Green Sun's Zenith (3G) (X=3)
+    [Priority] P1 passes (no response)
+T4: Resolve Green Sun's Zenith
+T4: Amulet of Vigor moved library -> graveyard (Aftermath Analyst mill)
+T4: Hanweir Battlements // Hanweir, the Writhing Township moved library -> graveyard (Aftermath Analyst mill)
+T4: Primeval Titan moved library -> graveyard (Aftermath Analyst mill)
+T4 P2: Aftermath Analyst ETB: mill 3
+T4 P2: Green Sun's Zenith finds Aftermath Analyst
+T4: Green Sun's Zenith moved stack -> graveyard (resolution)
+T4 P2: Activate Aftermath Analyst (sacrifice)
+T4 P2: Returned Shifting Woodland to battlefield — 1 damage to P1 (life: 19)
+T4 P2: Returned Hanweir Battlements // Hanweir, the Writhing Township to battlefield — 1 damage to P1 (life: 18)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 18  |  Amulet Titan 20
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 6
+║ Library: 45  |  Graveyard: 5
+║ Affinity board:
+║   Creatures: Emry, Lurker of the Loch (1/2)
+║   Other: Mox Opal, Shadowspear, Mishra's Bauble
+║   Lands: Spirebluff Canal, Urza's Saga
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Lands: Gruul Turf [T], Urza's Saga [T], Crumbling Vestige [T], Crumbling Vestige [T], Shifting Woodland [T], Hanweir Battlements // Hanweir, the Writhing Township [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T5 P1: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+  [Draw] P1 draws: Spirebluff Canal
+  [Main 1]
+T5 P1: Play Spirebluff Canal (untapped, 2 other lands)
+    → Goal: curve_out
+T5 P1: Improvise — tap 3 artifact(s) for Kappa Cannoneer
+    [Mana] Tap Urza's Saga→C, Spirebluff Canal→U, Spirebluff Canal→U (paying for Kappa Cannoneer, 3 mana remaining)
+T5 P1: Cast Kappa Cannoneer (5U)
+    [Priority] P2 passes (no response)
+T5: Resolve Kappa Cannoneer
+T5 P1: Kappa Cannoneer gets +1/+1 counter (Kappa Cannoneer entered) → 5/5
+T5 P1: Emry, Lurker of the Loch {T} → cast Mishra's Bauble from GY
+T5 P1: Cast Mishra's Bauble (0)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T5: Resolve Mishra's Bauble
+T5 P1: Kappa Cannoneer gets +1/+1 counter (Mishra's Bauble entered) → 6/6
+
+╔══ TURN 5 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Affinity 18
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 6  |  Opp lands: 3
+║ Library: 45  |  Graveyard: 4
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Lands: Gruul Turf, Urza's Saga, Crumbling Vestige, Crumbling Vestige, Shifting Woodland, Hanweir Battlements // Hanweir, the Writhing Township
+║ Affinity board:
+║   Creatures: Emry, Lurker of the Loch (1/2) [tapped], Kappa Cannoneer (6/6)
+║   Other: Mox Opal, Shadowspear, Mishra's Bauble, Mishra's Bauble
+║   Lands: Spirebluff Canal [T], Urza's Saga [T], Spirebluff Canal [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T5 P2: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+  [Draw] P2 draws: Green Sun's Zenith
+  [Main 1]
+T5 P2: Play Crumbling Vestige (enters tapped)
+    → Goal: ramp [enablers]
+    [Mana] Tap Urza's Saga→C, Shifting Woodland→G, Hanweir Battlements // Hanweir, the Writhing Township→C (paying for Spelunking, 7 mana remaining)
+T5 P2: Cast Spelunking (2G)
+    [Priority] P1 passes (no response)
+T5: Resolve Spelunking
+    → Goal: ramp [enablers]
+    [Mana] Tap Gruul Turf→RG, Crumbling Vestige→C (paying for Spelunking, 4 mana remaining)
+T5 P2: Cast Spelunking (2G)
+    [Priority] P1 passes (no response)
+T5: Resolve Spelunking
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 18  |  Amulet Titan 20
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 7
+║ Library: 44  |  Graveyard: 4
+║ Affinity board:
+║   Creatures: Emry, Lurker of the Loch (1/2), Kappa Cannoneer (6/6)
+║   Other: Mox Opal, Shadowspear, Mishra's Bauble, Mishra's Bauble
+║   Lands: Spirebluff Canal, Urza's Saga, Spirebluff Canal
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Spelunking, Spelunking
+║   Lands: Gruul Turf [T], Urza's Saga [T], Crumbling Vestige [T], Crumbling Vestige, Shifting Woodland [T], Hanweir Battlements // Hanweir, the Writhing Township [T], Crumbling Vestige [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T6 P1: Urza's Saga tutors Skateboard
+T6 P1: Kappa Cannoneer gets +1/+1 counter (Skateboard entered) → 7/7
+T6 P1: Sacrifice Urza's Saga (final chapter)
+  [Draw] P1 draws: Welding Jar
+  [Main 1]
+    → Goal: curve_out
+T6 P1: Cast Welding Jar (0)
+    [Priority] P2 passes (no response)
+T6: Resolve Welding Jar
+T6 P1: Kappa Cannoneer gets +1/+1 counter (Welding Jar entered) → 8/8
+T6 P1: Emry, Lurker of the Loch {T} → cast Tormod's Crypt from GY
+T6 P1: Cast Tormod's Crypt (0)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Kappa Cannoneer
+T6 P1: Attack with Kappa Cannoneer
+T6: Resolve Tormod's Crypt
+T6 P1: Kappa Cannoneer gets +1/+1 counter (Tormod's Crypt entered) → 9/9
+T6 P2:   [BLOCK] Arboreal Grazer (0/3) blocks Kappa Cannoneer (9/9) — lifespan_delta=+0.90
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T6: illegal block dropped — Arboreal Grazer cannot legally block Kappa Cannoneer
+T6 P1:   Kappa Cannoneer (9/9) → 9 dmg to player
+  [Combat Damage] 9 damage dealt → P2 life: 20 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 11  |  Affinity 18
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 7  |  Opp lands: 2
+║ Library: 44  |  Graveyard: 4
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Spelunking, Spelunking
+║   Lands: Gruul Turf, Urza's Saga, Crumbling Vestige, Crumbling Vestige, Shifting Woodland, Hanweir Battlements // Hanweir, the Writhing Township, Crumbling Vestige
+║ Affinity board:
+║   Creatures: Emry, Lurker of the Loch (1/2) [tapped], Kappa Cannoneer (9/9) [tapped]
+║   Other: Mox Opal, Shadowspear, Mishra's Bauble, Mishra's Bauble, Skateboard, Welding Jar, Tormod's Crypt
+║   Lands: Spirebluff Canal, Spirebluff Canal
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T6 P2: Urza's Saga tutors Amulet of Vigor
+T6 P2: Sacrifice Urza's Saga (final chapter)
+  [Draw] P2 draws: Boseiju, Who Endures
+  [Main 1]
+T6 P2: Play Boseiju, Who Endures
+    → Goal: ramp
+    [Mana] Tap Shifting Woodland→G (paying for Green Sun's Zenith, 8 mana remaining)
+T6 P2: Cast Green Sun's Zenith (7G) (X=7)
+    [Priority] P1 passes (no response)
+T6: Resolve Green Sun's Zenith
+T6 P2: Green Sun's Zenith finds Cultivator Colossus
+T6: Green Sun's Zenith moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 18  |  Amulet Titan 11
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 2  |  Opp lands: 7
+║ Library: 42  |  Graveyard: 4
+║ Affinity board:
+║   Creatures: Emry, Lurker of the Loch (1/2), Kappa Cannoneer (9/9)
+║   Other: Mox Opal, Shadowspear, Mishra's Bauble, Mishra's Bauble, Skateboard, Welding Jar, Tormod's Crypt
+║   Lands: Spirebluff Canal, Spirebluff Canal
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Cultivator Colossus (7/7)
+║   Other: Spelunking, Spelunking, Amulet of Vigor
+║   Lands: Gruul Turf [T], Crumbling Vestige [T], Crumbling Vestige [T], Shifting Woodland [T], Hanweir Battlements // Hanweir, the Writhing Township [T], Crumbling Vestige [T], Boseiju, Who Endures [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Mishra's Bauble
+  [Main 1]
+    → Goal: curve_out
+T7 P1: Cast Mishra's Bauble (0)
+    [Priority] P2 passes (no response)
+T7: Resolve Mishra's Bauble
+T7 P1: Kappa Cannoneer gets +1/+1 counter (Mishra's Bauble entered) → 10/10
+T7 P1: Activate Tormod's Crypt (sacrifice)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Emry, Lurker of the Loch, Kappa Cannoneer
+T7 P1: Attack with Emry, Lurker of the Loch, Kappa Cannoneer
+T7 P2:   [BLOCK-EMERGENCY] Arboreal Grazer (0/3) blocks Kappa Cannoneer (10/10) — lifespan_delta=+0.91
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T7: illegal block dropped — Arboreal Grazer cannot legally block Kappa Cannoneer
+T7 P1:   Emry, Lurker of the Loch (1/2) → 1 dmg to player
+T7 P1:   Kappa Cannoneer (10/10) → 10 dmg to player
+P2 loses: life total 0
+  [Combat Damage] 11 damage dealt → P2 life: 11 → 0
+
+>>> Affinity wins Game 3 on turn 7 via damage
+    Final life: Affinity=18  Amulet Titan=0
+
+======================================================================
+  MATCH RESULT: Affinity wins 2-1
+======================================================================
