@@ -2070,6 +2070,14 @@ Used by `_main_phase_decision` reactive-only gate in `ai/ev_player.py`.
 """
 
 LAND_SACRIFICE_MIN_LANDS: int = 4
+"""Rules-constant: minimum land count required for a "sacrifice any
+number of lands" payoff (Scapeshift) to be worth casting. Mirrors the
+engine threshold at engine/card_effects.py:scapeshift_resolve. Below
+4 lands the search-and-replace destroys our mana base for too small
+a payoff.
+
+Used by `_score_spell` Scapeshift gate in `ai/ev_player.py`.
+"""
 
 
 def conservative_land_retention(n_lands: int) -> int:
@@ -2084,14 +2092,6 @@ def conservative_land_retention(n_lands: int) -> int:
     rule. Observed: "Scapeshift sacrifices 7 lands" -> 3 surviving karoos.
     """
     return (n_lands + 1) // 2
-"""Rules-constant: minimum land count required for a "sacrifice any
-number of lands" payoff (Scapeshift) to be worth casting. Mirrors the
-engine threshold at engine/card_effects.py:scapeshift_resolve. Below
-4 lands the search-and-replace destroys our mana base for too small
-a payoff.
-
-Used by `_score_spell` Scapeshift gate in `ai/ev_player.py`.
-"""
 
 BIG_CREATURE_CMC_FLOOR: int = 6
 """Rules-constant: minimum CMC at which a creature is "Titan-class"
