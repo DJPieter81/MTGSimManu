@@ -204,3 +204,47 @@ scores defensibly, yet the matches still convert the same way.
 
 The measurement method for the next pass must be aggregate instrumentation
 over many games, not single-seed replays.
+
+## AGGREGATE ECONOMY DIAGNOSIS (2026-08-26, fourth pass) — CONCLUDED
+
+Per the loop-break plan, measured over 20 Bo3 matches / 49 games (verbose
+logs parsed; per-game data in
+`docs/diagnostics/2026-08-26_zoo_control_aggregate_economy.json`):
+
+| metric (per game) | ctl wins (n=8) | ctl losses (n=41) |
+|---|---|---|
+| Zoo threats deployed | 4.2 | 5.7 |
+| control answers cast | **5.4** | **1.9** |
+| control deploys cast | 8.5 | 4.3 |
+| threat−answer deficit | −1.1 | **+3.8** (38/41 in deficit) |
+| control attacked | 8/8, first T7.6 | 10/41 |
+| unblocked hits taken | 19 | **197** |
+| Zoo attack turns where control had ANY creature | 26 | 39 of ~200 |
+| land drops by T5 | 4.50 | 4.24 |
+| silent own-turns with ≥3 lands | 10% | 19% |
+| Ephemerate casts | **4.50** | 0.85 |
+
+**Hypothesis 1 CONFIRMED, refined:** control's answer economy is
+engine-assembly-dependent. It wins exactly the games where the
+Solitude+Ephemerate blink engine assembles (4.5 Ephemerates/game — the
+engine is simultaneously the removal stream and the clock; Solitude is the
+attacker in every win). Without it, one-shot answers cap at ~2/game against
+5.7 threats, the board stays empty on defense, and 197 unblocked hits end
+the game by T8.6.
+
+**Hypothesis 2 (mana) REFUTED as primary:** land drops by T5 are equal in
+wins and losses; only 7/41 losses were land-light.
+
+**Decision scoring EXONERATED:** three verified fixes landed this session;
+the silent-turn gap is secondary (19% vs 10%); and the sharpest probe —
+Ephemerate across 20 instrumented matches — shows it in hand on 420 main
+phases but castable-with-a-target on only 40 (9.5%), and CAST on 22 of
+those 40. The constraint is board presence, not choice.
+
+**Conclusion: the residual Zoo-vs-control gap is STRUCTURAL for this list.**
+The deck's answers are attached to 4-5 CMC bodies (evoke aside), its engine
+needs a resolved creature to exist, and its early game presents no board.
+The fix lane is deck-list/gameplan configuration (early interaction
+density, sweeper count, sideboard plan) — NOT engine or AI code. Per the
+abstraction contract, no further code change is warranted at this outlier;
+any future improvement claim must come with this aggregate table re-run.
