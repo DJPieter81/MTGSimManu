@@ -163,3 +163,44 @@ match) decomposes what still loses the deciders:
    (scale by lost capacity, or cap the charge at the value genuinely at
    risk this turn) is a deliberate spec change with wide blast radius —
    flagged for its own failing-test cycle rather than folded into this one.
+
+## LOST-VALUE RE-SPEC MEASURED + LOOP-BREAK HALT (2026-08-26, third pass)
+
+The A1 re-spec landed (`935dd27`): holdback now charges the cheapest-first
+packed, liveness-weighted value of the responses actually forfeited this
+response window, superseding pile scaling (lands untap each turn, so held
+mana buys only this window's responses). Decision-level verification: the
+3-CMC engine scores +8.5 where pile-scaling scored it -24.6, proactive
+deploys happen in the interaction-heavy fixture, the full suite passes with
+the two A1-pinning tests updated to derived lost-value thresholds.
+
+**Measured (n=20 Bo3): WR-neutral against Zoo.** 4/5c 90/10 (unchanged),
+Azorius 95/5 (was 90/10), Dimir 85/15 (was 80/20) — every delta is one
+match, within noise.
+
+**Loop-break invoked.** Three consecutive, mechanically-verified,
+regression-free fixes at this outlier (response tax-payability, holdback
+tax-liveness, holdback lost-value) have moved Zoo-vs-control from 95/5 to
+90/10 and no further. Each fix stands on its own correctness and stays.
+But per the session protocol, no further code targets this matchup until a
+diagnosis names where the remaining EV diverges — and the single-seed
+replay method has reached its limit here: every replayed decision now
+scores defensibly, yet the matches still convert the same way.
+
+**Ranked remaining hypotheses (for the next diagnosis, aggregate-first):**
+1. **Threat-density vs answer-economy asymmetry**: Zoo deploys ~7 cheap
+   recurring threats/match; control deploys ~5 finite answers and its
+   clock, even when it now casts finishers, starts too late to close
+   before the answer supply is exhausted. Measure across 40+ games:
+   cumulative threats resolved vs answers deployed vs turn-of-first-clock;
+   correlate with game wins. If confirmed, the gap is structural (deck
+   list/curve economics + sweeper count), not decision scoring.
+2. **Mana-light control keeps**: forensics showed T8-with-2-lands games;
+   quantify keep quality and land-drop misses across the sample; the
+   mulligan policy for greedy 4-5c manabases may keep unkeepable hands.
+3. Sideboard configuration (already partially refuted for the swap itself;
+   the +Dispute choice is now less punishing post-tax fixes, but boarding
+   IN dead-late tax counters at all remains questionable).
+
+The measurement method for the next pass must be aggregate instrumentation
+over many games, not single-seed replays.
