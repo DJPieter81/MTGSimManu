@@ -1,0 +1,1093 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+  Sideboard (Boros Energy vs Amulet Titan): +2 Blood Moon, -2 Galvanic Discharge
+======================================================================
+  GAME 1: Amulet Titan (P1) vs Boros Energy (P2)  —  seed 60000
+  Series: Amulet Titan 0 - 0 Boros Energy
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Amulet Titan wins → chooses to play first
+║ P1 (on play): Amulet Titan
+║ P2 (on draw): Boros Energy
+╚═══════════════════════════════════════════════════════
+
+P1 (Amulet Titan) opening hand (4 lands, 3 spells):
+  • Crumbling Vestige [Land, CMC 0]
+  • Simic Growth Chamber [Land, CMC 0]
+  • Boseiju, Who Endures [Land, CMC 0]
+  • Amulet of Vigor [Spell, CMC 1]
+  • Scapeshift [Spell, CMC 4]
+  • Crumbling Vestige [Land, CMC 0]
+  • Summoner's Pact [Spell, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Amulet of Vigor, Summoner's Pact, 2 cheap spells
+
+P2 (Boros Energy) opening hand (3 lands, 4 spells):
+  • Flooded Strand [Land, CMC 0]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Ajani, Nacatl Pariah // Ajani, Nacatl Avenger [Creature, CMC 2]
+  • Ocelot Pride [Creature, CMC 1]
+  • Arid Mesa [Land, CMC 0]
+  • Galvanic Discharge [Spell, CMC 1]
+  • Dalkovan Encampment [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Galvanic Discharge, Ocelot Pride, Ragavan, Nimble Pilferer, 4 cheap spells
+
+
+╔══ TURN 1 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Boros Energy 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Crumbling Vestige (enters tapped)
+    → Goal: deploy_engine
+T1 P1: Cast Summoner's Pact (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Summoner's Pact
+T1 P1: Summoner's Pact finds Primeval Titan
+T1: Summoner's Pact moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thraben Charm
+  [Main 1]
+T1 P2: Play Arid Mesa
+T1: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Boros Energy 19
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arboreal Grazer
+  [Main 1]
+T2 P1: Play Boseiju, Who Endures
+    → Goal: deploy_engine [engines]
+    [Mana] Tap Boseiju, Who Endures→G (paying for Amulet of Vigor, 2 mana remaining)
+T2 P1: Cast Amulet of Vigor (1)
+    [Priority] P2 passes (no response)
+T2: Resolve Amulet of Vigor
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 19  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige, Boseiju, Who Endures [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [Main 1]
+T2 P2: Play Flooded Strand
+T2: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T2 P2: Crack Flooded Strand (pay 1 life) -> Sacred Foundry (tapped, life: 18)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Ocelot Pride, 1 mana remaining)
+T2 P2: Cast Ocelot Pride (W)
+    [Priority] P1 passes (no response)
+T2: Resolve Ocelot Pride
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Boros Energy 18
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige, Boseiju, Who Endures
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Boseiju, Who Endures
+  [Main 1]
+T3 P1: Play Simic Growth Chamber (enters tapped)
+T3 P1: Amulet of Vigor untaps Simic Growth Chamber
+T3: Boseiju, Who Endures moved battlefield -> hand (Simic Growth Chamber ETB returns Boseiju, Who Endures to hand)
+    → Goal: ramp [enablers]
+    [Mana] Tap Simic Growth Chamber→GU (paying for Arboreal Grazer, 3 mana remaining)
+T3 P1: Cast Arboreal Grazer (G)
+    [Priority] P2 passes (no response)
+T3: Resolve Arboreal Grazer
+T3 P1: Amulet of Vigor untaps Crumbling Vestige
+T3 P1: Arboreal Grazer puts Crumbling Vestige onto battlefield
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 18  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1)
+║   Lands: Sacred Foundry, Sacred Foundry
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige, Simic Growth Chamber [T], Crumbling Vestige
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Guide of Souls
+  [Main 1]
+    → Goal: curve_out [interaction]
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R (paying for Thraben Charm, 2 mana remaining)
+T3 P2: Cast Thraben Charm (1W)
+    [Priority] P1 passes (no response)
+T3: Resolve Thraben Charm
+T3 P2: Thraben Charm deals 2 to Arboreal Grazer
+T3: Thraben Charm moved stack -> graveyard (resolution)
+T3 P2: Play Dalkovan Encampment (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ocelot Pride
+T3 P2: Attack with Ocelot Pride
+T3 P1:   [BLOCK] Arboreal Grazer (0/3) blocks Ocelot Pride (1/1) — lifespan_delta=+0.50
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T3: Arboreal Grazer dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Boros Energy 19
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige, Simic Growth Chamber, Crumbling Vestige
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1) [tapped]
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Dalkovan Encampment [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Amulet of Vigor
+  [Main 1]
+T4 P1: Play Boseiju, Who Endures
+    → Goal: ramp
+    [Mana] Tap Boseiju, Who Endures→G (paying for Amulet of Vigor, 5 mana remaining)
+T4 P1: Cast Amulet of Vigor (1)
+    [Priority] P2 passes (no response)
+T4: Resolve Amulet of Vigor
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 19  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 3
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Dalkovan Encampment
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Amulet of Vigor
+║   Lands: Crumbling Vestige, Simic Growth Chamber, Crumbling Vestige, Boseiju, Who Endures [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+T4 P2: Play Arid Mesa
+T4: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T4 P2: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (tapped, life: 18)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Dalkovan Encampment→W, Sacred Foundry→R (paying for Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, 3 mana remaining)
+T4 P2: Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)
+    [Priority] P1 passes (no response)
+T4: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T4 P2: Create 1x Cat token(s)
+T4 P2: Ajani creates 2/1 Cat Warrior token
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Guide of Souls, 1 mana remaining)
+T4 P2: Cast Guide of Souls (W)
+    [Priority] P1 passes (no response)
+T4: Resolve Guide of Souls
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ocelot Pride
+T4 P2: Attack with Ocelot Pride
+  [Declare Blockers] P1 does not block
+T4 P2:   Ocelot Pride (1/1) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 20 → 19
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 19  |  Boros Energy 19
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Amulet of Vigor
+║   Lands: Crumbling Vestige, Simic Growth Chamber, Crumbling Vestige, Boseiju, Who Endures
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1), Guide of Souls (1/2)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Dalkovan Encampment [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Dryad Arbor
+  [Main 1]
+T5 P1: Play Boseiju, Who Endures
+T5: Boseiju, Who Endures moved battlefield -> graveyard (SBA 704.5j: legend rule (Boseiju, Who Endures))
+    → Goal: ramp
+    [Mana] Tap Boseiju, Who Endures→G, Simic Growth Chamber→GU, Crumbling Vestige→C (paying for Scapeshift, 5 mana remaining)
+T5 P1: Cast Scapeshift (2GG)
+    [Priority] P2 passes (no response)
+T5: Resolve Scapeshift
+T5 P1: Scapeshift sacrifices 4 lands
+T5 P1: Amulet of Vigor, Amulet of Vigor untaps Simic Growth Chamber (x2)
+T5: Gruul Turf moved battlefield -> hand (Simic Growth Chamber ETB returns Gruul Turf to hand)
+T5 P1: Amulet of Vigor, Amulet of Vigor untaps Simic Growth Chamber (x2)
+T5: Simic Growth Chamber moved battlefield -> hand (Simic Growth Chamber ETB returns Simic Growth Chamber to hand)
+T5 P1: Scapeshift fetches 4 lands onto battlefield
+T5: Scapeshift moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 19  |  Amulet Titan 19
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 2
+║ Library: 46  |  Graveyard: 4
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1), Guide of Souls (1/2)
+║   Lands: Sacred Foundry, Sacred Foundry, Dalkovan Encampment, Sacred Foundry
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Amulet of Vigor
+║   Lands: Simic Growth Chamber, Simic Growth Chamber
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+T5 P2: Play Flooded Strand
+T5: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T5 P2: Crack Flooded Strand -> Plains (untapped)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 5 mana remaining)
+T5 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T5: Resolve Ragavan, Nimble Pilferer
+T5 P2: Gain 1 life from Guide of Souls (life: 19)
+T5 P2: +1 energy from Guide of Souls (total: 1)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ocelot Pride, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token, Guide of Souls
+T5 P2: Attack with Ocelot Pride, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token, Guide of Souls
+  [Declare Blockers] P1 does not block
+T5 P2:   Ocelot Pride (1/1) → 1 dmg to player
+T5 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+T5 P2:   Cat Token (2/1) → 2 dmg to player
+T5 P2:   Guide of Souls (1/2) → 1 dmg to player
+  [Combat Damage] 5 damage dealt → P1 life: 19 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 14  |  Boros Energy 20
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 5
+║ Library: 44  |  Graveyard: 8
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Amulet of Vigor
+║   Lands: Simic Growth Chamber, Simic Growth Chamber
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Cat Token (2/1) [tapped], Guide of Souls (1/2) [tapped], Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry, Dalkovan Encampment, Sacred Foundry, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Spelunking
+  [Main 1]
+T6 P1: Play Gruul Turf (enters tapped)
+T6 P1: Amulet of Vigor, Amulet of Vigor untaps Gruul Turf (x2)
+T6: Simic Growth Chamber moved battlefield -> hand (Gruul Turf ETB returns Simic Growth Chamber to hand)
+    → Goal: ramp [enablers]
+    [Mana] Tap Simic Growth Chamber→GU, Gruul Turf→RG (paying for Spelunking, 4 mana remaining)
+T6 P1: Cast Spelunking (2G)
+    [Priority] P2 passes (no response)
+T6: Resolve Spelunking
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Amulet Titan 14
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 2
+║ Library: 44  |  Graveyard: 5
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1), Guide of Souls (1/2), Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Dalkovan Encampment, Sacred Foundry, Plains
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber [T], Gruul Turf [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ranger-Captain of Eos
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Dalkovan Encampment→W, Plains→W, Sacred Foundry→R (paying for Ranger-Captain of Eos, 5 mana remaining)
+T6 P2: Cast Ranger-Captain of Eos (1WW)
+    [Priority] P1 passes (no response)
+T6: Resolve Ranger-Captain of Eos
+T6 P2: Ranger-Captain tutors Guide of Souls to hand
+T6 P2: Gain 1 life from Guide of Souls (life: 21)
+T6 P2: +1 energy from Guide of Souls (total: 2)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Guide of Souls, 2 mana remaining)
+T6 P2: Cast Guide of Souls (W)
+    [Priority] P1 passes (no response)
+T6: Resolve Guide of Souls
+T6 P2: Gain 1 life from Guide of Souls (life: 22)
+T6 P2: +1 energy from Guide of Souls (total: 3)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ocelot Pride, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token, Guide of Souls, Ragavan, Nimble Pilferer
+T6 P2: Attack with Ocelot Pride, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token, Guide of Souls, Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T6 P2:   Ocelot Pride (1/1) → 1 dmg to player
+T6 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+T6 P2:   Cat Token (2/1) → 2 dmg to player
+T6 P2:   Guide of Souls (1/2) → 1 dmg to player
+T6 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T6 P2: Create 1x Treasure token(s)
+T6 P2: Ragavan, Nimble Pilferer exiles Tolaria West from top of P1's library
+T6 P2: Ragavan, Nimble Pilferer — may cast Tolaria West this turn
+  [Combat Damage] 7 damage dealt → P1 life: 14 → 7
+  [End Combat]
+  [Main 2]
+T6 P2: Play Tolaria West (enters tapped)
+  [End Step]
+
+╔══ TURN 7 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 7  |  Boros Energy 23
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 6
+║ Library: 42  |  Graveyard: 8
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber, Gruul Turf
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Cat Token (2/1) [tapped], Guide of Souls (1/2) [tapped], Ragavan, Nimble Pilferer (2/1) [tapped], Ranger-Captain of Eos (3/3), Guide of Souls (1/2)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Dalkovan Encampment [T], Sacred Foundry, Plains [T], Tolaria West [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Crumbling Vestige
+  [Main 1]
+T7 P1: Play Crumbling Vestige (enters tapped)
+T7 P1: Amulet of Vigor, Amulet of Vigor untaps Crumbling Vestige (x2)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 23  |  Amulet Titan 7
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 6  |  Opp lands: 3
+║ Library: 42  |  Graveyard: 5
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1), Guide of Souls (1/2), Ragavan, Nimble Pilferer (2/1), Ranger-Captain of Eos (3/3), Guide of Souls (1/2)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Sacred Foundry, Dalkovan Encampment, Sacred Foundry, Plains, Tolaria West
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber, Gruul Turf, Crumbling Vestige
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ranger-Captain of Eos
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Dalkovan Encampment→W, Plains→W, Tolaria West→U (paying for Ranger-Captain of Eos, 6 mana remaining)
+T7 P2: Cast Ranger-Captain of Eos (1WW)
+    [Priority] P1 passes (no response)
+T7: Resolve Ranger-Captain of Eos
+T7 P2: Ranger-Captain tutors Guide of Souls to hand
+T7 P2: Gain 1 life from Guide of Souls (life: 24)
+T7 P2: +1 energy from Guide of Souls (total: 4)
+T7 P2: Gain 1 life from Guide of Souls (life: 25)
+T7 P2: +1 energy from Guide of Souls (total: 5)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Guide of Souls, 3 mana remaining)
+T7 P2: Cast Guide of Souls (W)
+    [Priority] P1 passes (no response)
+T7: Resolve Guide of Souls
+T7 P2: Gain 1 life from Guide of Souls (life: 26)
+T7 P2: +1 energy from Guide of Souls (total: 6)
+T7 P2: Gain 1 life from Guide of Souls (life: 27)
+T7 P2: +1 energy from Guide of Souls (total: 7)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ocelot Pride, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token, Guide of Souls, Ragavan, Nimble Pilferer, Ranger-Captain of Eos, Guide of Souls
+T7 P2: Attack with Ocelot Pride, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token, Guide of Souls, Ragavan, Nimble Pilferer, Ranger-Captain of Eos, Guide of Souls
+  [Declare Blockers] P1 does not block
+T7 P2:   Ocelot Pride (1/1) → 1 dmg to player
+T7 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+T7 P2:   Cat Token (2/1) → 2 dmg to player
+T7 P2:   Guide of Souls (1/2) → 1 dmg to player
+T7 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T7 P2: Create 1x Treasure token(s)
+T7 P2: Ragavan, Nimble Pilferer exiles The Mycosynth Gardens from top of P1's library
+T7 P2: Ragavan, Nimble Pilferer — may cast The Mycosynth Gardens this turn
+T7 P2:   Ranger-Captain of Eos (3/3) → 3 dmg to player
+T7 P2:   Guide of Souls (1/2) → 1 dmg to player
+P1 loses: life total -4
+  [Combat Damage] 11 damage dealt → P1 life: 7 → -4
+
+>>> Boros Energy wins Game 1 on turn 7 via damage
+    Final life: Amulet Titan=-4  Boros Energy=28
+
+======================================================================
+  GAME 2: Amulet Titan (P1) vs Boros Energy (P2)  —  seed 60001
+  Series: Amulet Titan 0 - 1 Boros Energy
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Boros Energy wins → chooses to play first
+║ P1 (on play): Boros Energy
+║ P2 (on draw): Amulet Titan
+╚═══════════════════════════════════════════════════════
+
+P1 (Amulet Titan) opening hand (5 lands, 2 spells):
+  • Simic Growth Chamber [Land, CMC 0]
+  • Zuran Orb [Spell, CMC 0]
+  • Urza's Cave [Land, CMC 0]
+  • Crumbling Vestige [Land, CMC 0]
+  • The Mycosynth Gardens [Land, CMC 0]
+  • Green Sun's Zenith [Spell, CMC 1]
+  • Simic Growth Chamber [Land, CMC 0]
+→ P1 MULLIGANS (no cost reducer and no ritual+cantrip+finisher backup)
+  New hand (5 lands, 2 spells): ['Boseiju, Who Endures', "Green Sun's Zenith", 'Aftermath Analyst', "Urza's Saga", 'Echoing Deeps', 'Boseiju, Who Endures', 'Crumbling Vestige']
+→ P1 mulligans to 6, bottoms: ['Boseiju, Who Endures']
+  Keeps: ['Boseiju, Who Endures', "Green Sun's Zenith", 'Aftermath Analyst', "Urza's Saga", 'Echoing Deeps', 'Crumbling Vestige']
+
+P2 (Boros Energy) opening hand (4 lands, 3 spells):
+  • Sacred Foundry [Land, CMC 0]
+  • Ranger-Captain of Eos [Creature, CMC 3]
+  • Flooded Strand [Land, CMC 0]
+  • Seasoned Pyromancer [Creature, CMC 3]
+  • Galvanic Discharge [Spell, CMC 1]
+  • Plains [Land, CMC 0]
+  • Elegant Parlor [Land, CMC 0]
+→ P2 MULLIGANS (too many lands (4 > 3); first-turn value 3 < 5)
+  New hand (2 lands, 5 spells): ['Ocelot Pride', 'Voice of Victory', 'Ocelot Pride', 'Thraben Charm', 'Arid Mesa', 'Flooded Strand', 'Galvanic Discharge']
+→ P2 mulligans to 6, bottoms: ['Voice of Victory']
+  Keeps: ['Ocelot Pride', 'Ocelot Pride', 'Thraben Charm', 'Arid Mesa', 'Flooded Strand', 'Galvanic Discharge']
+
+
+╔══ TURN 1 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 54  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Arid Mesa
+T1: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Boros Energy 19
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Spelunking
+  [Main 1]
+T1 P1: Play Crumbling Vestige (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 19  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Elegant Parlor
+  [Main 1]
+T2 P2: Play Flooded Strand
+T2: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T2 P2: Crack Flooded Strand (pay 1 life) -> Sacred Foundry (tapped, life: 18)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Ocelot Pride, 1 mana remaining)
+T2 P2: Cast Ocelot Pride (W)
+    [Priority] P1 passes (no response)
+T2: Resolve Ocelot Pride
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Boros Energy 18
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Mirrorpool
+  [Main 1]
+T2 P1: Play Urza's Saga
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 18  |  Amulet Titan 20
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1)
+║   Lands: Sacred Foundry, Sacred Foundry
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige, Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+T3 P2: surveil 1 → Marsh Flats to GY
+T3 P2: Play Elegant Parlor (enters tapped)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 2 mana remaining)
+T3 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T3: Resolve Ragavan, Nimble Pilferer
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Ocelot Pride, 1 mana remaining)
+T3 P2: Cast Ocelot Pride (W)
+    [Priority] P1 passes (no response)
+T3: Resolve Ocelot Pride
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ocelot Pride
+T3 P2: Attack with Ocelot Pride
+  [Declare Blockers] P1 does not block
+T3 P2:   Ocelot Pride (1/1) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 20 → 19
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 19  |  Boros Energy 19
+║ Hand: 6 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 52  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige, Urza's Saga
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1) [tapped], Ragavan, Nimble Pilferer (2/1), Ocelot Pride (1/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T3 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P1 draws: Green Sun's Zenith
+  [Main 1]
+T3 P1: Play Boseiju, Who Endures
+    → Goal: ramp
+    [Mana] Tap Boseiju, Who Endures→G (paying for Green Sun's Zenith, 3 mana remaining)
+T3 P1: Cast Green Sun's Zenith (2G) (X=2)
+    [Priority] P2 passes (no response)
+T3: Resolve Green Sun's Zenith
+T3 P1: Arboreal Grazer puts Mirrorpool onto battlefield
+T3 P1: Green Sun's Zenith finds Arboreal Grazer
+T3: Green Sun's Zenith moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 19  |  Amulet Titan 19
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 3
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ragavan, Nimble Pilferer (2/1), Ocelot Pride (1/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Elegant Parlor
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Lands: Crumbling Vestige [T], Urza's Saga [T], Boseiju, Who Endures [T], Mirrorpool [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Goblin Bombardment
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Sacred Foundry→R, Sacred Foundry→R (paying for Goblin Bombardment, 3 mana remaining)
+T4 P2: Cast Goblin Bombardment (1R)
+    [Priority] P1 passes (no response)
+T4: Resolve Goblin Bombardment
+T4 P2: Goblin Bombardment enters — sacrifice creatures for 1 damage each
+    → Goal: curve_out [interaction]
+    [Target] → Arboreal Grazer: marginal threat -2.00 (0/3 body) — better than 3 face dmg
+    [Mana] Tap Elegant Parlor→R (paying for Galvanic Discharge, 1 mana remaining)
+T4 P2: Cast Galvanic Discharge (R)
+    [Priority] P1 passes (no response)
+T4: Resolve Galvanic Discharge
+T4: Arboreal Grazer dies
+T4 P2: Galvanic Discharge deals 3 to Arboreal Grazer (base 0 + 3 energy)
+T4: Galvanic Discharge moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ocelot Pride, Ragavan, Nimble Pilferer, Ocelot Pride
+T4 P2: Attack with Ocelot Pride, Ragavan, Nimble Pilferer, Ocelot Pride
+  [Declare Blockers] P1 does not block
+T4 P2:   Ocelot Pride (1/1) → 1 dmg to player
+T4 P2:   Ocelot Pride (1/1) → 1 dmg to player
+T4 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T4 P2: Create 1x Treasure token(s)
+T4 P2: Ragavan, Nimble Pilferer exiles Scapeshift from top of P1's library
+T4 P2: Ragavan, Nimble Pilferer — may cast Scapeshift this turn
+  [Combat Damage] 4 damage dealt → P1 life: 19 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Scapeshift returned to exile (uncast)
+
+╔══ TURN 4 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 15  |  Boros Energy 21
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige, Urza's Saga, Boseiju, Who Endures, Mirrorpool
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1) [tapped], Ragavan, Nimble Pilferer (2/1) [tapped], Ocelot Pride (1/1) [tapped]
+║   Other: Goblin Bombardment, Treasure Token
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T4 P1: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+  [Draw] P1 draws: Green Sun's Zenith
+  [Main 1]
+T4 P1: Play Echoing Deeps
+    → Goal: ramp
+    [Mana] Tap Boseiju, Who Endures→G (paying for Green Sun's Zenith, 5 mana remaining)
+T4 P1: Cast Green Sun's Zenith (4G) (X=4)
+    [Priority] P2 passes (no response)
+T4: Resolve Green Sun's Zenith
+T4 P1: Green Sun's Zenith finds Arboreal Grazer
+T4: Green Sun's Zenith moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 21  |  Amulet Titan 15
+║ Hand: 1 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 48  |  Graveyard: 4
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ragavan, Nimble Pilferer (2/1), Ocelot Pride (1/1)
+║   Other: Goblin Bombardment, Treasure Token
+║   Lands: Sacred Foundry, Sacred Foundry, Elegant Parlor
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Lands: Crumbling Vestige [T], Urza's Saga [T], Boseiju, Who Endures [T], Mirrorpool [T], Echoing Deeps [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Voice of Victory
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R (paying for Voice of Victory, 3 mana remaining)
+T5 P2: Cast Voice of Victory (1W)
+    [Priority] P1 passes (no response)
+T5: Resolve Voice of Victory
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ocelot Pride, Ragavan, Nimble Pilferer, Ocelot Pride
+T5 P2: Attack with Ocelot Pride, Ragavan, Nimble Pilferer, Ocelot Pride
+T5 P1:   [BLOCK] Arboreal Grazer (0/3) blocks Ragavan, Nimble Pilferer (2/1) — lifespan_delta=+0.40
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T5 P2:   Ocelot Pride (1/1) → 1 dmg to player
+T5 P2:   Ocelot Pride (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 15 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 13  |  Boros Energy 23
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 3
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Lands: Crumbling Vestige, Urza's Saga, Boseiju, Who Endures, Mirrorpool, Echoing Deeps
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1) [tapped], Ragavan, Nimble Pilferer (2/1) [tapped], Ocelot Pride (1/1) [tapped], Voice of Victory (1/3)
+║   Other: Goblin Bombardment, Treasure Token
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Elegant Parlor
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T5 P1: Urza's Saga tutors Amulet of Vigor
+T5 P1: Sacrifice Urza's Saga (final chapter)
+  [Draw] P1 draws: Gruul Turf
+  [Main 1]
+T5 P1: Play Gruul Turf (enters tapped)
+T5 P1: Amulet of Vigor untaps Gruul Turf
+T5: Boseiju, Who Endures moved battlefield -> hand (Gruul Turf ETB returns Boseiju, Who Endures to hand)
+    → Goal: ramp
+    [Mana] Tap Gruul Turf→RG (paying for Green Sun's Zenith, 5 mana remaining)
+T5 P1: Cast Green Sun's Zenith (4G) (X=4)
+    [Priority] P2 passes (no response)
+T5: Resolve Green Sun's Zenith
+T5 P1: Amulet of Vigor untaps Boseiju, Who Endures
+T5 P1: Arboreal Grazer puts Boseiju, Who Endures onto battlefield
+T5 P1: Green Sun's Zenith finds Arboreal Grazer
+T5: Green Sun's Zenith moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 23  |  Amulet Titan 13
+║ Hand: 1 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 4
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ragavan, Nimble Pilferer (2/1), Ocelot Pride (1/1), Voice of Victory (1/3)
+║   Other: Goblin Bombardment, Treasure Token
+║   Lands: Sacred Foundry, Sacred Foundry, Elegant Parlor
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige [T], Mirrorpool [T], Echoing Deeps [T], Gruul Turf [T], Boseiju, Who Endures
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Blood Moon
+  [Main 1]
+    → Goal: curve_out [interaction]
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R (paying for Thraben Charm, 3 mana remaining)
+T6 P2: Cast Thraben Charm (1W)
+    [Priority] P1 passes (no response)
+T6: Resolve Thraben Charm
+T6: Arboreal Grazer dies
+T6 P2: Thraben Charm deals 8 to Arboreal Grazer
+T6: Thraben Charm moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ocelot Pride, Ragavan, Nimble Pilferer, Ocelot Pride, Voice of Victory
+T6 P2: Create 2x Warrior token(s)
+T6 P2: Voice of Victory mobilize 2 — create 2 1/1 tokens
+T6 P2: Attack with Ocelot Pride, Ragavan, Nimble Pilferer, Ocelot Pride, Voice of Victory
+T6 P1:   [BLOCK] Arboreal Grazer (0/3) blocks Ragavan, Nimble Pilferer (2/1) — lifespan_delta=+0.29
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T6 P2:   Ocelot Pride (1/1) → 1 dmg to player
+T6 P2:   Ocelot Pride (1/1) → 1 dmg to player
+T6 P2:   Voice of Victory (1/3) → 1 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 13 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+T6: Warrior Token moved battlefield -> graveyard (Mobilize sacrifice)
+T6: Warrior Token sacrificed (Mobilize)
+T6: Warrior Token moved battlefield -> graveyard (Mobilize sacrifice)
+T6: Warrior Token sacrificed (Mobilize)
+
+╔══ TURN 6 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 10  |  Boros Energy 25
+║ Hand: 2 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 44  |  Graveyard: 6
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige, Mirrorpool, Echoing Deeps, Gruul Turf, Boseiju, Who Endures
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1) [tapped], Ragavan, Nimble Pilferer (2/1) [tapped], Ocelot Pride (1/1) [tapped], Voice of Victory (1/3) [tapped]
+║   Other: Goblin Bombardment, Treasure Token
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Elegant Parlor
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Tolaria West
+  [Main 1]
+T6 P1: Play Tolaria West (enters tapped)
+T6 P1: Amulet of Vigor untaps Tolaria West
+    → Goal: ramp [enablers]
+    [Mana] Tap Mirrorpool→C, Echoing Deeps→C, Boseiju, Who Endures→G (paying for Spelunking, 7 mana remaining)
+T6 P1: Cast Spelunking (2G)
+    [Priority] P2 passes (no response)
+T6: Resolve Spelunking
+    → Goal: ramp
+    [Mana] Tap Gruul Turf→RG (paying for Aftermath Analyst, 4 mana remaining)
+T6 P1: Cast Aftermath Analyst (1G)
+    [Priority] P2 passes (no response)
+T6: Resolve Aftermath Analyst
+T6: Amulet of Vigor moved library -> graveyard (Aftermath Analyst mill)
+T6: Gruul Turf moved library -> graveyard (Aftermath Analyst mill)
+T6: Simic Growth Chamber moved library -> graveyard (Aftermath Analyst mill)
+T6 P1: Aftermath Analyst ETB: mill 3
+T6 P1: Activate Aftermath Analyst (sacrifice)
+T6 P1: Returned Urza's Saga to battlefield — 1 damage to P2 (life: 24)
+T6 P1: Returned Gruul Turf to battlefield — 1 damage to P2 (life: 23)
+T6 P1: Returned Simic Growth Chamber to battlefield — 1 damage to P2 (life: 22)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 22  |  Amulet Titan 10
+║ Hand: 1 cards  |  Opp hand: 0 cards
+║ Lands: 3  |  Opp lands: 9
+║ Library: 46  |  Graveyard: 5
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ragavan, Nimble Pilferer (2/1), Ocelot Pride (1/1), Voice of Victory (1/3)
+║   Other: Goblin Bombardment, Treasure Token
+║   Lands: Sacred Foundry, Sacred Foundry, Elegant Parlor
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Crumbling Vestige, Mirrorpool [T], Echoing Deeps [T], Gruul Turf [T], Boseiju, Who Endures [T], Tolaria West, Urza's Saga [T], Gruul Turf [T], Simic Growth Chamber [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R (paying for Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, 3 mana remaining)
+T7 P2: Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)
+    [Priority] P1 passes (no response)
+T7: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T7 P2: Create 1x Cat token(s)
+T7 P2: Ajani creates 2/1 Cat Warrior token
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ocelot Pride, Ragavan, Nimble Pilferer, Ocelot Pride, Voice of Victory
+T7 P2: Create 2x Warrior token(s)
+T7 P2: Voice of Victory mobilize 2 — create 2 1/1 tokens
+T7 P2: Attack with Ocelot Pride, Ragavan, Nimble Pilferer, Ocelot Pride, Voice of Victory
+T7 P1:   [BLOCK-EMERGENCY] Arboreal Grazer (0/3) blocks Ragavan, Nimble Pilferer (2/1) — lifespan_delta=+0.20
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T7 P2:   Ocelot Pride (1/1) → 1 dmg to player
+T7 P2:   Ocelot Pride (1/1) → 1 dmg to player
+T7 P2:   Voice of Victory (1/3) → 1 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 10 → 7
+  [End Combat]
+  [Main 2]
+  [End Step]
+T7: Warrior Token moved battlefield -> graveyard (Mobilize sacrifice)
+T7: Warrior Token sacrificed (Mobilize)
+T7: Warrior Token moved battlefield -> graveyard (Mobilize sacrifice)
+T7: Warrior Token sacrificed (Mobilize)
+
+╔══ TURN 7 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 7  |  Boros Energy 24
+║ Hand: 0 cards  |  Opp hand: 1 cards
+║ Lands: 9  |  Opp lands: 3
+║ Library: 40  |  Graveyard: 7
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Crumbling Vestige, Mirrorpool, Echoing Deeps, Gruul Turf, Boseiju, Who Endures, Tolaria West, Urza's Saga, Gruul Turf, Simic Growth Chamber
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1) [tapped], Ragavan, Nimble Pilferer (2/1) [tapped], Ocelot Pride (1/1) [tapped], Voice of Victory (1/3) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Other: Goblin Bombardment, Treasure Token
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Elegant Parlor
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T7 P1: Urza's Saga tutors Zuran Orb
+T7 P1: Sacrifice Urza's Saga (final chapter)
+  [Draw] P1 draws: Boseiju, Who Endures
+  [Main 1]
+T7 P1: Play Boseiju, Who Endures
+T7: Boseiju, Who Endures moved battlefield -> graveyard (SBA 704.5j: legend rule (Boseiju, Who Endures))
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 24  |  Amulet Titan 7
+║ Hand: 1 cards  |  Opp hand: 0 cards
+║ Lands: 3  |  Opp lands: 8
+║ Library: 45  |  Graveyard: 5
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ragavan, Nimble Pilferer (2/1), Ocelot Pride (1/1), Voice of Victory (1/3), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Other: Goblin Bombardment, Treasure Token
+║   Lands: Sacred Foundry, Sacred Foundry, Elegant Parlor
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor, Spelunking, Zuran Orb
+║   Lands: Crumbling Vestige, Mirrorpool, Echoing Deeps, Gruul Turf, Tolaria West, Gruul Turf, Simic Growth Chamber, Boseiju, Who Endures
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+T8 P2: Play Flooded Strand
+T8: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T8 P2: Crack Flooded Strand (pay 1 life) -> Sacred Foundry (tapped, life: 23)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ocelot Pride, Ragavan, Nimble Pilferer, Ocelot Pride, Voice of Victory, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+T8 P2: Create 2x Warrior token(s)
+T8 P2: Voice of Victory mobilize 2 — create 2 1/1 tokens
+T8 P2: Attack with Ocelot Pride, Ragavan, Nimble Pilferer, Ocelot Pride, Voice of Victory, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+T8 P1:   [BLOCK-EMERGENCY] Arboreal Grazer (0/3) blocks Ragavan, Nimble Pilferer (2/1) — lifespan_delta=+0.20
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T8 P2:   Ocelot Pride (1/1) → 1 dmg to player
+T8 P2:   Ocelot Pride (1/1) → 1 dmg to player
+T8 P2:   Voice of Victory (1/3) → 1 dmg to player
+T8 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+T8 P2:   Cat Token (2/1) → 2 dmg to player
+  [Combat Damage] 6 damage dealt → P1 life: 7 → 1
+  [End Combat]
+  [Main 2]
+  [End Step]
+T8 P2: Goblin Bombardment sacrifice Cat Token -> 1 damage to P1 (life: 0)
+
+>>> Boros Energy wins Game 2 on turn 8 via damage
+    Final life: Amulet Titan=0  Boros Energy=25
+
+======================================================================
+  MATCH RESULT: Boros Energy wins 2-0
+======================================================================

@@ -548,7 +548,11 @@ _ANY_COLOR_UNIT = ['W', 'U', 'B', 'R', 'G']
 # so the ability is visible-but-refused; a later tranche adds payers without
 # re-parsing the pool.
 _UNPAYABLE_COST_PATTERNS = (
-    ('sacrifice_another', r'sacrifice (a|an|another|two|three)\b'),
+    # Tranche 3 graduated single-victim sacrifices and plain discard-N to
+    # structured fields; what reaches these patterns now is the residue —
+    # multi-victim / or-typed / subtype-restricted sacrifices, and
+    # at-random / type-restricted / whole-hand discards.
+    ('sacrifice', r'sacrifice\b'),
     ('discard', r'discard\b'),
     ('remove_counter', r'remove (a|an|one|two|\d+)[^,:]*counter'),
     ('put_counter', r'put (a|an|one|two|\d+)[^,:]*counter'),
@@ -634,6 +638,9 @@ def parse_activation_cost(cost_text: str):
     untap_self = False
     life = 0
     sacrifice_self = False
+    sacrifice_type = None
+    sacrifice_another = False
+    discard_cards = 0
     unpayable = []
     for part in raw.split(','):
         piece = part.strip()
@@ -646,6 +653,28 @@ def parse_activation_cost(cost_text: str):
             continue
         if re.match(r'sacrifice this\b', low):
             sacrifice_self = True
+            continue
+        # Tranche 3: single-victim typed sacrifice. FULLMATCH on a CLOSED
+        # type set — "Sacrifice an artifact or land" (union), "Sacrifice
+        # two creatures" (multi-victim) and "Sacrifice a Goblin" (subtype)
+        # all fall through to the unpayable patterns below, refused rather
+        # than approximated. A SECOND sacrifice item in the same cost is a
+        # choice shape the schema cannot hold — also refused.
+        m_sac = re.fullmatch(
+            r'sacrifice (a|an|another) '
+            r'(creature|artifact|enchantment|land|permanent)', low)
+        if m_sac and sacrifice_type is None:
+            sacrifice_type = m_sac.group(2)
+            sacrifice_another = (m_sac.group(1) == 'another')
+            continue
+        # Tranche 3: plain untyped discard-N. FULLMATCH — "at random",
+        # type-restricted ("a creature card") and "your hand" forms stay
+        # on the unpayable path.
+        m_disc = re.fullmatch(r'discard (a|one|two|three|\d+) cards?', low)
+        if m_disc:
+            tok = m_disc.group(1)
+            discard_cards += (int(tok) if tok.isdigit()
+                              else _NUM_WORDS.get(tok, 0))
             continue
         if re.fullmatch(r'(\{[wubrgcxs0-9/]+\}\s*)+', low):
             mana = _add_mana_symbols(mana, low)
@@ -667,6 +696,9 @@ def parse_activation_cost(cost_text: str):
     return ActivationCost(mana=mana, tap_self=tap_self,
                           untap_self=untap_self,
                           life=life, sacrifice_self=sacrifice_self,
+                          sacrifice_type=sacrifice_type,
+                          sacrifice_another=sacrifice_another,
+                          discard_cards=discard_cards,
                           unpayable=tuple(unpayable))
 
 

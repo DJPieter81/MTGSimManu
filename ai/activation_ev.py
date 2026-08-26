@@ -108,6 +108,33 @@ def land_animation_candidates(
     return out
 
 
+def choose_sacrifice_victim(game, player_idx, legal):
+    """Pick which permanent pays a sacrifice cost — the AI half of the
+    `choose_sacrifice` callback seam.
+
+    Minimises what the board gives up, on values derived from the game
+    state and printed card data (no bare score tiers): a creature's cost
+    is its `creature_threat_value` on the current snapshot; a
+    non-creature's proxy is its printed mana investment. The legal set is
+    normally type-homogeneous (the cost names one permanent type), so the
+    two scales rarely mix; when a wildcard "permanent" cost does mix
+    them, cheap non-creatures rank as the smaller loss — the intended
+    tie-break.
+    """
+    from ai.ev_evaluator import creature_threat_value, snapshot_from_game
+
+    if not legal:
+        return None
+    snap = snapshot_from_game(game, player_idx)
+
+    def _loss(c):
+        if c.effective_is_creature:
+            return creature_threat_value(c, snap)
+        return float(c.template.cmc or 0)
+
+    return min(legal, key=_loss)
+
+
 def activation_candidates(game, player_idx, snap, excluded=None):
     """Enumerate generic activated abilities worth activating right now.
 
@@ -147,29 +174,51 @@ def activation_candidates(game, player_idx, snap, excluded=None):
 
             # Cost terms shared by every effect kind. `position_value`'s
             # mana term is clamped at zero for spending, so holdback (applied
-            # by the caller) carries the mana cost — but LIFE paid and a
-            # SACRIFICED source are real position changes the projection must
-            # charge, or "Pay 7 life: draw seven cards" scores as free.
+            # by the caller) carries the mana cost — but LIFE paid, a
+            # SACRIFICED permanent (source or victim) and a DISCARDED card
+            # are real position changes the projection must charge, or
+            # "Pay 7 life: draw seven cards" scores as free.
             cost_updates = {}
             if ability.cost.life:
                 cost_updates["my_life"] = snap.my_life - ability.cost.life
-            if ability.cost.sacrifice_self:
-                # What leaves with the source is derived from the permanent
-                # itself: a land is a mana source, a creature is board power.
-                if perm.template.is_land:
+            # What leaves with a sacrificed permanent is derived from the
+            # permanent itself: a land is a mana source, a creature is board
+            # power. For a sacrifice-ANOTHER cost the charged permanent is
+            # the victim the AI itself would choose at payment time — the
+            # same chooser the callback seam uses, so projection and payment
+            # cannot disagree.
+            sacrificed = perm if ability.cost.sacrifice_self else None
+            if ability.cost.sacrifice_type is not None:
+                from engine.activation import ActivationManager as _AM
+                sacrificed = choose_sacrifice_victim(
+                    game, player_idx,
+                    _AM.legal_sacrifice_victims(game, player_idx, perm,
+                                                ability.cost))
+                if sacrificed is None:
+                    continue  # can_activate should have refused; defensive
+            if sacrificed is not None:
+                if sacrificed.template.is_land:
                     cost_updates["my_mana"] = max(0, snap.my_mana - 1)
-                if perm.effective_is_creature:
+                if sacrificed.effective_is_creature:
                     cost_updates["my_power"] = max(
-                        0, snap.my_power - (perm.power or 0))
+                        0, snap.my_power - (sacrificed.power or 0))
+            if ability.cost.discard_cards:
+                cost_updates["my_hand_size"] = max(
+                    0, snap.my_hand_size - ability.cost.discard_cards)
 
+            # Merge effect deltas ON TOP of the cost terms — a discard-cost
+            # draw must net the two hand-size changes, not overwrite one.
+            updates = dict(cost_updates)
             kind = ability.effect_kind
             if kind is _K.DRAW_N:
-                after = snap.fast_replace(my_hand_size=snap.my_hand_size
-                                          + ability.amount, **cost_updates)
+                updates["my_hand_size"] = (
+                    updates.get("my_hand_size", snap.my_hand_size)
+                    + ability.amount)
+                after = snap.fast_replace(**updates)
                 reason = f"activate: draw {ability.amount}"
             elif kind is _K.DAMAGE_ANY_TARGET:
-                after = snap.fast_replace(opp_life=snap.opp_life
-                                          - ability.amount, **cost_updates)
+                updates["opp_life"] = snap.opp_life - ability.amount
+                after = snap.fast_replace(**updates)
                 reason = f"activate: {ability.amount} damage"
             elif kind is _K.PUMP_SELF_UEOT:
                 # GATED, not merely scored. `position_value` has no
@@ -180,8 +229,10 @@ def activation_candidates(game, player_idx, snap, excluded=None):
                 # tests/test_creature_land_activated_when_it_wins_race.py.
                 if game.current_phase is not _Phase.MAIN1:
                     continue
-                after = snap.fast_replace(
-                    my_power=snap.my_power + ability.power_mod)
+                updates["my_power"] = (
+                    updates.get("my_power", snap.my_power)
+                    + ability.power_mod)
+                after = snap.fast_replace(**updates)
                 if not (after.my_clock_discrete < snap.my_clock_discrete
                         and after.my_clock_discrete <= snap.opp_clock_discrete):
                     continue

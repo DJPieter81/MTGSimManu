@@ -80,11 +80,15 @@ class ActivationManager:
 
         # 9. A free, repeatable ability has no resource that depletes, so
         # nothing terminates the loop. Cost exhaustion is the real bound.
-        # Sacrifice-self is inherently self-limiting (the source leaves), and
-        # a life cost depletes the life total — both terminate the loop.
+        # Sacrifice-self is inherently self-limiting (the source leaves), a
+        # life cost depletes the life total, a sacrifice-another cost
+        # depletes the board and a discard cost depletes the hand — each
+        # terminates the loop.
         if (ability.cost.mana.cmc == 0 and not ability.cost.tap_self
                 and not ability.cost.sacrifice_self
-                and ability.cost.life == 0):
+                and ability.cost.life == 0
+                and ability.cost.sacrifice_type is None
+                and ability.cost.discard_cards == 0):
             return False
 
         # 9b. An effect kind the resolver cannot execute must be refused
@@ -103,6 +107,21 @@ class ActivationManager:
         # separate event); suicide-avoidance is the AI's judgment, not a
         # legality question.
         if ability.cost.life > 0 and player.life < ability.cost.life:
+            return False
+
+        # 9d. CR 601.2h — a sacrifice cost needs a legal victim under the
+        # controller's control RIGHT NOW: a permanent of the required type,
+        # excluding the source when the cost says "another". WHICH victim is
+        # sacrificed is strategy (the AI callback's choice at payment time);
+        # WHETHER one exists is the legality question owned here.
+        if ability.cost.sacrifice_type is not None:
+            if not ActivationManager.legal_sacrifice_victims(
+                    game, player_idx, perm, ability.cost):
+                return False
+
+        # 9e. CR 601.2h — a discard cost needs that many cards in hand.
+        if (ability.cost.discard_cards > 0
+                and len(player.hand) < ability.cost.discard_cards):
             return False
 
         # 10. Capacity precondition. THIS is what makes payment atomic: both
@@ -154,6 +173,35 @@ class ActivationManager:
         return True
 
     @staticmethod
+    def legal_sacrifice_victims(game: "GameState", player_idx: int,
+                                perm: "CardInstance",
+                                cost) -> List["CardInstance"]:
+        """Battlefield permanents that can pay a sacrifice cost (CR 601.2h).
+
+        Pure enumeration, zero preference — the CHOICE among these is the AI
+        callback's. `sacrifice_another` excludes the source; a plain
+        "sacrifice a creature" counts the source itself when it matches.
+        The creature test uses effective types so animated permanents
+        qualify, matching `PlayerState.creatures`.
+        """
+        type_word = cost.sacrifice_type
+        if type_word is None:
+            return []
+        out: List["CardInstance"] = []
+        for cand in game.players[player_idx].battlefield:
+            if cost.sacrifice_another and cand is perm:
+                continue
+            if type_word == 'permanent':
+                out.append(cand)
+            elif type_word == 'creature':
+                if (cand.effective_is_creature
+                        or getattr(cand, 'is_animated', False)):
+                    out.append(cand)
+            elif CardType(type_word) in cand.template.card_types:
+                out.append(cand)
+        return out
+
+    @staticmethod
     def activate(game: "GameState", player_idx: int, perm: "CardInstance",
                  ability: "ActivatedAbility",
                  targets: Optional[List[int]] = None) -> bool:
@@ -162,6 +210,24 @@ class ActivationManager:
 
         game._activation_depth = getattr(game, '_activation_depth', 0) + 1
         try:
+            # Victim RESOLUTION before any payment: choosing is not a
+            # mutation, and it is the only tranche-3 step that can refuse —
+            # doing it first keeps the no-half-paid-cost invariant when
+            # activate() is reached without a prior can_activate.
+            victim = None
+            if ability.cost.sacrifice_type is not None:
+                legal = ActivationManager.legal_sacrifice_victims(
+                    game, player_idx, perm, ability.cost)
+                if legal:
+                    victim = game.callbacks.choose_sacrifice(
+                        game, player_idx, legal)
+                if victim is None:
+                    return False
+            if (ability.cost.discard_cards > 0
+                    and len(game.players[player_idx].hand)
+                    < ability.cost.discard_cards):
+                return False
+
             # Mana FIRST, tap LAST: tapping cannot fail, so a refused payment
             # leaves nothing half-paid. `card_name=None` because CR 601.2f
             # cost reductions apply to SPELLS — passing the permanent's name
@@ -200,6 +266,23 @@ class ActivationManager:
             # BEFORE `elif item.effect`, so assigning the new dataclass there
             # raises before the partial is ever reached. The ActivatedAbility
             # travels only inside the partial.
+            # Resource-consuming cost items are paid LAST, like
+            # sacrifice_self below: every step that could refuse has already
+            # run, so nothing follows the consumption that could leave the
+            # cost half-paid.
+            if ability.cost.discard_cards > 0:
+                # Through the same funnel forced discards use
+                # (callbacks.choose_discard + zone_mgr), so discard-linked
+                # triggers keep firing. self_discard=True: activating the
+                # ability was the player's own choice (CR 601.2h).
+                game._force_discard(player_idx, ability.cost.discard_cards,
+                                    self_discard=True)
+            if victim is not None:
+                # CR 602.2b: the victim is sacrificed as part of the COST —
+                # it leaves at activation time, through the zone funnel.
+                game.zone_mgr.move_card_to_graveyard(
+                    game, victim, cause=f"activation cost ({perm.name})")
+
             if ability.cost.sacrifice_self:
                 # CR 602.2b: the sacrifice is part of the COST — the source
                 # leaves the battlefield at activation time; the ability on

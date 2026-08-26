@@ -1,8 +1,9 @@
 ---
 title: Amulet Titan 15.3% field — self-discard binned the payoff; conversion remains passive
-status: active
-priority: primary
+status: superseded
+priority: historical
 session: 2026-07-06
+superseded_by: docs/diagnostics/2026-08-26_amulet_titan_rediagnosis.md
 depends_on: docs/diagnostics/2026-07-05_storm_overshoot_root_cause.md
 tags: [amulet, discard, ramp, conversion, titan]
 summary: >

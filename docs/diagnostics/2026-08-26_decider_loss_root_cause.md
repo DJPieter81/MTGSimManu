@@ -248,3 +248,35 @@ The fix lane is deck-list/gameplan configuration (early interaction
 density, sweeper count, sideboard plan) — NOT engine or AI code. Per the
 abstraction contract, no further code change is warranted at this outlier;
 any future improvement claim must come with this aggregate table re-run.
+
+## DECK-CONFIG LANE: LIST-FIDELITY AUDIT (2026-08-26, fifth pass)
+
+Follow-up to the structural conclusion, respecting the fidelity rule (lists
+mirror real tournament decks; WR is never fixed by editing a faithful list).
+
+**Wrenn and Six exonerated.** The sharpest in-sim suspect — W6 choosing +1
+(land return) over -1 (the Ragavan-killing ping) 145:19 — is correct
+behaviour: 139 of the 145 +1 activations had no 1-toughness opposing
+creature on board (parsed from all 49 game logs), and a clean probe with
+Ragavan present chooses the ping. The 6 apparent misses are within
+board-header parse ambiguity. Combined with the Ephemerate probe (cast 55%
+of the times it was castable-with-target), every audited decision point in
+this matchup now checks out.
+
+**List plausibly faithful; verification egress-blocked.** Our 4/5c list's
+distinctive choices (4x Orim's Chant and 4x Quantum Riddler maindeck, no
+counterspells, 2x Prismatic Ending) match web-search evidence of real 2026
+Pro Tour lists (a PT Marvel Super Heroes control variant with 4x Chant; 4x
+Riddler in PT Edge of Eternities blink lists). Full 60-card verification
+against a current tournament list is NOT possible from this session: the
+egress proxy blocks mtgtop8.com, mtggoldfish.com, mtgdecks.net, AND
+magic.gg (same policy class as the documented mtgjson block). Complete the
+check from an environment with access before touching the list.
+
+**Verdict for this lane:** no list change is warranted on current evidence.
+A spicy Chant-control Pro Tour list being genuinely soft to Zoo is a
+plausible true result; the sim-wide distortion signal remains Zoo's 86.9%
+against the WHOLE field, not this pairing alone. Remaining deck-config work
+if pursued: (a) verify the imported lists against current tournament data
+from an unblocked environment; (b) revisit the EXPECTED calibration bands
+for fringe lists — a PT spice list should not carry a tier-deck band.

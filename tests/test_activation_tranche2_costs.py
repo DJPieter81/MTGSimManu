@@ -101,12 +101,14 @@ def test_sacrifice_self_cost_parses_as_payable():
         f"sacrifice-self is a tranche-2 payable cost, got {cost.unpayable}")
 
 
-def test_sacrifice_another_is_still_unpayable():
-    """Sacrificing a DIFFERENT permanent needs a choice this tranche does not
-    make — it must stay refused, not silently sacrifice something."""
-    cost = parse_activation_cost("Sacrifice another creature")
+def test_multi_victim_sacrifice_is_still_unpayable():
+    """Single-victim sacrifice graduated in tranche 3; sacrificing SEVERAL
+    permanents needs a choice shape no tranche makes yet — it must stay
+    refused, not silently sacrifice something."""
+    cost = parse_activation_cost("Sacrifice two creatures")
     assert cost is not None and cost.unpayable, (
-        "sacrifice-another requires choosing a victim; it stays unpayable")
+        "multi-victim sacrifice requires choosing several victims; it stays "
+        "unpayable")
 
 
 # ── legality ──────────────────────────────────────────────────────────
