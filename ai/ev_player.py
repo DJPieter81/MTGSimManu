@@ -34,6 +34,7 @@ from ai.llm_decision_scorer import (
     CTX_CYCLING_FREE_COST_BONUS,
 )
 from ai.scoring_constants import (
+    conservative_land_retention,
     held_response_value_per_cmc,
     STARTING_HAND_SIZE,
     opp_threat_prob_from_density,
@@ -839,12 +840,58 @@ class EVPlayer:
 
     def _overlay_land_sacrifice_fizzle(self, ev: float, t_oracle: str, me) -> float:
         """Clamp land-sacrifice tutors (Scapeshift shape) into the patience-
-        reject band when the controller lacks the minimum lands to sacrifice —
-        the engine fizzles the cast otherwise (engine/card_effects.py
-        scapeshift_resolve). Oracle-driven detection, no card names."""
-        if 'sacrifice any number of lands' in t_oracle and 'search your library' in t_oracle:
+        reject band when the cast is not worth its own mana base. Two gates,
+        both oracle-driven, no card names:
+
+        1. Fizzle floor (original): fewer than the minimum lands and the
+           engine fizzles the cast outright.
+        2. Payoff-reachability (2026-08-26 Amulet re-diagnosis, primary
+           root cause): the tutor converts an untapped base into fetched
+           lands whose bounce ETBs return co-entrants — with no untapped-
+           entry watcher the conservative retained yield is ceil(N/2)
+           TAPPED lands (see `conservative_land_retention`). Fired without
+           a deployable payoff that the post-resolution board can cast,
+           the "ramp" spell halves the caster's own mana base (replay-
+           verified: 6 of 12 walked losses, including a hand-held payoff
+           locked out permanently). So the cast is allowed only when a
+           payoff-role card in hand — excluding cards that are themselves
+           this tutor shape, since the gameplan lists the tutor among its
+           payoffs and self-justification reopens the blind-ramp hole —
+           costs no more than the retained-land estimate. Watchers make
+           retention = N: the untap-trigger pattern (Amulet of Vigor
+           class) and the lands-enter-untapped static (Spelunking class),
+           matched by the same oracle predicates the engine's
+           LandManager uses.
+        """
+        def _is_land_sac_tutor(oracle: str) -> bool:
+            return ('sacrifice any number of lands' in oracle
+                    and 'search your library' in oracle)
+
+        if _is_land_sac_tutor(t_oracle):
             my_land_count = sum(1 for c in me.battlefield if c.template.is_land)
             if my_land_count < LAND_SACRIFICE_MIN_LANDS:
+                return min(ev, PATIENCE_GATE_REJECT_SENTINEL)
+
+            has_watcher = False
+            for w in me.battlefield:
+                w_oracle = (w.template.oracle_text or '').lower()
+                if (('whenever' in w_oracle and 'enters tapped' in w_oracle
+                        and 'untap it' in w_oracle)
+                        or ('lands you control enter' in w_oracle
+                            and 'untapped' in w_oracle)):
+                    has_watcher = True
+                    break
+            retained = (my_land_count if has_watcher
+                        else conservative_land_retention(my_land_count))
+            payoff_costs = [
+                c.template.cmc or 0
+                for c in me.hand
+                if c.template.name in self._payoff_names
+                and not c.template.is_land
+                and not _is_land_sac_tutor(
+                    (c.template.oracle_text or '').lower())
+            ]
+            if not payoff_costs or min(payoff_costs) > retained:
                 return min(ev, PATIENCE_GATE_REJECT_SENTINEL)
         return ev
 

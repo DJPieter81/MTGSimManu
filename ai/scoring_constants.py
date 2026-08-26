@@ -2070,6 +2070,20 @@ Used by `_main_phase_decision` reactive-only gate in `ai/ev_player.py`.
 """
 
 LAND_SACRIFICE_MIN_LANDS: int = 4
+
+
+def conservative_land_retention(n_lands: int) -> int:
+    """Worst-case lands retained after a land-sacrifice tutor resolves with
+    NO untapped-entry watcher in play.
+
+    Derivation (2026-08-26 Amulet re-diagnosis, replay-verified): the fetch
+    prefers bounce lands, and each bounce land's ETB returns one co-entrant
+    land to hand. Under the engine's two-phase entry + LIFO trigger ordering
+    the worst case alternates fetch/bounce, retaining ceil(N/2) lands — all
+    tapped, with the bounced half stranded in hand behind the one-land-drop
+    rule. Observed: "Scapeshift sacrifices 7 lands" -> 3 surviving karoos.
+    """
+    return (n_lands + 1) // 2
 """Rules-constant: minimum land count required for a "sacrifice any
 number of lands" payoff (Scapeshift) to be worth casting. Mirrors the
 engine threshold at engine/card_effects.py:scapeshift_resolve. Below
