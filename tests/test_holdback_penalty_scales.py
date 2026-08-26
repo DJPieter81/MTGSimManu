@@ -116,16 +116,21 @@ class TestHoldbackPenaltyScalesA1:
             exclude_instance_id=augur.instance_id,
         )
 
-        # The original A1 goal: scaling, not a fixed magnitude. With
-        # 2 × Counterspell (UU each, CMC 2) held against a creature
-        # opponent, the coefficient-scaled penalty should be at least
-        # several multiples of the pre-A1 flat -2.0. We require <=
-        # -10.0 — this holds for the Bundle-3 7.0 coefficient (-28 or
-        # so) AND the Iteration-2 4.0 coefficient (≈ -16).
-        assert penalty <= -10.0, (
+        # The goal is unchanged — scaling, not a fixed magnitude —
+        # but the scale base is now the lost-VALUE spec (supersedes
+        # A1's count scaling; see docs/diagnostics/
+        # 2026-08-26_decider_loss_root_cause.md and tests/
+        # test_holdback_charges_lost_value_not_whole_pile.py): with 3
+        # mana only one of the two held CMC-2 counters was castable
+        # this window, and the cast strands exactly it. Required:
+        # lost_value 2 × threat 1.0 × coeff 4.0 = 8 — still several
+        # multiples of the pre-A1 flat -2.0, so the scaling is
+        # demonstrably non-flat.
+        assert penalty <= -8.0, (
             f"2× Counterspell holdback penalty={penalty:.2f} is not "
-            f"meaningfully scaled. A1 requires count × cmc × threat × "
-            f"coefficient ≥ 10 magnitude; a flat -2.0 would fail this."
+            f"meaningfully scaled. The lost-value spec requires "
+            f"lost_value × cmc-value coefficient ≥ 8 magnitude here; "
+            f"a flat -2.0 would fail this."
         )
 
     def test_no_penalty_without_held_interaction(self, card_db):

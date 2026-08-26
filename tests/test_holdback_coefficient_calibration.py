@@ -107,14 +107,21 @@ class TestBundle3CoefficientCalibration:
             exclude_instance_id=augur.instance_id,
         )
 
-        # Required magnitude: 2 × 2 × 1.0 × 4.0 = 16. Allow a small
-        # float margin (≤ -15.0). Pre-fix (coeff 7.0, ≈ -28) and
-        # post-fix (coeff 4.0, ≈ -16) both satisfy this.
-        assert penalty <= -15.0, (
+        # Lost-VALUE spec (supersedes A1's pile scaling — see
+        # docs/diagnostics/2026-08-26_decider_loss_root_cause.md and
+        # tests/test_holdback_charges_lost_value_not_whole_pile.py):
+        # with 3 mana only ONE of the two held counters was ever
+        # castable this window (cheapest-first packing: 2 fits, 2+2
+        # does not), and the cast strands exactly that one. Required
+        # magnitude: lost_value 2 × threat_prob 1.0 × coeff 4.0 = 8.
+        # The gating intent survives — the penalty is still several
+        # multiples of the pre-A1 flat -2.0 — but it charges what the
+        # tap-out actually forfeits, not the whole pile.
+        assert penalty <= -8.0, (
             f"With 2× Counterspell held + tight U mana + aggressive "
-            f"opp, holdback penalty={penalty:.2f}; expected ≤ -15.0 "
-            f"(the A1 scaling 2×2×1.0×4.0 = 16 magnitude must still "
-            f"gate low-EV plays post-tune)."
+            f"opp, holdback penalty={penalty:.2f}; expected ≤ -8.0 "
+            f"(lost_value 2 × threat 1.0 × coeff 4.0 must still gate "
+            f"low-EV plays)."
         )
 
     def test_single_counterspell_penalty_smaller_after_tune(self, card_db):
