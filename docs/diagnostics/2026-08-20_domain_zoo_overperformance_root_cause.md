@@ -241,3 +241,41 @@ boards in as an expensive soft counter rather than efficient interaction.
 Cutting Orim's Chant is correct (it was observed being cast uselessly at 5
 life). Whether this swap explains the lost deciders is unproven — a sideboard
 audit against aggro is the natural next probe, and it must be measured in Bo3.
+
+## n=20 FIELD SWEEP + MAIN-vs-BRANCH A/B (2026-08-25) — no regression; small-n artifacts retired
+
+Question prompted by the user: Zoo was near-band long ago (66.0% field, n=20,
+2026-05-15) — did a later change undo a fix?
+
+**Answer: no.** Verified two ways:
+
+1. **n=20 Bo3 field sweep** (idle machine, standard seeds): Zoo field WR
+   **86.9%** — confirms the n=8 headline (88.5%) was real. Worst matchups:
+   Ruby Storm / Azorius WST v2 / Pinnacle Affinity at 70%. Zoo beats every
+   control deck 80–100%.
+2. **Controlled A/B, Zoo vs Dimir Midrange, n=20, same seeds, main
+   (a2dd7e0) vs branch (b0b8b80): identical — 80/20 to Zoo on both**, same
+   11-sweep/9-decider breakdown, near-identical win-turn distributions. The
+   branch changed nothing in this matchup.
+
+The apparent "Dimir beats Zoo 70%" (this doc's matchup-spread table) was an
+**n=6 matrix artifact on a different seed base** (matrix seeds 40000+ vs
+matchup seeds 50000+). Convergence with n: 30% (n=6) → 62% (n=8) → 80%
+(n=20). Even the April 2026 "Zoo vs Dimir fixed" state was Zoo 67% — Dimir
+was never favored; that fix moved Dimir from ~0% to ~20–33%.
+
+**Where the 66% → 87% climb came from (no fix reverted):** each step tracks
+correctness fixes to Zoo's own previously-broken cards — domain CDA
+undercount, Scion of Draco's no-op keyword grant (continuous-effects
+activation), Wild Nacatl's land-type bonus — while the field's defensive
+execution gap stayed open. Zoo's number is the visible symptom of that gap,
+amplified by its cards now working as printed.
+
+**Standing methodology rule from this incident:** per-matchup WR claims
+require n≥20 on a stated seed base; n≤8 rows are for direction only, and
+cross-run comparisons must hold the seed base fixed (40000-matrix vs
+50000-matchup rows are not comparable).
+
+**Open problem unchanged, now better-founded:** the post-sweep rebuild race —
+in the n=20 A/B, 9 of 20 matches reached a deciding game and control lost
+every decider. That remains the #1 lead for bringing Zoo toward band.
