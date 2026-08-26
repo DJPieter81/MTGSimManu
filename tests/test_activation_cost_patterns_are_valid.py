@@ -29,11 +29,15 @@ from engine.oracle_parser import _UNPAYABLE_COST_PATTERNS, parse_activation_cost
 
 # (cost phrase, the unpayable name it must be classified as).
 # NOTE: sacrifice-self and pay-life graduated to STRUCTURED payable fields in
-# tranche 2 — they are asserted separately below, not via this table.
+# tranche 2; single-victim typed sacrifice and plain discard-N graduated in
+# tranche 3 — all asserted separately below, not via this table. What remains
+# on the sacrifice/discard patterns is the residue the structured parse
+# deliberately rejects.
 REPRESENTATIVE_COSTS = [
-    ("Sacrifice a creature", "sacrifice_another"),
-    ("Sacrifice another creature", "sacrifice_another"),
-    ("Discard a card", "discard"),
+    ("Sacrifice two creatures", "sacrifice"),
+    ("Sacrifice an artifact or land", "sacrifice"),
+    ("Discard a card at random", "discard"),
+    ("Discard a creature card", "discard"),
     ("Exile this card from your graveyard", "exile"),
     ("Return a land you control to its owner's hand", "return"),
     ("Reveal a card from your hand", "reveal"),
@@ -55,6 +59,33 @@ def test_sacrifice_self_is_a_structured_payable_field(phrase):
 def test_pay_life_is_a_structured_payable_field():
     cost = parse_activation_cost("Pay 3 life")
     assert cost is not None and cost.life == 3
+    assert cost.unpayable == ()
+
+
+@pytest.mark.parametrize("phrase,type_word,another", [
+    ("Sacrifice a creature", "creature", False),
+    ("Sacrifice another creature", "creature", True),
+    ("Sacrifice an artifact", "artifact", False),
+    ("Sacrifice a land", "land", False),
+    ("Sacrifice a permanent", "permanent", False),
+])
+def test_single_victim_sacrifice_is_a_structured_payable_field(
+        phrase, type_word, another):
+    """Tranche 3: a single-victim typed sacrifice is charged, not refused."""
+    cost = parse_activation_cost(phrase)
+    assert cost is not None and cost.sacrifice_type == type_word
+    assert cost.sacrifice_another is another
+    assert cost.unpayable == (), (
+        f"{phrase!r} must be fully payable, got {cost.unpayable}")
+
+
+def test_plain_discard_is_a_structured_payable_field():
+    """Tranche 3: an untyped, non-random discard-N is charged, not refused."""
+    cost = parse_activation_cost("Discard a card")
+    assert cost is not None and cost.discard_cards == 1
+    assert cost.unpayable == ()
+    cost = parse_activation_cost("Discard two cards")
+    assert cost is not None and cost.discard_cards == 2
     assert cost.unpayable == ()
 
 

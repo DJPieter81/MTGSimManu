@@ -197,6 +197,10 @@ class AICallbacks(GameCallbacks):
         from ai.discard_advisor import choose_discard as _choose
         return _choose(game, player_idx, hand, self_discard)
 
+    def choose_sacrifice(self, game, player_idx, legal):
+        from ai.activation_ev import choose_sacrifice_victim
+        return choose_sacrifice_victim(game, player_idx, legal)
+
     def choose_artifact_tutor_target(self, game, player_idx, eligible):
         """State-aware ranking on top of the default heuristic.
 

@@ -69,6 +69,21 @@ class GameCallbacks(Protocol):
         """
         ...
 
+    def choose_sacrifice(
+        self, game: GameState, player_idx: int,
+        legal: List[CardInstance],
+    ) -> Optional[CardInstance]:
+        """Pick which permanent pays a sacrifice cost.
+
+        The engine has already enumerated `legal` — the permanents that
+        satisfy the cost's type requirement (CR 601.2h), source excluded
+        when the cost says "another". The callback chooses WHICH one is
+        given up; returning one of `legal` is the contract. Returning
+        None refuses the activation (the engine treats an unmade choice
+        as an unpaid cost).
+        """
+        ...
+
     def choose_artifact_tutor_target(
         self, game: GameState, player_idx: int,
         eligible: List[CardInstance],
@@ -123,6 +138,19 @@ class DefaultCallbacks:
         by CMC desc, take head). AI callback implementations should
         override this with a proper discard-scoring strategy."""
         return max(hand, key=lambda c: c.template.cmc or 0)
+
+    def choose_sacrifice(
+        self, game: GameState, player_idx: int,
+        legal: List[CardInstance],
+    ) -> Optional[CardInstance]:
+        """Default: lowest-value legal victim, from printed card data only
+        (least board power, then least mana investment). AI callback
+        implementations override with position-aware scoring."""
+        if not legal:
+            return None
+        return min(legal, key=lambda c: (
+            (c.power or 0) if c.effective_is_creature else 0,
+            c.template.cmc or 0))
 
     def choose_artifact_tutor_target(
         self, game: GameState, player_idx: int,
