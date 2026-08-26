@@ -129,3 +129,37 @@ The fix stands on its own correctness (a whole mechanic class stops burning
 resources on provably-dead responses, with a mild positive signal on the
 biggest soft-counter caster) — but bringing Zoo's control matchups toward
 band requires the goal-transition work, which is the next diagnosis target.
+
+## HOLDBACK TAX-LIVENESS FIX + LIVE FORENSICS (2026-08-26, second pass)
+
+The holdback side of the same tax blindness is fixed (`1653420`):
+`_holdback_penalty` now weights a held tax counter by the fraction of the
+opponent's castable pool it actually stops (effective costs from the
+opponent's snapshot; pool-level knowledge per the BHI convention). The
+reconstructed decider turn deploys the finisher; hard-counter arithmetic is
+pinned unchanged; anchor 29/29 unchanged.
+
+**Measured (n=20 Bo3):** Zoo vs 4/5c 100/0 → **90/10** across the two tax
+fixes (95/5 original); Zoo vs Azorius unchanged at 90/10. Two match wins is
+directionally right and within noise — the matchup is not closed.
+
+**Live candidate-score forensics** (decide_main_phase spy on the seed-54500
+match) decomposes what still loses the deciders:
+
+1. **Mana-light games, not scoring**: several "durdle" turns show control at
+   T8 with 2-4 lands — reactive spells correctly held, nothing proactive
+   castable. That is keep/draw variance (and possibly mulligan policy for a
+   greedy 4-5c manabase), not a decision bug at the scored turn.
+2. **Pile-scaled holdback vetoes all deployment** (the remaining mechanical
+   lead): with an interaction-heavy hand (2× Galvanic Discharge, Dispute,
+   Solitude held), every sorcery-speed play is charged for the ENTIRE held
+   pile — observed `Stock Up EV=-51.8`, `Teferi EV=-24.6` — because
+   `base_penalty` deliberately scales with held COUNT (Brief A1: "the
+   second counter still wants the mana on a future turn"), not with the
+   response capacity actually lost this turn. When the whole hand is
+   interaction, nothing proactive can ever clear the bar, and the deck
+   never presents a clock. Responsible subsystem: `ai/ev_player.py::
+   _holdback_penalty`, the A1 count-scaling choice. Re-specifying it
+   (scale by lost capacity, or cap the charge at the value genuinely at
+   risk this turn) is a deliberate spec change with wide blast radius —
+   flagged for its own failing-test cycle rather than folded into this one.
