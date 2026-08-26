@@ -120,17 +120,55 @@ class ManaPayment:
         legacy single-unit lands)."""
         units = getattr(land.template, "mana_units", None)
         if units:
-            return [list(u) for u in units]
-        produced = ManaPayment.effective_produces_mana(
-            game, player_idx, land)
-        return [list(produced)] if produced else []
+            base = [list(u) for u in units]
+        else:
+            produced = ManaPayment.effective_produces_mana(
+                game, player_idx, land)
+            base = [list(produced)] if produced else []
+        # Auras attached to this land grant additional units (CR 303.4).
+        # Applied here, in the single per-land unit resolver, so payment and
+        # every capacity estimate pick it up without their own special case.
+        if base:
+            from .permanent_effects import PermanentEffects
+            base.extend(PermanentEffects.aura_granted_mana_units(game, land))
+        return base
 
     @staticmethod
     def tap_lands_for_mana(game: "GameState", player_idx: int,
                            cost: ManaCost,
                            card_name: str = None,
-                           held_instant_colors: Optional[Set[str]] = None
+                           held_instant_colors: Optional[Set[str]] = None,
+                           exclude_instance_id: Optional[int] = None
                            ) -> bool:
+        """Pay a mana cost, guarding against activation re-entry.
+
+        `game._paying_mana` is raised for the whole payment. CR 605.3 allows
+        only MANA abilities to be activated while paying a cost, and this
+        engine produces mana through the payment path itself — so any other
+        activation attempted mid-payment is refused outright by
+        `ActivationManager.can_activate`. That makes the recursion edge
+        non-existent rather than merely bounded: a self-untapping mana source
+        cannot spin here, because the loop that would spin never opens.
+
+        `exclude_instance_id` keeps a permanent from being tapped to pay for
+        its OWN activated ability (the generic form of a guard `game_runner`
+        already hand-rolls for granted abilities).
+        """
+        game._paying_mana = getattr(game, '_paying_mana', 0) + 1
+        try:
+            return ManaPayment._tap_lands_for_mana_inner(
+                game, player_idx, cost, card_name, held_instant_colors,
+                exclude_instance_id)
+        finally:
+            game._paying_mana -= 1
+
+    @staticmethod
+    def _tap_lands_for_mana_inner(game: "GameState", player_idx: int,
+                                  cost: ManaCost,
+                                  card_name: str = None,
+                                  held_instant_colors: Optional[Set[str]] = None,
+                                  exclude_instance_id: Optional[int] = None
+                                  ) -> bool:
         """Tap lands to pay a mana cost. Returns True if successful.
 
         Side effect: sets game._last_colors_spent to the set of colors
@@ -233,14 +271,109 @@ class ManaPayment:
                         f"Improvise — tap {n_tap} artifact(s) for "
                         f"{card_name}")
 
-        untapped = [l for l in player.lands if not l.tapped]
+        # One-shot sacrifice-for-mana permanents (CR 605): Eldrazi Spawn/Scion,
+        # Treasure, Lotus-style artifacts — 206 cards in the pool. Spending one
+        # CONSUMES it, so (exactly like Improvise above) only ever spend the
+        # SHORTFALL that repeatable sources plus the pool cannot already cover;
+        # otherwise a deck would eat its own ramp to pay costs its lands
+        # already afford. Tapped state is irrelevant — the cost is sacrifice,
+        # not {T} — which is why these are collected separately from
+        # `untapped` rather than appended to it.
+        # Permanents whose sacrifice-for-mana ability has been COMMITTED TO but
+        # not yet performed. Filled by the block below, then either performed
+        # (`_commit_sacrifices`, on every success path) or abandoned along with
+        # the mana it produced (`_refund_sacrifices`, on every failure path).
+        pending_sacrifice = []
+
+        def _commit_sacrifices():
+            """Perform the deferred sacrifices — payment succeeded."""
+            for _perm in pending_sacrifice:
+                # NOTE: ZoneManager.move_card does NOT currently dispatch
+                # dies/LTB triggers (zone_manager.py) — an earlier revision of
+                # this code claimed it did. It is still the sanctioned funnel
+                # (single owner of zone mutation), so route through it; when
+                # the funnel gains trigger dispatch this call inherits it.
+                game.zone_mgr.move_card_to_graveyard(
+                    game, _perm, cause=f"sacrificed for mana ({card_name})")
+                game.log.append(
+                    f"T{game.display_turn} P{player_idx+1}: "
+                    f"sacrifice {_perm.name} for mana ({card_name})")
+            pending_sacrifice.clear()
+
+        def _refund_sacrifices():
+            """Payment failed: un-add the mana, leave the permanents alone."""
+            for _perm in pending_sacrifice:
+                for _unit in (_perm.template.sacrifice_mana_units or []):
+                    player.mana_pool.remove(_unit[0], 1)
+            pending_sacrifice.clear()
+
+        sac_sources = [
+            perm for perm in player.battlefield
+            if getattr(perm.template, 'sacrifice_mana_units', None)
+        ]
+        if sac_sources:
+            capacity = (player.untapped_mana_capacity()
+                        + player.mana_pool.total()
+                        + player._tron_mana_bonus())
+            shortfall = max(0, cost.cmc - capacity)
+            if shortfall > 0:
+                spent = 0
+                for perm in sac_sources:
+                    if spent >= shortfall:
+                        break
+                    units = perm.template.sacrifice_mana_units or []
+                    if not units:
+                        continue
+                    # DEFERRED: the permanent is NOT moved here. This function
+                    # has failure returns further down (an unmeetable coloured
+                    # requirement; a generic remainder), and destroying a card
+                    # for a spell that then fails to cast is strictly worse
+                    # than declining the cast. Record the intent, add the mana
+                    # so the solver below can use it, and only actually
+                    # sacrifice on a success path (`_commit_sacrifices`).
+                    # Rolling back after the move is not an option: a card
+                    # returning from the graveyard would be a new object
+                    # (CR 400.7) and would re-fire its ETB.
+                    pending_sacrifice.append(perm)
+                    for unit in units:
+                        # A unit lists the colours it could produce; a
+                        # single-colour unit is fixed, a multi-colour unit is
+                        # the "any colour" shape. Add the first option and let
+                        # the pool's own payment logic sort out the rest.
+                        player.mana_pool.add(unit[0], 1)
+                        spent += 1
+
+        untapped = [l for l in player.lands if not l.tapped
+                    and l.instance_id != exclude_instance_id]
+
+        # Non-land mana sources: mana rocks (Talisman, Mind Stone) and mana
+        # creatures (Birds, Llanowar, Devoted Druid). A permanent whose
+        # template exposes a plain "{T}: Add" ability (produces_mana /
+        # mana_units populated for non-lands, CR 605) is tappable for mana
+        # exactly like a land. Creature mana abilities carry the tap symbol,
+        # so summoning sickness gates them (CR 302.6 / 605.3a).
+        for perm in player.battlefield:
+            if perm.tapped or perm.template.is_land:
+                continue
+            if perm.instance_id == exclude_instance_id:
+                continue  # cannot tap a permanent to pay for its own ability
+            if not (perm.template.mana_units or perm.template.produces_mana):
+                continue
+            if (CardType.CREATURE in perm.template.card_types
+                    and perm.has_summoning_sickness):
+                continue
+            untapped.append(perm)
 
         if not untapped and player.mana_pool.total() == 0:
-            return cost.cmc == 0
+            _ok = cost.cmc == 0
+            _commit_sacrifices() if _ok else _refund_sacrifices()
+            return _ok
 
         # Check if mana pool already has enough (from rituals)
         if player.mana_pool.can_pay(cost):
-            return player.mana_pool.pay(cost)
+            _paid = player.mana_pool.pay(cost)
+            _commit_sacrifices() if _paid else _refund_sacrifices()
+            return _paid
 
         # Routes through `effective_produces_mana` so Leyline of the
         # Guildpact and dynamic mana abilities (E1: Mox Opal metalcraft,
@@ -331,6 +464,7 @@ class ManaPayment:
                         best_key = key
                         best_unit = unit
             if best_unit is None:
+                _refund_sacrifices()
                 return False
             best_unit[3] = color
 
@@ -379,6 +513,7 @@ class ManaPayment:
                 generic_remaining -= cond_bonus_cache.get(id(land), 0)
 
         if generic_remaining > 0:
+            _refund_sacrifices()
             return False
 
         # Tap lands and add mana.  A land taps ONCE; every assigned
@@ -436,4 +571,6 @@ class ManaPayment:
             for c in ["W", "U", "B", "R", "G"]:
                 if _pre_pool[c] > 0 and player.mana_pool.get(c) < _pre_pool[c]:
                     game._last_colors_spent.add(c)
+        # Final exit: perform the deferred sacrifices only if we actually paid.
+        _commit_sacrifices() if ok else _refund_sacrifices()
         return ok

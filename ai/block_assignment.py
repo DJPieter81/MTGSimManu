@@ -51,6 +51,8 @@ def coverage_pass(
     cost_fn: Callable[[Blockable], float],
     stabilize_margin: float = 0.0,
     skip_fn: Optional[Callable[[Blockable, float], bool]] = None,
+    min_blockers_fn: Optional[Callable[[Blockable], int]] = None,
+    overflow_fn: Optional[Callable[[Blockable, List[Blockable]], float]] = None,
 ) -> Tuple[Dict[int, List[int]], Set[int]]:
     """PASS 1 — coverage.
 
@@ -71,17 +73,37 @@ def coverage_pass(
     rebinds, chumping is futile" gate) while still contributing that
     attacker's damage to every LATER iteration's ``unblocked_damage``.
 
+    ``overflow_fn(attacker, chosen_blockers) -> float``, if given, is
+    the trample-overflow (CR 702.19) accounting: a *blocked* attacker
+    still contributes its through-damage to ``unblocked_damage`` (power
+    beyond its blockers' combined toughness), instead of dropping out of
+    the survival sum entirely. Without it, a blocked trampler counts as
+    zero incoming — the pass stabilizes one attacker too early and the
+    defender dies to overflow it never accounted for. Non-trample
+    blocked attackers return 0 and so still drop out, unchanged.
+
     Returns ``(blocks, used)`` — a fresh dict/set, never mutates the
     inputs.
     """
     blocks: Dict[int, List[int]] = {}
     used: Set[int] = set()
+    id_to_blocker = {b.instance_id: b for b in blockers}
+
+    def _incoming() -> float:
+        total = 0.0
+        for a in sorted_attackers:
+            if a.instance_id not in blocks:
+                total += (a.power or 0)
+            elif overflow_fn is not None:
+                chosen = [
+                    id_to_blocker[bid] for bid in blocks[a.instance_id]
+                    if bid in id_to_blocker
+                ]
+                total += overflow_fn(a, chosen)
+        return total
 
     for attacker in sorted_attackers:
-        unblocked_damage = sum(
-            (a.power or 0) for a in sorted_attackers
-            if a.instance_id not in blocks
-        )
+        unblocked_damage = _incoming()
         still_lethal = unblocked_damage >= my_life
         if not still_lethal and (
                 my_life - unblocked_damage > stabilize_margin
@@ -95,12 +117,19 @@ def coverage_pass(
             b for b in blockers
             if b.instance_id not in used and can_block_fn(attacker, b)
         ]
-        if not candidates:
-            continue  # nothing left to block with — forced to eat it
+        # Minimum legal blockers for this attacker (menace ⇒ 2, CR 509.1c).
+        # If we can't field that many, do NOT partially block — a single
+        # blocker on a menace attacker is an illegal declaration the engine
+        # drops in its entirety, so the "block" would evaporate and the
+        # attacker would connect for full damage. Leave it uncovered instead.
+        need = min_blockers_fn(attacker) if min_blockers_fn else 1
+        if len(candidates) < need:
+            continue  # can't legally cover it — forced to eat it
 
-        chosen = min(candidates, key=cost_fn)
-        blocks[attacker.instance_id] = [chosen.instance_id]
-        used.add(chosen.instance_id)
+        chosen = sorted(candidates, key=cost_fn)[:need]
+        blocks[attacker.instance_id] = [c.instance_id for c in chosen]
+        for c in chosen:
+            used.add(c.instance_id)
 
     return blocks, used
 

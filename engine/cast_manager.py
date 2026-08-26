@@ -261,8 +261,8 @@ class CastManager:
                     game, player_idx, requirements, exclude=card):
                 return False
 
-        # Check mana (pool + untapped lands + Tron bonus)
-        untapped_lands = player.untapped_lands
+        # Check mana (pool + untapped lands + non-land mana sources + Tron bonus)
+        untapped_lands = player.untapped_mana_sources
         total_mana = (player.untapped_mana_capacity() + player.mana_pool.total()
                       + player._tron_mana_bonus())
 
@@ -1474,6 +1474,13 @@ class CastManager:
         # Generic oracle-text-based spell-cast triggers (incl. surveil)
         from .oracle_resolver import resolve_spell_cast_trigger
         resolve_spell_cast_trigger(game, player_idx, card)
+
+        # The spell's OWN "When you cast this spell, <effect>" trigger
+        # (CR 601.2i) — distinct from the watcher triggers above. Powers the
+        # Eldrazi ramp/interaction suite (Sowing Mycospawn land search,
+        # Devourer/Ugin exile a colored permanent on cast).
+        from .oracle_resolver import resolve_self_cast_trigger
+        resolve_self_cast_trigger(game, player_idx, card)
 
         return True
 

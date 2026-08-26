@@ -134,13 +134,45 @@ class PlayerState:
         return [c for c in self.lands if not c.tapped]
 
     @property
+    def untapped_mana_sources(self) -> List[CardInstance]:
+        """Untapped permanents that can tap for mana (CR 605): lands plus
+        non-land mana sources — mana rocks (Talisman, Mind Stone) and mana
+        creatures (Birds, Llanowar, Devoted Druid). Creature mana abilities
+        carry the tap symbol, so summoning sickness gates them (CR 302.6).
+        Used by the cast-feasibility solver and mana-capacity estimate so
+        rocks/dorks count exactly like lands."""
+        from .cards import CardType
+        out = [c for c in self.lands if not c.tapped]
+        for c in self.battlefield:
+            if c.tapped or c.template.is_land:
+                continue
+            if not (c.template.mana_units or c.template.produces_mana):
+                continue
+            if (CardType.CREATURE in c.template.card_types
+                    and c.has_summoning_sickness):
+                continue
+            out.append(c)
+        return out
+
+    @property
     def available_mana_estimate(self) -> int:
-        """Rough estimate of available mana from untapped lands.
-        Includes conditional mana bonuses (e.g., Tron assembly) detected
-        from oracle text on land card templates."""
-        base = len(self.untapped_lands)
-        bonus = self._conditional_mana_bonus()
-        return base + bonus
+        """Available mana from every untapped source the engine can spend.
+
+        This is the AI-facing number: it feeds `EVSnapshot.my_mana` (and thus
+        the clock / combo / mana-waste layer) and `GoalEngine`'s resource gate.
+        It previously counted `len(untapped_lands)` — LANDS ONLY, one mana
+        each — while the CASTING path checked `untapped_mana_capacity()`, the
+        real per-source unit sum. A board with mana rocks, a land tapping for
+        two, or an Aura-enchanted land therefore reported less mana to the AI
+        than the engine would actually let it spend, so a deck's own goal gate
+        refused to advance to "deploy the payoff" for several turns after the
+        payoff was genuinely castable.
+
+        Delegating to the same capacity the payment path uses makes the two
+        agree by construction. The Tron-style conditional bonus stays a
+        separate additive term, exactly as before.
+        """
+        return self.untapped_mana_capacity() + self._conditional_mana_bonus()
 
     def _conditional_mana_bonus(self) -> int:
         """Calculate bonus mana from lands with conditional mana production.
@@ -227,7 +259,22 @@ class PlayerState:
         separate additive term (`_conditional_mana_bonus`) at the
         call sites that already carry it.
         """
-        return sum(land.template.mana_count for land in self.untapped_lands)
+        # Route through `ManaPayment.land_mana_units` — the single per-source
+        # unit resolver the PAYMENT path uses — rather than reading
+        # `template.mana_count` directly. Reading the template misses every
+        # dynamic contribution (notably Aura-granted units, CR 303.4), which
+        # made this estimate disagree with what the engine could actually pay.
+        sources = self.untapped_mana_sources
+        # PlayerState holds no game back-reference, but every CardInstance
+        # does — derive it from the sources themselves.
+        game = next((getattr(s, '_game_state', None) for s in sources
+                     if getattr(s, '_game_state', None) is not None), None)
+        if game is not None:
+            from .mana_payment import ManaPayment
+            idx = sources[0].controller
+            return sum(len(ManaPayment.land_mana_units(game, idx, src))
+                       for src in sources)
+        return sum(src.template.mana_count for src in sources)
 
     def available_mana_colors(self) -> Dict[str, int]:
         """Get available mana by color from untapped lands."""

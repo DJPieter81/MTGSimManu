@@ -1885,21 +1885,32 @@ def consign_to_memory_resolve(game, card, controller, targets=None, item=None):
         for i, stack_item in enumerate(game.stack.items):
             if stack_item.source.instance_id != tid:
                 continue
+            from engine.game_state import StackItemType
             tmpl = stack_item.source.template
-            # Validate: only colorless spells (no color identity).
-            # Triggered ability counters are not modelled separately.
-            if tmpl.color_identity:
+            is_triggered = stack_item.item_type == StackItemType.TRIGGERED_ABILITY
+            # "Counter target triggered ability OR colorless spell": a
+            # triggered ability is counterable regardless of its source's
+            # color (the ability is not a spell and has no color identity of
+            # its own); a SPELL must be colorless.
+            if not is_triggered and tmpl.color_identity:
                 game.log.append(
                     f"T{game.display_turn} P{controller+1}: "
-                    f"Consign to Memory fizzles (target has color identity)")
+                    f"Consign to Memory fizzles (spell has color identity)")
                 continue
             countered = game.stack.items.pop(i)
-            countered_card = countered.source
-            countered_card.zone = "graveyard"
-            game.players[countered_card.owner].graveyard.append(countered_card)
-            game.log.append(
-                f"T{game.display_turn} P{controller+1}: "
-                f"Consign to Memory counters {countered_card.name}")
+            if is_triggered:
+                # A countered triggered ability simply ceases to exist —
+                # it is not a card and does not move to any zone.
+                game.log.append(
+                    f"T{game.display_turn} P{controller+1}: Consign to Memory "
+                    f"counters {countered.source.name}'s triggered ability")
+            else:
+                countered_card = countered.source
+                countered_card.zone = "graveyard"
+                game.players[countered_card.owner].graveyard.append(countered_card)
+                game.log.append(
+                    f"T{game.display_turn} P{controller+1}: "
+                    f"Consign to Memory counters {countered_card.name}")
             break
 
 
@@ -2093,7 +2104,13 @@ def explore_resolve(game, card, controller, targets=None, item=None):
 def green_suns_zenith_resolve(game, card, controller, targets=None, item=None):
     from .cards import Color
     player = game.players[controller]
-    x_value = getattr(card, '_x_value', 0) or 0
+    # The paid X lives on the STACK ITEM (`item.x_value`), the same place every
+    # other X-consuming resolver in this module reads it from. This previously
+    # read `card._x_value`, an attribute nothing in the codebase ever writes —
+    # one read, zero writers — so X was always 0 and the tutor could only find
+    # a mana-value-0 creature regardless of how much mana was actually spent.
+    x_value = (item.x_value if item is not None
+               and getattr(item, 'x_value', None) is not None else 0)
     # Find best green creature with CMC <= X
     candidates = [
         c for c in player.library
@@ -2102,7 +2119,15 @@ def green_suns_zenith_resolve(game, card, controller, targets=None, item=None):
         and (c.template.cmc or 0) <= x_value
     ]
     if candidates:
-        best = max(candidates, key=lambda c: (c.template.power or 0) + (c.template.toughness or 0))
+        # Rank by MANA VALUE, not power+toughness: several premium tutor
+        # targets have a base P/T of 0/0 and get their size from a
+        # characteristic-defining ability, so a P/T ranking picks the wrong
+        # card. Mana value is the size proxy matching what was paid for.
+        # Tie-break on P/T so equal-cost choices still prefer the bigger body.
+        best = max(candidates,
+                   key=lambda c: ((c.template.cmc or 0),
+                                  (c.template.power or 0)
+                                  + (c.template.toughness or 0)))
         player.library.remove(best)
         game.rng.shuffle(player.library)
         best.controller = controller

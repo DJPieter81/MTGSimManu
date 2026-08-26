@@ -1,15 +1,20 @@
 ---
 title: Instant Reanimator — engine mechanism gaps (blink vs Goryo's exile rider)
-status: active
-priority: secondary
+status: superseded
+priority: historical
 session: 2026-07-05
+superseded_by: docs/diagnostics/2026-08-25_instant_reanimator_residual_root_cause.md
 tags: [reanimation, blink, ephemerate, goryos-vengeance, engine, delayed-triggers]
 summary: >
-  Ephemerate-blinking a Goryo's-reanimated creature does not clear the
-  end-of-turn exile rider — the engine tracks the delayed trigger by
-  CardInstance identity across the blink, so the deck's namesake line
-  ("reanimate, blink to keep it permanently") is impossible in-sim.
-  Gameplan tuning cannot fix this; it caps the archetype's ceiling.
+  RESOLVED 2026-08-25 — the engine gap this doc describes is FIXED. Blinking a
+  Goryo's-reanimated creature now clears the end-of-turn exile rider: the rider
+  is tracked by `battlefield_entry_seq` (CR 400.7 new-object identity), and a
+  blink re-calls `enter_battlefield()` so the seqs diverge and the end step
+  drops it (engine/turn_manager.py:230-234, engine/game_state.py:138-144).
+  Verified green: tests/test_delayed_eot_exile_drops_on_zone_change.py and
+  tests/test_blink_clears_pending_eot_detriment.py (8 passed).
+  DO NOT re-open this as a blocking engine dependency. The deck's residual
+  under-performance is an AI sequencing/discard problem — see superseded_by.
 ---
 
 # Instant Reanimator — mechanism gaps (2026-07-05)

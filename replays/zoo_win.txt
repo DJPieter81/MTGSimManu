@@ -1,0 +1,385 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+Result: Domain Zoo wins T6 via damage
+Life: P1=19 P2=0
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Domain Zoo wins → chooses to play first
+║ P1 (on play): Domain Zoo
+║ P2 (on draw): 4/5c Control
+╚═══════════════════════════════════════════════════════
+
+P1 (Domain Zoo) opening hand (2 lands, 5 spells):
+  • Lightning Bolt [Spell, CMC 1]
+  • Leyline of the Guildpact [Spell, CMC 4]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Thundering Falls [Land, CMC 0]
+  • Flooded Strand [Land, CMC 0]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Leyline Binding [Spell, CMC 6]
+→ P1 KEEPS 7 — has key card(s): Leyline Binding, Ragavan, Nimble Pilferer, 2 cheap spells
+
+P2 (4/5c Control) opening hand (3 lands, 4 spells):
+  • Arena of Glory [Land, CMC 0]
+  • Orim's Chant [Spell, CMC 1]
+  • Wrath of the Skies [Spell, CMC 2]
+  • Wrenn and Six [Spell, CMC 2]
+  • Flooded Strand [Land, CMC 0]
+  • Windswept Heath [Land, CMC 0]
+  • Teferi, Time Raveler [Spell, CMC 3]
+→ P2 KEEPS 7 — has key card(s): Teferi, Time Raveler, Wrenn and Six, 4 cheap spells
+
+T0 P1: Leyline of the Guildpact begins the game on the battlefield (leyline)
+
+╔══ TURN 1 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 20  |  4/5c Control 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: (none)
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Flooded Strand
+T1: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Flooded Strand (pay 1 life) -> Steam Vents (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 20  |  Domain Zoo 19
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Quantum Riddler
+  [Main 1]
+T1 P2: Play Flooded Strand
+T1: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Flooded Strand (pay 1 life) -> Hallowed Fountain (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 19  |  4/5c Control 19
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: Steam Vents
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Doorkeeper Thrull
+  [Main 1]
+T2 P1: surveil 1 → Leyline Binding to GY
+T2 P1: Play Thundering Falls (enters tapped)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Steam Vents→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T2 P1: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P2 passes (no response)
+T2: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 19  |  Domain Zoo 19
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Other: Leyline of the Guildpact
+║   Lands: Steam Vents [T], Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Quantum Riddler
+  [Main 1]
+T2 P2: Play Windswept Heath
+T2: Windswept Heath moved battlefield -> graveyard (fetchland sacrifice)
+T2 P2: Crack Windswept Heath (pay 1 life) -> Stomping Ground (untapped, life: 16)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 19  |  4/5c Control 16
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Other: Leyline of the Guildpact
+║   Lands: Steam Vents, Thundering Falls
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Stomping Ground
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Doorkeeper Thrull
+  [Main 1]
+    → Goal: curve_out
+    [Target] → face (3 dmg, life 16 → 13): face value 4.50
+    [Mana] Tap Steam Vents→R (paying for Lightning Bolt, 2 mana remaining)
+T3 P1: Cast Lightning Bolt (R)
+    [Priority] P2 passes (no response)
+T3: Resolve Lightning Bolt
+T3 P1: Lightning Bolt → 3 damage → life 13
+T3: Lightning Bolt moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ragavan, Nimble Pilferer
+T3 P1: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P2 does not block
+T3 P1:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T3 P1: Create 1x Treasure token(s)
+T3 P1: Ragavan, Nimble Pilferer exiles Solitude from top of P2's library
+T3 P1: Ragavan, Nimble Pilferer — may cast Solitude this turn
+  [Combat Damage] 2 damage dealt → P2 life: 13 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+T3: Solitude returned to exile (uncast)
+
+╔══ TURN 3 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 11  |  Domain Zoo 19
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 48  |  Graveyard: 2
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Stomping Ground
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped]
+║   Other: Leyline of the Guildpact, Treasure Token
+║   Lands: Steam Vents [T], Thundering Falls
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wrenn and Six
+  [Main 1]
+T3 P2: Play Arena of Glory (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 19  |  4/5c Control 11
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 3
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Other: Leyline of the Guildpact, Treasure Token
+║   Lands: Steam Vents, Thundering Falls
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Stomping Ground, Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Leyline Binding
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Steam Vents→W, Thundering Falls→W (paying for Doorkeeper Thrull, 2 mana remaining)
+T4 P1: Cast Doorkeeper Thrull (1W)
+    [Priority] P2 passes (no response)
+T4: Resolve Doorkeeper Thrull
+T4 P1: Doorkeeper Thrull: opponent ETB triggers suppressed
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ragavan, Nimble Pilferer
+T4 P1: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P2 does not block
+T4 P1:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T4 P1: Create 1x Treasure token(s)
+T4 P1: Ragavan, Nimble Pilferer exiles Orim's Chant from top of P2's library
+T4 P1: Ragavan, Nimble Pilferer — may cast Orim's Chant this turn
+  [Combat Damage] 2 damage dealt → P2 life: 11 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Orim's Chant returned to exile (uncast)
+
+╔══ TURN 4 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 9  |  Domain Zoo 19
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 46  |  Graveyard: 2
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Stomping Ground, Arena of Glory
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Doorkeeper Thrull (1/2)
+║   Other: Leyline of the Guildpact, Treasure Token, Treasure Token
+║   Lands: Steam Vents [T], Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Misty Rainforest
+  [Main 1]
+T4 P2: Play Misty Rainforest
+T4: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T4 P2: Crack Misty Rainforest (pay 1 life) -> Breeding Pool (untapped, life: 6)
+    → Goal: close_game
+    [Mana] Tap Arena of Glory→R, Stomping Ground→G (paying for Wrenn and Six, 4 mana remaining)
+T4 P2: Cast Wrenn and Six (RG)
+    [Priority] P1 passes (no response)
+T4: Resolve Wrenn and Six
+T4 P2: Wrenn and Six [-1] -> Wrenn and Six deals 1 damage to any target
+T4 P2: Wrenn and Six deals 1 to Ragavan, Nimble Pilferer
+T4: Ragavan, Nimble Pilferer dies
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 19  |  4/5c Control 6
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 4
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2)
+║   Other: Leyline of the Guildpact, Treasure Token, Treasure Token
+║   Lands: Steam Vents, Thundering Falls
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Wrenn and Six
+║   Lands: Hallowed Fountain, Stomping Ground [T], Arena of Glory [T], Breeding Pool
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Lightning Bolt
+  [Main 1]
+    → Goal: curve_out
+    [Target] → face (3 dmg, life 6 → 3): face value 7.50
+    [Mana] Tap Steam Vents→R (paying for Lightning Bolt, 2 mana remaining)
+T5 P1: Cast Lightning Bolt (R)
+    [Priority] P2 passes (no response)
+T5: Resolve Lightning Bolt
+T5 P1: Lightning Bolt → 3 damage → life 3
+T5: Lightning Bolt moved stack -> graveyard (resolution)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Thundering Falls→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T5 P1: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P2 passes (no response)
+T5: Resolve Ragavan, Nimble Pilferer
+T5: Ragavan, Nimble Pilferer ETB suppressed by Doorkeeper Thrull
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Doorkeeper Thrull
+T5 P1: Attack with Doorkeeper Thrull
+  [Declare Blockers] P2 does not block
+T5 P1:   Doorkeeper Thrull (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P2 life: 3 → 2
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 2  |  Domain Zoo 19
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 2
+║ Library: 44  |  Graveyard: 3
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Wrenn and Six
+║   Lands: Hallowed Fountain, Stomping Ground, Arena of Glory, Breeding Pool
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2) [tapped], Ragavan, Nimble Pilferer (2/1)
+║   Other: Leyline of the Guildpact, Treasure Token, Treasure Token
+║   Lands: Steam Vents [T], Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+T5 P2: Play Flooded Strand
+T5: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T5 P2: Crack Flooded Strand (pay 1 life) -> Steam Vents (tapped, life: 1)
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→W (paying for Orim's Chant, 4 mana remaining)
+T5 P2: Cast Orim's Chant (W)
+    [Priority] P1 passes (no response)
+T5: Resolve Orim's Chant
+T5 P2: Orim's Chant silences P1 this turn
+T5: Orim's Chant moved stack -> graveyard (resolution)
+T5 P2: Wrenn and Six [-1] -> Wrenn and Six deals 1 damage to any target
+T5 P2: Wrenn and Six deals 1 to Ragavan, Nimble Pilferer
+T5: Ragavan, Nimble Pilferer dies
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 19  |  4/5c Control 1
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 6
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2)
+║   Other: Leyline of the Guildpact, Treasure Token, Treasure Token
+║   Lands: Steam Vents, Thundering Falls
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Wrenn and Six
+║   Lands: Hallowed Fountain [T], Stomping Ground, Arena of Glory, Breeding Pool, Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Leyline of the Guildpact
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Steam Vents→W, Thundering Falls→W (paying for Doorkeeper Thrull, 2 mana remaining)
+T6 P1: Cast Doorkeeper Thrull (1W)
+    [Priority] P2 passes (no response)
+T6: Resolve Doorkeeper Thrull
+T6: Doorkeeper Thrull ETB suppressed by Doorkeeper Thrull
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Doorkeeper Thrull
+T6 P1: Attack with Doorkeeper Thrull
+  [Declare Blockers] P2 does not block
+T6 P1:   Doorkeeper Thrull (1/2) → 1 dmg to player
+P2 loses: life total 0
+  [Combat Damage] 1 damage dealt → P2 life: 1 → 0

@@ -13,7 +13,7 @@ This replaces the hardcoded data tables in game_state.py
 """
 from __future__ import annotations
 import re
-from typing import Dict, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 from engine.oracle_clauses import split_abilities, split_clauses
 
@@ -507,18 +507,412 @@ def parse_has_attack_trigger(oracle: str, name: str = "") -> bool:
     time rather than requiring a runtime string-format check.
     """
     low = (oracle or '').lower()
-    if 'whenever this creature attacks' in low:
+    # Modern templating writes the combined form "Whenever this creature enters
+    # or attacks, …" (Grave Titan, Primeval Titan, Archon of Cruelty, the
+    # Overlord cycle — 88 Modern cards). That IS an attack trigger; matching
+    # only the bare "attacks" phrasing left every one of them with
+    # has_attack_trigger == False, which silently disabled the flag-gated
+    # attack-time dispatches (land search, energy) and under-valued all 88 in
+    # `creature_threat_value`'s virtual-power credit.
+    suffixes = ('attacks', 'enters or attacks')
+    # The self-referential subject is not always "this creature": the DB also
+    # uses "this permanent" (the Overlord enchantment-creature cycle), "this
+    # Vehicle", "this land" (creature-lands), "this token" and "this
+    # Spacecraft" — 50 cards beyond the creature phrasing. In modern
+    # templating "this <noun>" is ALWAYS a self-reference, so a single-word
+    # noun is a safe anchor; crucially it still excludes the watcher forms
+    # ("whenever YOUR COMMANDER enters or attacks", "whenever A CREATURE YOU
+    # CONTROL attacks"), which belong to a different trigger class.
+    if re.search(r'whenever this \w+ (?:enters or )?attacks\b', low):
         return True
     if name:
         # Full name minus alternate-face suffix (DFCs use "Front // Back").
         cname = name.lower().split(' //')[0].strip()
-        if cname and f'whenever {cname} attacks' in low:
-            return True
         # Legendary creatures with a title ("Ragavan, Nimble Pilferer") refer
         # to themselves in oracle text by just the personal name before the
         # comma ("Whenever Ragavan attacks"). Check both forms.
         short = cname.split(',')[0].strip()
-        if short and short != cname and f'whenever {short} attacks' in low:
+        for anchor in (cname, short):
+            if not anchor:
+                continue
+            if any(f'whenever {anchor} {s}' in low for s in suffixes):
+                return True
+    return False
+
+
+_ANY_COLOR_UNIT = ['W', 'U', 'B', 'R', 'G']
+
+
+# ── Activated abilities (CR 602): "[Cost]: [Effect]" ──────────────────
+# Cost verbs this tranche cannot charge. Parsed and RECORDED (never dropped)
+# so the ability is visible-but-refused; a later tranche adds payers without
+# re-parsing the pool.
+_UNPAYABLE_COST_PATTERNS = (
+    ('sacrifice_another', r'sacrifice (a|an|another|two|three)\b'),
+    ('discard', r'discard\b'),
+    ('remove_counter', r'remove (a|an|one|two|\d+)[^,:]*counter'),
+    ('put_counter', r'put (a|an|one|two|\d+)[^,:]*counter'),
+    ('exile', r'exile\b'),
+    ('tap_other', r'tap (an?|another|two|three|\d+)\b'),
+    ('return', r'return\b'),
+    ('energy', r'\{e\}'),
+    ('reveal', r'reveal\b'),
+)
+
+
+def strip_reminder_text(oracle: str) -> str:
+    """Remove parenthesised reminder text, innermost-first.
+
+    Load-bearing for the activated-ability scan: a large fraction of
+    colon-bearing lines in the pool have their ONLY colon inside keyword
+    reminder text — "Equip {3} ({3}: Attach ...)", "Cycling {2} ({2}, Discard
+    this card: Draw a card.)". Without stripping, those parse as real
+    abilities. The engine has no reminder stripper of its own; the repo's only
+    one lives in `ai/`, which `engine/` may not import.
+    """
+    text = oracle or ''
+    while True:
+        stripped = re.sub(r'\([^()]*\)', '', text)
+        if stripped == text:
+            return text
+        text = stripped
+
+
+def split_activation_riders(effect_text: str):
+    """Split "Activate only ..." sentences off an effect clause.
+
+    MUST run before effect classification — otherwise the classifier sees a
+    trailing rider sentence and fails to match legitimate lines.
+
+    Only two riders map to booleans. Everything else is returned verbatim so
+    `can_activate` can REFUSE on it. In particular "Activate only once."
+    (once per GAME) must not be read as once-each-turn, which would silently
+    grant extra activations.
+
+    Returns ``(body, restrictions)``.
+    """
+    text = effect_text or ''
+    restrictions = []
+    sorcery_only = False
+    once_each_turn = False
+
+    def _take(match):
+        nonlocal sorcery_only, once_each_turn
+        sentence = match.group(0).strip()
+        low = sentence.lower()
+        if low == 'activate only as a sorcery.':
+            sorcery_only = True
+        elif low == 'activate only once each turn.':
+            once_each_turn = True
+        else:
+            restrictions.append(sentence)
+        return ''
+
+    body = re.sub(r'Activate only[^.]*\.', _take, text, flags=re.IGNORECASE)
+    return body.strip(), tuple(restrictions), sorcery_only, once_each_turn
+
+
+def parse_activation_cost(cost_text: str):
+    """Parse the cost half of an activated ability.
+
+    Closed grammar with an explicit escape hatch: mana runs and {T}/{Q} are
+    payable; every recognised non-mana verb is appended to `unpayable`.
+    Returns ``None`` for loyalty brackets (planeswalker abilities are owned
+    elsewhere) and for empty costs.
+    """
+    from .cards import ActivationCost
+    from .mana import ManaCost
+    raw = (cost_text or '').strip()
+    if not raw:
+        return None
+    # Loyalty abilities ([+1], [-3], [0]) belong to the planeswalker manager.
+    if re.match(r'^\[[+\-−]?\d*\]', raw):
+        return None
+
+    mana = ManaCost()
+    tap_self = False
+    untap_self = False
+    life = 0
+    sacrifice_self = False
+    unpayable = []
+    for part in raw.split(','):
+        piece = part.strip()
+        if not piece:
+            continue
+        low = piece.lower()
+        m_life = re.fullmatch(r'pay (\d+) life', low)
+        if m_life:
+            life += int(m_life.group(1))
+            continue
+        if re.match(r'sacrifice this\b', low):
+            sacrifice_self = True
+            continue
+        if re.fullmatch(r'(\{[wubrgcxs0-9/]+\}\s*)+', low):
+            mana = _add_mana_symbols(mana, low)
+            continue
+        if low == '{t}':
+            tap_self = True
+            continue
+        if low == '{q}':
+            untap_self = True
+            continue
+        matched = False
+        for name, pattern in _UNPAYABLE_COST_PATTERNS:
+            if re.search(pattern, low):
+                unpayable.append(name)
+                matched = True
+                break
+        if not matched:
+            unpayable.append('unrecognised')
+    return ActivationCost(mana=mana, tap_self=tap_self,
+                          untap_self=untap_self,
+                          life=life, sacrifice_self=sacrifice_self,
+                          unpayable=tuple(unpayable))
+
+
+def _add_mana_symbols(cost, text):
+    """Fold a run of mana symbols into a ManaCost."""
+    attr = {'w': 'white', 'u': 'blue', 'b': 'black', 'r': 'red', 'g': 'green'}
+    for sym in re.findall(r'\{([wubrgcxs0-9]+)\}', text):
+        if sym.isdigit():
+            cost.generic += int(sym)
+        elif sym in attr:
+            setattr(cost, attr[sym], getattr(cost, attr[sym]) + 1)
+        elif sym == 'c':
+            cost.colorless += 1
+        # {X}/{S} are not chargeable in this tranche; they surface via the
+        # caller's `unpayable` path only when they appear outside a mana run.
+    return cost
+
+
+def classify_activation_effect(effect_text: str):
+    """Classify an effect clause. Returns (kind, amount, power_mod, tough_mod).
+
+    Regexes are ANCHORED to the FULL sentence, not searched. That is not
+    stylistic: a loose draw pattern matches "Draw a card, then exile a card
+    from your hand face down." — a different effect whose rider would be
+    silently dropped if it executed as a plain draw.
+    """
+    from .cards import ActivationEffectKind as K
+    text = (effect_text or '').strip()
+    low = text.lower().rstrip('.')
+
+    m = re.fullmatch(r'(?:this |it )?(?:\w+ )?deals? (\d+) damage to any target', low)
+    if m:
+        return K.DAMAGE_ANY_TARGET, int(m.group(1)), 0, 0
+
+    m = re.fullmatch(r'draw (a|one|two|three|\d+) cards?', low)
+    if m:
+        tok = m.group(1)
+        n = 1 if tok in ('a', 'one') else (int(tok) if tok.isdigit()
+                                           else _NUM_WORDS.get(tok, 0))
+        if n > 0:
+            return K.DRAW_N, n, 0, 0
+
+    m = re.fullmatch(
+        r'(?:this creature|this permanent|it) gets \+(\d+)/\+(\d+) until end of turn',
+        low)
+    if m:
+        return K.PUMP_SELF_UEOT, 0, int(m.group(1)), int(m.group(2))
+
+    if 'becomes a' in low and 'creature until end of turn' in low:
+        return K.ANIMATE_SELF_UEOT, 0, 0, 0
+
+    return K.UNCLASSIFIED, 0, 0, 0
+
+
+def parse_activated_abilities(oracle: str):
+    """Parse every "[Cost]: [Effect]" line a permanent has of its own.
+
+    Excludes, by construction: reminder text (stripped first), abilities
+    GRANTED to other objects via a quoted clause, and loyalty abilities.
+    Mana abilities (CR 605) are parsed but flagged `is_mana_ability` so the
+    enumerator can skip them — mana is produced by the payment path.
+    """
+    from .cards import ActivatedAbility, ActivationEffectKind as K
+    text = strip_reminder_text(oracle or '')
+    if ':' not in text:
+        return []
+
+    out = []
+    idx = 0
+    for line in re.split(r'\n+', text):
+        line = line.strip()
+        if ':' not in line:
+            continue
+        # A colon inside a quoted grant belongs to an ability given to OTHER
+        # objects ("Creatures you control have \"{T}: Add {C}\"") — a
+        # different mechanic, not this permanent's own activation.
+        if '"' in line or '\u201c' in line:
+            continue
+        cost_text, _, effect_text = line.partition(':')
+        cost = parse_activation_cost(cost_text)
+        if cost is None:
+            continue
+        body, restrictions, sorcery_only, once_turn = \
+            split_activation_riders(effect_text)
+        kind, amount, p_mod, t_mod = classify_activation_effect(body)
+        is_mana = bool(re.match(r'^add\b', body.strip().lower()))
+        out.append(ActivatedAbility(
+            index=idx, cost=cost, effect_text=body.strip(),
+            effect_kind=kind, amount=amount,
+            power_mod=p_mod, toughness_mod=t_mod,
+            sorcery_speed_only=sorcery_only, once_each_turn=once_turn,
+            restrictions=restrictions, is_mana_ability=is_mana,
+        ))
+        idx += 1
+    return out
+
+
+
+def parse_aura_enchant_restriction(oracle: str) -> Optional[str]:
+    """Parse an Aura's "Enchant <quality>" ability (CR 303.4).
+
+    Returns the quality lowercased ('land', 'forest', 'creature', 'creature
+    you control', …) or ``None`` when the card has no Enchant ability. The
+    quality is what makes a host legal; 786 Modern cards are Auras, so this is
+    the shared entry point for attachment generally, not just the mana slice.
+    """
+    m = re.search(r'^enchant ([a-z][a-z \']*)$',
+                  (oracle or '').lower(), re.MULTILINE)
+    if m is None:
+        return None
+    return m.group(1).strip()
+
+
+def parse_aura_mana_units(oracle: str) -> Optional[List[List[str]]]:
+    """Parse "Whenever enchanted <X> is tapped for mana, … adds an additional
+    <mana>" into the mana units the Aura GRANTS to its host.
+
+    12 Modern Auras carry this (Utopia Sprawl, Fertile Ground, Wild Growth,
+    Overgrowth, …). Returned in the same unit shape as ``template.mana_units``
+    so the host land's unit list can simply be extended.
+
+    "of the chosen color" is treated as any-colour: the colour is chosen as the
+    Aura enters and is not modelled per-instance, but the COUNT — which is what
+    mana capacity is measured in — is exact either way.
+    """
+    low = (oracle or '').lower()
+    m = re.search(
+        r'whenever enchanted [a-z]+ is tapped for mana[^.]*?'
+        r'adds?\s+(?:an additional\s+)?([^.]+)', low)
+    if m is None:
+        return None
+    effect = m.group(1).strip()
+
+    symbols = re.findall(r'\{([wubrgc])\}', effect)
+    if symbols:
+        return [[s.upper()] for s in symbols]
+
+    # "<N> mana of any color" / "of the chosen color" / "in any combination".
+    m2 = re.search(r'(\w+)\s+mana\s+(?:of|in)\b', effect)
+    if m2:
+        tok = m2.group(1)
+        try:
+            count = int(tok)
+        except ValueError:
+            count = _NUM_WORDS.get(tok, 0)
+        if count > 0:
+            return [list(_ANY_COLOR_UNIT) for _ in range(count)]
+    return None
+
+
+def parse_sacrifice_mana_units(oracle: str) -> Optional[List[List[str]]]:
+    """Parse a "Sacrifice this <thing>: Add <mana>" ability into mana units.
+
+    207 Modern cards create or carry this one-shot mana ability — Eldrazi
+    Spawn/Scion ("Add {C}"), Treasure ("Add one mana of any color"), and
+    Lotus-style multi-mana artifacts. Nothing in the engine recognised it, so
+    every such permanent contributed zero mana; for ramp shells that turns a
+    whole class of accelerant into dead bodies.
+
+    Returns a list of mana UNITS in the same shape as ``template.mana_units``
+    (each unit is the list of colours that unit could produce), or ``None``
+    when the oracle has no such ability.
+
+    Deliberately excluded:
+      * ``{T}: Add …`` — a plain tap ability, already modelled as a normal
+        mana source. Claiming it here would double-count the permanent.
+      * ``Sacrifice a creature: Add …`` / ``Sacrifice another …`` — a cost
+        paid with OTHER permanents, not this permanent converting itself into
+        mana. Different mechanic; the ``this`` anchor is the discriminator
+        (same discriminator the attack-trigger parsers use).
+      * ``Sacrifice this creature: <non-mana effect>`` — no ``Add``.
+    """
+    low = (oracle or '').lower()
+    # Anchor on "sacrifice this <noun>" so other-permanent sacrifice costs and
+    # tap abilities cannot match. The effect must begin with "add".
+    m = re.search(
+        r'sacrifice this [a-z]+[^:.]{0,40}:\s*add\s+([^.\n"]+)', low)
+    if m is None:
+        return None
+    effect = m.group(1).strip()
+
+    # Form 1: an explicit run of mana symbols — {C}, {C}{C}, {B}{B}, {W}{U}…
+    symbols = re.findall(r'\{([wubrgc])\}', effect)
+    if symbols:
+        return [[s.upper()] for s in symbols]
+
+    # Form 2: "<N> mana of any color" / "<N> mana of any one color".
+    m2 = re.search(r'(\w+)\s+mana\s+of\s+any', effect)
+    if m2:
+        tok = m2.group(1)
+        try:
+            count = int(tok)
+        except ValueError:
+            count = _NUM_WORDS.get(tok, 0)
+        if count > 0:
+            # "of any ONE color" additionally constrains every unit to the
+            # same colour; that constraint is not modelled here, so the units
+            # are independently any-colour. The count — which is what mana
+            # capacity is measured in — is exact either way.
+            return [list(_ANY_COLOR_UNIT) for _ in range(count)]
+
+    return None
+
+
+def parse_has_combat_damage_trigger(oracle: str, name: str = "") -> bool:
+    """Return True when the card has an on-combat-damage-to-a-player triggered
+    ability that belongs to the card itself (CR 603.2).
+
+    This is a DISTINCT oracle shape from `parse_has_attack_trigger`: an attack
+    trigger fires on declaration, a combat-damage trigger fires only when the
+    creature connects. 331 Modern creatures carry the latter — the "connects →
+    draw a card / make a Treasure / steal a card" value engines that power
+    aggro and tempo decks (Ragavan, Psychic Frog, the ninja cycle, …). They are
+    strictly more than their printed body, and `parse_has_attack_trigger`
+    correctly returns False for them, so without this parser they were valued
+    as vanilla creatures.
+
+    Recognised phrasings mirror `parse_has_attack_trigger`'s self-anchor:
+      - "Whenever this creature deals combat damage to a player" — generic
+        self-referential form.
+      - "Whenever [Card Name] deals combat damage to a player" — self-named
+        form used by legendaries, including the personal-name-only variant
+        ("Whenever Ragavan deals combat damage …" on "Ragavan, Nimble
+        Pilferer").
+
+    Deliberately excluded, same discriminator as the attack-trigger parser:
+    "Whenever a creature you control deals combat damage" / "Whenever another
+    creature …" — those are triggers on *other* permanents that fire off any
+    creature's combat damage, not this body's own recurring value.
+
+    The "to a player" anchor is required: "deals combat damage to a creature"
+    is a fight/deathtouch-style rider, not a per-connection value engine. The
+    common "to a player or planeswalker" phrasing is matched by the prefix.
+    """
+    low = (oracle or '').lower()
+    anchor = 'deals combat damage to a player'
+    if f'whenever this creature {anchor}' in low:
+        return True
+    if name:
+        cname = name.lower().split(' //')[0].strip()
+        if cname and f'whenever {cname} {anchor}' in low:
+            return True
+        # Legendaries refer to themselves by the personal name before the
+        # comma ("Whenever Ragavan deals combat damage to a player, …").
+        short = cname.split(',')[0].strip()
+        if short and short != cname and f'whenever {short} {anchor}' in low:
             return True
     return False
 

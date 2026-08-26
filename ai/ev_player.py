@@ -55,6 +55,7 @@ from ai.scoring_constants import (
     LAND_GAMEPLAN_PRIORITY_SCALE,
     X_BOARD_WIPE_WASTE_FLOOR,
     BLINK_FIZZLE_FLOOR,
+    BLINK_ETB_RETRIGGER_BONUS,
     CHUMP_SENTINEL_VALUE,
     NO_CLOCK_FACE_VAL_MULTIPLIER,
     LANDFALL_TRIGGER_VALUE,
@@ -189,12 +190,13 @@ def _build_turn_planner():
 
 class Play:
     """A candidate play with its EV score and lookahead reasoning."""
-    __slots__ = ('action', 'card', 'targets', 'ev', 'reason',
+    __slots__ = ('action', 'card', 'targets', 'ev', 'reason', 'ability_index',
                  'heuristic_ev', 'lookahead_ev', 'counter_pct', 'removal_pct', 'target_reason',
                  'no_signal')
 
     def __init__(self, action: str, card, targets: list, ev: float, reason: str, target_reason: str = ''):
         self.action = action  # "play_land", "cast_spell", "cycle"
+        self.ability_index = None  # set for 'activate' plays only
         self.card = card
         self.targets = targets
         self.ev = ev
@@ -392,7 +394,9 @@ class EVPlayer:
     # ═══════════════════════════════════════════════════════════
 
     def decide_main_phase(self, game: "GameState",
-                          excluded_cards: set = None) -> Optional[Tuple[str, "CardInstance", List[int]]]:
+                          excluded_cards: set = None,
+                          excluded_activations: set = None
+                          ) -> Optional[Tuple[str, "CardInstance", List[int]]]:
         """Score every legal play, pick the best one.
 
         Returns: ("play_land", card, []) or ("cast_spell", card, targets) or None
@@ -404,6 +408,10 @@ class EVPlayer:
         # without clearing, so trace/debug consumers read stale candidates
         # (e.g. `cast_spell: Ajani` after Ajani had already resolved).
         self._last_candidates = []
+        # Reset UNCONDITIONALLY: decide_main_phase has several early-return
+        # paths, and a stale index would make the engine exclude the wrong
+        # (instance_id, ability_index) pair — the case that spins a phase.
+        self._last_activation_ability_index = None
 
         self._init_deck_knowledge(game)
         me = game.players[self.player_idx]
@@ -443,6 +451,36 @@ class EVPlayer:
                     game, self.player_idx, snap):
                 activation_plays.append(
                     Play("activate_ability", perm, [], act_ev, act_reason))
+
+        # Generic activated abilities. Enumerated OUTSIDE the MAIN1 gate
+        # above — that gate belongs to land animation, which exists to attack
+        # this turn. The per-effect timing restriction (pump is MAIN1-only)
+        # lives in `activation_candidates`, where it can be justified per
+        # effect kind rather than applied wholesale.
+        from ai.activation_ev import activation_candidates
+        for _perm, _ab_idx, _tgts, _ev, _reason in activation_candidates(
+                game, self.player_idx, snap, excluded=excluded_activations):
+            # Holdback is the ONLY real mana-cost signal in this score:
+            # position_value's mana term is clamped by max(0, mana_diff), so
+            # spending mana contributes exactly 0.0 to the projection.
+            #
+            # SIGN: `_holdback_penalty` returns a signed ADJUSTMENT and every
+            # cast/cycling/equip call site adds it — negative when open mana
+            # has a defensive use, positive when holding mana serves nothing.
+            # An earlier revision SUBTRACTED it here, which inverted both
+            # branches: on a flooded board with an empty hand the +3.6
+            # "spend it" bonus became a -3.6 penalty and annihilated every
+            # candidate (a horizon-land cash-in scoring +0.075 raw never
+            # survived). Zero activations across four seeded games was the
+            # observable symptom.
+            _ev += self._holdback_penalty(
+                me, opp, snap, _perm.template.activated_abilities[_ab_idx]
+                .cost.mana.cmc)
+            if _ev <= 0.0:
+                continue
+            _play = Play("activate", _perm, list(_tgts), _ev, _reason)
+            _play.ability_index = _ab_idx
+            activation_plays.append(_play)
 
         legal = game.get_legal_plays(self.player_idx)
         if not legal and not activation_plays:
@@ -578,8 +616,24 @@ class EVPlayer:
             if spell.name in self._reactive_only:
                 if not spell.template.is_creature:
                     prof = self.profile
-                    is_dying = snap.am_dead_next or (snap.opp_power >= prof.dying_opp_power
-                                                     and snap.opp_clock_discrete <= prof.dying_opp_clock)
+                    # "Am I dying?" is a LIFE-RELATIVE question, and
+                    # `opp_clock_discrete` (= ceil(my_life / opp_power)) is
+                    # exactly that quantity — it already returns a no-clock
+                    # sentinel when the opponent has no power, so a short clock
+                    # cannot fire on an empty board.
+                    #
+                    # The old form also required `opp_power >=
+                    # prof.dying_opp_power`, an ATTACKER-SIZE floor. That made
+                    # death-by-a-thousand-cuts invisible: a board of small
+                    # creatures never met the floor no matter how short the
+                    # clock, so a control deck bled from 20 to 0 holding its
+                    # removal and deployed it only once one attacker happened
+                    # to grow past the floor — several turns and ~10 life too
+                    # late (post-sweep control-execution audit, seed 50000).
+                    # Size is redundant once the clock is life-relative; the
+                    # floor is dropped rather than patched around.
+                    is_dying = (snap.am_dead_next
+                                or snap.opp_clock_discrete <= prof.dying_opp_clock)
                     has_big_target = self._has_high_threat_target(game, spell, snap)
                     # A blink held "for protection" must be castable
                     # PROACTIVELY when it would clear a live pending
@@ -688,6 +742,11 @@ class EVPlayer:
             return None
 
         self._last_played_target_reason = getattr(best, "target_reason", "")
+        # Carry the chosen ability index across the AI/engine seam. Set on
+        # EVERY path (None when the chosen play is not an activation) so a
+        # stale value can never reach the engine's exclusion bookkeeping.
+        self._last_activation_ability_index = getattr(
+            best, "ability_index", None)
         self._emit_decision_event(game, candidates, chosen=best)
         return (best.action, best.card, best.targets)
 
@@ -809,7 +868,15 @@ class EVPlayer:
         destroy/exile clause over all matching nonland permanents (creatures +
         artifacts + enchantments), not creatures alone."""
         opp_nonland = [c for c in opp.battlefield if not c.template.is_land]
-        if not ('board_wipe' in tags and t.x_cost_data and opp_nonland):
+        # NOTE: `opp_nonland` is deliberately NOT part of this guard. An empty
+        # opposing board is not the "gate does not apply" case — it is the
+        # MAXIMALLY wasteful case, and requiring targets here meant the gate
+        # short-circuited precisely when the wipe was most wasteful. The
+        # kill-count checks below already floor a zero-kill sweep; they simply
+        # were never reached. Observed: a control deck cast its sweeper for
+        # X=0 into a creatureless board on turn 4, destroying 0 permanents and
+        # discarding its best answer against aggro.
+        if not ('board_wipe' in tags and t.x_cost_data):
             return None
         from engine.cards import CardType
         total_mana = snap.my_mana
@@ -1288,6 +1355,19 @@ class EVPlayer:
                 and (t.is_instant or t.is_sorcery) \
                 and len(me.creatures) == 0:
             return min(ev, BLINK_FIZZLE_FLOOR)
+
+        # ── Blink credits re-triggering an on-board ETB-value creature ──
+        # Re-firing a value ETB (Solitude re-exile, Quantum Riddler redraw)
+        # while keeping the body is the proactive premise of flicker decks.
+        # The reactive response path already credits BLINK_ETB_RETRIGGER_BONUS
+        # for this; the main-phase scorer did not, so a blink held for value
+        # scored ~0 and was never cast. Credit the re-trigger when we control
+        # an `etb_value` creature the blink could target. Tag-gated — every
+        # flicker spell x every ETB-value creature, no card names.
+        if ('blink' in tags and (t.is_instant or t.is_sorcery)
+                and any('etb_value' in getattr(c.template, 'tags', set())
+                        for c in me.creatures)):
+            ev += BLINK_ETB_RETRIGGER_BONUS
 
         # ── Jeskai / blink M1 hold: prefer M2 blink so combat damage applies ──
         # If we hold a blink instant AND an ETB-value creature, and it is Main1,
@@ -3084,6 +3164,24 @@ class EVPlayer:
                         or Keyword.REACH in blocker.keywords)
             return True
 
+        def _min_blockers(attacker):
+            # Menace (CR 702.111 / 509.1c): can't be blocked except by two
+            # or more creatures. A single-blocker menace assignment is
+            # illegal and the engine drops it, so coverage must field 2 (or
+            # leave the attacker unblocked) — never exactly 1.
+            return 2 if Keyword.MENACE in attacker.keywords else 1
+
+        def _trample_overflow(attacker, chosen_blockers):
+            # Trample (CR 702.19): a blocked trampler still connects for
+            # power beyond its blockers' combined toughness. Coverage must
+            # count that through-damage toward survival, or it stabilizes
+            # one attacker too early and dies to overflow. Same shape as the
+            # per-block model in _score_block_lifespan_delta.
+            if Keyword.TRAMPLE not in attacker.keywords:
+                return 0
+            soaked = sum((b.toughness or 0) for b in chosen_blockers)
+            return max(0, (attacker.power or 0) - soaked)
+
         def _cost_fn(blocker):
             # The audited fix: rank by ai.clock.opportunity_cost
             # (Phase 2a) ascending — the cheapest-to-lose blocker
@@ -3144,7 +3242,8 @@ class EVPlayer:
                 sorted_attackers, valid_blockers,
                 my_life=me.life, can_block_fn=_flying_ok, cost_fn=_cost_fn,
                 stabilize_margin=EMERGENCY_BLOCK_STABILIZE_LIFE_GAIN,
-                skip_fn=_skip_fn,
+                skip_fn=_skip_fn, min_blockers_fn=_min_blockers,
+                overflow_fn=_trample_overflow,
             )
 
             # RC-2: if coverage skipped every attacker via the

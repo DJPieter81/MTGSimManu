@@ -1,0 +1,795 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+Result: Domain Zoo wins T12 via damage
+Life: P1=0 P2=4
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Azorius Control wins → chooses to play first
+║ P1 (on play): Azorius Control
+║ P2 (on draw): Domain Zoo
+╚═══════════════════════════════════════════════════════
+
+P1 (Azorius Control) opening hand (2 lands, 5 spells):
+  • Stock Up [Spell, CMC 3]
+  • Teferi, Time Raveler [Spell, CMC 3]
+  • Solitude [Creature, CMC 5]
+  • Plains [Land, CMC 0]
+  • Hall of Storm Giants [Land, CMC 0]
+  • Solitude [Creature, CMC 5]
+  • Wrath of the Skies [Spell, CMC 2]
+→ P1 KEEPS 7 — has key card(s): Solitude, Teferi, Time Raveler, 3 cheap spells
+
+P2 (Domain Zoo) opening hand (4 lands, 3 spells):
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Flooded Strand [Land, CMC 0]
+  • Lush Portico [Land, CMC 0]
+  • Mountain [Land, CMC 0]
+  • Doorkeeper Thrull [Creature, CMC 2]
+  • Lightning Bolt [Spell, CMC 1]
+  • Blood Crypt [Land, CMC 0]
+→ P2 MULLIGANS (too many lands (4 > 3); first-turn value 4 < 5)
+  New hand (1 lands, 6 spells): ['Leyline of the Guildpact', 'Scion of Draco', 'Ragavan, Nimble Pilferer', 'Doorkeeper Thrull', 'Consign to Memory', 'Wild Nacatl', 'Arena of Glory']
+→ P2 mulligans to 6, bottoms: ['Wild Nacatl']
+  Keeps: ['Leyline of the Guildpact', 'Scion of Draco', 'Ragavan, Nimble Pilferer', 'Doorkeeper Thrull', 'Consign to Memory', 'Arena of Glory']
+
+T0 P2: Leyline of the Guildpact begins the game on the battlefield (leyline)
+
+╔══ TURN 1 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 20  |  Domain Zoo 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Plains
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 20  |  Azorius Control 20
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: (none)
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mountain
+  [Main 1]
+T1 P2: Play Mountain
+    → Goal: curve_out [enablers]
+    [Mana] Tap Mountain→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T1 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T1: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 20  |  Domain Zoo 20
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Plains
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Other: Leyline of the Guildpact
+║   Lands: Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arid Mesa
+  [Main 1]
+T2 P1: Play Arid Mesa
+T2: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T2 P1: Crack Arid Mesa (pay 1 life) -> Hallowed Fountain (untapped, life: 17)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 20  |  Azorius Control 17
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 53  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Other: Leyline of the Guildpact
+║   Lands: Mountain
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Plains, Hallowed Fountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Scion of Draco
+  [Main 1]
+T2 P2: Play Arena of Glory (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T2 P2: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T2 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T2 P2: Create 1x Treasure token(s)
+T2 P2: Ragavan, Nimble Pilferer exiles Wrath of the Skies from top of P1's library
+T2 P2: Ragavan, Nimble Pilferer — may cast Wrath of the Skies this turn
+  [Combat Damage] 2 damage dealt → P1 life: 17 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+T2: Wrath of the Skies returned to exile (uncast)
+
+╔══ TURN 3 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 15  |  Domain Zoo 20
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 1
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Plains, Hallowed Fountain
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped]
+║   Other: Leyline of the Guildpact, Treasure Token
+║   Lands: Mountain, Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Solitude
+  [Main 1]
+T3 P1: Play Hall of Storm Giants (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 20  |  Azorius Control 15
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 52  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Other: Leyline of the Guildpact, Treasure Token
+║   Lands: Mountain, Arena of Glory
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Plains, Hallowed Fountain, Hall of Storm Giants [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+T3 P2: Play Arid Mesa
+T3: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T3 P2: Crack Arid Mesa (pay 1 life) -> Temple Garden (tapped, life: 19)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Mountain→W, Arena of Glory→R (paying for Scion of Draco, 2 mana remaining)
+T3 P2: Cast Scion of Draco (12)
+    [Priority] P1 passes (no response)
+T3: Resolve Scion of Draco
+T3 P2: Scion of Draco enters — creatures gain vigilance/hexproof/lifelink/first strike/trample if white/blue/black/red/green
+  [Begin Combat]
+T3 P1: Evoke Solitude (exile Solitude)
+T3 P1: Cast Solitude (3WW)
+T3: Resolve Solitude
+T3: Scion of Draco moved battlefield -> exile (exiled)
+T3 P1: Solitude exiles Scion of Draco (opponent gains 4 life, now 23)
+T3: Solitude moved battlefield -> graveyard (evoke sacrifice)
+T3 P1: Solitude sacrificed (evoke)
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T3 P2: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T3 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T3 P2: Create 1x Treasure token(s)
+T3 P2: Ragavan, Nimble Pilferer exiles Mystic Gate from top of P1's library
+T3 P2: Ragavan, Nimble Pilferer — may cast Mystic Gate this turn
+  [Combat Damage] 2 damage dealt → P1 life: 15 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+T3: Mystic Gate returned to exile (uncast)
+
+╔══ TURN 4 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 13  |  Domain Zoo 23
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 2
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Plains, Hallowed Fountain, Hall of Storm Giants
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped]
+║   Other: Leyline of the Guildpact, Treasure Token, Treasure Token
+║   Lands: Mountain [T], Arena of Glory [T], Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Orim's Chant
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Hallowed Fountain→W (paying for Wrath of the Skies, 3 mana remaining)
+T4 P1: Cast Wrath of the Skies (1WW) (X=1)
+    [Priority] P2 passes (no response)
+T4: Resolve Wrath of the Skies
+T4: Ragavan, Nimble Pilferer dies
+T4: Treasure Token moved battlefield -> graveyard (destroyed)
+T4: Treasure Token moved battlefield -> graveyard (destroyed)
+T4 P1: Wrath of the Skies (X=1) sweeps the board, destroying 3 permanents
+T4: Wrath of the Skies moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 23  |  Azorius Control 13
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 2
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: Mountain, Arena of Glory, Temple Garden
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Plains [T], Hallowed Fountain [T], Hall of Storm Giants [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Doorkeeper Thrull
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Mountain→W, Arena of Glory→R (paying for Scion of Draco, 3 mana remaining)
+T4 P2: Cast Scion of Draco (12)
+    [Priority] P1 passes (no response)
+T4: Resolve Scion of Draco
+T4 P2: Scion of Draco enters — creatures gain vigilance/hexproof/lifelink/first strike/trample if white/blue/black/red/green
+  [Begin Combat]
+T4 P1: Evoke Solitude (exile Orim's Chant)
+T4 P1: Cast Solitude (3WW)
+T4: Resolve Solitude
+T4: Scion of Draco moved battlefield -> exile (exiled)
+T4 P1: Solitude exiles Scion of Draco (opponent gains 4 life, now 27)
+T4: Solitude moved battlefield -> graveyard (evoke sacrifice)
+T4 P1: Solitude sacrificed (evoke)
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 13  |  Domain Zoo 27
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 4
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Plains, Hallowed Fountain, Hall of Storm Giants
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: Mountain [T], Arena of Glory [T], Temple Garden
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Monumental Henge
+  [Main 1]
+T5 P1: Play Monumental Henge (enters tapped)
+    → Goal: close_game
+    [Mana] Tap Plains→W, Hall of Storm Giants→U, Hallowed Fountain→U (paying for Teferi, Time Raveler, 3 mana remaining)
+T5 P1: Cast Teferi, Time Raveler (1WU)
+    [Priority] P2 responds with Consign to Memory
+    [Mana] Tap Temple Garden→U (paying for Consign to Memory, 1 mana remaining)
+T5 P2: Cast Consign to Memory (U)
+T5: Resolve Consign to Memory
+T5 P2: Consign to Memory fizzles (target has color identity)
+T5: Consign to Memory moved stack -> graveyard (resolution)
+T5: Resolve Teferi, Time Raveler
+T5 P1: Teferi bounces Leyline of the Guildpact
+T5 P1: Teferi draws Prismatic Ending
+T5 P1: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 27  |  Azorius Control 13
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 3
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Mountain, Arena of Glory, Temple Garden
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Plains [T], Hallowed Fountain [T], Hall of Storm Giants [T], Monumental Henge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wild Nacatl
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Temple Garden→G (paying for Wild Nacatl, 3 mana remaining)
+T5 P2: Cast Wild Nacatl (G)
+    [Priority] P1 passes (no response)
+T5: Resolve Wild Nacatl
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 13  |  Domain Zoo 27
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 45  |  Graveyard: 4
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Plains, Hallowed Fountain, Hall of Storm Giants, Monumental Henge
+║ Domain Zoo board:
+║   Creatures: Wild Nacatl (3/3)
+║   Lands: Mountain, Arena of Glory, Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Supreme Verdict
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Hall of Storm Giants→U, Monumental Henge→W (paying for Stock Up, 4 mana remaining)
+T6 P1: Cast Stock Up (2U)
+T6: Resolve Stock Up
+T6: Stock Up moved stack -> graveyard (resolution)
+T6: Lórien Revealed moved hand -> graveyard (cycling)
+T6: Island moved library -> hand (cycling tutor)
+T6 P1: Cycle Lórien Revealed (pay 1 mana, tutor: Island)
+T6 P1: Play Island
+T6 P1: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 27  |  Azorius Control 13
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 48  |  Graveyard: 3
+║ Domain Zoo board:
+║   Creatures: Wild Nacatl (3/3)
+║   Lands: Mountain, Arena of Glory, Temple Garden
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Plains [T], Hallowed Fountain [T], Hall of Storm Giants [T], Monumental Henge [T], Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Doorkeeper Thrull
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Mountain→R, Temple Garden→W (paying for Doorkeeper Thrull, 3 mana remaining)
+T6 P2: Cast Doorkeeper Thrull (1W)
+    [Priority] P1 passes (no response)
+T6: Resolve Doorkeeper Thrull
+T6 P2: Doorkeeper Thrull: opponent ETB triggers suppressed
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Wild Nacatl
+T6 P2: Attack with Wild Nacatl
+  [Declare Blockers] P1 does not block
+T6 P2:   Wild Nacatl (3/3) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 13 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 10  |  Domain Zoo 27
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 41  |  Graveyard: 6
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Plains, Hallowed Fountain, Hall of Storm Giants, Monumental Henge, Island
+║ Domain Zoo board:
+║   Creatures: Wild Nacatl (3/3) [tapped], Doorkeeper Thrull (1/2)
+║   Lands: Mountain [T], Arena of Glory, Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Steam Vents
+  [Main 1]
+T7 P1: Play Steam Vents (untapped, life: 8)
+    → Goal: close_game
+    [Mana] Tap Plains→W, Hall of Storm Giants→U, Monumental Henge→W, Island→U (paying for Supreme Verdict, 6 mana remaining)
+T7 P1: Cast Supreme Verdict (1WWU)
+T7: Resolve Supreme Verdict
+T7: Wild Nacatl dies
+T7: Doorkeeper Thrull dies
+T7 P1: Supreme Verdict destroys 2 creatures
+T7: Supreme Verdict moved stack -> graveyard (resolution)
+T7 P1: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 27  |  Azorius Control 8
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 6
+║ Library: 47  |  Graveyard: 5
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Mountain, Arena of Glory, Temple Garden
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Plains [T], Hallowed Fountain, Hall of Storm Giants [T], Monumental Henge [T], Island [T], Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Leyline of the Guildpact
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Mountain→R, Temple Garden→W (paying for Doorkeeper Thrull, 3 mana remaining)
+T7 P2: Cast Doorkeeper Thrull (1W)
+    [Priority] P1 passes (no response)
+T7: Resolve Doorkeeper Thrull
+T7 P2: Doorkeeper Thrull: opponent ETB triggers suppressed
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 8  |  Domain Zoo 27
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 6  |  Opp lands: 3
+║ Library: 40  |  Graveyard: 7
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Plains, Hallowed Fountain, Hall of Storm Giants, Monumental Henge, Island, Steam Vents
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2)
+║   Lands: Mountain [T], Arena of Glory, Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Stock Up
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Monumental Henge→W (paying for Sanctifier en-Vec, 6 mana remaining)
+T8 P1: Cast Sanctifier en-Vec (WW)
+T8: Resolve Sanctifier en-Vec
+T8: Sanctifier en-Vec ETB suppressed by Doorkeeper Thrull
+    → Goal: close_game
+    [Mana] Tap Hall of Storm Giants→U, Island→U, Hallowed Fountain→U (paying for Stock Up, 4 mana remaining)
+T8 P1: Cast Stock Up (2U)
+T8: Resolve Stock Up
+T8: Stock Up moved stack -> graveyard (resolution)
+T8 P1: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
+T8: Teferi, Time Raveler moved battlefield -> graveyard (SBA 704.5p: zero loyalty)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 27  |  Azorius Control 8
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 6
+║ Library: 46  |  Graveyard: 5
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2)
+║   Lands: Mountain, Arena of Glory, Temple Garden
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2)
+║   Lands: Plains [T], Hallowed Fountain [T], Hall of Storm Giants [T], Monumental Henge [T], Island [T], Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Plains
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Mountain→R, Temple Garden→W (paying for Doorkeeper Thrull, 3 mana remaining)
+T8 P2: Cast Doorkeeper Thrull (1W)
+    [Priority] P1 passes (no response)
+T8: Resolve Doorkeeper Thrull
+T8: Doorkeeper Thrull ETB suppressed by Doorkeeper Thrull
+T8 P2: Play Plains
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Doorkeeper Thrull
+T8 P2: Attack with Doorkeeper Thrull
+  [Declare Blockers] P1 does not block
+T8 P2:   Doorkeeper Thrull (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 8 → 7
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 7  |  Domain Zoo 27
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 6  |  Opp lands: 4
+║ Library: 37  |  Graveyard: 9
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2)
+║   Lands: Plains, Hallowed Fountain, Hall of Storm Giants, Monumental Henge, Island, Steam Vents
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2) [tapped], Doorkeeper Thrull (1/2)
+║   Lands: Mountain [T], Arena of Glory, Temple Garden [T], Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Island
+  [Main 1]
+T9 P1: Play Island
+T9 P1: Hall of Storm Giants becomes a 7/7 creature until end of turn (pays 6 mana)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Hall of Storm Giants, Sanctifier en-Vec
+T9 P1: Attack with Hall of Storm Giants, Sanctifier en-Vec
+T9 P2:   [BLOCK] Doorkeeper Thrull (1/2) blocks Hall of Storm Giants (7/7) — lifespan_delta=+0.78
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T9 P1:   Sanctifier en-Vec (2/2) → 2 dmg to player
+T9: Doorkeeper Thrull dies
+  [Combat Damage] 2 damage dealt → P2 life: 27 → 25
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 25  |  Azorius Control 7
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 7
+║ Library: 45  |  Graveyard: 6
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2)
+║   Lands: Mountain, Arena of Glory, Temple Garden, Plains
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2) [tapped]
+║   Lands: Plains [T], Hallowed Fountain [T], Hall of Storm Giants [T], Monumental Henge [T], Island [T], Steam Vents [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thundering Falls
+  [Main 1]
+T9 P2: surveil 1 → Wooded Foothills to GY
+T9 P2: Play Thundering Falls (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Doorkeeper Thrull
+T9 P2: Attack with Doorkeeper Thrull
+  [Declare Blockers] P1 does not block
+T9 P2:   Doorkeeper Thrull (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 7 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 6  |  Domain Zoo 25
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 7  |  Opp lands: 5
+║ Library: 36  |  Graveyard: 9
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2)
+║   Lands: Plains, Hallowed Fountain, Hall of Storm Giants, Monumental Henge, Island, Steam Vents, Island
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2) [tapped]
+║   Lands: Mountain, Arena of Glory, Temple Garden, Plains, Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Orim's Chant
+  [Main 1]
+T10 P1: Hall of Storm Giants becomes a 7/7 creature until end of turn (pays 6 mana)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Hall of Storm Giants, Sanctifier en-Vec
+T10 P1: Attack with Hall of Storm Giants, Sanctifier en-Vec
+  [Declare Blockers] P2 does not block
+T10 P1:   Hall of Storm Giants (7/7) → 7 dmg to player
+T10 P1:   Sanctifier en-Vec (2/2) → 2 dmg to player
+  [Combat Damage] 9 damage dealt → P2 life: 25 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 16  |  Azorius Control 6
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 7
+║ Library: 43  |  Graveyard: 7
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2)
+║   Lands: Mountain, Arena of Glory, Temple Garden, Plains, Thundering Falls
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2) [tapped]
+║   Lands: Plains [T], Hallowed Fountain [T], Hall of Storm Giants [T], Monumental Henge [T], Island [T], Steam Vents [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Territorial Kavu
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Mountain→R, Temple Garden→G (paying for Territorial Kavu, 5 mana remaining)
+T10 P2: Cast Territorial Kavu (RG)
+    [Priority] P1 passes (no response)
+T10: Resolve Territorial Kavu
+T10: Territorial Kavu ETB suppressed by Doorkeeper Thrull
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Doorkeeper Thrull
+T10 P2: Attack with Doorkeeper Thrull
+  [Declare Blockers] P1 does not block
+T10 P2:   Doorkeeper Thrull (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 6 → 5
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 5  |  Domain Zoo 16
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 7  |  Opp lands: 5
+║ Library: 35  |  Graveyard: 9
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2)
+║   Lands: Plains, Hallowed Fountain, Hall of Storm Giants, Monumental Henge, Island, Steam Vents, Island
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2) [tapped], Territorial Kavu (4/4)
+║   Lands: Mountain [T], Arena of Glory, Temple Garden [T], Plains, Thundering Falls
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Meticulous Archive
+  [Main 1]
+T11 P1: surveil 1 → Prismatic Ending to GY
+T11 P1: Play Meticulous Archive (enters tapped)
+    → Goal: close_game
+    [Mana] Tap Plains→W (paying for Prismatic Ending, 7 mana remaining)
+T11 P1: Cast Prismatic Ending (6W) (X=6)
+    [Priority] P2 passes (no response)
+T11: Resolve Prismatic Ending
+T11: Territorial Kavu moved battlefield -> exile (exiled)
+T11 P1: Prismatic Ending exiles Territorial Kavu
+T11: Prismatic Ending moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Sanctifier en-Vec
+T11 P1: Attack with Sanctifier en-Vec
+  [Declare Blockers] P2 does not block
+T11 P1:   Sanctifier en-Vec (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 16 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 14  |  Azorius Control 5
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 8
+║ Library: 42  |  Graveyard: 7
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2)
+║   Lands: Mountain, Arena of Glory, Temple Garden, Plains, Thundering Falls
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2) [tapped]
+║   Lands: Plains [T], Hallowed Fountain [T], Hall of Storm Giants [T], Monumental Henge [T], Island [T], Steam Vents [T], Island [T], Meticulous Archive [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wooded Foothills
+  [Main 1]
+T11 P2: Play Wooded Foothills
+T11: Wooded Foothills moved battlefield -> graveyard (fetchland sacrifice)
+T11 P2: Crack Wooded Foothills (pay 1 life) -> Blood Crypt (tapped, life: 13)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Doorkeeper Thrull
+T11 P2: Attack with Doorkeeper Thrull
+  [Declare Blockers] P1 does not block
+T11 P2:   Doorkeeper Thrull (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 5 → 4
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 4  |  Domain Zoo 13
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 8  |  Opp lands: 6
+║ Library: 33  |  Graveyard: 11
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2)
+║   Lands: Plains, Hallowed Fountain, Hall of Storm Giants, Monumental Henge, Island, Steam Vents, Island, Meticulous Archive
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2) [tapped]
+║   Lands: Mountain, Arena of Glory, Temple Garden, Plains, Thundering Falls, Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Flooded Strand
+  [Main 1]
+T12 P1: Play Flooded Strand
+T12: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T12 P1: Crack Flooded Strand (pay 1 life) -> Hallowed Fountain (tapped, life: 3)
+T12 P1: Hall of Storm Giants becomes a 7/7 creature until end of turn (pays 6 mana)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Hall of Storm Giants, Sanctifier en-Vec
+T12 P1: Attack with Hall of Storm Giants, Sanctifier en-Vec
+  [Declare Blockers] P2 does not block
+T12 P1:   Hall of Storm Giants (7/7) → 7 dmg to player
+T12 P1:   Sanctifier en-Vec (2/2) → 2 dmg to player
+  [Combat Damage] 9 damage dealt → P2 life: 13 → 4
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 4  |  Azorius Control 3
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 6  |  Opp lands: 9
+║ Library: 40  |  Graveyard: 8
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2)
+║   Lands: Mountain, Arena of Glory, Temple Garden, Plains, Thundering Falls, Blood Crypt
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2) [tapped]
+║   Lands: Plains [T], Hallowed Fountain [T], Hall of Storm Giants [T], Monumental Henge [T], Island [T], Steam Vents [T], Island [T], Meticulous Archive, Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Mountain→R, Arena of Glory→R (paying for Ragavan, Nimble Pilferer, 6 mana remaining)
+T12 P2: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P1 passes (no response)
+T12: Resolve Ragavan, Nimble Pilferer
+T12: Ragavan, Nimble Pilferer ETB suppressed by Doorkeeper Thrull
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Doorkeeper Thrull, Ragavan, Nimble Pilferer
+T12 P2: Attack with Doorkeeper Thrull, Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T12 P2:   Doorkeeper Thrull (1/2) → 1 dmg to player
+T12 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T12 P2: Create 1x Treasure token(s)
+T12 P2: Ragavan, Nimble Pilferer exiles Lórien Revealed from top of P1's library
+T12 P2: Ragavan, Nimble Pilferer — may cast Lórien Revealed this turn
+P1 loses: life total 0
+  [Combat Damage] 3 damage dealt → P1 life: 3 → 0

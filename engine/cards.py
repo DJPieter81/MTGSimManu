@@ -100,6 +100,75 @@ class Ability:
         return True
 
 
+class ActivationEffectKind(Enum):
+    """What an activated ability actually does (CR 602).
+
+    Deliberately a CLOSED set with an explicit escape hatch: `UNCLASSIFIED`
+    means the line parsed as an ability but its effect is not one this tranche
+    executes. Visible-but-refused beats silently-dropped — a dropped line would
+    have to be re-parsed by every later tranche.
+
+    `ANIMATE_SELF_UEOT` is present so the enumerator can explicitly SKIP lines
+    that `parse_land_animation` / `animate_land` already own, rather than
+    double-executing them.
+    """
+    DAMAGE_ANY_TARGET = "damage_any_target"
+    DRAW_N = "draw_n"
+    PUMP_SELF_UEOT = "pump_self_ueot"
+    ANIMATE_SELF_UEOT = "animate_self_ueot"
+    UNCLASSIFIED = "unclassified"
+
+
+@dataclass
+class ActivationCost:
+    """The cost half of "[Cost]: [Effect]".
+
+    `unpayable` carries cost items this tranche cannot charge (sacrifice, pay
+    life, discard, remove/put counter, exile, ...). A NON-EMPTY tuple means the
+    ability is fully parsed and visible but must be refused. That is what makes
+    each later tranche a *payer addition* rather than a re-parse of the pool.
+    """
+    mana: "ManaCost" = field(default_factory=lambda: ManaCost())
+    tap_self: bool = False
+    untap_self: bool = False
+    # Tranche 2 payable costs. `life` is the amount of life paid (CR 118.4:
+    # payable only while the life total covers it). `sacrifice_self` means the
+    # source itself is sacrificed as part of the cost (CR 602.2b) — inherently
+    # self-limiting, so it satisfies the no-free-repeatable rule the way a tap
+    # cost does.
+    life: int = 0
+    sacrifice_self: bool = False
+    unpayable: Tuple[str, ...] = ()
+
+
+@dataclass
+class ActivatedAbility:
+    """One parsed "[Cost]: [Effect]" line on a permanent (CR 602).
+
+    `index` is a stable ordinal within the template. It is both the ledger key
+    for per-turn activation limits and the value that crosses the AI/engine
+    seam, so it must not be derived from list position at call time.
+
+    `restrictions` holds "Activate only ..." clauses the schema cannot express
+    as booleans. Non-empty means refuse — capturing them verbatim is what stops
+    an unrepresentable restriction from being silently ignored.
+    """
+    index: int
+    cost: ActivationCost
+    effect_text: str
+    effect_kind: ActivationEffectKind
+    amount: int = 0
+    power_mod: int = 0
+    toughness_mod: int = 0
+    targets_required: int = 0
+    target_requirements: List = field(default_factory=list)
+    sorcery_speed_only: bool = False
+    once_each_turn: bool = False
+    restrictions: Tuple[str, ...] = ()
+    from_battlefield: bool = True
+    is_mana_ability: bool = False
+
+
 @dataclass
 class CardTemplate:
     """Template for a card (shared data, not instance-specific)."""
@@ -131,6 +200,27 @@ class CardTemplate:
     # 'Add {G} or {U}' → [["G", "U"]] (one unit, color choice).
     # Empty ⇒ legacy single unit whose options are `produces_mana`.
     mana_units: List[List[str]] = field(default_factory=list)
+    # ONE-SHOT mana from "Sacrifice this <thing>: Add <mana>" (CR 605) —
+    # Eldrazi Spawn/Scion, Treasure, Lotus-style artifacts (207 Modern cards).
+    # Same unit shape as `mana_units`, but spending it CONSUMES the permanent,
+    # so it is deliberately a separate field: it must never be counted as
+    # repeatable per-turn mana. Populated at load time (and for tokens at
+    # creation time) by oracle_parser.parse_sacrifice_mana_units.
+    sacrifice_mana_units: List[List[str]] = field(default_factory=list)
+    # Aura attachment (CR 303.4). `aura_enchant_restriction` is the quality
+    # from the printed "Enchant <quality>" ability ('land', 'forest',
+    # 'creature', ...) and gates which objects are legal hosts; 786 Modern
+    # cards are Auras, so this is the shared primitive rather than a
+    # mana-specific field. `aura_mana_units` is its first consumer: the units
+    # a mana Aura GRANTS to the land it enchants.
+    # Parsed "[Cost]: [Effect]" lines (CR 602). A NEW field: deliberately NOT
+    # merged into `abilities`, because emitting AbilityType.ACTIVATED there
+    # would light up ABILITY_TYPE_ACTIVATED in ai/evaluator for thousands of
+    # templates, feeding estimate_permanent_value — the removal-target sort key
+    # in ai/response.py. See tests/test_activation_schema_is_behaviour_neutral.
+    activated_abilities: List["ActivatedAbility"] = field(default_factory=list)
+    aura_enchant_restriction: Optional[str] = None
+    aura_mana_units: List[List[str]] = field(default_factory=list)
     # 'When this land enters, return a land you control to its owner's
     # hand' — structural ETB clause of the karoo family (E1b), a
     # sibling of `enters_tapped`.
@@ -238,6 +328,12 @@ class CardTemplate:
     # "Whenever [Card Name] attacks". Replaces runtime 'whenever...attacks'
     # in-oracle substring checks in ai/ and engine/.
     has_attack_trigger: bool = False
+    # On-combat-damage-to-a-player triggered ability (CR 603.2) — populated at
+    # load time by oracle_parser.parse_has_combat_damage_trigger(oracle, name).
+    # A DISTINCT shape from has_attack_trigger: fires on connecting, not on
+    # declaring. Covers the "connects → draw / Treasure / steal" value engines
+    # (331 Modern creatures), which were previously valued as vanilla bodies.
+    has_combat_damage_trigger: bool = False
     # Lifegain-token trigger (CR 603.2) — True when oracle creates a token
     # whenever the controller gains life ("whenever you gain life … create …
     # token").  Replaces the runtime oracle substring check in
@@ -559,6 +655,7 @@ class CardTemplate:
                                         parse_can_target_player as _pctp,
                                         parse_can_target_planeswalker as _pctpw,
                                         parse_has_attack_trigger as _phat,
+                                        parse_has_combat_damage_trigger as _phcdt,
                                         parse_has_lifegain_token_trigger as _phltt,
                                         parse_lifegain_token_type as _pltt,
                                         parse_targets_creature_spell as _ptcs,
@@ -612,6 +709,9 @@ class CardTemplate:
                 self.can_target_planeswalker = _pctpw(self.oracle_text)
             if not self.has_attack_trigger:
                 self.has_attack_trigger = _phat(self.oracle_text, self.name)
+            if not self.has_combat_damage_trigger:
+                self.has_combat_damage_trigger = _phcdt(
+                    self.oracle_text, self.name)
             if not self.has_lifegain_token_trigger:
                 self.has_lifegain_token_trigger = _phltt(self.oracle_text)
             if self.has_lifegain_token_trigger and self.lifegain_token_type == 'creature':
@@ -842,6 +942,17 @@ class CardInstance:
     # permanent leaves the battlefield.
     granted_abilities: List[str] = field(default_factory=list)
     # Back-reference to game state (set when entering battlefield)
+    # Aura attachment back-reference (CR 303.4): instance_id of the object
+    # this Aura enchants, or None when unattached. The HOST additionally
+    # carries an `attached_{aura_id}` instance tag, mirroring Equipment.
+    # Per-turn activation ledger, keyed by ActivatedAbility.index. Cleared in
+    # new_turn() and enter_battlefield() (CR 400.7 — battlefield re-entry is a
+    # NEW object, so its budget resets). Deliberately NOT cleared in untap():
+    # turn_manager untaps some opponent permanents without calling new_turn(),
+    # and clearing there would refresh a once-each-turn budget twice per turn
+    # cycle.
+    activations_this_turn: Dict[int, int] = field(default_factory=dict)
+    attached_to_id: Optional[int] = None
     _game_state: Any = field(default=None, repr=False)
     # Evoke tracking
     _evoked: bool = False
@@ -1406,6 +1517,7 @@ class CardInstance:
         self.entered_battlefield_this_turn = False
         self.attacked_this_turn = False
         self.cannot_be_blocked_this_turn = False
+        self.activations_this_turn.clear()
 
     def enter_battlefield(self):
         self.zone = "battlefield"
@@ -1416,6 +1528,8 @@ class CardInstance:
         self.battlefield_entry_seq += 1
         if self.template.is_land and self.template.enters_tapped:
             self.tapped = True
+        # CR 400.7: a new object gets a fresh activation budget.
+        self.activations_this_turn.clear()
 
     def __hash__(self):
         return self.instance_id

@@ -638,6 +638,17 @@ class OracleTextParser:
                 "all_artifacts", "all_enchantments",
             ):
                 continue
+            # A self-blink effect ("exile target creature you control, then
+            # return it") is a flicker, NOT removal — tag it blink and skip
+            # the removal tagging for THIS effect so it does not pollute
+            # destroy_target_creature / any_removal. Detected per-effect
+            # (the card-level `is_blink` flag can't distinguish a modal
+            # card's blink mode from a real removal mode).
+            _rt = (e.raw_text or "").lower()
+            if (e.effect_type == "exile" and "you control" in _rt
+                    and "return" in _rt):
+                tags.add("blink")
+                continue
             any_removal = True
             if is_blink and e.effect_type == "exile":
                 tags.add("blink")
@@ -1472,6 +1483,28 @@ class CardDatabase:
         if CardType.LAND in card_types:
             produces_mana = OracleTextParser.detect_land_mana(oracle_text, subtypes, card_name=name)
             mana_units = OracleTextParser.detect_land_mana_units(oracle_text)
+            # Spend-restricted ALL-COLORLESS double-mana (Eldrazi Temple,
+            # Ugin's Labyrinth: "{T}: Add {C}{C}. Spend this mana only to cast
+            # colorless Eldrazi spells."). detect_land_mana_units drops
+            # spend-restricted lines, so these rampland engines produced 1
+            # colorless instead of 2. Because the restricted mana is colorless
+            # (usable for any generic/colorless cost) and these are dedicated
+            # ramp lands, model the land's output as its largest colorless tap
+            # line — the same pragmatic simplification as the Tron conditional
+            # bonus (the "only Eldrazi" clause is not separately enforced).
+            # Scoped to all-{C} lines only, so colored restricted mana
+            # (Cavern of Souls "any color, creatures only") is untouched.
+            if oracle_text:
+                _best_c = 0
+                for _ln in oracle_text.splitlines():
+                    _m = re.match(r"\s*\{T\}\s*:\s*Add\s+((?:\{C\})+)\s*\.",
+                                  _ln, re.IGNORECASE)
+                    if _m:
+                        _best_c = max(_best_c, _m.group(1).count("{C}"))
+                if _best_c > len(mana_units):
+                    mana_units = [["C"] for _ in range(_best_c)]
+                    if "C" not in produces_mana:
+                        produces_mana = sorted(set(produces_mana) | {"C"})
             enters_tapped = OracleTextParser.detect_enters_tapped(oracle_text, card_name=name)
             # Karoo-family structural ETB clause (E1b): mandatory
             # "return a land you control to its owner's hand" on entry.
@@ -1498,6 +1531,28 @@ class CardDatabase:
                 # Pain land: "this land deals 1 damage to you"
                 if 'deals 1 damage to you' in ot or 'this land deals 1 damage' in ot:
                     tap_damage = 1
+
+        # Non-land mana sources (mana rocks, mana creatures): a plain
+        # "{T}: Add {mana}" ability makes the permanent a mana source
+        # (CR 605.1a). Only lands were populated above, so every rock
+        # (Talisman, Mind Stone) and dork (Birds, Llanowar, Devoted
+        # Druid) produced ZERO usable mana. Gate on detect_land_mana_units
+        # returning a plain tap line so cost-bearing / triggered "add
+        # mana" text (rituals, "{T}, Sacrifice:") does not false-positive.
+        if CardType.LAND not in card_types and oracle_text:
+            nl_units = OracleTextParser.detect_land_mana_units(oracle_text)
+            if nl_units:
+                produces_mana = OracleTextParser.detect_land_mana(
+                    oracle_text, subtypes, card_name=name)
+                if len(nl_units) == 1:
+                    # One mana per tap: the single unit may choose any
+                    # producible color (Talisman's {C} / {R}|{G} lines
+                    # union to one CGR unit; Birds → any color).
+                    mana_units = [produces_mana]
+                else:
+                    # Multi-mana rock (Sol Ring "{C}{C}"): keep the
+                    # per-unit options and count.
+                    mana_units = nl_units
 
         # Detect conditional mana production from oracle text
         # Pattern: "If you control an Urza's ... add {C}{C}{C} instead"
@@ -1730,7 +1785,10 @@ class CardDatabase:
             parse_can_target_player, parse_can_target_planeswalker,
             grants_flashback_to_gy_spells, parse_deals_targeted_damage,
             parse_has_scaling_token_finisher,
-            parse_has_attack_trigger,
+            parse_has_attack_trigger, parse_has_combat_damage_trigger,
+            parse_sacrifice_mana_units,
+            parse_aura_enchant_restriction, parse_aura_mana_units,
+            parse_activated_abilities,
             parse_has_lifegain_token_trigger, parse_lifegain_token_type,
             parse_targets_creature_spell, parse_targets_planeswalker_spell,
             parse_has_landfall, parse_has_library_search_opponent_trigger,
@@ -1810,6 +1868,17 @@ class CardDatabase:
         template.can_target_player = parse_can_target_player(oracle)
         template.can_target_planeswalker = parse_can_target_planeswalker(oracle)
         template.has_attack_trigger = parse_has_attack_trigger(oracle, name)
+        template.has_combat_damage_trigger = parse_has_combat_damage_trigger(
+            oracle, name)
+        template.sacrifice_mana_units = (
+            parse_sacrifice_mana_units(oracle) or [])
+        template.aura_enchant_restriction = parse_aura_enchant_restriction(oracle)
+        template.aura_mana_units = parse_aura_mana_units(oracle) or []
+        # Parsed "[Cost]: [Effect]" lines (CR 602). Populated at load time so
+        # enumeration is a typed-field read rather than a runtime oracle parse.
+        # NOTE: deliberately a separate field from `abilities` — see
+        # tests/test_activation_schema_is_behaviour_neutral.py.
+        template.activated_abilities = parse_activated_abilities(oracle) or []
         template.has_lifegain_token_trigger = parse_has_lifegain_token_trigger(oracle)
         template.lifegain_token_type = parse_lifegain_token_type(oracle)
         template.targets_creature_spell = parse_targets_creature_spell(oracle)

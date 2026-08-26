@@ -34,7 +34,8 @@ if TYPE_CHECKING:
 # resolution draw-N branch (`resolve_spell_from_oracle`) — both read
 # the identical CR 121.1 "draw N cards" phrasing, just from different
 # trigger contexts (ETB vs. cast resolution).
-_WORD_TO_NUM = {'a': 1, 'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5}
+_WORD_TO_NUM = {'a': 1, 'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5,
+                'six': 6, 'seven': 7, 'eight': 8, 'nine': 9, 'ten': 10}
 
 
 def _pick_damage_target(game: "GameState", controller: int,
@@ -338,6 +339,128 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
             game.log.append(
                 f"T{game.display_turn} P{controller+1}: "
                 f"{card.name} ETB: draw {draw_n} ({names})")
+        return True
+
+    # ── "When ~ enters, reveal the top N cards of your library. For each
+    #     card type, you may put a card of that type ... into your hand.
+    #     Put the rest on the bottom of your library ..." (Atraxa, Grand
+    #     Unifier / selective reveal-to-hand by card type) ──
+    # Class: selective reveal-to-hand grouped by card type. The whole
+    # payoff of the reanimator archetype (Atraxa is the shared reanimation
+    # target of Goryo's Vengeance and Instant Reanimator). Deterministic
+    # engine policy (no AI hook yet, same convention as the GY-return
+    # branch above): for each distinct card type present among the
+    # revealed cards — in a stable type order — take the highest-value
+    # card of that type (nonland first, then highest mana value).
+    for ability in split_abilities(oracle):
+        ability = ability.strip()
+        if not ability.startswith('when '):
+            continue
+        if 'for each card type' not in ability or 'into your hand' not in ability:
+            continue
+        m = re.search(r'reveal the top (\w+) cards? of your library', ability)
+        if m is None:
+            continue
+        tok = m.group(1)
+        try:
+            reveal_n = int(tok)
+        except ValueError:
+            reveal_n = _WORD_TO_NUM.get(tok, 0)
+        if reveal_n <= 0:
+            return False
+        player = game.players[controller]
+        revealed = list(player.library[:reveal_n])
+        # Distinct card types present, in a deterministic order.
+        present_types = []
+        seen = set()
+        for c in revealed:
+            for ct in c.template.card_types:
+                if ct not in seen:
+                    seen.add(ct)
+                    present_types.append(ct)
+        present_types.sort(key=lambda ct: ct.value)
+        remaining = list(revealed)
+        taken = []
+        for ctype in present_types:
+            pool = [c for c in remaining if ctype in c.template.card_types]
+            if not pool:
+                continue
+            best = max(
+                pool,
+                key=lambda c: (not c.template.is_land, c.template.cmc or 0),
+            )
+            remaining.remove(best)
+            taken.append(best)
+        # Move taken cards to hand through the zone funnel (single-owner
+        # zone-transfer path; the abstraction contract forbids raw .zone=).
+        for c in taken:
+            game.zone_mgr.move_card_to_hand(game, c, cause=f"{card.name} reveal")
+        # Put the rest on the bottom of the library in a random order.
+        # move_card appends to the destination list, so a library->library
+        # move relocates a revealed (top) card to the bottom.
+        game.rng.shuffle(remaining)
+        for c in remaining:
+            game.zone_mgr.move_card(game, c, "library", "library")
+        if taken:
+            game.log.append(
+                f"T{game.display_turn} P{controller+1}: {card.name} ETB: "
+                f"put {len(taken)} to hand "
+                f"({', '.join(c.name for c in taken)})")
+        return True
+
+    # ── "When ~ enters, mill N cards" (self-mill, CR 701.13) ──
+    # Class: ~84 Modern permanents (Armored Skaab, Aftermath Analyst, ...).
+    # Also handles the mill-and-select rider "you may put a [type] card from
+    # among the cards milled ... into your hand" (Fallaji Archaeologist).
+    # Scoped to the permanent's own ETB paragraph and to SELF-mill only —
+    # "target player mills" (Hedron Crab landfall) is a different, targeted
+    # trigger and is excluded.
+    for ability in split_abilities(oracle):
+        ability = ability.strip()
+        if not ability.startswith('when ') or 'enters' not in ability:
+            continue
+        if 'target player' in ability or 'target opponent' in ability:
+            continue
+        m = re.search(r'\bmill\s+(\w+)\s+cards?', ability)
+        if m is None:
+            continue
+        tok = m.group(1)
+        try:
+            mill_n = int(tok)
+        except ValueError:
+            mill_n = _WORD_TO_NUM.get(tok, 0)
+        if mill_n <= 0:
+            return False
+        player = game.players[controller]
+        milled = []
+        for _ in range(min(mill_n, len(player.library))):
+            top = player.library[0]
+            game.zone_mgr.move_card(game, top, "library", "graveyard",
+                                    cause=f"{card.name} mill")
+            milled.append(top)
+        # Optional select rider: recover one card of the allowed type.
+        sel = re.search(
+            r'put a ([a-z, ]*?)card from among the cards milled', ability)
+        if sel and milled:
+            restr = sel.group(1)
+            excluded = set()
+            if 'noncreature' in restr:
+                excluded.add('creature')
+            if 'nonland' in restr:
+                excluded.add('land')
+            cands = [
+                c for c in milled
+                if c.zone == 'graveyard'
+                and not (excluded & {ct.value for ct in c.template.card_types})
+            ]
+            if cands:
+                best = max(cands, key=lambda c: c.template.cmc or 0)
+                game.zone_mgr.move_card(game, best, "graveyard", "hand",
+                                        cause=f"{card.name} recover")
+        if milled:
+            game.log.append(
+                f"T{game.display_turn} P{controller+1}: {card.name} ETB: "
+                f"mill {len(milled)}")
         return True
 
     return False
@@ -711,6 +834,42 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
                     f"{card.name} → draw {count} ({names})")
             handled = True
 
+    # ── "Create [N] <P>/<T> … creature token[s] [with '<ability>']" ──
+    # CR 111: a spell whose own effect creates a token. Token creation was
+    # already wired for ATTACK and DIES triggers but had NO spell-resolution
+    # branch, so 522 Modern instants/sorceries carrying this clause resolved
+    # to a complete no-op. For ramp shells the omission is load-bearing: the
+    # created body often carries a mana ability, so a missing token is missing
+    # ramp.
+    #
+    # Safe to run generically here: `resolve_spell_from_oracle` is only
+    # reached after EFFECT_REGISTRY has declined the card, so a card-specific
+    # handler can never double-fire with this branch. `create_token` does the
+    # P/T + subtype + inner-quoted-ability parsing via `parse_token_spec`, so
+    # the only parse here is the COUNT.
+    if not handled and (card.template.is_instant or card.template.is_sorcery):
+        for clause in split_abilities(oracle):
+            m = re.search(
+                r'\bcreate\s+(a|an|one|two|three|four|five|\d+)\s+'
+                r'(\d+)/(\d+)\b[^.]*?\btokens?\b', clause)
+            if m is None:
+                continue
+            tok = m.group(1)
+            try:
+                count = int(tok)
+            except ValueError:
+                count = 1 if tok in ('a', 'an', 'one') else _WORD_TO_NUM.get(tok, 0)
+            if count <= 0:
+                continue
+            created = game.create_token(
+                controller, "creature", count=count,
+                power=int(m.group(2)), toughness=int(m.group(3)),
+                source_oracle=clause)
+            # `create_token` already emits its own log line; don't duplicate it.
+            if created:
+                handled = True
+            break
+
     return handled
 
 
@@ -760,7 +919,10 @@ def resolve_attack_trigger(game: "GameState", attacker: "CardInstance",
     # ── "Whenever this creature attacks, gain N life" ──
     _life_ability = next(
         (a for a in abilities
-         if 'attacks' in a and 'gain' in a and 'life' in a), None)
+         if 'attacks' in a and 'gain' in a and 'life' in a
+         # The drain class ("... loses N life. You gain N life.") owns its
+         # own life-gain below — don't double-apply it here.
+         and not ('sacrifices' in a and 'loses' in a)), None)
     if _life_ability is not None:
         m = re.search(r'gain\s+(\d+)\s+life', _life_ability)
         if m:
@@ -781,6 +943,51 @@ def resolve_attack_trigger(game: "GameState", attacker: "CardInstance",
             game.log.append(
                 f"T{game.display_turn} P{controller+1}: "
                 f"{attacker.name} mobilize {count} — create {count} 1/1 tokens")
+
+    # ── "Whenever this creature enters or attacks, target opponent
+    #     sacrifices a creature or planeswalker, then discards a card, then
+    #     loses N life. You draw a card and gain N life." (Archon of
+    #     Cruelty / attack-drain class) ──
+    # The ETB half is handled by a dedicated ETB handler; this is the
+    # ATTACK half. Scoped to the paragraph that has both 'attacks' and the
+    # 'sacrifices' + 'loses ... life' drain shape.
+    _drain_ability = next(
+        (a for a in abilities
+         if 'attacks' in a and 'target opponent' in a
+         and 'sacrifices' in a and 'loses' in a and 'life' in a), None)
+    if _drain_ability is not None:
+        opp_player = game.players[opponent]
+        # 1. Opponent sacrifices a creature or planeswalker (they choose
+        #    their least-valuable: lowest power, then lowest mana value).
+        if 'creature or planeswalker' in _drain_ability or 'creature' in _drain_ability:
+            from engine.cards import CardType as _CT
+            sac_pool = [
+                c for c in opp_player.battlefield
+                if _CT.CREATURE in c.template.card_types
+                or _CT.PLANESWALKER in c.template.card_types
+            ]
+            if sac_pool:
+                worst = min(sac_pool,
+                            key=lambda c: ((c.power or 0), c.template.cmc or 0))
+                game.zone_mgr.move_card(game, worst, "battlefield", "graveyard",
+                                        cause=f"{attacker.name} attack: sacrifice")
+        # 2. Opponent discards a card.
+        if 'discards' in _drain_ability:
+            game._force_discard(opponent, 1, self_discard=False)
+        # 3. Opponent loses N life; controller draws a card and gains N life.
+        m = re.search(r'loses?\s+(\d+)\s+life', _drain_ability)
+        n_life = int(m.group(1)) if m else 0
+        if n_life > 0:
+            opp_player.life -= n_life
+        if 'draw a card' in _drain_ability or 'draw' in _drain_ability:
+            game.draw_cards(controller, 1)
+        m_gain = re.search(r'gain\s+(\d+)\s+life', _drain_ability)
+        if m_gain:
+            game.gain_life(controller, int(m_gain.group(1)), attacker.name)
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: "
+            f"{attacker.name} attack drain — opp loses {n_life} life")
+        game.check_state_based_actions()
 
     # ── "Whenever this creature attacks, create a token" ──
     # The mobilize exclusion stays whole-text: mobilize's reminder text
@@ -1001,6 +1208,89 @@ def _transform_permanent(game: "GameState", perm: "CardInstance",
     # Fire ETB triggers for the transformed (back) face
     if hasattr(game, '_handle_permanent_etb'):
         game._handle_permanent_etb(perm, controller)
+
+
+def _permanent_is_colored(perm: "CardInstance") -> bool:
+    """True when a permanent is one or more colors (CR 105.2)."""
+    colors = getattr(perm.template, 'colors', None) or \
+        getattr(perm.template, 'color_identity', None) or set()
+    return bool(colors)
+
+
+def resolve_self_cast_trigger(game: "GameState", caster_idx: int,
+                              spell_cast: "CardInstance") -> bool:
+    """Resolve the SPELL'S OWN "When you cast this spell, <effect>" triggers
+    (CR 601.2i cast triggers on the object being cast).
+
+    This is distinct from `resolve_spell_cast_trigger`, which fires "whenever
+    you cast a spell" watcher triggers on OTHER permanents. A spell's own
+    on-cast trigger previously had no dispatch and was a silent no-op — this
+    blanked the Eldrazi ramp engine (Sowing Mycospawn's land search) and the
+    Eldrazi interaction suite (Devourer of Destiny / Ugin exile a colored
+    permanent on cast). Oracle-shape-gated; no card names.
+
+    Returns True when at least one self-cast clause was recognised (so the
+    caller can distinguish "handled" from "no such trigger").
+    """
+    oracle = (spell_cast.template.oracle_text or '').lower()
+    if 'when you cast this spell' not in oracle:
+        return False
+
+    from engine.cards import CardType as _CT
+    handled = False
+    player = game.players[caster_idx]
+    opponent = 1 - caster_idx
+
+    for clause in split_abilities(oracle):
+        clause = clause.strip()
+        if not clause.startswith('when you cast this spell'):
+            continue
+        # Conditional riders we don't model (kicker/other cast conditions):
+        # skip the effect but the clause is still "recognised".
+        if 'if it was kicked' in clause or 'if this spell was kicked' in clause:
+            handled = True
+            continue
+
+        # ── "search your library for a land card, put it onto the
+        #     battlefield" (Sowing Mycospawn ramp) ──
+        if 'search your library for a land' in clause \
+                and 'onto the battlefield' in clause:
+            lands = [c for c in player.library
+                     if _CT.LAND in c.template.card_types]
+            if lands:
+                # Deterministic: fetch the highest-output land (Eldrazi
+                # Temple over a basic), tie-break by name.
+                best = max(lands, key=lambda c: (
+                    getattr(c.template, 'mana_count', 0) or 0, c.name))
+                game.zone_mgr.move_card(game, best, "library", "battlefield",
+                                        cause=f"{spell_cast.name} cast: land search")
+                game.log.append(
+                    f"T{game.display_turn} P{caster_idx+1}: {spell_cast.name} "
+                    f"cast — search land ({best.name})")
+            handled = True
+            continue
+
+        # ── "exile [up to one] target permanent that's one or more colors"
+        #     (Devourer of Destiny / Ugin, Eye of the Storms) ──
+        if 'exile' in clause and 'permanent' in clause \
+                and 'one or more colors' in clause:
+            targets = [c for c in game.players[opponent].battlefield
+                       if _permanent_is_colored(c)]
+            if targets:
+                # Exile the opponent's most threatening colored permanent
+                # (highest power, then mana value).
+                worst = max(targets, key=lambda c: (
+                    (c.power or 0) if _CT.CREATURE in c.template.card_types else 0,
+                    c.template.cmc or 0))
+                game.zone_mgr.move_card(game, worst, "battlefield", "exile",
+                                        cause=f"{spell_cast.name} cast: exile")
+                game.log.append(
+                    f"T{game.display_turn} P{caster_idx+1}: {spell_cast.name} "
+                    f"cast — exile {worst.name}")
+            handled = True
+            continue
+
+    return handled
 
 
 def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,

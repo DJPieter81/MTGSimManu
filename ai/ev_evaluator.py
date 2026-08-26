@@ -680,6 +680,15 @@ def creature_threat_value(card: "CardInstance", snap: EVSnapshot) -> float:
     virtual_power = 0
     if getattr(t, 'has_attack_trigger', False):
         virtual_power += THREAT_BATTLE_CRY_AMPLIFIER_VP
+    elif getattr(t, 'has_combat_damage_trigger', False):
+        # "Whenever this deals combat damage to a player, <recurring value>"
+        # is the same per-combat amplifier shape as an attack trigger, so it
+        # reuses that constant rather than introducing a second tunable. It
+        # is strictly NARROWER (requires connecting, not just declaring), so
+        # equal magnitude is conservative. `elif` because the two shapes are
+        # alternative phrasings of "extra value each combat" — a card with
+        # both should not be credited twice for one combat step.
+        virtual_power += THREAT_BATTLE_CRY_AMPLIFIER_VP
     if re.search(r'for each (artifact|creature|land|card)', oracle):
         # Phase 1C: skip the future-scaling bonus when the dynamic P/T
         # already captures the scaling. `engine/cards.py:_dynamic_base_power`
@@ -2004,6 +2013,21 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
             projected.my_artifact_count += 1
         if CardType.ENCHANTMENT in t.card_types:
             projected.my_enchantment_count += 1
+
+    # Saga chapter value: a Saga's Chapter I fires the moment it enters
+    # (CR 714.2), and later chapters follow on subsequent upkeeps. The
+    # token/ETB projection below is gated behind `is_creature`, so a Saga
+    # (an enchantment) got NO chapter value — Fable of the Mirror-Breaker's
+    # 2/2 Goblin, etc. — and the AI never cast it. Credit a creature token a
+    # chapter creates, using the SAME token-power regex `_clause_token_power`
+    # uses (no new pattern). Detected by the `Saga` subtype (no card names).
+    if 'Saga' in getattr(t, 'subtypes', ()):
+        _saga_oracle = (t.oracle_text or '').lower()
+        _mtok = re.search(
+            r'(\d+)/(\d+)\s+[\w\-\s,]*?creature token', _saga_oracle)
+        if _mtok:
+            projected.my_power += int(_mtok.group(1))
+            projected.my_creature_count += 1
 
     # Creature deployment
     if t.is_creature:

@@ -19,6 +19,13 @@ MAX_LANDS_PER_TURN = 1
 SBA_MAX_ITERATIONS = 20
 MAX_MANA_ITERATIONS = 20
 MAX_STACK_RESOLVES = 100
+# Activation re-entry bound. NOT a CR limit — the rules place no cap on how
+# many abilities may be activated. Depth 1 means "no activation may begin while
+# another is being paid for or is resolving". It is the only reachable value in
+# the current tranche (no resolution path can recurse into activation), and it
+# exists so that a later tranche which routes a sacrifice cost through the death
+# machinery inherits a bound instead of a hang.
+ACTIVATION_MAX_DEPTH = 1
 
 # ── Win conditions ──
 POISON_COUNTER_LETHAL = 10

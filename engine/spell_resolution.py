@@ -290,6 +290,14 @@ class ResolutionManager:
         """
         template = card.template
 
+        # Aura attachment (CR 303.4a): an Aura entering the battlefield
+        # becomes attached to a legal object chosen by its "Enchant <quality>"
+        # ability. Before this, Auras resolved as inert enchantments attached
+        # to nothing — a mana Aura granted no mana at all.
+        if getattr(template, 'aura_enchant_restriction', None):
+            from .permanent_effects import PermanentEffects
+            PermanentEffects.attach_aura(game, card, controller)
+
         # Planeswalker: set loyalty counters from template (oracle-derived)
         if CardType.PLANESWALKER in template.card_types:
             card.loyalty_counters = template.loyalty or 0

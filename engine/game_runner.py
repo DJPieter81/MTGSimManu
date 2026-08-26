@@ -1204,13 +1204,20 @@ class GameRunner:
         is_combo = arch == ArchetypeStrategy.COMBO if arch else False
         max_actions = MAX_ACTIONS_COMBO if is_combo else MAX_ACTIONS_NORMAL
         actions = 0
-        _last_failed_card = None  # Track failed casts to prevent infinite loops
-        _consecutive_fails = 0
+        # Cards whose cast_spell REFUSED after can_cast green-lit them
+        # (evoke pitch-value veto, flashback/reanimation gate, color/X
+        # mismatch). Excluding them and re-planning — instead of retrying the
+        # same top pick and ending the phase — is what lets a deck keep
+        # developing when its best play is momentarily un-executable.
+        _excluded: set = set()
+        _excluded_activations: set = set()
 
         while actions < max_actions and not game.game_over:
             if hasattr(game, '_game_deadline') and _time.monotonic() > game._game_deadline:
                 return
-            decision = ai.decide_main_phase(game)
+            decision = ai.decide_main_phase(
+                game, excluded_cards=_excluded,
+                excluded_activations=_excluded_activations)
             if decision is None:
                 break
 
@@ -1248,6 +1255,35 @@ class GameRunner:
                     creature = game.get_card_by_id(targets[0])
                     if creature:
                         game.equip_creature(ai.player_idx, card, creature)
+            elif action == "activate":
+                # Generic activated ability (CR 602). The AI chose it; the
+                # engine validates, pays, and stacks it.
+                from .activation import ActivationManager
+                _idx = getattr(ai, "_last_activation_ability_index", None)
+                _abilities = getattr(card.template, "activated_abilities",
+                                     None) or []
+                _ab = (_abilities[_idx]
+                       if _idx is not None and _idx < len(_abilities) else None)
+                _ok = False
+                if _ab is not None and ActivationManager.can_activate(
+                        game, ai.player_idx, card, _ab):
+                    _ok = ActivationManager.activate(
+                        game, ai.player_idx, card, _ab, targets)
+                if not _ok:
+                    # Exclude and re-plan rather than ending the phase. A
+                    # missing index excludes every ability on the permanent.
+                    if _idx is None:
+                        for _i in range(len(_abilities)):
+                            _excluded_activations.add((card.instance_id, _i))
+                    else:
+                        _excluded_activations.add((card.instance_id, _idx))
+                    actions += 1
+                    continue
+                # Drain the stack before the next decision, exactly as the
+                # cast arm does. Without this the ability sits on the stack
+                # unresolved and the next decision is made against a board
+                # that has not yet changed.
+                self._resolve_stack_loop(game)
             elif action == "activate_ability":
                 # Activated win-condition line (land animation) — the
                 # AI chose it in the ACTIVATION region; the engine only
@@ -1278,16 +1314,15 @@ class GameRunner:
                         ai._last_played_target_reason = ''
                 success = game.cast_spell(ai.player_idx, card, targets)
                 if not success:
-                    # Track failed casts to prevent infinite loops.
-                    # Break immediately if the same card name fails twice
-                    # (first attempt + one retry).
-                    if _last_failed_card and card.name == _last_failed_card.name:
-                        break  # Same card failing again — stop
-                    else:
-                        _last_failed_card = card
+                    # can_cast green-lit a play that cast_spell refused.
+                    # Exclude it and re-plan within this phase rather than
+                    # ending development. `decide_main_phase(excluded_cards)`
+                    # returns None once no non-excluded play remains, so the
+                    # loop terminates; `actions` bounds it regardless.
+                    _excluded.add(card.instance_id)
+                    actions += 1
+                    continue
                 if success:
-                    _last_failed_card = None
-                    _consecutive_fails = 0
                     # Opponent gets priority to respond (CR 117.3d) — UNLESS
                     # the active player controls a Teferi-style "cast at
                     # sorcery speed only" effect. In that case, the opponent

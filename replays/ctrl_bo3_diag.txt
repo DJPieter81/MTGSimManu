@@ -1,0 +1,377 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+=== 4/5c Control vs Domain Zoo (seed 40000) ===
+Result: Domain Zoo wins T7 via damage
+Life: P1=-1 P2=23
+
+  [MAIN1]
+
+T1 Domain Zoo | life=20 mana=0 hand=2+3L gy=0
+  Hand: ['Territorial Kavu', 'Territorial Kavu']
+  Permanents: ['Leyline of the Guildpact']
+  Opp board: [] (life=20)
+  EV scores:
+     +26.0  play_land: Blood Crypt <--
+     +23.0  play_land: Flooded Strand
+     +20.0  play_land: Arena of Glory
+  >>> PLAY_LAND: Blood Crypt
+  [MAIN1]
+
+T1 Domain Zoo | life=20 mana=1 hand=2+2L gy=0
+  Hand: ['Territorial Kavu', 'Territorial Kavu']
+  Permanents: ['Leyline of the Guildpact']
+  Opp board: [] (life=20)
+  >>> PASS (play_value <= 0)
+  [MAIN2]
+
+T1 Domain Zoo | life=20 mana=1 hand=2+2L gy=0
+  Hand: ['Territorial Kavu', 'Territorial Kavu']
+  Permanents: ['Leyline of the Guildpact']
+  Opp board: [] (life=20)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T2 4/5c Control | life=20 mana=0 hand=4+3L gy=0
+  Hand: ['Quantum Riddler', 'Quantum Riddler', 'Ephemerate', 'Solitude']
+  Opp board: [] (life=20)
+  EV scores:
+     +32.0  play_land: Misty Rainforest <--
+     +32.0  play_land: Windswept Heath
+     +29.0  play_land: Sacred Foundry
+  >>> PLAY_LAND: Misty Rainforest
+  [MAIN1]
+
+T2 4/5c Control | life=19 mana=0 hand=4+2L gy=1
+  Hand: ['Quantum Riddler', 'Quantum Riddler', 'Ephemerate', 'Solitude']
+  Opp board: [] (life=20)
+  >>> PASS (play_value <= 0)
+  [MAIN2]
+
+T2 4/5c Control | life=19 mana=0 hand=4+2L gy=1
+  Hand: ['Quantum Riddler', 'Quantum Riddler', 'Ephemerate', 'Solitude']
+  Opp board: [] (life=20)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T3 Domain Zoo | life=20 mana=1 hand=3+2L gy=0
+  Hand: ['Territorial Kavu', 'Territorial Kavu', 'Teferi, Time Raveler']
+  Permanents: ['Leyline of the Guildpact']
+  Opp board: [] (life=19)
+  EV scores:
+     +29.0  play_land: Flooded Strand <--
+      +7.0  play_land: Arena of Glory
+  >>> PLAY_LAND: Flooded Strand
+  [MAIN1]
+
+T3 Domain Zoo | life=19 mana=1 hand=3+1L gy=1
+  Hand: ['Territorial Kavu', 'Territorial Kavu', 'Teferi, Time Raveler']
+  Permanents: ['Leyline of the Guildpact']
+  Opp board: [] (life=19)
+  >>> PASS (play_value <= 0)
+  [MAIN2]
+
+T3 Domain Zoo | life=19 mana=1 hand=3+1L gy=1
+  Hand: ['Territorial Kavu', 'Territorial Kavu', 'Teferi, Time Raveler']
+  Permanents: ['Leyline of the Guildpact']
+  Opp board: [] (life=19)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T4 4/5c Control | life=19 mana=1 hand=4+3L gy=1
+  Hand: ['Quantum Riddler', 'Quantum Riddler', 'Ephemerate', 'Solitude']
+  Opp board: [] (life=19)
+  EV scores:
+     +22.0  play_land: Windswept Heath <--
+     +19.0  play_land: Sacred Foundry
+     +11.0  play_land: Arena of Glory
+  >>> PLAY_LAND: Windswept Heath
+  [MAIN1]
+
+T4 4/5c Control | life=18 mana=1 hand=4+2L gy=2
+  Hand: ['Quantum Riddler', 'Quantum Riddler', 'Ephemerate', 'Solitude']
+  Opp board: [] (life=19)
+  >>> PASS (play_value <= 0)
+  [MAIN2]
+
+T4 4/5c Control | life=18 mana=1 hand=4+2L gy=2
+  Hand: ['Quantum Riddler', 'Quantum Riddler', 'Ephemerate', 'Solitude']
+  Opp board: [] (life=19)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T5 Domain Zoo | life=19 mana=2 hand=3+2L gy=1
+  Hand: ['Territorial Kavu', 'Territorial Kavu', 'Teferi, Time Raveler']
+  Permanents: ['Leyline of the Guildpact']
+  Opp board: [] (life=18)
+  EV scores:
+      +7.0  play_land: Arena of Glory <--
+      +7.0  play_land: Lush Portico
+      +0.0  cast_spell: Territorial Kavu  [h=+0.0 la=+0.0]
+      +0.0  cast_spell: Territorial Kavu  [h=+0.0 la=+0.0]
+  >>> PLAY_LAND: Arena of Glory
+  [MAIN1]
+
+T5 Domain Zoo | life=19 mana=2 hand=3+1L gy=1
+  Hand: ['Territorial Kavu', 'Territorial Kavu', 'Teferi, Time Raveler']
+  Permanents: ['Leyline of the Guildpact']
+  Opp board: [] (life=18)
+  EV scores:
+      +0.1  cast_spell: Territorial Kavu <--  [h=+0.1 la=+0.1]
+      +0.1  cast_spell: Territorial Kavu  [h=+0.1 la=+0.1]
+  >>> CAST_SPELL: Territorial Kavu
+  [MAIN1]
+
+T5 Domain Zoo | life=19 mana=0 hand=2+1L gy=1
+  Hand: ['Territorial Kavu', 'Teferi, Time Raveler']
+  Board: ['Territorial Kavu (5/5)']
+  Permanents: ['Leyline of the Guildpact']
+  Opp board: [] (life=18)
+  >>> PASS (play_value <= 0)
+  [MAIN2]
+
+T5 Domain Zoo | life=24 mana=0 hand=2+1L gy=1
+  Hand: ['Territorial Kavu', 'Teferi, Time Raveler']
+  Permanents: ['Leyline of the Guildpact']
+  Opp board: [] (life=18)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T6 4/5c Control | life=18 mana=2 hand=3+2L gy=3
+  Hand: ['Quantum Riddler', 'Quantum Riddler', 'Quantum Riddler']
+  Opp board: [] (life=24)
+  EV scores:
+     +16.0  play_land: Sacred Foundry <--
+     +14.0  play_land: Arena of Glory
+  >>> PLAY_LAND: Sacred Foundry
+  [MAIN1]
+
+T6 4/5c Control | life=18 mana=3 hand=3+1L gy=3
+  Hand: ['Quantum Riddler', 'Quantum Riddler', 'Quantum Riddler']
+  Opp board: [] (life=24)
+  >>> PASS (play_value <= 0)
+  [MAIN2]
+
+T6 4/5c Control | life=18 mana=3 hand=3+1L gy=3
+  Hand: ['Quantum Riddler', 'Quantum Riddler', 'Quantum Riddler']
+  Opp board: [] (life=24)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T7 Domain Zoo | life=24 mana=3 hand=2+2L gy=1
+  Hand: ['Territorial Kavu', 'Teferi, Time Raveler']
+  Permanents: ['Leyline of the Guildpact']
+  Opp board: [] (life=18)
+  EV scores:
+     +18.0  play_land: Arid Mesa <--
+     +11.1  cast_spell: Teferi, Time Raveler  [h=+11.1 la=+11.1]
+      +7.0  play_land: Lush Portico
+      +0.0  cast_spell: Territorial Kavu  [h=+0.0 la=+0.0]
+  >>> PLAY_LAND: Arid Mesa
+  [MAIN1]
+
+T7 Domain Zoo | life=21 mana=4 hand=2+1L gy=2
+  Hand: ['Territorial Kavu', 'Teferi, Time Raveler']
+  Permanents: ['Leyline of the Guildpact']
+  Opp board: [] (life=18)
+  EV scores:
+     +11.1  cast_spell: Teferi, Time Raveler <--  [h=+11.1 la=+11.1]
+      +0.1  cast_spell: Territorial Kavu  [h=+0.1 la=+0.1]
+  >>> CAST_SPELL: Teferi, Time Raveler
+  [MAIN1]
+
+T7 Domain Zoo | life=21 mana=1 hand=2+1L gy=2
+  Hand: ['Territorial Kavu', 'Ragavan, Nimble Pilferer']
+  Permanents: ['Leyline of the Guildpact', 'Teferi, Time Raveler']
+  Opp board: [] (life=18)
+  EV scores:
+      +1.2  cast_spell: Ragavan, Nimble Pilferer <--  [h=+1.2 la=+1.2]
+  >>> CAST_SPELL: Ragavan, Nimble Pilferer
+  [MAIN1]
+
+T7 Domain Zoo | life=21 mana=0 hand=1+1L gy=2
+  Hand: ['Territorial Kavu']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Permanents: ['Leyline of the Guildpact', 'Teferi, Time Raveler']
+  Opp board: [] (life=18)
+  >>> PASS (play_value <= 0)
+  [MAIN2]
+
+T7 Domain Zoo | life=21 mana=0 hand=1+1L gy=2
+  Hand: ['Territorial Kavu']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Permanents: ['Leyline of the Guildpact', 'Teferi, Time Raveler']
+  Opp board: [] (life=18)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T8 4/5c Control | life=18 mana=3 hand=4+1L gy=3
+  Hand: ['Quantum Riddler', 'Quantum Riddler', 'Quantum Riddler', 'Solitude']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=21)
+  EV scores:
+     +10.0  play_land: Arena of Glory <--
+  >>> PLAY_LAND: Arena of Glory
+  [MAIN1]
+
+T8 4/5c Control | life=18 mana=3 hand=4+0L gy=3
+  Hand: ['Quantum Riddler', 'Quantum Riddler', 'Quantum Riddler', 'Solitude']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=21)
+  >>> PASS (play_value <= 0)
+  [MAIN2]
+
+T8 4/5c Control | life=18 mana=3 hand=4+0L gy=3
+  Hand: ['Quantum Riddler', 'Quantum Riddler', 'Quantum Riddler', 'Solitude']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)'] (life=21)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T9 Domain Zoo | life=21 mana=4 hand=1+2L gy=2
+  Hand: ['Territorial Kavu']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Permanents: ['Leyline of the Guildpact', 'Teferi, Time Raveler']
+  Opp board: [] (life=18)
+  EV scores:
+     +18.0  play_land: Arid Mesa <--
+      +7.0  play_land: Lush Portico
+      +0.1  cast_spell: Territorial Kavu  [h=+0.1 la=+0.1]
+  >>> PLAY_LAND: Arid Mesa
+  [MAIN1]
+
+T9 Domain Zoo | life=20 mana=4 hand=1+1L gy=3
+  Hand: ['Territorial Kavu']
+  Board: ['Ragavan, Nimble Pilferer (2/1)']
+  Permanents: ['Leyline of the Guildpact', 'Teferi, Time Raveler']
+  Opp board: [] (life=18)
+  EV scores:
+      +0.1  cast_spell: Territorial Kavu <--  [h=+0.1 la=+0.1]
+  >>> CAST_SPELL: Territorial Kavu
+  [MAIN1]
+
+T9 Domain Zoo | life=20 mana=2 hand=0+1L gy=3
+  Hand: []
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Territorial Kavu (5/5)']
+  Permanents: ['Leyline of the Guildpact', 'Teferi, Time Raveler']
+  Opp board: [] (life=18)
+  >>> PASS (play_value <= 0)
+  >>> ATTACK: ['Ragavan, Nimble Pilferer']
+  [MAIN2]
+
+T9 Domain Zoo | life=20 mana=2 hand=0+2L gy=3
+  Hand: []
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Territorial Kavu (5/5)']
+  Permanents: ['Leyline of the Guildpact', 'Teferi, Time Raveler', 'Treasure Token']
+  Opp board: [] (life=16)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T10 4/5c Control | life=16 mana=4 hand=5+0L gy=3
+  Hand: ['Quantum Riddler', 'Quantum Riddler', 'Quantum Riddler', 'Solitude', 'Omnath, Locus of Creation']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Territorial Kavu (5/5)'] (life=20)
+  EV scores:
+     +19.2  cast_spell: Solitude <--  [h=+19.2 la=+19.2]
+      +2.1  cast_spell: Omnath, Locus of Creation  [h=+2.1 la=+2.1]
+  >>> CAST_SPELL: Solitude
+  [MAIN1]
+
+T10 4/5c Control | life=16 mana=4 hand=5+0L gy=3
+  Hand: ['Quantum Riddler', 'Quantum Riddler', 'Quantum Riddler', 'Solitude', 'Omnath, Locus of Creation']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Territorial Kavu (5/5)'] (life=20)
+  EV scores:
+     +19.2  cast_spell: Solitude <--  [h=+19.2 la=+19.2]
+      +2.1  cast_spell: Omnath, Locus of Creation  [h=+2.1 la=+2.1]
+  >>> CAST_SPELL: Solitude
+  [MAIN2]
+
+T10 4/5c Control | life=16 mana=4 hand=5+0L gy=3
+  Hand: ['Quantum Riddler', 'Quantum Riddler', 'Quantum Riddler', 'Solitude', 'Omnath, Locus of Creation']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Territorial Kavu (5/5)'] (life=20)
+  EV scores:
+     +19.2  cast_spell: Solitude <--  [h=+19.2 la=+19.2]
+      +2.1  cast_spell: Omnath, Locus of Creation  [h=+2.1 la=+2.1]
+  >>> CAST_SPELL: Solitude
+  [MAIN2]
+
+T10 4/5c Control | life=16 mana=4 hand=5+0L gy=3
+  Hand: ['Quantum Riddler', 'Quantum Riddler', 'Quantum Riddler', 'Solitude', 'Omnath, Locus of Creation']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Territorial Kavu (5/5)'] (life=20)
+  EV scores:
+     +19.2  cast_spell: Solitude <--  [h=+19.2 la=+19.2]
+      +2.1  cast_spell: Omnath, Locus of Creation  [h=+2.1 la=+2.1]
+  >>> CAST_SPELL: Solitude
+  [MAIN1]
+
+T11 Domain Zoo | life=20 mana=5 hand=1+1L gy=3
+  Hand: ['Fable of the Mirror-Breaker // Reflection of Kiki-Jiki']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Territorial Kavu (5/5)']
+  Permanents: ['Leyline of the Guildpact', 'Teferi, Time Raveler', 'Treasure Token']
+  Opp board: [] (life=16)
+  EV scores:
+      +7.0  play_land: Lush Portico <--
+      -0.2  cast_spell: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki  [h=-0.2 la=-0.2]
+  >>> PLAY_LAND: Lush Portico
+  [MAIN1]
+
+T11 Domain Zoo | life=20 mana=5 hand=1+0L gy=4
+  Hand: ['Fable of the Mirror-Breaker // Reflection of Kiki-Jiki']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Territorial Kavu (5/5)']
+  Permanents: ['Leyline of the Guildpact', 'Teferi, Time Raveler', 'Treasure Token']
+  Opp board: [] (life=16)
+  EV scores:
+      -0.2  cast_spell: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki <--  [h=-0.2 la=-0.2]
+  >>> PASS (play_value <= 0)
+  >>> ATTACK: ['Ragavan, Nimble Pilferer', 'Territorial Kavu']
+  [MAIN2]
+
+T11 Domain Zoo | life=20 mana=5 hand=2+0L gy=4
+  Hand: ['Fable of the Mirror-Breaker // Reflection of Kiki-Jiki', 'Solitude']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Territorial Kavu (5/5)']
+  Permanents: ['Leyline of the Guildpact', 'Teferi, Time Raveler', 'Treasure Token', 'Treasure Token']
+  Opp board: [] (life=9)
+  EV scores:
+     +12.4  cast_spell: Solitude <--  [h=+12.4 la=+12.4]
+      -0.3  cast_spell: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki  [h=-0.3 la=-0.3]
+  >>> CAST_SPELL: Solitude
+  [MAIN2]
+
+T11 Domain Zoo | life=20 mana=0 hand=1+0L gy=4
+  Hand: ['Fable of the Mirror-Breaker // Reflection of Kiki-Jiki']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Territorial Kavu (5/5)', 'Solitude (3/2)']
+  Permanents: ['Leyline of the Guildpact', 'Teferi, Time Raveler', 'Treasure Token', 'Treasure Token']
+  Opp board: [] (life=9)
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T12 4/5c Control | life=9 mana=4 hand=6+0L gy=2
+  Hand: ['Quantum Riddler', 'Quantum Riddler', 'Quantum Riddler', 'Solitude', 'Omnath, Locus of Creation', "Orim's Chant"]
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Territorial Kavu (5/5)', 'Solitude (3/2)'] (life=20)
+  EV scores:
+      -0.2  cast_spell: Orim's Chant <--  [h=-0.2 la=-0.2]
+     -42.8  cast_spell: Omnath, Locus of Creation  [h=-42.8 la=-42.8]
+     -45.3  cast_spell: Solitude  [h=-45.3 la=-45.3]
+  >>> CAST_SPELL: Orim's Chant
+  [MAIN1]
+
+T12 4/5c Control | life=9 mana=3 hand=5+0L gy=3
+  Hand: ['Quantum Riddler', 'Quantum Riddler', 'Quantum Riddler', 'Solitude', 'Omnath, Locus of Creation']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Territorial Kavu (5/5)', 'Solitude (3/2)'] (life=20)
+  EV scores:
+     -45.2  cast_spell: Solitude <--  [h=-45.2 la=-45.2]
+  >>> PASS (play_value <= 0)
+  [MAIN2]
+
+T12 4/5c Control | life=9 mana=3 hand=5+0L gy=3
+  Hand: ['Quantum Riddler', 'Quantum Riddler', 'Quantum Riddler', 'Solitude', 'Omnath, Locus of Creation']
+  Opp board: ['Ragavan, Nimble Pilferer (2/1)', 'Territorial Kavu (5/5)', 'Solitude (3/2)'] (life=20)
+  EV scores:
+     -45.2  cast_spell: Solitude <--  [h=-45.2 la=-45.2]
+  >>> PASS (play_value <= 0)
+  [MAIN1]
+
+T13 Domain Zoo | life=20 mana=6 hand=2+0L gy=4
+  Hand: ['Fable of the Mirror-Breaker // Reflection of Kiki-Jiki', 'Leyline Binding']
+  Board: ['Ragavan, Nimble Pilferer (2/1)', 'Territorial Kavu (5/5)', 'Solitude (3/2)']
+  Permanents: ['Leyline of the Guildpact', 'Teferi, Time Raveler', 'Treasure Token', 'Treasure Token']
+  Opp board: [] (life=9)
+  EV scores:
+      -0.3  cast_spell: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki <--  [h=-0.3 la=-0.3]
+  >>> PASS (play_value <= 0)
+  >>> ATTACK: ['Ragavan, Nimble Pilferer', 'Territorial Kavu', 'Solitude']
