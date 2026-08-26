@@ -502,6 +502,26 @@ class ResponseDecider:
             if (instant.template.counter_target_kind == 'instant_or_sorcery_spell'
                     and not (target_spell.is_instant or target_spell.is_sorcery)):
                 continue
+            # Symmetric EV of the 1a counter-tax framework: a "counter
+            # unless its controller pays {N}" candidate is DEAD when the
+            # payer can afford the tax — a rational opponent who already
+            # sank the spell's cost pays whenever able (the payer side is
+            # exactly `project_counter_tax_payment`), so the expected
+            # neutralization is ~0 and firing burns a card plus real mana.
+            # Capacity mirrors the payment path's own affordability terms
+            # (`tap_lands_for_mana`): untapped lands + floating mana +
+            # Tron bonus. The "cast it anyway as a mana tax" tempo line is
+            # deliberately unmodelled — refusing the dead counter strictly
+            # dominates the pre-fix behaviour of firing it.
+            # docs/diagnostics/2026-08-26_decider_loss_root_cause.md.
+            tax = getattr(instant.template, 'counter_tax_amount', 0)
+            if tax > 0:
+                payer = game.players[stack_item.controller]
+                payer_capacity = (payer.untapped_mana_capacity()
+                                  + payer.mana_pool.total()
+                                  + payer._tron_mana_bonus())
+                if payer_capacity >= tax:
+                    continue
             counter_candidates.append((cost, instant))
 
         if counter_candidates:
