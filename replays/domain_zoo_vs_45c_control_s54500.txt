@@ -1,0 +1,1818 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+  Sideboard (4/5c Control vs Domain Zoo): +2 Mystical Dispute, -2 Orim's Chant
+  Sideboard (4/5c Control vs Domain Zoo): +2 Mystical Dispute, -2 Orim's Chant
+======================================================================
+  GAME 1: Domain Zoo (P1) vs 4/5c Control (P2)  —  seed 54500
+  Series: Domain Zoo 0 - 0 4/5c Control
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Domain Zoo wins → chooses to play first
+║ P1 (on play): Domain Zoo
+║ P2 (on draw): 4/5c Control
+╚═══════════════════════════════════════════════════════
+
+P1 (Domain Zoo) opening hand (0 lands, 7 spells):
+  • Leyline Binding [Spell, CMC 6]
+  • Consign to Memory [Spell, CMC 1]
+  • Leyline of the Guildpact [Spell, CMC 4]
+  • Doorkeeper Thrull [Creature, CMC 2]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Doorkeeper Thrull [Creature, CMC 2]
+  • Wild Nacatl [Creature, CMC 1]
+→ P1 MULLIGANS (too few lands (0 < 1))
+  New hand (4 lands, 3 spells): ['Lush Portico', 'Leyline Binding', 'Wooded Foothills', 'Flooded Strand', 'Arid Mesa', 'Territorial Kavu', 'Scion of Draco']
+→ P1 MULLIGANS (too many lands (4 > 3); first-turn value 3 < 5)
+  New hand (3 lands, 4 spells): ['Wild Nacatl', 'Steam Vents', 'Lightning Bolt', 'Scion of Draco', 'Lightning Bolt', 'Flooded Strand', 'Arena of Glory']
+→ P1 mulligans to 5, bottoms: ['Wild Nacatl', 'Scion of Draco']
+  Keeps: ['Steam Vents', 'Lightning Bolt', 'Lightning Bolt', 'Flooded Strand', 'Arena of Glory']
+
+P2 (4/5c Control) opening hand (2 lands, 5 spells):
+  • Ephemerate [Spell, CMC 1]
+  • Galvanic Discharge [Spell, CMC 1]
+  • Prismatic Ending [Spell, CMC 1]
+  • Quantum Riddler [Creature, CMC 5]
+  • Temple Garden [Land, CMC 0]
+  • Windswept Heath [Land, CMC 0]
+  • Wrenn and Six [Spell, CMC 2]
+→ P2 KEEPS 7 — has key card(s): Prismatic Ending, Quantum Riddler, Wrenn and Six, 4 cheap spells
+
+
+╔══ TURN 1 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 20  |  4/5c Control 20
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 55  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Steam Vents (untapped, life: 20)
+    → Goal: curve_out
+    [Target] → face (3 dmg, life 20 → 17): face value 0.45
+    [Mana] Tap Steam Vents→R (paying for Lightning Bolt, 1 mana remaining)
+T1 P1: Cast Lightning Bolt (R)
+    [Priority] P2 passes (no response)
+T1: Resolve Lightning Bolt
+T1 P1: Lightning Bolt → 3 damage → life 17
+T1: Lightning Bolt moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 17  |  Domain Zoo 20
+║ Hand: 7 cards  |  Opp hand: 3 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ephemerate
+  [Main 1]
+T1 P2: Play Windswept Heath
+T1: Windswept Heath moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Windswept Heath (pay 1 life) -> Sacred Foundry (tapped, life: 16)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 20  |  4/5c Control 16
+║ Hand: 3 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 55  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Plains
+  [Main 1]
+T2 P1: Play Flooded Strand
+T2: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T2 P1: Crack Flooded Strand (pay 1 life) -> Temple Garden (tapped, life: 19)
+    → Goal: curve_out
+    [Target] → face (3 dmg, life 16 → 13): face value 0.45
+    [Mana] Tap Steam Vents→R (paying for Lightning Bolt, 1 mana remaining)
+T2 P1: Cast Lightning Bolt (R)
+    [Priority] P2 passes (no response)
+T2: Resolve Lightning Bolt
+T2 P1: Lightning Bolt → 3 damage → life 13
+T2: Lightning Bolt moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 13  |  Domain Zoo 19
+║ Hand: 7 cards  |  Opp hand: 2 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents [T], Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Teferi, Time Raveler
+  [Main 1]
+T2 P2: Play Temple Garden (untapped, life: 13)
+    → Goal: grind_value
+    [Mana] Tap Sacred Foundry→R, Temple Garden→G (paying for Wrenn and Six, 2 mana remaining)
+T2 P2: Cast Wrenn and Six (RG)
+    [Priority] P1 passes (no response)
+T2: Resolve Wrenn and Six
+T2 P2: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 19  |  4/5c Control 13
+║ Hand: 2 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 53  |  Graveyard: 3
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Temple Garden
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Wrenn and Six
+║   Lands: Sacred Foundry [T], Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Territorial Kavu
+  [Main 1]
+T3 P1: Play Plains
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Steam Vents→R, Temple Garden→G (paying for Territorial Kavu, 3 mana remaining)
+T3 P1: Cast Territorial Kavu (RG)
+    [Priority] P2 passes (no response)
+T3: Resolve Territorial Kavu
+T3 P1: Territorial Kavu enters as 4/4 (domain=4)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 13  |  Domain Zoo 19
+║ Hand: 6 cards  |  Opp hand: 1 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Wrenn and Six
+║   Lands: Sacred Foundry, Temple Garden
+║ Domain Zoo board:
+║   Creatures: Territorial Kavu (4/4)
+║   Lands: Steam Vents [T], Temple Garden [T], Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Omnath, Locus of Creation
+  [Main 1]
+    → Goal: grind_value
+    [Mana] Tap Sacred Foundry→W (paying for Prismatic Ending, 2 mana remaining)
+T3 P2: Cast Prismatic Ending (1W) (X=1)
+    [Priority] P1 passes (no response)
+T3: Resolve Prismatic Ending
+T3: Territorial Kavu moved battlefield -> exile (exiled)
+T3 P2: Prismatic Ending exiles Territorial Kavu
+T3: Prismatic Ending moved stack -> graveyard (resolution)
+T3 P2: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 19  |  4/5c Control 13
+║ Hand: 1 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 3
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Temple Garden, Plains
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Wrenn and Six
+║   Lands: Sacred Foundry [T], Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Leyline of the Guildpact
+  [Main 1]
+T4 P1: Play Arena of Glory (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 13  |  Domain Zoo 19
+║ Hand: 6 cards  |  Opp hand: 1 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 2
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Wrenn and Six
+║   Lands: Sacred Foundry, Temple Garden
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Temple Garden, Plains, Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Galvanic Discharge
+  [Main 1]
+T4 P2: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 19  |  4/5c Control 13
+║ Hand: 1 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 3
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Temple Garden, Plains, Arena of Glory
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Wrenn and Six
+║   Lands: Sacred Foundry, Temple Garden
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Steam Vents
+  [Main 1]
+T5 P1: Play Steam Vents (untapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 13  |  Domain Zoo 19
+║ Hand: 7 cards  |  Opp hand: 1 cards
+║ Lands: 2  |  Opp lands: 5
+║ Library: 48  |  Graveyard: 2
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Wrenn and Six
+║   Lands: Sacred Foundry, Temple Garden
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Temple Garden, Plains, Arena of Glory, Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Windswept Heath
+  [Main 1]
+T5 P2: Play Windswept Heath
+T5: Windswept Heath moved battlefield -> graveyard (fetchland sacrifice)
+T5 P2: Crack Windswept Heath (pay 1 life) -> Hallowed Fountain (tapped, life: 12)
+T5 P2: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 19  |  4/5c Control 12
+║ Hand: 1 cards  |  Opp hand: 7 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 3
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Temple Garden, Plains, Arena of Glory, Steam Vents
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Wrenn and Six
+║   Lands: Sacred Foundry, Temple Garden, Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Wooded Foothills
+  [Main 1]
+T6 P1: Play Wooded Foothills
+T6: Wooded Foothills moved battlefield -> graveyard (fetchland sacrifice)
+T6 P1: Crack Wooded Foothills (pay 1 life) -> Blood Crypt (tapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 12  |  Domain Zoo 18
+║ Hand: 7 cards  |  Opp hand: 1 cards
+║ Lands: 3  |  Opp lands: 6
+║ Library: 46  |  Graveyard: 3
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Wrenn and Six
+║   Lands: Sacred Foundry, Temple Garden, Hallowed Fountain
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Temple Garden, Plains, Arena of Glory, Steam Vents, Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Omnath, Locus of Creation
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Sacred Foundry→W, Temple Garden→G, Hallowed Fountain→U (paying for Teferi, Time Raveler, 3 mana remaining)
+T6 P2: Cast Teferi, Time Raveler (1WU)
+    [Priority] P1 passes (no response)
+T6: Resolve Teferi, Time Raveler
+T6 P2: Teferi draws Misty Rainforest
+T6 P2: Play Misty Rainforest
+T6: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T6 P2: Crack Misty Rainforest (pay 1 life) -> Steam Vents (tapped, life: 11)
+T6 P2: Wrenn and Six [-7] -> You get an emblem with "Instant and sorcery cards in your graveyard have retrace." (You may cast instant and sorcery cards from your graveyard by discarding a land card in addition to paying their other costs.)
+T6: Wrenn and Six moved battlefield -> graveyard (SBA 704.5p: zero loyalty)
+T6 P2: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 18  |  4/5c Control 11
+║ Hand: 1 cards  |  Opp hand: 7 cards
+║ Lands: 6  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 4
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Temple Garden, Plains, Arena of Glory, Steam Vents, Blood Crypt
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Sacred Foundry [T], Temple Garden [T], Hallowed Fountain [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Stubborn Denial
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 11  |  Domain Zoo 18
+║ Hand: 7 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 43  |  Graveyard: 5
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Sacred Foundry, Temple Garden, Hallowed Fountain, Steam Vents
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Temple Garden, Plains, Arena of Glory, Steam Vents, Blood Crypt
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Eternal Witness
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Sacred Foundry→W, Temple Garden→G, Hallowed Fountain→U, Steam Vents→R (paying for Omnath, Locus of Creation, 4 mana remaining)
+T7 P2: Cast Omnath, Locus of Creation (WURG)
+T7: Resolve Omnath, Locus of Creation
+T7 P2: Omnath, Locus of Creation ETB: draw 1 (Solitude)
+T7 P2: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T7: Galvanic Discharge moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 8 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 18  |  4/5c Control 11
+║ Hand: 2 cards  |  Opp hand: 7 cards
+║ Lands: 6  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 4
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Temple Garden, Plains, Arena of Glory, Steam Vents, Blood Crypt
+║ 4/5c Control board:
+║   Creatures: Omnath, Locus of Creation (4/4)
+║   Other: Teferi, Time Raveler
+║   Lands: Sacred Foundry [T], Temple Garden [T], Hallowed Fountain [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 11  |  Domain Zoo 18
+║ Hand: 7 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 41  |  Graveyard: 6
+║ 4/5c Control board:
+║   Creatures: Omnath, Locus of Creation (4/4)
+║   Other: Teferi, Time Raveler
+║   Lands: Sacred Foundry, Temple Garden, Hallowed Fountain, Steam Vents
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Temple Garden, Plains, Arena of Glory, Steam Vents, Blood Crypt
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Hedge Maze
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Sacred Foundry→W (paying for Ephemerate, 4 mana remaining)
+T8 P2: Cast Ephemerate (W)
+T8: Resolve Ephemerate
+T8 P2: Omnath, Locus of Creation ETB: draw 1 (Misty Rainforest)
+T8: Blink Omnath, Locus of Creation
+T8: Ephemerate moved stack -> exile (rebound (CR 702.86))
+T8 P2: Play Misty Rainforest
+T8: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T8 P2: Crack Misty Rainforest (pay 1 life) -> Breeding Pool (tapped, life: 10)
+T8 P2: Omnath, Locus of Creation 2nd landfall: add mana
+    → Goal: close_game
+    [Mana] Tap Temple Garden→W (paying for Solitude, 7 mana remaining)
+T8 P2: Cast Solitude (3WW)
+T8: Resolve Solitude
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→W (paying for Ephemerate, 2 mana remaining)
+T8 P2: Cast Ephemerate (W)
+T8: Resolve Ephemerate
+T8 P2: Omnath, Locus of Creation ETB: draw 1 (Wrenn and Six)
+T8: Blink Omnath, Locus of Creation
+T8: Ephemerate moved stack -> exile (rebound (CR 702.86))
+T8 P2: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 18  |  4/5c Control 10
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 6  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 4
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Temple Garden, Plains, Arena of Glory, Steam Vents, Blood Crypt
+║ 4/5c Control board:
+║   Creatures: Solitude (3/2), Omnath, Locus of Creation (4/4)
+║   Other: Teferi, Time Raveler
+║   Lands: Sacred Foundry [T], Temple Garden [T], Hallowed Fountain [T], Steam Vents, Breeding Pool [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Lightning Bolt
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Plains→W, Arena of Glory→R (paying for Ragavan, Nimble Pilferer, 6 mana remaining)
+T9 P1: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P2 passes (no response)
+T9: Resolve Ragavan, Nimble Pilferer
+    → Goal: curve_out
+    [Target] → face (3 dmg, life 10 → 7): face value 7.50
+    [Mana] Tap Steam Vents→R (paying for Lightning Bolt, 4 mana remaining)
+T9 P1: Cast Lightning Bolt (R)
+    [Priority] P2 responds with Galvanic Discharge
+    [Mana] Tap Steam Vents→R (paying for Galvanic Discharge, 1 mana remaining)
+T9 P2: Cast Galvanic Discharge (R)
+T9: Resolve Galvanic Discharge
+T9: Ragavan, Nimble Pilferer dies
+T9 P2: Galvanic Discharge deals 1 to Ragavan, Nimble Pilferer (base 0 + 1 energy)
+T9: Galvanic Discharge moved stack -> graveyard (resolution)
+T9: Resolve Lightning Bolt
+T9 P1: Lightning Bolt → 3 damage → life 7
+T9: Lightning Bolt moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 7  |  Domain Zoo 18
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 37  |  Graveyard: 8
+║ 4/5c Control board:
+║   Creatures: Solitude (3/2), Omnath, Locus of Creation (4/4)
+║   Other: Teferi, Time Raveler
+║   Lands: Sacred Foundry, Temple Garden, Hallowed Fountain, Steam Vents, Breeding Pool
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents [T], Temple Garden, Plains [T], Arena of Glory [T], Steam Vents, Blood Crypt
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T9 P2: Cast Ephemerate (W)
+T9 P2: Rebound Ephemerate
+T9 P2: Cast Ephemerate (W)
+T9 P2: Rebound Ephemerate
+T9: Resolve Ephemerate
+T9 P2: Omnath, Locus of Creation ETB: draw 1 (Solitude)
+T9: Blink Omnath, Locus of Creation
+T9: Ephemerate moved stack -> exile (rebound (CR 702.86))
+T9: Resolve Ephemerate
+T9 P2: Omnath, Locus of Creation ETB: draw 1 (Flooded Strand)
+T9: Blink Omnath, Locus of Creation
+T9: Ephemerate moved stack -> exile (rebound (CR 702.86))
+  [Draw] P2 draws: Quantum Riddler
+  [Main 1]
+T9 P2: Play Flooded Strand
+T9: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T9 P2: Crack Flooded Strand -> Island (untapped)
+T9 P2: Omnath, Locus of Creation 2nd landfall: add mana
+    → Goal: close_game
+    [Mana] Tap Island→U (paying for Quantum Riddler, 10 mana remaining)
+T9 P2: Cast Quantum Riddler (3UU)
+T9: Resolve Quantum Riddler
+T9 P2: Quantum Riddler ETB: draw 1 (Wrath of the Skies)
+    → Goal: close_game
+    [Mana] Tap Sacred Foundry→R, Temple Garden→G, Hallowed Fountain→U, Steam Vents→U, Breeding Pool→G (paying for Quantum Riddler, 5 mana remaining)
+T9 P2: Cast Quantum Riddler (3UU)
+T9: Resolve Quantum Riddler
+T9 P2: Quantum Riddler ETB: draw 1 (Lush Portico)
+T9 P2: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Solitude
+T9 P2: Attack with Solitude
+  [Declare Blockers] P1 does not block
+T9 P2:   Solitude (3/2) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 18 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 15  |  4/5c Control 9
+║ Hand: 2 cards  |  Opp hand: 7 cards
+║ Lands: 6  |  Opp lands: 6
+║ Library: 45  |  Graveyard: 6
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Temple Garden, Plains, Arena of Glory, Steam Vents, Blood Crypt
+║ 4/5c Control board:
+║   Creatures: Solitude (3/2) [tapped], Omnath, Locus of Creation (4/4), Quantum Riddler (4/6), Quantum Riddler (4/6)
+║   Other: Teferi, Time Raveler
+║   Lands: Sacred Foundry [T], Temple Garden [T], Hallowed Fountain [T], Steam Vents [T], Breeding Pool [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arid Mesa
+  [Main 1]
+T10 P1: Play Arid Mesa
+T10: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T10 P1: Crack Arid Mesa -> Mountain (untapped)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Plains→W, Arena of Glory→R, Mountain→R, Steam Vents→R (paying for Leyline of the Guildpact, 7 mana remaining)
+T10 P1: Cast Leyline of the Guildpact (4)
+    [Priority] P2 passes (no response)
+T10: Resolve Leyline of the Guildpact
+T10 P1: Leyline of the Guildpact: all lands are every basic type (domain=5)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 9  |  Domain Zoo 14
+║ Hand: 7 cards  |  Opp hand: 1 cards
+║ Lands: 6  |  Opp lands: 7
+║ Library: 31  |  Graveyard: 9
+║ 4/5c Control board:
+║   Creatures: Solitude (3/2), Omnath, Locus of Creation (4/4), Quantum Riddler (4/6), Quantum Riddler (4/6)
+║   Other: Teferi, Time Raveler
+║   Lands: Sacred Foundry, Temple Garden, Hallowed Fountain, Steam Vents, Breeding Pool, Island
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: Steam Vents [T], Temple Garden, Plains [T], Arena of Glory [T], Steam Vents, Blood Crypt, Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T10 P2: Cast Ephemerate (W)
+T10 P2: Rebound Ephemerate
+T10 P2: Cast Ephemerate (W)
+T10 P2: Rebound Ephemerate
+T10: Resolve Ephemerate
+T10 P2: Quantum Riddler ETB: draw 1 (Quantum Riddler)
+T10: Blink Quantum Riddler
+T10: Ephemerate moved stack -> exile (rebound (CR 702.86))
+T10: Resolve Ephemerate
+T10 P2: Quantum Riddler ETB: draw 1 (Solitude)
+T10: Blink Quantum Riddler
+T10: Ephemerate moved stack -> exile (rebound (CR 702.86))
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+T10 P2: Play Flooded Strand
+T10: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T10 P2: Crack Flooded Strand -> Plains (untapped)
+T10 P2: Omnath, Locus of Creation 2nd landfall: add mana
+    → Goal: close_game
+    [Mana] Tap Island→U (paying for Quantum Riddler, 11 mana remaining)
+T10 P2: Cast Quantum Riddler (3UU)
+T10: Resolve Quantum Riddler
+T10 P2: Quantum Riddler ETB: draw 1 (Arena of Glory)
+    → Goal: close_game
+    [Mana] Tap Plains→W, Temple Garden→G, Breeding Pool→G (paying for Eternal Witness, 6 mana remaining)
+T10 P2: Cast Eternal Witness (1GG)
+T10: Resolve Eternal Witness
+T10 P2: Eternal Witness returns Wrenn and Six from graveyard to hand
+T10 P2: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Solitude, Omnath, Locus of Creation
+T10 P2: Attack with Solitude, Omnath, Locus of Creation
+  [Declare Blockers] P1 does not block
+T10 P2:   Solitude (3/2) → 3 dmg to player
+T10 P2:   Omnath, Locus of Creation (4/4) → 4 dmg to player
+  [Combat Damage] 7 damage dealt → P1 life: 14 → 7
+  [End Combat]
+  [Main 2]
+  [End Step]
+T10: Wrenn and Six moved hand -> graveyard (discard to hand size)
+T10: Wrenn and Six moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 11 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 7  |  4/5c Control 11
+║ Hand: 1 cards  |  Opp hand: 7 cards
+║ Lands: 7  |  Opp lands: 7
+║ Library: 43  |  Graveyard: 7
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: Steam Vents, Temple Garden, Plains, Arena of Glory, Steam Vents, Blood Crypt, Mountain
+║ 4/5c Control board:
+║   Creatures: Solitude (3/2) [tapped], Omnath, Locus of Creation (4/4) [tapped], Quantum Riddler (4/6), Quantum Riddler (4/6), Quantum Riddler (4/6), Eternal Witness (2/1)
+║   Other: Teferi, Time Raveler
+║   Lands: Sacred Foundry, Temple Garden [T], Hallowed Fountain, Steam Vents, Breeding Pool [T], Island [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Territorial Kavu
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Steam Vents→G, Arena of Glory→R (paying for Territorial Kavu, 7 mana remaining)
+T11 P1: Cast Territorial Kavu (RG)
+    [Priority] P2 passes (no response)
+T11: Resolve Territorial Kavu
+T11 P1: Territorial Kavu enters as 5/5 (domain=5)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 11  |  Domain Zoo 7
+║ Hand: 7 cards  |  Opp hand: 1 cards
+║ Lands: 7  |  Opp lands: 7
+║ Library: 26  |  Graveyard: 11
+║ 4/5c Control board:
+║   Creatures: Solitude (3/2), Omnath, Locus of Creation (4/4), Quantum Riddler (4/6), Quantum Riddler (4/6), Quantum Riddler (4/6), Eternal Witness (2/1)
+║   Other: Teferi, Time Raveler
+║   Lands: Sacred Foundry, Temple Garden, Hallowed Fountain, Steam Vents, Breeding Pool, Island, Plains
+║ Domain Zoo board:
+║   Creatures: Territorial Kavu (5/5)
+║   Other: Leyline of the Guildpact
+║   Lands: Steam Vents [T], Temple Garden, Plains, Arena of Glory [T], Steam Vents, Blood Crypt, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T11 P2: Cast Ephemerate (W)
+T11 P2: Rebound Ephemerate
+T11 P2: Cast Ephemerate (W)
+T11 P2: Rebound Ephemerate
+T11: Resolve Ephemerate
+T11 P2: Quantum Riddler ETB: draw 1 (Solitude)
+T11: Blink Quantum Riddler
+T11: Ephemerate moved stack -> exile (rebound (CR 702.86))
+T11: Resolve Ephemerate
+T11 P2: Quantum Riddler ETB: draw 1 (Wrath of the Skies)
+T11: Blink Quantum Riddler
+T11: Ephemerate moved stack -> exile (rebound (CR 702.86))
+  [Draw] P2 draws: Wrath of the Skies
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Island→U, Plains→W, Sacred Foundry→W, Temple Garden→G, Hallowed Fountain→U (paying for Solitude, 7 mana remaining)
+T11 P2: Cast Solitude (3WW)
+T11: Resolve Solitude
+T11: Territorial Kavu moved battlefield -> exile (exiled)
+T11 P2: Solitude exiles Territorial Kavu (opponent gains 5 life, now 12)
+T11 P2: surveil 1 → Flooded Strand to GY
+T11 P2: Play Hedge Maze (enters tapped)
+    → Goal: close_game
+    [Mana] Tap Steam Vents→R, Breeding Pool→G (paying for Wrenn and Six, 2 mana remaining)
+T11 P2: Cast Wrenn and Six (RG)
+T11: Resolve Wrenn and Six
+T11 P2: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
+T11 P2: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Solitude, Omnath, Locus of Creation, Quantum Riddler, Eternal Witness
+T11 P2: Attack with Solitude, Omnath, Locus of Creation, Quantum Riddler, Eternal Witness
+  [Declare Blockers] P1 does not block
+T11 P2:   Solitude (3/2) → 3 dmg to player
+T11 P2:   Omnath, Locus of Creation (4/4) → 4 dmg to player
+T11 P2:   Quantum Riddler (4/6) → 4 dmg to player
+T11 P2:   Eternal Witness (2/1) → 2 dmg to player
+P1 loses: life total -1
+  [Combat Damage] 13 damage dealt → P1 life: 12 → -1
+
+>>> 4/5c Control wins Game 1 on turn 11 via damage
+    Final life: Domain Zoo=-1  4/5c Control=14
+
+======================================================================
+  GAME 2: Domain Zoo (P1) vs 4/5c Control (P2)  —  seed 54501
+  Series: Domain Zoo 0 - 1 4/5c Control
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: 4/5c Control wins → chooses to play first
+║ P1 (on play): 4/5c Control
+║ P2 (on draw): Domain Zoo
+╚═══════════════════════════════════════════════════════
+
+P1 (Domain Zoo) opening hand (2 lands, 5 spells):
+  • Leyline Binding [Spell, CMC 6]
+  • Territorial Kavu [Creature, CMC 2]
+  • Wild Nacatl [Creature, CMC 1]
+  • Scion of Draco [Creature, CMC 12]
+  • Wooded Foothills [Land, CMC 0]
+  • Leyline of the Guildpact [Spell, CMC 4]
+  • Mountain [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Leyline Binding, Territorial Kavu, 2 cheap spells
+
+P2 (4/5c Control) opening hand (6 lands, 1 spells):
+  • Arena of Glory [Land, CMC 0]
+  • Hedge Maze [Land, CMC 0]
+  • Sacred Foundry [Land, CMC 0]
+  • Flooded Strand [Land, CMC 0]
+  • Steam Vents [Land, CMC 0]
+  • Flooded Strand [Land, CMC 0]
+  • Teferi, Time Raveler [Spell, CMC 3]
+→ P2 MULLIGANS (6 lands (≥ 6))
+  New hand (5 lands, 2 spells): ['Windswept Heath', 'Flooded Strand', 'Prismatic Ending', 'Lush Portico', 'Hallowed Fountain', 'Solitude', 'Sacred Foundry']
+→ P2 MULLIGANS (too many lands (5 > 4); first-turn value 2 < 5)
+  New hand (3 lands, 4 spells): ['Solitude', 'Stock Up', 'Wrenn and Six', 'Quantum Riddler', 'Misty Rainforest', 'Flooded Strand', 'Stomping Ground']
+→ P2 mulligans to 5, bottoms: ['Stock Up', 'Misty Rainforest']
+  Keeps: ['Solitude', 'Wrenn and Six', 'Quantum Riddler', 'Flooded Strand', 'Stomping Ground']
+
+T0 P1: Leyline of the Guildpact begins the game on the battlefield (leyline)
+
+╔══ TURN 1 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 20  |  Domain Zoo 20
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 55  |  Graveyard: 0
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Flooded Strand
+T1: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Flooded Strand (pay 1 life) -> Hallowed Fountain (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 20  |  4/5c Control 19
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: (none)
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+  [Main 1]
+T1 P1: Play Wooded Foothills
+T1: Wooded Foothills moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Wooded Foothills (pay 1 life) -> Temple Garden (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 19  |  Domain Zoo 19
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 1
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Teferi, Time Raveler
+  [Main 1]
+T2 P2: Play Stomping Ground (untapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 19  |  4/5c Control 19
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: Temple Garden
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Stomping Ground
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Lightning Bolt
+  [Main 1]
+T2 P1: Play Mountain
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Temple Garden→W, Mountain→W (paying for Scion of Draco, 2 mana remaining)
+T2 P1: Cast Scion of Draco (12)
+    [Priority] P2 passes (no response)
+T2: Resolve Scion of Draco
+T2 P1: Scion of Draco enters — creatures gain vigilance/hexproof/lifelink/first strike/trample if white/blue/black/red/green
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 19  |  Domain Zoo 19
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 53  |  Graveyard: 1
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Stomping Ground
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4)
+║   Other: Leyline of the Guildpact
+║   Lands: Temple Garden [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+T3 P2: Play Flooded Strand
+T3: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T3 P2: Crack Flooded Strand (pay 1 life) -> Sacred Foundry (untapped, life: 16)
+    → Goal: grind_value
+    [Mana] Tap Stomping Ground→G, Sacred Foundry→R (paying for Wrenn and Six, 3 mana remaining)
+T3 P2: Cast Wrenn and Six (RG)
+    [Priority] P1 passes (no response)
+T3: Resolve Wrenn and Six
+    → Goal: grind_value [interaction]
+T3 P2: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+    → Goal: grind_value [interaction]
+  [End Step]
+
+╔══ TURN 3 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 19  |  4/5c Control 16
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4)
+║   Other: Leyline of the Guildpact
+║   Lands: Temple Garden, Mountain
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Wrenn and Six
+║   Lands: Hallowed Fountain, Stomping Ground [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Lightning Bolt
+  [Main 1]
+    → Goal: curve_out
+    [Target] → face (3 dmg, life 16 → 13): face value 4.50
+    [Mana] Tap Temple Garden→R (paying for Lightning Bolt, 2 mana remaining)
+T3 P1: Cast Lightning Bolt (R)
+    [Priority] P2 responds with Solitude
+T3: Resolve Lightning Bolt
+T3 P1: Lightning Bolt → 3 damage → life 13
+T3: Lightning Bolt moved stack -> graveyard (resolution)
+    → Goal: curve_out
+    [Target] → face (3 dmg, life 13 → 10): face value 4.50
+    [Mana] Tap Mountain→R (paying for Lightning Bolt, 1 mana remaining)
+T3 P1: Cast Lightning Bolt (R)
+    [Priority] P2 responds with Solitude
+T3: Resolve Lightning Bolt
+T3 P1: Lightning Bolt → 3 damage → life 10
+T3: Lightning Bolt moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Scion of Draco
+T3 P1: Attack with Scion of Draco
+  [Declare Blockers] P2 does not block
+T3 P1:   Scion of Draco (4/4) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 10 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 6  |  Domain Zoo 19
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 2
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Wrenn and Six
+║   Lands: Hallowed Fountain, Stomping Ground, Sacred Foundry
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4) [tapped]
+║   Other: Leyline of the Guildpact
+║   Lands: Temple Garden [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wrenn and Six
+  [Main 1]
+    → Goal: close_game
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→U, Stomping Ground→G, Sacred Foundry→W (paying for Teferi, Time Raveler, 3 mana remaining)
+T4 P2: Cast Teferi, Time Raveler (1WU)
+    [Priority] P1 passes (no response)
+T4: Resolve Teferi, Time Raveler
+T4 P2: Teferi bounces Scion of Draco
+T4 P2: Teferi draws Quantum Riddler
+T4 P2: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+T4 P2: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 19  |  4/5c Control 6
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 3
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: Temple Garden, Mountain
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Wrenn and Six, Teferi, Time Raveler
+║   Lands: Hallowed Fountain [T], Stomping Ground [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arid Mesa
+  [Main 1]
+T4 P1: Play Arid Mesa
+T4: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T4 P1: Crack Arid Mesa (pay 1 life) -> Blood Crypt (tapped, life: 18)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Temple Garden→W, Mountain→W (paying for Scion of Draco, 2 mana remaining)
+T4 P1: Cast Scion of Draco (12)
+    [Priority] P2 passes (no response)
+T4: Resolve Scion of Draco
+T4 P1: Scion of Draco enters — creatures gain vigilance/hexproof/lifelink/first strike/trample if white/blue/black/red/green
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 6  |  Domain Zoo 18
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Wrenn and Six, Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Stomping Ground, Sacred Foundry
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4) [tapped]
+║   Other: Leyline of the Guildpact
+║   Lands: Temple Garden [T], Mountain [T], Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Galvanic Discharge
+  [Main 1]
+T5 P2: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+T5 P2: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 18  |  4/5c Control 6
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 4
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4)
+║   Other: Leyline of the Guildpact
+║   Lands: Temple Garden, Mountain, Blood Crypt
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Wrenn and Six, Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Stomping Ground, Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arid Mesa
+  [Main 1]
+T5 P1: Play Arid Mesa
+T5: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T5 P1: Crack Arid Mesa (pay 1 life) -> Steam Vents (tapped, life: 17)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Temple Garden→R, Mountain→G (paying for Territorial Kavu, 3 mana remaining)
+T5 P1: Cast Territorial Kavu (RG)
+    [Priority] P2 passes (no response)
+T5: Resolve Territorial Kavu
+T5 P1: Territorial Kavu enters as 5/5 (domain=5)
+    → Goal: curve_out
+    [Mana] Tap Blood Crypt→G (paying for Wild Nacatl, 1 mana remaining)
+T5 P1: Cast Wild Nacatl (G)
+    [Priority] P2 passes (no response)
+T5: Resolve Wild Nacatl
+  [Begin Combat]
+    [Mana] Tap Stomping Ground→R (paying for Galvanic Discharge, 3 mana remaining)
+T5 P2: Cast Galvanic Discharge (R)
+T5: Resolve Galvanic Discharge
+T5: Wild Nacatl dies
+T5 P2: Galvanic Discharge deals 3 to Wild Nacatl (base 0 + 3 energy)
+T5: Galvanic Discharge moved stack -> graveyard (resolution)
+  [Declare Attackers] P1 attacks with: Scion of Draco
+T5 P1: Attack with Scion of Draco
+  [Declare Blockers] P2 does not block
+T5 P1:   Scion of Draco (4/4) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 6 → 2
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 2  |  Domain Zoo 17
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 3
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Wrenn and Six, Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Stomping Ground, Sacred Foundry
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4) [tapped], Territorial Kavu (5/5)
+║   Other: Leyline of the Guildpact
+║   Lands: Temple Garden [T], Mountain [T], Blood Crypt [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ephemerate
+  [Main 1]
+    → Goal: close_game
+    [Target] → Wild Nacatl: marginal threat 0.17 (3/3 body) — better than 3 face dmg
+T6 P2: Evoke Solitude (exile Ephemerate)
+T6 P2: Cast Solitude (3WW)
+T6: Resolve Solitude
+T6: Scion of Draco moved battlefield -> exile (exiled)
+T6 P2: Solitude exiles Scion of Draco (opponent gains 4 life, now 21)
+T6: Solitude moved battlefield -> graveyard (evoke sacrifice)
+T6 P2: Solitude sacrificed (evoke)
+T6 P2: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+T6 P2: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 21  |  4/5c Control 2
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 45  |  Graveyard: 6
+║ Domain Zoo board:
+║   Creatures: Territorial Kavu (5/5)
+║   Other: Leyline of the Guildpact
+║   Lands: Temple Garden, Mountain, Blood Crypt, Steam Vents
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Wrenn and Six, Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Stomping Ground, Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Lightning Bolt
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Temple Garden→R (paying for Lightning Bolt, 4 mana remaining)
+T6 P1: Cast Lightning Bolt (R)
+    [Priority] P2 passes (no response)
+T6: Resolve Lightning Bolt
+T6 P1: Lightning Bolt → 3 damage → life -1
+T6: Lightning Bolt moved stack -> graveyard (resolution)
+P2 loses: life total -1
+
+>>> Domain Zoo wins Game 2 on turn 6 via damage
+    Final life: Domain Zoo=21  4/5c Control=-1
+
+======================================================================
+  GAME 3: 4/5c Control (P1) vs Domain Zoo (P2)  —  seed 54502
+  Series: Domain Zoo 1 - 1 4/5c Control
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: 4/5c Control wins → chooses to play first
+║ P1 (on play): 4/5c Control
+║ P2 (on draw): Domain Zoo
+╚═══════════════════════════════════════════════════════
+
+P1 (4/5c Control) opening hand (4 lands, 3 spells):
+  • Omnath, Locus of Creation [Creature, CMC 4]
+  • Windswept Heath [Land, CMC 0]
+  • Wrath of the Skies [Spell, CMC 2]
+  • Stomping Ground [Land, CMC 0]
+  • Quantum Riddler [Creature, CMC 5]
+  • Misty Rainforest [Land, CMC 0]
+  • Flooded Strand [Land, CMC 0]
+→ P1 KEEPS 7 — 4 lands, 3 spells, score 28.0
+
+P2 (Domain Zoo) opening hand (1 lands, 6 spells):
+  • Leyline Binding [Spell, CMC 6]
+  • Wooded Foothills [Land, CMC 0]
+  • Doorkeeper Thrull [Creature, CMC 2]
+  • Scion of Draco [Creature, CMC 12]
+  • Leyline of the Guildpact [Spell, CMC 4]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Fable of the Mirror-Breaker // Reflection of Kiki-Jiki [Spell, CMC 3]
+→ P2 KEEPS 7 — has key card(s): Doorkeeper Thrull, Leyline Binding, Ragavan, Nimble Pilferer, 3 cheap spells
+
+T0 P2: Leyline of the Guildpact begins the game on the battlefield (leyline)
+
+╔══ TURN 1 — 4/5c Control (P1) ══════════════════════════
+║ Life: 4/5c Control 20  |  Domain Zoo 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Flooded Strand
+T1: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Flooded Strand (pay 1 life) -> Hallowed Fountain (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 20  |  4/5c Control 19
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: (none)
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arena of Glory
+  [Main 1]
+T1 P2: Play Wooded Foothills
+T1: Wooded Foothills moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Wooded Foothills (pay 1 life) -> Blood Crypt (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — 4/5c Control (P1) ══════════════════════════
+║ Life: 4/5c Control 19  |  Domain Zoo 19
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Stock Up
+  [Main 1]
+T2 P1: Play Stomping Ground (untapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 19  |  4/5c Control 19
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: Blood Crypt
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Stomping Ground
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Leyline Binding
+  [Main 1]
+T2 P2: Play Arena of Glory (enters tapped)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Blood Crypt→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T2 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T2: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — 4/5c Control (P1) ══════════════════════════
+║ Life: 4/5c Control 19  |  Domain Zoo 19
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Stomping Ground
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Other: Leyline of the Guildpact
+║   Lands: Blood Crypt [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Orim's Chant
+  [Main 1]
+T3 P1: Play Windswept Heath
+T3: Windswept Heath moved battlefield -> graveyard (fetchland sacrifice)
+T3 P1: Crack Windswept Heath (pay 1 life) -> Breeding Pool (untapped, life: 16)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 19  |  4/5c Control 16
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Other: Leyline of the Guildpact
+║   Lands: Blood Crypt, Arena of Glory
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Stomping Ground, Breeding Pool
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Plains
+  [Main 1]
+T3 P2: Play Plains
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Blood Crypt→W, Arena of Glory→R (paying for Scion of Draco, 3 mana remaining)
+T3 P2: Cast Scion of Draco (12)
+    [Priority] P1 passes (no response)
+T3: Resolve Scion of Draco
+T3 P2: Scion of Draco enters — creatures gain vigilance/hexproof/lifelink/first strike/trample if white/blue/black/red/green
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T3 P2: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T3 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T3 P2: Create 1x Treasure token(s)
+T3 P2: Ragavan, Nimble Pilferer exiles Prismatic Ending from top of P1's library
+T3 P2: Ragavan, Nimble Pilferer — may cast Prismatic Ending this turn
+  [Combat Damage] 2 damage dealt → P1 life: 16 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+T3: Prismatic Ending returned to exile (uncast)
+
+╔══ TURN 4 — 4/5c Control (P1) ══════════════════════════
+║ Life: 4/5c Control 14  |  Domain Zoo 19
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 2
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Stomping Ground, Breeding Pool
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Scion of Draco (4/4)
+║   Other: Leyline of the Guildpact, Treasure Token
+║   Lands: Blood Crypt [T], Arena of Glory [T], Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Stock Up
+  [Main 1]
+T4 P1: Play Misty Rainforest
+T4: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T4 P1: Crack Misty Rainforest (pay 1 life) -> Temple Garden (untapped, life: 11)
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→W, Temple Garden→W (paying for Wrath of the Skies, 4 mana remaining)
+T4 P1: Cast Wrath of the Skies (1WW) (X=1)
+    [Priority] P2 passes (no response)
+T4: Resolve Wrath of the Skies
+T4: Ragavan, Nimble Pilferer dies
+T4: Treasure Token moved battlefield -> graveyard (destroyed)
+T4 P1: Wrath of the Skies (X=1) sweeps the board, destroying 2 permanents
+T4: Wrath of the Skies moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 19  |  4/5c Control 11
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 2
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4)
+║   Other: Leyline of the Guildpact
+║   Lands: Blood Crypt, Arena of Glory, Plains
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T], Stomping Ground [T], Breeding Pool, Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Stubborn Denial
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Blood Crypt→W, Arena of Glory→R (paying for Doorkeeper Thrull, 3 mana remaining)
+T4 P2: Cast Doorkeeper Thrull (1W)
+    [Priority] P1 passes (no response)
+T4: Resolve Doorkeeper Thrull
+T4 P2: Doorkeeper Thrull: opponent ETB triggers suppressed
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Scion of Draco
+T4 P2: Attack with Scion of Draco
+  [Declare Blockers] P1 does not block
+T4 P2:   Scion of Draco (4/4) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 11 → 7
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — 4/5c Control (P1) ══════════════════════════
+║ Life: 4/5c Control 7  |  Domain Zoo 19
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 46  |  Graveyard: 4
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Stomping Ground, Breeding Pool, Temple Garden
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4) [tapped], Doorkeeper Thrull (1/2)
+║   Other: Leyline of the Guildpact
+║   Lands: Blood Crypt [T], Arena of Glory [T], Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Teferi, Time Raveler
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→W, Stomping Ground→G, Breeding Pool→U (paying for Teferi, Time Raveler, 4 mana remaining)
+T5 P1: Cast Teferi, Time Raveler (1WU)
+    [Priority] P2 passes (no response)
+T5: Resolve Teferi, Time Raveler
+T5 P1: Teferi bounces Scion of Draco
+T5 P1: Teferi draws Wrath of the Skies
+T5 P1: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 19  |  4/5c Control 7
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 2
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2)
+║   Other: Leyline of the Guildpact
+║   Lands: Blood Crypt, Arena of Glory, Plains
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain [T], Stomping Ground [T], Breeding Pool [T], Temple Garden
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Leyline of the Guildpact
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Blood Crypt→W, Arena of Glory→R (paying for Scion of Draco, 3 mana remaining)
+T5 P2: Cast Scion of Draco (12)
+    [Priority] P1 passes (no response)
+T5: Resolve Scion of Draco
+T5: Scion of Draco ETB suppressed by Doorkeeper Thrull
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Doorkeeper Thrull
+T5 P2: Attack with Doorkeeper Thrull
+  [Declare Blockers] P1 does not block
+T5 P2:   Doorkeeper Thrull (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 7 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — 4/5c Control (P1) ══════════════════════════
+║ Life: 4/5c Control 6  |  Domain Zoo 19
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 44  |  Graveyard: 4
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Stomping Ground, Breeding Pool, Temple Garden
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2) [tapped], Scion of Draco (4/4) [tapped]
+║   Other: Leyline of the Guildpact
+║   Lands: Blood Crypt [T], Arena of Glory [T], Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Solitude
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→W, Temple Garden→W (paying for Wrath of the Skies, 4 mana remaining)
+T6 P1: Cast Wrath of the Skies (2WW) (X=2)
+T6: Resolve Wrath of the Skies
+T6: Doorkeeper Thrull dies
+T6 P1: Wrath of the Skies (X=2) sweeps the board, destroying 1 permanents
+T6: Wrath of the Skies moved stack -> graveyard (resolution)
+    → Goal: close_game
+T6 P1: Evoke Solitude (exile Orim's Chant)
+T6 P1: Cast Solitude (3WW)
+T6: Resolve Solitude
+T6: Scion of Draco moved battlefield -> exile (exiled)
+T6 P1: Solitude exiles Scion of Draco (opponent gains 4 life, now 23)
+T6: Solitude moved battlefield -> graveyard (evoke sacrifice)
+T6 P1: Solitude sacrificed (evoke)
+T6 P1: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 23  |  4/5c Control 6
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 3
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: Blood Crypt, Arena of Glory, Plains
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain [T], Stomping Ground [T], Breeding Pool [T], Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+T6 P2: Play Arid Mesa
+T6: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T6 P2: Crack Arid Mesa (pay 1 life) -> Steam Vents (untapped, life: 20)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — 4/5c Control (P1) ══════════════════════════
+║ Life: 4/5c Control 6  |  Domain Zoo 20
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 43  |  Graveyard: 6
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Stomping Ground, Breeding Pool, Temple Garden
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: Blood Crypt, Arena of Glory, Plains, Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Misty Rainforest
+  [Main 1]
+T7 P1: Play Misty Rainforest
+T7: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T7 P1: Crack Misty Rainforest (pay 1 life) -> Steam Vents (tapped, life: 5)
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→W, Stomping Ground→R, Breeding Pool→U, Temple Garden→G (paying for Omnath, Locus of Creation, 4 mana remaining)
+T7 P1: Cast Omnath, Locus of Creation (WURG)
+T7: Resolve Omnath, Locus of Creation
+T7 P1: Omnath, Locus of Creation ETB: draw 1 (Mystical Dispute)
+T7 P1: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 20  |  4/5c Control 5
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 4
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: Blood Crypt, Arena of Glory, Plains, Steam Vents
+║ 4/5c Control board:
+║   Creatures: Omnath, Locus of Creation (4/4)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain [T], Stomping Ground [T], Breeding Pool [T], Temple Garden [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Doorkeeper Thrull
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Blood Crypt→W (paying for Leyline Binding, 4 mana remaining)
+T7 P2: Cast Leyline Binding (5W)
+    [Priority] P1 passes (no response)
+T7: Resolve Leyline Binding
+T7: Omnath, Locus of Creation moved battlefield -> exile (exiled)
+T7 P2: Leyline Binding exiles Omnath, Locus of Creation
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Arena of Glory→R, Plains→W (paying for Doorkeeper Thrull, 3 mana remaining)
+T7 P2: Cast Doorkeeper Thrull (1W)
+    [Priority] P1 passes (no response)
+T7: Resolve Doorkeeper Thrull
+T7 P2: Doorkeeper Thrull: opponent ETB triggers suppressed
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — 4/5c Control (P1) ══════════════════════════
+║ Life: 4/5c Control 5  |  Domain Zoo 20
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 40  |  Graveyard: 7
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Stomping Ground, Breeding Pool, Temple Garden, Steam Vents
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2)
+║   Other: Leyline of the Guildpact, Leyline Binding
+║   Lands: Blood Crypt [T], Arena of Glory [T], Plains [T], Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Sacred Foundry
+  [Main 1]
+T8 P1: Play Sacred Foundry (untapped, life: 3)
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→U, Stomping Ground→G, Breeding Pool→G (paying for Stock Up, 6 mana remaining)
+T8 P1: Cast Stock Up (2U)
+T8: Resolve Stock Up
+T8: Stock Up moved stack -> graveyard (resolution)
+T8 P1: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
+T8: Teferi, Time Raveler moved battlefield -> graveyard (SBA 704.5p: zero loyalty)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 20  |  4/5c Control 3
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 44  |  Graveyard: 4
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2)
+║   Other: Leyline of the Guildpact, Leyline Binding
+║   Lands: Blood Crypt, Arena of Glory, Plains, Steam Vents
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T], Stomping Ground [T], Breeding Pool [T], Temple Garden, Steam Vents, Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wild Nacatl
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Blood Crypt→G (paying for Wild Nacatl, 4 mana remaining)
+T8 P2: Cast Wild Nacatl (G)
+    [Priority] P1 responds with Mystical Dispute
+    [Mana] Tap Temple Garden→G, Steam Vents→U, Sacred Foundry→R (paying for Mystical Dispute, 3 mana remaining)
+T8 P1: Cast Mystical Dispute (2U)
+T8: Resolve Mystical Dispute
+T8: Wild Nacatl's controller pays 3 — not countered by Mystical Dispute
+T8: Mystical Dispute moved stack -> graveyard (resolution)
+T8: Resolve Wild Nacatl
+T8: Wild Nacatl ETB suppressed by Doorkeeper Thrull
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Doorkeeper Thrull
+T8 P2: Attack with Doorkeeper Thrull
+  [Declare Blockers] P1 does not block
+T8 P2:   Doorkeeper Thrull (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 3 → 2
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — 4/5c Control (P1) ══════════════════════════
+║ Life: 4/5c Control 2  |  Domain Zoo 20
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 6  |  Opp lands: 4
+║ Library: 37  |  Graveyard: 10
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Stomping Ground, Breeding Pool, Temple Garden, Steam Vents, Sacred Foundry
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2) [tapped], Wild Nacatl (3/3)
+║   Other: Leyline of the Guildpact, Leyline Binding
+║   Lands: Blood Crypt [T], Arena of Glory [T], Plains [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ephemerate
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→U, Stomping Ground→G, Breeding Pool→G (paying for Stock Up, 6 mana remaining)
+T9 P1: Cast Stock Up (2U)
+    [Priority] P2 passes (no response)
+T9: Resolve Stock Up
+T9: Stock Up moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 20  |  4/5c Control 2
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 43  |  Graveyard: 4
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2), Wild Nacatl (3/3)
+║   Other: Leyline of the Guildpact, Leyline Binding
+║   Lands: Blood Crypt, Arena of Glory, Plains, Steam Vents
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T], Stomping Ground [T], Breeding Pool [T], Temple Garden, Steam Vents, Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Arena of Glory→R (paying for Ragavan, Nimble Pilferer, 4 mana remaining)
+T9 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 responds with Mystical Dispute
+    [Mana] Tap Temple Garden→G, Steam Vents→U, Sacred Foundry→R (paying for Mystical Dispute, 3 mana remaining)
+T9 P1: Cast Mystical Dispute (2U)
+T9: Resolve Mystical Dispute
+T9: Ragavan, Nimble Pilferer moved stack -> graveyard (resolution)
+T9: Ragavan, Nimble Pilferer is countered
+T9: Mystical Dispute moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Doorkeeper Thrull, Wild Nacatl
+T9 P2: Attack with Doorkeeper Thrull, Wild Nacatl
+  [Declare Blockers] P1 does not block
+T9 P2:   Doorkeeper Thrull (1/2) → 1 dmg to player
+T9 P2:   Wild Nacatl (3/3) → 3 dmg to player
+P1 loses: life total -2
+  [Combat Damage] 4 damage dealt → P1 life: 2 → -2
+
+>>> Domain Zoo wins Game 3 on turn 9 via damage
+    Final life: 4/5c Control=-2  Domain Zoo=20
+
+======================================================================
+  MATCH RESULT: Domain Zoo wins 2-1
+======================================================================
