@@ -110,3 +110,22 @@ term, but at 2-4 life of impact it is not the decider.
 2. Replay seed 54500: the T8/T9 Disputes must not be cast (or the game must
    materially change).
 3. Zoo vs 4/5c and Zoo vs Azorius Control matchups, n=20 Bo3, before/after.
+
+## MEASUREMENT FOLLOW-UP (2026-08-26, post-fix, n=20 Bo3, pre-fix worktree vs fixed tree, same seeds)
+
+| Matchup | before | after | note |
+|---|---|---|---|
+| Zoo vs 4/5c Control | 95 / 5 | 100 / 0 | one match flipped the other way — within n=20 noise |
+| Zoo vs Azorius Control | 90 / 10 | 90 / 10 | identical breakdown and avg turns |
+| Pinnacle Affinity (Rebuke caster) vs Izzet Prowess | 35 / 65 | 40 / 60 | +5pp for the soft-counter holder — one match, directionally right, within noise |
+
+**Honest verdict: the tax fix is decision-level correct but WR-neutral in the
+Zoo-control matchups.** The post-fix replay of seed 54500 confirms both dead
+Disputes are no longer cast — and control then spends the same turns on draw
+spells while still holding its castable finisher, and dies on the same turn.
+The card-and-mana waste is gone; the loss is not, because the binding
+constraint is the SECONDARY root cause above: no answer→close transition.
+The fix stands on its own correctness (a whole mechanic class stops burning
+resources on provably-dead responses, with a mild positive signal on the
+biggest soft-counter caster) — but bringing Zoo's control matchups toward
+band requires the goal-transition work, which is the next diagnosis target.
