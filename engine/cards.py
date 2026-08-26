@@ -138,6 +138,18 @@ class ActivationCost:
     # cost does.
     life: int = 0
     sacrifice_self: bool = False
+    # Tranche 3 payable costs. `sacrifice_type` is the required permanent
+    # type of a single-victim sacrifice cost ("creature", "artifact",
+    # "enchantment", "land", or the wildcard "permanent"); None means no
+    # such cost item. `sacrifice_another` records the word "another" —
+    # the source is then excluded from the legal victims (plain
+    # "sacrifice a creature" permits the source itself). `discard_cards`
+    # is the number of cards the untyped, non-random discard cost pays.
+    # Both deplete a real resource (board, hand), so they satisfy the
+    # no-free-repeatable rule the way sacrifice_self/life do.
+    sacrifice_type: Optional[str] = None
+    sacrifice_another: bool = False
+    discard_cards: int = 0
     unpayable: Tuple[str, ...] = ()
 
 
