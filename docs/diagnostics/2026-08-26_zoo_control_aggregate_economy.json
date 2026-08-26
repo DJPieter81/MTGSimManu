@@ -1,0 +1,492 @@
+[
+ {
+  "winner_is_ctl": false,
+  "turns": 9,
+  "zoo_deploys": 5,
+  "ctl_answers": 1,
+  "ctl_deploys": 4,
+  "ctl_other": 1,
+  "ctl_first_attack": null,
+  "zoo_first_attack": 3
+ },
+ {
+  "winner_is_ctl": false,
+  "turns": 5,
+  "zoo_deploys": 4,
+  "ctl_answers": 0,
+  "ctl_deploys": 0,
+  "ctl_other": 1,
+  "ctl_first_attack": null,
+  "zoo_first_attack": 2
+ },
+ {
+  "winner_is_ctl": false,
+  "turns": 6,
+  "zoo_deploys": 5,
+  "ctl_answers": 1,
+  "ctl_deploys": 1,
+  "ctl_other": 3,
+  "ctl_first_attack": null,
+  "zoo_first_attack": 4
+ },
+ {
+  "winner_is_ctl": false,
+  "turns": 13,
+  "zoo_deploys": 7,
+  "ctl_answers": 3,
+  "ctl_deploys": 8,
+  "ctl_other": 3,
+  "ctl_first_attack": null,
+  "zoo_first_attack": 11
+ },
+ {
+  "winner_is_ctl": true,
+  "turns": 11,
+  "zoo_deploys": 1,
+  "ctl_answers": 8,
+  "ctl_deploys": 8,
+  "ctl_other": 0,
+  "ctl_first_attack": 8,
+  "zoo_first_attack": 11
+ },
+ {
+  "winner_is_ctl": false,
+  "turns": 7,
+  "zoo_deploys": 4,
+  "ctl_answers": 1,
+  "ctl_deploys": 3,
+  "ctl_other": 2,
+  "ctl_first_attack": null,
+  "zoo_first_attack": 4
+ },
+ {
+  "winner_is_ctl": true,
+  "turns": 10,
+  "zoo_deploys": 5,
+  "ctl_answers": 12,
+  "ctl_deploys": 9,
+  "ctl_other": 2,
+  "ctl_first_attack": 8,
+  "zoo_first_attack": 4
+ },
+ {
+  "winner_is_ctl": false,
+  "turns": 13,
+  "zoo_deploys": 7,
+  "ctl_answers": 1,
+  "ctl_deploys": 7,
+  "ctl_other": 5,
+  "ctl_first_attack": 10,
+  "zoo_first_attack": 3
+ },
+ {
+  "winner_is_ctl": false,
+  "turns": 13,
+  "zoo_deploys": 10,
+  "ctl_answers": 3,
+  "ctl_deploys": 11,
+  "ctl_other": 0,
+  "ctl_first_attack": 11,
+  "zoo_first_attack": 5
+ },
+ {
+  "winner_is_ctl": false,
+  "turns": 9,
+  "zoo_deploys": 1,
+  "ctl_answers": 1,
+  "ctl_deploys": 5,
+  "ctl_other": 2,
+  "ctl_first_attack": 6,
+  "zoo_first_attack": 3
+ },
+ {
+  "winner_is_ctl": false,
+  "turns": 13,
+  "zoo_deploys": 10,
+  "ctl_answers": 8,
+  "ctl_deploys": 7,
+  "ctl_other": 5,
+  "ctl_first_attack": 11,
+  "zoo_first_attack": 5
+ },
+ {
+  "winner_is_ctl": false,
+  "turns": 13,
+  "zoo_deploys": 4,
+  "ctl_answers": 2,
+  "ctl_deploys": 7,
+  "ctl_other": 1,
+  "ctl_first_attack": null,
+  "zoo_first_attack": 11
+ },
+ {
+  "winner_is_ctl": false,
+  "turns": 12,
+  "zoo_deploys": 8,
+  "ctl_answers": 3,
+  "ctl_deploys": 7,
+  "ctl_other": 2,
+  "ctl_first_attack": null,
+  "zoo_first_attack": 5
+ },
+ {
+  "winner_is_ctl": false,
+  "turns": 13,
+  "zoo_deploys": 3,
+  "ctl_answers": 4,
+  "ctl_deploys": 7,
+  "ctl_other": 1,
+  "ctl_first_attack": 6,
+  "zoo_first_attack": 4
+ },
+ {
+  "winner_is_ctl": false,
+  "turns": 10,
+  "zoo_deploys": 8,
+  "ctl_answers": 3,
+  "ctl_deploys": 5,
+  "ctl_other": 0,
+  "ctl_first_attack": null,
+  "zoo_first_attack": 3
+ },
+ {
+  "winner_is_ctl": false,
+  "turns": 8,
+  "zoo_deploys": 4,
+  "ctl_answers": 1,
+  "ctl_deploys": 0,
+  "ctl_other": 4,
+  "ctl_first_attack": null,
+  "zoo_first_attack": 6
+ },
+ {
+  "winner_is_ctl": false,
+  "turns": 9,
+  "zoo_deploys": 7,
+  "ctl_answers": 2,
+  "ctl_deploys": 3,
+  "ctl_other": 3,
+  "ctl_first_attack": null,
+  "zoo_first_attack": 3
+ },
+ {
+  "winner_is_ctl": true,
+  "turns": 8,
+  "zoo_deploys": 3,
+  "ctl_answers": 0,
+  "ctl_deploys": 6,
+  "ctl_other": 3,
+  "ctl_first_attack": 6,
+  "zoo_first_attack": 8
+ },
+ {
+  "winner_is_ctl": false,
+  "turns": 9,
+  "zoo_deploys": 6,
+  "ctl_answers": 2,
+  "ctl_deploys": 4,
+  "ctl_other": 0,
+  "ctl_first_attack": 8,
+  "zoo_first_attack": 5
+ },
+ {
+  "winner_is_ctl": false,
+  "turns": 7,
+  "zoo_deploys": 5,
+  "ctl_answers": 0,
+  "ctl_deploys": 5,
+  "ctl_other": 5,
+  "ctl_first_attack": null,
+  "zoo_first_attack": 5
+ },
+ {
+  "winner_is_ctl": false,
+  "turns": 5,
+  "zoo_deploys": 4,
+  "ctl_answers": 0,
+  "ctl_deploys": 3,
+  "ctl_other": 2,
+  "ctl_first_attack": null,
+  "zoo_first_attack": 3
+ },
+ {
+  "winner_is_ctl": true,
+  "turns": 11,
+  "zoo_deploys": 3,
+  "ctl_answers": 9,
+  "ctl_deploys": 10,
+  "ctl_other": 1,
+  "ctl_first_attack": 9,
+  "zoo_first_attack": null
+ },
+ {
+  "winner_is_ctl": false,
+  "turns": 6,
+  "zoo_deploys": 4,
+  "ctl_answers": 0,
+  "ctl_deploys": 4,
+  "ctl_other": 1,
+  "ctl_first_attack": null,
+  "zoo_first_attack": 3
+ },
+ {
+  "winner_is_ctl": false,
+  "turns": 9,
+  "zoo_deploys": 7,
+  "ctl_answers": 2,
+  "ctl_deploys": 4,
+  "ctl_other": 2,
+  "ctl_first_attack": null,
+  "zoo_first_attack": 3
+ },
+ {
+  "winner_is_ctl": false,
+  "turns": 7,
+  "zoo_deploys": 4,
+  "ctl_answers": 1,
+  "ctl_deploys": 2,
+  "ctl_other": 3,
+  "ctl_first_attack": null,
+  "zoo_first_attack": 2
+ },
+ {
+  "winner_is_ctl": true,
+  "turns": 10,
+  "zoo_deploys": 4,
+  "ctl_answers": 7,
+  "ctl_deploys": 7,
+  "ctl_other": 1,
+  "ctl_first_attack": 6,
+  "zoo_first_attack": 3
+ },
+ {
+  "winner_is_ctl": false,
+  "turns": 5,
+  "zoo_deploys": 3,
+  "ctl_answers": 1,
+  "ctl_deploys": 1,
+  "ctl_other": 0,
+  "ctl_first_attack": null,
+  "zoo_first_attack": 4
+ },
+ {
+  "winner_is_ctl": true,
+  "turns": 11,
+  "zoo_deploys": 8,
+  "ctl_answers": 3,
+  "ctl_deploys": 12,
+  "ctl_other": 2,
+  "ctl_first_attack": 6,
+  "zoo_first_attack": 3
+ },
+ {
+  "winner_is_ctl": false,
+  "turns": 5,
+  "zoo_deploys": 5,
+  "ctl_answers": 1,
+  "ctl_deploys": 3,
+  "ctl_other": 0,
+  "ctl_first_attack": null,
+  "zoo_first_attack": 3
+ },
+ {
+  "winner_is_ctl": false,
+  "turns": 8,
+  "zoo_deploys": 8,
+  "ctl_answers": 1,
+  "ctl_deploys": 6,
+  "ctl_other": 3,
+  "ctl_first_attack": null,
+  "zoo_first_attack": 6
+ },
+ {
+  "winner_is_ctl": true,
+  "turns": 11,
+  "zoo_deploys": 6,
+  "ctl_answers": 3,
+  "ctl_deploys": 8,
+  "ctl_other": 1,
+  "ctl_first_attack": 9,
+  "zoo_first_attack": 3
+ },
+ {
+  "winner_is_ctl": false,
+  "turns": 10,
+  "zoo_deploys": 4,
+  "ctl_answers": 0,
+  "ctl_deploys": 4,
+  "ctl_other": 1,
+  "ctl_first_attack": null,
+  "zoo_first_attack": 6
+ },
+ {
+  "winner_is_ctl": false,
+  "turns": 6,
+  "zoo_deploys": 5,
+  "ctl_answers": 1,
+  "ctl_deploys": 1,
+  "ctl_other": 0,
+  "ctl_first_attack": null,
+  "zoo_first_attack": 4
+ },
+ {
+  "winner_is_ctl": false,
+  "turns": 4,
+  "zoo_deploys": 3,
+  "ctl_answers": 0,
+  "ctl_deploys": 0,
+  "ctl_other": 1,
+  "ctl_first_attack": null,
+  "zoo_first_attack": 2
+ },
+ {
+  "winner_is_ctl": false,
+  "turns": 13,
+  "zoo_deploys": 8,
+  "ctl_answers": 7,
+  "ctl_deploys": 8,
+  "ctl_other": 5,
+  "ctl_first_attack": null,
+  "zoo_first_attack": 5
+ },
+ {
+  "winner_is_ctl": false,
+  "turns": 13,
+  "zoo_deploys": 13,
+  "ctl_answers": 13,
+  "ctl_deploys": 8,
+  "ctl_other": 3,
+  "ctl_first_attack": 11,
+  "zoo_first_attack": 4
+ },
+ {
+  "winner_is_ctl": false,
+  "turns": 6,
+  "zoo_deploys": 4,
+  "ctl_answers": 2,
+  "ctl_deploys": 1,
+  "ctl_other": 0,
+  "ctl_first_attack": null,
+  "zoo_first_attack": 3
+ },
+ {
+  "winner_is_ctl": false,
+  "turns": 5,
+  "zoo_deploys": 4,
+  "ctl_answers": 0,
+  "ctl_deploys": 3,
+  "ctl_other": 1,
+  "ctl_first_attack": null,
+  "zoo_first_attack": 3
+ },
+ {
+  "winner_is_ctl": false,
+  "turns": 7,
+  "zoo_deploys": 5,
+  "ctl_answers": 0,
+  "ctl_deploys": 2,
+  "ctl_other": 1,
+  "ctl_first_attack": null,
+  "zoo_first_attack": 5
+ },
+ {
+  "winner_is_ctl": false,
+  "turns": 6,
+  "zoo_deploys": 5,
+  "ctl_answers": 0,
+  "ctl_deploys": 2,
+  "ctl_other": 0,
+  "ctl_first_attack": null,
+  "zoo_first_attack": 3
+ },
+ {
+  "winner_is_ctl": false,
+  "turns": 6,
+  "zoo_deploys": 5,
+  "ctl_answers": 2,
+  "ctl_deploys": 1,
+  "ctl_other": 1,
+  "ctl_first_attack": null,
+  "zoo_first_attack": 3
+ },
+ {
+  "winner_is_ctl": false,
+  "turns": 10,
+  "zoo_deploys": 5,
+  "ctl_answers": 2,
+  "ctl_deploys": 5,
+  "ctl_other": 3,
+  "ctl_first_attack": 9,
+  "zoo_first_attack": 8
+ },
+ {
+  "winner_is_ctl": false,
+  "turns": 13,
+  "zoo_deploys": 11,
+  "ctl_answers": 6,
+  "ctl_deploys": 9,
+  "ctl_other": 1,
+  "ctl_first_attack": 12,
+  "zoo_first_attack": 3
+ },
+ {
+  "winner_is_ctl": false,
+  "turns": 9,
+  "zoo_deploys": 5,
+  "ctl_answers": 1,
+  "ctl_deploys": 7,
+  "ctl_other": 0,
+  "ctl_first_attack": 5,
+  "zoo_first_attack": 7
+ },
+ {
+  "winner_is_ctl": true,
+  "turns": 13,
+  "zoo_deploys": 4,
+  "ctl_answers": 1,
+  "ctl_deploys": 8,
+  "ctl_other": 3,
+  "ctl_first_attack": 9,
+  "zoo_first_attack": null
+ },
+ {
+  "winner_is_ctl": false,
+  "turns": 10,
+  "zoo_deploys": 7,
+  "ctl_answers": 0,
+  "ctl_deploys": 6,
+  "ctl_other": 2,
+  "ctl_first_attack": null,
+  "zoo_first_attack": 3
+ },
+ {
+  "winner_is_ctl": false,
+  "turns": 9,
+  "zoo_deploys": 7,
+  "ctl_answers": 1,
+  "ctl_deploys": 5,
+  "ctl_other": 2,
+  "ctl_first_attack": null,
+  "zoo_first_attack": 2
+ },
+ {
+  "winner_is_ctl": false,
+  "turns": 7,
+  "zoo_deploys": 5,
+  "ctl_answers": 0,
+  "ctl_deploys": 6,
+  "ctl_other": 1,
+  "ctl_first_attack": null,
+  "zoo_first_attack": 2
+ },
+ {
+  "winner_is_ctl": false,
+  "turns": 6,
+  "zoo_deploys": 3,
+  "ctl_answers": 0,
+  "ctl_deploys": 1,
+  "ctl_other": 3,
+  "ctl_first_attack": null,
+  "zoo_first_attack": 3
+ }
+]
