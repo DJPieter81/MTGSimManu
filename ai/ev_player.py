@@ -1749,43 +1749,49 @@ class EVPlayer:
         # quiet board has some baseline threat probability.
         opp_threat_prob = self._estimate_opp_threat_prob(snap, opp)
 
-        # ── Lost-response-capacity model ─────────────────────────────
-        # How many held responses could we cast with all our mana
-        # untapped? With mana remaining after this play? The DELTA is
-        # the capacity we'd lose by tapping out — that's what the
-        # penalty pays for. Cheapest-first packing approximates the
-        # opponent's worst-case sequence (we'd counter the cheapest
-        # threats first to keep options open).
-        sorted_costs = sorted(held_costs)
-        def _capacity(mana: int) -> int:
-            n, m = 0, mana
-            for c in sorted_costs:
+        # ── Lost-response-VALUE model (supersedes Brief A1's pile
+        # scaling — docs/diagnostics/2026-08-26_decider_loss_root_cause.md
+        # second-pass forensics) ──────────────────────────────────────
+        # Lands untap every turn, so mana held now buys responses only in
+        # THIS turn's response window: the value at risk is exactly the
+        # held responses that no longer fit after the cast, not the whole
+        # pile. A1's count-scaling charged an interaction-heavy hand the
+        # full pile for every tap-out (a draw spell observed at EV -51.8,
+        # a 3-CMC engine at -24.6), so a reactive deck holding four
+        # answers could never deploy anything and never presented a
+        # clock. Cheapest-first packing approximates the worst-case
+        # response sequence (counter the cheapest threats first to keep
+        # options open); each packed response contributes its liveness-
+        # weighted CMC, so a payable-through tax counter is worth only
+        # its live fraction here too.
+        pairs = sorted(zip(held_costs, held_weights))
+
+        def _packed_value(mana: int) -> float:
+            m, v = mana, 0.0
+            for c, w in pairs:
                 if m >= c:
                     m -= c
-                    n += 1
+                    v += w * c
                 else:
                     break
-            return n
+            return v
 
-        cap_now = _capacity(snap.my_mana)
-        cap_after = _capacity(max(0, snap.my_mana - cost))
-        lost_capacity = max(0, cap_now - cap_after)
+        lost_value = max(0.0, _packed_value(snap.my_mana)
+                         - _packed_value(max(0, snap.my_mana - cost)))
 
-        # Penalty fires only when tapping out actually loses response
-        # capacity — if we still have enough mana for every held
-        # response, holdback is moot.
-        if lost_capacity <= 0:
+        # Penalty fires only when tapping out actually forfeits response
+        # value — if every held response still fits, holdback is moot.
+        if lost_value <= 0:
             return 0.0
 
-        # Scale: counter_count × counter_cmc × opp_threat_prob ×
-        # held_response_value_per_cmc(p_artifact_threat).  Brief A1
-        # specifies count (not lost_capacity) — holding more counters
-        # means more value at risk even if only one capacity is lost
-        # this turn (the second counter still wants the mana on a
-        # future turn).  The per-CMC value is the function-form from
-        # ai/scoring_constants.py, sourced from BHI's artifact-threat
-        # belief: floored at the Iter-2 base (4.0) for the average
-        # opponent, ramped to 6.0 against Affinity-class.
+        # Scale: lost_value × opp_threat_prob ×
+        # held_response_value_per_cmc(p_artifact_threat). The per-CMC
+        # value is the function-form from ai/scoring_constants.py,
+        # sourced from BHI's artifact-threat belief: floored at the
+        # Iter-2 base (4.0) for the average opponent, ramped to 6.0
+        # against Affinity-class. A full tap-out that strands the whole
+        # pile reproduces A1's original magnitude; a partial tap-out
+        # charges only what it costs.
         p_art = 0.0
         try:
             if self.bhi and self.bhi._initialized:
@@ -1793,18 +1799,13 @@ class EVPlayer:
         except Exception:
             pass
         held_value_per_cmc = held_response_value_per_cmc(p_art)
-        # `counter_count * counter_cmc` is algebraically sum(held_costs);
-        # the liveness weights fold in per-card, so a fully-live hand
-        # (weights all 1.0) reproduces the original product exactly and a
-        # payable-through tax counter contributes only its live fraction.
-        weighted_held_cmc = sum(
-            w * c for w, c in zip(held_weights, held_costs))
         # Liveness-weighted mean per held card — consumed by the A5
         # color-availability amplifier below as "the value of one
         # typical held response"; a payable-through tax counter's
         # stranding is worth only its live fraction there too.
-        counter_cmc = weighted_held_cmc / len(held_costs)
-        base_penalty = (weighted_held_cmc
+        counter_cmc = (sum(w * c for w, c in zip(held_weights, held_costs))
+                       / len(held_costs))
+        base_penalty = (lost_value
                         * opp_threat_prob
                         * held_value_per_cmc)
 
