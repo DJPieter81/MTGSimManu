@@ -307,6 +307,9 @@ class EVPlayer:
         self._fuel_names: Set[str] = set()
         self._interaction_names: Set[str] = set()
         self._reactive_only: Set[str] = set()
+        # Per-turn cache for _held_tax_counter_liveness — the scan walks
+        # the opponent's whole pool, and holdback runs per candidate.
+        self._tax_liveness_cache: dict = {}
         if self.goal_engine:
             gp = self.goal_engine.gameplan
             self._reactive_only = gp.reactive_only
@@ -475,7 +478,7 @@ class EVPlayer:
             # observable symptom.
             _ev += self._holdback_penalty(
                 me, opp, snap, _perm.template.activated_abilities[_ab_idx]
-                .cost.mana.cmc)
+                .cost.mana.cmc, game=game)
             if _ev <= 0.0:
                 continue
             _play = Play("activate", _perm, list(_tgts), _ev, _reason)
@@ -1557,7 +1560,7 @@ class EVPlayer:
         if p.holdback_applies and not t.is_instant and not t.has_flash:
             holdback = self._holdback_penalty(
                 me, opp, snap, cost=t.cmc or 0,
-                exclude_instance_id=card.instance_id)
+                exclude_instance_id=card.instance_id, game=game)
             ev += holdback
 
         # ── Stax lock-piece overlay (P1-1) ──
@@ -1587,7 +1590,8 @@ class EVPlayer:
         return ev
 
     def _holdback_penalty(self, me, opp, snap: EVSnapshot, cost: int,
-                          exclude_instance_id: Optional[int] = None) -> float:
+                          exclude_instance_id: Optional[int] = None,
+                          game: "GameState" = None) -> float:
         """Signed mana-holdback cost (M3 — proactive tap-out).
 
         Returns the EV adjustment for tapping out by `cost` mana on a
@@ -1657,6 +1661,7 @@ class EVPlayer:
         # Oracle/tag-driven (no card names). counter_cmc is the average
         # cost of held interaction — used to size the penalty.
         held_costs: list = []
+        held_weights: list = []
         held_colors: set = set()
         from ai.card_classes import is_held_interaction
         for c in me.hand:
@@ -1670,7 +1675,24 @@ class EVPlayer:
             # (docs/proposals/2026-07-09_structural_findings.md #2).
             if not is_held_interaction(tmpl):
                 continue
+            # Tax-counter liveness (the 1a framework's holdback side).
+            # A "counter unless its controller pays {N}" counter stops a
+            # spell only when casting it leaves the opponent unable to pay
+            # the tax; against a pool of cheap effective costs it stops
+            # ~nothing, and reserving mana for it is reserving mana for
+            # nothing. Weight its held value by the fraction of the
+            # opponent's castable pool it actually answers (0 → drop it
+            # entirely). Hard counters keep weight 1 and are untouched.
+            # docs/diagnostics/2026-08-26_decider_loss_root_cause.md
+            # (secondary root cause: the stranded-finisher decider loss).
+            weight = 1.0
+            tax = getattr(tmpl, 'counter_tax_amount', 0) or 0
+            if tax > 0 and 'counterspell' in tmpl.tags:
+                weight = self._held_tax_counter_liveness(game, opp, tax)
+                if weight <= 0.0:
+                    continue
             held_costs.append(tmpl.cmc or 0)
+            held_weights.append(weight)
             mc = tmpl.mana_cost
             for code, attr in (
                 ('W', 'white'), ('U', 'blue'), ('B', 'black'),
@@ -1688,8 +1710,6 @@ class EVPlayer:
             # certain to threaten, so this never over-fires.
             return self._proactive_tap_out_bonus(snap, opp, cost)
 
-        counter_count = len(held_costs)
-        counter_cmc = sum(held_costs) / counter_count  # mean CMC
 
         # ── Color-capacity early-exit (Iteration-2 B3-Tune) ──────────
         # If every held counter can still be paid AFTER this cast —
@@ -1773,7 +1793,18 @@ class EVPlayer:
         except Exception:
             pass
         held_value_per_cmc = held_response_value_per_cmc(p_art)
-        base_penalty = (counter_count * counter_cmc
+        # `counter_count * counter_cmc` is algebraically sum(held_costs);
+        # the liveness weights fold in per-card, so a fully-live hand
+        # (weights all 1.0) reproduces the original product exactly and a
+        # payable-through tax counter contributes only its live fraction.
+        weighted_held_cmc = sum(
+            w * c for w, c in zip(held_weights, held_costs))
+        # Liveness-weighted mean per held card — consumed by the A5
+        # color-availability amplifier below as "the value of one
+        # typical held response"; a payable-through tax counter's
+        # stranding is worth only its live fraction there too.
+        counter_cmc = weighted_held_cmc / len(held_costs)
+        base_penalty = (weighted_held_cmc
                         * opp_threat_prob
                         * held_value_per_cmc)
 
@@ -1815,6 +1846,56 @@ class EVPlayer:
                              * held_value_per_cmc)
 
         return -base_penalty
+
+
+    def _held_tax_counter_liveness(self, game, opp, tax: int) -> float:
+        """Fraction of the opponent's castable pool a held tax counter can
+        actually stop (CR 601 + the 1a "unless its controller pays {N}"
+        framework): a spell is stopped only when paying its own effective
+        cost leaves the caster below the tax. Pool-level knowledge only —
+        hand + library counted together, the same convention BHI uses for
+        its priors — never card location.
+
+        Capacity is the opponent's NEXT-turn mana (they untap everything),
+        mirroring the payment path's own terms: lands + floating mana +
+        Tron bonus. Effective costs go through `effective_cmc` from the
+        opponent's own snapshot so affinity/delve/domain discounts price
+        correctly (a domain deck's nominal 12-drop is a real 2-drop).
+
+        Returns a [0, 1] fraction; 1.0 when no game context is available
+        (legacy call sites keep the pre-liveness behaviour) and 0.0 when
+        the opponent's pool holds no castable spell the counter stops.
+        Cached per (turn, opp land count, tax) — the pool only shifts by
+        a draw a turn and the scan walks the whole library.
+        """
+        if game is None:
+            return 1.0
+        capacity = (len(opp.lands) + opp.mana_pool.total()
+                    + opp._tron_mana_bonus())
+        opp_idx = 1 - self.player_idx
+        cache_key = (game.turn_number, len(opp.lands), tax)
+        cached = self._tax_liveness_cache.get(cache_key)
+        if cached is not None:
+            return cached
+        from ai.effective_cmc import effective_cmc
+        from ai.ev_evaluator import snapshot_from_game
+        opp_snap = snapshot_from_game(game, opp_idx)
+        castable = live = 0
+        for c in list(opp.hand) + list(opp.library):
+            if c.template.is_land:
+                continue
+            try:
+                eff = effective_cmc(c, opp_snap, game=game,
+                                    player_idx=opp_idx)
+            except Exception:
+                eff = c.template.cmc or 0
+            if eff <= capacity:
+                castable += 1
+                if capacity - eff < tax:
+                    live += 1
+        frac = (live / castable) if castable else 0.0
+        self._tax_liveness_cache[cache_key] = frac
+        return frac
 
     def _proactive_tap_out_bonus(self, snap: EVSnapshot, opp,
                                  cost: int) -> float:
@@ -2329,7 +2410,7 @@ class EVPlayer:
         cycling_mana_cost = cost_data.get('mana', 0) if cost_data else 0
         ev += self._holdback_penalty(
             me, opp, snap, cost=cycling_mana_cost,
-            exclude_instance_id=card.instance_id)
+            exclude_instance_id=card.instance_id, game=game)
 
         return ev
 
@@ -3992,7 +4073,7 @@ class EVPlayer:
             opp = game.players[1 - self.player_idx]
             ev += self._holdback_penalty(
                 player, opp, snap, cost=cost,
-                exclude_instance_id=equip.instance_id)
+                exclude_instance_id=equip.instance_id, game=game)
 
             results.append(Play("equip", equip, [best.instance_id], ev,
                                 f"Equip {equip.name} to {best.name} (EV={ev:.1f})"))
