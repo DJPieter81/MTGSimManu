@@ -1,0 +1,1339 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+======================================================================
+  GAME 1: Dimir Midrange (P1) vs Boros Ponza (P2)  —  seed 62000
+  Series: Dimir Midrange 0 - 0 Boros Ponza
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Boros Ponza wins → chooses to play first
+║ P1 (on play): Boros Ponza
+║ P2 (on draw): Dimir Midrange
+╚═══════════════════════════════════════════════════════
+
+P1 (Dimir Midrange) opening hand (2 lands, 5 spells):
+  • Darkslick Shores [Land, CMC 0]
+  • Polluted Delta [Land, CMC 0]
+  • Consider [Spell, CMC 1]
+  • Thoughtseize [Spell, CMC 1]
+  • Counterspell [Spell, CMC 2]
+  • Drown in the Loch [Spell, CMC 2]
+  • Counterspell [Spell, CMC 2]
+→ P1 KEEPS 7 — has key card(s): Consider, Thoughtseize, 5 cheap spells
+
+P2 (Boros Ponza) opening hand (4 lands, 3 spells):
+  • Arena of Glory [Land, CMC 0]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Sacred Foundry [Land, CMC 0]
+  • Inspiring Vantage [Land, CMC 0]
+  • Inspiring Vantage [Land, CMC 0]
+  • Blood Moon [Spell, CMC 3]
+  • Lightning Bolt [Spell, CMC 1]
+→ P2 KEEPS 7 — has key card(s): Lightning Bolt, Ragavan, Nimble Pilferer, 3 cheap spells
+
+
+╔══ TURN 1 — Boros Ponza (P2) ══════════════════════════
+║ Life: Boros Ponza 20  |  Dimir Midrange 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Sacred Foundry (untapped, life: 20)
+    → Goal: interact [interaction]
+    [Target] → face (3 dmg, life 20 → 17): face value 0.15
+    [Mana] Tap Sacred Foundry→R (paying for Lightning Bolt, 1 mana remaining)
+T1 P2: Cast Lightning Bolt (R)
+    [Priority] P1 passes (no response)
+T1: Resolve Lightning Bolt
+T1 P2: Lightning Bolt → 3 damage → life 17
+T1: Lightning Bolt moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 17  |  Boros Ponza 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Fatal Push
+  [Main 1]
+T1 P1: Play Polluted Delta
+T1: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Polluted Delta (pay 1 life) -> Watery Grave (tapped, life: 16)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Ponza (P2) ══════════════════════════
+║ Life: Boros Ponza 20  |  Dimir Midrange 16
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 1
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flagstones of Trokair
+  [Main 1]
+T2 P2: Play Flagstones of Trokair
+    → Goal: grind_value
+    [Mana] Tap Flagstones of Trokair→W, Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 2 mana remaining)
+T2 P2: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P1 passes (no response)
+T2: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T2 P2: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T2 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T2 P2: Create 1x Treasure token(s)
+T2 P2: Ragavan, Nimble Pilferer exiles Drown in the Loch from top of P1's library
+T2 P2: Ragavan, Nimble Pilferer — may cast Drown in the Loch this turn
+  [Combat Damage] 2 damage dealt → P1 life: 16 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+T2: Drown in the Loch returned to exile (uncast)
+T2: Ragavan, Nimble Pilferer moved battlefield -> hand (Dash return)
+T2: Ragavan, Nimble Pilferer returned to hand (Dash)
+
+╔══ TURN 2 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 14  |  Boros Ponza 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry [T], Flagstones of Trokair [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Darkslick Shores
+  [Main 1]
+T2 P1: Play Darkslick Shores (untapped, 1 other lands)
+    → Goal: grind_value [enablers]
+    [Mana] Tap Watery Grave→U (paying for Consider, 2 mana remaining)
+T2 P1: Cast Consider (U)
+    [Priority] P2 passes (no response)
+T2: Resolve Consider
+T2 P1: surveil 1 → Subtlety to GY
+T2 P1: Consider → draw 1 (Otawara, Soaring City)
+T2: Consider moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Ponza (P2) ══════════════════════════
+║ Life: Boros Ponza 20  |  Dimir Midrange 14
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 1
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Flagstones of Trokair
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T], Darkslick Shores
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Blood Moon
+  [Main 1]
+T3 P2: Play Arena of Glory (enters tapped)
+    → Goal: grind_value
+    [Mana] Tap Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 2 mana remaining)
+T3 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T3: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+    [Mana] Tap Darkslick Shores→B (paying for Fatal Push, 1 mana remaining)
+T3 P1: Cast Fatal Push (B)
+T3: Resolve Fatal Push
+T3: Ragavan, Nimble Pilferer dies
+T3 P1: Fatal Push destroys Ragavan, Nimble Pilferer
+T3: Fatal Push moved stack -> graveyard (resolution)
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 14  |  Boros Ponza 20
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 4
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Darkslick Shores
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry [T], Flagstones of Trokair, Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Fatal Push
+  [Main 1]
+T3 P1: Play Otawara, Soaring City
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Ponza (P2) ══════════════════════════
+║ Life: Boros Ponza 20  |  Dimir Midrange 14
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 2
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Flagstones of Trokair, Arena of Glory
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Darkslick Shores, Otawara, Soaring City
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Cleansing Wildfire
+  [Main 1]
+T4 P2: Play Inspiring Vantage (tapped, 3 other lands)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 14  |  Boros Ponza 20
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 4
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Darkslick Shores, Otawara, Soaring City
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Flagstones of Trokair, Arena of Glory, Inspiring Vantage [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Spell Pierce
+  [Main 1]
+T4 P1: Play Darkslick Shores (tapped, 3 other lands)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Ponza (P2) ══════════════════════════
+║ Life: Boros Ponza 20  |  Dimir Midrange 14
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 50  |  Graveyard: 2
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Flagstones of Trokair, Arena of Glory, Inspiring Vantage
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Darkslick Shores, Otawara, Soaring City, Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Plains
+  [Main 1]
+T5 P2: Play Plains
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 14  |  Boros Ponza 20
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 4
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Darkslick Shores, Otawara, Soaring City, Darkslick Shores
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Flagstones of Trokair, Arena of Glory, Inspiring Vantage, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Polluted Delta
+  [Main 1]
+T5 P1: Play Polluted Delta
+T5: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T5 P1: Crack Polluted Delta (pay 1 life) -> Watery Grave (tapped, life: 13)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Boros Ponza (P2) ══════════════════════════
+║ Life: Boros Ponza 20  |  Dimir Midrange 13
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 49  |  Graveyard: 2
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Flagstones of Trokair, Arena of Glory, Inspiring Vantage, Plains
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Darkslick Shores, Otawara, Soaring City, Darkslick Shores, Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Lightning Bolt
+  [Main 1]
+T6 P2: Play Inspiring Vantage (tapped, 5 other lands)
+    → Goal: close_game
+    [Target] → face (3 dmg, life 13 → 10): face value 0.15
+    [Mana] Tap Arena of Glory→R (paying for Lightning Bolt, 5 mana remaining)
+T6 P2: Cast Lightning Bolt (R)
+    [Priority] P1 passes (no response)
+T6: Resolve Lightning Bolt
+T6 P2: Lightning Bolt → 3 damage → life 10
+T6: Lightning Bolt moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 10  |  Boros Ponza 20
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 43  |  Graveyard: 5
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Darkslick Shores, Otawara, Soaring City, Darkslick Shores, Watery Grave
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Flagstones of Trokair, Arena of Glory [T], Inspiring Vantage, Plains, Inspiring Vantage [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Psychic Frog
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Otawara, Soaring City→U, Watery Grave→B (paying for Psychic Frog, 5 mana remaining)
+T6 P1: Cast Psychic Frog (UB)
+    [Priority] P2 passes (no response)
+T6: Resolve Psychic Frog
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Boros Ponza (P2) ══════════════════════════
+║ Life: Boros Ponza 20  |  Dimir Midrange 10
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 6  |  Opp lands: 5
+║ Library: 48  |  Graveyard: 3
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Flagstones of Trokair, Arena of Glory, Inspiring Vantage, Plains, Inspiring Vantage
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (1/2)
+║   Lands: Watery Grave [T], Darkslick Shores, Otawara, Soaring City [T], Darkslick Shores, Watery Grave
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Marsh Flats
+  [Main 1]
+T7 P2: Play Marsh Flats
+T7: Marsh Flats moved battlefield -> graveyard (fetchland sacrifice)
+T7 P2: Crack Marsh Flats (pay 1 life) -> Sacred Foundry (untapped, life: 17)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 10  |  Boros Ponza 17
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 7
+║ Library: 42  |  Graveyard: 5
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (1/2)
+║   Lands: Watery Grave, Darkslick Shores, Otawara, Soaring City, Darkslick Shores, Watery Grave
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Flagstones of Trokair, Arena of Glory, Inspiring Vantage, Plains, Inspiring Vantage, Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Psychic Frog
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Otawara, Soaring City→U, Watery Grave→B (paying for Psychic Frog, 5 mana remaining)
+T7 P1: Cast Psychic Frog (UB)
+    [Priority] P2 passes (no response)
+T7: Resolve Psychic Frog
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Psychic Frog
+T7 P1: Attack with Psychic Frog
+  [Declare Blockers] P2 does not block
+T7 P1:   Psychic Frog (1/2) → 1 dmg to player
+T7 P1: Psychic Frog deals combat damage — draw a card
+  [Combat Damage] 1 damage dealt → P2 life: 17 → 16
+  [End Combat]
+  [Main 2]
+T7 P1: Play Polluted Delta
+T7: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T7 P1: Crack Polluted Delta -> Island (untapped)
+  [End Step]
+
+╔══ TURN 8 — Boros Ponza (P2) ══════════════════════════
+║ Life: Boros Ponza 16  |  Dimir Midrange 9
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 7  |  Opp lands: 6
+║ Library: 46  |  Graveyard: 4
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Flagstones of Trokair, Arena of Glory, Inspiring Vantage, Plains, Inspiring Vantage, Sacred Foundry
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (1/2) [tapped], Psychic Frog (1/2)
+║   Lands: Watery Grave [T], Darkslick Shores, Otawara, Soaring City [T], Darkslick Shores, Watery Grave, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Marsh Flats
+  [Main 1]
+T8 P2: Play Marsh Flats
+T8: Marsh Flats moved battlefield -> graveyard (fetchland sacrifice)
+T8 P2: Crack Marsh Flats -> Plains (untapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 9  |  Boros Ponza 15
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 6  |  Opp lands: 8
+║ Library: 39  |  Graveyard: 6
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (1/2), Psychic Frog (1/2)
+║   Lands: Watery Grave, Darkslick Shores, Otawara, Soaring City, Darkslick Shores, Watery Grave, Island
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Flagstones of Trokair, Arena of Glory, Inspiring Vantage, Plains, Inspiring Vantage, Sacred Foundry, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Orcish Bowmasters
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Otawara, Soaring City→U, Watery Grave→B (paying for Orcish Bowmasters, 6 mana remaining)
+T8 P1: Cast Orcish Bowmasters (1B)
+    [Priority] P2 passes (no response)
+T8: Resolve Orcish Bowmasters
+T8 P1: Bowmasters deals 1 damage to opponent (life: 14)
+T8 P1: Bowmasters creates 1/1 Orc Army token
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Psychic Frog, Psychic Frog
+T8 P1: Attack with Psychic Frog, Psychic Frog
+  [Declare Blockers] P2 does not block
+T8 P1:   Psychic Frog (1/2) → 1 dmg to player
+T8 P1: Psychic Frog deals combat damage — draw a card
+T8 P1:   Psychic Frog (1/2) → 1 dmg to player
+T8 P1: Psychic Frog deals combat damage — draw a card
+  [Combat Damage] 2 damage dealt → P2 life: 14 → 12
+  [End Combat]
+  [Main 2]
+    → Goal: close_game
+T8 P1: Delve 5 cards for Murktide Regent
+    [Mana] Tap Island→U, Darkslick Shores→U (paying for Murktide Regent, 4 mana remaining)
+T8 P1: Cast Murktide Regent (5UU)
+    [Priority] P2 passes (no response)
+T8: Resolve Murktide Regent
+T8 P1: Murktide Regent enters as 5/5 (2 +1/+1 counters from delved instants/sorceries)
+  [End Step]
+
+╔══ TURN 9 — Boros Ponza (P2) ══════════════════════════
+║ Life: Boros Ponza 12  |  Dimir Midrange 9
+║ Hand: 3 cards  |  Opp hand: 7 cards
+║ Lands: 8  |  Opp lands: 6
+║ Library: 44  |  Graveyard: 5
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Flagstones of Trokair, Arena of Glory, Inspiring Vantage, Plains, Inspiring Vantage, Sacred Foundry, Plains
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (1/2) [tapped], Psychic Frog (1/2) [tapped], Orcish Bowmasters (1/1), Orc Army (1/1), Murktide Regent (5/5)
+║   Lands: Watery Grave [T], Darkslick Shores [T], Otawara, Soaring City [T], Darkslick Shores, Watery Grave, Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Cleansing Wildfire
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 9  |  Boros Ponza 12
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 6  |  Opp lands: 8
+║ Library: 36  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (1/2), Psychic Frog (1/2), Orcish Bowmasters (1/1), Orc Army (1/1), Murktide Regent (5/5)
+║   Lands: Watery Grave, Darkslick Shores, Otawara, Soaring City, Darkslick Shores, Watery Grave, Island
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Flagstones of Trokair, Arena of Glory, Inspiring Vantage, Plains, Inspiring Vantage, Sacred Foundry, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Creeping Tar Pit
+  [Main 1]
+T9 P1: Play Creeping Tar Pit (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Psychic Frog, Psychic Frog, Orcish Bowmasters, Orc Army, Murktide Regent
+T9 P1: Attack with Psychic Frog, Psychic Frog, Orcish Bowmasters, Orc Army, Murktide Regent
+  [Declare Blockers] P2 does not block
+T9 P1:   Psychic Frog (1/2) → 1 dmg to player
+T9 P1: Psychic Frog deals combat damage — draw a card
+T9 P1:   Psychic Frog (1/2) → 1 dmg to player
+T9 P1: Psychic Frog deals combat damage — draw a card
+T9 P1:   Orcish Bowmasters (1/1) → 1 dmg to player
+T9 P1:   Orc Army (1/1) → 1 dmg to player
+T9 P1:   Murktide Regent (5/5) → 5 dmg to player
+  [Combat Damage] 9 damage dealt → P2 life: 12 → 3
+  [End Combat]
+  [Main 2]
+    → Goal: close_game
+    [Mana] Tap Otawara, Soaring City→U, Watery Grave→B (paying for Orcish Bowmasters, 6 mana remaining)
+T9 P1: Cast Orcish Bowmasters (1B)
+    [Priority] P2 passes (no response)
+T9: Resolve Orcish Bowmasters
+T9 P1: Bowmasters deals 1 damage to opponent (life: 2)
+T9 P1: Bowmasters creates 1/1 Orc Army token
+  [End Step]
+T9: Drown in the Loch moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 10 — Boros Ponza (P2) ══════════════════════════
+║ Life: Boros Ponza 2  |  Dimir Midrange 9
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 8  |  Opp lands: 7
+║ Library: 43  |  Graveyard: 5
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Flagstones of Trokair, Arena of Glory, Inspiring Vantage, Plains, Inspiring Vantage, Sacred Foundry, Plains
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (1/2) [tapped], Psychic Frog (1/2) [tapped], Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped], Murktide Regent (5/5) [tapped], Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave [T], Darkslick Shores, Otawara, Soaring City [T], Darkslick Shores, Watery Grave, Island, Creeping Tar Pit [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Cleansing Wildfire
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Flagstones of Trokair→W, Arena of Glory→R, Plains→W (paying for Blood Moon, 8 mana remaining)
+T10 P2: Cast Blood Moon (2R)
+    [Priority] P1 passes (no response)
+T10: Resolve Blood Moon
+T10 P2: Blood Moon: 7 opponent nonbasic lands become Mountains
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 9  |  Boros Ponza 2
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 7  |  Opp lands: 8
+║ Library: 33  |  Graveyard: 2
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (1/2), Psychic Frog (1/2), Orcish Bowmasters (1/1), Orc Army (1/1), Murktide Regent (5/5), Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave, Darkslick Shores, Otawara, Soaring City, Darkslick Shores, Watery Grave, Island, Creeping Tar Pit
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Other: Treasure Token, Blood Moon
+║   Lands: Sacred Foundry, Flagstones of Trokair [T], Arena of Glory [T], Inspiring Vantage, Plains [T], Inspiring Vantage, Sacred Foundry, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Takenuma, Abandoned Mire
+  [Main 1]
+T10 P1: Play Darkslick Shores (tapped, 7 other lands)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Psychic Frog, Psychic Frog, Orcish Bowmasters, Orc Army, Murktide Regent, Orcish Bowmasters, Orc Army
+T10 P1: Attack with Psychic Frog, Psychic Frog, Orcish Bowmasters, Orc Army, Murktide Regent, Orcish Bowmasters, Orc Army
+  [Declare Blockers] P2 does not block
+T10 P1:   Psychic Frog (2/3) → 2 dmg to player
+T10 P1: Psychic Frog deals combat damage — draw a card
+T10 P1:   Psychic Frog (1/2) → 1 dmg to player
+T10 P1: Psychic Frog deals combat damage — draw a card
+T10 P1:   Orcish Bowmasters (1/1) → 1 dmg to player
+T10 P1:   Orc Army (1/1) → 1 dmg to player
+T10 P1:   Murktide Regent (5/5) → 5 dmg to player
+T10 P1:   Orcish Bowmasters (1/1) → 1 dmg to player
+T10 P1:   Orc Army (1/1) → 1 dmg to player
+P2 loses: life total -10
+  [Combat Damage] 12 damage dealt → P2 life: 2 → -10
+
+>>> Dimir Midrange wins Game 1 on turn 10 via damage
+    Final life: Dimir Midrange=9  Boros Ponza=-10
+
+======================================================================
+  GAME 2: Boros Ponza (P1) vs Dimir Midrange (P2)  —  seed 62001
+  Series: Dimir Midrange 1 - 0 Boros Ponza
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Boros Ponza wins → chooses to play first
+║ P1 (on play): Boros Ponza
+║ P2 (on draw): Dimir Midrange
+╚═══════════════════════════════════════════════════════
+
+P1 (Boros Ponza) opening hand (3 lands, 4 spells):
+  • Obsidian Charmaw [Creature, CMC 5]
+  • Pillage [Spell, CMC 3]
+  • Mountain [Land, CMC 0]
+  • Sunbaked Canyon [Land, CMC 0]
+  • Marsh Flats [Land, CMC 0]
+  • Cleansing Wildfire [Spell, CMC 2]
+  • Ephemerate [Spell, CMC 1]
+→ P1 KEEPS 7 — has key card(s): Cleansing Wildfire, Obsidian Charmaw, Pillage, 3 cheap spells
+
+P2 (Dimir Midrange) opening hand (2 lands, 5 spells):
+  • Archmage's Charm [Spell, CMC 3]
+  • Dauthi Voidwalker [Creature, CMC 2]
+  • Counterspell [Spell, CMC 2]
+  • Island [Land, CMC 0]
+  • Swamp [Land, CMC 0]
+  • Archmage's Charm [Spell, CMC 3]
+  • Counterspell [Spell, CMC 2]
+→ P2 KEEPS 7 — has key card(s): Dauthi Voidwalker, 5 cheap spells
+
+
+╔══ TURN 1 — Boros Ponza (P1) ══════════════════════════
+║ Life: Boros Ponza 20  |  Dimir Midrange 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Sunbaked Canyon
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Boros Ponza 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Sunbaked Canyon
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Otawara, Soaring City
+  [Main 1]
+T1 P2: Play Island
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Ponza (P1) ══════════════════════════
+║ Life: Boros Ponza 20  |  Dimir Midrange 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Sunbaked Canyon
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Mountain
+  [Main 1]
+T2 P1: Play Marsh Flats
+T2: Marsh Flats moved battlefield -> graveyard (fetchland sacrifice)
+T2 P1: Crack Marsh Flats (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Boros Ponza 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Island
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Sunbaked Canyon, Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Orcish Bowmasters
+  [Main 1]
+T2 P2: Play Swamp
+    → Goal: grind_value
+    [Mana] Tap Island→U, Swamp→B (paying for Orcish Bowmasters, 2 mana remaining)
+T2 P2: Cast Orcish Bowmasters (1B)
+    [Priority] P1 passes (no response)
+T2: Resolve Orcish Bowmasters
+T2 P2: Bowmasters deals 1 damage to opponent (life: 18)
+T2 P2: Bowmasters creates 1/1 Orc Army token
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Ponza (P1) ══════════════════════════
+║ Life: Boros Ponza 18  |  Dimir Midrange 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Sunbaked Canyon, Sacred Foundry
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Island [T], Swamp [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Solitude
+  [Main 1]
+T3 P1: Play Mountain
+T3: Sunbaked Canyon moved battlefield -> graveyard (activation cost (Sunbaked Canyon))
+T3 P1: activate Sunbaked Canyon — Draw a card.
+T3 P1: Sunbaked Canyon activated — draw 1 (Ephemerate)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Boros Ponza 17
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Island, Swamp
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thoughtseize
+  [Main 1]
+T3 P2: Play Otawara, Soaring City
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army
+T3 P2: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P1 does not block
+T3 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T3 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 17 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Ponza (P1) ══════════════════════════
+║ Life: Boros Ponza 15  |  Dimir Midrange 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped]
+║   Lands: Island, Swamp, Otawara, Soaring City
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Pillage
+  [Main 1]
+T4 P1: Play Mountain
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Boros Ponza 15
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Island, Swamp, Otawara, Soaring City
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thoughtseize
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army
+T4 P2: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P1 does not block
+T4 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T4 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 15 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Ponza (P1) ══════════════════════════
+║ Life: Boros Ponza 13  |  Dimir Midrange 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 2
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain, Mountain
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped]
+║   Lands: Island, Swamp, Otawara, Soaring City
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Lightning Bolt
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T5: Solitude moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 5 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Boros Ponza 13
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Island, Swamp, Otawara, Soaring City
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Drown in the Loch
+  [Main 1]
+  [Begin Combat]
+    [Mana] Tap Mountain→R (paying for Lightning Bolt, 3 mana remaining)
+T5 P1: Cast Lightning Bolt (R)
+T5: Resolve Lightning Bolt
+T5: Lightning Bolt moved stack -> graveyard (resolution)
+T5: Orcish Bowmasters dies
+  [Declare Attackers] P2 attacks with: Orc Army
+T5 P2: Attack with Orc Army
+  [Declare Blockers] P1 does not block
+T5 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 13 → 12
+  [End Combat]
+  [Main 2]
+  [End Step]
+T5: Drown in the Loch moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 6 — Boros Ponza (P1) ══════════════════════════
+║ Life: Boros Ponza 12  |  Dimir Midrange 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 4
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain, Mountain
+║ Dimir Midrange board:
+║   Creatures: Orc Army (1/1) [tapped]
+║   Lands: Island, Swamp, Otawara, Soaring City
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Solitude
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Boros Ponza 12
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 2
+║ Dimir Midrange board:
+║   Creatures: Orc Army (1/1)
+║   Lands: Island, Swamp, Otawara, Soaring City
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Creeping Tar Pit
+  [Main 1]
+T6 P2: Play Creeping Tar Pit (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orc Army
+T6 P2: Attack with Orc Army
+  [Declare Blockers] P1 does not block
+T6 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 12 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Boros Ponza (P1) ══════════════════════════
+║ Life: Boros Ponza 11  |  Dimir Midrange 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 4
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain, Mountain
+║ Dimir Midrange board:
+║   Creatures: Orc Army (1/1) [tapped]
+║   Lands: Island, Swamp, Otawara, Soaring City, Creeping Tar Pit [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Mountain
+  [Main 1]
+T7 P1: Play Mountain
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Boros Ponza 11
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 2
+║ Dimir Midrange board:
+║   Creatures: Orc Army (1/1)
+║   Lands: Island, Swamp, Otawara, Soaring City, Creeping Tar Pit
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain, Mountain, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Scalding Tarn
+  [Main 1]
+T7 P2: Play Scalding Tarn
+T7: Scalding Tarn moved battlefield -> graveyard (fetchland sacrifice)
+T7 P2: Crack Scalding Tarn (pay 1 life) -> Watery Grave (tapped, life: 19)
+T7 P2: Creeping Tar Pit becomes a 3/2 creature until end of turn (pays 3 mana)
+  [Begin Combat]
+T7 P1: Evoke Solitude (exile Ephemerate)
+T7 P1: Cast Solitude (3WW)
+T7: Resolve Solitude
+T7: Orc Army moved battlefield -> exile (exiled)
+T7 P1: Solitude exiles Orc Army (opponent gains 1 life, now 20)
+T7: Solitude moved battlefield -> graveyard (evoke sacrifice)
+T7 P1: Solitude sacrificed (evoke)
+  [Declare Attackers] P2 attacks with: Creeping Tar Pit
+T7 P2: Attack with Creeping Tar Pit
+  [Declare Blockers] P1 does not block
+T7 P2:   Creeping Tar Pit (3/2) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 11 → 8
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Boros Ponza (P1) ══════════════════════════
+║ Life: Boros Ponza 8  |  Dimir Midrange 20
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 5
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain, Mountain, Mountain
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Island [T], Swamp [T], Otawara, Soaring City [T], Creeping Tar Pit [T], Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Marsh Flats
+  [Main 1]
+T8 P1: Play Marsh Flats
+T8: Marsh Flats moved battlefield -> graveyard (fetchland sacrifice)
+T8 P1: Crack Marsh Flats (pay 1 life) -> Sacred Foundry (tapped, life: 7)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Boros Ponza 7
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 3
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Island, Swamp, Otawara, Soaring City, Creeping Tar Pit, Watery Grave
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain, Mountain, Mountain, Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Consider
+  [Main 1]
+T8 P2: Creeping Tar Pit becomes a 3/2 creature until end of turn (pays 3 mana)
+    → Goal: close_game
+    [Mana] Tap Creeping Tar Pit→U (paying for Consider, 2 mana remaining)
+T8 P2: Cast Consider (U)
+    [Priority] P1 passes (no response)
+T8: Resolve Consider
+T8 P2: surveil 1 → Murktide Regent to GY
+T8 P2: Consider → draw 1 (Thoughtseize)
+T8: Consider moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T8: Archmage's Charm moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 9 — Boros Ponza (P1) ══════════════════════════
+║ Life: Boros Ponza 7  |  Dimir Midrange 20
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 43  |  Graveyard: 6
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain, Mountain, Mountain, Sacred Foundry
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Island [T], Swamp [T], Otawara, Soaring City [T], Creeping Tar Pit [T], Watery Grave
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arena of Glory
+  [Main 1]
+T9 P1: Play Arena of Glory (enters tapped)
+    → Goal: close_game
+    [Mana] Tap Mountain→R, Mountain→R, Mountain→R, Sacred Foundry→R, Sacred Foundry→R (paying for Obsidian Charmaw, 5 mana remaining)
+T9 P1: Cast Obsidian Charmaw (3RR)
+    [Priority] P2 passes (no response)
+T9: Resolve Obsidian Charmaw
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Boros Ponza 7
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 42  |  Graveyard: 6
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Island, Swamp, Otawara, Soaring City, Creeping Tar Pit, Watery Grave
+║ Boros Ponza board:
+║   Creatures: Obsidian Charmaw (4/4)
+║   Lands: Sacred Foundry [T], Mountain [T], Mountain [T], Mountain [T], Sacred Foundry [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Psychic Frog
+  [Main 1]
+T9 P2: Creeping Tar Pit becomes a 3/2 creature until end of turn (pays 3 mana)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T9: Counterspell moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 10 — Boros Ponza (P1) ══════════════════════════
+║ Life: Boros Ponza 7  |  Dimir Midrange 20
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 6  |  Opp lands: 5
+║ Library: 42  |  Graveyard: 6
+║ Boros Ponza board:
+║   Creatures: Obsidian Charmaw (4/4)
+║   Lands: Sacred Foundry, Mountain, Mountain, Mountain, Sacred Foundry, Arena of Glory
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Island [T], Swamp [T], Otawara, Soaring City [T], Creeping Tar Pit, Watery Grave
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Seasoned Pyromancer
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Mountain→R, Mountain→R, Mountain→R (paying for Seasoned Pyromancer, 6 mana remaining)
+T10 P1: Cast Seasoned Pyromancer (1RR)
+    [Priority] P2 responds with Counterspell
+    [Mana] Tap Creeping Tar Pit→U, Watery Grave→U (paying for Counterspell, 2 mana remaining)
+T10 P2: Cast Counterspell (UU)
+T10: Resolve Counterspell
+T10: Seasoned Pyromancer moved stack -> graveyard (resolution)
+T10: Seasoned Pyromancer is countered
+T10: Counterspell moved stack -> graveyard (resolution)
+    → Goal: close_game
+    [Mana] Tap Sacred Foundry→W (paying for Ephemerate, 3 mana remaining)
+T10 P1: Cast Ephemerate (W)
+    [Priority] P2 passes (no response)
+T10: Resolve Ephemerate
+T10: Blink Obsidian Charmaw
+T10: Ephemerate moved stack -> exile (rebound (CR 702.86))
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Boros Ponza 7
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 41  |  Graveyard: 8
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Island, Swamp, Otawara, Soaring City, Creeping Tar Pit, Watery Grave
+║ Boros Ponza board:
+║   Creatures: Obsidian Charmaw (4/4)
+║   Lands: Sacred Foundry [T], Mountain [T], Mountain [T], Mountain [T], Sacred Foundry, Arena of Glory
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Fatal Push
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Swamp→B (paying for Fatal Push, 5 mana remaining)
+T10 P2: Cast Fatal Push (B)
+    [Priority] P1 passes (no response)
+T10: Resolve Fatal Push
+T10: Fatal Push moved stack -> graveyard (resolution)
+T10 P2: Creeping Tar Pit becomes a 3/2 creature until end of turn (pays 3 mana)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Boros Ponza (P1) ══════════════════════════
+║ Life: Boros Ponza 7  |  Dimir Midrange 20
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 6  |  Opp lands: 5
+║ Library: 41  |  Graveyard: 7
+║ Boros Ponza board:
+║   Creatures: Obsidian Charmaw (4/4)
+║   Lands: Sacred Foundry, Mountain, Mountain, Mountain, Sacred Foundry, Arena of Glory
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Island [T], Swamp [T], Otawara, Soaring City [T], Creeping Tar Pit, Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T11 P1: Cast Ephemerate (W)
+T11 P1: Rebound Ephemerate
+T11: Resolve Ephemerate
+T11: Blink Obsidian Charmaw
+T11: Ephemerate moved stack -> exile (rebound (CR 702.86))
+  [Draw] P1 draws: Cleansing Wildfire
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Boros Ponza 7
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 40  |  Graveyard: 9
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Island, Swamp, Otawara, Soaring City, Creeping Tar Pit, Watery Grave
+║ Boros Ponza board:
+║   Creatures: Obsidian Charmaw (4/4)
+║   Lands: Sacred Foundry, Mountain, Mountain, Mountain, Sacred Foundry, Arena of Glory
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Counterspell
+  [Main 1]
+T11 P2: Creeping Tar Pit becomes a 3/2 creature until end of turn (pays 3 mana)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Boros Ponza (P1) ══════════════════════════
+║ Life: Boros Ponza 7  |  Dimir Midrange 20
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 6  |  Opp lands: 5
+║ Library: 40  |  Graveyard: 7
+║ Boros Ponza board:
+║   Creatures: Obsidian Charmaw (4/4)
+║   Lands: Sacred Foundry, Mountain, Mountain, Mountain, Sacred Foundry, Arena of Glory
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Island [T], Swamp [T], Otawara, Soaring City [T], Creeping Tar Pit, Watery Grave
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T12 P1: Cast Ephemerate (W)
+T12 P1: Rebound Ephemerate
+T12: Resolve Ephemerate
+T12: Blink Obsidian Charmaw
+T12: Ephemerate moved stack -> exile (rebound (CR 702.86))
+  [Draw] P1 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Mountain→R (paying for Ragavan, Nimble Pilferer, 6 mana remaining)
+T12 P1: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P2 responds with Counterspell
+    [Mana] Tap Creeping Tar Pit→U, Watery Grave→U (paying for Counterspell, 2 mana remaining)
+T12 P2: Cast Counterspell (UU)
+T12: Resolve Counterspell
+T12: Ragavan, Nimble Pilferer moved stack -> graveyard (resolution)
+T12: Ragavan, Nimble Pilferer is countered
+T12: Counterspell moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Boros Ponza 7
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 39  |  Graveyard: 10
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Island, Swamp, Otawara, Soaring City, Creeping Tar Pit, Watery Grave
+║ Boros Ponza board:
+║   Creatures: Obsidian Charmaw (4/4)
+║   Lands: Sacred Foundry, Mountain [T], Mountain, Mountain, Sacred Foundry, Arena of Glory
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Psychic Frog
+  [Main 1]
+T12 P2: Creeping Tar Pit becomes a 3/2 creature until end of turn (pays 3 mana)
+    → Goal: close_game
+    [Mana] Tap Creeping Tar Pit→B, Watery Grave→B (paying for Dauthi Voidwalker, 2 mana remaining)
+T12 P2: Cast Dauthi Voidwalker (BB)
+    [Priority] P1 passes (no response)
+T12: Resolve Dauthi Voidwalker
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+>>> Dimir Midrange wins Game 2 on turn 13 via timeout
+    Final life: Boros Ponza=7  Dimir Midrange=20
+
+======================================================================
+  MATCH RESULT: Dimir Midrange wins 2-0
+======================================================================

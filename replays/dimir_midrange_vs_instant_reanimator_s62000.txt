@@ -1,0 +1,1524 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+======================================================================
+  GAME 1: Dimir Midrange (P1) vs Instant Reanimator (P2)  —  seed 62000
+  Series: Dimir Midrange 0 - 0 Instant Reanimator
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Instant Reanimator wins → chooses to play first
+║ P1 (on play): Instant Reanimator
+║ P2 (on draw): Dimir Midrange
+╚═══════════════════════════════════════════════════════
+
+P1 (Dimir Midrange) opening hand (2 lands, 5 spells):
+  • Darkslick Shores [Land, CMC 0]
+  • Polluted Delta [Land, CMC 0]
+  • Consider [Spell, CMC 1]
+  • Thoughtseize [Spell, CMC 1]
+  • Counterspell [Spell, CMC 2]
+  • Drown in the Loch [Spell, CMC 2]
+  • Counterspell [Spell, CMC 2]
+→ P1 KEEPS 7 — has key card(s): Consider, Thoughtseize, 5 cheap spells
+
+P2 (Instant Reanimator) opening hand (2 lands, 5 spells):
+  • Breeding Pool [Land, CMC 0]
+  • Force of Negation [Spell, CMC 3]
+  • Goryo's Vengeance [Spell, CMC 2]
+  • Atraxa, Grand Unifier [Creature, CMC 7]
+  • Atraxa, Grand Unifier [Creature, CMC 7]
+  • Godless Shrine [Land, CMC 0]
+  • Atraxa, Grand Unifier [Creature, CMC 7]
+→ P2 MULLIGANS (combo path under-covered in 7-card hand (best path: 1/2 role buckets; need enabler+payoff))
+  New hand (4 lands, 3 spells): ['Atraxa, Grand Unifier', 'Atraxa, Grand Unifier', 'Island', 'Marsh Flats', 'Undercity Sewers', 'Quantum Riddler', 'Plains']
+→ P2 MULLIGANS (combo path under-covered in 6-card hand (best path: 1/2 role buckets; need enabler))
+  New hand (2 lands, 5 spells): ['Solitude', "Goryo's Vengeance", 'Atraxa, Grand Unifier', 'Psychic Frog', 'Flooded Strand', 'Undercity Sewers', 'Thoughtseize']
+→ P2 mulligans to 5, bottoms: ['Solitude', 'Thoughtseize']
+  Keeps: ["Goryo's Vengeance", 'Atraxa, Grand Unifier', 'Psychic Frog', 'Flooded Strand', 'Undercity Sewers']
+
+
+╔══ TURN 1 — Instant Reanimator (P2) ══════════════════════════
+║ Life: Instant Reanimator 20  |  Dimir Midrange 20
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 55  |  Graveyard: 0
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Flooded Strand
+T1: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Flooded Strand (pay 1 life) -> Watery Grave (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Instant Reanimator 19
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Fatal Push
+  [Main 1]
+T1 P1: Play Polluted Delta
+T1: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Polluted Delta (pay 1 life) -> Watery Grave (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Instant Reanimator (P2) ══════════════════════════
+║ Life: Instant Reanimator 19  |  Dimir Midrange 19
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 1
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Force of Negation
+  [Main 1]
+T2 P2: surveil 1 → Fallaji Archaeologist to GY
+T2 P2: Play Undercity Sewers (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Instant Reanimator 19
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Undercity Sewers [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Thoughtseize
+  [Main 1]
+T2 P1: Play Darkslick Shores (untapped, 1 other lands)
+    → Goal: grind_value [enablers]
+    [Mana] Tap Watery Grave→U (paying for Consider, 2 mana remaining)
+T2 P1: Cast Consider (U)
+    [Priority] P2 passes (no response)
+T2: Resolve Consider
+T2 P1: surveil 1 → Consider to GY
+T2 P1: Consider → draw 1 (Psychic Frog)
+T2: Consider moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Instant Reanimator (P2) ══════════════════════════
+║ Life: Instant Reanimator 19  |  Dimir Midrange 19
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 2
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Undercity Sewers
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T], Darkslick Shores
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Goryo's Vengeance
+  [Main 1]
+    → Goal: fill_resource [engines]
+    [Mana] Tap Watery Grave→U, Undercity Sewers→B (paying for Psychic Frog, 2 mana remaining)
+T3 P2: Cast Psychic Frog (UB)
+    [Priority] P1 passes (no response)
+T3: Resolve Psychic Frog
+  [Begin Combat]
+    [Mana] Tap Darkslick Shores→B (paying for Fatal Push, 1 mana remaining)
+T3 P1: Cast Fatal Push (B)
+T3: Resolve Fatal Push
+T3: Psychic Frog dies
+T3 P1: Fatal Push destroys Psychic Frog
+T3: Fatal Push moved stack -> graveyard (resolution)
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Instant Reanimator 19
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 48  |  Graveyard: 4
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Darkslick Shores
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T], Undercity Sewers [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Consider
+  [Main 1]
+    → Goal: grind_value [enablers]
+    [Mana] Tap Watery Grave→U (paying for Consider, 2 mana remaining)
+T3 P1: Cast Consider (U)
+    [Priority] P2 passes (no response)
+T3: Resolve Consider
+T3 P1: surveil 1 → Polluted Delta to GY
+T3 P1: Consider → draw 1 (Subtlety)
+T3: Consider moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Instant Reanimator (P2) ══════════════════════════
+║ Life: Instant Reanimator 19  |  Dimir Midrange 19
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 3
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Undercity Sewers
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T], Darkslick Shores
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Griselbrand
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Instant Reanimator 19
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 45  |  Graveyard: 6
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Darkslick Shores
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Undercity Sewers
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Orcish Bowmasters
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Watery Grave→B, Darkslick Shores→U (paying for Orcish Bowmasters, 2 mana remaining)
+T4 P1: Cast Orcish Bowmasters (1B)
+    [Priority] P2 passes (no response)
+T4: Resolve Orcish Bowmasters
+T4 P1: Bowmasters deals 1 damage to opponent (life: 18)
+T4 P1: Bowmasters creates 1/1 Orc Army token
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Instant Reanimator (P2) ══════════════════════════
+║ Life: Instant Reanimator 18  |  Dimir Midrange 19
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 3
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Undercity Sewers
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave [T], Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+T5 P2: Play Flooded Strand
+T5: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T5 P2: Crack Flooded Strand (pay 1 life) -> Godless Shrine (tapped, life: 17)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Instant Reanimator 17
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 44  |  Graveyard: 6
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave, Darkslick Shores
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Undercity Sewers, Godless Shrine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Swamp
+  [Main 1]
+T5 P1: Play Swamp
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Orcish Bowmasters, Orc Army
+T5 P1: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P2 does not block
+T5 P1:   Orcish Bowmasters (1/1) → 1 dmg to player
+T5 P1:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 17 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Instant Reanimator (P2) ══════════════════════════
+║ Life: Instant Reanimator 15  |  Dimir Midrange 19
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 4
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Undercity Sewers, Godless Shrine
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped]
+║   Lands: Watery Grave, Darkslick Shores, Swamp
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Shadowy Backstreet
+  [Main 1]
+T6 P2: surveil 1 → Thoughtseize to GY
+T6 P2: Play Shadowy Backstreet (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Instant Reanimator 15
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 43  |  Graveyard: 6
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave, Darkslick Shores, Swamp
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Undercity Sewers, Godless Shrine, Shadowy Backstreet [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Murktide Regent
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Orcish Bowmasters, Orc Army
+T6 P1: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P2 does not block
+T6 P1:   Orcish Bowmasters (1/1) → 1 dmg to player
+T6 P1:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 15 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+T6: Murktide Regent moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 7 — Instant Reanimator (P2) ══════════════════════════
+║ Life: Instant Reanimator 13  |  Dimir Midrange 19
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 46  |  Graveyard: 5
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Undercity Sewers, Godless Shrine, Shadowy Backstreet
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped]
+║   Lands: Watery Grave, Darkslick Shores, Swamp
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Faithful Mending
+  [Main 1]
+    → Goal: fill_resource [enablers]
+    [Mana] Tap Watery Grave→U, Godless Shrine→W (paying for Faithful Mending, 4 mana remaining)
+T7 P2: Cast Faithful Mending (WU)
+    [Priority] P1 passes (no response)
+T7: Resolve Faithful Mending
+T7: Griselbrand moved hand -> graveyard (discard)
+T7: Atraxa, Grand Unifier moved hand -> graveyard (discard)
+T7: Faithful Mending moved stack -> graveyard (resolution)
+T7 P2: Play Hallowed Fountain (untapped, life: 11)
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Undercity Sewers→B, Shadowy Backstreet→B (paying for Goryo's Vengeance, 3 mana remaining)
+T7 P2: Cast Goryo's Vengeance (1B)
+    [Priority] P1 responds with Counterspell
+    [Mana] Tap Watery Grave→U, Darkslick Shores→U (paying for Counterspell, 3 mana remaining)
+T7 P1: Cast Counterspell (UU)
+T7: Resolve Counterspell
+T7: Goryo's Vengeance moved stack -> graveyard (resolution)
+T7: Goryo's Vengeance is countered
+T7: Counterspell moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Instant Reanimator 11
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 42  |  Graveyard: 8
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave, Darkslick Shores, Swamp
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T], Undercity Sewers [T], Godless Shrine [T], Shadowy Backstreet [T], Hallowed Fountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Creeping Tar Pit
+  [Main 1]
+T7 P1: Play Creeping Tar Pit (enters tapped)
+    → Goal: close_game
+    [Mana] Tap Swamp→B, Watery Grave→U (paying for Psychic Frog, 3 mana remaining)
+T7 P1: Cast Psychic Frog (UB)
+    [Priority] P2 passes (no response)
+T7: Resolve Psychic Frog
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Orcish Bowmasters, Orc Army
+T7 P1: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P2 does not block
+T7 P1:   Orcish Bowmasters (1/1) → 1 dmg to player
+T7 P1:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 11 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Instant Reanimator (P2) ══════════════════════════
+║ Life: Instant Reanimator 9  |  Dimir Midrange 19
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 43  |  Graveyard: 9
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Undercity Sewers, Godless Shrine, Shadowy Backstreet, Hallowed Fountain
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped], Psychic Frog (1/2)
+║   Lands: Watery Grave [T], Darkslick Shores, Swamp [T], Creeping Tar Pit [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thoughtseize
+  [Main 1]
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Watery Grave→B, Undercity Sewers→B (paying for Goryo's Vengeance, 5 mana remaining)
+T8 P2: Cast Goryo's Vengeance (1B)
+    [Priority] P1 passes (no response)
+T8: Resolve Goryo's Vengeance
+T8 P2: Reanimate Griselbrand
+T8: Goryo's Vengeance moved stack -> graveyard (resolution)
+T8 P2: Griselbrand: pay 7 life, draw 7
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Griselbrand
+T8 P2: Attack with Griselbrand
+  [Declare Blockers] P1 does not block
+T8 P2:   Griselbrand (7/7) → 7 dmg to player
+  [Combat Damage] 7 damage dealt → P1 life: 19 → 12
+  [End Combat]
+  [Main 2]
+    → Goal: execute_payoff [protection]
+    [Mana] Tap Godless Shrine→W (paying for Ephemerate, 3 mana remaining)
+T8 P2: Cast Ephemerate (W)
+    [Priority] P1 passes (no response)
+T8: Resolve Ephemerate
+T8: Blink Griselbrand
+T8: Ephemerate moved stack -> exile (rebound (CR 702.86))
+T8 P2: Play Plains
+    → Goal: execute_payoff [protection]
+    [Mana] Tap Plains→W (paying for Ephemerate, 3 mana remaining)
+T8 P2: Cast Ephemerate (W)
+    [Priority] P1 passes (no response)
+T8: Resolve Ephemerate
+T8: Blink Griselbrand
+T8: Ephemerate moved stack -> exile (rebound (CR 702.86))
+  [End Step]
+
+╔══ TURN 8 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 12  |  Instant Reanimator 2
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 41  |  Graveyard: 8
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1), Psychic Frog (1/2)
+║   Lands: Watery Grave, Darkslick Shores, Swamp, Creeping Tar Pit
+║ Instant Reanimator board:
+║   Creatures: Griselbrand (7/7)
+║   Lands: Watery Grave [T], Undercity Sewers [T], Godless Shrine [T], Shadowy Backstreet, Hallowed Fountain, Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Darkslick Shores
+  [Main 1]
+T8 P1: Creeping Tar Pit becomes a 3/2 creature until end of turn (pays 3 mana)
+T8 P1: Play Darkslick Shores (tapped, 4 other lands)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Orcish Bowmasters, Orc Army, Creeping Tar Pit, Psychic Frog
+T8 P1: Attack with Orcish Bowmasters, Orc Army, Creeping Tar Pit, Psychic Frog
+T8 P2:   [BLOCK-EMERGENCY] Griselbrand (7/7) blocks Creeping Tar Pit (3/2) — lifespan_delta=+100.67
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T8 P1:   Orcish Bowmasters (1/1) → 1 dmg to player
+T8 P1:   Orc Army (1/1) → 1 dmg to player
+T8 P1:   Psychic Frog (1/2) → 1 dmg to player
+T8 P1: Psychic Frog deals combat damage — draw a card
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Instant Reanimator (P2) ══════════════════════════
+║ Life: Instant Reanimator 6  |  Dimir Midrange 12
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 6  |  Opp lands: 5
+║ Library: 35  |  Graveyard: 9
+║ Instant Reanimator board:
+║   Creatures: Griselbrand (7/7)
+║   Lands: Watery Grave, Undercity Sewers, Godless Shrine, Shadowy Backstreet, Hallowed Fountain, Plains
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped], Psychic Frog (1/2) [tapped]
+║   Lands: Watery Grave [T], Darkslick Shores [T], Swamp [T], Creeping Tar Pit [T], Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T9 P2: Cast Ephemerate (W)
+T9 P2: Rebound Ephemerate
+T9 P2: Cast Ephemerate (W)
+T9 P2: Rebound Ephemerate
+T9: Resolve Ephemerate
+T9: Blink Griselbrand
+T9: Ephemerate moved stack -> exile (rebound (CR 702.86))
+T9: Resolve Ephemerate
+T9: Blink Griselbrand
+T9: Ephemerate moved stack -> exile (rebound (CR 702.86))
+  [Draw] P2 draws: Ephemerate
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Plains→W, Watery Grave→B, Undercity Sewers→B, Godless Shrine→W, Shadowy Backstreet→B (paying for Solitude, 6 mana remaining)
+T9 P2: Cast Solitude (3WW)
+    [Priority] P1 passes (no response)
+T9: Resolve Solitude
+T9: Orcish Bowmasters moved battlefield -> exile (exiled)
+T9 P2: Solitude exiles Orcish Bowmasters (opponent gains 1 life, now 13)
+    → Goal: execute_payoff [protection]
+    [Mana] Tap Hallowed Fountain→W (paying for Ephemerate, 1 mana remaining)
+T9 P2: Cast Ephemerate (W)
+    [Priority] P1 passes (no response)
+T9: Resolve Ephemerate
+T9: Blink Griselbrand
+T9: Ephemerate moved stack -> exile (rebound (CR 702.86))
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 13  |  Instant Reanimator 6
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 39  |  Graveyard: 8
+║ Dimir Midrange board:
+║   Creatures: Orc Army (1/1), Psychic Frog (1/2)
+║   Lands: Watery Grave, Darkslick Shores, Swamp, Creeping Tar Pit, Darkslick Shores
+║ Instant Reanimator board:
+║   Creatures: Solitude (3/2), Griselbrand (7/7)
+║   Lands: Watery Grave [T], Undercity Sewers [T], Godless Shrine [T], Shadowy Backstreet [T], Hallowed Fountain [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Murktide Regent
+  [Main 1]
+T9 P1: Play Scalding Tarn
+T9: Scalding Tarn moved battlefield -> graveyard (fetchland sacrifice)
+T9 P1: Crack Scalding Tarn (pay 1 life) -> Watery Grave (tapped, life: 12)
+    → Goal: close_game
+    [Mana] Tap Swamp→B, Watery Grave→U (paying for Drown in the Loch, 5 mana remaining)
+T9 P1: Cast Drown in the Loch (UB)
+    [Priority] P2 responds with Force of Negation
+T9 P2: Pay alternate cost: exile Quantum Riddler for Force of Negation
+T9 P2: Cast Force of Negation (1UU)
+T9: Resolve Force of Negation
+T9: Drown in the Loch moved stack -> graveyard (resolution)
+T9: Drown in the Loch is countered
+T9: Force of Negation moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Orc Army, Psychic Frog
+T9 P1: Attack with Orc Army, Psychic Frog
+  [Declare Blockers] P2 does not block
+T9 P1:   Orc Army (1/1) → 1 dmg to player
+T9 P1:   Psychic Frog (1/2) → 1 dmg to player
+T9 P1: Psychic Frog deals combat damage — draw a card
+  [Combat Damage] 2 damage dealt → P2 life: 6 → 4
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Instant Reanimator (P2) ══════════════════════════
+║ Life: Instant Reanimator 4  |  Dimir Midrange 12
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 6  |  Opp lands: 6
+║ Library: 34  |  Graveyard: 10
+║ Instant Reanimator board:
+║   Creatures: Solitude (3/2), Griselbrand (7/7)
+║   Lands: Watery Grave, Undercity Sewers, Godless Shrine, Shadowy Backstreet, Hallowed Fountain, Plains
+║ Dimir Midrange board:
+║   Creatures: Orc Army (1/1) [tapped], Psychic Frog (1/2) [tapped]
+║   Lands: Watery Grave [T], Darkslick Shores, Swamp [T], Creeping Tar Pit, Darkslick Shores, Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T10 P2: Cast Ephemerate (W)
+T10 P2: Rebound Ephemerate
+T10 P2: Cast Ephemerate (W)
+T10 P2: Rebound Ephemerate
+T10 P2: Cast Ephemerate (W)
+T10 P2: Rebound Ephemerate
+T10: Resolve Ephemerate
+T10: Blink Griselbrand
+T10: Ephemerate moved stack -> exile (rebound (CR 702.86))
+T10: Resolve Ephemerate
+T10: Blink Griselbrand
+T10: Ephemerate moved stack -> exile (rebound (CR 702.86))
+T10: Resolve Ephemerate
+T10: Blink Griselbrand
+T10: Ephemerate moved stack -> exile (rebound (CR 702.86))
+  [Draw] P2 draws: Meticulous Archive
+  [Main 1]
+T10 P2: surveil 1 → Ephemerate to GY
+T10 P2: Play Meticulous Archive (enters tapped)
+    → Goal: execute_payoff
+    [Mana] Tap Plains→W, Watery Grave→U, Undercity Sewers→U, Godless Shrine→B, Shadowy Backstreet→B (paying for Quantum Riddler, 6 mana remaining)
+T10 P2: Cast Quantum Riddler (3UU)
+    [Priority] P1 responds with Counterspell
+    [Mana] Tap Darkslick Shores→U, Creeping Tar Pit→U (paying for Counterspell, 3 mana remaining)
+T10 P1: Cast Counterspell (UU)
+T10: Resolve Counterspell
+T10: Quantum Riddler moved stack -> graveyard (resolution)
+T10: Quantum Riddler is countered
+T10: Counterspell moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Solitude
+T10 P2: Attack with Solitude
+  [Declare Blockers] P1 does not block
+T10 P2:   Solitude (3/2) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 12 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 9  |  Instant Reanimator 7
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 6  |  Opp lands: 7
+║ Library: 36  |  Graveyard: 11
+║ Dimir Midrange board:
+║   Creatures: Orc Army (1/1), Psychic Frog (1/2)
+║   Lands: Watery Grave, Darkslick Shores, Swamp, Creeping Tar Pit, Darkslick Shores, Watery Grave
+║ Instant Reanimator board:
+║   Creatures: Solitude (3/2) [tapped], Griselbrand (7/7)
+║   Lands: Watery Grave [T], Undercity Sewers [T], Godless Shrine [T], Shadowy Backstreet [T], Hallowed Fountain, Plains [T], Meticulous Archive [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Shelldock Isle
+  [Main 1]
+T10 P1: Play Polluted Delta
+T10: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T10 P1: Crack Polluted Delta -> Island (untapped)
+    → Goal: close_game
+T10 P1: Delve 5 cards for Murktide Regent
+    [Mana] Tap Island→U, Watery Grave→U (paying for Murktide Regent, 7 mana remaining)
+T10 P1: Cast Murktide Regent (5UU)
+    [Priority] P2 passes (no response)
+T10: Resolve Murktide Regent
+T10 P1: Murktide Regent enters as 4/4 (1 +1/+1 counters from delved instants/sorceries)
+    → Goal: close_game
+    [Mana] Tap Swamp→B, Darkslick Shores→U, Creeping Tar Pit→U, Darkslick Shores→U (paying for Subtlety, 5 mana remaining)
+T10 P1: Cast Subtlety (2UU)
+    [Priority] P2 passes (no response)
+T10: Resolve Subtlety
+T10 P1: Subtlety enters (no creature/PW spell on stack to target)
+    → Goal: close_game
+    [Mana] Tap Watery Grave→B (paying for Thoughtseize, 1 mana remaining)
+T10 P1: Cast Thoughtseize (B)
+    [Priority] P2 passes (no response)
+T10: Resolve Thoughtseize
+T10: Atraxa, Grand Unifier moved hand -> graveyard (forced discard)
+T10 P1: Thoughtseize → opponent discards 1
+T10: Thoughtseize moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Orc Army, Psychic Frog
+T10 P1: Attack with Orc Army, Psychic Frog
+  [Declare Blockers] P2 does not block
+T10 P1:   Orc Army (1/1) → 1 dmg to player
+T10 P1:   Psychic Frog (2/3) → 2 dmg to player
+T10 P1: Psychic Frog deals combat damage — draw a card
+  [Combat Damage] 3 damage dealt → P2 life: 7 → 4
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Instant Reanimator (P2) ══════════════════════════
+║ Life: Instant Reanimator 4  |  Dimir Midrange 6
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 7  |  Opp lands: 7
+║ Library: 32  |  Graveyard: 13
+║ Instant Reanimator board:
+║   Creatures: Solitude (3/2), Griselbrand (7/7)
+║   Lands: Watery Grave, Undercity Sewers, Godless Shrine, Shadowy Backstreet, Hallowed Fountain, Plains, Meticulous Archive
+║ Dimir Midrange board:
+║   Creatures: Orc Army (1/1) [tapped], Psychic Frog (2/3) [tapped], Murktide Regent (4/4), Subtlety (3/3)
+║   Lands: Watery Grave [T], Darkslick Shores [T], Swamp [T], Creeping Tar Pit [T], Darkslick Shores [T], Watery Grave [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T11 P2: Cast Ephemerate (W)
+T11 P2: Rebound Ephemerate
+T11 P2: Cast Ephemerate (W)
+T11 P2: Rebound Ephemerate
+T11 P2: Cast Ephemerate (W)
+T11 P2: Rebound Ephemerate
+T11: Resolve Ephemerate
+T11: Blink Griselbrand
+T11: Ephemerate moved stack -> exile (rebound (CR 702.86))
+T11: Resolve Ephemerate
+T11: Blink Griselbrand
+T11: Ephemerate moved stack -> exile (rebound (CR 702.86))
+T11: Resolve Ephemerate
+T11: Blink Griselbrand
+T11: Ephemerate moved stack -> exile (rebound (CR 702.86))
+  [Draw] P2 draws: March of Otherworldly Light
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Watery Grave→B (paying for Thoughtseize, 7 mana remaining)
+T11 P2: Cast Thoughtseize (B)
+    [Priority] P1 passes (no response)
+T11: Resolve Thoughtseize
+T11: Thoughtseize moved hand -> graveyard (forced discard)
+T11: Thoughtseize moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Solitude
+T11 P2: Attack with Solitude
+  [Declare Blockers] P1 does not block
+T11 P2:   Solitude (3/2) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 6 → 3
+  [End Combat]
+  [Main 2]
+    → Goal: execute_payoff
+    [Mana] Tap Undercity Sewers→B (paying for Thoughtseize, 6 mana remaining)
+T11 P2: Cast Thoughtseize (B)
+    [Priority] P1 passes (no response)
+T11: Resolve Thoughtseize
+T11: Thoughtseize moved stack -> graveyard (resolution)
+  [End Step]
+
+╔══ TURN 11 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 3  |  Instant Reanimator 3
+║ Hand: 1 cards  |  Opp hand: 1 cards
+║ Lands: 7  |  Opp lands: 7
+║ Library: 33  |  Graveyard: 10
+║ Dimir Midrange board:
+║   Creatures: Orc Army (1/1), Psychic Frog (2/3), Murktide Regent (4/4), Subtlety (3/3)
+║   Lands: Watery Grave, Darkslick Shores, Swamp, Creeping Tar Pit, Darkslick Shores, Watery Grave, Island
+║ Instant Reanimator board:
+║   Creatures: Solitude (3/2) [tapped], Griselbrand (7/7)
+║   Lands: Watery Grave [T], Undercity Sewers [T], Godless Shrine, Shadowy Backstreet, Hallowed Fountain, Plains, Meticulous Archive
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Drown in the Loch
+  [Main 1]
+T11 P1: Play Darkslick Shores (tapped, 7 other lands)
+    → Goal: close_game
+    [Mana] Tap Swamp→B, Island→U (paying for Drown in the Loch, 7 mana remaining)
+T11 P1: Cast Drown in the Loch (UB)
+    [Priority] P2 passes (no response)
+T11: Resolve Drown in the Loch
+T11: Griselbrand dies
+T11: Drown in the Loch moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Orc Army, Psychic Frog, Murktide Regent, Subtlety
+T11 P1: Attack with Orc Army, Psychic Frog, Murktide Regent, Subtlety
+  [Declare Blockers] P2 does not block
+T11 P1:   Orc Army (1/1) → 1 dmg to player
+T11 P1:   Psychic Frog (2/3) → 2 dmg to player
+T11 P1: Psychic Frog deals combat damage — draw a card
+T11 P1:   Murktide Regent (4/4) → 4 dmg to player
+T11 P1:   Subtlety (3/3) → 3 dmg to player
+P2 loses: life total -7
+  [Combat Damage] 10 damage dealt → P2 life: 3 → -7
+
+>>> Dimir Midrange wins Game 1 on turn 11 via damage
+    Final life: Dimir Midrange=3  Instant Reanimator=-7
+
+======================================================================
+  GAME 2: Instant Reanimator (P1) vs Dimir Midrange (P2)  —  seed 62001
+  Series: Dimir Midrange 1 - 0 Instant Reanimator
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Instant Reanimator wins → chooses to play first
+║ P1 (on play): Instant Reanimator
+║ P2 (on draw): Dimir Midrange
+╚═══════════════════════════════════════════════════════
+
+P1 (Instant Reanimator) opening hand (2 lands, 5 spells):
+  • Quantum Riddler [Creature, CMC 5]
+  • Ephemerate [Spell, CMC 1]
+  • Quantum Riddler [Creature, CMC 5]
+  • Thoughtseize [Spell, CMC 1]
+  • Psychic Frog [Creature, CMC 2]
+  • Meticulous Archive [Land, CMC 0]
+  • Shadowy Backstreet [Land, CMC 0]
+→ P1 MULLIGANS (combo path under-covered in 7-card hand (best path: 1/2 role buckets; need enabler+payoff))
+  New hand (3 lands, 4 spells): ['March of Otherworldly Light', 'Solitude', 'Ephemerate', "Goryo's Vengeance", 'Polluted Delta', 'Hallowed Fountain', 'Watery Grave']
+→ P1 MULLIGANS (combo path under-covered in 6-card hand (best path: 1/2 role buckets; need enabler))
+  New hand (5 lands, 2 spells): ['Plains', 'Solitude', 'Polluted Delta', 'Flooded Strand', 'Polluted Delta', 'Ephemerate', 'Undercity Sewers']
+→ P1 MULLIGANS (goal conjunction unreachable — no role-path coverage and no castable dig card)
+  New hand (2 lands, 5 spells): ['Psychic Frog', 'Plains', "Goryo's Vengeance", 'Quantum Riddler', 'Atraxa, Grand Unifier', 'Godless Shrine', 'Prismatic Ending']
+
+P2 (Dimir Midrange) opening hand (2 lands, 5 spells):
+  • Archmage's Charm [Spell, CMC 3]
+  • Dauthi Voidwalker [Creature, CMC 2]
+  • Counterspell [Spell, CMC 2]
+  • Island [Land, CMC 0]
+  • Swamp [Land, CMC 0]
+  • Archmage's Charm [Spell, CMC 3]
+  • Counterspell [Spell, CMC 2]
+→ P2 KEEPS 7 — has key card(s): Dauthi Voidwalker, 5 cheap spells
+
+
+╔══ TURN 1 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 20  |  Dimir Midrange 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Godless Shrine (untapped, life: 20)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Instant Reanimator 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Otawara, Soaring City
+  [Main 1]
+T1 P2: Play Island
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 20  |  Dimir Midrange 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Solitude
+  [Main 1]
+T2 P1: Play Plains
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Instant Reanimator 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Island
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Orcish Bowmasters
+  [Main 1]
+T2 P2: Play Swamp
+    → Goal: grind_value
+    [Mana] Tap Island→U, Swamp→B (paying for Orcish Bowmasters, 2 mana remaining)
+T2 P2: Cast Orcish Bowmasters (1B)
+    [Priority] P1 passes (no response)
+T2: Resolve Orcish Bowmasters
+T2 P2: Bowmasters deals 1 damage to opponent (life: 19)
+T2 P2: Bowmasters creates 1/1 Orc Army token
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 19  |  Dimir Midrange 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Plains
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Island [T], Swamp [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Force of Negation
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Instant Reanimator 19
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Island, Swamp
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thoughtseize
+  [Main 1]
+T3 P2: Play Otawara, Soaring City
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army
+T3 P2: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P1 does not block
+T3 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T3 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 19 → 17
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 17  |  Dimir Midrange 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 0
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Plains
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped]
+║   Lands: Island, Swamp, Otawara, Soaring City
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Polluted Delta
+  [Main 1]
+T4 P1: Play Polluted Delta
+T4: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T4 P1: Crack Polluted Delta (pay 1 life) -> Breeding Pool (untapped, life: 14)
+    → Goal: fill_resource [engines]
+    [Mana] Tap Godless Shrine→B, Breeding Pool→U (paying for Psychic Frog, 3 mana remaining)
+T4 P1: Cast Psychic Frog (UB)
+    [Priority] P2 responds with Counterspell
+    [Mana] Tap Island→U, Otawara, Soaring City→U (paying for Counterspell, 3 mana remaining)
+T4 P2: Cast Counterspell (UU)
+T4: Resolve Counterspell
+T4: Psychic Frog moved stack -> graveyard (resolution)
+T4: Psychic Frog is countered
+T4: Counterspell moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Instant Reanimator 14
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Island, Swamp, Otawara, Soaring City
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine [T], Plains, Breeding Pool [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thoughtseize
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army
+T4 P2: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P1 does not block
+T4 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T4 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 14 → 12
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 12  |  Dimir Midrange 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Plains, Breeding Pool
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped]
+║   Lands: Island, Swamp, Otawara, Soaring City
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ephemerate
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Instant Reanimator 12
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Island, Swamp, Otawara, Soaring City
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Plains, Breeding Pool
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Drown in the Loch
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army
+T5 P2: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P1 does not block
+T5 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T5 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 12 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 10  |  Dimir Midrange 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 2
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Plains, Breeding Pool
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped]
+║   Lands: Island, Swamp, Otawara, Soaring City
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Quantum Riddler
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T6: Atraxa, Grand Unifier moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 6 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Instant Reanimator 10
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Island, Swamp, Otawara, Soaring City
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Plains, Breeding Pool
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Creeping Tar Pit
+  [Main 1]
+T6 P2: Play Creeping Tar Pit (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army
+T6 P2: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P1 does not block
+T6 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T6 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 10 → 8
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 8  |  Dimir Midrange 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 3
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Plains, Breeding Pool
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped]
+║   Lands: Island, Swamp, Otawara, Soaring City, Creeping Tar Pit [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Atraxa, Grand Unifier
+  [Main 1]
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Plains→W, Godless Shrine→B (paying for Goryo's Vengeance, 3 mana remaining)
+T7 P1: Cast Goryo's Vengeance (1B)
+    [Priority] P2 responds with Counterspell
+    [Mana] Tap Island→U, Otawara, Soaring City→U (paying for Counterspell, 3 mana remaining)
+T7 P2: Cast Counterspell (UU)
+T7: Resolve Counterspell
+T7: Goryo's Vengeance moved stack -> graveyard (resolution)
+T7: Goryo's Vengeance is countered
+T7: Counterspell moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Instant Reanimator 8
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 2
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Island, Swamp, Otawara, Soaring City, Creeping Tar Pit
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine [T], Plains [T], Breeding Pool
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Scalding Tarn
+  [Main 1]
+T7 P2: Play Scalding Tarn
+T7: Scalding Tarn moved battlefield -> graveyard (fetchland sacrifice)
+T7 P2: Crack Scalding Tarn (pay 1 life) -> Watery Grave (tapped, life: 19)
+T7 P2: Creeping Tar Pit becomes a 3/2 creature until end of turn (pays 3 mana)
+  [Begin Combat]
+T7 P1: Evoke Solitude (exile Ephemerate)
+T7 P1: Cast Solitude (3WW)
+T7: Resolve Solitude
+T7: Orcish Bowmasters moved battlefield -> exile (exiled)
+T7 P1: Solitude exiles Orcish Bowmasters (opponent gains 1 life, now 20)
+T7: Solitude moved battlefield -> graveyard (evoke sacrifice)
+T7 P1: Solitude sacrificed (evoke)
+  [Declare Attackers] P2 attacks with: Orc Army, Creeping Tar Pit
+T7 P2: Attack with Orc Army, Creeping Tar Pit
+  [Declare Blockers] P1 does not block
+T7 P2:   Orc Army (1/1) → 1 dmg to player
+T7 P2:   Creeping Tar Pit (3/2) → 3 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 8 → 4
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 4  |  Dimir Midrange 20
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 5
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Plains, Breeding Pool
+║ Dimir Midrange board:
+║   Creatures: Orc Army (1/1) [tapped]
+║   Lands: Island [T], Swamp [T], Otawara, Soaring City [T], Creeping Tar Pit [T], Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Psychic Frog
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Plains→W (paying for Prismatic Ending, 3 mana remaining)
+T8 P1: Cast Prismatic Ending (2W) (X=2)
+    [Priority] P2 passes (no response)
+T8: Resolve Prismatic Ending
+T8: Orc Army moved battlefield -> exile (exiled)
+T8 P1: Prismatic Ending exiles Orc Army
+T8: Prismatic Ending moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Instant Reanimator 4
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 45  |  Graveyard: 3
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Island, Swamp, Otawara, Soaring City, Creeping Tar Pit, Watery Grave
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine [T], Plains [T], Breeding Pool [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Spell Pierce
+  [Main 1]
+T8 P2: Creeping Tar Pit becomes a 3/2 creature until end of turn (pays 3 mana)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Creeping Tar Pit
+T8 P2: Attack with Creeping Tar Pit
+  [Declare Blockers] P1 does not block
+T8 P2:   Creeping Tar Pit (3/2) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 4 → 1
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 1  |  Dimir Midrange 20
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 6
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Plains, Breeding Pool
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Island [T], Swamp [T], Otawara, Soaring City [T], Creeping Tar Pit [T], Watery Grave
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Polluted Delta
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Godless Shrine→B, Breeding Pool→U (paying for Psychic Frog, 3 mana remaining)
+T9 P1: Cast Psychic Frog (UB)
+    [Priority] P2 passes (no response)
+T9: Resolve Psychic Frog
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Instant Reanimator 1
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 44  |  Graveyard: 3
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Island, Swamp, Otawara, Soaring City, Creeping Tar Pit, Watery Grave
+║ Instant Reanimator board:
+║   Creatures: Psychic Frog (1/2)
+║   Lands: Godless Shrine [T], Plains, Breeding Pool [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Fatal Push
+  [Main 1]
+T9 P2: Creeping Tar Pit becomes a 3/2 creature until end of turn (pays 3 mana)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Creeping Tar Pit
+T9 P2: Attack with Creeping Tar Pit
+T9 P1:   [BLOCK-EMERGENCY] Psychic Frog (1/2) blocks Creeping Tar Pit (3/2) — lifespan_delta=+100.33
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T9: Psychic Frog dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+T9: Drown in the Loch moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 10 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 1  |  Dimir Midrange 20
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 44  |  Graveyard: 7
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Plains, Breeding Pool
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Island [T], Swamp [T], Otawara, Soaring City [T], Creeping Tar Pit [T], Watery Grave
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Thoughtseize
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Instant Reanimator 1
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 43  |  Graveyard: 4
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Island, Swamp, Otawara, Soaring City, Creeping Tar Pit, Watery Grave
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Plains, Breeding Pool
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Consider
+  [Main 1]
+T10 P2: Creeping Tar Pit becomes a 3/2 creature until end of turn (pays 3 mana)
+    → Goal: close_game
+    [Mana] Tap Creeping Tar Pit→U (paying for Consider, 2 mana remaining)
+T10 P2: Cast Consider (U)
+    [Priority] P1 passes (no response)
+T10: Resolve Consider
+T10 P2: surveil 1 → Psychic Frog to GY
+T10 P2: Consider → draw 1 (Consider)
+T10: Consider moved stack -> graveyard (resolution)
+    → Goal: close_game
+    [Mana] Tap Watery Grave→U (paying for Consider, 1 mana remaining)
+T10 P2: Cast Consider (U)
+    [Priority] P1 passes (no response)
+T10: Resolve Consider
+T10 P2: surveil 1 → Underground River to GY
+T10 P2: Consider → draw 1 (Thoughtseize)
+T10: Consider moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T10: Archmage's Charm moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 11 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 1  |  Dimir Midrange 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 43  |  Graveyard: 7
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Plains, Breeding Pool
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Island [T], Swamp [T], Otawara, Soaring City [T], Creeping Tar Pit [T], Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Fallaji Archaeologist
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Plains→W, Breeding Pool→U (paying for Fallaji Archaeologist, 3 mana remaining)
+T11 P1: Cast Fallaji Archaeologist (1U)
+    [Priority] P2 passes (no response)
+T11: Resolve Fallaji Archaeologist
+T11: Island moved library -> graveyard (Fallaji Archaeologist mill)
+T11: Faithful Mending moved library -> graveyard (Fallaji Archaeologist mill)
+T11: Prismatic Ending moved library -> graveyard (Fallaji Archaeologist mill)
+T11: Faithful Mending moved graveyard -> hand (Fallaji Archaeologist recover)
+T11 P1: Fallaji Archaeologist ETB: mill 3
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Instant Reanimator 1
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 38  |  Graveyard: 9
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Island, Swamp, Otawara, Soaring City, Creeping Tar Pit, Watery Grave
+║ Instant Reanimator board:
+║   Creatures: Fallaji Archaeologist (0/3)
+║   Lands: Godless Shrine, Plains [T], Breeding Pool [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Spell Pierce
+  [Main 1]
+T11 P2: Creeping Tar Pit becomes a 3/2 creature until end of turn (pays 3 mana)
+    → Goal: close_game
+    [Mana] Tap Creeping Tar Pit→B (paying for Fatal Push, 2 mana remaining)
+T11 P2: Cast Fatal Push (B)
+    [Priority] P1 passes (no response)
+T11: Resolve Fatal Push
+T11: Fallaji Archaeologist dies
+T11 P2: Fatal Push destroys Fallaji Archaeologist
+T11: Fatal Push moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 1  |  Dimir Midrange 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 39  |  Graveyard: 10
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Plains, Breeding Pool
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Island [T], Swamp [T], Otawara, Soaring City [T], Creeping Tar Pit [T], Watery Grave
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Atraxa, Grand Unifier
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Plains→W, Breeding Pool→U (paying for Faithful Mending, 3 mana remaining)
+T12 P1: Cast Faithful Mending (WU)
+    [Priority] P2 passes (no response)
+T12: Resolve Faithful Mending
+T12: Atraxa, Grand Unifier moved hand -> graveyard (discard)
+T12: Atraxa, Grand Unifier moved hand -> graveyard (discard)
+T12: Faithful Mending moved stack -> graveyard (resolution)
+T12 P1: Play Polluted Delta
+T12: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T12 P1: Crack Polluted Delta (pay 1 life) -> Hallowed Fountain (tapped, life: 2)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Instant Reanimator 2
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 37  |  Graveyard: 10
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Island, Swamp, Otawara, Soaring City, Creeping Tar Pit, Watery Grave
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Plains [T], Breeding Pool [T], Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Polluted Delta
+  [Main 1]
+T12 P2: Creeping Tar Pit becomes a 3/2 creature until end of turn (pays 3 mana)
+T12 P2: Play Polluted Delta
+T12: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T12 P2: Crack Polluted Delta (pay 1 life) -> Watery Grave (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Creeping Tar Pit
+T12 P2: Attack with Creeping Tar Pit
+  [Declare Blockers] P1 does not block
+T12 P2:   Creeping Tar Pit (3/2) → 3 dmg to player
+P1 loses: life total -1
+  [Combat Damage] 3 damage dealt → P1 life: 2 → -1
+
+>>> Dimir Midrange wins Game 2 on turn 12 via damage
+    Final life: Instant Reanimator=-1  Dimir Midrange=19
+
+======================================================================
+  MATCH RESULT: Dimir Midrange wins 2-0
+======================================================================

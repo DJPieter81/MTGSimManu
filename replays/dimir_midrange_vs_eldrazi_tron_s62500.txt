@@ -1,0 +1,1150 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+======================================================================
+  GAME 1: Dimir Midrange (P1) vs Eldrazi Tron (P2)  —  seed 62500
+  Series: Dimir Midrange 0 - 0 Eldrazi Tron
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Dimir Midrange wins → chooses to play first
+║ P1 (on play): Dimir Midrange
+║ P2 (on draw): Eldrazi Tron
+╚═══════════════════════════════════════════════════════
+
+P1 (Dimir Midrange) opening hand (3 lands, 4 spells):
+  • Creeping Tar Pit [Land, CMC 0]
+  • Scalding Tarn [Land, CMC 0]
+  • Drown in the Loch [Spell, CMC 2]
+  • Psychic Frog [Creature, CMC 2]
+  • Archmage's Charm [Spell, CMC 3]
+  • Murktide Regent [Creature, CMC 7]
+  • Shelldock Isle [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Psychic Frog, 3 cheap spells
+
+P2 (Eldrazi Tron) opening hand (4 lands, 3 spells):
+  • Karn, the Great Creator [Spell, CMC 4]
+  • Karn, the Great Creator [Spell, CMC 4]
+  • Urza's Power Plant [Land, CMC 0]
+  • Urza's Power Plant [Land, CMC 0]
+  • Thought-Knot Seer [Creature, CMC 4]
+  • Ugin's Labyrinth [Land, CMC 0]
+  • Urza's Power Plant [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Thought-Knot Seer, 2 cheap spells
+
+
+╔══ TURN 1 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Eldrazi Tron 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Scalding Tarn
+T1: Scalding Tarn moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Scalding Tarn (pay 1 life) -> Watery Grave (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Dimir Midrange 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thought-Knot Seer
+  [Main 1]
+T1 P2: Play Urza's Power Plant
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Eldrazi Tron 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Power Plant
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Darkslick Shores
+  [Main 1]
+T2 P1: Play Creeping Tar Pit (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Dimir Midrange 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Power Plant
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Creeping Tar Pit [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Chalice of the Void
+  [Main 1]
+T2 P2: Play Urza's Power Plant
+    → Goal: ramp [enablers]
+T2 P2: Cast Chalice of the Void (2) (X=1)
+    [Priority] P1 passes (no response)
+T2: Resolve Chalice of the Void
+T2 P2: Chalice of the Void enters with 1 charge counter(s)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Eldrazi Tron 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Creeping Tar Pit
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant [T], Urza's Power Plant [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Orcish Bowmasters
+  [Main 1]
+T3 P1: Play Shelldock Isle (enters tapped)
+    → Goal: grind_value
+    [Mana] Tap Watery Grave→B, Creeping Tar Pit→U (paying for Orcish Bowmasters, 2 mana remaining)
+T3 P1: Cast Orcish Bowmasters (1B)
+    [Priority] P2 passes (no response)
+T3: Resolve Orcish Bowmasters
+T3 P1: Bowmasters deals 1 damage to opponent (life: 19)
+T3 P1: Bowmasters creates 1/1 Orc Army token
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 19  |  Dimir Midrange 19
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant, Urza's Power Plant
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave [T], Creeping Tar Pit [T], Shelldock Isle [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Urza's Mine
+  [Main 1]
+T3 P2: Play Urza's Mine
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Eldrazi Tron 19
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave, Creeping Tar Pit, Shelldock Isle
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant, Urza's Power Plant, Urza's Mine
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Fatal Push
+  [Main 1]
+T4 P1: Play Darkslick Shores (tapped, 3 other lands)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Orcish Bowmasters, Orc Army
+T4 P1: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P2 does not block
+T4 P1:   Orcish Bowmasters (1/1) → 1 dmg to player
+T4 P1:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 19 → 17
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 17  |  Dimir Midrange 19
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 50  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant, Urza's Power Plant, Urza's Mine
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped]
+║   Lands: Watery Grave, Creeping Tar Pit, Shelldock Isle, Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Kozilek's Command
+  [Main 1]
+T4 P2: Play Urza's Power Plant
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C, Urza's Power Plant→C, Urza's Mine→C, Urza's Power Plant→C (paying for Karn, the Great Creator, 4 mana remaining)
+T4 P2: Cast Karn, the Great Creator (4)
+    [Priority] P1 responds with Drown in the Loch
+    [Mana] Tap Shelldock Isle→U, Watery Grave→B (paying for Drown in the Loch, 3 mana remaining)
+T4 P1: Cast Drown in the Loch (UB)
+T4: Resolve Drown in the Loch
+T4: Karn, the Great Creator moved stack -> graveyard (resolution)
+T4: Karn, the Great Creator is countered
+T4: Drown in the Loch moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Eldrazi Tron 17
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 2
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave, Creeping Tar Pit, Shelldock Isle, Darkslick Shores
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant [T], Urza's Power Plant [T], Urza's Mine [T], Urza's Power Plant [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Consider
+  [Main 1]
+T5 P1: Creeping Tar Pit becomes a 3/2 creature until end of turn (pays 3 mana)
+    → Goal: close_game
+    [Mana] Tap Creeping Tar Pit→U (paying for Consider, 1 mana remaining)
+T5 P2: Chalice of the Void (X=1) counters Consider
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Orcish Bowmasters, Orc Army
+T5 P1: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P2 does not block
+T5 P1:   Orcish Bowmasters (1/1) → 1 dmg to player
+T5 P1:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 17 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 15  |  Dimir Midrange 19
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 1
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant, Urza's Power Plant, Urza's Mine, Urza's Power Plant
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped]
+║   Lands: Watery Grave [T], Creeping Tar Pit [T], Shelldock Isle [T], Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thought-Knot Seer
+  [Main 1]
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C, Urza's Power Plant→C, Urza's Mine→C, Urza's Power Plant→C (paying for Thought-Knot Seer, 4 mana remaining)
+T5 P2: Cast Thought-Knot Seer (3)
+    [Priority] P1 passes (no response)
+T5: Resolve Thought-Knot Seer
+T5 P2: Play Ugin's Labyrinth
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Eldrazi Tron 15
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 48  |  Graveyard: 3
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave, Creeping Tar Pit, Shelldock Isle, Darkslick Shores
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant [T], Urza's Power Plant [T], Urza's Mine [T], Urza's Power Plant [T], Ugin's Labyrinth
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Psychic Frog
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Watery Grave→B (paying for Fatal Push, 4 mana remaining)
+T6 P2: Chalice of the Void (X=1) counters Fatal Push
+    → Goal: close_game
+T6 P1: Delve 4 cards for Murktide Regent
+    [Mana] Tap Shelldock Isle→U, Creeping Tar Pit→U, Darkslick Shores→U (paying for Murktide Regent, 3 mana remaining)
+T6 P1: Cast Murktide Regent (5UU)
+    [Priority] P2 passes (no response)
+T6: Resolve Murktide Regent
+T6 P1: Murktide Regent enters as 6/6 (3 +1/+1 counters from delved instants/sorceries)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 15  |  Dimir Midrange 19
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 1
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant, Urza's Power Plant, Urza's Mine, Urza's Power Plant, Ugin's Labyrinth
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1), Murktide Regent (6/6)
+║   Lands: Watery Grave [T], Creeping Tar Pit [T], Shelldock Isle [T], Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Karn, the Great Creator
+  [Main 1]
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C, Urza's Power Plant→C, Urza's Mine→C, Urza's Power Plant→C (paying for Thought-Knot Seer, 5 mana remaining)
+T6 P2: Cast Thought-Knot Seer (3)
+    [Priority] P1 passes (no response)
+T6: Resolve Thought-Knot Seer
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Eldrazi Tron 15
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1), Murktide Regent (6/6)
+║   Lands: Watery Grave, Creeping Tar Pit, Shelldock Isle, Darkslick Shores
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4), Thought-Knot Seer (4/4)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant [T], Urza's Power Plant [T], Urza's Mine [T], Urza's Power Plant [T], Ugin's Labyrinth
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Spell Pierce
+  [Main 1]
+T7 P1: Creeping Tar Pit becomes a 3/2 creature until end of turn (pays 3 mana)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Creeping Tar Pit, Orcish Bowmasters, Orc Army, Murktide Regent
+T7 P1: Attack with Creeping Tar Pit, Orcish Bowmasters, Orc Army, Murktide Regent
+T7 P2:   [BLOCK-EMERGENCY] Thought-Knot Seer (4/4) blocks Creeping Tar Pit (3/2) — lifespan_delta=+0.78
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T7 P1:   Orcish Bowmasters (1/1) → 1 dmg to player
+T7 P1:   Orc Army (1/1) → 1 dmg to player
+T7 P1:   Murktide Regent (6/6) → 6 dmg to player
+  [Combat Damage] 8 damage dealt → P2 life: 15 → 7
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 7  |  Dimir Midrange 19
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 1
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4), Thought-Knot Seer (4/4)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant, Urza's Power Plant, Urza's Mine, Urza's Power Plant, Ugin's Labyrinth
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped], Murktide Regent (6/6) [tapped]
+║   Lands: Watery Grave [T], Creeping Tar Pit [T], Shelldock Isle [T], Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Dismember
+  [Main 1]
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C, Urza's Power Plant→C (paying for Kozilek's Command, 5 mana remaining)
+T7 P2: Cast Kozilek's Command (3) (X=3)
+    [Priority] P1 passes (no response)
+T7: Resolve Kozilek's Command
+T7: Murktide Regent moved battlefield -> exile (exiled)
+T7: Kozilek's Command moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Thought-Knot Seer, Thought-Knot Seer
+T7 P2: Attack with Thought-Knot Seer, Thought-Knot Seer
+  [Declare Blockers] P1 does not block
+T7 P2:   Thought-Knot Seer (4/4) → 4 dmg to player
+T7 P2:   Thought-Knot Seer (4/4) → 4 dmg to player
+  [Combat Damage] 8 damage dealt → P1 life: 19 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 11  |  Eldrazi Tron 7
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave, Creeping Tar Pit, Shelldock Isle, Darkslick Shores
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4) [tapped], Thought-Knot Seer (4/4) [tapped]
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant [T], Urza's Power Plant [T], Urza's Mine [T], Urza's Power Plant [T], Ugin's Labyrinth [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Murktide Regent
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Orcish Bowmasters, Orc Army
+T8 P1: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P2 does not block
+T8 P1:   Orcish Bowmasters (1/1) → 1 dmg to player
+T8 P1:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 7 → 5
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 5  |  Dimir Midrange 11
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 2
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4), Thought-Knot Seer (4/4)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant, Urza's Power Plant, Urza's Mine, Urza's Power Plant, Ugin's Labyrinth
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped]
+║   Lands: Watery Grave, Creeping Tar Pit, Shelldock Isle, Darkslick Shores
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Urza's Mine
+  [Main 1]
+T8 P2: Play Urza's Mine
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C, Urza's Power Plant→C, Urza's Mine→C, Urza's Power Plant→C (paying for Thought-Knot Seer, 6 mana remaining)
+T8 P2: Cast Thought-Knot Seer (3)
+    [Priority] P1 passes (no response)
+T8: Resolve Thought-Knot Seer
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Thought-Knot Seer, Thought-Knot Seer
+T8 P2: Attack with Thought-Knot Seer, Thought-Knot Seer
+  [Declare Blockers] P1 does not block
+T8 P2:   Thought-Knot Seer (4/4) → 4 dmg to player
+T8 P2:   Thought-Knot Seer (4/4) → 4 dmg to player
+  [Combat Damage] 8 damage dealt → P1 life: 11 → 3
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 3  |  Eldrazi Tron 5
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 45  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave, Creeping Tar Pit, Shelldock Isle, Darkslick Shores
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4) [tapped], Thought-Knot Seer (4/4) [tapped], Thought-Knot Seer (4/4)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant [T], Urza's Power Plant [T], Urza's Mine [T], Urza's Power Plant [T], Ugin's Labyrinth, Urza's Mine
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Psychic Frog
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Orcish Bowmasters, Orc Army
+T9 P1: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P2 does not block
+T9 P1:   Orcish Bowmasters (1/1) → 1 dmg to player
+T9 P1:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 5 → 3
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 3  |  Dimir Midrange 3
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 6  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 2
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4), Thought-Knot Seer (4/4), Thought-Knot Seer (4/4)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant, Urza's Power Plant, Urza's Mine, Urza's Power Plant, Ugin's Labyrinth, Urza's Mine
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped]
+║   Lands: Watery Grave, Creeping Tar Pit, Shelldock Isle, Darkslick Shores
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wastes
+  [Main 1]
+T9 P2: Play Wastes
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C, Urza's Power Plant→C, Urza's Mine→C, Urza's Power Plant→C (paying for Karn, the Great Creator, 7 mana remaining)
+T9 P2: Cast Karn, the Great Creator (4)
+    [Priority] P1 passes (no response)
+T9: Resolve Karn, the Great Creator
+T9 P2: Karn, the Great Creator [+1] -> Until your next turn, up to one target noncreature artifact becomes an artifact creature with power and toughness each equal to its mana value
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Thought-Knot Seer, Thought-Knot Seer, Thought-Knot Seer
+T9 P2: Attack with Thought-Knot Seer, Thought-Knot Seer, Thought-Knot Seer
+  [Declare Blockers] P1 does not block
+T9 P2:   Thought-Knot Seer (4/4) → 4 dmg to player
+T9 P2:   Thought-Knot Seer (4/4) → 4 dmg to player
+T9 P2:   Thought-Knot Seer (4/4) → 4 dmg to player
+P1 loses: life total -9
+  [Combat Damage] 12 damage dealt → P1 life: 3 → -9
+
+>>> Eldrazi Tron wins Game 1 on turn 9 via damage
+    Final life: Dimir Midrange=-9  Eldrazi Tron=3
+
+======================================================================
+  GAME 2: Dimir Midrange (P1) vs Eldrazi Tron (P2)  —  seed 62501
+  Series: Dimir Midrange 0 - 1 Eldrazi Tron
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Eldrazi Tron wins → chooses to play first
+║ P1 (on play): Eldrazi Tron
+║ P2 (on draw): Dimir Midrange
+╚═══════════════════════════════════════════════════════
+
+P1 (Dimir Midrange) opening hand (3 lands, 4 spells):
+  • Polluted Delta [Land, CMC 0]
+  • Fatal Push [Spell, CMC 1]
+  • Underground River [Land, CMC 0]
+  • Subtlety [Creature, CMC 4]
+  • Consider [Spell, CMC 1]
+  • Spell Pierce [Spell, CMC 1]
+  • Otawara, Soaring City [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Consider, Fatal Push, 3 cheap spells
+
+P2 (Eldrazi Tron) opening hand (4 lands, 3 spells):
+  • Kozilek's Command [Spell, CMC 2]
+  • Ugin, Eye of the Storms [Spell, CMC 7]
+  • Swamp [Land, CMC 0]
+  • Urza's Mine [Land, CMC 0]
+  • Relic of Progenitus [Spell, CMC 1]
+  • Urza's Tower [Land, CMC 0]
+  • Urza's Power Plant [Land, CMC 0]
+→ P2 KEEPS 7 — 4 lands, 3 spells, score 30.0
+
+
+╔══ TURN 1 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Dimir Midrange 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Urza's Mine
+    → Goal: ramp
+    [Mana] Tap Urza's Mine→C (paying for Relic of Progenitus, 1 mana remaining)
+T1 P2: Cast Relic of Progenitus (1)
+    [Priority] P1 passes (no response)
+T1: Resolve Relic of Progenitus
+T1 P2: Relic of Progenitus: draw 1 card
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Eldrazi Tron 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Relic of Progenitus
+║   Lands: Urza's Mine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Fatal Push
+  [Main 1]
+T1 P1: Play Underground River
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Dimir Midrange 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Relic of Progenitus
+║   Lands: Urza's Mine
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Devourer of Destiny
+  [Main 1]
+T2 P2: Play Urza's Tower
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Eldrazi Tron 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Relic of Progenitus
+║   Lands: Urza's Mine, Urza's Tower
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Murktide Regent
+  [Main 1]
+T2 P1: Play Polluted Delta
+T2: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T2 P1: Crack Polluted Delta (pay 1 life) -> Watery Grave (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Dimir Midrange 19
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Relic of Progenitus
+║   Lands: Urza's Mine, Urza's Tower
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River, Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Kozilek's Command
+  [Main 1]
+T3 P2: Play Urza's Power Plant
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Eldrazi Tron 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River, Watery Grave
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Relic of Progenitus
+║   Lands: Urza's Mine, Urza's Tower, Urza's Power Plant
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Shelldock Isle
+  [Main 1]
+T3 P1: Play Otawara, Soaring City
+    → Goal: grind_value [enablers]
+    [Mana] Tap Otawara, Soaring City→U (paying for Consider, 3 mana remaining)
+T3 P1: Cast Consider (U)
+    [Priority] P2 passes (no response)
+T3: Resolve Consider
+T3 P1: surveil 1 → Island to GY
+T3 P1: Consider → draw 1 (Spell Pierce)
+T3: Consider moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Dimir Midrange 19
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Relic of Progenitus
+║   Lands: Urza's Mine, Urza's Tower, Urza's Power Plant
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River, Watery Grave, Otawara, Soaring City [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Glaring Fleshraker
+  [Main 1]
+T4 P2: Play Urza's Power Plant
+    → Goal: ramp
+    [Mana] Tap Urza's Mine→C, Urza's Tower→C (paying for Glaring Fleshraker, 7 mana remaining)
+T4 P2: Cast Glaring Fleshraker (2)
+    [Priority] P1 passes (no response)
+T4: Resolve Glaring Fleshraker
+  [Begin Combat]
+    [Mana] Tap Watery Grave→B (paying for Fatal Push, 2 mana remaining)
+T4 P1: Cast Fatal Push (B)
+T4: Resolve Fatal Push
+T4: Fatal Push moved stack -> graveyard (resolution)
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Eldrazi Tron 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 4
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River, Watery Grave, Otawara, Soaring City
+║ Eldrazi Tron board:
+║   Creatures: Glaring Fleshraker (2/2)
+║   Other: Relic of Progenitus
+║   Lands: Urza's Mine [T], Urza's Tower [T], Urza's Power Plant, Urza's Power Plant
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Darkslick Shores
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Watery Grave→B (paying for Fatal Push, 3 mana remaining)
+T4 P1: Cast Fatal Push (B)
+    [Priority] P2 passes (no response)
+T4: Resolve Fatal Push
+T4: Fatal Push moved stack -> graveyard (resolution)
+T4 P1: Play Shelldock Isle (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Dimir Midrange 19
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: Glaring Fleshraker (2/2)
+║   Other: Relic of Progenitus
+║   Lands: Urza's Mine, Urza's Tower, Urza's Power Plant, Urza's Power Plant
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River, Watery Grave [T], Otawara, Soaring City, Shelldock Isle [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Glaring Fleshraker
+  [Main 1]
+T5 P2: Play Swamp
+    → Goal: ramp
+    [Mana] Tap Urza's Mine→C, Urza's Tower→C (paying for Glaring Fleshraker, 8 mana remaining)
+T5 P2: Cast Glaring Fleshraker (2)
+    [Priority] P1 passes (no response)
+T5: Resolve Glaring Fleshraker
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Glaring Fleshraker
+T5 P2: Attack with Glaring Fleshraker
+  [Declare Blockers] P1 does not block
+T5 P2:   Glaring Fleshraker (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 19 → 17
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 17  |  Eldrazi Tron 20
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 5
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River, Watery Grave, Otawara, Soaring City, Shelldock Isle
+║ Eldrazi Tron board:
+║   Creatures: Glaring Fleshraker (2/2) [tapped], Glaring Fleshraker (2/2)
+║   Other: Relic of Progenitus
+║   Lands: Urza's Mine [T], Urza's Tower [T], Urza's Power Plant, Urza's Power Plant, Swamp
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Psychic Frog
+  [Main 1]
+T5 P1: Play Darkslick Shores (tapped, 4 other lands)
+    → Goal: close_game
+    [Mana] Tap Otawara, Soaring City→U, Watery Grave→B (paying for Psychic Frog, 4 mana remaining)
+T5 P1: Cast Psychic Frog (UB)
+    [Priority] P2 passes (no response)
+T5: Resolve Psychic Frog
+  [Begin Combat]
+    [Mana] Tap Urza's Power Plant→C, Urza's Power Plant→C (paying for Kozilek's Command, 5 mana remaining)
+T5 P2: Cast Kozilek's Command (3) (X=3)
+T5: Resolve Kozilek's Command
+T5: Psychic Frog moved battlefield -> exile (exiled)
+T5: Kozilek's Command moved stack -> graveyard (resolution)
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Dimir Midrange 17
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 48  |  Graveyard: 1
+║ Eldrazi Tron board:
+║   Creatures: Glaring Fleshraker (2/2), Glaring Fleshraker (2/2)
+║   Other: Relic of Progenitus
+║   Lands: Urza's Mine, Urza's Tower, Urza's Power Plant, Urza's Power Plant, Swamp
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River, Watery Grave [T], Otawara, Soaring City [T], Shelldock Isle, Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Karn, the Great Creator
+  [Main 1]
+    → Goal: ramp
+    [Mana] Tap Urza's Mine→C, Urza's Tower→C (paying for Karn, the Great Creator, 8 mana remaining)
+T6 P2: Cast Karn, the Great Creator (4)
+    [Priority] P1 passes (no response)
+T6: Resolve Karn, the Great Creator
+T6 P2: Karn, the Great Creator [+1] -> Until your next turn, up to one target noncreature artifact becomes an artifact creature with power and toughness each equal to its mana value
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Glaring Fleshraker, Glaring Fleshraker
+T6 P2: Attack with Glaring Fleshraker, Glaring Fleshraker
+  [Declare Blockers] P1 does not block
+T6 P2:   Glaring Fleshraker (2/2) → 2 dmg to player
+T6 P2:   Glaring Fleshraker (2/2) → 2 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 17 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 13  |  Eldrazi Tron 20
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 5
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River, Watery Grave, Otawara, Soaring City, Shelldock Isle, Darkslick Shores
+║ Eldrazi Tron board:
+║   Creatures: Glaring Fleshraker (2/2) [tapped], Glaring Fleshraker (2/2) [tapped]
+║   Other: Relic of Progenitus, Karn, the Great Creator
+║   Lands: Urza's Mine [T], Urza's Tower [T], Urza's Power Plant, Urza's Power Plant, Swamp
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Polluted Delta
+  [Main 1]
+T6 P1: Play Polluted Delta
+T6: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T6 P1: Crack Polluted Delta (pay 1 life) -> Watery Grave (tapped, life: 12)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Dimir Midrange 12
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 47  |  Graveyard: 1
+║ Eldrazi Tron board:
+║   Creatures: Glaring Fleshraker (2/2), Glaring Fleshraker (2/2)
+║   Other: Relic of Progenitus, Karn, the Great Creator
+║   Lands: Urza's Mine, Urza's Tower, Urza's Power Plant, Urza's Power Plant, Swamp
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River, Watery Grave, Otawara, Soaring City, Shelldock Isle, Darkslick Shores, Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mind Stone
+  [Main 1]
+    → Goal: ramp
+    [Mana] Tap Urza's Mine→C (paying for Mind Stone, 6 mana remaining)
+T7 P2: Cast Mind Stone (2)
+    [Priority] P1 passes (no response)
+T7: Resolve Mind Stone
+T7: Mind Stone moved battlefield -> graveyard (activation cost (Mind Stone))
+T7 P2: activate Mind Stone — Draw a card.
+T7 P2: Mind Stone activated — draw 1 (Mind Stone)
+    → Goal: ramp
+T7 P2: Cast Mind Stone (2)
+    [Priority] P1 passes (no response)
+T7: Resolve Mind Stone
+T7: Mind Stone moved battlefield -> graveyard (activation cost (Mind Stone))
+T7 P2: activate Mind Stone — Draw a card.
+T7 P2: Mind Stone activated — draw 1 (Glaring Fleshraker)
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C (paying for Glaring Fleshraker, 4 mana remaining)
+T7 P2: Cast Glaring Fleshraker (2)
+    [Priority] P1 passes (no response)
+T7: Resolve Glaring Fleshraker
+T7 P2: Karn, the Great Creator [+1] -> Until your next turn, up to one target noncreature artifact becomes an artifact creature with power and toughness each equal to its mana value
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Glaring Fleshraker, Glaring Fleshraker
+T7 P2: Attack with Glaring Fleshraker, Glaring Fleshraker
+  [Declare Blockers] P1 does not block
+T7 P2:   Glaring Fleshraker (2/2) → 2 dmg to player
+T7 P2:   Glaring Fleshraker (2/2) → 2 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 12 → 8
+  [End Combat]
+  [Main 2]
+  [End Step]
+    [Mana] Tap Otawara, Soaring City→U, Shelldock Isle→U, Watery Grave→B, Underground River→C (paying for Subtlety, 5 mana remaining)
+T7 P1: Cast Subtlety (2UU)
+T7: Resolve Subtlety
+T7 P1: Subtlety enters (no creature/PW spell on stack to target)
+
+╔══ TURN 7 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 8  |  Eldrazi Tron 20
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 6  |  Opp lands: 5
+║ Library: 43  |  Graveyard: 6
+║ Dimir Midrange board:
+║   Creatures: Subtlety (3/3)
+║   Lands: Underground River, Watery Grave, Otawara, Soaring City, Shelldock Isle, Darkslick Shores, Watery Grave
+║ Eldrazi Tron board:
+║   Creatures: Glaring Fleshraker (2/2) [tapped], Glaring Fleshraker (2/2) [tapped], Glaring Fleshraker (2/2)
+║   Other: Relic of Progenitus, Karn, the Great Creator
+║   Lands: Urza's Mine [T], Urza's Tower [T], Urza's Power Plant [T], Urza's Power Plant [T], Swamp
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Polluted Delta
+  [Main 1]
+T7 P1: Play Polluted Delta
+T7: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T7 P1: Crack Polluted Delta -> Island (untapped)
+    → Goal: close_game
+T7 P1: Delve 5 cards for Murktide Regent
+    [Mana] Tap Otawara, Soaring City→U, Shelldock Isle→U (paying for Murktide Regent, 7 mana remaining)
+T7 P1: Cast Murktide Regent (5UU)
+    [Priority] P2 passes (no response)
+T7: Resolve Murktide Regent
+T7 P1: Murktide Regent enters as 4/4 (1 +1/+1 counters from delved instants/sorceries)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Subtlety
+T7 P1: Attack with Subtlety
+  [Declare Blockers] P2 does not block
+T7 P1:   Subtlety (3/3) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 20 → 17
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 17  |  Dimir Midrange 7
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 7
+║ Library: 44  |  Graveyard: 3
+║ Eldrazi Tron board:
+║   Creatures: Glaring Fleshraker (2/2), Glaring Fleshraker (2/2), Glaring Fleshraker (2/2)
+║   Other: Relic of Progenitus, Karn, the Great Creator
+║   Lands: Urza's Mine, Urza's Tower, Urza's Power Plant, Urza's Power Plant, Swamp
+║ Dimir Midrange board:
+║   Creatures: Subtlety (3/3) [tapped], Murktide Regent (4/4)
+║   Lands: Underground River, Watery Grave, Otawara, Soaring City [T], Shelldock Isle [T], Darkslick Shores, Watery Grave, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ugin's Labyrinth
+  [Main 1]
+T8 P2: Play Ugin's Labyrinth
+    → Goal: ramp
+    [Mana] Tap Urza's Mine→C, Urza's Tower→C (paying for Kozilek's Command, 9 mana remaining)
+T8 P2: Cast Kozilek's Command (9) (X=9)
+    [Priority] P1 responds with Spell Pierce
+    [Mana] Tap Island→U (paying for Spell Pierce, 5 mana remaining)
+T8 P1: Cast Spell Pierce (U)
+T8: Resolve Spell Pierce
+T8: Kozilek's Command moved stack -> graveyard (resolution)
+T8: Kozilek's Command is countered
+T8: Spell Pierce moved stack -> graveyard (resolution)
+T8 P2: Karn, the Great Creator [+1] -> Until your next turn, up to one target noncreature artifact becomes an artifact creature with power and toughness each equal to its mana value
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Glaring Fleshraker, Glaring Fleshraker, Glaring Fleshraker
+T8 P2: Attack with Glaring Fleshraker, Glaring Fleshraker, Glaring Fleshraker
+T8 P1:   [BLOCK-EMERGENCY] Murktide Regent (4/4) blocks Glaring Fleshraker (2/2) — lifespan_delta=+0.92
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T8 P2:   Glaring Fleshraker (2/2) → 2 dmg to player
+T8 P2:   Glaring Fleshraker (2/2) → 2 dmg to player
+T8: Glaring Fleshraker dies
+  [Combat Damage] 4 damage dealt → P1 life: 7 → 3
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 3  |  Eldrazi Tron 17
+║ Hand: 1 cards  |  Opp hand: 2 cards
+║ Lands: 7  |  Opp lands: 6
+║ Library: 41  |  Graveyard: 3
+║ Dimir Midrange board:
+║   Creatures: Subtlety (3/3), Murktide Regent (4/4)
+║   Lands: Underground River, Watery Grave, Otawara, Soaring City, Shelldock Isle, Darkslick Shores, Watery Grave, Island
+║ Eldrazi Tron board:
+║   Creatures: Glaring Fleshraker (2/2) [tapped], Glaring Fleshraker (2/2) [tapped]
+║   Other: Relic of Progenitus, Karn, the Great Creator
+║   Lands: Urza's Mine [T], Urza's Tower [T], Urza's Power Plant [T], Urza's Power Plant [T], Swamp [T], Ugin's Labyrinth [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Swamp
+  [Main 1]
+T8 P1: Play Swamp
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Subtlety, Murktide Regent
+T8 P1: Attack with Subtlety, Murktide Regent
+  [Declare Blockers] P2 does not block
+T8 P1:   Subtlety (3/3) → 3 dmg to player
+T8 P1:   Murktide Regent (4/4) → 4 dmg to player
+  [Combat Damage] 7 damage dealt → P2 life: 17 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 10  |  Dimir Midrange 3
+║ Hand: 2 cards  |  Opp hand: 1 cards
+║ Lands: 6  |  Opp lands: 8
+║ Library: 43  |  Graveyard: 5
+║ Eldrazi Tron board:
+║   Creatures: Glaring Fleshraker (2/2), Glaring Fleshraker (2/2)
+║   Other: Relic of Progenitus, Karn, the Great Creator
+║   Lands: Urza's Mine, Urza's Tower, Urza's Power Plant, Urza's Power Plant, Swamp, Ugin's Labyrinth
+║ Dimir Midrange board:
+║   Creatures: Subtlety (3/3) [tapped], Murktide Regent (4/4) [tapped]
+║   Lands: Underground River, Watery Grave, Otawara, Soaring City, Shelldock Isle, Darkslick Shores, Watery Grave, Island, Swamp
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Urza's Tower
+  [Main 1]
+T9 P2: Play Urza's Tower
+    → Goal: ramp
+    [Mana] Tap Urza's Mine→C, Urza's Tower→C, Urza's Power Plant→C, Urza's Power Plant→C, Swamp→B (paying for Devourer of Destiny, 12 mana remaining)
+T9 P2: Cast Devourer of Destiny (5)
+T9: Murktide Regent moved battlefield -> exile (Devourer of Destiny cast: exile)
+T9 P2: Devourer of Destiny cast — exile Murktide Regent
+    [Priority] P1 passes (no response)
+T9: Devourer of Destiny fizzles (all targets illegal, CR 608.2b)
+T9: Devourer of Destiny moved stack -> graveyard (resolution)
+T9 P2: Karn, the Great Creator [+1] -> Until your next turn, up to one target noncreature artifact becomes an artifact creature with power and toughness each equal to its mana value
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Glaring Fleshraker, Glaring Fleshraker
+T9 P2: Attack with Glaring Fleshraker, Glaring Fleshraker
+  [Declare Blockers] P1 does not block
+T9 P2:   Glaring Fleshraker (2/2) → 2 dmg to player
+T9 P2:   Glaring Fleshraker (2/2) → 2 dmg to player
+P1 loses: life total -1
+  [Combat Damage] 4 damage dealt → P1 life: 3 → -1
+
+>>> Eldrazi Tron wins Game 2 on turn 9 via damage
+    Final life: Dimir Midrange=-1  Eldrazi Tron=10
+
+======================================================================
+  MATCH RESULT: Eldrazi Tron wins 2-0
+======================================================================
