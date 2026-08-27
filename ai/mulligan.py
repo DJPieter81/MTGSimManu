@@ -39,6 +39,7 @@ from ai.scoring_constants import (
     MULLIGAN_LAND_SLACK_FIRST_TURN_VALUE_FLOOR,
     MULLIGAN_MIN_SPELLS_BASIC,
     MULLIGAN_STARTING_HAND_SIZE,
+    MULLIGAN_CONJUNCTION_BUCKET_VALUE,
     MULLIGAN_HAND_LAND_FUNCTIONAL_VALUE,
     MULLIGAN_HAND_OPTIMAL_LAND_COUNT,
     MULLIGAN_EXCESS_LAND_PENALTY,
@@ -702,7 +703,83 @@ class MulliganDecider:
             * MULLIGAN_EXCESS_LAND_PENALTY
         )
         spell_score = sum(self._card_keep_score(s, hand) for s in spells)
-        return land_score - excess_penalty + spell_score
+        # Goal-conjunction term: for decks with typed multi-role paths
+        # a covered required-role bucket is a functional resource slot
+        # like a land (see MULLIGAN_CONJUNCTION_BUCKET_VALUE).  Zero
+        # for decks that declare no paths.
+        conjunction_score = (
+            self._conjunction_covered_buckets({c.name for c in hand})
+            * MULLIGAN_CONJUNCTION_BUCKET_VALUE
+        )
+        return land_score - excess_penalty + spell_score + conjunction_score
+
+    # ── Goal-conjunction distance (2026-08-27 reanimator lever 2) ──
+    # The gameplan's typed ``mulligan_combo_paths`` declare the deck's
+    # goal conjunction as role buckets (enablers AND payoffs).  Two
+    # generic reads of that data:
+    #   * coverage — how many required buckets the hand fills (scored
+    #     in ``_hand_ev_score`` like functional lands);
+    #   * reachability — whether an uncovered bucket can still be dug
+    #     to from this hand (used to pierce the always-keep floor).
+    # Decks that declare no typed paths are untouched by both.
+
+    def _combo_role_paths(self) -> list:
+        if not (self.goal_engine and self.goal_engine.gameplan):
+            return []
+        return self.goal_engine.gameplan.mulligan_combo_paths or []
+
+    def _conjunction_covered_buckets(self, hand_names: set) -> int:
+        """Covered non-empty role buckets on the best declared path
+        (0 when the deck declares no typed paths)."""
+        best = 0
+        for path in self._combo_role_paths():
+            covered = sum(
+                1 for bucket in path.values()
+                if bucket and (hand_names & set(bucket))
+            )
+            best = max(best, covered)
+        return best
+
+    def conjunction_unreachable(self, hand: List["CardInstance"]) -> bool:
+        """True iff the gameplan declares typed role paths, every
+        declared path leaves at least one required role bucket
+        uncovered, AND no card in hand can dig toward the missing
+        role.
+
+        A dig card is a cantrip/draw/tutor-tagged card or a member of
+        any path's ``enablers`` bucket, castable in time — at or below
+        the gameplan's medium CMC profile, the same "castable by T2-T3
+        counts as development" definition the key-card gate uses.
+
+        This is the ONLY conjunction check applied below the 6-card
+        typed-path gate; it encodes reachability, not raw coverage —
+        a payoff-less hand that can dig keeps, a hand whose only plan
+        card is an uncastable payoff does not (IR s60500 G3 replay
+        keep: fetch, 7-drop payoff, fetch, blink spell, fetch)."""
+        paths = self._combo_role_paths()
+        if not paths:
+            return False
+        hand_names = {c.name for c in hand}
+        enabler_names: set = set()
+        for path in paths:
+            buckets = [set(b) for b in path.values() if b]
+            enabler_names |= set(path.get("enablers", []))
+            if buckets and all(hand_names & b for b in buckets):
+                return False  # conjunction fully covered
+        gp = self.goal_engine.gameplan
+        medium_cmc = gp.mulligan_cmc_profile.get(
+            "medium", MULLIGAN_CMC_PROFILE_MEDIUM_DEFAULT)
+        for c in hand:
+            t = c.template
+            if t.is_land:
+                continue
+            if (t.cmc or 0) > medium_cmc:
+                continue  # cannot be deployed in time to dig
+            tags = getattr(t, 'tags', None) or set()
+            if c.name in enabler_names or tags & {'cantrip', 'draw',
+                                                  'tutor'}:
+                return False  # a dig path to the missing role exists
+        return True
 
     def _generic(self, hand: List["CardInstance"], lands: List["CardInstance"], spells: List["CardInstance"], cards_in_hand: int) -> bool:
         """Generic mulligan heuristic when no gameplan is available.

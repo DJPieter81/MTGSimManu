@@ -379,6 +379,23 @@ class EVPlayer:
             # MulliganDecider allowed it (Affinity-style mox artifact
             # exception) — fall through to normal evaluation below.
         if cards_in_hand <= self.profile.mulligan_always_keep:
+            # Goal-conjunction reachability pierces the always-keep
+            # floor by exactly ONE hand size (2026-08-27 reanimator
+            # lever 2): at the floor itself, a hand that covers no
+            # declared role path fully AND cannot dig toward the
+            # missing role is a guaranteed non-assembly — one more
+            # mulligan buys a real chance at a plan piece.  Below the
+            # floor the veto never fires, so there is no
+            # mull-to-oblivion (mirrors the 0-land hard floor's
+            # ordering above; rule pinned by
+            # tests/test_mulligan_scores_goal_conjunction.py).
+            if (cards_in_hand == self.profile.mulligan_always_keep
+                    and self._mulligan_decider.conjunction_unreachable(hand)):
+                self.mulligan_reason = (
+                    "goal conjunction unreachable — no role-path "
+                    "coverage and no castable dig card"
+                )
+                return False
             self.mulligan_reason = f"only {cards_in_hand} cards — always keep"
             return True
         if len(lands) >= self.profile.mulligan_bad_land_count:
