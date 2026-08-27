@@ -189,3 +189,22 @@ EOT-exile-rider permanent that can attack is not cast before combat") —
 no card names; the same rule covers Sneak Attack / Through the Breach
 shapes. Fix also repairs `run_trace_game` first so the per-term EV can be
 observed.
+
+## BLINK-TIMING FIX MEASURED (2026-08-27, post-#557)
+
+The derived forfeit charge landed (flat penalty removed; pre-combat blink
+charged the attack it forfeits via `forfeited_attack_clock_impact`).
+Acceptance, n=20 Bo3 field, idle machine:
+
+- **Instant Reanimator: 35.4 -> 43.3 (+7.9pp)** — the largest single-fix
+  WR movement measured this session; 1.7pp below its [45-60] band floor.
+- **Goryo's Vengeance: 28.8 -> 32.1 (+3.3pp)** — back inside its [30-70]
+  band.
+
+The anchor corroborated the mechanism before the sweep did: all three
+drifted entries kept their winner and finished one turn faster (the swing
+lands). The diagnosed secondary items (discard-advisor pitching
+blockers/payoffs under a lethal clock; the outlet∧payoff∧spell mulligan
+coherence check) remain open and are now the levers for Instant
+Reanimator's final ~2pp; the pair's shared floor vs Domain Zoo should be
+re-read from the next full matrix.
