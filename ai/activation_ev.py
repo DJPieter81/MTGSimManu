@@ -152,6 +152,10 @@ def activation_candidates(game, player_idx, snap, excluded=None):
     Scoring is a single `position_value` delta: project the snapshot forward
     per effect kind and keep the improvement. No bare magnitudes — every number
     comes from parsed ability data (`amount`, `power_mod`, `toughness_mod`).
+    Exception: GRANT_HASTE_TARGET cannot be a `position_value` delta (the
+    snapshot's power terms already count summoning-sick creatures, so the
+    grant changes no projected field) — it is scored directly on the
+    `combat_clock` primitives under the land-animation race gates instead.
     """
     from engine.activation import ActivationManager
     from engine.cards import ActivationEffectKind as _K
