@@ -472,6 +472,44 @@ def creature_clock_impact(power: int, toughness: int,
     return base
 
 
+def forfeited_attack_clock_impact(power: int, keywords: Set[str],
+                                  snap: "EVSnapshot") -> float:
+    """Clock impact of the single combat step a creature would take
+    THIS turn — the price of any pre-combat action that removes its
+    attack capability (a blink resetting summoning sickness on a
+    temporarily hasty body, a tap cost, an exile-and-return effect).
+
+    Derivation mirrors the haste term in `creature_clock_impact`
+    (haste = one extra combat step = power / opp_life):
+
+      * damage step: ``min(1, damage / opp_life)`` — the kill fraction
+        one attack secures. Capped at a full kill (CR 104.3a: damage
+        past lethal adds nothing — the same cap
+        ``scarce_payoff_commit_ev`` documents), so the charge grows as
+        opp_life falls and saturates exactly when the attack is lethal.
+      * double strike: both strike steps connect, doubling the damage
+        of the forfeited step (same modeling as
+        ``creature_clock_impact``).
+      * lifelink: forfeiting the attack also forfeits the survival
+        extension — ``power / opp_power`` turns × KEYWORD_HALF_WEIGHT,
+        the SAME weighting ``creature_clock_impact`` gives lifelink.
+
+    Returns 0.0 for a powerless creature: no combat step to lose.
+    Units: turns of clock (kill fraction), like every primitive here;
+    callers convert to EV via CLOCK_IMPACT_LIFE_SCALING.
+    """
+    if power <= 0:
+        return 0.0
+    opp_life = max(1, snap.opp_life)
+    damage = power
+    if "double_strike" in keywords:
+        damage += power  # second strike step connects too
+    base = min(1.0, damage / opp_life)
+    if "lifelink" in keywords and snap.opp_power > 0:
+        base += (power / max(1, snap.opp_power)) * KEYWORD_HALF_WEIGHT
+    return base
+
+
 def creature_clock_impact_from_card(card: "CardInstance",
                                      snap: "EVSnapshot") -> float:
     """Convenience: compute clock impact from a CardInstance."""

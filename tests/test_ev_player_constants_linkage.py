@@ -53,7 +53,10 @@ from ai import ev_player, scoring_constants
     ("GAME_HORIZON_MAX_COST_REDUCER", 8.0),
     ("MODERN_AVG_GAME_LENGTH", 8.0),
     ("GAME_HORIZON_MAX_TRON", 10.0),
-    ("BLINK_M1_HOLD_PENALTY", 2.0),
+    # BLINK_M1_HOLD_PENALTY removed 2026-08-27 — the flat pre-combat
+    # blink nudge was replaced by the derived forfeited-attack charge
+    # (ai/clock.forfeited_attack_clock_impact × CLOCK_IMPACT_LIFE_SCALING);
+    # see tests/test_blink_timing_respects_pending_attack.py.
     ("NONCREATURE_COUNTER_DEAD_FLOOR", -3.0),
     ("REMOVAL_THREAT_PREMIUM_SCALE", 0.5),
     ("CHEAP_REMOVAL_ACTION_BONUS", 1.0),
@@ -99,7 +102,7 @@ REQUIRED_IMPORTS = (
     "GAME_HORIZON_MAX_COST_REDUCER",
     "GAME_HORIZON_MAX_TRON",
     "MODERN_AVG_GAME_LENGTH",
-    "BLINK_M1_HOLD_PENALTY",
+    # BLINK_M1_HOLD_PENALTY removed 2026-08-27 (see note above).
     "NONCREATURE_COUNTER_DEAD_FLOOR",
     "REMOVAL_THREAT_PREMIUM_SCALE",
     "CHEAP_REMOVAL_ACTION_BONUS",
