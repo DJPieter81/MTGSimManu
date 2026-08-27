@@ -208,12 +208,12 @@
     <div class="eyebrow">Magic: The Gathering · Modern format · EV-based AI</div>
     <h1>An engine that <span class="hl">refuses</span> to hardcode a card.</h1>
     <p class="lede">A full-rules Modern simulator that plays 25 competitive decks against each other with a Bayesian, expected-value decision kernel — under a standing contract that no rule may ever be written as <span class="mono">card.name == "…"</span>.</p>
-    <p class="hero-meta">Python 3.11 · deterministic &amp; offline · mechanic-driven engine · 3,393 tests green</p>
+    <p class="hero-meta">Python 3.11 · deterministic &amp; offline · mechanic-driven engine · 3,551 tests green</p>
     <div class="strip" id="strip">
-      <div class="cell"><div class="n" data-to="22470">0</div><div class="k">Cards modeled</div></div>
+      <div class="cell"><div class="n" data-to="22506">0</div><div class="k">Cards modeled</div></div>
       <div class="cell"><div class="n" data-to="25">0</div><div class="k">Competitive decks</div></div>
-      <div class="cell"><div class="n" data-to="59">0<span class="u">k</span></div><div class="k">Lines · engine + AI</div></div>
-      <div class="cell"><div class="n" data-to="3393">0</div><div class="k">Tests green</div></div>
+      <div class="cell"><div class="n" data-to="61">0<span class="u">k</span></div><div class="k">Lines · engine + AI</div></div>
+      <div class="cell"><div class="n" data-to="3551">0</div><div class="k">Tests green</div></div>
     </div>
   </div>
 </header>
@@ -316,9 +316,9 @@
 
 <section id="meta">
   <div class="wrap">
-    <div class="sec-head reveal"><div class="eyebrow">Round-robin · best-of-three · sideboarded · n=6</div>
+    <div class="sec-head reveal"><div class="eyebrow">Round-robin · best-of-three · sideboarded · n=20 · 2026-08-27</div>
       <h2>The field, scored deck against deck.</h2>
-      <p>Post-fix Bo3 field win rate across the 25-deck pool. Each archetype is color-coded by mana identity. The gold numbers mark the current outliers — decks the calibration bands say are still mispriced.</p></div>
+      <p>Bo3 field win rate across the 25-deck pool — 6,000 matches on post-#552 main. Each archetype is color-coded by mana identity. The gold numbers mark the current outliers — decks the calibration bands say are still mispriced. The honest calibration figure: 32 of 96 ground-truth checks in band, 64 out.</p></div>
     <div class="tiers" id="tiers"></div>
     <div class="legend">
       <span><i class="pip" style="background:var(--w)"></i>White</span>
@@ -332,29 +332,29 @@
 
 <section id="work">
   <div class="wrap">
-    <div class="sec-head reveal"><div class="eyebrow">This session · replay-audited, generic, no card names</div>
-      <h2>Eleven mechanics fixed. The floor rose; the ceiling held.</h2>
-      <p>Every fix was root-caused from a best-of-three replay, phrased as a failing test on the mechanic, and written to lift every deck that shares it. The honest Bo3 result: decks whose payoffs were silently broken recovered — but the aggro-overvaluation at the top is diagnosed, not yet solved.</p></div>
+    <div class="sec-head reveal"><div class="eyebrow">Latest sessions · replay-audited, generic, no card names</div>
+      <h2>Three ability tranches landed. The floor rose; the top is structural.</h2>
+      <p>Every fix was root-caused from a best-of-three replay, phrased as a failing test on the mechanic, and written to lift every deck that shares it. The honest Bo3 result: decks whose interaction or payoffs were silently broken recovered — but the aggro-overvaluation at the top is now diagnosed as structural, not yet solved.</p></div>
 
     <div class="conv">
-      <div class="cv up reveal"><div class="cn">Eldrazi Ramp</div><div class="track"><span class="from">12.5%</span><span class="arw">→</span><span class="to">32.7%</span></div><div class="note">Eldrazi lands tap for their full {C}{C}</div></div>
-      <div class="cv up reveal"><div class="cn">Jeskai Blink</div><div class="track"><span class="from">28.7%</span><span class="arw">→</span><span class="to">37.5%</span></div><div class="note">flickers its value creatures again</div></div>
-      <div class="cv up reveal"><div class="cn">Instant Reanimator</div><div class="track"><span class="from">25%</span><span class="arw">→</span><span class="to">32%</span></div><div class="note">Atraxa's reveal-to-hand ETB resolves</div></div>
-      <div class="cv up reveal"><div class="cn">Amulet Titan</div><div class="track"><span class="from">23%</span><span class="arw">→</span><span class="to">29%</span></div><div class="note">ramp + payoff execution</div></div>
-      <div class="cv flat reveal"><div class="cn">Domain Zoo</div><div class="track"><span class="from">89.5%</span><span class="arw">→</span><span class="to">89.5%</span></div><div class="note">aggro defense still unsolved</div></div>
+      <div class="cv up reveal"><div class="cn">Amulet Titan</div><div class="track"><span class="from">29.6%</span><span class="arw">→</span><span class="to">34.4%</span></div><div class="note">land-sacrifice tutors require a reachable payoff</div></div>
+      <div class="cv up reveal"><div class="cn">Azorius Control (WST v2)</div><div class="track"><span class="from">46.8%</span><span class="arw">→</span><span class="to">52.9%</span></div><div class="note">soft-counter tax-payability respected</div></div>
+      <div class="cv up reveal"><div class="cn">Jeskai Blink</div><div class="track"><span class="from">34.8%</span><span class="arw">→</span><span class="to">39.6%</span></div><div class="note">holdback re-specced on lost value</div></div>
+      <div class="cv flat reveal"><div class="cn">Creatures Toolbox</div><div class="track"><span class="from">16.6%</span><span class="arw">→</span><span class="to">14.8%</span></div><div class="note">tranche 3 refuted — effect-kind whitelist is the gate</div></div>
+      <div class="cv flat reveal"><div class="cn">Domain Zoo</div><div class="track"><span class="from">85.0%</span><span class="arw">→</span><span class="to">84.8%</span></div><div class="note">structural verdict: control loses on economy</div></div>
     </div>
 
     <div class="callout reveal">
       <div class="ct">Honest limits</div>
-      <p>The mechanic fixes are unit-verified and lifted the decks whose plans were broken. They did <b>not</b> tame the aggro overperformers in best-of-three — Domain Zoo holds at ~89% because control decks still mis-sequence their defense once sideboards enter. That's the top open problem, tracked below, not a claimed win.</p>
+      <p>The mechanic fixes are unit-verified and lifted the decks whose interaction was broken. They did <b>not</b> tame the aggro overperformers in best-of-three — Domain Zoo holds at 84.8% and the aggregate diagnosis says control loses on resource economy even when it sequences correctly. Creatures Toolbox stays at 14.8% by documented expectation: the effect-kind whitelist, not activation costs, is its gate. 32 of 96 calibration checks sit in band. Open problems are tracked below, not claimed as wins.</p>
     </div>
 
     <div class="log">
-      <div class="le reveal"><div class="ln">M1</div><div class="lx"><b>Mana engines run at full output.</b> <span>Rocks and dorks produce mana; Eldrazi restriction lands tap for {C}{C} instead of {C}.</span></div><div class="tag eng">engine</div></div>
-      <div class="le reveal"><div class="ln">P1</div><div class="lx"><b>Payoff ETBs stop being silent no-ops.</b> <span>Reveal-by-type (Atraxa), self-mill N, attack-trigger drain, undying/persist re-fire.</span></div><div class="tag eng">engine</div></div>
-      <div class="le reveal"><div class="ln">S1</div><div class="lx"><b>Value plays are finally priced.</b> <span>Proactive blink credits re-triggering an ETB creature; a Saga's chapter token is projected.</span></div><div class="tag ai">kernel</div></div>
-      <div class="le reveal"><div class="ln">D1</div><div class="lx"><b>Flash removal counts as held interaction.</b> <span>Control keeps mana open for it — helps in game one, not yet across a sideboarded match.</span></div><div class="tag ai">kernel</div></div>
-      <div class="le reveal"><div class="ln">H1</div><div class="lx"><b>Data-layer honesty.</b> <span>Self-blink no longer mis-tagged removal; Consign to Memory counters triggered abilities.</span></div><div class="tag eng">engine</div></div>
+      <div class="le reveal"><div class="ln">A1</div><div class="lx"><b>Activated abilities graduate en masse.</b> <span>Tranches 1-3: tap, sacrifice-self, sacrifice-another and discard costs are payable — 358 oracle-parsed abilities went from inert to usable.</span></div><div class="tag eng">engine</div></div>
+      <div class="le reveal"><div class="ln">C1</div><div class="lx"><b>Soft counters priced honestly.</b> <span>Tax-payability checked before discounting, and holdback re-specced on lost value — counter-holding control decks rose 5-7pp.</span></div><div class="tag ai">kernel</div></div>
+      <div class="le reveal"><div class="ln">L1</div><div class="lx"><b>Land-sacrifice tutors need a payoff.</b> <span>Fetch-and-sacrifice shapes score only when a reachable payoff exists — no more fizzle-floor value; Amulet Titan +4.8pp, the matrix's largest mover.</span></div><div class="tag ai">kernel</div></div>
+      <div class="le reveal"><div class="ln">D1</div><div class="lx"><b>Aggregate diagnosis over anecdotes.</b> <span>Zoo's overperformance root-caused across every control loss at once — a resource-economy gap, structural, not a scoring bug.</span></div><div class="tag ai">kernel</div></div>
+      <div class="le reveal"><div class="ln">H1</div><div class="lx"><b>Acceptance testing that can say no.</b> <span>Tranche 3 was measured on Creatures Toolbox and REFUTED (15.0 → 14.8) — the effect-kind whitelist is named as the actual gate.</span></div><div class="tag eng">engine</div></div>
     </div>
   </div>
 </section>
@@ -386,10 +386,10 @@
   <div class="wrap">
     <div class="sec-head reveal"><div class="eyebrow">Open work · honestly ranked</div><h2>What's next.</h2></div>
     <div class="road">
-      <div class="ri reveal"><span class="rs" style="background:var(--bad)"></span><div><div class="rt2">Aggro defense across sideboarded matches</div><div class="rd">Domain Zoo at ~89% is the top distortion. Control decks hold flash removal in game one but still mis-sequence post-board. The systemic aggro-overvaluation is diagnosed; the kernel fix is scoped, not shipped.</div></div></div>
-      <div class="ri reveal"><span class="rs" style="background:var(--warn)"></span><div><div class="rt2">Reanimator "keep-the-fatty" line</div><div class="rd">Payoff ETBs now resolve, but the AI under-executes the blink that saves a reanimated threat from its end-of-turn exile. Goryo's remains a fragile 21%.</div></div></div>
-      <div class="ri reveal"><span class="rs" style="background:var(--warn)"></span><div><div class="rt2">Restricted-mana lands with imprint state</div><div class="rd">Ugin's Labyrinth needs a runtime imprint model to correctly upgrade to {C}{C}; deferred over a pragmatic hack that would over-ramp.</div></div></div>
-      <div class="ri reveal"><span class="rs" style="background:var(--u)"></span><div><div class="rt2">Full-suite CI &amp; higher-N matrices</div><div class="rd">A session-scoped card-database fixture to run all 3,393 tests in CI, and n=20 Bo3 matrices to replace noisy low-N estimates.</div></div></div>
+      <div class="ri reveal"><span class="rs" style="background:var(--bad)"></span><div><div class="rt2">Aggro resource economy across sideboarded matches</div><div class="rd">Domain Zoo at 84.8% is the top distortion. The aggregate diagnosis across every control loss delivers a structural verdict: control loses on resource economy even when it sequences its defense correctly. The kernel fix is scoped, not shipped.</div></div></div>
+      <div class="ri reveal"><span class="rs" style="background:var(--warn)"></span><div><div class="rt2">Reanimator "keep-the-fatty" line</div><div class="rd">Payoff ETBs now resolve, but the AI under-executes the blink that saves a reanimated threat from its end-of-turn exile. Goryo's remains a fragile 28.8%.</div></div></div>
+      <div class="ri reveal"><span class="rs" style="background:var(--warn)"></span><div><div class="rt2">Effect-kind whitelist for toolbox activations</div><div class="rd">Tranche 3 made sacrifice and discard costs payable, but Creatures Toolbox held at 14.8% — the acceptance doc names the effect-kind whitelist, not activation costs, as the actual gate. Documented expected, next tranche's target.</div></div></div>
+      <div class="ri reveal"><span class="rs" style="background:var(--u)"></span><div><div class="rt2">Haste-aware combat lines</div><div class="rd">Promoted to the highest-leverage remaining item after the payoff-gate measurement: the kernel undervalues haste threats' immediate clock impact when planning the turn.</div></div></div>
     </div>
   </div>
 </section>
@@ -398,10 +398,10 @@
   <div class="wrap">
     <div class="sec-head reveal"><div class="eyebrow">Guardrails, not vibes</div><h2>What proves it stays true.</h2></div>
     <div class="val">
-      <div class="vc reveal"><div class="vn ok">3,393</div><div class="vk">Tests passing</div><div class="vd">Every fix ships with a rule-phrased test that went red first. Zero failures across the suite.</div></div>
-      <div class="vc reveal"><div class="vn">0 / 0</div><div class="vk">Ratchet baseline</div><div class="vd">Name-gate and magic-number counters held at zero through the whole session.</div></div>
+      <div class="vc reveal"><div class="vn ok">3,551</div><div class="vk">Tests passing</div><div class="vd">Every fix ships with a rule-phrased test that went red first. 3,585 collected; zero failures across the suite.</div></div>
+      <div class="vc reveal"><div class="vn">0 / 0</div><div class="vk">Ratchet baseline</div><div class="vd">Name-gate and deck-gate counters held at zero; magic numbers ratcheted per file.</div></div>
       <div class="vc reveal"><div class="vn">83</div><div class="vk">Zone-funnel guard</div><div class="vd">Raw zone mutations capped at baseline; new code routes through the single funnel.</div></div>
-      <div class="vc reveal"><div class="vn ok">green</div><div class="vk">Continuous integration</div><div class="vd">The binding check runs the ratchets plus a curated behavioral suite on every push.</div></div>
+      <div class="vc reveal"><div class="vn ok">green</div><div class="vk">Continuous integration</div><div class="vd">The binding check runs the ratchets plus the full test suite on every push and PR.</div></div>
     </div>
   </div>
 </section>
@@ -432,18 +432,18 @@
   var sio=new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ countUp(e.target); sio.unobserve(e.target);} }); },{threshold:.5});
   document.querySelectorAll(".strip .n").forEach(function(el){ sio.observe(el); });
 
-  // ── metagame tier board: post-fix Bo3 field (n=6), 25 decks ──
-  // [name, field win %, mana color, band lo, band hi]
+  // ── metagame tier board: Bo3 field (n=20, 2026-08-27, post-#552 main), 25 decks ──
+  // [name, field win %, mana color, band lo, band hi] — bands from tools/calibration_bands.json
   var decks=[
-    ["Domain Zoo",89.5,"R",50,65],["Pinnacle Affinity",75.6,"R",45,60],["Boros Energy",74.3,"R",50,70],
-    ["Izzet Prowess",73.6,"U",50,65],["Dimir Midrange",73.5,"U",45,60],["Affinity",63.2,"R",50,65],
-    ["Eldrazi Tron",63.1,"B",50,65],["4c Omnath",62.4,"G",40,65],["Ruby Storm",61.1,"R",40,55],
-    ["Grixis Reanimator",59.7,"B",40,60],["Boros Ponza",52.1,"R",40,60],["Azorius Control (WST v2)",51.4,"U",40,60],
-    ["Living End",45.1,"G",40,60],["4/5c Control",44.5,"G",40,60],["Azorius Blink",43.1,"U",40,60],
-    ["Azorius Control (WST)",40.9,"U",40,60],["Jeskai Blink",37.5,"U",45,60],["Broodscale Bloodchief",35.5,"G",30,60],
-    ["Hollow One",34.1,"B",30,60],["Azorius Control",34.0,"U",40,60],["Eldrazi Ramp",32.7,"G",30,60],
-    ["Instant Reanimator",32.0,"U",45,60],["Amulet Titan",29.2,"G",45,60],["Goryo's Vengeance",21.6,"B",30,55],
-    ["Creatures Toolbox",20.2,"G",30,60]
+    ["Domain Zoo",84.8,"R",50,65],["Pinnacle Affinity",74.8,"R",30,70],["Boros Energy",73.3,"R",50,70],
+    ["Dimir Midrange",69.0,"U",45,60],["Izzet Prowess",64.6,"U",50,65],["Eldrazi Tron",64.2,"B",50,65],
+    ["Grixis Reanimator",61.7,"B",30,70],["4c Omnath",61.2,"G",30,70],["Ruby Storm",55.2,"R",40,55],
+    ["Eldrazi Ramp",53.5,"G",30,70],["Azorius Control (WST v2)",52.9,"U",30,70],["Living End",50.0,"G",30,70],
+    ["Boros Ponza",46.7,"R",30,70],["Affinity",45.8,"R",50,65],["4/5c Control",44.6,"G",30,70],
+    ["Azorius Blink",44.6,"U",30,70],["Azorius Control (WST)",42.7,"U",30,70],["Broodscale Bloodchief",40.2,"G",30,70],
+    ["Jeskai Blink",39.6,"U",45,60],["Hollow One",36.5,"B",30,70],["Instant Reanimator",35.4,"U",45,60],
+    ["Amulet Titan",34.4,"G",45,60],["Azorius Control",30.8,"U",30,70],["Goryo's Vengeance",28.8,"B",30,70],
+    ["Creatures Toolbox",14.8,"G",30,70]
   ];
   var host=document.getElementById("tiers");
   decks.forEach(function(d){
