@@ -165,6 +165,202 @@ def test_full_line_parse_attaches_structured_tutor_data():
     assert 'creature' in ab.tutor_data['types']
 
 
+# ── engine execution: legality, X charge, resolution ──────────────────
+
+def _add(game, name, controller=0, zone="battlefield"):
+    t = _DB.get_card(name)
+    assert t is not None, f"missing {name}"
+    c = CardInstance(template=t, owner=controller, controller=controller,
+                     instance_id=game.next_instance_id(), zone=zone)
+    c._game_state = game
+    if zone == "battlefield":
+        c.enter_battlefield()
+        c.summoning_sick = False
+    getattr(game.players[controller],
+            "battlefield" if zone == "battlefield" else zone).append(c)
+    return c
+
+
+def _game(n_lands=4, n_hand=2):
+    game = GameState(rng=random.Random(0))
+    game.active_player = 0
+    game.current_phase = Phase.MAIN1
+    game.turn_number = 6
+    game.players[0].deck_name = "Eldrazi Tron"
+    game.players[1].deck_name = "Dimir Midrange"
+    for _ in range(n_lands):
+        _add(game, "Forest")
+    for _ in range(n_hand):
+        _add(game, "Forest", 0, "hand")
+    return game
+
+
+def _tutor_ability(mana=1, tap=True, x_count=0, dest="battlefield",
+                   mv_bound_is_x=False, max_mv=None, types=("creature",),
+                   subtypes=(), tapped=False):
+    return ActivatedAbility(
+        index=0,
+        cost=ActivationCost(mana=ManaCost(generic=mana), tap_self=tap,
+                            x_count=x_count),
+        effect_text="Search your library ...",
+        effect_kind=(ActivationEffectKind.TUTOR_CREATURE_TO_BATTLEFIELD
+                     if dest == "battlefield"
+                     else ActivationEffectKind.TUTOR_TO_HAND),
+        tutor_data={
+            'dest': dest, 'types': list(types), 'not_types': [],
+            'supertypes': [], 'subtypes': list(subtypes), 'colors': [],
+            'max_mv': max_mv, 'mv_bound_is_x': mv_bound_is_x,
+            'tapped': tapped,
+        })
+
+
+def _host(game, ability, name="Wall of Omens"):
+    perm = _add(game, name)
+    perm.template = perm.template.__class__(**{
+        **{f: getattr(perm.template, f)
+           for f in perm.template.__dataclass_fields__},
+        'activated_abilities': [ability]})
+    return perm
+
+
+def test_tutor_kinds_pass_the_effect_kind_whitelist():
+    """Rule 9b previously refused every tutor before any cost check —
+    the binding gate the tranche-3 acceptance doc named."""
+    game = _game()
+    _add(game, "Craterhoof Behemoth", 0, "library")
+    ab = _tutor_ability()
+    perm = _host(game, ab)
+    assert ActivationManager.can_activate(game, 0, perm, ab)
+
+
+def test_search_may_whiff_and_remains_a_legal_activation():
+    """CR 701.19b — a search may fail. Legality does not depend on a
+    deliverable target existing; not paying for a whiff is AI judgment."""
+    game = _game()
+    for _ in range(3):
+        _add(game, "Forest", 0, "library")  # no creature to find
+    ab = _tutor_ability()
+    perm = _host(game, ab)
+    assert ActivationManager.can_activate(game, 0, perm, ab)
+    assert ActivationManager.activate(game, 0, perm, ab, [])
+    game.resolve_stack()
+    assert game.players[0].library_searches_this_game == 1, (
+        "a failed search is still a search — bookkeeping and triggers fire")
+    assert all(c.zone == "library" for c in game.players[0].library)
+
+
+def test_x_bound_tutor_requires_an_x_pip_and_an_unbound_x_is_refused():
+    game = _game()
+    _add(game, "Craterhoof Behemoth", 0, "library")
+    # "mana value X or less" with no {X} pip to bind — incoherent, refuse.
+    ab_no_pip = _tutor_ability(x_count=0, mv_bound_is_x=True)
+    host1 = _host(game, ab_no_pip)
+    assert not ActivationManager.can_activate(game, 0, host1, ab_no_pip)
+    # An {X} pip on an effect that does not bind X — the engine cannot
+    # know what X buys; refuse rather than silently charge X=0.
+    ab_unbound = ActivatedAbility(
+        index=0, cost=ActivationCost(mana=ManaCost(), tap_self=True,
+                                     x_count=1),
+        effect_text="Draw a card.",
+        effect_kind=ActivationEffectKind.DRAW_N, amount=1)
+    host2 = _host(game, ab_unbound)
+    assert not ActivationManager.can_activate(game, 0, host2, ab_unbound)
+
+
+def test_found_card_enters_via_the_zone_funnel_with_etb_fanout():
+    game = _game()
+    finder = _add(game, "Wall of Omens", 0, "library")  # ETB: draw a card
+    for _ in range(3):
+        _add(game, "Forest", 0, "library")  # so the ETB draw has fuel
+    ab = _tutor_ability()
+    perm = _host(game, ab)
+    hand_before = len(game.players[0].hand)
+    assert ActivationManager.activate(game, 0, perm, ab, [])
+    game.resolve_stack()
+    assert finder.zone == "battlefield"
+    assert finder in game.players[0].battlefield
+    assert len(game.players[0].hand) == hand_before + 1, (
+        "battlefield entry must get the ETB fan-out — the found card's "
+        "enter trigger draws")
+
+
+def test_search_fires_opponent_library_search_triggers():
+    game = _game()
+    _add(game, "Craterhoof Behemoth", 0, "library")
+    watcher = _add(game, "Wall of Omens", 1)
+    watcher.template = watcher.template.__class__(**{
+        **{f: getattr(watcher.template, f)
+           for f in watcher.template.__dataclass_fields__},
+        'has_library_search_opponent_trigger': True})
+    ab = _tutor_ability()
+    perm = _host(game, ab)
+    assert ActivationManager.activate(game, 0, perm, ab, [])
+    game.resolve_stack()
+    assert game.players[0].library_searches_this_game == 1
+    assert watcher.plus_counters == 1, (
+        "the tutor must route through the shared search machinery so "
+        "search-watching triggers keep firing")
+
+
+def test_hand_destination_delivers_the_card_to_hand():
+    game = _game()
+    target = _add(game, "Craterhoof Behemoth", 0, "library")
+    ab = _tutor_ability(dest="hand")
+    perm = _host(game, ab)
+    hand_before = len(game.players[0].hand)
+    assert ActivationManager.activate(game, 0, perm, ab, [])
+    game.resolve_stack()
+    assert target.zone == "hand"
+    assert target in game.players[0].hand
+    assert len(game.players[0].hand) == hand_before + 1
+    assert target not in game.players[0].battlefield
+
+
+def test_chosen_x_bounds_the_search_and_is_charged_as_mana():
+    """The engine picks the cheapest X that delivers the best fetchable
+    target (the pick_creature_tutor_x_value discipline) and charges
+    fixed + X at payment time."""
+    game = _game(n_lands=4)
+    cheap = _add(game, "Wall of Omens", 0, "library")     # mv 2
+    _add(game, "Craterhoof Behemoth", 0, "library")       # mv 8, over budget
+    ab = _tutor_ability(mana=1, x_count=1, mv_bound_is_x=True)
+    perm = _host(game, ab)
+    untapped_before = len(game.players[0].untapped_lands)
+    assert ActivationManager.activate(game, 0, perm, ab, [])
+    game.resolve_stack()
+    assert cheap.zone == "battlefield", (
+        "within budget (capacity 4 - fixed 1 = X<=3) only the mv-2 body "
+        "is deliverable")
+    # Fixed {1} + chosen X=2 -> 3 mana; the host's own tap is separate.
+    assert untapped_before - len(game.players[0].untapped_lands) == 3, (
+        "the chosen X is part of the COST — fixed + X mana must be paid")
+
+
+def test_engine_default_choice_is_highest_mana_value_within_constraint():
+    game = _game(n_lands=6)
+    _add(game, "Birds of Paradise", 0, "library")         # mv 1
+    big = _add(game, "Craterhoof Behemoth", 0, "library")  # mv 8
+    ab = _tutor_ability(mana=0, tap=True)
+    perm = _host(game, ab)
+    assert ActivationManager.activate(game, 0, perm, ab, [])
+    game.resolve_stack()
+    assert big.zone == "battlefield", (
+        "with no AI callback preference, the engine default delivers the "
+        "highest-mana-value candidate — the GSZ resolver's ranking")
+
+
+def test_subtype_constraint_narrows_the_search():
+    game = _game()
+    _add(game, "Craterhoof Behemoth", 0, "library")
+    bird = _add(game, "Birds of Paradise", 0, "library")
+    ab = _tutor_ability(subtypes=("bird",))
+    perm = _host(game, ab)
+    assert ActivationManager.activate(game, 0, perm, ab, [])
+    game.resolve_stack()
+    assert bird.zone == "battlefield", (
+        "only the subtype-matching candidate is deliverable")
+
+
 def test_db_toolbox_carrier_card_parses_to_the_battlefield_tutor_kind():
     """The mechanic must light up for a real DB card carrying it —
     fixture carrier from the Creatures Toolbox list."""
