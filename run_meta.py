@@ -1011,9 +1011,17 @@ def run_trace_game(deck1: str, deck2: str, seed: int = 42000) -> str:
     orig_main = EVPlayer.decide_main_phase
     orig_atk = EVPlayer.decide_attackers
 
-    def traced_main(self, game, excluded_cards=None):
-        # Run the real decision FIRST — no re-scoring, no RNG divergence
-        result = orig_main(self, game, excluded_cards)
+    def traced_main(self, game, excluded_cards=None,
+                    excluded_activations=None):
+        # Run the real decision FIRST — no re-scoring, no RNG divergence.
+        # Signature MUST mirror EVPlayer.decide_main_phase — the engine
+        # calls this wrapper with keyword arguments
+        # (engine/game_runner.py::_execute_main_phase); a missing
+        # parameter kills every --trace run with a TypeError
+        # (regression pinned by
+        # tests/test_trace_wrapper_accepts_main_phase_signature.py).
+        result = orig_main(self, game, excluded_cards,
+                           excluded_activations=excluded_activations)
 
         # Phase label so Main1 vs Main2 decision blocks are distinguishable
         # in the trace output (fixes "duplicate EV trace blocks" P2 audit).
