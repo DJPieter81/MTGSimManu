@@ -5601,6 +5601,23 @@ totalling 24 — that 24 is the MULLIGAN_MIN_HAND_SCORE_7 floor.
 Used by `_hand_ev_score` in `ai/mulligan.py`.
 """
 
+MULLIGAN_CONJUNCTION_BUCKET_VALUE: float = MULLIGAN_HAND_LAND_FUNCTIONAL_VALUE
+"""Derived: per-covered-role-bucket contribution to hand EV for decks
+whose gameplan declares typed multi-role paths (`mulligan_combo_paths`
+enabler/payoff buckets).
+
+Derivation: a covered required-role bucket is a functional resource slot
+of exactly the same kind as a land — the hand cannot operate without it,
+but holding it is not by itself a sufficient hand-quality signal — so
+it is priced identically to one functional land
+(= MULLIGAN_HAND_LAND_FUNCTIONAL_VALUE, no new magnitude introduced).
+Rule pinned by tests/test_mulligan_scores_goal_conjunction.py: a keep
+holding the goal conjunction outranks a same-quality keep without it.
+Zero for decks that declare no typed paths (term vanishes).
+
+Used by `_hand_ev_score` in `ai/mulligan.py`.
+"""
+
 MULLIGAN_HAND_OPTIMAL_LAND_COUNT: int = 3
 """Rules-constant: optimal land count for scoring purposes in most Modern
 hands. The first three lands contribute their full MULLIGAN_HAND_LAND_

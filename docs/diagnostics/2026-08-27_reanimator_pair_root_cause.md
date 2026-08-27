@@ -208,3 +208,35 @@ blockers/payoffs under a lethal clock; the outlet∧payoff∧spell mulligan
 coherence check) remain open and are now the levers for Instant
 Reanimator's final ~2pp; the pair's shared floor vs Domain Zoo should be
 re-read from the next full matrix.
+
+## SECONDARY LEVERS IMPLEMENTED (2026-08-27, follow-up session)
+
+Both diagnosed secondary levers landed, test-first, no WR measurement
+run in that session (single-process constraint):
+
+1. **Discard vs live plan + race state** (`ai/discard_advisor.py`):
+   graveyard-payoff bonuses (fuel/flashback/escape/big-creature) are
+   discounted by the existing `EVSnapshot.urgency_factor` survival
+   fraction; under a lethal-range clock (`opp_clock_discrete <= 2`) a
+   deployable creature subtracts its `ai.clock.opportunity_cost`
+   (Phase-2a primitive, reused); the fuel bonus is gated on graveyard
+   safety (typed `has_graveyard_hate` on any opposing permanent); and
+   a live-plan role guard never pitches the LAST accessible copy of a
+   required role (goal `card_roles` payoffs/enablers/protection + the
+   derived FILL_RESOURCE resource role) — a dead plan protects
+   nothing. Tests: `tests/test_discard_respects_live_plan.py`.
+2. **Mulligan goal-conjunction distance** (`ai/mulligan.py`,
+   `ai/ev_player.py`): covered `mulligan_combo_paths` role buckets are
+   scored like functional lands (`MULLIGAN_CONJUNCTION_BUCKET_VALUE`),
+   and at the always-keep floor a hand whose conjunction is
+   UNREACHABLE (no fully-covered path, no castable dig card) mulls
+   exactly once more. Distinct from falsified RC-3 (which relaxed the
+   7/6 gates) and the 2026-05-09 Storm pro-bar audit (which tightened
+   7-card keeps): the 7/6 gates are untouched; the new hard rule lives
+   only at the previously ungated floor (5) and keys on reachability.
+   Tests: `tests/test_mulligan_scores_goal_conjunction.py`.
+
+Anchor after both levers: one drifted entry — Goryo's Vengeance vs
+Izzet Prowess s50000, winner unchanged (Izzet Prowess), turns 9 → 6.
+Snapshot deliberately NOT refreshed in that session; refresh alongside
+the next matrix re-read.

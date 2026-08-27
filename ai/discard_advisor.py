@@ -112,9 +112,54 @@ def choose_discard(game: "GameState", player_idx: int,
 
     # Self-discard: score-based choice, highest score = discard first.
     from ai.predicates import count_lands
+    from ai.ev_evaluator import snapshot_from_game
     player = game.players[player_idx]
     lands_on_field = len(player.lands)
     lands_in_hand = count_lands(hand)
+
+    # Race-state context (2026-08-27 reanimator-pair secondary lever):
+    # discard choice is evaluated against the live plan and the race,
+    # not card-value in isolation.
+    snap = snapshot_from_game(game, player_idx)
+
+    # Every "this card is good IN THE GRAVEYARD later" bonus (escape,
+    # flashback, reanimation fuel, generic big-creature) prices value
+    # that only exists if we get future turns.  `urgency_factor` is the
+    # existing EVSnapshot primitive for exactly that fraction (1.0 =
+    # safe, 0.0 = dying now) — reuse it as the discount instead of
+    # inventing a threshold.
+    future_discount = snap.urgency_factor
+
+    # Lethal-range clock: the opponent kills us within two combat
+    # steps.  `opp_clock_discrete` is the turns-to-lethal primitive;
+    # the 2 is the same "dies in two attack steps" rules multiplier
+    # the W1b-11 panic shim documents (EXEMPT_VALUES).
+    under_lethal_clock = (snap.opp_power > 0
+                          and snap.opp_clock_discrete <= 2)
+
+    def _defensive_retention(card: "CardInstance") -> float:
+        """Value forfeited by pitching a deployable blocker while the
+        race is lethal-range.  Priced by the existing Phase-2a
+        `ai.clock.opportunity_cost` primitive (clock-impact units ×
+        CREATURE_VALUE_OUTER_SCALE) — no new scale, no new constants.
+        A creature we cannot deploy in time (effective cost above the
+        battlefield's mana plus the next land drop, CR 305.1's one
+        land per turn) blocks nothing and retains nothing."""
+        if not under_lethal_clock or not card.template.is_creature:
+            return 0.0
+        from ai.clock import opportunity_cost
+        from ai.effective_cmc import effective_cmc
+        deployable_mana = lands_on_field + 1  # next turn's land drop
+        if effective_cmc(card, snap, game=game,
+                         player_idx=player_idx) > deployable_mana:
+            return 0.0
+        return opportunity_cost(card, player, snap)
+
+    # An opposing graveyard-hate permanent (typed field
+    # has_graveyard_hate, parsed once at DB load) means the graveyard
+    # cannot HOLD the plan's resources: binning a card there loses it
+    # instead of relocating it.
+    gy_safe = _graveyard_is_safe(game, player_idx)
 
     # GV-1: Gameplan-aware reanimation-fuel boost.
     #
@@ -131,15 +176,20 @@ def choose_discard(game: "GameState", player_idx: int,
     reanimation_min_cmc = _reanimation_fuel_min_cmc(game, player_idx)
     keystones = _declared_keystones(game, player_idx)
 
-    def discard_score(card: "CardInstance") -> int:
+    def discard_score(card: "CardInstance") -> float:
         t = card.template
-        score = 0
+        score = 0.0
 
         # Reanimation fuel — rank above every non-fuel "good-to-bin"
         # bonus (flashback +90, escape +100, removal-creature +95).
         # Uses the gameplan's declared min_cmc so the policy transfers
         # to any reanimator deck that later registers the same shape.
-        if (reanimation_min_cmc is not None
+        # The bonus requires the graveyard to actually HOLD the fuel:
+        # with an opposing hate permanent up, binning the payoff feeds
+        # the hate instead of the plan (IR s60500 G2 replay), so the
+        # card falls through to the keystone-protection branch below.
+        if (gy_safe
+                and reanimation_min_cmc is not None
                 and t.is_creature
                 and t.cmc >= reanimation_min_cmc):
             # Base clears the flashback/escape ceiling (100) and scales
@@ -147,12 +197,15 @@ def choose_discard(game: "GameState", player_idx: int,
             # CMC 8 -> 108. Guarantees Griselbrand (CMC 8) > Faithful
             # Mending flashback (90) and > Solitude removal-creature
             # stacked bonuses (95).
-            score += 100 + t.cmc
-            return score  # short-circuit; other bonuses are irrelevant
+            score += (100 + t.cmc) * future_discount
+            # Short-circuit (other bonuses are irrelevant), but the
+            # race-state retention still applies: a fuel body that can
+            # block is survival first, fuel second.
+            return score - _defensive_retention(card)
 
         # Cards with flashback/escape WANT to be in the graveyard.
         if t.escape_cost is not None:
-            score += 100  # Escape (Phlage) — great to discard
+            score += 100 * future_discount  # Escape (Phlage) — great to discard
         # A plain flashback card is happy in the graveyard — you flash
         # it back later, so binning it to hand size loses nothing.
         # EXCEPT a card that GRANTS flashback to the whole graveyard
@@ -164,7 +217,7 @@ def choose_discard(game: "GameState", player_idx: int,
         # card that hands the graveyard back to you.
         if ('flashback' in t.tags
                 and not getattr(t, 'grants_flashback_to_gy_spells', False)):
-            score += DISCARD_FLASHBACK_BONUS
+            score += DISCARD_FLASHBACK_BONUS * future_discount
 
         # High-CMC creatures are reanimation targets (generic fallback
         # for decks that don't declare a FILL_RESOURCE graveyard goal —
@@ -179,7 +232,7 @@ def choose_discard(game: "GameState", player_idx: int,
             if t.name in keystones:
                 score -= DISCARD_COMBO_TUTOR_PROTECT
             else:
-                score += DISCARD_BIG_CREATURE_BASE + t.cmc
+                score += (DISCARD_BIG_CREATURE_BASE + t.cmc) * future_discount
 
         # Excess lands (4+ in hand with 3+ already on battlefield).
         if t.is_land:
@@ -202,9 +255,168 @@ def choose_discard(game: "GameState", player_idx: int,
         if 'removal' in t.tags:
             score += DISCARD_REMOVAL_NUDGE
 
+        # Race state: a deployable blocker's defensive value enters
+        # the ranking under a lethal-range clock (0.0 otherwise).
+        score -= _defensive_retention(card)
+
         return score
 
-    return max(hand, key=discard_score)
+    # Live-plan role guard: the LAST accessible copy of a role the
+    # gameplan requires is never pitched while the plan is live.  A
+    # copy that stays role-usable from the graveyard after the discard
+    # (safe-graveyard fuel, flashback) is relocated, not lost, and
+    # stays pitchable.  If every card in hand is protected we must
+    # still discard something — fall back to the full hand.
+    protected = _plan_role_protected_ids(game, player_idx, hand, gy_safe)
+    eligible = [c for c in hand if id(c) not in protected] or hand
+
+    return max(eligible, key=discard_score)
+
+
+# Role buckets whose last reachable copy strands the declared plan.
+# These are gameplan card_roles KEYS (role vocabulary), not card names:
+# payoffs/enablers are the execution conjunction, protection keeps the
+# executed payoff alive. Value roles (interaction, engines, rituals,
+# removal) are replaceable and stay unguarded.
+_PLAN_ROLE_BUCKETS = frozenset({"payoffs", "enablers", "protection"})
+
+# Roles whose absence kills the plan outright (protection is optional
+# for execution — a plan without it is worse, not dead).
+_PLAN_LIVENESS_ROLES = frozenset({"payoffs", "enablers"})
+
+
+def _graveyard_is_safe(game: "GameState", player_idx: int) -> bool:
+    """False when any opposing battlefield permanent carries the typed
+    `has_graveyard_hate` field (parsed once at DB load) — the graveyard
+    then cannot hold the plan's resources."""
+    opp = game.players[1 - player_idx]
+    return not any(
+        getattr(perm.template, 'has_graveyard_hate', False)
+        for perm in opp.battlefield
+    )
+
+
+def _plan_role_map(game: "GameState", player_idx: int):
+    """(role_name -> card-name set) for the plan roles the player's
+    gameplan declares across its goals, restricted to
+    `_PLAN_ROLE_BUCKETS`.  Empty dict when no gameplan."""
+    player = game.players[player_idx]
+    deck_name = getattr(player, 'deck_name', '') or ''
+    if not deck_name:
+        return {}
+    try:
+        from ai.gameplan import get_gameplan
+    except ImportError:
+        return {}
+    plan = get_gameplan(deck_name)
+    if plan is None:
+        return {}
+    roles: dict = {}
+    for goal in plan.goals:
+        for role_name, names in (goal.card_roles or {}).items():
+            if role_name in _PLAN_ROLE_BUCKETS and names:
+                roles.setdefault(role_name, set()).update(names)
+    return roles
+
+
+def _usable_from_graveyard(card: "CardInstance", gy_safe: bool,
+                            reanimation_min_cmc) -> bool:
+    """Would this card still serve its plan role FROM the graveyard?
+
+    True for the reanimation resource (a creature at or above the
+    declared FILL_RESOURCE min CMC — the graveyard is where the plan
+    wants it) and for self-recurring spells (flashback / escape), in
+    both cases only while the graveyard is safe."""
+    if not gy_safe:
+        return False
+    t = card.template
+    if (reanimation_min_cmc is not None and t.is_creature
+            and t.cmc >= reanimation_min_cmc):
+        return True
+    if t.escape_cost is not None or 'flashback' in (t.tags or set()):
+        return True
+    return False
+
+
+def _plan_role_protected_ids(game: "GameState", player_idx: int,
+                              hand: List["CardInstance"],
+                              gy_safe: bool) -> set:
+    """ids of hand cards that are the LAST accessible copy of a
+    required plan role while the plan is still live.
+
+    Accessible pool per role = hand + own library (the pilot knows
+    their decklist) + graveyard copies that are still role-usable from
+    there (`_usable_from_graveyard`).  The reanimation resource is a
+    DERIVED role — any creature at/above the gameplan's FILL_RESOURCE
+    min CMC — so no card names are consulted for it.
+
+    Plan liveness: every declared `_PLAN_LIVENESS_ROLES` bucket, plus
+    the derived resource role when declared, has >= 1 accessible copy.
+    A dead plan protects nothing (the stranded role card may be
+    pitched — the negative control in the paired test file)."""
+    roles = _plan_role_map(game, player_idx)
+    reanimation_min_cmc = _reanimation_fuel_min_cmc(game, player_idx)
+    if not roles and reanimation_min_cmc is None:
+        return set()
+
+    player = game.players[player_idx]
+
+    def _pool():
+        for c in hand:
+            yield c, 'hand'
+        for c in player.library:
+            yield c, 'library'
+        for c in player.graveyard:
+            yield c, 'graveyard'
+
+    def _accessible(card, zone) -> bool:
+        if zone == 'graveyard':
+            return _usable_from_graveyard(card, gy_safe,
+                                          reanimation_min_cmc)
+        return True
+
+    # Count accessible copies per role (names) and for the derived
+    # resource role (predicate).
+    role_counts = {r: 0 for r in roles}
+    resource_count = 0
+    per_card_roles: dict = {}  # id(card) -> set of role keys it fills
+    for card, zone in _pool():
+        if not _accessible(card, zone):
+            continue
+        t = card.template
+        for r, names in roles.items():
+            if card.name in names:
+                role_counts[r] += 1
+                if zone == 'hand':
+                    per_card_roles.setdefault(id(card), set()).add(r)
+        if (reanimation_min_cmc is not None and t.is_creature
+                and t.cmc >= reanimation_min_cmc):
+            resource_count += 1
+            if zone == 'hand':
+                per_card_roles.setdefault(id(card), set()).add('_resource')
+
+    # Liveness: every required role reachable.
+    for r in _PLAN_LIVENESS_ROLES:
+        if r in roles and role_counts[r] == 0:
+            return set()
+    if reanimation_min_cmc is not None and resource_count == 0:
+        return set()
+
+    protected: set = set()
+    for card in hand:
+        card_roles = per_card_roles.get(id(card))
+        if not card_roles:
+            continue
+        if _usable_from_graveyard(card, gy_safe, reanimation_min_cmc):
+            # Discarding relocates it within the plan's reach.
+            continue
+        for r in card_roles:
+            count = (resource_count if r == '_resource'
+                     else role_counts[r])
+            if count <= 1:  # this card IS the last accessible copy
+                protected.add(id(card))
+                break
+    return protected
 
 
 def _declared_keystones(game: "GameState", player_idx: int) -> set:
