@@ -372,6 +372,43 @@ def parse_is_land_sacrifice_tutor(oracle: str) -> bool:
             and 'search your library' in low)
 
 
+def parse_x_creature_tutor(oracle: str) -> Optional[Dict]:
+    """Parse the Green Sun's Zenith shape: an X-cost tutor that searches
+    the library for a creature card with mana value X or less and puts it
+    directly onto the battlefield (GSZ, Chord of Calling, Finale of
+    Devastation — every X-cost creature-tutor in Modern).
+
+    Parsed once at DB load into `CardTemplate.x_creature_tutor_data`
+    (oracle-runtime-parse ratchet: consumers read the typed field).
+
+    Returns ``None`` for non-matching cards, else::
+
+        {'colors': ['G']}   # color constraint on the fetchable creature;
+                            # empty list = any creature
+
+    The "mana value X or less" phrase only occurs on cards whose printed
+    cost carries {X} (CR 107.3), so no separate mana-cost gate is needed;
+    `x_cost_data` still carries the multiplier/min_x for the cost side.
+    """
+    low = (oracle or '').lower()
+    if 'search your library' not in low:
+        return None
+    m = re.search(
+        r"search your library(?: and/or graveyard)? for an? ([a-z ]*?)"
+        r"creature card with mana value x or less"
+        r"(?:,| and) put it onto the battlefield",
+        low,
+    )
+    if not m:
+        return None
+    qualifier_words = set(m.group(1).split())
+    color_words = {'white': 'W', 'blue': 'U', 'black': 'B',
+                   'red': 'R', 'green': 'G'}
+    colors = [code for word, code in color_words.items()
+              if word in qualifier_words]
+    return {'colors': colors}
+
+
 def parse_counter_tax(oracle: str) -> int:
     """Parse a "soft counter" tax amount from oracle text.
 

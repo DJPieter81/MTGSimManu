@@ -297,6 +297,10 @@ class CardTemplate:
     # DB load by grants_flashback_to_gy_spells() in oracle_parser.py.
     grants_flashback_to_gy_spells: bool = False
     x_cost_data: Optional[Dict] = None        # {multiplier, min_x}
+    # X-cost creature tutor to battlefield (Green Sun's Zenith shape):
+    # {'colors': [letter, ...]} — parsed once at DB load by
+    # parse_x_creature_tutor(); None = not this shape.
+    x_creature_tutor_data: Optional[Dict] = None
     is_cost_reducer: bool = False             # reduces spell costs (from tags)
     domain_reduction: int = 0                 # cost reduction per basic land type
     back_face_oracle: str = ""                # oracle text for back face (transform cards)

@@ -1,0 +1,1738 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+======================================================================
+  GAME 1: Instant Reanimator (P1) vs Domain Zoo (P2)  —  seed 60500
+  Series: Instant Reanimator 0 - 0 Domain Zoo
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Domain Zoo wins → chooses to play first
+║ P1 (on play): Domain Zoo
+║ P2 (on draw): Instant Reanimator
+╚═══════════════════════════════════════════════════════
+
+P1 (Instant Reanimator) opening hand (2 lands, 5 spells):
+  • Faithful Mending [Spell, CMC 2]
+  • Psychic Frog [Creature, CMC 2]
+  • Flooded Strand [Land, CMC 0]
+  • Plains [Land, CMC 0]
+  • Quantum Riddler [Creature, CMC 5]
+  • Ephemerate [Spell, CMC 1]
+  • Atraxa, Grand Unifier [Creature, CMC 7]
+→ P1 KEEPS 7 — has key card(s): Atraxa, Grand Unifier, Faithful Mending, Psychic Frog, 3 cheap spells
+
+P2 (Domain Zoo) opening hand (3 lands, 4 spells):
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Flooded Strand [Land, CMC 0]
+  • Leyline Binding [Spell, CMC 6]
+  • Doorkeeper Thrull [Creature, CMC 2]
+  • Stubborn Denial [Spell, CMC 1]
+  • Thundering Falls [Land, CMC 0]
+  • Flooded Strand [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Doorkeeper Thrull, Leyline Binding, Ragavan, Nimble Pilferer, 3 cheap spells
+
+
+╔══ TURN 1 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 20  |  Instant Reanimator 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Flooded Strand
+T1: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Flooded Strand (pay 1 life) -> Steam Vents (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 20  |  Domain Zoo 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Solitude
+  [Main 1]
+T1 P1: Play Flooded Strand
+T1: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Flooded Strand (pay 1 life) -> Hallowed Fountain (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 19  |  Instant Reanimator 19
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arena of Glory
+  [Main 1]
+T2 P2: Play Flooded Strand
+T2: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T2 P2: Crack Flooded Strand (pay 1 life) -> Temple Garden (tapped, life: 18)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Steam Vents→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T2 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T2: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 19  |  Domain Zoo 18
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Steam Vents [T], Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Undercity Sewers
+  [Main 1]
+T2 P1: surveil 1 → Psychic Frog to GY
+T2 P1: Play Undercity Sewers (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 18  |  Instant Reanimator 19
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Steam Vents, Temple Garden
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Undercity Sewers [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wooded Foothills
+  [Main 1]
+T3 P2: Play Wooded Foothills
+T3: Wooded Foothills moved battlefield -> graveyard (fetchland sacrifice)
+T3 P2: Crack Wooded Foothills (pay 1 life) -> Blood Crypt (tapped, life: 17)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Steam Vents→R, Temple Garden→W (paying for Doorkeeper Thrull, 2 mana remaining)
+T3 P2: Cast Doorkeeper Thrull (1W)
+    [Priority] P1 passes (no response)
+T3: Resolve Doorkeeper Thrull
+T3 P2: Doorkeeper Thrull: opponent ETB triggers suppressed
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T3 P2: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T3 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T3 P2: Create 1x Treasure token(s)
+T3 P2: Ragavan, Nimble Pilferer exiles Breeding Pool from top of P1's library
+T3 P2: Ragavan, Nimble Pilferer — may cast Breeding Pool this turn
+  [Combat Damage] 2 damage dealt → P1 life: 19 → 17
+  [End Combat]
+  [Main 2]
+  [End Step]
+T3: Breeding Pool returned to exile (uncast)
+
+╔══ TURN 3 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 17  |  Domain Zoo 17
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 2
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Undercity Sewers
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Doorkeeper Thrull (1/2)
+║   Other: Treasure Token
+║   Lands: Steam Vents [T], Temple Garden [T], Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Fallaji Archaeologist
+  [Main 1]
+T3 P1: Play Plains
+    → Goal: fill_resource [enablers]
+    [Mana] Tap Plains→W, Hallowed Fountain→U (paying for Faithful Mending, 3 mana remaining)
+T3 P1: Cast Faithful Mending (WU)
+    [Priority] P2 passes (no response)
+T3: Resolve Faithful Mending
+T3: Atraxa, Grand Unifier moved hand -> graveyard (discard)
+T3: Solitude moved hand -> graveyard (discard)
+T3: Faithful Mending moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 17  |  Instant Reanimator 19
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 3
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Doorkeeper Thrull (1/2)
+║   Other: Treasure Token
+║   Lands: Steam Vents, Temple Garden, Blood Crypt
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T], Undercity Sewers, Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Leyline Binding
+  [Main 1]
+T4 P2: surveil 1 → Arena of Glory to GY
+T4 P2: Play Thundering Falls (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer, Doorkeeper Thrull
+T4 P2: Attack with Ragavan, Nimble Pilferer, Doorkeeper Thrull
+  [Declare Blockers] P1 does not block
+T4 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T4 P2: Create 1x Treasure token(s)
+T4 P2: Ragavan, Nimble Pilferer exiles Goryo's Vengeance from top of P1's library
+T4 P2: Ragavan, Nimble Pilferer — may cast Goryo's Vengeance this turn
+T4 P2:   Doorkeeper Thrull (1/2) → 1 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 19 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Goryo's Vengeance returned to exile (uncast)
+
+╔══ TURN 4 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 16  |  Domain Zoo 17
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 44  |  Graveyard: 5
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Undercity Sewers, Plains
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Doorkeeper Thrull (1/2) [tapped]
+║   Other: Treasure Token, Treasure Token
+║   Lands: Steam Vents, Temple Garden, Blood Crypt, Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Marsh Flats
+  [Main 1]
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Plains→W, Undercity Sewers→B (paying for Goryo's Vengeance, 3 mana remaining)
+T4 P1: Cast Goryo's Vengeance (1B)
+    [Priority] P2 passes (no response)
+T4: Resolve Goryo's Vengeance
+T4 P1: Reanimate Atraxa, Grand Unifier
+T4: Atraxa, Grand Unifier ETB suppressed by Doorkeeper Thrull
+T4: Goryo's Vengeance moved stack -> graveyard (resolution)
+T4 P1: Play Marsh Flats
+T4: Marsh Flats moved battlefield -> graveyard (fetchland sacrifice)
+T4 P1: Crack Marsh Flats (pay 1 life) -> Watery Grave (tapped, life: 15)
+    → Goal: execute_payoff [protection]
+    [Mana] Tap Hallowed Fountain→W (paying for Ephemerate, 1 mana remaining)
+T4 P1: Cast Ephemerate (W)
+    [Priority] P2 responds with Leyline Binding
+    [Mana] Tap Temple Garden→W (paying for Leyline Binding, 3 mana remaining)
+T4 P2: Cast Leyline Binding (5W)
+T4: Resolve Leyline Binding
+T4: Atraxa, Grand Unifier moved battlefield -> exile (exiled)
+T4 P2: Leyline Binding exiles Atraxa, Grand Unifier
+T4: Ephemerate fizzles (all targets illegal, CR 608.2b)
+T4: Ephemerate moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 17  |  Instant Reanimator 15
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 4
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Doorkeeper Thrull (1/2)
+║   Other: Treasure Token, Treasure Token, Leyline Binding
+║   Lands: Steam Vents, Temple Garden, Blood Crypt, Thundering Falls
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T], Undercity Sewers [T], Plains [T], Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Steam Vents
+  [Main 1]
+T5 P2: Play Steam Vents (untapped, life: 17)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer, Doorkeeper Thrull
+T5 P2: Attack with Ragavan, Nimble Pilferer, Doorkeeper Thrull
+  [Declare Blockers] P1 does not block
+T5 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T5 P2: Create 1x Treasure token(s)
+T5 P2: Ragavan, Nimble Pilferer exiles Flooded Strand from top of P1's library
+T5 P2: Ragavan, Nimble Pilferer — may cast Flooded Strand this turn
+T5 P2:   Doorkeeper Thrull (1/2) → 1 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 15 → 12
+  [End Combat]
+  [Main 2]
+  [End Step]
+T5: Flooded Strand returned to exile (uncast)
+
+╔══ TURN 5 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 12  |  Domain Zoo 17
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 41  |  Graveyard: 7
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Undercity Sewers, Plains, Watery Grave
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Doorkeeper Thrull (1/2) [tapped]
+║   Other: Treasure Token, Treasure Token, Leyline Binding, Treasure Token
+║   Lands: Steam Vents, Temple Garden, Blood Crypt, Thundering Falls, Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Thoughtseize
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Plains→W, Hallowed Fountain→U (paying for Faithful Mending, 4 mana remaining)
+T5 P1: Cast Faithful Mending (WU)
+    [Priority] P2 passes (no response)
+T5: Resolve Faithful Mending
+T5: Quantum Riddler moved hand -> graveyard (discard)
+T5: Godless Shrine moved hand -> graveyard (discard)
+T5: Faithful Mending moved stack -> exile (flashback resolution (CR 702.33a))
+T5 P1: Play Polluted Delta
+T5: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T5 P1: Crack Polluted Delta -> Island (untapped)
+    → Goal: execute_payoff
+    [Mana] Tap Island→U, Undercity Sewers→B (paying for Psychic Frog, 3 mana remaining)
+T5 P1: Cast Psychic Frog (UB)
+    [Priority] P2 passes (no response)
+T5: Resolve Psychic Frog
+T5: Psychic Frog ETB suppressed by Doorkeeper Thrull
+  [Begin Combat]
+    [Mana] Tap Temple Garden→W (paying for Leyline Binding, 5 mana remaining)
+T5 P2: Cast Leyline Binding (5W)
+T5: Resolve Leyline Binding
+T5: Psychic Frog moved battlefield -> exile (exiled)
+T5 P2: Leyline Binding exiles Psychic Frog
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 17  |  Instant Reanimator 13
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 4
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Doorkeeper Thrull (1/2)
+║   Other: Treasure Token, Treasure Token, Leyline Binding, Treasure Token, Leyline Binding
+║   Lands: Steam Vents, Temple Garden, Blood Crypt, Thundering Falls, Steam Vents
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T], Undercity Sewers [T], Plains [T], Watery Grave, Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+  [Main 1]
+T6 P2: Play Arena of Glory (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer, Doorkeeper Thrull
+T6 P2: Attack with Ragavan, Nimble Pilferer, Doorkeeper Thrull
+  [Declare Blockers] P1 does not block
+T6 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T6 P2: Create 1x Treasure token(s)
+T6 P2: Ragavan, Nimble Pilferer exiles Ephemerate from top of P1's library
+T6 P2: Ragavan, Nimble Pilferer — may cast Ephemerate this turn
+T6 P2:   Doorkeeper Thrull (1/2) → 1 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 13 → 10
+  [End Combat]
+  [Main 2]
+    → Goal: curve_out
+    [Mana] Tap Temple Garden→W (paying for Ephemerate, 5 mana remaining)
+T6 P2: Cast Ephemerate (W)
+    [Priority] P1 passes (no response)
+T6: Resolve Ephemerate
+T6: Ragavan, Nimble Pilferer ETB suppressed by Doorkeeper Thrull
+T6: Blink Ragavan, Nimble Pilferer
+T6: Ephemerate moved stack -> exile (rebound (CR 702.86))
+  [End Step]
+
+╔══ TURN 6 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 10  |  Domain Zoo 17
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 36  |  Graveyard: 9
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Undercity Sewers, Plains, Watery Grave, Island
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2) [tapped], Ragavan, Nimble Pilferer (2/1)
+║   Other: Treasure Token, Treasure Token, Leyline Binding, Treasure Token, Leyline Binding, Treasure Token
+║   Lands: Steam Vents, Temple Garden [T], Blood Crypt, Thundering Falls, Steam Vents, Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Swamp
+  [Main 1]
+T6 P1: Play Swamp
+    → Goal: execute_payoff
+    [Mana] Tap Island→U, Swamp→B (paying for Psychic Frog, 6 mana remaining)
+T6 P1: Cast Psychic Frog (UB)
+    [Priority] P2 passes (no response)
+T6: Resolve Psychic Frog
+T6: Psychic Frog ETB suppressed by Doorkeeper Thrull
+    → Goal: execute_payoff
+    [Mana] Tap Plains→W, Hallowed Fountain→U (paying for Fallaji Archaeologist, 4 mana remaining)
+T6 P1: Cast Fallaji Archaeologist (1U)
+    [Priority] P2 passes (no response)
+T6: Resolve Fallaji Archaeologist
+T6: Fallaji Archaeologist ETB suppressed by Doorkeeper Thrull
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 17  |  Instant Reanimator 10
+║ Hand: 2 cards  |  Opp hand: 1 cards
+║ Lands: 6  |  Opp lands: 6
+║ Library: 44  |  Graveyard: 4
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2), Ragavan, Nimble Pilferer (2/1)
+║   Other: Treasure Token, Treasure Token, Leyline Binding, Treasure Token, Leyline Binding, Treasure Token
+║   Lands: Steam Vents, Temple Garden, Blood Crypt, Thundering Falls, Steam Vents, Arena of Glory
+║ Instant Reanimator board:
+║   Creatures: Psychic Frog (1/2), Fallaji Archaeologist (0/3)
+║   Lands: Hallowed Fountain [T], Undercity Sewers, Plains [T], Watery Grave, Island [T], Swamp [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T7 P2: Cast Ephemerate (W)
+T7 P2: Rebound Ephemerate
+T7: Resolve Ephemerate
+T7: Ragavan, Nimble Pilferer ETB suppressed by Doorkeeper Thrull
+T7: Blink Ragavan, Nimble Pilferer
+T7: Ephemerate moved stack -> exile (rebound (CR 702.86))
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+T7 P2: Play Arid Mesa
+T7: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T7 P2: Crack Arid Mesa -> Mountain (untapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Doorkeeper Thrull
+T7 P2: Attack with Doorkeeper Thrull
+  [Declare Blockers] P1 does not block
+T7 P2:   Doorkeeper Thrull (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 10 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 9  |  Domain Zoo 16
+║ Hand: 1 cards  |  Opp hand: 2 cards
+║ Lands: 6  |  Opp lands: 7
+║ Library: 35  |  Graveyard: 9
+║ Instant Reanimator board:
+║   Creatures: Psychic Frog (1/2), Fallaji Archaeologist (0/3)
+║   Lands: Hallowed Fountain, Undercity Sewers, Plains, Watery Grave, Island, Swamp
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2) [tapped], Ragavan, Nimble Pilferer (2/1)
+║   Other: Treasure Token, Treasure Token, Leyline Binding, Treasure Token, Leyline Binding, Treasure Token
+║   Lands: Steam Vents, Temple Garden, Blood Crypt, Thundering Falls, Steam Vents, Arena of Glory, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Goryo's Vengeance
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Psychic Frog
+T7 P1: Attack with Psychic Frog
+  [Declare Blockers] P2 does not block
+T7 P1:   Psychic Frog (1/2) → 1 dmg to player
+T7 P1: Psychic Frog deals combat damage — draw a card
+  [Combat Damage] 1 damage dealt → P2 life: 16 → 15
+  [End Combat]
+  [Main 2]
+    → Goal: execute_payoff
+    [Mana] Tap Plains→W, Island→U, Swamp→B, Hallowed Fountain→W, Undercity Sewers→B (paying for Solitude, 6 mana remaining)
+T7 P1: Cast Solitude (3WW)
+    [Priority] P2 passes (no response)
+T7: Resolve Solitude
+T7: Solitude ETB suppressed by Doorkeeper Thrull
+  [End Step]
+
+╔══ TURN 8 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 15  |  Instant Reanimator 9
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 7  |  Opp lands: 6
+║ Library: 42  |  Graveyard: 5
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2), Ragavan, Nimble Pilferer (2/1)
+║   Other: Treasure Token, Treasure Token, Leyline Binding, Treasure Token, Leyline Binding, Treasure Token
+║   Lands: Steam Vents, Temple Garden, Blood Crypt, Thundering Falls, Steam Vents, Arena of Glory, Mountain
+║ Instant Reanimator board:
+║   Creatures: Psychic Frog (1/2) [tapped], Fallaji Archaeologist (0/3), Solitude (3/2)
+║   Lands: Hallowed Fountain [T], Undercity Sewers [T], Plains [T], Watery Grave, Island [T], Swamp [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T8 P2: Cast Ephemerate (W)
+T8 P2: Rebound Ephemerate
+T8: Resolve Ephemerate
+T8: Ragavan, Nimble Pilferer ETB suppressed by Doorkeeper Thrull
+T8: Blink Ragavan, Nimble Pilferer
+T8: Ephemerate moved stack -> exile (rebound (CR 702.86))
+  [Draw] P2 draws: Leyline of the Guildpact
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Doorkeeper Thrull
+T8 P2: Attack with Doorkeeper Thrull
+  [Declare Blockers] P1 does not block
+T8 P2:   Doorkeeper Thrull (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 9 → 8
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 8  |  Domain Zoo 15
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 6  |  Opp lands: 7
+║ Library: 33  |  Graveyard: 9
+║ Instant Reanimator board:
+║   Creatures: Psychic Frog (1/2), Fallaji Archaeologist (0/3), Solitude (3/2)
+║   Lands: Hallowed Fountain, Undercity Sewers, Plains, Watery Grave, Island, Swamp
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2) [tapped], Ragavan, Nimble Pilferer (2/1)
+║   Other: Treasure Token, Treasure Token, Leyline Binding, Treasure Token, Leyline Binding, Treasure Token
+║   Lands: Steam Vents, Temple Garden, Blood Crypt, Thundering Falls, Steam Vents, Arena of Glory, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Misty Rainforest
+  [Main 1]
+T8 P1: Play Misty Rainforest
+T8: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T8 P1: Crack Misty Rainforest -> Meticulous Archive (tapped)
+T8 P1: surveil 1 → Quantum Riddler to GY
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Psychic Frog
+T8 P1: Attack with Psychic Frog
+  [Declare Blockers] P2 does not block
+T8 P1:   Psychic Frog (1/2) → 1 dmg to player
+T8 P1: Psychic Frog deals combat damage — draw a card
+  [Combat Damage] 1 damage dealt → P2 life: 15 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 14  |  Instant Reanimator 7
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 7  |  Opp lands: 7
+║ Library: 41  |  Graveyard: 5
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2), Ragavan, Nimble Pilferer (2/1)
+║   Other: Treasure Token, Treasure Token, Leyline Binding, Treasure Token, Leyline Binding, Treasure Token
+║   Lands: Steam Vents, Temple Garden, Blood Crypt, Thundering Falls, Steam Vents, Arena of Glory, Mountain
+║ Instant Reanimator board:
+║   Creatures: Psychic Frog (1/2) [tapped], Fallaji Archaeologist (0/3), Solitude (3/2)
+║   Lands: Hallowed Fountain, Undercity Sewers, Plains, Watery Grave, Island, Swamp, Meticulous Archive [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T9 P2: Cast Ephemerate (W)
+T9 P2: Rebound Ephemerate
+T9: Resolve Ephemerate
+T9: Ragavan, Nimble Pilferer ETB suppressed by Doorkeeper Thrull
+T9: Blink Ragavan, Nimble Pilferer
+T9: Ephemerate moved stack -> exile (rebound (CR 702.86))
+  [Draw] P2 draws: Scion of Draco
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Arena of Glory→R, Mountain→R (paying for Scion of Draco, 7 mana remaining)
+T9 P2: Cast Scion of Draco (12)
+    [Priority] P1 passes (no response)
+T9: Resolve Scion of Draco
+T9: Scion of Draco ETB suppressed by Doorkeeper Thrull
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Doorkeeper Thrull
+T9 P2: Attack with Doorkeeper Thrull
+  [Declare Blockers] P1 does not block
+T9 P2:   Doorkeeper Thrull (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 7 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 6  |  Domain Zoo 14
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 7  |  Opp lands: 7
+║ Library: 29  |  Graveyard: 11
+║ Instant Reanimator board:
+║   Creatures: Psychic Frog (1/2), Fallaji Archaeologist (0/3), Solitude (3/2)
+║   Lands: Hallowed Fountain, Undercity Sewers, Plains, Watery Grave, Island, Swamp, Meticulous Archive
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2) [tapped], Ragavan, Nimble Pilferer (2/1), Scion of Draco (4/4)
+║   Other: Treasure Token, Treasure Token, Leyline Binding, Treasure Token, Leyline Binding, Treasure Token
+║   Lands: Steam Vents, Temple Garden, Blood Crypt, Thundering Falls, Steam Vents, Arena of Glory [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Solitude
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Plains→W, Island→U, Swamp→B, Hallowed Fountain→W, Undercity Sewers→B (paying for Solitude, 7 mana remaining)
+T9 P1: Cast Solitude (3WW)
+    [Priority] P2 passes (no response)
+T9: Resolve Solitude
+T9: Solitude ETB suppressed by Doorkeeper Thrull
+    → Goal: execute_payoff
+    [Mana] Tap Watery Grave→B (paying for Thoughtseize, 2 mana remaining)
+T9 P1: Cast Thoughtseize (B)
+    [Priority] P2 passes (no response)
+T9: Resolve Thoughtseize
+T9: Leyline of the Guildpact moved hand -> graveyard (forced discard)
+T9 P1: Thoughtseize → opponent discards 1
+T9: Thoughtseize moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Psychic Frog, Solitude
+T9 P1: Attack with Psychic Frog, Solitude
+  [Declare Blockers] P2 does not block
+T9 P1:   Psychic Frog (1/2) → 1 dmg to player
+T9 P1: Psychic Frog deals combat damage — draw a card
+T9 P1:   Solitude (3/2) → 3 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 14 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 10  |  Instant Reanimator 7
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 7  |  Opp lands: 7
+║ Library: 40  |  Graveyard: 6
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2), Ragavan, Nimble Pilferer (2/1), Scion of Draco (4/4)
+║   Other: Treasure Token, Treasure Token, Leyline Binding, Treasure Token, Leyline Binding, Treasure Token
+║   Lands: Steam Vents, Temple Garden, Blood Crypt, Thundering Falls, Steam Vents, Arena of Glory, Mountain
+║ Instant Reanimator board:
+║   Creatures: Psychic Frog (1/2) [tapped], Fallaji Archaeologist (0/3), Solitude (3/2) [tapped], Solitude (3/2)
+║   Lands: Hallowed Fountain [T], Undercity Sewers [T], Plains [T], Watery Grave [T], Island [T], Swamp [T], Meticulous Archive
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T10 P2: Cast Ephemerate (W)
+T10 P2: Rebound Ephemerate
+T10: Resolve Ephemerate
+T10: Scion of Draco ETB suppressed by Doorkeeper Thrull
+T10: Blink Scion of Draco
+T10: Ephemerate moved stack -> exile (rebound (CR 702.86))
+  [Draw] P2 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Doorkeeper Thrull, Ragavan, Nimble Pilferer
+T10 P2: Attack with Doorkeeper Thrull, Ragavan, Nimble Pilferer
+T10 P1:   [BLOCK-EMERGENCY] Fallaji Archaeologist (0/3) blocks Ragavan, Nimble Pilferer (2/1) — lifespan_delta=+0.29
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T10 P2:   Doorkeeper Thrull (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 7 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 6  |  Domain Zoo 10
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 7  |  Opp lands: 7
+║ Library: 27  |  Graveyard: 12
+║ Instant Reanimator board:
+║   Creatures: Psychic Frog (1/2), Fallaji Archaeologist (0/3), Solitude (3/2), Solitude (3/2)
+║   Lands: Hallowed Fountain, Undercity Sewers, Plains, Watery Grave, Island, Swamp, Meticulous Archive
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2) [tapped], Ragavan, Nimble Pilferer (2/1) [tapped], Scion of Draco (4/4)
+║   Other: Treasure Token, Treasure Token, Leyline Binding, Treasure Token, Leyline Binding, Treasure Token
+║   Lands: Steam Vents, Temple Garden, Blood Crypt, Thundering Falls, Steam Vents, Arena of Glory, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Force of Negation
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Plains→W, Island→U, Swamp→B, Hallowed Fountain→W, Undercity Sewers→B (paying for Solitude, 7 mana remaining)
+T10 P1: Cast Solitude (3WW)
+    [Priority] P2 passes (no response)
+T10: Resolve Solitude
+T10: Solitude ETB suppressed by Doorkeeper Thrull
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Psychic Frog, Solitude, Solitude
+T10 P1: Attack with Psychic Frog, Solitude, Solitude
+T10 P2:   [BLOCK-EMERGENCY] Scion of Draco (4/4) blocks Solitude (3/2) — lifespan_delta=+0.73
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T10 P1:   Psychic Frog (1/2) → 1 dmg to player
+T10 P1: Psychic Frog deals combat damage — draw a card
+T10 P1:   Solitude (3/2) → 3 dmg to player
+T10: Solitude dies
+  [Combat Damage] 4 damage dealt → P2 life: 10 → 6
+  [End Combat]
+  [Main 2]
+T10 P1: Play Polluted Delta
+T10: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T10 P1: Crack Polluted Delta -> Shadowy Backstreet (tapped)
+T10 P1: surveil 1 → Thoughtseize to GY
+  [End Step]
+
+╔══ TURN 11 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 6  |  Instant Reanimator 11
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 7  |  Opp lands: 8
+║ Library: 39  |  Graveyard: 6
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2), Ragavan, Nimble Pilferer (2/1), Scion of Draco (4/4)
+║   Other: Treasure Token, Treasure Token, Leyline Binding, Treasure Token, Leyline Binding, Treasure Token
+║   Lands: Steam Vents, Temple Garden, Blood Crypt, Thundering Falls, Steam Vents, Arena of Glory, Mountain
+║ Instant Reanimator board:
+║   Creatures: Psychic Frog (1/2) [tapped], Fallaji Archaeologist (0/3), Solitude (3/2) [tapped], Solitude (3/2)
+║   Lands: Hallowed Fountain [T], Undercity Sewers [T], Plains [T], Watery Grave, Island [T], Swamp [T], Meticulous Archive, Shadowy Backstreet [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T11 P2: Cast Ephemerate (W)
+T11 P2: Rebound Ephemerate
+T11: Resolve Ephemerate
+T11: Scion of Draco ETB suppressed by Doorkeeper Thrull
+T11: Blink Scion of Draco
+T11: Ephemerate moved stack -> exile (rebound (CR 702.86))
+  [Draw] P2 draws: Teferi, Time Raveler
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Arena of Glory→R, Mountain→R, Steam Vents→R (paying for Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, 7 mana remaining)
+T11 P2: Cast Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2R)
+    [Priority] P1 passes (no response)
+T11: Resolve Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+T11 P2: Create 1x Goblin token(s)
+T11 P2: Fable Ch.I: Create 2/2 Goblin Shaman with haste
+    → Goal: curve_out
+    [Mana] Tap Temple Garden→W, Blood Crypt→B, Thundering Falls→U (paying for Teferi, Time Raveler, 4 mana remaining)
+T11 P2: Cast Teferi, Time Raveler (1WU)
+    [Priority] P1 passes (no response)
+T11: Resolve Teferi, Time Raveler
+T11 P2: Teferi bounces Solitude
+T11 P2: Teferi draws Lush Portico
+T11 P2: surveil 1 → Wooded Foothills to GY
+T11 P2: Play Lush Portico (enters tapped)
+T11 P2: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Doorkeeper Thrull, Ragavan, Nimble Pilferer, Goblin Token
+T11 P2: Attack with Doorkeeper Thrull, Ragavan, Nimble Pilferer, Goblin Token
+T11 P1:   [BLOCK] Fallaji Archaeologist (0/3) blocks Ragavan, Nimble Pilferer (2/1) — lifespan_delta=+0.22
+T11 P1:   [BLOCK] Solitude (3/2) blocks Ragavan, Nimble Pilferer (2/1) — lifespan_delta=-0.93
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T11 P2:   Doorkeeper Thrull (1/2) → 1 dmg to player
+T11 P2:   Goblin Token (2/2) → 2 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 11 → 8
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 8  |  Domain Zoo 6
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 8  |  Opp lands: 8
+║ Library: 23  |  Graveyard: 15
+║ Instant Reanimator board:
+║   Creatures: Psychic Frog (1/2), Fallaji Archaeologist (0/3), Solitude (3/2)
+║   Lands: Hallowed Fountain, Undercity Sewers, Plains, Watery Grave, Island, Swamp, Meticulous Archive, Shadowy Backstreet
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2) [tapped], Ragavan, Nimble Pilferer (2/1) [tapped], Scion of Draco (4/4), Goblin Token (2/2) [tapped]
+║   Other: Treasure Token, Treasure Token, Leyline Binding, Treasure Token, Leyline Binding, Treasure Token, Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, Teferi, Time Raveler
+║   Lands: Steam Vents [T], Temple Garden [T], Blood Crypt [T], Thundering Falls [T], Steam Vents, Arena of Glory [T], Mountain [T], Lush Portico [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Atraxa, Grand Unifier
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Plains→W, Island→U, Swamp→B, Hallowed Fountain→W, Undercity Sewers→B (paying for Solitude, 8 mana remaining)
+T11 P1: Cast Solitude (3WW)
+    [Priority] P2 passes (no response)
+T11: Resolve Solitude
+T11: Solitude ETB suppressed by Doorkeeper Thrull
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Psychic Frog, Solitude
+T11 P1: Attack with Psychic Frog, Solitude
+T11 P2:   [BLOCK-EMERGENCY] Scion of Draco (4/4) blocks Solitude (3/2) — lifespan_delta=+1.07
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T11 P1:   Psychic Frog (1/2) → 1 dmg to player
+T11 P1: Psychic Frog deals combat damage — draw a card
+T11: Solitude dies
+  [Combat Damage] 1 damage dealt → P2 life: 6 → 5
+  [End Combat]
+  [Main 2]
+    → Goal: execute_payoff [protection]
+    [Mana] Tap Meticulous Archive→W (paying for Ephemerate, 3 mana remaining)
+T11 P1: Cast Ephemerate (W)
+    [Priority] P2 passes (no response)
+T11: Resolve Ephemerate
+T11: Psychic Frog ETB suppressed by Doorkeeper Thrull
+T11: Blink Psychic Frog
+T11: Ephemerate moved stack -> exile (rebound (CR 702.86))
+  [End Step]
+
+╔══ TURN 12 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 5  |  Instant Reanimator 11
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 8  |  Opp lands: 8
+║ Library: 36  |  Graveyard: 7
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2), Ragavan, Nimble Pilferer (2/1), Scion of Draco (4/4), Goblin Token (2/2)
+║   Other: Treasure Token, Treasure Token, Leyline Binding, Treasure Token, Leyline Binding, Treasure Token, Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, Teferi, Time Raveler
+║   Lands: Steam Vents, Temple Garden, Blood Crypt, Thundering Falls, Steam Vents, Arena of Glory, Mountain, Lush Portico
+║ Instant Reanimator board:
+║   Creatures: Fallaji Archaeologist (0/3), Solitude (3/2) [tapped], Psychic Frog (1/2)
+║   Lands: Hallowed Fountain [T], Undercity Sewers [T], Plains [T], Watery Grave, Island [T], Swamp [T], Meticulous Archive [T], Shadowy Backstreet
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T12 P2: Cast Ephemerate (W)
+T12 P2: Rebound Ephemerate
+T12: Stubborn Denial moved hand -> graveyard (discard)
+T12: Ragavan, Nimble Pilferer moved hand -> graveyard (discard)
+T12 P2: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki Ch.II: loot 2 (drew: Territorial Kavu, Doorkeeper Thrull)
+T12: Resolve Ephemerate
+T12: Scion of Draco ETB suppressed by Doorkeeper Thrull
+T12: Blink Scion of Draco
+T12: Ephemerate moved stack -> exile (rebound (CR 702.86))
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+T12 P2: Play Arid Mesa
+T12: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T12 P2: Crack Arid Mesa -> Plains (untapped)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Arena of Glory→R, Plains→W (paying for Doorkeeper Thrull, 9 mana remaining)
+T12 P2: Cast Doorkeeper Thrull (1W)
+T12: Resolve Doorkeeper Thrull
+T12: Doorkeeper Thrull ETB suppressed by Doorkeeper Thrull
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Mountain→R, Temple Garden→G (paying for Territorial Kavu, 7 mana remaining)
+T12 P2: Cast Territorial Kavu (RG)
+T12: Resolve Territorial Kavu
+T12: Territorial Kavu ETB suppressed by Doorkeeper Thrull
+T12 P2: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Doorkeeper Thrull, Ragavan, Nimble Pilferer, Goblin Token
+T12 P2: Attack with Doorkeeper Thrull, Ragavan, Nimble Pilferer, Goblin Token
+T12 P1:   [BLOCK] Fallaji Archaeologist (0/3) blocks Ragavan, Nimble Pilferer (2/1) — lifespan_delta=+0.13
+T12 P1:   [BLOCK] Psychic Frog (1/2) blocks Ragavan, Nimble Pilferer (2/1) — lifespan_delta=-0.09
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T12 P2:   Doorkeeper Thrull (1/2) → 1 dmg to player
+T12 P2:   Goblin Token (2/2) → 2 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 11 → 8
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 8  |  Domain Zoo 4
+║ Hand: 4 cards  |  Opp hand: 0 cards
+║ Lands: 8  |  Opp lands: 9
+║ Library: 21  |  Graveyard: 16
+║ Instant Reanimator board:
+║   Creatures: Fallaji Archaeologist (0/3), Solitude (3/2), Psychic Frog (1/2)
+║   Lands: Hallowed Fountain, Undercity Sewers, Plains, Watery Grave, Island, Swamp, Meticulous Archive, Shadowy Backstreet
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2) [tapped], Ragavan, Nimble Pilferer (2/1) [tapped], Goblin Token (2/2) [tapped], Scion of Draco (4/4), Doorkeeper Thrull (1/2), Territorial Kavu (5/5)
+║   Other: Treasure Token, Treasure Token, Leyline Binding, Treasure Token, Leyline Binding, Treasure Token, Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, Teferi, Time Raveler
+║   Lands: Steam Vents, Temple Garden [T], Blood Crypt, Thundering Falls, Steam Vents, Arena of Glory [T], Mountain [T], Lush Portico, Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T12 P1: Cast Ephemerate (W)
+T12 P1: Rebound Ephemerate
+T12: Resolve Ephemerate
+T12: Psychic Frog ETB suppressed by Doorkeeper Thrull
+T12: Blink Psychic Frog
+T12: Ephemerate moved stack -> exile (rebound (CR 702.86))
+  [Draw] P1 draws: Polluted Delta
+  [Main 1]
+T12 P1: Play Polluted Delta
+T12: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T12 P1: Crack Polluted Delta (no valid land found)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Solitude
+T12 P1: Attack with Solitude
+  [Declare Blockers] P2 does not block
+T12 P1:   Solitude (3/2) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 4 → 1
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+>>> Instant Reanimator wins Game 1 on turn 13 via timeout
+    Final life: Instant Reanimator=10  Domain Zoo=1
+
+======================================================================
+  GAME 2: Domain Zoo (P1) vs Instant Reanimator (P2)  —  seed 60501
+  Series: Instant Reanimator 1 - 0 Domain Zoo
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Domain Zoo wins → chooses to play first
+║ P1 (on play): Domain Zoo
+║ P2 (on draw): Instant Reanimator
+╚═══════════════════════════════════════════════════════
+
+P1 (Domain Zoo) opening hand (3 lands, 4 spells):
+  • Doorkeeper Thrull [Creature, CMC 2]
+  • Territorial Kavu [Creature, CMC 2]
+  • Fable of the Mirror-Breaker // Reflection of Kiki-Jiki [Spell, CMC 3]
+  • Wild Nacatl [Creature, CMC 1]
+  • Wooded Foothills [Land, CMC 0]
+  • Steam Vents [Land, CMC 0]
+  • Flooded Strand [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Doorkeeper Thrull, Territorial Kavu, 4 cheap spells
+
+P2 (Instant Reanimator) opening hand (2 lands, 5 spells):
+  • Watery Grave [Land, CMC 0]
+  • Faithful Mending [Spell, CMC 2]
+  • Griselbrand [Creature, CMC 8]
+  • Solitude [Creature, CMC 5]
+  • Solitude [Creature, CMC 5]
+  • Swamp [Land, CMC 0]
+  • Psychic Frog [Creature, CMC 2]
+→ P2 KEEPS 7 — has key card(s): Faithful Mending, Griselbrand, Psychic Frog, 2 cheap spells
+
+
+╔══ TURN 1 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 20  |  Instant Reanimator 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Wooded Foothills
+T1: Wooded Foothills moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Wooded Foothills (pay 1 life) -> Temple Garden (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Instant Reanimator (P2) ══════════════════════════
+║ Life: Instant Reanimator 20  |  Domain Zoo 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Force of Negation
+  [Main 1]
+T1 P2: Play Watery Grave (untapped, life: 20)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 19  |  Instant Reanimator 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Temple Garden
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Leyline Binding
+  [Main 1]
+T2 P1: Play Steam Vents (untapped, life: 19)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Temple Garden→W, Steam Vents→R (paying for Doorkeeper Thrull, 2 mana remaining)
+T2 P1: Cast Doorkeeper Thrull (1W)
+    [Priority] P2 passes (no response)
+T2: Resolve Doorkeeper Thrull
+T2 P1: Doorkeeper Thrull: opponent ETB triggers suppressed
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Instant Reanimator (P2) ══════════════════════════
+║ Life: Instant Reanimator 20  |  Domain Zoo 19
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2)
+║   Lands: Temple Garden [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Atraxa, Grand Unifier
+  [Main 1]
+T2 P2: Play Swamp
+    → Goal: fill_resource [engines]
+    [Mana] Tap Swamp→B, Watery Grave→U (paying for Psychic Frog, 2 mana remaining)
+T2 P2: Cast Psychic Frog (UB)
+    [Priority] P1 passes (no response)
+T2: Resolve Psychic Frog
+T2: Psychic Frog ETB suppressed by Doorkeeper Thrull
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 19  |  Instant Reanimator 20
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2)
+║   Lands: Temple Garden, Steam Vents
+║ Instant Reanimator board:
+║   Creatures: Psychic Frog (1/2)
+║   Lands: Watery Grave [T], Swamp [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Leyline Binding
+  [Main 1]
+T3 P1: Play Flooded Strand
+T3: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T3 P1: Crack Flooded Strand (pay 1 life) -> Steam Vents (tapped, life: 18)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Temple Garden→G, Steam Vents→R (paying for Territorial Kavu, 2 mana remaining)
+T3 P1: Cast Territorial Kavu (RG)
+    [Priority] P2 passes (no response)
+T3: Resolve Territorial Kavu
+T3: Territorial Kavu ETB suppressed by Doorkeeper Thrull
+  [Begin Combat]
+T3 P2: Evoke Solitude (exile Solitude)
+T3 P2: Cast Solitude (3WW)
+T3: Resolve Solitude
+T3: Solitude ETB suppressed by Doorkeeper Thrull
+T3: Solitude moved battlefield -> graveyard (evoke sacrifice)
+T3 P2: Solitude sacrificed (evoke)
+  [Declare Attackers] P1 attacks with: Doorkeeper Thrull
+T3 P1: Attack with Doorkeeper Thrull
+  [Declare Blockers] P2 does not block
+T3 P1:   Doorkeeper Thrull (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P2 life: 20 → 19
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Instant Reanimator (P2) ══════════════════════════
+║ Life: Instant Reanimator 19  |  Domain Zoo 18
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 1
+║ Instant Reanimator board:
+║   Creatures: Psychic Frog (1/2)
+║   Lands: Watery Grave, Swamp
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2) [tapped], Territorial Kavu (4/4)
+║   Lands: Temple Garden [T], Steam Vents [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+T3 P2: Play Flooded Strand
+T3: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T3 P2: Crack Flooded Strand (pay 1 life) -> Godless Shrine (untapped, life: 16)
+    → Goal: fill_resource [enablers]
+    [Mana] Tap Watery Grave→U, Godless Shrine→W (paying for Faithful Mending, 3 mana remaining)
+T3 P2: Cast Faithful Mending (WU)
+    [Priority] P1 passes (no response)
+T3: Resolve Faithful Mending
+T3: Griselbrand moved hand -> graveyard (discard)
+T3: Atraxa, Grand Unifier moved hand -> graveyard (discard)
+T3: Faithful Mending moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 18  |  Instant Reanimator 18
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2), Territorial Kavu (4/4)
+║   Lands: Temple Garden, Steam Vents, Steam Vents
+║ Instant Reanimator board:
+║   Creatures: Psychic Frog (1/2)
+║   Lands: Watery Grave [T], Swamp, Godless Shrine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Lightning Bolt
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Temple Garden→W, Steam Vents→R (paying for Leyline Binding, 3 mana remaining)
+T4 P1: Cast Leyline Binding (5W)
+    [Priority] P2 responds with Force of Negation
+T4 P2: Pay alternate cost: exile Faithful Mending for Force of Negation
+T4 P2: Cast Force of Negation (1UU)
+T4: Resolve Force of Negation
+T4: Leyline Binding moved stack -> graveyard (resolution)
+T4: Leyline Binding is countered
+T4: Force of Negation moved stack -> graveyard (resolution)
+    → Goal: curve_out
+    [Target] → face (3 dmg, life 18 → 15): face value 4.50
+    [Mana] Tap Steam Vents→R (paying for Lightning Bolt, 1 mana remaining)
+T4 P1: Cast Lightning Bolt (R)
+    [Priority] P2 passes (no response)
+T4: Resolve Lightning Bolt
+T4 P1: Lightning Bolt → 3 damage → life 15
+T4: Lightning Bolt moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Doorkeeper Thrull, Territorial Kavu
+T4 P1: Territorial Kavu exiles Griselbrand from opponent GY
+T4 P1: Attack with Doorkeeper Thrull, Territorial Kavu
+T4 P2:   [BLOCK] Psychic Frog (1/2) blocks Territorial Kavu (4/4) — lifespan_delta=+0.80
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T4 P1:   Doorkeeper Thrull (1/2) → 1 dmg to player
+T4: Psychic Frog dies
+  [Combat Damage] 1 damage dealt → P2 life: 15 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Instant Reanimator (P2) ══════════════════════════
+║ Life: Instant Reanimator 14  |  Domain Zoo 18
+║ Hand: 1 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 6
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Swamp, Godless Shrine
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2) [tapped], Territorial Kavu (4/4) [tapped]
+║   Lands: Temple Garden [T], Steam Vents [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: March of Otherworldly Light
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 18  |  Instant Reanimator 14
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 4
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2), Territorial Kavu (4/4)
+║   Lands: Temple Garden, Steam Vents, Steam Vents
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Swamp, Godless Shrine
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Doorkeeper Thrull
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Temple Garden→G (paying for Wild Nacatl, 3 mana remaining)
+T5 P1: Cast Wild Nacatl (G)
+    [Priority] P2 passes (no response)
+T5: Resolve Wild Nacatl
+T5: Wild Nacatl ETB suppressed by Doorkeeper Thrull
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Doorkeeper Thrull, Territorial Kavu
+T5 P1: Territorial Kavu exiles Atraxa, Grand Unifier from opponent GY
+T5 P1: Attack with Doorkeeper Thrull, Territorial Kavu
+  [Declare Blockers] P2 does not block
+T5 P1:   Doorkeeper Thrull (1/2) → 1 dmg to player
+T5 P1:   Territorial Kavu (4/4) → 4 dmg to player
+  [Combat Damage] 5 damage dealt → P2 life: 14 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Instant Reanimator (P2) ══════════════════════════
+║ Life: Instant Reanimator 9  |  Domain Zoo 18
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 46  |  Graveyard: 5
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Swamp, Godless Shrine
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2) [tapped], Territorial Kavu (4/4) [tapped], Wild Nacatl (3/3)
+║   Lands: Temple Garden [T], Steam Vents, Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Goryo's Vengeance
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 18  |  Instant Reanimator 9
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 4
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2), Territorial Kavu (4/4), Wild Nacatl (3/3)
+║   Lands: Temple Garden, Steam Vents, Steam Vents
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Swamp, Godless Shrine
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Scion of Draco
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Temple Garden→W, Steam Vents→R (paying for Doorkeeper Thrull, 3 mana remaining)
+T6 P1: Cast Doorkeeper Thrull (1W)
+    [Priority] P2 passes (no response)
+T6: Resolve Doorkeeper Thrull
+T6: Doorkeeper Thrull ETB suppressed by Doorkeeper Thrull
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Doorkeeper Thrull, Territorial Kavu, Wild Nacatl
+T6 P1: Territorial Kavu exiles Solitude from opponent GY
+T6 P1: Attack with Doorkeeper Thrull, Territorial Kavu, Wild Nacatl
+  [Declare Blockers] P2 does not block
+T6 P1:   Doorkeeper Thrull (1/2) → 1 dmg to player
+T6 P1:   Territorial Kavu (4/4) → 4 dmg to player
+T6 P1:   Wild Nacatl (3/3) → 3 dmg to player
+  [Combat Damage] 8 damage dealt → P2 life: 9 → 1
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Instant Reanimator (P2) ══════════════════════════
+║ Life: Instant Reanimator 1  |  Domain Zoo 18
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 45  |  Graveyard: 4
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Swamp, Godless Shrine
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2) [tapped], Territorial Kavu (4/4) [tapped], Wild Nacatl (3/3) [tapped], Doorkeeper Thrull (1/2)
+║   Lands: Temple Garden [T], Steam Vents [T], Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Plains
+  [Main 1]
+T6 P2: Play Plains
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 18  |  Instant Reanimator 1
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 4
+║ Domain Zoo board:
+║   Creatures: Doorkeeper Thrull (1/2), Territorial Kavu (4/4), Wild Nacatl (3/3), Doorkeeper Thrull (1/2)
+║   Lands: Temple Garden, Steam Vents, Steam Vents
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Swamp, Godless Shrine, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Territorial Kavu
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Temple Garden→G, Steam Vents→R (paying for Territorial Kavu, 3 mana remaining)
+T7 P1: Cast Territorial Kavu (RG)
+    [Priority] P2 passes (no response)
+T7: Resolve Territorial Kavu
+T7: Territorial Kavu ETB suppressed by Doorkeeper Thrull
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Doorkeeper Thrull, Territorial Kavu, Wild Nacatl, Doorkeeper Thrull
+T7 P1: Territorial Kavu exiles Force of Negation from opponent GY
+T7 P1: Attack with Doorkeeper Thrull, Territorial Kavu, Wild Nacatl, Doorkeeper Thrull
+  [Declare Blockers] P2 does not block
+T7 P1:   Doorkeeper Thrull (1/2) → 1 dmg to player
+T7 P1:   Territorial Kavu (4/4) → 4 dmg to player
+T7 P1:   Wild Nacatl (3/3) → 3 dmg to player
+T7 P1:   Doorkeeper Thrull (1/2) → 1 dmg to player
+P2 loses: life total -8
+  [Combat Damage] 9 damage dealt → P2 life: 1 → -8
+
+>>> Domain Zoo wins Game 2 on turn 7 via damage
+    Final life: Domain Zoo=18  Instant Reanimator=-8
+
+======================================================================
+  GAME 3: Instant Reanimator (P1) vs Domain Zoo (P2)  —  seed 60502
+  Series: Instant Reanimator 1 - 1 Domain Zoo
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Instant Reanimator wins → chooses to play first
+║ P1 (on play): Instant Reanimator
+║ P2 (on draw): Domain Zoo
+╚═══════════════════════════════════════════════════════
+
+P1 (Instant Reanimator) opening hand (1 lands, 6 spells):
+  • Fallaji Archaeologist [Creature, CMC 2]
+  • Flooded Strand [Land, CMC 0]
+  • Fallaji Archaeologist [Creature, CMC 2]
+  • Quantum Riddler [Creature, CMC 5]
+  • Solitude [Creature, CMC 5]
+  • Ephemerate [Spell, CMC 1]
+  • Psychic Frog [Creature, CMC 2]
+→ P1 MULLIGANS (too few lands (1 < 2))
+  New hand (5 lands, 2 spells): ['Solitude', 'Undercity Sewers', 'Shadowy Backstreet', 'Solitude', 'Swamp', 'Polluted Delta', 'Polluted Delta']
+→ P1 MULLIGANS (too many lands (5 > 4); first-turn value 2 < 5)
+  New hand (3 lands, 4 spells): ['Marsh Flats', 'Atraxa, Grand Unifier', 'Polluted Delta', 'Force of Negation', 'Atraxa, Grand Unifier', 'Ephemerate', 'Flooded Strand']
+→ P1 mulligans to 5, bottoms: ['Force of Negation', 'Atraxa, Grand Unifier']
+  Keeps: ['Marsh Flats', 'Atraxa, Grand Unifier', 'Polluted Delta', 'Ephemerate', 'Flooded Strand']
+
+P2 (Domain Zoo) opening hand (2 lands, 5 spells):
+  • The Legend of Roku // Avatar Roku [Spell, CMC 4]
+  • Leyline Binding [Spell, CMC 6]
+  • Wild Nacatl [Creature, CMC 1]
+  • Teferi, Time Raveler [Spell, CMC 3]
+  • Stubborn Denial [Spell, CMC 1]
+  • Blood Crypt [Land, CMC 0]
+  • Arid Mesa [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Leyline Binding, 3 cheap spells
+
+
+╔══ TURN 1 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 20  |  Domain Zoo 20
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 55  |  Graveyard: 0
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Flooded Strand
+T1: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Flooded Strand (pay 1 life) -> Godless Shrine (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 20  |  Instant Reanimator 19
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wild Nacatl
+  [Main 1]
+T1 P2: Play Arid Mesa
+T1: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Arid Mesa (pay 1 life) -> Temple Garden (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 19  |  Domain Zoo 19
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 1
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Solitude
+  [Main 1]
+T2 P1: Play Polluted Delta
+T2: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T2 P1: Crack Polluted Delta (pay 1 life) -> Hallowed Fountain (tapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 19  |  Instant Reanimator 18
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Temple Garden
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Steam Vents
+  [Main 1]
+T2 P2: Play Steam Vents (untapped, life: 19)
+    → Goal: curve_out
+    [Mana] Tap Temple Garden→G (paying for Wild Nacatl, 2 mana remaining)
+T2 P2: Cast Wild Nacatl (G)
+    [Priority] P1 passes (no response)
+T2: Resolve Wild Nacatl
+  [Begin Combat]
+T2 P1: Evoke Solitude (exile Ephemerate)
+T2 P1: Cast Solitude (3WW)
+T2: Resolve Solitude
+T2: Wild Nacatl moved battlefield -> exile (exiled)
+T2 P1: Solitude exiles Wild Nacatl (opponent gains 3 life, now 22)
+T2: Solitude moved battlefield -> graveyard (evoke sacrifice)
+T2 P1: Solitude sacrificed (evoke)
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 18  |  Domain Zoo 22
+║ Hand: 2 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 3
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Hallowed Fountain
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Temple Garden [T], Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Island
+  [Main 1]
+T3 P1: Play Marsh Flats
+T3: Marsh Flats moved battlefield -> graveyard (fetchland sacrifice)
+T3 P1: Crack Marsh Flats (pay 1 life) -> Watery Grave (tapped, life: 17)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 22  |  Instant Reanimator 17
+║ Hand: 6 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Temple Garden, Steam Vents
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Hallowed Fountain, Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Scion of Draco
+  [Main 1]
+T3 P2: Play Blood Crypt (untapped, life: 20)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Temple Garden→G, Steam Vents→R (paying for Scion of Draco, 3 mana remaining)
+T3 P2: Cast Scion of Draco (12)
+    [Priority] P1 passes (no response)
+T3: Resolve Scion of Draco
+T3 P2: Scion of Draco enters — creatures gain vigilance/hexproof/lifelink/first strike/trample if white/blue/black/red/green
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 17  |  Domain Zoo 20
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 4
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Hallowed Fountain, Watery Grave
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4)
+║   Lands: Temple Garden [T], Steam Vents [T], Blood Crypt
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Shadowy Backstreet
+  [Main 1]
+T4 P1: Play Island
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 20  |  Instant Reanimator 17
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4)
+║   Lands: Temple Garden, Steam Vents, Blood Crypt
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Hallowed Fountain, Watery Grave, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Leyline of the Guildpact
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Temple Garden→G (paying for Wild Nacatl, 3 mana remaining)
+T4 P2: Cast Wild Nacatl (G)
+    [Priority] P1 passes (no response)
+T4: Resolve Wild Nacatl
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Scion of Draco
+T4 P2: Attack with Scion of Draco
+  [Declare Blockers] P1 does not block
+T4 P2:   Scion of Draco (4/4) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 17 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 13  |  Domain Zoo 20
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 4
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Hallowed Fountain, Watery Grave, Island
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4) [tapped], Wild Nacatl (3/3)
+║   Lands: Temple Garden [T], Steam Vents, Blood Crypt
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Goryo's Vengeance
+  [Main 1]
+T5 P1: surveil 1 → Misty Rainforest to GY
+T5 P1: Play Shadowy Backstreet (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 20  |  Instant Reanimator 13
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 48  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4), Wild Nacatl (3/3)
+║   Lands: Temple Garden, Steam Vents, Blood Crypt
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Hallowed Fountain, Watery Grave, Island, Shadowy Backstreet [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Doorkeeper Thrull
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Temple Garden→W, Steam Vents→R (paying for Doorkeeper Thrull, 3 mana remaining)
+T5 P2: Cast Doorkeeper Thrull (1W)
+    [Priority] P1 passes (no response)
+T5: Resolve Doorkeeper Thrull
+T5 P2: Doorkeeper Thrull: opponent ETB triggers suppressed
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Scion of Draco, Wild Nacatl
+T5 P2: Attack with Scion of Draco, Wild Nacatl
+  [Declare Blockers] P1 does not block
+T5 P2:   Scion of Draco (4/4) → 4 dmg to player
+T5 P2:   Wild Nacatl (3/3) → 3 dmg to player
+  [Combat Damage] 7 damage dealt → P1 life: 13 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 6  |  Domain Zoo 20
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 5
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Hallowed Fountain, Watery Grave, Island, Shadowy Backstreet
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4) [tapped], Wild Nacatl (3/3) [tapped], Doorkeeper Thrull (1/2)
+║   Lands: Temple Garden [T], Steam Vents [T], Blood Crypt
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Solitude
+  [Main 1]
+    → Goal: fill_resource
+    [Mana] Tap Island→U, Godless Shrine→W, Hallowed Fountain→W, Watery Grave→B, Shadowy Backstreet→B (paying for Solitude, 5 mana remaining)
+T6 P1: Cast Solitude (3WW)
+    [Priority] P2 passes (no response)
+T6: Resolve Solitude
+T6: Solitude ETB suppressed by Doorkeeper Thrull
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 20  |  Instant Reanimator 6
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4), Wild Nacatl (3/3), Doorkeeper Thrull (1/2)
+║   Lands: Temple Garden, Steam Vents, Blood Crypt
+║ Instant Reanimator board:
+║   Creatures: Solitude (3/2)
+║   Lands: Godless Shrine [T], Hallowed Fountain [T], Watery Grave [T], Island [T], Shadowy Backstreet [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Leyline of the Guildpact
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Temple Garden→W, Steam Vents→U, Blood Crypt→B (paying for Teferi, Time Raveler, 3 mana remaining)
+T6 P2: Cast Teferi, Time Raveler (1WU)
+    [Priority] P1 passes (no response)
+T6: Resolve Teferi, Time Raveler
+T6 P2: Teferi bounces Solitude
+T6 P2: Teferi draws Wooded Foothills
+T6 P2: Play Wooded Foothills
+T6: Wooded Foothills moved battlefield -> graveyard (fetchland sacrifice)
+T6 P2: Crack Wooded Foothills (pay 1 life) -> Steam Vents (tapped, life: 19)
+T6 P2: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Scion of Draco, Wild Nacatl, Doorkeeper Thrull
+T6 P2: Attack with Scion of Draco, Wild Nacatl, Doorkeeper Thrull
+  [Declare Blockers] P1 does not block
+T6 P2:   Scion of Draco (4/4) → 4 dmg to player
+T6 P2:   Wild Nacatl (3/3) → 3 dmg to player
+T6 P2:   Doorkeeper Thrull (1/2) → 1 dmg to player
+P1 loses: life total -2
+  [Combat Damage] 8 damage dealt → P1 life: 6 → -2
+
+>>> Domain Zoo wins Game 3 on turn 6 via damage
+    Final life: Instant Reanimator=-2  Domain Zoo=19
+
+======================================================================
+  MATCH RESULT: Domain Zoo wins 2-1
+======================================================================

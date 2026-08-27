@@ -908,6 +908,89 @@ class EVPlayer:
                 return min(ev, PATIENCE_GATE_REJECT_SENTINEL)
         return ev
 
+    def _gate_x_tutor_payoff(self, ev: float, card, t, snap: EVSnapshot,
+                             me, game) -> float:
+        """Delivery-conditioned EV + payoff patience for X-cost creature
+        tutors (Green Sun's Zenith shape, parse-once typed field
+        `CardTemplate.x_creature_tutor_data`). Shaped like the sibling
+        gates (`_overlay_land_sacrifice_fizzle`, `_gate_x_cost_board_wipe`,
+        `_overlay_cascade_patience`): clamp into the patience-reject band
+        or adjust EV from resource primitives, no card names.
+
+        Live bug this closes (2026-08-26 Amulet re-diagnosis, 2/12 walked
+        losses): the tutor was cast at whatever X current mana allowed and
+        scored blind to what it could deliver — X=2/4/4 all fetching the
+        same 1-mana body, burning a 4-of payoff-access below the 6-mana
+        payoff's cost while that payoff sat reachable in the library.
+
+        Three terms, all consulting the SAME engine-side X picker
+        (`pick_creature_tutor_x_value`) the cast path uses:
+
+        1. Delivery conditioning: nothing fetchable at any affordable X
+           means the cast is a fizzle — clamp. Otherwise credit the best
+           deliverable target's mana value and charge the X-gap
+           (`creature_tutor_x_net_value`, mana units), converted at the
+           projection's per-mana clock scale — the value credited is what
+           the tutor actually delivers, not a flat tutor bonus.
+        2. Waste charge is inside that same net value: X above the
+           delivered target's cost is mana buying nothing, charged 1:1.
+        3. Hold/patience: when the library's payoff ceiling sits above
+           the deliverable band, this copy is the last in-hand access
+           (no other X-creature-tutor in hand), the body we would settle
+           for does not accelerate the mana trajectory (typed ramp
+           signals: ETB-land-from-hand with a land actually in hand,
+           mana production, extra land drops), the forfeited gap exceeds
+           the deliverable's own value (waiting more than doubles what
+           the tutor delivers — both sides in mana units), and the
+           trajectory (one land drop per turn, a rules constant) reaches
+           the payoff within the surviving horizon (`snap.opp_clock`) —
+           hold. Early small-X ramp fetches pass untouched via the
+           acceleration test; a lethal opposing clock releases the hold
+           (better a small body now than a payoff we never live to cast).
+        """
+        data = getattr(t, 'x_creature_tutor_data', None)
+        if not data or not t.x_cost_data or game is None:
+            return ev
+        from engine.cast_manager import (pick_creature_tutor_x_value,
+                                         creature_tutor_x_net_value)
+        from ai.clock import mana_clock_impact
+        mult = (t.x_cost_data or {}).get('multiplier', 1) or 1
+        x_budget = max(0, int(snap.my_mana) - (t.cmc or 0)) // mult
+        best_x, target, top = pick_creature_tutor_x_value(
+            game, self.player_idx, x_budget, t)
+        if target is None:
+            # Nothing fetchable at any affordable X — the cast delivers
+            # nothing; delivery-conditioned EV is a fizzle.
+            return min(ev, PATIENCE_GATE_REJECT_SENTINEL)
+
+        delivered_cmc = target.template.cmc or 0
+        per_mana = mana_clock_impact(snap) * CLOCK_IMPACT_LIFE_SCALING
+        ev += (creature_tutor_x_net_value(best_x, delivered_cmc)
+               * mult * per_mana)
+
+        top_cmc = top.template.cmc or 0
+        forfeited_gap = top_cmc - delivered_cmc
+        if forfeited_gap > delivered_cmc:
+            # The payoff ceiling is more than double the deliverable body.
+            other_access_in_hand = any(
+                c is not card
+                and getattr(c.template, 'x_creature_tutor_data', None)
+                for c in me.hand)
+            target_tags = getattr(target.template, 'tags', set()) or set()
+            land_in_hand = any(c.template.is_land for c in me.hand)
+            accelerates = (
+                ('etb_land_from_hand' in target_tags and land_in_hand)
+                or bool(getattr(target.template, 'produces_mana', None))
+                or getattr(target.template, 'extra_land_drops', 0) > 0)
+            if not other_access_in_hand and not accelerates:
+                payoff_total_cost = (t.cmc or 0) + top_cmc * mult
+                # Mana trajectory: one land drop per turn (rules constant).
+                turns_to_afford = max(
+                    0, payoff_total_cost - int(snap.my_mana))
+                if turns_to_afford <= snap.opp_clock:
+                    return min(ev, PATIENCE_GATE_REJECT_SENTINEL)
+        return ev
+
     def _gate_x_cost_board_wipe(self, ev: float, t, tags, snap: EVSnapshot, opp):
         """Hard gate: hold an X-cost board wipe when its X-budget can't
         meaningfully clear the board. Returns a clamped float to short-circuit
@@ -1072,6 +1155,10 @@ class EVPlayer:
 
         # Cascade patience gate (LE-A3).
         ev = self._overlay_cascade_patience(ev, t, snap, me)
+
+        # X-cost creature tutor (GSZ shape): delivery-conditioned EV,
+        # X-gap waste charge, and payoff hold (2026-08-26 re-diagnosis).
+        ev = self._gate_x_tutor_payoff(ev, card, t, snap, me, game)
 
         # ── Reanimation readiness gate (GV-2) ──
         # Mirror shape of the cascade patience gate above, but in the
