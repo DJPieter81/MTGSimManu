@@ -243,3 +243,166 @@ class TestLandTargetRequirement:
         _land(game, 1)
         reqs = parse_targets("Destroy target land.")
         assert has_legal_target_for_spell(game, 0, reqs) is True
+
+
+# ═════════════════════════════════════════════════════════════════════
+# 2. Engine resolution — zone funnel, riders, target legality
+# ═════════════════════════════════════════════════════════════════════
+
+
+def _spell_in_hand(game, controller, oracle, name="LD Spell"):
+    tmpl = _tmpl(name, oracle)
+    card = CardInstance(template=tmpl, owner=controller,
+                        controller=controller,
+                        instance_id=game.next_instance_id(),
+                        zone="hand")
+    card._game_state = game
+    game.players[controller].hand.append(card)
+    return card
+
+
+def _library_card(game, owner, name="Test Basic", basic=True,
+                  produces=("R",), land=True):
+    tmpl = _tmpl(name, "",
+                 types=(CardType.LAND,) if land else (CardType.SORCERY,),
+                 supertypes=([Supertype.BASIC] if basic else []),
+                 subtypes=(["Mountain"] if basic and land else []),
+                 produces=produces, cost=ManaCost())
+    card = CardInstance(template=tmpl, owner=owner, controller=owner,
+                        instance_id=game.next_instance_id(),
+                        zone="library")
+    card._game_state = game
+    game.players[owner].library.append(card)
+    return card
+
+
+def _resolve(game, spell, controller, targets):
+    from engine.oracle_resolver import resolve_spell_from_oracle
+    return resolve_spell_from_oracle(game, spell, controller, targets)
+
+
+class TestLandDestructionResolution:
+
+    def test_destroyed_land_moves_battlefield_to_graveyard_via_funnel(self):
+        game = _fresh_game()
+        land = _land(game, 1)
+        spell = _spell_in_hand(game, 0, "Destroy target land.")
+        handled = _resolve(game, spell, 0, [land.instance_id])
+        assert handled is True
+        assert land.zone == "graveyard"
+        assert land in game.players[1].graveyard
+        assert land not in game.players[1].battlefield
+
+    def test_search_basic_rider_replaces_through_library_search_funnel(self):
+        game = _fresh_game()
+        land = _land(game, 1, name="Nonbasic Peak")
+        basic = _library_card(game, 1)
+        # A caster-side permanent watching for opponent library searches
+        # proves the rider routes through the search funnel (its trigger
+        # must fire), not an ad-hoc library mutation.
+        watcher = _on_battlefield(game, _tmpl(
+            "Search Watcher",
+            "Whenever an opponent searches their library, put a +1/+1 "
+            "counter on this creature.",
+            types=(CardType.CREATURE,)), 0)
+        spell = _spell_in_hand(game, 0, (
+            "Destroy target land. Its controller may search their library "
+            "for a basic land card, put it onto the battlefield tapped, "
+            "then shuffle.\nDraw a card."))
+        _library_card(game, 0, name="Caster Deck Card", land=False)
+        hand_before = len(game.players[0].hand)
+        _resolve(game, spell, 0, [land.instance_id])
+        assert land.zone == "graveyard"
+        assert basic.zone == "battlefield"
+        assert basic in game.players[1].battlefield
+        assert basic.tapped is True, "rider says the basic enters tapped"
+        assert game.players[1].library_searches_this_game == 1
+        assert watcher.plus_counters == 1, (
+            "the replacement search must fire opponent search triggers "
+            "(library-search funnel, not ad-hoc mutation)")
+        # Caster-draw rider went through the draw funnel.
+        assert len(game.players[0].hand) == hand_before + 1
+
+    def test_search_rider_basic_enters_untapped_when_text_says_untapped(self):
+        game = _fresh_game()
+        land = _land(game, 1)
+        basic = _library_card(game, 1)
+        spell = _spell_in_hand(game, 0, (
+            "Destroy target land. Its controller may search their library "
+            "for a basic land card, put it onto the battlefield, then "
+            "shuffle.\nDraw a card."))
+        _library_card(game, 0, name="Caster Deck Card", land=False)
+        _resolve(game, spell, 0, [land.instance_id])
+        assert basic.zone == "battlefield"
+        assert basic.tapped is False
+
+    def test_damage_rider_fires_only_when_destroyed_land_was_nonbasic(self):
+        oracle = ("Destroy target land. If that land was nonbasic, LD "
+                  "Punish deals 2 damage to the land's controller.")
+        # Nonbasic target: rider damage lands on its controller.
+        game = _fresh_game()
+        nonbasic = _land(game, 1, name="Nonbasic Peak", basic=False)
+        spell = _spell_in_hand(game, 0, oracle, name="LD Punish")
+        _resolve(game, spell, 0, [nonbasic.instance_id])
+        assert game.players[1].life == 18
+        # Basic target: condition unmet, no damage.
+        game2 = _fresh_game()
+        basic = _land(game2, 1, name="Basic Peak", basic=True)
+        spell2 = _spell_in_hand(game2, 0, oracle, name="LD Punish")
+        _resolve(game2, spell2, 0, [basic.instance_id])
+        assert basic.zone == "graveyard"
+        assert game2.players[1].life == 20
+
+    def test_indestructible_land_survives_and_riders_do_not_fire(self):
+        # CR 702.12b + CR 608.2c: destroy does nothing, and the rider
+        # chain must not execute against a surviving land.
+        game = _fresh_game()
+        land = _land(game, 1, keywords={Keyword.INDESTRUCTIBLE})
+        spell = _spell_in_hand(game, 0, (
+            "Destroy target land. LD Sting deals 2 damage to that "
+            "land's controller."), name="LD Sting")
+        handled = _resolve(game, spell, 0, [land.instance_id])
+        assert handled is True
+        assert land.zone == "battlefield"
+        assert game.players[1].life == 20
+
+    def test_hexproof_land_is_not_a_legal_target_for_opponents_spell(self):
+        # CR 702.11d via target_solver — the solver owns target legality.
+        game = _fresh_game()
+        land = _land(game, 1, keywords={Keyword.HEXPROOF})
+        spell = _spell_in_hand(game, 0, "Destroy target land.")
+        _resolve(game, spell, 0, [land.instance_id])
+        assert land.zone == "battlefield"
+
+    def test_target_gone_at_resolution_means_no_effect(self):
+        # CR 608.2b analog at the resolver level: a stale instance id
+        # must not redirect onto a different land.
+        game = _fresh_game()
+        survivor = _land(game, 1, name="Survivor Peak")
+        spell = _spell_in_hand(game, 0, "Destroy target land.")
+        handled = _resolve(game, spell, 0, [987654])
+        assert handled is True
+        assert survivor.zone == "battlefield"
+
+    def test_engine_fallback_picks_an_opponent_land_never_our_own(self):
+        # No cast-time target (synthetic call sites): the deterministic
+        # engine fallback denies the opponent, not the caster.
+        game = _fresh_game()
+        mine = _land(game, 0, name="My Peak")
+        theirs = _land(game, 1, name="Their Peak")
+        spell = _spell_in_hand(game, 0, "Destroy target land.")
+        _resolve(game, spell, 0, [])
+        assert mine.zone == "battlefield"
+        assert theirs.zone == "graveyard"
+
+    def test_compound_spell_destroys_a_chosen_artifact_target(self):
+        # The artifact-or-land form must honor an artifact target through
+        # the same funnel.
+        game = _fresh_game()
+        artifact = _on_battlefield(game, _tmpl(
+            "Test Trinket", "", types=(CardType.ARTIFACT,),
+            cost=ManaCost(generic=1)), 1)
+        spell = _spell_in_hand(game, 0, (
+            "Destroy target artifact or land. It can't be regenerated."))
+        _resolve(game, spell, 0, [artifact.instance_id])
+        assert artifact.zone == "graveyard"

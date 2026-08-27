@@ -466,6 +466,151 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
     return False
 
 
+# ---------------------------------------------------------------------------
+# Land destruction (spell tranche) — typed-field-gated resolution
+# (no runtime oracle inspection; classification lives in
+# oracle_parser.parse_land_destruction / CardTemplate.land_destruction_data)
+# ---------------------------------------------------------------------------
+
+
+def _ld_is_basic(perm) -> bool:
+    from .cards import Supertype
+    return Supertype.BASIC in (getattr(perm.template, 'supertypes', None)
+                               or [])
+
+
+def _ld_owner_searches_basic(game: "GameState", owner_idx: int,
+                             tapped: bool, cause_name: str) -> None:
+    """Replacement-basic rider: the destroyed land's controller searches
+    their library for a basic land and puts it onto the battlefield.
+
+    Routes through the same funnel as the fetchland-crack path
+    (engine/land_manager.py) so search-watch triggers (CR 603) and
+    landfall fire: callbacks-chosen target, zone funnel entry, land ETB
+    statics, shuffle, library-search trigger, landfall trigger.
+
+    The rider is a "may"; taking the basic is engine-rational (declining
+    free mana development is dominated) — same deterministic-engine
+    simplification as the Gifts graveyard-pile choice in card_effects.
+    """
+    from .land_manager import LandManager
+    player = game.players[owner_idx]
+    basics = [c for c in player.library
+              if c.template.is_land and _ld_is_basic(c)]
+    if not basics:
+        return  # decline the optional search — nothing to find
+    choice = game.callbacks.choose_fetch_target(
+        game, owner_idx, None, basics, ['W', 'U', 'B', 'R', 'G'])
+    if choice is None:
+        choice = basics[0]
+    game.zone_mgr.move_card(game, choice, "library", "battlefield",
+                            cause=f"{cause_name} basic-land replacement",
+                            controller_override=owner_idx)
+    choice.tapped = bool(tapped)
+    LandManager.apply_land_etb_static(game, choice, owner_idx)
+    LandManager.apply_lands_enter_untapped(game, choice, owner_idx)
+    game.rng.shuffle(player.library)
+    player.library_searches_this_game += 1
+    LandManager.trigger_library_search(game, owner_idx)
+    LandManager.trigger_landfall(game, owner_idx)
+    game.log.append(
+        f"T{game.display_turn} P{owner_idx+1}: searches a basic "
+        f"({choice.name}, {'tapped' if choice.tapped else 'untapped'}) "
+        f"to replace the destroyed land")
+
+
+def _resolve_destroy_target_land(game: "GameState", card: "CardInstance",
+                                 controller: int, targets: list) -> bool:
+    """Resolve a classified destroy-target-land spell.
+
+    Destruction routes through game._permanent_destroyed (zone funnel:
+    battlefield -> graveyard via zone_mgr); riders execute afterwards in
+    printed order — replacement-basic search (library-search funnel),
+    damage to the land's controller (damage funnel), caster draw (draw
+    funnel).  CR 702.12b (indestructible) and CR 608.2b/608.2c
+    (resolution-time legality / unmet conditions) are enforced here;
+    hexproof legality comes from target_solver enumeration.
+    """
+    from .cards import Keyword
+    from .target_solver import TargetRequirement, enumerate_legal_targets
+
+    data = card.template.land_destruction_data or {}
+    types = (frozenset({"artifact", "land"})
+             if data.get('can_target_artifact') else frozenset({"land"}))
+    req = TargetRequirement(zone="battlefield", types=types,
+                            owner_scope="any")
+    legal = {c.instance_id: c
+             for c in enumerate_legal_targets(game, controller, req)}
+
+    def _eligible(perm) -> bool:
+        if (data.get('nonbasic_only') and perm.template.is_land
+                and _ld_is_basic(perm)):
+            return False  # CR 608.2c: nonbasic-only condition unmet
+        if (data.get('opponent_controls_only')
+                and perm.controller == controller):
+            return False
+        if Keyword.INDESTRUCTIBLE in perm.keywords:
+            return False  # CR 702.12b: destroy does nothing
+        return True
+
+    chosen = None
+    if targets:
+        for tid in targets:
+            cand = legal.get(tid)
+            if cand is None:
+                continue  # CR 608.2b: illegal at resolution — try next id
+            if not _eligible(cand):
+                return True  # condition unmet — no effect, no retarget
+            chosen = cand
+            break
+        if chosen is None:
+            return True  # every chosen id illegal — no effect
+    else:
+        # No cast-time target (dies-trigger fan-out / synthetic call
+        # sites): deterministic engine fallback — deny the OPPONENT's
+        # mana, categorical preference for nonbasic then color breadth.
+        # Strategic target choice belongs to the AI at cast time
+        # (ai/land_denial.py); this mirrors the Gifts-style engine
+        # simplification, not a scoring decision.
+        cands = [c for c in legal.values()
+                 if c.controller != controller and c.template.is_land
+                 and _eligible(c)]
+        if not cands:
+            return True
+        chosen = max(cands, key=lambda c: (
+            not _ld_is_basic(c),
+            len(c.template.produces_mana or []),
+            -c.instance_id))
+
+    owner_idx = chosen.controller
+    was_land = chosen.template.is_land
+    was_nonbasic = was_land and not _ld_is_basic(chosen)
+    game._permanent_destroyed(chosen)
+    game.log.append(f"T{game.display_turn} P{controller+1}: "
+                    f"{card.name} destroys {chosen.name}")
+
+    # Riders, in printed order (search -> damage -> draw). Land-keyed
+    # riders apply only when the destroyed permanent was a land (the
+    # artifact mode of the compound form has no riders in the class).
+    if was_land and data.get('rider_search_basic'):
+        _ld_owner_searches_basic(
+            game, owner_idx, data.get('rider_search_basic_tapped', False),
+            card.name)
+    dmg = data.get('rider_damage', 0)
+    if (was_land and dmg > 0
+            and (not data.get('rider_damage_nonbasic_only')
+                 or was_nonbasic)):
+        from .damage import deal_damage
+        deal_damage(card, game.players[owner_idx], dmg)
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
+                        f"{card.name} deals {dmg} damage to "
+                        f"P{owner_idx+1} (destroyed-land rider)")
+    draws = data.get('rider_caster_draws', 0)
+    if draws > 0:
+        game.draw_cards(controller, draws)
+    return True
+
+
 def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
                                controller: int, targets: list = None) -> bool:
     """Resolve instant/sorcery effects by parsing oracle text.
@@ -576,6 +721,12 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
             f"{card.name} deals {total} to {chosen.name} "
             f"(base {base_damage} + {spend} energy)")
         return True
+
+    # ── Land destruction (spell tranche) — typed-field gate, no oracle
+    #    inspection at resolve time. Classification + rider data come from
+    #    oracle_parser.parse_land_destruction at DB load.
+    if getattr(card.template, 'destroys_target_land', False):
+        return _resolve_destroy_target_land(game, card, controller, targets)
 
     # ── "Target opponent reveals their hand. You choose a nonland card
     #     and that player discards it." (Thoughtseize, Inquisition) ──
