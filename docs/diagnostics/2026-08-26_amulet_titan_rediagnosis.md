@@ -213,3 +213,22 @@ haste-grant activation mechanism exists) still costs the exact one turn
 those games die by. The secondary is now the highest-leverage remaining
 item for this deck: both perfect-curve losses died one attack short, so its
 counterfactual is sharp.
+
+## HASTE-LINE FIX MEASURED (2026-08-27, post-#554)
+
+GRANT_HASTE_TARGET activation + Titan fetch-priority substitution landed
+(#554). Seed bases matter for comparison: on the FIELD base (50000+) the
+progression is 31.2% (post-payoff-gate) -> **34.8%** (+3.6pp, borderline
+significant, directionally right); on the MATRIX base (40000+) the payoff
+gate alone measured 29.6 -> 34.4, with the haste addition to be read from
+the next matrix run. Matchup texture: the reanimator/toolbox/control rows
+now reach 45-75%, while the fast-aggro rows remain the floor (Boros 5%,
+Zoo/Pinnacle 10%) — Amulet still loses the pure race even converting one
+turn faster.
+
+Remaining known items for this deck, from the original loss tally: the
+GSZ-class X-tutor payoff-blindness (2/12 losses — same mechanism class as
+the Scapeshift gate, deferred at build time), and the draw/structural tail.
+The deck sits ~10pp below band with both primary and secondary subsystem
+fixes landed; the next increment is the X-tutor selection fix, after which
+any residual is likely list-structural like the Zoo verdict.
