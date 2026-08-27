@@ -136,6 +136,32 @@ def choose_sacrifice_victim(game, player_idx, legal):
     return min(legal, key=_loss)
 
 
+def choose_tutor_delivery(game, player_idx, eligible):
+    """Pick which card an activated library tutor delivers — the AI half
+    of the `choose_tutor_target` callback seam (the engine default is the
+    highest mana value satisfying the constraint).
+
+    Plan-best on the EXISTING valuation primitives, mirror-image of
+    `choose_sacrifice_victim`: a creature's worth is its
+    `creature_threat_value` on the current snapshot (evasion, triggers and
+    board context included — a bigger body at a smaller mana value beats
+    an expensive small one); a non-creature's proxy is its printed mana
+    investment, the same proxy the engine ranking uses.
+    """
+    from ai.ev_evaluator import creature_threat_value, snapshot_from_game
+
+    if not eligible:
+        return None
+    snap = snapshot_from_game(game, player_idx)
+
+    def _worth(c):
+        if c.template.is_creature:
+            return creature_threat_value(c, snap)
+        return float(c.template.cmc or 0)
+
+    return max(eligible, key=_worth)
+
+
 def activation_candidates(game, player_idx, snap, excluded=None):
     """Enumerate generic activated abilities worth activating right now.
 
@@ -297,6 +323,61 @@ def activation_candidates(game, player_idx, snap, excluded=None):
                              f"attack this turn (clock "
                              f"{my_clock_without:.0f}→{my_clock_with:.0f} "
                              f"vs opp {opp_clock:.0f})")))
+                continue
+            elif kind in (_K.TUTOR_CREATURE_TO_BATTLEFIELD,
+                          _K.TUTOR_TO_HAND):
+                # Delivery-conditioned, through the SAME engine-side X
+                # picker the payment path uses (`pick_activated_tutor_x`)
+                # — the EV is priced on exactly what the chosen X will
+                # deliver, the `_gate_x_tutor_payoff` discipline. The
+                # once-each-turn ledger and the no-free-repeatable rule
+                # are `can_activate`'s (checked above); the whiff is the
+                # layer split: engine-legal (CR 701.19b), but paying for
+                # a search that finds nothing is the AI throwing
+                # resources away — no candidate.
+                from engine.activated_effects import (
+                    activated_tutor_x_budget, pick_activated_tutor_x)
+                from ai.clock import mana_clock_impact
+
+                x_budget = activated_tutor_x_budget(game, player_idx,
+                                                    ability)
+                best_x, target, _top = pick_activated_tutor_x(
+                    game, player_idx, x_budget, ability)
+                if target is None:
+                    continue
+                if kind is _K.TUTOR_TO_HAND:
+                    # Selective card access projects like the draw it
+                    # replaces: +1 hand on top of the charged costs.
+                    updates["my_hand_size"] = (
+                        updates.get("my_hand_size", snap.my_hand_size) + 1)
+                    after = snap.fast_replace(**updates)
+                    ev = position_value(after) - base
+                    reason = f"activate: tutor {target.name} to hand"
+                else:
+                    after = snap.fast_replace(**updates)  # cost terms only
+                    # Battlefield delivery: the credited value is the
+                    # delivered body's mana value, X-waste charged 1:1
+                    # inside the same net-value function the cast-side
+                    # tutor gate uses, converted at the projection's
+                    # per-mana clock scale.
+                    delivered_cmc = target.template.cmc or 0
+                    if (ability.tutor_data or {}).get('mv_bound_is_x'):
+                        from engine.cast_manager import (
+                            creature_tutor_x_net_value)
+                        delivered_net = creature_tutor_x_net_value(
+                            best_x, delivered_cmc)
+                    else:
+                        delivered_net = delivered_cmc
+                    per_mana = (mana_clock_impact(snap)
+                                * CLOCK_IMPACT_LIFE_SCALING)
+                    ev = ((position_value(after) - base)
+                          + delivered_net * per_mana)
+                    reason = (f"activate: tutor {target.name} to "
+                              f"battlefield"
+                              + (f" (X={best_x})" if best_x else ""))
+                if ev <= 0.0:
+                    continue
+                out.append((perm, ability.index, [], ev, reason))
                 continue
             else:
                 continue

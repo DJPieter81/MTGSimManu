@@ -361,6 +361,127 @@ def test_subtype_constraint_narrows_the_search():
         "only the subtype-matching candidate is deliverable")
 
 
+# ── AI valuation: delivery-conditioned enumeration ────────────────────
+
+def _snap(game, pidx=0):
+    from ai.ev_evaluator import snapshot_from_game
+    return snapshot_from_game(game, pidx)
+
+
+def _tutor_cands(game, perm, pidx=0):
+    from ai.activation_ev import activation_candidates
+    return [c for c in activation_candidates(game, pidx, _snap(game, pidx))
+            if c[0].instance_id == perm.instance_id]
+
+
+def test_ai_enumerates_a_deliverable_battlefield_tutor_with_positive_ev():
+    game = _game(n_lands=6)
+    _add(game, "Craterhoof Behemoth", 0, "library")
+    ab = _tutor_ability(mana=1)
+    perm = _host(game, ab)
+    assert ActivationManager.can_activate(game, 0, perm, ab)
+    cands = _tutor_cands(game, perm)
+    assert cands, "a deliverable tutor must compete as a Play candidate"
+    assert cands[0][3] > 0.0, "delivered body's contribution nets positive"
+
+
+def test_ai_emits_no_candidate_when_the_search_would_whiff():
+    """Layer split: the whiff is engine-legal (CR 701.19b) but paying for
+    it is throwing resources away — the AI emits no candidate."""
+    game = _game(n_lands=6)
+    for _ in range(3):
+        _add(game, "Forest", 0, "library")  # no creature to find
+    ab = _tutor_ability(mana=1)
+    perm = _host(game, ab)
+    assert ActivationManager.can_activate(game, 0, perm, ab), (
+        "legality is the engine's — the whiff activation stays legal")
+    assert not _tutor_cands(game, perm), (
+        "judgment is the AI's — never pay for a search that finds nothing")
+
+
+def test_ai_x_tutor_valuation_is_delivery_conditioned():
+    """The AI consults the SAME X picker the payment path uses: a library
+    whose only match sits above every affordable X is a whiff."""
+    game = _game(n_lands=4)  # budget: capacity 4 - fixed 1 = X <= 3
+    big = _add(game, "Craterhoof Behemoth", 0, "library")  # mv 8
+    ab = _tutor_ability(mana=1, x_count=1, mv_bound_is_x=True)
+    perm = _host(game, ab)
+    assert not _tutor_cands(game, perm), (
+        "nothing deliverable at any affordable X — no candidate")
+    _add(game, "Wall of Omens", 0, "library")  # mv 2, inside budget
+    assert _tutor_cands(game, perm), (
+        "a body inside the X budget makes the line worth paying for")
+    assert big.zone == "library"
+
+
+def test_hand_tutor_is_valued_as_card_access():
+    game = _game(n_lands=6)
+    _add(game, "Craterhoof Behemoth", 0, "library")
+    ab = _tutor_ability(mana=1, dest="hand")
+    perm = _host(game, ab)
+    cands = _tutor_cands(game, perm)
+    assert cands and cands[0][3] > 0.0, (
+        "a hand tutor projects like selective card access — positive EV")
+
+
+def test_repeatable_tutor_respects_the_once_each_turn_ledger():
+    """The AI enumerates only what `can_activate` permits — a spent
+    once-each-turn tutor drops out of the candidate set, and a free
+    repeatable tutor (rule 9) never enters it."""
+    import dataclasses
+    game = _game(n_lands=6)
+    _add(game, "Craterhoof Behemoth", 0, "library")
+    ab = dataclasses.replace(_tutor_ability(mana=1, tap=False),
+                             once_each_turn=True)
+    perm = _host(game, ab)
+    assert _tutor_cands(game, perm)
+    perm.activations_this_turn[ab.index] = 1
+    assert not ActivationManager.can_activate(game, 0, perm, ab)
+    assert not _tutor_cands(game, perm)
+    # Free + repeatable: no depleting resource terminates the loop.
+    ab_free = _tutor_ability(mana=0, tap=False)
+    host2 = _host(game, ab_free)
+    assert not ActivationManager.can_activate(game, 0, host2, ab_free)
+    assert not _tutor_cands(game, host2)
+
+
+def test_ai_delivery_choice_is_plan_best_not_raw_mana_value():
+    """The engine default ranks by mana value; the AI callback ranks by
+    the existing threat primitive — a bigger body at a smaller mana value
+    outranks an expensive small body."""
+    from ai.activation_ev import choose_tutor_delivery
+    from ai.ev_evaluator import creature_threat_value
+
+    game = _game(n_lands=6)
+    champ = _add(game, "Steel Leaf Champion", 0, "library")   # mv 3, 5/4
+    golem = _add(game, "Meteor Golem", 0, "library")          # mv 7, 3/3
+    eligible = [champ, golem]
+    chosen = choose_tutor_delivery(game, 0, eligible)
+    snap = _snap(game)
+    assert chosen is max(eligible,
+                         key=lambda c: creature_threat_value(c, snap)), (
+        "the AI choice IS the threat-primitive argmax — no private scale")
+    assert chosen is champ, (
+        "plan-best delivery beats the engine's raw mana-value default")
+
+
+def test_ai_callback_routes_tutor_delivery_to_the_plan_best_chooser():
+    """The runner's callback seam delegates to the AI chooser, so a
+    resolved tutor delivers the plan-best card, not the mv default."""
+    from engine.game_runner import AICallbacks
+
+    game = _game(n_lands=6)
+    game.callbacks = AICallbacks()
+    champ = _add(game, "Steel Leaf Champion", 0, "library")
+    _add(game, "Meteor Golem", 0, "library")
+    ab = _tutor_ability(mana=1)
+    perm = _host(game, ab)
+    assert ActivationManager.activate(game, 0, perm, ab, [])
+    game.resolve_stack()
+    assert champ.zone == "battlefield", (
+        "the AI seam overrides the engine's highest-mv default")
+
+
 def test_db_toolbox_carrier_card_parses_to_the_battlefield_tutor_kind():
     """The mechanic must light up for a real DB card carrying it —
     fixture carrier from the Creatures Toolbox list."""

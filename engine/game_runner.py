@@ -201,6 +201,10 @@ class AICallbacks(GameCallbacks):
         from ai.activation_ev import choose_sacrifice_victim
         return choose_sacrifice_victim(game, player_idx, legal)
 
+    def choose_tutor_target(self, game, player_idx, source, eligible):
+        from ai.activation_ev import choose_tutor_delivery
+        return choose_tutor_delivery(game, player_idx, eligible)
+
     def choose_artifact_tutor_target(self, game, player_idx, eligible):
         """State-aware ranking on top of the default heuristic.
 
