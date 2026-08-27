@@ -2079,6 +2079,20 @@ a payoff.
 Used by `_score_spell` Scapeshift gate in `ai/ev_player.py`.
 """
 
+
+def conservative_land_retention(n_lands: int) -> int:
+    """Worst-case lands retained after a land-sacrifice tutor resolves with
+    NO untapped-entry watcher in play.
+
+    Derivation (2026-08-26 Amulet re-diagnosis, replay-verified): the fetch
+    prefers bounce lands, and each bounce land's ETB returns one co-entrant
+    land to hand. Under the engine's two-phase entry + LIFO trigger ordering
+    the worst case alternates fetch/bounce, retaining ceil(N/2) lands — all
+    tapped, with the bounced half stranded in hand behind the one-land-drop
+    rule. Observed: "Scapeshift sacrifices 7 lands" -> 3 surviving karoos.
+    """
+    return (n_lands + 1) // 2
+
 BIG_CREATURE_CMC_FLOOR: int = 6
 """Rules-constant: minimum CMC at which a creature is "Titan-class"
 (Primeval Titan, Cultivator Colossus, Reality Smasher, Eldrazi).

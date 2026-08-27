@@ -192,3 +192,24 @@ or toolbox deck; Storm-side robustness case per the
 generalization-first rule. The engine-side "sacrifice all lands"
 choice and the haste-activation gap are named for their own future
 diagnoses.
+
+## PAYOFF-GATE FIX MEASURED (2026-08-26, post-fix)
+
+The primary fix landed (`4fa4de2` + typed-field refactor `b781802`): the
+land-sacrifice tutor now requires a reachable payoff (conservative
+ceil(N/2) retention without an untapped-entry watcher). Behaviourally
+verified: the s60000 replay that previously locked its hand-held Titan out
+via a 4-land no-payoff Scapeshift now casts none; the pinned anchor game
+shortened T13 -> T9 with the suicide line gone.
+
+**Measured (n=20 Bo3 field): 29.6% -> 31.2% (+1.6pp, within noise).**
+Matchup texture improved at the top (Goryo's 75%, Creatures Toolbox 75%,
+Azorius 50-55%) while the fast-aggro rows stay catastrophic (Boros 10%,
+Zoo 10%, Ruby Storm 5%, Pinnacle 5%). This matches the loss tally: removing
+the 6/12 self-destruction mode converts games only where the deck's natural
+line then wins the race — against fast aggro the SECONDARY root cause
+(conversion speed: fetch priority never takes the haste land, and no
+haste-grant activation mechanism exists) still costs the exact one turn
+those games die by. The secondary is now the highest-leverage remaining
+item for this deck: both perfect-curve losses died one attack short, so its
+counterfactual is sharp.
