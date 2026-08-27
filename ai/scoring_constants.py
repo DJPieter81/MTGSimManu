@@ -721,21 +721,14 @@ its mana advantage matters most in protracted games.
 Used by `_score_land` Tron-assembly branch in `ai/ev_player.py`.
 """
 
-BLINK_M1_HOLD_PENALTY: float = 2.0
-"""Derived: small penalty applied to blink-instant EV when
-- we're in MAIN1
-- we hold a blink instant AND control an ETB-value creature
-- we have at least one untapped attacker
 
-The penalty nudges the AI to pass M1, swing for combat damage, then
-blink in M2 — preserving the combat damage step. 2.0 is below most
-spell scores (typical range 5-15) so it acts as a tie-breaker, not
-a hard gate. Mirrors the threat-amplifier scale used by the
-`_score_spell` removal premium term.
-
-Used by `_score_spell` Jeskai/blink M1 hold branch in
-`ai/ev_player.py`.
-"""
+# BLINK_M1_HOLD_PENALTY (2.0) was removed 2026-08-27: a flat pre-combat
+# blink nudge was empirically never decisive (4/4 assembled reanimation
+# lines still blinked in Main 1 and forfeited the swing —
+# docs/diagnostics/2026-08-27_reanimator_pair_root_cause.md). Replaced
+# by the derived forfeited-attack charge:
+# `ai/clock.forfeited_attack_clock_impact` × CLOCK_IMPACT_LIFE_SCALING
+# in `_score_spell`'s pre-combat blink block (`ai/ev_player.py`).
 
 NONCREATURE_COUNTER_DEAD_FLOOR: float = -3.0
 """Derived: ceiling EV for a noncreature-only counter (Negate / Dovin's
@@ -964,7 +957,7 @@ TRADE_UP_BONUS: float = 2.0
 """Derived: bonus for combat configurations where opp loses more
 total creature value than we do.
 
-2.0 matches the `BLINK_M1_HOLD_PENALTY` / `CYCLING_FREE_COST_BONUS`
+2.0 matches the `CYCLING_FREE_COST_BONUS`
 tier — small enough that it's a tie-breaker, not a hard gate. The
 combat math already values surviving creatures via post-board
 score; this is just a nudge to prefer trades where we come out
@@ -994,7 +987,7 @@ SHIELDS_DOWN_PENALTY: float = -1.5
 """Derived: penalty for tapping out attackers when opponent has open
 mana for tricks (`board.opp_mana >= 2`).
 
-1.5 mirrors the `FREE_CAST_TEMPO_BONUS` / `BLINK_M1_HOLD_PENALTY`
+1.5 mirrors the `FREE_CAST_TEMPO_BONUS`
 scale — a tie-breaker, not a hard gate. Scaled at the call site by
 the damage being dealt: heavy attacks discount the penalty (tapping
 out is worth it for big damage).

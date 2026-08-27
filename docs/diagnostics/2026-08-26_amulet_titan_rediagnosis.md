@@ -232,3 +232,14 @@ the Scapeshift gate, deferred at build time), and the draw/structural tail.
 The deck sits ~10pp below band with both primary and secondary subsystem
 fixes landed; the next increment is the X-tutor selection fix, after which
 any residual is likely list-structural like the Zoo verdict.
+
+## GSZ X-TUTOR FIX MEASURED (2026-08-27, post-#556)
+
+Field base: 34.8 -> **35.2%** (+0.4, noise) — consistent with the X-tutor
+mode being 2 of the 12 walked losses. The fix's value is class-wide
+correctness (every X-creature-tutor deck; the engine's max-affordable-X
+default was wrong for all of them), not this deck's WR. Amulet's cumulative
+field-base progression across the three fixes: 31.2 -> 35.2 vs band
+[45-60]. Remaining tally is draw/structural plus the race floor vs aggro;
+no further code item is identified for this deck — residual is likely
+list-structural pending the external-list verification.

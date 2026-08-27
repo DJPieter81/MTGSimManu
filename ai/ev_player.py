@@ -48,7 +48,6 @@ from ai.scoring_constants import (
     GAME_HORIZON_MAX_COST_REDUCER,
     GAME_HORIZON_MAX_TRON,
     MODERN_AVG_GAME_LENGTH,
-    BLINK_M1_HOLD_PENALTY,
     NONCREATURE_COUNTER_DEAD_FLOOR,
     REMOVAL_THREAT_PREMIUM_SCALE,
     CHEAP_REMOVAL_ACTION_BONUS,
@@ -1503,20 +1502,42 @@ class EVPlayer:
                         for c in me.creatures)):
             ev += BLINK_ETB_RETRIGGER_BONUS
 
-        # ── Jeskai / blink M1 hold: prefer M2 blink so combat damage applies ──
-        # If we hold a blink instant AND an ETB-value creature, and it is Main1,
-        # slightly penalise the blink so the AI passes M1, swings, and casts in M2.
+        # ── Pre-combat blink forfeits the target's attack (CR 400.7) ──
+        # The blinked permanent re-enters as a NEW, summoning-sick object
+        # carrying only its printed keywords — so blinking an attack-
+        # capable target in OUR Main 1 forfeits its combat step this
+        # turn (a temporary haste grant dies with the old object).
+        # Charge that forfeit at its clock price: one combat step of the
+        # presumed target (`ai/clock.forfeited_attack_clock_impact` —
+        # power kill-fraction, lifelink swing included), converted to EV
+        # units via CLOCK_IMPACT_LIFE_SCALING like every other clock
+        # term in this method. This REPLACES the old flat
+        # BLINK_M1_HOLD_PENALTY nudge (2.0), which was empirically never
+        # decisive: 4/4 assembled reanimation lines still blinked
+        # pre-combat and forfeited the whole swing — once with lethal on
+        # board (docs/diagnostics/2026-08-27_reanimator_pair_root_cause.md).
+        # Presumed targets are the creatures the positive terms presume:
+        # live EOT-exile riders (threat-credit block below) and
+        # etb_value creatures (retrigger bonus above). Post-combat
+        # (Main 2) and opponent-turn casts are never charged — the play
+        # loop re-enumerates the blink in Main 2 (game_runner MAIN2 →
+        # _execute_main_phase), where the rider credit below prices
+        # keeping the body.
         if ('blink' in tags and (t.is_instant or t.is_sorcery)
                 and game is not None
-                and getattr(game, 'current_phase', None) is not None
+                and getattr(game, 'active_player', None) == self.player_idx
                 and 'MAIN1' in str(getattr(game, 'current_phase', ''))):
-            etb_creatures = [c for c in me.creatures
-                             if 'etb_value' in getattr(c.template, 'tags', set())]
-            has_attackers = any(not getattr(c, 'summoning_sick', False)
-                                and not getattr(c, 'tapped', False)
-                                for c in me.creatures)
-            if etb_creatures and has_attackers:
-                ev -= BLINK_M1_HOLD_PENALTY  # wait for M2 so we keep combat damage
+            presumed = list(self._pending_eot_exile_riders(game))
+            _seen = {c.instance_id for c in presumed}
+            presumed += [
+                c for c in me.creatures
+                if c.instance_id not in _seen
+                and 'etb_value' in getattr(c.template, 'tags', set())]
+            charges = [self._forfeited_attack_charge(c, snap)
+                       for c in presumed
+                       if self._blink_would_forfeit_attack(c)]
+            if charges:
+                ev -= max(charges)  # swing first, blink post-combat
 
         # ── Blink clears a live pending EOT-exile detriment (CR 400.7) ──
         # A delayed "exile it at the beginning of the next end step"
@@ -1526,21 +1547,28 @@ class EVPlayer:
         # Keeping the body past end of turn is worth its full threat
         # value — derived from `creature_threat_value`, the same
         # principled subsystem removal targeting uses.  Sequencing: the
-        # rider only fires at OUR end step, so in MAIN1 an attack-
+        # rider only fires at OUR end step, so in our MAIN1 an attack-
         # capable rider should swing first (the temporary body still
         # deals combat damage) and be blinked post-combat — pre-combat
-        # the credit is withheld and the existing M1-hold penalty
-        # applies, steering the cast to MAIN2.  RC-1 decision layer,
-        # docs/diagnostics/2026-07-05_goryos_field_13pct_root_cause.md.
+        # the credit is withheld and the forfeited-attack charge above
+        # prices the wait, steering the cast to MAIN2.  RC-1 decision
+        # layer, docs/diagnostics/
+        # 2026-07-05_goryos_field_13pct_root_cause.md and
+        # 2026-08-27_reanimator_pair_root_cause.md.
         if ('blink' in tags and (t.is_instant or t.is_sorcery)
                 and game is not None):
             riders = self._pending_eot_exile_riders(game)
             if riders:
                 best_rider = max(
                     riders, key=lambda c: creature_threat_value(c, snap))
-                in_main1 = 'MAIN1' in str(getattr(game, 'current_phase', ''))
-                if in_main1 and best_rider.can_attack:
-                    ev -= BLINK_M1_HOLD_PENALTY  # swing first, blink in M2
+                in_own_main1 = (
+                    getattr(game, 'active_player', None) == self.player_idx
+                    and 'MAIN1' in str(getattr(game, 'current_phase', '')))
+                if in_own_main1 and self._blink_would_forfeit_attack(
+                        best_rider):
+                    # Credit withheld: the forfeit charge above already
+                    # prices casting now vs. after combat.
+                    pass
                 else:
                     ev += creature_threat_value(best_rider, snap)
 
@@ -3977,6 +4005,42 @@ class EVPlayer:
                     == entry_seq):
                 riders.append(card)
         return riders
+
+    def _blink_would_forfeit_attack(self, card) -> bool:
+        """True iff ``card`` can attack THIS turn and a blink would
+        remove that capability.
+
+        CR 400.7: the blinked permanent re-enters as a new object —
+        summoning-sick, carrying only its printed keywords. A temporary
+        haste grant (reanimation rider, pump effect) dies with the old
+        object, so the new object cannot attack; printed haste survives
+        re-entry, so the new object still can. Reasoned from object
+        state (current attack capability + printed keywords), never
+        from card identity.
+        """
+        if not getattr(card, 'can_attack', False):
+            return False
+        printed = getattr(card.template, 'keywords', None) or set()
+        has_printed_haste = any(
+            str(getattr(kw, 'value', kw)).lower() == 'haste'
+            for kw in printed)
+        return not has_printed_haste
+
+    def _forfeited_attack_charge(self, card, snap) -> float:
+        """EV price of the attack ``card`` would forfeit if blinked
+        pre-combat: one combat step from the clock primitive
+        (`ai/clock.forfeited_attack_clock_impact` — power kill-fraction
+        + lifelink swing), converted to EV units via
+        CLOCK_IMPACT_LIFE_SCALING like every other clock term in
+        `_score_spell`. Keywords are the object's CURRENT keywords
+        (temp grants included) — the forfeited attack would happen with
+        those.
+        """
+        from ai.clock import forfeited_attack_clock_impact
+        kws = {str(getattr(kw, 'value', kw)).lower()
+               for kw in (getattr(card, 'keywords', None) or set())}
+        return (forfeited_attack_clock_impact(card.power or 0, kws, snap)
+                * CLOCK_IMPACT_LIFE_SCALING)
 
     def _blink_reservation_penalty(self, me, snap, cost: int,
                                    exclude_instance_id, game) -> float:
