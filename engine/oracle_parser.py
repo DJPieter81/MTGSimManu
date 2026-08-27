@@ -688,6 +688,7 @@ def parse_activation_cost(cost_text: str):
     sacrifice_type = None
     sacrifice_another = False
     discard_cards = 0
+    x_count = 0
     unpayable = []
     for part in raw.split(','):
         piece = part.strip()
@@ -724,6 +725,10 @@ def parse_activation_cost(cost_text: str):
                               else _NUM_WORDS.get(tok, 0))
             continue
         if re.fullmatch(r'(\{[wubrgcxs0-9/]+\}\s*)+', low):
+            # {X} pips are a COUNT, not fixed mana: X is chosen at
+            # activation time (CR 601.2b). Whether the count is chargeable
+            # is `can_activate`'s question (only effects that bind X).
+            x_count += low.count('{x}')
             mana = _add_mana_symbols(mana, low)
             continue
         if low == '{t}':
@@ -746,21 +751,31 @@ def parse_activation_cost(cost_text: str):
                           sacrifice_type=sacrifice_type,
                           sacrifice_another=sacrifice_another,
                           discard_cards=discard_cards,
+                          x_count=x_count,
                           unpayable=tuple(unpayable))
 
 
 def _add_mana_symbols(cost, text):
     """Fold a run of mana symbols into a ManaCost."""
     attr = {'w': 'white', 'u': 'blue', 'b': 'black', 'r': 'red', 'g': 'green'}
-    for sym in re.findall(r'\{([wubrgcxs0-9]+)\}', text):
-        if sym.isdigit():
+    for sym in re.findall(r'\{([wubrgcxs0-9/]+)\}', text):
+        if '/' in sym:
+            # Hybrid pip: one generic — the caster picks which colour (or
+            # which half) pays it, so any mana satisfies it. Same
+            # convention as `_parse_mana_symbols_to_cost` on the spell
+            # side; charging it (rather than dropping it, the pre-tutor
+            # behaviour) is what keeps hybrid activation costs honest.
+            cost.generic += 1
+        elif sym.isdigit():
             cost.generic += int(sym)
         elif sym in attr:
             setattr(cost, attr[sym], getattr(cost, attr[sym]) + 1)
         elif sym == 'c':
             cost.colorless += 1
-        # {X}/{S} are not chargeable in this tranche; they surface via the
-        # caller's `unpayable` path only when they appear outside a mana run.
+        # {X} is COUNTED by the caller (`x_count`), never folded into the
+        # fixed mana here; {S} is not chargeable in this tranche and
+        # surfaces via the caller's `unpayable` path only when it appears
+        # outside a mana run.
     return cost
 
 
@@ -805,7 +820,106 @@ def classify_activation_effect(effect_text: str):
     if re.fullmatch(r'target creature gains haste until end of turn', low):
         return K.GRANT_HASTE_TARGET, 0, 0, 0
 
+    # Activated tutor (single full-sentence search). The structured
+    # constraint is re-derived by `parse_activated_abilities` via
+    # `parse_activation_tutor` and stored on the ability (`tutor_data`) —
+    # both parses happen once, at DB load time.
+    tutor = parse_activation_tutor(low)
+    if tutor is not None:
+        if tutor['dest'] == 'battlefield':
+            return K.TUTOR_CREATURE_TO_BATTLEFIELD, 0, 0, 0
+        return K.TUTOR_TO_HAND, 0, 0, 0
+
     return K.UNCLASSIFIED, 0, 0, 0
+
+
+# ── Activated tutor effects (TUTOR_* kinds) ──────────────────────────
+# Closed constraint vocabulary. A qualifier word outside these sets is
+# treated as a SUBTYPE word (Goblin, Sliver, Equipment, Forest, ...);
+# connector words ('or', 'and') mean a union constraint the schema
+# cannot hold — the whole line is refused rather than approximated.
+_TUTOR_TYPE_WORDS = frozenset({
+    'creature', 'artifact', 'enchantment', 'land', 'planeswalker',
+    'instant', 'sorcery', 'battle', 'permanent'})
+_TUTOR_SUPERTYPE_WORDS = frozenset({'basic', 'legendary', 'snow'})
+_TUTOR_COLOR_WORDS = {'white': 'W', 'blue': 'U', 'black': 'B',
+                      'red': 'R', 'green': 'G'}
+
+# ANCHORED to the full sentence (fullmatch) — the same discipline every
+# other activation classifier follows: a trailing rider sentence or an
+# unrecognised "with ..." clause fails the match and the line stays
+# UNCLASSIFIED instead of executing with the rider silently dropped.
+_TUTOR_SENTENCE_RE = re.compile(
+    r'search your library for an? (?P<quals>(?:[a-z][a-z\-\']* )*?)card'
+    r'(?: with mana value (?P<mv>x|\d+) or less)?'
+    r'(?:,| and)'
+    r'(?: reveal it(?:,| and)?)?'
+    r' put (?:it|that card) '
+    r'(?P<dest>onto the battlefield(?P<tapped> tapped)?|into your hand)'
+    r',? then shuffle(?: your library)?')
+
+
+def parse_activation_tutor(effect_text: str) -> Optional[Dict]:
+    """Parse an activated-tutor effect sentence into its structured search
+    constraint, or ``None`` when the sentence is not one of the two
+    executable shapes (battlefield destination is limited to CREATURE
+    searches — see ``ActivationEffectKind.TUTOR_CREATURE_TO_BATTLEFIELD``).
+
+    Returns::
+
+        {'dest': 'battlefield' | 'hand',
+         'types': [...], 'not_types': [...],   # card-type words
+         'supertypes': [...], 'subtypes': [...],
+         'colors': ['G', ...],                 # printed-colour constraint
+         'max_mv': int | None,                 # fixed "mana value N or less"
+         'mv_bound_is_x': bool,                # "mana value X or less"
+         'tapped': bool}                       # battlefield entry rider
+
+    Called once at DB load (via ``parse_activated_abilities``), never at
+    runtime — the oracle-runtime-parse ratchet stays at 0.
+    """
+    low = (effect_text or '').strip().lower().rstrip('.')
+    m = _TUTOR_SENTENCE_RE.fullmatch(low)
+    if m is None:
+        return None
+
+    types: list = []
+    not_types: list = []
+    supertypes: list = []
+    subtypes: list = []
+    colors: list = []
+    for word in (m.group('quals') or '').split():
+        if word in _TUTOR_COLOR_WORDS:
+            colors.append(_TUTOR_COLOR_WORDS[word])
+        elif word in _TUTOR_SUPERTYPE_WORDS:
+            supertypes.append(word)
+        elif word in _TUTOR_TYPE_WORDS:
+            types.append(word)
+        elif word.startswith('non') and word[3:] in _TUTOR_TYPE_WORDS:
+            not_types.append(word[3:])
+        elif word in ('or', 'and'):
+            return None  # union constraint — refuse, never approximate
+        else:
+            subtypes.append(word)
+
+    mv = m.group('mv')
+    dest = 'battlefield' if m.group('dest').startswith('onto') else 'hand'
+    if dest == 'battlefield' and 'creature' not in types:
+        # A non-creature permanent put onto the battlefield carries entry
+        # statics (land ETB / enters-tapped rules) this tranche does not
+        # wire through the activation path — refused, counted as residue.
+        return None
+    return {
+        'dest': dest,
+        'types': types,
+        'not_types': not_types,
+        'supertypes': supertypes,
+        'subtypes': subtypes,
+        'colors': colors,
+        'max_mv': int(mv) if (mv and mv != 'x') else None,
+        'mv_bound_is_x': mv == 'x',
+        'tapped': bool(m.group('tapped')),
+    }
 
 
 def parse_activated_abilities(oracle: str):
@@ -852,6 +966,11 @@ def parse_activated_abilities(oracle: str):
             target_requirements = [TargetRequirement(
                 zone="battlefield", types=frozenset({"creature"}),
                 raw_phrase="target creature")]
+        # TUTOR_* kinds carry their structured search constraint on the
+        # ability — parsed here, at load time, never re-derived at runtime.
+        tutor_data = None
+        if kind in (K.TUTOR_CREATURE_TO_BATTLEFIELD, K.TUTOR_TO_HAND):
+            tutor_data = parse_activation_tutor(body)
         out.append(ActivatedAbility(
             index=idx, cost=cost, effect_text=body.strip(),
             effect_kind=kind, amount=amount,
@@ -860,6 +979,7 @@ def parse_activated_abilities(oracle: str):
             target_requirements=target_requirements,
             sorcery_speed_only=sorcery_only, once_each_turn=once_turn,
             restrictions=restrictions, is_mana_ability=is_mana,
+            tutor_data=tutor_data,
         ))
         idx += 1
     return out
