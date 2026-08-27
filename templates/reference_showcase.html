@@ -235,12 +235,12 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
 <div class="hero">
   <div class="hero-eyebrow">Pure Python · Zero Dependencies · Full Bo3</div>
   <h1>The <em>Modern</em> metagame,<br>simulated.</h1>
-  <p class="hero-sub">21,795 cards. 19 decks. 3,420 Bo3 matches across 171 pairings. An EV-based AI brain that mulligans, sequences spells, predicts blocks, and tracks what your opponent is holding — all in 0.68 seconds per match.</p>
+  <p class="hero-sub">22,506 cards. 25 decks. 6,000 Bo3 matches across 300 pairings. An EV-based AI brain that mulligans, sequences spells, predicts blocks, and tracks what your opponent is holding — all in under a second per match.</p>
   <div class="counter-row">
-    <div class="counter"><div class="num" data-target="21795">0</div><div class="unit">Cards in DB</div></div>
-    <div class="counter"><div class="num" data-target="19">0</div><div class="unit">Modern Decks</div></div>
-    <div class="counter"><div class="num" data-target="2052">0</div><div class="unit">Bo3 Matches</div></div>
-    <div class="counter"><div class="num" data-target="49722">0</div><div class="unit">Lines of Python</div></div>
+    <div class="counter"><div class="num" data-target="22506">0</div><div class="unit">Cards in DB</div></div>
+    <div class="counter"><div class="num" data-target="25">0</div><div class="unit">Modern Decks</div></div>
+    <div class="counter"><div class="num" data-target="6000">0</div><div class="unit">Bo3 Matches</div></div>
+    <div class="counter"><div class="num" data-target="61670">0</div><div class="unit">Lines · Engine + AI</div></div>
   </div>
 </div>
 
@@ -256,7 +256,7 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
     <div class="arch-bar ab-data" onclick="showLayer(this.parentNode,'data')">
       <div class="bar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#185fa5" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
       <div class="bar-body"><div class="bar-name">Data layer</div><div class="bar-desc">MTGJSON cards, decklists, gameplans, strategy profiles</div></div>
-      <div class="bar-stat">21,795 cards</div>
+      <div class="bar-stat">22,506 cards</div>
     </div>
     <div class="arch-detail"></div>
     </div>
@@ -264,7 +264,7 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
     <div class="arch-bar ab-engine" onclick="showLayer(this.parentNode,'engine')">
       <div class="bar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#0f6e56" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div>
       <div class="bar-body"><div class="bar-name">Engine layer</div><div class="bar-desc">Rules, state machine, stack, combat, 115 card effects</div></div>
-      <div class="bar-stat">17,784 lines</div>
+      <div class="bar-stat">25,357 lines</div>
     </div>
     <div class="arch-detail"></div>
     </div>
@@ -272,7 +272,7 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
     <div class="arch-bar ab-ai" onclick="showLayer(this.parentNode,'ai')">
       <div class="bar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#534ab7" stroke-width="2"><path d="M12 2a4 4 0 014 4v1a4 4 0 01-8 0V6a4 4 0 014-4z"/><path d="M16 11a4 4 0 014 4v1a4 4 0 01-8 0v-1a4 4 0 014-4z"/><path d="M8 11a4 4 0 014 4v1a4 4 0 01-8 0v-1a4 4 0 014-4z"/></svg></div>
       <div class="bar-body"><div class="bar-name">AI layer</div><div class="bar-desc">EV scoring, clock evaluation, Bayesian inference, combat sim</div></div>
-      <div class="bar-stat">41 modules</div>
+      <div class="bar-stat">50 modules</div>
     </div>
     <div class="arch-detail"></div>
     </div>
@@ -360,8 +360,8 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
 <section style="text-align:center">
   <div class="reveal">
     <div class="sec-label">Metagame</div>
-    <div class="sec-title">19 tournament-sourced decks</div>
-    <div class="sec-desc" style="margin:0 auto 2rem">Decklists from Modern Challenge and League results. July 2026 meta shares (post May-18 B&R: Phlage and Lotus Field banned) — includes Instant Reanimator and Boros Ponza.</div>
+    <div class="sec-title">25 tournament-sourced decks</div>
+    <div class="sec-desc" style="margin:0 auto 2rem">Decklists from Modern Challenge and League results. July 2026 meta shares (post May-18 B&R: Phlage and Lotus Field banned). 19 decks below carry full dashboard detail; the matrix pool adds Grixis Reanimator, Eldrazi Ramp, Azorius Blink, Broodscale Bloodchief, Hollow One, and Creatures Toolbox.</div>
   </div>
   <div class="deck-cloud reveal">
     <a target="_blank" rel="noopener" href="https://djpieter81.github.io/MTGSimManu/guides/guide_boros_energy.html" class="deck-chip t1" style="text-decoration:none;color:inherit">Boros Energy<span class="meta">16%</span></a>
@@ -473,8 +473,8 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
 <section>
   <div class="reveal">
     <div class="sec-label">Performance</div>
-    <div class="sec-title">3,420 matches under the microscope</div>
-    <div class="sec-desc">Every metric traceable to a game log. Every win rate backed by 20 Bo3 matches per pairing (171 pairings).</div>
+    <div class="sec-title">6,000 matches under the microscope</div>
+    <div class="sec-desc">Every metric traceable to a game log. Every win rate backed by 20 Bo3 matches per pairing (300 pairings, 2026-08-27 run).</div>
   </div>
   <div class="chart-grid reveal">
     <div class="chart-card">
@@ -484,7 +484,7 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
     </div>
     <div class="chart-card">
       <h4>Game resolution</h4>
-      <div class="chart-sub">How 3,420 simulated Bo3 matches ended</div>
+      <div class="chart-sub">How 6,000 simulated Bo3 matches ended</div>
       <div class="chart-wrap"><canvas id="resChart"></canvas></div>
     </div>
     <div class="chart-card">
@@ -504,7 +504,7 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
 <section>
   <div class="reveal">
     <div class="sec-label">Metagame matrix</div>
-    <div class="sec-title">16 × 16 matchup heatmap</div>
+    <div class="sec-title">19 × 19 matchup heatmap</div>
     <div class="sec-desc">Click any cell for matchup breakdown. Click a deck name to see its full profile.</div>
   </div>
   <div class="heatmap reveal" id="heatmap"></div>
@@ -516,7 +516,7 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
 <section>
   <div class="reveal">
     <div class="sec-label">Accuracy</div>
-    <div class="sec-title">Graded C- by a 6-expert panel</div>
+    <div class="sec-title">Graded C by a 6-expert panel</div>
     <div class="sec-desc">Click any deck bar to see why it's on or off target. Shaded bands show the expected tournament range.</div>
   </div>
   <div class="accuracy-bars reveal">
@@ -529,7 +529,7 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
   </div>
   <div style="margin-top:32px" class="reveal">
     <div style="font-weight:600;font-size:15px;margin-bottom:4px;font-family:var(--font-display)">Win rate validation vs tournament consensus</div>
-    <div style="font-size:12px;color:var(--ink3);margin-bottom:16px">Shaded band = expected range. Click any row for root cause.</div>
+    <div style="font-size:12px;color:var(--ink3);margin-bottom:16px">Shaded band = expected range. Click any row for root cause. Honest figure for the 2026-08-27 run: 32 of 96 calibration checks in band, 64 out.</div>
     <div id="valBars"></div>
     <div id="valDetail" style="display:none;margin-top:12px;animation:fadeIn .3s ease"></div>
   </div>
@@ -542,6 +542,10 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
     <div class="sec-title">What works, and what doesn't — yet</div>
   </div>
   <div class="timeline reveal">
+    <div class="tl-item" onclick="this.classList.toggle('open')"><div class="tl-dot fixed"></div><span class="tl-tag tag-fixed">Fixed</span><div class="tl-title">Activated-ability subsystem (tranches 1-3)</div><div class="tl-desc">Tap, sacrifice-self, sacrifice-another, and discard activation costs are now payable — 358 oracle-parsed abilities graduated from inert to usable.</div><div class="tl-extra">Location: engine activation subsystem + ai scoring hooks<br>Tranche 1-2: tap + sacrifice-self costs<br>Tranche 3: sacrifice-another and discard costs<br>Acceptance measured honestly: Creatures Toolbox verdict REFUTED the tranche-3 hypothesis (15.0 → 14.8) — the effect-kind whitelist is the actual gate (docs/diagnostics/2026-08-26_tranche3_toolbox_acceptance.md)</div></div>
+    <div class="tl-item" onclick="this.classList.toggle('open')"><div class="tl-dot fixed"></div><span class="tl-tag tag-fixed">Fixed</span><div class="tl-title">Soft-counter tax-payability + holdback re-spec</div><div class="tl-desc">Tax counters check payability before discounting; holdback re-specced on lost value. Counter-holding control decks rose 5-7pp.</div><div class="tl-extra">Location: ai/bhi.py + ai/response.py discount path<br>Azorius Control (WST v2) 46.8 → 52.9, WST +6pp, Jeskai Blink +4.8pp<br>Aggro/tempo softened correspondingly — the fingerprint is directionally right</div></div>
+    <div class="tl-item" onclick="this.classList.toggle('open')"><div class="tl-dot fixed"></div><span class="tl-tag tag-fixed">Fixed</span><div class="tl-title">Land-sacrifice tutor payoff gate</div><div class="tl-desc">Fetch-and-sacrifice shapes score only when a reachable payoff exists, not merely a legal fizzle floor. Amulet Titan +4.8pp, the matrix's largest mover.</div><div class="tl-extra">Location: parse-once typed field + ai scoring gate (PR #552)<br>Amulet Titan 29.6 → 34.4 field WR at n=20<br>Every other deck within ±1.4pp — the fix is surgical</div></div>
+    <div class="tl-item" onclick="this.classList.toggle('open')"><div class="tl-dot p1"></div><span class="tl-tag tag-p1">P1 Open</span><div class="tl-title">Domain Zoo structural verdict (aggregate diagnosis)</div><div class="tl-desc">Root-caused across every control loss at once instead of one replay at a time: control loses on resource economy even when it sequences correctly. 84.8% field WR stands until the kernel fix ships.</div><div class="tl-extra">Method: aggregate-diagnosis over all Zoo-vs-control losses<br>Verdict: economy gap is structural, not a scoring bug<br>See docs/diagnostics/2026-08-26_decider_loss_root_cause.md</div></div>
     <div class="tl-item" onclick="this.classList.toggle('open')"><div class="tl-dot fixed"></div><span class="tl-tag tag-fixed">Fixed</span><div class="tl-title">Creature deployment for aggro</div><div class="tl-desc">Guide of Souls now +2.6 EV (was -7.6). Aggro decks deploy T1 one-drops correctly.</div><div class="tl-extra">Location: ai/ev_evaluator.py — removal projection<br>Before: Ragavan -7.6 EV (projected removal killed it)<br>After: Ragavan +8.2 EV, Guide of Souls +2.6 EV<br>Impact: Boros Energy 64% WR (was ~30%)</div></div>
     <div class="tl-item" onclick="this.classList.toggle('open')"><div class="tl-dot fixed"></div><span class="tl-tag tag-fixed">Fixed</span><div class="tl-title">Goryo's Vengeance combo chain</div><div class="tl-desc">Full combo fires: Faithful Mending → bin Griselbrand → Goryo's → draw 14 cards.</div><div class="tl-extra">Location: ai/combo_chain.py + engine/card_effects.py<br>Faithful Mending correctly discards to graveyard<br>Goryo's Vengeance targets creature in GY<br>Griselbrand: pay 7 life → draw 7, repeat</div></div>
     <div class="tl-item" onclick="this.classList.toggle('open')"><div class="tl-dot fixed"></div><span class="tl-tag tag-fixed">Fixed</span><div class="tl-title">First strike combat simulation</div><div class="tl-desc">Two-phase damage correctly models first strike vs regular combat.</div><div class="tl-extra">Location: ai/turn_planner.py — _simulate_combat()<br>Phase 1: first/double strike creatures deal damage<br>Phase 2: SBA check, then regular damage<br>Fixes: Ragavan surviving 1/1 blocks</div></div>
@@ -555,7 +559,7 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
     <div class="tl-item" onclick="this.classList.toggle('open')"><div class="tl-dot fixed"></div><span class="tl-tag tag-fixed">Fixed</span><div class="tl-title">Urza's Saga Ch.III legend rule</div><div class="tl-desc">Saga tutor was creating duplicate legendary artifacts, then legend rule killed both. Now checks existing copies.</div><div class="tl-extra">Location: engine/card_effects.py<br>Before: tutor Mox Opal #2 → legend rule kills both<br>After: skip tutor if legendary copy exists<br>Impact: Affinity no longer self-destructs tutoring</div></div>
     <div class="tl-item" onclick="this.classList.toggle('open')"><div class="tl-dot fixed"></div><span class="tl-tag tag-fixed">Fixed</span><div class="tl-title">Planeswalker EV scoring</div><div class="tl-desc">Planeswalkers now scored by loyalty abilities and board impact. 4c Omnath jumped 29% → 56% WR.</div><div class="tl-extra">Location: ai/ev_player.py<br>Before: Wrenn and Six = -0.1 EV (no PW case)<br>After: PW base EV by loyalty + ability assessment<br>Impact: 4c Omnath 29% → 56%, Jeskai Blink improved</div></div>
     <div class="tl-item" onclick="this.classList.toggle('open')"><div class="tl-dot fixed"></div><span class="tl-tag tag-fixed">Fixed</span><div class="tl-title">Wrath cast on empty board</div><div class="tl-desc">X-cost board wipe gate v3: returns -999 EV when no opponent creatures present. Three iterations to stabilize.</div><div class="tl-extra">Location: ai/ev_evaluator.py + ai/ev_player.py<br>Gate v1: opp_creature_count == 0 check<br>Gate v2: include token creatures<br>Gate v3: stable across 3 matrix reruns<br>Impact: Azorius no longer wastes wraths</div></div>
-    <div class="tl-item" onclick="this.classList.toggle('open')"><div class="tl-dot p1"></div><span class="tl-tag tag-p1">P1 Open</span><div class="tl-title">Storm ritual mid-chain penalty</div><div class="tl-desc">Patience fix and sequencing improvements applied, but Ruby Storm still at 29% WR. Expected range recalibrated to 25-50%.</div><div class="tl-extra">Location: ai/ev_player.py:428<br>Storm patience threshold prevents premature fizzles<br>Combo sequencing improved for shock lands + rituals<br>But 20x mid-chain penalty still suppresses chaining<br>Audit conclusion: structural weakness, not just tuning</div></div>
+    <div class="tl-item" onclick="this.classList.toggle('open')"><div class="tl-dot fixed"></div><span class="tl-tag tag-fixed">Fixed</span><div class="tl-title">Storm ritual mid-chain penalty</div><div class="tl-desc">Chain projection and combo EV bypass landed; Ruby Storm recovered from ~29% to 55.2% field WR, at the top edge of its 40-55 band.</div><div class="tl-extra">Location: ai/ev_player.py + ai/combo_chain.py<br>Storm patience threshold prevents premature fizzles<br>Mid-chain rituals no longer penalized — chain EV projected as a unit<br>2026-08-27 matrix: 55.2% field WR (band 40-55)</div></div>
   </div>
 </section>
 
@@ -647,7 +651,7 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
       <p>2.5ms per game. 19 per-deck strategy functions with card-level knowledge. Explicit Force of Will priority tables. 137/137 rules tests. Accepted 5 Modern modules: strategic logger, clock evaluation, BHI, declarative gameplans, symmetry averaging.</p>
     </div>
     <div class="xp-card xp-modern card">
-      <div class="xp-num" style="color:var(--gold)">15</div>
+      <div class="xp-num" style="color:var(--gold)">25</div>
       <h4>Modern — MTGSimManu</h4>
       <p>Full Bo3 with sideboarding. Clock-based evaluation. Bayesian hand inference. Combat simulation. LLM-audited. Adopting 6 Legacy infra proposals: plugin decks, template dashboard, parallel processing, meta audit, symmetry validation, provenance footer.</p>
     </div>
@@ -668,7 +672,7 @@ section{padding:80px 24px;max-width:1100px;margin:0 auto}
 
 <div class="footer">
   <p>MTGSimManu + MTGSimClaude · Built by <a href="https://github.com/DJPieter81">DJPieter81</a> · <a href="https://djpieter81.github.io/MTGSimClaude/results/mtgsimclaude_showcase.html">Legacy Showcase</a></p>
-  <p style="margin-top:4px">Engine shell by <a href="https://manus.im">ManusAI</a> · Strategy, EV scoring & outputs by Claude · Python 3.11 · July 2026 (31-PR engine & AI overhaul, 2,286-test suite fully green)</p>
+  <p style="margin-top:4px">Engine shell by <a href="https://manus.im">ManusAI</a> · Strategy, EV scoring & outputs by Claude · Python 3.11 · August 2026 · 3,551 tests passing (3,585 collected)</p>
 </div>
 
 <script>
@@ -719,34 +723,34 @@ function showAI(i){
 
 // Architecture layer details
 const layerData={
-  data:{t:'Data layer — 21,795 cards',d:'MTGJSON card database reassembled from 8 parts. Every card has parsed mana costs, keywords, tags, oracle text, and special mechanics (evoke, dash, escape, delve, domain). 15 Modern decklists with mainboard + sideboard in modern_meta.py. Per-deck gameplans as JSON goal sequences. Strategy profiles with archetype-specific AI weights.',
+  data:{t:'Data layer — 22,506 cards',d:'MTGJSON card database reassembled from 8 parts. Every card has parsed mana costs, keywords, tags, oracle text, and special mechanics (evoke, dash, escape, delve, domain). 25 Modern decklists with mainboard + sideboard in modern_meta.py. Per-deck gameplans as JSON goal sequences. Strategy profiles with archetype-specific AI weights.',
     files:[
       {n:'ModernAtomic_part[1-8].json',tip:'Card database split into 8 parts for git — merged at runtime by merge_db.py'},
-      {n:'modern_meta.py',tip:'All 16 decklists + METAGAME_SHARES — single source of truth for decks'},
+      {n:'modern_meta.py',tip:'All 25 decklists + METAGAME_SHARES — single source of truth for decks'},
       {n:'gameplans/*.json',tip:'Per-deck goal sequences: curve_out → push_damage → close_game with enablers/payoffs'},
       {n:'strategy_profile.py',tip:'Archetype weights: burn_face_mult, attack_threshold, pass_threshold, holdback'},
       {n:'card_knowledge.json',tip:'Static card annotations the oracle parser can\'t derive'}
     ]},
-  engine:{t:'Engine layer — 3,160 line state machine',d:'Full MTG rules: turn structure, mana system with greedy constraint solver, spell stack with priority passing, combat resolution, continuous effects with layer ordering, state-based actions, zone management, and 115 card-specific effect handlers.',
+  engine:{t:'Engine layer — 25,357 lines, 36 modules',d:'Full MTG rules: turn structure, mana system with greedy constraint solver, spell stack with priority passing, combat resolution, continuous effects with layer ordering, state-based actions, zone management, and 115 card-specific effect handlers.',
     files:[
-      {n:'game_state.py (3160 ln)',tip:'Core state machine: zones, turn phases, SBAs, triggers, continuous effects'},
+      {n:'game_state.py',tip:'Core state machine: zones, turn phases, SBAs, triggers, continuous effects'},
       {n:'game_runner.py',tip:'Runs a full game from shuffle to result — calls AI for decisions'},
       {n:'card_effects.py',tip:'115 card-specific handlers: ETB, cast triggers, activated abilities, replacement effects'},
-      {n:'card_database.py',tip:'Loads ModernAtomic.json — 21,795 cards with parsed oracle text'},
+      {n:'card_database.py',tip:'Loads ModernAtomic.json — 22,506 cards with parsed oracle text'},
       {n:'combat_manager.py',tip:'Declare attackers/blockers, first strike, trample, damage assignment'},
       {n:'sideboard_manager.py',tip:'Bool-flag based SB: opp_is_aggro, opp_is_combo, opp_is_gy → swap cards'},
       {n:'oracle_parser.py',tip:'Extracts keywords, mana costs, P/T, abilities from raw oracle text'},
       {n:'stack.py',tip:'Spell stack with priority passing — handles counters, responses, split second'}
     ]},
-  ai:{t:'AI layer — 14 modules, 7,757 lines',d:'EV-based decision engine. Clock evaluation (turns to kill). Bayesian hand inference tracks P(counter), P(removal). Full combat sim with blocker prediction and 5 turn orderings. Goal engine with JSON game phases. Combo assessment. Strategic logger produces reasoning traces.',
+  ai:{t:'AI layer — 50 modules, 36,313 lines',d:'EV-based decision engine. Clock evaluation (turns to kill). Bayesian hand inference tracks P(counter), P(removal). Full combat sim with blocker prediction and 5 turn orderings. Goal engine with JSON game phases. Combo assessment. Strategic logger produces reasoning traces.',
     files:[
-      {n:'ev_player.py (1224 ln)',tip:'Main AI brain: enumerate plays → score by EV + clock Δ + combo mod → pick best'},
-      {n:'gameplan.py (545 ln)',tip:'GoalEngine: reads gameplans/*.json, tracks current goal, transitions on board state'},
-      {n:'turn_planner.py (1113 ln)',tip:'Tries 5 orderings of the same plays, picks highest total EV sequence'},
-      {n:'ev_evaluator.py (712 ln)',tip:'EVSnapshot: board eval, life totals, hand quality, threat assessment'},
-      {n:'combo_calc.py (652 ln)',tip:'Storm count, graveyard state for escape/delve, mana zone for combo turns'},
-      {n:'clock.py (328 ln)',tip:'Turns-to-kill calculator — the fundamental unit of MTG tempo evaluation'},
-      {n:'bhi.py (275 ln)',tip:'Bayesian Hand Inference: tracks P(Force), P(Push) from opponent\'s visible actions'},
+      {n:'ev_player.py (4163 ln)',tip:'Main AI brain: enumerate plays → score by EV + clock Δ + combo mod → pick best'},
+      {n:'gameplan.py (1120 ln)',tip:'GoalEngine: reads gameplans/*.json, tracks current goal, transitions on board state'},
+      {n:'turn_planner.py (1258 ln)',tip:'Tries 5 orderings of the same plays, picks highest total EV sequence'},
+      {n:'ev_evaluator.py (3587 ln)',tip:'EVSnapshot: board eval, life totals, hand quality, threat assessment'},
+      {n:'combo_calc.py (1368 ln)',tip:'Storm count, graveyard state for escape/delve, mana zone for combo turns'},
+      {n:'clock.py (898 ln)',tip:'Turns-to-kill calculator — the fundamental unit of MTG tempo evaluation'},
+      {n:'bhi.py (828 ln)',tip:'Bayesian Hand Inference: tracks P(Force), P(Push) from opponent\'s visible actions'},
       {n:'strategic_logger.py',tip:'Logs AI reasoning: "Cast Phlage (+8.2 EV, clock 5→3)" for replay viewer'}
     ]},
   runner:{t:'Simulation runner — single entry point',d:'All analysis through one file: full NxN round-robin matrix, head-to-head matchups, field sweeps, verbose game logs, AI reasoning traces, and Bo3 match generation. Reproducible seeds.',
@@ -794,7 +798,7 @@ let selectedDeck=null;
 // WR chart labels → full names
 const wrLabels=['Boros','Zoo','Storm','Dimir','Prowess','Omnath','Azoriu','4/5c','LivEnd','WST','Boros ','ETron','Jeskai','P.Affin','Instan','Goryo','AzCtrl','Affinity','Amulet'];
 const wrFull=['Boros Energy','Domain Zoo','Ruby Storm','Dimir Midrange','Izzet Prowess','4c Omnath','Azorius Control (WST v2)','4/5c Control','Living End','Azorius Control (WST)','Boros Ponza','Eldrazi Tron','Jeskai Blink','Pinnacle Affinity','Instant Reanimator',"Goryo's Vengeance",'Azorius Control','Affinity','Amulet Titan'];
-const wrData=[74.7,75.6,64.7,74.2,63.1,60.8,57.8,43.6,49.2,46.1,47.2,51.1,35.3,45.0,41.7,33.6,38.9,28.1,19.4];
+const wrData=[73.5,84.6,52.3,60.4,57.5,50.3,54.8,46.1,47.6,46.8,39.9,59.8,29.6,68.9,28.7,25.0,24.3,38.5,26.1];
 const wrBgDef=['#fdf5e6','#fdf5e6','#fdf5e6','#fdf5e6','#fdf5e6','#fdf5e6','#e6f5ee','#fde8e8','#e6f5ee','#e6f5ee','#e6f5ee','#e6f5ee','#fde8e8','#e6f5ee','#fde8e8','#fde8e8','#fde8e8','#fde8e8','#fde8e8'];
 const wrBrDef=[amber,amber,amber,amber,amber,amber,teal,red,teal,teal,teal,teal,red,teal,red,red,red,red,red];
 
@@ -898,11 +902,11 @@ function clearSelection(){
 };
 
 // Heatmap — full interactivity
-const decksFull=['Boros Energy','Jeskai Blink','Ruby Storm','Affinity','Eldrazi Tron','Amulet Titan',"Goryo's Vengeance",'Domain Zoo','Living End','Izzet Prowess','Dimir Midrange','4c Omnath','4/5c Control','Azorius Control (WST)','Azorius Control'];
-const decks=['Boros','Jesk','Storm','Affi','ETron','AmTi','Gory','Zoo','LivE','Prow','Dimir','4cOm','4/5c','WST','AzCtrl'];
-const wins=[[0,100,42,100,92,100,92,33,75,67,58,67,92,58,100],[0,0,0,75,67,75,50,25,50,67,50,8,50,42,67],[58,100,0,92,83,92,83,67,75,75,50,92,92,50,83],[0,25,8,0,25,50,58,0,33,17,0,25,33,33,42],[8,33,17,75,0,83,42,8,42,75,42,33,58,100,75],[0,25,8,50,17,0,67,8,33,17,0,0,17,42,0],[8,50,17,42,58,33,0,25,83,17,0,25,42,25,33],[67,75,33,100,92,92,75,0,50,67,33,50,100,75,100],[25,50,25,67,58,67,17,50,0,42,33,58,75,50,17],[33,33,25,83,25,83,83,33,58,0,42,75,83,42,92],[42,50,50,100,58,100,100,67,67,58,0,58,58,83,75],[33,92,8,75,67,100,75,50,42,25,42,0,92,83,100],[8,50,8,67,42,83,58,0,25,17,42,8,0,58,50],[42,58,50,67,0,58,75,25,50,58,17,17,42,0,25],[0,33,17,58,25,100,67,0,83,8,25,0,50,75,0]];
-const archetype=['aggro','midrange','combo','aggro','ramp','combo','combo','aggro','combo','aggro','midrange','midrange','control','control','control'];
-const avgTurns=[[0,8,5,6,8,7,6,6,6,6,7,7,6,7,7],[8,0,6,7,8,9,8,7,7,6,8,9,8,10,9],[5,6,0,5,6,7,8,6,6,5,6,8,7,9,8],[6,7,5,0,7,6,6,6,6,6,6,6,6,8,6],[8,8,6,7,0,9,8,7,0,7,8,8,8,8,8],[7,9,7,6,9,0,8,8,9,7,8,11,10,10,10],[6,8,8,6,8,8,0,7,8,7,7,10,10,10,10],[6,7,6,6,7,8,7,0,7,6,7,8,8,9,8],[6,7,6,6,0,9,8,7,0,6,7,9,9,0,10],[6,6,5,6,7,7,7,6,6,0,7,6,6,9,8],[7,8,6,6,8,8,7,7,7,7,0,8,8,9,9],[7,9,8,6,8,11,10,8,9,6,8,0,10,10,11],[6,8,7,6,8,10,10,8,9,6,8,10,0,10,10],[7,10,9,8,8,10,10,9,0,9,9,10,10,0,12],[7,9,8,6,8,10,10,8,10,8,9,11,10,12,0]];
+const decksFull=["Boros Energy","Jeskai Blink","Ruby Storm","Affinity","Eldrazi Tron","Amulet Titan","Goryo's Vengeance","Domain Zoo","Living End","Izzet Prowess","Dimir Midrange","4c Omnath","4/5c Control","Azorius Control (WST)","Azorius Control","Pinnacle Affinity","Azorius Control (WST v2)","Instant Reanimator","Boros Ponza"];
+const decks=["Boros","Jesk","Storm","Affi","ETron","AmTi","Gory","Zoo","LivE","Prow","Dimir","4cOm","4/5c","WST","AzCtrl","Pinn","WSTv2","InstR","Ponza"];
+const wins=[[0,95,65,80,70,90,90,20,65,65,70,70,50,45,95,50,25,85,85],[5,0,25,45,25,60,45,10,20,25,25,15,35,40,60,50,30,50,40],[35,75,0,55,30,75,70,20,70,40,15,90,90,15,70,30,40,70,60],[20,55,45,0,10,75,70,10,35,35,35,60,30,35,70,15,50,75,45],[30,75,70,90,0,65,95,25,45,80,50,30,75,95,90,25,100,70,65],[10,40,25,25,35,0,50,5,50,5,20,25,50,70,65,5,50,50,15],[10,55,30,30,5,50,0,0,70,15,5,15,45,25,30,0,55,25,25],[80,90,80,90,75,95,100,0,65,80,70,80,95,95,90,70,70,100,90],[35,80,30,65,55,50,30,35,0,45,20,60,60,55,50,35,60,45,55],[35,75,60,65,20,95,85,20,55,0,60,65,70,50,95,55,25,80,70],[30,75,85,65,50,80,95,30,80,40,0,45,60,80,90,40,75,100,90],[30,85,10,40,70,75,85,20,40,35,55,0,85,75,90,15,60,70,95],[50,65,10,70,25,50,55,5,40,30,40,15,0,50,60,25,15,55,65],[55,60,85,65,5,30,75,5,45,50,20,25,50,0,45,15,25,40,45],[5,40,30,30,10,35,70,10,50,5,10,10,40,55,0,25,50,50,30],[50,50,70,85,75,95,100,30,65,45,60,85,75,85,75,0,80,100,80],[75,70,60,50,0,50,45,30,40,75,25,40,85,75,50,20,0,60,60],[15,50,30,25,30,50,75,0,55,20,0,30,45,60,50,0,40,0,35],[15,60,40,55,35,85,75,10,45,30,10,5,35,55,70,20,40,65,0]];
+const archetype=["aggro","midrange","combo","aggro","ramp","combo","combo","aggro","combo","aggro","midrange","midrange","control","control","control","aggro","control","combo","midrange"];
+const avgTurns=[[0,7.6,5.3,6.0,7.5,6.9,5.6,6.5,6.2,5.5,7.1,7.3,6.0,7.0,7.2,0,0,0,0],[7.6,0,6.4,7.0,8.1,9.1,7.9,7.3,7.0,6.4,7.8,8.9,8.3,9.5,8.8,0,0,0,0],[5.3,6.4,0,5.0,6.1,7.0,8.0,5.7,6.3,4.6,6.0,7.5,7.1,8.7,7.7,0,0,0,0],[6.0,7.0,5.0,0,7.0,5.9,6.2,5.9,5.9,5.7,6.0,6.0,6.3,7.7,6.4,0,0,0,0],[7.5,8.1,6.1,7.0,0,8.7,7.7,7.4,0,7.2,8.5,8.4,8.1,8.2,8.4,0,0,0,0],[6.9,9.1,7.0,5.9,8.7,0,8.4,7.9,8.8,6.6,7.6,10.6,9.7,10.1,10.1,0,0,0,0],[5.6,7.9,8.0,6.2,7.7,8.4,0,7.3,8.4,6.7,7.2,10.5,10.2,9.6,10.5,0,0,0,0],[6.5,7.3,5.7,5.9,7.4,7.9,7.3,0,6.9,6.0,7.3,7.5,7.6,9.4,7.9,0,0,0,0],[6.2,7.0,6.3,5.9,0,8.8,8.4,6.9,0,6.4,7.4,9.4,9.1,0,9.8,0,0,0,0],[5.5,6.4,4.6,5.7,7.2,6.6,6.7,6.0,6.4,0,6.6,6.2,6.5,9.1,7.7,0,0,0,0],[7.1,7.8,6.0,6.0,8.5,7.6,7.2,7.3,7.4,6.6,0,8.3,8.1,8.8,8.7,0,0,0,0],[7.3,8.9,7.5,6.0,8.4,10.6,10.5,7.5,9.4,6.2,8.3,0,10.4,10.3,11.3,0,0,0,0],[6.0,8.3,7.1,6.3,8.1,9.7,10.2,7.6,9.1,6.5,8.1,10.4,0,9.8,10.5,0,0,0,0],[7.0,9.5,8.7,7.7,8.2,10.1,9.6,9.4,0,9.1,8.8,10.3,9.8,0,11.8,0,0,0,0],[7.2,8.8,7.7,6.4,8.4,10.1,10.5,7.9,9.8,7.7,8.7,11.3,10.5,11.8,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]];
 
 function wrColor(v){
   if(v>=65)return`rgba(15,110,86,${.15+v/200})`;if(v>=55)return`rgba(15,110,86,${.08+v/500})`;
@@ -993,16 +997,16 @@ document.querySelectorAll('.deck-chip').forEach(chip=>{
   });
 });
 
-// Validation bars with expected ranges (Aug 2026 matrix, n=20 per pair)
+// Validation bars with expected ranges (2026-08-27 matrix, n=20 per pair, 25-deck field WR; bands from tools/calibration_bands.json — 32 of 96 checks in band)
 const valData=[
-  {name:'Domain Zoo',wr:76,lo:50,hi:65,pass:0,detail:'<strong>Above expected range (50-65%).</strong> Actual 76% — structural advantage or sim artifact.'},
-  {name:'Ruby Storm',wr:65,lo:40,hi:55,pass:0,detail:'<strong>Above expected range (40-55%).</strong> Actual 65% — structural advantage or sim artifact.'},
-  {name:'Dimir Midrange',wr:74,lo:45,hi:60,pass:0,detail:'<strong>Above expected range (45-60%).</strong> Actual 74% — structural advantage or sim artifact.'},
-  {name:'Boros Energy',wr:75,lo:50,hi:70,pass:0,detail:'<strong>Above expected range (50-70%).</strong> Actual 75% — structural advantage or sim artifact.'},
-  {name:'Izzet Prowess',wr:63,lo:45,hi:60,pass:0,detail:'<strong>Above expected range (45-60%).</strong> Actual 63% — slightly above band.'},
-  {name:'Eldrazi Tron',wr:51,lo:50,hi:65,pass:1,detail:'In range (50-65%). Performing as expected at 51%.'},
-  {name:'Jeskai Blink',wr:35,lo:45,hi:60,pass:0,detail:'<strong>Below expected range (45-60%).</strong> Actual 35% — possible engine weakness.'},
-  {name:'Affinity',wr:28,lo:45,hi:60,pass:0,detail:'<strong>Below expected range (45-60%).</strong> Actual 28% — possible engine weakness.'}
+  {name:'Domain Zoo',wr:84.8,lo:50,hi:65,pass:0,detail:'<strong>Above expected range (50-65%).</strong> Actual 84.8% — aggregate diagnosis delivered a structural verdict: control loses on resource economy, not sequencing.'},
+  {name:'Boros Energy',wr:73.3,lo:50,hi:70,pass:0,detail:'<strong>Above expected range (50-70%).</strong> Actual 73.3% — modestly above the Tier-1 band.'},
+  {name:'Dimir Midrange',wr:69.0,lo:45,hi:60,pass:0,detail:'<strong>Above expected range (45-60%).</strong> Actual 69.0% — interactive midrange overperforms vs the extended field.'},
+  {name:'Izzet Prowess',wr:64.6,lo:50,hi:65,pass:1,detail:'In range (50-65%). Performing as expected at 64.6%, at the top of the band.'},
+  {name:'Eldrazi Tron',wr:64.2,lo:50,hi:65,pass:1,detail:'In range (50-65%). Performing as expected at 64.2%.'},
+  {name:'Ruby Storm',wr:55.2,lo:40,hi:55,pass:0,detail:'<strong>Just above expected range (40-55%).</strong> Actual 55.2% — recovered from a long stretch at ~29%; now sits at the band edge.'},
+  {name:'Jeskai Blink',wr:39.6,lo:45,hi:60,pass:0,detail:'<strong>Below expected range (45-60%).</strong> Actual 39.6% — up ~5pp from the soft-counter holdback re-spec, still short of band.'},
+  {name:'Amulet Titan',wr:34.4,lo:45,hi:60,pass:0,detail:'<strong>Below expected range (45-60%).</strong> Actual 34.4% — +4.8pp from the land-sacrifice payoff gate (PR #552), the standing P0.'}
 ];
 const valEl=document.getElementById('valBars'),valDet=document.getElementById('valDetail');
 valData.forEach((d,i)=>{
