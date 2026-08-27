@@ -238,6 +238,11 @@ class CardTemplate:
     # templates, feeding estimate_permanent_value — the removal-target sort key
     # in ai/response.py. See tests/test_activation_schema_is_behaviour_neutral.
     activated_abilities: List["ActivatedAbility"] = field(default_factory=list)
+    # Parse-once typed field derived from `activated_abilities`: True when
+    # any parsed line is a GRANT_HASTE_TARGET activation. Consumers (e.g.
+    # Primeval Titan's fetch priority) read this instead of re-scanning
+    # oracle text at runtime (oracle-runtime-parse ratchet).
+    grants_haste_activation: bool = False
     aura_enchant_restriction: Optional[str] = None
     aura_mana_units: List[List[str]] = field(default_factory=list)
     # 'When this land enters, return a land you control to its owner's

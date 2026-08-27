@@ -1881,6 +1881,14 @@ class CardDatabase:
         # NOTE: deliberately a separate field from `abilities` — see
         # tests/test_activation_schema_is_behaviour_neutral.py.
         template.activated_abilities = parse_activated_abilities(oracle) or []
+        # Parse-once typed field for consumers that must not re-scan oracle
+        # text at runtime (e.g. Primeval Titan's fetch priority): derived
+        # from the SAME classify pass that built `activated_abilities`, so
+        # it can never drift from what the ability actually does.
+        from .cards import ActivationEffectKind as _AEK
+        template.grants_haste_activation = any(
+            a.effect_kind is _AEK.GRANT_HASTE_TARGET
+            for a in template.activated_abilities)
         template.has_lifegain_token_trigger = parse_has_lifegain_token_trigger(oracle)
         template.lifegain_token_type = parse_lifegain_token_type(oracle)
         template.targets_creature_spell = parse_targets_creature_spell(oracle)
