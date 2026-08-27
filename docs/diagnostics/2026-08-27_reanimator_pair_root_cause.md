@@ -1,6 +1,6 @@
 ---
 title: Reanimator pair (Instant Reanimator 35.4% / Goryo's Vengeance 28.8%) — blink-before-combat forfeits the haste swing
-status: active
+status: archived
 priority: primary
 session: 2026-08-27
 depends_on:
@@ -240,3 +240,20 @@ Anchor after both levers: one drifted entry — Goryo's Vengeance vs
 Izzet Prowess s50000, winner unchanged (Izzet Prowess), turns 9 → 6.
 Snapshot deliberately NOT refreshed in that session; refresh alongside
 the next matrix re-read.
+
+## SECONDARY LEVERS MEASURED — ARC CLOSED IN BAND (2026-08-27, post-#559)
+
+Acceptance, n=20 Bo3 field, idle machine:
+
+- **Instant Reanimator: 43.3 -> 47.9 (+4.6pp) — INSIDE its [45-60] band.**
+  Cumulative across the three fixes (blink timing, plan-aware discard,
+  goal-conjunction mulligan): **35.4 -> 47.9, +12.5pp.**
+- **Goryo's Vengeance: 32.1 -> 36.9 (+4.8pp)** — solidly in its [30-70]
+  band; cumulative +8.1pp.
+
+This investigation is CONCLUDED: the pair's shared gap decomposed into one
+primary (forfeited haste swing) and two secondary mechanisms (isolation-
+valued discard, conjunction-blind mulligan), every fix generic and reused
+by other decks, every step measured. The next full matrix should re-read
+both rows plus the decks the generic mechanisms touch (any deck holding
+blink effects, graveyard payoffs, or multi-role gameplans).
