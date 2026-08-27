@@ -670,6 +670,19 @@ class CardTemplate:
     # DIES: its +1/+1 counters may be placed on a target artifact creature.
     # Populated by card_database.py oracle-derived properties section.
     modular_n: int = 0
+    # -- Land destruction (spell tranche) -----------------------------------
+    # True when the card is a spell-shaped "Destroy target land" effect with
+    # only supported riders (see oracle_parser.parse_land_destruction).
+    # Activated/triggered LD (Ghost Quarter, Fulminator classes) is a later
+    # tranche and stays False here.
+    destroys_target_land: bool = False
+    # Structured rider data for the destroy-target-land clause: compound
+    # artifact-or-land mode, nonbasic-only restriction, replacement-basic
+    # search rider, damage-to-controller rider, caster-draw rider.  None
+    # when the card is not in the class (unsupported riders refuse the
+    # whole card — never half-executed).
+    # Populated by oracle_parser.parse_land_destruction.
+    land_destruction_data: Optional[dict] = None
 
     def __post_init__(self) -> None:
         # Derive fields from oracle text for templates not loaded through
@@ -822,6 +835,12 @@ class CardTemplate:
                                 self.oracle_text.lower())
                 if _m:
                     self.modular_n = int(_m.group(1))
+            # Land destruction (spell tranche) — warp_cost pattern: derive
+            # for synthetic templates; CardDatabase sets both explicitly.
+            if self.land_destruction_data is None and not self.destroys_target_land:
+                from .oracle_parser import parse_land_destruction as _pld
+                self.land_destruction_data = _pld(self.oracle_text)
+                self.destroys_target_land = self.land_destruction_data is not None
 
     @property
     def is_creature(self) -> bool:

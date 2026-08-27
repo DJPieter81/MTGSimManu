@@ -1980,6 +1980,10 @@ class CardDatabase:
         template.has_charge_counter_ability = parse_has_charge_counter_ability(oracle)
         template.cast_trigger_token = parse_cast_trigger_token(oracle)
         template.enters_type_counter = parse_enters_type_counter(oracle)
+        # Land destruction (spell tranche) — parse-once typed classification.
+        from .oracle_parser import parse_land_destruction
+        template.land_destruction_data = parse_land_destruction(oracle)
+        template.destroys_target_land = template.land_destruction_data is not None
 
         return template
 

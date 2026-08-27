@@ -153,6 +153,9 @@ _BATTLEFIELD_COMPOUND = [
     ("target artifact or creature",     frozenset({"artifact", "creature"})),
     ("target artifact or enchantment",  frozenset({"artifact", "enchantment"})),
     ("target creature or planeswalker", frozenset({"creature", "planeswalker"})),
+    # Land-destruction compound form (Pillage class): castable off either
+    # permanent type — CR 601.2c needs only one legal target among the union.
+    ("target artifact or land",         frozenset({"artifact", "land"})),
 ]
 
 # "target [non]land permanent" / "target permanent" — supertype-aware.
