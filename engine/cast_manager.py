@@ -106,6 +106,92 @@ def pick_wipe_x_value(game: "GameState", player_idx: int,
     return best_x, max(0.0, best_score), best_kill_count
 
 
+def creature_tutor_x_net_value(x: int, delivered_cmc: int) -> int:
+    """Net cast value, in mana units, of an X-cost creature tutor cast at
+    X=``x`` when the best deliverable target at that X costs
+    ``delivered_cmc``.
+
+    Both terms are mana: the delivered creature's headline size proxy is
+    its mana value (the same proxy the resolvers rank fetch candidates
+    by), and every point of X above it is spent mana buying nothing —
+    charged 1:1 because it is literally the same resource.
+
+    This is the value function `pick_creature_tutor_x_value` maximises;
+    its argmax is the cheapest X that still delivers the best fetchable
+    target (X above the target's cost only subtracts).
+    """
+    return delivered_cmc - (x - delivered_cmc)
+
+
+def pick_creature_tutor_x_value(
+        game: "GameState", player_idx: int, x_budget: int,
+        template) -> "tuple[int, object, object]":
+    """Engine-side X picker for "search your library for a creature card
+    with mana value X or less, put it onto the battlefield" spells (the
+    Green Sun's Zenith shape, `CardTemplate.x_creature_tutor_data`).
+
+    Mirrors `pick_wipe_x_value` above: a module-level helper so the AI
+    scoring layer (`ai/ev_player.py::_gate_x_tutor_payoff`) consults the
+    SAME picker the engine uses at cast time — the cast EV is conditioned
+    on exactly what the chosen X will deliver, and the chosen X is the
+    cheapest one that delivers it (never X=4 for a 1-drop).
+
+    Candidate ranking within an X budget matches the resolver: highest
+    mana value first, P/T tie-break (several premium targets are 0/0 with
+    a characteristic-defining ability).
+
+    Args:
+        game: GameState.
+        player_idx: controller of the tutor.
+        x_budget: max X the controller can afford (after base cost).
+        template: the tutor's CardTemplate (color constraint + min_x).
+
+    Returns:
+        (best_x, best_target, top_candidate):
+        - best_x: the chosen X (0 when nothing is fetchable).
+        - best_target: the CardInstance the resolver will deliver at
+          best_x, or None when no candidate fits any affordable X.
+        - top_candidate: the best fetchable candidate ignoring the
+          budget — the library's payoff ceiling, which the AI's
+          hold/patience gate compares against best_target.
+    """
+    from .mana import Color
+
+    data = getattr(template, 'x_creature_tutor_data', None) or {}
+    want = {Color(letter) for letter in data.get('colors', [])}
+    player = game.players[player_idx]
+
+    def _rank(c) -> "tuple[int, int]":
+        return ((c.template.cmc or 0),
+                (c.template.power or 0) + (c.template.toughness or 0))
+
+    candidates = [
+        c for c in player.library
+        if c.template.is_creature
+        and (not want or (want & set(c.template.color_identity)))
+    ]
+    if not candidates:
+        return 0, None, None
+    top_candidate = max(candidates, key=_rank)
+
+    min_x = int((template.x_cost_data or {}).get('min_x', 0) or 0)
+    best_x = min_x
+    best_net: "float | None" = None
+    best_target = None
+    for X in range(min_x, max(min_x, int(x_budget)) + 1):
+        affordable = [c for c in candidates if (c.template.cmc or 0) <= X]
+        if not affordable:
+            continue
+        target = max(affordable, key=_rank)
+        net = creature_tutor_x_net_value(X, target.template.cmc or 0)
+        # Strict > keeps the LOWEST X among equal nets (cheapest first).
+        if best_net is None or net > best_net:
+            best_net = net
+            best_x = X
+            best_target = target
+    return best_x, best_target, top_candidate
+
+
 class CastManager:
     """Cast-time legality + special-case handlers. Stateless."""
 
@@ -1280,6 +1366,19 @@ class CastManager:
                 # `pick_wipe_x_value` docstring + audit F-Wrath-X.
                 best_x, _, _ = pick_wipe_x_value(
                     game, player_idx, int(x_value)
+                )
+                x_value = best_x
+            elif getattr(template, 'x_creature_tutor_data', None):
+                # X-cost creature tutor (Green Sun's Zenith shape): the
+                # resolver fetches the highest-mana-value candidate within
+                # X, so every point of X above the best fetchable target's
+                # cost is mana buying nothing. Delegate to the module-level
+                # `pick_creature_tutor_x_value` — the AI scoring layer
+                # (`ai/ev_player.py::_gate_x_tutor_payoff`) consults the
+                # SAME picker — which chooses the cheapest X that still
+                # delivers the best target (never X=4 for a 1-drop).
+                best_x, _target, _top = pick_creature_tutor_x_value(
+                    game, player_idx, int(x_value), template
                 )
                 x_value = best_x
             # +1/+1 counter creatures: use max mana (Ballista-style)
