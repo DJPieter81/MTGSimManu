@@ -61,6 +61,27 @@ def resolve_activated_ability(game: "GameState", source: "CardInstance",
                 f"until end of turn")
             return True
 
+        if kind is ActivationEffectKind.GRANT_HASTE_TARGET:
+            # CR 702.10 haste, granted until end of turn. temp_keywords is
+            # the engine's until-EOT keyword channel (Dash and Goryo's-style
+            # reanimation use the same one): `CardInstance.keywords` unions
+            # it in, `has_summoning_sickness` clears while HASTE is present,
+            # and `cleanup_damage()` (cleanup step, CR 514) expires it.
+            from .cards import CardType, Keyword
+            for tid in (targets or []):
+                found = game.get_card_by_id(tid)
+                if (found is None or found.zone != "battlefield"
+                        or not (CardType.CREATURE in found.template.card_types
+                                or getattr(found, 'is_animated', False))):
+                    continue  # CR 608.2b — an illegal target is skipped
+                found.temp_keywords.add(Keyword.HASTE)
+                game.log.append(
+                    f"T{game.display_turn} P{controller+1}: {source.name} "
+                    f"grants {found.name} haste until end of turn")
+                return True
+            return False  # every declared target left the battlefield —
+                          # the ability fizzles (CR 608.2b)
+
         # ANIMATE_SELF_UEOT is owned by `parse_land_animation` / `animate_land`
         # and must never be double-executed here; it reaches this branch only
         # if the enumerator's skip was bypassed.

@@ -5677,3 +5677,19 @@ Sister constant: MULLIGAN_MIN_HAND_SCORE_7.
 
 Used by `_hand_ev_score` decision gate in `ai/mulligan.py`.
 """
+
+HASTE_GRANT_COMBAT_STEPS_ADVANCED: float = 1.0
+"""Rules-constant: a haste grant converts exactly ONE extra combat step
+— the granted creature attacks this turn instead of first attacking
+next turn (CR 702.10).
+
+Caps the clock delta credited to a GRANT_HASTE_TARGET activation: the
+with/without-this-creature clock comparison in
+`ai/activation_ev.py::activation_candidates` measures the creature's
+whole ongoing clock contribution (and is polluted by the NO_CLOCK
+sentinel when the creature is the board's only attacker), but the grant
+itself only advances the first attack by one step, so at most one turn
+of clock is real.
+
+Used by `activation_candidates` in `ai/activation_ev.py`.
+"""

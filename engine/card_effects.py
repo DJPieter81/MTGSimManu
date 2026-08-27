@@ -1775,6 +1775,10 @@ def _primeval_titan_search(game, controller):
     def land_priority(c):
         score = 0
         otext = (c.template.oracle_text or "").lower()
+        # NOTE: this top-tier predicate is a "tapped mana land" PROXY, not
+        # a bounce-land predicate — it also matches non-bounce tapped
+        # producers (e.g. Crumbling Vestige). Known imprecision; kept
+        # because widening it is a separate diagnosis.
         if c.template.enters_tapped and c.template.produces_mana:
             score += 10  # bounce lands are best with Amulet
         # Damage-source lands: any land whose oracle text contains a
@@ -1793,8 +1797,40 @@ def _primeval_titan_search(game, controller):
             score += 3
         return score
 
+    def _tapped_mana_tier(c):
+        # Same predicate as the top tier of land_priority — named so the
+        # second-copy substitution below reads as the rule it encodes.
+        return c.template.enters_tapped and bool(c.template.produces_mana)
+
     lands_in_library.sort(key=land_priority, reverse=True)
     to_put = lands_in_library[:2]
+
+    # Conversion-speed rule: when the searcher has a summoning-sick
+    # would-be attacker (typically the Titan whose trigger this is) and
+    # controls no haste source, a haste-GRANTING land outranks the SECOND
+    # copy of a tapped-mana land in the fetch pair — the first tapped-mana
+    # land keeps the engine going, but a duplicate is worth less than
+    # converting the attack one turn earlier. All checks are parse-once
+    # typed fields (`grants_haste_activation` from the activated-ability
+    # classify pass); no oracle text is read at runtime.
+    from .cards import Keyword as _Kw
+    has_sick_attacker = any(
+        c.has_summoning_sickness and not c.tapped
+        and _Kw.DEFENDER not in c.keywords
+        for c in player.creatures)
+    controls_haste_source = any(
+        getattr(p.template, 'grants_haste_activation', False)
+        for p in player.battlefield)
+    if (has_sick_attacker and not controls_haste_source
+            and len(to_put) == 2
+            and _tapped_mana_tier(to_put[0]) and _tapped_mana_tier(to_put[1])
+            and not any(getattr(c.template, 'grants_haste_activation', False)
+                        for c in to_put)):
+        haste_lands = [c for c in lands_in_library
+                       if getattr(c.template, 'grants_haste_activation',
+                                  False)]
+        if haste_lands:
+            to_put = [to_put[0], haste_lands[0]]
 
     for land in to_put:
         player.library.remove(land)

@@ -116,6 +116,13 @@ class ActivationEffectKind(Enum):
     DRAW_N = "draw_n"
     PUMP_SELF_UEOT = "pump_self_ueot"
     ANIMATE_SELF_UEOT = "animate_self_ueot"
+    # "[Cost]: Target creature gains haste until end of turn" — the
+    # combat-enabler activation carried by utility lands and creatures
+    # (Hanweir Battlements-shape). Grants Keyword.HASTE via temp_keywords,
+    # the same until-EOT channel Dash/Goryo's reanimation use, so
+    # `has_summoning_sickness` clears for the target this turn and
+    # cleanup_damage() expires the grant at end of turn.
+    GRANT_HASTE_TARGET = "grant_haste_target"
     UNCLASSIFIED = "unclassified"
 
 
@@ -231,6 +238,11 @@ class CardTemplate:
     # templates, feeding estimate_permanent_value — the removal-target sort key
     # in ai/response.py. See tests/test_activation_schema_is_behaviour_neutral.
     activated_abilities: List["ActivatedAbility"] = field(default_factory=list)
+    # Parse-once typed field derived from `activated_abilities`: True when
+    # any parsed line is a GRANT_HASTE_TARGET activation. Consumers (e.g.
+    # Primeval Titan's fetch priority) read this instead of re-scanning
+    # oracle text at runtime (oracle-runtime-parse ratchet).
+    grants_haste_activation: bool = False
     aura_enchant_restriction: Optional[str] = None
     aura_mana_units: List[List[str]] = field(default_factory=list)
     # 'When this land enters, return a land you control to its owner's

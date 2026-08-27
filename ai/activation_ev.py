@@ -32,7 +32,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, List, Tuple
 
 from ai.clock import combat_clock, creature_clock_impact
-from ai.scoring_constants import CLOCK_IMPACT_LIFE_SCALING
+from ai.scoring_constants import (CLOCK_IMPACT_LIFE_SCALING,
+                                  HASTE_GRANT_COMBAT_STEPS_ADVANCED)
 
 if TYPE_CHECKING:  # pragma: no cover
     from engine.cards import CardInstance
@@ -151,6 +152,10 @@ def activation_candidates(game, player_idx, snap, excluded=None):
     Scoring is a single `position_value` delta: project the snapshot forward
     per effect kind and keep the improvement. No bare magnitudes — every number
     comes from parsed ability data (`amount`, `power_mod`, `toughness_mod`).
+    Exception: GRANT_HASTE_TARGET cannot be a `position_value` delta (the
+    snapshot's power terms already count summoning-sick creatures, so the
+    grant changes no projected field) — it is scored directly on the
+    `combat_clock` primitives under the land-animation race gates instead.
     """
     from engine.activation import ActivationManager
     from engine.cards import ActivationEffectKind as _K
@@ -238,6 +243,61 @@ def activation_candidates(game, player_idx, snap, excluded=None):
                     continue
                 reason = (f"activate: +{ability.power_mod}/"
                           f"+{ability.toughness_mod} improves the race")
+            elif kind is _K.GRANT_HASTE_TARGET:
+                # Pre-combat only, same MAIN1 justification as land
+                # animation and pump: the grant's whole value is converting
+                # an attack THIS turn.
+                if game.current_phase is not _Phase.MAIN1:
+                    continue
+                from engine.cards import Keyword as _Kw
+                # Valued only on OUR OWN summoning-sick would-be attacker.
+                # Hasting an already-attackable body (or the opponent's
+                # creature — engine-legal, the printed ability targets any
+                # creature) buys nothing, so no candidate is emitted.
+                sick = [c for c in me.creatures
+                        if c.has_summoning_sickness and not c.tapped
+                        and _Kw.DEFENDER not in c.keywords]
+                if not sick:
+                    continue
+                tgt = max(sick, key=lambda c: max(0, c.power or 0))
+                p = max(0, tgt.power or 0)
+                if p <= 0:
+                    continue
+                evasive_p = p if ({k.value for k in tgt.keywords}
+                                  & _EVASION_WORDS) else 0
+                # Clock WITH the grant is the snapshot clock (snap.my_power
+                # already counts every creature, sick or not — the clock
+                # model does not know about summoning sickness); clock
+                # WITHOUT is the same board minus this body's power, since
+                # without haste it does not attack this turn.
+                my_clock_with = combat_clock(
+                    snap.my_power, snap.opp_life,
+                    snap.my_evasion_power, snap.opp_toughness)
+                my_clock_without = combat_clock(
+                    max(0, snap.my_power - p), snap.opp_life,
+                    max(0, snap.my_evasion_power - evasive_p),
+                    snap.opp_toughness)
+                opp_clock = combat_clock(
+                    snap.opp_power, snap.my_life,
+                    snap.opp_evasion_power, snap.my_toughness)
+                if my_clock_with >= my_clock_without:
+                    continue  # no clock improvement — save the mana
+                if my_clock_with > opp_clock:
+                    continue  # attacking loses the race — hold for defense
+                # The credited delta is capped at the one combat step haste
+                # actually advances (CR 702.10): the raw with/without
+                # difference measures the creature's whole ongoing clock
+                # contribution and hits the NO_CLOCK sentinel when it is
+                # the board's only attacker.
+                turns_saved = min(HASTE_GRANT_COMBAT_STEPS_ADVANCED,
+                                  my_clock_without - my_clock_with)
+                ev = turns_saved * CLOCK_IMPACT_LIFE_SCALING
+                out.append((perm, ability.index, [tgt.instance_id], ev,
+                            (f"activate: haste on {tgt.name} converts an "
+                             f"attack this turn (clock "
+                             f"{my_clock_without:.0f}→{my_clock_with:.0f} "
+                             f"vs opp {opp_clock:.0f})")))
+                continue
             else:
                 continue
 
