@@ -97,7 +97,8 @@ class ActivationManager:
         # the land-animation path and must not be double-executed here.
         if ability.effect_kind not in (ActivationEffectKind.DAMAGE_ANY_TARGET,
                                        ActivationEffectKind.DRAW_N,
-                                       ActivationEffectKind.PUMP_SELF_UEOT):
+                                       ActivationEffectKind.PUMP_SELF_UEOT,
+                                       ActivationEffectKind.GRANT_HASTE_TARGET):
             return False
 
         player = game.players[player_idx]

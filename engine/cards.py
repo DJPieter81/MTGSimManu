@@ -116,6 +116,13 @@ class ActivationEffectKind(Enum):
     DRAW_N = "draw_n"
     PUMP_SELF_UEOT = "pump_self_ueot"
     ANIMATE_SELF_UEOT = "animate_self_ueot"
+    # "[Cost]: Target creature gains haste until end of turn" — the
+    # combat-enabler activation carried by utility lands and creatures
+    # (Hanweir Battlements-shape). Grants Keyword.HASTE via temp_keywords,
+    # the same until-EOT channel Dash/Goryo's reanimation use, so
+    # `has_summoning_sickness` clears for the target this turn and
+    # cleanup_damage() expires the grant at end of turn.
+    GRANT_HASTE_TARGET = "grant_haste_target"
     UNCLASSIFIED = "unclassified"
 
 

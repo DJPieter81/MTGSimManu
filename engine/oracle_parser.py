@@ -760,6 +760,14 @@ def classify_activation_effect(effect_text: str):
     if 'becomes a' in low and 'creature until end of turn' in low:
         return K.ANIMATE_SELF_UEOT, 0, 0, 0
 
+    # Combat-enabler grant (Hanweir Battlements-shape). ANCHORED to the
+    # exact single-target sentence: composite grants ("gets +2/+0 and
+    # gains vigilance and haste") and non-targeted grants ("creatures you
+    # control gain haste") are DIFFERENT effects and stay UNCLASSIFIED
+    # rather than executing as a bare haste grant with riders dropped.
+    if re.fullmatch(r'target creature gains haste until end of turn', low):
+        return K.GRANT_HASTE_TARGET, 0, 0, 0
+
     return K.UNCLASSIFIED, 0, 0, 0
 
 
@@ -795,10 +803,24 @@ def parse_activated_abilities(oracle: str):
             split_activation_riders(effect_text)
         kind, amount, p_mod, t_mod = classify_activation_effect(body)
         is_mana = bool(re.match(r'^add\b', body.strip().lower()))
+        # CR 601.2c: a targeted effect kind carries its target requirement
+        # so ActivationManager can refuse the activation when no legal
+        # target exists (rule 15) — populated here, at parse time, from the
+        # classified kind rather than re-scanning oracle text at runtime.
+        targets_required = 0
+        target_requirements: list = []
+        if kind is K.GRANT_HASTE_TARGET:
+            from .target_solver import TargetRequirement
+            targets_required = 1
+            target_requirements = [TargetRequirement(
+                zone="battlefield", types=frozenset({"creature"}),
+                raw_phrase="target creature")]
         out.append(ActivatedAbility(
             index=idx, cost=cost, effect_text=body.strip(),
             effect_kind=kind, amount=amount,
             power_mod=p_mod, toughness_mod=t_mod,
+            targets_required=targets_required,
+            target_requirements=target_requirements,
             sorcery_speed_only=sorcery_only, once_each_turn=once_turn,
             restrictions=restrictions, is_mana_ability=is_mana,
         ))
