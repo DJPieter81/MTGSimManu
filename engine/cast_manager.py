@@ -1290,6 +1290,10 @@ class CastManager:
                         game.log.append(
                             f"T{game.display_turn} P{player_idx+1}: "
                             f"Flashback {template.name} — sacrifice {sac.name}")
+        # CR 702.88a (and every other "if this spell was cast from your
+        # X" replacement): the zone a spell was cast FROM is part of how
+        # it was cast, so record it before the stack move overwrites it.
+        card._cast_from_zone = card.zone
         card.zone = "stack"
         card._cast_with_flashback = cast_with_flashback
         card._evoked = evoked  # Track for sacrifice after ETB
