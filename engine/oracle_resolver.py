@@ -500,12 +500,11 @@ def _resolve_x_creature_tutor(game: "GameState", card: "CardInstance",
         tutor_search_pool(player, spec), spec, x_value)
     found = choose_tutor_delivery(game, controller, card, eligible)
     if found is not None:
-        put_tutor_target(game, found, controller, spec,
-                         cause=f"{card.name} tutor")
-        if spec.get('enters_with_x_counters'):
-            # "…with X additional +1/+1 counters on it" — placed as it
-            # enters, before the ETB fan-out reads the board.
-            found.plus_counters += x_value
+        put_tutor_target(
+            game, found, controller, spec, cause=f"{card.name} tutor",
+            # "…with X additional +1/+1 counters on it" — part of the
+            # entry itself (CR 614.1c), so the funnel places them.
+            entry_counters=x_value if spec.get('enters_with_x_counters') else 0)
         haste_at = spec.get('haste_at_x')
         if haste_at is not None and x_value >= haste_at:
             found.temp_keywords.add(Keyword.HASTE)

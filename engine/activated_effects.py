@@ -123,16 +123,24 @@ def choose_tutor_delivery(game: "GameState", controller: int,
 
 
 def put_tutor_target(game: "GameState", found: "CardInstance",
-                     controller: int, spec: dict, cause: str) -> None:
+                     controller: int, spec: dict, cause: str,
+                     entry_counters: int = 0) -> None:
     """Move a found card to the parsed destination through the zone funnel
     (CR 603 zone-change triggers / CR 614 replacements), giving a
-    battlefield entry the ETB fan-out."""
+    battlefield entry the ETB fan-out.
+
+    ``entry_counters`` is the "…onto the battlefield with N +1/+1 counters
+    on it" rider: CR 614.1c makes those counters part of the entry itself,
+    so they are on the permanent before the ETB fan-out (and before state-
+    based actions can see a 0/0 body)."""
     if spec.get('dest') == 'battlefield':
         game.zone_mgr.move_card(
             game, found, found.zone, "battlefield",
             cause=cause, controller_override=controller)
         if spec.get('tapped'):
             found.tapped = True
+        if entry_counters:
+            found.plus_counters += entry_counters
         game._handle_permanent_etb(found, controller)
     else:
         game.zone_mgr.move_card(game, found, found.zone, "hand", cause=cause)
