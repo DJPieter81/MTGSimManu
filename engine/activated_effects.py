@@ -91,6 +91,63 @@ def eligible_tutor_targets(library: List["CardInstance"], spec: dict,
             if tutor_target_matches(c.template, spec, x_value)]
 
 
+def tutor_search_pool(player, spec: dict) -> List["CardInstance"]:
+    """Every card inside a tutor's search ZONES, in one list.
+
+    The library always; the graveyard as well when the parsed shape says
+    "search your library and/or graveyard" (`spec['also_graveyard']`).
+    One owner of the zone set so the X picker enumerates exactly what the
+    resolver will search."""
+    pool = list(player.library)
+    if spec.get('also_graveyard'):
+        pool.extend(player.graveyard)
+    return pool
+
+
+def choose_tutor_delivery(game: "GameState", controller: int,
+                          source: "CardInstance",
+                          eligible: List["CardInstance"]
+                          ) -> Optional["CardInstance"]:
+    """WHICH legal candidate is delivered — a strategic choice, so it goes
+    through the callback seam (the `choose_fetch_target` pattern).  A
+    missing or misbehaving callback falls back to the engine default
+    (`default_tutor_rank`: highest mana value, P/T tie-break)."""
+    if not eligible:
+        return None
+    chooser = getattr(game.callbacks, 'choose_tutor_target', None)
+    found = chooser(game, controller, source, list(eligible)) \
+        if chooser is not None else None
+    if found is None or found not in eligible:
+        found = max(eligible, key=default_tutor_rank)
+    return found
+
+
+def put_tutor_target(game: "GameState", found: "CardInstance",
+                     controller: int, spec: dict, cause: str) -> None:
+    """Move a found card to the parsed destination through the zone funnel
+    (CR 603 zone-change triggers / CR 614 replacements), giving a
+    battlefield entry the ETB fan-out."""
+    if spec.get('dest') == 'battlefield':
+        game.zone_mgr.move_card(
+            game, found, found.zone, "battlefield",
+            cause=cause, controller_override=controller)
+        if spec.get('tapped'):
+            found.tapped = True
+        game._handle_permanent_etb(found, controller)
+    else:
+        game.zone_mgr.move_card(game, found, found.zone, "hand", cause=cause)
+
+
+def finish_library_search(game: "GameState", controller: int) -> None:
+    """Close a library search: shuffle, count it, and let opponents'
+    search-watching triggers see it (CR 701.19 — a failed search still
+    shuffles and still counts as searching)."""
+    player = game.players[controller]
+    game.rng.shuffle(player.library)
+    player.library_searches_this_game += 1
+    game._trigger_library_search(controller)
+
+
 def default_tutor_rank(card: "CardInstance") -> Tuple[int, int]:
     """Engine-default delivery ranking: highest mana value first, P/T
     tie-break — the same ranking the GSZ resolver and
@@ -172,30 +229,13 @@ def _resolve_activated_tutor(game: "GameState", source: "CardInstance",
     still shuffles and still counts as searching)."""
     player = game.players[controller]
     spec = ability.tutor_data or {}
-    eligible = eligible_tutor_targets(player.library, spec, x_value)
+    eligible = eligible_tutor_targets(
+        tutor_search_pool(player, spec), spec, x_value)
 
-    found = None
-    if eligible:
-        # The CHOICE among legal candidates is strategic — routed through
-        # the callback seam (the choose_fetch_target pattern). A missing
-        # or misbehaving callback falls back to the engine default.
-        chooser = getattr(game.callbacks, 'choose_tutor_target', None)
-        if chooser is not None:
-            found = chooser(game, controller, source, list(eligible))
-        if found is None or found not in eligible:
-            found = max(eligible, key=default_tutor_rank)
-
-        if spec.get('dest') == 'battlefield':
-            game.zone_mgr.move_card(
-                game, found, "library", "battlefield",
-                cause=f"{source.name} tutor",
-                controller_override=controller)
-            if spec.get('tapped'):
-                found.tapped = True
-            game._handle_permanent_etb(found, controller)
-        else:
-            game.zone_mgr.move_card(game, found, "library", "hand",
-                                    cause=f"{source.name} tutor")
+    found = choose_tutor_delivery(game, controller, source, eligible)
+    if found is not None:
+        put_tutor_target(game, found, controller, spec,
+                         cause=f"{source.name} tutor")
         game.log.append(
             f"T{game.display_turn} P{controller+1}: {source.name} "
             f"activated — finds {found.name} "
@@ -205,9 +245,7 @@ def _resolve_activated_tutor(game: "GameState", source: "CardInstance",
             f"T{game.display_turn} P{controller+1}: {source.name} "
             f"activated — search finds nothing")
 
-    game.rng.shuffle(player.library)
-    player.library_searches_this_game += 1
-    game._trigger_library_search(controller)
+    finish_library_search(game, controller)
     return True
 
 
