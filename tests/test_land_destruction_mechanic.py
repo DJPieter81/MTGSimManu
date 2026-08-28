@@ -406,3 +406,135 @@ class TestLandDestructionResolution:
             "Destroy target artifact or land. It can't be regenerated."))
         _resolve(game, spell, 0, [artifact.instance_id])
         assert artifact.zone == "graveyard"
+
+
+# ═════════════════════════════════════════════════════════════════════
+# 3. AI valuation — mana-denial EV and scarcest-source targeting
+# ═════════════════════════════════════════════════════════════════════
+
+
+def _snap(game, idx):
+    from ai.ev_evaluator import snapshot_from_game
+    return snapshot_from_game(game, idx)
+
+
+class TestLandDenialValuation:
+
+    def test_target_selection_prefers_opponents_sole_color_source(self):
+        from ai.land_denial import choose_land_denial_target
+        game = _fresh_game()
+        _land(game, 1, name="Red Source A", produces=("R",))
+        _land(game, 1, name="Red Source B", produces=("R",))
+        sole_black = _land(game, 1, name="Sole Black Source",
+                           produces=("B",))
+        tmpl = _tmpl("LD Plain", "Destroy target land.")
+        chosen = choose_land_denial_target(tmpl, game, 0, _snap(game, 0))
+        assert chosen is sole_black, (
+            "denying the opponent's only source of a color maximizes "
+            "their deficit — a redundant source must not be picked")
+
+    def test_denial_value_declines_as_opponent_mana_exceeds_curve(self):
+        from ai.land_denial import land_denial_value
+        tmpl = _tmpl("LD Plain", "Destroy target land.")
+
+        def _state(n_lands):
+            game = _fresh_game()
+            for i in range(n_lands):
+                _land(game, 1, name=f"Peak {i}", produces=("R",))
+            # Opponent deck curve tops at 4 — mana is a binding
+            # constraint only while their lands sit below that.
+            _library_card(game, 1, name="Opp Curve Top", land=False)
+            game.players[1].library[-1].template.mana_cost = ManaCost(
+                generic=3, red=1)
+            return game
+
+        developing = _state(2)
+        flooded = _state(8)
+        v_developing = land_denial_value(tmpl, developing, 0,
+                                         _snap(developing, 0))
+        v_flooded = land_denial_value(tmpl, flooded, 0,
+                                      _snap(flooded, 0))
+        assert v_developing > v_flooded, (
+            "denying the Nth land matters by what it delays — a flooded "
+            "opponent loses nothing")
+        assert v_flooded == pytest.approx(0.0), (
+            "past the curve top the tempo term must vanish (identical "
+            "redundant sources leave no scarcity premium either)")
+
+    def test_ld_spell_requires_a_target_to_be_enumerated(self):
+        from ai.ev_player import EVPlayer
+        game = _fresh_game()
+        spell = _spell_in_hand(game, 0, "Destroy target land.")
+        ai = EVPlayer(player_idx=0, deck_name="Boros Ponza",
+                      rng=random.Random(0))
+        assert ai._spell_requires_targets(spell) is True
+
+    def test_ld_spell_counts_as_immediate_interaction_signal(self):
+        # The deferral gate must not hold LD spells forever — that is
+        # the original dead-card bug in different clothes.
+        from ai.ev_evaluator import _is_immediate_interaction
+        tmpl = _tmpl("LD Plain", "Destroy target land.")
+        assert _is_immediate_interaction(
+            tmpl.oracle_text.lower(), set(), tmpl) is True
+
+
+class TestLandDenialEndToEnd:
+
+    def test_denial_spell_is_cast_on_curve_in_a_denial_deck_state(self):
+        """Seeded Ponza-style state: the LD spell must actually be cast,
+        and at the opponent's scarcest color source."""
+        from engine.card_database import CardDatabase
+        from ai.ev_player import EVPlayer
+        db = CardDatabase()
+
+        def _real(game, name, controller, zone="battlefield",
+                  untap=True):
+            t = db.get_card(name)
+            assert t is not None, f"missing {name}"
+            c = CardInstance(template=t, owner=controller,
+                             controller=controller,
+                             instance_id=game.next_instance_id(),
+                             zone=zone)
+            c._game_state = game
+            if zone == "battlefield":
+                c.enter_battlefield()
+                c.summoning_sick = False
+                if untap:
+                    c.tapped = False
+                game.players[controller].battlefield.append(c)
+            else:
+                getattr(game.players[controller], zone).append(c)
+            return c
+
+        game = _fresh_game()
+        game.turn_number = 5   # engine turn counter (both players)
+        me, opp = game.players[0], game.players[1]
+        me.deck_name = "Boros Ponza"
+        opp.deck_name = "Dimir Midrange"
+        for i in range(3):
+            _real(game, "Mountain", 0)
+        spell = _real(game, "Cleansing Wildfire", 0, zone="hand")
+        assert spell.template.destroys_target_land is True
+        # Opponent developing: two redundant U sources and a sole
+        # B source, with unreached curve toppers still in the deck.
+        _real(game, "Island", 1)
+        _real(game, "Island", 1)
+        sole_b = _real(game, "Watery Grave", 1)
+        for name in ("Murktide Regent", "Counterspell", "Psychic Frog"):
+            _real(game, name, 1, zone="library")
+        for _ in range(4):
+            _real(game, "Mountain", 0, zone="library")
+
+        ai = EVPlayer(player_idx=0, deck_name="Boros Ponza",
+                      rng=random.Random(0))
+        decision = ai.decide_main_phase(game)
+        assert decision is not None, (
+            "a castable land-destruction spell with real denial value "
+            "must produce a play, not a pass")
+        action, card, targets = decision
+        assert action == "cast_spell" and card.instance_id == spell.instance_id, (
+            f"the denial spell must be cast on curve, got {action} "
+            f"{getattr(card, 'name', card)}")
+        assert targets == [sole_b.instance_id], (
+            "the chosen target must be the opponent's scarcest color "
+            "source (their only B source)")
