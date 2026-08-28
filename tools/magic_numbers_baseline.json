@@ -18,6 +18,7 @@
   "ai/finisher_simulator.py": 0,
   "ai/finisher_simulator_v3.py": 0,
   "ai/gameplan.py": 0,
+  "ai/land_denial.py": 0,
   "ai/mana_planner.py": 0,
   "ai/mulligan.py": 0,
   "ai/oracle_classifier.py": 0,

@@ -934,6 +934,13 @@ def _is_immediate_interaction(oracle: str, tags, template) -> bool:
     if (getattr(template, 'can_destroy_nonland_permanent', False)
             or getattr(template, 'can_exile_permanent', False)):
         return True
+    # Classified land destruction (typed field, parse-once): destroying
+    # a land is immediate board interaction — the mana denied this turn
+    # never comes back, so cast-later is strictly worse than cast-now.
+    # Without this the deferral gate holds LD spells forever (the
+    # original dead-card bug in different clothes).
+    if getattr(template, 'destroys_target_land', False):
+        return True
     # ``template.is_counterspell`` is the pre-parsed typed field covering
     # all "counter target …" oracle wordings (oracle_parser.parse_is_counterspell).
     if template.is_counterspell:

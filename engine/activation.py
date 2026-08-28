@@ -95,10 +95,33 @@ class ActivationManager:
         # BEFORE any cost is charged — paying a cost for a recorded-unhandled
         # no-op is strictly worse than refusing. ANIMATE_SELF_UEOT is owned by
         # the land-animation path and must not be double-executed here.
-        if ability.effect_kind not in (ActivationEffectKind.DAMAGE_ANY_TARGET,
-                                       ActivationEffectKind.DRAW_N,
-                                       ActivationEffectKind.PUMP_SELF_UEOT,
-                                       ActivationEffectKind.GRANT_HASTE_TARGET):
+        if ability.effect_kind not in (
+                ActivationEffectKind.DAMAGE_ANY_TARGET,
+                ActivationEffectKind.DRAW_N,
+                ActivationEffectKind.PUMP_SELF_UEOT,
+                ActivationEffectKind.GRANT_HASTE_TARGET,
+                ActivationEffectKind.TUTOR_CREATURE_TO_BATTLEFIELD,
+                ActivationEffectKind.TUTOR_TO_HAND):
+            return False
+
+        # 9b-x. X-pip discipline. An {X} in the cost is chargeable exactly
+        # when the classified effect BINDS X (a tutor's "mana value X or
+        # less"): an unbound {X} cannot be charged honestly (the engine
+        # does not know what X buys), and an X-bound search with no {X}
+        # pip to bind is schema incoherence. Both refuse BEFORE any cost
+        # is charged. Note a tutor whose search finds nothing is still a
+        # LEGAL activation (CR 701.19b — searching may fail); refusing to
+        # pay for a whiff is the AI's judgment, not a rule.
+        is_tutor = ability.effect_kind in (
+            ActivationEffectKind.TUTOR_CREATURE_TO_BATTLEFIELD,
+            ActivationEffectKind.TUTOR_TO_HAND)
+        if is_tutor and ability.tutor_data is None:
+            return False
+        binds_x = bool(is_tutor
+                       and ability.tutor_data.get('mv_bound_is_x'))
+        if ability.cost.x_count > 0 and not binds_x:
+            return False
+        if binds_x and ability.cost.x_count == 0:
             return False
 
         player = game.players[player_idx]
@@ -229,13 +252,35 @@ class ActivationManager:
                     < ability.cost.discard_cards):
                 return False
 
+            # X CHOICE (CR 601.2b) — made before payment, by the shared
+            # engine-side picker the AI valuation layer also consults
+            # (`pick_activated_tutor_x`), so projection and payment cannot
+            # disagree. can_activate's 9b-x rule guarantees x_count > 0
+            # only on X-binding tutors, so the chosen X both prices the
+            # cost and bounds the search (bound into the resolver partial
+            # below).
+            chosen_x = 0
+            pay_mana = ability.cost.mana
+            if ability.cost.x_count > 0:
+                from dataclasses import replace as _dc_replace
+                from .activated_effects import (activated_tutor_x_budget,
+                                                pick_activated_tutor_x)
+                x_budget = activated_tutor_x_budget(game, player_idx, ability)
+                chosen_x, _target, _top = pick_activated_tutor_x(
+                    game, player_idx, x_budget, ability)
+                if chosen_x > 0:
+                    pay_mana = _dc_replace(
+                        ability.cost.mana,
+                        generic=(ability.cost.mana.generic
+                                 + chosen_x * ability.cost.x_count))
+
             # Mana FIRST, tap LAST: tapping cannot fail, so a refused payment
             # leaves nothing half-paid. `card_name=None` because CR 601.2f
             # cost reductions apply to SPELLS — passing the permanent's name
             # would let the solver apply a spurious discount.
-            if ability.cost.mana.cmc > 0:
+            if pay_mana.cmc > 0:
                 paid = game.tap_lands_for_mana(
-                    player_idx, ability.cost.mana, None,
+                    player_idx, pay_mana, None,
                     exclude_instance_id=perm.instance_id)
                 if not paid:
                     return False
@@ -299,9 +344,11 @@ class ActivationManager:
                 controller=player_idx,
                 targets=list(targets or []),
                 effect=functools.partial(resolve_activated_ability,
-                                         ability=ability),
+                                         ability=ability,
+                                         x_value=chosen_x),
                 ability=None,
                 target_zones=target_zones,
+                x_value=chosen_x,
             ))
             game.log.append(
                 f"T{game.display_turn} P{player_idx+1}: activate "

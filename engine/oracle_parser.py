@@ -688,6 +688,7 @@ def parse_activation_cost(cost_text: str):
     sacrifice_type = None
     sacrifice_another = False
     discard_cards = 0
+    x_count = 0
     unpayable = []
     for part in raw.split(','):
         piece = part.strip()
@@ -724,6 +725,10 @@ def parse_activation_cost(cost_text: str):
                               else _NUM_WORDS.get(tok, 0))
             continue
         if re.fullmatch(r'(\{[wubrgcxs0-9/]+\}\s*)+', low):
+            # {X} pips are a COUNT, not fixed mana: X is chosen at
+            # activation time (CR 601.2b). Whether the count is chargeable
+            # is `can_activate`'s question (only effects that bind X).
+            x_count += low.count('{x}')
             mana = _add_mana_symbols(mana, low)
             continue
         if low == '{t}':
@@ -746,21 +751,31 @@ def parse_activation_cost(cost_text: str):
                           sacrifice_type=sacrifice_type,
                           sacrifice_another=sacrifice_another,
                           discard_cards=discard_cards,
+                          x_count=x_count,
                           unpayable=tuple(unpayable))
 
 
 def _add_mana_symbols(cost, text):
     """Fold a run of mana symbols into a ManaCost."""
     attr = {'w': 'white', 'u': 'blue', 'b': 'black', 'r': 'red', 'g': 'green'}
-    for sym in re.findall(r'\{([wubrgcxs0-9]+)\}', text):
-        if sym.isdigit():
+    for sym in re.findall(r'\{([wubrgcxs0-9/]+)\}', text):
+        if '/' in sym:
+            # Hybrid pip: one generic — the caster picks which colour (or
+            # which half) pays it, so any mana satisfies it. Same
+            # convention as `_parse_mana_symbols_to_cost` on the spell
+            # side; charging it (rather than dropping it, the pre-tutor
+            # behaviour) is what keeps hybrid activation costs honest.
+            cost.generic += 1
+        elif sym.isdigit():
             cost.generic += int(sym)
         elif sym in attr:
             setattr(cost, attr[sym], getattr(cost, attr[sym]) + 1)
         elif sym == 'c':
             cost.colorless += 1
-        # {X}/{S} are not chargeable in this tranche; they surface via the
-        # caller's `unpayable` path only when they appear outside a mana run.
+        # {X} is COUNTED by the caller (`x_count`), never folded into the
+        # fixed mana here; {S} is not chargeable in this tranche and
+        # surfaces via the caller's `unpayable` path only when it appears
+        # outside a mana run.
     return cost
 
 
@@ -805,7 +820,106 @@ def classify_activation_effect(effect_text: str):
     if re.fullmatch(r'target creature gains haste until end of turn', low):
         return K.GRANT_HASTE_TARGET, 0, 0, 0
 
+    # Activated tutor (single full-sentence search). The structured
+    # constraint is re-derived by `parse_activated_abilities` via
+    # `parse_activation_tutor` and stored on the ability (`tutor_data`) —
+    # both parses happen once, at DB load time.
+    tutor = parse_activation_tutor(low)
+    if tutor is not None:
+        if tutor['dest'] == 'battlefield':
+            return K.TUTOR_CREATURE_TO_BATTLEFIELD, 0, 0, 0
+        return K.TUTOR_TO_HAND, 0, 0, 0
+
     return K.UNCLASSIFIED, 0, 0, 0
+
+
+# ── Activated tutor effects (TUTOR_* kinds) ──────────────────────────
+# Closed constraint vocabulary. A qualifier word outside these sets is
+# treated as a SUBTYPE word (Goblin, Sliver, Equipment, Forest, ...);
+# connector words ('or', 'and') mean a union constraint the schema
+# cannot hold — the whole line is refused rather than approximated.
+_TUTOR_TYPE_WORDS = frozenset({
+    'creature', 'artifact', 'enchantment', 'land', 'planeswalker',
+    'instant', 'sorcery', 'battle', 'permanent'})
+_TUTOR_SUPERTYPE_WORDS = frozenset({'basic', 'legendary', 'snow'})
+_TUTOR_COLOR_WORDS = {'white': 'W', 'blue': 'U', 'black': 'B',
+                      'red': 'R', 'green': 'G'}
+
+# ANCHORED to the full sentence (fullmatch) — the same discipline every
+# other activation classifier follows: a trailing rider sentence or an
+# unrecognised "with ..." clause fails the match and the line stays
+# UNCLASSIFIED instead of executing with the rider silently dropped.
+_TUTOR_SENTENCE_RE = re.compile(
+    r'search your library for an? (?P<quals>(?:[a-z][a-z\-\']* )*?)card'
+    r'(?: with mana value (?P<mv>x|\d+) or less)?'
+    r'(?:,| and)'
+    r'(?: reveal it(?:,| and)?)?'
+    r' put (?:it|that card) '
+    r'(?P<dest>onto the battlefield(?P<tapped> tapped)?|into your hand)'
+    r',? then shuffle(?: your library)?')
+
+
+def parse_activation_tutor(effect_text: str) -> Optional[Dict]:
+    """Parse an activated-tutor effect sentence into its structured search
+    constraint, or ``None`` when the sentence is not one of the two
+    executable shapes (battlefield destination is limited to CREATURE
+    searches — see ``ActivationEffectKind.TUTOR_CREATURE_TO_BATTLEFIELD``).
+
+    Returns::
+
+        {'dest': 'battlefield' | 'hand',
+         'types': [...], 'not_types': [...],   # card-type words
+         'supertypes': [...], 'subtypes': [...],
+         'colors': ['G', ...],                 # printed-colour constraint
+         'max_mv': int | None,                 # fixed "mana value N or less"
+         'mv_bound_is_x': bool,                # "mana value X or less"
+         'tapped': bool}                       # battlefield entry rider
+
+    Called once at DB load (via ``parse_activated_abilities``), never at
+    runtime — the oracle-runtime-parse ratchet stays at 0.
+    """
+    low = (effect_text or '').strip().lower().rstrip('.')
+    m = _TUTOR_SENTENCE_RE.fullmatch(low)
+    if m is None:
+        return None
+
+    types: list = []
+    not_types: list = []
+    supertypes: list = []
+    subtypes: list = []
+    colors: list = []
+    for word in (m.group('quals') or '').split():
+        if word in _TUTOR_COLOR_WORDS:
+            colors.append(_TUTOR_COLOR_WORDS[word])
+        elif word in _TUTOR_SUPERTYPE_WORDS:
+            supertypes.append(word)
+        elif word in _TUTOR_TYPE_WORDS:
+            types.append(word)
+        elif word.startswith('non') and word[3:] in _TUTOR_TYPE_WORDS:
+            not_types.append(word[3:])
+        elif word in ('or', 'and'):
+            return None  # union constraint — refuse, never approximate
+        else:
+            subtypes.append(word)
+
+    mv = m.group('mv')
+    dest = 'battlefield' if m.group('dest').startswith('onto') else 'hand'
+    if dest == 'battlefield' and 'creature' not in types:
+        # A non-creature permanent put onto the battlefield carries entry
+        # statics (land ETB / enters-tapped rules) this tranche does not
+        # wire through the activation path — refused, counted as residue.
+        return None
+    return {
+        'dest': dest,
+        'types': types,
+        'not_types': not_types,
+        'supertypes': supertypes,
+        'subtypes': subtypes,
+        'colors': colors,
+        'max_mv': int(mv) if (mv and mv != 'x') else None,
+        'mv_bound_is_x': mv == 'x',
+        'tapped': bool(m.group('tapped')),
+    }
 
 
 def parse_activated_abilities(oracle: str):
@@ -852,6 +966,11 @@ def parse_activated_abilities(oracle: str):
             target_requirements = [TargetRequirement(
                 zone="battlefield", types=frozenset({"creature"}),
                 raw_phrase="target creature")]
+        # TUTOR_* kinds carry their structured search constraint on the
+        # ability — parsed here, at load time, never re-derived at runtime.
+        tutor_data = None
+        if kind in (K.TUTOR_CREATURE_TO_BATTLEFIELD, K.TUTOR_TO_HAND):
+            tutor_data = parse_activation_tutor(body)
         out.append(ActivatedAbility(
             index=idx, cost=cost, effect_text=body.strip(),
             effect_kind=kind, amount=amount,
@@ -860,6 +979,7 @@ def parse_activated_abilities(oracle: str):
             target_requirements=target_requirements,
             sorcery_speed_only=sorcery_only, once_each_turn=once_turn,
             restrictions=restrictions, is_mana_ability=is_mana,
+            tutor_data=tutor_data,
         ))
         idx += 1
     return out
@@ -3264,3 +3384,143 @@ def parse_channel_clause(oracle: str) -> str:
     if idx < 0:
         return ''
     return lo[idx:]
+
+
+# ---------------------------------------------------------------------------
+# Land destruction (spell tranche) — parse-once typed classification
+# (2026-08-27 Dimir root-cause doc, "LD mechanic hole": the destroy-target-
+# land clause had no parser coverage, so the whole spell class resolved as
+# a silent no-op and Boros Ponza's mainboard LD slots were dead cards.)
+#
+# Class: every Modern sorcery/instant whose resolution text is
+# "Destroy target land" (plain / nonbasic-only / artifact-or-land
+# compound) plus zero or more SUPPORTED riders:
+#   * "It can't be regenerated."           — no-op (regeneration is not
+#                                            simulated; plain destroy is
+#                                            strictly faithful)
+#   * "Its controller may search their library for a basic land card,
+#      put it onto the battlefield [tapped], then shuffle."
+#                                          — replacement-basic rider
+#                                            (Cleansing Wildfire class)
+#   * "[If that land was nonbasic, ]~ deals N damage to the/that land's
+#      controller."                        — damage rider (Molten Rain
+#                                            class)
+#   * "Draw a card."                       — caster-draw rider
+#
+# Tranche discipline: a card whose LD paragraph carries ANY sentence
+# outside this whitelist is REFUSED — parse_land_destruction returns
+# None and the card stays unclassified rather than half-executed.
+# Activated ("{T}, Sacrifice this land: Destroy …", Ghost Quarter
+# class) and triggered ("When this creature enters, destroy …",
+# Obsidian Charmaw class) land destruction are a LATER tranche: their
+# destroy clause is never sentence-initial, so the anchored sentence
+# grammar below refuses them by construction.
+# ---------------------------------------------------------------------------
+
+# The destroy clause itself — anchored to a full sentence so trigger /
+# activation prefixes ("when … enters, destroy …", "sacrifice …:
+# destroy …") never match.
+_LD_DESTROY_RE = re.compile(
+    r'^destroy target '
+    r'(?:(nonbasic) )?(land|artifact or land)'
+    r'(?: (an opponent controls))?$'
+)
+
+# Supported rider sentences (each anchored to the full sentence).
+_LD_RIDER_NOOP_REGEN_RE = re.compile(r"^it can't be regenerated$")
+_LD_RIDER_SEARCH_BASIC_RE = re.compile(
+    r"^its controller may search their library for a basic land card, "
+    r"put (?:it|that card) onto the battlefield( tapped)?, "
+    r"then shuffles?(?: their library)?$"
+)
+_LD_RIDER_DAMAGE_RE = re.compile(
+    r"^(if that land was nonbasic, )?[\w\s,'-]+? "
+    r"deals (\d+) damage to (?:the|that) land's controller$"
+)
+_LD_RIDER_DRAW_RE = re.compile(r"^draw a card$")
+
+# Keyword-ability cost lines ("Flashback {3}{R}", "Cycling {2}") are
+# not resolution text — they must not trip the unknown-sentence
+# refusal. Matched by a leading keyword word followed by a brace cost.
+_LD_KEYWORD_COST_LINE_RE = re.compile(r"^[a-z][a-z' ]*(?: ?[—–-])? ?\{")
+
+
+def parse_land_destruction(oracle: str):
+    """Classify a spell-shaped destroy-target-land oracle text.
+
+    Returns None when the text has no sentence-initial destroy-target-
+    land clause OR when any sentence of its resolution text falls
+    outside the supported-rider whitelist (tranche discipline: refuse,
+    never half-execute).  Otherwise returns a dict of typed rider data:
+
+      can_target_artifact       bool — "artifact or land" compound form
+      nonbasic_only             bool — target restricted to nonbasic
+      opponent_controls_only    bool — target restricted to opponent's
+      rider_search_basic        bool — destroyed land's controller
+                                       searches a basic onto battlefield
+      rider_search_basic_tapped bool — the searched basic enters tapped
+      rider_damage              int  — damage to the land's controller
+      rider_damage_nonbasic_only bool — damage only if land was nonbasic
+      rider_caster_draws        int  — cards the caster draws
+
+    Stored on CardTemplate as `land_destruction_data`
+    (`destroys_target_land` is the derived presence flag).
+    """
+    if not oracle:
+        return None
+    lower = oracle.lower()
+    if 'destroy target' not in lower:
+        return None
+
+    data = {
+        'can_target_artifact': False,
+        'nonbasic_only': False,
+        'opponent_controls_only': False,
+        'rider_search_basic': False,
+        'rider_search_basic_tapped': False,
+        'rider_damage': 0,
+        'rider_damage_nonbasic_only': False,
+        'rider_caster_draws': 0,
+    }
+    found_destroy = False
+
+    for paragraph in lower.split('\n'):
+        paragraph = paragraph.strip()
+        if not paragraph:
+            continue
+        if _LD_KEYWORD_COST_LINE_RE.match(paragraph):
+            continue  # keyword-ability cost line, not resolution text
+        for sentence in paragraph.split('.'):
+            sentence = sentence.strip()
+            if not sentence:
+                continue
+            m = _LD_DESTROY_RE.match(sentence)
+            if m is not None:
+                if found_destroy:
+                    return None  # multi-destroy form (Boom // Bust) — refuse
+                found_destroy = True
+                data['nonbasic_only'] = m.group(1) is not None
+                data['can_target_artifact'] = (
+                    m.group(2) == 'artifact or land')
+                data['opponent_controls_only'] = m.group(3) is not None
+                continue
+            if _LD_RIDER_NOOP_REGEN_RE.match(sentence):
+                continue
+            ms = _LD_RIDER_SEARCH_BASIC_RE.match(sentence)
+            if ms is not None:
+                data['rider_search_basic'] = True
+                data['rider_search_basic_tapped'] = ms.group(1) is not None
+                continue
+            md = _LD_RIDER_DAMAGE_RE.match(sentence)
+            if md is not None:
+                data['rider_damage'] = int(md.group(2))
+                data['rider_damage_nonbasic_only'] = md.group(1) is not None
+                continue
+            if _LD_RIDER_DRAW_RE.match(sentence):
+                data['rider_caster_draws'] += 1
+                continue
+            # Unknown sentence anywhere in the card's resolution text:
+            # refuse the whole card (never half-execute a rider).
+            return None
+
+    return data if found_destroy else None

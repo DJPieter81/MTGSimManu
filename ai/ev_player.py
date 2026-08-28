@@ -1128,6 +1128,17 @@ class EVPlayer:
             ev = max(ev, 0.0)  # floor: never negative
             ev += FREE_CAST_TEMPO_BONUS  # tempo: got it for free
 
+        # ── Land-denial overlay (LD mechanic class) ──
+        # Board projection sees no delta from destroying a land (lands
+        # carry no power/toughness), so the spell's entire value lives
+        # in the opponent's mana development — tempo term + scarcity
+        # premium derived from mana_clock_impact / card_clock_impact
+        # in ai/land_denial.py.  Typed-field gate (parse-once); covers
+        # every classified destroy-target-land spell.
+        if getattr(t, 'destroys_target_land', False):
+            from ai.land_denial import land_denial_value
+            ev += land_denial_value(t, game, self.player_idx, snap)
+
         # ── Evoke overlay: projection doesn't model 2-card cost ──
         if ('evoke' in tags or 'evoke_pitch' in tags) and snap.my_mana < (t.cmc or 0):
             # Evoking costs an extra card — subtract its future clock value
@@ -3705,6 +3716,31 @@ class EVPlayer:
         # board state, not a blank default board.
         snap = snapshot_from_game(game, self.player_idx)
 
+        # Land destruction (typed field, parse-once): the target is the
+        # opponent's scarcest color source — denying the only source of
+        # a demanded color maximizes their pip deficit (ai/land_denial).
+        if getattr(t, 'destroys_target_land', False):
+            from ai.land_denial import choose_land_denial_target
+            chosen = choose_land_denial_target(
+                t, game, self.player_idx, snap)
+            if chosen is not None:
+                self._last_target_reason = (
+                    f"scarcest color source ({chosen.name})")
+                return [chosen.instance_id]
+            # Compound artifact-or-land form with no affectable land:
+            # fall back to the biggest artifact threat so the spell
+            # stays live against artifact-only boards.
+            if (t.land_destruction_data or {}).get('can_target_artifact'):
+                from ai.permanent_threat import permanent_threat
+                from engine.cards import CardType as _CT
+                arts = [c for c in opp.battlefield
+                        if _CT.ARTIFACT in c.template.card_types]
+                if arts:
+                    best = max(arts,
+                               key=lambda c: permanent_threat(c, opp, game))
+                    return [best.instance_id]
+            return []
+
         # Burn spells FIRST — they can always target face as fallback
         from decks.card_knowledge_loader import get_burn_damage
         from engine.cards import Keyword as Kw2
@@ -4183,6 +4219,11 @@ class EVPlayer:
         from engine.cards import CardType
         if t.is_creature or CardType.PLANESWALKER in t.card_types:
             return False
+
+        # Classified land-destruction spells (typed field, parse-once):
+        # "Destroy target land" cannot resolve without a target.
+        if getattr(t, 'destroys_target_land', False):
+            return True
 
         # Modal spells with draw mode don't require targets (can choose draw)
         if 'counterspell' in tags:

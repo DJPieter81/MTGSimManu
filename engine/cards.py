@@ -123,6 +123,15 @@ class ActivationEffectKind(Enum):
     # `has_summoning_sickness` clears for the target this turn and
     # cleanup_damage() expires the grant at end of turn.
     GRANT_HASTE_TARGET = "grant_haste_target"
+    # Activated tutors — "[Cost]: Search your library for a ... card, put
+    # it onto the battlefield / into your hand, then shuffle." The parsed
+    # search constraint rides on `ActivatedAbility.tutor_data`; the resolver
+    # routes through the shared library-search machinery (search triggers,
+    # zone funnel, shuffle). The battlefield kind is restricted to CREATURE
+    # searches — a land put onto the battlefield carries land-ETB statics
+    # this tranche does not wire, so that shape stays UNCLASSIFIED.
+    TUTOR_CREATURE_TO_BATTLEFIELD = "tutor_creature_to_battlefield"
+    TUTOR_TO_HAND = "tutor_to_hand"
     UNCLASSIFIED = "unclassified"
 
 
@@ -157,6 +166,14 @@ class ActivationCost:
     sacrifice_type: Optional[str] = None
     sacrifice_another: bool = False
     discard_cards: int = 0
+    # Number of {X} pips in the mana cost. X is chosen at activation time
+    # (CR 601.2b) and is chargeable exactly when the classified effect
+    # BINDS X (a tutor's "mana value X or less"); an {X} pip on any other
+    # effect kind is refused by `can_activate` because the engine cannot
+    # know what X buys. Hybrid pips are folded into `mana` as one generic
+    # each (caster picks the colour — the `_parse_mana_symbols_to_cost`
+    # convention), so they are NOT tracked here.
+    x_count: int = 0
     unpayable: Tuple[str, ...] = ()
 
 
@@ -186,6 +203,12 @@ class ActivatedAbility:
     restrictions: Tuple[str, ...] = ()
     from_battlefield: bool = True
     is_mana_ability: bool = False
+    # TUTOR_* kinds only: the structured search constraint from
+    # `oracle_parser.parse_activation_tutor` — dest ('battlefield'/'hand'),
+    # types / not_types / supertypes / subtypes / colors, max_mv (fixed
+    # bound), mv_bound_is_x ("mana value X or less"), tapped (battlefield
+    # entry rider). None for every other effect kind.
+    tutor_data: Optional[Dict] = None
 
 
 @dataclass
@@ -670,6 +693,19 @@ class CardTemplate:
     # DIES: its +1/+1 counters may be placed on a target artifact creature.
     # Populated by card_database.py oracle-derived properties section.
     modular_n: int = 0
+    # -- Land destruction (spell tranche) -----------------------------------
+    # True when the card is a spell-shaped "Destroy target land" effect with
+    # only supported riders (see oracle_parser.parse_land_destruction).
+    # Activated/triggered LD (Ghost Quarter, Fulminator classes) is a later
+    # tranche and stays False here.
+    destroys_target_land: bool = False
+    # Structured rider data for the destroy-target-land clause: compound
+    # artifact-or-land mode, nonbasic-only restriction, replacement-basic
+    # search rider, damage-to-controller rider, caster-draw rider.  None
+    # when the card is not in the class (unsupported riders refuse the
+    # whole card — never half-executed).
+    # Populated by oracle_parser.parse_land_destruction.
+    land_destruction_data: Optional[dict] = None
 
     def __post_init__(self) -> None:
         # Derive fields from oracle text for templates not loaded through
@@ -822,6 +858,12 @@ class CardTemplate:
                                 self.oracle_text.lower())
                 if _m:
                     self.modular_n = int(_m.group(1))
+            # Land destruction (spell tranche) — warp_cost pattern: derive
+            # for synthetic templates; CardDatabase sets both explicitly.
+            if self.land_destruction_data is None and not self.destroys_target_land:
+                from .oracle_parser import parse_land_destruction as _pld
+                self.land_destruction_data = _pld(self.oracle_text)
+                self.destroys_target_land = self.land_destruction_data is not None
 
     @property
     def is_creature(self) -> bool:

@@ -101,6 +101,21 @@ class GameCallbacks(Protocol):
         """
         ...
 
+    def choose_tutor_target(
+        self, game: GameState, player_idx: int, source: CardInstance,
+        eligible: List[CardInstance],
+    ) -> Optional[CardInstance]:
+        """Which card should an activated library tutor deliver?
+
+        The engine has already narrowed the library to the cards that
+        satisfy the ability's parsed search constraint (types, subtypes,
+        colors, mana-value bound at the chosen X). The callback chooses
+        WHICH one serves the plan best; returning one of `eligible` is
+        the contract. Returning None (or a non-member) falls back to the
+        engine default — highest mana value within the constraint.
+        """
+        ...
+
 
 class DefaultCallbacks:
     """Safe defaults: always tapped, first legal target, no evoke, no dash."""
@@ -183,3 +198,16 @@ class DefaultCallbacks:
             return (is_mana, is_artifact_scaler, cmc)
 
         return max(eligible, key=_rank)
+
+    def choose_tutor_target(
+        self, game: GameState, player_idx: int, source: CardInstance,
+        eligible: List[CardInstance],
+    ) -> Optional[CardInstance]:
+        """Default: highest mana value within the constraint, P/T
+        tie-break — the engine's own delivery ranking (see
+        `engine.activated_effects.default_tutor_rank`). AI callback
+        implementations override with plan-aware scoring."""
+        from .activated_effects import default_tutor_rank
+        if not eligible:
+            return None
+        return max(eligible, key=default_tutor_rank)

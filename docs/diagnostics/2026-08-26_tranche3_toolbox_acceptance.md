@@ -38,3 +38,20 @@ via the tutor-as-finisher-access path (the generic mechanism from the
 Storm/Wish work). Class size: every activated-tutor permanent in Modern.
 Until then, Creatures Toolbox's 15% is EXPECTED behaviour, not a
 calibration mystery — recorded here so nobody re-diagnoses it from scratch.
+
+## Update 2026-08-27 — the TUTOR_* increment landed
+
+Three commits implement the increment named above (parse: `417c39b`;
+engine resolver + rule-9b admission + `choose_tutor_target` callback
+seam: `7bef3ae`; delivery-conditioned AI valuation + plan-best choice:
+`2d9f0b7`). DB-wide: 37 activated-tutor lines now classify and execute
+(4 `TUTOR_CREATURE_TO_BATTLEFIELD`, 33 `TUTOR_TO_HAND`); 117
+search-your-library activated lines remain visible-but-refused residue
+(union constraints, multi-card searches, rider sentences, non-creature
+battlefield destinations — the never-half-execute discipline). Pinned by
+`tests/test_activated_tutor_effects.py`. One WR-anchor drift observed
+and expected (Eldrazi Tron's 4x Expedition Map line now fires): Eldrazi
+Tron vs Amulet Titan seed=50500, winner unchanged, turns 12 → 13 —
+snapshot deliberately NOT refreshed in the feature branch; refresh with
+the merge. The acceptance re-measurement (Creatures Toolbox field WR)
+has NOT been re-run — this doc stays `active` until that number exists.
