@@ -141,6 +141,14 @@ class ActivationEffectKind(Enum):
     # this tranche does not wire, so that shape stays UNCLASSIFIED.
     TUTOR_CREATURE_TO_BATTLEFIELD = "tutor_creature_to_battlefield"
     TUTOR_TO_HAND = "tutor_to_hand"
+    # "[Cost]: Untap target <permanent>" / "[Cost]: Untap this <permanent>"
+    # — the mana-untapper class (Arbor Elf, Voyaging Satyr, Blossom Dryad)
+    # and the self-untappers (Devoted Druid, Barrenton Medic). The TARGETED
+    # shape carries its restriction in `target_requirements` like any other
+    # targeted ability; the SELF shape declares no target (CR 115.1) and
+    # untaps its own source, which is why `targets_required == 0` is the
+    # discriminator the resolver and the no-free-repeatable rule both read.
+    UNTAP_TARGET_PERMANENT = "untap_target_permanent"
     UNCLASSIFIED = "unclassified"
 
 

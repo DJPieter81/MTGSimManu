@@ -892,6 +892,13 @@ def classify_activation_effect(effect_text: str):
     if re.fullmatch(r'target creature gains haste until end of turn', low):
         return K.GRANT_HASTE_TARGET, 0, 0, 0
 
+    # Untap (single full-sentence). The structured target constraint is
+    # re-derived by `parse_activated_abilities` via `parse_activation_untap`
+    # and stored on the ability's `target_requirements` — both parses happen
+    # once, at DB load time.
+    if parse_activation_untap(low) is not None:
+        return K.UNTAP_TARGET_PERMANENT, 0, 0, 0
+
     # Activated tutor (single full-sentence search). The structured
     # constraint is re-derived by `parse_activated_abilities` via
     # `parse_activation_tutor` and stored on the ability (`tutor_data`) —
@@ -994,6 +1001,85 @@ def parse_activation_tutor(effect_text: str) -> Optional[Dict]:
     }
 
 
+# ── Activated untap effects (UNTAP_TARGET_PERMANENT) ─────────────────
+# Same closed-vocabulary discipline as the tutor constraint above: a
+# qualifier word outside these sets is treated as a SUBTYPE word (Forest,
+# Gate, Myr, ...), and any word that changes WHICH objects are untapped
+# ('another', 'all', 'each', a count, a union connector) refuses the whole
+# line. That refusal is load-bearing, not conservatism: reading "Untap
+# ANOTHER target permanent" as a plain "untap target permanent" would let
+# the source untap itself and manufacture a repeatable loop the printed
+# card does not have.
+_UNTAP_TYPE_WORDS = frozenset({
+    'creature', 'artifact', 'enchantment', 'land', 'planeswalker',
+    'permanent'})
+_UNTAP_SUPERTYPE_WORDS = frozenset({'basic', 'legendary', 'snow'})
+_UNTAP_REFUSE_WORDS = frozenset({
+    'or', 'and', 'another', 'each', 'all', 'other', 'up', 'to', 'x',
+    'that', 'with', 'not', 'named', 'attacking', 'blocking', 'tapped',
+    'untapped'})
+
+_UNTAP_SELF_RE = re.compile(r'untap this (?P<word>[a-z]+)')
+_UNTAP_TARGET_RE = re.compile(
+    r"untap target (?P<quals>[a-z][a-z\-' ]*?)(?P<scope> you control)?")
+
+
+def parse_activation_untap(effect_text: str) -> Optional[Dict]:
+    """Parse an activated untap sentence into its structured shape, or
+    ``None`` when the sentence is not one of the two executable forms.
+
+    Returns::
+
+        {'self': bool,              # True for "Untap this <permanent>"
+         'types': ['land', ...],    # card-type words ('permanent' wildcard)
+         'supertype': str | None,
+         'subtype': str | None,     # 'forest', 'gate', ...
+         'owner': 'you' | 'any'}
+
+    Called once at DB load (via ``parse_activated_abilities``), never at
+    runtime — the oracle-runtime-parse ratchet stays at 0.
+    """
+    low = (effect_text or '').strip().lower().rstrip('.')
+
+    m_self = _UNTAP_SELF_RE.fullmatch(low)
+    if m_self is not None:
+        if m_self.group('word') not in _UNTAP_TYPE_WORDS:
+            return None
+        return {'self': True, 'types': [], 'supertype': None,
+                'subtype': None, 'owner': 'any'}
+
+    m = _UNTAP_TARGET_RE.fullmatch(low)
+    if m is None:
+        return None
+    types: list = []
+    supertype = None
+    subtype = None
+    for word in (m.group('quals') or '').split():
+        if word in _UNTAP_REFUSE_WORDS or word in _NUM_WORDS or word.isdigit():
+            return None
+        if word in _UNTAP_TYPE_WORDS:
+            types.append(word)
+        elif word in _UNTAP_SUPERTYPE_WORDS:
+            if supertype is not None:
+                return None
+            supertype = word
+        else:
+            if subtype is not None:
+                return None
+            subtype = word
+    if len(types) > 1:
+        # "target artifact creature" is a CONJUNCTION; TargetRequirement's
+        # type set is a disjunction, so the constraint cannot be expressed.
+        return None
+    if not types and subtype is None:
+        return None
+    return {'self': False,
+            'types': types or ['permanent'],
+            'supertype': supertype,
+            'subtype': subtype,
+            'owner': 'you' if m.group('scope') else 'any'}
+
+
 def parse_activated_abilities(oracle: str):
     """Parse every "[Cost]: [Effect]" line a permanent has of its own.
 
@@ -1038,6 +1124,21 @@ def parse_activated_abilities(oracle: str):
             target_requirements = [TargetRequirement(
                 zone="battlefield", types=frozenset({"creature"}),
                 raw_phrase="target creature")]
+        elif kind is K.UNTAP_TARGET_PERMANENT:
+            # The SELF shape ("Untap this creature") is not targeted at all
+            # (CR 115.1) — it stays at targets_required=0, and that is the
+            # discriminator the resolver and the no-free-repeatable rule read.
+            spec = parse_activation_untap(body)
+            if spec is not None and not spec['self']:
+                from .target_solver import TargetRequirement
+                targets_required = 1
+                target_requirements = [TargetRequirement(
+                    zone="battlefield",
+                    types=frozenset(spec['types']),
+                    supertype=spec['supertype'],
+                    subtype=spec['subtype'],
+                    owner_scope=spec['owner'],
+                    raw_phrase=body.strip().lower())]
         # TUTOR_* kinds carry their structured search constraint on the
         # ability — parsed here, at load time, never re-derived at runtime.
         tutor_data = None

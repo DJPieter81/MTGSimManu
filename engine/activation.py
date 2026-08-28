@@ -97,7 +97,8 @@ class ActivationManager:
                 ActivationEffectKind.PUMP_SELF_UEOT,
                 ActivationEffectKind.GRANT_HASTE_TARGET,
                 ActivationEffectKind.TUTOR_CREATURE_TO_BATTLEFIELD,
-                ActivationEffectKind.TUTOR_TO_HAND):
+                ActivationEffectKind.TUTOR_TO_HAND,
+                ActivationEffectKind.UNTAP_TARGET_PERMANENT):
             return False
 
         # 9b-x. X-pip discipline. An {X} in the cost is chargeable exactly
@@ -202,6 +203,21 @@ class ActivationManager:
         return True
 
     @staticmethod
+    def _untaps_its_own_source(ability: "ActivatedAbility") -> bool:
+        """Does resolving this ability untap the permanent it is on?
+
+        The SELF untap shape ("Untap this creature") declares no target
+        (CR 115.1), so `targets_required == 0` on an UNTAP kind IS the
+        discriminator. Owned here because rule 9 needs it: a tap cost is
+        normally the thing that terminates a repeated activation, and it
+        stops being that the moment the ability puts the source back
+        untapped.
+        """
+        return (ability.effect_kind
+                is ActivationEffectKind.UNTAP_TARGET_PERMANENT
+                and ability.targets_required == 0)
+
+    @staticmethod
     def _cost_depletes_a_resource(perm: "CardInstance",
                                   ability: "ActivatedAbility") -> bool:
         """Rule 9's predicate: does paying this cost consume something
@@ -219,11 +235,15 @@ class ActivationManager:
             engine. The same counter on a non-creature changes nothing, and
             a neutral counter (charge/page/oil) is pure bookkeeping — both
             leave the loop unbounded, so they do not count.
+
+        A tap cost is subtracted from the depleting set when the ability
+        untaps its own source: tap-then-untap-yourself consumes nothing.
         """
         from .cards import COUNTER_KIND_MINUS
 
         cost = ability.cost
-        if cost.tap_self:
+        if cost.tap_self and not ActivationManager._untaps_its_own_source(
+                ability):
             return True
         if (cost.mana.cmc > 0 or cost.sacrifice_self or cost.life > 0
                 or cost.sacrifice_type is not None

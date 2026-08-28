@@ -272,6 +272,34 @@ def resolve_activated_ability(game: "GameState", source: "CardInstance",
             return False  # every declared target left the battlefield —
                           # the ability fizzles (CR 608.2b)
 
+        if kind is ActivationEffectKind.UNTAP_TARGET_PERMANENT:
+            # Two shapes, one branch. A DECLARED target is untapped (CR
+            # 608.2b: one that has left the battlefield is skipped, never
+            # silently redirected); with no declared target the ability is
+            # the untargeted SELF form ("Untap this creature") and the
+            # source is what untaps — and only while the source is still
+            # there, which is what makes the -1/-1-paid loop stop dead the
+            # moment the zero-toughness SBA removes it.
+            untapped = False
+            for tid in (targets or []):
+                found = game.get_card_by_id(tid)
+                if found is None or found.zone != "battlefield":
+                    continue
+                found.tapped = False
+                untapped = True
+                game.log.append(
+                    f"T{game.display_turn} P{controller+1}: {source.name} "
+                    f"activated — untaps {found.name}")
+            if not targets:
+                if source.zone != "battlefield":
+                    return False
+                source.tapped = False
+                untapped = True
+                game.log.append(
+                    f"T{game.display_turn} P{controller+1}: {source.name} "
+                    f"activated — untaps itself")
+            return untapped
+
         if kind in (ActivationEffectKind.TUTOR_CREATURE_TO_BATTLEFIELD,
                     ActivationEffectKind.TUTOR_TO_HAND):
             return _resolve_activated_tutor(game, source, controller,
