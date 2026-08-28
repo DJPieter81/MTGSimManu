@@ -210,3 +210,11 @@ residual, and the LD mechanic hole should each pull Dimir's anomalous rows
 55-65% Dimir per `2026-07-05_storm_dimir_canonical_gap.md`) without
 touching a line of Dimir-relevant scoring — the same direction the 71→68.5
 trajectory already shows.
+
+## LD MECHANIC MEASURED (2026-08-28, post-#563)
+
+The LD hole this doc flagged is closed and confirmed: **Boros Ponza
+44.4 -> 56.9 (+12.5pp, n=20 Bo3 field)** — firmly in band. Its row was
+structural exactly as stated; with 11 mainboard slots alive the deck plays
+real land denial. Dimir's row should soften further at the next matrix
+(one more victim class repaired).
