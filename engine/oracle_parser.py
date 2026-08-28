@@ -372,41 +372,205 @@ def parse_is_land_sacrifice_tutor(oracle: str) -> bool:
             and 'search your library' in low)
 
 
+# ── X-bound creature tutor, SPELL side (Green Sun's Zenith shape) ────
+#
+# Same discipline as `parse_activation_tutor` below, applied to a spell's
+# own resolution text instead of an activated ability's effect text, and
+# producing the SAME structured spec so one delivery helper serves both:
+#
+#   * The search sentence is matched with `fullmatch` — a trailing rider
+#     the vocabulary does not know fails the match, and the card stays
+#     unclassified instead of resolving with the rider silently dropped.
+#   * Every OTHER sentence in the same ability paragraph must match a
+#     known rider; every other PARAGRAPH must be a keyword line (which
+#     carries no resolution effect of its own).
+#   * Battlefield destination is limited to CREATURE searches, for the
+#     same reason as the activation parser: a non-creature permanent
+#     entering this way carries entry statics this path does not wire up.
+
+# The search sentence.  "creature" rides inside the qualifier group, as
+# in `_TUTOR_SENTENCE_RE`, so one vocabulary serves both parsers.
+_X_TUTOR_SEARCH_RE = re.compile(
+    r'search your library(?P<gy> and/or graveyard)? for an? '
+    r"(?P<quals>(?:[a-z][a-z\-\']* )*?)card with mana value x or less"
+    r'(?:,| and)'
+    r'(?: reveal it(?:,| and)?)?'
+    r' put (?:it|that card) '
+    r'(?P<dest>onto the battlefield(?P<tapped> tapped)?|into your hand)'
+    r'(?P<counters> with x additional \+1/\+1 counters on it)?'
+    r'(?:,? then shuffle(?: your library)?)?')
+
+# Riders the engine executes, each with an existing typed mechanism:
+#   shuffle-self         -> the zone funnel (graveyard -> library)
+#   search-zone shuffle  -> bookkeeping this resolver already performs
+#   haste at X           -> CardInstance.temp_keywords (the until-EOT channel)
+#   team pump + haste    -> temp_power_mod / temp_toughness_mod / temp_keywords
+_X_TUTOR_RIDERS = (
+    ('self_shuffle_into_library',
+     re.compile(r"shuffle .+ into its owner's library")),
+    ('search_shuffle_note',
+     re.compile(r'if you search your library this way, shuffle')),
+    ('haste_at_x',
+     re.compile(r'if x is (?P<n>\d+) or (?:more|greater), '
+                r'it gains haste until end of turn')),
+    ('team_pump_haste_at_x',
+     re.compile(r'if x is (?P<n>\d+) or (?:more|greater), creatures you '
+                r'control get \+x/\+x and gain haste until end of turn')),
+)
+
+# A paragraph carrying no resolution effect of its own: a keyword ability,
+# optionally followed by its cost ("Convoke", "Harmonize {X}{G}{G}{G}{G}").
+# At most two words so a sentence-shaped paragraph can never pass.
+_KEYWORD_ONLY_LINE_RE = re.compile(
+    r"[a-z][a-z'\-]*(?: [a-z][a-z'\-]*)?"
+    r"(?:[ —-]*(?:\{[^}]+\}|\d+))*")
+
+
 def parse_x_creature_tutor(oracle: str) -> Optional[Dict]:
-    """Parse the Green Sun's Zenith shape: an X-cost tutor that searches
-    the library for a creature card with mana value X or less and puts it
-    directly onto the battlefield (GSZ, Chord of Calling, Finale of
-    Devastation — every X-cost creature-tutor in Modern).
+    """Parse the Green Sun's Zenith shape from a SPELL's own resolution
+    text: an X-bound search for a creature card with mana value X or less,
+    put onto the battlefield (GSZ, Chord of Calling, Finale of Devastation,
+    Nature's Rhythm, Vision Quest — the X-cost creature tutors in Modern).
 
     Parsed once at DB load into `CardTemplate.x_creature_tutor_data`
-    (oracle-runtime-parse ratchet: consumers read the typed field).
+    (oracle-runtime-parse ratchet: consumers read the typed field).  The
+    AI's valuation gate and the cast path's X picker both key off this
+    field, so it must be set ONLY for shapes the resolver actually
+    delivers — an unexecutable rider refuses the whole card.
 
-    Returns ``None`` for non-matching cards, else::
+    Returns ``None`` for non-matching / refused cards, else the same
+    structured search spec `parse_activation_tutor` produces, plus the
+    spell-side riders::
 
-        {'colors': ['G']}   # color constraint on the fetchable creature;
-                            # empty list = any creature
+        {'dest': 'battlefield' | 'hand',
+         'types', 'not_types', 'supertypes', 'subtypes', 'colors',
+         'max_mv': None, 'mv_bound_is_x': True, 'tapped': bool,
+         'also_graveyard': bool,             # "library and/or graveyard"
+         'self_shuffle_into_library': bool,  # the card shuffles itself back
+         'enters_with_x_counters': bool,     # +X +1/+1 counters on entry
+         'haste_at_x': int | None,           # delivered creature gains haste
+         'team_pump_haste_at_x': int | None} # team +X/+X and haste
+
+    Refused (field stays ``None``, so no valuation credit is given):
+
+      * the clause sits on an ACTIVATED ability — the activation path
+        (`ActivationEffectKind.TUTOR_*`) owns those, and a permanent
+        spell's own resolution must not tutor;
+      * the clause sits on a TRIGGERED ability — its condition (e.g.
+        "if you cast it") depends on facts outside this resolver;
+      * any sentence in the ability, or any other ability paragraph,
+        outside the known rider / keyword vocabulary.
 
     The "mana value X or less" phrase only occurs on cards whose printed
     cost carries {X} (CR 107.3), so no separate mana-cost gate is needed;
     `x_cost_data` still carries the multiplier/min_x for the cost side.
     """
-    low = (oracle or '').lower()
-    if 'search your library' not in low:
+    # Cheap reject first — stripping reminder text only removes characters,
+    # so a phrase absent from the raw text is absent from the stripped text.
+    if 'mana value x or less' not in (oracle or '').lower():
         return None
-    m = re.search(
-        r"search your library(?: and/or graveyard)? for an? ([a-z ]*?)"
-        r"creature card with mana value x or less"
-        r"(?:,| and) put it onto the battlefield",
-        low,
-    )
-    if not m:
+    text = strip_reminder_text(oracle)
+
+    paragraphs = split_abilities(text)
+    tutor_para = None
+    for para in paragraphs:
+        low = para.lower()
+        if 'search your library' in low and 'mana value x or less' in low:
+            if tutor_para is not None:
+                return None  # two search abilities — not this shape
+            tutor_para = para
+        elif not _KEYWORD_ONLY_LINE_RE.fullmatch(low.strip().rstrip('.')):
+            # A paragraph with a resolution effect of its own; claiming
+            # the card here would drop it.
+            return None
+    if tutor_para is None:
         return None
-    qualifier_words = set(m.group(1).split())
-    color_words = {'white': 'W', 'blue': 'U', 'black': 'B',
-                   'red': 'R', 'green': 'G'}
-    colors = [code for word, code in color_words.items()
-              if word in qualifier_words]
-    return {'colors': colors}
+
+    low = tutor_para.lower().strip()
+    if ':' in low:
+        return None       # activated ability — owned by the activation path
+    if re.match(r'^(when|whenever|at)\b', low):
+        return None       # triggered ability — its condition is not ours
+
+    spec = None
+    riders: Dict = {'also_graveyard': False,
+                    'self_shuffle_into_library': False,
+                    'enters_with_x_counters': False,
+                    'haste_at_x': None,
+                    'team_pump_haste_at_x': None}
+    for sentence in split_clauses(low):
+        m = _X_TUTOR_SEARCH_RE.fullmatch(sentence)
+        if m is not None:
+            if spec is not None:
+                return None  # two search sentences — not this shape
+            spec = _x_tutor_spec_from_match(m)
+            if spec is None:
+                return None
+            riders['also_graveyard'] = bool(m.group('gy'))
+            riders['enters_with_x_counters'] = bool(m.group('counters'))
+            continue
+        for key, pattern in _X_TUTOR_RIDERS:
+            rm = pattern.fullmatch(sentence)
+            if rm is None:
+                continue
+            if key.endswith('_at_x'):
+                riders[key] = int(rm.group('n'))
+            elif key != 'search_shuffle_note':
+                riders[key] = True
+            break
+        else:
+            return None  # an unknown sentence — refuse, never approximate
+
+    if spec is None:
+        return None
+    spec.update(riders)
+    return spec
+
+
+def _x_tutor_spec_from_match(m) -> Optional[Dict]:
+    """Structured search constraint from an `_X_TUTOR_SEARCH_RE` match, or
+    ``None`` when the qualifier vocabulary cannot hold it exactly."""
+    types: list = []
+    not_types: list = []
+    supertypes: list = []
+    subtypes: list = []
+    colors: list = []
+    for word in (m.group('quals') or '').split():
+        if word in _TUTOR_COLOR_WORDS:
+            colors.append(_TUTOR_COLOR_WORDS[word])
+        elif word in _TUTOR_SUPERTYPE_WORDS:
+            supertypes.append(word)
+        elif word in _TUTOR_TYPE_WORDS:
+            types.append(word)
+        elif word.startswith('non'):
+            stripped = word[3:].lstrip('-')
+            if stripped in _TUTOR_TYPE_WORDS:
+                not_types.append(stripped)
+            else:
+                return None  # "non-Human" — a subtype negation the spec
+                             # cannot hold; refuse rather than approximate
+        elif word in ('or', 'and'):
+            return None      # union constraint — refuse, never approximate
+        else:
+            subtypes.append(word)
+
+    dest = 'battlefield' if m.group('dest').startswith('onto') else 'hand'
+    if dest == 'battlefield' and 'creature' not in types:
+        # Same refusal as the activation parser: a non-creature permanent
+        # put onto the battlefield carries entry statics (land ETB /
+        # enters-tapped rules) this path does not wire through.
+        return None
+    return {
+        'dest': dest,
+        'types': types,
+        'not_types': not_types,
+        'supertypes': supertypes,
+        'subtypes': subtypes,
+        'colors': colors,
+        'max_mv': None,
+        'mv_bound_is_x': True,
+        'tapped': bool(m.group('tapped')),
+    }
 
 
 def parse_counter_tax(oracle: str) -> int:

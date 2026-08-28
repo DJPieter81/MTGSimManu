@@ -2135,50 +2135,12 @@ def explore_resolve(game, card, controller, targets=None, item=None):
     game.log.append(f"T{game.display_turn} P{controller+1}: Explore — draw 1, extra land drop")
 
 
-@EFFECT_REGISTRY.register("Green Sun's Zenith", EffectTiming.SPELL_RESOLVE,
-                           description="Search library for green creature CMC <= X, put onto battlefield")
-def green_suns_zenith_resolve(game, card, controller, targets=None, item=None):
-    from .cards import Color
-    player = game.players[controller]
-    # The paid X lives on the STACK ITEM (`item.x_value`), the same place every
-    # other X-consuming resolver in this module reads it from. This previously
-    # read `card._x_value`, an attribute nothing in the codebase ever writes —
-    # one read, zero writers — so X was always 0 and the tutor could only find
-    # a mana-value-0 creature regardless of how much mana was actually spent.
-    x_value = (item.x_value if item is not None
-               and getattr(item, 'x_value', None) is not None else 0)
-    # Find best green creature with CMC <= X
-    candidates = [
-        c for c in player.library
-        if c.template.is_creature
-        and Color.GREEN in c.template.color_identity
-        and (c.template.cmc or 0) <= x_value
-    ]
-    if candidates:
-        # Rank by MANA VALUE, not power+toughness: several premium tutor
-        # targets have a base P/T of 0/0 and get their size from a
-        # characteristic-defining ability, so a P/T ranking picks the wrong
-        # card. Mana value is the size proxy matching what was paid for.
-        # Tie-break on P/T so equal-cost choices still prefer the bigger body.
-        best = max(candidates,
-                   key=lambda c: ((c.template.cmc or 0),
-                                  (c.template.power or 0)
-                                  + (c.template.toughness or 0)))
-        player.library.remove(best)
-        game.rng.shuffle(player.library)
-        best.controller = controller
-        best.enter_battlefield()
-        player.battlefield.append(best)
-        game._handle_permanent_etb(best, controller)
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Green Sun's Zenith finds {best.name}")
-    # Shuffle GSZ back into library (unique to this card)
-    # card is already in graveyard at this point; move it to library
-    if card in player.graveyard:
-        player.graveyard.remove(card)
-        card.zone = "library"
-        player.library.append(card)
-        game.rng.shuffle(player.library)
+# Green Sun's Zenith handler removed — the X-bound creature-tutor shape it
+# was the only carrier of is now resolved generically from the parse-once
+# typed field `CardTemplate.x_creature_tutor_data`
+# (`oracle_resolver._resolve_x_creature_tutor`), which serves every card in
+# the class instead of one. Its per-card riders (green colour constraint,
+# shuffle-self-into-library) are parsed data on that field, not code here.
 
 
 @EFFECT_REGISTRY.register("Summoner's Pact", EffectTiming.SPELL_RESOLVE,
