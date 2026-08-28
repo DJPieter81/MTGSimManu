@@ -100,6 +100,15 @@ class Ability:
         return True
 
 
+# Canonical counter-kind strings (CR 122). The two P/T kinds name the
+# instance fields that carry them (`plus_counters` / `minus_counters`) and
+# so move `power`/`toughness`; every other kind is a named resource counter
+# in `other_counters`. Parsed once, in oracle_parser.
+COUNTER_KIND_PLUS = "+1/+1"
+COUNTER_KIND_MINUS = "-1/-1"
+COUNTER_KIND_LOYALTY = "loyalty"
+
+
 class ActivationEffectKind(Enum):
     """What an activated ability actually does (CR 602).
 
@@ -166,6 +175,20 @@ class ActivationCost:
     sacrifice_type: Optional[str] = None
     sacrifice_another: bool = False
     discard_cards: int = 0
+    # Tranche 4 payable costs — counters put on / removed from the SOURCE.
+    # `*_kind` is the canonical counter kind ('+1/+1', '-1/-1', or a named
+    # kind like 'charge'/'oil'/'page' that lives in
+    # `CardInstance.other_counters`); `*_amount` is how many. A REMOVE cost
+    # is payable only while that many counters are there (CR 118.x — you
+    # cannot pay what you do not have); a PUT cost is always payable.
+    # Depletion (the no-free-repeatable rule) differs between them: REMOVE
+    # always drains a finite supply, while PUT drains only when the counter
+    # itself is a resource — a -1/-1 counter on a creature shrinks toughness
+    # toward the zero-toughness SBA. See `ActivationManager.can_activate`.
+    put_counter_kind: Optional[str] = None
+    put_counter_amount: int = 0
+    remove_counter_kind: Optional[str] = None
+    remove_counter_amount: int = 0
     # Number of {X} pips in the mana cost. X is chosen at activation time
     # (CR 601.2b) and is chargeable exactly when the classified effect
     # BINDS X (a tutor's "mana value X or less"); an {X} pip on any other
@@ -1108,6 +1131,40 @@ class CardInstance:
         base = self._dynamic_base_toughness()
         return (base + self.plus_counters - self.minus_counters
                 + self.temp_toughness_mod + self.cem_toughness_mod)
+
+    # ── Counters by kind (CR 122) ────────────────────────────────────
+    # Thin accessors over the SAME four fields declared above — NOT a
+    # second counter mechanism. They exist so a caller that only knows a
+    # counter kind as a parsed string ("+1/+1", "charge") does not have to
+    # re-derive which field holds it, and so P/T-bearing counters keep
+    # moving `power`/`toughness` (which is what makes the zero-toughness
+    # SBA terminate a -1/-1-paid activation loop).
+
+    def counter_count(self, kind: str) -> int:
+        """How many counters of `kind` are on this permanent."""
+        if kind == COUNTER_KIND_PLUS:
+            return self.plus_counters
+        if kind == COUNTER_KIND_MINUS:
+            return self.minus_counters
+        if kind == COUNTER_KIND_LOYALTY:
+            return self.loyalty_counters
+        return self.other_counters.get(kind, 0)
+
+    def adjust_counters(self, kind: str, delta: int) -> None:
+        """Add (or, with a negative delta, remove) counters of `kind`.
+
+        Counts never go below zero — CR 122.3: removing more counters than
+        are present simply removes what is there.
+        """
+        if kind == COUNTER_KIND_PLUS:
+            self.plus_counters = max(0, self.plus_counters + delta)
+        elif kind == COUNTER_KIND_MINUS:
+            self.minus_counters = max(0, self.minus_counters + delta)
+        elif kind == COUNTER_KIND_LOYALTY:
+            self.loyalty_counters = max(0, self.loyalty_counters + delta)
+        else:
+            self.other_counters[kind] = max(
+                0, self.other_counters.get(kind, 0) + delta)
 
     def _get_domain_count(self) -> int:
         """Count basic land types among lands controlled by this card's controller."""

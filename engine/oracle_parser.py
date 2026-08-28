@@ -594,9 +594,48 @@ _ANY_COLOR_UNIT = ['W', 'U', 'B', 'R', 'G']
 # Cost verbs this tranche cannot charge. Parsed and RECORDED (never dropped)
 # so the ability is visible-but-refused; a later tranche adds payers without
 # re-parsing the pool.
+# ── Counter cost items (tranche 4) ───────────────────────────────────
+# Permanent-type words a self-referential counter cost may name ("... on
+# THIS creature", "... from THIS artifact"). A cost that names another
+# permanent ("from a creature you control"), a group ("from among
+# creatures you control"), or the card by name is a different cost shape
+# and stays on the unpayable path.
+_COUNTER_SELF_WORDS = (r'creature|artifact|enchantment|land|permanent'
+                       r'|planeswalker|vehicle|token|battle|equipment')
+# ANCHORED (fullmatch) like every other cost item: an unbounded count
+# ("any number of", "all", "one or more") or a trailing rider must fail
+# the match rather than be approximated by a fixed amount.
+_PUT_COUNTER_COST_RE = re.compile(
+    r'put (?P<n>a|an|one|two|three|\d+) (?P<kind>[^ ]+) counters? on this '
+    r'(?:' + _COUNTER_SELF_WORDS + r')')
+_REMOVE_COUNTER_COST_RE = re.compile(
+    r'remove (?P<n>a|an|one|two|three|\d+) (?P<kind>[^ ]+) counters? from '
+    r'this (?:' + _COUNTER_SELF_WORDS + r')')
+# A P/T counter kind the instance model can actually hold. `plus_counters`
+# / `minus_counters` are symmetric (+N/+N, -N/-N) fields, so a -0/-1 or a
+# +2/+2 counter has no representation — refused, never mapped onto the
+# nearest available kind.
+_PT_COUNTER_KIND_RE = re.compile(r'^[+\-]\d+/[+\-]\d+$')
+_NAMED_COUNTER_KIND_RE = re.compile(r"^[a-z][a-z\-']*$")
+
+
+def _canonical_counter_kind(word: str) -> Optional[str]:
+    """Normalise a parsed counter-kind word, or None when the instance
+    model cannot represent that kind of counter."""
+    from .cards import COUNTER_KIND_MINUS, COUNTER_KIND_PLUS
+    if word in (COUNTER_KIND_PLUS, COUNTER_KIND_MINUS):
+        return word
+    if _PT_COUNTER_KIND_RE.match(word):
+        return None  # a P/T counter with no field to live on
+    if _NAMED_COUNTER_KIND_RE.match(word) and word != 'counter':
+        return word
+    return None
+
+
 _UNPAYABLE_COST_PATTERNS = (
     # Tranche 3 graduated single-victim sacrifices and plain discard-N to
-    # structured fields; what reaches these patterns now is the residue —
+    # structured fields; tranche 4 graduated self-referential counter costs;
+    # what reaches these patterns now is the residue —
     # multi-victim / or-typed / subtype-restricted sacrifices, and
     # at-random / type-restricted / whole-hand discards.
     ('sacrifice', r'sacrifice\b'),
@@ -688,6 +727,10 @@ def parse_activation_cost(cost_text: str):
     sacrifice_type = None
     sacrifice_another = False
     discard_cards = 0
+    put_counter_kind = None
+    put_counter_amount = 0
+    remove_counter_kind = None
+    remove_counter_amount = 0
     x_count = 0
     unpayable = []
     for part in raw.split(','):
@@ -724,6 +767,31 @@ def parse_activation_cost(cost_text: str):
             discard_cards += (int(tok) if tok.isdigit()
                               else _NUM_WORDS.get(tok, 0))
             continue
+        # Tranche 4: counter costs on the SOURCE. Parsed into a kind + an
+        # amount; a SECOND counter item of the same direction is a choice
+        # shape the schema cannot hold, so it falls through to unpayable.
+        m_put = _PUT_COUNTER_COST_RE.fullmatch(low)
+        if m_put and put_counter_kind is None:
+            kind = _canonical_counter_kind(m_put.group('kind'))
+            if kind is not None:
+                tok = m_put.group('n')
+                put_counter_kind = kind
+                put_counter_amount = (
+                    int(tok) if tok.isdigit()
+                    else (1 if tok in ('a', 'an', 'one')
+                          else _NUM_WORDS.get(tok, 0)))
+                continue
+        m_rem = _REMOVE_COUNTER_COST_RE.fullmatch(low)
+        if m_rem and remove_counter_kind is None:
+            kind = _canonical_counter_kind(m_rem.group('kind'))
+            if kind is not None:
+                tok = m_rem.group('n')
+                remove_counter_kind = kind
+                remove_counter_amount = (
+                    int(tok) if tok.isdigit()
+                    else (1 if tok in ('a', 'an', 'one')
+                          else _NUM_WORDS.get(tok, 0)))
+                continue
         if re.fullmatch(r'(\{[wubrgcxs0-9/]+\}\s*)+', low):
             # {X} pips are a COUNT, not fixed mana: X is chosen at
             # activation time (CR 601.2b). Whether the count is chargeable
@@ -751,6 +819,10 @@ def parse_activation_cost(cost_text: str):
                           sacrifice_type=sacrifice_type,
                           sacrifice_another=sacrifice_another,
                           discard_cards=discard_cards,
+                          put_counter_kind=put_counter_kind,
+                          put_counter_amount=put_counter_amount,
+                          remove_counter_kind=remove_counter_kind,
+                          remove_counter_amount=remove_counter_amount,
                           x_count=x_count,
                           unpayable=tuple(unpayable))
 

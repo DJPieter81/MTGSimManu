@@ -84,11 +84,7 @@ class ActivationManager:
         # life cost depletes the life total, a sacrifice-another cost
         # depletes the board and a discard cost depletes the hand — each
         # terminates the loop.
-        if (ability.cost.mana.cmc == 0 and not ability.cost.tap_self
-                and not ability.cost.sacrifice_self
-                and ability.cost.life == 0
-                and ability.cost.sacrifice_type is None
-                and ability.cost.discard_cards == 0):
+        if not ActivationManager._cost_depletes_a_resource(perm, ability):
             return False
 
         # 9b. An effect kind the resolver cannot execute must be refused
@@ -148,6 +144,15 @@ class ActivationManager:
                 and len(player.hand) < ability.cost.discard_cards):
             return False
 
+        # 9f. CR 118.x — a remove-counter cost is payable only while that
+        # many counters of that kind are actually on the permanent: you
+        # cannot pay what you do not have. A PUT cost needs no such check
+        # (the counter is created by the payment).
+        if ability.cost.remove_counter_kind is not None:
+            if (perm.counter_count(ability.cost.remove_counter_kind)
+                    < ability.cost.remove_counter_amount):
+                return False
+
         # 10. Capacity precondition. THIS is what makes payment atomic: both
         # mutating branches inside `tap_lands_for_mana` are gated on a
         # shortfall, so if capacity already covers the cost no mutation can
@@ -195,6 +200,41 @@ class ActivationManager:
                 return False
 
         return True
+
+    @staticmethod
+    def _cost_depletes_a_resource(perm: "CardInstance",
+                                  ability: "ActivatedAbility") -> bool:
+        """Rule 9's predicate: does paying this cost consume something
+        finite, so that repeating the activation terminates?
+
+        Mana, a tap, sacrifice (self or another), life, and discard each
+        deplete. Tranche 4 adds the two counter items:
+
+          * REMOVE always depletes — the counter supply on the permanent is
+            finite and each payment strictly lowers it.
+          * PUT depletes only when the counter itself IS the resource. A
+            -1/-1 counter on a CREATURE walks its toughness down to the
+            zero-toughness SBA (704.5g), which is exactly how paper Magic
+            bounds the "put a -1/-1 counter: untap this" infinite-mana
+            engine. The same counter on a non-creature changes nothing, and
+            a neutral counter (charge/page/oil) is pure bookkeeping — both
+            leave the loop unbounded, so they do not count.
+        """
+        from .cards import COUNTER_KIND_MINUS
+
+        cost = ability.cost
+        if cost.tap_self:
+            return True
+        if (cost.mana.cmc > 0 or cost.sacrifice_self or cost.life > 0
+                or cost.sacrifice_type is not None
+                or cost.discard_cards > 0
+                or cost.remove_counter_kind is not None):
+            return True
+        if (cost.put_counter_kind == COUNTER_KIND_MINUS
+                and cost.put_counter_amount > 0):
+            return bool(perm.effective_is_creature
+                        or getattr(perm, 'is_animated', False))
+        return False
 
     @staticmethod
     def legal_sacrifice_victims(game: "GameState", player_idx: int,
@@ -251,6 +291,13 @@ class ActivationManager:
                     and len(game.players[player_idx].hand)
                     < ability.cost.discard_cards):
                 return False
+            # CR 118.x — the counters must be there BEFORE anything is
+            # charged, so a short supply refuses the whole activation
+            # rather than leaving the mana half paid.
+            if ability.cost.remove_counter_kind is not None:
+                if (perm.counter_count(ability.cost.remove_counter_kind)
+                        < ability.cost.remove_counter_amount):
+                    return False
 
             # X CHOICE (CR 601.2b) — made before payment, by the shared
             # engine-side picker the AI valuation layer also consults
@@ -291,6 +338,26 @@ class ActivationManager:
                     f"{ability.cost.life} life ({perm.name} activation)")
             if ability.cost.tap_self:
                 perm.tap()
+            # Counters, through the instance's own counter fields — the same
+            # `plus_counters` / `minus_counters` / `other_counters` every
+            # other counter mutation in the engine writes, so a -1/-1 cost
+            # really does move `toughness` and really does reach the SBA.
+            if ability.cost.remove_counter_kind is not None:
+                perm.adjust_counters(ability.cost.remove_counter_kind,
+                                     -ability.cost.remove_counter_amount)
+                game.log.append(
+                    f"T{game.display_turn} P{player_idx+1}: removes "
+                    f"{ability.cost.remove_counter_amount} "
+                    f"{ability.cost.remove_counter_kind} counter(s) from "
+                    f"{perm.name} (activation cost)")
+            if ability.cost.put_counter_kind is not None:
+                perm.adjust_counters(ability.cost.put_counter_kind,
+                                     ability.cost.put_counter_amount)
+                game.log.append(
+                    f"T{game.display_turn} P{player_idx+1}: puts "
+                    f"{ability.cost.put_counter_amount} "
+                    f"{ability.cost.put_counter_kind} counter(s) on "
+                    f"{perm.name} (activation cost)")
 
             perm.activations_this_turn[ability.index] = (
                 perm.activations_this_turn.get(ability.index, 0) + 1)

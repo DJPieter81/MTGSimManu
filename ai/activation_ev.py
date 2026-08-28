@@ -162,6 +162,29 @@ def choose_tutor_delivery(game, player_idx, eligible):
     return max(eligible, key=_worth)
 
 
+def _counter_cost_pt_delta(cost) -> int:
+    """Net power/toughness the source loses (negative) or gains (positive)
+    from this activation's counter cost.
+
+    Derived from the counters' own printed semantics, not a tuned weight:
+    +1/+1 and -1/-1 counters move power and toughness by the same amount,
+    so one signed number describes both. Kinds with no P/T meaning
+    (charge, oil, page) contribute 0.
+    """
+    from engine.cards import COUNTER_KIND_MINUS, COUNTER_KIND_PLUS
+
+    delta = 0
+    if cost.put_counter_kind == COUNTER_KIND_PLUS:
+        delta += cost.put_counter_amount
+    elif cost.put_counter_kind == COUNTER_KIND_MINUS:
+        delta -= cost.put_counter_amount
+    if cost.remove_counter_kind == COUNTER_KIND_PLUS:
+        delta -= cost.remove_counter_amount
+    elif cost.remove_counter_kind == COUNTER_KIND_MINUS:
+        delta += cost.remove_counter_amount
+    return delta
+
+
 def activation_candidates(game, player_idx, snap, excluded=None):
     """Enumerate generic activated abilities worth activating right now.
 
@@ -236,6 +259,17 @@ def activation_candidates(game, player_idx, snap, excluded=None):
             if ability.cost.discard_cards:
                 cost_updates["my_hand_size"] = max(
                     0, snap.my_hand_size - ability.cost.discard_cards)
+            # A counter cost that moves P/T is a real board change and must
+            # be charged, or "Put a -1/-1 counter on this creature: ..."
+            # scores as free right up to the point the creature dies. The
+            # amount is the counter's own printed P/T semantics — +1/+1 and
+            # -1/-1 are symmetric, so one number covers power and toughness.
+            _pt_delta = _counter_cost_pt_delta(ability.cost)
+            if _pt_delta and perm.effective_is_creature:
+                cost_updates["my_power"] = max(
+                    0, snap.my_power + _pt_delta)
+                cost_updates["my_toughness"] = max(
+                    0, snap.my_toughness + _pt_delta)
 
             # Merge effect deltas ON TOP of the cost terms — a discard-cost
             # draw must net the two hand-size changes, not overwrite one.
