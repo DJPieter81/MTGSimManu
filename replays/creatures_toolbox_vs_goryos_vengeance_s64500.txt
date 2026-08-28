@@ -1,0 +1,1934 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+======================================================================
+  GAME 1: Creatures Toolbox (P1) vs Goryo's Vengeance (P2)  —  seed 64500
+  Series: Creatures Toolbox 0 - 0 Goryo's Vengeance
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Goryo's Vengeance wins → chooses to play first
+║ P1 (on play): Goryo's Vengeance
+║ P2 (on draw): Creatures Toolbox
+╚═══════════════════════════════════════════════════════
+
+P1 (Creatures Toolbox) opening hand (1 lands, 6 spells):
+  • Green Sun's Zenith [Spell, CMC 1]
+  • Walking Ballista [Creature, CMC 0]
+  • Forest [Land, CMC 0]
+  • Devoted Druid [Creature, CMC 2]
+  • Badgermole Cub [Creature, CMC 2]
+  • Devoted Druid [Creature, CMC 2]
+  • Badgermole Cub [Creature, CMC 2]
+→ P1 KEEPS 7 — has key card(s): Badgermole Cub, Devoted Druid, 6 cheap spells
+
+P2 (Goryo's Vengeance) opening hand (3 lands, 4 spells):
+  • Atraxa, Grand Unifier [Creature, CMC 7]
+  • Island [Land, CMC 0]
+  • Goryo's Vengeance [Spell, CMC 2]
+  • Ephemerate [Spell, CMC 1]
+  • Silent Clearing [Land, CMC 0]
+  • Goryo's Vengeance [Spell, CMC 2]
+  • Concealed Courtyard [Land, CMC 0]
+→ P2 MULLIGANS (combo path under-covered in 7-card hand (best path: 1/2 role buckets; need enabler+payoff))
+  New hand (2 lands, 5 spells): ["Goryo's Vengeance", 'Inquisition of Kozilek', 'Ephemerate', 'Faithful Mending', 'Ephemerate', 'Flooded Strand', 'Swamp']
+→ P2 mulligans to 6, bottoms: ['Ephemerate']
+  Keeps: ["Goryo's Vengeance", 'Inquisition of Kozilek', 'Faithful Mending', 'Ephemerate', 'Flooded Strand', 'Swamp']
+
+
+╔══ TURN 1 — Goryo's Vengeance (P2) ══════════════════════════
+║ Life: Goryo's Vengeance 20  |  Creatures Toolbox 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 54  |  Graveyard: 0
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Flooded Strand
+T1: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Flooded Strand (pay 1 life) -> Godless Shrine (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 20  |  Goryo's Vengeance 19
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Nurturing Peatland
+  [Main 1]
+T1 P1: Play Nurturing Peatland
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Goryo's Vengeance (P2) ══════════════════════════
+║ Life: Goryo's Vengeance 19  |  Creatures Toolbox 20
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 1
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: Nurturing Peatland
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Unburial Rites
+  [Main 1]
+T2 P2: Play Swamp
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 20  |  Goryo's Vengeance 19
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: Nurturing Peatland
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Swamp
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Verdant Catacombs
+  [Main 1]
+T2 P1: Play Verdant Catacombs
+T2: Verdant Catacombs moved battlefield -> graveyard (fetchland sacrifice)
+T2 P1: Crack Verdant Catacombs (pay 1 life) -> Overgrown Tomb (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Goryo's Vengeance (P2) ══════════════════════════
+║ Life: Goryo's Vengeance 19  |  Creatures Toolbox 19
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 1
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Swamp
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: Nurturing Peatland, Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Marsh Flats
+  [Main 1]
+T3 P2: Play Marsh Flats
+T3: Marsh Flats moved battlefield -> graveyard (fetchland sacrifice)
+T3 P2: Crack Marsh Flats (pay 1 life) -> Watery Grave (tapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 19  |  Goryo's Vengeance 18
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: Nurturing Peatland, Overgrown Tomb
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Swamp, Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Leyline of Abundance
+  [Main 1]
+T3 P1: Play Forest
+    → Goal: execute_payoff
+    [Mana] Tap Forest→G, Nurturing Peatland→B (paying for Badgermole Cub, 3 mana remaining)
+T3 P1: Cast Badgermole Cub (1G)
+    [Priority] P2 passes (no response)
+T3: Resolve Badgermole Cub
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Goryo's Vengeance (P2) ══════════════════════════
+║ Life: Goryo's Vengeance 18  |  Creatures Toolbox 19
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 2
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Swamp, Watery Grave
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2)
+║   Lands: Nurturing Peatland [T], Overgrown Tomb, Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thoughtseize
+  [Main 1]
+    → Goal: fill_resource [enablers]
+    [Mana] Tap Godless Shrine→W, Watery Grave→U (paying for Faithful Mending, 3 mana remaining)
+T4 P2: Cast Faithful Mending (WU)
+    [Priority] P1 passes (no response)
+T4: Resolve Faithful Mending
+T4: Unburial Rites moved hand -> graveyard (discard)
+T4: Unburial Rites moved hand -> graveyard (discard)
+T4: Faithful Mending moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 19  |  Goryo's Vengeance 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 1
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2)
+║   Lands: Nurturing Peatland, Overgrown Tomb, Forest
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine [T], Swamp, Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Green Sun's Zenith
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Forest→G, Nurturing Peatland→B (paying for Badgermole Cub, 3 mana remaining)
+T4 P1: Cast Badgermole Cub (1G)
+    [Priority] P2 passes (no response)
+T4: Resolve Badgermole Cub
+T4 P1: Activate Nurturing Peatland (sacrifice)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Badgermole Cub
+T4 P1: Attack with Badgermole Cub
+  [Declare Blockers] P2 does not block
+T4 P1:   Badgermole Cub (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 20 → 18
+  [End Combat]
+  [Main 2]
+T4 P1: Play Dryad Arbor
+    → Goal: execute_payoff
+T4 P1: Cast Walking Ballista (2) (X=1)
+    [Priority] P2 passes (no response)
+T4: Resolve Walking Ballista
+T4 P1: Walking Ballista enters with 1 +1/+1 counter(s)
+T4 P1: Walking Ballista deals 1 to opponent (life: 17)
+T4: Walking Ballista dies
+  [End Step]
+
+╔══ TURN 5 — Goryo's Vengeance (P2) ══════════════════════════
+║ Life: Goryo's Vengeance 17  |  Creatures Toolbox 19
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 5
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Swamp, Watery Grave
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2) [tapped], Badgermole Cub (2/2), Dryad Arbor (1/1) [tapped]
+║   Lands: Overgrown Tomb [T], Forest [T], Dryad Arbor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Swamp
+  [Main 1]
+T5 P2: Play Swamp
+    → Goal: fill_resource [enablers]
+    [Mana] Tap Godless Shrine→W, Watery Grave→U (paying for Faithful Mending, 4 mana remaining)
+T5 P2: Cast Faithful Mending (WU)
+    [Priority] P1 passes (no response)
+T5: Resolve Faithful Mending
+T5: Unburial Rites moved hand -> graveyard (discard)
+T5: Inquisition of Kozilek moved hand -> graveyard (discard)
+T5: Faithful Mending moved stack -> exile (flashback resolution (CR 702.33a))
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 19  |  Goryo's Vengeance 19
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 3
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2), Badgermole Cub (2/2), Dryad Arbor (1/1)
+║   Lands: Overgrown Tomb, Forest, Dryad Arbor
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine [T], Swamp, Watery Grave [T], Swamp
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Fiend Artisan
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Forest→G, Dryad Arbor→G (paying for Devoted Druid, 3 mana remaining)
+T5 P1: Cast Devoted Druid (1G)
+    [Priority] P2 passes (no response)
+T5: Resolve Devoted Druid
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Badgermole Cub, Badgermole Cub
+T5 P1: Attack with Badgermole Cub, Badgermole Cub
+  [Declare Blockers] P2 does not block
+T5 P1:   Badgermole Cub (2/2) → 2 dmg to player
+T5 P1:   Badgermole Cub (2/2) → 2 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 19 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Goryo's Vengeance (P2) ══════════════════════════
+║ Life: Goryo's Vengeance 15  |  Creatures Toolbox 19
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 44  |  Graveyard: 6
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Swamp, Watery Grave, Swamp
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2) [tapped], Badgermole Cub (2/2) [tapped], Dryad Arbor (1/1) [tapped], Devoted Druid (0/2)
+║   Lands: Overgrown Tomb, Forest [T], Dryad Arbor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thoughtseize
+  [Main 1]
+T6 P2: Play Concealed Courtyard (tapped, 4 other lands)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 19  |  Goryo's Vengeance 15
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 3
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2), Badgermole Cub (2/2), Dryad Arbor (1/1), Devoted Druid (0/2)
+║   Lands: Overgrown Tomb, Forest, Dryad Arbor
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Swamp, Watery Grave, Swamp, Concealed Courtyard [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Craterhoof Behemoth
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Forest→G, Dryad Arbor→G (paying for Devoted Druid, 4 mana remaining)
+T6 P1: Cast Devoted Druid (1G)
+    [Priority] P2 passes (no response)
+T6: Resolve Devoted Druid
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Badgermole Cub, Badgermole Cub
+T6 P1: Attack with Badgermole Cub, Badgermole Cub
+  [Declare Blockers] P2 does not block
+T6 P1:   Badgermole Cub (2/2) → 2 dmg to player
+T6 P1:   Badgermole Cub (2/2) → 2 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 15 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Goryo's Vengeance (P2) ══════════════════════════
+║ Life: Goryo's Vengeance 11  |  Creatures Toolbox 19
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 43  |  Graveyard: 6
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Swamp, Watery Grave, Swamp, Concealed Courtyard
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2) [tapped], Badgermole Cub (2/2) [tapped], Dryad Arbor (1/1) [tapped], Devoted Druid (0/2), Devoted Druid (0/2)
+║   Lands: Overgrown Tomb, Forest [T], Dryad Arbor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Griselbrand
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 19  |  Goryo's Vengeance 11
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 3
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2), Badgermole Cub (2/2), Dryad Arbor (1/1), Devoted Druid (0/2), Devoted Druid (0/2)
+║   Lands: Overgrown Tomb, Forest, Dryad Arbor
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Swamp, Watery Grave, Swamp, Concealed Courtyard
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Devoted Druid
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Forest→G, Dryad Arbor→G, Devoted Druid→G, Devoted Druid→G (paying for Leyline of Abundance, 5 mana remaining)
+T7 P1: Cast Leyline of Abundance (2GG)
+    [Priority] P2 passes (no response)
+T7: Resolve Leyline of Abundance
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Badgermole Cub, Badgermole Cub
+T7 P1: Attack with Badgermole Cub, Badgermole Cub
+  [Declare Blockers] P2 does not block
+T7 P1:   Badgermole Cub (2/2) → 2 dmg to player
+T7 P1:   Badgermole Cub (2/2) → 2 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 11 → 7
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Goryo's Vengeance (P2) ══════════════════════════
+║ Life: Goryo's Vengeance 7  |  Creatures Toolbox 19
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 42  |  Graveyard: 6
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Swamp, Watery Grave, Swamp, Concealed Courtyard
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2) [tapped], Badgermole Cub (2/2) [tapped], Dryad Arbor (1/1) [tapped], Devoted Druid (0/2) [tapped], Devoted Druid (0/2) [tapped]
+║   Other: Leyline of Abundance
+║   Lands: Overgrown Tomb, Forest [T], Dryad Arbor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Inquisition of Kozilek
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 19  |  Goryo's Vengeance 7
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 44  |  Graveyard: 3
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2), Badgermole Cub (2/2), Dryad Arbor (1/1), Devoted Druid (0/2), Devoted Druid (0/2)
+║   Other: Leyline of Abundance
+║   Lands: Overgrown Tomb, Forest, Dryad Arbor
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Swamp, Watery Grave, Swamp, Concealed Courtyard
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Delighted Halfling
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Forest→G, Dryad Arbor→G (paying for Devoted Druid, 5 mana remaining)
+T8 P1: Cast Devoted Druid (1G)
+    [Priority] P2 passes (no response)
+T8: Resolve Devoted Druid
+    → Goal: execute_payoff
+    [Mana] Tap Devoted Druid→G (paying for Delighted Halfling, 3 mana remaining)
+T8 P1: Cast Delighted Halfling (G)
+    [Priority] P2 passes (no response)
+T8: Resolve Delighted Halfling
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Badgermole Cub, Badgermole Cub
+T8 P1: Attack with Badgermole Cub, Badgermole Cub
+  [Declare Blockers] P2 does not block
+T8 P1:   Badgermole Cub (2/2) → 2 dmg to player
+T8 P1:   Badgermole Cub (2/2) → 2 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 7 → 3
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Goryo's Vengeance (P2) ══════════════════════════
+║ Life: Goryo's Vengeance 3  |  Creatures Toolbox 19
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 41  |  Graveyard: 6
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Swamp, Watery Grave, Swamp, Concealed Courtyard
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2) [tapped], Badgermole Cub (2/2) [tapped], Dryad Arbor (1/1) [tapped], Devoted Druid (0/2) [tapped], Devoted Druid (0/2), Devoted Druid (0/2), Delighted Halfling (1/2)
+║   Other: Leyline of Abundance
+║   Lands: Overgrown Tomb, Forest [T], Dryad Arbor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Leyline of Sanctity
+  [Main 1]
+    → Goal: fill_resource [interaction]
+    [Mana] Tap Swamp→B (paying for Inquisition of Kozilek, 5 mana remaining)
+T9 P2: Cast Inquisition of Kozilek (B)
+    [Priority] P1 passes (no response)
+T9: Resolve Inquisition of Kozilek
+T9 P2: Inquisition of Kozilek discards Craterhoof Behemoth
+T9: Inquisition of Kozilek moved stack -> graveyard (resolution)
+    → Goal: fill_resource [interaction]
+    [Mana] Tap Swamp→B (paying for Thoughtseize, 4 mana remaining)
+T9 P2: Cast Thoughtseize (B)
+    [Priority] P1 passes (no response)
+T9: Resolve Thoughtseize
+T9: Green Sun's Zenith moved hand -> graveyard (forced discard)
+T9 P2: Thoughtseize → opponent discards 1
+T9: Thoughtseize moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 19  |  Goryo's Vengeance 1
+║ Hand: 2 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 43  |  Graveyard: 5
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2), Badgermole Cub (2/2), Dryad Arbor (1/1), Devoted Druid (0/2), Devoted Druid (0/2), Devoted Druid (0/2), Delighted Halfling (1/2)
+║   Other: Leyline of Abundance
+║   Lands: Overgrown Tomb, Forest, Dryad Arbor
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Swamp [T], Watery Grave, Swamp [T], Concealed Courtyard
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Nature's Rhythm
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Forest→G (paying for Green Sun's Zenith, 7 mana remaining)
+T9 P1: Cast Green Sun's Zenith (4G) (X=4)
+    [Priority] P2 passes (no response)
+T9: Resolve Green Sun's Zenith
+T9 P1: Green Sun's Zenith finds Ouroboroid
+T9: Green Sun's Zenith moved stack -> graveyard (resolution)
+    → Goal: execute_payoff
+    [Mana] Tap Devoted Druid→G, Devoted Druid→G (paying for Nature's Rhythm, 4 mana remaining)
+T9 P1: Cast Nature's Rhythm (2GG) (X=2)
+    [Priority] P2 passes (no response)
+T9: Resolve Nature's Rhythm
+T9: Nature's Rhythm moved stack -> graveyard (resolution)
+    → Goal: execute_payoff
+    [Mana] Tap Devoted Druid→G, Delighted Halfling→B (paying for Fiend Artisan, 2 mana remaining)
+T9 P1: Cast Fiend Artisan (2)
+    [Priority] P2 passes (no response)
+T9: Resolve Fiend Artisan
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Badgermole Cub, Badgermole Cub
+T9 P1: Attack with Badgermole Cub, Badgermole Cub
+  [Declare Blockers] P2 does not block
+T9 P1:   Badgermole Cub (2/2) → 2 dmg to player
+T9 P1:   Badgermole Cub (2/2) → 2 dmg to player
+P2 loses: life total -3
+  [Combat Damage] 4 damage dealt → P2 life: 1 → -3
+
+>>> Creatures Toolbox wins Game 1 on turn 9 via damage
+    Final life: Creatures Toolbox=19  Goryo's Vengeance=-3
+
+======================================================================
+  GAME 2: Goryo's Vengeance (P1) vs Creatures Toolbox (P2)  —  seed 64501
+  Series: Creatures Toolbox 1 - 0 Goryo's Vengeance
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Goryo's Vengeance wins → chooses to play first
+║ P1 (on play): Goryo's Vengeance
+║ P2 (on draw): Creatures Toolbox
+╚═══════════════════════════════════════════════════════
+
+P1 (Goryo's Vengeance) opening hand (3 lands, 4 spells):
+  • Inquisition of Kozilek [Spell, CMC 1]
+  • Godless Shrine [Land, CMC 0]
+  • Marsh Flats [Land, CMC 0]
+  • Goryo's Vengeance [Spell, CMC 2]
+  • Atraxa, Grand Unifier [Creature, CMC 7]
+  • Griselbrand [Creature, CMC 8]
+  • Concealed Courtyard [Land, CMC 0]
+→ P1 MULLIGANS (combo path under-covered in 7-card hand (best path: 1/2 role buckets; need enabler+payoff))
+  New hand (2 lands, 5 spells): ['Ephemerate', 'Leyline of Sanctity', 'Marsh Flats', 'Concealed Courtyard', 'Unburial Rites', 'Leyline of Sanctity', 'Thoughtseize']
+→ P1 MULLIGANS (combo path under-covered in 6-card hand (best path: 1/2 role buckets; need enabler))
+  New hand (1 lands, 6 spells): ['Leyline of Sanctity', 'Silent Clearing', 'Archon of Cruelty', 'Griselbrand', "Goryo's Vengeance", 'Thoughtseize', 'Unburial Rites']
+→ P1 MULLIGANS (goal conjunction unreachable — no role-path coverage and no castable dig card)
+  New hand (2 lands, 5 spells): ['Concealed Courtyard', 'Silent Clearing', 'Undying Evil', 'Leyline of Sanctity', 'Faithful Mending', 'Archon of Cruelty', 'Unburial Rites']
+
+P2 (Creatures Toolbox) opening hand (0 lands, 7 spells):
+  • Leyline of Abundance [Spell, CMC 4]
+  • Delighted Halfling [Creature, CMC 1]
+  • Green Sun's Zenith [Spell, CMC 1]
+  • Green Sun's Zenith [Spell, CMC 1]
+  • Devoted Druid [Creature, CMC 2]
+  • Eternal Witness [Creature, CMC 3]
+  • Tyvar, Jubilant Brawler [Spell, CMC 3]
+→ P2 MULLIGANS (too few lands (0 < 1))
+  New hand (1 lands, 6 spells): ['Verdant Catacombs', 'Tyvar, Jubilant Brawler', 'Badgermole Cub', 'Tyvar, Jubilant Brawler', "Nature's Rhythm", 'Badgermole Cub', "Green Sun's Zenith"]
+→ P2 mulligans to 6, bottoms: ['Tyvar, Jubilant Brawler']
+  Keeps: ['Verdant Catacombs', 'Tyvar, Jubilant Brawler', 'Badgermole Cub', "Nature's Rhythm", 'Badgermole Cub', "Green Sun's Zenith"]
+
+T0 P1: Leyline of Sanctity begins the game on the battlefield (leyline)
+
+╔══ TURN 1 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 20  |  Creatures Toolbox 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Other: Leyline of Sanctity
+║   Lands: (none)
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Silent Clearing
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Creatures Toolbox (P2) ══════════════════════════
+║ Life: Creatures Toolbox 20  |  Goryo's Vengeance 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 0
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Other: Leyline of Sanctity
+║   Lands: Silent Clearing
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Walking Ballista
+  [Main 1]
+T1 P2: Play Verdant Catacombs
+T1: Verdant Catacombs moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Verdant Catacombs (pay 1 life) -> Overgrown Tomb (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 20  |  Creatures Toolbox 19
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Other: Leyline of Sanctity
+║   Lands: Silent Clearing
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Unburial Rites
+  [Main 1]
+T2 P1: Play Concealed Courtyard (untapped, 1 other lands)
+T2: Silent Clearing moved battlefield -> graveyard (activation cost (Silent Clearing))
+T2 P1: activate Silent Clearing — Draw a card.
+T2 P1: Silent Clearing activated — draw 1 (Unburial Rites)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Creatures Toolbox (P2) ══════════════════════════
+║ Life: Creatures Toolbox 19  |  Goryo's Vengeance 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Other: Leyline of Sanctity
+║   Lands: Concealed Courtyard [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Overgrown Tomb
+  [Main 1]
+T2 P2: Play Overgrown Tomb (untapped, life: 19)
+    → Goal: deploy_engine
+    [Mana] Tap Overgrown Tomb→G, Overgrown Tomb→B (paying for Badgermole Cub, 2 mana remaining)
+T2 P2: Cast Badgermole Cub (1G)
+    [Priority] P1 passes (no response)
+T2: Resolve Badgermole Cub
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 20  |  Creatures Toolbox 19
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Other: Leyline of Sanctity
+║   Lands: Concealed Courtyard
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2)
+║   Lands: Overgrown Tomb [T], Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Thoughtseize
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Creatures Toolbox (P2) ══════════════════════════
+║ Life: Creatures Toolbox 19  |  Goryo's Vengeance 20
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 1
+║ Library: 51  |  Graveyard: 1
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2)
+║   Lands: Overgrown Tomb, Overgrown Tomb
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Other: Leyline of Sanctity
+║   Lands: Concealed Courtyard
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wooded Foothills
+  [Main 1]
+T3 P2: Play Wooded Foothills
+T3: Wooded Foothills moved battlefield -> graveyard (fetchland sacrifice)
+T3 P2: Crack Wooded Foothills (pay 1 life) -> Temple Garden (tapped, life: 18)
+    → Goal: execute_payoff
+    [Mana] Tap Overgrown Tomb→G, Overgrown Tomb→B (paying for Badgermole Cub, 2 mana remaining)
+T3 P2: Cast Badgermole Cub (1G)
+    [Priority] P1 passes (no response)
+T3: Resolve Badgermole Cub
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Badgermole Cub
+T3 P2: Attack with Badgermole Cub
+  [Declare Blockers] P1 does not block
+T3 P2:   Badgermole Cub (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 20 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 18  |  Creatures Toolbox 18
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Other: Leyline of Sanctity
+║   Lands: Concealed Courtyard
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2) [tapped], Badgermole Cub (2/2)
+║   Lands: Overgrown Tomb [T], Overgrown Tomb [T], Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Plains
+  [Main 1]
+T4 P1: Play Plains
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Creatures Toolbox (P2) ══════════════════════════
+║ Life: Creatures Toolbox 18  |  Goryo's Vengeance 18
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 49  |  Graveyard: 2
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2), Badgermole Cub (2/2)
+║   Lands: Overgrown Tomb, Overgrown Tomb, Temple Garden
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Other: Leyline of Sanctity
+║   Lands: Concealed Courtyard, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Delighted Halfling
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Overgrown Tomb→B, Overgrown Tomb→G, Temple Garden→G (paying for Tyvar, Jubilant Brawler, 3 mana remaining)
+T4 P2: Cast Tyvar, Jubilant Brawler (1BG)
+    [Priority] P1 passes (no response)
+T4: Resolve Tyvar, Jubilant Brawler
+T4 P2: Tyvar, Jubilant Brawler [+1] -> Untap up to one target creature
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Badgermole Cub, Badgermole Cub
+T4 P2: Attack with Badgermole Cub, Badgermole Cub
+  [Declare Blockers] P1 does not block
+T4 P2:   Badgermole Cub (2/2) → 2 dmg to player
+T4 P2:   Badgermole Cub (2/2) → 2 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 18 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 14  |  Creatures Toolbox 18
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 1
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Other: Leyline of Sanctity
+║   Lands: Concealed Courtyard, Plains
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2) [tapped], Badgermole Cub (2/2) [tapped]
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Overgrown Tomb [T], Overgrown Tomb [T], Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Flooded Strand
+  [Main 1]
+T5 P1: Play Flooded Strand
+T5: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T5 P1: Crack Flooded Strand (pay 1 life) -> Watery Grave (untapped, life: 11)
+    → Goal: fill_resource [enablers]
+    [Mana] Tap Plains→W, Watery Grave→U (paying for Faithful Mending, 3 mana remaining)
+T5 P1: Cast Faithful Mending (WU)
+    [Priority] P2 passes (no response)
+T5: Resolve Faithful Mending
+T5: Archon of Cruelty moved hand -> graveyard (discard)
+T5: Unburial Rites moved hand -> graveyard (discard)
+T5: Faithful Mending moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Creatures Toolbox (P2) ══════════════════════════
+║ Life: Creatures Toolbox 18  |  Goryo's Vengeance 13
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 2
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2), Badgermole Cub (2/2)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Overgrown Tomb, Overgrown Tomb, Temple Garden
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Other: Leyline of Sanctity
+║   Lands: Concealed Courtyard, Plains [T], Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Nature's Rhythm
+  [Main 1]
+    → Goal: execute_payoff
+T5 P2: Cast Walking Ballista (2) (X=1)
+    [Priority] P1 passes (no response)
+T5: Resolve Walking Ballista
+T5 P2: Walking Ballista enters with 1 +1/+1 counter(s)
+T5 P2: Walking Ballista deals 1 to opponent (life: 12)
+T5: Walking Ballista dies
+    → Goal: execute_payoff
+    [Mana] Tap Temple Garden→G (paying for Delighted Halfling, 1 mana remaining)
+T5 P2: Cast Delighted Halfling (G)
+    [Priority] P1 passes (no response)
+T5: Resolve Delighted Halfling
+T5 P2: Tyvar, Jubilant Brawler [+1] -> Untap up to one target creature
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Badgermole Cub, Badgermole Cub
+T5 P2: Attack with Badgermole Cub, Badgermole Cub
+  [Declare Blockers] P1 does not block
+T5 P2:   Badgermole Cub (2/2) → 2 dmg to player
+T5 P2:   Badgermole Cub (2/2) → 2 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 12 → 8
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 8  |  Creatures Toolbox 18
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 45  |  Graveyard: 5
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Other: Leyline of Sanctity
+║   Lands: Concealed Courtyard, Plains, Watery Grave
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2) [tapped], Badgermole Cub (2/2) [tapped], Delighted Halfling (1/2)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Overgrown Tomb [T], Overgrown Tomb [T], Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Griselbrand
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Plains→W, Watery Grave→U (paying for Faithful Mending, 3 mana remaining)
+T6 P1: Cast Faithful Mending (WU)
+    [Priority] P2 passes (no response)
+T6: Resolve Faithful Mending
+T6: Griselbrand moved hand -> graveyard (discard)
+T6: Faithful Mending moved hand -> graveyard (discard)
+T6: Faithful Mending moved stack -> exile (flashback resolution (CR 702.33a))
+T6 P1: Play Hallowed Fountain (untapped, life: 10)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Creatures Toolbox (P2) ══════════════════════════
+║ Life: Creatures Toolbox 18  |  Goryo's Vengeance 10
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 3
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2), Badgermole Cub (2/2), Delighted Halfling (1/2)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Overgrown Tomb, Overgrown Tomb, Temple Garden
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Other: Leyline of Sanctity
+║   Lands: Concealed Courtyard, Plains [T], Watery Grave [T], Hallowed Fountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Misty Rainforest
+  [Main 1]
+T6 P2: Play Misty Rainforest
+T6: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T6 P2: Crack Misty Rainforest -> Forest (untapped)
+T6 P2: Tyvar, Jubilant Brawler [+1] -> Untap up to one target creature
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Badgermole Cub, Badgermole Cub, Delighted Halfling
+T6 P2: Attack with Badgermole Cub, Badgermole Cub, Delighted Halfling
+  [Declare Blockers] P1 does not block
+T6 P2:   Badgermole Cub (2/2) → 2 dmg to player
+T6 P2:   Badgermole Cub (2/2) → 2 dmg to player
+T6 P2:   Delighted Halfling (1/2) → 1 dmg to player
+  [Combat Damage] 5 damage dealt → P1 life: 10 → 5
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 5  |  Creatures Toolbox 17
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 42  |  Graveyard: 6
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Other: Leyline of Sanctity
+║   Lands: Concealed Courtyard, Plains, Watery Grave, Hallowed Fountain
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2) [tapped], Badgermole Cub (2/2) [tapped], Delighted Halfling (1/2) [tapped]
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Overgrown Tomb, Overgrown Tomb, Temple Garden, Forest
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Marsh Flats
+  [Main 1]
+    → Goal: execute_payoff [payoffs]
+T7 P1: Play Marsh Flats
+T7: Marsh Flats moved battlefield -> graveyard (fetchland sacrifice)
+T7 P1: Crack Marsh Flats (pay 1 life) -> Godless Shrine (tapped, life: 4)
+    → Goal: execute_payoff
+    [Mana] Tap Plains→W, Watery Grave→U (paying for Faithful Mending, 4 mana remaining)
+T7 P1: Cast Faithful Mending (WU)
+    [Priority] P2 passes (no response)
+T7: Resolve Faithful Mending
+T7: Undying Evil moved hand -> graveyard (discard)
+T7: Thoughtseize moved hand -> graveyard (discard)
+T7: Faithful Mending moved stack -> exile (flashback resolution (CR 702.33a))
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Creatures Toolbox (P2) ══════════════════════════
+║ Life: Creatures Toolbox 17  |  Goryo's Vengeance 6
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 4
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2), Badgermole Cub (2/2), Delighted Halfling (1/2)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Overgrown Tomb, Overgrown Tomb, Temple Garden, Forest
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Other: Leyline of Sanctity
+║   Lands: Concealed Courtyard, Plains [T], Watery Grave [T], Hallowed Fountain, Godless Shrine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Verdant Catacombs
+  [Main 1]
+T7 P2: Play Verdant Catacombs
+T7: Verdant Catacombs moved battlefield -> graveyard (fetchland sacrifice)
+T7 P2: Crack Verdant Catacombs -> Forest (untapped)
+T7 P2: Tyvar, Jubilant Brawler [+1] -> Untap up to one target creature
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Badgermole Cub, Badgermole Cub, Delighted Halfling
+T7 P2: Attack with Badgermole Cub, Badgermole Cub, Delighted Halfling
+  [Declare Blockers] P1 does not block
+T7 P2:   Badgermole Cub (2/2) → 2 dmg to player
+T7 P2:   Badgermole Cub (2/2) → 2 dmg to player
+T7 P2:   Delighted Halfling (1/2) → 1 dmg to player
+  [Combat Damage] 5 damage dealt → P1 life: 6 → 1
+  [End Combat]
+  [Main 2]
+    → Goal: execute_payoff
+    [Mana] Tap Forest→G (paying for Green Sun's Zenith, 5 mana remaining)
+T7 P2: Cast Green Sun's Zenith (4G) (X=4)
+    [Priority] P1 passes (no response)
+T7: Resolve Green Sun's Zenith
+T7 P2: Green Sun's Zenith finds Ouroboroid
+T7: Green Sun's Zenith moved stack -> graveyard (resolution)
+  [End Step]
+
+╔══ TURN 8 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 1  |  Creatures Toolbox 16
+║ Hand: 6 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 38  |  Graveyard: 8
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Other: Leyline of Sanctity
+║   Lands: Concealed Courtyard, Plains, Watery Grave, Hallowed Fountain, Godless Shrine
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2) [tapped], Badgermole Cub (2/2) [tapped], Delighted Halfling (1/2) [tapped], Ouroboroid (1/3)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Overgrown Tomb [T], Overgrown Tomb [T], Temple Garden [T], Forest [T], Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Archon of Cruelty
+  [Main 1]
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Plains→W, Concealed Courtyard→B, Watery Grave→B, Hallowed Fountain→U, Godless Shrine→B (paying for Unburial Rites, 5 mana remaining)
+T8 P1: Cast Unburial Rites (4B)
+    [Priority] P2 passes (no response)
+T8: Resolve Unburial Rites
+T8 P1: Reanimate Griselbrand
+T8 P1: Unburial Rites reanimates Griselbrand
+T8: Unburial Rites moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Creatures Toolbox (P2) ══════════════════════════
+║ Life: Creatures Toolbox 16  |  Goryo's Vengeance 1
+║ Hand: 2 cards  |  Opp hand: 6 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 42  |  Graveyard: 6
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2), Badgermole Cub (2/2), Delighted Halfling (1/2), Ouroboroid (1/3)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Overgrown Tomb, Overgrown Tomb, Temple Garden, Forest, Forest
+║ Goryo's Vengeance board:
+║   Creatures: Griselbrand (7/7)
+║   Other: Leyline of Sanctity
+║   Lands: Concealed Courtyard [T], Plains [T], Watery Grave [T], Hallowed Fountain [T], Godless Shrine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Forest
+  [Main 1]
+T8 P2: Play Forest
+    → Goal: execute_payoff
+    [Mana] Tap Forest→G, Forest→G (paying for Nature's Rhythm, 7 mana remaining)
+T8 P2: Cast Nature's Rhythm (3GG) (X=3)
+    [Priority] P1 passes (no response)
+T8: Resolve Nature's Rhythm
+T8: Nature's Rhythm moved stack -> graveyard (resolution)
+T8 P2: Tyvar, Jubilant Brawler [+1] -> Untap up to one target creature
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Badgermole Cub, Badgermole Cub, Delighted Halfling, Ouroboroid
+T8 P2: Attack with Badgermole Cub, Badgermole Cub, Delighted Halfling, Ouroboroid
+T8 P1:   [BLOCK-EMERGENCY] Griselbrand (7/7) blocks Badgermole Cub (2/2) — lifespan_delta=+100.25
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T8 P2:   Badgermole Cub (2/2) → 2 dmg to player
+T8 P2:   Delighted Halfling (1/2) → 1 dmg to player
+T8 P2:   Ouroboroid (1/3) → 1 dmg to player
+T8: Badgermole Cub dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 4  |  Creatures Toolbox 16
+║ Hand: 6 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 37  |  Graveyard: 8
+║ Goryo's Vengeance board:
+║   Creatures: Griselbrand (7/7)
+║   Other: Leyline of Sanctity
+║   Lands: Concealed Courtyard, Plains, Watery Grave, Hallowed Fountain, Godless Shrine
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2) [tapped], Delighted Halfling (1/2) [tapped], Ouroboroid (1/3) [tapped]
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Overgrown Tomb [T], Overgrown Tomb [T], Temple Garden [T], Forest [T], Forest [T], Forest
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Flooded Strand
+  [Main 1]
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Plains→W, Concealed Courtyard→B, Watery Grave→B, Hallowed Fountain→U, Godless Shrine→B (paying for Unburial Rites, 5 mana remaining)
+T9 P1: Cast Unburial Rites (4B)
+    [Priority] P2 passes (no response)
+T9: Resolve Unburial Rites
+T9 P1: Reanimate Archon of Cruelty
+T9 P1: Archon of Cruelty: P2 sacrifices Delighted Halfling
+T9 P1: Archon of Cruelty: P2 discards Nature's Rhythm
+T9 P1: Archon of Cruelty: P2 loses 3 life (now 13)
+T9 P1: Gain 3 life from Archon of Cruelty (life: 7)
+T9 P1: Archon of Cruelty: draw 1, gain 3 life (now 7)
+T9 P1: Unburial Rites reanimates Archon of Cruelty
+T9: Unburial Rites moved stack -> graveyard (resolution)
+T9 P1: Play Flooded Strand
+T9: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T9 P1: Crack Flooded Strand (pay 1 life) -> Godless Shrine (tapped, life: 6)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Griselbrand
+T9 P1: Attack with Griselbrand
+  [Declare Blockers] P2 does not block
+T9 P1:   Griselbrand (7/7) → 7 dmg to player
+  [Combat Damage] 7 damage dealt → P2 life: 13 → 6
+  [End Combat]
+  [Main 2]
+T9 P1: Griselbrand: pay 7 life, draw 7
+  [End Step]
+T9: Marsh Flats moved hand -> graveyard (discard to hand size)
+T9: Silent Clearing moved hand -> graveyard (discard to hand size)
+T9: Griselbrand moved hand -> graveyard (discard to hand size)
+T9: Archon of Cruelty moved hand -> graveyard (discard to hand size)
+T9: Archon of Cruelty moved hand -> graveyard (discard to hand size)
+T9: Thoughtseize moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 9 — Creatures Toolbox (P2) ══════════════════════════
+║ Life: Creatures Toolbox 6  |  Goryo's Vengeance 6
+║ Hand: 0 cards  |  Opp hand: 7 cards
+║ Lands: 6  |  Opp lands: 6
+║ Library: 41  |  Graveyard: 10
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2), Ouroboroid (1/3)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Overgrown Tomb, Overgrown Tomb, Temple Garden, Forest, Forest, Forest
+║ Goryo's Vengeance board:
+║   Creatures: Griselbrand (7/7) [tapped], Archon of Cruelty (6/6)
+║   Other: Leyline of Sanctity
+║   Lands: Concealed Courtyard [T], Plains [T], Watery Grave [T], Hallowed Fountain [T], Godless Shrine [T], Godless Shrine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Leyline of Abundance
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Forest→G, Forest→G, Forest→G, Overgrown Tomb→B (paying for Leyline of Abundance, 6 mana remaining)
+T9 P2: Cast Leyline of Abundance (2GG)
+    [Priority] P1 passes (no response)
+T9: Resolve Leyline of Abundance
+T9 P2: Tyvar, Jubilant Brawler [+1] -> Untap up to one target creature
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Badgermole Cub, Ouroboroid
+T9 P2: Attack with Badgermole Cub, Ouroboroid
+  [Declare Blockers] P1 does not block
+T9 P2:   Badgermole Cub (2/2) → 2 dmg to player
+T9 P2:   Ouroboroid (1/3) → 1 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 6 → 3
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 3  |  Creatures Toolbox 6
+║ Hand: 7 cards  |  Opp hand: 0 cards
+║ Lands: 6  |  Opp lands: 6
+║ Library: 27  |  Graveyard: 15
+║ Goryo's Vengeance board:
+║   Creatures: Griselbrand (7/7), Archon of Cruelty (6/6)
+║   Other: Leyline of Sanctity
+║   Lands: Concealed Courtyard, Plains, Watery Grave, Hallowed Fountain, Godless Shrine, Godless Shrine
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2) [tapped], Ouroboroid (1/3) [tapped]
+║   Other: Tyvar, Jubilant Brawler, Leyline of Abundance
+║   Lands: Overgrown Tomb [T], Overgrown Tomb, Temple Garden, Forest [T], Forest [T], Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Flooded Strand
+  [Main 1]
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Plains→W, Concealed Courtyard→B (paying for Goryo's Vengeance, 6 mana remaining)
+    [Mana] Tap Watery Grave→B, Hallowed Fountain→U, Godless Shrine→B (paying for Goryo's Vengeance, 4 mana remaining)
+T10 P1:   Splice Goryo's Vengeance onto Goryo's Vengeance
+T10 P1: Cast Goryo's Vengeance (1B)
+    [Priority] P2 passes (no response)
+T10: Resolve Goryo's Vengeance
+T10 P1: Reanimate Griselbrand
+T10: Goryo's Vengeance moved stack -> graveyard (resolution)
+T10: Griselbrand moved battlefield -> graveyard (SBA 704.5j: legend rule (Griselbrand))
+T10 P1: Play Flooded Strand
+T10: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T10 P1: Crack Flooded Strand -> Island (untapped)
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Island→U, Godless Shrine→B (paying for Goryo's Vengeance, 2 mana remaining)
+T10 P1: Cast Goryo's Vengeance (1B)
+    [Priority] P2 passes (no response)
+T10: Resolve Goryo's Vengeance
+T10 P1: Reanimate Griselbrand
+T10: Goryo's Vengeance moved stack -> graveyard (resolution)
+T10: Griselbrand moved battlefield -> graveyard (SBA 704.5j: legend rule (Griselbrand))
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Griselbrand, Archon of Cruelty
+T10: Tyvar, Jubilant Brawler moved battlefield -> graveyard (Archon of Cruelty attack: sacrifice)
+T10 P1: Gain 3 life from Archon of Cruelty (life: 5)
+T10 P1: Archon of Cruelty attack drain — opp loses 3 life
+T10 P1: Attack with Griselbrand, Archon of Cruelty
+  [Declare Blockers] P2 does not block
+T10 P1:   Griselbrand (7/7) → 7 dmg to player
+T10 P1:   Archon of Cruelty (6/6) → 6 dmg to player
+P2 loses: life total -10
+  [Combat Damage] 13 damage dealt → P2 life: 3 → -10
+
+>>> Goryo's Vengeance wins Game 2 on turn 10 via damage
+    Final life: Goryo's Vengeance=12  Creatures Toolbox=-10
+
+======================================================================
+  GAME 3: Creatures Toolbox (P1) vs Goryo's Vengeance (P2)  —  seed 64502
+  Series: Creatures Toolbox 1 - 1 Goryo's Vengeance
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Goryo's Vengeance wins → chooses to play first
+║ P1 (on play): Goryo's Vengeance
+║ P2 (on draw): Creatures Toolbox
+╚═══════════════════════════════════════════════════════
+
+P1 (Creatures Toolbox) opening hand (3 lands, 4 spells):
+  • Leyline of Abundance [Spell, CMC 4]
+  • Badgermole Cub [Creature, CMC 2]
+  • Verdant Catacombs [Land, CMC 0]
+  • Windswept Heath [Land, CMC 0]
+  • Birds of Paradise [Creature, CMC 1]
+  • Nurturing Peatland [Land, CMC 0]
+  • Eternal Witness [Creature, CMC 3]
+→ P1 KEEPS 7 — has key card(s): Badgermole Cub, Birds of Paradise, 3 cheap spells
+
+P2 (Goryo's Vengeance) opening hand (1 lands, 6 spells):
+  • Leyline of Sanctity [Spell, CMC 4]
+  • Unburial Rites [Spell, CMC 5]
+  • Thoughtseize [Spell, CMC 1]
+  • Faithful Mending [Spell, CMC 2]
+  • Marsh Flats [Land, CMC 0]
+  • Undying Evil [Spell, CMC 1]
+  • Inquisition of Kozilek [Spell, CMC 1]
+→ P2 MULLIGANS (combo set present but lands miss colors ['U'])
+  New hand (2 lands, 5 spells): ['Flooded Strand', 'Undying Evil', 'Inquisition of Kozilek', 'Griselbrand', 'Thoughtseize', 'Unburial Rites', 'Concealed Courtyard']
+→ P2 MULLIGANS (combo path under-covered in 6-card hand (best path: 1/2 role buckets; need enabler))
+  New hand (2 lands, 5 spells): ['Leyline of Sanctity', 'Griselbrand', 'Atraxa, Grand Unifier', 'Archon of Cruelty', 'Undying Evil', 'Godless Shrine', 'Concealed Courtyard']
+→ P2 MULLIGANS (goal conjunction unreachable — no role-path coverage and no castable dig card)
+  New hand (2 lands, 5 spells): ['Faithful Mending', 'Unburial Rites', 'Unburial Rites', 'Marsh Flats', "Goryo's Vengeance", 'Flooded Strand', 'Faithful Mending']
+
+T0 P1: Leyline of Abundance begins the game on the battlefield (leyline)
+
+╔══ TURN 1 — Goryo's Vengeance (P2) ══════════════════════════
+║ Life: Goryo's Vengeance 20  |  Creatures Toolbox 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Marsh Flats
+T1: Marsh Flats moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Marsh Flats (pay 1 life) -> Godless Shrine (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 20  |  Goryo's Vengeance 19
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance
+║   Lands: (none)
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Devoted Druid
+  [Main 1]
+T1 P1: Play Verdant Catacombs
+T1: Verdant Catacombs moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Verdant Catacombs (pay 1 life) -> Temple Garden (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Goryo's Vengeance (P2) ══════════════════════════
+║ Life: Goryo's Vengeance 19  |  Creatures Toolbox 19
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance
+║   Lands: Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Atraxa, Grand Unifier
+  [Main 1]
+T2 P2: Play Flooded Strand
+T2: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T2 P2: Crack Flooded Strand (pay 1 life) -> Watery Grave (tapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 19  |  Goryo's Vengeance 18
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance
+║   Lands: Temple Garden
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Green Sun's Zenith
+  [Main 1]
+T2 P1: Play Nurturing Peatland
+    → Goal: deploy_engine
+    [Mana] Tap Temple Garden→G, Nurturing Peatland→B (paying for Badgermole Cub, 2 mana remaining)
+T2 P1: Cast Badgermole Cub (1G)
+    [Priority] P2 passes (no response)
+T2: Resolve Badgermole Cub
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Goryo's Vengeance (P2) ══════════════════════════
+║ Life: Goryo's Vengeance 18  |  Creatures Toolbox 19
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Watery Grave
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2)
+║   Other: Leyline of Abundance
+║   Lands: Temple Garden [T], Nurturing Peatland [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Silent Clearing
+  [Main 1]
+T3 P2: Play Silent Clearing
+    → Goal: fill_resource [enablers]
+    [Mana] Tap Godless Shrine→W, Watery Grave→U (paying for Faithful Mending, 3 mana remaining)
+T3 P2: Cast Faithful Mending (WU)
+    [Priority] P1 passes (no response)
+T3: Resolve Faithful Mending
+T3: Atraxa, Grand Unifier moved hand -> graveyard (discard)
+T3: Faithful Mending moved hand -> graveyard (discard)
+T3: Faithful Mending moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 19  |  Goryo's Vengeance 20
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2)
+║   Other: Leyline of Abundance
+║   Lands: Temple Garden, Nurturing Peatland
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine [T], Watery Grave [T], Silent Clearing
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Badgermole Cub
+  [Main 1]
+T3 P1: Play Windswept Heath
+T3: Windswept Heath moved battlefield -> graveyard (fetchland sacrifice)
+T3 P1: Crack Windswept Heath (pay 1 life) -> Overgrown Tomb (tapped, life: 18)
+    → Goal: execute_payoff
+    [Mana] Tap Temple Garden→G, Nurturing Peatland→B (paying for Badgermole Cub, 2 mana remaining)
+T3 P1: Cast Badgermole Cub (1G)
+    [Priority] P2 passes (no response)
+T3: Resolve Badgermole Cub
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Badgermole Cub
+T3 P1: Attack with Badgermole Cub
+  [Declare Blockers] P2 does not block
+T3 P1:   Badgermole Cub (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 20 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Goryo's Vengeance (P2) ══════════════════════════
+║ Life: Goryo's Vengeance 18  |  Creatures Toolbox 18
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 5
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Watery Grave, Silent Clearing
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2) [tapped], Badgermole Cub (2/2)
+║   Other: Leyline of Abundance
+║   Lands: Temple Garden [T], Nurturing Peatland [T], Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Plains
+  [Main 1]
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Godless Shrine→B, Watery Grave→B (paying for Goryo's Vengeance, 3 mana remaining)
+T4 P2: Cast Goryo's Vengeance (1B)
+    [Priority] P1 passes (no response)
+T4: Resolve Goryo's Vengeance
+T4 P2: Reanimate Atraxa, Grand Unifier
+T4: Archon of Cruelty moved library -> hand (Atraxa, Grand Unifier reveal)
+T4: Ephemerate moved library -> hand (Atraxa, Grand Unifier reveal)
+T4: Flooded Strand moved library -> hand (Atraxa, Grand Unifier reveal)
+T4: Unburial Rites moved library -> hand (Atraxa, Grand Unifier reveal)
+T4 P2: Atraxa, Grand Unifier ETB: put 4 to hand (Archon of Cruelty, Ephemerate, Flooded Strand, Unburial Rites)
+T4: Goryo's Vengeance moved stack -> graveyard (resolution)
+T4 P2: Play Flooded Strand
+T4: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T4 P2: Crack Flooded Strand (pay 1 life) -> Godless Shrine (tapped, life: 17)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Atraxa, Grand Unifier
+T4 P2: Attack with Atraxa, Grand Unifier
+  [Declare Blockers] P1 does not block
+T4 P2:   Atraxa, Grand Unifier (7/7) → 7 dmg to player
+  [Combat Damage] 7 damage dealt → P1 life: 18 → 11
+  [End Combat]
+  [Main 2]
+    → Goal: execute_payoff [protection]
+    [Mana] Tap Silent Clearing→W (paying for Ephemerate, 1 mana remaining)
+T4 P2: Cast Ephemerate (W)
+    [Priority] P1 passes (no response)
+T4: Resolve Ephemerate
+T4: Griselbrand moved library -> hand (Atraxa, Grand Unifier reveal)
+T4: Goryo's Vengeance moved library -> hand (Atraxa, Grand Unifier reveal)
+T4: Swamp moved library -> hand (Atraxa, Grand Unifier reveal)
+T4: Thoughtseize moved library -> hand (Atraxa, Grand Unifier reveal)
+T4 P2: Atraxa, Grand Unifier ETB: put 4 to hand (Griselbrand, Goryo's Vengeance, Swamp, Thoughtseize)
+T4: Blink Atraxa, Grand Unifier
+T4: Ephemerate moved stack -> exile (rebound (CR 702.86))
+  [End Step]
+T4: Archon of Cruelty moved hand -> graveyard (discard to hand size)
+T4: Griselbrand moved hand -> graveyard (discard to hand size)
+T4: Unburial Rites moved hand -> graveyard (discard to hand size)
+T4: Unburial Rites moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 4 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 11  |  Goryo's Vengeance 24
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 2
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2), Badgermole Cub (2/2)
+║   Other: Leyline of Abundance
+║   Lands: Temple Garden, Nurturing Peatland, Overgrown Tomb
+║ Goryo's Vengeance board:
+║   Creatures: Atraxa, Grand Unifier (7/7)
+║   Lands: Godless Shrine [T], Watery Grave [T], Silent Clearing [T], Godless Shrine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Green Sun's Zenith
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Temple Garden→G, Nurturing Peatland→G, Overgrown Tomb→B (paying for Eternal Witness, 3 mana remaining)
+T4 P1: Cast Eternal Witness (1GG)
+    [Priority] P2 passes (no response)
+T4: Resolve Eternal Witness
+T4 P1: Eternal Witness returns Verdant Catacombs from graveyard to hand
+T4 P1: Play Verdant Catacombs
+T4: Verdant Catacombs moved battlefield -> graveyard (fetchland sacrifice)
+T4 P1: Crack Verdant Catacombs (pay 1 life) -> Overgrown Tomb (tapped, life: 10)
+T4 P1: Activate Nurturing Peatland (sacrifice)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Badgermole Cub, Badgermole Cub
+T4 P1: Attack with Badgermole Cub, Badgermole Cub
+  [Declare Blockers] P2 does not block
+T4 P1:   Badgermole Cub (2/2) → 2 dmg to player
+T4 P1:   Badgermole Cub (2/2) → 2 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 24 → 20
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Goryo's Vengeance (P2) ══════════════════════════
+║ Life: Goryo's Vengeance 20  |  Creatures Toolbox 10
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 37  |  Graveyard: 10
+║ Goryo's Vengeance board:
+║   Creatures: Atraxa, Grand Unifier (7/7)
+║   Lands: Godless Shrine, Watery Grave, Silent Clearing, Godless Shrine
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2) [tapped], Badgermole Cub (2/2) [tapped], Eternal Witness (2/1)
+║   Other: Leyline of Abundance
+║   Lands: Temple Garden [T], Overgrown Tomb [T], Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T5 P2: Cast Ephemerate (W)
+T5 P2: Rebound Ephemerate
+T5: Resolve Ephemerate
+T5: Atraxa, Grand Unifier moved library -> hand (Atraxa, Grand Unifier reveal)
+T5: Leyline of Sanctity moved library -> hand (Atraxa, Grand Unifier reveal)
+T5: Faithful Mending moved library -> hand (Atraxa, Grand Unifier reveal)
+T5: Marsh Flats moved library -> hand (Atraxa, Grand Unifier reveal)
+T5 P2: Atraxa, Grand Unifier ETB: put 4 to hand (Atraxa, Grand Unifier, Leyline of Sanctity, Faithful Mending, Marsh Flats)
+T5: Blink Atraxa, Grand Unifier
+T5: Ephemerate moved stack -> exile (rebound (CR 702.86))
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Godless Shrine→B, Watery Grave→B (paying for Goryo's Vengeance, 4 mana remaining)
+T5 P2: Cast Goryo's Vengeance (1B)
+    [Priority] P1 passes (no response)
+T5: Resolve Goryo's Vengeance
+T5 P2: Reanimate Griselbrand
+T5: Goryo's Vengeance moved stack -> graveyard (resolution)
+T5 P2: Play Flooded Strand
+T5: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T5 P2: Crack Flooded Strand (pay 1 life) -> Hallowed Fountain (tapped, life: 19)
+T5 P2: Activate Silent Clearing (sacrifice)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Griselbrand
+T5 P2: Attack with Griselbrand
+  [Declare Blockers] P1 does not block
+T5 P2:   Griselbrand (7/7) → 7 dmg to player
+  [Combat Damage] 7 damage dealt → P1 life: 10 → 3
+  [End Combat]
+  [Main 2]
+    → Goal: execute_payoff [protection]
+    [Mana] Tap Godless Shrine→W (paying for Ephemerate, 1 mana remaining)
+T5 P2: Cast Ephemerate (W)
+    [Priority] P1 passes (no response)
+T5: Resolve Ephemerate
+T5: Goryo's Vengeance moved library -> hand (Atraxa, Grand Unifier reveal)
+T5: Concealed Courtyard moved library -> hand (Atraxa, Grand Unifier reveal)
+T5: Inquisition of Kozilek moved library -> hand (Atraxa, Grand Unifier reveal)
+T5 P2: Atraxa, Grand Unifier ETB: put 3 to hand (Goryo's Vengeance, Concealed Courtyard, Inquisition of Kozilek)
+T5: Blink Atraxa, Grand Unifier
+T5: Ephemerate moved stack -> exile (rebound (CR 702.86))
+  [End Step]
+T5: Griselbrand moved battlefield -> exile (delayed end-of-turn exile)
+T5: Griselbrand exiled (end of turn)
+T5: Atraxa, Grand Unifier moved hand -> graveyard (discard to hand size)
+T5: Faithful Mending moved hand -> graveyard (discard to hand size)
+T5: Plains moved hand -> graveyard (discard to hand size)
+T5: Swamp moved hand -> graveyard (discard to hand size)
+T5: Marsh Flats moved hand -> graveyard (discard to hand size)
+T5: Flooded Strand moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 5 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 3  |  Goryo's Vengeance 26
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 3
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2), Badgermole Cub (2/2), Eternal Witness (2/1)
+║   Other: Leyline of Abundance
+║   Lands: Temple Garden, Overgrown Tomb, Overgrown Tomb
+║ Goryo's Vengeance board:
+║   Creatures: Atraxa, Grand Unifier (7/7)
+║   Lands: Godless Shrine [T], Watery Grave [T], Godless Shrine [T], Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Nature's Rhythm
+  [Main 1]
+T5 P1: Play Verdant Catacombs
+T5: Verdant Catacombs moved battlefield -> graveyard (fetchland sacrifice)
+T5 P1: Crack Verdant Catacombs -> Dryad Arbor (untapped)
+    → Goal: execute_payoff
+    [Mana] Tap Dryad Arbor→G, Temple Garden→G (paying for Devoted Druid, 4 mana remaining)
+T5 P1: Cast Devoted Druid (1G)
+    [Priority] P2 passes (no response)
+T5: Resolve Devoted Druid
+    → Goal: execute_payoff
+    [Mana] Tap Overgrown Tomb→G (paying for Birds of Paradise, 2 mana remaining)
+T5 P1: Cast Birds of Paradise (G)
+    [Priority] P2 passes (no response)
+T5: Resolve Birds of Paradise
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Badgermole Cub, Badgermole Cub, Eternal Witness
+T5 P1: Attack with Badgermole Cub, Badgermole Cub, Eternal Witness
+  [Declare Blockers] P2 does not block
+T5 P1:   Badgermole Cub (2/2) → 2 dmg to player
+T5 P1:   Badgermole Cub (2/2) → 2 dmg to player
+T5 P1:   Eternal Witness (2/1) → 2 dmg to player
+  [Combat Damage] 6 damage dealt → P2 life: 26 → 20
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Goryo's Vengeance (P2) ══════════════════════════
+║ Life: Goryo's Vengeance 20  |  Creatures Toolbox 2
+║ Hand: 7 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 27  |  Graveyard: 18
+║ Goryo's Vengeance board:
+║   Creatures: Atraxa, Grand Unifier (7/7)
+║   Lands: Godless Shrine, Watery Grave, Godless Shrine, Hallowed Fountain
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2) [tapped], Badgermole Cub (2/2) [tapped], Eternal Witness (2/1) [tapped], Dryad Arbor (1/1) [tapped], Devoted Druid (0/2), Birds of Paradise (0/1)
+║   Other: Leyline of Abundance
+║   Lands: Temple Garden [T], Overgrown Tomb [T], Overgrown Tomb, Dryad Arbor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T6 P2: Cast Ephemerate (W)
+T6 P2: Rebound Ephemerate
+T6 P2: Cast Ephemerate (W)
+T6 P2: Rebound Ephemerate
+T6: Resolve Ephemerate
+T6: Griselbrand moved library -> hand (Atraxa, Grand Unifier reveal)
+T6: Leyline of Sanctity moved library -> hand (Atraxa, Grand Unifier reveal)
+T6: Goryo's Vengeance moved library -> hand (Atraxa, Grand Unifier reveal)
+T6: Island moved library -> hand (Atraxa, Grand Unifier reveal)
+T6: Inquisition of Kozilek moved library -> hand (Atraxa, Grand Unifier reveal)
+T6 P2: Atraxa, Grand Unifier ETB: put 5 to hand (Griselbrand, Leyline of Sanctity, Goryo's Vengeance, Island, Inquisition of Kozilek)
+T6: Blink Atraxa, Grand Unifier
+T6: Ephemerate moved stack -> exile (rebound (CR 702.86))
+T6: Resolve Ephemerate
+T6: Archon of Cruelty moved library -> hand (Atraxa, Grand Unifier reveal)
+T6: Undying Evil moved library -> hand (Atraxa, Grand Unifier reveal)
+T6: Concealed Courtyard moved library -> hand (Atraxa, Grand Unifier reveal)
+T6: Unburial Rites moved library -> hand (Atraxa, Grand Unifier reveal)
+T6 P2: Atraxa, Grand Unifier ETB: put 4 to hand (Archon of Cruelty, Undying Evil, Concealed Courtyard, Unburial Rites)
+T6: Blink Atraxa, Grand Unifier
+T6: Ephemerate moved stack -> exile (rebound (CR 702.86))
+  [Draw] P2 draws: Faithful Mending
+  [Main 1]
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Godless Shrine→B, Watery Grave→B (paying for Goryo's Vengeance, 4 mana remaining)
+T6 P2: Cast Goryo's Vengeance (1B)
+    [Priority] P1 passes (no response)
+T6: Resolve Goryo's Vengeance
+T6 P2: Reanimate Atraxa, Grand Unifier
+T6: Atraxa, Grand Unifier moved library -> hand (Atraxa, Grand Unifier reveal)
+T6: Undying Evil moved library -> hand (Atraxa, Grand Unifier reveal)
+T6: Marsh Flats moved library -> hand (Atraxa, Grand Unifier reveal)
+T6: Inquisition of Kozilek moved library -> hand (Atraxa, Grand Unifier reveal)
+T6 P2: Atraxa, Grand Unifier ETB: put 4 to hand (Atraxa, Grand Unifier, Undying Evil, Marsh Flats, Inquisition of Kozilek)
+T6: Goryo's Vengeance moved stack -> graveyard (resolution)
+T6: Atraxa, Grand Unifier moved battlefield -> graveyard (SBA 704.5j: legend rule (Atraxa, Grand Unifier))
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Godless Shrine→B, Hallowed Fountain→U (paying for Goryo's Vengeance, 2 mana remaining)
+T6 P2: Cast Goryo's Vengeance (1B)
+    [Priority] P1 passes (no response)
+T6: Resolve Goryo's Vengeance
+T6 P2: Reanimate Atraxa, Grand Unifier
+T6: Griselbrand moved library -> hand (Atraxa, Grand Unifier reveal)
+T6: Ephemerate moved library -> hand (Atraxa, Grand Unifier reveal)
+T6: Concealed Courtyard moved library -> hand (Atraxa, Grand Unifier reveal)
+T6: Thoughtseize moved library -> hand (Atraxa, Grand Unifier reveal)
+T6 P2: Atraxa, Grand Unifier ETB: put 4 to hand (Griselbrand, Ephemerate, Concealed Courtyard, Thoughtseize)
+T6: Goryo's Vengeance moved stack -> graveyard (resolution)
+T6: Atraxa, Grand Unifier moved battlefield -> graveyard (SBA 704.5j: legend rule (Atraxa, Grand Unifier))
+T6 P2: Play Marsh Flats
+T6: Marsh Flats moved battlefield -> graveyard (fetchland sacrifice)
+T6 P2: Crack Marsh Flats -> Swamp (untapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T6: Griselbrand moved hand -> graveyard (discard to hand size)
+T6: Archon of Cruelty moved hand -> graveyard (discard to hand size)
+T6: Griselbrand moved hand -> graveyard (discard to hand size)
+T6: Atraxa, Grand Unifier moved hand -> graveyard (discard to hand size)
+T6: Faithful Mending moved hand -> graveyard (discard to hand size)
+T6: Concealed Courtyard moved hand -> graveyard (discard to hand size)
+T6: Island moved hand -> graveyard (discard to hand size)
+T6: Concealed Courtyard moved hand -> graveyard (discard to hand size)
+T6: Unburial Rites moved hand -> graveyard (discard to hand size)
+T6: Unburial Rites moved hand -> graveyard (discard to hand size)
+T6: Thoughtseize moved hand -> graveyard (discard to hand size)
+T6: Thoughtseize moved hand -> graveyard (discard to hand size)
+T6: Leyline of Sanctity moved hand -> graveyard (discard to hand size)
+T6: Inquisition of Kozilek moved hand -> graveyard (discard to hand size)
+T6: Leyline of Sanctity moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 6 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 2  |  Goryo's Vengeance 19
+║ Hand: 3 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 43  |  Graveyard: 4
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2), Badgermole Cub (2/2), Eternal Witness (2/1), Dryad Arbor (1/1), Devoted Druid (0/2), Birds of Paradise (0/1)
+║   Other: Leyline of Abundance
+║   Lands: Temple Garden, Overgrown Tomb, Overgrown Tomb, Dryad Arbor
+║ Goryo's Vengeance board:
+║   Creatures: Atraxa, Grand Unifier (7/7)
+║   Lands: Godless Shrine [T], Watery Grave [T], Godless Shrine [T], Hallowed Fountain [T], Swamp
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Delighted Halfling
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Dryad Arbor→G (paying for Delighted Halfling, 6 mana remaining)
+T6 P1: Cast Delighted Halfling (G)
+    [Priority] P2 passes (no response)
+T6: Resolve Delighted Halfling
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Badgermole Cub, Badgermole Cub, Eternal Witness
+T6 P1: Attack with Badgermole Cub, Badgermole Cub, Eternal Witness
+  [Declare Blockers] P2 does not block
+T6 P1:   Badgermole Cub (2/2) → 2 dmg to player
+T6 P1:   Badgermole Cub (2/2) → 2 dmg to player
+T6 P1:   Eternal Witness (2/1) → 2 dmg to player
+  [Combat Damage] 6 damage dealt → P2 life: 19 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Goryo's Vengeance (P2) ══════════════════════════
+║ Life: Goryo's Vengeance 13  |  Creatures Toolbox 2
+║ Hand: 7 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 8  |  Graveyard: 36
+║ Goryo's Vengeance board:
+║   Creatures: Atraxa, Grand Unifier (7/7)
+║   Lands: Godless Shrine, Watery Grave, Godless Shrine, Hallowed Fountain, Swamp
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2) [tapped], Badgermole Cub (2/2) [tapped], Eternal Witness (2/1) [tapped], Dryad Arbor (1/1) [tapped], Devoted Druid (0/2), Birds of Paradise (0/1), Delighted Halfling (1/2)
+║   Other: Leyline of Abundance
+║   Lands: Temple Garden, Overgrown Tomb, Overgrown Tomb, Dryad Arbor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T7 P2: Cast Ephemerate (W)
+T7 P2: Rebound Ephemerate
+T7 P2: Cast Ephemerate (W)
+T7 P2: Rebound Ephemerate
+T7: Resolve Ephemerate
+T7: Griselbrand moved library -> hand (Atraxa, Grand Unifier reveal)
+T7: Ephemerate moved library -> hand (Atraxa, Grand Unifier reveal)
+T7: Concealed Courtyard moved library -> hand (Atraxa, Grand Unifier reveal)
+T7: Thoughtseize moved library -> hand (Atraxa, Grand Unifier reveal)
+T7 P2: Atraxa, Grand Unifier ETB: put 4 to hand (Griselbrand, Ephemerate, Concealed Courtyard, Thoughtseize)
+T7: Blink Atraxa, Grand Unifier
+T7: Ephemerate moved stack -> exile (rebound (CR 702.86))
+T7: Resolve Ephemerate
+T7: Archon of Cruelty moved library -> hand (Atraxa, Grand Unifier reveal)
+T7: Marsh Flats moved library -> hand (Atraxa, Grand Unifier reveal)
+T7 P2: Atraxa, Grand Unifier ETB: put 2 to hand (Archon of Cruelty, Marsh Flats)
+T7: Blink Atraxa, Grand Unifier
+T7: Ephemerate moved stack -> exile (rebound (CR 702.86))
+  [Draw] P2 draws: Silent Clearing
+  [Main 1]
+    → Goal: push_damage
+    [Mana] Tap Swamp→B, Godless Shrine→B, Watery Grave→B, Godless Shrine→B, Hallowed Fountain→U (paying for Unburial Rites, 5 mana remaining)
+T7 P2: Cast Unburial Rites (4B)
+    [Priority] P1 passes (no response)
+T7: Resolve Unburial Rites
+T7 P2: Reanimate Atraxa, Grand Unifier
+T7: Atraxa, Grand Unifier moved library -> hand (Atraxa, Grand Unifier reveal)
+T7 P2: Atraxa, Grand Unifier ETB: put 1 to hand (Atraxa, Grand Unifier)
+T7 P2: Unburial Rites reanimates Atraxa, Grand Unifier
+T7: Unburial Rites moved stack -> exile (flashback resolution (CR 702.33a))
+T7: Atraxa, Grand Unifier moved battlefield -> graveyard (SBA 704.5j: legend rule (Atraxa, Grand Unifier))
+T7 P2: Play Marsh Flats
+T7: Marsh Flats moved battlefield -> graveyard (fetchland sacrifice)
+T7 P2: Crack Marsh Flats (no valid land found)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T7: Concealed Courtyard moved hand -> graveyard (discard to hand size)
+T7: Concealed Courtyard moved hand -> graveyard (discard to hand size)
+T7: Griselbrand moved hand -> graveyard (discard to hand size)
+T7: Archon of Cruelty moved hand -> graveyard (discard to hand size)
+T7: Atraxa, Grand Unifier moved hand -> graveyard (discard to hand size)
+T7: Inquisition of Kozilek moved hand -> graveyard (discard to hand size)
+T7: Undying Evil moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 7 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 2  |  Goryo's Vengeance 12
+║ Hand: 3 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 42  |  Graveyard: 4
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2), Badgermole Cub (2/2), Eternal Witness (2/1), Dryad Arbor (1/1), Devoted Druid (0/2), Birds of Paradise (0/1), Delighted Halfling (1/2)
+║   Other: Leyline of Abundance
+║   Lands: Temple Garden, Overgrown Tomb, Overgrown Tomb, Dryad Arbor
+║ Goryo's Vengeance board:
+║   Creatures: Atraxa, Grand Unifier (7/7)
+║   Lands: Godless Shrine [T], Watery Grave [T], Godless Shrine [T], Hallowed Fountain [T], Swamp [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Fiend Artisan
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Badgermole Cub, Badgermole Cub, Eternal Witness, Dryad Arbor, Delighted Halfling
+T7 P1: Attack with Badgermole Cub, Badgermole Cub, Eternal Witness, Dryad Arbor, Delighted Halfling
+  [Declare Blockers] P2 does not block
+T7 P1:   Badgermole Cub (2/2) → 2 dmg to player
+T7 P1:   Badgermole Cub (2/2) → 2 dmg to player
+T7 P1:   Eternal Witness (2/1) → 2 dmg to player
+T7 P1:   Dryad Arbor (1/1) → 1 dmg to player
+T7 P1:   Delighted Halfling (1/2) → 1 dmg to player
+  [Combat Damage] 8 damage dealt → P2 life: 12 → 4
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Goryo's Vengeance (P2) ══════════════════════════
+║ Life: Goryo's Vengeance 4  |  Creatures Toolbox 2
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 0  |  Graveyard: 43
+║ Goryo's Vengeance board:
+║   Creatures: Atraxa, Grand Unifier (7/7)
+║   Lands: Godless Shrine, Watery Grave, Godless Shrine, Hallowed Fountain, Swamp
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2) [tapped], Badgermole Cub (2/2) [tapped], Eternal Witness (2/1) [tapped], Dryad Arbor (1/1) [tapped], Devoted Druid (0/2), Birds of Paradise (0/1), Delighted Halfling (1/2) [tapped]
+║   Other: Leyline of Abundance
+║   Lands: Temple Garden, Overgrown Tomb, Overgrown Tomb, Dryad Arbor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T8 P2: Cast Ephemerate (W)
+T8 P2: Rebound Ephemerate
+T8 P2: Cast Ephemerate (W)
+T8 P2: Rebound Ephemerate
+T8: Resolve Ephemerate
+T8: Blink Atraxa, Grand Unifier
+T8: Ephemerate moved stack -> exile (rebound (CR 702.86))
+T8: Resolve Ephemerate
+T8: Blink Atraxa, Grand Unifier
+T8: Ephemerate moved stack -> exile (rebound (CR 702.86))
+P2 loses: empty library
+
+>>> Creatures Toolbox wins Game 3 on turn 8 via mill
+    Final life: Creatures Toolbox=2  Goryo's Vengeance=4
+
+======================================================================
+  MATCH RESULT: Creatures Toolbox wins 2-1
+======================================================================
