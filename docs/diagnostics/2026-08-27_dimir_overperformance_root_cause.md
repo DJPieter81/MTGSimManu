@@ -211,6 +211,48 @@ residual, and the LD mechanic hole should each pull Dimir's anomalous rows
 touching a line of Dimir-relevant scoring — the same direction the 71→68.5
 trajectory already shows.
 
+## FOLLOW-UP RESOLUTION (2026-08-28) — three flagged defects re-tested
+
+Each of the three engine/AI items this doc raised was reproduced (or not)
+in a test before any code changed.
+
+1. **Rebound re-blink loop — REPRODUCED, FIXED.** The upkeep pass took the
+   "you may cast it" recast unconditionally, re-blinking the controller's
+   highest-threat body into summoning sickness every upkeep. The choice now
+   goes through `EVPlayer.decide_optional_recast`, which declines a recast
+   that resets an attack-capable creature unless the recast's own EV covers
+   the forfeited combat step (priced by the shared clock primitive
+   `ai/clock.forfeited_attack_clock_impact`). Two rules bugs fell out with
+   it: a declined/targetless rebound card used to be dropped out of every
+   zone, and the free recast re-earned rebound forever (CR 702.88a scopes
+   the replacement to a spell cast FROM HAND — `_cast_from_zone` now
+   records the origin). Pin:
+   `tests/test_optional_recast_respects_pending_attack.py`.
+
+2. **Bowmasters "zero triggers" — DID NOT REPRODUCE.** An instrumented
+   re-run of s62000 (patching the on-draw damage applier to log) fires all
+   SEVEN triggers on the T8 draw-7; per-card firing and the
+   first-draw-of-draw-step exemption are both correct. The claim came from
+   the absence of a log line the DRAW fan-out never emits. What the same
+   evidence DOES show is a state-based-action hole: those triggers took the
+   drawing player from 2 to −5 life, nothing checked SBAs, and a lifelink
+   attack later in the turn restored them to 2 — they kept playing a game
+   they had already lost. Fixed in the DRAW fan-out (one SBA pass when a
+   handler fires; draws stop once the game ends). Pin:
+   `tests/test_per_draw_triggers_fire_per_card.py`.
+
+3. **Spell Pierce unpaid tax — DID NOT REPRODUCE.** The offer path, the
+   payment, and the real `AICallbacks.decide_optional_cost` verdict are all
+   correct in a reconstruction of the replayed shape (the production seam
+   answers "pay" with 4 untapped lands). The replayed instance was an
+   *unpayable* tax: Ponza had 4 lands, tapped 3 for the 3-mana spell and
+   held 1 — below the {2}. The misleading part was the log line, which
+   measured "N mana remaining" BEFORE the cost was paid and so counted the
+   mana earmarked for that very spell ("4 mana remaining" with one untapped
+   land). The line is now emitted post-payment. Pins:
+   `tests/test_counter_tax_is_offered_and_payable.py` (production wiring —
+   previously covered only through stub callbacks) and its mana-log case.
+
 ## LD MECHANIC MEASURED (2026-08-28, post-#563)
 
 The LD hole this doc flagged is closed and confirmed: **Boros Ponza
