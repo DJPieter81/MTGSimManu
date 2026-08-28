@@ -1,6 +1,6 @@
 ---
 title: Tranche-3 acceptance on Creatures Toolbox — REFUTED; effect-kind whitelist is the next gate
-status: active
+status: falsified
 priority: secondary
 session: 2026-08-26
 supersedes: []
@@ -55,3 +55,22 @@ Tron vs Amulet Titan seed=50500, winner unchanged, turns 12 → 13 —
 snapshot deliberately NOT refreshed in the feature branch; refresh with
 the merge. The acceptance re-measurement (Creatures Toolbox field WR)
 has NOT been re-run — this doc stays `active` until that number exists.
+
+## SECOND ACCEPTANCE — TUTOR EFFECT-KINDS ALSO REFUTED (2026-08-28, post-#563)
+
+The effect-kind whitelist expansion this doc predicted landed (TUTOR_* kinds,
+resolution through the library-search funnel, delivery-conditioned
+valuation). Acceptance, n=20 Bo3 field: **13.8 -> 10.2 (-3.6pp)** — the
+prediction FAILED, the second successive named-gate fix (after tranche-3
+costs) that did not move this deck. The deck now spends mana on tutor
+activations without converting them.
+
+**Loop-break applies:** no third mechanism guess. Creatures Toolbox has
+never received its own replay diagnosis — both prior predictions were
+inferences from activation-subsystem whitelists. If this row is pursued
+again, the next step is the full protocol (Bo3 replays, first-divergence
+walk, subsystem named from evidence) — or an explicit decision that a
+fringe toolbox list at ~10-15% is accepted with a lowered band. The
+mechanics built along the way (payable costs, executable tutors) stand on
+their own class-wide correctness — Ponza's +12.5pp from the same PR's LD
+class is the proof the method works when the diagnosis is right.
