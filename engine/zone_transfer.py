@@ -309,6 +309,7 @@ def _fire_on_draw_triggers(game: "GameState", card: "CardInstance",
     # "whenever you draw" effects, opp permanents fire "whenever an
     # opponent draws" effects. The handler triple decides side, verb,
     # and application.
+    fired = False
     for source_player, role in ((player, "own"), (opp, "opp")):
         for src_card in source_player.battlefield:
             src_tags = tags_for(src_card.name)
@@ -325,6 +326,20 @@ def _fire_on_draw_triggers(game: "GameState", card: "CardInstance",
                     # on-draw trigger clause contains "draw".
                     trigger_phrase="draw")
                 handler.apply(game, controller, src_card, amount)
+                fired = True
+
+    # CR 704.3 — state-based actions are checked as soon as a player
+    # would receive priority, which is immediately after each of these
+    # triggers resolves. Without this pass a player driven to 0 or less
+    # life mid-draw (a draw-N into an on-draw damage source) keeps
+    # acting, and life gained later in the same turn "un-kills" them —
+    # the failure behind
+    # docs/diagnostics/2026-08-27_dimir_overperformance_root_cause.md's
+    # draw-7 evidence. Only run the pass when a handler actually
+    # applied something, so the common no-on-draw-permanent draw stays
+    # free.
+    if fired:
+        game.check_state_based_actions()
 
 
 def _fire_etb_triggers(game: "GameState", card: "CardInstance",
