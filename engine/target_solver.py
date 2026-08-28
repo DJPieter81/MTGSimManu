@@ -56,6 +56,12 @@ class TargetRequirement:
                         — creature OR planeswalker OR player).
         supertype:      "legendary" / "nonlegendary" / "basic" / "snow"
                         / None.
+        subtype:        lowercase SUBTYPE the target must have ("forest",
+                        "gate", "goblin", "equipment") or None. Distinct
+                        from `types` (card types) and `supertype`; a
+                        subtype restriction narrows an otherwise-wildcard
+                        "permanent" requirement — "Untap target Forest"
+                        is types={"permanent"} + subtype="forest".
         owner_scope:    "you" / "opponent" / "any".
         is_optional:    True for "up to" / "you may target".
         count_min:      1 for plain "target X"; 0 for "up to N target X";
@@ -74,6 +80,7 @@ class TargetRequirement:
     zone: Zone
     types: FrozenSet[str]
     supertype: Optional[str] = None
+    subtype: Optional[str] = None
     owner_scope: OwnerScope = "any"
     is_optional: bool = False
     count_min: int = 1
@@ -556,6 +563,19 @@ def _matches_supertype(card: "CardInstance",
     return True
 
 
+def _matches_subtype(card: "CardInstance", subtype: Optional[str]) -> bool:
+    """Filter by SUBTYPE (CR 205.3). None = no filter.
+
+    Printed subtypes only. A type-adding continuous effect ("lands you
+    control are Forests") is a layer-7 question the continuous-effects
+    manager owns; reading it here would put two owners on the same rule.
+    """
+    if subtype is None:
+        return True
+    have = getattr(card.template, "subtypes", None) or ()
+    return subtype in {str(s).lower() for s in have}
+
+
 def _matches_owner(card: "CardInstance", controller: int,
                    owner_scope: OwnerScope) -> bool:
     """Owner / controller filter. CR 109.4: cards on the battlefield
@@ -696,6 +716,8 @@ def has_legal_target(game: "GameState", controller: int,
             continue
         if not _matches_supertype(card, req.supertype):
             continue
+        if not _matches_subtype(card, req.subtype):
+            continue
         if req.zone == "battlefield" and _blocked_by_hexproof(card, controller):
             continue
         # Owner already pre-filtered by _zone_cards.
@@ -739,6 +761,8 @@ def enumerate_legal_targets(game: "GameState", controller: int,
         if not _matches_type(card, req.types, req.zone):
             continue
         if not _matches_supertype(card, req.supertype):
+            continue
+        if not _matches_subtype(card, req.subtype):
             continue
         if req.zone == "battlefield" and _blocked_by_hexproof(card, controller):
             continue

@@ -758,9 +758,48 @@ _ANY_COLOR_UNIT = ['W', 'U', 'B', 'R', 'G']
 # Cost verbs this tranche cannot charge. Parsed and RECORDED (never dropped)
 # so the ability is visible-but-refused; a later tranche adds payers without
 # re-parsing the pool.
+# ── Counter cost items (tranche 4) ───────────────────────────────────
+# Permanent-type words a self-referential counter cost may name ("... on
+# THIS creature", "... from THIS artifact"). A cost that names another
+# permanent ("from a creature you control"), a group ("from among
+# creatures you control"), or the card by name is a different cost shape
+# and stays on the unpayable path.
+_COUNTER_SELF_WORDS = (r'creature|artifact|enchantment|land|permanent'
+                       r'|planeswalker|vehicle|token|battle|equipment')
+# ANCHORED (fullmatch) like every other cost item: an unbounded count
+# ("any number of", "all", "one or more") or a trailing rider must fail
+# the match rather than be approximated by a fixed amount.
+_PUT_COUNTER_COST_RE = re.compile(
+    r'put (?P<n>a|an|one|two|three|\d+) (?P<kind>[^ ]+) counters? on this '
+    r'(?:' + _COUNTER_SELF_WORDS + r')')
+_REMOVE_COUNTER_COST_RE = re.compile(
+    r'remove (?P<n>a|an|one|two|three|\d+) (?P<kind>[^ ]+) counters? from '
+    r'this (?:' + _COUNTER_SELF_WORDS + r')')
+# A P/T counter kind the instance model can actually hold. `plus_counters`
+# / `minus_counters` are symmetric (+N/+N, -N/-N) fields, so a -0/-1 or a
+# +2/+2 counter has no representation — refused, never mapped onto the
+# nearest available kind.
+_PT_COUNTER_KIND_RE = re.compile(r'^[+\-]\d+/[+\-]\d+$')
+_NAMED_COUNTER_KIND_RE = re.compile(r"^[a-z][a-z\-']*$")
+
+
+def _canonical_counter_kind(word: str) -> Optional[str]:
+    """Normalise a parsed counter-kind word, or None when the instance
+    model cannot represent that kind of counter."""
+    from .cards import COUNTER_KIND_MINUS, COUNTER_KIND_PLUS
+    if word in (COUNTER_KIND_PLUS, COUNTER_KIND_MINUS):
+        return word
+    if _PT_COUNTER_KIND_RE.match(word):
+        return None  # a P/T counter with no field to live on
+    if _NAMED_COUNTER_KIND_RE.match(word) and word != 'counter':
+        return word
+    return None
+
+
 _UNPAYABLE_COST_PATTERNS = (
     # Tranche 3 graduated single-victim sacrifices and plain discard-N to
-    # structured fields; what reaches these patterns now is the residue —
+    # structured fields; tranche 4 graduated self-referential counter costs;
+    # what reaches these patterns now is the residue —
     # multi-victim / or-typed / subtype-restricted sacrifices, and
     # at-random / type-restricted / whole-hand discards.
     ('sacrifice', r'sacrifice\b'),
@@ -852,6 +891,10 @@ def parse_activation_cost(cost_text: str):
     sacrifice_type = None
     sacrifice_another = False
     discard_cards = 0
+    put_counter_kind = None
+    put_counter_amount = 0
+    remove_counter_kind = None
+    remove_counter_amount = 0
     x_count = 0
     unpayable = []
     for part in raw.split(','):
@@ -888,6 +931,31 @@ def parse_activation_cost(cost_text: str):
             discard_cards += (int(tok) if tok.isdigit()
                               else _NUM_WORDS.get(tok, 0))
             continue
+        # Tranche 4: counter costs on the SOURCE. Parsed into a kind + an
+        # amount; a SECOND counter item of the same direction is a choice
+        # shape the schema cannot hold, so it falls through to unpayable.
+        m_put = _PUT_COUNTER_COST_RE.fullmatch(low)
+        if m_put and put_counter_kind is None:
+            kind = _canonical_counter_kind(m_put.group('kind'))
+            if kind is not None:
+                tok = m_put.group('n')
+                put_counter_kind = kind
+                put_counter_amount = (
+                    int(tok) if tok.isdigit()
+                    else (1 if tok in ('a', 'an', 'one')
+                          else _NUM_WORDS.get(tok, 0)))
+                continue
+        m_rem = _REMOVE_COUNTER_COST_RE.fullmatch(low)
+        if m_rem and remove_counter_kind is None:
+            kind = _canonical_counter_kind(m_rem.group('kind'))
+            if kind is not None:
+                tok = m_rem.group('n')
+                remove_counter_kind = kind
+                remove_counter_amount = (
+                    int(tok) if tok.isdigit()
+                    else (1 if tok in ('a', 'an', 'one')
+                          else _NUM_WORDS.get(tok, 0)))
+                continue
         if re.fullmatch(r'(\{[wubrgcxs0-9/]+\}\s*)+', low):
             # {X} pips are a COUNT, not fixed mana: X is chosen at
             # activation time (CR 601.2b). Whether the count is chargeable
@@ -915,6 +983,10 @@ def parse_activation_cost(cost_text: str):
                           sacrifice_type=sacrifice_type,
                           sacrifice_another=sacrifice_another,
                           discard_cards=discard_cards,
+                          put_counter_kind=put_counter_kind,
+                          put_counter_amount=put_counter_amount,
+                          remove_counter_kind=remove_counter_kind,
+                          remove_counter_amount=remove_counter_amount,
                           x_count=x_count,
                           unpayable=tuple(unpayable))
 
@@ -983,6 +1055,13 @@ def classify_activation_effect(effect_text: str):
     # rather than executing as a bare haste grant with riders dropped.
     if re.fullmatch(r'target creature gains haste until end of turn', low):
         return K.GRANT_HASTE_TARGET, 0, 0, 0
+
+    # Untap (single full-sentence). The structured target constraint is
+    # re-derived by `parse_activated_abilities` via `parse_activation_untap`
+    # and stored on the ability's `target_requirements` — both parses happen
+    # once, at DB load time.
+    if parse_activation_untap(low) is not None:
+        return K.UNTAP_TARGET_PERMANENT, 0, 0, 0
 
     # Activated tutor (single full-sentence search). The structured
     # constraint is re-derived by `parse_activated_abilities` via
@@ -1086,6 +1165,85 @@ def parse_activation_tutor(effect_text: str) -> Optional[Dict]:
     }
 
 
+# ── Activated untap effects (UNTAP_TARGET_PERMANENT) ─────────────────
+# Same closed-vocabulary discipline as the tutor constraint above: a
+# qualifier word outside these sets is treated as a SUBTYPE word (Forest,
+# Gate, Myr, ...), and any word that changes WHICH objects are untapped
+# ('another', 'all', 'each', a count, a union connector) refuses the whole
+# line. That refusal is load-bearing, not conservatism: reading "Untap
+# ANOTHER target permanent" as a plain "untap target permanent" would let
+# the source untap itself and manufacture a repeatable loop the printed
+# card does not have.
+_UNTAP_TYPE_WORDS = frozenset({
+    'creature', 'artifact', 'enchantment', 'land', 'planeswalker',
+    'permanent'})
+_UNTAP_SUPERTYPE_WORDS = frozenset({'basic', 'legendary', 'snow'})
+_UNTAP_REFUSE_WORDS = frozenset({
+    'or', 'and', 'another', 'each', 'all', 'other', 'up', 'to', 'x',
+    'that', 'with', 'not', 'named', 'attacking', 'blocking', 'tapped',
+    'untapped'})
+
+_UNTAP_SELF_RE = re.compile(r'untap this (?P<word>[a-z]+)')
+_UNTAP_TARGET_RE = re.compile(
+    r"untap target (?P<quals>[a-z][a-z\-' ]*?)(?P<scope> you control)?")
+
+
+def parse_activation_untap(effect_text: str) -> Optional[Dict]:
+    """Parse an activated untap sentence into its structured shape, or
+    ``None`` when the sentence is not one of the two executable forms.
+
+    Returns::
+
+        {'self': bool,              # True for "Untap this <permanent>"
+         'types': ['land', ...],    # card-type words ('permanent' wildcard)
+         'supertype': str | None,
+         'subtype': str | None,     # 'forest', 'gate', ...
+         'owner': 'you' | 'any'}
+
+    Called once at DB load (via ``parse_activated_abilities``), never at
+    runtime — the oracle-runtime-parse ratchet stays at 0.
+    """
+    low = (effect_text or '').strip().lower().rstrip('.')
+
+    m_self = _UNTAP_SELF_RE.fullmatch(low)
+    if m_self is not None:
+        if m_self.group('word') not in _UNTAP_TYPE_WORDS:
+            return None
+        return {'self': True, 'types': [], 'supertype': None,
+                'subtype': None, 'owner': 'any'}
+
+    m = _UNTAP_TARGET_RE.fullmatch(low)
+    if m is None:
+        return None
+    types: list = []
+    supertype = None
+    subtype = None
+    for word in (m.group('quals') or '').split():
+        if word in _UNTAP_REFUSE_WORDS or word in _NUM_WORDS or word.isdigit():
+            return None
+        if word in _UNTAP_TYPE_WORDS:
+            types.append(word)
+        elif word in _UNTAP_SUPERTYPE_WORDS:
+            if supertype is not None:
+                return None
+            supertype = word
+        else:
+            if subtype is not None:
+                return None
+            subtype = word
+    if len(types) > 1:
+        # "target artifact creature" is a CONJUNCTION; TargetRequirement's
+        # type set is a disjunction, so the constraint cannot be expressed.
+        return None
+    if not types and subtype is None:
+        return None
+    return {'self': False,
+            'types': types or ['permanent'],
+            'supertype': supertype,
+            'subtype': subtype,
+            'owner': 'you' if m.group('scope') else 'any'}
+
+
 def parse_activated_abilities(oracle: str):
     """Parse every "[Cost]: [Effect]" line a permanent has of its own.
 
@@ -1130,6 +1288,21 @@ def parse_activated_abilities(oracle: str):
             target_requirements = [TargetRequirement(
                 zone="battlefield", types=frozenset({"creature"}),
                 raw_phrase="target creature")]
+        elif kind is K.UNTAP_TARGET_PERMANENT:
+            # The SELF shape ("Untap this creature") is not targeted at all
+            # (CR 115.1) — it stays at targets_required=0, and that is the
+            # discriminator the resolver and the no-free-repeatable rule read.
+            spec = parse_activation_untap(body)
+            if spec is not None and not spec['self']:
+                from .target_solver import TargetRequirement
+                targets_required = 1
+                target_requirements = [TargetRequirement(
+                    zone="battlefield",
+                    types=frozenset(spec['types']),
+                    supertype=spec['supertype'],
+                    subtype=spec['subtype'],
+                    owner_scope=spec['owner'],
+                    raw_phrase=body.strip().lower())]
         # TUTOR_* kinds carry their structured search constraint on the
         # ability — parsed here, at load time, never re-derived at runtime.
         tutor_data = None

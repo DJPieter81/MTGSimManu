@@ -83,9 +83,10 @@ def test_mana_and_tap_cost_is_parsed_as_payable():
 def test_unpayable_cost_item_is_marked_not_dropped():
     # NOTE: the fixture must use a cost item no tranche has graduated yet.
     # Sacrifice-SELF graduated in tranche 2, sacrifice-ANOTHER and plain
-    # discard in tranche 3 — remove-counter is still unpayable.
+    # discard in tranche 3, self-referential counter costs in tranche 4 —
+    # exile-from-graveyard is still unpayable.
     abilities = parse_activated_abilities(
-        "{1}, Remove a +1/+1 counter from this creature: Draw a card.")
+        "{1}, Exile a card from your graveyard: Draw a card.")
     assert len(abilities) == 1, (
         "an ability whose cost this tranche cannot charge must still be "
         "PARSED — dropping it would force a re-parse in a later tranche")
