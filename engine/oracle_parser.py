@@ -3384,3 +3384,143 @@ def parse_channel_clause(oracle: str) -> str:
     if idx < 0:
         return ''
     return lo[idx:]
+
+
+# ---------------------------------------------------------------------------
+# Land destruction (spell tranche) — parse-once typed classification
+# (2026-08-27 Dimir root-cause doc, "LD mechanic hole": the destroy-target-
+# land clause had no parser coverage, so the whole spell class resolved as
+# a silent no-op and Boros Ponza's mainboard LD slots were dead cards.)
+#
+# Class: every Modern sorcery/instant whose resolution text is
+# "Destroy target land" (plain / nonbasic-only / artifact-or-land
+# compound) plus zero or more SUPPORTED riders:
+#   * "It can't be regenerated."           — no-op (regeneration is not
+#                                            simulated; plain destroy is
+#                                            strictly faithful)
+#   * "Its controller may search their library for a basic land card,
+#      put it onto the battlefield [tapped], then shuffle."
+#                                          — replacement-basic rider
+#                                            (Cleansing Wildfire class)
+#   * "[If that land was nonbasic, ]~ deals N damage to the/that land's
+#      controller."                        — damage rider (Molten Rain
+#                                            class)
+#   * "Draw a card."                       — caster-draw rider
+#
+# Tranche discipline: a card whose LD paragraph carries ANY sentence
+# outside this whitelist is REFUSED — parse_land_destruction returns
+# None and the card stays unclassified rather than half-executed.
+# Activated ("{T}, Sacrifice this land: Destroy …", Ghost Quarter
+# class) and triggered ("When this creature enters, destroy …",
+# Obsidian Charmaw class) land destruction are a LATER tranche: their
+# destroy clause is never sentence-initial, so the anchored sentence
+# grammar below refuses them by construction.
+# ---------------------------------------------------------------------------
+
+# The destroy clause itself — anchored to a full sentence so trigger /
+# activation prefixes ("when … enters, destroy …", "sacrifice …:
+# destroy …") never match.
+_LD_DESTROY_RE = re.compile(
+    r'^destroy target '
+    r'(?:(nonbasic) )?(land|artifact or land)'
+    r'(?: (an opponent controls))?$'
+)
+
+# Supported rider sentences (each anchored to the full sentence).
+_LD_RIDER_NOOP_REGEN_RE = re.compile(r"^it can't be regenerated$")
+_LD_RIDER_SEARCH_BASIC_RE = re.compile(
+    r"^its controller may search their library for a basic land card, "
+    r"put (?:it|that card) onto the battlefield( tapped)?, "
+    r"then shuffles?(?: their library)?$"
+)
+_LD_RIDER_DAMAGE_RE = re.compile(
+    r"^(if that land was nonbasic, )?[\w\s,'-]+? "
+    r"deals (\d+) damage to (?:the|that) land's controller$"
+)
+_LD_RIDER_DRAW_RE = re.compile(r"^draw a card$")
+
+# Keyword-ability cost lines ("Flashback {3}{R}", "Cycling {2}") are
+# not resolution text — they must not trip the unknown-sentence
+# refusal. Matched by a leading keyword word followed by a brace cost.
+_LD_KEYWORD_COST_LINE_RE = re.compile(r"^[a-z][a-z' ]*(?: ?[—–-])? ?\{")
+
+
+def parse_land_destruction(oracle: str):
+    """Classify a spell-shaped destroy-target-land oracle text.
+
+    Returns None when the text has no sentence-initial destroy-target-
+    land clause OR when any sentence of its resolution text falls
+    outside the supported-rider whitelist (tranche discipline: refuse,
+    never half-execute).  Otherwise returns a dict of typed rider data:
+
+      can_target_artifact       bool — "artifact or land" compound form
+      nonbasic_only             bool — target restricted to nonbasic
+      opponent_controls_only    bool — target restricted to opponent's
+      rider_search_basic        bool — destroyed land's controller
+                                       searches a basic onto battlefield
+      rider_search_basic_tapped bool — the searched basic enters tapped
+      rider_damage              int  — damage to the land's controller
+      rider_damage_nonbasic_only bool — damage only if land was nonbasic
+      rider_caster_draws        int  — cards the caster draws
+
+    Stored on CardTemplate as `land_destruction_data`
+    (`destroys_target_land` is the derived presence flag).
+    """
+    if not oracle:
+        return None
+    lower = oracle.lower()
+    if 'destroy target' not in lower:
+        return None
+
+    data = {
+        'can_target_artifact': False,
+        'nonbasic_only': False,
+        'opponent_controls_only': False,
+        'rider_search_basic': False,
+        'rider_search_basic_tapped': False,
+        'rider_damage': 0,
+        'rider_damage_nonbasic_only': False,
+        'rider_caster_draws': 0,
+    }
+    found_destroy = False
+
+    for paragraph in lower.split('\n'):
+        paragraph = paragraph.strip()
+        if not paragraph:
+            continue
+        if _LD_KEYWORD_COST_LINE_RE.match(paragraph):
+            continue  # keyword-ability cost line, not resolution text
+        for sentence in paragraph.split('.'):
+            sentence = sentence.strip()
+            if not sentence:
+                continue
+            m = _LD_DESTROY_RE.match(sentence)
+            if m is not None:
+                if found_destroy:
+                    return None  # multi-destroy form (Boom // Bust) — refuse
+                found_destroy = True
+                data['nonbasic_only'] = m.group(1) is not None
+                data['can_target_artifact'] = (
+                    m.group(2) == 'artifact or land')
+                data['opponent_controls_only'] = m.group(3) is not None
+                continue
+            if _LD_RIDER_NOOP_REGEN_RE.match(sentence):
+                continue
+            ms = _LD_RIDER_SEARCH_BASIC_RE.match(sentence)
+            if ms is not None:
+                data['rider_search_basic'] = True
+                data['rider_search_basic_tapped'] = ms.group(1) is not None
+                continue
+            md = _LD_RIDER_DAMAGE_RE.match(sentence)
+            if md is not None:
+                data['rider_damage'] = int(md.group(2))
+                data['rider_damage_nonbasic_only'] = md.group(1) is not None
+                continue
+            if _LD_RIDER_DRAW_RE.match(sentence):
+                data['rider_caster_draws'] += 1
+                continue
+            # Unknown sentence anywhere in the card's resolution text:
+            # refuse the whole card (never half-execute a rider).
+            return None
+
+    return data if found_destroy else None
