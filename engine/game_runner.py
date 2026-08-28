@@ -680,32 +680,8 @@ class GameRunner:
                     game.current_phase = Phase.UPKEEP
                     _vlog(f'  [Upkeep]')
                     _emit(KIND_PHASE, phase="Upkeep", pidx=active)
-                    # Rebound: cast exiled rebound spells for free
-                    if hasattr(game, '_rebound_cards'):
-                        to_cast = [c for c in game._rebound_cards
-                                   if getattr(c, '_rebound_controller', -1) == active]
-                        for rc in to_cast:
-                            game._rebound_cards.remove(rc)
-                            if rc in game.players[active].exile:
-                                game.players[active].exile.remove(rc)
-                            # Gate rebound on valid targets (avoids wasted fizzles)
-                            tags = getattr(rc.template, 'tags', set())
-                            player = game.players[active]
-                            opponent = game.players[1 - active]
-                            skip = False
-                            if 'blink' in tags and not player.creatures:
-                                skip = True  # no creature to blink
-                            elif ('removal' in tags and 'board_wipe' not in tags
-                                  and not opponent.creatures):
-                                skip = True  # no creature to target
-                            if skip:
-                                game.log.append(f"T{game.display_turn} P{active+1}: "
-                                                f"Rebound {rc.name} skipped (no valid target)")
-                                continue
-                            rc._free_cast_opportunity = True  # rebound: free cast
-                            game.cast_spell(active, rc, free_cast=True)
-                            game.log.append(f"T{game.display_turn} P{active+1}: "
-                                            f"Rebound {rc.name}")
+                    # Rebound (CR 702.88b): offer the free recast
+                    self._process_rebound_recasts(game, active, ai)
                     # Urza's Saga chapter triggers
                     self._process_saga_chapters(game, active)
                     # Activated abilities fired on our upkeep (Isochron Scepter, etc.)
@@ -1529,6 +1505,55 @@ class GameRunner:
                 if game.game_over:
                     return
             break  # only activate one such creature per call
+
+    def _process_rebound_recasts(self, game: GameState, active: int, ai):
+        """Offer each pending rebound recast at its controller's upkeep.
+
+        CR 702.88b: "at the beginning of your next upkeep, you MAY cast
+        that card from exile without paying its mana cost." Three gates,
+        in rules order:
+
+          1. *Legality* (engine): a spell whose only legal targets do
+             not exist is not cast — a blink with no creature to return,
+             a targeted removal spell with nothing to remove.
+          2. *Choice* (AI): `EVPlayer.decide_optional_recast` answers the
+             "may" — the engine never decides a strategic option.
+          3. *Opportunity* (engine): the window is the beginning of THIS
+             upkeep only. Whether taken, refused, or targetless, the
+             card leaves the pending queue and stays in exile; it is not
+             re-offered on later upkeeps.
+
+        Extracted from the inline upkeep block so the decision seam is
+        testable and so declining leaves the card in exile instead of
+        dropping it out of every zone.
+        """
+        pending = getattr(game, '_rebound_cards', None)
+        if not pending:
+            return
+        player = game.players[active]
+        opponent = game.players[1 - active]
+        for rc in [c for c in pending
+                   if getattr(c, '_rebound_controller', -1) == active]:
+            pending.remove(rc)
+            tags = getattr(rc.template, 'tags', set())
+            if ('blink' in tags and not player.creatures) or (
+                    'removal' in tags and 'board_wipe' not in tags
+                    and not opponent.creatures):
+                game.log.append(f"T{game.display_turn} P{active+1}: "
+                                f"Rebound {rc.name} skipped (no valid target)")
+                continue
+            if ai is not None and hasattr(ai, 'decide_optional_recast'):
+                if not ai.decide_optional_recast(game, rc):
+                    game.log.append(
+                        f"T{game.display_turn} P{active+1}: "
+                        f"Rebound {rc.name} declined (CR 702.88b)")
+                    continue
+            if rc in player.exile:
+                player.exile.remove(rc)
+            rc._free_cast_opportunity = True  # rebound: free cast
+            game.cast_spell(active, rc, free_cast=True)
+            game.log.append(f"T{game.display_turn} P{active+1}: "
+                            f"Rebound {rc.name}")
 
     def _process_saga_chapters(self, game: GameState, active: int):
         """Process saga chapter triggers during upkeep.

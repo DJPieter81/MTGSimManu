@@ -550,13 +550,22 @@ class ManaPayment:
                     c != "C" for c in yielded):
                 player.life -= land.template.tap_damage
 
-        # Verbose: log which lands were tapped for mana
+        ok = player.mana_pool.pay(cost)
+
+        # Verbose: log which lands were tapped, and what is left AFTER
+        # this cost is paid. Emitted post-payment on purpose: measured
+        # before `pay`, the figure still counts the mana earmarked for
+        # this very spell, which reads as spare mana the controller does
+        # not have (a replay showing "4 mana remaining" while the payer
+        # held one untapped land produced a false "unpaid counter-tax"
+        # finding in
+        # docs/diagnostics/2026-08-27_dimir_overperformance_root_cause.md).
         if getattr(game, 'verbose', False) and tapped_names and card_name:
-            remaining_mana = player.untapped_mana_capacity() + player.mana_pool.total()
+            remaining_mana = (player.untapped_mana_capacity()
+                              + player.mana_pool.total())
             game.log.append(f'    [Mana] Tap {", ".join(tapped_names)} '
                             f'(paying for {card_name}, {remaining_mana} mana remaining)')
 
-        ok = player.mana_pool.pay(cost)
         if ok:
             # Record colors-of-mana-spent for Converge and similar mechanics.
             # Includes colors tapped from lands in this call + any colors

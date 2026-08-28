@@ -467,6 +467,84 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
 
 
 # ---------------------------------------------------------------------------
+# X-bound creature tutor (spell tranche) — typed-field-gated resolution.
+# ONE resolver for the whole shape, driven by
+# CardTemplate.x_creature_tutor_data (oracle_parser.parse_x_creature_tutor),
+# sharing its search/choose/deliver machinery with the activated TUTOR_*
+# path so valuation, X-selection and resolution all key off one parse.
+# ---------------------------------------------------------------------------
+
+
+def _resolve_x_creature_tutor(game: "GameState", card: "CardInstance",
+                              controller: int, x_value: int) -> bool:
+    """Resolve an X-bound creature search for whatever card carries the
+    shape (CR 701.19 search, CR 603 zone-change triggers).
+
+    Sequence, matching the printed template: search the parsed zone set →
+    choose (callback seam, engine default = best legal by mana value) →
+    deliver through the zone funnel (battlefield entry gets the ETB
+    fan-out) → entry riders → shuffle + search bookkeeping + opponents'
+    search triggers → the caster's own shuffle-back rider.
+    """
+    from .activated_effects import (choose_tutor_delivery,
+                                    eligible_tutor_targets,
+                                    finish_library_search,
+                                    put_tutor_target, tutor_search_pool)
+    from .cards import Keyword
+
+    spec = card.template.x_creature_tutor_data or {}
+    player = game.players[controller]
+    x_value = max(0, int(x_value or 0))
+
+    eligible = eligible_tutor_targets(
+        tutor_search_pool(player, spec), spec, x_value)
+    found = choose_tutor_delivery(game, controller, card, eligible)
+    if found is not None:
+        put_tutor_target(
+            game, found, controller, spec, cause=f"{card.name} tutor",
+            # "…with X additional +1/+1 counters on it" — part of the
+            # entry itself (CR 614.1c), so the funnel places them.
+            entry_counters=x_value if spec.get('enters_with_x_counters') else 0)
+        haste_at = spec.get('haste_at_x')
+        if haste_at is not None and x_value >= haste_at:
+            found.temp_keywords.add(Keyword.HASTE)
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
+                        f"{card.name} finds {found.name}")
+    else:
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
+                        f"{card.name} — search finds nothing")
+
+    team_at = spec.get('team_pump_haste_at_x')
+    if team_at is not None and x_value >= team_at:
+        # "creatures you control get +X/+X and gain haste until end of
+        # turn" — the until-EOT P/T and keyword channels (cleared at
+        # cleanup, CR 514), the same ones the activated pump/haste kinds
+        # write to.
+        for creature in player.creatures:
+            creature.temp_power_mod += x_value
+            creature.temp_toughness_mod += x_value
+            creature.temp_keywords.add(Keyword.HASTE)
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
+                        f"{card.name} — creatures get +{x_value}/+{x_value} "
+                        f"and haste")
+
+    finish_library_search(game, controller)
+
+    if spec.get('self_shuffle_into_library') and card in player.graveyard:
+        # "Shuffle ~ into its owner's library" replaces the card's own
+        # trip to the graveyard.  The spell is still ON THE STACK while
+        # its effects execute (ResolutionManager moves it off afterwards),
+        # so this fires only when the card has already reached the
+        # graveyard — the pre-existing semantics of this rider, preserved
+        # verbatim.  Making it unconditional needs a zone-replacement hook
+        # in the stack-exit path, which is a different subsystem.
+        game.zone_mgr.move_card(game, card, "graveyard", "library",
+                                cause=f"{card.name} shuffles itself back")
+        game.rng.shuffle(player.library)
+    return True
+
+
+# ---------------------------------------------------------------------------
 # Land destruction (spell tranche) — typed-field-gated resolution
 # (no runtime oracle inspection; classification lives in
 # oracle_parser.parse_land_destruction / CardTemplate.land_destruction_data)
@@ -612,13 +690,22 @@ def _resolve_destroy_target_land(game: "GameState", card: "CardInstance",
 
 
 def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
-                               controller: int, targets: list = None) -> bool:
+                               controller: int, targets: list = None,
+                               *, x_value: int = 0) -> bool:
     """Resolve instant/sorcery effects by parsing oracle text.
 
     Called when a spell resolves AND no EFFECT_REGISTRY handler took it.
     Returns True when an effect was applied, so callers can skip the
     legacy ability-description fallback.
+
+    ``x_value`` is the X actually paid, carried on the stack item — the
+    same value every other X-consuming resolver reads.
     """
+    # ── X-bound creature tutor — typed-field gate, no oracle inspection
+    #    at resolve time (classification: parse_x_creature_tutor).
+    if getattr(card.template, 'x_creature_tutor_data', None):
+        return _resolve_x_creature_tutor(game, card, controller, x_value)
+
     oracle = (card.template.oracle_text or '').lower()
     if not oracle:
         return False

@@ -4,7 +4,8 @@ status: falsified
 priority: secondary
 session: 2026-08-26
 supersedes: []
-superseded_by: []
+superseded_by:
+  - docs/diagnostics/2026-08-28_creatures_toolbox_replay_diagnosis.md
 depends_on: []
 tags: [activation, tranche3, creatures-toolbox, calibration, acceptance]
 summary: >

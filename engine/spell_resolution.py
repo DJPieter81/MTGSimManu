@@ -60,8 +60,14 @@ class ResolutionManager:
                 game, card, "exile", cause="flashback resolution (CR 702.33a)"
             )
             card.has_flashback = False  # no longer has flashback
-        elif hasattr(card, '_rebound_controller'):
-            # Rebound: exile instead of graveyard, cast for free next upkeep
+        elif (hasattr(card, '_rebound_controller')
+              and getattr(card, '_cast_from_zone', 'hand') == 'hand'):
+            # Rebound: exile instead of graveyard, cast for free next
+            # upkeep. CR 702.88a scopes the replacement to a spell cast
+            # FROM HAND — the free recast itself is cast from exile, so
+            # it resolves into the graveyard and the loop terminates
+            # after one repetition. Cards constructed directly on the
+            # stack (fixtures) carry no origin and default to hand.
             game.zone_mgr.move_card_from_stack(
                 game, card, "exile", cause="rebound (CR 702.86)"
             )
@@ -607,7 +613,8 @@ class ResolutionManager:
         # gets a multi-ability counterspell's counter effect to run.
         from .oracle_resolver import resolve_spell_from_oracle
         if not getattr(card.template, 'is_counterspell', False):
-            if resolve_spell_from_oracle(game, card, controller, item.targets):
+            if resolve_spell_from_oracle(game, card, controller, item.targets,
+                                         x_value=item.x_value):
                 return
 
         # ── Generic fallback: parse abilities from oracle text ──

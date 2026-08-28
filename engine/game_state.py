@@ -295,6 +295,11 @@ class GameState:
             # call places the card in hand and runs the DRAW fan-out.
             transfer(self, card, src_zone="library", dst_zone="hand",
                      kind=TransferKind.DRAW, controller=player_idx)
+            if self.game_over:
+                # A per-draw trigger's damage/life loss ended the game
+                # (CR 704.5a, checked inside the DRAW fan-out). The
+                # remaining draws of this effect never happen.
+                break
         return drawn
 
     def surveil(self, player_idx: int, n: int) -> List[CardInstance]:

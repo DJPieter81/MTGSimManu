@@ -320,9 +320,15 @@ class CardTemplate:
     # DB load by grants_flashback_to_gy_spells() in oracle_parser.py.
     grants_flashback_to_gy_spells: bool = False
     x_cost_data: Optional[Dict] = None        # {multiplier, min_x}
-    # X-cost creature tutor to battlefield (Green Sun's Zenith shape):
-    # {'colors': [letter, ...]} — parsed once at DB load by
-    # parse_x_creature_tutor(); None = not this shape.
+    # X-bound creature tutor on a SPELL's own resolution (Green Sun's
+    # Zenith shape). The structured search constraint plus its executable
+    # riders ({'dest', 'types', 'colors', 'mv_bound_is_x', 'also_graveyard',
+    # 'self_shuffle_into_library', 'enters_with_x_counters', 'haste_at_x',
+    # 'team_pump_haste_at_x', ...}), parsed once at DB load by
+    # parse_x_creature_tutor(). None = not this shape, or a shape whose
+    # riders the engine refuses rather than half-executes — the AI's
+    # valuation gate keys off this field, so it must never be set for a
+    # card `oracle_resolver._resolve_x_creature_tutor` cannot deliver.
     x_creature_tutor_data: Optional[Dict] = None
     is_cost_reducer: bool = False             # reduces spell costs (from tags)
     domain_reduction: int = 0                 # cost reduction per basic land type

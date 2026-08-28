@@ -4095,6 +4095,65 @@ class EVPlayer:
         return (forfeited_attack_clock_impact(card.power or 0, kws, snap)
                 * CLOCK_IMPACT_LIFE_SCALING)
 
+    def _presumed_reset_target(self, me, snap):
+        """The creature a state-resetting spell (blink/flicker) would
+        return, modelled the way the effect itself chooses: the highest
+        `creature_threat_value` creature we control (see
+        `engine/card_effects.py`'s blink handler, whose own choice
+        function delegates to that same primitive). None when we
+        control no creatures — nothing to reset."""
+        if not me.creatures:
+            return None
+        return max(me.creatures,
+                   key=lambda c: creature_threat_value(c, snap))
+
+    def decide_optional_recast(self, game, card) -> bool:
+        """Should an OPTIONAL free recast from exile be taken now?
+
+        Rebound (CR 702.88b) and every other "you may cast that card"
+        free recast is a choice, not a turn-based action. The engine
+        establishes that the recast is legal; this decides whether to
+        take it.
+
+        Rule encoded: a recast that would return a creature to a state
+        where it cannot attack this turn (CR 400.7 — a blink returns a
+        NEW object, summoning-sick, keeping only its printed keywords,
+        so a temporary haste grant does not survive) is DECLINED while
+        that creature would otherwise attack, unless the recast's own
+        EV covers the combat step it costs. The price is the shared
+        clock primitive `_forfeited_attack_charge`
+        (`ai/clock.forfeited_attack_clock_impact` x
+        CLOCK_IMPACT_LIFE_SCALING) — the same charge the Main-1 blink
+        gate in `_score_spell` uses; the value side is `_score_spell`
+        itself, so no new scoring numbers enter here.
+
+        A free recast that forfeits nothing is always taken: it costs
+        no mana and no card.
+
+        Root cause: docs/diagnostics/
+        2026-08-27_dimir_overperformance_root_cause.md (win 8) — the
+        rebound recast was taken at every upkeep, re-summoning-sicking
+        a reanimated 7/7 that then attacked exactly once per game.
+        """
+        me = game.players[self.player_idx]
+        opp = game.players[1 - self.player_idx]
+        tags = getattr(card.template, 'tags', set()) or set()
+        resets_state = ('blink' in tags
+                        or getattr(card.template, 'has_exile_own_creature',
+                                   False))
+        if not resets_state:
+            return True
+
+        snap = snapshot_from_game(game, self.player_idx)
+        target = self._presumed_reset_target(me, snap)
+        if target is None or not self._blink_would_forfeit_attack(target):
+            return True
+
+        charge = self._forfeited_attack_charge(target, snap)
+        if charge <= 0:
+            return True
+        return self._score_spell(card, snap, game, me, opp) > charge
+
     def _blink_reservation_penalty(self, me, snap, cost: int,
                                    exclude_instance_id, game) -> float:
         """Reservation charge for a cast that would strand a held blink

@@ -1,0 +1,1157 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+======================================================================
+  GAME 1: Creatures Toolbox (P1) vs Boros Energy (P2)  —  seed 64500
+  Series: Creatures Toolbox 0 - 0 Boros Energy
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Boros Energy wins → chooses to play first
+║ P1 (on play): Boros Energy
+║ P2 (on draw): Creatures Toolbox
+╚═══════════════════════════════════════════════════════
+
+P1 (Creatures Toolbox) opening hand (1 lands, 6 spells):
+  • Green Sun's Zenith [Spell, CMC 1]
+  • Walking Ballista [Creature, CMC 0]
+  • Forest [Land, CMC 0]
+  • Devoted Druid [Creature, CMC 2]
+  • Badgermole Cub [Creature, CMC 2]
+  • Devoted Druid [Creature, CMC 2]
+  • Badgermole Cub [Creature, CMC 2]
+→ P1 KEEPS 7 — has key card(s): Badgermole Cub, Devoted Druid, 6 cheap spells
+
+P2 (Boros Energy) opening hand (3 lands, 4 spells):
+  • Ocelot Pride [Creature, CMC 1]
+  • Flooded Strand [Land, CMC 0]
+  • Ajani, Nacatl Pariah // Ajani, Nacatl Avenger [Creature, CMC 2]
+  • Ranger-Captain of Eos [Creature, CMC 3]
+  • Arid Mesa [Land, CMC 0]
+  • Ajani, Nacatl Pariah // Ajani, Nacatl Avenger [Creature, CMC 2]
+  • Flooded Strand [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Ocelot Pride, 3 cheap spells
+
+
+╔══ TURN 1 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Creatures Toolbox 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Flooded Strand
+T1: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Flooded Strand (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 20  |  Boros Energy 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Nurturing Peatland
+  [Main 1]
+T1 P1: Play Nurturing Peatland
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 19  |  Creatures Toolbox 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: Nurturing Peatland
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+T2 P2: Play Flooded Strand
+T2: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T2 P2: Crack Flooded Strand (pay 1 life) -> Sacred Foundry (tapped, life: 18)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Ocelot Pride, 1 mana remaining)
+T2 P2: Cast Ocelot Pride (W)
+    [Priority] P1 passes (no response)
+T2: Resolve Ocelot Pride
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 20  |  Boros Energy 18
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: Nurturing Peatland
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Verdant Catacombs
+  [Main 1]
+T2 P1: Play Verdant Catacombs
+T2: Verdant Catacombs moved battlefield -> graveyard (fetchland sacrifice)
+T2 P1: Crack Verdant Catacombs (pay 1 life) -> Overgrown Tomb (untapped, life: 17)
+    → Goal: deploy_engine
+    [Mana] Tap Nurturing Peatland→G, Overgrown Tomb→B (paying for Badgermole Cub, 2 mana remaining)
+T2 P1: Cast Badgermole Cub (1G)
+    [Priority] P2 passes (no response)
+T2: Resolve Badgermole Cub
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 18  |  Creatures Toolbox 17
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1)
+║   Lands: Sacred Foundry, Sacred Foundry
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2)
+║   Lands: Nurturing Peatland [T], Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Galvanic Discharge
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R (paying for Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, 2 mana remaining)
+T3 P2: Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)
+    [Priority] P1 passes (no response)
+T3: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T3 P2: Create 1x Cat token(s)
+T3 P2: Ajani creates 2/1 Cat Warrior token
+T3 P2: Play Arid Mesa
+T3: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T3 P2: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (tapped, life: 17)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ocelot Pride
+T3 P2: Attack with Ocelot Pride
+T3 P1:   [BLOCK] Badgermole Cub (2/2) blocks Ocelot Pride (1/1) — lifespan_delta=+1.67
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 17  |  Boros Energy 18
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2)
+║   Lands: Nurturing Peatland, Overgrown Tomb
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Leyline of Abundance
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Nurturing Peatland→G, Overgrown Tomb→B (paying for Badgermole Cub, 2 mana remaining)
+T3 P1: Cast Badgermole Cub (1G)
+    [Priority] P2 passes (no response)
+T3: Resolve Badgermole Cub
+T3 P1: Play Forest
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 18  |  Creatures Toolbox 17
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 3
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2), Badgermole Cub (2/2)
+║   Lands: Nurturing Peatland [T], Overgrown Tomb [T], Forest
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [Main 1]
+    → Goal: curve_out [interaction]
+    [Target] → Badgermole Cub: marginal threat 25.50 (2/2 body) — better than 3 face dmg
+    [Mana] Tap Sacred Foundry→R (paying for Galvanic Discharge, 3 mana remaining)
+T4 P2: Cast Galvanic Discharge (R)
+    [Priority] P1 passes (no response)
+T4: Resolve Galvanic Discharge
+T4: Badgermole Cub dies
+T4 P2: Galvanic Discharge deals 2 to Badgermole Cub (base 0 + 2 energy)
+T4: Galvanic Discharge moved stack -> graveyard (resolution)
+T4 P2: Play Arid Mesa
+T4: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T4 P2: Crack Arid Mesa -> Plains (untapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ocelot Pride, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+T4 P2: Attack with Ocelot Pride, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+T4 P1:   [BLOCK] Badgermole Cub (2/2) blocks Cat Token (2/1) — lifespan_delta=+4.75
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T4 P2:   Ocelot Pride (1/1) → 1 dmg to player
+T4 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+T4: Badgermole Cub dies
+T4: Cat Token dies
+  [Combat Damage] 2 damage dealt → P1 life: 17 → 15
+  [End Combat]
+  [Main 2]
+    → Goal: curve_out
+    [Mana] Tap Plains→W, Sacred Foundry→W, Sacred Foundry→R (paying for Ranger-Captain of Eos, 3 mana remaining)
+T4 P2: Cast Ranger-Captain of Eos (1WW)
+    [Priority] P1 passes (no response)
+T4: Resolve Ranger-Captain of Eos
+T4 P2: Ranger-Captain tutors Guide of Souls to hand
+  [End Step]
+
+╔══ TURN 4 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 15  |  Boros Energy 18
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 3
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: Nurturing Peatland, Overgrown Tomb, Forest
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Ranger-Captain of Eos (3/3)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Wooded Foothills
+  [Main 1]
+T4 P1: Play Wooded Foothills
+T4: Wooded Foothills moved battlefield -> graveyard (fetchland sacrifice)
+T4 P1: Crack Wooded Foothills (pay 1 life) -> Temple Garden (tapped, life: 14)
+    → Goal: execute_payoff
+T4 P1: Cast Walking Ballista (2) (X=1)
+    [Priority] P2 passes (no response)
+T4: Resolve Walking Ballista
+T4 P1: Walking Ballista enters with 1 +1/+1 counter(s)
+T4 P2: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger transforms! (loyalty: 3)
+T4: Ocelot Pride dies
+T4 P1: Walking Ballista deals 1 to Ocelot Pride
+T4: Walking Ballista dies
+T4 P1: Activate Nurturing Peatland (sacrifice)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 18  |  Creatures Toolbox 14
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 45  |  Graveyard: 6
+║ Boros Energy board:
+║   Creatures: Ranger-Captain of Eos (3/3)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb [T], Forest, Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ocelot Pride
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Plains→W (paying for Ocelot Pride, 4 mana remaining)
+T5 P2: Cast Ocelot Pride (W)
+    [Priority] P1 passes (no response)
+T5: Resolve Ocelot Pride
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Guide of Souls, 3 mana remaining)
+T5 P2: Cast Guide of Souls (W)
+    [Priority] P1 passes (no response)
+T5: Resolve Guide of Souls
+T5 P2: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger [+0] -> Create a 2/1 white Cat Warrior creature token. When you do, if you control a red permanent other than Ajani, he deals damage equal to the number of creatures you control to any target
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ranger-Captain of Eos
+T5 P2: Attack with Ranger-Captain of Eos
+  [Declare Blockers] P1 does not block
+T5 P2:   Ranger-Captain of Eos (3/3) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 13 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 10  |  Boros Energy 18
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 6
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb, Forest, Temple Garden
+║ Boros Energy board:
+║   Creatures: Ranger-Captain of Eos (3/3) [tapped], Ocelot Pride (1/1), Guide of Souls (1/2)
+║   Lands: Sacred Foundry [T], Sacred Foundry, Sacred Foundry, Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Badgermole Cub
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Forest→G, Overgrown Tomb→B (paying for Devoted Druid, 3 mana remaining)
+T5 P1: Cast Devoted Druid (1G)
+    [Priority] P2 passes (no response)
+T5: Resolve Devoted Druid
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 18  |  Creatures Toolbox 10
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 44  |  Graveyard: 6
+║ Boros Energy board:
+║   Creatures: Ranger-Captain of Eos (3/3), Ocelot Pride (1/1), Guide of Souls (1/2)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains
+║ Creatures Toolbox board:
+║   Creatures: Devoted Druid (0/2)
+║   Lands: Overgrown Tomb [T], Forest [T], Temple Garden
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ranger-Captain of Eos
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Plains→W, Sacred Foundry→W, Sacred Foundry→R (paying for Ranger-Captain of Eos, 4 mana remaining)
+T6 P2: Cast Ranger-Captain of Eos (1WW)
+    [Priority] P1 passes (no response)
+T6: Resolve Ranger-Captain of Eos
+T6 P2: Ranger-Captain tutors Guide of Souls to hand
+T6 P2: Gain 1 life from Guide of Souls (life: 19)
+T6 P2: +1 energy from Guide of Souls (total: 2)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Guide of Souls, 1 mana remaining)
+T6 P2: Cast Guide of Souls (W)
+    [Priority] P1 passes (no response)
+T6: Resolve Guide of Souls
+T6 P2: Gain 1 life from Guide of Souls (life: 20)
+T6 P2: +1 energy from Guide of Souls (total: 3)
+T6 P2: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger [+0] -> Create a 2/1 white Cat Warrior creature token. When you do, if you control a red permanent other than Ajani, he deals damage equal to the number of creatures you control to any target
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ranger-Captain of Eos, Ocelot Pride, Guide of Souls
+T6 P2: Attack with Ranger-Captain of Eos, Ocelot Pride, Guide of Souls
+T6 P1:   [BLOCK-EMERGENCY] Devoted Druid (0/2) blocks Ranger-Captain of Eos (3/3) — lifespan_delta=+0.33
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T6 P2:   Ocelot Pride (1/1) → 1 dmg to player
+T6 P2:   Guide of Souls (1/2) → 1 dmg to player
+T6: Devoted Druid dies
+  [Combat Damage] 2 damage dealt → P1 life: 9 → 7
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 7  |  Boros Energy 21
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 7
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb, Forest, Temple Garden
+║ Boros Energy board:
+║   Creatures: Ranger-Captain of Eos (3/3) [tapped], Ocelot Pride (1/1) [tapped], Guide of Souls (1/2) [tapped], Ranger-Captain of Eos (3/3), Guide of Souls (1/2)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Overgrown Tomb
+  [Main 1]
+T6 P1: Play Overgrown Tomb (untapped, life: 7)
+    → Goal: execute_payoff
+    [Mana] Tap Forest→G, Overgrown Tomb→B (paying for Devoted Druid, 4 mana remaining)
+T6 P1: Cast Devoted Druid (1G)
+    [Priority] P2 passes (no response)
+T6: Resolve Devoted Druid
+    → Goal: execute_payoff
+    [Mana] Tap Temple Garden→G, Overgrown Tomb→B (paying for Badgermole Cub, 2 mana remaining)
+T6 P1: Cast Badgermole Cub (1G)
+    [Priority] P2 passes (no response)
+T6: Resolve Badgermole Cub
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 21  |  Creatures Toolbox 7
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 42  |  Graveyard: 6
+║ Boros Energy board:
+║   Creatures: Ranger-Captain of Eos (3/3), Ocelot Pride (1/1), Guide of Souls (1/2), Ranger-Captain of Eos (3/3), Guide of Souls (1/2)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains
+║ Creatures Toolbox board:
+║   Creatures: Devoted Druid (0/2), Badgermole Cub (2/2)
+║   Lands: Overgrown Tomb [T], Forest [T], Temple Garden [T], Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Elegant Parlor
+  [Main 1]
+T7 P2: surveil 1 → Goblin Bombardment to GY
+T7 P2: Play Elegant Parlor (enters tapped)
+T7 P2: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger [+0] -> Create a 2/1 white Cat Warrior creature token. When you do, if you control a red permanent other than Ajani, he deals damage equal to the number of creatures you control to any target
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ranger-Captain of Eos, Ocelot Pride, Guide of Souls, Ranger-Captain of Eos, Guide of Souls
+T7 P2: Attack with Ranger-Captain of Eos, Ocelot Pride, Guide of Souls, Ranger-Captain of Eos, Guide of Souls
+T7 P1:   [BLOCK-EMERGENCY] Devoted Druid (0/2) blocks Ranger-Captain of Eos (3/3) — lifespan_delta=+0.33
+T7 P1:   [BLOCK-EMERGENCY] Badgermole Cub (2/2) blocks Ranger-Captain of Eos (3/3) — lifespan_delta=+0.33
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T7 P2:   Ocelot Pride (1/1) → 1 dmg to player
+T7 P2:   Guide of Souls (1/2) → 1 dmg to player
+T7 P2:   Guide of Souls (1/2) → 1 dmg to player
+T7: Devoted Druid dies
+T7: Badgermole Cub dies
+  [Combat Damage] 3 damage dealt → P1 life: 6 → 3
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 3  |  Boros Energy 22
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 44  |  Graveyard: 9
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb, Forest, Temple Garden, Overgrown Tomb
+║ Boros Energy board:
+║   Creatures: Ranger-Captain of Eos (3/3) [tapped], Ocelot Pride (1/1) [tapped], Guide of Souls (1/2) [tapped], Ranger-Captain of Eos (3/3) [tapped], Guide of Souls (1/2) [tapped]
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains, Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Badgermole Cub
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Forest→G, Overgrown Tomb→B (paying for Badgermole Cub, 4 mana remaining)
+T7 P1: Cast Badgermole Cub (1G)
+    [Priority] P2 passes (no response)
+T7: Resolve Badgermole Cub
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 22  |  Creatures Toolbox 3
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 40  |  Graveyard: 7
+║ Boros Energy board:
+║   Creatures: Ranger-Captain of Eos (3/3), Ocelot Pride (1/1), Guide of Souls (1/2), Ranger-Captain of Eos (3/3), Guide of Souls (1/2)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains, Elegant Parlor
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2)
+║   Lands: Overgrown Tomb [T], Forest [T], Temple Garden, Overgrown Tomb
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Voice of Victory
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Plains→W, Sacred Foundry→R (paying for Voice of Victory, 5 mana remaining)
+T8 P2: Cast Voice of Victory (1W)
+    [Priority] P1 passes (no response)
+T8: Resolve Voice of Victory
+T8 P2: Gain 1 life from Guide of Souls (life: 23)
+T8 P2: +1 energy from Guide of Souls (total: 4)
+T8 P2: Gain 1 life from Guide of Souls (life: 24)
+T8 P2: +1 energy from Guide of Souls (total: 5)
+T8 P2: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger [+0] -> Create a 2/1 white Cat Warrior creature token. When you do, if you control a red permanent other than Ajani, he deals damage equal to the number of creatures you control to any target
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ranger-Captain of Eos, Ocelot Pride, Guide of Souls, Ranger-Captain of Eos, Guide of Souls
+T8 P2: Attack with Ranger-Captain of Eos, Ocelot Pride, Guide of Souls, Ranger-Captain of Eos, Guide of Souls
+T8 P1:   [BLOCK-EMERGENCY] Badgermole Cub (2/2) blocks Ranger-Captain of Eos (3/3) — lifespan_delta=+100.20
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T8 P2:   Ocelot Pride (1/1) → 1 dmg to player
+T8 P2:   Guide of Souls (1/2) → 1 dmg to player
+T8 P2:   Ranger-Captain of Eos (3/3) → 3 dmg to player
+T8 P2:   Guide of Souls (1/2) → 1 dmg to player
+P1 loses: life total -4
+  [Combat Damage] 6 damage dealt → P1 life: 2 → -4
+
+>>> Boros Energy wins Game 1 on turn 8 via damage
+    Final life: Creatures Toolbox=-4  Boros Energy=25
+
+======================================================================
+  GAME 2: Creatures Toolbox (P1) vs Boros Energy (P2)  —  seed 64501
+  Series: Creatures Toolbox 0 - 1 Boros Energy
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Creatures Toolbox wins → chooses to play first
+║ P1 (on play): Creatures Toolbox
+║ P2 (on draw): Boros Energy
+╚═══════════════════════════════════════════════════════
+
+P1 (Creatures Toolbox) opening hand (3 lands, 4 spells):
+  • Green Sun's Zenith [Spell, CMC 1]
+  • Nature's Rhythm [Spell, CMC 2]
+  • Misty Rainforest [Land, CMC 0]
+  • Badgermole Cub [Creature, CMC 2]
+  • Boseiju, Who Endures [Land, CMC 0]
+  • Badgermole Cub [Creature, CMC 2]
+  • Verdant Catacombs [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Badgermole Cub, 4 cheap spells
+
+P2 (Boros Energy) opening hand (1 lands, 6 spells):
+  • Thraben Charm [Spell, CMC 2]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Galvanic Discharge [Spell, CMC 1]
+  • Galvanic Discharge [Spell, CMC 1]
+  • Ranger-Captain of Eos [Creature, CMC 3]
+  • Seasoned Pyromancer [Creature, CMC 3]
+  • Flooded Strand [Land, CMC 0]
+→ P2 MULLIGANS (too few lands (1 < 2))
+  New hand (5 lands, 2 spells): ['Ranger-Captain of Eos', 'Flooded Strand', 'Marsh Flats', 'Marsh Flats', 'The Legend of Roku // Avatar Roku', 'Flooded Strand', 'Arena of Glory']
+→ P2 MULLIGANS (too many lands (5 > 3); first-turn value 2 < 5)
+  New hand (5 lands, 2 spells): ['Flooded Strand', 'Plains', 'Elegant Parlor', 'Arid Mesa', 'Galvanic Discharge', 'Arena of Glory', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
+→ P2 mulligans to 5, bottoms: ['Flooded Strand', 'Arid Mesa']
+  Keeps: ['Plains', 'Elegant Parlor', 'Galvanic Discharge', 'Arena of Glory', 'Ajani, Nacatl Pariah // Ajani, Nacatl Avenger']
+
+
+╔══ TURN 1 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 20  |  Boros Energy 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Misty Rainforest
+T1: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Misty Rainforest (pay 1 life) -> Overgrown Tomb (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Creatures Toolbox 19
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 55  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mana Tithe
+  [Main 1]
+T1 P2: Play Plains
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 19  |  Boros Energy 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Verdant Catacombs
+  [Main 1]
+T2 P1: Play Verdant Catacombs
+T2: Verdant Catacombs moved battlefield -> graveyard (fetchland sacrifice)
+T2 P1: Crack Verdant Catacombs (pay 1 life) -> Temple Garden (tapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Creatures Toolbox 18
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 54  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Plains
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb, Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+T2 P2: Play Flooded Strand
+T2: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T2 P2: Crack Flooded Strand (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 18  |  Boros Energy 19
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb, Temple Garden
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Plains, Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Forest
+  [Main 1]
+T3 P1: Play Verdant Catacombs
+T3: Verdant Catacombs moved battlefield -> graveyard (fetchland sacrifice)
+T3 P1: Crack Verdant Catacombs (pay 1 life) -> Overgrown Tomb (tapped, life: 17)
+    → Goal: execute_payoff
+    [Mana] Tap Overgrown Tomb→G, Temple Garden→G (paying for Badgermole Cub, 2 mana remaining)
+T3 P1: Cast Badgermole Cub (1G)
+    [Priority] P2 responds with Mana Tithe
+    [Mana] Tap Plains→W (paying for Mana Tithe, 1 mana remaining)
+T3 P2: Cast Mana Tithe (W)
+T3: Resolve Mana Tithe
+T3: Badgermole Cub moved stack -> graveyard (resolution)
+T3: Badgermole Cub is countered
+T3: Mana Tithe moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 19  |  Creatures Toolbox 17
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 52  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Plains, Sacred Foundry
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb [T], Temple Garden [T], Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Guide of Souls
+  [Main 1]
+T3 P2: surveil 1 → Arid Mesa to GY
+T3 P2: Play Elegant Parlor (enters tapped)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Plains→W, Sacred Foundry→R (paying for Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, 2 mana remaining)
+T3 P2: Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)
+    [Priority] P1 passes (no response)
+T3: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T3 P2: Create 1x Cat token(s)
+T3 P2: Ajani creates 2/1 Cat Warrior token
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 17  |  Boros Energy 19
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 4
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb, Temple Garden, Overgrown Tomb
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Lands: Plains [T], Sacred Foundry [T], Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Nature's Rhythm
+  [Main 1]
+T4 P1: Play Boseiju, Who Endures
+    → Goal: execute_payoff
+    [Mana] Tap Boseiju, Who Endures→G, Overgrown Tomb→B (paying for Badgermole Cub, 4 mana remaining)
+T4 P1: Cast Badgermole Cub (1G)
+    [Priority] P2 passes (no response)
+T4: Resolve Badgermole Cub
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 19  |  Creatures Toolbox 17
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 50  |  Graveyard: 3
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Lands: Plains, Sacred Foundry, Elegant Parlor
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2)
+║   Lands: Overgrown Tomb [T], Temple Garden, Overgrown Tomb, Boseiju, Who Endures [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Plains→W (paying for Guide of Souls, 3 mana remaining)
+T4 P2: Cast Guide of Souls (W)
+    [Priority] P1 passes (no response)
+T4: Resolve Guide of Souls
+T4 P2: Play Arid Mesa
+T4: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T4 P2: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (tapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+T4 P2: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+T4 P1:   [BLOCK] Badgermole Cub (2/2) blocks Cat Token (2/1) — lifespan_delta=+4.75
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T4 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+T4: Badgermole Cub dies
+T4: Cat Token dies
+  [Combat Damage] 1 damage dealt → P1 life: 17 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 16  |  Boros Energy 18
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 5
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb, Temple Garden, Overgrown Tomb, Boseiju, Who Endures
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Guide of Souls (1/2)
+║   Lands: Plains [T], Sacred Foundry, Elegant Parlor, Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Leyline of Abundance
+  [Main 1]
+T5 P1: Play Forest
+    → Goal: execute_payoff
+    [Mana] Tap Boseiju, Who Endures→G, Forest→G, Overgrown Tomb→B, Temple Garden→G (paying for Leyline of Abundance, 5 mana remaining)
+T5 P1: Cast Leyline of Abundance (2GG)
+    [Priority] P2 passes (no response)
+T5: Resolve Leyline of Abundance
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 18  |  Creatures Toolbox 16
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 48  |  Graveyard: 4
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Guide of Souls (1/2)
+║   Lands: Plains, Sacred Foundry, Elegant Parlor, Sacred Foundry
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance
+║   Lands: Overgrown Tomb [T], Temple Garden [T], Overgrown Tomb, Boseiju, Who Endures [T], Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Voice of Victory
+  [Main 1]
+T5 P2: Play Arena of Glory (enters tapped)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Plains→W, Sacred Foundry→R (paying for Voice of Victory, 4 mana remaining)
+T5 P2: Cast Voice of Victory (1W)
+    [Priority] P1 passes (no response)
+T5: Resolve Voice of Victory
+T5 P2: Gain 1 life from Guide of Souls (life: 19)
+T5 P2: +1 energy from Guide of Souls (total: 1)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Guide of Souls
+T5 P2: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Guide of Souls
+  [Declare Blockers] P1 does not block
+T5 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+T5 P2:   Guide of Souls (1/2) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 16 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 14  |  Boros Energy 19
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 5
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance
+║   Lands: Overgrown Tomb, Temple Garden, Overgrown Tomb, Boseiju, Who Endures, Forest
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Guide of Souls (1/2) [tapped], Voice of Victory (1/3)
+║   Lands: Plains [T], Sacred Foundry [T], Elegant Parlor, Sacred Foundry, Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Badgermole Cub
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Boseiju, Who Endures→G, Forest→G (paying for Badgermole Cub, 5 mana remaining)
+T6 P1: Cast Badgermole Cub (1G)
+    [Priority] P2 passes (no response)
+T6: Resolve Badgermole Cub
+  [Begin Combat]
+    [Mana] Tap Elegant Parlor→R (paying for Galvanic Discharge, 2 mana remaining)
+T6 P2: Cast Galvanic Discharge (R)
+T6: Resolve Galvanic Discharge
+T6: Badgermole Cub dies
+T6 P2: Galvanic Discharge deals 2 to Badgermole Cub (base 0 + 2 energy)
+T6: Galvanic Discharge moved stack -> graveyard (resolution)
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 19  |  Creatures Toolbox 14
+║ Hand: 0 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 5
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Guide of Souls (1/2), Voice of Victory (1/3)
+║   Lands: Plains, Sacred Foundry, Elegant Parlor, Sacred Foundry, Arena of Glory
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance
+║   Lands: Overgrown Tomb, Temple Garden, Overgrown Tomb, Boseiju, Who Endures [T], Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Guide of Souls, Voice of Victory
+T6 P2: Create 2x Warrior token(s)
+T6 P2: Voice of Victory mobilize 2 — create 2 1/1 tokens
+T6 P2: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Guide of Souls, Voice of Victory
+  [Declare Blockers] P1 does not block
+T6 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+T6 P2:   Guide of Souls (1/2) → 1 dmg to player
+T6 P2:   Voice of Victory (1/3) → 1 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 14 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+T6: Warrior Token moved battlefield -> graveyard (Mobilize sacrifice)
+T6: Warrior Token sacrificed (Mobilize)
+T6: Warrior Token moved battlefield -> graveyard (Mobilize sacrifice)
+T6: Warrior Token sacrificed (Mobilize)
+
+╔══ TURN 7 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 11  |  Boros Energy 19
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 6
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance
+║   Lands: Overgrown Tomb, Temple Garden, Overgrown Tomb, Boseiju, Who Endures, Forest
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Guide of Souls (1/2) [tapped], Voice of Victory (1/3) [tapped]
+║   Lands: Plains, Sacred Foundry, Elegant Parlor, Sacred Foundry, Arena of Glory
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Delighted Halfling
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Boseiju, Who Endures→G (paying for Delighted Halfling, 5 mana remaining)
+T7 P1: Cast Delighted Halfling (G)
+    [Priority] P2 passes (no response)
+T7: Resolve Delighted Halfling
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 19  |  Creatures Toolbox 11
+║ Hand: 1 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 5
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Guide of Souls (1/2), Voice of Victory (1/3)
+║   Lands: Plains, Sacred Foundry, Elegant Parlor, Sacred Foundry, Arena of Glory
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2)
+║   Other: Leyline of Abundance
+║   Lands: Overgrown Tomb, Temple Garden, Overgrown Tomb, Boseiju, Who Endures [T], Forest
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ocelot Pride
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Target] → Badgermole Cub: marginal threat -1.00 (2/2 body) — better than 3 face dmg
+    [Mana] Tap Plains→W (paying for Ocelot Pride, 5 mana remaining)
+T7 P2: Cast Ocelot Pride (W)
+    [Priority] P1 passes (no response)
+T7: Resolve Ocelot Pride
+T7 P2: Gain 1 life from Guide of Souls (life: 20)
+T7 P2: +1 energy from Guide of Souls (total: 3)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Guide of Souls, Voice of Victory
+T7 P2: Create 2x Warrior token(s)
+T7 P2: Voice of Victory mobilize 2 — create 2 1/1 tokens
+T7 P2: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Guide of Souls, Voice of Victory
+T7 P1:   [BLOCK] Delighted Halfling (1/2) blocks Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) — lifespan_delta=+0.17
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T7 P2:   Guide of Souls (1/2) → 1 dmg to player
+T7 P2:   Voice of Victory (1/3) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 11 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+T7: Warrior Token moved battlefield -> graveyard (Mobilize sacrifice)
+T7: Warrior Token sacrificed (Mobilize)
+T7: Warrior Token moved battlefield -> graveyard (Mobilize sacrifice)
+T7: Warrior Token sacrificed (Mobilize)
+
+╔══ TURN 8 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 9  |  Boros Energy 20
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 44  |  Graveyard: 6
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2)
+║   Other: Leyline of Abundance
+║   Lands: Overgrown Tomb, Temple Garden, Overgrown Tomb, Boseiju, Who Endures, Forest
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Guide of Souls (1/2) [tapped], Voice of Victory (1/3) [tapped], Ocelot Pride (1/1)
+║   Lands: Plains [T], Sacred Foundry, Elegant Parlor, Sacred Foundry, Arena of Glory
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Green Sun's Zenith
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Delighted Halfling
+T8 P1: Attack with Delighted Halfling
+  [Declare Blockers] P2 does not block
+T8 P1:   Delighted Halfling (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P2 life: 20 → 19
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 19  |  Creatures Toolbox 9
+║ Hand: 1 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 5
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Guide of Souls (1/2), Voice of Victory (1/3), Ocelot Pride (1/1)
+║   Lands: Plains, Sacred Foundry, Elegant Parlor, Sacred Foundry, Arena of Glory
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2) [tapped]
+║   Other: Leyline of Abundance
+║   Lands: Overgrown Tomb, Temple Garden, Overgrown Tomb, Boseiju, Who Endures, Forest
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+T8 P2: Play Arid Mesa
+T8: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T8 P2: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (tapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Guide of Souls, Voice of Victory, Ocelot Pride
+T8 P2: Create 2x Warrior token(s)
+T8 P2: Voice of Victory mobilize 2 — create 2 1/1 tokens
+T8 P2: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Guide of Souls, Voice of Victory, Ocelot Pride
+  [Declare Blockers] P1 does not block
+T8 P2:   Ocelot Pride (1/1) → 1 dmg to player
+T8 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+T8 P2:   Guide of Souls (1/2) → 1 dmg to player
+T8 P2:   Voice of Victory (1/3) → 1 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 9 → 5
+  [End Combat]
+  [Main 2]
+  [End Step]
+T8: Warrior Token moved battlefield -> graveyard (Mobilize sacrifice)
+T8: Warrior Token sacrificed (Mobilize)
+T8: Warrior Token moved battlefield -> graveyard (Mobilize sacrifice)
+T8: Warrior Token sacrificed (Mobilize)
+
+╔══ TURN 9 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 5  |  Boros Energy 19
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 43  |  Graveyard: 6
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2)
+║   Other: Leyline of Abundance
+║   Lands: Overgrown Tomb, Temple Garden, Overgrown Tomb, Boseiju, Who Endures, Forest
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Guide of Souls (1/2) [tapped], Voice of Victory (1/3) [tapped], Ocelot Pride (1/1) [tapped]
+║   Lands: Plains, Sacred Foundry, Elegant Parlor, Sacred Foundry, Arena of Glory, Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Badgermole Cub
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Boseiju, Who Endures→G, Forest→G (paying for Badgermole Cub, 6 mana remaining)
+T9 P1: Cast Badgermole Cub (1G)
+    [Priority] P2 passes (no response)
+T9: Resolve Badgermole Cub
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Delighted Halfling
+T9 P1: Attack with Delighted Halfling
+  [Declare Blockers] P2 does not block
+T9 P1:   Delighted Halfling (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P2 life: 19 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 18  |  Creatures Toolbox 5
+║ Hand: 1 cards  |  Opp hand: 4 cards
+║ Lands: 6  |  Opp lands: 5
+║ Library: 43  |  Graveyard: 6
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Guide of Souls (1/2), Voice of Victory (1/3), Ocelot Pride (1/1)
+║   Lands: Plains, Sacred Foundry, Elegant Parlor, Sacred Foundry, Arena of Glory, Sacred Foundry
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2) [tapped], Badgermole Cub (2/2)
+║   Other: Leyline of Abundance
+║   Lands: Overgrown Tomb, Temple Garden, Overgrown Tomb, Boseiju, Who Endures [T], Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Goblin Bombardment
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Guide of Souls, Voice of Victory, Ocelot Pride
+T9 P2: Create 2x Warrior token(s)
+T9 P2: Voice of Victory mobilize 2 — create 2 1/1 tokens
+T9 P2: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Guide of Souls, Voice of Victory, Ocelot Pride
+T9 P1:   [BLOCK-EMERGENCY] Badgermole Cub (2/2) blocks Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) — lifespan_delta=+0.33
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T9 P2:   Ocelot Pride (1/1) → 1 dmg to player
+T9 P2:   Guide of Souls (1/2) → 1 dmg to player
+T9 P2:   Voice of Victory (1/3) → 1 dmg to player
+T9: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger dies
+  [Combat Damage] 3 damage dealt → P1 life: 5 → 2
+  [End Combat]
+  [Main 2]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Plains→W, Arena of Glory→R (paying for Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, 6 mana remaining)
+T9 P2: Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)
+    [Priority] P1 passes (no response)
+T9: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T9 P2: Create 1x Cat token(s)
+T9 P2: Ajani creates 2/1 Cat Warrior token
+T9 P2: Gain 1 life from Guide of Souls (life: 20)
+T9 P2: +1 energy from Guide of Souls (total: 4)
+    → Goal: curve_out
+    [Mana] Tap Sacred Foundry→R, Elegant Parlor→R (paying for Goblin Bombardment, 4 mana remaining)
+T9 P2: Cast Goblin Bombardment (1R)
+    [Priority] P1 passes (no response)
+T9: Resolve Goblin Bombardment
+T9 P2: Goblin Bombardment enters — sacrifice creatures for 1 damage each
+  [End Step]
+T9 P2: Goblin Bombardment sacrifice Warrior Token -> 1 damage to P1 (life: 1)
+T9 P2: Goblin Bombardment sacrifice Warrior Token -> 1 damage to P1 (life: 0)
+
+>>> Boros Energy wins Game 2 on turn 9 via damage
+    Final life: Creatures Toolbox=0  Boros Energy=20
+
+======================================================================
+  MATCH RESULT: Boros Energy wins 2-0
+======================================================================
