@@ -45,15 +45,12 @@ def _add(game, name, controller, zone):
     return c
 
 
-class _Item:
-    """Minimal stack item carrying the paid X, as the cast pipeline builds."""
-
-    def __init__(self, x_value):
-        self.x_value = x_value
-
-
 def _resolve_tutor_with_x(x_paid, library_names):
-    from engine.card_effects import green_suns_zenith_resolve
+    # The per-card handler this file used to call was retired: the shape is
+    # now resolved generically from `CardTemplate.x_creature_tutor_data`
+    # (oracle_resolver._resolve_x_creature_tutor). Same card, same paid X,
+    # same assertions — only the entry point moved.
+    from engine.oracle_resolver import resolve_spell_from_oracle
 
     game = GameState(rng=random.Random(0))
     game.active_player = 0
@@ -64,7 +61,7 @@ def _resolve_tutor_with_x(x_paid, library_names):
     for nm in library_names:
         _add(game, nm, 0, "library")
     spell = _add(game, "Green Sun's Zenith", 0, "graveyard")
-    green_suns_zenith_resolve(game, spell, 0, None, _Item(x_paid))
+    resolve_spell_from_oracle(game, spell, 0, None, x_value=x_paid)
     return [c.name for c in game.players[0].battlefield]
 
 

@@ -155,21 +155,20 @@ def pick_creature_tutor_x_value(
           budget — the library's payoff ceiling, which the AI's
           hold/patience gate compares against best_target.
     """
-    from .mana import Color
+    from .activated_effects import (default_tutor_rank,
+                                    eligible_tutor_targets,
+                                    tutor_search_pool)
 
-    data = getattr(template, 'x_creature_tutor_data', None) or {}
-    want = {Color(letter) for letter in data.get('colors', [])}
+    spec = getattr(template, 'x_creature_tutor_data', None)
+    if not spec:
+        return 0, None, None  # not this shape — nothing to price
     player = game.players[player_idx]
+    _rank = default_tutor_rank
 
-    def _rank(c) -> "tuple[int, int]":
-        return ((c.template.cmc or 0),
-                (c.template.power or 0) + (c.template.toughness or 0))
-
-    candidates = [
-        c for c in player.library
-        if c.template.is_creature
-        and (not want or (want & set(c.template.color_identity)))
-    ]
+    # Same predicate and same zone set the resolver searches — the X the
+    # AI prices is the X the engine charges for the card it will deliver.
+    candidates = eligible_tutor_targets(
+        tutor_search_pool(player, spec), spec, x_value=None)
     if not candidates:
         return 0, None, None
     top_candidate = max(candidates, key=_rank)

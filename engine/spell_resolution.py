@@ -613,7 +613,8 @@ class ResolutionManager:
         # gets a multi-ability counterspell's counter effect to run.
         from .oracle_resolver import resolve_spell_from_oracle
         if not getattr(card.template, 'is_counterspell', False):
-            if resolve_spell_from_oracle(game, card, controller, item.targets):
+            if resolve_spell_from_oracle(game, card, controller, item.targets,
+                                         x_value=item.x_value):
                 return
 
         # ── Generic fallback: parse abilities from oracle text ──

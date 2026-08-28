@@ -3,7 +3,7 @@
   "engine/__init__.py": 0,
   "engine/callbacks.py": 0,
   "engine/card_database.py": 0,
-  "engine/card_effects.py": 33,
+  "engine/card_effects.py": 32,
   "engine/cards.py": 1,
   "engine/cast_manager.py": 14,
   "engine/combat_manager.py": 2,
