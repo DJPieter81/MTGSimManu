@@ -132,8 +132,15 @@ jobs:
               sys.exit(1)
           print(f"chunk coverage OK: {len(chunk1)} + {len(chunk2)} = {len(all_files)} files")
           GUARD
-          python -m pytest tests/eval $(ls tests/test_[a-g]*.py) -q --timeout=120 --tb=short \
+          # --ignore-glob (not an explicit file list): conftest.py's
+          # collect_ignore for optional deps — test_llm_embeddings.py when
+          # numpy is absent — only applies to DIRECTORY collection. Naming
+          # files explicitly bypasses it and turns a clean auto-skip into a
+          # collection ERROR, which is exactly what the first attempt did.
+          python -m pytest tests/ -q --timeout=120 --tb=short \
+            --ignore-glob='tests/test_[h-z]*.py' \
             --deselect tests/test_etb_graveyard_return.py \
             --deselect tests/test_card_features.py::test_extraction_performance
-          python -m pytest $(ls tests/test_[h-z]*.py) -q --timeout=120 --tb=short \
+          python -m pytest tests/ -q --timeout=120 --tb=short \
+            --ignore-glob='tests/test_[a-g]*.py' --ignore=tests/eval \
             --deselect tests/test_parallel_matrix.py
