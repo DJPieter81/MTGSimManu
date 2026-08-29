@@ -1789,6 +1789,7 @@ class CardDatabase:
             parse_has_attack_trigger, parse_has_combat_damage_trigger,
             parse_sacrifice_mana_units,
             parse_aura_enchant_restriction, parse_aura_mana_units,
+            parse_aura_mana_color_is_chosen, parse_tap_for_mana_trigger,
             parse_activated_abilities,
             parse_has_lifegain_token_trigger, parse_lifegain_token_type,
             parse_targets_creature_spell, parse_targets_planeswalker_spell,
@@ -1880,6 +1881,12 @@ class CardDatabase:
             parse_sacrifice_mana_units(oracle) or [])
         template.aura_enchant_restriction = parse_aura_enchant_restriction(oracle)
         template.aura_mana_units = parse_aura_mana_units(oracle) or []
+        # "of the chosen color" riders: the colour is picked as the Aura
+        # enters, so `aura_mana_units` holds the OPTION set and the pick lands
+        # on the instance (see PermanentEffects._choose_entry_mana_color).
+        template.aura_mana_color_chosen = parse_aura_mana_color_is_chosen(oracle)
+        # "Whenever you tap a <filter> for mana, add …" (CR 605.1b, 12 cards).
+        template.tap_for_mana_trigger = parse_tap_for_mana_trigger(oracle)
         # Parsed "[Cost]: [Effect]" lines (CR 602). Populated at load time so
         # enumeration is a typed-field read rather than a runtime oracle parse.
         # NOTE: deliberately a separate field from `abilities` — see

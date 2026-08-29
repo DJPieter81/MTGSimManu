@@ -205,6 +205,28 @@ class AICallbacks(GameCallbacks):
         from ai.activation_ev import choose_tutor_delivery
         return choose_tutor_delivery(game, player_idx, eligible)
 
+    def choose_mana_color(self, game, player_idx, source, options):
+        """Pick an entry-choice colour from the deck's actual mana needs.
+
+        `analyze_mana_needs` is the existing primitive for "which colour is
+        this deck short of": `missing_colors` are the colours a held spell's
+        pips are not yet covered by a source, and `needed_colors` weights them
+        by how many pips demand each. Preferring an uncovered colour, then the
+        most-demanded one, is the same ranking `choose_fetch_target` uses — no
+        new weights, no card names.
+        """
+        if not options:
+            return ""
+        from ai.mana_planner import analyze_mana_needs
+        player = game.players[player_idx]
+        needs = analyze_mana_needs(game, player_idx,
+                                   player.effective_cmc_overrides)
+        uncovered = [c for c in options if c in needs.missing_colors]
+        pool = uncovered or options
+        ranked = max(pool, key=lambda c: (needs.needed_colors.get(c, 0),
+                                          -options.index(c)))
+        return ranked
+
     def choose_artifact_tutor_target(self, game, player_idx, eligible):
         """State-aware ranking on top of the default heuristic.
 

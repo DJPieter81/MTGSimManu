@@ -131,6 +131,15 @@ class ManaPayment:
         if base:
             from .permanent_effects import PermanentEffects
             base.extend(PermanentEffects.aura_granted_mana_units(game, land))
+            # Tap-for-mana triggers (CR 605.1b) — "whenever you tap a <filter>
+            # for mana, add …". Resolved here for the same reason the Aura
+            # grant is: this is the ONE place a source's units are computed, so
+            # the AI's capacity estimate and what the payment path can actually
+            # spend are the same number by construction. The trigger sees the
+            # source's own units (Aura grant included), which is what the
+            # "any type that permanent produced" rider mirrors.
+            base.extend(PermanentEffects.tap_trigger_bonus_units(
+                game, land, base))
         return base
 
     @staticmethod

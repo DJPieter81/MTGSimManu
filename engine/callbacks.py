@@ -101,6 +101,20 @@ class GameCallbacks(Protocol):
         """
         ...
 
+    def choose_mana_color(
+        self, game: GameState, player_idx: int, source: CardInstance,
+        options: List[str],
+    ) -> str:
+        """Which colour does an "as this enters, choose a color" permanent pick?
+
+        The engine has already enumerated the legal `options`; the callback
+        picks one. Uniform per KIND — any permanent whose entry choice is a
+        colour routes here, so no mechanic-named callback is needed for the
+        next printing that words it the same way. Returning something outside
+        `options` falls back to the engine default.
+        """
+        ...
+
     def choose_tutor_target(
         self, game: GameState, player_idx: int, source: CardInstance,
         eligible: List[CardInstance],
@@ -198,6 +212,37 @@ class DefaultCallbacks:
             return (is_mana, is_artifact_scaler, cmc)
 
         return max(eligible, key=_rank)
+
+    def choose_mana_color(
+        self, game: GameState, player_idx: int, source: CardInstance,
+        options: List[str],
+    ) -> str:
+        """Default: the colour the controller's own cards demand most.
+
+        Printed card data only, in keeping with the other defaults here — the
+        coloured pips of every card the player owns are counted, and the most
+        demanded colour among `options` wins. That is a deterministic reading
+        of the deck, not a strategic read of the board; AI implementations
+        override it with `analyze_mana_needs`, which additionally knows which
+        colours the battlefield already covers.
+
+        Ties break on the option order the engine supplied, so the choice is
+        reproducible for a given seed.
+        """
+        if not options:
+            return ""
+        player = game.players[player_idx]
+        demand = {c: 0 for c in options}
+        color_attrs = {"W": "white", "U": "blue", "B": "black",
+                       "R": "red", "G": "green"}
+        for zone in (player.hand, player.library, player.battlefield):
+            for card in zone:
+                cost = getattr(card.template, "mana_cost", None)
+                if cost is None:
+                    continue
+                for code in demand:
+                    demand[code] += getattr(cost, color_attrs.get(code, ""), 0)
+        return max(options, key=lambda c: (demand[c], -options.index(c)))
 
     def choose_tutor_target(
         self, game: GameState, player_idx: int, source: CardInstance,

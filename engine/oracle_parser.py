@@ -1530,6 +1530,87 @@ def parse_aura_mana_units(oracle: str) -> Optional[List[List[str]]]:
     return None
 
 
+def parse_aura_mana_color_is_chosen(oracle: str) -> bool:
+    """True when a mana Aura's granted mana is "of the chosen color".
+
+    Two Modern Auras word it this way (Utopia Sprawl, Shimmerwilds Growth);
+    both pair it with "As this Aura enters, choose a color." The colour is a
+    DECISION, so the engine records the option set in `aura_mana_units` and
+    routes the pick through the `choose_mana_color` callback, narrowing the
+    granted unit to the chosen colour at attachment time.
+
+    Distinguished from "one mana of any color" (6 Auras), where the colour is
+    genuinely free at payment time and the full option set is correct.
+    """
+    low = (oracle or '').lower()
+    return bool(re.search(
+        r'whenever enchanted [a-z]+ is tapped for mana[^.]*?'
+        r'adds?\s+(?:an additional\s+)?[^.]*?of the chosen colou?r', low))
+
+
+def parse_tap_for_mana_trigger(oracle: str):
+    """Parse "Whenever you tap a <filter> for mana, add <mana>" (CR 605.1b).
+
+    12 Modern cards carry this shape and NONE of it was modelled, so the whole
+    class of controller-scoped mana accelerants — Leyline of Abundance, Nissa
+    Who Shakes the World, Crypt Ghast, Nirkana Revenant, Zendikar Resurgent,
+    Mirari's Wake, Nikya of the Old Ways, Vorinclex, Kinnan, Roxanne,
+    Badgermole Cub, Groundchuck & Dirtbag — sat on the battlefield producing
+    nothing.
+
+    Returns a `TapForManaTrigger`, or ``None`` when the oracle carries no such
+    trigger.
+
+    Deliberately NOT matched (each below the ~10-card class threshold, and
+    each needing engine surface this class does not have):
+      * "whenever A PLAYER taps …" (5 cards) and "whenever a <X> IS TAPPED for
+        mana, its controller adds …" (4 cards) — the mana can land in the
+        OPPONENT's pool, which is a different production path.
+      * "whenever AN OPPONENT taps …" (3 cards) — same reason.
+      * "whenever you tap THIS <thing> for mana, <non-mana effect>" (2 cards,
+        Zhur-Taa Druid / Forbidden Orchard) — same trigger event, but the
+        rider is damage or a token, not mana. The `a|an` article anchor and
+        the required `add` are what exclude them.
+    """
+    from .cards import TapForManaTrigger
+
+    low = (oracle or '').lower()
+    # Anchor: controller-scoped ("you tap"), an indefinite article (so "this
+    # creature" self-references cannot match), and an `add` rider.
+    m = re.search(
+        r'whenever you tap an? ([a-z][a-z ]*?) for mana,\s*'
+        r'(?:you )?add\s+([^.\n]+)', low)
+    if m is None:
+        return None
+    watch = m.group(1).strip()
+    effect = m.group(2).strip()
+
+    # Rider form 1: "one mana of any type that <permanent> produced" — the
+    # granted mana mirrors whatever the tapped source itself offers, so it is
+    # resolved against the source rather than fixed here.
+    if re.search(r'of any type that .* produced', effect):
+        return TapForManaTrigger(watch=watch, units=(), mirror_source=True)
+
+    # Rider form 2: an explicit run of mana symbols — {G}, {B}{B}, …
+    symbols = re.findall(r'\{([wubrgc])\}', effect)
+    if symbols:
+        return TapForManaTrigger(
+            watch=watch, units=tuple((s.upper(),) for s in symbols),
+            mirror_source=False)
+
+    # Rider form 3: "<N> mana of any color".
+    m2 = re.search(r'(\w+)\s+mana\s+of\s+any', effect)
+    if m2:
+        tok = m2.group(1)
+        count = int(tok) if tok.isdigit() else _NUM_WORDS.get(tok, 0)
+        if count > 0:
+            return TapForManaTrigger(
+                watch=watch,
+                units=tuple(tuple(_ANY_COLOR_UNIT) for _ in range(count)),
+                mirror_source=False)
+    return None
+
+
 def parse_sacrifice_mana_units(oracle: str) -> Optional[List[List[str]]]:
     """Parse a "Sacrifice this <thing>: Add <mana>" ability into mana units.
 

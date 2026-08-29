@@ -4,7 +4,7 @@ Defines card types, subtypes, abilities, and the core Card class.
 """
 from __future__ import annotations
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Set, Callable, Any, TYPE_CHECKING
+from typing import Dict, List, Optional, Set, Tuple, Callable, Any, TYPE_CHECKING
 from enum import Enum
 from .mana import ManaCost, Color
 
@@ -264,6 +264,33 @@ class ActivatedAbility:
     graveyard_exile_data: Optional[Dict] = None
 
 
+@dataclass(frozen=True)
+class TapForManaTrigger:
+    """A "whenever you tap a <filter> for mana, add …" trigger (CR 605.1b).
+
+    12 Modern cards carry this shape — Leyline of Abundance, Nissa Who Shakes
+    the World, Crypt Ghast, Nirkana Revenant, Badgermole Cub, Groundchuck &
+    Dirtbag (fixed-symbol riders) and Zendikar Resurgent, Mirari's Wake,
+    Nikya of the Old Ways, Vorinclex, Kinnan, Roxanne (source-mirroring
+    riders). Parsed once by `oracle_parser.parse_tap_for_mana_trigger`; the
+    engine dispatches off these fields, never off a card name.
+
+    `watch` is the normalised noun phrase the trigger looks for — a card type
+    ('creature', 'land', 'nonland permanent', 'artifact token') or a land
+    subtype ('forest', 'swamp'). `PermanentEffects.tap_trigger_matches`
+    turns it into a predicate over a permanent.
+
+    `units` are the extra mana units granted, in the same shape as
+    `CardTemplate.mana_units`, so a source's unit list can simply be extended.
+    `mirror_source` instead means "one mana of any type that permanent
+    produced": the granted unit is a copy of what the tapped source itself
+    offers, so it is resolved against the source rather than stored here.
+    """
+    watch: str
+    units: Tuple[Tuple[str, ...], ...] = ()
+    mirror_source: bool = False
+
+
 @dataclass
 class CardTemplate:
     """Template for a card (shared data, not instance-specific)."""
@@ -321,6 +348,17 @@ class CardTemplate:
     grants_haste_activation: bool = False
     aura_enchant_restriction: Optional[str] = None
     aura_mana_units: List[List[str]] = field(default_factory=list)
+    # True when the Aura's granted mana is "of the chosen color" — a colour
+    # picked as the Aura enters (Utopia Sprawl, Shimmerwilds Growth). The
+    # COLOUR is a decision, so it is routed through the `choose_mana_color`
+    # callback and recorded per-instance on `CardInstance.chosen_color`;
+    # `aura_mana_units` holds the full option set that choice ranges over.
+    aura_mana_color_chosen: bool = False
+    # "Whenever you tap a <filter> for mana, add …" (12 Modern cards).
+    # See TapForManaTrigger. Read by `PermanentEffects.tap_trigger_bonus_units`
+    # from inside `ManaPayment.land_mana_units` — the single per-source unit
+    # resolver — so mana CAPACITY and actual PRODUCTION cannot disagree.
+    tap_for_mana_trigger: Optional["TapForManaTrigger"] = None
     # 'When this land enters, return a land you control to its owner's
     # hand' — structural ETB clause of the karoo family (E1b), a
     # sibling of `enters_tapped`.
@@ -1106,6 +1144,11 @@ class CardInstance:
     # cycle.
     activations_this_turn: Dict[int, int] = field(default_factory=dict)
     attached_to_id: Optional[int] = None
+    # "As this permanent enters, choose a color" (CR 614.12-style entry
+    # choice). Set once at ETB from the `choose_mana_color` callback and read
+    # by the mana resolver for "of the chosen color" riders. None when the
+    # permanent makes no such choice.
+    chosen_color: Optional[str] = None
     _game_state: Any = field(default=None, repr=False)
     # Evoke tracking
     _evoked: bool = False
