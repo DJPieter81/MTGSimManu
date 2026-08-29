@@ -362,7 +362,12 @@ def activation_candidates(game, player_idx, snap, excluded=None):
             # the victim the AI itself would choose at payment time — the
             # same chooser the callback seam uses, so projection and payment
             # cannot disagree.
-            sacrificed = perm if ability.cost.sacrifice_self else None
+            # A cost that EXILES the source is the same board loss as one
+            # that sacrifices it — the permanent is gone either way, so
+            # the projection must charge both or "Exile this artifact:
+            # ..." scores as free.
+            sacrificed = (perm if (ability.cost.sacrifice_self
+                                   or ability.cost.exile_self) else None)
             if ability.cost.sacrifice_type is not None:
                 from engine.activation import ActivationManager as _AM
                 sacrificed = choose_sacrifice_victim(

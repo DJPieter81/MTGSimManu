@@ -888,6 +888,7 @@ def parse_activation_cost(cost_text: str):
     untap_self = False
     life = 0
     sacrifice_self = False
+    exile_self = False
     sacrifice_type = None
     sacrifice_another = False
     discard_cards = 0
@@ -908,6 +909,15 @@ def parse_activation_cost(cost_text: str):
             continue
         if re.match(r'sacrifice this\b', low):
             sacrifice_self = True
+            continue
+        # Sibling cost item, different destination zone. ANCHORED on the
+        # `this` self-reference -- the same discriminator
+        # `parse_sacrifice_mana_units` uses -- so "Exile a creature card
+        # from your graveyard" and "Exile three cards from your
+        # graveyard" (cards paid from a DIFFERENT zone, a different
+        # mechanic) fall through to the unpayable patterns below.
+        if re.fullmatch(r'exile this [a-z]+', low):
+            exile_self = True
             continue
         # Tranche 3: single-victim typed sacrifice. FULLMATCH on a CLOSED
         # type set — "Sacrifice an artifact or land" (union), "Sacrifice
@@ -980,6 +990,7 @@ def parse_activation_cost(cost_text: str):
     return ActivationCost(mana=mana, tap_self=tap_self,
                           untap_self=untap_self,
                           life=life, sacrifice_self=sacrifice_self,
+                          exile_self=exile_self,
                           sacrifice_type=sacrifice_type,
                           sacrifice_another=sacrifice_another,
                           discard_cards=discard_cards,

@@ -181,6 +181,13 @@ class ActivationCost:
     # cost does.
     life: int = 0
     sacrifice_self: bool = False
+    # Sibling of `sacrifice_self` with a different destination zone: the
+    # source is EXILED as part of the cost (CR 602.2b). Equally
+    # self-limiting -- the source leaves the battlefield, so a repeatable
+    # ability charging it terminates -- but the permanent does not land in
+    # the graveyard, so graveyard recursion cannot bring it back.
+    # 24 Modern activated abilities charge it.
+    exile_self: bool = False
     # Tranche 3 payable costs. `sacrifice_type` is the required permanent
     # type of a single-victim sacrifice cost ("creature", "artifact",
     # "enchantment", "land", or the wildcard "permanent"); None means no
