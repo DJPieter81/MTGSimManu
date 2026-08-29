@@ -183,12 +183,25 @@ class GameState:
         return None
 
     def _gy_library_cast_hate_source(self) -> Optional[CardInstance]:
-        """Return the first permanent on any battlefield whose oracle
-        text bans casting spells from graveyards or libraries. None if
-        no such permanent is in play."""
+        """Return the first permanent on any battlefield that PRINTS the
+        static "Players can't cast spells from graveyards or libraries"
+        (the Grafdigger's Cage clause). None if no such permanent is in
+        play.
+
+        Reads the narrow, parse-once `prevents_graveyard_casting` field —
+        NOT `has_graveyard_hate`. The latter is a deliberately broad
+        sideboard-advice predicate matched by 446 Modern permanents
+        (anything whose oracle exiles a graveyard); using it here made
+        every graveyard-REMOVAL permanent a symmetric, permanent Cage that
+        switched off flashback and escape for both players, its own
+        controller included. Removal takes the fuel away when the ability
+        is ACTIVATED; it bans no cast. See
+        tests/test_graveyard_cast_prevention_static.py.
+        """
         for player in self.players:
             for card in player.battlefield:
-                if getattr(card.template, 'has_graveyard_hate', False):
+                if getattr(card.template, 'prevents_graveyard_casting',
+                           False):
                     return card
         return None
 

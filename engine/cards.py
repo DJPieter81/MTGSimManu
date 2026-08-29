@@ -149,6 +149,16 @@ class ActivationEffectKind(Enum):
     # untaps its own source, which is why `targets_required == 0` is the
     # discriminator the resolver and the no-free-repeatable rule both read.
     UNTAP_TARGET_PERMANENT = "untap_target_permanent"
+    # "[Cost]: Exile target player's graveyard / all graveyards / each
+    # opponent's graveyard / N target cards from a graveyard" — the
+    # graveyard-hate class (Tormod's Crypt, Nihil Spellbomb, Relic of
+    # Progenitus, Soul-Guide Lantern, Withered Wretch, Unlicensed Hearse,
+    # …; 33 Modern cards). The parsed shape rides on
+    # `ActivatedAbility.graveyard_exile_data`; `scope` — not the effect
+    # kind — is what tells the resolver whose graveyards it clears, and
+    # only the 'cards' scope declares card targets. Every exile is a zone
+    # change and routes through the zone funnel.
+    EXILE_FROM_GRAVEYARD = "exile_from_graveyard"
     UNCLASSIFIED = "unclassified"
 
 
@@ -171,6 +181,13 @@ class ActivationCost:
     # cost does.
     life: int = 0
     sacrifice_self: bool = False
+    # Sibling of `sacrifice_self` with a different destination zone: the
+    # source is EXILED as part of the cost (CR 602.2b). Equally
+    # self-limiting -- the source leaves the battlefield, so a repeatable
+    # ability charging it terminates -- but the permanent does not land in
+    # the graveyard, so graveyard recursion cannot bring it back.
+    # 24 Modern activated abilities charge it.
+    exile_self: bool = False
     # Tranche 3 payable costs. `sacrifice_type` is the required permanent
     # type of a single-victim sacrifice cost ("creature", "artifact",
     # "enchantment", "land", or the wildcard "permanent"); None means no
@@ -240,6 +257,11 @@ class ActivatedAbility:
     # bound), mv_bound_is_x ("mana value X or less"), tapped (battlefield
     # entry rider). None for every other effect kind.
     tutor_data: Optional[Dict] = None
+    # EXILE_FROM_GRAVEYARD kind only: the structured shape from
+    # `oracle_parser.parse_activation_graveyard_exile` -- scope
+    # ('cards'/'target_player'/'all'/'each_opponent'), count, up_to,
+    # types, owner, single_graveyard. None for every other effect kind.
+    graveyard_exile_data: Optional[Dict] = None
 
 
 @dataclass
@@ -544,6 +566,26 @@ class CardTemplate:
     # Prevents graveyard ETB -- True for Grafdigger's Cage pattern.
     # Populated by oracle_parser.parse_prevents_graveyard_etb.
     prevents_graveyard_etb: bool = False
+    # Prevents graveyard CASTING -- the other half of the Grafdigger's Cage
+    # clause ("Players can't cast spells from graveyards or libraries").
+    # The rules gate in CastManager.can_cast reads THIS, not the broad
+    # has_graveyard_hate sideboard-advice predicate: a permanent that exiles
+    # a graveyard removes fuel when activated and bans no cast at all.
+    # Populated by oracle_parser.parse_prevents_graveyard_casting.
+    prevents_graveyard_casting: bool = False
+    # Continuous replacement -- 'if a card would be put into a
+    # graveyard, exile it instead' (Leyline of the Void / Rest in
+    # Peace family). The third slice of what has_graveyard_hate lumps
+    # together; this one answers 'can this permanent stop a card
+    # reaching a graveyard'.
+    # Populated by oracle_parser.parse_exiles_cards_bound_for_graveyard.
+    exiles_cards_bound_for_graveyard: bool = False
+    # Reanimation -- True when the card puts a card from a GRAVEYARD onto
+    # the BATTLEFIELD. Narrower than has_graveyard_recursion (which also
+    # matches flashback's own reminder text); the ordering constraint
+    # graveyard-before-battlefield is the discriminator.
+    # Populated by oracle_parser.parse_reanimates_from_graveyard.
+    reanimates_from_graveyard: bool = False
     # Requires creature target -- True when oracle needs a creature or creature-spell target.
     # Populated by oracle_parser.parse_requires_creature_target.
     requires_creature_target: bool = False

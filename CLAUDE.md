@@ -14,6 +14,15 @@ The slogan "no patches, solve holistically" does not bind. These rules do. They 
 - **No new `card.name == "X"` or `name in {…}` in `engine/` or `ai/`.** Pre-commit ratchet (`tools/check_abstraction.py`) blocks any commit that *increases* the count from `tools/abstraction_baseline.json`. Reducing the count requires explicitly lowering the baseline in the same commit. True exceptions (enum checks, supertypes) get `# abstraction-allow: <reason>` on the line.
 - **No new hardcoded deck-name conditionals in `engine/` or `ai/`.** Pre-commit ratchet (`tools/check_abstraction.py`'s deck-gate detector) blocks any commit that increases the count from `tools/abstraction_baseline.json`'s `deck_gate_count`. If the gate controls a *mechanic* (combo-land priority, fast-mana priority, color-fix preference), use a tag/oracle predicate or per-archetype config in `decks/gameplans/*.json` / `ai/strategy_profile.py` instead. True exceptions get `# abstraction-allow: <reason>` on the line. Class D from `docs/design/2026-05-04_modern_combo_audit_methodology.md`.
 - **No new bare numeric literal in `ai/*.py` outside the excluded infra modules.** CI ratchet (`tools/check_magic_numbers.py`) blocks any commit that increases a file's count from `tools/magic_numbers_baseline.json`. Replace with a named constant in `ai/scoring_constants.py` (with inline justification comment) or derive from a primitive (`ai/clock.py`, `ai/bhi.py`, oracle predicates). True rules-constants get `# magic-allow: <reason>` on the line. The script is the single source of truth: `python tools/check_magic_numbers.py [--list]`.
+- **No new card-name-keyed registry entry.** CI ratchet
+  (`tools/check_card_name_registry.py`) pins the count of
+  `EFFECT_REGISTRY.register("Card Name", …)` entries — the surface
+  `check_abstraction.py`'s regex cannot see. It may only SHRINK: growth fails
+  CI (build the mechanic class instead — parse the shape once into a typed
+  `CardTemplate` field and dispatch off it, or refuse the variant outright),
+  and a reduction must lower the baseline in the same commit so the ceiling
+  cannot be silently re-filled. Precedent: the X-creature-tutor consolidation
+  deleted `green_suns_zenith_resolve`, taking the count 97 → 96.
 - **No new numeric threshold without a test that names the rule it encodes.** A literal `0.7` with no comment, no constant name, and no test is a magic number; it gets reverted on review.
 - **No fix without a failing test in the same diff.** Test goes red first, then the fix lands and turns it green. Both in the same commit.
 - **No second diagnostic phase on an outlier without a Bo3 replay-based root cause first.** Documentation is not progress.
@@ -31,6 +40,33 @@ If three consecutive commits target the same outlier deck without moving the win
 3. **Pre-commit hook (optional, local only)** — `.git-hooks/pre-commit` calls the same script. Activated per-clone via `bash tools/install_hooks.sh`. Useful for fast feedback in local Claude Code sessions; redundant in fresh containers and irrelevant for github.dev / web UI commits.
 
 The script `tools/check_abstraction.py` is the single source of truth — runnable standalone (`python tools/check_abstraction.py [--list]`) and called by all three layers above.
+
+## Sequencing rules (standing) — plan the run, not just the step
+
+Long measurements here cost 20 minutes to 4 hours. Three failures recur when
+a step is launched without planning the sequence around it. Check all three
+BEFORE starting any sim run:
+
+1. **Will pending work invalidate this measurement?** If a fix is merging (or
+   in review) that changes the code path being measured, the numbers are
+   stale on arrival. Merge first, then measure. Precedent: four field sweeps
+   were launched, the phantom-Cage fix merged mid-flight, and the results
+   described an engine that no longer existed.
+2. **Is the machine quiet, and does this tool tolerate load?** Anything that
+   runs games is wall-clock sensitive because `GAME_TIMEOUT_SECONDS`
+   truncates mid-game. Under contention that silently corrupts results —
+   Affinity once moved 13.8pp from this alone. Tools that WRITE fixtures must
+   neutralise the deadline (`tools/refresh_wr_baseline.py` and
+   `tests/test_wr_baseline_anchor.py` both do; they share the constant so
+   they cannot diverge). Verify with `cat /proc/loadavg` first.
+3. **Can independent work run in parallel?** Disjoint test chunks, sweeps of
+   different decks, and worktree agents are independent. Running them
+   serially on an idle 4-core box wastes wall-clock for nothing.
+
+**And do not theorise ahead of cheap evidence.** When a suite fails, run the
+other half before proposing a cause: chunk halves are ~12 min each and name
+the test outright. A hypothesis stated from partial data has to be retracted
+when the cheap command finally runs, which costs more than the command did.
 
 ## Workflow rules (standing)
 

@@ -58,6 +58,9 @@ jobs:
       - name: Oracle-runtime-parse ratchet
         run: python tools/check_oracle_runtime_parse.py
 
+      - name: Card-name-registry ratchet
+        run: python tools/check_card_name_registry.py
+
       - name: Assemble card DB
         # ModernAtomic.json is gitignored, so a fresh checkout doesn't have
         # it. The classifier gate below constructs CardDatabase() directly
@@ -101,8 +104,43 @@ jobs:
         # PYTHONHASHSEED values), so no hash pin is needed.
         # test_llm_embeddings.py is auto-skipped (numpy not installed);
         # see the optional-dependency collect_ignore in conftest.py.
+        #
+        # Split into two sequential chunks (2026-08-29). The single-process
+        # run stopped completing on the runner: two consecutive jobs failed a
+        # test at 26% and were then killed by "The runner has received a
+        # shutdown signal" BEFORE pytest printed its summary, so the failing
+        # test's NAME was never reported and could not be diagnosed. The same
+        # single-process run is also OOM-killed locally (~4.7 GB RSS), which
+        # is why every agent already runs this suite in chunks by hand.
+        #
+        # Chunking bounds per-process memory and, critically, makes each chunk
+        # print its own summary — a truncation can no longer hide which test
+        # failed. Coverage is IDENTICAL: the same three deselects, and the
+        # guard step below fails the job if the two globs ever stop covering
+        # every collected test file (a silently-skipped file would be worse
+        # than the problem this solves).
         run: |
+          python - <<'GUARD'
+          import glob, pathlib, sys
+          all_files = {p for p in glob.glob("tests/test_*.py")}
+          chunk1 = set(glob.glob("tests/test_[a-g]*.py"))
+          chunk2 = set(glob.glob("tests/test_[h-z]*.py"))
+          missed = all_files - chunk1 - chunk2
+          overlap = chunk1 & chunk2
+          if missed or overlap:
+              print(f"chunk globs do not partition tests/: missed={sorted(missed)} overlap={sorted(overlap)}")
+              sys.exit(1)
+          print(f"chunk coverage OK: {len(chunk1)} + {len(chunk2)} = {len(all_files)} files")
+          GUARD
+          # --ignore-glob (not an explicit file list): conftest.py's
+          # collect_ignore for optional deps — test_llm_embeddings.py when
+          # numpy is absent — only applies to DIRECTORY collection. Naming
+          # files explicitly bypasses it and turns a clean auto-skip into a
+          # collection ERROR, which is exactly what the first attempt did.
           python -m pytest tests/ -q --timeout=120 --tb=short \
+            --ignore-glob='tests/test_[h-z]*.py' \
             --deselect tests/test_etb_graveyard_return.py \
-            --deselect tests/test_card_features.py::test_extraction_performance \
+            --deselect tests/test_card_features.py::test_extraction_performance
+          python -m pytest tests/ -q --timeout=120 --tb=short \
+            --ignore-glob='tests/test_[a-g]*.py' --ignore=tests/eval \
             --deselect tests/test_parallel_matrix.py

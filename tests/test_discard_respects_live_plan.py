@@ -163,7 +163,14 @@ class TestLastAccessibleRoleCopyProtectedWhilePlanLive:
         it.  The last copy must be kept (IR s60500 G2 replay shape:
         both payoffs binned under an active hate permanent)."""
         game = _reanimator_game(card_db, my_lands_on_field=3)
-        _add(game, card_db, "Territorial Kavu", controller=1,
+        # Fixture carrier re-pointed: the rule is "an opposing permanent
+        # that stops the graveyard holding the resource". Territorial Kavu
+        # used to satisfy it only because the old gate asked the broad
+        # `has_graveyard_hate` field — its graveyard exile is a modal ATTACK
+        # TRIGGER ("exile up to one target card"), not hate. Leyline of the
+        # Void is the literal carrier of the rule: cards never arrive.
+        # See tests/test_graveyard_threat_is_an_actual_removal_ability.py.
+        _add(game, card_db, "Leyline of the Void", controller=1,
              zone="battlefield")
         # Plan otherwise live: enabler + payoff spell in library.
         _add(game, card_db, "Faithful Mending", 0, "library")

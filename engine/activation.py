@@ -98,7 +98,15 @@ class ActivationManager:
                 ActivationEffectKind.GRANT_HASTE_TARGET,
                 ActivationEffectKind.TUTOR_CREATURE_TO_BATTLEFIELD,
                 ActivationEffectKind.TUTOR_TO_HAND,
-                ActivationEffectKind.UNTAP_TARGET_PERMANENT):
+                ActivationEffectKind.UNTAP_TARGET_PERMANENT,
+                ActivationEffectKind.EXILE_FROM_GRAVEYARD):
+            return False
+
+        # 9b-gy. A graveyard-exile line whose shape did not parse is
+        # schema incoherence — the resolver reads `scope` to decide whose
+        # graveyards it clears and has nothing to dispatch on without it.
+        if (ability.effect_kind is ActivationEffectKind.EXILE_FROM_GRAVEYARD
+                and ability.graveyard_exile_data is None):
             return False
 
         # 9b-x. X-pip discipline. An {X} in the cost is chargeable exactly
@@ -223,8 +231,8 @@ class ActivationManager:
         """Rule 9's predicate: does paying this cost consume something
         finite, so that repeating the activation terminates?
 
-        Mana, a tap, sacrifice (self or another), life, and discard each
-        deplete. Tranche 4 adds the two counter items:
+        Mana, a tap, sacrifice (self or another), EXILE of the source,
+        life, and discard each deplete. Tranche 4 adds the two counter items:
 
           * REMOVE always depletes — the counter supply on the permanent is
             finite and each payment strictly lowers it.
@@ -245,7 +253,8 @@ class ActivationManager:
         if cost.tap_self and not ActivationManager._untaps_its_own_source(
                 ability):
             return True
-        if (cost.mana.cmc > 0 or cost.sacrifice_self or cost.life > 0
+        if (cost.mana.cmc > 0 or cost.sacrifice_self or cost.exile_self
+                or cost.life > 0
                 or cost.sacrifice_type is not None
                 or cost.discard_cards > 0
                 or cost.remove_counter_kind is not None):
@@ -423,6 +432,13 @@ class ActivationManager:
                 # zone funnel. Placed LAST so nothing that could refuse runs
                 # after the permanent is gone.
                 game.zone_mgr.move_card_to_graveyard(
+                    game, perm, cause=f"activation cost ({perm.name})")
+            elif ability.cost.exile_self:
+                # Same CR 602.2b moment, different destination zone — and
+                # the same LAST position for the same reason. `elif`
+                # because no printed cost both sacrifices and exiles the
+                # source; the permanent can only leave once.
+                game.zone_mgr.move_card_to_exile(
                     game, perm, cause=f"activation cost ({perm.name})")
 
             game.stack.items.append(StackItem(

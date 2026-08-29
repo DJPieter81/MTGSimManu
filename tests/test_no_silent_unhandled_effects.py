@@ -21,6 +21,8 @@ A new or edited card that slips through every handler turns this test red.
 """
 from __future__ import annotations
 
+import pytest
+
 from engine import effect_diagnostics
 from decks.modern_meta import MODERN_DECKS
 from run_meta import _get_runner, _run_game
@@ -65,6 +67,19 @@ ALLOWED_UNHANDLED: set[tuple[str, str]] = {
 }
 
 
+# Legitimate long work, not a hang: this drives every registered deck through
+# two real games (25 decks x 2 seats = 50 games), which is the whole point —
+# a narrower workload would stop covering the decks it exists to police, and
+# CLAUDE.md is explicit that the suite-wide --timeout=120 "exists to catch
+# HANGS, not to bound legitimate long work" and that shrinking a test to duck
+# under the cap is the wrong fix.
+#
+# Measured 2026-08-29 on this container: 266s wall for the full 50-game sweep
+# (the host has been ~4x slower since a restart; it was comfortably inside the
+# suite default before). 600s leaves headroom for further deck registrations
+# without re-tuning, while still bounding a genuine hang. Same convention and
+# rationale as tests/test_parallel_matrix.py's exemption.
+@pytest.mark.timeout(600)
 def test_no_new_silent_unhandled_spell_effects():
     """Drive every deck (as the active caster) through deterministic games and
     assert no instant/sorcery resolves to a silent no-op, and no permanent's

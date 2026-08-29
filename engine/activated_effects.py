@@ -257,6 +257,75 @@ def _resolve_activated_tutor(game: "GameState", source: "CardInstance",
     return True
 
 
+def _resolve_graveyard_exile(game: "GameState", source: "CardInstance",
+                             controller: int, ability: "ActivatedAbility",
+                             targets: Optional[List[int]]) -> bool:
+    """Resolve an EXILE_FROM_GRAVEYARD activation (CR 406 — exile is a
+    zone, so every card moved here goes through the zone funnel and
+    leaves-the-graveyard triggers/replacements see it).
+
+    ONE branch for all five parsed shapes; ``spec['scope']`` is the
+    discriminator:
+
+      * ``cards`` — only the DECLARED targets move. CR 608.2b: a target
+        that has already left the graveyard is skipped, never silently
+        redirected onto a different card.
+      * ``target_player`` — the whole of one player's graveyard. The
+        chosen player is the OPPONENT: this is the same declared-or-
+        default contract `resolve_damage_to_chosen_target` already uses
+        for "any target" ("an exhausted or empty target list falls
+        through to the opponent"), and in a two-player game those are the
+        only two choices. A multiplayer engine would put a callback seam
+        here, as `choose_sacrifice` / `choose_tutor_target` do.
+      * ``all`` — every graveyard INCLUDING the activator's own. That
+        symmetry is the printed cost of the effect and the AI's
+        valuation must pay it; the resolver simply applies it.
+      * ``each_opponent`` — every graveyard except the activator's.
+    """
+    spec = ability.graveyard_exile_data or {}
+    scope = spec.get('scope')
+    cause = f"{source.name} graveyard exile"
+
+    if scope == 'cards':
+        moved = 0
+        for tid in (targets or []):
+            found = game.get_card_by_id(tid)
+            if found is None or found.zone != "graveyard":
+                continue  # CR 608.2b — illegal target, skipped
+            game.zone_mgr.move_card_to_exile(game, found, cause=cause)
+            moved += 1
+        if moved:
+            game.log.append(
+                f"T{game.display_turn} P{controller+1}: {source.name} "
+                f"activated — exiles {moved} card(s) from graveyards")
+        return bool(moved)
+
+    if scope == 'all':
+        victims = list(range(len(game.players)))
+    elif scope == 'each_opponent':
+        victims = [i for i in range(len(game.players)) if i != controller]
+    elif scope == 'target_player':
+        victims = [i for i in range(len(game.players)) if i != controller]
+    else:
+        from .effect_diagnostics import record_unhandled_effect
+        record_unhandled_effect(source.name, "activated")
+        return False
+
+    exiled = 0
+    for idx in victims:
+        for card in list(game.players[idx].graveyard):
+            game.zone_mgr.move_card_to_exile(game, card, cause=cause)
+            exiled += 1
+    game.log.append(
+        f"T{game.display_turn} P{controller+1}: {source.name} activated "
+        f"— exiles {exiled} card(s) from "
+        f"{', '.join(f'P{i+1}' for i in victims)} graveyard(s)")
+    # A cleared-but-already-empty graveyard is still a RESOLVED ability
+    # (nothing about it fizzles); whether it was worth paying for is the
+    # AI's judgment, not a rules question.
+    return True
+
+
 def resolve_activated_ability(game: "GameState", source: "CardInstance",
                               controller: int,
                               targets: Optional[List[int]] = None,
@@ -350,6 +419,10 @@ def resolve_activated_ability(game: "GameState", source: "CardInstance",
                     ActivationEffectKind.TUTOR_TO_HAND):
             return _resolve_activated_tutor(game, source, controller,
                                             ability, x_value)
+
+        if kind is ActivationEffectKind.EXILE_FROM_GRAVEYARD:
+            return _resolve_graveyard_exile(game, source, controller,
+                                            ability, targets)
 
         # ANIMATE_SELF_UEOT is owned by `parse_land_animation` / `animate_land`
         # and must never be double-executed here; it reaches this branch only

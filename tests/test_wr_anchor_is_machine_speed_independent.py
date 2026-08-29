@@ -74,3 +74,32 @@ def test_same_seed_gives_same_result_under_a_generous_budget():
         f"{entry['deck1']} vs {entry['deck2']} @ {entry['seed']}: "
         f"got {first}, fixture says "
         f"{{'winner': {entry['winner']!r}, 'turns': {entry['turns']}}}")
+
+
+def test_the_refresher_neutralises_the_deadline_like_the_test_does():
+    """The snapshot WRITER must be as machine-speed-independent as the reader.
+
+    `tests/test_wr_baseline_anchor.py::_replay` raises the wall-clock budget
+    before replaying, so a recorded outcome is a function of the seed alone.
+    `tools/refresh_wr_baseline.py` writes that same fixture and originally did
+    not, which is strictly worse than an unprotected read: a slow or loaded
+    host silently bakes truncated games INTO the baseline, and every later run
+    then measures drift against garbage.
+
+    Observed before this guard existed: on a loaded container an unprotected
+    refresh rewrote 14 of 29 entries as `draw` at turns 1-8, while the
+    self-neutralising anchor test on identical code found exactly one real
+    drift. Structural check, so the two cannot drift apart again.
+    """
+    from pathlib import Path
+
+    src = (Path(__file__).resolve().parent.parent
+           / "tools" / "refresh_wr_baseline.py").read_text()
+    assert "GAME_TIMEOUT_SECONDS" in src, (
+        "refresh_wr_baseline.py must neutralise the wall-clock deadline "
+        "before replaying, exactly as the anchor test does"
+    )
+    assert "_ANCHOR_TIMEOUT_SECONDS" in src, (
+        "the refresher must import the anchor test's timeout constant rather "
+        "than duplicating the value, so the writer and reader cannot diverge"
+    )

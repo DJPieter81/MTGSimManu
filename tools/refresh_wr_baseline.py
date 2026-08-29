@@ -82,6 +82,25 @@ def main() -> None:
         from engine.card_database import CardDatabase
         from engine.game_runner import GameRunner
 
+        # Neutralise the wall-clock deadline for the SAME reason the anchor
+        # test does (tests/test_wr_baseline_anchor.py::_ANCHOR_TIMEOUT_SECONDS,
+        # and its `_replay` docstring): the engine's GAME_TIMEOUT_SECONDS
+        # breaks out of the turn loop and abandons the game, so a recorded
+        # outcome becomes a function of MACHINE SPEED as well as of the seed.
+        #
+        # The test was hardened for this; the refresher was not, and that gap
+        # nearly poisoned the fixture: run on a loaded container (a 4x-slower
+        # host with field sweeps in flight), an unprotected refresh rewrote 14
+        # of 29 entries as `draw` at turns 1-8, while the self-neutralising
+        # anchor test on the identical code reported exactly ONE real drift.
+        # A refresher that writes machine-dependent values corrupts the very
+        # fixture meant to detect drift, so the two must neutralise
+        # identically. The constant is imported rather than duplicated so the
+        # tool and the test cannot silently diverge.
+        import ai.constants as _ai_constants
+        from tests.test_wr_baseline_anchor import _ANCHOR_TIMEOUT_SECONDS
+        _ai_constants.GAME_TIMEOUT_SECONDS = _ANCHOR_TIMEOUT_SECONDS
+
         db = CardDatabase()
         runner = GameRunner(db)
 
