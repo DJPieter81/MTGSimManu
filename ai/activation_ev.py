@@ -246,6 +246,66 @@ def untap_beneficiary(game, player_idx, perm, ability):
     return max(usable, key=tap_mana_units)
 
 
+def graveyard_hate_plan(game, player_idx, ability):
+    """What a graveyard-exile activation would actually accomplish right
+    now, as ``(fuel_removed, target_ids)``.
+
+    ``fuel_removed`` is a NET count of cards that stop being a resource:
+    the opponent's live fuel this activation reaches, minus our own that
+    it takes with it. That net is what makes the symmetric shape
+    ("Exile all graveyards") decline itself when our graveyard is the
+    more valuable one — the resolver applies the symmetry unconditionally
+    (it is the printed cost of the effect), so the valuation has to pay
+    for it here.
+
+    ``target_ids`` is empty for the whole-graveyard scopes, which declare
+    no card target; for the card-targeting scope it is the chosen
+    graveyard-zone targets, drawn only from OPPONENT fuel — spending a
+    targeted exile on our own graveyard, or on a card its owner can no
+    longer use, buys nothing.
+
+    Strategy only: `ActivationManager.can_activate` has already ruled on
+    legality (CR 601.2c included). Returning ``(0, [])`` means "not worth
+    paying for", never "not allowed".
+    """
+    from ai.predicates import graveyard_fuel
+
+    spec = ability.graveyard_exile_data or {}
+    scope = spec.get('scope')
+    opponents = [i for i in range(len(game.players)) if i != player_idx]
+
+    if scope in ('target_player', 'each_opponent'):
+        return sum(len(graveyard_fuel(game, i)) for i in opponents), []
+    if scope == 'all':
+        theirs = sum(len(graveyard_fuel(game, i)) for i in opponents)
+        return theirs - len(graveyard_fuel(game, player_idx)), []
+    if scope != 'cards':
+        return 0, []
+
+    # Card-targeting scope. Legal candidates come from the ability's own
+    # parsed TargetRequirement (type filter and owner scope included), so
+    # the AI can never declare a target the engine would refuse; the
+    # fuel test then narrows those to the ones worth spending on.
+    from engine.target_solver import enumerate_legal_targets
+
+    legal = []
+    for req in ability.target_requirements:
+        legal.extend(enumerate_legal_targets(game, player_idx, req))
+    legal_ids = {c.instance_id for c in legal}
+
+    chosen = []
+    for idx in opponents:
+        # "from a single graveyard" — every target must come from ONE
+        # graveyard, so the per-opponent loop is also the grouping.
+        picks = [c for c in graveyard_fuel(game, idx)
+                 if c.instance_id in legal_ids]
+        if spec.get('single_graveyard') and chosen and picks:
+            break
+        chosen.extend(picks)
+    chosen = chosen[:max(0, int(spec.get('count') or 0))]
+    return len(chosen), [c.instance_id for c in chosen]
+
+
 def activation_candidates(game, player_idx, snap, excluded=None):
     """Enumerate generic activated abilities worth activating right now.
 
@@ -448,6 +508,33 @@ def activation_candidates(game, player_idx, snap, excluded=None):
                 out.append((perm, ability.index, tgt_ids, ev,
                             f"activate: untap {tgt.name} — {units} mana "
                             f"back this turn"))
+                continue
+            elif kind is _K.EXILE_FROM_GRAVEYARD:
+                # What graveyard hate BUYS is the fuel it removes from
+                # its owner — cards they could still cast, reanimate or
+                # count. Priced at `card_clock_impact`, the exact term
+                # `position_value` uses for one card of advantage, so a
+                # hate activation competes with a cast on one scale and
+                # no new magnitude is invented for it.
+                #
+                # A graveyard with no live fuel yields no candidate: the
+                # permanent would sacrifice itself for nothing, which is
+                # precisely the failure mode this branch exists to
+                # prevent.
+                from ai.clock import card_clock_impact
+
+                removed, tgt_ids = graveyard_hate_plan(game, player_idx,
+                                                       ability)
+                if removed <= 0:
+                    continue
+                after = snap.fast_replace(**updates)  # cost terms only
+                ev = ((position_value(after) - base)
+                      + removed * card_clock_impact(snap))
+                if ev <= 0.0:
+                    continue
+                out.append((perm, ability.index, tgt_ids, ev,
+                            f"activate: {perm.name} strips {removed} live "
+                            f"card(s) from the graveyard"))
                 continue
             elif kind in (_K.TUTOR_CREATURE_TO_BATTLEFIELD,
                           _K.TUTOR_TO_HAND):

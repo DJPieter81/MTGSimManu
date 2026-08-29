@@ -1836,6 +1836,7 @@ class CardDatabase:
             parse_limits_opponent_spell_timing, parse_has_charge_counter_wipe,
             parse_has_mana_value_wipe, parse_has_sacrifice_for_damage,
             parse_prevents_graveyard_etb, parse_prevents_graveyard_casting,
+            parse_reanimates_from_graveyard,
             parse_requires_creature_target,
             parse_has_alternate_exile_cost,
             parse_has_discard_effect, parse_is_storm_spell,
@@ -1975,6 +1976,7 @@ class CardDatabase:
         template.has_sacrifice_for_damage = parse_has_sacrifice_for_damage(oracle)
         template.prevents_graveyard_etb = parse_prevents_graveyard_etb(oracle)
         template.prevents_graveyard_casting = parse_prevents_graveyard_casting(oracle)
+        template.reanimates_from_graveyard = parse_reanimates_from_graveyard(oracle)
         template.requires_creature_target = parse_requires_creature_target(oracle)
         template.has_alternate_exile_cost = parse_has_alternate_exile_cost(oracle)
         template.has_discard_effect = parse_has_discard_effect(oracle)

@@ -148,6 +148,98 @@ def count_gy_creatures(graveyard: "Iterable[CardInstance]") -> int:
     return sum(1 for c in graveyard if c.template.is_creature)
 
 
+# ─── Graveyard worth (what graveyard hate actually removes) ─────────
+#
+# The value of exiling a graveyard is NOT its card count. It is how much
+# of that graveyard is still a RESOURCE to its owner: a Boros Energy
+# graveyard of spent burn spells is worth nothing, while a two-card
+# graveyard holding an escape threat is worth a great deal. Every test
+# below reads a PARSE-ONCE typed field — the oracle-runtime-parse ratchet
+# stays at 0.
+
+# `power_scales_with` values that read the graveyard as a resource. A
+# body whose size is the graveyard's size is a size CONSUMER: shrinking
+# the graveyard shrinks it.
+_GRAVEYARD_SIZE_SCALINGS: frozenset[str] = frozenset(
+    {'graveyard', 'delirium', 'tarmogoyf'})
+
+
+def _reveals_graveyard_size_consumer(player) -> bool:
+    """Has this player revealed a card that turns graveyard SIZE into
+    value (delve, delirium, a graveyard-scaling body)?
+
+    Only PUBLIC zones are consulted — their battlefield and their own
+    graveyard. Their hand is hidden and guessing at it would be a belief
+    model, which is `ai.bhi`'s job, not a predicate's.
+    """
+    for zone in (player.battlefield, player.graveyard):
+        for card in zone:
+            t = card.template
+            if (getattr(t, 'has_delve', False)
+                    or getattr(t, 'has_delirium', False)
+                    or getattr(t, 'power_scales_with', '')
+                    in _GRAVEYARD_SIZE_SCALINGS):
+                return True
+    return False
+
+
+def _reveals_reanimation(player) -> bool:
+    """Has this player revealed a way to put a card from a graveyard onto
+    the battlefield? Public zones only, same reason as above — a
+    reanimation spell already sitting in their graveyard is evidence the
+    deck plays them.
+    """
+    for zone in (player.battlefield, player.graveyard):
+        for card in zone:
+            if getattr(card.template, 'reanimates_from_graveyard', False):
+                return True
+    return False
+
+
+def _castable_from_graveyard(template) -> bool:
+    """Does this card's own printed permission let it be cast from the
+    graveyard? Flashback (CR 702.33), Escape (CR 702.139) and Unearth
+    (CR 702.83) each need no second card, so a graveyard holding one is
+    live no matter what else its owner has.
+    """
+    from engine.cards import Keyword
+
+    return bool(getattr(template, 'flashback_cost', None) is not None
+                or getattr(template, 'escape_cost', None) is not None
+                or Keyword.UNEARTH in (getattr(template, 'keywords', None)
+                                       or set()))
+
+
+def graveyard_fuel(game, owner_idx: int) -> "list":
+    """Cards in ``owner_idx``'s graveyard that are still a resource TO
+    THEM — i.e. exactly what graveyard hate takes away.
+
+    Three tiers, each derived from printed card data:
+
+    1. cards castable from the graveyard by their own permission
+       (flashback / escape / unearth) — live unconditionally;
+    2. creature cards, once their owner has revealed a graveyard-to-
+       battlefield recursion source (they are reanimation targets);
+    3. every card, once their owner has revealed a consumer of graveyard
+       SIZE (delve / delirium / a graveyard-scaling body).
+
+    Returned as a list of instances rather than a count so a targeted
+    exile can pick WHICH cards to hit. Order follows the graveyard.
+    """
+    player = game.players[owner_idx]
+    size_matters = _reveals_graveyard_size_consumer(player)
+    recursion = _reveals_reanimation(player)
+
+    out = []
+    for card in player.graveyard:
+        t = card.template
+        if (size_matters
+                or _castable_from_graveyard(t)
+                or (recursion and t.is_creature)):
+            out.append(card)
+    return out
+
+
 # ─── First-turn value (mulligan land-slack replacement) ─────────────
 # Tag families consulted by ``first_turn_value``.  Each frozenset is
 # a set of real classifier tags (set in ``engine/card_database.py``

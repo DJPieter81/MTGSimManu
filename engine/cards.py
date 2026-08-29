@@ -566,6 +566,12 @@ class CardTemplate:
     # a graveyard removes fuel when activated and bans no cast at all.
     # Populated by oracle_parser.parse_prevents_graveyard_casting.
     prevents_graveyard_casting: bool = False
+    # Reanimation -- True when the card puts a card from a GRAVEYARD onto
+    # the BATTLEFIELD. Narrower than has_graveyard_recursion (which also
+    # matches flashback's own reminder text); the ordering constraint
+    # graveyard-before-battlefield is the discriminator.
+    # Populated by oracle_parser.parse_reanimates_from_graveyard.
+    reanimates_from_graveyard: bool = False
     # Requires creature target -- True when oracle needs a creature or creature-spell target.
     # Populated by oracle_parser.parse_requires_creature_target.
     requires_creature_target: bool = False

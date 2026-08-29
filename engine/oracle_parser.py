@@ -3090,6 +3090,36 @@ def parse_prevents_graveyard_etb(oracle: str) -> bool:
             and "can't enter the battlefield" in lo)
 
 
+def parse_reanimates_from_graveyard(oracle: str) -> bool:
+    """Return True when the card puts a card from a GRAVEYARD onto the
+    BATTLEFIELD (Goryo's Vengeance, Unburial Rites, Living End, Persist,
+    Ephemerate-via-Persist, …).
+
+    Narrower than ``parse_has_graveyard_recursion``, deliberately. That
+    predicate matches any "from your graveyard" phrase, which flashback's
+    own reminder text ("Cast this spell from your graveyard for its
+    flashback cost") satisfies — it answers "does this card care about a
+    graveyard at all", which is the right question for sideboard advice
+    and the wrong one for "is a creature in that graveyard a reanimation
+    target". Ordering is the discriminator: 'graveyard' must precede
+    'battlefield', which is what excludes "put a creature card from your
+    HAND onto the battlefield".
+
+    Class size: every reanimation spell and permanent in Modern (dozens).
+    Consumed by ``ai.predicates.graveyard_fuel`` to decide whether the
+    creature cards in a graveyard are still a resource to their owner.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    if 'from' not in lo or 'graveyard' not in lo:
+        return False
+    if not (('return' in lo or 'put' in lo) and 'battlefield' in lo):
+        return False
+    gy_idx = lo.find('graveyard')
+    return lo.find('battlefield', gy_idx) >= 0
+
+
 def parse_prevents_graveyard_casting(oracle: str) -> bool:
     """Return True for the printed "Players can't cast spells from
     graveyards (or libraries)" STATIC (the Grafdigger's Cage clause).
