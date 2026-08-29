@@ -3131,6 +3131,29 @@ def parse_reanimates_from_graveyard(oracle: str) -> bool:
     return lo.find('battlefield', gy_idx) >= 0
 
 
+def parse_exiles_cards_bound_for_graveyard(oracle: str) -> bool:
+    """Return True for the CONTINUOUS replacement "if a card would be put
+    into a graveyard, exile it instead" (Leyline of the Void, Rest in
+    Peace, Anafenza).
+
+    The third slice of what `parse_has_graveyard_hate` lumps together.
+    That predicate answers "does this card care about graveyards at all",
+    which is right for sideboard ADVICE and wrong as a mechanism gate;
+    this one answers "can this permanent stop a card reaching a
+    graveyard". Sibling of `parse_prevents_graveyard_casting` (the
+    can't-cast static) and of the parsed EXILE_FROM_GRAVEYARD activated
+    ability (the removal ability).
+
+    Class size: the Leyline of the Void / Rest in Peace replacement
+    family.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return bool('would be put into' in lo and 'graveyard' in lo
+                and 'exile' in lo)
+
+
 def parse_prevents_graveyard_casting(oracle: str) -> bool:
     """Return True for the printed "Players can't cast spells from
     graveyards (or libraries)" STATIC (the Grafdigger's Cage clause).

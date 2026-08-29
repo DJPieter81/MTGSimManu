@@ -573,6 +573,13 @@ class CardTemplate:
     # a graveyard removes fuel when activated and bans no cast at all.
     # Populated by oracle_parser.parse_prevents_graveyard_casting.
     prevents_graveyard_casting: bool = False
+    # Continuous replacement -- 'if a card would be put into a
+    # graveyard, exile it instead' (Leyline of the Void / Rest in
+    # Peace family). The third slice of what has_graveyard_hate lumps
+    # together; this one answers 'can this permanent stop a card
+    # reaching a graveyard'.
+    # Populated by oracle_parser.parse_exiles_cards_bound_for_graveyard.
+    exiles_cards_bound_for_graveyard: bool = False
     # Reanimation -- True when the card puts a card from a GRAVEYARD onto
     # the BATTLEFIELD. Narrower than has_graveyard_recursion (which also
     # matches flashback's own reminder text); the ordering constraint
