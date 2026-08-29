@@ -162,6 +162,90 @@ def choose_tutor_delivery(game, player_idx, eligible):
     return max(eligible, key=_worth)
 
 
+def _counter_cost_pt_delta(cost) -> int:
+    """Net power/toughness the source loses (negative) or gains (positive)
+    from this activation's counter cost.
+
+    Derived from the counters' own printed semantics, not a tuned weight:
+    +1/+1 and -1/-1 counters move power and toughness by the same amount,
+    so one signed number describes both. Kinds with no P/T meaning
+    (charge, oil, page) contribute 0.
+    """
+    from engine.cards import COUNTER_KIND_MINUS, COUNTER_KIND_PLUS
+
+    delta = 0
+    if cost.put_counter_kind == COUNTER_KIND_PLUS:
+        delta += cost.put_counter_amount
+    elif cost.put_counter_kind == COUNTER_KIND_MINUS:
+        delta -= cost.put_counter_amount
+    if cost.remove_counter_kind == COUNTER_KIND_PLUS:
+        delta -= cost.remove_counter_amount
+    elif cost.remove_counter_kind == COUNTER_KIND_MINUS:
+        delta += cost.remove_counter_amount
+    return delta
+
+
+def tap_mana_units(card) -> int:
+    """How much mana this permanent yields by being untapped — i.e. the
+    mana units its own {T} mana ability produces (CR 605).
+
+    Read from PARSE-ONCE typed fields only (`mana_units` /
+    `produces_mana` for lands, the `is_mana_ability` flag on parsed
+    activated abilities for everything else), never from oracle text.
+    Returns 0 for a permanent that taps for nothing — untapping it
+    returns no mana, so it is not worth an activation on this channel.
+    """
+    t = card.template
+    units = 0
+    if getattr(t, 'is_land', False):
+        if t.mana_units:
+            units = len(t.mana_units)
+        elif t.produces_mana:
+            units = 1
+    if units == 0:
+        for ab in (getattr(t, 'activated_abilities', None) or []):
+            if ab.is_mana_ability and ab.cost.tap_self:
+                units = 1
+                break
+    return units
+
+
+def untap_beneficiary(game, player_idx, perm, ability):
+    """Which permanent this untap activation would actually free up, or
+    None when it frees up nothing worth paying for.
+
+    Strategy, not legality — `can_activate` has already ruled on whether
+    a legal target exists (CR 601.2c). Three rules, all derived from what
+    the untap BUYS:
+
+      * the permanent must be TAPPED (untapping an untapped permanent is
+        a no-op);
+      * it must be one of OURS (untapping an opponent's permanent hands
+        them the mana);
+      * it must not be the source of a tap cost — tapping a permanent to
+        untap itself is engine-legal, strategically empty, and endlessly
+        repeatable, which is precisely the shape the chooser must never
+        walk into.
+
+    Among the survivors the best is the one returning the most mana.
+    """
+    from engine.target_solver import enumerate_legal_targets
+
+    if ability.targets_required == 0:
+        # Untargeted self-untap: the beneficiary is the source itself.
+        return perm if perm.tapped else None
+
+    candidates = []
+    for req in ability.target_requirements:
+        candidates.extend(enumerate_legal_targets(game, player_idx, req))
+    usable = [c for c in candidates
+              if c.tapped and c.controller == player_idx
+              and not (ability.cost.tap_self and c is perm)]
+    if not usable:
+        return None
+    return max(usable, key=tap_mana_units)
+
+
 def activation_candidates(game, player_idx, snap, excluded=None):
     """Enumerate generic activated abilities worth activating right now.
 
@@ -236,6 +320,17 @@ def activation_candidates(game, player_idx, snap, excluded=None):
             if ability.cost.discard_cards:
                 cost_updates["my_hand_size"] = max(
                     0, snap.my_hand_size - ability.cost.discard_cards)
+            # A counter cost that moves P/T is a real board change and must
+            # be charged, or "Put a -1/-1 counter on this creature: ..."
+            # scores as free right up to the point the creature dies. The
+            # amount is the counter's own printed P/T semantics — +1/+1 and
+            # -1/-1 are symmetric, so one number covers power and toughness.
+            _pt_delta = _counter_cost_pt_delta(ability.cost)
+            if _pt_delta and perm.effective_is_creature:
+                cost_updates["my_power"] = max(
+                    0, snap.my_power + _pt_delta)
+                cost_updates["my_toughness"] = max(
+                    0, snap.my_toughness + _pt_delta)
 
             # Merge effect deltas ON TOP of the cost terms — a discard-cost
             # draw must net the two hand-size changes, not overwrite one.
@@ -323,6 +418,36 @@ def activation_candidates(game, player_idx, snap, excluded=None):
                              f"attack this turn (clock "
                              f"{my_clock_without:.0f}→{my_clock_with:.0f} "
                              f"vs opp {opp_clock:.0f})")))
+                continue
+            elif kind is _K.UNTAP_TARGET_PERMANENT:
+                # What an untap BUYS is the mana the freed permanent taps
+                # for this turn — priced at the same per-mana clock rate the
+                # tutor branch uses, so an untap competes with a cast on one
+                # scale. A permanent that taps for nothing (a vanilla
+                # creature, an already-untapped land) yields no candidate:
+                # `position_value` counts tapped creatures in its power
+                # terms, so an untap changes no projected field and inventing
+                # a blocker bonus here would be a magnitude with no primitive
+                # behind it.
+                from ai.clock import mana_clock_impact
+
+                tgt = untap_beneficiary(game, player_idx, perm, ability)
+                if tgt is None:
+                    continue
+                units = tap_mana_units(tgt)
+                if units <= 0:
+                    continue
+                after = snap.fast_replace(**updates)  # cost terms only
+                per_mana = (mana_clock_impact(snap)
+                            * CLOCK_IMPACT_LIFE_SCALING)
+                ev = (position_value(after) - base) + units * per_mana
+                if ev <= 0.0:
+                    continue
+                tgt_ids = ([tgt.instance_id]
+                           if ability.targets_required else [])
+                out.append((perm, ability.index, tgt_ids, ev,
+                            f"activate: untap {tgt.name} — {units} mana "
+                            f"back this turn"))
                 continue
             elif kind in (_K.TUTOR_CREATURE_TO_BATTLEFIELD,
                           _K.TUTOR_TO_HAND):
