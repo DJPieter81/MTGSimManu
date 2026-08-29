@@ -382,6 +382,22 @@ def activation_candidates(game, player_idx, snap, excluded=None):
                 if sacrificed.effective_is_creature:
                     cost_updates["my_power"] = max(
                         0, snap.my_power - (sacrificed.power or 0))
+                # Artifact and enchantment COUNTS are the remaining
+                # snapshot resources a non-creature, non-land permanent
+                # contributes; `position_value` prices them (gated on the
+                # scaling flags). Without charging them, a deck that
+                # actually scales with artifact count -- affinity cost
+                # reduction, "+1/+0 per artifact" equipment, metalcraft --
+                # reads cracking one of its own artifacts as free, which
+                # is precisely the board it must not eat.
+                from engine.cards import CardType as _CT
+                _types = sacrificed.template.card_types
+                if _CT.ARTIFACT in _types:
+                    cost_updates["my_artifact_count"] = max(
+                        0, snap.my_artifact_count - 1)
+                if _CT.ENCHANTMENT in _types:
+                    cost_updates["my_enchantment_count"] = max(
+                        0, snap.my_enchantment_count - 1)
             if ability.cost.discard_cards:
                 cost_updates["my_hand_size"] = max(
                     0, snap.my_hand_size - ability.cost.discard_cards)
