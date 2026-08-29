@@ -365,3 +365,59 @@ def test_any_colour_aura_is_unaffected_by_the_choice_machinery():
     units = ManaPayment.land_mana_units(game, 0, host)
     granted = [u for u in units if u != ["G"]]
     assert len(granted) == 1 and set(granted[0]) == {"W", "U", "B", "R", "G"}
+
+
+# ── 5. End-to-end: more mana on the same turn ─────────────────────────
+
+def test_board_with_the_accelerant_reaches_more_mana_on_the_same_turn():
+    """Rule 5 — the pin that the whole class is not inert.
+
+    Same lands, same turn; the only difference is the accelerant. The AI-facing
+    mana estimate (`available_mana_estimate`, what EVSnapshot.my_mana reads)
+    must be strictly higher.
+    """
+    from ai.mana_planner import analyze_mana_needs
+
+    def _total(with_accelerant):
+        game = _game()
+        _put_lands(game, "Forest", 4)
+        if with_accelerant:
+            _put(game, "Zendikar Resurgent")
+        needs = analyze_mana_needs(game, 0)
+        return (game.players[0].available_mana_estimate, needs.total_mana)
+
+    plain_est, plain_needs = _total(False)
+    boosted_est, boosted_needs = _total(True)
+    assert boosted_est > plain_est, (
+        f"the engine-facing estimate must grow ({plain_est} -> {boosted_est})")
+    assert boosted_needs > plain_needs, (
+        f"the AI's mana-needs total must grow too, or land scoring and "
+        f"'castable with one more mana' stay blind to the accelerant "
+        f"({plain_needs} -> {boosted_needs})")
+
+
+def test_ai_mana_needs_total_matches_the_engine_capacity():
+    """analyze_mana_needs must not disagree with what the engine will pay."""
+    from ai.mana_planner import analyze_mana_needs
+
+    game = _game()
+    _put_lands(game, "Forest", 3)
+    _put(game, "Zendikar Resurgent")
+    needs = analyze_mana_needs(game, 0)
+    assert needs.total_mana == game.players[0].available_mana_estimate, (
+        "the AI's total_mana and the engine's capacity are the same quantity; "
+        "they must be computed from the same primitive")
+
+
+def test_aura_accelerant_also_lifts_the_ai_mana_total():
+    """The Aura half of the class reaches the AI layer through the same path."""
+    from ai.mana_planner import analyze_mana_needs
+
+    game = _game()
+    _put_lands(game, "Forest", 3)
+    before = analyze_mana_needs(game, 0).total_mana
+    aura = _put(game, "Utopia Sprawl")
+    PermanentEffects.attach_aura(game, aura, 0)
+    after = analyze_mana_needs(game, 0).total_mana
+    assert after == before + 1, (
+        f"one enchanted Forest taps for one more ({before} -> {after})")
