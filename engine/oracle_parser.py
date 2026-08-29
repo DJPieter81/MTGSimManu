@@ -888,6 +888,7 @@ def parse_activation_cost(cost_text: str):
     untap_self = False
     life = 0
     sacrifice_self = False
+    exile_self = False
     sacrifice_type = None
     sacrifice_another = False
     discard_cards = 0
@@ -908,6 +909,15 @@ def parse_activation_cost(cost_text: str):
             continue
         if re.match(r'sacrifice this\b', low):
             sacrifice_self = True
+            continue
+        # Sibling cost item, different destination zone. ANCHORED on the
+        # `this` self-reference -- the same discriminator
+        # `parse_sacrifice_mana_units` uses -- so "Exile a creature card
+        # from your graveyard" and "Exile three cards from your
+        # graveyard" (cards paid from a DIFFERENT zone, a different
+        # mechanic) fall through to the unpayable patterns below.
+        if re.fullmatch(r'exile this [a-z]+', low):
+            exile_self = True
             continue
         # Tranche 3: single-victim typed sacrifice. FULLMATCH on a CLOSED
         # type set — "Sacrifice an artifact or land" (union), "Sacrifice
@@ -980,6 +990,7 @@ def parse_activation_cost(cost_text: str):
     return ActivationCost(mana=mana, tap_self=tap_self,
                           untap_self=untap_self,
                           life=life, sacrifice_self=sacrifice_self,
+                          exile_self=exile_self,
                           sacrifice_type=sacrifice_type,
                           sacrifice_another=sacrifice_another,
                           discard_cards=discard_cards,
@@ -1055,6 +1066,13 @@ def classify_activation_effect(effect_text: str):
     # rather than executing as a bare haste grant with riders dropped.
     if re.fullmatch(r'target creature gains haste until end of turn', low):
         return K.GRANT_HASTE_TARGET, 0, 0, 0
+
+    # Graveyard exile (single full-sentence). The structured shape is
+    # re-derived by `parse_activated_abilities` via
+    # `parse_activation_graveyard_exile` and stored on the ability
+    # (`graveyard_exile_data`) — both parses happen once, at DB load.
+    if parse_activation_graveyard_exile(low) is not None:
+        return K.EXILE_FROM_GRAVEYARD, 0, 0, 0
 
     # Untap (single full-sentence). The structured target constraint is
     # re-derived by `parse_activated_abilities` via `parse_activation_untap`
@@ -1188,6 +1206,121 @@ _UNTAP_TARGET_RE = re.compile(
     r"untap target (?P<quals>[a-z][a-z\-' ]*?)(?P<scope> you control)?")
 
 
+# ── Graveyard-exile effects (EXILE_FROM_GRAVEYARD kind) ──────────────
+#
+# Five executable sentence shapes, all ANCHORED with fullmatch — the same
+# discipline every other activation classifier follows. A rider sentence
+# ("… Draw a card.", "… If it was a creature card, …") fails the match and
+# the line stays UNCLASSIFIED rather than executing with the rider
+# silently dropped.
+#
+# Class size: 33 Modern cards carry one of these five shapes on an
+# activated ability; the plain "Exile target card from a graveyard" line
+# alone is on 15 of them.
+
+# Card-type words a graveyard-exile target filter may carry. Closed set:
+# anything else (a subtype, "nonland", a union) refuses the whole line
+# rather than approximating the constraint.
+_GY_EXILE_TYPE_WORDS = frozenset({
+    'creature', 'artifact', 'enchantment', 'land', 'instant', 'sorcery',
+    'planeswalker'})
+
+# "exile [up to] [N] target [<type>] card(s) from <source>"
+_GY_EXILE_CARDS_RE = re.compile(
+    r'exile (?:(?P<upto>up to )?(?P<n>a|one|two|three|four|five|\d+) )?'
+    r"target (?P<quals>(?:[a-z][a-z\-']* )*?)cards? "
+    r'from (?P<src>a graveyard|a single graveyard|graveyards'
+    r"|your graveyard|an opponent's graveyard)")
+
+# Whole-graveyard shapes → (regex, scope).
+_GY_EXILE_WHOLE_RES = (
+    (re.compile(r"exile target player's graveyard"), 'target_player'),
+    (re.compile(r'exile all (?:cards from all )?graveyards'), 'all'),
+    (re.compile(r"exile each opponent's graveyard"), 'each_opponent'),
+)
+
+_GY_EXILE_SRC_OWNER = {
+    'a graveyard': ('any', False),
+    'a single graveyard': ('any', True),
+    'graveyards': ('any', False),
+    'your graveyard': ('you', False),
+    "an opponent's graveyard": ('opponent', False),
+}
+
+
+def parse_activation_graveyard_exile(effect_text: str) -> Optional[Dict]:
+    """Parse a graveyard-exile effect sentence into its structured shape,
+    or ``None`` when the sentence is not one of the executable forms.
+
+    Returns::
+
+        {'scope': 'cards'|'target_player'|'all'|'each_opponent',
+         'count': int,             # cards scope: how many targets
+         'up_to': bool,            # cards scope: "up to N"
+         'types': ['creature'],    # cards scope: type filter, [] = any card
+         'owner': 'you'|'opponent'|'any',   # whose graveyard
+         'single_graveyard': bool} # all targets from ONE graveyard
+
+    Deliberately refused (left ``None``, so the line stays UNCLASSIFIED):
+
+      * any trailing rider — "… Draw a card.", "… If it was a creature
+        card, put a +1/+1 counter on this creature." Those are composite
+        effects; executing only the exile half is the half-execution the
+        tranche discipline exists to prevent.
+      * an X-bound count ("exile up to X target cards"). X is chosen at
+        activation time and this effect does not BIND it, so the engine
+        cannot charge the {X} pip honestly — the same rule
+        ``can_activate`` applies to every non-tutor {X}.
+      * "target player exiles a card from their graveyard" — the CHOICE
+        belongs to the targeted player, a decision seam this shape does
+        not have.
+      * a union or subtype constraint, or more than one card-type word
+        (a conjunction the TargetRequirement type set cannot express).
+
+    Called once at DB load (via ``parse_activated_abilities``), never at
+    runtime — the oracle-runtime-parse ratchet stays at 0.
+    """
+    low = (effect_text or '').strip().lower().rstrip('.')
+    if not low:
+        return None
+
+    for pattern, scope in _GY_EXILE_WHOLE_RES:
+        if pattern.fullmatch(low):
+            return {'scope': scope, 'count': 0, 'up_to': False,
+                    'types': [], 'owner': 'any', 'single_graveyard': False}
+
+    m = _GY_EXILE_CARDS_RE.fullmatch(low)
+    if m is None:
+        return None
+
+    tok = m.group('n')
+    if tok is None:
+        count = 1
+    elif tok.isdigit():
+        count = int(tok)
+    elif tok in ('a', 'one'):
+        count = 1
+    else:
+        count = _NUM_WORDS.get(tok, 0)
+    if count <= 0:
+        return None
+
+    types: list = []
+    for word in (m.group('quals') or '').split():
+        if word not in _GY_EXILE_TYPE_WORDS:
+            return None  # subtype / "nonland" / union — refuse, don't guess
+        types.append(word)
+    if len(types) > 1:
+        # "target artifact creature card" is a CONJUNCTION; the
+        # TargetRequirement type set is a disjunction.
+        return None
+
+    owner, single = _GY_EXILE_SRC_OWNER[m.group('src')]
+    return {'scope': 'cards', 'count': count,
+            'up_to': bool(m.group('upto')), 'types': types,
+            'owner': owner, 'single_graveyard': single}
+
+
 def parse_activation_untap(effect_text: str) -> Optional[Dict]:
     """Parse an activated untap sentence into its structured shape, or
     ``None`` when the sentence is not one of the two executable forms.
@@ -1303,11 +1436,32 @@ def parse_activated_abilities(oracle: str):
                     subtype=spec['subtype'],
                     owner_scope=spec['owner'],
                     raw_phrase=body.strip().lower())]
+        elif kind is K.EXILE_FROM_GRAVEYARD:
+            # Only the CARD-targeting scope declares targets. The
+            # whole-graveyard scopes name a player (or every player) and
+            # carry no card target at all, which is why the scope — not
+            # the effect kind — is the discriminator the resolver reads.
+            spec = parse_activation_graveyard_exile(body)
+            if spec is not None and spec['scope'] == 'cards':
+                from .target_solver import TargetRequirement
+                targets_required = spec['count']
+                target_requirements = [TargetRequirement(
+                    zone="graveyard",
+                    types=frozenset(spec['types'] or {"card"}),
+                    owner_scope=spec['owner'],
+                    is_optional=spec['up_to'],
+                    count_min=0 if spec['up_to'] else spec['count'],
+                    count_max=spec['count'],
+                    raw_phrase=body.strip().lower())]
         # TUTOR_* kinds carry their structured search constraint on the
         # ability — parsed here, at load time, never re-derived at runtime.
         tutor_data = None
         if kind in (K.TUTOR_CREATURE_TO_BATTLEFIELD, K.TUTOR_TO_HAND):
             tutor_data = parse_activation_tutor(body)
+        # EXILE_FROM_GRAVEYARD carries its structured shape the same way.
+        graveyard_exile_data = None
+        if kind is K.EXILE_FROM_GRAVEYARD:
+            graveyard_exile_data = parse_activation_graveyard_exile(body)
         out.append(ActivatedAbility(
             index=idx, cost=cost, effect_text=body.strip(),
             effect_kind=kind, amount=amount,
@@ -1317,6 +1471,7 @@ def parse_activated_abilities(oracle: str):
             sorcery_speed_only=sorcery_only, once_each_turn=once_turn,
             restrictions=restrictions, is_mana_ability=is_mana,
             tutor_data=tutor_data,
+            graveyard_exile_data=graveyard_exile_data,
         ))
         idx += 1
     return out
@@ -2944,6 +3099,89 @@ def parse_prevents_graveyard_etb(oracle: str) -> bool:
     lo = oracle.lower()
     return ("creature cards in graveyards" in lo
             and "can't enter the battlefield" in lo)
+
+
+def parse_reanimates_from_graveyard(oracle: str) -> bool:
+    """Return True when the card puts a card from a GRAVEYARD onto the
+    BATTLEFIELD (Goryo's Vengeance, Unburial Rites, Living End, Persist,
+    Ephemerate-via-Persist, …).
+
+    Narrower than ``parse_has_graveyard_recursion``, deliberately. That
+    predicate matches any "from your graveyard" phrase, which flashback's
+    own reminder text ("Cast this spell from your graveyard for its
+    flashback cost") satisfies — it answers "does this card care about a
+    graveyard at all", which is the right question for sideboard advice
+    and the wrong one for "is a creature in that graveyard a reanimation
+    target". Ordering is the discriminator: 'graveyard' must precede
+    'battlefield', which is what excludes "put a creature card from your
+    HAND onto the battlefield".
+
+    Class size: every reanimation spell and permanent in Modern (dozens).
+    Consumed by ``ai.predicates.graveyard_fuel`` to decide whether the
+    creature cards in a graveyard are still a resource to their owner.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    if 'from' not in lo or 'graveyard' not in lo:
+        return False
+    if not (('return' in lo or 'put' in lo) and 'battlefield' in lo):
+        return False
+    gy_idx = lo.find('graveyard')
+    return lo.find('battlefield', gy_idx) >= 0
+
+
+def parse_exiles_cards_bound_for_graveyard(oracle: str) -> bool:
+    """Return True for the CONTINUOUS replacement "if a card would be put
+    into a graveyard, exile it instead" (Leyline of the Void, Rest in
+    Peace, Anafenza).
+
+    The third slice of what `parse_has_graveyard_hate` lumps together.
+    That predicate answers "does this card care about graveyards at all",
+    which is right for sideboard ADVICE and wrong as a mechanism gate;
+    this one answers "can this permanent stop a card reaching a
+    graveyard". Sibling of `parse_prevents_graveyard_casting` (the
+    can't-cast static) and of the parsed EXILE_FROM_GRAVEYARD activated
+    ability (the removal ability).
+
+    Class size: the Leyline of the Void / Rest in Peace replacement
+    family.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return bool('would be put into' in lo and 'graveyard' in lo
+                and 'exile' in lo)
+
+
+def parse_prevents_graveyard_casting(oracle: str) -> bool:
+    """Return True for the printed "Players can't cast spells from
+    graveyards (or libraries)" STATIC (the Grafdigger's Cage clause).
+
+    Sibling of ``parse_prevents_graveyard_etb``: that one owns the "can't
+    ENTER the battlefield" half of the Cage, this one owns the "can't CAST"
+    half. Both are static abilities on a permanent, and both are a
+    different mechanic from graveyard REMOVAL — an ability that exiles
+    cards out of a graveyard takes the fuel away when it is ACTIVATED and
+    bans nothing while it sits on the battlefield.
+
+    That distinction is the whole reason this predicate exists.
+    ``parse_has_graveyard_hate`` is deliberately broad ("exile … graveyard"
+    anywhere in the oracle) because its consumer is sideboard ADVICE; 446
+    Modern permanents satisfy it. Using it as the rules gate in
+    ``CastManager.can_cast`` turned every one of them into a symmetric,
+    permanent Grafdigger's Cage. Exactly 4 Modern-legal cards print the
+    static this predicate matches.
+
+    Class size: the printed cast-prevention family (Grafdigger's Cage,
+    Ashes of the Abhorrent, Kunoros, Weathered Runestone) plus any future
+    reprint of the same clause.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return bool(re.search(r"can'?t (be )?cast (spells )?from", lo)
+                and 'graveyard' in lo)
 
 
 def parse_requires_creature_target(oracle: str) -> bool:

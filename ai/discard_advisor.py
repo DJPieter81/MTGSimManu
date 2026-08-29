@@ -285,15 +285,51 @@ _PLAN_ROLE_BUCKETS = frozenset({"payoffs", "enablers", "protection"})
 _PLAN_LIVENESS_ROLES = frozenset({"payoffs", "enablers"})
 
 
-def _graveyard_is_safe(game: "GameState", player_idx: int) -> bool:
-    """False when any opposing battlefield permanent carries the typed
-    `has_graveyard_hate` field (parsed once at DB load) — the graveyard
-    then cannot hold the plan's resources."""
-    opp = game.players[1 - player_idx]
-    return not any(
-        getattr(perm.template, 'has_graveyard_hate', False)
-        for perm in opp.battlefield
+def _threatens_graveyards(template) -> bool:
+    """Can this permanent actually stop a graveyard from holding cards?
+
+    Three mechanisms, each a parse-once typed signal:
+
+      * an activated ability whose classified effect kind EXILES cards
+        from a graveyard (Tormod's Crypt, Nihil Spellbomb, Withered
+        Wretch, Soul-Guide Lantern, …);
+      * the continuous replacement that exiles cards on their way to a
+        graveyard, so they never arrive (Leyline of the Void, Rest in
+        Peace);
+      * the statics that make a graveyard unusable — cards in it cannot
+        be cast, or cannot enter the battlefield from it (the
+        Grafdigger's Cage clauses).
+
+    Deliberately NOT `has_graveyard_hate`: that field matches any oracle
+    mentioning "exile … graveyard" (446 Modern permanents) because its
+    consumer is sideboard ADVICE. Delve threats, escape bodies,
+    exile-as-a-cost discard outlets and graveyard-scaling creatures all
+    satisfy it while threatening nothing of OURS — and they are among
+    the most-played creatures in the format, so using it as the
+    mechanism gate switched binning off almost permanently.
+    """
+    from engine.cards import ActivationEffectKind
+
+    if getattr(template, 'exiles_cards_bound_for_graveyard', False):
+        return True
+    if getattr(template, 'prevents_graveyard_casting', False):
+        return True
+    if getattr(template, 'prevents_graveyard_etb', False):
+        return True
+    return any(
+        a.effect_kind is ActivationEffectKind.EXILE_FROM_GRAVEYARD
+        for a in (getattr(template, 'activated_abilities', None) or [])
     )
+
+
+def _graveyard_is_safe(game: "GameState", player_idx: int) -> bool:
+    """False when an OPPOSING battlefield permanent can actually empty or
+    disable our graveyard (`_threatens_graveyards`) — the graveyard then
+    cannot hold the plan's resources, so binning a card there loses it
+    instead of relocating it."""
+    opp = game.players[1 - player_idx]
+    return not any(_threatens_graveyards(perm.template)
+                   for perm in opp.battlefield)
 
 
 def _plan_role_map(game: "GameState", player_idx: int):
