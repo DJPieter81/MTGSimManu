@@ -41,6 +41,33 @@ If three consecutive commits target the same outlier deck without moving the win
 
 The script `tools/check_abstraction.py` is the single source of truth — runnable standalone (`python tools/check_abstraction.py [--list]`) and called by all three layers above.
 
+## Sequencing rules (standing) — plan the run, not just the step
+
+Long measurements here cost 20 minutes to 4 hours. Three failures recur when
+a step is launched without planning the sequence around it. Check all three
+BEFORE starting any sim run:
+
+1. **Will pending work invalidate this measurement?** If a fix is merging (or
+   in review) that changes the code path being measured, the numbers are
+   stale on arrival. Merge first, then measure. Precedent: four field sweeps
+   were launched, the phantom-Cage fix merged mid-flight, and the results
+   described an engine that no longer existed.
+2. **Is the machine quiet, and does this tool tolerate load?** Anything that
+   runs games is wall-clock sensitive because `GAME_TIMEOUT_SECONDS`
+   truncates mid-game. Under contention that silently corrupts results —
+   Affinity once moved 13.8pp from this alone. Tools that WRITE fixtures must
+   neutralise the deadline (`tools/refresh_wr_baseline.py` and
+   `tests/test_wr_baseline_anchor.py` both do; they share the constant so
+   they cannot diverge). Verify with `cat /proc/loadavg` first.
+3. **Can independent work run in parallel?** Disjoint test chunks, sweeps of
+   different decks, and worktree agents are independent. Running them
+   serially on an idle 4-core box wastes wall-clock for nothing.
+
+**And do not theorise ahead of cheap evidence.** When a suite fails, run the
+other half before proposing a cause: chunk halves are ~12 min each and name
+the test outright. A hypothesis stated from partial data has to be retracted
+when the cheap command finally runs, which costs more than the command did.
+
 ## Workflow rules (standing)
 
 - **Open a PR after pushing a feature-branch commit.** The default
