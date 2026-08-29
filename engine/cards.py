@@ -544,6 +544,13 @@ class CardTemplate:
     # Prevents graveyard ETB -- True for Grafdigger's Cage pattern.
     # Populated by oracle_parser.parse_prevents_graveyard_etb.
     prevents_graveyard_etb: bool = False
+    # Prevents graveyard CASTING -- the other half of the Grafdigger's Cage
+    # clause ("Players can't cast spells from graveyards or libraries").
+    # The rules gate in CastManager.can_cast reads THIS, not the broad
+    # has_graveyard_hate sideboard-advice predicate: a permanent that exiles
+    # a graveyard removes fuel when activated and bans no cast at all.
+    # Populated by oracle_parser.parse_prevents_graveyard_casting.
+    prevents_graveyard_casting: bool = False
     # Requires creature target -- True when oracle needs a creature or creature-spell target.
     # Populated by oracle_parser.parse_requires_creature_target.
     requires_creature_target: bool = False

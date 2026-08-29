@@ -2946,6 +2946,36 @@ def parse_prevents_graveyard_etb(oracle: str) -> bool:
             and "can't enter the battlefield" in lo)
 
 
+def parse_prevents_graveyard_casting(oracle: str) -> bool:
+    """Return True for the printed "Players can't cast spells from
+    graveyards (or libraries)" STATIC (the Grafdigger's Cage clause).
+
+    Sibling of ``parse_prevents_graveyard_etb``: that one owns the "can't
+    ENTER the battlefield" half of the Cage, this one owns the "can't CAST"
+    half. Both are static abilities on a permanent, and both are a
+    different mechanic from graveyard REMOVAL — an ability that exiles
+    cards out of a graveyard takes the fuel away when it is ACTIVATED and
+    bans nothing while it sits on the battlefield.
+
+    That distinction is the whole reason this predicate exists.
+    ``parse_has_graveyard_hate`` is deliberately broad ("exile … graveyard"
+    anywhere in the oracle) because its consumer is sideboard ADVICE; 446
+    Modern permanents satisfy it. Using it as the rules gate in
+    ``CastManager.can_cast`` turned every one of them into a symmetric,
+    permanent Grafdigger's Cage. Exactly 4 Modern-legal cards print the
+    static this predicate matches.
+
+    Class size: the printed cast-prevention family (Grafdigger's Cage,
+    Ashes of the Abhorrent, Kunoros, Weathered Runestone) plus any future
+    reprint of the same clause.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    return bool(re.search(r"can'?t (be )?cast (spells )?from", lo)
+                and 'graveyard' in lo)
+
+
 def parse_requires_creature_target(oracle: str) -> bool:
     """Return True when the card requires a creature or creature-spell target.
 
