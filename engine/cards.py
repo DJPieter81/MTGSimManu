@@ -149,6 +149,16 @@ class ActivationEffectKind(Enum):
     # untaps its own source, which is why `targets_required == 0` is the
     # discriminator the resolver and the no-free-repeatable rule both read.
     UNTAP_TARGET_PERMANENT = "untap_target_permanent"
+    # "[Cost]: Exile target player's graveyard / all graveyards / each
+    # opponent's graveyard / N target cards from a graveyard" — the
+    # graveyard-hate class (Tormod's Crypt, Nihil Spellbomb, Relic of
+    # Progenitus, Soul-Guide Lantern, Withered Wretch, Unlicensed Hearse,
+    # …; 33 Modern cards). The parsed shape rides on
+    # `ActivatedAbility.graveyard_exile_data`; `scope` — not the effect
+    # kind — is what tells the resolver whose graveyards it clears, and
+    # only the 'cards' scope declares card targets. Every exile is a zone
+    # change and routes through the zone funnel.
+    EXILE_FROM_GRAVEYARD = "exile_from_graveyard"
     UNCLASSIFIED = "unclassified"
 
 
@@ -240,6 +250,11 @@ class ActivatedAbility:
     # bound), mv_bound_is_x ("mana value X or less"), tapped (battlefield
     # entry rider). None for every other effect kind.
     tutor_data: Optional[Dict] = None
+    # EXILE_FROM_GRAVEYARD kind only: the structured shape from
+    # `oracle_parser.parse_activation_graveyard_exile` -- scope
+    # ('cards'/'target_player'/'all'/'each_opponent'), count, up_to,
+    # types, owner, single_graveyard. None for every other effect kind.
+    graveyard_exile_data: Optional[Dict] = None
 
 
 @dataclass

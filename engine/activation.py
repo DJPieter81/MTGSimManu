@@ -98,7 +98,15 @@ class ActivationManager:
                 ActivationEffectKind.GRANT_HASTE_TARGET,
                 ActivationEffectKind.TUTOR_CREATURE_TO_BATTLEFIELD,
                 ActivationEffectKind.TUTOR_TO_HAND,
-                ActivationEffectKind.UNTAP_TARGET_PERMANENT):
+                ActivationEffectKind.UNTAP_TARGET_PERMANENT,
+                ActivationEffectKind.EXILE_FROM_GRAVEYARD):
+            return False
+
+        # 9b-gy. A graveyard-exile line whose shape did not parse is
+        # schema incoherence — the resolver reads `scope` to decide whose
+        # graveyards it clears and has nothing to dispatch on without it.
+        if (ability.effect_kind is ActivationEffectKind.EXILE_FROM_GRAVEYARD
+                and ability.graveyard_exile_data is None):
             return False
 
         # 9b-x. X-pip discipline. An {X} in the cost is chargeable exactly
