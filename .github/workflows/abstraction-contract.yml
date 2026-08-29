@@ -58,6 +58,9 @@ jobs:
       - name: Oracle-runtime-parse ratchet
         run: python tools/check_oracle_runtime_parse.py
 
+      - name: Card-name-registry ratchet
+        run: python tools/check_card_name_registry.py
+
       - name: Assemble card DB
         # ModernAtomic.json is gitignored, so a fresh checkout doesn't have
         # it. The classifier gate below constructs CardDatabase() directly
