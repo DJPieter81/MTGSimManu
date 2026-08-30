@@ -2074,6 +2074,124 @@ def parse_land_animation(oracle: str) -> Optional[Dict]:
     }
 
 
+# ── Fetchlands (self-sacrifice land search) ──────────────────────────
+#
+# The mechanic, stated as a rule: a land whose ACTIVATED ability sacrifices
+# ITSELF to put a land card from its controller's library onto the
+# battlefield, with the search constrained by BASIC LAND TYPES.  ~43 Modern
+# lands print it.  Everything the engine needs is printed on the card, so
+# there is no card-name table: the life payment is in the activation cost
+# and the fetched land's entry state is in the effect.
+#
+# Same discipline as `parse_activation_tutor`: the ability LINE is matched
+# with `fullmatch` against a closed vocabulary, so a shape the vocabulary
+# does not know fails and the land stays UNCLASSIFIED instead of executing
+# with a clause silently dropped.  The refusals are load-bearing:
+#
+#   * Land DESTRUCTION whose search is a rider (Ghost Quarter, Field of
+#     Ruin, Volatile Fault, Demolition Field) — the effect begins "Destroy
+#     target …", the sacrifice is a cost for REMOVAL, and the search is
+#     usually the OPPONENT's.  Reading these as fetchlands makes the engine
+#     play them and instantly crack them for a free basic.
+#   * Untyped land searches (Urza's Cave, "search your library for a land
+#     card") — expressible as "any land", not as a colour set.  Refused
+#     rather than approximated as WUBRG.
+#   * Non-land searches (Axgard Armory → Aura/Equipment, Maelstrom of the
+#     Spirit Dragon → Dragon, The World Tree → God cards) and searches that
+#     go to HAND rather than the battlefield.
+#   * The triggered self-sacrifice cycle (Brokers Hideout, Cabaretti
+#     Courtyard, Maestros Theater, Obscura Storefront, Riveteers Overlook —
+#     "When this land enters, sacrifice it. When you do, search …") — same
+#     search, but a TRIGGER with a life-gain rider rather than an activated
+#     ability whose cost this profile models.  Out of the class by shape,
+#     not by name.
+
+# Basic land types are the only qualifiers the colour model can express;
+# 'basic'/'land' carry no colour of their own, and 'or' is the union
+# connector that a multi-type fetch is printed with.
+_FETCH_TYPE_TO_COLOR = {
+    'plains': 'W', 'island': 'U', 'swamp': 'B',
+    'mountain': 'R', 'forest': 'G',
+}
+_FETCH_NEUTRAL_QUALIFIERS = frozenset({'basic', 'land', 'or'})
+# Canonical colour order, so a fetch's colour tuple is independent of the
+# order the types happen to be printed in ("Mountain or Plains" → W, R).
+_FETCH_COLOR_ORDER = ('W', 'U', 'B', 'R', 'G')
+_FETCH_COUNT_WORDS = {'a': 1, 'an': 1, 'up to two': 2}
+
+_FETCHLAND_LINE_RE = re.compile(
+    # Activation cost: optional mana symbols, the tap symbol, an optional
+    # life payment.  The life payment is the ONLY life cost in the class.
+    r'(?:(?:\{[0-9wubrgcxsp/]+\})+, )?'
+    r'\{t\}'
+    r'(?:, pay (?P<life>\d+) life)?'
+    r', sacrifice this land: '
+    # The search sentence.
+    r'search your library for (?P<count>a|an|up to two) '
+    r"(?P<quals>(?:[a-z][a-z']*,? )*?)"
+    r'cards?, '
+    r'put (?:it|them) onto the battlefield(?P<tapped> tapped)?, '
+    r'then shuffle'
+    # Known riders.  Anything else fails the fullmatch.
+    r'(?:\.'
+    r' (?:then if you control (?P<untap_n>[a-z]+) or more lands,'
+    r' untap that land'
+    # An OPTIONAL rider whose only consequence is untapping the fetched
+    # land ("You may behold an Elf. If you do, untap that land.") is
+    # DECLINED, which is a legal choice — so declining executes the card
+    # faithfully rather than approximating it.
+    r"|you may [a-z' ]+\. if you do, untap that land)"
+    r')?'
+)
+
+
+def parse_fetchland_profile(oracle: str):
+    """Parse a land's printed self-sacrifice search into a
+    `cards.FetchLandProfile`, or ``None`` when the card is not a fetchland.
+
+    Called once at DB load into `CardTemplate.fetchland`; the engine and AI
+    read that field, never the oracle string (oracle-runtime-parse ratchet).
+    This replaces the 38-entry `FETCH_LAND_COLORS` card-name table.
+    """
+    from .cards import FetchLandProfile
+
+    if not oracle:
+        return None
+    for line in strip_reminder_text(oracle).split('\n'):
+        low = ' '.join(line.lower().split()).rstrip('.')
+        m = _FETCHLAND_LINE_RE.fullmatch(low)
+        if m is None:
+            continue
+
+        colors = set()
+        for word in (m.group('quals') or '').replace(',', ' ').split():
+            if word in _FETCH_TYPE_TO_COLOR:
+                colors.add(_FETCH_TYPE_TO_COLOR[word])
+            elif word not in _FETCH_NEUTRAL_QUALIFIERS:
+                return None  # unknown qualifier — refuse, never approximate
+        if not colors:
+            # No type named at all.  "a basic land card" means every basic
+            # type; "a land card" names none and is not a colour-fixing
+            # fetch this model can express.
+            if 'basic' not in (m.group('quals') or ''):
+                return None
+            colors = set(_FETCH_COLOR_ORDER)
+
+        untap_word = m.group('untap_n')
+        untap_min = _NUM_WORDS.get(untap_word, 0) if untap_word else 0
+        if untap_word and not untap_min:
+            return None  # threshold outside the number vocabulary
+
+        return FetchLandProfile(
+            colors=tuple(c for c in _FETCH_COLOR_ORDER if c in colors),
+            life_cost=int(m.group('life')) if m.group('life') else 0,
+            count=_FETCH_COUNT_WORDS[m.group('count')],
+            target_enters_tapped=bool(m.group('tapped')),
+            untap_target_min_lands=untap_min,
+        )
+    return None
+
+
 def parse_escape_cost(oracle: str) -> Optional[Dict]:
     """Parse Escape cost from oracle text.
 

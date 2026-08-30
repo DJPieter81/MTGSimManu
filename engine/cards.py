@@ -291,6 +291,49 @@ class TapForManaTrigger:
     mirror_source: bool = False
 
 
+@dataclass(frozen=True)
+class FetchLandProfile:
+    """The printed shape of a fetchland's self-sacrifice search ability.
+
+    The mechanic: a land whose activated ability sacrifices ITSELF to put a
+    land card from its controller's library onto the battlefield, where the
+    search is constrained by BASIC LAND TYPES ("a Mountain or Plains card",
+    "a basic Forest, Plains, or Island card", "a basic land card").  ~43
+    Modern lands print it — the Onslaught/Zendikar cycles, the Panorama and
+    Landscape cycles, Evolving Wilds, Terramorphic Expanse, Fabled Passage,
+    Prismatic Vista, Escape Tunnel, Hobbit Hole and friends.
+
+    Everything the engine needs to execute one is printed on the card, so
+    everything here is parsed once by
+    `oracle_parser.parse_fetchland_profile` at DB load and read off the
+    typed field afterwards.  In particular the life payment is part of the
+    printed activation cost ("{T}, Pay 1 life, Sacrifice this land: …") and
+    the fetched land's entry state is part of the printed effect ("put it
+    onto the battlefield" vs "… onto the battlefield tapped", plus Fabled
+    Passage's "Then if you control four or more lands, untap that land").
+
+    `colors` are the mana colours of the basic land types the search may
+    name, in canonical WUBRG order — the colour-fixing view the mana
+    planner scores fetches by.  A search that names NO land type (Urza's
+    Cave: "search your library for a land card") is refused rather than
+    approximated as five colours: it can find any land at all, which this
+    colour-set model cannot express.
+    """
+    colors: Tuple[str, ...]
+    # Life paid as part of the activation cost ("Pay 1 life"). 0 for the
+    # Panorama/Landscape/Evolving Wilds families, which pay none.
+    life_cost: int = 0
+    # How many land cards the one activation finds ("up to two basic land
+    # cards" — Blighted Woodland).
+    count: int = 1
+    # "put it onto the battlefield TAPPED" — a property of the FETCH, not
+    # of the land it finds (which carries its own enters-tapped rules).
+    target_enters_tapped: bool = False
+    # Fabled Passage's "Then if you control N or more lands, untap that
+    # land." 0 means the fetch prints no such rider.
+    untap_target_min_lands: int = 0
+
+
 @dataclass
 class CardTemplate:
     """Template for a card (shared data, not instance-specific)."""
@@ -359,6 +402,11 @@ class CardTemplate:
     # from inside `ManaPayment.land_mana_units` — the single per-source unit
     # resolver — so mana CAPACITY and actual PRODUCTION cannot disagree.
     tap_for_mana_trigger: Optional["TapForManaTrigger"] = None
+    # The printed self-sacrifice land search (fetchland mechanic).  See
+    # FetchLandProfile; populated by oracle_parser.parse_fetchland_profile.
+    # `None` means the card is not a fetchland — that predicate replaces the
+    # old FETCH_LAND_COLORS card-name table.
+    fetchland: Optional["FetchLandProfile"] = None
     # 'When this land enters, return a land you control to its owner's
     # hand' — structural ETB clause of the karoo family (E1b), a
     # sibling of `enters_tapped`.

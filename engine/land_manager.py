@@ -45,7 +45,6 @@ class LandManager:
         fast-lands, fetchlands) runs around the transfer; the trigger
         dispatch is uniform.
         """
-        from .card_database import FETCH_LAND_COLORS
         from .zone_transfer import TransferKind, transfer
         player = game.players[player_idx]
         max_lands = 1 + player.extra_land_drops
@@ -64,7 +63,7 @@ class LandManager:
         # land's ETB runs in `crack_fetchland`). Kept on the legacy
         # manual-append path so the sacrifice-and-replace mechanic
         # stays atomic.
-        if card.name in FETCH_LAND_COLORS:
+        if card.template.fetchland is not None:
             card.enter_battlefield()
             player.battlefield.append(card)
             game.log.append(
@@ -146,24 +145,38 @@ class LandManager:
     @staticmethod
     def crack_fetchland(game: "GameState", player_idx: int,
                         fetch_card: "CardInstance") -> None:
-        """Sacrifice a fetchland, pay 1 life, search library for a land."""
-        from .card_database import FETCH_LAND_COLORS
+        """Sacrifice a fetchland, pay its printed cost, search for a land.
+
+        Every number here comes off the card: `CardTemplate.fetchland` is
+        the parsed `FetchLandProfile` (colours, life payment, how many
+        lands, whether the fetched land enters tapped, and any conditional
+        untap rider).  Nothing about a fetchland is keyed by card name.
+        """
         player = game.players[player_idx]
         fetch_name = fetch_card.name
-        fetch_colors = FETCH_LAND_COLORS.get(fetch_name, [])
+        profile = fetch_card.template.fetchland
+        if profile is None:
+            return
+        fetch_colors = list(profile.colors)
 
-        # Pay 1 life (Prismatic Vista, Fabled Passage, Evolving Wilds,
-        # Terramorphic Expanse don't cost life; Zendikar/Onslaught fetches do)
-        no_life_fetches = {"Prismatic Vista", "Fabled Passage",
-                           "Evolving Wilds", "Terramorphic Expanse"}
-        if fetch_name not in no_life_fetches:
-            # Safety: if paying 1 life would kill us, don't crack the fetch
-            if player.life <= 1:
+        # Life is part of the printed activation cost ("Pay 1 life") — the
+        # Onslaught/Zendikar cycles print it, the Panorama/Landscape/
+        # Evolving Wilds families do not.
+        if profile.life_cost:
+            # NOTE (layering): this "don't kill yourself" guard is a
+            # STRATEGY decision living in the engine, which the
+            # abstraction contract reserves for `ai/`.  Left in place
+            # deliberately — moving it changes which plays the AI is
+            # offered, a behavioural change this migration is not
+            # measuring.  Flagged for a follow-up that lifts it into the
+            # play-scoring layer (`ai/ev_player.py` already declines to
+            # PLAY a life-costing fetch at 1 life).
+            if player.life <= profile.life_cost:
                 game.log.append(
                     f"T{game.display_turn} P{player_idx+1}: "
                     f"{fetch_name} not cracked (life too low: {player.life})")
                 return
-            player.life -= 1
+            player.life -= profile.life_cost
 
         # Sacrifice the fetchland (triggers revolt)
         game.zone_mgr.move_card(game, fetch_card, "battlefield", "graveyard",
@@ -173,14 +186,21 @@ class LandManager:
             player.creatures_died_this_turn, 1)
 
         # ── Hand-aware fetch target selection via callbacks ──
-        best_land = game.callbacks.choose_fetch_target(
-            game, player_idx, fetch_card, player.library, fetch_colors
-        )
-
-        if best_land:
+        # `profile.count` is the printed number of land cards one
+        # activation finds ("up to two basic land cards"); it is 1 for
+        # every fetch outside the Blighted Woodland shape, so this loop
+        # runs exactly once for them.
+        for _ in range(profile.count):
+            best_land = game.callbacks.choose_fetch_target(
+                game, player_idx, fetch_card, player.library, fetch_colors
+            )
+            if not best_land:
+                break
             player.library.remove(best_land)
             best_land.controller = player_idx
 
+            paid = (f" (pay {profile.life_cost} life)"
+                    if profile.life_cost else "")
             # Lands with discoverable optional ETB costs.  Router-driven;
             # no mechanic-named callback.  See `engine/optional_costs.py`.
             if best_land.template.untap_life_cost > 0:
@@ -191,14 +211,22 @@ class LandManager:
                 state = ("untapped" if not best_land.tapped else "tapped")
                 game.log.append(
                     f"T{game.display_turn} P{player_idx+1}: "
-                    f"Crack {fetch_name} (pay 1 life) -> {best_land.name} "
+                    f"Crack {fetch_name}{paid} -> {best_land.name} "
                     f"({state}, life: {player.life})")
             else:
-                # Fabled Passage: tapped if < 4 lands; Zendikar fetches:
-                # always untapped.
+                # The fetch's OWN text decides how the found land arrives:
+                # "put it onto the battlefield" vs "… onto the battlefield
+                # tapped", plus any conditional untap rider ("Then if you
+                # control four or more lands, untap that land").  The +1
+                # counts the land now entering, which the printed
+                # threshold includes.
                 best_land.enter_battlefield()
-                if fetch_name in no_life_fetches and len(player.lands) < 4:
+                if profile.target_enters_tapped:
                     best_land.tapped = True
+                    if (profile.untap_target_min_lands
+                            and len(player.lands) + 1
+                            >= profile.untap_target_min_lands):
+                        best_land.tapped = False
                 game.log.append(
                     f"T{game.display_turn} P{player_idx+1}: "
                     f"Crack {fetch_name} -> {best_land.name} "
@@ -225,13 +253,16 @@ class LandManager:
             # Trigger landfall for the fetched land
             LandManager.trigger_landfall(game, player_idx)
         else:
-            # No valid land found (shuffle anyway)
-            game.rng.shuffle(player.library)
-            player.library_searches_this_game += 1
-            LandManager.trigger_library_search(game, player_idx)
-            game.log.append(
-                f"T{game.display_turn} P{player_idx+1}: "
-                f"Crack {fetch_name} (no valid land found)")
+            # Loop ran to completion — every printed target was found.
+            return
+
+        # No valid land found (shuffle anyway)
+        game.rng.shuffle(player.library)
+        player.library_searches_this_game += 1
+        LandManager.trigger_library_search(game, player_idx)
+        game.log.append(
+            f"T{game.display_turn} P{player_idx+1}: "
+            f"Crack {fetch_name} (no valid land found)")
 
     @staticmethod
     def trigger_library_search(game: "GameState", searcher_idx: int) -> None:

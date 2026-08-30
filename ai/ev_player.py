@@ -552,11 +552,16 @@ class EVPlayer:
 
         # Score land plays — lands compete with spells for priority
         if lands and me.lands_played_this_turn < (1 + me.extra_land_drops):
-            from engine.card_database import FETCH_LAND_COLORS
+            # A fetchland whose printed activation cost includes a life
+            # payment is unplayable at or below that life total — the
+            # crack would kill us.  Both the cost and its absence are on
+            # the card (`template.fetchland.life_cost`), so no name table
+            # and no life-free-fetch exception list.
             safe_lands = [
                 l for l in lands
-                if l.name not in FETCH_LAND_COLORS or me.life > 1
-                or 'basic land' in (l.template.oracle_text or '').lower()  # free fetches
+                if l.template.fetchland is None
+                or l.template.fetchland.life_cost == 0
+                or me.life > l.template.fetchland.life_cost
             ]
             for land in safe_lands:
                 ev = self._score_land(land, me, spells, game)
@@ -2279,11 +2284,13 @@ class EVPlayer:
         existing_colors = set()
         for l in me.lands:
             existing_colors.update(l.template.produces_mana)
-        from engine.card_database import FETCH_LAND_COLORS
-        is_fetch = land.name in FETCH_LAND_COLORS
-        # Use FETCH_LAND_COLORS for fetch lands — template.produces_mana is not
-        # reliably populated on CardInstances in game context for fetches
-        land_produces = set(FETCH_LAND_COLORS[land.name]) if is_fetch else set(land.template.produces_mana)
+        # A fetchland's colour contribution is the set of colours it can
+        # SEARCH FOR, not the mana it taps for (it taps for none, or for
+        # {C}).  Both come off the printed text via `template.fetchland`.
+        fetch_profile = land.template.fetchland
+        is_fetch = fetch_profile is not None
+        land_produces = (set(fetch_profile.colors) if is_fetch
+                         else set(land.template.produces_mana))
 
         new_colors = land_produces - existing_colors
         # Gate the anticipatory color-diversity bonus by whether the hand

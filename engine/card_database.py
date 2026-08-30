@@ -102,46 +102,10 @@ BASIC_LAND_SUBTYPES = {
     "Forest": ["G"],
 }
 
-# Fetch land colors: derived from oracle text at module load time.
-# Pattern: "Sacrifice this land: Search your library for a [types] card"
-# Populated by _build_fetch_land_colors() after DB loads.
-FETCH_LAND_COLORS: Dict[str, List[str]] = {}
-
-# Basic land type → color mapping for fetch target resolution
-_BASIC_TYPE_TO_COLOR = {
-    "plains": "W", "island": "U", "swamp": "B",
-    "mountain": "R", "forest": "G",
-}
-
-
-def _parse_fetch_colors_from_oracle(oracle_text: str) -> Optional[List[str]]:
-    """Parse fetchable colors from oracle text.
-
-    Returns list of color codes, or None if not a fetch land.
-    """
-    if not oracle_text:
-        return None
-    ot = oracle_text.lower()
-    if 'sacrifice this land' not in ot or 'search your library' not in ot:
-        return None
-
-    # "search your library for a basic land card" → all colors
-    if 'basic land card' in ot:
-        return ["W", "U", "B", "R", "G"]
-
-    # "search your library for a Plains or Island card" → W, U
-    import re
-    m = re.search(r'search your library for (?:a|an) (.+?) card', ot)
-    if m:
-        type_text = m.group(1).lower()
-        colors = []
-        for basic_type, color in _BASIC_TYPE_TO_COLOR.items():
-            if basic_type in type_text:
-                colors.append(color)
-        if colors:
-            return colors
-
-    return None
+# Fetchlands carry no card-name table.  The self-sacrifice land search is
+# parsed off the printed text once per card by
+# `oracle_parser.parse_fetchland_profile` into `CardTemplate.fetchland`
+# (a `cards.FetchLandProfile`), and every consumer reads that typed field.
 
 # Hardcoded land sets removed — all land entry logic is now derived from
 # oracle text via template properties: enters_tapped, untap_life_cost,
@@ -445,11 +409,10 @@ class OracleTextParser:
         Lands with optional life payment (shock lands) or conditional untap
         (fast lands) are handled separately via untap_life_cost and
         untap_max_other_lands template properties.
-        Fetch lands don't enter tapped (they sacrifice immediately).
+        Fetch lands don't enter tapped (they sacrifice immediately) — no
+        fetchland in the pool prints an enters-tapped clause about ITSELF,
+        so the patterns below already exclude them without a name lookup.
         """
-        if card_name in FETCH_LAND_COLORS:
-            return False
-
         if not oracle_text:
             return False
         text_lower = oracle_text.lower()
@@ -474,10 +437,6 @@ class OracleTextParser:
                          card_name: str = "") -> List[str]:
         """Detect what colors of mana a land can produce."""
         mana_colors = set()
-
-        # Check fetch lands first
-        if card_name in FETCH_LAND_COLORS:
-            return FETCH_LAND_COLORS[card_name]
 
         # Check subtypes first (e.g., Sacred Foundry is a Mountain Plains)
         for subtype, colors in BASIC_LAND_SUBTYPES.items():
@@ -1323,15 +1282,6 @@ class CardDatabase:
             except Exception as e:
                 errors += 1
 
-        # Populate FETCH_LAND_COLORS from oracle text
-        global FETCH_LAND_COLORS
-        FETCH_LAND_COLORS.clear()
-        for cname, tmpl in self.cards.items():
-            if tmpl.is_land:
-                fetch_colors = _parse_fetch_colors_from_oracle(tmpl.oracle_text)
-                if fetch_colors:
-                    FETCH_LAND_COLORS[cname] = fetch_colors
-
         print(f"Loaded {count} cards ({errors} errors)")
 
         if count < self._MIN_REAL_DB_CARDS and not self._automerge_attempted:
@@ -1823,6 +1773,7 @@ class CardDatabase:
             parse_has_cast_spell_draw, parse_has_opponent_cast_damage,
             parse_has_mana_add_text,
             parse_has_bounce_land_oracle, parse_has_sacrifice_search_land,
+            parse_fetchland_profile,
             parse_has_emry_graveyard_cast, parse_has_cc_tap_draw,
             parse_has_stax_ability, parse_has_pithing_needle_lock,
             parse_has_another_creature_enters_trigger,
@@ -1963,6 +1914,9 @@ class CardDatabase:
         template.has_mana_add_text = parse_has_mana_add_text(oracle)
         template.has_bounce_land_oracle = parse_has_bounce_land_oracle(oracle)
         template.has_sacrifice_search_land = parse_has_sacrifice_search_land(oracle)
+        # Fetchland mechanic: the printed self-sacrifice land search.
+        # `None` for every card that is not a fetchland.
+        template.fetchland = parse_fetchland_profile(oracle)
         template.has_emry_graveyard_cast = parse_has_emry_graveyard_cast(oracle)
         template.has_cc_tap_draw = parse_has_cc_tap_draw(oracle)
         template.has_stax_ability = parse_has_stax_ability(oracle)

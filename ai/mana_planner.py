@@ -423,8 +423,7 @@ def score_land(land, needs: ManaNeeds, is_fetchable: bool = False,
         score += LAND_SCORE_UNTAPPED_BONUS  # shock lands have option to enter untapped
 
     # ── (F) Fetchlands: flexibility to find what you need ──
-    from engine.card_database import FETCH_LAND_COLORS
-    if template.name in FETCH_LAND_COLORS and not is_fetchable:
+    if template.fetchland is not None and not is_fetchable:
         score += LAND_SCORE_FETCHLAND_FLEXIBILITY_BONUS
 
     # ── (G) Versatility: more colors = more flexible ──
@@ -486,8 +485,6 @@ def choose_best_land(lands: list, needs: ManaNeeds,
     if not lands:
         return None
 
-    from engine.card_database import FETCH_LAND_COLORS
-
     prios = gameplan_priorities or {}
     best = None
     best_score = LAND_SCORE_BEST_INIT_SENTINEL
@@ -497,8 +494,8 @@ def choose_best_land(lands: list, needs: ManaNeeds,
         gp = prios.get(template.name, 0.0)
 
         # ── Fetch-as-proxy: score fetchlands by their best target ──
-        if template.name in FETCH_LAND_COLORS and library:
-            fetch_colors = FETCH_LAND_COLORS[template.name]
+        if template.fetchland is not None and library:
+            fetch_colors = list(template.fetchland.colors)
             # Find the best target this fetch could get
             proxy_target = choose_fetch_target(
                 library, fetch_colors, needs,
@@ -582,8 +579,6 @@ def choose_fetch_target(library: list, fetch_colors: list,
     Filters to only lands that match the fetch's color identity,
     then scores using the unified scoring system.
     """
-    from engine.card_database import FETCH_LAND_COLORS
-
     prios = gameplan_priorities or {}
     best = None
     best_score = LAND_SCORE_BEST_INIT_SENTINEL
@@ -599,7 +594,7 @@ def choose_fetch_target(library: list, fetch_colors: list,
         if not lib_card.template.is_land:
             continue
         # Fetch lands cannot find other fetch lands
-        if lib_card.template.name in FETCH_LAND_COLORS:
+        if lib_card.template.fetchland is not None:
             continue
         # Must have a matching basic land subtype (not just produce the color)
         # e.g., Sacred Foundry has subtypes ['Mountain', 'Plains'], Mountain has ['Mountain']
