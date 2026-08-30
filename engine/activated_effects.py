@@ -388,6 +388,37 @@ def resolve_activated_ability(game: "GameState", source: "CardInstance",
     kind = ability.effect_kind
     game._activation_depth = getattr(game, '_activation_depth', 0) + 1
     try:
+        # CR 603.7 — a delayed effect does not happen now. It creates a
+        # delayed triggered ability that fires at its stated step, ONCE,
+        # and independently of this source (CR 603.7d): the closure below
+        # captures the controller and a delay-free copy of the ability, so
+        # a source that sacrificed itself to pay its own cost still
+        # delivers. Dispatch is on the parsed field, never on oracle text.
+        if ability.delayed_timing is not None:
+            from dataclasses import replace as _dc_replace
+            from .delayed_triggers import DelayedTrigger
+
+            immediate = _dc_replace(ability, delayed_timing=None)
+            captured_targets = list(targets or [])
+
+            def _fire(g, _ab=immediate, _src=source, _ctrl=controller,
+                      _tgts=captured_targets, _x=x_value):
+                resolve_activated_ability(g, _src, _ctrl, _tgts,
+                                          ability=_ab, x_value=_x)
+
+            game.register_delayed_trigger(DelayedTrigger(
+                timing=ability.delayed_timing,
+                controller=controller,
+                effect=_fire,
+                description=f"{source.name}: {ability.effect_text}",
+                created_turn=game.turn_number,
+            ))
+            game.log.append(
+                f"T{game.display_turn} P{controller+1}: {source.name} "
+                f"queues a delayed trigger "
+                f"({ability.delayed_timing.value})")
+            return True
+
         if kind is ActivationEffectKind.DAMAGE_ANY_TARGET:
             from .oracle_resolver import resolve_damage_to_chosen_target
             return bool(resolve_damage_to_chosen_target(

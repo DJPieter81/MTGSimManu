@@ -724,6 +724,13 @@ class GameRunner:
                     game.current_phase = Phase.UPKEEP
                     _vlog(f'  [Upkeep]')
                     _emit(KIND_PHASE, phase="Upkeep", pidx=active)
+                    # CR 603.7 — delayed triggers that named this step
+                    # ("at the beginning of the next turn's upkeep",
+                    # "at the beginning of your next upkeep"). Drained
+                    # FIRST, before rebound/saga/upkeep activations, so a
+                    # delayed draw is in hand for every decision this turn.
+                    from engine.delayed_triggers import DelayedTriggerStep
+                    game.fire_delayed_triggers(DelayedTriggerStep.UPKEEP)
                     # Rebound (CR 702.88b): offer the free recast
                     self._process_rebound_recasts(game, active, ai)
                     # Urza's Saga chapter triggers

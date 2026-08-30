@@ -31,6 +31,9 @@ from .sba_manager import SBAManager
 from .turn_manager import TurnManager, TurnStep
 from .card_effects import EFFECT_REGISTRY, EffectTiming
 from .continuous_effects import ContinuousEffectsManager
+from .delayed_triggers import (
+    DelayedTrigger, DelayedTriggerQueue, DelayedTriggerStep,
+)
 from .callbacks import GameCallbacks, DefaultCallbacks
 from .constants import (
     STARTING_LIFE, MAX_HAND_SIZE, MAX_TURNS, SBA_MAX_ITERATIONS,
@@ -108,6 +111,13 @@ class GameState:
         # end step" (Mobilize, CR 702 Mobilize reminder text). Entries are
         # CardInstance objects; processed and cleared in end_of_turn_cleanup.
         self._end_of_turn_sacrifices: List["CardInstance"] = []
+        # General delayed-trigger queue (CR 603.7) — "at the beginning of
+        # <a later step>, <effect>". The two lists above are the engine's
+        # two pre-queue special cases (end-step-only, effect hard-coded at
+        # the firing site); everything new goes here, where the timing rule
+        # and the fire-once guarantee are stated once. See
+        # engine/delayed_triggers.py for the measured card class.
+        self.delayed_triggers = DelayedTriggerQueue()
         # Game log
         self.log: List[str] = []
         self.max_turns: int = MAX_TURNS
@@ -128,6 +138,26 @@ class GameState:
         other tokens are unaffected.
         """
         self._end_of_turn_sacrifices.append(card)
+
+    def register_delayed_trigger(self, trigger: "DelayedTrigger") -> None:
+        """Queue a delayed triggered ability (CR 603.7).
+
+        The trigger's `effect` closes over everything it needs at creation
+        time, so it keeps working after its source has left the battlefield
+        — CR 603.7d, and the reason a self-sacrificing source (Mishra's
+        Bauble pays its own cost by sacrificing itself) still delivers.
+        """
+        self.delayed_triggers.register(trigger)
+
+    def fire_delayed_triggers(self, step: "DelayedTriggerStep") -> int:
+        """Drain every delayed trigger due at `step`. Returns how many fired.
+
+        Called from the two places the turn loop reaches those steps — the
+        upkeep step in `GameRunner`, the end step in
+        `TurnManager.end_of_turn_cleanup` — so a delayed effect fires at its
+        printed moment no matter which subsystem created it.
+        """
+        return self.delayed_triggers.fire_for_step(self, step)
 
     def register_end_of_turn_exile(self, card: CardInstance,
                                    controller: int) -> None:

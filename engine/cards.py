@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Set, Tuple, Callable, Any, TYPE_CHECKING
 from enum import Enum
 from .mana import ManaCost, Color
+from .delayed_triggers import DelayedTriggerTiming
 
 if TYPE_CHECKING:
     from .game_state import GameState
@@ -290,6 +291,14 @@ class ActivatedAbility:
     # counter kind), amount, self (bool), types. None for every other
     # effect kind.
     put_counter_data: Optional[Dict] = None
+    # Delayed timing (CR 603.7): non-None when the effect happens at a
+    # LATER step ("Draw a card at the beginning of the next turn's
+    # upkeep"). `effect_kind` is the INNER effect's kind — the delay is
+    # orthogonal, so every executable kind gets its delayed form for free
+    # instead of each spawning a delayed twin. Parsed once at DB load by
+    # `oracle_parser.parse_activation_delay`; `resolve_activated_ability`
+    # dispatches off it into `GameState.register_delayed_trigger`.
+    delayed_timing: Optional["DelayedTriggerTiming"] = None
 
 
 @dataclass(frozen=True)
