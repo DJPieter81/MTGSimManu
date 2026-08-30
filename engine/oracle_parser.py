@@ -4742,3 +4742,171 @@ def parse_land_destruction(oracle: str):
             return None
 
     return data if found_destroy else None
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Planeswalker loyalty abilities (CR 606)
+# ═══════════════════════════════════════════════════════════════════
+#
+# `[+1]: …` / `[-3]: …` / `[0]: …` lines are parsed and CLASSIFIED here,
+# once, at DB load.  `engine/planeswalker_manager.py` dispatches off the
+# resulting `LoyaltyEffectKind` and refuses anything it cannot execute
+# BEFORE charging loyalty.
+#
+# Before this parser existed, the manager pattern-matched the printed
+# text at activation time against invented vocabulary ("bounce",
+# "brainstorm", "cast sorceries as flash") that occurs on zero cards, so
+# 576 of 696 parsed loyalty abilities (82.8%) matched no branch: the
+# loyalty was paid and nothing happened.  Root cause and A/B:
+# docs/diagnostics/2026-08-30_azorius_planeswalker_loyalty_noop_root_cause.md
+
+# `[+1]: text` / `[−3]: text` / `[0]: text`, up to the next bracket.
+_LOYALTY_LINE_PATTERN = re.compile(
+    r'\[([+\-−]?\d+)\]:\s*([^\[]+?)(?=\[|$)')
+
+# "Return [up to one] target <filter> to its owner's hand" (battlefield
+# bounce) and "Return target <filter> card from your graveyard to your
+# hand" (graveyard recursion).  Both are one mechanic — a printed
+# return-to-hand with a printed target — and both execute through
+# `engine.target_solver` + the zone funnel.
+_LOYALTY_RETURN_TO_HAND_PATTERN = re.compile(
+    r"\breturn\b[^.;]*?\btarget\b[^.;]*?"
+    r"\bto\s+(?:its\s+owner's|your)\s+hand\b",
+    re.IGNORECASE)
+
+# The only rider this resolver executes alongside a return-to-hand.
+# Anything else refuses the whole ability (the same discipline
+# `parse_x_creature_tutor` applies to its riders).
+_LOYALTY_DRAW_RIDER_PATTERN = re.compile(
+    r'^draw\s+(a|one|two|three|four|five|six|seven|\d+)\s+cards?$',
+    re.IGNORECASE)
+
+_LOYALTY_WORD_NUMBERS = {'a': 1, 'one': 1, 'two': 2, 'three': 3, 'four': 4,
+                         'five': 5, 'six': 6, 'seven': 7}
+
+
+def _loyalty_return_to_hand(text: str):
+    """Classify a printed loyalty ability as a return-to-hand.
+
+    Returns ``(TargetRequirement, draws)`` when the WHOLE ability is
+    executable, else ``None``.  Refusal cases, all deliberate:
+
+      * a return sentence carrying an extra clause ("…, then that player
+        exiles a card from their hand") — half-executing it would hand
+        the controller the good half of a symmetrical effect;
+      * a plural or untargeted return ("Return up to two target
+        creatures…", "…you may return a creature card…") — the target
+        solver models one requirement, and approximating the rest is the
+        failure mode this whole change exists to remove;
+      * any sibling sentence outside the draw-rider vocabulary.
+    """
+    from .target_solver import parse as _parse_targets
+
+    sentences = split_clauses(text)
+    if not sentences:
+        return None
+
+    return_sentence = None
+    draws = 0
+    for sentence in sentences:
+        match = _LOYALTY_RETURN_TO_HAND_PATTERN.search(sentence)
+        if match is not None:
+            if return_sentence is not None:
+                return None  # two return clauses — not this mechanic
+            # The return clause must be the WHOLE sentence: a trailing
+            # ", then …" is an unimplemented rider, not decoration.
+            if sentence[match.end():].strip(' .'):
+                return None
+            return_sentence = sentence
+            continue
+        rider = _LOYALTY_DRAW_RIDER_PATTERN.match(sentence.strip(' .'))
+        if rider is None:
+            return None  # unknown sibling sentence — refuse the ability
+        amount = rider.group(1).lower()
+        draws += _LOYALTY_WORD_NUMBERS.get(amount) or int(amount)
+
+    if return_sentence is None:
+        return None
+
+    requirements = _parse_targets(return_sentence)
+    if len(requirements) != 1:
+        return None  # ambiguous or unparsed target — refuse
+    requirement = requirements[0]
+    if requirement.zone not in ("battlefield", "graveyard"):
+        return None
+    return requirement, draws
+
+
+def _classify_loyalty_effect(text: str):
+    """Classify one printed loyalty ability's effect.
+
+    Returns ``(LoyaltyEffectKind, TargetRequirement | None, draws)``.
+
+    The branches below the return-to-hand check are the pre-existing
+    `activate_planeswalker` dispatch tests, moved here verbatim
+    (case-sensitivity included) so the abilities they already executed
+    keep classifying exactly as before.  The ten branches keyed on
+    vocabulary that occurs on zero cards in the pool are GONE — a
+    dispatch test that can never fire is not a mechanic.
+    """
+    from .cards import LoyaltyEffectKind as _K
+
+    if not text:
+        return _K.UNCLASSIFIED, None, 0
+
+    bounce = _loyalty_return_to_hand(text)
+    if bounce is not None:
+        requirement, draws = bounce
+        return _K.RETURN_TO_HAND, requirement, draws
+
+    lowered = text.lower()
+    if "damage" in text:
+        return _K.DAMAGE, None, 0
+    if "gain" in text and "draw" in text:
+        return _K.GAIN_LIFE_AND_DRAW, None, 0
+    if "draw a card" in lowered and "untap" in lowered:
+        return _K.DRAW_AND_UNTAP_LANDS, None, 0
+    if "put target" in lowered and "library" in lowered:
+        return _K.TUCK_TARGET_INTO_LIBRARY, None, 0
+    if "emblem" in lowered and "exile" in lowered:
+        return _K.EMBLEM_EXILE_PERMANENT, None, 0
+    return _K.UNCLASSIFIED, None, 0
+
+
+def parse_loyalty_abilities(oracle: str, loyalty: Optional[int] = 0) -> Dict:
+    """Parse and classify a planeswalker's printed loyalty abilities.
+
+    Returns ``{slot: LoyaltyAbility}`` keyed by the same slot names
+    `engine.player_state._parse_planeswalker_abilities` uses — "plus"
+    (the first loyalty-positive line), "zero", "minus" (the first
+    loyalty-negative line) and "ult" (the second) — so the AI chooser
+    and the engine agree on what "the minus" means.
+
+    Empty dict for a card with no printed loyalty abilities.
+    """
+    from .cards import LoyaltyAbility
+
+    result: Dict = {}
+    if not oracle:
+        return result
+
+    plus_found = False
+    for cost_str, desc in _LOYALTY_LINE_PATTERN.findall(oracle):
+        cost = int(cost_str.replace('−', '-'))
+        desc = desc.strip().rstrip('.')
+        if cost > 0 and not plus_found:
+            slot = "plus"
+            plus_found = True
+        elif cost == 0:
+            slot = "zero"
+        elif cost < 0:
+            slot = "ult" if "minus" in result else "minus"
+        else:
+            continue  # a second loyalty-positive line: no slot for it
+        if slot in result:
+            continue
+        kind, requirement, draws = _classify_loyalty_effect(desc)
+        result[slot] = LoyaltyAbility(
+            slot=slot, cost=cost, text=desc, effect_kind=kind,
+            target=requirement, draws=draws)
+    return result

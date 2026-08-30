@@ -1426,11 +1426,31 @@ class GameRunner:
                 oracle = pw.template.back_face_oracle
                 loyalty = pw.template.back_face_loyalty
             pw_data = _parse_planeswalker_abilities(oracle, loyalty)
-            if not pw_data.get("plus") and not pw_data.get("minus"):
-                continue  # no parseable abilities
+            # Engine legality first, AI choice second: an ability whose
+            # printed effect the resolver cannot execute is refused
+            # before any loyalty is paid, so it must not be OFFERED
+            # either — otherwise the AI spends the walker's one
+            # activation per turn on a line that will be refused.
+            from .planeswalker_manager import PlaneswalkerManager
+            resolvable = PlaneswalkerManager.resolvable_ability_slots(pw)
+            pw_data = {k: v for k, v in pw_data.items()
+                       if k in resolvable or k == "starting_loyalty"}
+            if not any(k in pw_data
+                       for k in ("plus", "zero", "minus", "ult")):
+                continue  # nothing this engine can execute
             opp = game.players[opponent]
 
             ability_type = self._choose_pw_ability(pw, pw_name, pw_data, player, opp, game)
+
+            # The chooser falls back to a fixed slot name when nothing it
+            # was offered is currently AFFORDABLE (a minus below its
+            # loyalty cost). Validate its answer against the resolvable
+            # set rather than trusting it: an unexecutable line must
+            # never reach activation, and burning the walker's one
+            # activation per turn on a refusal is the same defect one
+            # step later.
+            if ability_type not in resolvable:
+                continue
 
             game.activate_planeswalker(active, pw, ability_type)
             ai._pw_activated_this_turn.add(pw.instance_id)

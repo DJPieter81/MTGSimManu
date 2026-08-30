@@ -22,7 +22,7 @@
   "engine/oracle_parser.py": 0,
   "engine/oracle_resolver.py": 5,
   "engine/permanent_effects.py": 2,
-  "engine/planeswalker_manager.py": 7,
+  "engine/planeswalker_manager.py": 0,
   "engine/player_state.py": 0,
   "engine/replay_log.py": 0,
   "engine/sba_manager.py": 1,

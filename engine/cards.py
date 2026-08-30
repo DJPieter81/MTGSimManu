@@ -11,6 +11,7 @@ from .delayed_triggers import DelayedTriggerTiming
 
 if TYPE_CHECKING:
     from .game_state import GameState
+    from .target_solver import TargetRequirement
 
 
 class CardType(Enum):
@@ -326,6 +327,58 @@ class TapForManaTrigger:
     watch: str
     units: Tuple[Tuple[str, ...], ...] = ()
     mirror_source: bool = False
+
+
+class LoyaltyEffectKind(Enum):
+    """What a planeswalker loyalty ability actually does (CR 606).
+
+    Same shape and same discipline as `ActivationEffectKind` above: a
+    CLOSED set with an explicit `UNCLASSIFIED` escape hatch.  A loyalty
+    ability whose printed effect this engine cannot execute is refused
+    BEFORE its loyalty is paid (`PlaneswalkerManager.activate_planeswalker`,
+    mirroring `ActivationManager.can_activate` rule 9b) — visible-but-
+    refused beats silently-dropped.
+
+    The kinds below the RETURN_TO_HAND line are the pre-existing dispatch
+    branches, moved from runtime substring tests to load-time
+    classification without changing which abilities they take or what they
+    do.  Their names describe the shape they execute, not a card.
+    """
+    # "Return [up to N] target <filter> to its owner's hand" (battlefield)
+    # and "Return target <filter> card from your graveyard to your hand".
+    # Resolved through `engine.target_solver` + the zone funnel — the same
+    # seam ETB / spell resolution / triggers use.
+    RETURN_TO_HAND = "return_to_hand"
+    # "<walker> deals N damage to …" — targeted burn, kill-or-face.
+    DAMAGE = "damage"
+    # "You gain N life, draw N cards, …" — the Ugin-shape value ultimate.
+    GAIN_LIFE_AND_DRAW = "gain_life_and_draw"
+    # "Draw a card. Untap up to two lands."
+    DRAW_AND_UNTAP_LANDS = "draw_and_untap_lands"
+    # "Put target <permanent> into its owner's library Nth from the top."
+    TUCK_TARGET_INTO_LIBRARY = "tuck_target_into_library"
+    # An emblem line whose executed part exiles an opposing permanent.
+    EMBLEM_EXILE_PERMANENT = "emblem_exile_permanent"
+    UNCLASSIFIED = "unclassified"
+
+
+@dataclass(frozen=True)
+class LoyaltyAbility:
+    """One printed `[±N]: effect` line, classified once at DB load.
+
+    `text` is the PRINTED oracle text of the ability — it is what the log
+    shows and what the AI's description-driven chooser reads, so it must
+    never be paraphrased.  `effect_kind` is what the resolver dispatches
+    on; `target` (a `target_solver.TargetRequirement`) and `draws` carry
+    the parsed payload for the kinds that need one.
+    """
+    slot: str          # "plus" | "zero" | "minus" | "ult"
+    cost: int          # signed loyalty change (+1, 0, -3, …)
+    text: str
+    effect_kind: "LoyaltyEffectKind" = LoyaltyEffectKind.UNCLASSIFIED
+    target: Optional["TargetRequirement"] = None
+    # Printed "Draw a card" / "Draw N cards" rider on the same ability.
+    draws: int = 0
 
 
 @dataclass(frozen=True)
@@ -931,6 +984,15 @@ class CardTemplate:
     # whole card — never half-executed).
     # Populated by oracle_parser.parse_land_destruction.
     land_destruction_data: Optional[dict] = None
+    # Printed `[±N]: effect` loyalty abilities (CR 606), classified once at
+    # DB load by oracle_parser.parse_loyalty_abilities into
+    # {slot: LoyaltyAbility}.  `PlaneswalkerManager` dispatches off
+    # `effect_kind` and refuses UNCLASSIFIED lines before charging loyalty.
+    # None means "not parsed yet"; {} means "parsed, no loyalty abilities".
+    loyalty_abilities: Optional[Dict[str, "LoyaltyAbility"]] = None
+    # Same, for the back face of a transforming planeswalker DFC.  Set by
+    # CardDatabase after `back_face_oracle` / `back_face_loyalty` land.
+    back_face_loyalty_abilities: Optional[Dict[str, "LoyaltyAbility"]] = None
 
     def __post_init__(self) -> None:
         # Derive fields from oracle text for templates not loaded through
@@ -940,6 +1002,9 @@ class CardTemplate:
             from .oracle_parser import parse_is_land_sacrifice_tutor as _plst
             if not self.is_land_sacrifice_tutor:
                 self.is_land_sacrifice_tutor = _plst(self.oracle_text)
+            if self.loyalty_abilities is None:
+                from .oracle_parser import parse_loyalty_abilities as _pl
+                self.loyalty_abilities = _pl(self.oracle_text, self.loyalty)
             from .oracle_parser import (parse_warp_cost as _pwc,
                                         parse_dash_cost as _pdc,
                                         parse_escape_cost as _pec,
