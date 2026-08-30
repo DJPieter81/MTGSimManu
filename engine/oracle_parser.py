@@ -2726,6 +2726,102 @@ _PERMANENT_TYPE_WORDS = {"artifact", "creature", "enchantment", "land",
 
 _NUM_WORDS = {"a": 1, "an": 1, "one": 1, "two": 2, "three": 3, "four": 4}
 
+# ── Ordinal cast triggers (CR 603.2) ────────────────────────────────
+# "Whenever you cast your second spell each turn, <effect>" — the trigger
+# condition is an ORDINAL over the caster's per-turn spell count, not a
+# card-type condition. Class size in ModernAtomic (22,506 cards): 45 cards
+# carry the trigger shape (37 "you", 4 "a player", 4 "an opponent"); a
+# further 4 carry the ordinal as a static cost reduction ("the second spell
+# you cast each turn costs {1} less"), which is a DIFFERENT mechanic and is
+# deliberately not matched here.  Distinct and untouched: 25 magecraft cards
+# and 757 plain "whenever you cast a/an/another <type> spell" triggers.
+_ORDINAL_WORDS = {"first": 1, "second": 2, "third": 3, "fourth": 4,
+                  "fifth": 5}
+_ORDINAL_ALT = "|".join(_ORDINAL_WORDS)
+
+# Each pattern carries the CASTER SCOPE it implies: whose spell count the
+# ordinal is measured over.
+_ORDINAL_CAST_TRIGGER_RES = (
+    (re.compile(r"whenever you cast your (" + _ORDINAL_ALT
+                + r") spell each turn"), "you"),
+    (re.compile(r"whenever a player casts their (" + _ORDINAL_ALT
+                + r") spell each turn"), "any"),
+    (re.compile(r"whenever an opponent casts their (" + _ORDINAL_ALT
+                + r") spell each turn"), "opponent"),
+)
+
+
+def parse_ordinal_cast_trigger(oracle: str) -> Optional[Dict]:
+    """Parse an ORDINAL cast trigger (CR 603.2).
+
+    Returns::
+
+        {"ordinal": int, "caster_scope": "you"|"any"|"opponent",
+         "reset": "turn", "clause": str}
+
+    or None when the oracle has no ordinal cast trigger.
+
+    ``ordinal`` is which spell of the turn meets the condition (2 for
+    "your second spell each turn").  ``caster_scope`` says whose spells
+    are counted.  ``reset`` records the counter's reset scope, which the
+    "each turn" wording fixes at the TURN — not the game — so the trigger
+    fires again next turn (CR 500.8).  ``clause`` is the rest of the
+    oracle LINE carrying the trigger, so effect parsers (token spec,
+    attach rider) can scope themselves to this trigger's own sentence
+    rather than to some other ability on the card.
+
+    Reminder text is stripped first.  That is load-bearing: a card whose
+    trigger creates a token *with prowess* carries the token's own
+    reminder text — "(Whenever you cast a noncreature spell, the token
+    gets +1/+1 until end of turn.)" — which reads exactly like a plain
+    cast trigger and otherwise hijacks the card's trigger condition.
+
+    Static ordinal COST reductions ("the second spell you cast each turn
+    costs {1} less") are a different mechanic and return None: they carry
+    no "whenever … casts" trigger wording.
+    """
+    if not oracle:
+        return None
+    # Match on the lowercased text but SLICE the clause out of the
+    # case-preserving text: `str.lower()` is length-preserving, so the
+    # offsets agree, and the clause keeps the capitalisation that
+    # `parse_token_spec` needs to read a token's subtype ("Monk").
+    stripped = strip_reminder_text(oracle)
+    lo = stripped.lower()
+    if "each turn" not in lo:
+        return None
+    for pattern, scope in _ORDINAL_CAST_TRIGGER_RES:
+        m = pattern.search(lo)
+        if not m:
+            continue
+        line_end = lo.find("\n", m.end())
+        clause = (stripped[m.end():] if line_end == -1
+                  else stripped[m.end():line_end])
+        return {
+            "ordinal": _ORDINAL_WORDS[m.group(1)],
+            "caster_scope": scope,
+            # CR 500.8: "each turn" resets the count at every turn boundary.
+            "reset": "turn",
+            "clause": clause,
+        }
+    return None
+
+
+def parse_token_attach_rider(clause: str) -> bool:
+    """True when a token-creation clause ends by attaching its own source.
+
+    "… create a 1/1 white Monk creature token, then attach this Equipment
+    to it."  The attachment is part of the triggered effect: no equip
+    cost is paid and no equip activation is needed.  43 cards in the pool
+    carry an attach-to-the-creature-just-made rider; 15 of those in the
+    "create a token, then attach this Equipment to it" shape parsed here.
+    """
+    if not clause:
+        return False
+    return bool(re.search(
+        r"attach th(?:is|at)[a-z ]*\bto (?:it|that creature|them)\b",
+        clause.lower()))
+
 
 def parse_cast_trigger_token(oracle: str) -> Optional[Dict]:
     """Parse "whenever you cast a[n] <type> spell, create ... token"
@@ -2733,7 +2829,8 @@ def parse_cast_trigger_token(oracle: str) -> Optional[Dict]:
 
     Returns::
 
-        {"spell_types": frozenset[str], "count": int}
+        {"spell_types": frozenset[str], "count": int,
+         "attach_source": bool, "clause": Optional[str]}
 
     or None when the oracle has no such trigger.
 
@@ -2744,6 +2841,17 @@ def parse_cast_trigger_token(oracle: str) -> Optional[Dict]:
                                         spell that is not a creature)
       - "artifact spell"           -> {"artifact"}
       - "instant or sorcery spell" -> {"instant", "sorcery"}
+      - ordinal trigger            -> {"any"}  (sentinel: the condition
+                                        names no card type; whether the
+                                        cast qualifies is decided by
+                                        ``CardTemplate.ordinal_cast_trigger``)
+
+    ``attach_source`` is the "then attach this Equipment to it" rider —
+    the created token is equipped by the trigger's own source, with no
+    equip cost and no equip activation.  ``clause`` is the trigger's own
+    oracle line when one was isolated (ordinal shape), so the dispatcher
+    can scope the token spec to that sentence; None means "use the whole
+    oracle", the pre-existing behaviour.
 
     The dispatcher matches ``spell_types`` against the cast spell's card
     types (or, for the ``noncreature`` sentinel, against "not a creature
@@ -2751,14 +2859,40 @@ def parse_cast_trigger_token(oracle: str) -> Optional[Dict]:
     the dispatcher passes the source oracle to ``create_token``, which
     extracts the token spec via ``parse_token_spec``. This keeps ONE
     owner for the token-shape parse.
+
+    Reminder text is stripped before the condition is matched.  Without
+    that, a card whose token has prowess matches its own TOKEN's reminder
+    text ("(Whenever you cast a noncreature spell, the token gets +1/+1
+    …)") and adopts a spell-type condition the card does not have.
     """
     if not oracle:
         return None
-    lo = oracle.lower()
+    lo = strip_reminder_text(oracle).lower()
     if "whenever" not in lo or "cast" not in lo:
         return None
     if "create" not in lo or "token" not in lo:
         return None
+
+    # ── Ordinal shape: the condition is "your Nth spell each turn", which
+    #    names no card type.  Scope the token effect to that trigger's own
+    #    line so a second ability on the card cannot contribute to it.
+    ordinal = parse_ordinal_cast_trigger(oracle)
+    if ordinal is not None:
+        clause = ordinal["clause"]
+        clause_lo = clause.lower()
+        if "create" not in clause_lo or "token" not in clause_lo:
+            return None
+        if "choose one" in clause_lo:
+            # Modal effect — the mode choice is not modelled; refuse the
+            # variant outright rather than half-execute it.
+            return None
+        return {
+            "spell_types": frozenset({"any"}),
+            "count": _parse_token_create_count(clause_lo),
+            "attach_source": parse_token_attach_rider(clause),
+            "clause": clause,
+        }
+
     m = re.search(r"cast (?:a|an|your first|another) ([a-z /]*?)spell", lo)
     if not m:
         return None
@@ -2771,12 +2905,21 @@ def parse_cast_trigger_token(oracle: str) -> Optional[Dict]:
             if w in _CARD_TYPE_WORDS)
     if not spell_types:
         return None
-    count = 1
-    cm = re.search(r"create (a|an|one|two|three|four|\d+)\b", lo)
-    if cm:
-        tok = cm.group(1)
-        count = int(tok) if tok.isdigit() else _NUM_WORDS.get(tok, 1)
-    return {"spell_types": spell_types, "count": count}
+    return {
+        "spell_types": spell_types,
+        "count": _parse_token_create_count(lo),
+        "attach_source": parse_token_attach_rider(lo),
+        "clause": None,
+    }
+
+
+def _parse_token_create_count(text: str) -> int:
+    """How many tokens a "create <n> … token" clause makes (default 1)."""
+    cm = re.search(r"create (a|an|one|two|three|four|\d+)\b", text)
+    if not cm:
+        return 1
+    tok = cm.group(1)
+    return int(tok) if tok.isdigit() else _NUM_WORDS.get(tok, 1)
 
 
 def parse_enters_type_counter(oracle: str) -> Optional[Dict]:
