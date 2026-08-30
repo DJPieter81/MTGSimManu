@@ -1813,6 +1813,7 @@ class CardDatabase:
             parse_has_lifegain_equal_power, parse_has_lifegain_effect,
             parse_has_exile_own_creature, parse_has_converge,
             parse_has_delirium, parse_has_all_basic_land_types,
+            parse_color_setting_scope,
             parse_has_destroy_or_exile,
             parse_has_artifact_count_scaling, parse_has_surveil,
             parse_has_scry,
@@ -1945,6 +1946,7 @@ class CardDatabase:
         template.has_converge = parse_has_converge(oracle)
         template.has_delirium = parse_has_delirium(oracle)
         template.has_all_basic_land_types = parse_has_all_basic_land_types(oracle)
+        template.color_setting_scope = parse_color_setting_scope(oracle)
         template.has_destroy_or_exile = parse_has_destroy_or_exile(oracle)
         template.has_artifact_count_scaling = parse_has_artifact_count_scaling(oracle)
         template.has_surveil = parse_has_surveil(oracle)
