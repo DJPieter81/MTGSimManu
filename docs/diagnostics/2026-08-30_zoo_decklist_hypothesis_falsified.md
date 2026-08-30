@@ -20,10 +20,14 @@ summary: >
   scores HIGHER (84.7% vs 79.2%), so our build is not the cause. Two real
   defects were found while testing and are recorded separately: the 6.07%
   meta share is assigned to an archetype absent from the real top-16 (nearest
-  real bucket is 4.0%), and Scion of Draco's keyword static is completely
-  inert. Neither explains the outlier — the share is a weighting error, and
-  the inert keywords would make Zoo STRONGER if fixed. Do not re-run the
-  decklist swap.
+  real bucket is 4.0%), and Leyline of the Guildpact's "all nonland permanents
+  are all colors" static is unimplemented, costing Zoo three of Scion of
+  Draco's five keywords including hexproof. Neither explains the outlier — the
+  share is a weighting error, and the missing keywords would make Zoo STRONGER
+  if fixed. CONTAINS A RETRACTION: an earlier version of this doc claimed
+  Scion of Draco was inert; that was a probe artefact (it drove trigger_etb,
+  which does not invoke EFFECT_REGISTRY) and Scion in fact works. Do not
+  re-run the decklist swap.
 ---
 
 # Domain Zoo: the decklist is not the cause (2026-08-30)
