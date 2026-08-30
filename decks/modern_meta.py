@@ -528,43 +528,71 @@ MODERN_DECKS: Dict[str, Dict[str, Dict[str, int]]] = {
         },
     },
     "Izzet Prowess": {
-        # July 2026 refresh — real meta tracks this as "UR Cutter Prowess"
-        # (~3.99%): stock June-2026 builds run the full 4 Cori-Steel Cutter
-        # (mtgdecks/mtggoldfish archetype pages, June 2026).
-        # +2 Cori-Steel Cutter (2→4), -2 Violent Urge.
+        # Aug 2026 — the "UR Cutter Prowess" MTGO Challenge-winning list,
+        # supplied verbatim by the project owner. Plan, in the pilot's own
+        # words: close out games quickly through a combination of creature
+        # damage and direct burn spells.
+        #
+        # Replaces the June-2026 archetype-page approximation. The two
+        # structural corrections are worth naming, because both change how
+        # the deck must be modelled rather than just its counts:
+        #   * NO green splash. Stomping Ground and the 3 SB Pick Your Poison
+        #     are gone, so this is straight UR and its mana solver no longer
+        #     has to find G. Independently corroborated by the mtgtop8 list
+        #     this repo's own fetch_tier1_decklists.py pulled on 2026-08-08.
+        #   * The pump suite is wider and cheaper: Expressive Iteration 4→2
+        #     and Mutagenic Growth 4→3 pay for 2 Monstrous Rage and 2 Violent
+        #     Urge, both of which are combat tricks rather than card
+        #     advantage — the list leans harder on connecting than on
+        #     refuelling.
+        # Unholy Heat moves mostly to the board (MB 2→1, SB 0→3), the
+        # standard concession to matchups where a 6-damage delirium mode is
+        # dead. Murktide Regent and Spell Snare are out entirely.
+        #
+        # KNOWN ENGINE GAP this list exposes, recorded so the WR is read
+        # correctly rather than trusted: with Stomping Ground gone the deck
+        # has ZERO green sources, and `CastManager.can_cast`'s coloured-pip
+        # solver does not waive Phyrexian pips (CR 107.4f) — verified True
+        # with a green source present, False without. So the 3 Mutagenic
+        # Growth are currently UNCASTABLE here, and this deck's numbers are
+        # a floor until that is fixed. The old approximation hid it by
+        # running a green source.
         "mainboard": {
             # Creatures (12)
             "Dragon's Rage Channeler": 4,
             "Monastery Swiftspear": 4,
             "Slickshot Show-Off": 4,
-            # Spells (30)
-            "Lightning Bolt": 4,
+            # Instants and sorceries (22)
+            "Expressive Iteration": 2,
             "Lava Dart": 4,
-            "Unholy Heat": 2,
-            "Mutagenic Growth": 4,
-            "Mishra's Bauble": 4,
-            "Expressive Iteration": 4,
+            "Lightning Bolt": 4,
+            "Monstrous Rage": 2,
+            "Mutagenic Growth": 3,
             "Preordain": 4,
+            "Unholy Heat": 1,
+            "Violent Urge": 2,
+            # Other spells (8)
             "Cori-Steel Cutter": 4,
+            "Mishra's Bauble": 4,
             # Lands (18)
-            "Scalding Tarn": 3,
-            "Wooded Foothills": 3,
             "Arid Mesa": 2,
-            "Bloodstained Mire": 2,
-            "Steam Vents": 2,
-            "Stomping Ground": 1,
-            "Fiery Islet": 1,
-            "Thundering Falls": 2,
-            "Mountain": 2,
+            "Bloodstained Mire": 3,
+            "Fiery Islet": 2,
+            "Mountain": 3,
+            "Scalding Tarn": 2,
+            "Steam Vents": 3,
+            "Thundering Falls": 1,
+            "Wooded Foothills": 2,
         },
         "sideboard": {
-            "Consign to Memory": 4,
-            "Pick Your Poison": 3,
-            "Murktide Regent": 2,
+            "Abhorrent Oculus": 1,
+            "Consign to Memory": 3,
+            "Expressive Iteration": 1,
+            "Meltdown": 2,
             "Spell Pierce": 2,
             "Surgical Extraction": 2,
-            "Meltdown": 1,
-            "Spell Snare": 1,
+            "Tormod's Crypt": 1,
+            "Unholy Heat": 3,
         },
     },
     "Dimir Midrange": {
