@@ -20,7 +20,7 @@
       "deck2": "Eldrazi Tron",
       "seed": 50000,
       "winner": "Domain Zoo",
-      "turns": 8
+      "turns": 13
     },
     {
       "deck1": "Amulet Titan",
@@ -76,7 +76,7 @@
       "deck2": "Domain Zoo",
       "seed": 50500,
       "winner": "Affinity",
-      "turns": 7
+      "turns": 8
     },
     {
       "deck1": "Eldrazi Tron",
