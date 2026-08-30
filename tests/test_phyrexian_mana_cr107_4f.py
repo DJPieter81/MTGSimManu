@@ -253,3 +253,21 @@ def test_a_cost_without_pips_spends_no_life(card_db):
     game, spell = _game(card_db, ["Mountain"], SHAPE_NO_PIP)
     assert game.cast_spell(0, spell)
     assert game.players[0].life == 20
+
+
+def test_a_template_without_a_mana_cost_still_constructs():
+    """`CardTemplate.mana_cost` is Optional — lands and many test fixtures
+    build a template with no cost at all.
+
+    Deriving `phyrexian_pip_count` from the COST rather than from oracle
+    reminder text is what makes it correct for multi-pip cards, but the
+    derivation runs in `__post_init__`, so it must tolerate a cost-less
+    template instead of raising at construction. Regression: the first cut
+    of that derivation did `self.mana_cost.phyrexian.values()` unguarded and
+    took out every fixture that omits the cost.
+    """
+    from engine.cards import CardTemplate, CardType
+
+    t = CardTemplate(name="fixture", card_types=[CardType.ARTIFACT],
+                     mana_cost=None)
+    assert t.phyrexian_pip_count == 0

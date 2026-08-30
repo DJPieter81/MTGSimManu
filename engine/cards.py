@@ -1019,8 +1019,17 @@ class CardTemplate:
             if not self.has_symmetric_reanimation:
                 self.has_symmetric_reanimation = _phsr(self.oracle_text)
             if self.phyrexian_pip_count == 0:
-                self.phyrexian_pip_count = sum(
-                    self.mana_cost.phyrexian.values())
+                # `mana_cost` is Optional: a template can be constructed
+                # without one (lands, and test fixtures that only exercise
+                # oracle-derived fields). Deriving the pip count from the
+                # COST rather than from oracle reminder text is what makes
+                # it correct for multi-pip cards, but it must not turn a
+                # cost-less template into an AttributeError at construction.
+                _mc = self.mana_cost
+                self.phyrexian_pip_count = (
+                    sum(_mc.phyrexian.values())
+                    if _mc is not None and getattr(_mc, 'phyrexian', None)
+                    else 0)
             if not self.has_token_effect:
                 self.has_token_effect = _phte(self.oracle_text)
             if not self.has_graveyard_recursion:
