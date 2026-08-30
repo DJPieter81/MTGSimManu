@@ -1531,6 +1531,35 @@ def resolve_self_cast_trigger(game: "GameState", caster_idx: int,
     return handled
 
 
+def _ordinal_cast_trigger_fires(game: "GameState", permanent: "CardInstance",
+                                caster_idx: int) -> bool:
+    """Does an ORDINAL cast trigger (CR 603.2) meet its condition now?
+
+    "Whenever you cast your second spell each turn" is satisfied by exactly
+    one spell per turn: the one that brings the relevant player's per-turn
+    spell count to N.  `spells_cast_this_turn` is incremented by
+    `CastManager.cast_spell` BEFORE cast triggers run, so the spell now
+    being cast is already counted and the test is an equality — an
+    inequality would re-fire on every later spell of the turn.
+
+    The counter is per player and reset by `reset_turn_tracking`, so "each
+    turn" (CR 500.8) holds without any extra state here.  `caster_scope`
+    decides whose count is read: "you" (the permanent's controller must be
+    the caster), "an opponent" (must not be), or "a player" (either).
+
+    Permanents with no ordinal trigger are unaffected — the caller only
+    consults this when the typed field is present.
+    """
+    spec = permanent.template.ordinal_cast_trigger
+    scope = spec["caster_scope"]
+    if scope == "you" and permanent.controller != caster_idx:
+        return False
+    if scope == "opponent" and permanent.controller == caster_idx:
+        return False
+    return (game.players[caster_idx].spells_cast_this_turn
+            == spec["ordinal"])
+
+
 def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
                                 spell_cast: "CardInstance"):
     """Resolve "whenever you cast a spell" triggers for all permanents.
@@ -1544,6 +1573,19 @@ def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
     for permanent in list(player.battlefield):  # copy: battlefield may change (transform)
         oracle = (permanent.template.oracle_text or '').lower()
         if not oracle or 'whenever' not in oracle:
+            continue
+
+        # ── Ordinal cast triggers (CR 603.2) gate the WHOLE permanent ──
+        # "Whenever you cast your Nth spell each turn" is the trigger
+        # condition for every effect the ability grants — token, counter,
+        # damage, draw.  Checking it once here means no effect branch below
+        # can fire on a non-Nth spell.  Gating the permanent (rather than
+        # each branch) is safe because no card in the pool carries an
+        # ordinal cast trigger AND a plain "whenever you cast a <type>
+        # spell" trigger — measured 0 of 22,506.
+        if (permanent.template.ordinal_cast_trigger is not None
+                and not _ordinal_cast_trigger_fires(game, permanent,
+                                                     caster_idx)):
             continue
 
         # ── "Whenever you cast a noncreature spell, you get {E}" ──
@@ -1571,15 +1613,30 @@ def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
         cast_spec = permanent.template.cast_trigger_token
         if cast_spec and permanent.controller == caster_idx:
             spell_types = cast_spec['spell_types']
-            if 'noncreature' in spell_types:
+            if 'any' in spell_types:
+                # Ordinal trigger: the condition names no card type, so any
+                # spell type qualifies once the ordinal gate above passed.
+                qualifies = True
+            elif 'noncreature' in spell_types:
                 qualifies = not spell_cast.template.is_creature
             else:
                 cast_types = {t.value for t in spell_cast.template.card_types}
                 qualifies = bool(spell_types & cast_types)
             if qualifies:
-                game.create_token(
+                tokens = game.create_token(
                     caster_idx, "creature", count=cast_spec['count'],
-                    source_oracle=permanent.template.oracle_text)
+                    source_oracle=(cast_spec.get('clause')
+                                   or permanent.template.oracle_text))
+                # "… then attach this Equipment to it" — the attachment is
+                # part of the trigger's effect, so it costs nothing and needs
+                # no equip activation.  Attaching through the engine's one
+                # owner keeps the `equipment_unattached` flag (which the AI's
+                # equip planner reads) consistent with the equip path.
+                if cast_spec.get('attach_source') and tokens:
+                    if game.attach_equipment(caster_idx, permanent, tokens[-1]):
+                        game.log.append(
+                            f"T{game.display_turn} P{caster_idx+1}: "
+                            f"{permanent.name} attaches to {tokens[-1].name}")
 
         # ── "Whenever you cast a spell, draw a card" ──
         if getattr(permanent.template, 'has_cast_spell_draw', False):
@@ -1631,6 +1688,12 @@ def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
     for permanent in opp_player.battlefield:
         oracle = (permanent.template.oracle_text or '').lower()
         if not oracle or 'whenever' not in oracle:
+            continue
+
+        # Same ordinal gate as the controller loop above (CR 603.2).
+        if (permanent.template.ordinal_cast_trigger is not None
+                and not _ordinal_cast_trigger_fires(game, permanent,
+                                                     caster_idx)):
             continue
 
         # ── "Whenever an opponent casts a spell, deal damage" ──

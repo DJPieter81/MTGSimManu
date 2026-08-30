@@ -796,6 +796,17 @@ class CardTemplate:
     # Talrand/instant-or-sorcery). None when absent.
     # Populated by oracle_parser.parse_cast_trigger_token.
     cast_trigger_token: Optional[dict] = None
+    # ORDINAL cast trigger (CR 603.2) -- dict
+    # {"ordinal": int, "caster_scope": "you"|"any"|"opponent",
+    #  "reset": "turn", "clause": str} for
+    # "whenever you cast your Nth spell each turn, <effect>".
+    # `ordinal` is which spell of the turn meets the condition; `reset`
+    # records that the counter's scope is the TURN, not the game (CR 500.8);
+    # `caster_scope` says whose spells are counted. None when absent.
+    # 45 cards in the pool carry this trigger shape -- it is the condition
+    # gate for every effect on such a card, not just token creation.
+    # Populated by oracle_parser.parse_ordinal_cast_trigger.
+    ordinal_cast_trigger: Optional[dict] = None
     # Permanent-enters counter by card TYPE (CR 603) -- dict
     # {"permanent_type": str, "counter_power": int,
     #  "counter_toughness": int, "unblockable_this_turn": bool} for
@@ -868,6 +879,7 @@ class CardTemplate:
                                         parse_is_storm_spell as _piss,
                                         parse_has_charge_counter_ability as _phcca,
                                         parse_cast_trigger_token as _pctt,
+                                        parse_ordinal_cast_trigger as _poct,
                                         parse_enters_type_counter as _petc)
             from .card_database import KEYWORD_MAP as _KM
             import re as _re
@@ -951,6 +963,8 @@ class CardTemplate:
                 self.has_charge_counter_ability = _phcca(self.oracle_text)
             if self.cast_trigger_token is None:
                 self.cast_trigger_token = _pctt(self.oracle_text)
+            if self.ordinal_cast_trigger is None:
+                self.ordinal_cast_trigger = _poct(self.oracle_text)
             if self.enters_type_counter is None:
                 self.enters_type_counter = _petc(self.oracle_text)
             if self.land_type_bonuses is None:

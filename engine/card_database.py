@@ -1844,6 +1844,7 @@ class CardDatabase:
             parse_has_discard_effect, parse_is_storm_spell,
             parse_has_charge_counter_ability,
             parse_cast_trigger_token, parse_enters_type_counter,
+            parse_ordinal_cast_trigger,
         )
         oracle = template.oracle_text or ''
         template.ritual_mana = parse_ritual_mana(oracle)
@@ -1992,6 +1993,7 @@ class CardDatabase:
         template.is_storm_spell = parse_is_storm_spell(oracle)
         template.has_charge_counter_ability = parse_has_charge_counter_ability(oracle)
         template.cast_trigger_token = parse_cast_trigger_token(oracle)
+        template.ordinal_cast_trigger = parse_ordinal_cast_trigger(oracle)
         template.enters_type_counter = parse_enters_type_counter(oracle)
         # Land destruction (spell tranche) — parse-once typed classification.
         from .oracle_parser import parse_land_destruction

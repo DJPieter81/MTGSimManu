@@ -525,22 +525,47 @@ class GameState:
             land.tapped = True
             remaining -= 1
 
-        if 'equipment' in getattr(template, 'tags', set()) or 'pump' in getattr(template, 'tags', set()):
-            # Use instance_id-based tag so stacking the same equipment works correctly.
-            # Format: equipped_{equipment.instance_id}  (unique per equipment object)
-            equip_tag = f"equipped_{equipment.instance_id}"
-            # Remove this specific equipment from any creature it was previously on
-            for c in player.creatures:
-                c.instance_tags.discard(equip_tag)
-            # Attach to new creature
-            creature.instance_tags.add(equip_tag)
-            # Mark equipment as attached
-            equipment.instance_tags.discard("equipment_unattached")
-            equipment.instance_tags.add("equipment_attached")
+        self.attach_equipment(player_idx, equipment, creature)
 
         self.log.append(f"T{self.display_turn} P{player_idx+1}: "
                         f"Equip {equipment.name} to {creature.name} "
                         f"(cost {template.equip_cost})")
+        return True
+
+    def attach_equipment(self, player_idx: int, equipment: CardInstance,
+                         creature: CardInstance) -> bool:
+        """Attach an Equipment to a creature (CR 301.5), cost-free.
+
+        The attachment step of `equip_creature`, split out because equipping
+        is not the only way an Equipment becomes attached: a triggered
+        ability may attach it as part of its effect ("create a token, then
+        attach this Equipment to it") with no equip cost and no activation.
+        Both paths must leave the same state behind, which is why they share
+        this one owner:
+
+          - `equipped_{instance_id}` on the creature (instance-id keyed, so
+            several Equipment stack on one creature);
+          - CR 301.5c — an Equipment is attached to at most one creature, so
+            the tag is removed from whatever it was on before;
+          - `equipment_attached` on the Equipment and, crucially,
+            `equipment_unattached` removed: that tag is what the AI's equip
+            planner reads to find Equipment still needing an activation.
+        """
+        template = equipment.template
+        if not ('equipment' in getattr(template, 'tags', set())
+                or 'pump' in getattr(template, 'tags', set())):
+            return False
+        # Use instance_id-based tag so stacking the same equipment works correctly.
+        # Format: equipped_{equipment.instance_id}  (unique per equipment object)
+        equip_tag = f"equipped_{equipment.instance_id}"
+        # Remove this specific equipment from any creature it was previously on
+        for c in self.players[player_idx].creatures:
+            c.instance_tags.discard(equip_tag)
+        # Attach to new creature
+        creature.instance_tags.add(equip_tag)
+        # Mark equipment as attached
+        equipment.instance_tags.discard("equipment_unattached")
+        equipment.instance_tags.add("equipment_attached")
         return True
 
     def cast_spell(self, player_idx: int, card: CardInstance,
