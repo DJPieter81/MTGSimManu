@@ -30,6 +30,31 @@ class TriggerManager:
 
     @staticmethod
     def trigger_etb(game: "GameState", card: CardInstance, controller: int):
+        # CR 301.5c / 702.6 — an Equipment can become attached only via an
+        # effect that says so (normally its own equip ability), so every
+        # Equipment that enters the battlefield enters UNATTACHED. The
+        # simulator records that as the `equipment_unattached` instance tag,
+        # which is the sole gate on `ai/ev_player.py::_consider_equip`
+        # enumerating an equip play and on `ai/permanent_threat.py` valuing a
+        # stranded equipment. Without it an Equipment resolves and can never
+        # be equipped for the rest of the game — legal in the engine, absent
+        # from the AI's play space.
+        #
+        # Class: every Equipment printing (hundreds), keyed off the typed
+        # `equip_cost` field parsed once at DB load plus the Equipment
+        # subtype — no card name is consulted. The mirror-image half of this
+        # mechanic (re-marking an equipment unattached when its bearer leaves)
+        # already lives generically in engine/permanent_effects.py; this is
+        # the "enters" half, which used to be a card-name registry entry.
+        #
+        # Runs before the fan-out below and AFTER any card-specific ETB
+        # handler (spell_resolution calls the registry first), so an
+        # Equipment that attaches itself on entry keeps its attachment.
+        if (getattr(card.template, 'equip_cost', None) is not None
+                and "Equipment" in (card.template.subtypes or [])
+                and "equipment_attached" not in card.instance_tags):
+            card.instance_tags.add("equipment_unattached")
+
         # Elesh Norn / Panharmonicon family: detect any controller-side permanent
         # whose oracle says "triggers an additional time". Each such permanent
         # causes ETB-induced triggers to fire one extra time. Generic — no

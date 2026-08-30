@@ -327,15 +327,14 @@ def mox_opal_etb(game, card, controller, targets=None, item=None):
     return
 
 
-@EFFECT_REGISTRY.register("Cranial Plating", EffectTiming.ETB,
-                           description="Enters battlefield unattached. Equip {1}.")
-def cranial_plating_etb(game, card, controller, targets=None, item=None):
-    # In real MTG, equipment enters unattached.
-    # The AI must spend mana to equip via the "equip" action in main phase.
-    # Mark this card as equipment so the game knows it can be equipped.
-    card.instance_tags.add("equipment_unattached")
-    game.log.append(f"T{game.display_turn} P{controller+1}: "
-                    f"Cranial Plating enters the battlefield (unattached)")
+# NOTE: the card-name-keyed "Cranial Plating" ETB handler that used to sit
+# here was deleted. Its whole body was `card.instance_tags.add(
+# "equipment_unattached")` plus a log line — i.e. it encoded CR 301.5c ("an
+# Equipment enters the battlefield unattached") for exactly one printing,
+# leaving the rule silently false for every other Equipment in the format.
+# The rule now lives generically in `engine/triggers.py::trigger_etb`, keyed
+# off the typed `CardTemplate.equip_cost` field and the Equipment subtype.
+# See tests/test_equipment_enters_unattached.py. Registry count 96 -> 95.
 
 
 @EFFECT_REGISTRY.register("Nettlecyst", EffectTiming.ETB,
