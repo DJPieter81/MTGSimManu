@@ -549,14 +549,15 @@ MODERN_DECKS: Dict[str, Dict[str, Dict[str, int]]] = {
         # standard concession to matchups where a 6-damage delirium mode is
         # dead. Murktide Regent and Spell Snare are out entirely.
         #
-        # KNOWN ENGINE GAP this list exposes, recorded so the WR is read
-        # correctly rather than trusted: with Stomping Ground gone the deck
-        # has ZERO green sources, and `CastManager.can_cast`'s coloured-pip
-        # solver does not waive Phyrexian pips (CR 107.4f) — verified True
-        # with a green source present, False without. So the 3 Mutagenic
-        # Growth are currently UNCASTABLE here, and this deck's numbers are
-        # a floor until that is fixed. The old approximation hid it by
-        # running a green source.
+        # Registering this list is what exposed the Phyrexian-mana gap, and
+        # the note is kept because it explains a WR discontinuity in this
+        # deck's history: with Stomping Ground gone there are ZERO green
+        # sources, and `CastManager.can_cast` used to refuse {G/P} without a
+        # green source, making the 3 Mutagenic Growth dead cards. The old
+        # approximation hid it by running a green source. FIXED — coloured
+        # pips payable with life (CR 107.4f) are no longer treated as
+        # colour requirements, so numbers from before that fix understate
+        # this deck.
         "mainboard": {
             # Creatures (12)
             "Dragon's Rage Channeler": 4,
