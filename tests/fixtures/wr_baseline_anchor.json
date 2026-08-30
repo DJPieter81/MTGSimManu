@@ -104,14 +104,14 @@
       "deck2": "Dimir Midrange",
       "seed": 50500,
       "winner": "Izzet Prowess",
-      "turns": 10
+      "turns": 8
     },
     {
       "deck1": "4/5c Control",
       "deck2": "Pinnacle Affinity",
       "seed": 50500,
-      "winner": "4/5c Control",
-      "turns": 17
+      "winner": "Pinnacle Affinity",
+      "turns": 9
     },
     {
       "deck1": "Azorius Control (WST)",
