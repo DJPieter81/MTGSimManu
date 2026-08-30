@@ -2,6 +2,7 @@
 title: MAX_TURNS=25 decides a third of aggro-vs-control games on life total, deflating control
 status: active
 priority: primary
+implemented: 2026-08-30
 session: 2026-08-30
 depends_on:
   - docs/diagnostics/2026-08-30_zoo_decklist_hypothesis_falsified.md
@@ -24,7 +25,10 @@ summary: >
   34.4 -> 50.0, into band; Azorius Control 24.0 -> 31.2) while both aggro
   decks are flat (Zoo -1.1, Boros -1.0). This is a measurement-harness
   artefact, not a Magic result, and it is a partial — not complete —
-  explanation of the aggro-high/control-low skew.
+  explanation of the aggro-high/control-low skew. IMPLEMENTED the same
+  session (MAX_TURNS 25->60, capped game = draw, plus a Bo3 draw-counting bug
+  fixed first): 4/5c Control moved INTO band (38.1 -> 52.0), Azorius Control
+  improved but is still broken (21.0 -> 28.6), Domain Zoo unchanged (83.9).
 ---
 
 # The turn cap decides aggro-vs-control games on life total
@@ -117,7 +121,70 @@ field average. Anyone reading this as "the outlier is solved" is
 over-reading it, which is the specific failure mode this session repeated
 several times.
 
-## Recommendation — an owner decision, deliberately not taken here
+## IMPLEMENTED (2026-08-30, same session)
+
+The recommendation below was acted on. Both halves shipped together, because
+the draw path was unusable on its own:
+
+* **A capped game is now a DRAW** (`game_runner.adjudicate_capped_game`,
+  CR 104.4). Life total no longer breaks it.
+* **`MAX_TURNS` 25 -> 60.** At 60 the cap did not fire at all in the measured
+  sample, and 80/120 bought nothing further.
+* **A draw-counting bug was fixed first.** `run_meta`'s Bo3 loop read
+  `if winner_deck == deck1: score[0] += 1 else: score[1] += 1`, and
+  `winner_deck` is the literal string `"draw"`, so every drawn game was
+  silently a game win for whichever deck was named second. Scoring capped
+  games as draws would have made that strictly worse than the life tiebreak
+  it replaces. Now routed through `score_game_result()`. The Bo3 loop is also
+  bounded on GAMES PLAYED (`BO3_MAX_GAMES`), since gating only on
+  `score < 2` cannot terminate once games can end without incrementing
+  either side. Field/matchup accumulation was audited and was already
+  correct — draws land in a `"draw"` key that the percentages do not read.
+
+### Anchor evidence
+
+6 of 29 entries drifted and **every one had `turns=13`**, the old cap — a
+fifth of the drift-detection fixture was recording tiebreak verdicts rather
+than game outcomes. Refreshed by hand (not via the whole-fixture refresher):
+
+| entry | before | after |
+|---|---|---|
+| Azorius Control vs Azorius Control (WST) s50000 | WST wins T13 | **draw** T30 |
+| Azorius Control (WST) vs (WST v2) s50500 | WST wins T13 | **draw** T30 |
+| 4/5c Control vs Pinnacle Affinity s50500 | Pinnacle wins T13 | **4/5c Control wins** T17 |
+| Eldrazi Tron vs Amulet Titan s50500 | T13 | T14 |
+| Boros Ponza vs Boros Energy s51000 | T13 | T14 |
+| Eldrazi Ramp vs Broodscale Bloodchief s52000 | T13 | T14 |
+
+The two control mirrors now correctly draw — they genuinely cannot kill each
+other — and 4/5c Control converts a tiebreak LOSS into a real win.
+
+### Field result (n=6, implemented vs the cap=25 baseline)
+
+| deck | before | after | band |
+|---|---|---|---|
+| Azorius Control | 21.0 | **28.6** | still far below |
+| 4/5c Control | 38.1 | **52.0** | **moved INTO band** |
+| Jeskai Blink | 48.6 | 47.9 | in band |
+| Dimir Midrange | — | 57.6 | in band |
+| Domain Zoo | 84.4 | 83.9 | still far above |
+| Boros Energy | 60.4 | 65.3 | slightly above |
+
+These track the pre-implementation A/B closely (predicted Azorius ~31.2,
+4/5c ~50.0, Zoo ~83.3, Boros ~59.4), which is the check that matters: the
+effect reproduces from the mechanism rather than from noise.
+
+**Honest limits.** Only 4/5c Control actually changed band. Azorius Control
+is better but still broken at 28.6, and Domain Zoo is untouched at 83.9 —
+the cap was never its explanation. n=6 per opponent leaves roughly +/-10pp
+on each field average, so the individual numbers are soft; the pattern
+(control up, aggro flat) is the finding.
+
+**Cost, stated plainly:** ~+52% wall-clock on control-heavy matchups. A full
+matrix is correspondingly more expensive, and every cell in the existing
+dashboard is now stale.
+
+## Original recommendation — kept for the record
 
 Raising `MAX_TURNS` is not a free correctness fix. It:
 
