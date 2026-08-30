@@ -581,6 +581,35 @@ def activation_candidates(game, player_idx, snap, excluded=None):
                              f"vs opp {opp_clock:.0f})")))
                 continue
             elif kind in (_K.PUT_COUNTER_SELF, _K.PUT_COUNTER_TARGET):
+                # WITHHELD DELIBERATELY — the engine class is complete and
+                # correct (148 abilities classify, resolve, and are legal);
+                # what is missing is a valuation honest enough to drive it.
+                #
+                # `EVSnapshot` has no term for card QUALITY, only
+                # `my_hand_size`, priced at `card_clock_impact` ~= 0.125
+                # against 0.23-4.07 for a single +1/+1 counter. So every
+                # marginal activation of a card-costed counter ability
+                # reads positive and the AI repeats it until the hand is
+                # EMPTY: measured at seed 51000, five cards including two
+                # Solitude pitched on turn 3 to grow one creature.
+                #
+                # Two fixes were tried and rejected on evidence, not taste:
+                # charging the card `ai.discard_advisor.choose_discard`
+                # would pick (inexpressible — the snapshot has no field for
+                # it), and a discrete-clock race gate mirroring
+                # PUMP_SELF_UEOT (measured WORSE: at low power each counter
+                # does move the clock, so the gate passes).
+                #
+                # A/B field sweep, n=6 Bo3 over 24 opponents, enabled vs
+                # disabled: Instant Reanimator 53.5/57.7, Dimir 65.2/56.9,
+                # Grixis Reanimator 56.1/48.0, Creatures Toolbox 9.1/9.1.
+                # Not decisive on win rate (~1-2 SE), but enabling pushes
+                # Dimir ABOVE its [45,60] band and does nothing at all for
+                # Creatures Toolbox, the deck this class was expected to
+                # help. Shipping a scoring path that demonstrably misplays
+                # is worse than leaving the mechanic unused, so it waits
+                # for a snapshot that can price a card.
+                continue
                 # A counter is a PERMANENT board change, which is exactly
                 # what `position_value` measures — so unlike PUMP_SELF_UEOT
                 # this needs no until-end-of-turn gate and invents no

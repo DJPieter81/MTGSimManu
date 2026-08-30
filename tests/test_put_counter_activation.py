@@ -364,56 +364,50 @@ def _snap(game, player_idx=0):
     return snapshot_from_game(game, player_idx)
 
 
-def test_a_growth_activation_is_offered_as_a_candidate():
-    """Engine legality alone leaves the ability dead: `activation_candidates`
-    falls through to `continue` for any kind it has no branch for, so the AI
-    would never activate it. This pins the AI half of the class."""
+def test_the_ai_withholds_put_counter_activations_pending_a_card_price():
+    """The engine class is complete; the AI enumeration is withheld.
+
+    `EVSnapshot` prices a card in hand at `card_clock_impact` (~0.125)
+    against 0.23-4.07 for one +1/+1 counter, and carries no term for card
+    QUALITY. Every marginal activation of a card-costed counter ability
+    therefore reads positive and the AI repeats it until the hand is empty
+    (measured: five cards, two of them Solitude, pitched on turn 3).
+
+    Withholding is the deliberate state, so it is pinned like any other
+    behaviour — if a later change makes `activation_candidates` offer these
+    again, that change must come with a valuation that prices a card, and
+    this test is where it announces itself.
+    """
     from ai.activation_ev import activation_candidates
     game = _game()
     ab = _ability("Put a +1/+1 counter on this creature.")
     perm = _host(game, ab, "Grizzly Bears")
-    cands = activation_candidates(game, 0, _snap(game))
-    assert any(c[0] is perm for c in cands), (
-        "a permanent counter on our own creature is a position gain and "
-        "must be offered")
+    assert not any(c[0] is perm
+                   for c in activation_candidates(game, 0, _snap(game)))
 
 
-def test_a_counter_with_no_power_toughness_meaning_is_not_offered():
-    """A charge/oil/page counter moves no projected field. Emitting a
-    candidate for it would be a magnitude with no primitive behind it, so
-    the honest answer is no candidate at all."""
-    from ai.activation_ev import activation_candidates
+def test_the_recipient_chooser_still_follows_the_counters_sign():
+    """The beneficiary logic is kept and tested even while enumeration is
+    withheld: it is the piece a future valuation will drive, and an
+    untested chooser would rot silently until then."""
+    from ai.activation_ev import put_counter_beneficiary
     game = _game()
-    ab = _ability("Put a charge counter on this artifact.")
-    perm = _host(game, ab)
-    cands = activation_candidates(game, 0, _snap(game))
-    assert not any(c[0] is perm for c in cands)
-
-
-def test_a_shrink_activation_targets_an_opposing_creature():
-    """The counters' own sign picks the side: a -1/-1 stack is only a
-    position gain pointed at the opponent's board."""
-    from ai.activation_ev import activation_candidates
-    game = _game()
-    ab = _ability("Put a -1/-1 counter on target creature.")
-    perm = _host(game, ab)
-    _add(game, "Grizzly Bears", controller=0)
-    victim = _add(game, "Grizzly Bears", controller=1)
-    cands = [c for c in activation_candidates(game, 0, _snap(game))
-             if c[0] is perm]
-    assert cands, "shrinking an opposing body is a position gain"
-    assert cands[0][2] == [victim.instance_id], (
-        "a negative counter must be aimed at the opponent, not at our own "
-        "creature")
+    grow = _ability("Put a +1/+1 counter on target creature.")
+    perm = _host(game, grow)
+    mine = _add(game, "Grizzly Bears", controller=0)
+    theirs = _add(game, "Grizzly Bears", controller=1)
+    assert put_counter_beneficiary(game, 0, perm, grow) is mine, (
+        "a positive counter belongs on our own board")
+    shrink = _ability("Put a -1/-1 counter on target creature.")
+    assert put_counter_beneficiary(game, 0, perm, shrink) is theirs, (
+        "a negative counter belongs on the opponent's board")
 
 
 def test_an_owner_restricted_ability_never_aims_outside_its_legal_targets():
-    """The parsed owner scope is a LEGALITY bound, not a preference. An
+    """The parsed owner scope is a LEGALITY bound, not a preference: an
     ability printed "target creature you control" cannot aim at the
-    opponent's board however much a -1/-1 counter would prefer to — and a
-    shrink pointed at our own board is not a position gain, so the honest
-    outcome is no candidate rather than an illegal target."""
-    from ai.activation_ev import activation_candidates, put_counter_beneficiary
+    opponent's board however much a -1/-1 counter would prefer to."""
+    from ai.activation_ev import put_counter_beneficiary
     game = _game()
     ab = _ability("Put a -1/-1 counter on target creature you control.")
     assert ab.put_counter_data['owner'] == 'you'
@@ -421,41 +415,18 @@ def test_an_owner_restricted_ability_never_aims_outside_its_legal_targets():
     mine = _add(game, "Grizzly Bears", controller=0)
     _add(game, "Grizzly Bears", controller=1)
     chosen = put_counter_beneficiary(game, 0, perm, ab)
-    assert chosen is None or chosen is mine, (
-        "an owner-restricted ability must not choose a recipient it is not "
-        "allowed to target")
-    assert not any(c[0] is perm
-                   for c in activation_candidates(game, 0, _snap(game)))
+    assert chosen is None or chosen is mine
 
 
-def test_a_growth_activation_prefers_an_evasive_body():
-    """`position_value` prices `my_evasion_power` separately from raw
-    power, so the same counter is worth more on an evasive creature. The
-    preference is read off the snapshot's own fields, not invented."""
-    from ai.activation_ev import activation_candidates
+def test_a_counter_with_no_power_toughness_meaning_has_no_recipient():
+    """A charge/oil/page counter moves no projected field, so there is no
+    recipient that turns it into position — the honest answer is None
+    rather than an invented value."""
+    from ai.activation_ev import put_counter_beneficiary
     game = _game()
-    ab = _ability("Put a +1/+1 counter on target creature.")
+    ab = _ability("Put a charge counter on this artifact.")
     perm = _host(game, ab)
-    ground = _add(game, "Grizzly Bears", controller=0)
-    flier = _add(game, "Wind Drake", controller=0)
-    cands = [c for c in activation_candidates(game, 0, _snap(game))
-             if c[0] is perm]
-    assert cands
-    assert cands[0][2] == [flier.instance_id], (
-        f"expected the evasive body to be chosen over {ground.name}")
-
-
-def test_growth_is_offered_on_a_body_that_contributes_no_power_yet():
-    """A 0-power body is exactly the case this class is worth the most on —
-    the counters are what turn it into a clock at all. Pinned separately
-    from the 2-power fixture because the projection's power and toughness
-    terms behave differently near zero."""
-    from ai.activation_ev import activation_candidates
-    game = _game()
-    ab = _ability("Put a +1/+1 counter on this creature.")
-    perm = _host(game, ab, "Ornithopter")  # 0/2: contributes no power
-    cands = activation_candidates(game, 0, _snap(game))
-    assert any(c[0] is perm for c in cands)
+    assert put_counter_beneficiary(game, 0, perm, ab) is None
 
 
 def test_the_cost_and_effect_sides_price_counters_through_one_mapping():
