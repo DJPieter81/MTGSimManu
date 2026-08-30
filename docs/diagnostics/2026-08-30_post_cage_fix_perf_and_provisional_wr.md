@@ -1,6 +1,6 @@
 ---
-title: Post-phantom-Cage performance cost, and why the reanimator WRs are provisional
-status: active
+title: RETRACTED perf claim (live LLM scorer, not the Cage fix); reanimator WRs still provisional
+status: superseded
 priority: primary
 session: 2026-08-30
 supersedes: []
@@ -70,3 +70,42 @@ re-creating as a committed tool if these conditions persist.
 1. Profile the main-phase enumeration for graveyard-castable plays (item 1).
 2. Re-measure both reanimator decks' field WR in an environment that can run a
    sweep uninterrupted; update the 2026-08-27 doc with the corrected figures.
+
+
+## RETRACTION (2026-08-30, same day) — the perf claim above is WRONG
+
+Section 1 blamed the phantom-Cage fix for a 4x slowdown. **That is retracted.**
+Profiling the actual game showed the two dominant costs were a redundant card-DB
+load and `ai/llm_decision_scorer.weight`, NOT graveyard-play enumeration.
+
+Root cause, and it was self-inflicted:
+
+- `llm_decision_scorer.weight` makes a **live LLM call** (`agent.run_sync`)
+  unless `MTG_LLM_DECISION_SCORER_OFFLINE=1` is set. CI sets it at the top of
+  `.github/workflows/abstraction-contract.yml`; local runs do not.
+- A container restart had wiped `pydantic_ai`, so `_get_agent()` returned None
+  and the live path cost nothing. I then reinstalled `pydantic_ai` to "repair
+  the environment" — which silently switched the live LLM path ON for every
+  subsequent local sim.
+
+Measured, same box, same command, same 3 Bo3 matches:
+
+| Condition | Time |
+|---|---|
+| Without the flag (live LLM calls) | **106s** |
+| With `MTG_LLM_DECISION_SCORER_OFFLINE=1` | **29s** |
+
+29s ≈ 9.7s/match, matching the pre-#567 baseline. **There is no performance
+regression from the Cage fix.** Do not spend a session profiling one.
+
+**The more serious consequence — measurement validity.** A live LLM weight is
+non-deterministic, so any local sim run after that reinstall, without the flag,
+was neither reproducible nor comparable to CI. In the 3-match probe the same
+matchup read 0% without the flag and 67% with it. Treat any local WR measured
+in that window as unusable, not merely noisy.
+
+**Standing rule (now in CLAUDE.md):** every local sim run sets
+`MTG_LLM_DECISION_SCORER_OFFLINE=1`, matching CI.
+
+Section 2 (reanimator WRs provisional) still stands, for its original reason:
+those numbers predate the Cage fix, which was suppressing the decks.

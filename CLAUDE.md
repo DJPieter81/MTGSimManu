@@ -47,6 +47,15 @@ Long measurements here cost 20 minutes to 4 hours. Three failures recur when
 a step is launched without planning the sequence around it. Check all three
 BEFORE starting any sim run:
 
+0. **Set `MTG_LLM_DECISION_SCORER_OFFLINE=1` on every local sim run.** Without
+   it, `ai/llm_decision_scorer.weight` makes a LIVE LLM call inside the
+   decision loop: ~4x slower AND non-deterministic, so the run is neither
+   reproducible nor comparable to CI (which sets the flag). The trap is that
+   the cost is invisible when `pydantic_ai` is absent — `_get_agent()` returns
+   None and the path is free — so installing that package silently turns live
+   scoring on. Precedent: a 4x slowdown was measured, blamed on an engine fix,
+   and written up before profiling showed the real cause
+   (docs/diagnostics/2026-08-30_post_cage_fix_perf_and_provisional_wr.md).
 1. **Will pending work invalidate this measurement?** If a fix is merging (or
    in review) that changes the code path being measured, the numbers are
    stale on arrival. Merge first, then measure. Precedent: four field sweeps
