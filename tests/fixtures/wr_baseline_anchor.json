@@ -13,7 +13,7 @@
       "deck2": "Dimir Midrange",
       "seed": 50000,
       "winner": "Dimir Midrange",
-      "turns": 6
+      "turns": 7
     },
     {
       "deck1": "Domain Zoo",
@@ -34,7 +34,7 @@
       "deck2": "4c Omnath",
       "seed": 50000,
       "winner": "4c Omnath",
-      "turns": 10
+      "turns": 9
     },
     {
       "deck1": "Goryo's Vengeance",
@@ -54,7 +54,7 @@
       "deck1": "Azorius Control",
       "deck2": "Azorius Control (WST)",
       "seed": 50000,
-      "winner": "draw",
+      "winner": "Azorius Control (WST)",
       "turns": 30
     },
     {
@@ -96,8 +96,8 @@
       "deck1": "4c Omnath",
       "deck2": "Goryo's Vengeance",
       "seed": 50500,
-      "winner": "4c Omnath",
-      "turns": 10
+      "winner": "Goryo's Vengeance",
+      "turns": 6
     },
     {
       "deck1": "Izzet Prowess",
