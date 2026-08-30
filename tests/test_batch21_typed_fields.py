@@ -2,9 +2,13 @@
 
 # Mechanic: Phyrexian mana symbol count (rule, not a card)
 
-phyrexian_mana_symbol_count replaces oracle_lower.count('/p}') in two sites:
-- ai/ev_player.py:1502 (EV life-cost discount for Phyrexian spells)
-- engine/cast_manager.py:1093 (Phyrexian mana payment at cast time)
+The pip count feeding ai/ev_player.py (EV life-cost discount) and
+engine/cast_manager.py (Phyrexian payment at cast) is parsed from the printed
+MANA COST into ManaCost.phyrexian, not from oracle text: the reminder clause
+names the symbol exactly ONCE however many pips the cost carries (CR 107.4f),
+so an oracle-derived count is wrong for every multi-pip cost.  The mechanic
+itself is pinned by tests/test_phyrexian_mana_cr107_4f.py; what is pinned here
+is that the count is a property of the cost.
 
 # Mechanic: channel clause (rule, not a card)
 
@@ -25,52 +29,36 @@ Card names appear only as fixture carriers in comments.
 """
 from __future__ import annotations
 import pytest
-from engine.oracle_parser import (
-    parse_phyrexian_mana_symbol_count,
-    parse_channel_clause,
-)
+from engine.card_database import parse_mana_cost_mtgjson
+from engine.oracle_parser import parse_channel_clause
+
+
+def parse_phyrexian_mana_symbol_count(mana_cost: str) -> int:
+    """Total Phyrexian pips in a printed MANA COST (CR 107.4f)."""
+    return sum(parse_mana_cost_mtgjson(mana_cost).phyrexian.values())
 
 
 class TestParsePhyrexianManaSymbolCount:
-    """Pins replacement of oracle_lower.count('/p}') in ev_player.py and
-    cast_manager.py — Phyrexian mana spell life-cost detection."""
+    """The pip count is a property of the printed cost, not of the text."""
 
     def test_single_phyrexian_symbol(self):
-        # Mutagenic Growth {G/P}: 1 Phyrexian symbol
-        assert parse_phyrexian_mana_symbol_count(
-            "Target creature gets +2/+2 until end of turn."
-            # oracle text for a {G/P} spell
-        ) == 0  # no /p} in plain text
+        assert parse_phyrexian_mana_symbol_count("{G/P}") == 1
 
-    def test_phyrexian_mana_in_cost_notation(self):
-        # Gitaxian Probe {U/P}: cost contains {U/P}
-        assert parse_phyrexian_mana_symbol_count(
-            "({U/P} can be paid with either {U} or 2 life.) "
-            "Look at target player's hand."
-        ) == 1
+    def test_reminder_text_is_not_the_source(self):
+        """A cost with TWO pips reports two, even though its reminder clause
+        names the symbol once."""
+        assert parse_phyrexian_mana_symbol_count("{1}{B/P}{B/P}") == 2
 
-    def test_double_phyrexian_symbols(self):
-        # Gut Shot {R/P} targeting ({R/P} in reminder)
-        assert parse_phyrexian_mana_symbol_count(
-            "({R/P} can be paid with either {R} or 2 life.) "
-            "({R/P} can be paid with either {R} or 2 life.) "
-            "Gut Shot deals 1 damage to any target."
-        ) == 2
+    def test_three_pips(self):
+        assert parse_phyrexian_mana_symbol_count("{4}{B/P}{B/P}{B/P}") == 3
 
-    def test_phyrexian_bp_notation(self):
-        # Some cards use {B/P} or {W/P}
-        assert parse_phyrexian_mana_symbol_count(
-            "({B/P} can be paid with either {B} or 2 life.) "
-            "Target player loses 1 life."
-        ) == 1
+    def test_hard_pip_beside_a_phyrexian_pip_is_not_counted(self):
+        assert parse_phyrexian_mana_symbol_count("{2}{U}{U/P}") == 1
 
     def test_no_phyrexian_symbols(self):
-        # Ordinary card with no Phyrexian mana
-        assert parse_phyrexian_mana_symbol_count(
-            "Draw two cards. {2}, {T}: Add {U}."
-        ) == 0
+        assert parse_phyrexian_mana_symbol_count("{2}{U}{U}") == 0
 
-    def test_empty_oracle_is_zero(self):
+    def test_empty_cost_is_zero(self):
         assert parse_phyrexian_mana_symbol_count("") == 0
         assert parse_phyrexian_mana_symbol_count(None) == 0
 

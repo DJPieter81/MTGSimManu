@@ -21,6 +21,7 @@ mana_payment.py.
 """
 from __future__ import annotations
 
+from itertools import product as _product
 from typing import TYPE_CHECKING
 
 from .cards import CardType, Keyword
@@ -402,13 +403,22 @@ class CastManager:
             delve_reduction = min(gy_count, generic_portion)
             effective_cmc = max(colored_cost, effective_cmc - delve_reduction)
 
-        # Phyrexian mana: 2 life per Phyrexian symbol instead of mana
-        oracle = (template.oracle_text or '')
-        if '/P}' in oracle or '/p}' in oracle.lower():
-            phyrexian_count = oracle.lower().count('/p}')
-            life_cost = phyrexian_count * 2
-            if player.life > life_cost:
-                effective_cmc = max(0, effective_cmc - phyrexian_count)
+        # Phyrexian mana (CR 107.4f): each {C/P} pip in the cost may be paid
+        # with 2 life INSTEAD of one mana of that pip's colour.  Waiving a pip
+        # therefore does TWO things — it drops one mana off the quantity AND
+        # removes one COLOURED requirement — and the second half is what makes
+        # Dismember castable off Mountains.  The quantity half is applied
+        # optimistically here (largest waiver life can afford) so the early
+        # quantity gates below cannot reject a spell life could pay for; the
+        # exact per-colour waiver is chosen by the colour solver further down,
+        # which is the only place that can tell whether waiving a given pip is
+        # legal.  `effective_cmc` itself is left un-discounted so the improvise
+        # and delve arithmetic above/below keeps its printed floor.
+        phyrexian_pips = ({} if _using_flashback_cost
+                          else dict(template.mana_cost.phyrexian))
+        max_phyrexian_waived = min(
+            sum(phyrexian_pips.values()),
+            CastManager._phyrexian_pips_life_can_pay(player.life))
 
         # Evoke as alternative cost (Solitude, Endurance, Grief, etc.)
         # Evoke is independent of the hardcast path: it is a *choice*
@@ -547,7 +557,11 @@ class CastManager:
                         if has_exile_target:
                             return True  # Can cast for free
 
-        if total_mana < effective_cmc:
+        # Quantity floor: the cheapest the cost can get is the printed
+        # cost minus every Phyrexian pip life can cover (computed here, after
+        # improvise has had its say on `effective_cmc`).
+        min_effective_cmc = max(0, effective_cmc - max_phyrexian_waived)
+        if total_mana < min_effective_cmc:
             return False
 
         # Detailed color check using greedy constraint solving (MRV).
@@ -555,12 +569,7 @@ class CastManager:
         cost = (template.flashback_cost
                 if _using_flashback_cost
                 else template.mana_cost)
-        color_needs = []
-        for color, needed in [("W", cost.white), ("U", cost.blue),
-                              ("B", cost.black), ("R", cost.red),
-                              ("G", cost.green), ("C", cost.colorless)]:
-            for _ in range(needed):
-                color_needs.append(color)
+        color_needs = CastManager._color_pip_list(cost)
 
         # Routes through `_effective_produces_mana` so Leyline of the
         # Guildpact and dynamic mana abilities (E1: Mox Opal metalcraft,
@@ -568,23 +577,182 @@ class CastManager:
         # solver.
         # E1: one source per mana UNIT — a multi-mana land contributes
         # one entry per unit (fixed karoo units stay single-color).
+        sources = CastManager._mana_source_units(game, player_idx,
+                                                 untapped_lands)
+
+        if len(sources) < min_effective_cmc:
+            return False
+
+        # CR 107.4f — try every Phyrexian waiver life can afford, fewest pips
+        # first, and accept the spell if ANY of them is payable.  A waived pip
+        # drops out of `color_needs` (it is no longer a coloured requirement)
+        # and off the quantity, so exactly one pass of the existing MRV solver
+        # decides each candidate.  With no Phyrexian pips this degenerates to
+        # a single pass over the printed cost — unchanged behaviour for the
+        # other ~22k cards.
+        for waived in CastManager._phyrexian_waivers(phyrexian_pips,
+                                                     max_phyrexian_waived):
+            k = sum(waived.values())
+            if CastManager._color_assignment_feasible(
+                    sources,
+                    CastManager._without_waived_pips(color_needs, waived),
+                    max(0, effective_cmc - k)):
+                break
+        else:
+            return False
+
+        # Blink spells require a friendly creature target
+        if 'blink' in (template.tags or set()):
+            if not player.creatures:
+                return False
+
+        return True
+
+    # ─── Phyrexian mana (CR 107.4f) ───────────────────────────────────
+    #
+    # "{C/P} can be paid with either {C} or 2 life."  Two consequences the
+    # cast path must respect, and one invariant:
+    #   * a waived pip is no longer a COLOURED requirement — Dismember
+    #     ({1}{B/P}{B/P}) is castable with no black source at all, which is
+    #     the entire reason decks play it;
+    #   * only that pip's OWN colour is waived — {U}{G/P} still demands a
+    #     blue source, so a blanket "ignore the coloured pips" rule is wrong
+    #     in the other direction;
+    #   * legality (`can_cast`) and payment (`cast_spell`) call the SAME
+    #     helpers with the SAME life rule, so `can_cast` can never green-light
+    #     a waiver the payment then refuses.
+    #
+    # Life rule: `life > 2 * waived` (strict).  Paying down to exactly 0 is
+    # lethal (CR 104.3b), so a player may never spend their last 2 life on a
+    # Phyrexian pip; the payment path has always used the strict form and the
+    # legality path now matches it exactly.
+
+    @staticmethod
+    def _phyrexian_pips_life_can_pay(life: int) -> int:
+        """Largest pip count N satisfying `life > 2 * N` (CR 107.4f)."""
+        return max(0, (life - 1) // 2)
+
+    @staticmethod
+    def _phyrexian_waivers(pips: dict, max_waived: int):
+        """Yield each waiver {colour: pips paid with life}, fewest pips first.
+
+        `pips` is a colour -> count map (``ManaCost.phyrexian``).  Always
+        yields the empty waiver first, so a cost that is payable with real
+        mana never spends life.
+        """
+        colors = sorted(pips)
+        options = []
+        for counts in _product(*[range(pips[c] + 1) for c in colors]):
+            total = sum(counts)
+            if total <= max_waived:
+                options.append(
+                    (total, {c: n for c, n in zip(colors, counts) if n}))
+        options.sort(key=lambda item: item[0])
+        for _total, waived in options:
+            yield waived
+
+    @staticmethod
+    def _choose_phyrexian_waiver(game: "GameState", player_idx: int,
+                                 cost: "ManaCost") -> dict:
+        """Pick the FEWEST Phyrexian pips to pay with life (CR 107.4f).
+
+        A deck that actually has the colour should not bleed life for
+        nothing, so the empty waiver is tried first and only grows until the
+        remainder is payable.  Uses the same feasibility solver as
+        ``can_cast``, so a spell legality approved is a spell payment can
+        settle.  Falls back to the cheapest COLOUR-feasible waiver when no
+        candidate clears the quantity bar with the raw printed cost: the
+        payment funnel applies cost reductions this side cannot see, and
+        those reduce generic only — never a coloured pip.
+        """
+        player = game.players[player_idx]
+        pips = dict(cost.phyrexian)
+        if not pips:
+            return {}
+        sources = CastManager._mana_source_units(
+            game, player_idx, player.untapped_mana_sources)
+        color_needs = CastManager._color_pip_list(cost)
+        max_waived = min(sum(pips.values()),
+                         CastManager._phyrexian_pips_life_can_pay(player.life))
+        color_only_fallback = None
+        for waived in CastManager._phyrexian_waivers(pips, max_waived):
+            k = sum(waived.values())
+            needs = CastManager._without_waived_pips(color_needs, waived)
+            if CastManager._color_assignment_feasible(sources, needs,
+                                                      max(0, cost.cmc - k)):
+                return waived
+            if (color_only_fallback is None
+                    and CastManager._color_assignment_feasible(
+                        sources, needs, len(needs))):
+                color_only_fallback = waived
+        return color_only_fallback if color_only_fallback is not None else {}
+
+    @staticmethod
+    def _cost_without_pips(cost: "ManaCost", waived: dict) -> "ManaCost":
+        """The mana still owed once `waived` Phyrexian pips are paid in life.
+
+        Only the waived pips' own colours shrink; every other coloured pip
+        and the generic portion survive untouched.
+        """
+        if not waived:
+            return cost
+        from .mana import ManaCost
+        field_of = {"W": "white", "U": "blue", "B": "black",
+                    "R": "red", "G": "green", "C": "colorless"}
+        amounts = {"generic": cost.generic, "white": cost.white,
+                   "blue": cost.blue, "black": cost.black, "red": cost.red,
+                   "green": cost.green, "colorless": cost.colorless}
+        left = dict(cost.phyrexian)
+        for color, count in waived.items():
+            key = field_of[color]
+            amounts[key] = max(0, amounts[key] - count)
+            left[color] = max(0, left.get(color, 0) - count)
+        residual = ManaCost(**amounts)
+        residual.phyrexian = {c: n for c, n in left.items() if n}
+        return residual
+
+    @staticmethod
+    def _color_pip_list(cost: "ManaCost") -> list:
+        """Flatten a cost's coloured pips into one entry per pip."""
+        needs = []
+        for color, needed in [("W", cost.white), ("U", cost.blue),
+                              ("B", cost.black), ("R", cost.red),
+                              ("G", cost.green), ("C", cost.colorless)]:
+            needs.extend([color] * needed)
+        return needs
+
+    @staticmethod
+    def _without_waived_pips(color_needs: list, waived: dict) -> list:
+        """Drop the waived Phyrexian pips from a flattened pip list."""
+        if not waived:
+            return color_needs
+        remaining = list(color_needs)
+        for color, count in waived.items():
+            for _ in range(count):
+                remaining.remove(color)
+        return remaining
+
+    @staticmethod
+    def _mana_source_units(game: "GameState", player_idx: int,
+                           untapped_lands) -> list:
+        """One colour-option set per UNIT of mana currently available."""
         from .mana_payment import ManaPayment as _MP
+        player = game.players[player_idx]
         sources = []
         for land in untapped_lands:
             for options in _MP.land_mana_units(game, player_idx, land):
                 sources.append(set(options))
-        # Mana pool as fixed-color sources
         for color in ["W", "U", "B", "R", "G", "C"]:
-            pool_amount = player.mana_pool.get(color)
-            for _ in range(pool_amount):
+            for _ in range(player.mana_pool.get(color)):
                 sources.append({color})
+        return sources
 
-        if len(sources) < effective_cmc:
-            return False
-
-        # Color assignment: greedy with re-sorting after each step.
+    @staticmethod
+    def _color_assignment_feasible(sources: list, color_needs: list,
+                                   total_needed: int) -> bool:
+        """MRV greedy: can each coloured pip claim its own source, with
+        enough sources left over for the generic remainder?"""
         used = [False] * len(sources)
-
         remaining_needs = list(color_needs)
         while remaining_needs:
             # Re-sort by scarcity
@@ -609,16 +777,7 @@ class CastManager:
 
         # Check total mana (generic portion)
         remaining_sources = sum(1 for u in used if not u)
-        generic_needed = effective_cmc - len(color_needs)
-        if remaining_sources < generic_needed:
-            return False
-
-        # Blink spells require a friendly creature target
-        if 'blink' in (template.tags or set()):
-            if not player.creatures:
-                return False
-
-        return True
+        return remaining_sources >= total_needed - len(color_needs)
 
     # ─── Shared colour-verification helper ────────────────────────────
 
@@ -627,54 +786,35 @@ class CastManager:
                               untapped_lands, cost: "ManaCost") -> bool:
         """Return True iff lands + mana pool can satisfy cost's coloured pips.
 
-        Used by alternative-cost mechanics (dash, escape) that replace the
-        normal mana cost with a different ManaCost object.  Applies the same
-        MRV (minimum-remaining-values) greedy algorithm as the main can_cast
-        colour check.  Does NOT verify total quantity — callers confirm
-        ``total_mana >= cost.cmc`` first.
-        """
-        from .mana_payment import ManaPayment as _MP
-        player = game.players[player_idx]
-        sources = []
-        for land in untapped_lands:
-            for options in _MP.land_mana_units(game, player_idx, land):
-                sources.append(set(options))
-        for color in ["W", "U", "B", "R", "G", "C"]:
-            pool_amount = player.mana_pool.get(color)
-            for _ in range(pool_amount):
-                sources.append({color})
+        Used by alternative-cost mechanics (dash, escape, warp, spectacle)
+        that replace the normal mana cost with a different ManaCost object.
+        Applies the same MRV (minimum-remaining-values) greedy algorithm as
+        the main can_cast colour check.  Does NOT verify total quantity —
+        callers confirm ``total_mana >= cost.cmc`` first.
 
-        color_needs = []
-        for color, needed in [("W", cost.white), ("U", cost.blue),
-                              ("B", cost.black), ("R", cost.red),
-                              ("G", cost.green), ("C", cost.colorless)]:
-            for _ in range(needed):
-                color_needs.append(color)
+        Phyrexian pips (CR 107.4f) on the alternative cost are waived by the
+        same rule the main path and the payment path use: because the pips
+        live on ``ManaCost`` rather than on the card, every alternative cost
+        parsed by ``parse_mana_cost_mtgjson`` gets this for free.
+        """
+        player = game.players[player_idx]
+        sources = CastManager._mana_source_units(game, player_idx,
+                                                 untapped_lands)
+        color_needs = CastManager._color_pip_list(cost)
 
         if not color_needs:
             return True  # No coloured pips — quantity check already done
 
-        used = [False] * len(sources)
-        remaining_needs = list(color_needs)
-        while remaining_needs:
-            remaining_needs.sort(
-                key=lambda c: sum(
-                    1 for i, s in enumerate(sources)
-                    if c in s and not used[i])
-            )
-            c = remaining_needs.pop(0)
-            best_idx = -1
-            best_flex = 999
-            for i, s in enumerate(sources):
-                if not used[i] and c in s:
-                    if len(s) < best_flex:
-                        best_flex = len(s)
-                        best_idx = i
-            if best_idx == -1:
-                return False
-            used[best_idx] = True
-
-        return True
+        pips = dict(cost.phyrexian)
+        max_waived = min(sum(pips.values()),
+                         CastManager._phyrexian_pips_life_can_pay(player.life))
+        for waived in CastManager._phyrexian_waivers(pips, max_waived):
+            needs = CastManager._without_waived_pips(color_needs, waived)
+            # Quantity is the caller's job; ask only the colour question.
+            if CastManager._color_assignment_feasible(sources, needs,
+                                                      len(needs)):
+                return True
+        return False
 
     # ─── Suspend (LE-E2) ─────────────────────────────────────────────
     # Parse "Suspend N—{cost}" from oracle text. Returns (N, ManaCost) or
@@ -1236,26 +1376,30 @@ class CastManager:
                                                          card_name=template.name):
                             return False
                     else:
-                        # Phyrexian mana: pay 2 life per Phyrexian symbol instead of colored mana
-                        phyrexian_count = getattr(template, 'phyrexian_pip_count', 0)
-                        if phyrexian_count > 0 and player.life > phyrexian_count * 2:
-                            life_cost = phyrexian_count * 2
+                        # Phyrexian mana (CR 107.4f): 2 life instead of one
+                        # mana of the pip's colour.  Waive the FEWEST pips
+                        # that make the rest payable — chosen by the same
+                        # helper `can_cast` uses, so legality and payment
+                        # cannot disagree — and pay the genuine remainder,
+                        # keeping the non-Phyrexian coloured pips intact
+                        # ({W}{U}{B/P}{R}{G} must still tap WURG).
+                        waived = CastManager._choose_phyrexian_waiver(
+                            game, player_idx, template.mana_cost)
+                        life_cost = 2 * sum(waived.values()) if waived else 0
+                        residual = CastManager._cost_without_pips(
+                            template.mana_cost, waived)
+                        if life_cost:
                             player.life -= life_cost
-                            # Reduce the effective cost — Mutagenic Growth {G/P} becomes free
-                            remaining_cmc = max(0, template.mana_cost.cmc - phyrexian_count)
-                            if remaining_cmc > 0:
-                                from .mana import ManaCost
-                                phyrexian_cost = ManaCost(generic=remaining_cmc)
-                                if not game.tap_lands_for_mana(player_idx, phyrexian_cost,
-                                                                 card_name=template.name):
-                                    player.life += life_cost  # refund
-                                    return False
+                        if not game.tap_lands_for_mana(
+                                player_idx, residual,
+                                card_name=template.name):
+                            player.life += life_cost  # refund
+                            return False
+                        if life_cost:
                             game.log.append(
                                 f"T{game.display_turn} P{player_idx+1}: "
-                                f"Pay {life_cost} life (Phyrexian mana) for {template.name}")
-                        elif not game.tap_lands_for_mana(player_idx, template.mana_cost,
-                                                         card_name=template.name):
-                            return False
+                                f"Pay {life_cost} life (Phyrexian mana) for "
+                                f"{template.name}")
 
         # Remove from zone and track cast-from-graveyard for flashback exile
         cast_with_flashback = False
