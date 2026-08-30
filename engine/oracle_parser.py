@@ -896,6 +896,7 @@ def parse_activation_cost(cost_text: str):
     put_counter_amount = 0
     remove_counter_kind = None
     remove_counter_amount = 0
+    exile_from_graveyard_cards = 0
     x_count = 0
     unpayable = []
     for part in raw.split(','):
@@ -940,6 +941,28 @@ def parse_activation_cost(cost_text: str):
             tok = m_disc.group(1)
             discard_cards += (int(tok) if tok.isdigit()
                               else _NUM_WORDS.get(tok, 0))
+            continue
+        # Tranche 5: untyped exile-N-from-YOUR-OWN-graveyard. FULLMATCH on
+        # a CLOSED shape — the count word/digit and the zone are both
+        # pinned, so every neighbouring shape falls through to the
+        # unpayable patterns below rather than being approximated:
+        # type-restricted ("exile a creature card from your graveyard" —
+        # a victim CHOICE the schema cannot hold),
+        # "all"/"any number"/"one or more" (unbounded count),
+        # "exile X cards" ({X} is chosen at activation and nothing here
+        # binds it), "exile N OTHER cards" (a self-exclusion the payer
+        # does not model), and any exile from a zone that is not the
+        # controller's own graveyard ("from a graveyard", "from your
+        # hand"). 40 further cost items DB-wide stay refused on those
+        # grounds. Placed AFTER the `exile this <permanent>` branch so
+        # exile-SELF keeps its own structured field.
+        m_gy = re.fullmatch(
+            r'exile (a|an|one|two|three|four|\d+) cards? '
+            r'from your graveyard', low)
+        if m_gy:
+            tok = m_gy.group(1)
+            exile_from_graveyard_cards += (int(tok) if tok.isdigit()
+                                           else _NUM_WORDS.get(tok, 0))
             continue
         # Tranche 4: counter costs on the SOURCE. Parsed into a kind + an
         # amount; a SECOND counter item of the same direction is a choice
@@ -998,6 +1021,8 @@ def parse_activation_cost(cost_text: str):
                           put_counter_amount=put_counter_amount,
                           remove_counter_kind=remove_counter_kind,
                           remove_counter_amount=remove_counter_amount,
+                          exile_from_graveyard_cards=(
+                              exile_from_graveyard_cards),
                           x_count=x_count,
                           unpayable=tuple(unpayable))
 

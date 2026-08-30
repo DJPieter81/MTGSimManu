@@ -227,6 +227,16 @@ class ActivationCost:
     put_counter_amount: int = 0
     remove_counter_kind: Optional[str] = None
     remove_counter_amount: int = 0
+    # Tranche 5 payable cost: the number of cards exiled from the
+    # ACTIVATOR'S OWN graveyard as part of the cost (CR 602.2b). Untyped
+    # and fixed-count only ("Exile three cards from your graveyard"); a
+    # type-restricted, "all"/"any number", {X}-counted, or other-zone
+    # exile stays in `unpayable` rather than being approximated by a
+    # count. Payable only while the graveyard actually holds that many
+    # cards (CR 601.2h), and depleting for the no-free-repeatable rule:
+    # the graveyard is finite and each payment strictly shrinks it.
+    # 11 Modern activated abilities charge it.
+    exile_from_graveyard_cards: int = 0
     # Number of {X} pips in the mana cost. X is chosen at activation time
     # (CR 601.2b) and is chargeable exactly when the classified effect
     # BINDS X (a tutor's "mana value X or less"); an {X} pip on any other

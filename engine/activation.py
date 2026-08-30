@@ -183,6 +183,15 @@ class ActivationManager:
                 and len(player.hand) < ability.cost.discard_cards):
             return False
 
+        # 9e-gy. CR 601.2h — an exile-from-graveyard cost needs that many
+        # cards in the ACTIVATOR'S OWN graveyard. Same shape as 9e: the
+        # cost names a zone the payer must draw from, so an empty (or
+        # short) graveyard makes it unpayable, not merely unwise.
+        if (ability.cost.exile_from_graveyard_cards > 0
+                and len(player.graveyard)
+                < ability.cost.exile_from_graveyard_cards):
+            return False
+
         # 9f. CR 118.x — a remove-counter cost is payable only while that
         # many counters of that kind are actually on the permanent: you
         # cannot pay what you do not have. A PUT cost needs no such check
@@ -262,7 +271,11 @@ class ActivationManager:
         finite, so that repeating the activation terminates?
 
         Mana, a tap, sacrifice (self or another), EXILE of the source,
-        life, and discard each deplete. Tranche 4 adds the two counter items:
+        life, and discard each deplete. Tranche 5 adds exile-from-your-own-
+        graveyard for the same reason a discard cost qualifies: the
+        graveyard is a finite pile that refills only through separate game
+        events, so each payment strictly shrinks it until rule 9e-gy
+        refuses. Tranche 4 adds the two counter items:
 
           * REMOVE always depletes — the counter supply on the permanent is
             finite and each payment strictly lowers it.
@@ -287,6 +300,7 @@ class ActivationManager:
                 or cost.life > 0
                 or cost.sacrifice_type is not None
                 or cost.discard_cards > 0
+                or cost.exile_from_graveyard_cards > 0
                 or cost.remove_counter_kind is not None):
             return True
         if (cost.put_counter_kind == COUNTER_KIND_MINUS
@@ -363,6 +377,25 @@ class ActivationManager:
         return out
 
     @staticmethod
+    def graveyard_exile_payment(game: "GameState", player_idx: int,
+                                count: int) -> List["CardInstance"]:
+        """The cards an exile-from-your-graveyard cost takes (CR 601.2h).
+
+        Pure enumeration in ZONE ORDER, zero preference — the graveyard is
+        an ordered pile and the head of it is what the payer takes. This is
+        deliberately not a valuation: the cost names no type, so every card
+        in the pile pays it equally as far as the RULES are concerned, and
+        ranking them by what the controller would rather keep is a
+        strategic choice. Tranche 3 gave the sacrifice cost such a choice
+        (`callbacks.choose_sacrifice`) because its legal set is genuinely
+        heterogeneous; a seam here would be the same shape and can be added
+        the same way. Until it is, this is the single definition of WHICH
+        cards pay, so a future valuation layer reads it rather than
+        guessing and projection cannot disagree with payment.
+        """
+        return list(game.players[player_idx].graveyard)[:max(0, count)]
+
+    @staticmethod
     def activate(game: "GameState", player_idx: int, perm: "CardInstance",
                  ability: "ActivatedAbility",
                  targets: Optional[List[int]] = None) -> bool:
@@ -387,6 +420,10 @@ class ActivationManager:
             if (ability.cost.discard_cards > 0
                     and len(game.players[player_idx].hand)
                     < ability.cost.discard_cards):
+                return False
+            if (ability.cost.exile_from_graveyard_cards > 0
+                    and len(game.players[player_idx].graveyard)
+                    < ability.cost.exile_from_graveyard_cards):
                 return False
             # CR 118.x — the counters must be there BEFORE anything is
             # charged, so a short supply refuses the whole activation
@@ -487,6 +524,16 @@ class ActivationManager:
                 # ability was the player's own choice (CR 601.2h).
                 game._force_discard(player_idx, ability.cost.discard_cards,
                                     self_discard=True)
+            if ability.cost.exile_from_graveyard_cards > 0:
+                # CR 602.2b — the cards leave the graveyard at ACTIVATION
+                # time, through the zone funnel, so leaves-the-graveyard
+                # replacements and triggers see the move.
+                for gy_card in ActivationManager.graveyard_exile_payment(
+                        game, player_idx,
+                        ability.cost.exile_from_graveyard_cards):
+                    game.zone_mgr.move_card_to_exile(
+                        game, gy_card,
+                        cause=f"activation cost ({perm.name})")
             if victim is not None:
                 # CR 602.2b: the victim is sacrificed as part of the COST —
                 # it leaves at activation time, through the zone funnel.
