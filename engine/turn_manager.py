@@ -254,6 +254,15 @@ class TurnManager:
                 )
         game._end_of_turn_sacrifices.clear()
 
+        # CR 603.7 — the general delayed-trigger queue. The two blocks
+        # above are the engine's pre-queue special cases (end-step only,
+        # effect hard-coded at the firing site); this drains everything
+        # that named "the next end step" / "your next end step" whatever
+        # subsystem created it. Placed LAST so those two keep their exact
+        # existing ordering relative to the Dash/Warp/Ragavan blocks.
+        from .delayed_triggers import DelayedTriggerStep
+        game.fire_delayed_triggers(DelayedTriggerStep.END_STEP)
+
     def cleanup_step(self, game: "GameState") -> None:
         """CR 514: Cleanup step — cleanup continuous effects, discard to
         max hand size, remove combat damage, empty mana pools.

@@ -102,6 +102,17 @@ class ActivationManager:
                 ActivationEffectKind.EXILE_FROM_GRAVEYARD):
             return False
 
+        # 9b-delay. A delayed effect (CR 603.7) is legal only while the
+        # queue actually fires the timing it names — the same
+        # "refuse before charging a cost the resolver cannot honour"
+        # discipline as 9b itself. `TIMING_STEP` is the queue's own map, so
+        # a timing added to the parser without a drain point is refused
+        # here rather than paid for and silently never fired.
+        if ability.delayed_timing is not None:
+            from .delayed_triggers import TIMING_STEP
+            if ability.delayed_timing not in TIMING_STEP:
+                return False
+
         # 9b-gy. A graveyard-exile line whose shape did not parse is
         # schema incoherence — the resolver reads `scope` to decide whose
         # graveyards it clears and has nothing to dispatch on without it.

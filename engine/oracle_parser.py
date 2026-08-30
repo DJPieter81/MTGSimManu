@@ -1026,6 +1026,108 @@ def _add_mana_symbols(cost, text):
     return cost
 
 
+# ── Delayed triggers and state-free clauses ──────────────────────────
+# Two orthogonal parses that sit UNDER the effect classifiers below: they
+# reduce a multi-clause effect body to the single sentence that actually
+# changes the game, so the anchored classifiers can do their job on it.
+# Both run once, at DB load, like every other parse in this module.
+
+#: Printed timing vocabulary → the queue's timing enum. Closed set: a
+#: phrase outside it leaves the effect UNCLASSIFIED rather than being
+#: approximated onto the nearest step. Measured over ModernAtomic
+#: (22 506 cards): 307 cards say "the next end step", 44 "your next
+#: upkeep", 13 "your next end step", 5 "the next turn's upkeep".
+_DELAY_TIMING_PHRASES = {
+    "the next turn's upkeep": "NEXT_UPKEEP",
+    "your next upkeep": "YOUR_NEXT_UPKEEP",
+    "the next end step": "NEXT_END_STEP",
+    "your next end step": "YOUR_NEXT_END_STEP",
+}
+
+_DELAY_WHEN = "(?P<when>%s)" % "|".join(
+    re.escape(p) for p in sorted(_DELAY_TIMING_PHRASES, key=len, reverse=True))
+
+# "At the beginning of <when>, <effect>" and "<effect> at the beginning of
+# <when>" — the two printed orders. FULLMATCH on one sentence, the same
+# anchoring discipline the effect classifiers use.
+_DELAY_PREFIX_RE = re.compile(
+    r'at the beginning of %s,\s*(?P<inner>.+)' % _DELAY_WHEN)
+_DELAY_SUFFIX_RE = re.compile(
+    r'(?P<inner>.+?)\s+at the beginning of %s' % _DELAY_WHEN)
+
+# "UNTIL the beginning of your next upkeep" is a DURATION, not a delayed
+# trigger — it says how long a continuous effect lasts, and reading it as
+# "do this then" would fire an effect that should never fire at all.
+_DURATION_MARKERS = ('until the beginning of', 'before the beginning of')
+
+# A clause that changes NO game state. Looking at a library's top card
+# moves nothing, taps nothing and reveals nothing to another player, so
+# dropping it loses no behaviour — which is what makes it safe to strip
+# before classification, and why the vocabulary is a closed anchored set
+# rather than a substring test (a "look at the top N cards … then put
+# them back in any order" DOES change state and must not match).
+_INFORMATION_ONLY_RE = re.compile(
+    r"look at the top card of "
+    r"(?:your|target player's|target opponent's|each player's|"
+    r"that player's|any player's) library")
+
+_SENTENCE_SPLIT_RE = re.compile(r'\.\s+|\.\Z|\n+')
+
+
+def split_effect_sentences(effect_text: str) -> List[str]:
+    """Split an effect body into its sentences (lowercased, no periods)."""
+    parts = _SENTENCE_SPLIT_RE.split((effect_text or '').lower())
+    return [p.strip() for p in parts if p and p.strip()]
+
+
+def is_information_only_clause(sentence: str) -> bool:
+    """Does this sentence change nothing about the game state?
+
+    Only the look-at-a-library-top shape qualifies today (16 activated
+    ability lines in Modern carry it). The engine models no hidden-
+    information state, so the clause has no representable effect; saying
+    so explicitly is what keeps it distinct from a rider that was DROPPED
+    because nobody implemented it.
+    """
+    return bool(_INFORMATION_ONLY_RE.fullmatch((sentence or '').strip()))
+
+
+def parse_delayed_effect(sentence: str):
+    """Split "<effect> at the beginning of <step>" into (timing, inner).
+
+    Returns ``(timing_name, inner_effect_text)`` — the timing as the
+    ``DelayedTriggerTiming`` member NAME, so this module keeps its
+    zero-import-from-the-engine-runtime shape — or ``None`` when the
+    sentence states no delayed timing.
+    """
+    low = (sentence or '').strip().lower().rstrip('.')
+    if any(marker in low for marker in _DURATION_MARKERS):
+        return None
+    for pattern in (_DELAY_PREFIX_RE, _DELAY_SUFFIX_RE):
+        m = pattern.fullmatch(low)
+        if m:
+            inner = m.group('inner').strip().rstrip(',').strip()
+            if not inner:
+                return None
+            return _DELAY_TIMING_PHRASES[m.group('when')], inner
+    return None
+
+
+def parse_activation_delay(effect_text: str):
+    """The delayed timing an activated ability's effect states, or None.
+
+    Called once at DB load from ``parse_activated_abilities`` and stored on
+    ``ActivatedAbility.delayed_timing``; the resolver dispatches off that
+    field and never re-reads oracle text.
+    """
+    sentences = [s for s in split_effect_sentences(effect_text)
+                 if not is_information_only_clause(s)]
+    if len(sentences) != 1:
+        return None
+    parsed = parse_delayed_effect(sentences[0])
+    return None if parsed is None else parsed[0]
+
+
 def classify_activation_effect(effect_text: str):
     """Classify an effect clause. Returns (kind, amount, power_mod, tough_mod).
 
@@ -1033,10 +1135,32 @@ def classify_activation_effect(effect_text: str):
     stylistic: a loose draw pattern matches "Draw a card, then exile a card
     from your hand face down." — a different effect whose rider would be
     silently dropped if it executed as a plain draw.
+
+    Two reductions run before those anchored regexes, and only they can
+    turn a multi-sentence body into a classified one:
+
+      * state-free sentences are dropped (`is_information_only_clause`),
+      * a delayed-timing wrapper is peeled off and the INNER effect is
+        classified instead (`parse_delayed_effect`). The kind returned is
+        the inner effect's own; WHEN it happens rides separately on
+        `ActivatedAbility.delayed_timing`, which is what keeps the delay
+        orthogonal to the effect rather than spawning a delayed twin of
+        every effect kind.
+
+    A body that reduces to nothing stays UNCLASSIFIED — an ability with no
+    representable effect is refused, not executed as a no-op.
     """
     from .cards import ActivationEffectKind as K
     text = (effect_text or '').strip()
     low = text.lower().rstrip('.')
+
+    sentences = [s for s in split_effect_sentences(low)
+                 if not is_information_only_clause(s)]
+    if len(sentences) == 1:
+        delayed = parse_delayed_effect(sentences[0])
+        if delayed is not None:
+            return classify_activation_effect(delayed[1])
+        low = sentences[0]
 
     m = re.fullmatch(r'(?:this |it )?(?:\w+ )?deals? (\d+) damage to any target', low)
     if m:
@@ -1386,6 +1510,7 @@ def parse_activated_abilities(oracle: str):
     enumerator can skip them — mana is produced by the payment path.
     """
     from .cards import ActivatedAbility, ActivationEffectKind as K
+    from .delayed_triggers import DelayedTriggerTiming
     text = strip_reminder_text(oracle or '')
     if ':' not in text:
         return []
@@ -1462,6 +1587,17 @@ def parse_activated_abilities(oracle: str):
         graveyard_exile_data = None
         if kind is K.EXILE_FROM_GRAVEYARD:
             graveyard_exile_data = parse_activation_graveyard_exile(body)
+        # Delayed timing (CR 603.7). Derived from the SAME helper
+        # `classify_activation_effect` used to reach the inner kind, so the
+        # two cannot disagree — a classified kind with the delay dropped is
+        # exactly the bug this pairing prevents (the effect would happen
+        # immediately). Unclassified lines carry no timing: there is nothing
+        # to delay.
+        delayed_timing = None
+        if kind is not K.UNCLASSIFIED:
+            timing_name = parse_activation_delay(body)
+            if timing_name is not None:
+                delayed_timing = DelayedTriggerTiming[timing_name]
         out.append(ActivatedAbility(
             index=idx, cost=cost, effect_text=body.strip(),
             effect_kind=kind, amount=amount,
@@ -1472,6 +1608,7 @@ def parse_activated_abilities(oracle: str):
             restrictions=restrictions, is_mana_ability=is_mana,
             tutor_data=tutor_data,
             graveyard_exile_data=graveyard_exile_data,
+            delayed_timing=delayed_timing,
         ))
         idx += 1
     return out

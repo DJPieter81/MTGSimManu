@@ -422,7 +422,20 @@ def activation_candidates(game, player_idx, snap, excluded=None):
                     updates.get("my_hand_size", snap.my_hand_size)
                     + ability.amount)
                 after = snap.fast_replace(**updates)
-                reason = f"activate: draw {ability.amount}"
+                # A DELAYED draw (CR 603.7 — "draw a card at the beginning
+                # of the next turn's upkeep") is projected as the same +1
+                # hand: `position_value` has no time axis, so there is no
+                # representable difference between a card now and a card at
+                # the next upkeep, and discounting the one step would mean
+                # inventing a magnitude no primitive supplies. The delay is
+                # named in the reason so the log does not claim otherwise.
+                # It is still the right call to enumerate: the card arrives
+                # unconditionally, and the alternative — no candidate — is
+                # exactly the dead-ability failure this branch exists to
+                # prevent.
+                reason = (f"activate: draw {ability.amount}"
+                          + (f" ({ability.delayed_timing.value})"
+                             if ability.delayed_timing is not None else ""))
             elif kind is _K.DAMAGE_ANY_TARGET:
                 updates["opp_life"] = snap.opp_life - ability.amount
                 after = snap.fast_replace(**updates)
