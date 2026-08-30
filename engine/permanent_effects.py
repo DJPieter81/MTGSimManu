@@ -157,10 +157,41 @@ class PermanentEffects:
         host = min(candidates, key=lambda c: (1 if c.tapped else 0))
         host.instance_tags.add(f"attached_{aura.instance_id}")
         aura.attached_to_id = host.instance_id
+        PermanentEffects._choose_entry_mana_color(game, aura, controller)
         game.log.append(
             f"T{game.display_turn} P{controller+1}: {aura.name} enchants "
             f"{host.name}")
         return host
+
+    @staticmethod
+    def _choose_entry_mana_color(game: "GameState", perm, controller: int):
+        """Resolve an "As this enters, choose a color" entry choice.
+
+        The engine enumerates the legal colours (the option set the parser
+        recorded in `aura_mana_units`) and hands the DECISION to the callback
+        seam — engine layer enforces the rule, AI layer picks. An out-of-range
+        answer, or callbacks that predate this seam, fall back to
+        `DefaultCallbacks.choose_mana_color`.
+        """
+        if not getattr(perm.template, 'aura_mana_color_chosen', False):
+            return
+        options = sorted({c for unit in perm.template.aura_mana_units
+                          for c in unit})
+        if not options:
+            return
+        chooser = getattr(getattr(game, 'callbacks', None),
+                          'choose_mana_color', None)
+        picked = None
+        if chooser is not None:
+            picked = chooser(game, controller, perm, options)
+        if picked not in options:
+            from .callbacks import DefaultCallbacks
+            picked = DefaultCallbacks.choose_mana_color(
+                DefaultCallbacks(), game, controller, perm, options)
+        perm.chosen_color = picked if picked in options else options[0]
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: {perm.name} enters — "
+            f"colour chosen: {perm.chosen_color}")
 
     @staticmethod
     def aura_granted_mana_units(game: "GameState", host) -> list:
@@ -180,7 +211,89 @@ class PermanentEffects:
                 continue
             if getattr(perm, 'attached_to_id', None) != host.instance_id:
                 continue
+            # "of the chosen color" (CR 614-style entry choice): the option set
+            # was recorded at parse time, but the Aura picked ONE colour as it
+            # entered. Narrow to that colour — modelling it as any-colour would
+            # hand the deck colour fixing the card does not provide.
+            chosen = getattr(perm, 'chosen_color', None)
+            if getattr(perm.template, 'aura_mana_color_chosen', False) and chosen:
+                out.extend([[chosen] for _ in units])
+                continue
             out.extend([list(u) for u in units])
+        return out
+
+    # ─── TAP-FOR-MANA TRIGGERS (CR 605.1b) ───────────────────────
+
+    # Basic land subtypes a trigger may name ("whenever you tap a Forest for
+    # mana"). Kept here rather than re-derived per call; the same five types
+    # domain counting uses.
+    _WATCH_LAND_SUBTYPES = {'plains', 'island', 'swamp', 'mountain', 'forest'}
+
+    @staticmethod
+    def tap_trigger_matches(watch: str, source) -> bool:
+        """Does `source` satisfy a `TapForManaTrigger`'s watch filter?
+
+        `watch` is the noun phrase the parser lifted out of the oracle line, so
+        this is a dispatch over parsed card QUALITIES — types, land subtypes,
+        tokenness — not over card identities. A trigger naming a quality this
+        engine cannot express matches nothing rather than matching everything.
+        """
+        from .cards import CardType
+        tmpl = source.template
+        if watch in PermanentEffects._WATCH_LAND_SUBTYPES:
+            return bool(tmpl.is_land) and watch in {
+                s.lower() for s in getattr(tmpl, 'subtypes', ())}
+        if watch == 'land':
+            return bool(tmpl.is_land)
+        if watch == 'nonland permanent':
+            return not tmpl.is_land
+        if watch == 'creature':
+            return CardType.CREATURE in tmpl.card_types
+        if watch == 'artifact':
+            return CardType.ARTIFACT in tmpl.card_types
+        if watch == 'artifact token':
+            return (CardType.ARTIFACT in tmpl.card_types
+                    and bool(getattr(source, 'is_token', False)))
+        return False
+
+    @staticmethod
+    def tap_trigger_bonus_units(game: "GameState", source, base_units) -> list:
+        """Extra mana units granted by tap-for-mana triggers watching `source`.
+
+        CR 605.1b: a triggered ability that triggers off a mana ability and
+        itself adds mana is a mana ability, so the extra mana is in the pool in
+        time to pay the same cost. Modelling it as extra UNITS on the tapped
+        source is what makes that true here: the units come from
+        `ManaPayment.land_mana_units`, the one resolver both the payment path
+        and every capacity estimate read, so capacity cannot drift from
+        production.
+
+        `base_units` is what the source already produces, needed for the
+        "add one mana of any type that permanent produced" rider.
+
+        Triggers are controller-scoped ("whenever YOU tap"), so only the
+        source's own controller's battlefield is scanned. Multiple copies each
+        trigger, so the units accumulate.
+        """
+        controller = getattr(source, 'controller', None)
+        if controller is None or not base_units:
+            return []
+        out = []
+        for perm in game.players[controller].battlefield:
+            trig = getattr(perm.template, 'tap_for_mana_trigger', None)
+            if trig is None:
+                continue
+            if not PermanentEffects.tap_trigger_matches(trig.watch, source):
+                continue
+            if trig.mirror_source:
+                # One extra mana of a type the source produced — the union of
+                # its own options, since which colour it "produced" is only
+                # settled at payment time in this unit model.
+                mirrored = sorted({c for unit in base_units for c in unit})
+                if mirrored:
+                    out.append(mirrored)
+                continue
+            out.extend([list(u) for u in trig.units])
         return out
 
     # ─── TOKEN GENERATION ────────────────────────────────────────

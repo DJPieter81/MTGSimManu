@@ -271,7 +271,19 @@ def analyze_mana_needs(game: "GameState", player_idx: int,
                 if st in BASIC_LAND_TYPES:
                     needs.existing_subtypes.add(st)
 
-    needs.total_mana = needs.untapped_land_count + player.mana_pool.total()
+    # `untapped_land_count` counts LANDS, one mana each. That silently ignores
+    # every source whose output is not one-mana-per-land: mana rocks and dorks,
+    # multi-unit lands, Aura-granted units (CR 303.4), and tap-for-mana
+    # triggers (CR 605.1b). A deck whose acceleration is any of those reported
+    # its unaccelerated mana here, so `spells_enabled_by_one_more` and the land
+    # scoring built on it stayed blind to the accelerant — the fix would be
+    # inert no matter how correct the engine side was.
+    #
+    # `available_mana_estimate` is the existing primitive for the same
+    # quantity, and it routes through `ManaPayment.land_mana_units`, the
+    # resolver the PAYMENT path uses. Reading it here makes the AI's mana total
+    # and the engine's spendable mana the same number by construction.
+    needs.total_mana = player.available_mana_estimate + player.mana_pool.total()
 
     # ── What colors are missing? ──
     # A color is a deficit when the number of lands that can produce it is
