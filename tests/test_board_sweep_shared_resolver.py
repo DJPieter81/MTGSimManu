@@ -229,7 +229,15 @@ class TestAllIsDustUsesRealColorNotColorIdentity:
     def test_filter_predicate_unit(self):
         """Unit test of `_all_is_dust_has_color` directly, independent
         of a live game — pins the field choice without needing a full
-        cast/resolve cycle."""
+        cast/resolve cycle.
+
+        The predicate reads the INSTANCE's colour, not the template's:
+        a layer-5 colour-setting static (CR 105.2b) can make a printed-
+        colourless permanent all colours, and a sweep that keyed off the
+        printed template would miss it. The stub therefore mirrors
+        `CardInstance.colors` — printed colour unless an effect overrode
+        it — rather than exposing only `.template`.
+        """
         colored = CardTemplate(
             name="Colored", card_types=[CardType.ARTIFACT],
             mana_cost=ManaCost(generic=1), colors={Color.RED},
@@ -242,11 +250,25 @@ class TestAllIsDustUsesRealColorNotColorIdentity:
         )
 
         class _Stub:
-            def __init__(self, template):
+            def __init__(self, template, cem_colors_set=None):
                 self.template = template
+                self.cem_colors_set = cem_colors_set
 
+            @property
+            def colors(self):
+                if self.cem_colors_set is not None:
+                    return set(self.cem_colors_set)
+                return self.template.colors
+
+        # Printed colour decides when no static is applying.
         assert _all_is_dust_has_color(None, 0, _Stub(colored)) is True
+        # color_identity must NOT stand in for colour.
         assert _all_is_dust_has_color(None, 0, _Stub(colorless)) is False
+        # A printed-colourless permanent that a layer-5 static has made
+        # all colours IS coloured, and the sweep must see it.
+        assert _all_is_dust_has_color(
+            None, 0, _Stub(colorless, cem_colors_set=frozenset({Color.RED}))
+        ) is True
 
 
 # ─── symmetric — both players' battlefields are swept ─────────────────
