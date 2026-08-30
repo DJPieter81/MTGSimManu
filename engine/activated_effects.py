@@ -326,6 +326,52 @@ def _resolve_graveyard_exile(game: "GameState", source: "CardInstance",
     return True
 
 
+def _resolve_put_counter(game: "GameState", source: "CardInstance",
+                         controller: int, ability: "ActivatedAbility",
+                         targets: Optional[List[int]]) -> bool:
+    """Put counters on the recipients this ability names (CR 121.1).
+
+    Two scopes, one branch, mirroring the untap resolver: a DECLARED target
+    receives the counters (CR 608.2b — one that has left the battlefield is
+    skipped, never silently redirected onto something else), and the
+    untargeted SELF form puts them on the source, only while the source is
+    still there.
+
+    Counters are written through `CardInstance.adjust_counters`, the same
+    accessor the counter COST payer uses, so a +1/+1 counter moves power and
+    toughness and a -1/-1 counter walks toughness toward the zero-toughness
+    SBA. There is no parallel ledger and no until-end-of-turn expiry — that
+    is the whole difference from `PUMP_SELF_UEOT`.
+    """
+    spec = ability.put_counter_data
+    if not spec:
+        return False
+    counter_kind = spec['kind']
+    amount = int(spec['amount'])
+    if amount <= 0:
+        return False
+
+    if spec['self']:
+        recipients = [source] if source.zone == "battlefield" else []
+    else:
+        recipients = []
+        for tid in (targets or []):
+            found = game.get_card_by_id(tid)
+            if found is None or found.zone != "battlefield":
+                continue
+            recipients.append(found)
+
+    applied = False
+    for recipient in recipients:
+        recipient.adjust_counters(counter_kind, amount)
+        applied = True
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: {source.name} "
+            f"activated — {amount} {counter_kind} counter"
+            f"{'s' if amount != 1 else ''} on {recipient.name}")
+    return applied
+
+
 def resolve_activated_ability(game: "GameState", source: "CardInstance",
                               controller: int,
                               targets: Optional[List[int]] = None,
@@ -423,6 +469,11 @@ def resolve_activated_ability(game: "GameState", source: "CardInstance",
         if kind is ActivationEffectKind.EXILE_FROM_GRAVEYARD:
             return _resolve_graveyard_exile(game, source, controller,
                                             ability, targets)
+
+        if kind in (ActivationEffectKind.PUT_COUNTER_SELF,
+                    ActivationEffectKind.PUT_COUNTER_TARGET):
+            return _resolve_put_counter(game, source, controller,
+                                        ability, targets)
 
         # ANIMATE_SELF_UEOT is owned by `parse_land_animation` / `animate_land`
         # and must never be double-executed here; it reaches this branch only

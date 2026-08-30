@@ -1091,6 +1091,18 @@ def classify_activation_effect(effect_text: str):
             return K.TUTOR_CREATURE_TO_BATTLEFIELD, 0, 0, 0
         return K.TUTOR_TO_HAND, 0, 0, 0
 
+    # Put-counter (single full-sentence). Two scopes, two kinds: the SELF
+    # form is not targeted at all (CR 115.1), and that is the discriminator
+    # the resolver reads. The structured shape is re-derived by
+    # `parse_activated_abilities` via `parse_activation_put_counter` and
+    # stored on the ability (`put_counter_data`) — both parses happen once,
+    # at DB load time.
+    put_counter = parse_activation_put_counter(low)
+    if put_counter is not None:
+        if put_counter['self']:
+            return K.PUT_COUNTER_SELF, put_counter['amount'], 0, 0
+        return K.PUT_COUNTER_TARGET, put_counter['amount'], 0, 0
+
     return K.UNCLASSIFIED, 0, 0, 0
 
 
@@ -1377,6 +1389,95 @@ def parse_activation_untap(effect_text: str) -> Optional[Dict]:
             'owner': 'you' if m.group('scope') else 'any'}
 
 
+# ── Put-counter effects (PUT_COUNTER_* kinds) ────────────────────────
+# ANCHORED to the full sentence (fullmatch), the same discipline every
+# other activation classifier follows. Two scopes, one regex each:
+#
+#   SELF   "put a +1/+1 counter on this creature"
+#   TARGET "put a +1/+1 counter on target creature"
+#
+# Everything else about the shape is deliberately excluded by the anchor:
+# a mass form ("on each creature you control"), an unbounded count ("any
+# number of target creatures"), an X-bound count, and any trailing rider
+# are DIFFERENT effects. Executing them as a bare single-recipient put
+# would silently drop the rest, which is exactly the failure mode the
+# refuse-rather-than-half-execute rule exists to prevent.
+_PUT_COUNTER_EFFECT_SELF_RE = re.compile(
+    r'put (?P<n>a|an|one|two|three|\d+) (?P<kind>[^ ]+) counters? on this '
+    r'(?:' + _COUNTER_SELF_WORDS + r')')
+_PUT_COUNTER_EFFECT_TARGET_RE = re.compile(
+    r'put (?P<n>a|an|one|two|three|\d+) (?P<kind>[^ ]+) counters? on '
+    r'target (?P<quals>(?:[a-z][a-z\-\']* )*?)'
+    r'(?P<noun>' + _COUNTER_SELF_WORDS + r')'
+    r'(?P<scope> you control)?')
+# Card-type words a put-counter target requirement can express. A
+# qualifier outside this set (a subtype, "another", a colour) narrows the
+# target in a way `TargetRequirement` would have to approximate, so the
+# line is refused instead.
+_PUT_COUNTER_TYPE_WORDS = frozenset({
+    'creature', 'artifact', 'enchantment', 'land', 'permanent',
+    'planeswalker', 'vehicle', 'token', 'battle', 'equipment'})
+
+
+def parse_activation_put_counter(effect_text: str) -> Optional[Dict]:
+    """Parse a put-counter effect sentence into its structured shape, or
+    ``None`` when the sentence is not one of the two executable forms.
+
+    Returns::
+
+        {'kind': '+1/+1',        # canonical counter kind
+         'amount': 1,
+         'self': bool,           # True for "on this <permanent>"
+         'types': ['creature'],  # target scope only; [] for the self form
+         'owner': 'you' | 'any'} # "target creature YOU CONTROL" narrows it
+
+    The counter kind goes through `_canonical_counter_kind`, so a kind the
+    instance model cannot hold (+2/+2, -0/-1) returns ``None`` rather than
+    being mapped onto the nearest representable kind — the same rule the
+    counter COST parser enforces.
+
+    Called once at DB load (via ``parse_activated_abilities``), never at
+    runtime — the oracle-runtime-parse ratchet stays at 0.
+    """
+    low = (effect_text or '').strip().lower().rstrip('.')
+
+    def _count(tok: str) -> int:
+        if tok.isdigit():
+            return int(tok)
+        if tok in ('a', 'an', 'one'):
+            return 1
+        return _NUM_WORDS.get(tok, 0)
+
+    m = _PUT_COUNTER_EFFECT_SELF_RE.fullmatch(low)
+    if m is not None:
+        kind = _canonical_counter_kind(m.group('kind'))
+        n = _count(m.group('n'))
+        if kind is None or n <= 0:
+            return None
+        return {'kind': kind, 'amount': n, 'self': True, 'types': [],
+                'owner': 'any'}
+
+    m = _PUT_COUNTER_EFFECT_TARGET_RE.fullmatch(low)
+    if m is None:
+        return None
+    kind = _canonical_counter_kind(m.group('kind'))
+    n = _count(m.group('n'))
+    if kind is None or n <= 0:
+        return None
+    noun = m.group('noun')
+    if noun not in _PUT_COUNTER_TYPE_WORDS:
+        return None
+    # Any qualifier BEFORE the type noun ("another creature", "attacking
+    # creature", "red creature") is a restriction this schema cannot hold.
+    # A trailing "you control" is different in kind: `TargetRequirement`
+    # carries it as `owner_scope`, exactly as the untap parser already
+    # does, so it narrows the requirement rather than being approximated.
+    if (m.group('quals') or '').strip():
+        return None
+    return {'kind': kind, 'amount': n, 'self': False, 'types': [noun],
+            'owner': 'you' if m.group('scope') else 'any'}
+
+
 def parse_activated_abilities(oracle: str):
     """Parse every "[Cost]: [Effect]" line a permanent has of its own.
 
@@ -1453,6 +1554,19 @@ def parse_activated_abilities(oracle: str):
                     count_min=0 if spec['up_to'] else spec['count'],
                     count_max=spec['count'],
                     raw_phrase=body.strip().lower())]
+        elif kind is K.PUT_COUNTER_TARGET:
+            # Only the TARGET scope declares a target; the SELF form stays
+            # at targets_required=0 (CR 115.1), which is what the resolver
+            # and the refill guard both read.
+            spec = parse_activation_put_counter(body)
+            if spec is not None:
+                from .target_solver import TargetRequirement
+                targets_required = 1
+                target_requirements = [TargetRequirement(
+                    zone="battlefield",
+                    types=frozenset(spec['types']),
+                    owner_scope=spec['owner'],
+                    raw_phrase=body.strip().lower())]
         # TUTOR_* kinds carry their structured search constraint on the
         # ability — parsed here, at load time, never re-derived at runtime.
         tutor_data = None
@@ -1462,6 +1576,10 @@ def parse_activated_abilities(oracle: str):
         graveyard_exile_data = None
         if kind is K.EXILE_FROM_GRAVEYARD:
             graveyard_exile_data = parse_activation_graveyard_exile(body)
+        # PUT_COUNTER_* kinds carry their structured shape the same way.
+        put_counter_data = None
+        if kind in (K.PUT_COUNTER_SELF, K.PUT_COUNTER_TARGET):
+            put_counter_data = parse_activation_put_counter(body)
         out.append(ActivatedAbility(
             index=idx, cost=cost, effect_text=body.strip(),
             effect_kind=kind, amount=amount,
@@ -1472,6 +1590,7 @@ def parse_activated_abilities(oracle: str):
             restrictions=restrictions, is_mana_ability=is_mana,
             tutor_data=tutor_data,
             graveyard_exile_data=graveyard_exile_data,
+            put_counter_data=put_counter_data,
         ))
         idx += 1
     return out

@@ -99,7 +99,37 @@ class ActivationManager:
                 ActivationEffectKind.TUTOR_CREATURE_TO_BATTLEFIELD,
                 ActivationEffectKind.TUTOR_TO_HAND,
                 ActivationEffectKind.UNTAP_TARGET_PERMANENT,
-                ActivationEffectKind.EXILE_FROM_GRAVEYARD):
+                ActivationEffectKind.EXILE_FROM_GRAVEYARD,
+                ActivationEffectKind.PUT_COUNTER_SELF,
+                ActivationEffectKind.PUT_COUNTER_TARGET):
+            return False
+
+        # 9b-pc. A put-counter line whose shape did not parse is schema
+        # incoherence — the resolver reads `kind`/`amount` off
+        # `put_counter_data` and has nothing to dispatch on without it.
+        is_put_counter = ability.effect_kind in (
+            ActivationEffectKind.PUT_COUNTER_SELF,
+            ActivationEffectKind.PUT_COUNTER_TARGET)
+        if is_put_counter and ability.put_counter_data is None:
+            return False
+
+        # 9b-pc-loop. No-free-repeatable, EFFECT side. Rule 9 above asks
+        # only whether the COST depletes something, which is blind to an
+        # effect that hands the resource straight back: "Remove a +1/+1
+        # counter: Put a +1/+1 counter on this creature" pays with exactly
+        # what it produces and never terminates. Refuse when a counter item
+        # on the source is the ONLY thing the cost spends — anything else
+        # finite alongside it (mana, a tap, life, a sacrifice, a discard)
+        # still bounds the loop, so the guard stays off those.
+        #
+        # The TARGET scope is included deliberately: a creature is a legal
+        # target for its own ability, so a targeted put could always choose
+        # the source and close the same loop.
+        #
+        # Measured DB-wide when this landed: zero printed cards have the
+        # shape, so the guard refuses nothing real. It exists so a later DB
+        # refresh cannot introduce a free loop silently.
+        if is_put_counter and ActivationManager._refills_its_own_cost(ability):
             return False
 
         # 9b-gy. A graveyard-exile line whose shape did not parse is
@@ -264,6 +294,44 @@ class ActivationManager:
             return bool(perm.effective_is_creature
                         or getattr(perm, 'is_animated', False))
         return False
+
+    @staticmethod
+    def _refills_its_own_cost(ability: "ActivatedAbility") -> bool:
+        """Does this put-counter effect hand back the only resource its
+        cost spends?
+
+        Rule 9's cost-side predicate cannot answer this: it reads the cost
+        alone, so "Remove a +1/+1 counter: Put a +1/+1 counter on this
+        creature" looks depleting to it while the effect silently restores
+        the supply. The pair is a free loop.
+
+        True exactly when BOTH hold:
+          * a counter item on the source is the only thing the cost spends
+            (no mana, tap, life, sacrifice, exile or discard alongside), and
+          * the effect puts back at least as many counters as the cost took.
+
+        Kind-blind on purpose. A +1/+1 effect against a -1/-1 cost is not a
+        different case: CR 704.5q annihilates the pair, so the permanent
+        ends where it started and the loop is just as free.
+        """
+        cost = ability.cost
+        data = ability.put_counter_data or {}
+        other_finite = (cost.mana.cmc > 0 or cost.tap_self or cost.life > 0
+                        or cost.sacrifice_self or cost.exile_self
+                        or cost.sacrifice_type is not None
+                        or cost.discard_cards > 0)
+        if other_finite:
+            return False
+        paid = 0
+        if cost.remove_counter_kind is not None:
+            paid = cost.remove_counter_amount
+        elif cost.put_counter_kind is not None:
+            paid = cost.put_counter_amount
+        else:
+            # No counter item at all. A cost that spends NOTHING is already
+            # refused by rule 9 upstream; this predicate has nothing to say.
+            return False
+        return int(data.get('amount', 0)) >= paid
 
     @staticmethod
     def legal_sacrifice_victims(game: "GameState", player_idx: int,

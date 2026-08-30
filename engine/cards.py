@@ -159,6 +159,19 @@ class ActivationEffectKind(Enum):
     # only the 'cards' scope declares card targets. Every exile is a zone
     # change and routes through the zone funnel.
     EXILE_FROM_GRAVEYARD = "exile_from_graveyard"
+    # "[Cost]: Put N <kind> counter(s) on this/target <permanent>" — the
+    # put-counter class (157 Modern activated abilities across 156 cards).
+    # Counter COSTS became payable in tranche 4; this is the EFFECT half,
+    # which until now landed in UNCLASSIFIED and so was refused by rule 9b
+    # before any cost was charged. The parsed shape rides on
+    # `ActivatedAbility.put_counter_data`; SCOPE is split across two kinds
+    # rather than carried as a flag because the SELF form is not targeted
+    # at all (CR 115.1) and `targets_required == 0` is the discriminator
+    # the resolver reads. Counters go on the permanent through the
+    # instance's existing counter fields, so a +1/+1 counter moves power
+    # and toughness and, unlike PUMP_SELF_UEOT, does not expire.
+    PUT_COUNTER_SELF = "put_counter_self"
+    PUT_COUNTER_TARGET = "put_counter_target"
     UNCLASSIFIED = "unclassified"
 
 
@@ -262,6 +275,11 @@ class ActivatedAbility:
     # ('cards'/'target_player'/'all'/'each_opponent'), count, up_to,
     # types, owner, single_graveyard. None for every other effect kind.
     graveyard_exile_data: Optional[Dict] = None
+    # PUT_COUNTER_* kinds only: the structured shape from
+    # `oracle_parser.parse_activation_put_counter` -- kind (canonical
+    # counter kind), amount, self (bool), types. None for every other
+    # effect kind.
+    put_counter_data: Optional[Dict] = None
 
 
 @dataclass(frozen=True)
