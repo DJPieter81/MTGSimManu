@@ -111,31 +111,52 @@ the dashboard, not only Zoo's. It is NOT the cause of the flat-WR outlier
 (flat WR is unweighted), so it is recorded here and left as a decision for
 the project owner rather than changed unilaterally.
 
-### 2. Scion of Draco's keyword static is completely inert
+### 2. Leyline of the Guildpact's "all colors" static is not implemented
 
-Oracle: "Each creature you control has vigilance if it's white, hexproof if
-it's blue, lifelink if it's black, first strike if it's red, and trample if
-it's green."
+**CORRECTION (same session).** The first version of this section claimed
+"Scion of Draco's keyword static is completely inert" and showed a probe with
+`keywords=[]` on every creature. **That claim was FALSE and is retracted.**
+The probe drove `game.trigger_etb(...)`, which does not invoke the
+`EFFECT_REGISTRY` card handlers at all — `spell_resolution` does. It was a
+measurement artefact, not an engine defect. Recorded rather than quietly
+deleted because it is the third probe-shaped false positive of this session
+and the pattern is the lesson: **a synthetic board must drive the same entry
+point the live game drives.**
 
-Probed on a board with Leyline of the Guildpact (domain 5) and Scion of
-Draco resolved:
+Re-measured through the registry path (`EFFECT_REGISTRY.execute(...,
+EffectTiming.ETB, ...)`), which is what `spell_resolution` calls:
 
 ```
-Ragavan, Nimble Pilferer   2/1  colors=['R']       keywords=[]   # expected first strike
-Territorial Kavu           5/5  colors=['G','R']   keywords=[]   # expected trample + first strike
-Wild Nacatl                3/3  colors=['G']       keywords=[]   # expected trample
+creature on board when Scion resolves -> keywords ['first_strike','trample']   # correct for G/R
+creature entering AFTER Scion         -> [] until the next recalculate(), then ['first_strike','trample']
 ```
 
-No creature receives any keyword. Related: `leyline_guildpact_etb`
-(`engine/card_effects.py`) sets only the domain flag — its docstring claims
-"all nonland permanents you control are all colors" but the code does not
-implement that half, so even a working Scion would grant off printed colours
-rather than all five.
+Confirmed live: seed 50500 logs `T3 P1: Scion of Draco enters — creatures
+gain vigilance/hexproof/lifelink/first strike/trample ...`. The later-arrival
+gap closes on its own because `continuous_effects.recalculate()` is the first
+statement of `_check_sba_once`, which runs constantly. **Scion works.**
 
-Both are real bugs. **Neither can explain the outlier, because both are
-DEFLATIONARY** — Zoo is posting 79-85% without its keyword package, and
-fixing either would make it stronger. Domain P/T maths is correct (domain=5,
-Kavu 5/5, Nacatl 3/3), so the CDA side is fine.
+What IS real, verified end-to-end with the corrected probe:
+`leyline_guildpact_etb` (`engine/card_effects.py`) sets only the domain flag.
+Its docstring claims "all nonland permanents you control are all colors" but
+no code implements that half:
+
+```
+WITH Leyline of the Guildpact on the battlefield:
+  Territorial Kavu printed colors : ['G','R']        (all five would mean the static applied)
+  Territorial Kavu keywords       : ['first_strike','trample']
+  expected under the real card    : vigilance, hexproof, lifelink, first strike, trample
+```
+
+So Zoo's creatures get two of five keywords instead of all five, and in
+particular **no hexproof** — the keyword that would make the board
+untargetable and is the reason Scion and Leyline are played together.
+
+This is a real bug and it is **DEFLATIONARY** — Zoo posts 79-85% while
+getting two-fifths of its keyword package, so implementing it makes Zoo
+STRONGER, not weaker. It therefore cannot explain the outlier either. Domain
+P/T maths is correct (domain=5, Kavu 5/5, Nacatl 3/3), so the CDA side is
+fine.
 
 ## Verdict and loop-break
 
@@ -147,7 +168,8 @@ this direction. Established so far, cumulatively:
 * NOT the held-removal deployment window (2026-08-20, retracted)
 * NOT decisional; structural (2026-08-26)
 * NOT the decklist (this doc)
-* NOT the keyword package (this doc — it is not even active)
+* NOT the keyword package (this doc — Scion works; only Leyline's
+  all-colors half is missing, and adding it makes Zoo stronger)
 
 What remains, and where the next session should look: Zoo's 100% column
 against every interactive deck sits alongside Azorius Control's 21% field WR
