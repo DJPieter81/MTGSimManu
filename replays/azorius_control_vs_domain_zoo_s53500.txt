@@ -1,0 +1,816 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+Result: Domain Zoo wins T13 via damage
+Life: P1=0 P2=9
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Azorius Control wins → chooses to play first
+║ P1 (on play): Azorius Control
+║ P2 (on draw): Domain Zoo
+╚═══════════════════════════════════════════════════════
+
+P1 (Azorius Control) opening hand (1 lands, 6 spells):
+  • Isochron Scepter [Spell, CMC 2]
+  • Counterspell [Spell, CMC 2]
+  • Solitude [Creature, CMC 5]
+  • Lórien Revealed [Spell, CMC 5]
+  • Teferi, Hero of Dominaria [Spell, CMC 5]
+  • Plains [Land, CMC 0]
+  • Prismatic Ending [Spell, CMC 1]
+→ P1 MULLIGANS (too few lands (1 < 2))
+  New hand (1 lands, 6 spells): ['Sanctifier en-Vec', 'Sanctifier en-Vec', 'Solitude', 'Lórien Revealed', 'Solitude', 'Island', "Orim's Chant"]
+→ P1 MULLIGANS (too few lands (1 < 2))
+  New hand (6 lands, 1 spells): ['Island', 'Hallowed Fountain', 'Island', 'Plains', 'Stock Up', 'Arid Mesa', 'Steam Vents']
+→ P1 mulligans to 5, bottoms: ['Arid Mesa', 'Island']
+  Keeps: ['Hallowed Fountain', 'Island', 'Plains', 'Stock Up', 'Steam Vents']
+
+P2 (Domain Zoo) opening hand (3 lands, 4 spells):
+  • Psychic Frog [Creature, CMC 2]
+  • Leyline Binding [Spell, CMC 6]
+  • Practiced Offense [Spell, CMC 3]
+  • Flooded Strand [Land, CMC 0]
+  • Breeding Pool [Land, CMC 0]
+  • Thundering Falls [Land, CMC 0]
+  • Psychic Frog [Creature, CMC 2]
+→ P2 KEEPS 7 — has key card(s): Leyline Binding, 3 cheap spells
+
+
+╔══ TURN 1 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 20  |  Domain Zoo 20
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 55  |  Graveyard: 0
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Hallowed Fountain (untapped, life: 20)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 20  |  Azorius Control 20
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Fatal Push
+  [Main 1]
+T1 P2: Play Flooded Strand
+T1: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Flooded Strand (pay 1 life) -> Godless Shrine (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 20  |  Domain Zoo 19
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 55  |  Graveyard: 0
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Otawara, Soaring City
+  [Main 1]
+T2 P1: Play Steam Vents (untapped, life: 20)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 19  |  Azorius Control 20
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wrath of the Skies
+  [Main 1]
+T2 P2: Play Breeding Pool (untapped, life: 19)
+    → Goal: curve_out
+    [Mana] Tap Godless Shrine→B, Breeding Pool→U (paying for Psychic Frog, 0 mana remaining)
+T2 P2: Cast Psychic Frog (UB)
+    [Priority] P1 passes (no response)
+T2: Resolve Psychic Frog
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 20  |  Domain Zoo 19
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 54  |  Graveyard: 0
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Steam Vents
+║ Domain Zoo board:
+║   Creatures: Psychic Frog (1/2)
+║   Lands: Godless Shrine [T], Breeding Pool [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Counterspell
+  [Main 1]
+T3 P1: Play Island
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 19  |  Azorius Control 20
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: Psychic Frog (1/2)
+║   Lands: Godless Shrine, Breeding Pool
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Steam Vents, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+T3 P2: Play Flooded Strand
+T3: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T3 P2: Crack Flooded Strand (pay 1 life) -> Hallowed Fountain (tapped, life: 18)
+    → Goal: curve_out
+    [Mana] Tap Godless Shrine→B, Breeding Pool→U (paying for Psychic Frog, 0 mana remaining)
+T3 P2: Cast Psychic Frog (UB)
+    [Priority] P1 responds with Counterspell
+    [Mana] Tap Island→U, Hallowed Fountain→U (paying for Counterspell, 1 mana remaining)
+T3 P1: Cast Counterspell (UU)
+T3: Resolve Counterspell
+T3: Psychic Frog moved stack -> graveyard (resolution)
+T3: Psychic Frog is countered
+T3: Counterspell moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Psychic Frog
+T3 P2: Attack with Psychic Frog
+  [Declare Blockers] P1 does not block
+T3 P2:   Psychic Frog (1/2) → 1 dmg to player
+T3 P2: Psychic Frog deals combat damage — draw a card
+  [Combat Damage] 1 damage dealt → P1 life: 20 → 19
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 19  |  Domain Zoo 18
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 53  |  Graveyard: 1
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Steam Vents, Island
+║ Domain Zoo board:
+║   Creatures: Psychic Frog (1/2) [tapped]
+║   Lands: Godless Shrine [T], Breeding Pool [T], Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Solitude
+  [Main 1]
+T4 P1: Play Plains
+    → Goal: close_game
+    [Mana] Tap Island→U, Plains→W, Hallowed Fountain→U (paying for Stock Up, 1 mana remaining)
+T4 P1: Cast Stock Up (2U)
+    [Priority] P2 passes (no response)
+T4: Resolve Stock Up
+T4: Stock Up moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 18  |  Azorius Control 19
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 3
+║ Domain Zoo board:
+║   Creatures: Psychic Frog (1/2)
+║   Lands: Godless Shrine, Breeding Pool, Hallowed Fountain
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T], Steam Vents, Island [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Leyline of the Guildpact
+  [Main 1]
+T4 P2: surveil 1 → Scion of Draco to GY
+T4 P2: Play Thundering Falls (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Psychic Frog
+T4 P2: Attack with Psychic Frog
+  [Declare Blockers] P1 does not block
+T4 P2:   Psychic Frog (1/2) → 1 dmg to player
+T4 P2: Psychic Frog deals combat damage — draw a card
+  [Combat Damage] 1 damage dealt → P1 life: 19 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 18  |  Domain Zoo 18
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 50  |  Graveyard: 2
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Steam Vents, Island, Plains
+║ Domain Zoo board:
+║   Creatures: Psychic Frog (1/2) [tapped]
+║   Lands: Godless Shrine, Breeding Pool, Hallowed Fountain, Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Wrath of the Skies
+  [Main 1]
+T5 P1: Play Demolition Field
+    → Goal: close_game
+    [Mana] Tap Island→U, Plains→W, Demolition Field→C, Hallowed Fountain→W, Steam Vents→R (paying for Solitude, 0 mana remaining)
+T5 P1: Cast Solitude (3WW)
+    [Priority] P2 passes (no response)
+T5: Resolve Solitude
+T5: Psychic Frog moved battlefield -> exile (exiled)
+T5 P1: Solitude exiles Psychic Frog (opponent gains 1 life, now 19)
+  [Begin Combat]
+    [Mana] Tap Godless Shrine→B (paying for Fatal Push, 2 mana remaining)
+T5 P2: Cast Fatal Push (B)
+T5: Resolve Fatal Push
+T5: Fatal Push moved stack -> graveyard (resolution)
+    [Mana] Tap Hallowed Fountain→W (paying for Leyline Binding, 1 mana remaining)
+T5 P2: Cast Leyline Binding (5W)
+T5: Resolve Leyline Binding
+T5: Solitude moved battlefield -> exile (exiled)
+T5 P2: Leyline Binding exiles Solitude
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 19  |  Azorius Control 18
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 44  |  Graveyard: 5
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline Binding
+║   Lands: Godless Shrine, Breeding Pool, Hallowed Fountain, Thundering Falls
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T], Steam Vents [T], Island [T], Plains [T], Demolition Field [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Fatal Push
+  [Main 1]
+T5 P2: Play Steam Vents (untapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 18  |  Domain Zoo 19
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 49  |  Graveyard: 2
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Steam Vents, Island, Plains, Demolition Field
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline Binding
+║   Lands: Godless Shrine, Breeding Pool, Hallowed Fountain, Thundering Falls, Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Hallowed Fountain
+  [Main 1]
+T6 P1: Play Otawara, Soaring City
+    → Goal: close_game
+    [Mana] Tap Island→U, Plains→W, Demolition Field→C, Otawara, Soaring City→U, Hallowed Fountain→W (paying for Solitude, 1 mana remaining)
+T6 P1: Cast Solitude (3WW)
+    [Priority] P2 passes (no response)
+T6: Resolve Solitude
+  [Begin Combat]
+    [Mana] Tap Godless Shrine→B (paying for Fatal Push, 4 mana remaining)
+T6 P2: Cast Fatal Push (B)
+T6: Resolve Fatal Push
+T6: Fatal Push moved stack -> graveyard (resolution)
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 19  |  Azorius Control 18
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 43  |  Graveyard: 6
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline Binding
+║   Lands: Godless Shrine, Breeding Pool, Hallowed Fountain, Thundering Falls, Steam Vents
+║ Azorius Control board:
+║   Creatures: Solitude (3/2)
+║   Lands: Hallowed Fountain [T], Steam Vents, Island [T], Plains [T], Demolition Field [T], Otawara, Soaring City [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Temple Garden
+  [Main 1]
+T6 P2: Play Temple Garden (untapped, life: 17)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 18  |  Domain Zoo 17
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 6  |  Opp lands: 6
+║ Library: 48  |  Graveyard: 2
+║ Azorius Control board:
+║   Creatures: Solitude (3/2)
+║   Lands: Hallowed Fountain, Steam Vents, Island, Plains, Demolition Field, Otawara, Soaring City
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline Binding
+║   Lands: Godless Shrine, Breeding Pool, Hallowed Fountain, Thundering Falls, Steam Vents, Temple Garden
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Island
+  [Main 1]
+T7 P1: Play Hallowed Fountain (untapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Solitude
+T7 P1: Attack with Solitude
+  [Declare Blockers] P2 does not block
+T7 P1:   Solitude (3/2) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 17 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 14  |  Azorius Control 21
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 6  |  Opp lands: 6
+║ Library: 42  |  Graveyard: 6
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline Binding
+║   Lands: Godless Shrine, Breeding Pool, Hallowed Fountain, Thundering Falls, Steam Vents, Temple Garden
+║ Azorius Control board:
+║   Creatures: Solitude (3/2) [tapped]
+║   Lands: Hallowed Fountain [T], Steam Vents [T], Island, Plains, Otawara, Soaring City, Hallowed Fountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 21  |  Domain Zoo 14
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 6  |  Opp lands: 6
+║ Library: 47  |  Graveyard: 3
+║ Azorius Control board:
+║   Creatures: Solitude (3/2)
+║   Lands: Hallowed Fountain, Steam Vents, Island, Plains, Otawara, Soaring City, Hallowed Fountain
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline Binding
+║   Lands: Godless Shrine, Breeding Pool, Hallowed Fountain, Thundering Falls, Steam Vents, Temple Garden
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Teferi, Time Raveler
+  [Main 1]
+T8 P1: Play Island
+    → Goal: close_game
+    [Mana] Tap Island→U, Plains→W, Otawara, Soaring City→U (paying for Teferi, Time Raveler, 4 mana remaining)
+T8 P1: Cast Teferi, Time Raveler (1WU)
+    [Priority] P2 passes (no response)
+T8: Resolve Teferi, Time Raveler
+T8 P1: Teferi bounces Leyline Binding
+T8 P1: Teferi draws Demolition Field
+T8 P1: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Solitude
+T8 P1: Attack with Solitude
+  [Declare Blockers] P2 does not block
+T8 P1:   Solitude (3/2) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 14 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 11  |  Azorius Control 24
+║ Hand: 6 cards  |  Opp hand: 2 cards
+║ Lands: 6  |  Opp lands: 7
+║ Library: 41  |  Graveyard: 6
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Breeding Pool, Hallowed Fountain, Thundering Falls, Steam Vents, Temple Garden
+║ Azorius Control board:
+║   Creatures: Solitude (3/2) [tapped]
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Steam Vents, Island [T], Plains [T], Otawara, Soaring City [T], Hallowed Fountain, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Psychic Frog
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Godless Shrine→W (paying for Leyline Binding, 5 mana remaining)
+T8 P2: Cast Leyline Binding (5W)
+    [Priority] P1 passes (no response)
+T8: Resolve Leyline Binding
+T8: Solitude moved battlefield -> exile (exiled)
+T8 P2: Leyline Binding exiles Solitude
+    → Goal: curve_out [enablers]
+    [Mana] Tap Thundering Falls→R (paying for Ragavan, Nimble Pilferer, 4 mana remaining)
+T8 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T8: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 24  |  Domain Zoo 11
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 7  |  Opp lands: 6
+║ Library: 45  |  Graveyard: 3
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Steam Vents, Island, Plains, Otawara, Soaring City, Hallowed Fountain, Island
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Other: Leyline Binding
+║   Lands: Godless Shrine [T], Breeding Pool, Hallowed Fountain, Thundering Falls [T], Steam Vents, Temple Garden
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Isochron Scepter
+  [Main 1]
+T9 P1: Play Demolition Field
+    → Goal: close_game
+    [Mana] Tap Plains→W, Hallowed Fountain→W (paying for Wrath of the Skies, 6 mana remaining)
+T9 P1: Cast Wrath of the Skies (1WW) (X=1)
+T9: Resolve Wrath of the Skies
+T9: Ragavan, Nimble Pilferer dies
+T9 P1: Wrath of the Skies (X=1) sweeps the board, destroying 1 permanents
+T9: Wrath of the Skies moved stack -> graveyard (resolution)
+    → Goal: close_game
+    [Mana] Tap Island→U, Otawara, Soaring City→U (paying for Isochron Scepter, 3 mana remaining)
+T9 P1: Cast Isochron Scepter (2)
+T9: Resolve Isochron Scepter
+T9 P1: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 11  |  Azorius Control 24
+║ Hand: 5 cards  |  Opp hand: 0 cards
+║ Lands: 6  |  Opp lands: 7
+║ Library: 40  |  Graveyard: 7
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline Binding
+║   Lands: Godless Shrine, Breeding Pool, Hallowed Fountain, Thundering Falls, Steam Vents, Temple Garden
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler, Isochron Scepter
+║   Lands: Hallowed Fountain [T], Steam Vents [T], Island [T], Plains [T], Otawara, Soaring City [T], Hallowed Fountain [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+T9 P2: Play Arid Mesa
+T9: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T9 P2: Crack Arid Mesa (pay 1 life) -> Blood Crypt (tapped, life: 10)
+    → Goal: curve_out
+    [Mana] Tap Godless Shrine→B, Breeding Pool→U (paying for Psychic Frog, 4 mana remaining)
+T9 P2: Cast Psychic Frog (UB)
+    [Priority] P1 passes (no response)
+T9: Resolve Psychic Frog
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 24  |  Domain Zoo 10
+║ Hand: 0 cards  |  Opp hand: 4 cards
+║ Lands: 7  |  Opp lands: 7
+║ Library: 44  |  Graveyard: 5
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler, Isochron Scepter
+║   Lands: Hallowed Fountain, Steam Vents, Island, Plains, Otawara, Soaring City, Hallowed Fountain, Island
+║ Domain Zoo board:
+║   Creatures: Psychic Frog (1/2)
+║   Other: Leyline Binding
+║   Lands: Godless Shrine [T], Breeding Pool [T], Hallowed Fountain, Thundering Falls, Steam Vents, Temple Garden, Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Flooded Strand
+  [Main 1]
+T10 P1: Play Flooded Strand
+T10: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T10 P1: Crack Flooded Strand -> Plains (untapped)
+T10 P1: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 10  |  Azorius Control 23
+║ Hand: 4 cards  |  Opp hand: 0 cards
+║ Lands: 7  |  Opp lands: 8
+║ Library: 38  |  Graveyard: 8
+║ Domain Zoo board:
+║   Creatures: Psychic Frog (1/2)
+║   Other: Leyline Binding
+║   Lands: Godless Shrine, Breeding Pool, Hallowed Fountain, Thundering Falls, Steam Vents, Temple Garden, Blood Crypt
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler, Isochron Scepter
+║   Lands: Hallowed Fountain, Steam Vents, Island, Plains, Otawara, Soaring City, Hallowed Fountain, Island, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Polluted Delta
+  [Main 1]
+T10 P2: Play Polluted Delta
+T10: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T10 P2: Crack Polluted Delta -> Indatha Triome (tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Psychic Frog
+T10 P2: Attack with Psychic Frog
+  [Declare Blockers] P1 does not block
+T10 P2:   Psychic Frog (1/2) → 1 dmg to player
+T10 P2: Psychic Frog deals combat damage — draw a card
+  [Combat Damage] 1 damage dealt → P1 life: 23 → 22
+  [End Combat]
+  [Main 2]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Godless Shrine→B, Breeding Pool→G (paying for Scion of Draco, 5 mana remaining)
+T10 P2: Cast Scion of Draco (12)
+    [Priority] P1 passes (no response)
+T10: Resolve Scion of Draco
+T10 P2: Scion of Draco enters — creatures gain vigilance/hexproof/lifelink/first strike/trample if white/blue/black/red/green
+  [End Step]
+
+╔══ TURN 11 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 22  |  Domain Zoo 9
+║ Hand: 0 cards  |  Opp hand: 4 cards
+║ Lands: 8  |  Opp lands: 8
+║ Library: 42  |  Graveyard: 6
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler, Isochron Scepter
+║   Lands: Hallowed Fountain, Steam Vents, Island, Plains, Otawara, Soaring City, Hallowed Fountain, Island, Plains
+║ Domain Zoo board:
+║   Creatures: Psychic Frog (1/2) [tapped], Scion of Draco (4/4)
+║   Other: Leyline Binding
+║   Lands: Godless Shrine [T], Breeding Pool [T], Hallowed Fountain, Thundering Falls, Steam Vents, Temple Garden, Blood Crypt, Indatha Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Wrath of the Skies
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Plains→W (paying for Wrath of the Skies, 6 mana remaining)
+T11 P1: Cast Wrath of the Skies (2WW) (X=2)
+T11: Resolve Wrath of the Skies
+T11: Isochron Scepter moved battlefield -> graveyard (destroyed)
+T11: Psychic Frog dies
+T11 P1: Wrath of the Skies (X=2) sweeps the board, destroying 2 permanents
+T11: Wrath of the Skies moved stack -> graveyard (resolution)
+T11 P1: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
+T11: Teferi, Time Raveler moved battlefield -> graveyard (SBA 704.5p: zero loyalty)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 9  |  Azorius Control 22
+║ Hand: 4 cards  |  Opp hand: 0 cards
+║ Lands: 8  |  Opp lands: 8
+║ Library: 35  |  Graveyard: 10
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4)
+║   Other: Leyline Binding
+║   Lands: Godless Shrine, Breeding Pool, Hallowed Fountain, Thundering Falls, Steam Vents, Temple Garden, Blood Crypt, Indatha Triome
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T], Steam Vents [T], Island, Plains [T], Otawara, Soaring City, Hallowed Fountain, Island, Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Territorial Kavu
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Breeding Pool→G, Thundering Falls→R (paying for Territorial Kavu, 6 mana remaining)
+T11 P2: Cast Territorial Kavu (RG)
+    [Priority] P1 passes (no response)
+T11: Resolve Territorial Kavu
+T11 P2: Territorial Kavu enters as 5/5 (domain=5)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Scion of Draco
+T11 P2: Attack with Scion of Draco
+  [Declare Blockers] P1 does not block
+T11 P2:   Scion of Draco (4/4) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 22 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 18  |  Domain Zoo 9
+║ Hand: 0 cards  |  Opp hand: 4 cards
+║ Lands: 8  |  Opp lands: 8
+║ Library: 41  |  Graveyard: 9
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Steam Vents, Island, Plains, Otawara, Soaring City, Hallowed Fountain, Island, Plains
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4) [tapped], Territorial Kavu (5/5)
+║   Other: Leyline Binding
+║   Lands: Godless Shrine, Breeding Pool [T], Hallowed Fountain, Thundering Falls [T], Steam Vents, Temple Garden, Blood Crypt, Indatha Triome
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Consult the Star Charts
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Island→U, Plains→W (paying for Consult the Star Charts, 6 mana remaining)
+T12 P1: Cast Consult the Star Charts (1U)
+    [Priority] P2 passes (no response)
+T12: Resolve Consult the Star Charts
+T12: Consult the Star Charts moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 9  |  Azorius Control 18
+║ Hand: 4 cards  |  Opp hand: 0 cards
+║ Lands: 8  |  Opp lands: 8
+║ Library: 34  |  Graveyard: 10
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4), Territorial Kavu (5/5)
+║   Other: Leyline Binding
+║   Lands: Godless Shrine, Breeding Pool, Hallowed Fountain, Thundering Falls, Steam Vents, Temple Garden, Blood Crypt, Indatha Triome
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Steam Vents, Island [T], Plains [T], Otawara, Soaring City, Hallowed Fountain, Island, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Plains
+  [Main 1]
+T12 P2: Play Plains
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Scion of Draco, Territorial Kavu
+T12 P2: Territorial Kavu exiles Stock Up from opponent GY
+T12 P2: Attack with Scion of Draco, Territorial Kavu
+  [Declare Blockers] P1 does not block
+T12 P2:   Territorial Kavu (5/5) → 5 dmg to player
+T12 P2:   Scion of Draco (4/4) → 4 dmg to player
+  [Combat Damage] 9 damage dealt → P1 life: 18 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 13 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 9  |  Domain Zoo 9
+║ Hand: 0 cards  |  Opp hand: 4 cards
+║ Lands: 8  |  Opp lands: 9
+║ Library: 40  |  Graveyard: 9
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Steam Vents, Island, Plains, Otawara, Soaring City, Hallowed Fountain, Island, Plains
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4) [tapped], Territorial Kavu (5/5) [tapped]
+║   Other: Leyline Binding
+║   Lands: Godless Shrine, Breeding Pool, Hallowed Fountain, Thundering Falls, Steam Vents, Temple Garden, Blood Crypt, Indatha Triome, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Mystic Gate
+  [Main 1]
+T13 P1: Play Mystic Gate
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 13 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 9  |  Azorius Control 9
+║ Hand: 4 cards  |  Opp hand: 0 cards
+║ Lands: 9  |  Opp lands: 9
+║ Library: 33  |  Graveyard: 10
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4), Territorial Kavu (5/5)
+║   Other: Leyline Binding
+║   Lands: Godless Shrine, Breeding Pool, Hallowed Fountain, Thundering Falls, Steam Vents, Temple Garden, Blood Crypt, Indatha Triome, Plains
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Steam Vents, Island, Plains, Otawara, Soaring City, Hallowed Fountain, Island, Plains, Mystic Gate
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Scion of Draco
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Plains→W, Godless Shrine→B (paying for Scion of Draco, 7 mana remaining)
+T13 P2: Cast Scion of Draco (12)
+    [Priority] P1 passes (no response)
+T13: Resolve Scion of Draco
+T13 P2: Scion of Draco enters — creatures gain vigilance/hexproof/lifelink/first strike/trample if white/blue/black/red/green
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Scion of Draco, Territorial Kavu
+T13 P2: Territorial Kavu exiles Teferi, Time Raveler from opponent GY
+T13 P2: Attack with Scion of Draco, Territorial Kavu
+  [Declare Blockers] P1 does not block
+T13 P2:   Territorial Kavu (5/5) → 5 dmg to player
+T13 P2:   Scion of Draco (4/4) → 4 dmg to player
+P1 loses: life total 0
+  [Combat Damage] 9 damage dealt → P1 life: 9 → 0
