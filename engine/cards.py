@@ -760,6 +760,12 @@ class CardTemplate:
     # All basic land types -- True when oracle grants all basic land types to lands.
     # Populated by oracle_parser.parse_has_all_basic_land_types.
     has_all_basic_land_types: bool = False
+    # Colour-setting static (CR 105.2b, continuous-effects layer 5):
+    # "" | "self" | "your_nonland_permanents".  Populated by
+    # oracle_parser.parse_color_setting_scope; consumed by
+    # ContinuousEffectsManager.recalculate, which derives the layer-5
+    # effect from every permanent on the battlefield carrying it.
+    color_setting_scope: str = ""
     # Destroy or exile -- True when oracle destroys or exiles a permanent.
     # Populated by oracle_parser.parse_has_destroy_or_exile.
     has_destroy_or_exile: bool = False
@@ -1176,6 +1182,16 @@ class CardInstance:
     cem_power_mod: int = 0
     cem_toughness_mod: int = 0
     cem_keywords: Set[Keyword] = field(default_factory=set)
+    # Layer-5 colour SET (CR 105.2b / CR 613.1e).  None = no
+    # colour-setting effect applies and the permanent is its printed
+    # colour; a frozenset REPLACES the printed colour (a set, not an
+    # accumulator — unlike the cem_* fields above — because that is
+    # what "is all colors" does).  Written only by
+    # ContinuousEffectsManager.recalculate, read through the `colors`
+    # property below.  Never write the template: templates are shared
+    # database objects and a mutation there leaks into every other
+    # game in the process.
+    cem_colors_set: Optional[frozenset] = None
     # Land animation ("this land becomes an N/M creature until end of
     # turn") — Track H. While True the instance belongs to the combat
     # class (creatures property, can_attack/can_block, SBA death
@@ -1708,6 +1724,21 @@ class CardInstance:
     @property
     def keywords(self) -> Set[Keyword]:
         return self.template.keywords | self.temp_keywords | self.cem_keywords
+
+    @property
+    def colors(self) -> Set[Color]:
+        """This permanent's CURRENT colour (CR 105.2, CR 613 layer 5).
+
+        The printed colour unless a colour-setting continuous effect
+        applies, in which case that effect's colour replaces it
+        (CR 105.2b "is all colors" SETS colour, it does not add).
+        Every runtime colour read on a permanent goes through here so
+        that layer-5 effects are visible to colour-conditional rules
+        (protection, colour-conditional keyword grants, "permanents
+        that are one or more colors" sweeps)."""
+        if self.cem_colors_set is not None:
+            return set(self.cem_colors_set)
+        return set(self.template.colors)
 
     @property
     def has_deathtouch(self) -> bool:

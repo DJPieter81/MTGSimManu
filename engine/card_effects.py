@@ -670,12 +670,13 @@ def _wrath_of_the_skies_mv_filter(x_val):
 
 def _all_is_dust_has_color(game, controller, permanent):
     # Oracle: "sacrifices all permanents ... that are one or more
-    # colors." Uses CardTemplate.colors (a permanent's actual color,
-    # CR 105.2a) rather than color_identity (a format-legality
+    # colors." Uses the permanent's CURRENT color (CardInstance.colors:
+    # printed color, or whatever a layer-5 color-setting effect set it
+    # to — CR 105.2) rather than color_identity (a format-legality
     # superset that can include colors not actually on the permanent,
     # e.g. a colored activated-ability cost) — the same distinction
     # Phase 0b's Scion of Draco fix established `colors` for.
-    return len(permanent.template.colors) > 0
+    return len(permanent.colors) > 0
 
 
 @EFFECT_REGISTRY.register("Wrath of the Skies", EffectTiming.SPELL_RESOLVE,
@@ -2872,10 +2873,22 @@ def ratchet_bomb_etb(game, card, controller, targets=None, item=None):
 @EFFECT_REGISTRY.register("Leyline of the Guildpact", EffectTiming.ETB,
                            description="All lands are every basic type, all permanents are all colors")
 def leyline_guildpact_etb(game, card, controller, targets=None, item=None):
-    """Leyline of the Guildpact: enables full domain (5 basic land types).
+    """Leyline of the Guildpact — logging + legacy domain flag.
 
-    Static: all your lands are every basic land type → domain = 5.
-    Static: all nonland permanents you control are all colors.
+    Neither of the card's two statics is implemented here, and
+    deliberately so: both are continuous abilities that must hold for
+    as long as the enchantment is on the battlefield, whatever path
+    put it there (this handler does NOT run on the start-of-game
+    leyline placement in game_runner.py, which goes through
+    TriggerManager, not EFFECT_REGISTRY).
+
+      • "Lands you control are every basic land type" — derived from
+        CardTemplate.has_all_basic_land_types by the domain count in
+        cards.py.
+      • "Each nonland permanent you control is all colors" — a
+        layer-5 colour-setting static (CR 105.2b), derived from
+        CardTemplate.color_setting_scope by
+        ContinuousEffectsManager.recalculate.
     """
     player = game.players[controller]
     # Set a flag for domain calculation
@@ -3029,7 +3042,14 @@ def scion_of_draco_etb(game, card, controller, targets=None, item=None):
     automatically retracts if Scion leaves the battlefield (the
     manager's stale-source cleanup). Mechanic-class: "creatures you
     control have keyword K if they're color C" — this registration
-    shape generalizes to any future card with the same clause."""
+    shape generalizes to any future card with the same clause.
+
+    The colour it reads is the creature's CURRENT colour
+    (CardInstance.colors), not its printed colour: a layer-5
+    colour-setting static (CR 105.2b, e.g. "each nonland permanent you
+    control is all colors") is applied earlier in the same
+    recalculate() pass, so a creature made all colours picks up all
+    five keywords."""
     from .cards import Keyword
     from .mana import Color
     from .continuous_effects import ContinuousEffect, Layer, create_lord_effect
@@ -3045,7 +3065,7 @@ def scion_of_draco_etb(game, card, controller, targets=None, item=None):
         def affected(g, c, _color=color, _controller=controller):
             return (c.controller == _controller
                     and c.template.is_creature
-                    and _color in c.template.colors)
+                    and _color in c.colors)
         for effect in create_lord_effect(
                 source_id=card.instance_id, source_name=card.template.name,
                 affected_fn=affected, power_bonus=0, toughness_bonus=0,

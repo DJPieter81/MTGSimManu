@@ -3762,6 +3762,47 @@ def parse_has_delirium(oracle: str) -> bool:
     return 'delirium' in oracle.lower()
 
 
+# ── colour-setting statics (CR 105.2b, layer 5) ────────────────────
+# Scope vocabulary shared with engine/continuous_effects.py.  These are
+# the only two shapes the clause takes in the Modern pool.
+COLOR_SET_SELF = "self"                              # "<this permanent> is all colors"
+COLOR_SET_YOUR_NONLAND = "your_nonland_permanents"   # "each nonland permanent you control is all colors"
+
+_COLOR_SET_MASS_RE = re.compile(
+    r'\beach nonland permanent you control (?:is|are) all colors\b')
+_COLOR_SET_CLAUSE_RE = re.compile(r'\b(?:is|are) all colors\b')
+
+
+def parse_color_setting_scope(oracle: str) -> str:
+    """Which permanents a "… is/are all colors" static sets the colour of.
+
+    CR 105.2b: an effect that says a permanent "is all colors" SETS its
+    colour (layer 5, CR 613.1e) rather than adding to it.  Returns one
+    of `COLOR_SET_YOUR_NONLAND`, `COLOR_SET_SELF`, or "" when the card
+    carries no such static.  Consumed by
+    ContinuousEffectsManager.recalculate via
+    `CardTemplate.color_setting_scope`.
+
+    Class size: 5 Modern-legal cards carry the clause — Leyline of the
+    Guildpact (the only mass-scope one), Sphinx of the Guildpact,
+    Transguild Courier, O-Kagachi Made Manifest and Awaken the
+    Maelstrom (self-scope).  Small, which is exactly why the knowledge
+    lives here in the parse and the behaviour lives in the layer
+    system, rather than in a per-card branch.
+    """
+    if not oracle:
+        return ""
+    lowered = oracle.lower()
+    if not _COLOR_SET_CLAUSE_RE.search(lowered):
+        return ""
+    if _COLOR_SET_MASS_RE.search(lowered):
+        return COLOR_SET_YOUR_NONLAND
+    # Remaining shape is self-referential: the subject is the card's own
+    # name ("Transguild Courier is all colors") or the modern
+    # self-reference templating ("This creature is all colors").
+    return COLOR_SET_SELF
+
+
 def parse_has_all_basic_land_types(oracle: str) -> bool:
     """Return True when oracle grants all basic land types to controlled lands.
 

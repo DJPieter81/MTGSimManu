@@ -163,7 +163,7 @@ class CombatManager:
         # the quality this attacker has protection from.
         protection = getattr(attacker.template, 'protection_from_colors',
                              frozenset())
-        if protection and (blocker.template.colors & protection):
+        if protection and (blocker.colors & protection):
             return False
         return True
 
