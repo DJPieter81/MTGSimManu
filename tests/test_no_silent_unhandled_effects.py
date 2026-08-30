@@ -64,6 +64,30 @@ ALLOWED_UNHANDLED: set[tuple[str, str]] = {
     # the resolve path to be counted as unhandled for the graveyard-cast
     # variant (Harmonize cost-reduction/exile sequence not modeled).
     ("Nature's Rhythm", "spell"),
+    # "Target creature gets +2/+0 until end of turn. Create a Monster Role
+    # token attached to it." — the ROLE TOKEN class (31 Modern cards):
+    # an Aura token that attaches, replaces any other Role its controller
+    # has on that creature, and grants a static buff (+1/+1 and trample
+    # here). Not modeled.
+    #
+    # Deliberately allowlisted rather than half-implemented. The pump half
+    # alone IS expressible, but shipping it without the Role would be the
+    # "refuse rather than half-execute" rule inverted — the card would
+    # silently apply +2/+0 where the real card applies +3/+1 and trample
+    # permanently. The Role half needs the attached-permanent static-buff
+    # infrastructure that is missing engine-wide (`_dynamic_base_power`
+    # applies only artifact-COUNT scaling from `equipped_` tags; there is
+    # no path for "enchanted/equipped creature gets +N/+M and has X"),
+    # which is a hundreds-of-cards mechanic and would move combat maths
+    # and the WR anchor broadly.
+    #
+    # Registered via the real UR Cutter Prowess list (2026-08-30). It was
+    # EXPOSED, not caused, by the ordinal-cast-trigger fix in the same
+    # session: stripping reminder text removed 15 pool-wide false-positive
+    # token handlers, one of which had been firing on this card's Role
+    # reminder text. The card was equally unmodeled before — a bogus
+    # handler was masking it.
+    ("Monstrous Rage", "spell"),
 }
 
 
