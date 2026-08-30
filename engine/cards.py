@@ -632,9 +632,15 @@ class CardTemplate:
     # all graveyards simultaneously.
     # Populated by oracle_parser.parse_has_symmetric_reanimation.
     has_symmetric_reanimation: bool = False
-    # Phyrexian pip count — number of {X/P} Phyrexian mana symbols; each
-    # allows paying 2 life instead of 1 mana.
-    # Populated by oracle_parser.parse_phyrexian_pip_count.
+    # Phyrexian pip count (CR 107.4f) — TOTAL number of {C/P} pips in the
+    # printed MANA COST; each may be paid with 2 life instead of one mana
+    # of that pip's colour.  The per-colour breakdown lives on the cost
+    # itself (`mana_cost.phyrexian`) because which colour a pip waives is
+    # load-bearing; this field is the sum, kept for consumers that only
+    # need the life price.
+    # Populated at DB load from `mana_cost.phyrexian` — NOT from oracle
+    # text, whose reminder clause names the symbol once however many pips
+    # the cost carries.
     phyrexian_pip_count: int = 0
     # -- Batch 7 typed fields -----------------------------------------------
     # Token-creation effect -- True when oracle contains "create ... token" /
@@ -937,7 +943,6 @@ class CardTemplate:
                                         parse_has_draw_effect as _phde,
                                         parse_can_exile_permanent as _pcep,
                                         parse_has_symmetric_reanimation as _phsr,
-                                        parse_phyrexian_pip_count as _pppc,
                                         parse_has_token_effect as _phte,
                                         parse_has_graveyard_recursion as _phgr,
                                         parse_has_discard_effect as _phde2,
@@ -1014,7 +1019,8 @@ class CardTemplate:
             if not self.has_symmetric_reanimation:
                 self.has_symmetric_reanimation = _phsr(self.oracle_text)
             if self.phyrexian_pip_count == 0:
-                self.phyrexian_pip_count = _pppc(self.oracle_text)
+                self.phyrexian_pip_count = sum(
+                    self.mana_cost.phyrexian.values())
             if not self.has_token_effect:
                 self.has_token_effect = _phte(self.oracle_text)
             if not self.has_graveyard_recursion:

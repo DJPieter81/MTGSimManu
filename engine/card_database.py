@@ -1144,10 +1144,18 @@ def parse_mana_cost_mtgjson(mana_cost_str: str) -> ManaCost:
         elif "/" in sym:
             # e.g., W/U, 2/W, W/P
             parts = sym.split("/")
-            if parts[1] == "P":
-                # Phyrexian - treat as colored
+            if parts[1].upper() == "P":
+                # Phyrexian (CR 107.4f) — counts as a coloured pip AND
+                # records the "or 2 life" permission on the cost itself.
+                # Parsed from the MANA COST, never from the reminder text:
+                # the reminder names the symbol once no matter how many
+                # pips the cost has ({1}{B/P}{B/P} reads "({B/P} can be
+                # paid with either {B} or 2 life.)"), so counting the
+                # oracle undercounts every multi-pip card.
                 if parts[0] in COLOR_CHARS:
                     cost.add_color(parts[0])
+                    cost.phyrexian[parts[0]] = (
+                        cost.phyrexian.get(parts[0], 0) + 1)
             elif parts[0].isdigit():
                 # Generic/colored hybrid - treat as colored
                 if parts[1] in ("W", "U", "B", "R", "G"):
@@ -1752,7 +1760,7 @@ class CardDatabase:
             parse_is_tutor, parse_has_noncreature_spell_cast_trigger,
             parse_has_artifact_synergy,
             parse_has_draw_effect, parse_can_exile_permanent,
-            parse_has_symmetric_reanimation, parse_phyrexian_pip_count,
+            parse_has_symmetric_reanimation,
             parse_has_token_effect, parse_has_graveyard_recursion,
             parse_has_graveyard_hate, parse_has_spell_chain_hate,
             parse_stax_class, parse_stax_forced_basic,
@@ -1875,7 +1883,10 @@ class CardDatabase:
         template.has_scaling_token_finisher = parse_has_scaling_token_finisher(oracle)
         template.can_exile_permanent = parse_can_exile_permanent(oracle)
         template.has_symmetric_reanimation = parse_has_symmetric_reanimation(oracle)
-        template.phyrexian_pip_count = parse_phyrexian_pip_count(oracle)
+        # CR 107.4f — total Phyrexian pips, read off the parsed MANA COST
+        # (template.mana_cost.phyrexian), never off the reminder text.
+        template.phyrexian_pip_count = sum(
+            template.mana_cost.phyrexian.values())
         template.has_token_effect = parse_has_token_effect(oracle)
         template.has_graveyard_recursion = parse_has_graveyard_recursion(oracle)
         template.has_graveyard_hate = parse_has_graveyard_hate(oracle)

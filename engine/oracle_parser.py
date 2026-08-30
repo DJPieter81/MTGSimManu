@@ -3119,15 +3119,14 @@ def parse_has_symmetric_reanimation(oracle: str) -> bool:
     return (('return' in lo or 'battlefield' in lo) and 'creature' in lo)
 
 
-def parse_phyrexian_pip_count(oracle: str) -> int:
-    """Count Phyrexian mana pips ({X/P} symbols) in the oracle text.
-
-    Each pip allows the controller to pay 2 life instead of the mana cost.
-    Replaces oracle_lower.count('/p}') at ai/ev_player.py:1504.
-    """
-    if not oracle:
-        return 0
-    return oracle.lower().count('/p}')
+# NOTE (CR 107.4f): Phyrexian pips are NOT parsed here.  A card's oracle
+# text carries a reminder clause that names the symbol exactly ONCE however
+# many pips the cost has — Dismember's {1}{B/P}{B/P} reads "({B/P} can be
+# paid with either {B} or 2 life.)" — so any count taken from oracle text
+# undercounts every multi-pip card and reads 0 if reminder text is stripped.
+# The pips are parsed from the printed MANA COST by
+# `card_database.parse_mana_cost_mtgjson` into `ManaCost.phyrexian`
+# (colour -> count), and summed into `CardTemplate.phyrexian_pip_count`.
 
 
 # -- Batch 7 typed fields --------------------------------------------------
@@ -4262,26 +4261,6 @@ def parse_has_artifact_or_enchantment_scaling(oracle: str) -> bool:
 
 
 # -- Batch 21 typed fields -------------------------------------------------
-
-def parse_phyrexian_mana_symbol_count(oracle: str) -> int:
-    """Count Phyrexian mana symbols ({X/P}) in oracle text.
-
-    Replaces oracle_lower.count('/p}') at ai/ev_player.py:1502 (life-cost
-    discount) and engine/cast_manager.py:1093 (Phyrexian payment at cast).
-
-    Class size: every Phyrexian mana card — Gitaxian Probe, Mutagenic Growth,
-    Gut Shot, Phyrexian Metamorph, etc.
-    """
-    if not oracle:
-        return 0
-    return oracle.lower().count('/p}')
-
-
-# Alias for backwards compatibility with phyrexian_pip_count field.
-# parse_phyrexian_pip_count and this function are identical; the typed field
-# on CardTemplate is named phyrexian_pip_count (populated before batch 21).
-parse_phyrexian_mana_symbol_count = parse_phyrexian_mana_symbol_count  # noqa: keep alias distinct
-
 
 def parse_channel_clause(oracle: str) -> str:
     """Extract the channel ability clause from oracle text.

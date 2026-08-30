@@ -33,6 +33,19 @@ class ManaCost:
     red: int = 0
     green: int = 0
     colorless: int = 0  # true colorless (C), not generic
+    # Phyrexian pips in this cost (CR 107.4f), colour char -> count.
+    # A {B/P} pip is ALSO counted in `black` above, so `cmc`, `colors`
+    # and every existing consumer are unchanged; this field records the
+    # extra permission the pip grants: the controller may pay 2 life
+    # INSTEAD of one mana of that specific colour.  The colour is
+    # load-bearing — waiving an arbitrary pip of a {U}{G/P} cost would
+    # wrongly excuse the blue requirement — so the counts are kept per
+    # colour rather than as a bare total.
+    # Populated once by `parse_mana_cost_mtgjson` at DB load; because it
+    # lives on ManaCost, every alternative cost parsed through that
+    # function (dash, escape, warp, spectacle, flashback, suspend)
+    # inherits Phyrexian support with no extra plumbing.
+    phyrexian: Dict[str, int] = field(default_factory=dict)
 
     @property
     def cmc(self) -> int:
