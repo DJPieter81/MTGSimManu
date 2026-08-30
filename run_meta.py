@@ -33,6 +33,35 @@ _DEFAULT_WORKERS = max(1, (os.cpu_count() or 4) - 1)
 # is the single source of the per-pair seed arithmetic, and --probe
 # re-runs cells on the MATRIX grid so its numbers are directly
 # comparable to matrix cells by construction.
+# A Bo3 is first-to-two, but a game can now end without incrementing either
+# side (a draw, CR 104.4 — see engine.game_runner.adjudicate_capped_game), so
+# the loop needs a bound on GAMES PLAYED or an all-draws match never exits.
+# Five allows the 2-1 that two drawn games would push out, while still
+# bounding a pathological pairing so it cannot dominate a matrix run.
+BO3_MAX_GAMES = 5
+
+
+def score_game_result(winner_deck, deck1, deck2):
+    """Score one game as ``(deck1_won, deck2_won, drawn)``.
+
+    Exists because the Bo3 loop used to read::
+
+        if winner_deck == deck1: score[0] += 1
+        else:                    score[1] += 1
+
+    and `winner_deck` is the literal string "draw" for a drawn game, so every
+    draw was silently counted as a game win for whichever deck happened to be
+    named second. Any change that produces more draws — such as scoring a
+    capped game as a draw instead of on life total — makes that bug worse,
+    so the two land together.
+    """
+    if winner_deck == deck1:
+        return (1, 0, 0)
+    if winner_deck == deck2:
+        return (0, 1, 0)
+    return (0, 0, 1)
+
+
 SEED_STEP = 500            # reproducibility contract: historical grid step
 MATRIX_SEED_START = 40000  # matrix grid origin (--matrix, --probe)
 MATCHUP_SEED_START = 50000  # matchup/field grid origin (--matchup, --field)
@@ -895,9 +924,14 @@ def run_bo3(deck1: str, deck2: str, seed: int = 42000,
 
     lines = []
     score = [0, 0]
+    draws = 0
     game_num = 0
 
-    while score[0] < 2 and score[1] < 2:
+    # Bound on GAMES PLAYED, not on the score. Gating only on
+    # `score[0] < 2 and score[1] < 2` cannot terminate once a game can end
+    # without incrementing either side (a draw), and an unbounded match
+    # would hang an entire matrix run.
+    while score[0] < 2 and score[1] < 2 and game_num < BO3_MAX_GAMES:
         game_num += 1
         game_seed = seed + game_num - 1
 
@@ -957,14 +991,23 @@ def run_bo3(deck1: str, deck2: str, seed: int = 42000,
         lines.append('')
 
         last_winner = r.winner_deck
-        if r.winner_deck == deck1:
-            score[0] += 1
-        else:
-            score[1] += 1
+        d1_won, d2_won, drawn = score_game_result(r.winner_deck, deck1, deck2)
+        score[0] += d1_won
+        score[1] += d2_won
+        draws += drawn
 
     lines.append('=' * 70)
-    winner = deck1 if score[0] > score[1] else deck2
-    lines.append(f'  MATCH RESULT: {winner} wins {max(score)}-{min(score)}')
+    if score[0] == score[1]:
+        # Every game drawn, or the game bound was reached without either
+        # deck taking two. A match nobody won is a draw, not a win for
+        # whichever deck happens to be named second.
+        winner = "draw"
+        lines.append(f'  MATCH RESULT: draw {score[0]}-{score[1]}'
+                     + (f' ({draws} drawn game(s))' if draws else ''))
+    else:
+        winner = deck1 if score[0] > score[1] else deck2
+        lines.append(f'  MATCH RESULT: {winner} wins {max(score)}-{min(score)}'
+                     + (f' ({draws} drawn game(s))' if draws else ''))
     lines.append('=' * 70)
 
     if replay_log is not None and dump_replay:

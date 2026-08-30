@@ -12,7 +12,20 @@ STARTING_HAND_SIZE = 7
 MIN_KEEP_HAND_SIZE = 5
 
 # ── Game limits ──
-MAX_TURNS = 25
+# Counted in HALF-turns, so this binds at roughly display turn MAX_TURNS//2.
+# It is a WALL-CLOCK SAFETY VALVE — a pathological game must not run
+# forever — and NOT a tiebreak: reaching it is a draw (CR 104.4), decided in
+# `game_runner.adjudicate_capped_game`.
+#
+# Raised 25 -> 60 on 2026-08-30. At 25 it bound at display turn ~12 and
+# adjudicated real games: 10 of 24 on a control-heavy sample, and 32% of
+# Domain Zoo vs Azorius Control games. Because the old adjudication compared
+# LIFE TOTALS it was archetype-biased, systematically deflating control.
+# Measured sec/game post-warmup: 25 -> 0.23, 40 -> 0.34, 60 -> 0.35,
+# 80 -> 0.35, 120 -> 0.35, with zero capped games from 60 upward. 60 is the
+# smallest value that buys the whole effect; above it costs nothing and
+# gains nothing. See docs/diagnostics/2026-08-30_turn_cap_deflates_control.md
+MAX_TURNS = 60
 MAX_LANDS_PER_TURN = 1
 
 # ── Safety valves ──

@@ -257,6 +257,28 @@ class AICallbacks(GameCallbacks):
         )
 
 
+def adjudicate_capped_game(life):
+    """Who wins a game that hit `MAX_TURNS`? Nobody (CR 104.4).
+
+    `MAX_TURNS` is a wall-clock safety valve so a pathological game cannot
+    run forever. It is NOT a tiebreak, and an unfinished game is a draw.
+
+    This used to compare LIFE TOTALS, which is not a neutral tiebreak: an
+    aggro deck spends the game reducing its opponent's total and typically
+    takes little back, so it wins that comparison close to automatically,
+    while a control deck that stabilised low but assembled an unbeatable
+    board loses it. Measured, the bias was large and archetype-shaped —
+    32% of Domain Zoo vs Azorius Control games were decided this way
+    (6% across a mixed field), and lifting the cap moved the CONTROL decks
+    (4/5c Control 34.4 -> 50.0, into band) while aggro decks stayed flat.
+    See docs/diagnostics/2026-08-30_turn_cap_deflates_control.md.
+
+    Takes the life totals purely so the signature documents what is being
+    deliberately IGNORED; returns None (no winner) regardless.
+    """
+    return None
+
+
 @dataclass
 class GameResult:
     """Result of a single game simulation."""
@@ -926,15 +948,12 @@ class GameRunner:
                 else:
                     win_condition = "combo"
         elif game.turn_number >= game.max_turns:
-            if game.players[0].life > game.players[1].life:
-                winner = 0
-                loser = 1
-            elif game.players[1].life > game.players[0].life:
-                winner = 1
-                loser = 0
-            else:
-                winner = None
-                loser = None
+            # CR 104.4 — a game that does not end with a winner is a DRAW.
+            # `MAX_TURNS` is a wall-clock safety valve, not a tiebreak, so
+            # hitting it decides nothing about who was winning. See
+            # `adjudicate_capped_game` for why life total must not break it.
+            winner = loser = adjudicate_capped_game(
+                [game.players[0].life, game.players[1].life])
             win_condition = "timeout"
         else:
             winner = None
