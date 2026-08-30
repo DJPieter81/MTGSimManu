@@ -58,15 +58,31 @@ def test_exile_this_permanent_parses_as_a_structured_cost_item():
 
 
 def test_exiling_something_other_than_the_source_stays_unpayable():
-    """A cost that exiles cards from a graveyard, or another permanent, is
-    a different mechanic — refused rather than approximated."""
+    """A cost that exiles cards other than the source is a different
+    mechanic — refused rather than approximated.
+
+    Tranche 5 graduated ONE of those mechanics: the untyped fixed-count
+    "Exile N cards from your graveyard" is now a structured payable field
+    (see tests/test_activation_graveyard_exile_cost.py). What stays
+    refused here is the residue that tranche also refuses — a
+    type-restricted victim, and a self-excluding "N other cards"."""
     for text in ("Exile a creature card from your graveyard",
-                 "Exile three cards from your graveyard",
+                 "Exile all cards from your graveyard",
                  "{2}, Exile two other creature cards from your graveyard"):
         cost = parse_activation_cost(text)
         assert cost is not None, text
         assert cost.exile_self is False, text
         assert 'exile' in cost.unpayable, text
+
+
+def test_the_graveyard_exile_cost_never_sets_the_exile_self_flag():
+    """The two exile cost items share a verb and nothing else: exile-SELF
+    moves the source off the battlefield, the graveyard cost pays from a
+    different zone entirely."""
+    cost = parse_activation_cost("Exile three cards from your graveyard")
+    assert cost is not None
+    assert cost.exile_self is False
+    assert cost.exile_from_graveyard_cards == 3
 
 
 def test_exile_self_and_sacrifice_self_are_distinct_cost_items():

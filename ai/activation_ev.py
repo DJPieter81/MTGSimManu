@@ -401,6 +401,20 @@ def activation_candidates(game, player_idx, snap, excluded=None):
             if ability.cost.discard_cards:
                 cost_updates["my_hand_size"] = max(
                     0, snap.my_hand_size - ability.cost.discard_cards)
+            # An exile-from-your-own-graveyard cost is deliberately NOT
+            # charged here, and that is a measured omission rather than an
+            # oversight. The only graveyard term the snapshot carries is
+            # `my_gy_creatures`, and `position_value` — the sole valuation
+            # this function projects into — does not read it, so charging
+            # it would move no EV. Pricing what a lost reanimation target
+            # is worth means either inventing a magnitude for it or
+            # extending `position_value` with a graveyard term, and both
+            # are changes to the VALUATION, not to this tranche's cost
+            # projection. Until one of them lands the cost reads as free
+            # to the scorer; the engine still refuses the activation
+            # outright whenever the graveyard cannot cover it
+            # (`can_activate` rule 9e-gy), so nothing illegal follows from
+            # the silence.
             # A counter cost that moves P/T is a real board change and must
             # be charged, or "Put a -1/-1 counter on this creature: ..."
             # scores as free right up to the point the creature dies. The
