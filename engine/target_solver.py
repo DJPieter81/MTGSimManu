@@ -157,6 +157,13 @@ _GRAVEYARD_ZONE_HINTS = (
 # Battlefield compound patterns — same dispatch order as the existing
 # _battlefield_legal_targets() helper.
 _BATTLEFIELD_COMPOUND = [
+    # Three-type compound (Teferi Time Raveler's -3, March of Otherworldly
+    # Light, Angelic Purge, Banishing Stroke, … — 13 cards in the pool).
+    # Listed FIRST so the two-type and single-type patterns below cannot
+    # capture just "artifact" and silently narrow a three-type target set
+    # down to artifacts only.
+    ("target artifact, creature, or enchantment",
+     frozenset({"artifact", "creature", "enchantment"})),
     ("target artifact or creature",     frozenset({"artifact", "creature"})),
     ("target artifact or enchantment",  frozenset({"artifact", "enchantment"})),
     ("target creature or planeswalker", frozenset({"creature", "planeswalker"})),

@@ -408,11 +408,52 @@ copies across 6 registered decks.
   no branch, so the count can only shrink (the same ratchet shape as
   `tools/check_card_name_registry.py`).
 
-**Not implemented in this session.** The session's standing instruction
-forbade running the full test suite (two agents working concurrently), and
-`activate_planeswalker` is a hot engine path that must not land unvalidated.
-The diagnosis, the A/B and the slicing are the deliverable; the fix is
-specified for the next session.
+**Not implemented in the session that wrote this document.** The session's
+standing instruction forbade running the full test suite (two agents working
+concurrently), and `activate_planeswalker` is a hot engine path that must not
+land unvalidated. The diagnosis, the A/B and the slicing were that session's
+deliverable.
+
+### IMPLEMENTED — the return-to-hand slice
+
+The rule and the first slice landed as specified. What changed:
+
+* `oracle_parser.parse_loyalty_abilities` classifies every printed `[±N]:`
+  line ONCE at DB load into `CardTemplate.loyalty_abilities`
+  (`{slot: LoyaltyAbility}`), with a closed `LoyaltyEffectKind` set and an
+  explicit `UNCLASSIFIED` escape hatch — the same shape and discipline as
+  `ActivationEffectKind`.
+* `PlaneswalkerManager.activate_planeswalker` dispatches off the typed
+  `effect_kind` and **refuses `UNCLASSIFIED` before charging loyalty**
+  (rule-9b parity), returning `bool`.  `resolvable_ability_slots` narrows
+  the AI's menu in `game_runner._activate_planeswalkers`, so a refused line
+  is never *offered* — refusing only at resolution time would still burn
+  the walker's one activation per turn.
+* `RETURN_TO_HAND` resolves through `target_solver.enumerate_legal_targets`
+  on the printed `TargetRequirement` and the `zone_mgr` funnel.  Riders
+  outside `{draw N}` refuse the whole ability rather than half-execute it.
+* Ten of the fifteen original dispatch branches were keyed on vocabulary
+  that occurs on ZERO cards; the census confirmed 0 hits each and they were
+  deleted.  Five live branches kept their exact predicates, moved to load
+  time.  A differential census over all 22,470 cards shows the ONLY
+  classification change is the 10 newly-live return-to-hand abilities.
+* Ratchet: `tools/check_loyalty_dispatch.py` + `loyalty_dispatch_baseline.json`
+  pin the unclassified count (**576 → 564** measured on this branch, over
+  698 parsed abilities); it fails on growth AND on a stale baseline.
+* Incidental: `target_solver._BATTLEFIELD_COMPOUND` gained the three-type
+  "target artifact, creature, or enchantment" phrase (13 cards in the pool,
+  including March of Otherworldly Light).  Without it Teferi's `-3` parsed
+  as artifact-only and could not have bounced the creature the A/B measured.
+
+Newly live (10): Teferi Time Raveler `-3` (+ draw rider), Wrenn and Six `+1`,
+Jace TMS `-1`, Jace Unraveler `-3`, Jace the Living Guildpact `-3`, Liliana
+Death Mage `+1`, Liliana the Necromancer, Nissa Vital Force, Tamiyo Collector
+of Tales, Tezzeret Master of the Bridge.
+
+Still refused in this family, each for a named reason: Ashiok Nightmare Muse
+(trailing exile clause), Mu Yanling Celestial Wind (plural targets), Liliana
+the Last Hope (mill rider, untargeted), Wrenn and Seven (emblem rider),
+Nahiri, Kaya, Tamiyo Moon Sage, Teferi Temporal Pilgrim.
 
 ## Reproducing
 

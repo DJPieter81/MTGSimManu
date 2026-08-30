@@ -1262,6 +1262,13 @@ class CardDatabase:
                         back = card_entries[1]
                         template.back_face_oracle = back.get('text', '')
                         template.back_face_loyalty = int(back.get('loyalty', 0) or 0)
+                        # The back face's own printed loyalty lines — a
+                        # transformed DFC activates these, not the front's.
+                        from .oracle_parser import (
+                            parse_loyalty_abilities as _parse_loyalty)
+                        template.back_face_loyalty_abilities = _parse_loyalty(
+                            template.back_face_oracle,
+                            template.back_face_loyalty)
                         template.back_face_types = [
                             TYPE_MAP[t] for t in back.get('types', []) if t in TYPE_MAP
                         ]
@@ -1741,6 +1748,7 @@ class CardDatabase:
             parse_domain_reduction, detect_power_scaling, parse_splice_cost,
             parse_counter_tax, parse_protection_from, parse_ward_cost,
             parse_is_land_sacrifice_tutor, parse_x_creature_tutor,
+            parse_loyalty_abilities,
             parse_can_target_player, parse_can_target_planeswalker,
             grants_flashback_to_gy_spells, parse_deals_targeted_damage,
             parse_has_scaling_token_finisher,
@@ -1831,6 +1839,11 @@ class CardDatabase:
         template.counter_tax_amount = parse_counter_tax(oracle)
         template.is_land_sacrifice_tutor = parse_is_land_sacrifice_tutor(oracle)
         template.x_creature_tutor_data = parse_x_creature_tutor(oracle)
+        # Printed loyalty abilities (CR 606), classified once here so
+        # `PlaneswalkerManager` can dispatch off a typed field and refuse
+        # what it cannot execute before charging loyalty.
+        template.loyalty_abilities = parse_loyalty_abilities(
+            oracle, template.loyalty)
         template.protection_from_colors = parse_protection_from(oracle)
         template.ward_cost = parse_ward_cost(oracle)
         template.can_target_player = parse_can_target_player(oracle)
