@@ -1696,12 +1696,36 @@ class CastManager:
                 if 'noncreature spell' not in c_oracle and 'instant or sorcery' not in c_oracle:
                     continue
                 import re
-                pump = re.search(r'gets?\s+\+(\d+)/\+(\d+)', c_oracle)
+                # Anchor the pump search to the actual "whenever you cast
+                # ... spell" triggered-ability CLAUSE (up to the next
+                # sentence boundary) rather than the creature's whole
+                # oracle text. A creature can print a "+N/+N" elsewhere for
+                # an unrelated reason (a delirium condition, an oil-counter
+                # static, an anthem for another creature type) alongside a
+                # real cast-trigger whose own effect has no P/T component
+                # (e.g. Dragon's Rage Channeler's trigger only surveils —
+                # its "+2/+2" belongs to a separate Delirium static). Class:
+                # >=11 Modern creatures share this "unrelated pump text
+                # co-present with a cast trigger" shape; searching the
+                # whole blob re-applies that unrelated bonus on every spell
+                # cast instead of leaving it to the static/condition that
+                # actually grants it.
+                trigger_clause = next(
+                    (m.group(0) for m in re.finditer(
+                        r'whenever you cast[^.]*?'
+                        r'(?:noncreature spell|instant or sorcery)[^.]*\.',
+                        c_oracle,
+                    )),
+                    None,
+                )
+                if trigger_clause is None:
+                    continue
+                pump = re.search(r'gets?\s+\+(\d+)/\+(\d+)', trigger_clause)
                 if pump:
                     creature.temp_power_mod += int(pump.group(1))
                     creature.temp_toughness_mod += int(pump.group(2))
-                elif re.search(r'gets?\s+\+(\d+)/\+0', c_oracle):
-                    m = re.search(r'gets?\s+\+(\d+)/\+0', c_oracle)
+                elif re.search(r'gets?\s+\+(\d+)/\+0', trigger_clause):
+                    m = re.search(r'gets?\s+\+(\d+)/\+0', trigger_clause)
                     creature.temp_power_mod += int(m.group(1))
                 # Delirium — check actual GY card types via _has_delirium()
                 # _dynamic_base_power() already scales to 3 with delirium; we also
