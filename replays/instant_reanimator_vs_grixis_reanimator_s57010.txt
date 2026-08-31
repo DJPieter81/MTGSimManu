@@ -1,0 +1,2135 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+======================================================================
+  GAME 1: Instant Reanimator (P1) vs Grixis Reanimator (P2)  —  seed 57010
+  Series: Instant Reanimator 0 - 0 Grixis Reanimator
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Instant Reanimator wins → chooses to play first
+║ P1 (on play): Instant Reanimator
+║ P2 (on draw): Grixis Reanimator
+╚═══════════════════════════════════════════════════════
+
+P1 (Instant Reanimator) opening hand (2 lands, 5 spells):
+  • Misty Rainforest [Land, CMC 0]
+  • Fallaji Archaeologist [Creature, CMC 2]
+  • Atraxa, Grand Unifier [Creature, CMC 7]
+  • Faithful Mending [Spell, CMC 2]
+  • Quantum Riddler [Creature, CMC 5]
+  • Prismatic Ending [Spell, CMC 1]
+  • Breeding Pool [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Atraxa, Grand Unifier, Faithful Mending, 3 cheap spells
+
+P2 (Grixis Reanimator) opening hand (1 lands, 6 spells):
+  • Unearth [Spell, CMC 1]
+  • Fatal Push [Spell, CMC 1]
+  • Psychic Frog [Creature, CMC 2]
+  • Persist [Spell, CMC 2]
+  • Unearth [Spell, CMC 1]
+  • Faithless Looting [Spell, CMC 1]
+  • Watery Grave [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Fatal Push, Psychic Frog, 6 cheap spells
+
+
+╔══ TURN 1 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 20  |  Grixis Reanimator 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Grixis Reanimator board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Misty Rainforest
+T1: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Misty Rainforest (pay 1 life) -> Hallowed Fountain (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Grixis Reanimator (P2) ══════════════════════════
+║ Life: Grixis Reanimator 20  |  Instant Reanimator 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Grixis Reanimator board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Steam Vents
+  [Main 1]
+T1 P2: Play Watery Grave (untapped, life: 20)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 19  |  Grixis Reanimator 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain
+║ Grixis Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Flooded Strand
+  [Main 1]
+T2 P1: Play Breeding Pool (untapped, life: 19)
+    → Goal: fill_resource [enablers]
+    [Mana] Tap Hallowed Fountain→W, Breeding Pool→U (paying for Faithful Mending, 0 mana remaining)
+T2 P1: Cast Faithful Mending (WU)
+    [Priority] P2 passes (no response)
+T2: Resolve Faithful Mending
+T2: Atraxa, Grand Unifier moved hand -> graveyard (discard)
+T2: Atraxa, Grand Unifier moved hand -> graveyard (discard)
+T2: Faithful Mending moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Grixis Reanimator (P2) ══════════════════════════
+║ Life: Grixis Reanimator 20  |  Instant Reanimator 21
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Grixis Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T], Breeding Pool [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Abhorrent Oculus
+  [Main 1]
+T2 P2: Play Steam Vents (untapped, life: 20)
+T2: Unearth moved hand -> graveyard (cycling)
+T2 P2: Cycle Unearth (pay 2 mana, draw: Bloodstained Mire)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 21  |  Grixis Reanimator 20
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 49  |  Graveyard: 4
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Breeding Pool
+║ Grixis Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Griselbrand
+  [Main 1]
+T3 P1: Play Flooded Strand
+T3: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T3 P1: Crack Flooded Strand (pay 1 life) -> Watery Grave (tapped, life: 20)
+    → Goal: execute_payoff
+    [Mana] Tap Hallowed Fountain→U, Breeding Pool→G (paying for Fallaji Archaeologist, 0 mana remaining)
+T3 P1: Cast Fallaji Archaeologist (1U)
+    [Priority] P2 passes (no response)
+T3: Resolve Fallaji Archaeologist
+T3: Polluted Delta moved library -> graveyard (Fallaji Archaeologist mill)
+T3: Solitude moved library -> graveyard (Fallaji Archaeologist mill)
+T3: Prismatic Ending moved library -> graveyard (Fallaji Archaeologist mill)
+T3: Prismatic Ending moved graveyard -> hand (Fallaji Archaeologist recover)
+T3 P1: Fallaji Archaeologist ETB: mill 3
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Grixis Reanimator (P2) ══════════════════════════
+║ Life: Grixis Reanimator 20  |  Instant Reanimator 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Grixis Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Steam Vents
+║ Instant Reanimator board:
+║   Creatures: Fallaji Archaeologist (0/3)
+║   Lands: Hallowed Fountain [T], Breeding Pool [T], Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Abhorrent Oculus
+  [Main 1]
+T3 P2: Play Bloodstained Mire
+T3: Bloodstained Mire moved battlefield -> graveyard (fetchland sacrifice)
+T3 P2: Crack Bloodstained Mire (pay 1 life) -> Blood Crypt (tapped, life: 19)
+T3: Unearth moved hand -> graveyard (cycling)
+T3 P2: Cycle Unearth (pay 2 mana, draw: Scalding Tarn)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 20  |  Grixis Reanimator 19
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 44  |  Graveyard: 7
+║ Instant Reanimator board:
+║   Creatures: Fallaji Archaeologist (0/3)
+║   Lands: Hallowed Fountain, Breeding Pool, Watery Grave
+║ Grixis Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T], Steam Vents [T], Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Marsh Flats
+  [Main 1]
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Hallowed Fountain→U, Watery Grave→B (paying for Goryo's Vengeance, 1 mana remaining)
+T4 P1: Cast Goryo's Vengeance (1B)
+    [Priority] P2 passes (no response)
+T4: Resolve Goryo's Vengeance
+T4 P1: Reanimate Atraxa, Grand Unifier
+T4: Atraxa, Grand Unifier moved library -> hand (Atraxa, Grand Unifier reveal)
+T4: Faithful Mending moved library -> hand (Atraxa, Grand Unifier reveal)
+T4: Flooded Strand moved library -> hand (Atraxa, Grand Unifier reveal)
+T4 P1: Atraxa, Grand Unifier ETB: put 3 to hand (Atraxa, Grand Unifier, Faithful Mending, Flooded Strand)
+T4: Goryo's Vengeance moved stack -> graveyard (resolution)
+T4 P1: Play Flooded Strand
+T4: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T4 P1: Crack Flooded Strand (pay 1 life) -> Godless Shrine (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Atraxa, Grand Unifier
+T4 P1: Attack with Atraxa, Grand Unifier
+  [Declare Blockers] P2 does not block
+T4 P1:   Atraxa, Grand Unifier (7/7) → 7 dmg to player
+  [Combat Damage] 7 damage dealt → P2 life: 19 → 12
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Atraxa, Grand Unifier moved battlefield -> exile (delayed end-of-turn exile)
+T4: Atraxa, Grand Unifier exiled (end of turn)
+
+╔══ TURN 4 — Grixis Reanimator (P2) ══════════════════════════
+║ Life: Grixis Reanimator 12  |  Instant Reanimator 26
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 3
+║ Grixis Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Steam Vents, Blood Crypt
+║ Instant Reanimator board:
+║   Creatures: Fallaji Archaeologist (0/3)
+║   Lands: Hallowed Fountain [T], Breeding Pool, Watery Grave [T], Godless Shrine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Bloodstained Mire
+  [Main 1]
+T4 P2: Play Scalding Tarn
+T4: Scalding Tarn moved battlefield -> graveyard (fetchland sacrifice)
+T4 P2: Crack Scalding Tarn -> Island (untapped)
+    → Goal: push_damage
+    [Mana] Tap Island→U, Watery Grave→B, Steam Vents→R (paying for Abhorrent Oculus, 1 mana remaining)
+T4 P2: Cast Abhorrent Oculus (2U)
+    [Priority] P1 passes (no response)
+T4: Resolve Abhorrent Oculus
+    → Goal: push_damage
+    [Mana] Tap Blood Crypt→R (paying for Faithless Looting, 0 mana remaining)
+T4 P2: Cast Faithless Looting (R)
+    [Priority] P1 passes (no response)
+T4: Resolve Faithless Looting
+T4 P2: Faithless Looting → draw 2 (Abhorrent Oculus, Archon of Cruelty)
+T4: Faithless Looting moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 26  |  Grixis Reanimator 11
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 39  |  Graveyard: 8
+║ Instant Reanimator board:
+║   Creatures: Fallaji Archaeologist (0/3)
+║   Lands: Hallowed Fountain, Breeding Pool, Watery Grave, Godless Shrine
+║ Grixis Reanimator board:
+║   Creatures: Abhorrent Oculus (5/5)
+║   Lands: Watery Grave [T], Steam Vents [T], Blood Crypt [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Goryo's Vengeance
+  [Main 1]
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Hallowed Fountain→U, Watery Grave→B (paying for Goryo's Vengeance, 2 mana remaining)
+T5 P1: Cast Goryo's Vengeance (1B)
+    [Priority] P2 passes (no response)
+T5: Resolve Goryo's Vengeance
+T5 P1: Reanimate Atraxa, Grand Unifier
+T5: Solitude moved library -> hand (Atraxa, Grand Unifier reveal)
+T5: Faithful Mending moved library -> hand (Atraxa, Grand Unifier reveal)
+T5: Island moved library -> hand (Atraxa, Grand Unifier reveal)
+T5 P1: Atraxa, Grand Unifier ETB: put 3 to hand (Solitude, Faithful Mending, Island)
+T5: Goryo's Vengeance moved stack -> graveyard (resolution)
+T5 P1: Play Marsh Flats
+T5: Marsh Flats moved battlefield -> graveyard (fetchland sacrifice)
+T5 P1: Crack Marsh Flats -> Swamp (untapped)
+    → Goal: execute_payoff
+    [Mana] Tap Godless Shrine→W (paying for Prismatic Ending, 2 mana remaining)
+T5 P1: Cast Prismatic Ending (2W) (X=2)
+    [Priority] P2 passes (no response)
+T5: Resolve Prismatic Ending
+T5: Abhorrent Oculus moved battlefield -> exile (exiled)
+T5 P1: Prismatic Ending exiles Abhorrent Oculus
+T5: Prismatic Ending moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Atraxa, Grand Unifier
+T5 P1: Attack with Atraxa, Grand Unifier
+  [Declare Blockers] P2 does not block
+T5 P1:   Atraxa, Grand Unifier (7/7) → 7 dmg to player
+  [Combat Damage] 7 damage dealt → P2 life: 11 → 4
+  [End Combat]
+  [Main 2]
+  [End Step]
+T5: Atraxa, Grand Unifier moved battlefield -> exile (delayed end-of-turn exile)
+T5: Atraxa, Grand Unifier exiled (end of turn)
+T5: Griselbrand moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 5 — Grixis Reanimator (P2) ══════════════════════════
+║ Life: Grixis Reanimator 4  |  Instant Reanimator 32
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 43  |  Graveyard: 5
+║ Grixis Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Steam Vents, Blood Crypt, Island
+║ Instant Reanimator board:
+║   Creatures: Fallaji Archaeologist (0/3)
+║   Lands: Hallowed Fountain [T], Breeding Pool [T], Watery Grave [T], Godless Shrine [T], Swamp [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Psychic Frog
+  [Main 1]
+T5 P2: Play Bloodstained Mire
+T5: Bloodstained Mire moved battlefield -> graveyard (fetchland sacrifice)
+T5 P2: Crack Bloodstained Mire -> Swamp (untapped)
+    → Goal: push_damage
+    [Mana] Tap Island→U, Swamp→B, Watery Grave→B (paying for Abhorrent Oculus, 2 mana remaining)
+T5 P2: Cast Abhorrent Oculus (2U)
+    [Priority] P1 passes (no response)
+T5: Resolve Abhorrent Oculus
+    → Goal: push_damage
+    [Mana] Tap Steam Vents→U, Blood Crypt→B (paying for Psychic Frog, 0 mana remaining)
+T5 P2: Cast Psychic Frog (UB)
+    [Priority] P1 passes (no response)
+T5: Resolve Psychic Frog
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 32  |  Grixis Reanimator 3
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 34  |  Graveyard: 11
+║ Instant Reanimator board:
+║   Creatures: Fallaji Archaeologist (0/3)
+║   Lands: Hallowed Fountain, Breeding Pool, Watery Grave, Godless Shrine, Swamp
+║ Grixis Reanimator board:
+║   Creatures: Abhorrent Oculus (5/5), Psychic Frog (1/2)
+║   Lands: Watery Grave [T], Steam Vents [T], Blood Crypt [T], Island [T], Swamp [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ephemerate
+  [Main 1]
+T6 P1: Play Island
+    → Goal: execute_payoff
+    [Mana] Tap Swamp→B, Island→U, Hallowed Fountain→U, Breeding Pool→G, Watery Grave→B (paying for Quantum Riddler, 1 mana remaining)
+T6 P1: Cast Quantum Riddler (3UU)
+    [Priority] P2 passes (no response)
+T6: Resolve Quantum Riddler
+T6 P1: Quantum Riddler ETB: draw 1 (Quantum Riddler)
+    → Goal: execute_payoff [protection]
+    [Mana] Tap Godless Shrine→W (paying for Ephemerate, 0 mana remaining)
+T6 P1: Cast Ephemerate (W)
+    [Priority] P2 passes (no response)
+T6: Resolve Ephemerate
+T6 P1: Quantum Riddler ETB: draw 1 (Polluted Delta)
+T6: Blink Quantum Riddler
+T6: Ephemerate moved stack -> exile (rebound (CR 702.86))
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Grixis Reanimator (P2) ══════════════════════════
+║ Life: Grixis Reanimator 3  |  Instant Reanimator 32
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 41  |  Graveyard: 6
+║ Grixis Reanimator board:
+║   Creatures: Abhorrent Oculus (5/5), Psychic Frog (1/2)
+║   Lands: Watery Grave, Steam Vents, Blood Crypt, Island, Swamp
+║ Instant Reanimator board:
+║   Creatures: Fallaji Archaeologist (0/3), Quantum Riddler (4/6)
+║   Lands: Hallowed Fountain [T], Breeding Pool [T], Watery Grave [T], Godless Shrine [T], Swamp [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Fatal Push
+  [Main 1]
+    → Goal: push_damage
+    [Mana] Tap Swamp→B (paying for Fatal Push, 4 mana remaining)
+T6 P2: Cast Fatal Push (B)
+    [Priority] P1 passes (no response)
+T6: Resolve Fatal Push
+T6: Fatal Push moved stack -> graveyard (resolution)
+    → Goal: push_damage
+    [Mana] Tap Watery Grave→B (paying for Fatal Push, 3 mana remaining)
+T6 P2: Cast Fatal Push (B)
+    [Priority] P1 passes (no response)
+T6: Resolve Fatal Push
+T6: Fatal Push moved stack -> graveyard (resolution)
+    → Goal: push_damage
+    [Mana] Tap Island→U, Steam Vents→R, Blood Crypt→B (paying for Abhorrent Oculus, 0 mana remaining)
+T6 P2: Cast Abhorrent Oculus (2U)
+    [Priority] P1 passes (no response)
+T6: Resolve Abhorrent Oculus
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Abhorrent Oculus, Psychic Frog
+T6 P2: Attack with Abhorrent Oculus, Psychic Frog
+  [Declare Blockers] P1 does not block
+T6 P2:   Abhorrent Oculus (5/5) → 5 dmg to player
+T6 P2:   Psychic Frog (3/4) → 3 dmg to player
+T6 P2: Psychic Frog deals combat damage — draw a card
+  [Combat Damage] 8 damage dealt → P1 life: 32 → 24
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 24  |  Grixis Reanimator 3
+║ Hand: 7 cards  |  Opp hand: 2 cards
+║ Lands: 6  |  Opp lands: 5
+║ Library: 31  |  Graveyard: 11
+║ Instant Reanimator board:
+║   Creatures: Fallaji Archaeologist (0/3), Quantum Riddler (4/6)
+║   Lands: Hallowed Fountain, Breeding Pool, Watery Grave, Godless Shrine, Swamp, Island
+║ Grixis Reanimator board:
+║   Creatures: Abhorrent Oculus (5/5) [tapped], Psychic Frog (3/4) [tapped], Abhorrent Oculus (5/5)
+║   Lands: Watery Grave [T], Steam Vents [T], Blood Crypt [T], Island [T], Swamp [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T7 P1: Rebound Ephemerate declined (CR 702.88b)
+  [Draw] P1 draws: Faithful Mending
+  [Main 1]
+T7 P1: Play Polluted Delta
+T7: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T7 P1: Crack Polluted Delta -> Meticulous Archive (tapped)
+T7 P1: surveil 1 → Ephemerate to GY
+    → Goal: execute_payoff
+    [Mana] Tap Hallowed Fountain→W (paying for Prismatic Ending, 5 mana remaining)
+T7 P1: Cast Prismatic Ending (5W) (X=5)
+    [Priority] P2 passes (no response)
+T7: Resolve Prismatic Ending
+T7: Abhorrent Oculus moved battlefield -> exile (exiled)
+T7 P1: Prismatic Ending exiles Abhorrent Oculus
+T7: Prismatic Ending moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Quantum Riddler
+T7 P1: Attack with Quantum Riddler
+T7 P2:   [BLOCK-EMERGENCY] Abhorrent Oculus (5/5) blocks Quantum Riddler (4/6) — lifespan_delta=+100.75
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Grixis Reanimator (P2) ══════════════════════════
+║ Life: Grixis Reanimator 3  |  Instant Reanimator 23
+║ Hand: 2 cards  |  Opp hand: 6 cards
+║ Lands: 5  |  Opp lands: 7
+║ Library: 39  |  Graveyard: 10
+║ Grixis Reanimator board:
+║   Creatures: Psychic Frog (3/4), Abhorrent Oculus (5/5)
+║   Lands: Watery Grave, Steam Vents, Blood Crypt, Island, Swamp
+║ Instant Reanimator board:
+║   Creatures: Fallaji Archaeologist (0/3), Quantum Riddler (4/6) [tapped]
+║   Lands: Hallowed Fountain [T], Breeding Pool [T], Watery Grave [T], Godless Shrine [T], Swamp [T], Island [T], Meticulous Archive [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Spell Pierce
+  [Main 1]
+    → Goal: push_damage
+    [Mana] Tap Island→U, Swamp→B (paying for Persist, 3 mana remaining)
+T7 P2: Cast Persist (1B)
+    [Priority] P1 passes (no response)
+T7: Resolve Persist
+T7 P2: Reanimate Psychic Frog
+T7 P2: Persist reanimates Psychic Frog
+T7: Persist moved stack -> graveyard (resolution)
+    → Goal: push_damage
+    [Mana] Tap Watery Grave→B, Steam Vents→R (paying for Emperor of Bones, 1 mana remaining)
+T7 P2: Cast Emperor of Bones (1B)
+    [Priority] P1 passes (no response)
+T7: Resolve Emperor of Bones
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Psychic Frog, Abhorrent Oculus
+T7 P2: Attack with Psychic Frog, Abhorrent Oculus
+  [Declare Blockers] P1 does not block
+T7 P2:   Psychic Frog (3/4) → 3 dmg to player
+T7 P2: Psychic Frog deals combat damage — draw a card
+T7 P2:   Abhorrent Oculus (5/5) → 5 dmg to player
+  [Combat Damage] 8 damage dealt → P1 life: 23 → 15
+  [End Combat]
+  [Main 2]
+T7 P2: Play Polluted Delta
+T7: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T7 P2: Crack Polluted Delta -> Undercity Sewers (tapped)
+T7 P2: surveil 1 → Fatal Push to GY
+  [End Step]
+
+╔══ TURN 8 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 15  |  Grixis Reanimator 2
+║ Hand: 6 cards  |  Opp hand: 1 cards
+║ Lands: 7  |  Opp lands: 6
+║ Library: 28  |  Graveyard: 14
+║ Instant Reanimator board:
+║   Creatures: Fallaji Archaeologist (0/3), Quantum Riddler (4/6)
+║   Lands: Hallowed Fountain, Breeding Pool, Watery Grave, Godless Shrine, Swamp, Island, Meticulous Archive
+║ Grixis Reanimator board:
+║   Creatures: Psychic Frog (3/4) [tapped], Abhorrent Oculus (5/5) [tapped], Psychic Frog (1/2), Emperor of Bones (2/2)
+║   Lands: Watery Grave [T], Steam Vents [T], Blood Crypt, Island [T], Swamp [T], Undercity Sewers [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Thoughtseize
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Island→U, Hallowed Fountain→W (paying for Faithful Mending, 5 mana remaining)
+T8 P1: Cast Faithful Mending (WU)
+    [Priority] P2 passes (no response)
+T8: Resolve Faithful Mending
+T8: Faithful Mending moved hand -> graveyard (discard)
+T8: Faithful Mending moved hand -> graveyard (discard)
+T8: Faithful Mending moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Swamp→B, Breeding Pool→G (paying for Goryo's Vengeance, 3 mana remaining)
+T8 P1: Cast Goryo's Vengeance (1B)
+    [Priority] P2 passes (no response)
+T8: Resolve Goryo's Vengeance
+T8 P1: Reanimate Griselbrand
+T8: Goryo's Vengeance moved stack -> graveyard (resolution)
+T8 P1: Play Flooded Strand
+T8: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T8 P1: Crack Flooded Strand -> Plains (untapped)
+    → Goal: execute_payoff
+    [Mana] Tap Plains→W, Watery Grave→U (paying for Faithful Mending, 2 mana remaining)
+T8 P1: Cast Faithful Mending (WU)
+    [Priority] P2 passes (no response)
+T8: Resolve Faithful Mending
+T8: Thoughtseize moved hand -> graveyard (discard)
+T8: Thoughtseize moved hand -> graveyard (discard)
+T8: Faithful Mending moved stack -> exile (flashback resolution (CR 702.33a))
+    → Goal: execute_payoff
+    [Mana] Tap Godless Shrine→B, Meticulous Archive→U (paying for Psychic Frog, 0 mana remaining)
+T8 P1: Cast Psychic Frog (UB)
+    [Priority] P2 passes (no response)
+T8: Resolve Psychic Frog
+T8 P1: Griselbrand: pay 7 life, draw 7
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Quantum Riddler, Griselbrand
+T8 P1: Attack with Quantum Riddler, Griselbrand
+  [Declare Blockers] P2 does not block
+T8 P1:   Quantum Riddler (4/6) → 4 dmg to player
+T8 P1:   Griselbrand (7/7) → 7 dmg to player
+P2 loses: life total -9
+  [Combat Damage] 11 damage dealt → P2 life: 2 → -9
+
+>>> Instant Reanimator wins Game 1 on turn 8 via damage
+    Final life: Instant Reanimator=18  Grixis Reanimator=-9
+
+======================================================================
+  GAME 2: Grixis Reanimator (P1) vs Instant Reanimator (P2)  —  seed 57011
+  Series: Instant Reanimator 1 - 0 Grixis Reanimator
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Instant Reanimator wins → chooses to play first
+║ P1 (on play): Instant Reanimator
+║ P2 (on draw): Grixis Reanimator
+╚═══════════════════════════════════════════════════════
+
+P1 (Grixis Reanimator) opening hand (2 lands, 5 spells):
+  • Swamp [Land, CMC 0]
+  • Psychic Frog [Creature, CMC 2]
+  • Psychic Frog [Creature, CMC 2]
+  • Fatal Push [Spell, CMC 1]
+  • Scalding Tarn [Land, CMC 0]
+  • Thought Scour [Spell, CMC 1]
+  • Faithless Looting [Spell, CMC 1]
+→ P1 KEEPS 7 — has key card(s): Fatal Push, Psychic Frog, 5 cheap spells
+
+P2 (Instant Reanimator) opening hand (4 lands, 3 spells):
+  • Psychic Frog [Creature, CMC 2]
+  • Goryo's Vengeance [Spell, CMC 2]
+  • Polluted Delta [Land, CMC 0]
+  • Marsh Flats [Land, CMC 0]
+  • Solitude [Creature, CMC 5]
+  • Godless Shrine [Land, CMC 0]
+  • Swamp [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Goryo's Vengeance, Psychic Frog, 2 cheap spells
+
+
+╔══ TURN 1 — Instant Reanimator (P2) ══════════════════════════
+║ Life: Instant Reanimator 20  |  Grixis Reanimator 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Grixis Reanimator board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Marsh Flats
+T1: Marsh Flats moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Marsh Flats (pay 1 life) -> Hallowed Fountain (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Grixis Reanimator (P1) ══════════════════════════
+║ Life: Grixis Reanimator 20  |  Instant Reanimator 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Grixis Reanimator board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Emperor of Bones
+  [Main 1]
+T1 P1: Play Scalding Tarn
+T1: Scalding Tarn moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Scalding Tarn (pay 1 life) -> Watery Grave (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Instant Reanimator (P2) ══════════════════════════
+║ Life: Instant Reanimator 19  |  Grixis Reanimator 19
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain
+║ Grixis Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Solitude
+  [Main 1]
+T2 P2: Play Polluted Delta
+T2: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T2 P2: Crack Polluted Delta (pay 1 life) -> Watery Grave (tapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Grixis Reanimator (P1) ══════════════════════════
+║ Life: Grixis Reanimator 19  |  Instant Reanimator 18
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Grixis Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Psychic Frog
+  [Main 1]
+T2 P1: Play Swamp
+    → Goal: deploy_engine
+    [Mana] Tap Swamp→B, Watery Grave→B (paying for Emperor of Bones, 0 mana remaining)
+T2 P1: Cast Emperor of Bones (1B)
+    [Priority] P2 passes (no response)
+T2: Resolve Emperor of Bones
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Instant Reanimator (P2) ══════════════════════════
+║ Life: Instant Reanimator 18  |  Grixis Reanimator 19
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Watery Grave
+║ Grixis Reanimator board:
+║   Creatures: Emperor of Bones (2/2)
+║   Lands: Watery Grave [T], Swamp [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Goryo's Vengeance
+  [Main 1]
+T3 P2: Play Godless Shrine (untapped, life: 16)
+    → Goal: fill_resource [engines]
+    [Mana] Tap Hallowed Fountain→U, Watery Grave→B (paying for Psychic Frog, 1 mana remaining)
+T3 P2: Cast Psychic Frog (UB)
+    [Priority] P1 passes (no response)
+T3: Resolve Psychic Frog
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Grixis Reanimator (P1) ══════════════════════════
+║ Life: Grixis Reanimator 19  |  Instant Reanimator 16
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Grixis Reanimator board:
+║   Creatures: Emperor of Bones (2/2)
+║   Lands: Watery Grave, Swamp
+║ Instant Reanimator board:
+║   Creatures: Psychic Frog (1/2)
+║   Lands: Hallowed Fountain [T], Watery Grave [T], Godless Shrine
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Emperor of Bones
+  [Main 1]
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Watery Grave→U (paying for Thought Scour, 1 mana remaining)
+T3 P1: Cast Thought Scour (U)
+    [Priority] P2 passes (no response)
+T3: Resolve Thought Scour
+T3 P1: Thought Scour → draw 1 (Thoughtseize)
+T3: Thought Scour moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Emperor of Bones
+T3 P1: Attack with Emperor of Bones
+T3 P2:   [BLOCK] Psychic Frog (1/2) blocks Emperor of Bones (2/2) — lifespan_delta=+1.00
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T3: Psychic Frog dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Instant Reanimator (P2) ══════════════════════════
+║ Life: Instant Reanimator 16  |  Grixis Reanimator 19
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 49  |  Graveyard: 3
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Watery Grave, Godless Shrine
+║ Grixis Reanimator board:
+║   Creatures: Emperor of Bones (2/2) [tapped]
+║   Lands: Watery Grave [T], Swamp
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Atraxa, Grand Unifier
+  [Main 1]
+T4 P2: Play Swamp
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Grixis Reanimator (P1) ══════════════════════════
+║ Life: Grixis Reanimator 19  |  Instant Reanimator 16
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 2
+║ Grixis Reanimator board:
+║   Creatures: Emperor of Bones (2/2)
+║   Lands: Watery Grave, Swamp
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Watery Grave, Godless Shrine, Swamp
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Faithless Looting
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Swamp→B, Watery Grave→B (paying for Emperor of Bones, 0 mana remaining)
+T4 P1: Cast Emperor of Bones (1B)
+    [Priority] P2 passes (no response)
+T4: Resolve Emperor of Bones
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Emperor of Bones
+T4 P1: Attack with Emperor of Bones
+  [Declare Blockers] P2 does not block
+T4 P1:   Emperor of Bones (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 16 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Instant Reanimator (P2) ══════════════════════════
+║ Life: Instant Reanimator 14  |  Grixis Reanimator 19
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 2
+║ Library: 48  |  Graveyard: 3
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Watery Grave, Godless Shrine, Swamp
+║ Grixis Reanimator board:
+║   Creatures: Emperor of Bones (2/2) [tapped], Emperor of Bones (2/2)
+║   Lands: Watery Grave [T], Swamp [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Force of Negation
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Grixis Reanimator (P1) ══════════════════════════
+║ Life: Grixis Reanimator 19  |  Instant Reanimator 14
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 2
+║ Grixis Reanimator board:
+║   Creatures: Emperor of Bones (2/2), Emperor of Bones (2/2)
+║   Lands: Watery Grave, Swamp
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Watery Grave, Godless Shrine, Swamp
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Archon of Cruelty
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Swamp→B, Watery Grave→U (paying for Psychic Frog, 0 mana remaining)
+T5 P1: Cast Psychic Frog (UB)
+    [Priority] P2 passes (no response)
+T5: Resolve Psychic Frog
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Emperor of Bones, Emperor of Bones
+T5 P1: Attack with Emperor of Bones, Emperor of Bones
+  [Declare Blockers] P2 does not block
+T5 P1:   Emperor of Bones (2/2) → 2 dmg to player
+T5 P1:   Emperor of Bones (2/2) → 2 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 14 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Instant Reanimator (P2) ══════════════════════════
+║ Life: Instant Reanimator 10  |  Grixis Reanimator 19
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 2
+║ Library: 47  |  Graveyard: 3
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Watery Grave, Godless Shrine, Swamp
+║ Grixis Reanimator board:
+║   Creatures: Emperor of Bones (2/2) [tapped], Emperor of Bones (2/2) [tapped], Psychic Frog (1/2)
+║   Lands: Watery Grave [T], Swamp [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Misty Rainforest
+  [Main 1]
+T6 P2: Play Misty Rainforest
+T6: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T6 P2: Crack Misty Rainforest (pay 1 life) -> Breeding Pool (tapped, life: 9)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Grixis Reanimator (P1) ══════════════════════════
+║ Life: Grixis Reanimator 19  |  Instant Reanimator 9
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 2
+║ Grixis Reanimator board:
+║   Creatures: Emperor of Bones (2/2), Emperor of Bones (2/2), Psychic Frog (1/2)
+║   Lands: Watery Grave, Swamp
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Watery Grave, Godless Shrine, Swamp, Breeding Pool [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Bloodstained Mire
+  [Main 1]
+T6 P1: Play Bloodstained Mire
+T6: Bloodstained Mire moved battlefield -> graveyard (fetchland sacrifice)
+T6 P1: Crack Bloodstained Mire (pay 1 life) -> Blood Crypt (tapped, life: 18)
+    → Goal: execute_payoff
+    [Mana] Tap Swamp→B, Watery Grave→U (paying for Psychic Frog, 0 mana remaining)
+T6 P1: Cast Psychic Frog (UB)
+    [Priority] P2 passes (no response)
+T6: Resolve Psychic Frog
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Emperor of Bones, Emperor of Bones, Psychic Frog
+T6 P1: Attack with Emperor of Bones, Emperor of Bones, Psychic Frog
+  [Declare Blockers] P2 does not block
+T6 P1:   Emperor of Bones (2/2) → 2 dmg to player
+T6 P1:   Emperor of Bones (2/2) → 2 dmg to player
+T6 P1:   Psychic Frog (3/4) → 3 dmg to player
+T6 P1: Psychic Frog deals combat damage — draw a card
+  [Combat Damage] 7 damage dealt → P2 life: 9 → 2
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Instant Reanimator (P2) ══════════════════════════
+║ Life: Instant Reanimator 2  |  Grixis Reanimator 18
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 45  |  Graveyard: 4
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Watery Grave, Godless Shrine, Swamp, Breeding Pool
+║ Grixis Reanimator board:
+║   Creatures: Emperor of Bones (2/2) [tapped], Emperor of Bones (2/2) [tapped], Psychic Frog (3/4) [tapped], Psychic Frog (1/2)
+║   Lands: Watery Grave [T], Swamp [T], Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Island
+  [Main 1]
+T7 P2: Play Island
+    → Goal: fill_resource
+    [Mana] Tap Swamp→B, Island→U, Hallowed Fountain→W, Watery Grave→B, Godless Shrine→W (paying for Solitude, 1 mana remaining)
+T7 P2: Cast Solitude (3WW)
+    [Priority] P1 passes (no response)
+T7: Resolve Solitude
+T7: Psychic Frog moved battlefield -> exile (exiled)
+T7 P2: Solitude exiles Psychic Frog (opponent gains 3 life, now 21)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Grixis Reanimator (P1) ══════════════════════════
+║ Life: Grixis Reanimator 21  |  Instant Reanimator 2
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 6
+║ Library: 43  |  Graveyard: 5
+║ Grixis Reanimator board:
+║   Creatures: Emperor of Bones (2/2), Emperor of Bones (2/2), Psychic Frog (1/2)
+║   Lands: Watery Grave, Swamp, Blood Crypt
+║ Instant Reanimator board:
+║   Creatures: Solitude (3/2)
+║   Lands: Hallowed Fountain [T], Watery Grave [T], Godless Shrine [T], Swamp [T], Breeding Pool, Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Psychic Frog
+  [Main 1]
+    → Goal: push_damage
+    [Mana] Tap Swamp→B, Watery Grave→U (paying for Psychic Frog, 1 mana remaining)
+T7 P1: Cast Psychic Frog (UB)
+    [Priority] P2 passes (no response)
+T7: Resolve Psychic Frog
+    → Goal: push_damage
+    [Mana] Tap Blood Crypt→R (paying for Faithless Looting, 0 mana remaining)
+T7 P1: Cast Faithless Looting (R)
+    [Priority] P2 responds with Force of Negation
+T7 P2: Pay alternate cost: exile Atraxa, Grand Unifier for Force of Negation
+T7 P2: Cast Force of Negation (1UU)
+T7: Resolve Force of Negation
+T7: Faithless Looting moved stack -> graveyard (resolution)
+T7: Faithless Looting is countered
+T7: Force of Negation moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Emperor of Bones, Emperor of Bones, Psychic Frog
+T7 P1: Attack with Emperor of Bones, Emperor of Bones, Psychic Frog
+T7 P2:   [BLOCK-EMERGENCY] Solitude (3/2) blocks Emperor of Bones (2/2) — lifespan_delta=+97.40
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T7 P1:   Emperor of Bones (2/2) → 2 dmg to player
+T7 P1:   Psychic Frog (2/3) → 2 dmg to player
+T7 P1: Psychic Frog deals combat damage — draw a card
+T7: Emperor of Bones dies
+T7: Solitude dies
+  [Combat Damage] 1 damage dealt → P2 life: 2 → 1
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Instant Reanimator (P2) ══════════════════════════
+║ Life: Instant Reanimator 1  |  Grixis Reanimator 21
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 6  |  Opp lands: 3
+║ Library: 44  |  Graveyard: 6
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Watery Grave, Godless Shrine, Swamp, Breeding Pool, Island
+║ Grixis Reanimator board:
+║   Creatures: Emperor of Bones (2/2) [tapped], Psychic Frog (2/3) [tapped], Psychic Frog (1/2)
+║   Lands: Watery Grave [T], Swamp [T], Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Grixis Reanimator (P1) ══════════════════════════
+║ Life: Grixis Reanimator 21  |  Instant Reanimator 1
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 6
+║ Library: 41  |  Graveyard: 8
+║ Grixis Reanimator board:
+║   Creatures: Emperor of Bones (2/2), Psychic Frog (2/3), Psychic Frog (1/2)
+║   Lands: Watery Grave, Swamp, Blood Crypt
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Watery Grave, Godless Shrine, Swamp, Breeding Pool, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Darkslick Shores
+  [Main 1]
+T8 P1: Play Darkslick Shores (tapped, 3 other lands)
+    → Goal: push_damage
+    [Mana] Tap Blood Crypt→R (paying for Faithless Looting, 2 mana remaining)
+T8 P1: Cast Faithless Looting (R)
+    [Priority] P2 responds with Solitude
+    [Mana] Tap Swamp→B, Island→U, Hallowed Fountain→W, Watery Grave→B, Godless Shrine→W (paying for Solitude, 1 mana remaining)
+T8 P2: Cast Solitude (3WW)
+T8: Resolve Solitude
+T8: Psychic Frog moved battlefield -> exile (exiled)
+T8 P2: Solitude exiles Psychic Frog (opponent gains 2 life, now 23)
+T8: Resolve Faithless Looting
+T8 P1: Faithless Looting → draw 2 (Abhorrent Oculus, Cling to Dust)
+T8: Faithless Looting moved stack -> graveyard (resolution)
+    → Goal: push_damage
+    [Mana] Tap Watery Grave→U (paying for Thought Scour, 1 mana remaining)
+T8 P1: Cast Thought Scour (U)
+    [Priority] P2 passes (no response)
+T8: Resolve Thought Scour
+T8 P1: Thought Scour → draw 1 (Verdant Catacombs)
+T8: Thought Scour moved stack -> graveyard (resolution)
+    → Goal: push_damage
+    [Mana] Tap Swamp→B (paying for Fatal Push, 0 mana remaining)
+T8 P1: Cast Fatal Push (B)
+    [Priority] P2 passes (no response)
+T8: Resolve Fatal Push
+T8: Fatal Push moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Emperor of Bones, Psychic Frog
+T8 P1: Attack with Emperor of Bones, Psychic Frog
+T8 P2:   [BLOCK-EMERGENCY] Solitude (3/2) blocks Emperor of Bones (2/2) — lifespan_delta=+98.17
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T8 P1:   Psychic Frog (1/2) → 1 dmg to player
+T8 P1: Psychic Frog deals combat damage — draw a card
+T8: Emperor of Bones dies
+T8: Solitude dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Instant Reanimator (P2) ══════════════════════════
+║ Life: Instant Reanimator 3  |  Grixis Reanimator 23
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 6  |  Opp lands: 4
+║ Library: 43  |  Graveyard: 7
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Watery Grave, Godless Shrine, Swamp, Breeding Pool, Island
+║ Grixis Reanimator board:
+║   Creatures: Psychic Frog (1/2) [tapped]
+║   Lands: Watery Grave [T], Swamp [T], Blood Crypt [T], Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Faithful Mending
+  [Main 1]
+T9 P2: Play Flooded Strand
+T9: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T9 P2: Crack Flooded Strand -> Plains (untapped)
+    → Goal: fill_resource [enablers]
+    [Mana] Tap Island→U, Plains→W (paying for Faithful Mending, 5 mana remaining)
+T9 P2: Cast Faithful Mending (WU)
+    [Priority] P1 passes (no response)
+T9: Resolve Faithful Mending
+T9: Polluted Delta moved hand -> graveyard (discard)
+T9: Goryo's Vengeance moved hand -> graveyard (discard)
+T9: Faithful Mending moved stack -> graveyard (resolution)
+    → Goal: fill_resource [enablers]
+    [Mana] Tap Hallowed Fountain→W, Watery Grave→U (paying for Faithful Mending, 3 mana remaining)
+T9 P2: Cast Faithful Mending (WU)
+    [Priority] P1 passes (no response)
+T9: Resolve Faithful Mending
+T9: Griselbrand moved hand -> graveyard (discard)
+T9: Thoughtseize moved hand -> graveyard (discard)
+T9: Faithful Mending moved stack -> exile (flashback resolution (CR 702.33a))
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Swamp→B, Godless Shrine→B (paying for Goryo's Vengeance, 1 mana remaining)
+T9 P2: Cast Goryo's Vengeance (1B)
+    [Priority] P1 passes (no response)
+T9: Resolve Goryo's Vengeance
+T9 P2: Reanimate Griselbrand
+T9: Goryo's Vengeance moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Griselbrand
+T9 P2: Attack with Griselbrand
+  [Declare Blockers] P1 does not block
+T9 P2:   Griselbrand (7/7) → 7 dmg to player
+  [Combat Damage] 7 damage dealt → P1 life: 23 → 16
+  [End Combat]
+  [Main 2]
+T9 P2: Griselbrand: pay 7 life, draw 7
+  [End Step]
+T9: Griselbrand moved battlefield -> exile (delayed end-of-turn exile)
+T9: Griselbrand exiled (end of turn)
+T9: Atraxa, Grand Unifier moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 9 — Grixis Reanimator (P1) ══════════════════════════
+║ Life: Grixis Reanimator 16  |  Instant Reanimator 6
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 7
+║ Library: 36  |  Graveyard: 12
+║ Grixis Reanimator board:
+║   Creatures: Psychic Frog (1/2)
+║   Lands: Watery Grave, Swamp, Blood Crypt, Darkslick Shores
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T], Watery Grave [T], Godless Shrine [T], Swamp [T], Breeding Pool, Island [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Bloodstained Mire
+  [Main 1]
+T9 P1: Play Verdant Catacombs
+T9: Verdant Catacombs moved battlefield -> graveyard (fetchland sacrifice)
+T9 P1: Crack Verdant Catacombs -> Swamp (untapped)
+    → Goal: push_damage
+    [Mana] Tap Swamp→B, Swamp→B, Watery Grave→U (paying for Abhorrent Oculus, 2 mana remaining)
+T9 P1: Cast Abhorrent Oculus (2U)
+    [Priority] P2 passes (no response)
+T9: Resolve Abhorrent Oculus
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Psychic Frog
+T9 P1: Attack with Psychic Frog
+  [Declare Blockers] P2 does not block
+T9 P1:   Psychic Frog (2/3) → 2 dmg to player
+T9 P1: Psychic Frog deals combat damage — draw a card
+  [Combat Damage] 2 damage dealt → P2 life: 6 → 4
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Instant Reanimator (P2) ══════════════════════════
+║ Life: Instant Reanimator 4  |  Grixis Reanimator 15
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 7  |  Opp lands: 5
+║ Library: 30  |  Graveyard: 13
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Watery Grave, Godless Shrine, Swamp, Breeding Pool, Island, Plains
+║ Grixis Reanimator board:
+║   Creatures: Psychic Frog (2/3) [tapped], Abhorrent Oculus (5/5)
+║   Lands: Watery Grave [T], Swamp [T], Blood Crypt, Darkslick Shores, Swamp [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Marsh Flats
+  [Main 1]
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Swamp→B, Island→U (paying for Goryo's Vengeance, 5 mana remaining)
+T10 P2: Cast Goryo's Vengeance (1B)
+    [Priority] P1 passes (no response)
+T10: Resolve Goryo's Vengeance
+T10 P2: Reanimate Atraxa, Grand Unifier
+T10: Atraxa, Grand Unifier moved library -> hand (Atraxa, Grand Unifier reveal)
+T10: Goryo's Vengeance moved library -> hand (Atraxa, Grand Unifier reveal)
+T10: Meticulous Archive moved library -> hand (Atraxa, Grand Unifier reveal)
+T10: Thoughtseize moved library -> hand (Atraxa, Grand Unifier reveal)
+T10 P2: Atraxa, Grand Unifier ETB: put 4 to hand (Atraxa, Grand Unifier, Goryo's Vengeance, Meticulous Archive, Thoughtseize)
+T10: Goryo's Vengeance moved stack -> graveyard (resolution)
+T10 P2: Play Polluted Delta
+T10: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T10 P2: Crack Polluted Delta -> Shadowy Backstreet (tapped)
+T10 P2: surveil 1 → Ephemerate to GY
+    → Goal: execute_payoff
+    [Mana] Tap Hallowed Fountain→U, Watery Grave→B (paying for Psychic Frog, 3 mana remaining)
+T10 P2: Cast Psychic Frog (UB)
+    [Priority] P1 passes (no response)
+T10: Resolve Psychic Frog
+    → Goal: execute_payoff
+    [Mana] Tap Godless Shrine→B (paying for Thoughtseize, 2 mana remaining)
+T10 P2: Cast Thoughtseize (B)
+    [Priority] P1 responds with Fatal Push
+    [Mana] Tap Blood Crypt→B (paying for Fatal Push, 1 mana remaining)
+T10 P1: Cast Fatal Push (B)
+T10: Resolve Fatal Push
+T10: Fatal Push moved stack -> graveyard (resolution)
+T10: Resolve Thoughtseize
+T10: Cling to Dust moved hand -> graveyard (forced discard)
+T10 P2: Thoughtseize → opponent discards 1
+T10: Thoughtseize moved stack -> graveyard (resolution)
+    → Goal: execute_payoff
+    [Mana] Tap Plains→W, Breeding Pool→U (paying for Fallaji Archaeologist, 0 mana remaining)
+T10 P2: Cast Fallaji Archaeologist (1U)
+    [Priority] P1 passes (no response)
+T10: Resolve Fallaji Archaeologist
+T10: Fallaji Archaeologist moved library -> graveyard (Fallaji Archaeologist mill)
+T10: Ephemerate moved library -> graveyard (Fallaji Archaeologist mill)
+T10: Quantum Riddler moved library -> graveyard (Fallaji Archaeologist mill)
+T10: Ephemerate moved graveyard -> hand (Fallaji Archaeologist recover)
+T10 P2: Fallaji Archaeologist ETB: mill 3
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Atraxa, Grand Unifier
+T10 P2: Attack with Atraxa, Grand Unifier
+  [Declare Blockers] P1 does not block
+T10 P2:   Atraxa, Grand Unifier (7/7) → 7 dmg to player
+  [Combat Damage] 7 damage dealt → P1 life: 15 → 8
+  [End Combat]
+  [Main 2]
+  [End Step]
+T10: Atraxa, Grand Unifier moved battlefield -> exile (delayed end-of-turn exile)
+T10: Atraxa, Grand Unifier exiled (end of turn)
+T10: Undercity Sewers moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 10 — Grixis Reanimator (P1) ══════════════════════════
+║ Life: Grixis Reanimator 8  |  Instant Reanimator 8
+║ Hand: 2 cards  |  Opp hand: 7 cards
+║ Lands: 5  |  Opp lands: 8
+║ Library: 33  |  Graveyard: 16
+║ Grixis Reanimator board:
+║   Creatures: Psychic Frog (2/3), Abhorrent Oculus (5/5)
+║   Lands: Watery Grave, Swamp, Blood Crypt, Darkslick Shores, Swamp
+║ Instant Reanimator board:
+║   Creatures: Psychic Frog (1/2), Fallaji Archaeologist (0/3)
+║   Lands: Hallowed Fountain [T], Watery Grave [T], Godless Shrine [T], Swamp [T], Breeding Pool [T], Island [T], Plains [T], Shadowy Backstreet [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Persist
+  [Main 1]
+    → Goal: push_damage
+    [Mana] Tap Swamp→B, Swamp→B, Watery Grave→U (paying for Abhorrent Oculus, 2 mana remaining)
+T10 P1: Cast Abhorrent Oculus (2U)
+    [Priority] P2 passes (no response)
+T10: Resolve Abhorrent Oculus
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Psychic Frog, Abhorrent Oculus
+T10 P1: Attack with Psychic Frog, Abhorrent Oculus
+T10 P2:   [BLOCK-EMERGENCY] Psychic Frog (1/2) blocks Psychic Frog (2/3) — lifespan_delta=+0.17
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T10 P1:   Abhorrent Oculus (5/5) → 5 dmg to player
+T10: Psychic Frog dies
+  [Combat Damage] 5 damage dealt → P2 life: 8 → 3
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Instant Reanimator (P2) ══════════════════════════
+║ Life: Instant Reanimator 3  |  Grixis Reanimator 8
+║ Hand: 7 cards  |  Opp hand: 2 cards
+║ Lands: 8  |  Opp lands: 5
+║ Library: 20  |  Graveyard: 20
+║ Instant Reanimator board:
+║   Creatures: Fallaji Archaeologist (0/3)
+║   Lands: Hallowed Fountain, Watery Grave, Godless Shrine, Swamp, Breeding Pool, Island, Plains, Shadowy Backstreet
+║ Grixis Reanimator board:
+║   Creatures: Psychic Frog (2/3) [tapped], Abhorrent Oculus (5/5) [tapped], Abhorrent Oculus (5/5)
+║   Lands: Watery Grave [T], Swamp [T], Blood Crypt, Darkslick Shores, Swamp [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Quantum Riddler
+  [Main 1]
+T11 P2: Play Marsh Flats
+T11: Marsh Flats moved battlefield -> graveyard (fetchland sacrifice)
+T11 P2: Crack Marsh Flats (no valid land found)
+    → Goal: execute_payoff [protection]
+    [Mana] Tap Plains→W (paying for Ephemerate, 7 mana remaining)
+T11 P2: Cast Ephemerate (W)
+    [Priority] P1 passes (no response)
+T11: Resolve Ephemerate
+T11: Quantum Riddler moved library -> graveyard (Fallaji Archaeologist mill)
+T11: Faithful Mending moved library -> graveyard (Fallaji Archaeologist mill)
+T11: Solitude moved library -> graveyard (Fallaji Archaeologist mill)
+T11: Faithful Mending moved graveyard -> hand (Fallaji Archaeologist recover)
+T11 P2: Fallaji Archaeologist ETB: mill 3
+T11: Blink Fallaji Archaeologist
+T11: Ephemerate moved stack -> exile (rebound (CR 702.86))
+    → Goal: execute_payoff
+    [Mana] Tap Swamp→B, Island→U, Hallowed Fountain→W, Watery Grave→B, Godless Shrine→B, Breeding Pool→G, Shadowy Backstreet→B (paying for Atraxa, Grand Unifier, 0 mana remaining)
+T11 P2: Cast Atraxa, Grand Unifier (3WUBG)
+    [Priority] P1 passes (no response)
+T11: Resolve Atraxa, Grand Unifier
+T11: Quantum Riddler moved library -> hand (Atraxa, Grand Unifier reveal)
+T11: Faithful Mending moved library -> hand (Atraxa, Grand Unifier reveal)
+T11: Flooded Strand moved library -> hand (Atraxa, Grand Unifier reveal)
+T11: Prismatic Ending moved library -> hand (Atraxa, Grand Unifier reveal)
+T11 P2: Atraxa, Grand Unifier ETB: put 4 to hand (Quantum Riddler, Faithful Mending, Flooded Strand, Prismatic Ending)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T11: Meticulous Archive moved hand -> graveyard (discard to hand size)
+T11: Force of Negation moved hand -> graveyard (discard to hand size)
+T11: Prismatic Ending moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 11 — Grixis Reanimator (P1) ══════════════════════════
+║ Life: Grixis Reanimator 8  |  Instant Reanimator 2
+║ Hand: 2 cards  |  Opp hand: 7 cards
+║ Lands: 5  |  Opp lands: 8
+║ Library: 32  |  Graveyard: 16
+║ Grixis Reanimator board:
+║   Creatures: Psychic Frog (2/3), Abhorrent Oculus (5/5), Abhorrent Oculus (5/5)
+║   Lands: Watery Grave, Swamp, Blood Crypt, Darkslick Shores, Swamp
+║ Instant Reanimator board:
+║   Creatures: Fallaji Archaeologist (0/3), Atraxa, Grand Unifier (7/7)
+║   Lands: Hallowed Fountain [T], Watery Grave [T], Godless Shrine [T], Swamp [T], Breeding Pool [T], Island [T], Plains [T], Shadowy Backstreet [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Persist
+  [Main 1]
+    → Goal: push_damage
+    [Mana] Tap Blood Crypt→R (paying for Faithless Looting, 4 mana remaining)
+T11 P1: Cast Faithless Looting (R)
+    [Priority] P2 passes (no response)
+T11: Resolve Faithless Looting
+T11 P1: Faithless Looting → draw 2 (Island, Thoughtseize)
+T11: Faithless Looting moved stack -> exile (flashback resolution (CR 702.33a))
+T11 P1: Play Island
+    → Goal: push_damage
+T11 P1: Escape Cling to Dust (exile 5 cards)
+    [Mana] Tap Swamp→B, Swamp→B, Island→U, Watery Grave→B (paying for Cling to Dust, 1 mana remaining)
+T11 P1: Cast Cling to Dust (B)
+    [Priority] P2 passes (no response)
+T11: Resolve Cling to Dust
+T11 P1: Cling to Dust → draw 1 (Undercity Sewers)
+T11: Cling to Dust moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Psychic Frog, Abhorrent Oculus, Abhorrent Oculus
+T11 P1: Attack with Psychic Frog, Abhorrent Oculus, Abhorrent Oculus
+T11 P2:   [BLOCK-EMERGENCY] Atraxa, Grand Unifier (7/7) blocks Abhorrent Oculus (5/5) — lifespan_delta=+100.25
+T11 P2:   [BLOCK-EMERGENCY] Fallaji Archaeologist (0/3) blocks Psychic Frog (3/4) — lifespan_delta=+100.15
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T11 P1:   Abhorrent Oculus (5/5) → 5 dmg to player
+T11: Abhorrent Oculus dies
+T11: Fallaji Archaeologist dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Instant Reanimator (P2) ══════════════════════════
+║ Life: Instant Reanimator 4  |  Grixis Reanimator 8
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 8  |  Opp lands: 6
+║ Library: 12  |  Graveyard: 27
+║ Instant Reanimator board:
+║   Creatures: Atraxa, Grand Unifier (7/7)
+║   Lands: Hallowed Fountain, Watery Grave, Godless Shrine, Swamp, Breeding Pool, Island, Plains, Shadowy Backstreet
+║ Grixis Reanimator board:
+║   Creatures: Psychic Frog (3/4) [tapped], Abhorrent Oculus (5/5) [tapped]
+║   Lands: Watery Grave [T], Swamp [T], Blood Crypt [T], Darkslick Shores, Swamp [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T12 P2: Rebound Ephemerate declined (CR 702.88b)
+  [Draw] P2 draws: Psychic Frog
+  [Main 1]
+T12 P2: Play Flooded Strand
+T12: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T12 P2: Crack Flooded Strand (no valid land found)
+    → Goal: execute_payoff
+    [Mana] Tap Swamp→B, Island→U, Plains→W, Hallowed Fountain→U, Watery Grave→B (paying for Quantum Riddler, 3 mana remaining)
+T12 P2: Cast Quantum Riddler (3UU)
+    [Priority] P1 passes (no response)
+T12: Resolve Quantum Riddler
+T12 P2: Quantum Riddler ETB: draw 1 (Ephemerate)
+    → Goal: execute_payoff
+    [Mana] Tap Godless Shrine→W, Breeding Pool→U (paying for Faithful Mending, 1 mana remaining)
+T12 P2: Cast Faithful Mending (WU)
+    [Priority] P1 passes (no response)
+T12: Resolve Faithful Mending
+T12: Faithful Mending moved hand -> graveyard (discard)
+T12: Ephemerate moved hand -> graveyard (discard)
+T12: Faithful Mending moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Atraxa, Grand Unifier
+T12 P2: Attack with Atraxa, Grand Unifier
+  [Declare Blockers] P1 does not block
+T12 P2:   Atraxa, Grand Unifier (7/7) → 7 dmg to player
+  [Combat Damage] 7 damage dealt → P1 life: 8 → 1
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Grixis Reanimator (P1) ══════════════════════════
+║ Life: Grixis Reanimator 1  |  Instant Reanimator 12
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 6  |  Opp lands: 8
+║ Library: 28  |  Graveyard: 12
+║ Grixis Reanimator board:
+║   Creatures: Psychic Frog (3/4), Abhorrent Oculus (5/5)
+║   Lands: Watery Grave, Swamp, Blood Crypt, Darkslick Shores, Swamp, Island
+║ Instant Reanimator board:
+║   Creatures: Atraxa, Grand Unifier (7/7), Quantum Riddler (4/6)
+║   Lands: Hallowed Fountain [T], Watery Grave [T], Godless Shrine [T], Swamp [T], Breeding Pool [T], Island [T], Plains [T], Shadowy Backstreet
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Unearth
+  [Main 1]
+    → Goal: push_damage
+    [Mana] Tap Swamp→B, Swamp→B (paying for Persist, 4 mana remaining)
+T12 P1: Cast Persist (1B)
+    [Priority] P2 passes (no response)
+T12: Resolve Persist
+T12 P1: Reanimate Abhorrent Oculus
+T12 P1: Persist reanimates Abhorrent Oculus
+T12: Persist moved stack -> graveyard (resolution)
+    → Goal: push_damage
+    [Mana] Tap Island→U, Watery Grave→B (paying for Persist, 2 mana remaining)
+T12 P1: Cast Persist (1B)
+    [Priority] P2 passes (no response)
+T12: Resolve Persist
+T12 P1: Reanimate Emperor of Bones
+T12 P1: Persist reanimates Emperor of Bones
+T12: Persist moved stack -> graveyard (resolution)
+    → Goal: push_damage
+    [Mana] Tap Blood Crypt→B (paying for Unearth, 1 mana remaining)
+T12 P1: Cast Unearth (B)
+    [Priority] P2 passes (no response)
+T12: Resolve Unearth
+T12 P1: Reanimate Archon of Cruelty
+T12 P1: Archon of Cruelty: P2 sacrifices Quantum Riddler
+T12 P1: Archon of Cruelty: P2 discards Goryo's Vengeance
+T12 P1: Archon of Cruelty: P2 loses 3 life (now 9)
+T12 P1: Gain 3 life from Archon of Cruelty (life: 4)
+T12 P1: Archon of Cruelty: draw 1, gain 3 life (now 4)
+T12 P1: Unearth reanimates Archon of Cruelty
+T12 P1: Unearth → draw 1 (Bloodstained Mire)
+T12: Unearth moved stack -> graveyard (resolution)
+T12 P1: Play Bloodstained Mire
+T12: Bloodstained Mire moved battlefield -> graveyard (fetchland sacrifice)
+T12 P1: Crack Bloodstained Mire (pay 1 life) -> Steam Vents (tapped, life: 3)
+    → Goal: push_damage
+    [Mana] Tap Darkslick Shores→B (paying for Fatal Push, 0 mana remaining)
+T12 P1: Cast Fatal Push (B)
+    [Priority] P2 passes (no response)
+T12: Resolve Fatal Push
+T12: Fatal Push moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Psychic Frog, Abhorrent Oculus
+T12 P1: Attack with Psychic Frog, Abhorrent Oculus
+  [Declare Blockers] P2 does not block
+T12 P1:   Psychic Frog (3/4) → 3 dmg to player
+T12 P1: Psychic Frog deals combat damage — draw a card
+T12 P1:   Abhorrent Oculus (5/5) → 5 dmg to player
+  [Combat Damage] 8 damage dealt → P2 life: 9 → 1
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 13 — Instant Reanimator (P2) ══════════════════════════
+║ Life: Instant Reanimator 1  |  Grixis Reanimator 3
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 8  |  Opp lands: 7
+║ Library: 8  |  Graveyard: 33
+║ Instant Reanimator board:
+║   Creatures: Atraxa, Grand Unifier (7/7)
+║   Lands: Hallowed Fountain, Watery Grave, Godless Shrine, Swamp, Breeding Pool, Island, Plains, Shadowy Backstreet
+║ Grixis Reanimator board:
+║   Creatures: Psychic Frog (3/4) [tapped], Abhorrent Oculus (5/5) [tapped], Abhorrent Oculus (5/5), Emperor of Bones (2/2), Archon of Cruelty (6/6)
+║   Lands: Watery Grave [T], Swamp [T], Blood Crypt [T], Darkslick Shores [T], Swamp [T], Island [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Solitude
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Island→U, Plains→W (paying for Faithful Mending, 6 mana remaining)
+T13 P2: Cast Faithful Mending (WU)
+    [Priority] P1 passes (no response)
+T13: Resolve Faithful Mending
+T13: Flooded Strand moved hand -> graveyard (discard)
+T13: March of Otherworldly Light moved hand -> graveyard (discard)
+T13: Faithful Mending moved stack -> graveyard (resolution)
+T13 P2: Play Flooded Strand
+T13: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T13 P2: Crack Flooded Strand (no valid land found)
+    → Goal: execute_payoff
+    [Mana] Tap Hallowed Fountain→W, Watery Grave→U (paying for Faithful Mending, 4 mana remaining)
+T13 P2: Cast Faithful Mending (WU)
+    [Priority] P1 passes (no response)
+T13: Resolve Faithful Mending
+T13: Ephemerate moved hand -> graveyard (discard)
+T13: Solitude moved hand -> graveyard (discard)
+T13: Faithful Mending moved stack -> exile (flashback resolution (CR 702.33a))
+    → Goal: execute_payoff
+    [Mana] Tap Godless Shrine→W, Breeding Pool→U (paying for Faithful Mending, 2 mana remaining)
+T13 P2: Cast Faithful Mending (WU)
+    [Priority] P1 passes (no response)
+T13: Resolve Faithful Mending
+T13: Prismatic Ending moved hand -> graveyard (discard)
+T13: Polluted Delta moved hand -> graveyard (discard)
+T13: Faithful Mending moved stack -> exile (flashback resolution (CR 702.33a))
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Atraxa, Grand Unifier
+T13 P2: Attack with Atraxa, Grand Unifier
+T13 P1:   [BLOCK-EMERGENCY] Abhorrent Oculus (5/5) blocks Atraxa, Grand Unifier (7/7) — lifespan_delta=+100.34
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T13: Abhorrent Oculus dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 13 — Grixis Reanimator (P1) ══════════════════════════
+║ Life: Grixis Reanimator 3  |  Instant Reanimator 11
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 7  |  Opp lands: 8
+║ Library: 23  |  Graveyard: 15
+║ Grixis Reanimator board:
+║   Creatures: Psychic Frog (3/4), Abhorrent Oculus (5/5), Emperor of Bones (2/2), Archon of Cruelty (6/6)
+║   Lands: Watery Grave, Swamp, Blood Crypt, Darkslick Shores, Swamp, Island, Steam Vents
+║ Instant Reanimator board:
+║   Creatures: Atraxa, Grand Unifier (7/7)
+║   Lands: Hallowed Fountain [T], Watery Grave [T], Godless Shrine [T], Swamp, Breeding Pool [T], Island [T], Plains [T], Shadowy Backstreet
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Unearth
+  [Main 1]
+    → Goal: push_damage
+    [Mana] Tap Swamp→B (paying for Unearth, 6 mana remaining)
+T13 P1: Cast Unearth (B)
+    [Priority] P2 passes (no response)
+T13: Resolve Unearth
+T13 P1: Reanimate Abhorrent Oculus
+T13 P1: Unearth reanimates Abhorrent Oculus
+T13 P1: Unearth → draw 1 (Unearth)
+T13: Unearth moved stack -> graveyard (resolution)
+T13: Unearth moved hand -> graveyard (cycling)
+T13 P1: Cycle Unearth (pay 2 mana, draw: Archon of Cruelty)
+    → Goal: push_damage
+    [Mana] Tap Steam Vents→R (paying for Faithless Looting, 3 mana remaining)
+T13 P1: Cast Faithless Looting (R)
+    [Priority] P2 passes (no response)
+T13: Resolve Faithless Looting
+T13 P1: Faithless Looting → draw 2 (Archon of Cruelty, Unearth)
+T13: Faithless Looting moved stack -> exile (flashback resolution (CR 702.33a))
+T13: Unearth moved hand -> graveyard (cycling)
+T13 P1: Cycle Unearth (pay 2 mana, draw: Archon of Cruelty)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Psychic Frog, Abhorrent Oculus, Emperor of Bones, Archon of Cruelty
+T13: Atraxa, Grand Unifier moved battlefield -> graveyard (Archon of Cruelty attack: sacrifice)
+T13: Atraxa, Grand Unifier moved hand -> graveyard (forced discard)
+T13 P1: Gain 3 life from Archon of Cruelty (life: 6)
+T13 P1: Archon of Cruelty attack drain — opp loses 3 life
+T13 P1: Attack with Psychic Frog, Abhorrent Oculus, Emperor of Bones, Archon of Cruelty
+  [Declare Blockers] P2 does not block
+T13 P1:   Psychic Frog (5/6) → 5 dmg to player
+T13 P1: Psychic Frog deals combat damage — draw a card
+T13 P1:   Abhorrent Oculus (5/5) → 5 dmg to player
+T13 P1:   Emperor of Bones (2/2) → 2 dmg to player
+T13 P1:   Archon of Cruelty (6/6) → 6 dmg to player
+P2 loses: life total -10
+  [Combat Damage] 18 damage dealt → P2 life: 8 → -10
+
+>>> Grixis Reanimator wins Game 2 on turn 13 via damage
+    Final life: Grixis Reanimator=6  Instant Reanimator=-10
+
+======================================================================
+  GAME 3: Instant Reanimator (P1) vs Grixis Reanimator (P2)  —  seed 57012
+  Series: Instant Reanimator 1 - 1 Grixis Reanimator
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Instant Reanimator wins → chooses to play first
+║ P1 (on play): Instant Reanimator
+║ P2 (on draw): Grixis Reanimator
+╚═══════════════════════════════════════════════════════
+
+P1 (Instant Reanimator) opening hand (4 lands, 3 spells):
+  • Breeding Pool [Land, CMC 0]
+  • Solitude [Creature, CMC 5]
+  • Quantum Riddler [Creature, CMC 5]
+  • Solitude [Creature, CMC 5]
+  • Flooded Strand [Land, CMC 0]
+  • Shadowy Backstreet [Land, CMC 0]
+  • Misty Rainforest [Land, CMC 0]
+→ P1 MULLIGANS (combo path under-covered in 7-card hand (best path: 0/2 role buckets; need enabler+payoff))
+  New hand (1 lands, 6 spells): ["Goryo's Vengeance", 'Atraxa, Grand Unifier', 'Polluted Delta', 'Psychic Frog', 'Atraxa, Grand Unifier', 'Faithful Mending', "Goryo's Vengeance"]
+→ P1 MULLIGANS (too few lands (1 < 2))
+  New hand (3 lands, 4 spells): ['Flooded Strand', 'Thoughtseize', 'Plains', 'Watery Grave', 'Quantum Riddler', "Goryo's Vengeance", "Goryo's Vengeance"]
+→ P1 MULLIGANS (goal conjunction unreachable — no role-path coverage and no castable dig card)
+  New hand (4 lands, 3 spells): ['Breeding Pool', 'Fallaji Archaeologist', 'Godless Shrine', 'Quantum Riddler', 'Solitude', 'Polluted Delta', 'Shadowy Backstreet']
+
+P2 (Grixis Reanimator) opening hand (2 lands, 5 spells):
+  • Polluted Delta [Land, CMC 0]
+  • Fatal Push [Spell, CMC 1]
+  • Swamp [Land, CMC 0]
+  • Spell Pierce [Spell, CMC 1]
+  • Fatal Push [Spell, CMC 1]
+  • Cling to Dust [Spell, CMC 1]
+  • Unearth [Spell, CMC 1]
+→ P2 KEEPS 7 — has key card(s): Fatal Push, 5 cheap spells
+
+
+╔══ TURN 1 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 20  |  Grixis Reanimator 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Grixis Reanimator board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Polluted Delta
+T1: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Polluted Delta (pay 1 life) -> Hallowed Fountain (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Grixis Reanimator (P2) ══════════════════════════
+║ Life: Grixis Reanimator 20  |  Instant Reanimator 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Grixis Reanimator board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Archon of Cruelty
+  [Main 1]
+T1 P2: Play Polluted Delta
+T1: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Polluted Delta (pay 1 life) -> Watery Grave (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 19  |  Grixis Reanimator 19
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain
+║ Grixis Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Psychic Frog
+  [Main 1]
+T2 P1: Play Godless Shrine (untapped, life: 19)
+    → Goal: fill_resource [engines]
+    [Mana] Tap Hallowed Fountain→U, Godless Shrine→B (paying for Psychic Frog, 0 mana remaining)
+T2 P1: Cast Psychic Frog (UB)
+    [Priority] P2 passes (no response)
+T2: Resolve Psychic Frog
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Grixis Reanimator (P2) ══════════════════════════
+║ Life: Grixis Reanimator 19  |  Instant Reanimator 19
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Grixis Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave
+║ Instant Reanimator board:
+║   Creatures: Psychic Frog (1/2)
+║   Lands: Hallowed Fountain [T], Godless Shrine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Emperor of Bones
+  [Main 1]
+    → Goal: deploy_engine
+    [Mana] Tap Watery Grave→B (paying for Fatal Push, 0 mana remaining)
+T2 P2: Cast Fatal Push (B)
+    [Priority] P1 passes (no response)
+T2: Resolve Fatal Push
+T2: Psychic Frog dies
+T2 P2: Fatal Push destroys Psychic Frog
+T2: Fatal Push moved stack -> graveyard (resolution)
+T2 P2: Play Swamp
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 19  |  Grixis Reanimator 19
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 2
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Godless Shrine
+║ Grixis Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T], Swamp
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Psychic Frog
+  [Main 1]
+T3 P1: Play Breeding Pool (untapped, life: 19)
+    → Goal: fill_resource [engines]
+    [Mana] Tap Hallowed Fountain→U, Godless Shrine→B (paying for Psychic Frog, 1 mana remaining)
+T3 P1: Cast Psychic Frog (UB)
+    [Priority] P2 passes (no response)
+T3: Resolve Psychic Frog
+  [Begin Combat]
+    [Mana] Tap Swamp→B (paying for Fatal Push, 0 mana remaining)
+T3 P2: Cast Fatal Push (B)
+T3: Resolve Fatal Push
+T3: Psychic Frog dies
+T3 P2: Fatal Push destroys Psychic Frog
+T3: Fatal Push moved stack -> graveyard (resolution)
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Grixis Reanimator (P2) ══════════════════════════
+║ Life: Grixis Reanimator 19  |  Instant Reanimator 19
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 3
+║ Grixis Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Swamp
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T], Godless Shrine [T], Breeding Pool
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thought Scour
+  [Main 1]
+T3: Unearth moved hand -> graveyard (cycling)
+T3 P2: Cycle Unearth (pay 2 mana, draw: Thoughtseize)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 19  |  Grixis Reanimator 19
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 3
+║ Instant Reanimator board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Godless Shrine, Breeding Pool
+║ Grixis Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T], Swamp [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Force of Negation
+  [Main 1]
+T4 P1: surveil 1 → Force of Negation to GY
+T4 P1: Play Shadowy Backstreet (enters tapped)
+    → Goal: fill_resource
+    [Mana] Tap Hallowed Fountain→U, Godless Shrine→B (paying for Fallaji Archaeologist, 1 mana remaining)
+T4 P1: Cast Fallaji Archaeologist (1U)
+    [Priority] P2 passes (no response)
+T4: Resolve Fallaji Archaeologist
+T4: Faithful Mending moved library -> graveyard (Fallaji Archaeologist mill)
+T4: Flooded Strand moved library -> graveyard (Fallaji Archaeologist mill)
+T4: Misty Rainforest moved library -> graveyard (Fallaji Archaeologist mill)
+T4: Faithful Mending moved graveyard -> hand (Fallaji Archaeologist recover)
+T4 P1: Fallaji Archaeologist ETB: mill 3
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Grixis Reanimator (P2) ══════════════════════════
+║ Life: Grixis Reanimator 19  |  Instant Reanimator 19
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 4
+║ Grixis Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Swamp
+║ Instant Reanimator board:
+║   Creatures: Fallaji Archaeologist (0/3)
+║   Lands: Hallowed Fountain [T], Godless Shrine [T], Breeding Pool, Shadowy Backstreet [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Bloodstained Mire
+  [Main 1]
+T4 P2: Play Bloodstained Mire
+T4: Bloodstained Mire moved battlefield -> graveyard (fetchland sacrifice)
+T4 P2: Crack Bloodstained Mire (pay 1 life) -> Blood Crypt (tapped, life: 18)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Swamp→B (paying for Cling to Dust, 1 mana remaining)
+T4 P2: Cast Cling to Dust (B)
+    [Priority] P1 responds with Force of Negation
+T4 P1: Pay alternate cost: exile Faithful Mending for Force of Negation
+T4 P1: Cast Force of Negation (1UU)
+T4: Resolve Force of Negation
+T4: Cling to Dust moved stack -> graveyard (resolution)
+T4: Cling to Dust is countered
+T4: Force of Negation moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Watery Grave→U (paying for Thought Scour, 0 mana remaining)
+T4 P2: Cast Thought Scour (U)
+    [Priority] P1 passes (no response)
+T4: Resolve Thought Scour
+T4 P2: Thought Scour → draw 1 (Thought Scour)
+T4: Thought Scour moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 19  |  Grixis Reanimator 18
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 45  |  Graveyard: 7
+║ Instant Reanimator board:
+║   Creatures: Fallaji Archaeologist (0/3)
+║   Lands: Hallowed Fountain, Godless Shrine, Breeding Pool, Shadowy Backstreet
+║ Grixis Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T], Swamp [T], Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Island
+  [Main 1]
+T5 P1: Play Island
+    → Goal: fill_resource [enablers]
+    [Mana] Tap Island→U, Hallowed Fountain→U, Godless Shrine→B, Breeding Pool→G, Shadowy Backstreet→B (paying for Quantum Riddler, 0 mana remaining)
+T5 P1: Cast Quantum Riddler (3UU)
+    [Priority] P2 passes (no response)
+T5: Resolve Quantum Riddler
+T5 P1: Quantum Riddler ETB: draw 1 (Plains)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Grixis Reanimator (P2) ══════════════════════════
+║ Life: Grixis Reanimator 18  |  Instant Reanimator 19
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 7
+║ Grixis Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Swamp, Blood Crypt
+║ Instant Reanimator board:
+║   Creatures: Fallaji Archaeologist (0/3), Quantum Riddler (4/6)
+║   Lands: Hallowed Fountain [T], Godless Shrine [T], Breeding Pool [T], Shadowy Backstreet [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Polluted Delta
+  [Main 1]
+T5 P2: Play Polluted Delta
+T5: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T5 P2: Crack Polluted Delta (pay 1 life) -> Steam Vents (untapped, life: 15)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Watery Grave→U (paying for Thought Scour, 3 mana remaining)
+T5 P2: Cast Thought Scour (U)
+    [Priority] P1 passes (no response)
+T5: Resolve Thought Scour
+T5 P2: Thought Scour → draw 1 (Fatal Push)
+T5: Thought Scour moved stack -> graveyard (resolution)
+    → Goal: execute_payoff
+    [Mana] Tap Swamp→B (paying for Fatal Push, 2 mana remaining)
+T5 P2: Cast Fatal Push (B)
+    [Priority] P1 passes (no response)
+T5: Resolve Fatal Push
+T5: Fatal Push moved stack -> graveyard (resolution)
+    → Goal: execute_payoff
+    [Mana] Tap Blood Crypt→B, Steam Vents→R (paying for Emperor of Bones, 0 mana remaining)
+T5 P2: Cast Emperor of Bones (1B)
+    [Priority] P1 passes (no response)
+T5: Resolve Emperor of Bones
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 19  |  Grixis Reanimator 15
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 43  |  Graveyard: 7
+║ Instant Reanimator board:
+║   Creatures: Fallaji Archaeologist (0/3), Quantum Riddler (4/6)
+║   Lands: Hallowed Fountain, Godless Shrine, Breeding Pool, Shadowy Backstreet, Island
+║ Grixis Reanimator board:
+║   Creatures: Emperor of Bones (2/2)
+║   Lands: Watery Grave [T], Swamp [T], Blood Crypt [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Marsh Flats
+  [Main 1]
+T6 P1: Play Marsh Flats
+T6: Marsh Flats moved battlefield -> graveyard (fetchland sacrifice)
+T6 P1: Crack Marsh Flats (pay 1 life) -> Watery Grave (tapped, life: 18)
+    → Goal: fill_resource
+    [Mana] Tap Island→U, Hallowed Fountain→W, Godless Shrine→W, Breeding Pool→G, Shadowy Backstreet→B (paying for Solitude, 0 mana remaining)
+T6 P1: Cast Solitude (3WW)
+    [Priority] P2 passes (no response)
+T6: Resolve Solitude
+T6: Emperor of Bones moved battlefield -> exile (exiled)
+T6 P1: Solitude exiles Emperor of Bones (opponent gains 2 life, now 17)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Quantum Riddler
+T6 P1: Attack with Quantum Riddler
+  [Declare Blockers] P2 does not block
+T6 P1:   Quantum Riddler (4/6) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 17 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Grixis Reanimator (P2) ══════════════════════════
+║ Life: Grixis Reanimator 13  |  Instant Reanimator 18
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 42  |  Graveyard: 10
+║ Grixis Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Swamp, Blood Crypt, Steam Vents
+║ Instant Reanimator board:
+║   Creatures: Fallaji Archaeologist (0/3), Quantum Riddler (4/6) [tapped], Solitude (3/2)
+║   Lands: Hallowed Fountain [T], Godless Shrine [T], Breeding Pool [T], Shadowy Backstreet [T], Island [T], Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Fatal Push
+  [Main 1]
+    → Goal: execute_payoff [enablers]
+T6 P2: Escape Cling to Dust (exile 5 cards)
+    [Mana] Tap Swamp→B, Watery Grave→B, Blood Crypt→B, Steam Vents→R (paying for Cling to Dust, 0 mana remaining)
+T6 P2: Cast Cling to Dust (B)
+    [Priority] P1 passes (no response)
+T6: Resolve Cling to Dust
+T6 P2: Cling to Dust → draw 1 (Unearth)
+T6: Cling to Dust moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 18  |  Grixis Reanimator 13
+║ Hand: 1 cards  |  Opp hand: 5 cards
+║ Lands: 6  |  Opp lands: 4
+║ Library: 41  |  Graveyard: 8
+║ Instant Reanimator board:
+║   Creatures: Fallaji Archaeologist (0/3), Quantum Riddler (4/6), Solitude (3/2)
+║   Lands: Hallowed Fountain, Godless Shrine, Breeding Pool, Shadowy Backstreet, Island, Watery Grave
+║ Grixis Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T], Swamp [T], Blood Crypt [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Goryo's Vengeance
+  [Main 1]
+T7 P1: Play Plains
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Quantum Riddler, Solitude
+T7 P1: Attack with Quantum Riddler, Solitude
+  [Declare Blockers] P2 does not block
+T7 P1:   Quantum Riddler (4/6) → 4 dmg to player
+T7 P1:   Solitude (3/2) → 3 dmg to player
+  [Combat Damage] 7 damage dealt → P2 life: 13 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Grixis Reanimator (P2) ══════════════════════════
+║ Life: Grixis Reanimator 6  |  Instant Reanimator 21
+║ Hand: 5 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 7
+║ Library: 40  |  Graveyard: 5
+║ Grixis Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Swamp, Blood Crypt, Steam Vents
+║ Instant Reanimator board:
+║   Creatures: Fallaji Archaeologist (0/3), Quantum Riddler (4/6) [tapped], Solitude (3/2) [tapped]
+║   Lands: Hallowed Fountain, Godless Shrine, Breeding Pool, Shadowy Backstreet, Island, Watery Grave, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Faithless Looting
+  [Main 1]
+T7: Unearth moved hand -> graveyard (cycling)
+T7 P2: Cycle Unearth (pay 2 mana, draw: Faithless Looting)
+    → Goal: push_damage
+    [Mana] Tap Blood Crypt→R (paying for Faithless Looting, 1 mana remaining)
+T7 P2: Cast Faithless Looting (R)
+    [Priority] P1 passes (no response)
+T7: Resolve Faithless Looting
+T7 P2: Faithless Looting → draw 2 (Unearth, Persist)
+T7: Faithless Looting moved stack -> graveyard (resolution)
+    → Goal: push_damage
+    [Mana] Tap Steam Vents→R (paying for Faithless Looting, 0 mana remaining)
+T7 P2: Cast Faithless Looting (R)
+    [Priority] P1 passes (no response)
+T7: Resolve Faithless Looting
+T7 P2: Faithless Looting → draw 2 (Abhorrent Oculus, Darkslick Shores)
+T7: Faithless Looting moved stack -> graveyard (resolution)
+T7 P2: Play Darkslick Shores (tapped, 4 other lands)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Instant Reanimator (P1) ══════════════════════════
+║ Life: Instant Reanimator 21  |  Grixis Reanimator 6
+║ Hand: 1 cards  |  Opp hand: 7 cards
+║ Lands: 7  |  Opp lands: 5
+║ Library: 40  |  Graveyard: 8
+║ Instant Reanimator board:
+║   Creatures: Fallaji Archaeologist (0/3), Quantum Riddler (4/6), Solitude (3/2)
+║   Lands: Hallowed Fountain, Godless Shrine, Breeding Pool, Shadowy Backstreet, Island, Watery Grave, Plains
+║ Grixis Reanimator board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T], Swamp [T], Blood Crypt [T], Steam Vents [T], Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ephemerate
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Quantum Riddler, Solitude
+T8 P1: Attack with Quantum Riddler, Solitude
+  [Declare Blockers] P2 does not block
+T8 P1:   Quantum Riddler (4/6) → 4 dmg to player
+T8 P1:   Solitude (3/2) → 3 dmg to player
+P2 loses: life total -1
+  [Combat Damage] 7 damage dealt → P2 life: 6 → -1
+
+>>> Instant Reanimator wins Game 3 on turn 8 via damage
+    Final life: Instant Reanimator=24  Grixis Reanimator=-1
+
+======================================================================
+  MATCH RESULT: Instant Reanimator wins 2-1
+======================================================================
