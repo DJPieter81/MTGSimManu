@@ -689,6 +689,67 @@ def _resolve_destroy_target_land(game: "GameState", card: "CardInstance",
     return True
 
 
+def _targeted_discard_candidates(hand, choose_restriction: str) -> list:
+    """Filter a revealed hand to the cards a "you choose a <restricted>
+    card from it" clause may LEGALLY take, per the restriction the
+    clause itself states.
+
+    The "target player reveals their hand, you choose a card, that
+    player discards it" class is large in Modern (Inquisition of
+    Kozilek, Despise, Divest, Duress, Distress, Harsh Scrutiny, ...)
+    and the restriction differs per card — a mana-value cap ("with
+    mana value N or less") and/or a card-type filter ("creature or
+    planeswalker", "artifact or creature", "noncreature, nonland").
+    The generic resolver previously took the highest-mana-value
+    nonland unconditionally, honoring neither — so Inquisition (cap 3)
+    could discard an above-cap bomb and Duress could take a creature.
+
+    ``choose_restriction`` is the choose clause (already lowercased by
+    the caller); this parses the cap and type predicate from it. No
+    card names — the restriction is read from the text.
+    """
+    from engine.cards import CardType
+    r = choose_restriction or ''
+    m = re.search(r'mana value (\d+) or less', r)
+    max_mv = int(m.group(1)) if m else None
+    type_words = {
+        'creature': CardType.CREATURE,
+        'planeswalker': CardType.PLANESWALKER,
+        'artifact': CardType.ARTIFACT,
+        'enchantment': CardType.ENCHANTMENT,
+        'instant': CardType.INSTANT,
+        'sorcery': CardType.SORCERY,
+        'land': CardType.LAND,
+    }
+    # A word preceded by "non" is a forbidden type ("noncreature",
+    # "nonland"); the same word standing alone is a member of the
+    # allow-list ("creature or planeswalker" → must be one of these).
+    forbidden = set()
+    allowed = set()
+    for word, ctype in type_words.items():
+        for occ in re.finditer(re.escape(word), r):
+            if r[max(0, occ.start() - 3):occ.start()] == 'non':
+                forbidden.add(ctype)
+            else:
+                allowed.add(ctype)
+    # Every card in this class is at minimum "nonland" — a plain
+    # "nonland card" clause, and even a positive-list clause like
+    # "creature or planeswalker card", never takes a land.
+    forbidden.add(CardType.LAND)
+
+    def _legal(card) -> bool:
+        types = set(card.template.card_types)
+        if types & forbidden:
+            return False
+        if allowed and not (types & allowed):
+            return False
+        if max_mv is not None and (card.template.cmc or 0) > max_mv:
+            return False
+        return True
+
+    return [c for c in hand if _legal(c)]
+
+
 def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
                                controller: int, targets: list = None,
                                *, x_value: int = 0) -> bool:
@@ -824,10 +885,19 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
     if any_ability_with(oracle, 'reveals', 'hand', 'discard'):
         opp = game.players[opponent]
         if opp.hand:
-            nonlands = [c for c in opp.hand if not c.template.is_land]
-            if nonlands:
-                # Choose highest-CMC nonland card
-                best = max(nonlands, key=lambda c: (c.template.cmc or 0))
+            # Honor the choose-clause's stated restriction (mana-value
+            # cap and/or card-type filter) instead of taking the
+            # highest-mana-value nonland unconditionally. The choose
+            # clause is the sentence that names what may be chosen.
+            choose_clause = next(
+                (c for c in split_clauses(oracle)
+                 if 'choose' in c and 'card' in c), '')
+            legal = _targeted_discard_candidates(opp.hand, choose_clause)
+            if legal:
+                # Among the legal candidates, take the best (highest
+                # mana value) — the existing heuristic, now applied to
+                # the correct pool.
+                best = max(legal, key=lambda c: (c.template.cmc or 0))
                 opp.hand.remove(best)
                 best.zone = "graveyard"
                 game.players[opponent].graveyard.append(best)
