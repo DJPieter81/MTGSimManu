@@ -2348,20 +2348,20 @@ class GameRunner:
                 game.game_over = True
                 game.winner = controller
         elif 'return' in effect_text and 'land' in effect_text:
+            # No land-return effect in the current pool deals damage
+            # as part of returning the lands (Aftermath Analyst: "Return
+            # all land cards from your graveyard to the battlefield
+            # tapped." — no damage clause). A prior version of this
+            # branch fabricated 1 damage per land returned with no
+            # basis in any card's oracle text; see
+            # tests/test_sac_effect_land_return_no_damage.py.
             for c in list(player.graveyard):
                 if c.template.is_land:
                     player.graveyard.remove(c)
                     c.zone = "battlefield"
                     c.tapped = True
                     player.battlefield.append(c)
-                    opp.life -= 1
-                    player.damage_dealt_this_turn += 1
                     game.log.append(
                         f"T{game.display_turn} P{controller+1}: "
-                        f"Returned {c.name} to battlefield — 1 damage to P{opp_idx+1} "
-                        f"(life: {opp.life})"
+                        f"Returned {c.name} to battlefield"
                     )
-                    if opp.life <= 0:
-                        game.game_over = True
-                        game.winner = controller
-                        return

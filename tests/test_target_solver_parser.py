@@ -236,6 +236,34 @@ def test_target_artifact_card_from_your_graveyard_emits_artifact():
     assert req.zone == "graveyard"
 
 
+def test_target_creature_card_with_mana_value_cap_emits_max_mana_value():
+    """'target creature card with mana value N or less' (Unearth's
+    shape — also Bishop of Rebirth, Call a Surprise Witness, Can't
+    Stay Away, and ~10 other Modern-legal reanimation effects) must
+    parse the cap, not silently drop it. Pre-fix: the strict graveyard
+    pattern required the type word to be immediately followed by
+    'from/in ... graveyard', so this shape fell through to the loose
+    fallback and lost the cap entirely — reanimating anything in the
+    graveyard regardless of mana value."""
+    req = _only(parse(
+        "Return target creature card with mana value 3 or less from "
+        "your graveyard to the battlefield."
+    ))
+    assert req.zone == "graveyard"
+    assert req.types == frozenset({"creature"})
+    assert req.max_mana_value == 3
+
+
+def test_target_creature_card_without_mana_value_cap_leaves_it_none():
+    """Regression anchor: an uncapped reanimation spell (Zombify,
+    Unburial Rites) must not acquire a spurious cap."""
+    req = _only(parse(
+        "Return target creature card from your graveyard to the "
+        "battlefield."
+    ))
+    assert req.max_mana_value is None
+
+
 # ── 8. Stack-target spells (counterspells) ─────────────────────────
 
 def test_target_spell_emits_stack_zone_spell():

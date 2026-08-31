@@ -1028,9 +1028,25 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
             surveil_spell_pos = m_surv.start()
 
     # Parse draw count and oracle-text position
+    #
+    # Reminder text (anything in parentheses — CR glossary) is
+    # explanatory, never part of the resolving effect. Matching
+    # against the whole oracle string reads a keyword inside another
+    # ability's reminder text as this spell's own effect — Unearth's
+    # normal cast ("Return target creature card with mana value 3 or
+    # less...") has no draw clause, but its Cycling ability's reminder
+    # text ("({2}, Discard this card: Draw a card.)") does, so the
+    # unscoped search drew a phantom extra card on every normal cast.
+    # `oracle_parser.strip_reminder_text` removes the text outright,
+    # which would shift every other detector's `.start()` offset in
+    # this shared `oracle` string out of alignment — masking with
+    # spaces instead keeps positions comparable while making reminder
+    # text unmatchable.
     draw_n = 0
     draw_pos = len(oracle)  # sentinel
-    m_draw = re.search(r'draw\s+(\w+)\s+cards?', oracle)
+    oracle_no_reminder = re.sub(r'\([^()]*\)', lambda m: ' ' * len(m.group(0)),
+                                oracle)
+    m_draw = re.search(r'draw\s+(\w+)\s+cards?', oracle_no_reminder)
     if m_draw:
         tok = m_draw.group(1)
         try:

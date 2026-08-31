@@ -87,6 +87,7 @@ class TargetRequirement:
     count_max: int = 1
     mode_group: Optional[int] = None
     raw_phrase: str = ""
+    max_mana_value: Optional[int] = None
 
 
 # ── Regex catalogue ─────────────────────────────────────────────────
@@ -133,10 +134,16 @@ def _is_optional_at(oracle_l: str, idx: int) -> bool:
 # "cards" is optional so "target card from a graveyard" matches with
 # the type word being "card" itself.
 _GRAVEYARD_PATTERN = re.compile(
-    r"target\s+((?:non)?legendary\s+)?"
-    r"(creature|instant|sorcery|artifact|enchantment|"
+    r"target\s+(?P<super>(?:non)?legendary\s+)?"
+    r"(?P<type>creature|instant|sorcery|artifact|enchantment|"
     r"planeswalker|land|permanent|card)"
-    r"(?:\s+cards?)?\s+(?:from|in)\s+(your|a)\s+graveyard"
+    r"(?:\s+cards?)?"
+    # Optional mana-value ceiling between the type word and the
+    # graveyard-zone phrase (Unearth: "target creature card WITH MANA
+    # VALUE 3 OR LESS from your graveyard"). Not tied to any card
+    # name — any reanimation-shaped effect with this clause parses it.
+    r"(?:\s+with\s+(?:total\s+)?mana\s+value\s+(?P<mv>\d+)\s+or\s+less)?"
+    r"\s+(?:from|in)\s+(?P<scope>your|a)\s+graveyard"
 )
 
 # Loose graveyard fallback — same source-zone phrase but without the
@@ -266,17 +273,22 @@ def parse(oracle_text: str) -> List[TargetRequirement]:
     if gy_match is not None:
         super_word = (gy_match.group(1) or "").strip() or None
         type_word = gy_match.group(2)
-        # Source-zone scope. The strict pattern captures (your|a) as
-        # group 3; the loose fallback has no group 3, so we infer from
-        # the explicit zone hint phrase ("from a graveyard" → any,
-        # "from your graveyard" / "in your graveyard" → you).
-        groups = gy_match.groups()
-        if len(groups) >= 3 and groups[2]:
-            zone_scope_word = groups[2]
-        elif "from a graveyard" in oracle_l or "in a graveyard" in oracle_l:
-            zone_scope_word = "a"
-        else:
-            zone_scope_word = "your"
+        # Named groups only exist on the strict pattern — the loose
+        # fallback has neither, so groupdict() safely returns {} and
+        # both fall through to their existing inference below.
+        gd = gy_match.groupdict()
+        mv_word = gd.get("mv")
+        max_mv = int(mv_word) if mv_word else None
+        # Source-zone scope: the strict pattern's named 'scope' group,
+        # else infer from the explicit zone hint phrase ("from a
+        # graveyard" → any, "from your graveyard" / "in your
+        # graveyard" → you).
+        zone_scope_word = gd.get("scope")
+        if not zone_scope_word:
+            if "from a graveyard" in oracle_l or "in a graveyard" in oracle_l:
+                zone_scope_word = "a"
+            else:
+                zone_scope_word = "your"
         owner: OwnerScope = "you" if zone_scope_word == "your" else "any"
         types = _types_for_word(type_word)
         out.append(TargetRequirement(
@@ -290,6 +302,7 @@ def parse(oracle_text: str) -> List[TargetRequirement]:
             mode_group=_detect_mode_group(oracle_l, gy_match.start(),
                                           modal_start),
             raw_phrase=gy_match.group(0),
+            max_mana_value=max_mv,
         ))
         return out
 
@@ -772,6 +785,9 @@ def enumerate_legal_targets(game: "GameState", controller: int,
         if not _matches_subtype(card, req.subtype):
             continue
         if req.zone == "battlefield" and _blocked_by_hexproof(card, controller):
+            continue
+        if req.max_mana_value is not None and \
+                (card.template.cmc or 0) > req.max_mana_value:
             continue
         out.append(card)
     return out
