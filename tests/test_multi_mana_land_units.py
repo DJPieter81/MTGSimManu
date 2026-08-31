@@ -27,6 +27,7 @@ from engine.card_database import OracleTextParser
 from engine.cards import CardInstance
 from engine.game_state import GameState
 from engine.mana import ManaCost
+from engine.stack import StackItem, StackItemType
 
 
 # ─── Parser: oracle shape → mana units ──────────────────────────────
@@ -70,6 +71,46 @@ def test_worded_quantity_parses_as_that_many_any_color_units():
         "{T}: Add two mana of any one color.")
     assert len(units) == 2
     assert all(set(u) == {"W", "U", "B", "R", "G"} for u in units)
+
+
+def test_two_equal_arity_tap_lines_merge_their_color_choices():
+    """A land with two SEPARATE plain '{T}: Add …' lines, each
+    producing one unit of mana, is tapped ONCE per turn for whichever
+    line the player picks — the parsed production must be the union
+    of both lines' colors, not just the first one seen.
+
+    Live bug this pins (replay audit, docs artifact "The Colorless
+    Counterspell" — Ruby Storm vs Dimir Midrange, seed 57008): the
+    tie-break used a strict `len(units) > len(best)`, so when a
+    second same-arity line resolved AFTER the first (e.g. a painland's
+    free colorless line printed before its paid colored line), the
+    colored option was silently discarded and the land's parsed
+    production regressed to colorless-only — `can_cast`'s color solver
+    then treated a genuinely castable colored spell as uncastable.
+
+    Class size: the full painland cycle (10 lands — Underground River,
+    Yavimaya Coast, Adarkar Wastes, Sulfurous Springs, Karplusan
+    Forest, Battlefield Forge, Brushland, Caves of Koilos, Shivan
+    Reef, Llanowar Wastes) plus any future land printed with the same
+    two-line shape. No card names appear in the parser fix; the
+    fixture below is oracle text only.
+    """
+    units = OracleTextParser.detect_land_mana_units(
+        "{T}: Add {C}.\n{T}: Add {U} or {B}. This land deals 1 damage to you."
+    )
+    assert units == [["C", "U", "B"]], (
+        f"expected the free-colorless and paid-colored lines to merge "
+        f"into one unit offering all three colors, got {units!r}"
+    )
+
+
+def test_first_seen_equal_arity_line_does_not_win_over_a_later_one():
+    """Order must not matter for equal-arity lines: swapping which
+    line prints first must not change which colors survive."""
+    units = OracleTextParser.detect_land_mana_units(
+        "{T}: Add {U} or {B}. This land deals 1 damage to you.\n{T}: Add {C}."
+    )
+    assert set(units[0]) == {"C", "U", "B"}
 
 
 # ─── Payment: one tap yields every unit ─────────────────────────────
@@ -143,4 +184,45 @@ def test_affordability_sees_multi_unit_land(card_db):
     game.players[0].hand.append(spell)
     assert game.can_cast(0, spell), (
         "a lone {G}{U}-producing land must make a {G}{U} spell castable"
+    )
+
+
+def test_affordability_sees_the_painland_colored_line_not_just_its_free_line(
+        card_db):
+    """A painland's paid-colored line must be visible to `can_cast`,
+    not shadowed by its own free-colorless line printed first in the
+    oracle text (the exact shape of the live bug this file's parser
+    tests pin: `can_cast` returned False for a genuinely castable
+    UU spell because the second land's colored option had been
+    silently dropped)."""
+    game = GameState(rng=random.Random(0))
+    _land_on_battlefield(game, card_db, "Underground River")
+    _land_on_battlefield(game, card_db, "Underground River")
+
+    # Counterspell requires a legal target (CR 601.2c) — put an
+    # opposing spell on the stack, matching the live bug's shape
+    # (a lethal Grapeshot on the stack, held Counterspell unable to
+    # respond).
+    target_tmpl = card_db.get_card("Lightning Bolt")
+    assert target_tmpl is not None
+    target_card = CardInstance(
+        template=target_tmpl, owner=1, controller=1,
+        instance_id=game.next_instance_id(), zone="stack",
+    )
+    target_card._game_state = game
+    game.stack.push(StackItem(item_type=StackItemType.SPELL,
+                              source=target_card, controller=1, targets=[]))
+
+    tmpl = card_db.get_card("Counterspell")  # {U}{U} instant
+    assert tmpl is not None
+    spell = CardInstance(
+        template=tmpl, owner=0, controller=0,
+        instance_id=game.next_instance_id(), zone="hand",
+    )
+    spell._game_state = game
+    game.players[0].hand.append(spell)
+    assert game.can_cast(0, spell), (
+        "two Underground Rivers must make a {U}{U} spell castable — "
+        "each land's paid-colored line ({U} or {B}) must not be "
+        "shadowed by its own free-colorless line ({C})"
     )

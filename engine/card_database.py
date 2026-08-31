@@ -546,6 +546,16 @@ class OracleTextParser:
                     units = [[sym] for sym in alt_syms[0]]
             if len(units) > len(best):
                 best = units
+            elif units and len(units) == len(best):
+                # Two SEPARATE plain tap lines of equal arity (e.g. a
+                # painland's free-colorless line and its paid-colored
+                # line) are alternative ways to use the SAME single
+                # tap, not independent production — the land's real
+                # output is the union of every equal-arity line's
+                # color options, not whichever line happened to be
+                # written first in the oracle text.
+                best = [list(dict.fromkeys(a + b))
+                        for a, b in zip(best, units)]
         return best
 
     @classmethod
