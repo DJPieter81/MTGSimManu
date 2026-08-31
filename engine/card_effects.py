@@ -1612,6 +1612,36 @@ def _prismatic_ending_mv_max(game, card, controller, item):
     return max(1, min(len(colors), _CONVERGE_MAX_COLORS))
 
 
+def converge_reachable_max_mv(game, controller: int) -> int:
+    """The highest mana value a Converge-conditioned effect could reach
+    right now, computed from this player's CURRENTLY UNTAPPED mana
+    sources rather than a spell already on the stack.
+
+    Converge's real ceiling is the number of distinct colors of mana
+    spent (capped at `_CONVERGE_MAX_COLORS`, WUBRG) — not raw generic
+    mana. A manabase that can only ever produce 2 colors can never
+    satisfy "mana value <= colors spent" against a permanent above
+    mana value 2, no matter how much mana is poured in. Domain payoffs
+    (Scion of Draco et al.) carry a large PRINTED mana value even
+    though their discounted cast cost is small, so this ceiling is
+    frequently far below what a quick "how much mana do I have" read
+    would suggest.
+
+    Shared by the cast-time X picker
+    (`engine.cast_manager.pick_converge_x_value`) and the AI's
+    proactive-cast gate (`ai.ev_player.EVPlayer._has_high_threat_target`)
+    so both layers agree on what a Converge spell can and cannot reach —
+    the same "one picker, two consumers" pattern `pick_wipe_x_value` and
+    `pick_creature_tutor_x_value` already establish for their own
+    X-cost shapes.
+    """
+    colors = set()
+    for land in game.players[controller].untapped_lands:
+        colors |= set(game._effective_produces_mana(controller, land) or [])
+    colors.discard('C')
+    return min(len(colors), _CONVERGE_MAX_COLORS)
+
+
 def _march_otherworldly_light_mv_max(game, card, controller, item):
     # X = mana actually paid for {X} (stored on the stack item at cast
     # time). Reading from len(lands) would ignore the cast-time

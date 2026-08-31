@@ -192,6 +192,56 @@ def pick_creature_tutor_x_value(
     return best_x, best_target, top_candidate
 
 
+def pick_converge_x_value(
+        game: "GameState", player_idx: int, x_budget: int,
+        template) -> "tuple[int, object]":
+    """Engine-side X picker for Converge-conditioned target-removal
+    spells (the Prismatic Ending shape: "exile/destroy target nonland
+    permanent if its mana value is <= the number of colors of mana spent
+    to cast this spell").
+
+    Mirrors `pick_wipe_x_value` / `pick_creature_tutor_x_value`: a
+    module-level helper so the AI's proactive-cast gate
+    (`ai.ev_player.EVPlayer._has_high_threat_target`) consults the SAME
+    picker the engine uses at cast time. The naive fallback every other
+    X-cost spell uses — "pay the maximum affordable mana" — is actively
+    wrong here: Converge's ceiling is capped by distinct colors spent
+    (`card_effects.converge_reachable_max_mv`, capped at 5), so pouring
+    in more generic mana never reaches a target beyond what the
+    manabase's color diversity allows, and can pay for an X that
+    reaches nothing at all.
+
+    Args:
+        game: GameState.
+        player_idx: controller of the spell.
+        x_budget: max X the controller can afford (ignored beyond the
+          colors-of-mana ceiling — Converge never benefits from more).
+        template: the spell's CardTemplate.
+
+    Returns:
+        (best_x, best_target): best_x is the cheapest mana spend that
+        reaches best_target's mana value (0 when no target exists at
+        all colors_spent counts); best_target is the highest-mana-value
+        legal permanent this manabase's color diversity can actually
+        reach, or None when nothing on the battlefield is reachable —
+        the caller should decline to cast rather than pay for a
+        guaranteed whiff.
+    """
+    from .card_effects import _removal_legal_pool, converge_reachable_max_mv
+
+    max_mv = converge_reachable_max_mv(game, player_idx)
+    legal = _removal_legal_pool(game, player_idx, "opponent",
+                                frozenset({"permanent_nonland"}))
+    reachable = [c for c in legal.values() if (c.template.cmc or 0) <= max_mv]
+    if not reachable:
+        return 0, None
+
+    best_target = max(reachable, key=lambda c: c.template.cmc or 0)
+    needed_colors = int(best_target.template.cmc or 0)
+    best_x = max(0, min(needed_colors, int(x_budget)))
+    return best_x, best_target
+
+
 class CastManager:
     """Cast-time legality + special-case handlers. Stateless."""
 
@@ -1525,6 +1575,21 @@ class CastManager:
                 # SAME picker — which chooses the cheapest X that still
                 # delivers the best target (never X=4 for a 1-drop).
                 best_x, _target, _top = pick_creature_tutor_x_value(
+                    game, player_idx, int(x_value), template
+                )
+                x_value = best_x
+            elif (getattr(template, 'has_converge', False)
+                  and (getattr(template, 'can_destroy_nonland_permanent', False)
+                       or getattr(template, 'can_exile_permanent', False))):
+                # Converge target-removal (Prismatic Ending shape): the
+                # resolver's condition is gated by colors of mana spent,
+                # not raw mana — "pay max affordable" (the default below)
+                # can pour mana into an X that still reaches nothing.
+                # Delegate to the module-level `pick_converge_x_value` —
+                # the AI's proactive-cast gate
+                # (`ai/ev_player.py::EVPlayer._has_high_threat_target`)
+                # consults the SAME picker.
+                best_x, _target = pick_converge_x_value(
                     game, player_idx, int(x_value), template
                 )
                 x_value = best_x

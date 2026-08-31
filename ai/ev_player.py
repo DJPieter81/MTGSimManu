@@ -4246,7 +4246,23 @@ class EVPlayer:
         prof = self.profile
         floor = float(prof.big_creature_power)  # e.g. 4.0 EV floor
 
+        t = spell.template
+        # Converge-conditioned removal (Prismatic Ending shape) can only
+        # ever reach a mana value <= this manabase's achievable colors-
+        # of-mana-spent ceiling — a huge, unreachable threat (Domain
+        # payoffs carry a large printed mana value despite a small
+        # discounted cast cost) is not justification to cast into a
+        # guaranteed whiff. Same picker `pick_converge_x_value` uses at
+        # cast time, consulted here so the decision to cast agrees with
+        # what casting will actually deliver.
+        converge_max_mv = None
+        if getattr(t, 'has_converge', False):
+            from engine.card_effects import converge_reachable_max_mv
+            converge_max_mv = converge_reachable_max_mv(game, self.player_idx)
+
         for c in opp.creatures:
+            if converge_max_mv is not None and (c.template.cmc or 0) > converge_max_mv:
+                continue
             if dmg > 0:
                 remaining = (c.toughness or 0) - getattr(c, 'damage_marked', 0)
                 if remaining > dmg:
@@ -4254,7 +4270,6 @@ class EVPlayer:
             if creature_threat_value(c, snap) >= floor:
                 return True
 
-        t = spell.template
         hits_noncreature = (t.can_destroy_nonland_permanent
                             or t.can_exile_permanent
                             or t.can_destroy_artifact
@@ -4263,6 +4278,8 @@ class EVPlayer:
             from ai.permanent_threat import permanent_threat
             for perm in opp.battlefield:
                 if perm.template.is_land or perm.template.is_creature:
+                    continue
+                if converge_max_mv is not None and (perm.template.cmc or 0) > converge_max_mv:
                     continue
                 if permanent_threat(perm, opp, game) >= floor:
                     return True
