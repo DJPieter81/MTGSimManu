@@ -138,6 +138,17 @@ def _make_panic_state(card_db):
 
     for n in ("Memnite", "Ornithopter", "Frogmite"):
         _add(game, card_db, n, 1, "battlefield")
+    # Memnite as the real threat (Cranial Plating-equipped, per the
+    # s60104 audit trace this fixture is named for): mana value 0, so
+    # it is reachable by Prismatic Ending's Converge condition from a
+    # two-land WU board (max 2 colors of mana spent) — unlike Frogmite
+    # (mana value 4), which Converge can never reach at 2 colors no
+    # matter how much mana is spent. Before the Converge-reachability
+    # fix this distinction didn't matter because nothing checked it;
+    # now the fixture's "real threat" must actually be one Prismatic
+    # Ending could hit.
+    memnite = next(c for c in game.players[1].creatures if c.name == "Memnite")
+    memnite.temp_power_mod = 4
     for n in ("Spire of Industry", "Spire of Industry", "Darksteel Citadel"):
         land = _add(game, card_db, n, 1, "battlefield")
         land.tapped = False
