@@ -136,7 +136,22 @@ class ResolutionManager:
         # unpaid counters the whole spell/ability immediately (CR
         # 702.21a counters the SPELL, not just that one target) and
         # stops further ward checks — there is nothing left to tax.
-        for _tid in list(item.targets):
+        # CR 603.3: a permanent spell (non-Aura creature/artifact/
+        # enchantment/planeswalker) does NOT target — its ETB/attack
+        # trigger does, on a separate stack object. Ward on such a
+        # trigger-bound target may counter the trigger when it resolves,
+        # but never the permanent spell, which still enters. Same
+        # exemption the CR 608.2b fizzle branch below already applies;
+        # abilities and genuinely-targeted instants/sorceries/Auras are
+        # unaffected.
+        _pt_ward = getattr(card.template, 'card_types', None) or []
+        _is_permanent_spell_ward = any(
+            t in _pt_ward for t in (CardType.CREATURE, CardType.ARTIFACT,
+                                    CardType.ENCHANTMENT, CardType.PLANESWALKER))
+        _is_aura_ward = getattr(card.template, 'aura_enchant_restriction', None) is not None
+        _ward_can_counter = not (item.item_type == StackItemType.SPELL
+                                 and _is_permanent_spell_ward and not _is_aura_ward)
+        for _tid in (list(item.targets) if _ward_can_counter else []):
             if not isinstance(_tid, int) or _tid < 0:
                 continue  # face/player target — permanents only have ward
             _target = game.get_card_by_id(_tid)
