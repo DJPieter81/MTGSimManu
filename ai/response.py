@@ -502,6 +502,12 @@ class ResponseDecider:
             if (instant.template.counter_target_kind == 'instant_or_sorcery_spell'
                     and not (target_spell.is_instant or target_spell.is_sorcery)):
                 continue
+            # "Counter target ... colorless spell" (Consign to Memory)
+            # can never counter a colored spell — CR 105 colour, not
+            # colour identity.
+            if (getattr(instant.template, 'counters_colorless_only', False)
+                    and (target_spell.colors or set())):
+                continue
             # Symmetric EV of the 1a counter-tax framework: a "counter
             # unless its controller pays {N}" candidate is DEAD when the
             # payer can afford the tax — a rational opponent who already

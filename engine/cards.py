@@ -590,6 +590,7 @@ class CardTemplate:
     is_counterspell: bool = False              # has a "counter target ..." effect
     counter_target_kind: str = ""              # "spell"/"creature_spell"/"noncreature_spell"/"instant_or_sorcery_spell"
     counter_tax_amount: int = 0                # {N} from "unless its controller pays {N}"; 0 = hard counter
+    counters_colorless_only: bool = False      # "counter target ... colorless spell" (Consign to Memory)
     is_land_sacrifice_tutor: bool = False      # Scapeshift shape: sac any number of lands + search (typed, parse-once)
     # Combat/targeting legality (CR 702.16d/e) — colors this permanent
     # has protection from. Empty = no protection. Populated at load

@@ -1856,6 +1856,14 @@ class CardDatabase:
             template.is_counterspell = True
             template.counter_target_kind = counter_effect.target_type
         template.counter_tax_amount = parse_counter_tax(oracle)
+        # "Counter target ... colorless spell" (Consign to Memory): a
+        # colorless-only counter can never target a colored spell. Read
+        # once here from the oracle shape (the effect is registered, not
+        # parsed into counter_target_kind), so the AI response layer can
+        # reject a colored target.
+        _ol = (oracle or "").lower()
+        template.counters_colorless_only = (
+            "counter target" in _ol and "colorless spell" in _ol)
         template.is_land_sacrifice_tutor = parse_is_land_sacrifice_tutor(oracle)
         # Modal "Choose one/two —" spells: store the mode clauses and the
         # choose-count so resolution picks the chosen mode(s) rather than
