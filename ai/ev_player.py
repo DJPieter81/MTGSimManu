@@ -2242,7 +2242,15 @@ class EVPlayer:
             for c in me.battlefield
         )
 
-        effectively_tapped = land.template.enters_tapped and not has_untap_enabler
+        # A pay-to-untap land (shock: untap_life_cost > 0) can enter
+        # untapped for a small life cost, so for mana-availability it
+        # behaves as an untapped colour source — do not apply the
+        # tapped penalty to it. (The engine still enters it tapped
+        # unless the life is actually paid; this is the AI valuing it
+        # as the premium dual it is.)
+        effectively_tapped = (land.template.enters_tapped
+                              and not has_untap_enabler
+                              and land.template.untap_life_cost == 0)
         if not effectively_tapped:
             ev += LAND_UNTAPPED_USEFUL if has_castable_spells else LAND_UNTAPPED_IDLE
         else:

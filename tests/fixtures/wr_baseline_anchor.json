@@ -27,7 +27,7 @@
       "deck2": "Living End",
       "seed": 50000,
       "winner": "Living End",
-      "turns": 8
+      "turns": 10
     },
     {
       "deck1": "Jeskai Blink",
@@ -41,21 +41,21 @@
       "deck2": "Izzet Prowess",
       "seed": 50000,
       "winner": "Izzet Prowess",
-      "turns": 6
+      "turns": 5
     },
     {
       "deck1": "Pinnacle Affinity",
       "deck2": "4/5c Control",
       "seed": 50000,
       "winner": "4/5c Control",
-      "turns": 10
+      "turns": 9
     },
     {
       "deck1": "Azorius Control",
       "deck2": "Azorius Control (WST)",
       "seed": 50000,
-      "winner": "Azorius Control",
-      "turns": 9
+      "winner": "Azorius Control (WST)",
+      "turns": 30
     },
     {
       "deck1": "Azorius Control (WST v2)",
@@ -75,8 +75,8 @@
       "deck1": "Affinity",
       "deck2": "Domain Zoo",
       "seed": 50500,
-      "winner": "Domain Zoo",
-      "turns": 10
+      "winner": "Affinity",
+      "turns": 9
     },
     {
       "deck1": "Eldrazi Tron",
