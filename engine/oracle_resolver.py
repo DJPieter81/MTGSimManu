@@ -750,9 +750,93 @@ def _targeted_discard_candidates(hand, choose_restriction: str) -> list:
     return [c for c in hand if _legal(c)]
 
 
+def _mass_scope_players(game, controller: int, clause: str) -> list:
+    """Which players' permanents a mass effect touches, from its clause.
+    Default is symmetric (both) — "each creature", "all artifacts".
+    """
+    opp = 1 - controller
+    if 'you control' in clause and 'opponent' not in clause:
+        return [game.players[controller]]
+    if ('opponent' in clause or 'defending player' in clause
+            or 'that player' in clause):
+        return [game.players[opp]]
+    return [game.players[controller], game.players[opp]]
+
+
+def _resolve_mass_mode_clause(game, card, controller: int, clause: str) -> bool:
+    """Resolve a mass-sweep / typed mass-destroy clause off its REAL
+    text (so the permanent TYPE and any mana-value cap survive).
+
+    Handles two shapes the whole-card resolver never carried a branch
+    for, because non-modal mass wipes are EFFECT_REGISTRY-registered:
+      * "deals N damage to each creature [and each planeswalker]"
+      * "destroy/exile all <type> [with mana value M or less]"
+    Both honor the owner scope stated in the clause (default symmetric).
+    Returns True iff it resolved the clause.
+    """
+    from .cards import CardType, Keyword
+    from .damage import deal_damage
+
+    # ── mass damage sweep ──
+    m_dmg = re.search(r'deals?\s+(\d+)\s+damage\s+to\s+each\s+creature', clause)
+    if m_dmg:
+        amount = int(m_dmg.group(1))
+        also_pw = 'planeswalker' in clause
+        for pl in _mass_scope_players(game, controller, clause):
+            for perm in list(pl.battlefield):
+                is_creature = CardType.CREATURE in perm.template.card_types
+                is_pw = CardType.PLANESWALKER in perm.template.card_types
+                if is_creature or (also_pw and is_pw):
+                    deal_damage(card, perm, amount)
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: "
+            f"{card.name} deals {amount} to each creature"
+            f"{' and planeswalker' if also_pw else ''}")
+        return True
+
+    # ── typed mass destroy / exile ──
+    m_all = re.search(r'\b(destroy|exile)\s+all\s+'
+                      r'(artifacts?|creatures?|enchantments?|permanents?)', clause)
+    if m_all:
+        verb, noun = m_all.group(1), m_all.group(2)
+        type_map = {
+            'artifact': CardType.ARTIFACT, 'creature': CardType.CREATURE,
+            'enchantment': CardType.ENCHANTMENT,
+        }
+        want = type_map.get(noun.rstrip('s'))  # None ⇒ "permanents" (any nonland)
+        cap_m = re.search(r'mana value (\d+) or less', clause)
+        max_mv = int(cap_m.group(1)) if cap_m else None
+
+        def _matches(perm) -> bool:
+            if perm.template.is_land:
+                return False
+            if want is not None and want not in perm.template.card_types:
+                return False
+            if max_mv is not None and (perm.template.cmc or 0) > max_mv:
+                return False
+            return True
+
+        for pl in _mass_scope_players(game, controller, clause):
+            for perm in list(pl.battlefield):
+                if not _matches(perm):
+                    continue
+                if verb == 'exile':
+                    game._exile_permanent(perm)
+                elif Keyword.INDESTRUCTIBLE not in perm.keywords:
+                    game._permanent_destroyed(perm)
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: "
+            f"{card.name} {verb}s all {noun}"
+            f"{f' with mana value {max_mv} or less' if max_mv is not None else ''}")
+        return True
+
+    return False
+
+
 def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
                                controller: int, targets: list = None,
-                               *, x_value: int = 0) -> bool:
+                               *, x_value: int = 0,
+                               oracle_override: str = None) -> bool:
     """Resolve instant/sorcery effects by parsing oracle text.
 
     Called when a spell resolves AND no EFFECT_REGISTRY handler took it.
@@ -761,18 +845,37 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
 
     ``x_value`` is the X actually paid, carried on the stack item — the
     same value every other X-consuming resolver reads.
+
+    ``oracle_override`` lets a caller resolve ONE clause instead of the
+    card's whole oracle text — used by modal spell resolution to run
+    exactly the chosen mode's real clause (the synthesized per-mode
+    ability description is lossy). The X-tutor short-circuit is bypassed
+    when an override is supplied so it applies to the whole card only.
     """
     # ── X-bound creature tutor — typed-field gate, no oracle inspection
     #    at resolve time (classification: parse_x_creature_tutor).
-    if getattr(card.template, 'x_creature_tutor_data', None):
+    if oracle_override is None and getattr(card.template, 'x_creature_tutor_data', None):
         return _resolve_x_creature_tutor(game, card, controller, x_value)
 
-    oracle = (card.template.oracle_text or '').lower()
+    oracle = (oracle_override
+              if oracle_override is not None
+              else (card.template.oracle_text or '')).lower()
     if not oracle:
         return False
 
     opponent = 1 - controller
     handled = False
+
+    # ── Modal mode: mass sweep / typed mass-destroy ─────────────────
+    # These shapes ("deals N damage to each creature ...", "destroy all
+    # <type> [with mana value M or less]") are the mode clauses of
+    # modal wipes that the whole-card resolver never needed a branch
+    # for (mass wipes are EFFECT_REGISTRY-registered or hit the legacy
+    # loop). Gated on oracle_override so ONLY a routed single mode
+    # clause reaches it — whole-card resolution is unchanged.
+    if oracle_override is not None and \
+            _resolve_mass_mode_clause(game, card, controller, oracle):
+        return True
 
     # Clause-scoped predicates (E5): a spell effect's verbs live in one
     # ability paragraph (a spell's resolution text; an added ability

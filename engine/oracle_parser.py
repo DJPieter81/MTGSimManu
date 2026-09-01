@@ -4142,6 +4142,46 @@ def parse_has_surveil(oracle: str) -> bool:
     return 'surveil' in oracle.lower()
 
 
+_MODAL_HEADER_RE = re.compile(
+    r'choose\s+(one or both|up to (?:one|two|three|four)|one|two|three|four)\b',
+    re.IGNORECASE)
+_MODAL_COUNT = {
+    'one': 1, 'two': 2, 'three': 3, 'four': 4,
+    'one or both': 2,
+    'up to one': 1, 'up to two': 2, 'up to three': 3, 'up to four': 4,
+}
+
+
+def parse_modal_spell(oracle: str) -> "tuple[bool, int, list]":
+    """Parse a "Choose one/two/... —" modal spell into its mode clauses.
+
+    Returns ``(is_modal, choose_count, modes)`` where ``modes`` is the
+    list of bullet-point (•) mode clause strings, verbatim, in order.
+    Non-modal cards return ``(False, 0, [])``.
+
+    Class: every modal spell — charms (Warping Wail, Thraben Charm),
+    modal removal/wipes (Brotherhood's End), Kozilek's Command, the
+    Commands, etc. The choose-count and the mode clauses are the two
+    facts an accurate resolver needs: WHICH mode(s) the controller
+    picks, and the real text of each (the synthesized per-mode ability
+    description is lossy — a mode's mana-value cap is dropped from it).
+    """
+    if not oracle or '•' not in oracle:
+        return False, 0, []
+    m = _MODAL_HEADER_RE.search(oracle)
+    if not m:
+        return False, 0, []
+    count = _MODAL_COUNT.get(m.group(1).lower(), 1)
+    # Mode clauses are the bullet-prefixed segments after the header.
+    tail = oracle[m.end():]
+    modes = [seg.strip().strip('.').strip()
+             for seg in tail.split('•')[1:]]
+    modes = [seg for seg in modes if seg]
+    if len(modes) < 2:
+        return False, 0, []
+    return True, count, modes
+
+
 def parse_has_scry(oracle: str) -> bool:
     """Return True when oracle contains the scry keyword (CR 701.18).
 

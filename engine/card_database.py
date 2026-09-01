@@ -1758,6 +1758,7 @@ class CardDatabase:
             parse_domain_reduction, detect_power_scaling, parse_splice_cost,
             parse_counter_tax, parse_protection_from, parse_ward_cost,
             parse_is_land_sacrifice_tutor, parse_x_creature_tutor,
+            parse_modal_spell,
             parse_loyalty_abilities,
             parse_can_target_player, parse_can_target_planeswalker,
             grants_flashback_to_gy_spells, parse_deals_targeted_damage,
@@ -1848,6 +1849,16 @@ class CardDatabase:
             template.counter_target_kind = counter_effect.target_type
         template.counter_tax_amount = parse_counter_tax(oracle)
         template.is_land_sacrifice_tutor = parse_is_land_sacrifice_tutor(oracle)
+        # Modal "Choose one/two —" spells: store the mode clauses and the
+        # choose-count so resolution picks the chosen mode(s) rather than
+        # running every mode. The per-mode synthesized ability
+        # description is lossy (drops a mode's mana-value cap), so the
+        # verbatim clause is kept for correct resolution.
+        _is_modal, _modal_count, _modes = parse_modal_spell(oracle)
+        if _is_modal:
+            template.is_modal = True
+            template.modal_choose_count = _modal_count
+            template.modes = [{"text": c} for c in _modes]
         template.x_creature_tutor_data = parse_x_creature_tutor(oracle)
         # Printed loyalty abilities (CR 606), classified once here so
         # `PlaneswalkerManager` can dispatch off a typed field and refuse

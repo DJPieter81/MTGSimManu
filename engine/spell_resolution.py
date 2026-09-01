@@ -559,6 +559,41 @@ class ResolutionManager:
                                     f"  Spliced {spliced_tmpl.name} adds {sa} {sc} mana")
             return
 
+        # ── Modal "Choose one/two —" spells ──
+        # Resolve exactly the chosen mode(s), not every mode. Scope:
+        # multi-mode, non-counterspell instants/sorceries with no
+        # counter mode (the counterspell path and single-parsed-mode
+        # charms already resolve their one mode correctly and are left
+        # untouched). Each chosen mode resolves off its REAL clause via
+        # resolve_spell_from_oracle(oracle_override=...), so a mode's
+        # type / mana-value restriction survives (the synthesized
+        # per-mode ability description drops it).
+        tmpl = card.template
+        modes = getattr(tmpl, 'modes', None) or []
+        # Gate on the number of PARSED mode-abilities, not the number of
+        # printed modes: the bug is a modal card that synthesized MORE
+        # THAN ONE ability and runs them all (Brotherhood's End: 2). A
+        # modal card that parsed to a single ability (Kozilek's Command,
+        # the charms) already resolves its one mode and must be left on
+        # its existing path — intercepting it would route a mode clause
+        # this generic resolver cannot fully execute.
+        _n_abilities = len([a for a in tmpl.abilities if a.description])
+        if (getattr(tmpl, 'is_modal', False)
+                and _n_abilities > getattr(tmpl, 'modal_choose_count', 1)
+                and not getattr(tmpl, 'is_counterspell', False)
+                and (tmpl.is_instant or tmpl.is_sorcery)
+                and not any('counter target' in m.get('text', '').lower()
+                            for m in modes)):
+            from ai.modal import select_modal_modes
+            from .oracle_resolver import resolve_spell_from_oracle
+            chosen = select_modal_modes(game, card, controller, item.targets)
+            for idx in chosen:
+                clause = modes[idx].get('text', '')
+                resolve_spell_from_oracle(game, card, controller, item.targets,
+                                          x_value=item.x_value,
+                                          oracle_override=clause)
+            return
+
         # Dispatch to card effect registry
         # Snapshot opponent state before resolution to auto-generate target log
         _opp = game.players[1 - controller]

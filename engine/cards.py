@@ -512,6 +512,8 @@ class CardTemplate:
     # For split/modal cards
     is_modal: bool = False
     modes: List[Dict] = field(default_factory=list)
+    # How many modes a "Choose N —" modal spell picks (CR 700.2d).
+    modal_choose_count: int = 1
     # Oracle text (raw rules text from card database)
     oracle_text: str = ""
     # Tags for AI strategy
