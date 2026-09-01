@@ -41,6 +41,7 @@ class Keyword(Enum):
     VIGILANCE = "vigilance"
     REACH = "reach"
     MENACE = "menace"
+    SHADOW = "shadow"
     FLASH = "flash"
     HEXPROOF = "hexproof"
     INDESTRUCTIBLE = "indestructible"

@@ -44,6 +44,7 @@ KEYWORD_MAP = {
     "Vigilance": Keyword.VIGILANCE,
     "Reach": Keyword.REACH,
     "Menace": Keyword.MENACE,
+    "Shadow": Keyword.SHADOW,
     "Flash": Keyword.FLASH,
     "Hexproof": Keyword.HEXPROOF,
     "Indestructible": Keyword.INDESTRUCTIBLE,

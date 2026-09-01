@@ -159,6 +159,12 @@ class CombatManager:
                 and Keyword.FLYING not in blocker.keywords
                 and Keyword.REACH not in blocker.keywords):
             return False
+        # CR 702.28b — shadow is symmetric: a creature with shadow can
+        # block or be blocked by ONLY creatures with shadow. So a block
+        # is illegal whenever exactly one of the two has shadow.
+        if ((Keyword.SHADOW in attacker.keywords)
+                != (Keyword.SHADOW in blocker.keywords)):
+            return False
         # CR 702.16d — protection: can't be blocked by a creature of
         # the quality this attacker has protection from.
         protection = getattr(attacker.template, 'protection_from_colors',
