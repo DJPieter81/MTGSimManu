@@ -1846,3 +1846,60 @@ not the ~80 min CLAUDE.md describes from before the shared-DB-fixture consolidat
 `python tools/check_abstraction.py` + `python tools/check_magic_numbers.py` +
 `python tools/check_zone_mutation.py`, all at baseline or better. Targeted replay of the specific
 audit seed for bugs directly fixed by an item (table above).
+
+## Audit round 2026-09-01 — cascade / reanimation / control / big-mana (4 fresh Bo3 audits)
+
+Four parallel Bo3 audits on matchups the earlier arcs had not stressed. Two came back
+clean at the class level (Goryo's vs Amulet s55611 — reanimation timing, Amulet untap,
+bounce-lands, Cultivator Colossus live `*/*`; Azorius vs Boros s55612 — counters, Wrath
+of the Skies energy-MV threshold, planeswalker loyalty, mobilize end-step sacrifice). Two
+surfaced four genuine class-level bugs:
+
+| # | Bug | Matchup | Seed | Root cause | Status |
+|---|---|---|---|---|---|
+| A | ETB "reveal hand, exile a nonland card" never fires | Eldrazi Tron vs Izzet Prowess | 55613 | reveal-hand chooser lived only on the spell/cast path; unreachable from an ETB trigger | **FIXED** (`ad2077f`) |
+| C | Revolt/morbid "this turn" counter leaks into opponent's turn | Living End vs Dimir | 55610 | `untap_step` reset only the active player's per-turn tracking | **FIXED** (`e401e68`) |
+| D | Cascade **permanent** source enters before its cascade trigger resolves | Living End vs Dimir | 55610 | `resolve_stack` entered the permanent, then fired cascade → source swept by its own cascaded spell | **FIXED** (`cad4487`) |
+| B | Modal "Choose two —" resolves only one mode + drops the mode's target filter | Eldrazi Tron vs Izzet Prowess | 55613 | see below | **TRACKED FOLLOW-UP** (not a one-line fix) |
+
+Below-bar (recorded, not fixed): Living End's own "sacrifice all creatures" moves them to
+exile rather than graveyard — a real rules deviation but a ~2-card class (Living End,
+Living Death), under the 10-card abstraction bar.
+
+### Bug B — modal "Choose two —" (root cause, why it is a build not a patch)
+
+Kozilek's Command parses to `is_modal=True`, `modal_choose_count=2`, and a correct verbatim
+`modes` list (4 entries), but its synthesized `abilities` list collapses to a SINGLE
+`CAST "Exile creature"` ability with `target_filter=None`. The modal dispatch in
+`engine/spell_resolution.py` (`_execute_spell_effects`) gates interception on
+`_n_abilities > modal_choose_count` (1 > 2 → False), so the card falls to the single-ability
+path: only the exile mode resolves (should be two modes) and, with `target_filter=None`, it
+exiled an unattached Equipment under a "target creature" mode (illegal target type).
+
+The obvious one-line fix — broaden the gate to `len(modes) > modal_choose_count` — was
+**empirically rejected**: `resolve_spell_from_oracle(oracle_override=<mode clause>)` returns
+`fired=False` for ALL FOUR Kozilek's Command modes (X-scaled Eldrazi-Spawn tokens, "scry X
+then draw", "exile target creature with mana value X or less", "exile up to X cards from
+graveyards"). Broadening the gate would route the card to a per-mode resolver that no-ops
+every chosen mode — strictly WORSE than the status quo (which at least exiles one creature).
+The existing gate comment already documented this hazard.
+
+A correct fix is therefore a real build, not a gate flip:
+1. Extend the generic per-mode resolver (`resolve_spell_from_oracle`'s `oracle_override`
+   path) to cover the missing Command-cycle mode shapes: X-scaled token creation, "scry X
+   then draw a card", "exile target creature with mana value N or less" (with the creature
+   filter + MV cap enforced), "exile up to X target cards from graveyards", "tap all
+   creatures your opponents control". Several other modes (draw, bounce, destroy artifact,
+   deal N to any target, target-player-discards) already resolve.
+2. Extend `ai/modal._mode_value` beyond its current two shapes (mass-damage, mass-destroy)
+   so mode selection is value-driven across the new shapes rather than defaulting to the
+   first `k`.
+3. Thread `X` and per-mode targeting through the mode resolution.
+4. Only then broaden the `spell_resolution.py` gate to `len(modes) > modal_choose_count`,
+   with a per-mode-resolvable guard so no card is ever made worse, and regression-test the
+   whole Command/charm cycle (Kozilek's, Cryptic — counter-mode excluded, Kolaghan's, the
+   charms) plus the existing `test_modal_spell_resolves_one_chosen_mode` (Brotherhood's End).
+
+Class ≈ 15 Command-cycle spells. Real-world sim blast radius is currently narrow (Kozilek's
+Command in Eldrazi Tron is the main in-pool carrier), which is why this is scheduled as a
+tracked build rather than rushed into this audit round's lean-fix batch.
