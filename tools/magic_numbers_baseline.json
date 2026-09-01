@@ -31,5 +31,6 @@
   "ai/stax_ev.py": 0,
   "ai/strategic_logger.py": 2,
   "ai/turn_planner.py": 0,
-  "ai/win_probability.py": 10
+  "ai/win_probability.py": 10,
+  "ai/modal.py": 0
 }
