@@ -1,0 +1,1247 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+======================================================================
+  GAME 1: Goryo's Vengeance (P1) vs Amulet Titan (P2)  —  seed 55611
+  Series: Goryo's Vengeance 0 - 0 Amulet Titan
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Goryo's Vengeance wins → chooses to play first
+║ P1 (on play): Goryo's Vengeance
+║ P2 (on draw): Amulet Titan
+╚═══════════════════════════════════════════════════════
+
+P1 (Goryo's Vengeance) opening hand (1 lands, 6 spells):
+  • Archon of Cruelty [Creature, CMC 8]
+  • Archon of Cruelty [Creature, CMC 8]
+  • Silent Clearing [Land, CMC 0]
+  • Thoughtseize [Spell, CMC 1]
+  • Goryo's Vengeance [Spell, CMC 2]
+  • Leyline of Sanctity [Spell, CMC 4]
+  • Inquisition of Kozilek [Spell, CMC 1]
+→ P1 MULLIGANS (combo path under-covered in 7-card hand (best path: 1/2 role buckets; need enabler+payoff))
+  New hand (2 lands, 5 spells): ['Griselbrand', 'Archon of Cruelty', 'Flooded Strand', 'Thoughtseize', 'Flooded Strand', 'Undying Evil', 'Ephemerate']
+→ P1 MULLIGANS (combo path under-covered in 6-card hand (best path: 0/2 role buckets; need enabler))
+  New hand (5 lands, 2 spells): ['Marsh Flats', 'Flooded Strand', 'Hallowed Fountain', 'Silent Clearing', 'Faithful Mending', 'Faithful Mending', 'Concealed Courtyard']
+→ P1 mulligans to 5, bottoms: ['Marsh Flats', 'Flooded Strand']
+  Keeps: ['Hallowed Fountain', 'Silent Clearing', 'Faithful Mending', 'Faithful Mending', 'Concealed Courtyard']
+
+P2 (Amulet Titan) opening hand (7 lands, 0 spells):
+  • Boseiju, Who Endures [Land, CMC 0]
+  • Crumbling Vestige [Land, CMC 0]
+  • Gruul Turf [Land, CMC 0]
+  • Gruul Turf [Land, CMC 0]
+  • Crumbling Vestige [Land, CMC 0]
+  • Urza's Saga [Land, CMC 0]
+  • Forest [Land, CMC 0]
+→ P2 MULLIGANS (7 lands (≥ 6))
+  New hand (2 lands, 5 spells): ['Simic Growth Chamber', 'Boseiju, Who Endures', "Summoner's Pact", 'Primeval Titan', 'Arboreal Grazer', 'Cultivator Colossus', 'Scapeshift']
+→ P2 mulligans to 6, bottoms: ["Summoner's Pact"]
+  Keeps: ['Simic Growth Chamber', 'Boseiju, Who Endures', 'Primeval Titan', 'Arboreal Grazer', 'Cultivator Colossus', 'Scapeshift']
+
+
+╔══ TURN 1 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 20  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 55  |  Graveyard: 0
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Hallowed Fountain (tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Goryo's Vengeance 20
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Green Sun's Zenith
+  [Main 1]
+T1 P2: Play Boseiju, Who Endures
+    → Goal: deploy_engine [enablers]
+    [Mana] Tap Boseiju, Who Endures→G (paying for Arboreal Grazer, 0 mana remaining)
+T1 P2: Cast Arboreal Grazer (G)
+    [Priority] P1 passes (no response)
+T1: Resolve Arboreal Grazer
+T1: Boseiju, Who Endures moved battlefield -> hand (Simic Growth Chamber ETB returns Boseiju, Who Endures to hand)
+T1 P2: Arboreal Grazer puts Simic Growth Chamber onto battlefield
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 20  |  Amulet Titan 20
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 55  |  Graveyard: 0
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Lands: Simic Growth Chamber [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Inquisition of Kozilek
+  [Main 1]
+T2 P1: Play Silent Clearing
+T2: Silent Clearing moved battlefield -> graveyard (activation cost (Silent Clearing))
+T2 P1: activate Silent Clearing — Draw a card.
+T2 P1: Silent Clearing activated — draw 1 (Flooded Strand)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Goryo's Vengeance 20
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Lands: Simic Growth Chamber
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Otawara, Soaring City
+  [Main 1]
+T2 P2: Play Boseiju, Who Endures
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 20  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 53  |  Graveyard: 1
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Lands: Simic Growth Chamber, Boseiju, Who Endures
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Unburial Rites
+  [Main 1]
+T3 P1: Play Flooded Strand
+T3: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T3 P1: Crack Flooded Strand (pay 1 life) -> Watery Grave (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Goryo's Vengeance 19
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Lands: Simic Growth Chamber, Boseiju, Who Endures
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arboreal Grazer
+  [Main 1]
+T3 P2: Play Otawara, Soaring City
+    → Goal: ramp [enablers]
+    [Mana] Tap Boseiju, Who Endures→G (paying for Arboreal Grazer, 3 mana remaining)
+T3 P2: Cast Arboreal Grazer (G)
+    [Priority] P1 passes (no response)
+T3: Resolve Arboreal Grazer
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 19  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 2
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Watery Grave
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Arboreal Grazer (0/3)
+║   Lands: Simic Growth Chamber, Boseiju, Who Endures [T], Otawara, Soaring City
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ephemerate
+  [Main 1]
+T4 P1: Play Concealed Courtyard (untapped, 2 other lands)
+    → Goal: fill_resource [enablers]
+    [Mana] Tap Hallowed Fountain→W, Watery Grave→U (paying for Faithful Mending, 1 mana remaining)
+T4 P1: Cast Faithful Mending (WU)
+    [Priority] P2 passes (no response)
+T4: Resolve Faithful Mending
+T4: Faithful Mending moved hand -> graveyard (discard)
+T4: Unburial Rites moved hand -> graveyard (discard)
+T4: Faithful Mending moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Goryo's Vengeance 21
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Arboreal Grazer (0/3)
+║   Lands: Simic Growth Chamber, Boseiju, Who Endures, Otawara, Soaring City
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T], Watery Grave [T], Concealed Courtyard
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Urza's Cave
+  [Main 1]
+T4 P2: Play Urza's Cave
+T4 P2: Activate Urza's Cave (sacrifice)
+T4 P2:   finds Urza's Saga
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 21  |  Amulet Titan 20
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 5
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Watery Grave, Concealed Courtyard
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Arboreal Grazer (0/3)
+║   Lands: Simic Growth Chamber, Boseiju, Who Endures, Otawara, Soaring City
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Goryo's Vengeance
+  [Main 1]
+    → Goal: fill_resource [enablers]
+    [Mana] Tap Hallowed Fountain→W, Watery Grave→U (paying for Faithful Mending, 1 mana remaining)
+T5 P1: Cast Faithful Mending (WU)
+    [Priority] P2 passes (no response)
+T5: Resolve Faithful Mending
+T5: Plains moved hand -> graveyard (discard)
+T5: Inquisition of Kozilek moved hand -> graveyard (discard)
+T5: Faithful Mending moved stack -> exile (flashback resolution (CR 702.33a))
+T5 P1: Play Godless Shrine (tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Goryo's Vengeance 23
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Arboreal Grazer (0/3)
+║   Lands: Simic Growth Chamber, Boseiju, Who Endures, Otawara, Soaring City
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T], Watery Grave [T], Concealed Courtyard, Godless Shrine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Vesuva
+  [Main 1]
+T5 P2: Play Urza's Saga
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 23  |  Amulet Titan 20
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 6
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Watery Grave, Concealed Courtyard, Godless Shrine
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Arboreal Grazer (0/3)
+║   Lands: Simic Growth Chamber, Boseiju, Who Endures, Otawara, Soaring City, Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Goryo's Vengeance
+  [Main 1]
+    → Goal: fill_resource [enablers]
+    [Mana] Tap Hallowed Fountain→U, Concealed Courtyard→W (paying for Faithful Mending, 2 mana remaining)
+T6 P1: Cast Faithful Mending (WU)
+    [Priority] P2 passes (no response)
+T6: Resolve Faithful Mending
+T6: Ephemerate moved hand -> graveyard (discard)
+T6: Leyline of Sanctity moved hand -> graveyard (discard)
+T6: Faithful Mending moved stack -> exile (flashback resolution (CR 702.33a))
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Goryo's Vengeance 25
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Arboreal Grazer (0/3)
+║   Lands: Simic Growth Chamber, Boseiju, Who Endures, Otawara, Soaring City, Urza's Saga
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T], Watery Grave, Concealed Courtyard [T], Godless Shrine
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T6 P2: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P2 draws: Boseiju, Who Endures
+  [Main 1]
+T6 P2: Play Vesuva
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 25  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 42  |  Graveyard: 7
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Watery Grave, Concealed Courtyard, Godless Shrine
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Arboreal Grazer (0/3)
+║   Lands: Simic Growth Chamber, Boseiju, Who Endures, Otawara, Soaring City, Urza's Saga, Vesuva
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Marsh Flats
+  [Main 1]
+T7 P1: Play Marsh Flats
+T7: Marsh Flats moved battlefield -> graveyard (fetchland sacrifice)
+T7 P1: Crack Marsh Flats (pay 1 life) -> Godless Shrine (tapped, life: 24)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Goryo's Vengeance 24
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Arboreal Grazer (0/3)
+║   Lands: Simic Growth Chamber, Boseiju, Who Endures, Otawara, Soaring City, Urza's Saga, Vesuva
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Watery Grave, Concealed Courtyard, Godless Shrine, Godless Shrine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T7 P2: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+  [Draw] P2 draws: Dryad Arbor
+  [Main 1]
+T7 P2: Play Boseiju, Who Endures
+T7: Boseiju, Who Endures moved battlefield -> graveyard (SBA 704.5j: legend rule (Boseiju, Who Endures))
+T7 P2: Create 1x Construct token(s)
+T7 P2: Urza's Saga activates "{2}, {T}: Create a 0/0 colorless Constru..." (pays {2}, {T})
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 24  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 40  |  Graveyard: 8
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Watery Grave, Concealed Courtyard, Godless Shrine, Godless Shrine
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Arboreal Grazer (0/3), Construct Token (1/1)
+║   Lands: Simic Growth Chamber [T], Boseiju, Who Endures [T], Otawara, Soaring City, Urza's Saga [T], Vesuva
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Leyline of Sanctity
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Goryo's Vengeance 24
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Arboreal Grazer (0/3), Construct Token (1/1)
+║   Lands: Simic Growth Chamber, Boseiju, Who Endures, Otawara, Soaring City, Urza's Saga, Vesuva
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Watery Grave, Concealed Courtyard, Godless Shrine, Godless Shrine
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T8 P2: Urza's Saga tutors Amulet of Vigor
+T8 P2: Sacrifice Urza's Saga (final chapter)
+  [Draw] P2 draws: Simic Growth Chamber
+  [Main 1]
+T8 P2: Play Simic Growth Chamber (enters tapped)
+T8 P2: Amulet of Vigor untaps Simic Growth Chamber
+T8: Vesuva moved battlefield -> hand (Simic Growth Chamber ETB returns Vesuva to hand)
+    → Goal: ramp [payoffs]
+    [Mana] Tap Boseiju, Who Endures→G, Otawara, Soaring City→U, Simic Growth Chamber→GU, Simic Growth Chamber→GU (paying for Primeval Titan, 0 mana remaining)
+T8 P2: Cast Primeval Titan (4GG)
+    [Priority] P1 passes (no response)
+T8: Resolve Primeval Titan
+T8 P2: Amulet of Vigor untaps Crumbling Vestige
+T8 P2: Primeval Titan searches for Crumbling Vestige
+T8 P2: Amulet of Vigor untaps Hanweir Battlements // Hanweir, the Writhing Township
+T8 P2: Primeval Titan searches for Hanweir Battlements // Hanweir, the Writhing Township
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Construct Token
+T8 P2: Attack with Construct Token
+  [Declare Blockers] P1 does not block
+T8 P2:   Construct Token (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 24 → 22
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 22  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 39  |  Graveyard: 8
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Watery Grave, Concealed Courtyard, Godless Shrine, Godless Shrine
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Arboreal Grazer (0/3), Construct Token (2/2) [tapped], Primeval Titan (6/6)
+║   Other: Amulet of Vigor
+║   Lands: Simic Growth Chamber [T], Boseiju, Who Endures [T], Otawara, Soaring City [T], Simic Growth Chamber [T], Crumbling Vestige, Hanweir Battlements // Hanweir, the Writhing Township
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Faithful Mending
+  [Main 1]
+    → Goal: fill_resource [enablers]
+    [Mana] Tap Hallowed Fountain→U, Concealed Courtyard→W (paying for Faithful Mending, 3 mana remaining)
+T9 P1: Cast Faithful Mending (WU)
+    [Priority] P2 passes (no response)
+T9: Resolve Faithful Mending
+T9: Undying Evil moved hand -> graveyard (discard)
+T9: Ephemerate moved hand -> graveyard (discard)
+T9: Faithful Mending moved stack -> graveyard (resolution)
+T9 P1: Play Flooded Strand
+T9: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T9 P1: Crack Flooded Strand -> Island (untapped)
+    → Goal: fill_resource [enablers]
+    [Mana] Tap Island→U, Godless Shrine→W (paying for Faithful Mending, 2 mana remaining)
+T9 P1: Cast Faithful Mending (WU)
+    [Priority] P2 passes (no response)
+T9: Resolve Faithful Mending
+T9: Unburial Rites moved hand -> graveyard (discard)
+T9: Inquisition of Kozilek moved hand -> graveyard (discard)
+T9: Faithful Mending moved stack -> exile (flashback resolution (CR 702.33a))
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Goryo's Vengeance 25
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 6  |  Opp lands: 6
+║ Library: 42  |  Graveyard: 3
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Arboreal Grazer (0/3), Construct Token (2/2), Primeval Titan (6/6)
+║   Other: Amulet of Vigor
+║   Lands: Simic Growth Chamber, Boseiju, Who Endures, Otawara, Soaring City, Simic Growth Chamber, Crumbling Vestige, Hanweir Battlements // Hanweir, the Writhing Township
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T], Watery Grave, Concealed Courtyard [T], Godless Shrine [T], Godless Shrine, Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Spelunking
+  [Main 1]
+T9 P2: Play Dryad Arbor
+    → Goal: ramp
+    [Mana] Tap Boseiju, Who Endures→G (paying for Green Sun's Zenith, 8 mana remaining)
+T9 P2: Cast Green Sun's Zenith (6G) (X=6)
+    [Priority] P1 passes (no response)
+T9: Resolve Green Sun's Zenith
+T9: Primeval Titan moved library -> battlefield (Green Sun's Zenith tutor)
+T9 P2: Amulet of Vigor untaps Crumbling Vestige
+T9 P2: Primeval Titan searches for Crumbling Vestige
+T9 P2: Amulet of Vigor untaps Gruul Turf
+T9: Boseiju, Who Endures moved battlefield -> hand (Gruul Turf ETB returns Boseiju, Who Endures to hand)
+T9 P2: Primeval Titan searches for Gruul Turf
+T9 P2: Green Sun's Zenith finds Primeval Titan
+T9: Green Sun's Zenith moved stack -> graveyard (resolution)
+    → Goal: ramp [enablers]
+    [Mana] Tap Hanweir Battlements // Hanweir, the Writhing Township→C, Dryad Arbor→G, Gruul Turf→RG (paying for Spelunking, 2 mana remaining)
+T9 P2: Cast Spelunking (2G)
+    [Priority] P1 passes (no response)
+T9: Resolve Spelunking
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Construct Token, Primeval Titan
+T9 P2: Amulet of Vigor untaps Crumbling Vestige
+T9 P2: Primeval Titan searches for Crumbling Vestige
+T9 P2: Amulet of Vigor untaps Gruul Turf
+T9: Otawara, Soaring City moved battlefield -> hand (Gruul Turf ETB returns Otawara, Soaring City to hand)
+T9 P2: Primeval Titan searches for Gruul Turf
+T9 P2: Attack with Construct Token, Primeval Titan
+  [Declare Blockers] P1 does not block
+T9 P2:   Construct Token (2/2) → 2 dmg to player
+T9 P2:   Primeval Titan (6/6) → 6 dmg to player
+  [Combat Damage] 8 damage dealt → P1 life: 25 → 17
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 17  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 6  |  Opp lands: 9
+║ Library: 33  |  Graveyard: 13
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Watery Grave, Concealed Courtyard, Godless Shrine, Godless Shrine, Island
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Arboreal Grazer (0/3), Construct Token (2/2) [tapped], Primeval Titan (6/6) [tapped], Dryad Arbor (1/1) [tapped], Primeval Titan (6/6)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber [T], Simic Growth Chamber [T], Crumbling Vestige [T], Hanweir Battlements // Hanweir, the Writhing Township [T], Dryad Arbor [T], Crumbling Vestige, Gruul Turf [T], Crumbling Vestige, Gruul Turf
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Atraxa, Grand Unifier
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Goryo's Vengeance 17
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 9  |  Opp lands: 6
+║ Library: 36  |  Graveyard: 4
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Arboreal Grazer (0/3), Construct Token (2/2), Primeval Titan (6/6), Dryad Arbor (1/1), Primeval Titan (6/6)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber, Simic Growth Chamber, Crumbling Vestige, Hanweir Battlements // Hanweir, the Writhing Township, Dryad Arbor, Crumbling Vestige, Gruul Turf, Crumbling Vestige, Gruul Turf
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Watery Grave, Concealed Courtyard, Godless Shrine, Godless Shrine, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Forest
+  [Main 1]
+T10 P2: Play Forest
+    → Goal: ramp
+    [Mana] Tap Hanweir Battlements // Hanweir, the Writhing Township→C, Dryad Arbor→G, Forest→G, Simic Growth Chamber→GU (paying for Scapeshift, 10 mana remaining)
+T10 P2: Cast Scapeshift (2GG)
+    [Priority] P1 passes (no response)
+T10: Resolve Scapeshift
+T10 P2: Scapeshift sacrifices 10 lands
+T10 P2: Amulet of Vigor untaps Shifting Woodland
+T10 P2: Amulet of Vigor untaps Boseiju, Who Endures
+T10 P2: Amulet of Vigor untaps Forest
+T10 P2: Amulet of Vigor untaps Urza's Saga
+T10 P2: Amulet of Vigor untaps Mirrorpool
+T10 P2: Amulet of Vigor untaps Crumbling Vestige
+T10 P2: Amulet of Vigor untaps The Mycosynth Gardens
+T10 P2: Amulet of Vigor untaps Gruul Turf
+T10: Simic Growth Chamber moved battlefield -> hand (Gruul Turf ETB returns Simic Growth Chamber to hand)
+T10 P2: Amulet of Vigor untaps Simic Growth Chamber
+T10: Mirrorpool moved battlefield -> hand (Simic Growth Chamber ETB returns Mirrorpool to hand)
+T10 P2: Scapeshift fetches 10 lands onto battlefield
+T10: Scapeshift moved stack -> graveyard (resolution)
+    → Goal: ramp [payoffs]
+    [Mana] Tap Urza's Saga→C, Forest→G, Boseiju, Who Endures→G, Shifting Woodland→G, Simic Growth Chamber→GU (paying for Cultivator Colossus, 4 mana remaining)
+T10 P2: Cast Cultivator Colossus (4GGG)
+    [Priority] P1 passes (no response)
+T10: Resolve Cultivator Colossus
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Construct Token, Primeval Titan, Primeval Titan
+T10 P2: Amulet of Vigor untaps Tolaria West
+T10 P2: Primeval Titan searches for Tolaria West
+T10 P2: Amulet of Vigor untaps Urza's Saga
+T10 P2: Primeval Titan searches for Urza's Saga
+T10 P2: Amulet of Vigor untaps Echoing Deeps
+T10 P2: Primeval Titan searches for Echoing Deeps
+T10 P2: Amulet of Vigor untaps Forest
+T10 P2: Primeval Titan searches for Forest
+T10 P2: Attack with Construct Token, Primeval Titan, Primeval Titan
+  [Declare Blockers] P1 does not block
+T10 P2:   Construct Token (2/2) → 2 dmg to player
+T10 P2:   Primeval Titan (6/6) → 6 dmg to player
+T10 P2:   Primeval Titan (6/6) → 6 dmg to player
+  [Combat Damage] 14 damage dealt → P1 life: 17 → 3
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 3  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 6  |  Opp lands: 12
+║ Library: 32  |  Graveyard: 13
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Watery Grave, Concealed Courtyard, Godless Shrine, Godless Shrine, Island
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Arboreal Grazer (0/3), Construct Token (2/2) [tapped], Primeval Titan (6/6) [tapped], Primeval Titan (6/6) [tapped], Cultivator Colossus (12/12)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber [T], Gruul Turf, The Mycosynth Gardens, Crumbling Vestige, Urza's Saga [T], Forest [T], Boseiju, Who Endures [T], Shifting Woodland [T], Tolaria West, Urza's Saga, Echoing Deeps, Forest
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Concealed Courtyard
+  [Main 1]
+T11 P1: Play Concealed Courtyard (tapped, 6 other lands)
+    → Goal: fill_resource [interaction]
+    [Mana] Tap Watery Grave→B (paying for Inquisition of Kozilek, 5 mana remaining)
+T11 P1: Cast Inquisition of Kozilek (B)
+    [Priority] P2 passes (no response)
+T11: Resolve Inquisition of Kozilek
+T11: Inquisition of Kozilek moved stack -> graveyard (resolution)
+    → Goal: fill_resource
+    [Mana] Tap Island→U, Hallowed Fountain→W, Concealed Courtyard→W, Godless Shrine→B (paying for Leyline of Sanctity, 1 mana remaining)
+T11 P1: Cast Leyline of Sanctity (2WW)
+    [Priority] P2 passes (no response)
+T11: Resolve Leyline of Sanctity
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Goryo's Vengeance 3
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 12  |  Opp lands: 7
+║ Library: 21  |  Graveyard: 15
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Arboreal Grazer (0/3), Construct Token (2/2), Primeval Titan (6/6), Primeval Titan (6/6), Cultivator Colossus (12/12)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber, Gruul Turf, The Mycosynth Gardens, Crumbling Vestige, Urza's Saga, Forest, Boseiju, Who Endures, Shifting Woodland, Tolaria West, Urza's Saga, Echoing Deeps, Forest
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Other: Leyline of Sanctity
+║   Lands: Hallowed Fountain [T], Watery Grave [T], Concealed Courtyard [T], Godless Shrine [T], Godless Shrine, Island [T], Concealed Courtyard [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T11 P2: Urza's Saga Ch.I: gains "{T}: Add {C}."
+T11 P2: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P2 draws: Summoner's Pact
+  [Main 1]
+T11 P2: Play Simic Growth Chamber (enters tapped)
+T11 P2: Amulet of Vigor untaps Simic Growth Chamber
+T11: Urza's Saga moved battlefield -> hand (Simic Growth Chamber ETB returns Urza's Saga to hand)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Construct Token, Primeval Titan, Primeval Titan, Cultivator Colossus
+T11 P2: Amulet of Vigor untaps Urza's Saga
+T11 P2: Primeval Titan searches for Urza's Saga
+T11 P2: Attack with Construct Token, Primeval Titan, Primeval Titan, Cultivator Colossus
+  [Declare Blockers] P1 does not block
+T11 P2:   Construct Token (2/2) → 2 dmg to player
+T11 P2:   Primeval Titan (6/6) → 6 dmg to player
+T11 P2:   Primeval Titan (6/6) → 6 dmg to player
+T11 P2:   Cultivator Colossus (13/13) → 13 dmg to player
+P1 loses: life total -24
+  [Combat Damage] 27 damage dealt → P1 life: 3 → -24
+
+>>> Amulet Titan wins Game 1 on turn 11 via damage
+    Final life: Goryo's Vengeance=-24  Amulet Titan=20
+
+======================================================================
+  GAME 2: Goryo's Vengeance (P1) vs Amulet Titan (P2)  —  seed 55612
+  Series: Goryo's Vengeance 0 - 1 Amulet Titan
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Amulet Titan wins → chooses to play first
+║ P1 (on play): Amulet Titan
+║ P2 (on draw): Goryo's Vengeance
+╚═══════════════════════════════════════════════════════
+
+P1 (Goryo's Vengeance) opening hand (3 lands, 4 spells):
+  • Faithful Mending [Spell, CMC 2]
+  • Flooded Strand [Land, CMC 0]
+  • Goryo's Vengeance [Spell, CMC 2]
+  • Thoughtseize [Spell, CMC 1]
+  • Concealed Courtyard [Land, CMC 0]
+  • Silent Clearing [Land, CMC 0]
+  • Unburial Rites [Spell, CMC 5]
+→ P1 KEEPS 7 — has key card(s): Faithful Mending, Goryo's Vengeance, Unburial Rites, 3 cheap spells
+
+P2 (Amulet Titan) opening hand (5 lands, 2 spells):
+  • Scapeshift [Spell, CMC 4]
+  • Urza's Saga [Land, CMC 0]
+  • Urza's Saga [Land, CMC 0]
+  • Tolaria West [Land, CMC 0]
+  • Mirrorpool [Land, CMC 0]
+  • Green Sun's Zenith [Spell, CMC 1]
+  • Crumbling Vestige [Land, CMC 0]
+→ P2 MULLIGANS (no cost reducer and no ritual+cantrip+finisher backup)
+  New hand (2 lands, 5 spells): ["Summoner's Pact", 'Malevolent Rumble', 'Spelunking', "Summoner's Pact", 'Boseiju, Who Endures', 'Shifting Woodland', 'Spelunking']
+→ P2 mulligans to 6, bottoms: ['Malevolent Rumble']
+  Keeps: ["Summoner's Pact", 'Spelunking', "Summoner's Pact", 'Boseiju, Who Endures', 'Shifting Woodland', 'Spelunking']
+
+
+╔══ TURN 1 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Goryo's Vengeance 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 54  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Boseiju, Who Endures
+    → Goal: deploy_engine
+T1 P2: Cast Summoner's Pact (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Summoner's Pact
+T1 P2: Summoner's Pact finds Primeval Titan
+T1: Summoner's Pact moved stack -> graveyard (resolution)
+    → Goal: deploy_engine
+T1 P2: Cast Summoner's Pact (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Summoner's Pact
+T1 P2: Summoner's Pact finds Primeval Titan
+T1: Summoner's Pact moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 20  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Boseiju, Who Endures
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Concealed Courtyard
+  [Main 1]
+T1 P1: Play Silent Clearing
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Goryo's Vengeance 20
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Boseiju, Who Endures
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Silent Clearing
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Crumbling Vestige
+  [Main 1]
+T2 P2: Play Crumbling Vestige (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 20  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Silent Clearing
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Boseiju, Who Endures, Crumbling Vestige [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Silent Clearing
+  [Main 1]
+T2 P1: Play Flooded Strand
+T2: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T2 P1: Crack Flooded Strand (pay 1 life) -> Watery Grave (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Goryo's Vengeance 19
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Boseiju, Who Endures, Crumbling Vestige
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Silent Clearing, Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Simic Growth Chamber
+  [Main 1]
+T3 P2: Play Simic Growth Chamber (enters tapped)
+T3: Boseiju, Who Endures moved battlefield -> hand (Simic Growth Chamber ETB returns Boseiju, Who Endures to hand)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 19  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 1
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Silent Clearing, Watery Grave
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige, Simic Growth Chamber [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Griselbrand
+  [Main 1]
+T3 P1: Play Silent Clearing
+    → Goal: fill_resource [enablers]
+    [Mana] Tap Silent Clearing→W, Watery Grave→U (paying for Faithful Mending, 1 mana remaining)
+T3 P1: Cast Faithful Mending (WU)
+    [Priority] P2 passes (no response)
+T3: Resolve Faithful Mending
+T3: Griselbrand moved hand -> graveyard (discard)
+T3: Griselbrand moved hand -> graveyard (discard)
+T3: Faithful Mending moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Goryo's Vengeance 21
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige, Simic Growth Chamber
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Silent Clearing [T], Watery Grave [T], Silent Clearing
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Scapeshift
+  [Main 1]
+T4 P2: Play Boseiju, Who Endures
+    → Goal: ramp [enablers]
+    [Mana] Tap Boseiju, Who Endures→G, Simic Growth Chamber→GU (paying for Spelunking, 1 mana remaining)
+T4 P2: Cast Spelunking (2G)
+    [Priority] P1 passes (no response)
+T4: Resolve Spelunking
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 21  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 4
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Silent Clearing, Watery Grave, Silent Clearing
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Spelunking
+║   Lands: Crumbling Vestige, Simic Growth Chamber [T], Boseiju, Who Endures [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Unburial Rites
+  [Main 1]
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Silent Clearing→B, Watery Grave→B (paying for Goryo's Vengeance, 1 mana remaining)
+T4 P1: Cast Goryo's Vengeance (1B)
+    [Priority] P2 passes (no response)
+T4: Resolve Goryo's Vengeance
+T4 P1: Reanimate Griselbrand
+T4: Goryo's Vengeance moved stack -> graveyard (resolution)
+T4 P1: Play Concealed Courtyard (tapped, 3 other lands)
+T4 P1: Griselbrand: pay 7 life, draw 7
+T4 P1: Activate Silent Clearing (sacrifice)
+T4 P1: Activate Silent Clearing (sacrifice)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Griselbrand
+T4 P1: Attack with Griselbrand
+  [Declare Blockers] P2 does not block
+T4 P1: Griselbrand lifelink — gain 7 (life: 21)
+T4 P1:   Griselbrand (7/7) → 7 dmg to player
+  [Combat Damage] 7 damage dealt → P2 life: 20 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Griselbrand moved battlefield -> exile (delayed end-of-turn exile)
+T4: Griselbrand exiled (end of turn)
+T4: Faithful Mending moved hand -> graveyard (discard to hand size)
+T4: Faithful Mending moved hand -> graveyard (discard to hand size)
+T4: Unburial Rites moved hand -> graveyard (discard to hand size)
+T4: Unburial Rites moved hand -> graveyard (discard to hand size)
+T4: Concealed Courtyard moved hand -> graveyard (discard to hand size)
+T4: Marsh Flats moved hand -> graveyard (discard to hand size)
+T4: Thoughtseize moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 5 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 13  |  Goryo's Vengeance 21
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 49  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Spelunking
+║   Lands: Crumbling Vestige, Simic Growth Chamber, Boseiju, Who Endures
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T], Concealed Courtyard [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Urza's Saga
+  [Main 1]
+T5 P2: Play Urza's Saga
+    → Goal: ramp [enablers]
+    [Mana] Tap Boseiju, Who Endures→G, Urza's Saga→C, Simic Growth Chamber→GU (paying for Spelunking, 2 mana remaining)
+T5 P2: Cast Spelunking (2G)
+    [Priority] P1 passes (no response)
+T5: Resolve Spelunking
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 21  |  Amulet Titan 13
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 37  |  Graveyard: 13
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Concealed Courtyard
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Spelunking, Spelunking
+║   Lands: Crumbling Vestige, Simic Growth Chamber [T], Boseiju, Who Endures [T], Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Atraxa, Grand Unifier
+  [Main 1]
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Watery Grave→B, Concealed Courtyard→W (paying for Goryo's Vengeance, 0 mana remaining)
+T5 P1: Cast Goryo's Vengeance (1B)
+    [Priority] P2 passes (no response)
+T5: Resolve Goryo's Vengeance
+T5 P1: Reanimate Griselbrand
+T5: Goryo's Vengeance moved stack -> graveyard (resolution)
+T5 P1: Play Flooded Strand
+T5: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T5 P1: Crack Flooded Strand (pay 1 life) -> Godless Shrine (tapped, life: 20)
+T5 P1: Griselbrand: pay 7 life, draw 7
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Griselbrand
+T5 P1: Attack with Griselbrand
+  [Declare Blockers] P2 does not block
+T5 P1: Griselbrand lifelink — gain 7 (life: 20)
+T5 P1:   Griselbrand (7/7) → 7 dmg to player
+  [Combat Damage] 7 damage dealt → P2 life: 13 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+T5: Griselbrand moved battlefield -> exile (delayed end-of-turn exile)
+T5: Griselbrand exiled (end of turn)
+T5: Archon of Cruelty moved hand -> graveyard (discard to hand size)
+T5: Atraxa, Grand Unifier moved hand -> graveyard (discard to hand size)
+T5: Unburial Rites moved hand -> graveyard (discard to hand size)
+T5: Island moved hand -> graveyard (discard to hand size)
+T5: Marsh Flats moved hand -> graveyard (discard to hand size)
+T5: Marsh Flats moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 6 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 6  |  Goryo's Vengeance 20
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Spelunking, Spelunking
+║   Lands: Crumbling Vestige, Simic Growth Chamber, Boseiju, Who Endures, Urza's Saga
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T], Concealed Courtyard [T], Godless Shrine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T6 P2: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P2 draws: Arboreal Grazer
+  [Main 1]
+T6 P2: Play Shifting Woodland (enters tapped)
+T6 P2: Spelunking — Shifting Woodland enters untapped
+    → Goal: ramp [payoffs]
+    [Mana] Tap Boseiju, Who Endures→G, Urza's Saga→C, Shifting Woodland→G, Simic Growth Chamber→GU, Crumbling Vestige→C (paying for Primeval Titan, 0 mana remaining)
+T6 P2: Cast Primeval Titan (4GG)
+    [Priority] P1 passes (no response)
+T6: Resolve Primeval Titan
+T6: Boseiju, Who Endures moved battlefield -> hand (Gruul Turf ETB returns Boseiju, Who Endures to hand)
+T6 P2: Spelunking — Gruul Turf enters untapped
+T6 P2: Primeval Titan searches for Gruul Turf
+T6 P2: Spelunking — Hanweir Battlements // Hanweir, the Writhing Township enters untapped
+T6 P2: Primeval Titan searches for Hanweir Battlements // Hanweir, the Writhing Township
+T6 P2: activate Hanweir Battlements // Hanweir, the Writhing Township — Target creature gains haste until end of turn.
+T6 P2: Hanweir Battlements // Hanweir, the Writhing Township grants Primeval Titan haste until end of turn
+    → Goal: ramp [enablers]
+T6 P2: Cast Arboreal Grazer (G)
+    [Priority] P1 passes (no response)
+T6: Resolve Arboreal Grazer
+T6 P2: Spelunking — Boseiju, Who Endures enters untapped
+T6 P2: Arboreal Grazer puts Boseiju, Who Endures onto battlefield
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Primeval Titan
+T6 P2: Spelunking — Tolaria West enters untapped
+T6 P2: Primeval Titan searches for Tolaria West
+T6: Urza's Saga moved battlefield -> hand (Gruul Turf ETB returns Urza's Saga to hand)
+T6 P2: Spelunking — Gruul Turf enters untapped
+T6 P2: Primeval Titan searches for Gruul Turf
+T6 P2: Attack with Primeval Titan
+  [Declare Blockers] P1 does not block
+T6 P2:   Primeval Titan (6/6) → 6 dmg to player
+  [Combat Damage] 6 damage dealt → P1 life: 20 → 14
+  [End Combat]
+  [Main 2]
+    → Goal: ramp
+    [Mana] Tap Boseiju, Who Endures→G, Tolaria West→U, Gruul Turf→RG (paying for Scapeshift, 0 mana remaining)
+T6 P2: Cast Scapeshift (2GG)
+    [Priority] P1 passes (no response)
+T6: Resolve Scapeshift
+T6 P2: Scapeshift sacrifices 8 lands
+T6 P2: Spelunking — Crumbling Vestige enters untapped
+T6 P2: Spelunking — The Mycosynth Gardens enters untapped
+T6 P2: Spelunking — Crumbling Vestige enters untapped
+T6 P2: Spelunking — Crumbling Vestige enters untapped
+T6: Simic Growth Chamber moved battlefield -> hand (Gruul Turf ETB returns Simic Growth Chamber to hand)
+T6 P2: Spelunking — Gruul Turf enters untapped
+T6: Simic Growth Chamber moved battlefield -> hand (Simic Growth Chamber ETB returns Simic Growth Chamber to hand)
+T6 P2: Spelunking — Simic Growth Chamber enters untapped
+T6 P2: Scapeshift fetches 8 lands onto battlefield
+T6: Scapeshift moved stack -> graveyard (resolution)
+    → Goal: ramp [payoffs]
+    [Mana] Tap Simic Growth Chamber→GU, Gruul Turf→RG, Crumbling Vestige→C, Crumbling Vestige→C (paying for Primeval Titan, 2 mana remaining)
+T6 P2: Cast Primeval Titan (4GG)
+    [Priority] P1 passes (no response)
+T6: Resolve Primeval Titan
+T6 P2: Spelunking — Mirrorpool enters untapped
+T6 P2: Primeval Titan searches for Mirrorpool
+T6 P2: Spelunking — Forest enters untapped
+T6 P2: Primeval Titan searches for Forest
+  [End Step]
+
+╔══ TURN 6 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 14  |  Amulet Titan 6
+║ Hand: 7 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 8
+║ Library: 28  |  Graveyard: 20
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Concealed Courtyard, Godless Shrine
+║ Amulet Titan board:
+║   Creatures: Primeval Titan (6/6) [tapped], Arboreal Grazer (0/3), Primeval Titan (6/6)
+║   Other: Spelunking, Spelunking
+║   Lands: Simic Growth Chamber [T], Gruul Turf [T], Crumbling Vestige [T], Crumbling Vestige [T], The Mycosynth Gardens, Crumbling Vestige, Mirrorpool, Forest
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Flooded Strand
+  [Main 1]
+T6 P1: Play Flooded Strand
+T6: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T6 P1: Crack Flooded Strand (pay 1 life) -> Godless Shrine (untapped, life: 11)
+    → Goal: execute_payoff [payoffs]
+    → Goal: execute_payoff [payoffs]
+    → Goal: execute_payoff [payoffs]
+    → Goal: execute_payoff
+    [Mana] Tap Watery Grave→B (paying for Thoughtseize, 3 mana remaining)
+T6 P1: Cast Thoughtseize (B)
+    [Priority] P2 passes (no response)
+T6: Resolve Thoughtseize
+T6: Thoughtseize moved stack -> graveyard (resolution)
+    → Goal: execute_payoff
+    [Mana] Tap Concealed Courtyard→B (paying for Thoughtseize, 2 mana remaining)
+T6 P1: Cast Thoughtseize (B)
+    [Priority] P2 passes (no response)
+T6: Resolve Thoughtseize
+T6: Thoughtseize moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [protection]
+    [Mana] Tap Godless Shrine→B (paying for Undying Evil, 1 mana remaining)
+T6 P1: Cast Undying Evil (B)
+    [Priority] P2 passes (no response)
+T6: Resolve Undying Evil
+T6: Undying Evil moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 6  |  Goryo's Vengeance 7
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 8  |  Opp lands: 4
+║ Library: 33  |  Graveyard: 11
+║ Amulet Titan board:
+║   Creatures: Primeval Titan (6/6), Arboreal Grazer (0/3), Primeval Titan (6/6)
+║   Other: Spelunking, Spelunking
+║   Lands: Simic Growth Chamber, Gruul Turf, Crumbling Vestige, Crumbling Vestige, The Mycosynth Gardens, Crumbling Vestige, Mirrorpool, Forest
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T], Concealed Courtyard [T], Godless Shrine [T], Godless Shrine
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Spelunking
+  [Main 1]
+T7 P2: Play Urza's Saga
+    → Goal: ramp [enablers]
+    [Mana] Tap Mirrorpool→C, Forest→G, Urza's Saga→C (paying for Spelunking, 8 mana remaining)
+T7 P2: Cast Spelunking (2G)
+    [Priority] P1 passes (no response)
+T7: Resolve Spelunking
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Primeval Titan, Primeval Titan
+T7 P2: Spelunking — Urza's Cave enters untapped
+T7 P2: Primeval Titan searches for Urza's Cave
+T7 P2: Spelunking — Otawara, Soaring City enters untapped
+T7 P2: Primeval Titan searches for Otawara, Soaring City
+T7 P2: Spelunking — Dryad Arbor enters untapped
+T7 P2: Primeval Titan searches for Dryad Arbor
+T7 P2: Spelunking — Forest enters untapped
+T7 P2: Primeval Titan searches for Forest
+T7 P2: Attack with Primeval Titan, Primeval Titan
+  [Declare Blockers] P1 does not block
+T7 P2:   Primeval Titan (6/6) → 6 dmg to player
+T7 P2:   Primeval Titan (6/6) → 6 dmg to player
+P1 loses: life total -5
+  [Combat Damage] 12 damage dealt → P1 life: 7 → -5
+
+>>> Amulet Titan wins Game 2 on turn 7 via damage
+    Final life: Goryo's Vengeance=-5  Amulet Titan=6
+
+======================================================================
+  MATCH RESULT: Amulet Titan wins 2-0
+======================================================================
