@@ -1,0 +1,1055 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+  Sideboard (Izzet Prowess vs Amulet Titan): +2 Spell Pierce, -2 Lightning Bolt
+======================================================================
+  GAME 1: Izzet Prowess (P1) vs Amulet Titan (P2)  —  seed 59003
+  Series: Izzet Prowess 0 - 0 Amulet Titan
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Amulet Titan wins → chooses to play first
+║ P1 (on play): Amulet Titan
+║ P2 (on draw): Izzet Prowess
+╚═══════════════════════════════════════════════════════
+
+P1 (Izzet Prowess) opening hand (3 lands, 4 spells):
+  • Mishra's Bauble [Spell, CMC 0]
+  • Monastery Swiftspear [Creature, CMC 1]
+  • Preordain [Spell, CMC 1]
+  • Mountain [Land, CMC 0]
+  • Steam Vents [Land, CMC 0]
+  • Slickshot Show-Off [Creature, CMC 2]
+  • Steam Vents [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Monastery Swiftspear, Slickshot Show-Off, 4 cheap spells
+
+P2 (Amulet Titan) opening hand (3 lands, 4 spells):
+  • Crumbling Vestige [Land, CMC 0]
+  • Spelunking [Spell, CMC 3]
+  • Forest [Land, CMC 0]
+  • Amulet of Vigor [Spell, CMC 1]
+  • Simic Growth Chamber [Land, CMC 0]
+  • Malevolent Rumble [Spell, CMC 2]
+  • Primeval Titan [Creature, CMC 6]
+→ P2 KEEPS 7 — has key card(s): Amulet of Vigor, Spelunking, 3 cheap spells
+
+
+╔══ TURN 1 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Izzet Prowess 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Crumbling Vestige (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Izzet Prowess (P1) ══════════════════════════
+║ Life: Izzet Prowess 20  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Mutagenic Growth
+  [Main 1]
+T1 P1: Play Steam Vents (untapped, life: 20)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Steam Vents→R (paying for Monastery Swiftspear, 0 mana remaining)
+T1 P1: Cast Monastery Swiftspear (R)
+    [Priority] P2 passes (no response)
+T1: Resolve Monastery Swiftspear
+    → Goal: curve_out
+T1 P1: Cast Mishra's Bauble (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Mishra's Bauble
+T1: Mishra's Bauble moved battlefield -> graveyard (activation cost (Mishra's Bauble))
+T1 P1: activate Mishra's Bauble — Look at the top card of target player's library. Draw a card at the beginning of the next turn's upkeep.
+T1 P1: Mishra's Bauble queues a delayed trigger (next_upkeep)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Monastery Swiftspear
+T1 P1: Attack with Monastery Swiftspear
+  [Declare Blockers] P2 does not block
+T1 P1:   Monastery Swiftspear (2/3) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 20 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 18  |  Izzet Prowess 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2) [tapped]
+║   Lands: Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T2: delayed trigger — Mishra's Bauble: Look at the top card of target player's library. Draw a card at the beginning of the next turn's upkeep.
+T2 P1: Mishra's Bauble activated — draw 1 (Steam Vents)
+  [Draw] P2 draws: Dryad Arbor
+  [Main 1]
+T2 P2: Play Forest
+    → Goal: deploy_engine [engines]
+    [Mana] Tap Forest→G (paying for Amulet of Vigor, 1 mana remaining)
+T2 P2: Cast Amulet of Vigor (1)
+    [Priority] P1 passes (no response)
+T2: Resolve Amulet of Vigor
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Izzet Prowess (P1) ══════════════════════════
+║ Life: Izzet Prowess 20  |  Amulet Titan 18
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2)
+║   Lands: Steam Vents
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige, Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Expressive Iteration
+  [Main 1]
+T2 P1: Play Mountain
+    → Goal: curve_out
+    [Mana] Tap Steam Vents→U (paying for Preordain, 1 mana remaining)
+T2 P1: Cast Preordain (U)
+    [Priority] P2 passes (no response)
+T2: Resolve Preordain
+T2 P1: scry 2 (Mishra's Bauble, Lava Dart) → bottom: none
+T2 P1: Preordain → draw 1 (Mishra's Bauble)
+T2: Preordain moved stack -> graveyard (resolution)
+    → Goal: curve_out
+T2 P1: Cast Mishra's Bauble (0)
+    [Priority] P2 passes (no response)
+T2: Resolve Mishra's Bauble
+T2: Mishra's Bauble moved battlefield -> graveyard (activation cost (Mishra's Bauble))
+T2 P1: activate Mishra's Bauble — Look at the top card of target player's library. Draw a card at the beginning of the next turn's upkeep.
+T2 P1: Mishra's Bauble queues a delayed trigger (next_upkeep)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Monastery Swiftspear
+T2 P1: Attack with Monastery Swiftspear
+  [Declare Blockers] P2 does not block
+T2 P1:   Monastery Swiftspear (3/4) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 18 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 15  |  Izzet Prowess 20
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige, Forest
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2) [tapped]
+║   Lands: Steam Vents [T], Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T3: delayed trigger — Mishra's Bauble: Look at the top card of target player's library. Draw a card at the beginning of the next turn's upkeep.
+T3 P1: Mishra's Bauble activated — draw 1 (Lava Dart)
+  [Draw] P2 draws: Summoner's Pact
+  [Main 1]
+T3 P2: Play Simic Growth Chamber (enters tapped)
+T3 P2: Amulet of Vigor untaps Simic Growth Chamber
+T3: Forest moved battlefield -> hand (Simic Growth Chamber ETB returns Forest to hand)
+    → Goal: ramp
+T3 P2: Cast Summoner's Pact (0)
+    [Priority] P1 passes (no response)
+T3: Resolve Summoner's Pact
+T3 P2: Summoner's Pact finds Primeval Titan
+T3: Summoner's Pact moved stack -> graveyard (resolution)
+    → Goal: ramp
+    [Mana] Tap Simic Growth Chamber→GU (paying for Malevolent Rumble, 1 mana remaining)
+T3 P2: Cast Malevolent Rumble (1G)
+    [Priority] P1 passes (no response)
+T3: Resolve Malevolent Rumble
+T3 P2: Create 1x spawn token(s)
+T3: Malevolent Rumble moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Izzet Prowess (P1) ══════════════════════════
+║ Life: Izzet Prowess 20  |  Amulet Titan 15
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 48  |  Graveyard: 3
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2)
+║   Lands: Steam Vents, Mountain
+║ Amulet Titan board:
+║   Creatures: spawn Token (0/1)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige, Simic Growth Chamber [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Lava Dart
+  [Main 1]
+T3 P1: Play Steam Vents (untapped, life: 20)
+    → Goal: curve_out
+    [Mana] Tap Mountain→R, Steam Vents→U (paying for Expressive Iteration, 1 mana remaining)
+T3 P1: Cast Expressive Iteration (UR)
+    [Priority] P2 passes (no response)
+T3: Resolve Expressive Iteration
+T3: Expressive Iteration moved stack -> graveyard (resolution)
+    → Goal: curve_out
+    [Mana] Tap Steam Vents→R (paying for Lava Dart, 0 mana remaining)
+T3 P1: Cast Lava Dart (R)
+    [Priority] P2 passes (no response)
+T3: Resolve Lava Dart
+T3: Lava Dart moved stack -> graveyard (resolution)
+T3: spawn Token dies
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Monastery Swiftspear
+T3 P1: Attack with Monastery Swiftspear
+  [Declare Blockers] P2 does not block
+T3 P1:   Monastery Swiftspear (3/4) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 15 → 12
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 12  |  Izzet Prowess 20
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige, Simic Growth Chamber
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2) [tapped]
+║   Lands: Steam Vents [T], Mountain [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Cultivator Colossus
+  [Main 1]
+T4 P2: Play Forest
+    → Goal: ramp [enablers]
+    [Mana] Tap Forest→G, Simic Growth Chamber→GU (paying for Spelunking, 1 mana remaining)
+T4 P2: Cast Spelunking (2G)
+    [Priority] P1 passes (no response)
+T4: Resolve Spelunking
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Izzet Prowess (P1) ══════════════════════════
+║ Life: Izzet Prowess 20  |  Amulet Titan 12
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 45  |  Graveyard: 5
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2)
+║   Lands: Steam Vents, Mountain, Steam Vents
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Crumbling Vestige, Simic Growth Chamber [T], Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Unholy Heat
+  [Main 1]
+T4 P1: Play Steam Vents (untapped, life: 20)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Mountain→R, Steam Vents→R (paying for Slickshot Show-Off, 2 mana remaining)
+T4 P1: Cast Slickshot Show-Off (1R)
+    [Priority] P2 passes (no response)
+T4: Resolve Slickshot Show-Off
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Monastery Swiftspear, Slickshot Show-Off
+T4 P1: Attack with Monastery Swiftspear, Slickshot Show-Off
+  [Declare Blockers] P2 does not block
+T4 P1:   Monastery Swiftspear (1/2) → 1 dmg to player
+T4 P1:   Slickshot Show-Off (1/2) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 12 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 10  |  Izzet Prowess 20
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Crumbling Vestige, Simic Growth Chamber, Forest
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2) [tapped], Slickshot Show-Off (1/2) [tapped]
+║   Lands: Steam Vents [T], Mountain [T], Steam Vents, Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Simic Growth Chamber
+  [Main 1]
+T5 P2: Play Simic Growth Chamber (enters tapped)
+T5 P2: Amulet of Vigor untaps Simic Growth Chamber
+T5: Forest moved battlefield -> hand (Simic Growth Chamber ETB returns Forest to hand)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Izzet Prowess (P1) ══════════════════════════
+║ Life: Izzet Prowess 20  |  Amulet Titan 10
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 44  |  Graveyard: 5
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2), Slickshot Show-Off (1/2)
+║   Lands: Steam Vents, Mountain, Steam Vents, Steam Vents
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Crumbling Vestige, Simic Growth Chamber, Simic Growth Chamber
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Lightning Bolt
+  [Main 1]
+    → Goal: curve_out
+    [Target] → face (3 dmg, life 10 → 7): face value 7.50
+    [Mana] Tap Mountain→R (paying for Lightning Bolt, 3 mana remaining)
+T5 P1: Cast Lightning Bolt (R)
+    [Priority] P2 passes (no response)
+T5: Resolve Lightning Bolt
+T5 P1: Lightning Bolt → 3 damage → life 7
+T5: Lightning Bolt moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Monastery Swiftspear, Slickshot Show-Off
+T5 P1: Attack with Monastery Swiftspear, Slickshot Show-Off
+  [Declare Blockers] P2 does not block
+T5 P1:   Monastery Swiftspear (2/3) → 2 dmg to player
+T5 P1:   Slickshot Show-Off (3/2) → 3 dmg to player
+  [Combat Damage] 5 damage dealt → P2 life: 7 → 2
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 2  |  Izzet Prowess 20
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Crumbling Vestige, Simic Growth Chamber, Simic Growth Chamber
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2) [tapped], Slickshot Show-Off (1/2) [tapped]
+║   Lands: Steam Vents, Mountain [T], Steam Vents, Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Urza's Saga
+  [Main 1]
+T6 P2: Play Urza's Saga
+    → Goal: ramp [payoffs]
+    [Mana] Tap Urza's Saga→C, Simic Growth Chamber→GU, Simic Growth Chamber→GU, Crumbling Vestige→C (paying for Primeval Titan, 0 mana remaining)
+T6 P2: Cast Primeval Titan (4GG)
+    [Priority] P1 passes (no response)
+T6: Resolve Primeval Titan
+T6 P2: Amulet of Vigor untaps Mirrorpool
+T6 P2: Primeval Titan searches for Mirrorpool
+T6 P2: Amulet of Vigor untaps Hanweir Battlements // Hanweir, the Writhing Township
+T6 P2: Primeval Titan searches for Hanweir Battlements // Hanweir, the Writhing Township
+  [Begin Combat]
+    [Mana] Tap Steam Vents→R (paying for Lava Dart, 2 mana remaining)
+T6 P1: Cast Lava Dart (R)
+T6: Resolve Lava Dart
+T6: Lava Dart moved stack -> graveyard (resolution)
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Izzet Prowess (P1) ══════════════════════════
+║ Life: Izzet Prowess 20  |  Amulet Titan 2
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 43  |  Graveyard: 7
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2), Slickshot Show-Off (1/2)
+║   Lands: Steam Vents, Mountain, Steam Vents, Steam Vents
+║ Amulet Titan board:
+║   Creatures: Primeval Titan (6/6)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Crumbling Vestige [T], Simic Growth Chamber [T], Simic Growth Chamber [T], Urza's Saga [T], Mirrorpool, Hanweir Battlements // Hanweir, the Writhing Township
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Violent Urge
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Mountain→R (paying for Lava Dart, 3 mana remaining)
+T6 P1: Flashback Lava Dart — sacrifice Steam Vents
+T6 P1: Cast Lava Dart (R)
+    [Priority] P2 passes (no response)
+T6: Resolve Lava Dart
+T6: Lava Dart moved stack -> exile (flashback resolution (CR 702.33a))
+    → Goal: curve_out
+    [Mana] Tap Steam Vents→R (paying for Lava Dart, 1 mana remaining)
+T6 P1: Flashback Lava Dart — sacrifice Mountain
+T6 P1: Cast Lava Dart (R)
+    [Priority] P2 passes (no response)
+T6: Resolve Lava Dart
+T6: Lava Dart moved stack -> exile (flashback resolution (CR 702.33a))
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Monastery Swiftspear, Slickshot Show-Off
+T6 P1: Attack with Monastery Swiftspear, Slickshot Show-Off
+T6 P2:   [BLOCK-EMERGENCY] Primeval Titan (6/6) blocks Monastery Swiftspear (3/4) — lifespan_delta=+100.40
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T6 P1:   Slickshot Show-Off (5/2) → 5 dmg to player
+P2 loses: life total -3
+  [Combat Damage] 5 damage dealt → P2 life: 2 → -3
+
+>>> Izzet Prowess wins Game 1 on turn 6 via damage
+    Final life: Izzet Prowess=20  Amulet Titan=-3
+
+======================================================================
+  GAME 2: Amulet Titan (P1) vs Izzet Prowess (P2)  —  seed 59004
+  Series: Izzet Prowess 1 - 0 Amulet Titan
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Amulet Titan wins → chooses to play first
+║ P1 (on play): Amulet Titan
+║ P2 (on draw): Izzet Prowess
+╚═══════════════════════════════════════════════════════
+
+P1 (Amulet Titan) opening hand (2 lands, 5 spells):
+  • Arboreal Grazer [Creature, CMC 1]
+  • Boseiju, Who Endures [Land, CMC 0]
+  • Green Sun's Zenith [Spell, CMC 1]
+  • Spelunking [Spell, CMC 3]
+  • Otawara, Soaring City [Land, CMC 0]
+  • Malevolent Rumble [Spell, CMC 2]
+  • Green Sun's Zenith [Spell, CMC 1]
+→ P1 KEEPS 7 — has key card(s): Arboreal Grazer, Green Sun's Zenith, Spelunking, 5 cheap spells
+
+P2 (Izzet Prowess) opening hand (2 lands, 5 spells):
+  • Steam Vents [Land, CMC 0]
+  • Dragon's Rage Channeler [Creature, CMC 1]
+  • Monastery Swiftspear [Creature, CMC 1]
+  • Mountain [Land, CMC 0]
+  • Monastery Swiftspear [Creature, CMC 1]
+  • Monastery Swiftspear [Creature, CMC 1]
+  • Mishra's Bauble [Spell, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Dragon's Rage Channeler, Monastery Swiftspear, 5 cheap spells
+
+
+╔══ TURN 1 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Izzet Prowess 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Boseiju, Who Endures
+    → Goal: deploy_engine [enablers]
+    [Mana] Tap Boseiju, Who Endures→G (paying for Green Sun's Zenith, 0 mana remaining)
+T1 P1: Cast Green Sun's Zenith (G)
+    [Priority] P2 passes (no response)
+T1: Resolve Green Sun's Zenith
+T1: Dryad Arbor moved library -> battlefield (Green Sun's Zenith tutor)
+T1 P1: Green Sun's Zenith finds Dryad Arbor
+T1: Green Sun's Zenith moved stack -> graveyard (resolution)
+    → Goal: deploy_engine [enablers]
+    [Mana] Tap Dryad Arbor→G (paying for Arboreal Grazer, 0 mana remaining)
+T1 P1: Cast Arboreal Grazer (G)
+    [Priority] P2 passes (no response)
+T1: Resolve Arboreal Grazer
+T1 P1: Arboreal Grazer puts Otawara, Soaring City onto battlefield
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 20  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 3 cards
+║ Lands: 0  |  Opp lands: 3
+║ Library: 53  |  Graveyard: 0
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1) [tapped], Arboreal Grazer (0/3)
+║   Lands: Boseiju, Who Endures [T], Dryad Arbor [T], Otawara, Soaring City [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Unholy Heat
+  [Main 1]
+T1 P2: Play Steam Vents (untapped, life: 18)
+    → Goal: curve_out
+T1 P2: Cast Mishra's Bauble (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Mishra's Bauble
+T1: Mishra's Bauble moved battlefield -> graveyard (activation cost (Mishra's Bauble))
+T1 P2: activate Mishra's Bauble — Look at the top card of target player's library. Draw a card at the beginning of the next turn's upkeep.
+T1 P2: Mishra's Bauble queues a delayed trigger (next_upkeep)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Izzet Prowess 18
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1), Arboreal Grazer (0/3)
+║   Lands: Boseiju, Who Endures, Dryad Arbor, Otawara, Soaring City
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T2: delayed trigger — Mishra's Bauble: Look at the top card of target player's library. Draw a card at the beginning of the next turn's upkeep.
+T2 P2: Mishra's Bauble activated — draw 1 (Steam Vents)
+  [Draw] P1 draws: Spelunking
+  [Main 1]
+    → Goal: deploy_engine [engines]
+    [Mana] Tap Boseiju, Who Endures→G, Dryad Arbor→G, Otawara, Soaring City→U (paying for Spelunking, 0 mana remaining)
+T2 P1: Cast Spelunking (2G)
+    [Priority] P2 passes (no response)
+T2: Resolve Spelunking
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 18  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 3 cards
+║ Lands: 1  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 1
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: Steam Vents
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1) [tapped], Arboreal Grazer (0/3)
+║   Other: Spelunking
+║   Lands: Boseiju, Who Endures [T], Dryad Arbor [T], Otawara, Soaring City [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Preordain
+  [Main 1]
+T2 P2: Play Mountain
+    → Goal: curve_out
+    [Mana] Tap Steam Vents→U (paying for Preordain, 1 mana remaining)
+T2 P2: Cast Preordain (U)
+    [Priority] P1 passes (no response)
+T2: Resolve Preordain
+T2 P2: scry 2 (Dragon's Rage Channeler, Arid Mesa) → bottom: none
+T2 P2: Preordain → draw 1 (Dragon's Rage Channeler)
+T2: Preordain moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Izzet Prowess 18
+║ Hand: 3 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1), Arboreal Grazer (0/3)
+║   Other: Spelunking
+║   Lands: Boseiju, Who Endures, Dryad Arbor, Otawara, Soaring City
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: Steam Vents [T], Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Urza's Saga
+  [Main 1]
+T3 P1: Play Urza's Saga
+    → Goal: ramp [enablers]
+    [Mana] Tap Boseiju, Who Endures→G, Dryad Arbor→G, Otawara, Soaring City→U (paying for Spelunking, 1 mana remaining)
+T3 P1: Cast Spelunking (2G)
+    [Priority] P2 passes (no response)
+T3: Resolve Spelunking
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 18  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 2
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Mountain
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1) [tapped], Arboreal Grazer (0/3)
+║   Other: Spelunking, Spelunking
+║   Lands: Boseiju, Who Endures [T], Dryad Arbor [T], Otawara, Soaring City [T], Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+T3 P2: Play Arid Mesa
+T3: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T3 P2: Crack Arid Mesa (pay 1 life) -> Steam Vents (untapped, life: 15)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Izzet Prowess 15
+║ Hand: 2 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1), Arboreal Grazer (0/3)
+║   Other: Spelunking, Spelunking
+║   Lands: Boseiju, Who Endures, Dryad Arbor, Otawara, Soaring City, Urza's Saga
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Mountain, Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T4 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P1 draws: Primeval Titan
+  [Main 1]
+    → Goal: ramp
+    [Mana] Tap Boseiju, Who Endures→G, Dryad Arbor→G (paying for Malevolent Rumble, 2 mana remaining)
+T4 P1: Cast Malevolent Rumble (1G)
+    [Priority] P2 passes (no response)
+T4: Resolve Malevolent Rumble
+T4 P1: Create 1x spawn token(s)
+T4: Malevolent Rumble moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 15  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 3
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Mountain, Steam Vents
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1) [tapped], Arboreal Grazer (0/3), spawn Token (0/1)
+║   Other: Spelunking, Spelunking
+║   Lands: Boseiju, Who Endures [T], Dryad Arbor [T], Otawara, Soaring City, Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mishra's Bauble
+  [Main 1]
+T4 P2: Play Steam Vents (untapped, life: 13)
+    → Goal: curve_out
+T4 P2: Cast Mishra's Bauble (0)
+    [Priority] P1 passes (no response)
+T4: Resolve Mishra's Bauble
+T4: Mishra's Bauble moved battlefield -> graveyard (activation cost (Mishra's Bauble))
+T4 P2: activate Mishra's Bauble — Look at the top card of target player's library. Draw a card at the beginning of the next turn's upkeep.
+T4 P2: Mishra's Bauble queues a delayed trigger (next_upkeep)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Izzet Prowess 13
+║ Hand: 2 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1), Arboreal Grazer (0/3), spawn Token (0/1)
+║   Other: Spelunking, Spelunking
+║   Lands: Boseiju, Who Endures, Dryad Arbor, Otawara, Soaring City, Urza's Saga
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Mountain, Steam Vents, Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T5: delayed trigger — Mishra's Bauble: Look at the top card of target player's library. Draw a card at the beginning of the next turn's upkeep.
+T5 P2: Mishra's Bauble activated — draw 1 (Monstrous Rage)
+T5 P1: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+  [Draw] P1 draws: Urza's Saga
+  [Main 1]
+T5 P1: Play Urza's Saga
+T5 P1: Create 1x Construct token(s)
+T5 P1: Urza's Saga activates "{2}, {T}: Create a 0/0 colorless Constru..." (pays {2}, {T})
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 13  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 4
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Mountain, Steam Vents, Steam Vents
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1) [tapped], Arboreal Grazer (0/3), spawn Token (0/1), Construct Token (1/1)
+║   Other: Spelunking, Spelunking
+║   Lands: Boseiju, Who Endures [T], Dryad Arbor [T], Otawara, Soaring City, Urza's Saga [T], Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Monstrous Rage
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Mountain→R (paying for Dragon's Rage Channeler, 3 mana remaining)
+T5 P2: Cast Dragon's Rage Channeler (R)
+    [Priority] P1 passes (no response)
+T5: Resolve Dragon's Rage Channeler
+    → Goal: curve_out [enablers]
+    [Mana] Tap Steam Vents→R (paying for Dragon's Rage Channeler, 2 mana remaining)
+T5 P2: Cast Dragon's Rage Channeler (R)
+    [Priority] P1 passes (no response)
+T5: Resolve Dragon's Rage Channeler
+    → Goal: curve_out [enablers]
+    [Mana] Tap Steam Vents→R (paying for Monastery Swiftspear, 1 mana remaining)
+T5 P2: Cast Monastery Swiftspear (R)
+    [Priority] P1 passes (no response)
+T5: Resolve Monastery Swiftspear
+    → Goal: curve_out [enablers]
+    [Mana] Tap Steam Vents→R (paying for Monastery Swiftspear, 0 mana remaining)
+T5 P2: Cast Monastery Swiftspear (R)
+    [Priority] P1 passes (no response)
+T5: Resolve Monastery Swiftspear
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Monastery Swiftspear, Monastery Swiftspear
+T5 P2: Attack with Monastery Swiftspear, Monastery Swiftspear
+T5 P1:   [BLOCK] Arboreal Grazer (0/3) blocks Monastery Swiftspear (1/2) — lifespan_delta=+0.25
+T5 P1:   [BLOCK] spawn Token (0/1) blocks Monastery Swiftspear (1/2) — lifespan_delta=+0.25
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T5: spawn Token dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Izzet Prowess 13
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1), Arboreal Grazer (0/3), Construct Token (1/1)
+║   Other: Spelunking, Spelunking
+║   Lands: Boseiju, Who Endures, Dryad Arbor, Otawara, Soaring City, Urza's Saga, Urza's Saga
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (1/1), Dragon's Rage Channeler (1/1), Monastery Swiftspear (1/2) [tapped], Monastery Swiftspear (1/2) [tapped]
+║   Lands: Steam Vents [T], Mountain [T], Steam Vents [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T6 P1: Urza's Saga tutors Amulet of Vigor
+T6 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+T6 P1: Sacrifice Urza's Saga (final chapter)
+  [Draw] P1 draws: Summoner's Pact
+  [Main 1]
+    → Goal: ramp
+T6 P1: Cast Summoner's Pact (0)
+    [Priority] P2 passes (no response)
+T6: Resolve Summoner's Pact
+T6 P1: Summoner's Pact finds Primeval Titan
+T6: Summoner's Pact moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Construct Token
+T6 P1: Attack with Construct Token
+  [Declare Blockers] P2 does not block
+T6 P1:   Construct Token (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 13 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 11  |  Amulet Titan 20
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 44  |  Graveyard: 4
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (1/1), Dragon's Rage Channeler (1/1), Monastery Swiftspear (1/2), Monastery Swiftspear (1/2)
+║   Lands: Steam Vents, Mountain, Steam Vents, Steam Vents
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1), Arboreal Grazer (0/3), Construct Token (2/2) [tapped]
+║   Other: Spelunking, Spelunking, Amulet of Vigor
+║   Lands: Boseiju, Who Endures, Dryad Arbor, Otawara, Soaring City, Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Bloodstained Mire
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Mountain→R (paying for Monastery Swiftspear, 3 mana remaining)
+T6 P2: Cast Monastery Swiftspear (R)
+    [Priority] P1 passes (no response)
+T6: Resolve Monastery Swiftspear
+T6 P2: Play Bloodstained Mire
+T6: Bloodstained Mire moved battlefield -> graveyard (fetchland sacrifice)
+T6 P2: Crack Bloodstained Mire -> Mountain (untapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Dragon's Rage Channeler, Dragon's Rage Channeler, Monastery Swiftspear, Monastery Swiftspear, Monastery Swiftspear
+T6 P2: Attack with Dragon's Rage Channeler, Dragon's Rage Channeler, Monastery Swiftspear, Monastery Swiftspear, Monastery Swiftspear
+T6 P1:   [BLOCK] Arboreal Grazer (0/3) blocks Dragon's Rage Channeler (1/1) — lifespan_delta=+0.20
+T6 P1:   [BLOCK] Dryad Arbor (1/1) blocks Dragon's Rage Channeler (1/1) — lifespan_delta=-0.47
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T6 P2:   Dragon's Rage Channeler (1/1) → 1 dmg to player
+T6 P2:   Monastery Swiftspear (1/2) → 1 dmg to player
+T6 P2:   Monastery Swiftspear (1/2) → 1 dmg to player
+T6 P2:   Monastery Swiftspear (1/2) → 1 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 20 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 16  |  Izzet Prowess 10
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 4
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1), Arboreal Grazer (0/3), Construct Token (2/2)
+║   Other: Spelunking, Spelunking, Amulet of Vigor
+║   Lands: Boseiju, Who Endures, Dryad Arbor, Otawara, Soaring City, Urza's Saga
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (1/1) [tapped], Dragon's Rage Channeler (1/1) [tapped], Monastery Swiftspear (1/2) [tapped], Monastery Swiftspear (1/2) [tapped], Monastery Swiftspear (1/2) [tapped]
+║   Lands: Steam Vents, Mountain [T], Steam Vents, Steam Vents, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T7 P1: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+  [Draw] P1 draws: Mirrorpool
+  [Main 1]
+T7 P1: Play Mirrorpool (enters tapped)
+T7 P1: Amulet of Vigor untaps Mirrorpool
+T7 P1: Create 1x Construct token(s)
+T7 P1: Urza's Saga activates "{2}, {T}: Create a 0/0 colorless Constru..." (pays {2}, {T})
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Construct Token
+T7 P1: Attack with Construct Token
+  [Declare Blockers] P2 does not block
+T7 P1:   Construct Token (3/3) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 10 → 7
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 7  |  Amulet Titan 16
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 42  |  Graveyard: 5
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (1/1), Dragon's Rage Channeler (1/1), Monastery Swiftspear (1/2), Monastery Swiftspear (1/2), Monastery Swiftspear (1/2)
+║   Lands: Steam Vents, Mountain, Steam Vents, Steam Vents, Mountain
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1) [tapped], Arboreal Grazer (0/3), Construct Token (3/3) [tapped], Construct Token (3/3)
+║   Other: Spelunking, Spelunking, Amulet of Vigor
+║   Lands: Boseiju, Who Endures [T], Dryad Arbor [T], Otawara, Soaring City, Urza's Saga [T], Mirrorpool
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Spell Pierce
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Mountain→R (paying for Monstrous Rage, 4 mana remaining)
+T7 P2: Cast Monstrous Rage (R)
+T7 P2: surveil 1 → Violent Urge to GY
+T7 P2: surveil 1 → Mutagenic Growth to GY
+    [Priority] P1 passes (no response)
+T7: Resolve Monstrous Rage
+T7: Monstrous Rage moved stack -> graveyard (resolution)
+    → Goal: curve_out
+    [Mana] Tap Mountain→R (paying for Monstrous Rage, 3 mana remaining)
+T7 P2: Cast Monstrous Rage (R)
+T7 P2: surveil 1 → Mutagenic Growth to GY
+T7 P2: surveil 1 → Slickshot Show-Off to GY
+    [Priority] P1 passes (no response)
+T7: Resolve Monstrous Rage
+T7: Monstrous Rage moved stack -> graveyard (resolution)
+    → Goal: curve_out
+    [Target] → Construct Token: marginal threat 1.19 (3/3 body) — better than 6 face dmg
+    [Mana] Tap Steam Vents→R (paying for Unholy Heat, 2 mana remaining)
+T7 P2: Cast Unholy Heat (R)
+T7 P2: surveil 1 → Preordain to GY
+T7 P2: surveil 1 → Bloodstained Mire to GY
+    [Priority] P1 passes (no response)
+T7: Resolve Unholy Heat
+T7: Unholy Heat moved stack -> graveyard (resolution)
+T7: Construct Token dies
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Dragon's Rage Channeler, Dragon's Rage Channeler, Monastery Swiftspear, Monastery Swiftspear, Monastery Swiftspear
+T7 P2: Attack with Dragon's Rage Channeler, Dragon's Rage Channeler, Monastery Swiftspear, Monastery Swiftspear, Monastery Swiftspear
+T7 P1:   [BLOCK-EMERGENCY] Construct Token (2/2) blocks Monastery Swiftspear (4/5) — lifespan_delta=-0.94
+T7 P1:   [BLOCK-EMERGENCY] Arboreal Grazer (0/3) blocks Monastery Swiftspear (4/5) — lifespan_delta=+0.22
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T7 P2:   Dragon's Rage Channeler (3/3) → 3 dmg to player
+T7 P2:   Dragon's Rage Channeler (3/3) → 3 dmg to player
+T7 P2:   Monastery Swiftspear (4/5) → 4 dmg to player
+T7: Arboreal Grazer dies
+T7: Construct Token dies
+  [Combat Damage] 10 damage dealt → P1 life: 16 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 6  |  Izzet Prowess 7
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 44  |  Graveyard: 5
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1)
+║   Other: Spelunking, Spelunking, Amulet of Vigor
+║   Lands: Boseiju, Who Endures, Dryad Arbor, Otawara, Soaring City, Urza's Saga, Mirrorpool
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (3/3) [tapped], Dragon's Rage Channeler (3/3) [tapped], Monastery Swiftspear (1/2) [tapped], Monastery Swiftspear (1/2) [tapped], Monastery Swiftspear (1/2) [tapped]
+║   Lands: Steam Vents [T], Mountain [T], Steam Vents, Steam Vents, Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T8 P1: Urza's Saga tutors Zuran Orb
+T8 P1: Sacrifice Urza's Saga (final chapter)
+  [Draw] P1 draws: Forest
+  [Main 1]
+T8 P1: Play Forest
+    → Goal: ramp
+    [Mana] Tap Boseiju, Who Endures→G (paying for Green Sun's Zenith, 4 mana remaining)
+T8 P1: Cast Green Sun's Zenith (2G) (X=2)
+    [Priority] P2 passes (no response)
+T8: Resolve Green Sun's Zenith
+T8: Aftermath Analyst moved library -> battlefield (Green Sun's Zenith tutor)
+T8: Arboreal Grazer moved library -> graveyard (Aftermath Analyst mill)
+T8: Arboreal Grazer moved library -> graveyard (Aftermath Analyst mill)
+T8: Echoing Deeps moved library -> graveyard (Aftermath Analyst mill)
+T8 P1: Aftermath Analyst ETB: mill 3
+T8 P1: Green Sun's Zenith finds Aftermath Analyst
+T8: Green Sun's Zenith moved stack -> graveyard (resolution)
+T8 P1: Activate Aftermath Analyst (sacrifice)
+T8 P1: Returned Urza's Saga to battlefield
+T8 P1: Returned Urza's Saga to battlefield
+T8 P1: Returned Echoing Deeps to battlefield
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 7  |  Amulet Titan 6
+║ Hand: 1 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 8
+║ Library: 35  |  Graveyard: 14
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (3/3), Dragon's Rage Channeler (3/3), Monastery Swiftspear (1/2), Monastery Swiftspear (1/2), Monastery Swiftspear (1/2)
+║   Lands: Steam Vents, Mountain, Steam Vents, Steam Vents, Mountain
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1) [tapped]
+║   Other: Spelunking, Spelunking, Amulet of Vigor, Zuran Orb
+║   Lands: Boseiju, Who Endures [T], Dryad Arbor [T], Otawara, Soaring City [T], Mirrorpool, Forest, Urza's Saga [T], Urza's Saga [T], Echoing Deeps [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Spell Pierce
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Dragon's Rage Channeler, Dragon's Rage Channeler, Monastery Swiftspear, Monastery Swiftspear, Monastery Swiftspear
+T8 P2: Attack with Dragon's Rage Channeler, Dragon's Rage Channeler, Monastery Swiftspear, Monastery Swiftspear, Monastery Swiftspear
+  [Declare Blockers] P1 does not block
+T8 P2:   Dragon's Rage Channeler (3/3) → 3 dmg to player
+T8 P2:   Dragon's Rage Channeler (3/3) → 3 dmg to player
+T8 P2:   Monastery Swiftspear (1/2) → 1 dmg to player
+T8 P2:   Monastery Swiftspear (1/2) → 1 dmg to player
+T8 P2:   Monastery Swiftspear (1/2) → 1 dmg to player
+P1 loses: life total -3
+  [Combat Damage] 9 damage dealt → P1 life: 6 → -3
+
+>>> Izzet Prowess wins Game 2 on turn 8 via damage
+    Final life: Amulet Titan=-3  Izzet Prowess=7
+
+======================================================================
+  MATCH RESULT: Izzet Prowess wins 2-0
+======================================================================

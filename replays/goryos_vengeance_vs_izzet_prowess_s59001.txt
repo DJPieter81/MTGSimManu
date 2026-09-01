@@ -1,0 +1,919 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+======================================================================
+  GAME 1: Goryo's Vengeance (P1) vs Izzet Prowess (P2)  —  seed 59001
+  Series: Goryo's Vengeance 0 - 0 Izzet Prowess
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Izzet Prowess wins → chooses to play first
+║ P1 (on play): Izzet Prowess
+║ P2 (on draw): Goryo's Vengeance
+╚═══════════════════════════════════════════════════════
+
+P1 (Goryo's Vengeance) opening hand (1 lands, 6 spells):
+  • Archon of Cruelty [Creature, CMC 8]
+  • Inquisition of Kozilek [Spell, CMC 1]
+  • Unburial Rites [Spell, CMC 5]
+  • Leyline of Sanctity [Spell, CMC 4]
+  • Griselbrand [Creature, CMC 8]
+  • Island [Land, CMC 0]
+  • Goryo's Vengeance [Spell, CMC 2]
+→ P1 MULLIGANS (combo path under-covered in 7-card hand (best path: 1/2 role buckets; need enabler+payoff))
+  New hand (2 lands, 5 spells): ["Goryo's Vengeance", 'Archon of Cruelty', 'Atraxa, Grand Unifier', 'Island', 'Plains', 'Atraxa, Grand Unifier', 'Ephemerate']
+→ P1 MULLIGANS (combo path under-covered in 6-card hand (best path: 1/2 role buckets; need enabler))
+  New hand (2 lands, 5 spells): ['Ephemerate', "Goryo's Vengeance", 'Swamp', 'Ephemerate', 'Marsh Flats', 'Unburial Rites', 'Archon of Cruelty']
+→ P1 MULLIGANS (goal conjunction unreachable — no role-path coverage and no castable dig card)
+  New hand (2 lands, 5 spells): ['Silent Clearing', 'Unburial Rites', 'Ephemerate', 'Thoughtseize', 'Archon of Cruelty', 'Atraxa, Grand Unifier', 'Marsh Flats']
+
+P2 (Izzet Prowess) opening hand (3 lands, 4 spells):
+  • Bloodstained Mire [Land, CMC 0]
+  • Dragon's Rage Channeler [Creature, CMC 1]
+  • Bloodstained Mire [Land, CMC 0]
+  • Violent Urge [Spell, CMC 1]
+  • Mutagenic Growth [Spell, CMC 1]
+  • Mountain [Land, CMC 0]
+  • Dragon's Rage Channeler [Creature, CMC 1]
+→ P2 KEEPS 7 — has key card(s): Dragon's Rage Channeler, 4 cheap spells
+
+
+╔══ TURN 1 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 20  |  Goryo's Vengeance 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Bloodstained Mire
+T1: Bloodstained Mire moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Bloodstained Mire (pay 1 life) -> Steam Vents (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 20  |  Izzet Prowess 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Flooded Strand
+  [Main 1]
+T1 P1: Play Marsh Flats
+T1: Marsh Flats moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Marsh Flats (pay 1 life) -> Godless Shrine (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 19  |  Goryo's Vengeance 19
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: Steam Vents
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Preordain
+  [Main 1]
+T2 P2: Play Bloodstained Mire
+T2: Bloodstained Mire moved battlefield -> graveyard (fetchland sacrifice)
+T2 P2: Crack Bloodstained Mire (pay 1 life) -> Steam Vents (tapped, life: 18)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Steam Vents→R (paying for Dragon's Rage Channeler, 0 mana remaining)
+T2 P2: Cast Dragon's Rage Channeler (R)
+    [Priority] P1 passes (no response)
+T2: Resolve Dragon's Rage Channeler
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 19  |  Izzet Prowess 18
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (1/1)
+║   Lands: Steam Vents [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Faithful Mending
+  [Main 1]
+T2 P1: Play Flooded Strand
+T2: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T2 P1: Crack Flooded Strand (pay 1 life) -> Watery Grave (untapped, life: 16)
+    → Goal: fill_resource [enablers]
+    [Mana] Tap Godless Shrine→W, Watery Grave→U (paying for Faithful Mending, 0 mana remaining)
+T2 P1: Cast Faithful Mending (WU)
+    [Priority] P2 passes (no response)
+T2: Resolve Faithful Mending
+T2: Archon of Cruelty moved hand -> graveyard (discard)
+T2: Griselbrand moved hand -> graveyard (discard)
+T2: Faithful Mending moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 18  |  Goryo's Vengeance 18
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (1/1)
+║   Lands: Steam Vents, Steam Vents
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine [T], Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Lava Dart
+  [Main 1]
+T3 P2: Play Mountain
+    → Goal: curve_out
+    [Mana] Tap Steam Vents→U (paying for Preordain, 2 mana remaining)
+T3 P2: Cast Preordain (U)
+T3 P2: surveil 1 → Cori-Steel Cutter to GY
+    [Priority] P1 passes (no response)
+T3: Resolve Preordain
+T3 P2: scry 2 (Expressive Iteration, Fiery Islet) → bottom: none
+T3 P2: Preordain → draw 1 (Expressive Iteration)
+T3: Preordain moved stack -> graveyard (resolution)
+    → Goal: curve_out
+    [Mana] Tap Mountain→R, Steam Vents→U (paying for Expressive Iteration, 0 mana remaining)
+T3 P2: Cast Expressive Iteration (UR)
+T3 P2: surveil 1 → Fiery Islet to GY
+    [Priority] P1 passes (no response)
+T3: Resolve Expressive Iteration
+T3: Expressive Iteration moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Dragon's Rage Channeler
+T3 P2: Attack with Dragon's Rage Channeler
+  [Declare Blockers] P1 does not block
+T3 P2:   Dragon's Rage Channeler (1/1) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 18 → 17
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 17  |  Izzet Prowess 18
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 5
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Watery Grave
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (1/1) [tapped]
+║   Lands: Steam Vents [T], Steam Vents [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ephemerate
+  [Main 1]
+T3 P1: Play Silent Clearing
+    → Goal: execute_payoff
+    [Mana] Tap Godless Shrine→W, Watery Grave→U (paying for Faithful Mending, 1 mana remaining)
+T3 P1: Cast Faithful Mending (WU)
+    [Priority] P2 passes (no response)
+T3: Resolve Faithful Mending
+T3: Griselbrand moved hand -> graveyard (discard)
+T3: Atraxa, Grand Unifier moved hand -> graveyard (discard)
+T3: Faithful Mending moved stack -> exile (flashback resolution (CR 702.33a))
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 18  |  Goryo's Vengeance 19
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 44  |  Graveyard: 6
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (1/1)
+║   Lands: Steam Vents, Steam Vents, Mountain
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine [T], Watery Grave [T], Silent Clearing
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mishra's Bauble
+  [Main 1]
+    → Goal: curve_out
+T4 P2: Cast Mishra's Bauble (0)
+T4 P2: surveil 1 → Mutagenic Growth to GY
+    [Priority] P1 passes (no response)
+T4: Resolve Mishra's Bauble
+    → Goal: curve_out
+    [Mana] Tap Steam Vents→U (paying for Preordain, 2 mana remaining)
+T4 P2: Cast Preordain (U)
+T4 P2: surveil 1 → Lava Dart to GY
+    [Priority] P1 passes (no response)
+T4: Resolve Preordain
+T4 P2: scry 2 (Fiery Islet, Mutagenic Growth) → bottom: none
+T4 P2: Preordain → draw 1 (Fiery Islet)
+T4: Preordain moved stack -> graveyard (resolution)
+T4 P2: Play Fiery Islet
+T4: Fiery Islet moved battlefield -> graveyard (activation cost (Fiery Islet))
+T4 P2: activate Fiery Islet — Draw a card.
+T4 P2: Fiery Islet activated — draw 1 (Mutagenic Growth)
+T4: Mishra's Bauble moved battlefield -> graveyard (activation cost (Mishra's Bauble))
+T4 P2: activate Mishra's Bauble — Look at the top card of target player's library. Draw a card at the beginning of the next turn's upkeep.
+T4 P2: Mishra's Bauble queues a delayed trigger (next_upkeep)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Steam Vents→R (paying for Dragon's Rage Channeler, 0 mana remaining)
+T4 P2: Cast Dragon's Rage Channeler (R)
+    [Priority] P1 passes (no response)
+T4: Resolve Dragon's Rage Channeler
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Dragon's Rage Channeler
+T4 P2: Attack with Dragon's Rage Channeler
+  [Declare Blockers] P1 does not block
+T4 P2:   Dragon's Rage Channeler (3/3) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 19 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 16  |  Izzet Prowess 18
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 44  |  Graveyard: 6
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Watery Grave, Silent Clearing
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (3/3) [tapped], Dragon's Rage Channeler (3/3)
+║   Lands: Steam Vents [T], Steam Vents [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T4: delayed trigger — Mishra's Bauble: Look at the top card of target player's library. Draw a card at the beginning of the next turn's upkeep.
+T4 P2: Mishra's Bauble activated — draw 1 (Steam Vents)
+  [Draw] P1 draws: Undying Evil
+  [Main 1]
+T4 P1: Play Silent Clearing
+T4: Silent Clearing moved battlefield -> graveyard (activation cost (Silent Clearing))
+T4 P1: activate Silent Clearing — Draw a card.
+T4 P1: Silent Clearing activated — draw 1 (Flooded Strand)
+T4 P1: Activate Silent Clearing (sacrifice)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Atraxa, Grand Unifier moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 5 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 18  |  Goryo's Vengeance 16
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 38  |  Graveyard: 11
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (3/3), Dragon's Rage Channeler (3/3)
+║   Lands: Steam Vents, Steam Vents, Mountain
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine [T], Watery Grave
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Monastery Swiftspear
+  [Main 1]
+T5 P2: Play Steam Vents (untapped, life: 18)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Mountain→R (paying for Monastery Swiftspear, 3 mana remaining)
+T5 P2: Cast Monastery Swiftspear (R)
+    [Priority] P1 passes (no response)
+T5: Resolve Monastery Swiftspear
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Dragon's Rage Channeler, Dragon's Rage Channeler, Monastery Swiftspear
+T5 P2: Attack with Dragon's Rage Channeler, Dragon's Rage Channeler, Monastery Swiftspear
+  [Declare Blockers] P1 does not block
+T5 P2:   Dragon's Rage Channeler (3/3) → 3 dmg to player
+T5 P2:   Dragon's Rage Channeler (3/3) → 3 dmg to player
+T5 P2:   Monastery Swiftspear (1/2) → 1 dmg to player
+  [Combat Damage] 7 damage dealt → P1 life: 16 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 9  |  Izzet Prowess 18
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 41  |  Graveyard: 9
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Watery Grave
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (3/3) [tapped], Dragon's Rage Channeler (3/3) [tapped], Monastery Swiftspear (1/2) [tapped]
+║   Lands: Steam Vents, Steam Vents, Mountain [T], Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Concealed Courtyard
+  [Main 1]
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Godless Shrine→B, Watery Grave→B (paying for Goryo's Vengeance, 0 mana remaining)
+T5 P1: Cast Goryo's Vengeance (1B)
+    [Priority] P2 passes (no response)
+T5: Resolve Goryo's Vengeance
+T5 P1: Reanimate Griselbrand
+T5: Goryo's Vengeance moved stack -> graveyard (resolution)
+T5 P1: Play Flooded Strand
+T5: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T5 P1: Crack Flooded Strand (pay 1 life) -> Godless Shrine (tapped, life: 8)
+  [Begin Combat]
+    [Mana] Tap Steam Vents→R (paying for Lava Dart, 2 mana remaining)
+T5 P2: Cast Lava Dart (R)
+T5 P2: surveil 1 → Lightning Bolt to GY
+T5 P2: surveil 1 → Lightning Bolt to GY
+T5: Resolve Lava Dart
+T5: Lava Dart moved stack -> graveyard (resolution)
+  [Declare Attackers] P1 attacks with: Griselbrand
+T5 P1: Attack with Griselbrand
+  [Declare Blockers] P2 does not block
+T5 P1:   Griselbrand (7/7) → 7 dmg to player
+  [Combat Damage] 7 damage dealt → P2 life: 18 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+T5: Griselbrand moved battlefield -> exile (delayed end-of-turn exile)
+T5: Griselbrand exiled (end of turn)
+
+╔══ TURN 6 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 11  |  Goryo's Vengeance 15
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 35  |  Graveyard: 14
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (3/3), Dragon's Rage Channeler (3/3), Monastery Swiftspear (1/2)
+║   Lands: Steam Vents, Steam Vents, Mountain, Steam Vents
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine [T], Watery Grave [T], Godless Shrine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mishra's Bauble
+  [Main 1]
+    → Goal: curve_out
+T6 P2: Cast Mishra's Bauble (0)
+T6 P2: surveil 1 → Wooded Foothills to GY
+T6 P2: surveil 1 → Slickshot Show-Off to GY
+    [Priority] P1 passes (no response)
+T6: Resolve Mishra's Bauble
+T6: Mishra's Bauble moved battlefield -> graveyard (activation cost (Mishra's Bauble))
+T6 P2: activate Mishra's Bauble — Look at the top card of target player's library. Draw a card at the beginning of the next turn's upkeep.
+T6 P2: Mishra's Bauble queues a delayed trigger (next_upkeep)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Dragon's Rage Channeler, Dragon's Rage Channeler, Monastery Swiftspear
+T6 P2: Attack with Dragon's Rage Channeler, Dragon's Rage Channeler, Monastery Swiftspear
+  [Declare Blockers] P1 does not block
+T6 P2:   Dragon's Rage Channeler (3/3) → 3 dmg to player
+T6 P2:   Dragon's Rage Channeler (3/3) → 3 dmg to player
+T6 P2:   Monastery Swiftspear (2/3) → 2 dmg to player
+  [Combat Damage] 8 damage dealt → P1 life: 15 → 7
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 7  |  Izzet Prowess 11
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 39  |  Graveyard: 10
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Watery Grave, Godless Shrine
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (3/3) [tapped], Dragon's Rage Channeler (3/3) [tapped], Monastery Swiftspear (1/2) [tapped]
+║   Lands: Steam Vents, Steam Vents, Mountain, Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T6: delayed trigger — Mishra's Bauble: Look at the top card of target player's library. Draw a card at the beginning of the next turn's upkeep.
+T6 P2: Mishra's Bauble activated — draw 1 (Preordain)
+  [Draw] P1 draws: Archon of Cruelty
+  [Main 1]
+T6 P1: Play Concealed Courtyard (tapped, 3 other lands)
+    → Goal: execute_payoff [protection]
+    [Mana] Tap Godless Shrine→B (paying for Undying Evil, 2 mana remaining)
+T6 P1: Cast Undying Evil (B)
+    [Priority] P2 passes (no response)
+T6: Resolve Undying Evil
+T6: Undying Evil moved stack -> graveyard (resolution)
+    → Goal: execute_payoff
+    [Mana] Tap Watery Grave→B (paying for Thoughtseize, 1 mana remaining)
+T6 P1: Cast Thoughtseize (B)
+    [Priority] P2 passes (no response)
+T6: Resolve Thoughtseize
+T6: Violent Urge moved hand -> graveyard (forced discard)
+T6 P1: Thoughtseize → opponent discards 1
+T6: Thoughtseize moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 11  |  Goryo's Vengeance 5
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 31  |  Graveyard: 18
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (3/3), Dragon's Rage Channeler (3/3), Monastery Swiftspear (1/2)
+║   Lands: Steam Vents, Steam Vents, Mountain, Steam Vents
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine [T], Watery Grave [T], Godless Shrine, Concealed Courtyard [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Cori-Steel Cutter
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Steam Vents→U (paying for Preordain, 3 mana remaining)
+T7 P2: Cast Preordain (U)
+T7 P2: surveil 1 → Arid Mesa to GY
+T7 P2: surveil 1 → Lightning Bolt to GY
+    [Priority] P1 passes (no response)
+T7: Resolve Preordain
+T7 P2: scry 2 (Dragon's Rage Channeler, Bloodstained Mire) → bottom: Bloodstained Mire
+T7 P2: Preordain → draw 1 (Dragon's Rage Channeler)
+T7: Preordain moved stack -> graveyard (resolution)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Mountain→R, Steam Vents→R (paying for Cori-Steel Cutter, 1 mana remaining)
+T7 P2: Cast Cori-Steel Cutter (1R)
+T7 P2: surveil 1 → Cori-Steel Cutter to GY
+T7 P2: surveil 1 → Mountain to GY
+    [Priority] P1 passes (no response)
+T7: Resolve Cori-Steel Cutter
+T7 P2: Equip Cori-Steel Cutter to Dragon's Rage Channeler (cost 1)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Dragon's Rage Channeler, Dragon's Rage Channeler, Monastery Swiftspear
+T7 P2: Attack with Dragon's Rage Channeler, Dragon's Rage Channeler, Monastery Swiftspear
+  [Declare Blockers] P1 does not block
+T7 P2:   Dragon's Rage Channeler (3/3) → 3 dmg to player
+T7 P2:   Dragon's Rage Channeler (3/3) → 3 dmg to player
+T7 P2:   Monastery Swiftspear (3/4) → 3 dmg to player
+P1 loses: life total -4
+  [Combat Damage] 9 damage dealt → P1 life: 5 → -4
+
+>>> Izzet Prowess wins Game 1 on turn 7 via damage
+    Final life: Goryo's Vengeance=-4  Izzet Prowess=11
+
+======================================================================
+  GAME 2: Goryo's Vengeance (P1) vs Izzet Prowess (P2)  —  seed 59002
+  Series: Goryo's Vengeance 0 - 1 Izzet Prowess
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Izzet Prowess wins → chooses to play first
+║ P1 (on play): Izzet Prowess
+║ P2 (on draw): Goryo's Vengeance
+╚═══════════════════════════════════════════════════════
+
+P1 (Goryo's Vengeance) opening hand (1 lands, 6 spells):
+  • Leyline of Sanctity [Spell, CMC 4]
+  • Ephemerate [Spell, CMC 1]
+  • Inquisition of Kozilek [Spell, CMC 1]
+  • Atraxa, Grand Unifier [Creature, CMC 7]
+  • Unburial Rites [Spell, CMC 5]
+  • Godless Shrine [Land, CMC 0]
+  • Faithful Mending [Spell, CMC 2]
+→ P1 MULLIGANS (combo set present but lands miss colors ['U'])
+  New hand (2 lands, 5 spells): ['Griselbrand', 'Griselbrand', 'Flooded Strand', 'Inquisition of Kozilek', 'Griselbrand', 'Marsh Flats', 'Archon of Cruelty']
+→ P1 MULLIGANS (combo path under-covered in 6-card hand (best path: 0/2 role buckets; need enabler))
+  New hand (1 lands, 6 spells): ['Leyline of Sanctity', 'Concealed Courtyard', 'Thoughtseize', 'Ephemerate', 'Atraxa, Grand Unifier', 'Archon of Cruelty', 'Thoughtseize']
+→ P1 MULLIGANS (goal conjunction unreachable — no role-path coverage and no castable dig card)
+  New hand (4 lands, 3 spells): ['Griselbrand', 'Marsh Flats', "Goryo's Vengeance", 'Silent Clearing', 'Concealed Courtyard', 'Griselbrand', 'Hallowed Fountain']
+
+P2 (Izzet Prowess) opening hand (1 lands, 6 spells):
+  • Lightning Bolt [Spell, CMC 1]
+  • Slickshot Show-Off [Creature, CMC 2]
+  • Unholy Heat [Spell, CMC 1]
+  • Wooded Foothills [Land, CMC 0]
+  • Lava Dart [Spell, CMC 1]
+  • Dragon's Rage Channeler [Creature, CMC 1]
+  • Cori-Steel Cutter [Spell, CMC 2]
+→ P2 KEEPS 7 — has key card(s): Dragon's Rage Channeler, Lightning Bolt, Slickshot Show-Off, 6 cheap spells
+
+
+╔══ TURN 1 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 20  |  Goryo's Vengeance 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Wooded Foothills
+T1: Wooded Foothills moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Wooded Foothills (pay 1 life) -> Steam Vents (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 20  |  Izzet Prowess 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Thoughtseize
+  [Main 1]
+T1 P1: Play Marsh Flats
+T1: Marsh Flats moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Marsh Flats (pay 1 life) -> Godless Shrine (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 19  |  Goryo's Vengeance 19
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: Steam Vents
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Expressive Iteration
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Steam Vents→R (paying for Dragon's Rage Channeler, 0 mana remaining)
+T2 P2: Cast Dragon's Rage Channeler (R)
+    [Priority] P1 passes (no response)
+T2: Resolve Dragon's Rage Channeler
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 19  |  Izzet Prowess 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 51  |  Graveyard: 1
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (1/1)
+║   Lands: Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ephemerate
+  [Main 1]
+T2 P1: Play Hallowed Fountain (untapped, life: 17)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 19  |  Goryo's Vengeance 17
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (1/1)
+║   Lands: Steam Vents
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Hallowed Fountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Bloodstained Mire
+  [Main 1]
+T3 P2: Play Bloodstained Mire
+T3: Bloodstained Mire moved battlefield -> graveyard (fetchland sacrifice)
+T3 P2: Crack Bloodstained Mire (pay 1 life) -> Steam Vents (tapped, life: 18)
+    → Goal: curve_out
+    [Target] → face (3 dmg, life 17 → 14): face value 4.50
+    [Mana] Tap Steam Vents→R (paying for Lightning Bolt, 0 mana remaining)
+T3 P2: Cast Lightning Bolt (R)
+T3 P2: surveil 1 → Preordain to GY
+    [Priority] P1 passes (no response)
+T3: Resolve Lightning Bolt
+T3 P2: Lightning Bolt → 3 damage → life 14
+T3: Lightning Bolt moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Dragon's Rage Channeler
+T3 P2: Attack with Dragon's Rage Channeler
+  [Declare Blockers] P1 does not block
+T3 P2:   Dragon's Rage Channeler (1/1) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 14 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 13  |  Izzet Prowess 18
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 1
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Hallowed Fountain
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (1/1) [tapped]
+║   Lands: Steam Vents [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Plains
+  [Main 1]
+T3 P1: Play Silent Clearing
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 18  |  Goryo's Vengeance 13
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 4
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (1/1)
+║   Lands: Steam Vents, Steam Vents
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Hallowed Fountain, Silent Clearing
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mountain
+  [Main 1]
+T4 P2: Play Mountain
+    → Goal: curve_out [enablers]
+    [Mana] Tap Mountain→R, Steam Vents→R (paying for Cori-Steel Cutter, 1 mana remaining)
+T4 P2: Cast Cori-Steel Cutter (1R)
+T4 P2: surveil 1 → Bloodstained Mire to GY
+    [Priority] P1 passes (no response)
+T4: Resolve Cori-Steel Cutter
+T4 P2: Equip Cori-Steel Cutter to Dragon's Rage Channeler (cost 1)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Dragon's Rage Channeler
+T4 P2: Attack with Dragon's Rage Channeler
+  [Declare Blockers] P1 does not block
+T4 P2:   Dragon's Rage Channeler (1/1) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 13 → 12
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 12  |  Izzet Prowess 18
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 1
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Hallowed Fountain, Silent Clearing
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (1/1) [tapped]
+║   Other: Cori-Steel Cutter
+║   Lands: Steam Vents [T], Steam Vents [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Swamp
+  [Main 1]
+T4 P1: Play Plains
+T4: Silent Clearing moved battlefield -> graveyard (activation cost (Silent Clearing))
+T4 P1: activate Silent Clearing — Draw a card.
+T4 P1: Silent Clearing activated — draw 1 (Undying Evil)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Griselbrand moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 5 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 18  |  Goryo's Vengeance 12
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 46  |  Graveyard: 5
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (1/1)
+║   Other: Cori-Steel Cutter
+║   Lands: Steam Vents, Steam Vents, Mountain
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Hallowed Fountain, Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Lightning Bolt
+  [Main 1]
+    → Goal: curve_out
+    [Target] → face (3 dmg, life 12 → 9): face value 4.50
+    [Mana] Tap Mountain→R (paying for Lightning Bolt, 2 mana remaining)
+T5 P2: Cast Lightning Bolt (R)
+T5 P2: surveil 1 → Arid Mesa to GY
+    [Priority] P1 passes (no response)
+T5: Resolve Lightning Bolt
+T5 P2: Lightning Bolt → 3 damage → life 9
+T5: Lightning Bolt moved stack -> graveyard (resolution)
+    → Goal: curve_out
+    [Mana] Tap Steam Vents→U, Steam Vents→R (paying for Expressive Iteration, 0 mana remaining)
+T5 P2: Cast Expressive Iteration (UR)
+T5 P2: surveil 1 → Violent Urge to GY
+T5 P2: Create 1x Monk token(s)
+T5 P2: Cori-Steel Cutter attaches to Monk Token
+    [Priority] P1 passes (no response)
+T5: Resolve Expressive Iteration
+T5: Expressive Iteration moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Dragon's Rage Channeler
+T5 P2: Attack with Dragon's Rage Channeler
+  [Declare Blockers] P1 does not block
+T5 P2:   Dragon's Rage Channeler (1/1) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 9 → 8
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Goryo's Vengeance (P1) ══════════════════════════
+║ Life: Goryo's Vengeance 8  |  Izzet Prowess 18
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 3
+║ Goryo's Vengeance board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Hallowed Fountain, Plains
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (1/1) [tapped], Monk Token (1/1)
+║   Other: Cori-Steel Cutter
+║   Lands: Steam Vents [T], Steam Vents [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Flooded Strand
+  [Main 1]
+T5 P1: Play Flooded Strand
+T5: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T5 P1: Crack Flooded Strand (pay 1 life) -> Godless Shrine (untapped, life: 5)
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Plains→W, Godless Shrine→B (paying for Goryo's Vengeance, 2 mana remaining)
+T5 P1: Cast Goryo's Vengeance (1B)
+    [Priority] P2 passes (no response)
+T5: Resolve Goryo's Vengeance
+T5 P1: Reanimate Griselbrand
+T5: Goryo's Vengeance moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Griselbrand
+T5 P1: Attack with Griselbrand
+  [Declare Blockers] P2 does not block
+T5 P1:   Griselbrand (7/7) → 7 dmg to player
+  [Combat Damage] 7 damage dealt → P2 life: 18 → 11
+  [End Combat]
+  [Main 2]
+    → Goal: execute_payoff [protection]
+    [Mana] Tap Hallowed Fountain→W (paying for Ephemerate, 1 mana remaining)
+T5 P1: Cast Ephemerate (W)
+    [Priority] P2 passes (no response)
+T5: Resolve Ephemerate
+T5: Blink Griselbrand
+T5: Ephemerate moved stack -> exile (rebound (CR 702.86))
+T5 P1: Griselbrand: pay 7 life, draw 7
+  [End Step]
+T5: Griselbrand moved hand -> graveyard (discard to hand size)
+T5: Atraxa, Grand Unifier moved hand -> graveyard (discard to hand size)
+T5: Concealed Courtyard moved hand -> graveyard (discard to hand size)
+T5: Faithful Mending moved hand -> graveyard (discard to hand size)
+T5: Unburial Rites moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 6 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 11  |  Goryo's Vengeance 5
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 41  |  Graveyard: 9
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (1/1), Monk Token (1/1)
+║   Other: Cori-Steel Cutter
+║   Lands: Steam Vents, Steam Vents, Mountain
+║ Goryo's Vengeance board:
+║   Creatures: Griselbrand (7/7)
+║   Lands: Godless Shrine [T], Hallowed Fountain [T], Plains [T], Godless Shrine
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Dragon's Rage Channeler
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Mountain→R (paying for Lava Dart, 2 mana remaining)
+T6 P2: Cast Lava Dart (R)
+T6 P2: surveil 1 → Dragon's Rage Channeler to GY
+    [Priority] P1 passes (no response)
+T6: Resolve Lava Dart
+T6: Lava Dart moved stack -> graveyard (resolution)
+    → Goal: curve_out
+    [Target] → Griselbrand: marginal threat 5.35 (7/7 body) — better than 6 face dmg
+    [Mana] Tap Steam Vents→R (paying for Unholy Heat, 1 mana remaining)
+T6 P2: Cast Unholy Heat (R)
+T6 P2: surveil 1 → Lightning Bolt to GY
+T6 P2: Create 1x Monk token(s)
+T6 P2: Cori-Steel Cutter attaches to Monk Token
+    [Priority] P1 passes (no response)
+T6: Resolve Unholy Heat
+T6: Unholy Heat moved stack -> graveyard (resolution)
+T6: Griselbrand dies
+    → Goal: curve_out [enablers]
+    [Mana] Tap Steam Vents→R (paying for Dragon's Rage Channeler, 0 mana remaining)
+T6 P2: Cast Dragon's Rage Channeler (R)
+    [Priority] P1 passes (no response)
+T6: Resolve Dragon's Rage Channeler
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Dragon's Rage Channeler, Monk Token
+T6 P2: Attack with Dragon's Rage Channeler, Monk Token
+  [Declare Blockers] P1 does not block
+T6 P2:   Dragon's Rage Channeler (3/3) → 3 dmg to player
+T6 P2:   Monk Token (3/3) → 3 dmg to player
+P1 loses: life total -1
+  [Combat Damage] 6 damage dealt → P1 life: 5 → -1
+
+>>> Izzet Prowess wins Game 2 on turn 6 via damage
+    Final life: Goryo's Vengeance=-1  Izzet Prowess=11
+
+======================================================================
+  MATCH RESULT: Izzet Prowess wins 2-0
+======================================================================

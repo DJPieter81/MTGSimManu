@@ -1,0 +1,2599 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+  Sideboard (Azorius Control vs Affinity): +2 Wear // Tear, -2 Orim's Chant
+  Sideboard (Azorius Control vs Affinity): +2 Wear // Tear, -2 Orim's Chant
+======================================================================
+  GAME 1: Affinity (P1) vs Azorius Control (P2)  —  seed 59002
+  Series: Affinity 0 - 0 Azorius Control
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Azorius Control wins → chooses to play first
+║ P1 (on play): Azorius Control
+║ P2 (on draw): Affinity
+╚═══════════════════════════════════════════════════════
+
+P1 (Affinity) opening hand (2 lands, 5 spells):
+  • Weapons Manufacturing [Spell, CMC 2]
+  • Urza's Saga [Land, CMC 0]
+  • Metallic Rebuke [Spell, CMC 3]
+  • Spirebluff Canal [Land, CMC 0]
+  • Weapons Manufacturing [Spell, CMC 2]
+  • Engineered Explosives [Spell, CMC 0]
+  • Kappa Cannoneer [Creature, CMC 6]
+→ P1 KEEPS 7 — 2 lands, 5 spells, score 37.0
+
+P2 (Azorius Control) opening hand (2 lands, 5 spells):
+  • Orim's Chant [Spell, CMC 1]
+  • Counterspell [Spell, CMC 2]
+  • Teferi, Hero of Dominaria [Spell, CMC 5]
+  • Steam Vents [Land, CMC 0]
+  • Orim's Chant [Spell, CMC 1]
+  • Solitude [Creature, CMC 5]
+  • Arid Mesa [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Counterspell, Orim's Chant, Solitude, 3 cheap spells
+
+
+╔══ TURN 1 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Arid Mesa
+T1: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Arid Mesa (pay 1 life) -> Hallowed Fountain (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Azorius Control 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Spirebluff Canal
+  [Main 1]
+T1 P1: Play Urza's Saga
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 19  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+T2 P2: Play Steam Vents (untapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Azorius Control 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: Urza's Saga
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T2 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P1 draws: Skateboard
+  [Main 1]
+T2 P1: Play Spirebluff Canal (untapped, 1 other lands)
+    → Goal: deploy_engine
+    [Mana] Tap Urza's Saga→C (paying for Skateboard, 1 mana remaining)
+T2 P1: Cast Skateboard (1)
+    [Priority] P2 responds with Counterspell
+    [Mana] Tap Hallowed Fountain→U, Steam Vents→U (paying for Counterspell, 0 mana remaining)
+T2 P2: Cast Counterspell (UU)
+T2: Resolve Counterspell
+T2: Skateboard moved stack -> graveyard (resolution)
+T2: Skateboard is countered
+T2: Counterspell moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 19  |  Affinity 20
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 2
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Steam Vents
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: Urza's Saga [T], Spirebluff Canal
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mystic Gate
+  [Main 1]
+T3 P2: Play Mystic Gate
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Azorius Control 19
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: Urza's Saga, Spirebluff Canal
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Steam Vents, Mystic Gate
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T3 P1: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+  [Draw] P1 draws: Tormod's Crypt
+  [Main 1]
+T3 P1: Play Spirebluff Canal (untapped, 2 other lands)
+T3 P1: Create 1x Construct token(s)
+T3 P1: Urza's Saga activates "{2}, {T}: Create a 0/0 colorless Constru..." (pays {2}, {T})
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 19  |  Affinity 20
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 2
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Steam Vents, Mystic Gate
+║ Affinity board:
+║   Creatures: Construct Token (1/1)
+║   Lands: Urza's Saga [T], Spirebluff Canal [T], Spirebluff Canal [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+T4 P2: Play Flooded Strand
+T4: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T4 P2: Crack Flooded Strand (pay 1 life) -> Hallowed Fountain (untapped, life: 16)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Azorius Control 16
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 50  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Construct Token (1/1)
+║   Lands: Urza's Saga, Spirebluff Canal, Spirebluff Canal
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Steam Vents, Mystic Gate, Hallowed Fountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T4 P1: Urza's Saga tutors Pithing Needle
+T4 P1: Sacrifice Urza's Saga (final chapter)
+  [Draw] P1 draws: Tormod's Crypt
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Construct Token
+T4 P1: Attack with Construct Token
+  [Declare Blockers] P2 does not block
+T4 P1:   Construct Token (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 16 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 14  |  Affinity 20
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 2
+║ Library: 48  |  Graveyard: 3
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Steam Vents, Mystic Gate, Hallowed Fountain
+║ Affinity board:
+║   Creatures: Construct Token (2/2) [tapped]
+║   Other: Pithing Needle
+║   Lands: Spirebluff Canal, Spirebluff Canal
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Island
+  [Main 1]
+T5 P2: Play Flooded Strand
+T5: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T5 P2: Crack Flooded Strand -> Plains (untapped)
+    → Goal: close_game
+    [Mana] Tap Plains→W, Hallowed Fountain→W, Steam Vents→R, Hallowed Fountain→U, Mystic Gate→C (paying for Solitude, 0 mana remaining)
+T5 P2: Cast Solitude (3WW)
+    [Priority] P1 responds with Metallic Rebuke
+T5 P1: Improvise — tap 1 artifact(s) for Metallic Rebuke
+    [Mana] Tap Spirebluff Canal→U, Spirebluff Canal→U (paying for Metallic Rebuke, 0 mana remaining)
+T5 P1: Cast Metallic Rebuke (2U)
+T5: Resolve Metallic Rebuke
+T5: Solitude moved stack -> graveyard (resolution)
+T5: Solitude is countered
+T5: Metallic Rebuke moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Azorius Control 13
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 5
+║ Library: 48  |  Graveyard: 3
+║ Affinity board:
+║   Creatures: Construct Token (2/2)
+║   Other: Pithing Needle
+║   Lands: Spirebluff Canal, Spirebluff Canal
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T], Steam Vents [T], Mystic Gate [T], Hallowed Fountain [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Tormod's Crypt
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Construct Token
+T5 P1: Attack with Construct Token
+  [Declare Blockers] P2 does not block
+T5 P1:   Construct Token (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 13 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 11  |  Affinity 20
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 5  |  Opp lands: 2
+║ Library: 46  |  Graveyard: 5
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Steam Vents, Mystic Gate, Hallowed Fountain, Plains
+║ Affinity board:
+║   Creatures: Construct Token (2/2) [tapped]
+║   Other: Pithing Needle
+║   Lands: Spirebluff Canal, Spirebluff Canal
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Teferi, Time Raveler
+  [Main 1]
+T6 P2: Play Island
+    → Goal: close_game
+    [Mana] Tap Plains→W, Island→U, Hallowed Fountain→U, Steam Vents→R, Mystic Gate→C (paying for Teferi, Hero of Dominaria, 1 mana remaining)
+T6 P2: Cast Teferi, Hero of Dominaria (3WU)
+    [Priority] P1 passes (no response)
+T6: Resolve Teferi, Hero of Dominaria
+T6 P2: Teferi, Hero of Dominaria [+1] -> Draw a card. At the beginning of the next end step, untap up to two lands
+T6 P2:   untap 2 lands
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Azorius Control 11
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 6
+║ Library: 47  |  Graveyard: 3
+║ Affinity board:
+║   Creatures: Construct Token (2/2)
+║   Other: Pithing Needle
+║   Lands: Spirebluff Canal, Spirebluff Canal
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Hero of Dominaria
+║   Lands: Hallowed Fountain, Steam Vents, Mystic Gate [T], Hallowed Fountain, Plains [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Kappa Cannoneer
+  [Main 1]
+    → Goal: curve_out
+T6 P1: Cast Tormod's Crypt (0)
+    [Priority] P2 passes (no response)
+T6: Resolve Tormod's Crypt
+T6 P1: Activate Tormod's Crypt (sacrifice)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Construct Token
+T6 P1: Attack with Construct Token
+  [Declare Blockers] P2 does not block
+T6 P1:   Construct Token (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 11 → 9
+  [End Combat]
+  [Main 2]
+    → Goal: curve_out
+T6 P1: Cast Tormod's Crypt (0)
+    [Priority] P2 passes (no response)
+T6: Resolve Tormod's Crypt
+  [End Step]
+
+╔══ TURN 7 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 9  |  Affinity 20
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 6  |  Opp lands: 2
+║ Library: 44  |  Graveyard: 0
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Hero of Dominaria
+║   Lands: Hallowed Fountain, Steam Vents, Mystic Gate, Hallowed Fountain, Plains, Island
+║ Affinity board:
+║   Creatures: Construct Token (3/3) [tapped]
+║   Other: Pithing Needle, Tormod's Crypt
+║   Lands: Spirebluff Canal, Spirebluff Canal
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Counterspell
+  [Main 1]
+T7 P2: Play Island
+    → Goal: close_game
+    [Mana] Tap Plains→W, Island→U, Island→U (paying for Teferi, Time Raveler, 4 mana remaining)
+T7 P2: Cast Teferi, Time Raveler (1WU)
+    [Priority] P1 passes (no response)
+T7: Resolve Teferi, Time Raveler
+T7 P2: Teferi bounces Construct Token
+T7 P2: Teferi draws Supreme Verdict
+T7 P2: Teferi, Hero of Dominaria [+1] -> Draw a card. At the beginning of the next end step, untap up to two lands
+T7 P2:   untap 2 lands
+T7 P2: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
+T7: Pithing Needle moved battlefield -> hand (bounced)
+T7 P2:   returns Pithing Needle to its owner's hand
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Island→U, Hallowed Fountain→W, Steam Vents→R, Mystic Gate→C (paying for Solitude, 1 mana remaining)
+T7 P2: Cast Solitude (3WW)
+T7: Resolve Solitude
+  [End Step]
+
+╔══ TURN 7 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Azorius Control 9
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 7
+║ Library: 46  |  Graveyard: 4
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Tormod's Crypt
+║   Lands: Spirebluff Canal, Spirebluff Canal
+║ Azorius Control board:
+║   Creatures: Solitude (3/2)
+║   Other: Teferi, Hero of Dominaria, Teferi, Time Raveler
+║   Lands: Hallowed Fountain [T], Steam Vents [T], Mystic Gate [T], Hallowed Fountain, Plains [T], Island [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Spirebluff Canal
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Spirebluff Canal→R, Spirebluff Canal→U (paying for Weapons Manufacturing, 0 mana remaining)
+T7 P1: Cast Weapons Manufacturing (1R)
+    [Priority] P2 passes (no response)
+T7: Resolve Weapons Manufacturing
+T7 P1: Play Spirebluff Canal (untapped, 2 other lands)
+    → Goal: curve_out
+    [Mana] Tap Spirebluff Canal→U (paying for Pithing Needle, 0 mana remaining)
+T7 P1: Cast Pithing Needle (1)
+    [Priority] P2 passes (no response)
+T7: Resolve Pithing Needle
+T7 P1: Create 1x Drone token(s)
+T7 P1: Weapons Manufacturing trigger → create 1 token(s) (Pithing Needle entered as nontoken=True artifact)
+    → Goal: curve_out
+T7 P1: Cast Tormod's Crypt (0)
+    [Priority] P2 passes (no response)
+T7: Resolve Tormod's Crypt
+T7 P1: Create 1x Drone token(s)
+T7 P1: Weapons Manufacturing trigger → create 1 token(s) (Tormod's Crypt entered as nontoken=True artifact)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 9  |  Affinity 20
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 7  |  Opp lands: 3
+║ Library: 40  |  Graveyard: 0
+║ Azorius Control board:
+║   Creatures: Solitude (3/2)
+║   Other: Teferi, Hero of Dominaria, Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Steam Vents, Mystic Gate, Hallowed Fountain, Plains, Island, Island
+║ Affinity board:
+║   Creatures: Drone Token (1/1), Drone Token (1/1)
+║   Other: Tormod's Crypt, Weapons Manufacturing, Pithing Needle, Tormod's Crypt
+║   Lands: Spirebluff Canal [T], Spirebluff Canal [T], Spirebluff Canal [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thundering Falls
+  [Main 1]
+T8 P2: surveil 1 → Prismatic Ending to GY
+T8 P2: Play Thundering Falls (enters tapped)
+T8 P2: Teferi, Hero of Dominaria [+1] -> Draw a card. At the beginning of the next end step, untap up to two lands
+T8 P2:   untap 1 lands
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Solitude
+T8 P2: Attack with Solitude
+  [Declare Blockers] P1 does not block
+T8 P2:   Solitude (3/2) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 20 → 17
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 17  |  Azorius Control 12
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 8
+║ Library: 45  |  Graveyard: 4
+║ Affinity board:
+║   Creatures: Drone Token (1/1), Drone Token (1/1)
+║   Other: Tormod's Crypt, Weapons Manufacturing, Pithing Needle, Tormod's Crypt
+║   Lands: Spirebluff Canal, Spirebluff Canal, Spirebluff Canal
+║ Azorius Control board:
+║   Creatures: Solitude (3/2) [tapped]
+║   Other: Teferi, Hero of Dominaria, Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Steam Vents, Mystic Gate, Hallowed Fountain, Plains, Island, Island, Thundering Falls
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Emry, Lurker of the Loch
+  [Main 1]
+    → Goal: curve_out
+T8 P1: Improvise — tap 3 artifact(s) for Kappa Cannoneer
+    [Mana] Tap Spirebluff Canal→U, Spirebluff Canal→U, Spirebluff Canal→U (paying for Kappa Cannoneer, 0 mana remaining)
+T8 P1: Cast Kappa Cannoneer (5U)
+    [Priority] P2 responds with Counterspell
+    [Mana] Tap Island→U, Island→U (paying for Counterspell, 6 mana remaining)
+T8 P2: Cast Counterspell (UU)
+T8: Resolve Counterspell
+T8: Kappa Cannoneer moved stack -> graveyard (resolution)
+T8: Kappa Cannoneer is countered
+T8: Counterspell moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Drone Token
+T8 P1: Attack with Drone Token
+  [Declare Blockers] P2 does not block
+T8 P1:   Drone Token (1/1) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P2 life: 12 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 11  |  Affinity 17
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 8  |  Opp lands: 3
+║ Library: 37  |  Graveyard: 2
+║ Azorius Control board:
+║   Creatures: Solitude (3/2)
+║   Other: Teferi, Hero of Dominaria, Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Steam Vents, Mystic Gate, Hallowed Fountain, Plains, Island, Island, Thundering Falls
+║ Affinity board:
+║   Creatures: Drone Token (1/1) [tapped], Drone Token (1/1) [tapped]
+║   Other: Tormod's Crypt, Weapons Manufacturing, Pithing Needle, Tormod's Crypt
+║   Lands: Spirebluff Canal [T], Spirebluff Canal [T], Spirebluff Canal [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Orim's Chant
+  [Main 1]
+T9 P2: Play Monumental Henge (enters tapped)
+T9 P2: Teferi, Hero of Dominaria [+1] -> Draw a card. At the beginning of the next end step, untap up to two lands
+T9 P2:   untap 1 lands
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Solitude
+T9 P2: Attack with Solitude
+  [Declare Blockers] P1 does not block
+T9 P2:   Solitude (3/2) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 17 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 14  |  Azorius Control 14
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 9
+║ Library: 44  |  Graveyard: 5
+║ Affinity board:
+║   Creatures: Drone Token (1/1), Drone Token (1/1)
+║   Other: Tormod's Crypt, Weapons Manufacturing, Pithing Needle, Tormod's Crypt
+║   Lands: Spirebluff Canal, Spirebluff Canal, Spirebluff Canal
+║ Azorius Control board:
+║   Creatures: Solitude (3/2) [tapped]
+║   Other: Teferi, Hero of Dominaria, Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Steam Vents, Mystic Gate, Hallowed Fountain, Plains, Island, Island, Thundering Falls, Monumental Henge
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Weapons Manufacturing
+  [Main 1]
+    → Goal: curve_out
+T9 P1: Improvise — tap 3 artifact(s) for Kappa Cannoneer
+    [Mana] Tap Spirebluff Canal→U, Spirebluff Canal→U, Spirebluff Canal→U (paying for Kappa Cannoneer, 0 mana remaining)
+T9 P1: Cast Kappa Cannoneer (5U)
+    [Priority] P2 responds with Counterspell
+    [Mana] Tap Island→U, Island→U (paying for Counterspell, 7 mana remaining)
+T9 P2: Cast Counterspell (UU)
+T9: Resolve Counterspell
+T9: Kappa Cannoneer moved stack -> graveyard (resolution)
+T9: Kappa Cannoneer is countered
+T9: Counterspell moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Drone Token
+T9 P1: Attack with Drone Token
+  [Declare Blockers] P2 does not block
+T9 P1:   Drone Token (1/1) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P2 life: 14 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 13  |  Affinity 14
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 9  |  Opp lands: 3
+║ Library: 35  |  Graveyard: 3
+║ Azorius Control board:
+║   Creatures: Solitude (3/2)
+║   Other: Teferi, Hero of Dominaria, Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Steam Vents, Mystic Gate, Hallowed Fountain, Plains, Island, Island, Thundering Falls, Monumental Henge
+║ Affinity board:
+║   Creatures: Drone Token (1/1) [tapped], Drone Token (1/1) [tapped]
+║   Other: Tormod's Crypt, Weapons Manufacturing, Pithing Needle, Tormod's Crypt
+║   Lands: Spirebluff Canal [T], Spirebluff Canal [T], Spirebluff Canal [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Solitude
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Island→U, Island→U, Monumental Henge→W, Mystic Gate→C (paying for Solitude, 4 mana remaining)
+T10 P2: Cast Solitude (3WW)
+T10: Resolve Solitude
+T10: Drone Token moved battlefield -> exile (exiled)
+T10 P2: Solitude exiles Drone Token (opponent gains 1 life, now 15)
+T10 P2: Teferi, Hero of Dominaria [-8] -> You get an emblem with "Whenever you draw a card, exile target permanent an opponent controls."
+T10: Weapons Manufacturing moved battlefield -> exile (emblem exile)
+T10 P2:   emblem exiles Weapons Manufacturing
+T10: Teferi, Hero of Dominaria moved battlefield -> graveyard (SBA 704.5p: zero loyalty)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Solitude
+T10 P2: Attack with Solitude
+  [Declare Blockers] P1 does not block
+T10 P2:   Solitude (3/2) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 15 → 12
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 12  |  Azorius Control 16
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 9
+║ Library: 43  |  Graveyard: 6
+║ Affinity board:
+║   Creatures: Drone Token (1/1)
+║   Other: Tormod's Crypt, Pithing Needle, Tormod's Crypt
+║   Lands: Spirebluff Canal, Spirebluff Canal, Spirebluff Canal
+║ Azorius Control board:
+║   Creatures: Solitude (3/2) [tapped], Solitude (3/2)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Steam Vents, Mystic Gate [T], Hallowed Fountain, Plains [T], Island [T], Island [T], Thundering Falls, Monumental Henge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Mishra's Bauble
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 16  |  Affinity 12
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 9  |  Opp lands: 3
+║ Library: 34  |  Graveyard: 4
+║ Azorius Control board:
+║   Creatures: Solitude (3/2), Solitude (3/2)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Steam Vents, Mystic Gate, Hallowed Fountain, Plains, Island, Island, Thundering Falls, Monumental Henge
+║ Affinity board:
+║   Creatures: Drone Token (1/1)
+║   Other: Tormod's Crypt, Pithing Needle, Tormod's Crypt
+║   Lands: Spirebluff Canal, Spirebluff Canal, Spirebluff Canal
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Lórien Revealed
+  [Main 1]
+T11: Lórien Revealed moved hand -> graveyard (cycling)
+T11: Island moved library -> hand (cycling tutor)
+T11 P2: Cycle Lórien Revealed (pay 1 mana, tutor: Island)
+T11 P2: Play Island
+    → Goal: close_game
+    [Mana] Tap Plains→W, Island→U, Island→U, Monumental Henge→W, Island→U (paying for Teferi, Hero of Dominaria, 4 mana remaining)
+T11 P2: Cast Teferi, Hero of Dominaria (3WU)
+T11: Resolve Teferi, Hero of Dominaria
+T11 P2: Teferi, Hero of Dominaria [+1] -> Draw a card. At the beginning of the next end step, untap up to two lands
+T11 P2:   untap 2 lands
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Solitude, Solitude
+T11 P2: Attack with Solitude, Solitude
+T11 P1:   [BLOCK] Drone Token (1/1) blocks Solitude (3/2) — lifespan_delta=+0.50
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T11 P2:   Solitude (3/2) → 3 dmg to player
+T11: Drone Token dies
+  [Combat Damage] 3 damage dealt → P1 life: 12 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 9  |  Azorius Control 20
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 10
+║ Library: 42  |  Graveyard: 6
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Tormod's Crypt, Pithing Needle, Tormod's Crypt
+║   Lands: Spirebluff Canal, Spirebluff Canal, Spirebluff Canal
+║ Azorius Control board:
+║   Creatures: Solitude (3/2) [tapped], Solitude (3/2) [tapped]
+║   Other: Teferi, Time Raveler, Teferi, Hero of Dominaria
+║   Lands: Hallowed Fountain, Steam Vents, Mystic Gate, Hallowed Fountain, Plains, Island [T], Island [T], Thundering Falls, Monumental Henge [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Shivan Reef
+  [Main 1]
+T11 P1: Play Shivan Reef
+    → Goal: curve_out
+    [Mana] Tap Spirebluff Canal→R, Spirebluff Canal→U (paying for Weapons Manufacturing, 2 mana remaining)
+T11 P1: Cast Weapons Manufacturing (1R)
+    [Priority] P2 passes (no response)
+T11: Resolve Weapons Manufacturing
+    → Goal: curve_out
+    [Mana] Tap Spirebluff Canal→R, Shivan Reef→C (paying for Weapons Manufacturing, 0 mana remaining)
+T11 P1: Cast Weapons Manufacturing (1R)
+    [Priority] P2 passes (no response)
+T11: Resolve Weapons Manufacturing
+    → Goal: curve_out
+T11 P1: Cast Mishra's Bauble (0)
+    [Priority] P2 responds with Orim's Chant
+    [Mana] Tap Plains→W (paying for Orim's Chant, 5 mana remaining)
+T11 P2: Cast Orim's Chant (W)
+T11: Resolve Orim's Chant
+T11 P2: Orim's Chant silences P1 this turn
+T11: Orim's Chant moved stack -> graveyard (resolution)
+T11: Resolve Mishra's Bauble
+T11 P1: Create 1x Drone token(s)
+T11 P1: Weapons Manufacturing trigger → create 1 token(s) (Mishra's Bauble entered as nontoken=True artifact)
+T11 P1: Create 1x Drone token(s)
+T11 P1: Weapons Manufacturing trigger → create 1 token(s) (Mishra's Bauble entered as nontoken=True artifact)
+T11 P1: Activate Tormod's Crypt (sacrifice)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 20  |  Affinity 9
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 10  |  Opp lands: 4
+║ Library: 31  |  Graveyard: 0
+║ Azorius Control board:
+║   Creatures: Solitude (3/2), Solitude (3/2)
+║   Other: Teferi, Time Raveler, Teferi, Hero of Dominaria
+║   Lands: Hallowed Fountain, Steam Vents, Mystic Gate, Hallowed Fountain, Plains, Island, Island, Thundering Falls, Monumental Henge, Island
+║ Affinity board:
+║   Creatures: Drone Token (1/1), Drone Token (1/1)
+║   Other: Pithing Needle, Tormod's Crypt, Weapons Manufacturing, Weapons Manufacturing, Mishra's Bauble
+║   Lands: Spirebluff Canal [T], Spirebluff Canal [T], Spirebluff Canal [T], Shivan Reef [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wrath of the Skies
+  [Main 1]
+T12 P2: Teferi, Hero of Dominaria [+1] -> Draw a card. At the beginning of the next end step, untap up to two lands
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Solitude, Solitude
+T12 P2: Attack with Solitude, Solitude
+T12 P1:   [BLOCK-EMERGENCY] Drone Token (1/1) blocks Solitude (3/2) — lifespan_delta=+0.50
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T12 P2:   Solitude (3/2) → 3 dmg to player
+T12: Drone Token dies
+  [Combat Damage] 3 damage dealt → P1 life: 9 → 6
+  [End Combat]
+  [Main 2]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Monumental Henge→W (paying for Wrath of the Skies, 8 mana remaining)
+T12 P2: Cast Wrath of the Skies (5WW) (X=5)
+T12: Resolve Wrath of the Skies
+T12: Pithing Needle moved battlefield -> graveyard (destroyed)
+T12: Tormod's Crypt moved battlefield -> graveyard (destroyed)
+T12: Weapons Manufacturing moved battlefield -> graveyard (destroyed)
+T12: Weapons Manufacturing moved battlefield -> graveyard (destroyed)
+T12: Mishra's Bauble moved battlefield -> graveyard (destroyed)
+T12: Drone Token dies
+T12: Solitude dies
+T12: Solitude dies
+T12 P2: Wrath of the Skies (X=5) sweeps the board, destroying 8 permanents
+T12: Wrath of the Skies moved stack -> graveyard (resolution)
+  [End Step]
+
+╔══ TURN 12 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 6  |  Azorius Control 24
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 10
+║ Library: 41  |  Graveyard: 12
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: Spirebluff Canal, Spirebluff Canal, Spirebluff Canal, Shivan Reef
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler, Teferi, Hero of Dominaria
+║   Lands: Hallowed Fountain [T], Steam Vents [T], Mystic Gate [T], Hallowed Fountain [T], Plains [T], Island [T], Island, Thundering Falls, Monumental Henge [T], Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Kappa Cannoneer
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Spirebluff Canal→U, Spirebluff Canal→U, Spirebluff Canal→U (paying for Emry, Lurker of the Loch, 1 mana remaining)
+T12 P1: Cast Emry, Lurker of the Loch (2U)
+    [Priority] P2 passes (no response)
+T12: Resolve Emry, Lurker of the Loch
+T12 P1: Emry mills 4: Claws of Gix, Pinnacle Emissary, Fiery Islet, Fiery Islet
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 13 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 24  |  Affinity 6
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 10  |  Opp lands: 4
+║ Library: 29  |  Graveyard: 3
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler, Teferi, Hero of Dominaria
+║   Lands: Hallowed Fountain, Steam Vents, Mystic Gate, Hallowed Fountain, Plains, Island, Island, Thundering Falls, Monumental Henge, Island
+║ Affinity board:
+║   Creatures: Emry, Lurker of the Loch (1/2)
+║   Lands: Spirebluff Canal [T], Spirebluff Canal [T], Spirebluff Canal [T], Shivan Reef
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W (paying for Prismatic Ending, 9 mana remaining)
+T13 P2: Cast Prismatic Ending (3W) (X=3)
+T13: Resolve Prismatic Ending
+T13: Emry, Lurker of the Loch moved battlefield -> exile (exiled)
+T13 P2: Prismatic Ending exiles Emry, Lurker of the Loch
+T13: Prismatic Ending moved stack -> graveyard (resolution)
+T13 P2: Play Arid Mesa
+T13: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T13 P2: Crack Arid Mesa -> Plains (untapped)
+T13 P2: Teferi, Hero of Dominaria [+1] -> Draw a card. At the beginning of the next end step, untap up to two lands
+T13 P2:   untap 2 lands
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 13 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 6  |  Azorius Control 23
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 11
+║ Library: 36  |  Graveyard: 16
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: Spirebluff Canal, Spirebluff Canal, Spirebluff Canal, Shivan Reef
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler, Teferi, Hero of Dominaria
+║   Lands: Hallowed Fountain, Steam Vents, Mystic Gate, Hallowed Fountain, Plains [T], Island, Island, Thundering Falls [T], Monumental Henge, Island, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Claws of Gix
+  [Main 1]
+    → Goal: curve_out
+T13 P1: Cast Claws of Gix (0)
+    [Priority] P2 passes (no response)
+T13: Resolve Claws of Gix
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 14 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 23  |  Affinity 6
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 11  |  Opp lands: 4
+║ Library: 26  |  Graveyard: 5
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler, Teferi, Hero of Dominaria
+║   Lands: Hallowed Fountain, Steam Vents, Mystic Gate, Hallowed Fountain, Plains, Island, Island, Thundering Falls, Monumental Henge, Island, Plains
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Claws of Gix
+║   Lands: Spirebluff Canal, Spirebluff Canal, Spirebluff Canal, Shivan Reef
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Consult the Star Charts
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Island→U (paying for Consult the Star Charts, 9 mana remaining)
+T14 P2: Cast Consult the Star Charts (1U)
+T14: Resolve Consult the Star Charts
+T14: Consult the Star Charts moved stack -> graveyard (resolution)
+T14 P2: Teferi, Hero of Dominaria [+1] -> Draw a card. At the beginning of the next end step, untap up to two lands
+T14 P2:   untap 2 lands
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Monumental Henge→W (paying for Sanctifier en-Vec, 9 mana remaining)
+T14 P2: Cast Sanctifier en-Vec (WW)
+T14: Resolve Sanctifier en-Vec
+T14 P2: Sanctifier en-Vec exiles 5 black/red cards from graveyards
+  [End Step]
+
+╔══ TURN 14 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 6  |  Azorius Control 23
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 11
+║ Library: 35  |  Graveyard: 11
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Claws of Gix
+║   Lands: Spirebluff Canal, Spirebluff Canal, Spirebluff Canal, Shivan Reef
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2)
+║   Other: Teferi, Time Raveler, Teferi, Hero of Dominaria
+║   Lands: Hallowed Fountain, Steam Vents, Mystic Gate, Hallowed Fountain, Plains [T], Island, Island, Thundering Falls, Monumental Henge [T], Island, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Mox Opal
+  [Main 1]
+    → Goal: curve_out
+T14 P1: Cast Mox Opal (0)
+    [Priority] P2 passes (no response)
+T14: Resolve Mox Opal
+    → Goal: curve_out
+T14 P1: Improvise — tap 2 artifact(s) for Kappa Cannoneer
+    [Mana] Tap Spirebluff Canal→U, Spirebluff Canal→U, Spirebluff Canal→U, Shivan Reef→C (paying for Kappa Cannoneer, 0 mana remaining)
+T14 P1: Cast Kappa Cannoneer (5U)
+    [Priority] P2 passes (no response)
+T14: Resolve Kappa Cannoneer
+T14 P1: Kappa Cannoneer gets +1/+1 counter (Kappa Cannoneer entered) → 5/5
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 15 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 23  |  Affinity 6
+║ Hand: 5 cards  |  Opp hand: 1 cards
+║ Lands: 11  |  Opp lands: 4
+║ Library: 24  |  Graveyard: 6
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2)
+║   Other: Teferi, Time Raveler, Teferi, Hero of Dominaria
+║   Lands: Hallowed Fountain, Steam Vents, Mystic Gate, Hallowed Fountain, Plains, Island, Island, Thundering Falls, Monumental Henge, Island, Plains
+║ Affinity board:
+║   Creatures: Kappa Cannoneer (5/5)
+║   Other: Claws of Gix, Mox Opal
+║   Lands: Spirebluff Canal [T], Spirebluff Canal [T], Spirebluff Canal [T], Shivan Reef [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Solitude
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Island→U, Island→U, Monumental Henge→W, Island→U (paying for Solitude, 6 mana remaining)
+T15 P2: Cast Solitude (3WW)
+T15: Solitude's controller pays 4 — not countered by Kappa Cannoneer's ward
+T15: Resolve Solitude
+T15: Kappa Cannoneer moved battlefield -> exile (exiled)
+T15 P2: Solitude exiles Kappa Cannoneer (opponent gains 5 life, now 11)
+T15 P2: Teferi, Hero of Dominaria [-8] -> You get an emblem with "Whenever you draw a card, exile target permanent an opponent controls."
+T15: Spirebluff Canal moved battlefield -> exile (emblem exile)
+T15 P2:   emblem exiles Spirebluff Canal
+T15: Teferi, Hero of Dominaria moved battlefield -> graveyard (SBA 704.5p: zero loyalty)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Sanctifier en-Vec
+T15 P2: Attack with Sanctifier en-Vec
+  [Declare Blockers] P1 does not block
+T15 P2:   Sanctifier en-Vec (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 11 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 15 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 9  |  Azorius Control 23
+║ Hand: 1 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 11
+║ Library: 34  |  Graveyard: 11
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Claws of Gix, Mox Opal
+║   Lands: Spirebluff Canal, Spirebluff Canal, Shivan Reef
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2) [tapped], Solitude (3/2)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain [T], Steam Vents [T], Mystic Gate [T], Hallowed Fountain, Plains [T], Island [T], Island [T], Thundering Falls, Monumental Henge [T], Island [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Pinnacle Emissary
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 16 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 23  |  Affinity 9
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 11  |  Opp lands: 3
+║ Library: 23  |  Graveyard: 7
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2), Solitude (3/2)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Steam Vents, Mystic Gate, Hallowed Fountain, Plains, Island, Island, Thundering Falls, Monumental Henge, Island, Plains
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Claws of Gix, Mox Opal
+║   Lands: Spirebluff Canal, Spirebluff Canal, Shivan Reef
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Otawara, Soaring City
+  [Main 1]
+T16 P2: Play Otawara, Soaring City
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Sanctifier en-Vec, Solitude
+T16 P2: Attack with Sanctifier en-Vec, Solitude
+  [Declare Blockers] P1 does not block
+T16 P2:   Sanctifier en-Vec (2/2) → 2 dmg to player
+T16 P2:   Solitude (3/2) → 3 dmg to player
+  [Combat Damage] 5 damage dealt → P1 life: 9 → 4
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 16 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 4  |  Azorius Control 26
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 12
+║ Library: 33  |  Graveyard: 11
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Claws of Gix, Mox Opal
+║   Lands: Spirebluff Canal, Spirebluff Canal, Shivan Reef
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2) [tapped], Solitude (3/2) [tapped]
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Steam Vents, Mystic Gate, Hallowed Fountain, Plains, Island, Island, Thundering Falls, Monumental Henge, Island, Plains, Otawara, Soaring City
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Mox Opal
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 17 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 26  |  Affinity 4
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 12  |  Opp lands: 3
+║ Library: 22  |  Graveyard: 7
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2), Solitude (3/2)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Steam Vents, Mystic Gate, Hallowed Fountain, Plains, Island, Island, Thundering Falls, Monumental Henge, Island, Plains, Otawara, Soaring City
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Claws of Gix, Mox Opal
+║   Lands: Spirebluff Canal, Spirebluff Canal, Shivan Reef
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Orim's Chant
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Sanctifier en-Vec, Solitude
+T17 P2: Attack with Sanctifier en-Vec, Solitude
+  [Declare Blockers] P1 does not block
+T17 P2:   Sanctifier en-Vec (2/2) → 2 dmg to player
+T17 P2:   Solitude (3/2) → 3 dmg to player
+P1 loses: life total -1
+  [Combat Damage] 5 damage dealt → P1 life: 4 → -1
+
+>>> Azorius Control wins Game 1 on turn 17 via damage
+    Final life: Affinity=-1  Azorius Control=29
+
+======================================================================
+  GAME 2: Affinity (P1) vs Azorius Control (P2)  —  seed 59003
+  Series: Affinity 0 - 1 Azorius Control
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Azorius Control wins → chooses to play first
+║ P1 (on play): Azorius Control
+║ P2 (on draw): Affinity
+╚═══════════════════════════════════════════════════════
+
+P1 (Affinity) opening hand (2 lands, 5 spells):
+  • Mishra's Bauble [Spell, CMC 0]
+  • Shivan Reef [Land, CMC 0]
+  • Metallic Rebuke [Spell, CMC 3]
+  • Tormod's Crypt [Spell, CMC 0]
+  • Weapons Manufacturing [Spell, CMC 2]
+  • Spirebluff Canal [Land, CMC 0]
+  • Weapons Manufacturing [Spell, CMC 2]
+→ P1 KEEPS 7 — 2 lands, 5 spells, score 37.0
+
+P2 (Azorius Control) opening hand (3 lands, 4 spells):
+  • Demolition Field [Land, CMC 0]
+  • Prismatic Ending [Spell, CMC 1]
+  • Island [Land, CMC 0]
+  • Counterspell [Spell, CMC 2]
+  • Flooded Strand [Land, CMC 0]
+  • Stock Up [Spell, CMC 3]
+  • Solitude [Creature, CMC 5]
+→ P2 KEEPS 7 — has key card(s): Counterspell, Prismatic Ending, Solitude, 3 cheap spells
+
+
+╔══ TURN 1 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Flooded Strand
+T1: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Flooded Strand (pay 1 life) -> Hallowed Fountain (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Azorius Control 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Pinnacle Emissary
+  [Main 1]
+T1 P1: Play Shivan Reef
+    → Goal: deploy_engine
+T1 P1: Cast Mishra's Bauble (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Mishra's Bauble
+    → Goal: deploy_engine
+    [Mana] Tap Shivan Reef→C (paying for Pinnacle Emissary, 0 mana remaining)
+T1 P1: Warp Pinnacle Emissary (pays 1)
+T1 P1: Cast Pinnacle Emissary (1UR)
+    [Priority] P2 passes (no response)
+T1: Resolve Pinnacle Emissary
+  [Begin Combat]
+T1 P2: Evoke Solitude (exile Prismatic Ending)
+T1 P2: Cast Solitude (3WW)
+T1: Resolve Solitude
+T1: Pinnacle Emissary moved battlefield -> exile (exiled)
+T1 P2: Solitude exiles Pinnacle Emissary (opponent gains 3 life, now 23)
+T1: Solitude moved battlefield -> graveyard (evoke sacrifice)
+T1 P2: Solitude sacrificed (evoke)
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 19  |  Affinity 23
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 2
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble
+║   Lands: Shivan Reef [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Sanctifier en-Vec
+  [Main 1]
+T2 P2: Play Demolition Field
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 23  |  Azorius Control 19
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble
+║   Lands: Shivan Reef
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Weapons Manufacturing
+  [Main 1]
+    → Goal: deploy_engine
+T2 P1: Play Spirebluff Canal (untapped, 1 other lands)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+    → Goal: deploy_engine
+  [End Step]
+
+╔══ TURN 3 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 19  |  Affinity 23
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 3
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble
+║   Lands: Shivan Reef, Spirebluff Canal
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Demolition Field
+  [Main 1]
+T3 P2: Play Demolition Field
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 23  |  Azorius Control 19
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 1
+║ Library: 51  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble
+║   Lands: Shivan Reef, Spirebluff Canal
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Steam Vents
+  [Main 1]
+T3 P1: Play Steam Vents (untapped, life: 21)
+    → Goal: curve_out
+    [Mana] Tap Spirebluff Canal→U, Steam Vents→R, Shivan Reef→C (paying for Pinnacle Emissary, 0 mana remaining)
+T3 P1: Cast Pinnacle Emissary (1UR)
+    [Priority] P2 passes (no response)
+T3: Resolve Pinnacle Emissary
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 19  |  Affinity 21
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 4
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain
+║ Affinity board:
+║   Creatures: Pinnacle Emissary (3/3)
+║   Other: Mishra's Bauble
+║   Lands: Shivan Reef [T], Spirebluff Canal [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Plains
+  [Main 1]
+T4 P2: Play Island
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 21  |  Azorius Control 19
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Pinnacle Emissary (3/3)
+║   Other: Mishra's Bauble
+║   Lands: Shivan Reef, Spirebluff Canal, Steam Vents
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Engineered Explosives
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Pinnacle Emissary
+T4 P1: Attack with Pinnacle Emissary
+  [Declare Blockers] P2 does not block
+T4 P1:   Pinnacle Emissary (3/3) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 19 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 16  |  Affinity 21
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 4
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Island
+║ Affinity board:
+║   Creatures: Pinnacle Emissary (3/3) [tapped]
+║   Other: Mishra's Bauble
+║   Lands: Shivan Reef, Spirebluff Canal, Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Teferi, Time Raveler
+  [Main 1]
+T5 P2: Play Plains
+    → Goal: close_game
+    [Mana] Tap Plains→W, Hallowed Fountain→W (paying for Sanctifier en-Vec, 1 mana remaining)
+T5 P2: Cast Sanctifier en-Vec (WW)
+    [Priority] P1 responds with Metallic Rebuke
+    [Mana] Tap Spirebluff Canal→U, Steam Vents→R, Shivan Reef→C (paying for Metallic Rebuke, 0 mana remaining)
+T5 P1: Cast Metallic Rebuke (2U)
+T5: Resolve Metallic Rebuke
+T5: Sanctifier en-Vec moved stack -> graveyard (resolution)
+T5: Sanctifier en-Vec is countered
+T5: Metallic Rebuke moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 21  |  Azorius Control 16
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Pinnacle Emissary (3/3)
+║   Other: Mishra's Bauble
+║   Lands: Shivan Reef, Spirebluff Canal, Steam Vents
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T], Island, Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Emry, Lurker of the Loch
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Spirebluff Canal→U (paying for Emry, Lurker of the Loch, 2 mana remaining)
+T5 P1: Cast Emry, Lurker of the Loch (2U)
+    [Priority] P2 passes (no response)
+T5: Resolve Emry, Lurker of the Loch
+T5 P1: Emry mills 4: Urza's Saga, Mox Opal, Pinnacle Emissary, Urza's Saga
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Pinnacle Emissary
+T5 P1: Attack with Pinnacle Emissary
+  [Declare Blockers] P2 does not block
+T5 P1:   Pinnacle Emissary (3/3) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 16 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 13  |  Affinity 21
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 5
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Island, Plains
+║ Affinity board:
+║   Creatures: Pinnacle Emissary (3/3) [tapped], Emry, Lurker of the Loch (1/2)
+║   Other: Mishra's Bauble
+║   Lands: Shivan Reef, Spirebluff Canal [T], Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Teferi, Time Raveler
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 21  |  Azorius Control 13
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 44  |  Graveyard: 5
+║ Affinity board:
+║   Creatures: Pinnacle Emissary (3/3), Emry, Lurker of the Loch (1/2)
+║   Other: Mishra's Bauble
+║   Lands: Shivan Reef, Spirebluff Canal, Steam Vents
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Island, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Preordain
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Spirebluff Canal→U (paying for Preordain, 2 mana remaining)
+T6 P1: Cast Preordain (U)
+    [Priority] P2 responds with Counterspell
+    [Mana] Tap Island→U, Hallowed Fountain→U (paying for Counterspell, 1 mana remaining)
+T6 P2: Cast Counterspell (UU)
+T6: Resolve Counterspell
+T6: Preordain moved stack -> graveyard (resolution)
+T6: Preordain is countered
+T6: Counterspell moved stack -> graveyard (resolution)
+T6 P1: Emry, Lurker of the Loch {T} → cast Mox Opal from GY
+T6 P1: Cast Mox Opal (0)
+T6 P1: Create 1x Drone token(s)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Pinnacle Emissary
+T6 P1: Attack with Pinnacle Emissary
+T6: Resolve Mox Opal
+  [Declare Blockers] P2 does not block
+T6 P1:   Pinnacle Emissary (3/3) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 13 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 10  |  Affinity 21
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 6
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Island, Plains
+║ Affinity board:
+║   Creatures: Pinnacle Emissary (3/3) [tapped], Emry, Lurker of the Loch (1/2) [tapped], Drone Token (1/1)
+║   Other: Mishra's Bauble, Mox Opal
+║   Lands: Shivan Reef, Spirebluff Canal [T], Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Solitude
+  [Main 1]
+    → Goal: close_game
+    → Goal: close_game
+    [Mana] Tap Island→U, Plains→W, Hallowed Fountain→U (paying for Stock Up, 0 mana remaining)
+T7 P2: Cast Stock Up (2U)
+    [Priority] P1 passes (no response)
+T7: Resolve Stock Up
+T7: Stock Up moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+    → Goal: close_game
+T7 P2: Evoke Solitude (exile Supreme Verdict)
+T7 P2: Cast Solitude (3WW)
+    [Priority] P1 passes (no response)
+T7: Resolve Solitude
+T7: Emry, Lurker of the Loch moved battlefield -> exile (exiled)
+T7 P2: Solitude exiles Emry, Lurker of the Loch (opponent gains 1 life, now 22)
+T7: Solitude moved battlefield -> graveyard (evoke sacrifice)
+T7 P2: Solitude sacrificed (evoke)
+  [End Step]
+
+╔══ TURN 7 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 22  |  Azorius Control 10
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 43  |  Graveyard: 5
+║ Affinity board:
+║   Creatures: Pinnacle Emissary (3/3), Drone Token (1/1)
+║   Other: Mishra's Bauble, Mox Opal
+║   Lands: Shivan Reef, Spirebluff Canal, Steam Vents
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T], Island [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Kappa Cannoneer
+  [Main 1]
+    → Goal: curve_out
+T7 P1: Improvise — tap 3 artifact(s) for Kappa Cannoneer
+    [Mana] Tap Spirebluff Canal→U, Steam Vents→R, Shivan Reef→C (paying for Kappa Cannoneer, 0 mana remaining)
+T7 P1: Cast Kappa Cannoneer (5U)
+T7 P1: Create 1x Drone token(s)
+    [Priority] P2 passes (no response)
+T7: Resolve Kappa Cannoneer
+T7 P1: Kappa Cannoneer gets +1/+1 counter (Kappa Cannoneer entered) → 5/5
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 10  |  Affinity 22
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 44  |  Graveyard: 8
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Island, Plains
+║ Affinity board:
+║   Creatures: Pinnacle Emissary (3/3) [tapped], Drone Token (1/1) [tapped], Drone Token (1/1), Kappa Cannoneer (5/5)
+║   Other: Mishra's Bauble, Mox Opal
+║   Lands: Shivan Reef [T], Spirebluff Canal [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Consult the Star Charts
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Island→U, Plains→W, Hallowed Fountain→U (paying for Teferi, Time Raveler, 0 mana remaining)
+T8 P2: Cast Teferi, Time Raveler (1WU)
+    [Priority] P1 passes (no response)
+T8: Resolve Teferi, Time Raveler
+T8 P2: Teferi bounces Pinnacle Emissary
+T8 P2: Teferi draws Monumental Henge
+T8 P2: Play Monumental Henge (enters tapped)
+T8 P2: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
+T8: Kappa Cannoneer moved battlefield -> hand (bounced)
+T8 P2:   returns Kappa Cannoneer to its owner's hand
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 22  |  Azorius Control 10
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 42  |  Graveyard: 5
+║ Affinity board:
+║   Creatures: Drone Token (1/1), Drone Token (1/1)
+║   Other: Mishra's Bauble, Mox Opal
+║   Lands: Shivan Reef, Spirebluff Canal, Steam Vents
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain [T], Island [T], Plains [T], Monumental Henge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Claws of Gix
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Spirebluff Canal→U, Steam Vents→R, Shivan Reef→C (paying for Pinnacle Emissary, 0 mana remaining)
+T8 P1: Cast Pinnacle Emissary (1UR)
+    [Priority] P2 passes (no response)
+T8: Resolve Pinnacle Emissary
+    → Goal: curve_out
+T8 P1: Cast Tormod's Crypt (0)
+T8 P1: Create 1x Drone token(s)
+    [Priority] P2 passes (no response)
+T8: Resolve Tormod's Crypt
+    → Goal: curve_out
+T8 P1: Cast Claws of Gix (0)
+T8 P1: Create 1x Drone token(s)
+    [Priority] P2 passes (no response)
+T8: Resolve Claws of Gix
+T8 P1: Activate Tormod's Crypt (sacrifice)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Drone Token, Drone Token
+T8 P1: Attack with Drone Token, Drone Token
+  [Declare Blockers] P2 does not block
+T8 P1:   Drone Token (1/1) → 1 dmg to player
+T8 P1:   Drone Token (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 10 → 8
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 8  |  Affinity 22
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 41  |  Graveyard: 0
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Island, Plains, Monumental Henge
+║ Affinity board:
+║   Creatures: Drone Token (1/1) [tapped], Drone Token (1/1) [tapped], Pinnacle Emissary (3/3) [tapped], Drone Token (1/1), Drone Token (1/1)
+║   Other: Mishra's Bauble, Mox Opal, Claws of Gix
+║   Lands: Shivan Reef [T], Spirebluff Canal [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Teferi, Hero of Dominaria
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Island→U, Plains→W (paying for Isochron Scepter, 2 mana remaining)
+T9 P2: Cast Isochron Scepter (2)
+T9: Resolve Isochron Scepter
+T9 P2: Isochron Scepter imprints Consult the Star Charts
+    → Goal: close_game
+    [Mana] Tap Monumental Henge→W, Hallowed Fountain→U (paying for Consult the Star Charts, 0 mana remaining)
+T9 P2: Cast Consult the Star Charts (1U)
+T9: Resolve Consult the Star Charts
+T9: Consult the Star Charts moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 22  |  Azorius Control 8
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 41  |  Graveyard: 6
+║ Affinity board:
+║   Creatures: Drone Token (1/1), Drone Token (1/1), Pinnacle Emissary (3/3), Drone Token (1/1), Drone Token (1/1)
+║   Other: Mishra's Bauble, Mox Opal, Claws of Gix
+║   Lands: Shivan Reef, Spirebluff Canal, Steam Vents
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler, Isochron Scepter
+║   Lands: Hallowed Fountain [T], Island [T], Plains [T], Monumental Henge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Mox Opal
+  [Main 1]
+    → Goal: curve_out
+T9 P1: Improvise — tap 3 artifact(s) for Kappa Cannoneer
+    [Mana] Tap Spirebluff Canal→U, Steam Vents→R, Shivan Reef→C (paying for Kappa Cannoneer, 0 mana remaining)
+T9 P1: Cast Kappa Cannoneer (5U)
+T9 P1: Create 1x Drone token(s)
+    [Priority] P2 passes (no response)
+T9: Resolve Kappa Cannoneer
+T9 P1: Kappa Cannoneer gets +1/+1 counter (Kappa Cannoneer entered) → 5/5
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Drone Token, Pinnacle Emissary, Drone Token, Drone Token
+T9 P1: Attack with Drone Token, Pinnacle Emissary, Drone Token, Drone Token
+  [Declare Blockers] P2 does not block
+T9 P1:   Drone Token (1/1) → 1 dmg to player
+T9 P1:   Pinnacle Emissary (3/3) → 3 dmg to player
+T9 P1:   Drone Token (1/1) → 1 dmg to player
+T9 P1:   Drone Token (1/1) → 1 dmg to player
+  [Combat Damage] 6 damage dealt → P2 life: 8 → 2
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Azorius Control (P2) ══════════════════════════
+║ Life: Azorius Control 2  |  Affinity 22
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 40  |  Graveyard: 1
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler, Isochron Scepter
+║   Lands: Hallowed Fountain, Island, Plains, Monumental Henge
+║ Affinity board:
+║   Creatures: Drone Token (1/1) [tapped], Drone Token (1/1) [tapped], Pinnacle Emissary (3/3) [tapped], Drone Token (1/1) [tapped], Drone Token (1/1) [tapped], Drone Token (1/1), Kappa Cannoneer (5/5)
+║   Other: Mishra's Bauble, Mox Opal, Claws of Gix
+║   Lands: Shivan Reef [T], Spirebluff Canal [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+    [Mana] Tap Island→U, Plains→W (paying for Isochron Scepter, 2 mana remaining)
+T10 P2: Cast Consult the Star Charts (1U)
+T10 P2: Isochron Scepter copies Consult the Star Charts
+T10: Resolve Consult the Star Charts
+T10 P2: Play Flooded Strand
+T10: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T10 P2: Crack Flooded Strand (pay 1 life) -> Hallowed Fountain (tapped, life: 1)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 22  |  Azorius Control 1
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 40  |  Graveyard: 6
+║ Affinity board:
+║   Creatures: Drone Token (1/1), Drone Token (1/1), Pinnacle Emissary (3/3), Drone Token (1/1), Drone Token (1/1), Drone Token (1/1), Kappa Cannoneer (5/5)
+║   Other: Mishra's Bauble, Mox Opal, Claws of Gix
+║   Lands: Shivan Reef, Spirebluff Canal, Steam Vents
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler, Isochron Scepter
+║   Lands: Hallowed Fountain, Island [T], Plains [T], Monumental Henge, Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Shivan Reef
+  [Main 1]
+T10 P1: Play Shivan Reef
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Drone Token, Drone Token, Pinnacle Emissary, Drone Token, Drone Token, Drone Token, Kappa Cannoneer
+T10 P1: Attack with Drone Token, Drone Token, Pinnacle Emissary, Drone Token, Drone Token, Drone Token, Kappa Cannoneer
+  [Declare Blockers] P2 does not block
+T10 P1:   Drone Token (1/1) → 1 dmg to player
+T10 P1:   Drone Token (1/1) → 1 dmg to player
+T10 P1:   Pinnacle Emissary (3/3) → 3 dmg to player
+T10 P1:   Drone Token (1/1) → 1 dmg to player
+T10 P1:   Drone Token (1/1) → 1 dmg to player
+T10 P1:   Drone Token (1/1) → 1 dmg to player
+T10 P1:   Kappa Cannoneer (5/5) → 5 dmg to player
+P2 loses: life total -12
+  [Combat Damage] 13 damage dealt → P2 life: 1 → -12
+
+>>> Affinity wins Game 2 on turn 10 via damage
+    Final life: Affinity=22  Azorius Control=-12
+
+======================================================================
+  GAME 3: Azorius Control (P1) vs Affinity (P2)  —  seed 59004
+  Series: Affinity 1 - 1 Azorius Control
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Azorius Control wins → chooses to play first
+║ P1 (on play): Azorius Control
+║ P2 (on draw): Affinity
+╚═══════════════════════════════════════════════════════
+
+P1 (Azorius Control) opening hand (2 lands, 5 spells):
+  • Sanctifier en-Vec [Creature, CMC 2]
+  • Hallowed Fountain [Land, CMC 0]
+  • Prismatic Ending [Spell, CMC 1]
+  • Orim's Chant [Spell, CMC 1]
+  • Plains [Land, CMC 0]
+  • Stock Up [Spell, CMC 3]
+  • Stock Up [Spell, CMC 3]
+→ P1 KEEPS 7 — has key card(s): Orim's Chant, Prismatic Ending, 5 cheap spells
+
+P2 (Affinity) opening hand (4 lands, 3 spells):
+  • Weapons Manufacturing [Spell, CMC 2]
+  • Fiery Islet [Land, CMC 0]
+  • Island [Land, CMC 0]
+  • Pithing Needle [Spell, CMC 1]
+  • Island [Land, CMC 0]
+  • Shivan Reef [Land, CMC 0]
+  • Engineered Explosives [Spell, CMC 0]
+→ P2 MULLIGANS (too many lands (4 > 3); first-turn value 2 < 5)
+  New hand (4 lands, 3 spells): ['Engineered Explosives', 'Skateboard', 'Spirebluff Canal', 'Fiery Islet', "Mishra's Bauble", 'Island', 'Fiery Islet']
+→ P2 MULLIGANS (too many lands (4 > 3); first-turn value 2 < 5)
+  New hand (2 lands, 5 spells): ['Pinnacle Emissary', "Urza's Saga", 'Fiery Islet', 'Pithing Needle', "Mishra's Bauble", 'Skateboard', 'Kappa Cannoneer']
+→ P2 mulligans to 5, bottoms: ['Kappa Cannoneer', 'Pinnacle Emissary']
+  Keeps: ["Urza's Saga", 'Fiery Islet', 'Pithing Needle', "Mishra's Bauble", 'Skateboard']
+
+
+╔══ TURN 1 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Hallowed Fountain (untapped, life: 20)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Azorius Control 20
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 55  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Island
+  [Main 1]
+T1 P2: Play Urza's Saga
+    → Goal: deploy_engine
+T1 P2: Cast Mishra's Bauble (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Mishra's Bauble
+T1: Mishra's Bauble moved battlefield -> graveyard (activation cost (Mishra's Bauble))
+T1 P2: activate Mishra's Bauble — Look at the top card of target player's library. Draw a card at the beginning of the next turn's upkeep.
+T1 P2: Mishra's Bauble queues a delayed trigger (next_upkeep)
+    → Goal: deploy_engine
+    [Mana] Tap Urza's Saga→C (paying for Pithing Needle, 0 mana remaining)
+T1 P2: Cast Pithing Needle (1)
+    [Priority] P1 passes (no response)
+T1: Resolve Pithing Needle
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 20  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Pithing Needle
+║   Lands: Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T2: delayed trigger — Mishra's Bauble: Look at the top card of target player's library. Draw a card at the beginning of the next turn's upkeep.
+T2 P2: Mishra's Bauble activated — draw 1 (Weapons Manufacturing)
+  [Draw] P1 draws: Wear // Tear
+  [Main 1]
+T2 P1: Play Plains
+    → Goal: grind_value
+    [Mana] Tap Plains→W, Hallowed Fountain→W (paying for Sanctifier en-Vec, 0 mana remaining)
+T2 P1: Cast Sanctifier en-Vec (WW)
+    [Priority] P2 passes (no response)
+T2: Resolve Sanctifier en-Vec
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Azorius Control 20
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 53  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Pithing Needle
+║   Lands: Urza's Saga
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2)
+║   Lands: Hallowed Fountain [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T2 P2: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P2 draws: Kappa Cannoneer
+  [Main 1]
+T2 P2: Play Fiery Islet
+    → Goal: deploy_engine
+    [Mana] Tap Urza's Saga→C, Fiery Islet→R (paying for Weapons Manufacturing, 0 mana remaining)
+T2 P2: Cast Weapons Manufacturing (1R)
+    [Priority] P1 passes (no response)
+T2: Resolve Weapons Manufacturing
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 20  |  Affinity 20
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2)
+║   Lands: Hallowed Fountain, Plains
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Pithing Needle, Weapons Manufacturing
+║   Lands: Urza's Saga [T], Fiery Islet [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Wrath of the Skies
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Sanctifier en-Vec
+T3 P1: Attack with Sanctifier en-Vec
+  [Declare Blockers] P2 does not block
+T3 P1:   Sanctifier en-Vec (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 20 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 18  |  Azorius Control 20
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Pithing Needle, Weapons Manufacturing
+║   Lands: Urza's Saga, Fiery Islet
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2) [tapped]
+║   Lands: Hallowed Fountain, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T3 P2: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+  [Draw] P2 draws: Engineered Explosives
+  [Main 1]
+T3 P2: Play Island
+T3: Fiery Islet moved battlefield -> graveyard (activation cost (Fiery Islet))
+T3 P2: activate Fiery Islet — Draw a card.
+T3 P2: Fiery Islet activated — draw 1 (Preordain)
+    → Goal: curve_out
+    [Mana] Tap Island→U (paying for Skateboard, 0 mana remaining)
+T3 P2: Cast Skateboard (1)
+    [Priority] P1 passes (no response)
+T3: Resolve Skateboard
+T3 P2: Create 1x Drone token(s)
+T3 P2: Weapons Manufacturing trigger → create 1 token(s) (Skateboard entered as nontoken=True artifact)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 20  |  Affinity 18
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 0
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2)
+║   Lands: Hallowed Fountain, Plains
+║ Affinity board:
+║   Creatures: Drone Token (1/1)
+║   Other: Pithing Needle, Weapons Manufacturing, Skateboard
+║   Lands: Urza's Saga [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Teferi, Time Raveler
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Sanctifier en-Vec
+T4 P1: Attack with Sanctifier en-Vec
+T4 P2:   [BLOCK] Drone Token (1/1) blocks Sanctifier en-Vec (2/2) — lifespan_delta=+1.00
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T4: Drone Token dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 18  |  Azorius Control 20
+║ Hand: 3 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Pithing Needle, Weapons Manufacturing, Skateboard
+║   Lands: Urza's Saga, Island
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2) [tapped]
+║   Lands: Hallowed Fountain, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T4 P2: Urza's Saga tutors Shadowspear
+T4 P2: Create 1x Drone token(s)
+T4 P2: Weapons Manufacturing trigger → create 1 token(s) (Shadowspear entered as nontoken=True artifact)
+T4 P2: Sacrifice Urza's Saga (final chapter)
+  [Draw] P2 draws: Urza's Saga
+  [Main 1]
+T4 P2: Play Urza's Saga
+    → Goal: curve_out
+T4 P2: Improvise — tap 4 artifact(s) for Kappa Cannoneer
+    [Mana] Tap Island→U, Urza's Saga→C (paying for Kappa Cannoneer, 0 mana remaining)
+T4 P2: Cast Kappa Cannoneer (5U)
+    [Priority] P1 passes (no response)
+T4: Resolve Kappa Cannoneer
+T4 P2: Kappa Cannoneer gets +1/+1 counter (Kappa Cannoneer entered) → 5/5
+T4 P2: Create 1x Drone token(s)
+T4 P2: Weapons Manufacturing trigger → create 1 token(s) (Kappa Cannoneer entered as nontoken=True artifact)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 20  |  Affinity 18
+║ Hand: 7 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 0
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2)
+║   Lands: Hallowed Fountain, Plains
+║ Affinity board:
+║   Creatures: Drone Token (1/1) [tapped], Kappa Cannoneer (5/5), Drone Token (1/1)
+║   Other: Pithing Needle, Weapons Manufacturing, Skateboard, Shadowspear
+║   Lands: Island [T], Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arid Mesa
+  [Main 1]
+T5 P1: Play Arid Mesa
+T5: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T5 P1: Crack Arid Mesa (pay 1 life) -> Steam Vents (untapped, life: 17)
+    → Goal: close_game
+    [Mana] Tap Plains→W, Hallowed Fountain→W (paying for Wrath of the Skies, 1 mana remaining)
+T5 P1: Cast Wrath of the Skies (1WW) (X=1)
+    [Priority] P2 passes (no response)
+T5: Resolve Wrath of the Skies
+T5: Pithing Needle moved battlefield -> graveyard (destroyed)
+T5: Skateboard moved battlefield -> graveyard (destroyed)
+T5: Shadowspear moved battlefield -> graveyard (destroyed)
+T5: Drone Token dies
+T5: Urza's Saga moved battlefield -> graveyard (destroyed)
+T5: Drone Token dies
+T5 P1: Wrath of the Skies (X=1) sweeps the board, destroying 6 permanents
+T5: Wrath of the Skies moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 18  |  Azorius Control 17
+║ Hand: 2 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 7
+║ Affinity board:
+║   Creatures: Kappa Cannoneer (5/5)
+║   Other: Weapons Manufacturing
+║   Lands: Island
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2)
+║   Lands: Hallowed Fountain [T], Plains [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Preordain
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Island→U (paying for Preordain, 0 mana remaining)
+T5 P2: Cast Preordain (U)
+    [Priority] P1 passes (no response)
+T5: Resolve Preordain
+T5 P2: scry 2 (Metallic Rebuke, Fiery Islet) → bottom: none
+T5 P2: Preordain → draw 1 (Metallic Rebuke)
+T5: Preordain moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Kappa Cannoneer
+T5 P2: Attack with Kappa Cannoneer
+T5 P1:   [BLOCK] Sanctifier en-Vec (2/2) blocks Kappa Cannoneer (5/5) — lifespan_delta=+1.00
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T5: Sanctifier en-Vec dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 17  |  Affinity 18
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 1
+║ Library: 48  |  Graveyard: 3
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Plains, Steam Vents
+║ Affinity board:
+║   Creatures: Kappa Cannoneer (5/5) [tapped]
+║   Other: Weapons Manufacturing
+║   Lands: Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Hallowed Fountain
+  [Main 1]
+T6 P1: Play Hallowed Fountain (untapped, life: 15)
+    → Goal: close_game
+    [Mana] Tap Plains→W, Steam Vents→R (paying for Wear // Tear, 2 mana remaining)
+T6 P1: Cast Wear // Tear (1R)
+    [Priority] P2 passes (no response)
+T6: Wear // Tear moved stack -> graveyard (resolution)
+T6: Wear // Tear is countered by Kappa Cannoneer's ward
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→W (paying for Prismatic Ending, 1 mana remaining)
+T6 P1: Cast Prismatic Ending (1W) (X=1)
+    [Priority] P2 passes (no response)
+T6: Prismatic Ending moved stack -> graveyard (resolution)
+T6: Prismatic Ending is countered by Kappa Cannoneer's ward
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 18  |  Azorius Control 15
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 8
+║ Affinity board:
+║   Creatures: Kappa Cannoneer (5/5)
+║   Other: Weapons Manufacturing
+║   Lands: Island
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T], Plains [T], Steam Vents [T], Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Fiery Islet
+  [Main 1]
+T6 P2: Play Fiery Islet
+T6: Fiery Islet moved battlefield -> graveyard (activation cost (Fiery Islet))
+T6 P2: activate Fiery Islet — Draw a card.
+T6 P2: Fiery Islet activated — draw 1 (Tormod's Crypt)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Kappa Cannoneer
+T6 P2: Attack with Kappa Cannoneer
+  [Declare Blockers] P1 does not block
+T6 P2:   Kappa Cannoneer (5/5) → 5 dmg to player
+  [Combat Damage] 5 damage dealt → P1 life: 15 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 10  |  Affinity 18
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 1
+║ Library: 47  |  Graveyard: 5
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Plains, Steam Vents, Hallowed Fountain
+║ Affinity board:
+║   Creatures: Kappa Cannoneer (5/5) [tapped]
+║   Other: Weapons Manufacturing
+║   Lands: Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Plains
+  [Main 1]
+T7 P1: Play Plains
+    → Goal: close_game
+    [Mana] Tap Plains→W, Plains→W, Hallowed Fountain→U (paying for Teferi, Time Raveler, 2 mana remaining)
+T7 P1: Cast Teferi, Time Raveler (1WU)
+    [Priority] P2 passes (no response)
+T7: Resolve Teferi, Time Raveler
+T7 P1: Teferi bounces Kappa Cannoneer
+T7 P1: Teferi draws Monumental Henge
+T7 P1: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
+T7: Weapons Manufacturing moved battlefield -> hand (bounced)
+T7 P1:   returns Weapons Manufacturing to its owner's hand
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 18  |  Azorius Control 10
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 5
+║ Library: 44  |  Graveyard: 9
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: Island
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain [T], Plains [T], Steam Vents, Hallowed Fountain, Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Shivan Reef
+  [Main 1]
+T7 P2: Play Shivan Reef
+    → Goal: curve_out
+T7 P2: Cast Tormod's Crypt (0)
+    [Priority] P1 passes (no response)
+T7: Resolve Tormod's Crypt
+    → Goal: curve_out
+    [Mana] Tap Island→U (paying for Preordain, 1 mana remaining)
+T7 P2: Cast Preordain (U)
+    [Priority] P1 responds with Orim's Chant
+    [Mana] Tap Hallowed Fountain→W (paying for Orim's Chant, 1 mana remaining)
+T7 P1: Cast Orim's Chant (W)
+T7: Resolve Orim's Chant
+T7 P1: Orim's Chant silences P2 this turn
+T7: Orim's Chant moved stack -> graveyard (resolution)
+T7: Resolve Preordain
+T7 P2: scry 2 (Spirebluff Canal, Claws of Gix) → bottom: none
+T7 P2: Preordain → draw 1 (Spirebluff Canal)
+T7: Preordain moved stack -> graveyard (resolution)
+T7 P2: Activate Tormod's Crypt (sacrifice)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 10  |  Affinity 18
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 2
+║ Library: 44  |  Graveyard: 0
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Plains, Steam Vents, Hallowed Fountain, Plains
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: Island [T], Shivan Reef
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Teferi, Hero of Dominaria
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Plains→W, Hallowed Fountain→U, Steam Vents→R, Hallowed Fountain→U (paying for Teferi, Hero of Dominaria, 0 mana remaining)
+T8 P1: Cast Teferi, Hero of Dominaria (3WU)
+T8: Resolve Teferi, Hero of Dominaria
+T8 P1: Play Monumental Henge (enters tapped)
+T8 P1: Teferi, Hero of Dominaria [+1] -> Draw a card. At the beginning of the next end step, untap up to two lands
+T8 P1:   untap 2 lands
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 18  |  Azorius Control 10
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 6
+║ Library: 42  |  Graveyard: 11
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: Island, Shivan Reef
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler, Teferi, Hero of Dominaria
+║   Lands: Hallowed Fountain, Plains, Steam Vents [T], Hallowed Fountain [T], Plains [T], Monumental Henge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Claws of Gix
+  [Main 1]
+T8 P2: Play Spirebluff Canal (untapped, 2 other lands)
+    → Goal: curve_out
+T8 P2: Cast Claws of Gix (0)
+    [Priority] P1 passes (no response)
+T8: Resolve Claws of Gix
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 10  |  Affinity 18
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 6  |  Opp lands: 3
+║ Library: 42  |  Graveyard: 0
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler, Teferi, Hero of Dominaria
+║   Lands: Hallowed Fountain, Plains, Steam Vents, Hallowed Fountain, Plains, Monumental Henge
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Claws of Gix
+║   Lands: Island, Shivan Reef, Spirebluff Canal
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Mystic Gate
+  [Main 1]
+T9 P1: Play Mystic Gate
+    → Goal: close_game
+    [Mana] Tap Plains→W, Plains→W, Hallowed Fountain→U (paying for Stock Up, 4 mana remaining)
+T9 P1: Cast Stock Up (2U)
+T9: Resolve Stock Up
+T9: Stock Up moved stack -> graveyard (resolution)
+T9: Lórien Revealed moved hand -> graveyard (cycling)
+T9: Island moved library -> hand (cycling tutor)
+T9 P1: Cycle Lórien Revealed (pay 1 mana, tutor: Island)
+T9 P1: Teferi, Hero of Dominaria [+1] -> Draw a card. At the beginning of the next end step, untap up to two lands
+T9 P1:   untap 2 lands
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Monumental Henge→W, Hallowed Fountain→U, Hallowed Fountain→U, Mystic Gate→C (paying for Solitude, 0 mana remaining)
+T9 P1: Cast Solitude (3WW)
+T9: Resolve Solitude
+  [End Step]
+
+╔══ TURN 9 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 18  |  Azorius Control 10
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 7
+║ Library: 41  |  Graveyard: 11
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Claws of Gix
+║   Lands: Island, Shivan Reef, Spirebluff Canal
+║ Azorius Control board:
+║   Creatures: Solitude (3/2)
+║   Other: Teferi, Time Raveler, Teferi, Hero of Dominaria
+║   Lands: Hallowed Fountain [T], Plains [T], Steam Vents [T], Hallowed Fountain [T], Plains [T], Monumental Henge [T], Mystic Gate [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Kappa Cannoneer
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Island→U, Spirebluff Canal→R (paying for Weapons Manufacturing, 1 mana remaining)
+T9 P2: Cast Weapons Manufacturing (1R)
+    [Priority] P1 passes (no response)
+T9: Resolve Weapons Manufacturing
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 10  |  Affinity 18
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 7  |  Opp lands: 3
+║ Library: 37  |  Graveyard: 2
+║ Azorius Control board:
+║   Creatures: Solitude (3/2)
+║   Other: Teferi, Time Raveler, Teferi, Hero of Dominaria
+║   Lands: Hallowed Fountain, Plains, Steam Vents, Hallowed Fountain, Plains, Monumental Henge, Mystic Gate
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Claws of Gix, Weapons Manufacturing
+║   Lands: Island [T], Shivan Reef, Spirebluff Canal [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Sanctifier en-Vec
+  [Main 1]
+T10 P1: Play Island
+    → Goal: close_game
+    [Mana] Tap Plains→W, Plains→W (paying for Sanctifier en-Vec, 6 mana remaining)
+T10 P1: Cast Sanctifier en-Vec (WW)
+T10: Resolve Sanctifier en-Vec
+T10 P1: Sanctifier en-Vec exiles 2 black/red cards from graveyards
+    → Goal: close_game
+    [Mana] Tap Monumental Henge→W, Island→U, Mystic Gate→C (paying for Stock Up, 3 mana remaining)
+T10 P1: Cast Stock Up (2U)
+T10: Resolve Stock Up
+T10: Stock Up moved stack -> graveyard (resolution)
+T10 P1: Teferi, Hero of Dominaria [+1] -> Draw a card. At the beginning of the next end step, untap up to two lands
+T10 P1:   untap 2 lands
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Solitude
+T10 P1: Attack with Solitude
+  [Declare Blockers] P2 does not block
+T10 P1:   Solitude (3/2) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 18 → 15
+  [End Combat]
+  [Main 2]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Plains→W, Hallowed Fountain→U, Steam Vents→R, Hallowed Fountain→U (paying for Solitude, 0 mana remaining)
+T10 P1: Cast Solitude (3WW)
+T10: Resolve Solitude
+  [End Step]
+
+╔══ TURN 10 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 15  |  Azorius Control 13
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 8
+║ Library: 40  |  Graveyard: 9
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Claws of Gix, Weapons Manufacturing
+║   Lands: Island, Shivan Reef, Spirebluff Canal
+║ Azorius Control board:
+║   Creatures: Solitude (3/2) [tapped], Sanctifier en-Vec (2/2), Solitude (3/2)
+║   Other: Teferi, Time Raveler, Teferi, Hero of Dominaria
+║   Lands: Hallowed Fountain [T], Plains [T], Steam Vents [T], Hallowed Fountain [T], Plains [T], Monumental Henge [T], Mystic Gate [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Fiery Islet
+  [Main 1]
+T10 P2: Play Fiery Islet
+T10: Fiery Islet moved battlefield -> graveyard (activation cost (Fiery Islet))
+T10 P2: activate Fiery Islet — Draw a card.
+T10 P2: Fiery Islet activated — draw 1 (Pinnacle Emissary)
+    → Goal: curve_out
+    [Mana] Tap Spirebluff Canal→U (paying for Pinnacle Emissary, 1 mana remaining)
+T10 P2: Warp Pinnacle Emissary (pays 1)
+T10 P2: Cast Pinnacle Emissary (1UR)
+    [Priority] P1 passes (no response)
+T10: Resolve Pinnacle Emissary
+T10 P2: Create 1x Drone token(s)
+T10 P2: Weapons Manufacturing trigger → create 1 token(s) (Pinnacle Emissary entered as nontoken=True artifact)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T10: Pinnacle Emissary moved battlefield -> exile (Warp exile)
+T10: Pinnacle Emissary exiled (Warp)
+
+╔══ TURN 11 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 13  |  Affinity 15
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 8  |  Opp lands: 3
+║ Library: 33  |  Graveyard: 3
+║ Azorius Control board:
+║   Creatures: Solitude (3/2), Sanctifier en-Vec (2/2), Solitude (3/2)
+║   Other: Teferi, Time Raveler, Teferi, Hero of Dominaria
+║   Lands: Hallowed Fountain, Plains, Steam Vents, Hallowed Fountain, Plains, Monumental Henge, Mystic Gate, Island
+║ Affinity board:
+║   Creatures: Drone Token (1/1)
+║   Other: Claws of Gix, Weapons Manufacturing
+║   Lands: Island [T], Shivan Reef, Spirebluff Canal [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Counterspell
+  [Main 1]
+T11 P1: surveil 1 → Isochron Scepter to GY
+T11 P1: Play Meticulous Archive (enters tapped)
+T11 P1: Teferi, Hero of Dominaria [+1] -> Draw a card. At the beginning of the next end step, untap up to two lands
+T11 P1:   untap 1 lands
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Solitude, Sanctifier en-Vec, Solitude
+T11 P1: Attack with Solitude, Sanctifier en-Vec, Solitude
+T11 P2:   [BLOCK] Drone Token (1/1) blocks Solitude (3/2) — lifespan_delta=+0.38
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T11 P1:   Sanctifier en-Vec (2/2) → 2 dmg to player
+T11 P1:   Solitude (3/2) → 3 dmg to player
+T11: Drone Token dies
+  [Combat Damage] 5 damage dealt → P2 life: 15 → 10
+  [End Combat]
+  [Main 2]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Plains→W (paying for Sanctifier en-Vec, 7 mana remaining)
+T11 P1: Cast Sanctifier en-Vec (WW)
+T11: Resolve Sanctifier en-Vec
+T11 P1: Sanctifier en-Vec exiles 1 black/red cards from graveyards
+  [End Step]
+
+╔══ TURN 11 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 10  |  Azorius Control 17
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 9
+║ Library: 38  |  Graveyard: 9
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Claws of Gix, Weapons Manufacturing
+║   Lands: Island, Shivan Reef, Spirebluff Canal
+║ Azorius Control board:
+║   Creatures: Solitude (3/2) [tapped], Sanctifier en-Vec (2/2) [tapped], Solitude (3/2) [tapped], Sanctifier en-Vec (2/2)
+║   Other: Teferi, Time Raveler, Teferi, Hero of Dominaria
+║   Lands: Hallowed Fountain, Plains [T], Steam Vents, Hallowed Fountain, Plains [T], Monumental Henge, Mystic Gate, Island, Meticulous Archive
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Urza's Saga
+  [Main 1]
+T11 P2: Play Urza's Saga
+    → Goal: curve_out
+    [Mana] Tap Island→U, Urza's Saga→C, Spirebluff Canal→R (paying for Pinnacle Emissary, 1 mana remaining)
+T11 P2: Cast Pinnacle Emissary (1UR)
+    [Priority] P1 responds with Counterspell
+    [Mana] Tap Island→U, Hallowed Fountain→U (paying for Counterspell, 5 mana remaining)
+T11 P1: Cast Counterspell (UU)
+T11: Resolve Counterspell
+T11: Pinnacle Emissary moved stack -> graveyard (resolution)
+T11: Pinnacle Emissary is countered
+T11: Counterspell moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 17  |  Affinity 10
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 9  |  Opp lands: 4
+║ Library: 30  |  Graveyard: 5
+║ Azorius Control board:
+║   Creatures: Solitude (3/2), Sanctifier en-Vec (2/2), Solitude (3/2), Sanctifier en-Vec (2/2)
+║   Other: Teferi, Time Raveler, Teferi, Hero of Dominaria
+║   Lands: Hallowed Fountain, Plains, Steam Vents, Hallowed Fountain, Plains, Monumental Henge, Mystic Gate, Island, Meticulous Archive
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Claws of Gix, Weapons Manufacturing
+║   Lands: Island [T], Shivan Reef, Spirebluff Canal [T], Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Meticulous Archive
+  [Main 1]
+T12 P1: Play Hall of Storm Giants (enters tapped)
+T12 P1: Teferi, Hero of Dominaria [-8] -> You get an emblem with "Whenever you draw a card, exile target permanent an opponent controls."
+T12: Weapons Manufacturing moved battlefield -> exile (emblem exile)
+T12 P1:   emblem exiles Weapons Manufacturing
+T12: Teferi, Hero of Dominaria moved battlefield -> graveyard (SBA 704.5p: zero loyalty)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Solitude, Sanctifier en-Vec, Solitude, Sanctifier en-Vec
+T12 P1: Attack with Solitude, Sanctifier en-Vec, Solitude, Sanctifier en-Vec
+  [Declare Blockers] P2 does not block
+T12 P1:   Solitude (3/2) → 3 dmg to player
+T12 P1:   Sanctifier en-Vec (2/2) → 2 dmg to player
+T12 P1:   Solitude (3/2) → 3 dmg to player
+T12 P1:   Sanctifier en-Vec (2/2) → 2 dmg to player
+P2 loses: life total 0
+  [Combat Damage] 10 damage dealt → P2 life: 10 → 0
+
+>>> Azorius Control wins Game 3 on turn 12 via damage
+    Final life: Azorius Control=23  Affinity=0
+
+======================================================================
+  MATCH RESULT: Azorius Control wins 2-1
+======================================================================
