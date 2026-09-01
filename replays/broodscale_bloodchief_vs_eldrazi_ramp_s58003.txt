@@ -1,0 +1,1446 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+======================================================================
+  GAME 1: Broodscale Bloodchief (P1) vs Eldrazi Ramp (P2)  —  seed 58003
+  Series: Broodscale Bloodchief 0 - 0 Eldrazi Ramp
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Eldrazi Ramp wins → chooses to play first
+║ P1 (on play): Eldrazi Ramp
+║ P2 (on draw): Broodscale Bloodchief
+╚═══════════════════════════════════════════════════════
+
+P1 (Broodscale Bloodchief) opening hand (3 lands, 4 spells):
+  • Kozilek's Command [Spell, CMC 2]
+  • Ancient Stirrings [Spell, CMC 1]
+  • Emrakul, the Promised End [Creature, CMC 13]
+  • Eldrazi Temple [Land, CMC 0]
+  • Verdant Catacombs [Land, CMC 0]
+  • Boseiju, Who Endures [Land, CMC 0]
+  • Vexing Bauble [Spell, CMC 1]
+→ P1 KEEPS 7 — has key card(s): Emrakul, the Promised End, Kozilek's Command, 3 cheap spells
+
+P2 (Eldrazi Ramp) opening hand (3 lands, 4 spells):
+  • Ugin's Labyrinth [Land, CMC 0]
+  • Herigast, Erupting Nullkite [Creature, CMC 9]
+  • Icetill Explorer [Creature, CMC 4]
+  • Commercial District [Land, CMC 0]
+  • Eldrazi Temple [Land, CMC 0]
+  • Emrakul, the Promised End [Creature, CMC 13]
+  • Malevolent Rumble [Spell, CMC 2]
+→ P2 KEEPS 7 — 3 lands, 4 spells, score 26.0
+
+
+╔══ TURN 1 — Eldrazi Ramp (P2) ══════════════════════════
+║ Life: Eldrazi Ramp 20  |  Broodscale Bloodchief 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Broodscale Bloodchief board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: surveil 1 → Kozilek's Command to GY
+T1 P2: Play Commercial District (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Broodscale Bloodchief (P1) ══════════════════════════
+║ Life: Broodscale Bloodchief 20  |  Eldrazi Ramp 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Broodscale Bloodchief board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Lands: Commercial District [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Basking Broodscale
+  [Main 1]
+T1 P1: Play Verdant Catacombs
+T1: Verdant Catacombs moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Verdant Catacombs (pay 1 life) -> Stomping Ground (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Eldrazi Ramp (P2) ══════════════════════════
+║ Life: Eldrazi Ramp 20  |  Broodscale Bloodchief 19
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Lands: Commercial District
+║ Broodscale Bloodchief board:
+║   Creatures: (empty)
+║   Lands: Stomping Ground [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Talisman of Impulse
+  [Main 1]
+T2 P2: Play Ugin's Labyrinth
+    → Goal: grind_value [enablers]
+    [Mana] Tap Ugin's Labyrinth→C, Commercial District→G (paying for Malevolent Rumble, 0 mana remaining)
+T2 P2: Cast Malevolent Rumble (1G)
+    [Priority] P1 passes (no response)
+T2: Resolve Malevolent Rumble
+T2 P2: Create 1x spawn token(s)
+T2: Malevolent Rumble moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Broodscale Bloodchief (P1) ══════════════════════════
+║ Life: Broodscale Bloodchief 19  |  Eldrazi Ramp 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Broodscale Bloodchief board:
+║   Creatures: (empty)
+║   Lands: Stomping Ground
+║ Eldrazi Ramp board:
+║   Creatures: spawn Token (0/1)
+║   Lands: Commercial District [T], Ugin's Labyrinth [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Urza's Saga
+  [Main 1]
+T2 P1: Play Urza's Saga
+    → Goal: grind_value
+    [Mana] Tap Urza's Saga→C, Stomping Ground→G (paying for Basking Broodscale, 0 mana remaining)
+T2 P1: Cast Basking Broodscale (1G)
+    [Priority] P2 passes (no response)
+T2: Resolve Basking Broodscale
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Eldrazi Ramp (P2) ══════════════════════════
+║ Life: Eldrazi Ramp 20  |  Broodscale Bloodchief 19
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 2
+║ Eldrazi Ramp board:
+║   Creatures: spawn Token (0/1)
+║   Lands: Commercial District, Ugin's Labyrinth
+║ Broodscale Bloodchief board:
+║   Creatures: Basking Broodscale (2/2)
+║   Lands: Stomping Ground [T], Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Devourer of Destiny
+  [Main 1]
+T3 P2: Play Eldrazi Temple
+    → Goal: grind_value
+    [Mana] Tap Ugin's Labyrinth→C, Eldrazi Temple→CC (paying for Talisman of Impulse, 2 mana remaining)
+T3 P2: Cast Talisman of Impulse (2)
+    [Priority] P1 passes (no response)
+T3: Resolve Talisman of Impulse
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Broodscale Bloodchief (P1) ══════════════════════════
+║ Life: Broodscale Bloodchief 19  |  Eldrazi Ramp 20
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Broodscale Bloodchief board:
+║   Creatures: Basking Broodscale (2/2)
+║   Lands: Stomping Ground, Urza's Saga
+║ Eldrazi Ramp board:
+║   Creatures: spawn Token (0/1)
+║   Other: Talisman of Impulse
+║   Lands: Commercial District, Ugin's Labyrinth [T], Eldrazi Temple [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T3 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P1 draws: Emrakul, the Promised End
+  [Main 1]
+T3 P1: Play Eldrazi Temple
+    → Goal: grind_value [enablers]
+    [Mana] Tap Stomping Ground→G (paying for Ancient Stirrings, 3 mana remaining)
+T3 P1: Cast Ancient Stirrings (G)
+    [Priority] P2 passes (no response)
+T3: Resolve Ancient Stirrings
+T3: Ancient Stirrings moved stack -> graveyard (resolution)
+    → Goal: grind_value
+    [Mana] Tap Urza's Saga→C (paying for Vexing Bauble, 2 mana remaining)
+T3 P1: Cast Vexing Bauble (1)
+    [Priority] P2 passes (no response)
+T3: Resolve Vexing Bauble
+    → Goal: grind_value
+    [Mana] Tap Eldrazi Temple→CC (paying for Kozilek's Command, 0 mana remaining)
+T3 P1: Cast Kozilek's Command (0)
+    [Priority] P2 passes (no response)
+T3: Resolve Kozilek's Command
+T3: Talisman of Impulse moved battlefield -> exile (exiled)
+T3: Kozilek's Command moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Basking Broodscale
+T3 P1: Attack with Basking Broodscale
+T3 P2:   [BLOCK] spawn Token (0/1) blocks Basking Broodscale (2/2) — lifespan_delta=+1.00
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T3: spawn Token dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Eldrazi Ramp (P2) ══════════════════════════
+║ Life: Eldrazi Ramp 20  |  Broodscale Bloodchief 19
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 2
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Lands: Commercial District, Ugin's Labyrinth, Eldrazi Temple
+║ Broodscale Bloodchief board:
+║   Creatures: Basking Broodscale (2/2) [tapped]
+║   Other: Vexing Bauble
+║   Lands: Stomping Ground [T], Urza's Saga [T], Eldrazi Temple [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Devourer of Destiny
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Broodscale Bloodchief (P1) ══════════════════════════
+║ Life: Broodscale Bloodchief 19  |  Eldrazi Ramp 20
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 3
+║ Broodscale Bloodchief board:
+║   Creatures: Basking Broodscale (2/2)
+║   Other: Vexing Bauble
+║   Lands: Stomping Ground, Urza's Saga, Eldrazi Temple
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Lands: Commercial District, Ugin's Labyrinth, Eldrazi Temple
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T4 P1: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+  [Draw] P1 draws: Urza's Saga
+  [Main 1]
+T4 P1: Play Boseiju, Who Endures
+T4: Vexing Bauble moved battlefield -> graveyard (activation cost (Vexing Bauble))
+T4 P1: activate Vexing Bauble — Draw a card.
+T4 P1: Vexing Bauble activated — draw 1 (Malevolent Rumble)
+    → Goal: close_game
+    [Mana] Tap Eldrazi Temple→CC, Boseiju, Who Endures→G (paying for Malevolent Rumble, 2 mana remaining)
+T4 P1: Cast Malevolent Rumble (1G)
+    [Priority] P2 passes (no response)
+T4: Resolve Malevolent Rumble
+T4 P1: Create 1x spawn token(s)
+T4: Malevolent Rumble moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Basking Broodscale
+T4 P1: Attack with Basking Broodscale
+  [Declare Blockers] P2 does not block
+T4 P1:   Basking Broodscale (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 20 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Eldrazi Ramp (P2) ══════════════════════════
+║ Life: Eldrazi Ramp 18  |  Broodscale Bloodchief 19
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 2
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Lands: Commercial District, Ugin's Labyrinth, Eldrazi Temple
+║ Broodscale Bloodchief board:
+║   Creatures: Basking Broodscale (2/2) [tapped], spawn Token (0/1)
+║   Lands: Stomping Ground, Urza's Saga [T], Eldrazi Temple [T], Boseiju, Who Endures [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Kozilek's Return
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Ugin's Labyrinth→C, Eldrazi Temple→CC, Commercial District→R (paying for Kozilek's Return, 1 mana remaining)
+T5 P2: Cast Kozilek's Return (2R)
+    [Priority] P1 passes (no response)
+T5: Resolve Kozilek's Return
+T5: Kozilek's Return moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Broodscale Bloodchief (P1) ══════════════════════════
+║ Life: Broodscale Bloodchief 17  |  Eldrazi Ramp 18
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 5
+║ Broodscale Bloodchief board:
+║   Creatures: Basking Broodscale (2/2), spawn Token (0/1)
+║   Lands: Stomping Ground, Urza's Saga, Eldrazi Temple, Boseiju, Who Endures
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Lands: Commercial District [T], Ugin's Labyrinth [T], Eldrazi Temple [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T5 P1: Urza's Saga tutors Blade of the Bloodchief
+T5 P1: Sacrifice Urza's Saga (final chapter)
+  [Draw] P1 draws: Delighted Halfling
+  [Main 1]
+T5 P1: Play Urza's Saga
+    → Goal: close_game
+    [Mana] Tap Boseiju, Who Endures→G (paying for Delighted Halfling, 4 mana remaining)
+T5 P1: Cast Delighted Halfling (G)
+    [Priority] P2 passes (no response)
+T5: Resolve Delighted Halfling
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Basking Broodscale
+T5 P1: Attack with Basking Broodscale
+  [Declare Blockers] P2 does not block
+T5 P1:   Basking Broodscale (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 18 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Eldrazi Ramp (P2) ══════════════════════════
+║ Life: Eldrazi Ramp 16  |  Broodscale Bloodchief 17
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 3
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Lands: Commercial District, Ugin's Labyrinth, Eldrazi Temple
+║ Broodscale Bloodchief board:
+║   Creatures: Basking Broodscale (2/2) [tapped], spawn Token (0/1), Delighted Halfling (1/2)
+║   Other: Blade of the Bloodchief
+║   Lands: Stomping Ground, Eldrazi Temple, Boseiju, Who Endures [T], Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Forest
+  [Main 1]
+T6 P2: Play Forest
+    → Goal: close_game
+    [Mana] Tap Ugin's Labyrinth→C, Eldrazi Temple→CC, Forest→G, Commercial District→G (paying for Icetill Explorer, 1 mana remaining)
+T6 P2: Cast Icetill Explorer (2GG)
+    [Priority] P1 passes (no response)
+T6: Resolve Icetill Explorer
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Broodscale Bloodchief (P1) ══════════════════════════
+║ Life: Broodscale Bloodchief 17  |  Eldrazi Ramp 16
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 6
+║ Broodscale Bloodchief board:
+║   Creatures: Basking Broodscale (2/2), spawn Token (0/1), Delighted Halfling (1/2)
+║   Other: Blade of the Bloodchief
+║   Lands: Stomping Ground, Eldrazi Temple, Boseiju, Who Endures, Urza's Saga
+║ Eldrazi Ramp board:
+║   Creatures: Icetill Explorer (2/4)
+║   Lands: Commercial District [T], Ugin's Labyrinth [T], Eldrazi Temple [T], Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T6 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P1 draws: Urza's Saga
+  [Main 1]
+T6 P1: Play Urza's Saga
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Eldrazi Ramp (P2) ══════════════════════════
+║ Life: Eldrazi Ramp 16  |  Broodscale Bloodchief 17
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 3
+║ Eldrazi Ramp board:
+║   Creatures: Icetill Explorer (2/4)
+║   Lands: Commercial District, Ugin's Labyrinth, Eldrazi Temple, Forest
+║ Broodscale Bloodchief board:
+║   Creatures: Basking Broodscale (2/2), spawn Token (0/1), Delighted Halfling (1/2)
+║   Other: Blade of the Bloodchief
+║   Lands: Stomping Ground, Eldrazi Temple, Boseiju, Who Endures, Urza's Saga, Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ugin's Labyrinth
+  [Main 1]
+T7 P2: Play Ugin's Labyrinth
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Icetill Explorer
+T7 P2: Attack with Icetill Explorer
+  [Declare Blockers] P1 does not block
+T7 P2:   Icetill Explorer (2/4) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 17 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Broodscale Bloodchief (P1) ══════════════════════════
+║ Life: Broodscale Bloodchief 15  |  Eldrazi Ramp 16
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 44  |  Graveyard: 6
+║ Broodscale Bloodchief board:
+║   Creatures: Basking Broodscale (2/2), spawn Token (0/1), Delighted Halfling (1/2)
+║   Other: Blade of the Bloodchief
+║   Lands: Stomping Ground, Eldrazi Temple, Boseiju, Who Endures, Urza's Saga, Urza's Saga
+║ Eldrazi Ramp board:
+║   Creatures: Icetill Explorer (2/4) [tapped]
+║   Lands: Commercial District, Ugin's Labyrinth, Eldrazi Temple, Forest, Ugin's Labyrinth
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T7 P1: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+T7 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P1 draws: Soul-Guide Lantern
+  [Main 1]
+T7 P1: Equip Blade of the Bloodchief to Basking Broodscale (cost 1)
+    → Goal: close_game
+    [Mana] Tap Eldrazi Temple→CC (paying for Soul-Guide Lantern, 5 mana remaining)
+T7 P1: Cast Soul-Guide Lantern (1)
+    [Priority] P2 passes (no response)
+T7: Resolve Soul-Guide Lantern
+T7: Soul-Guide Lantern moved battlefield -> graveyard (activation cost (Soul-Guide Lantern))
+T7 P1: activate Soul-Guide Lantern — Draw a card.
+T7 P1: Soul-Guide Lantern activated — draw 1 (Grove of the Burnwillows)
+T7 P1: Play Grove of the Burnwillows
+T7 P1: Create 1x Construct token(s)
+T7 P1: Urza's Saga activates "{2}, {T}: Create a 0/0 colorless Constru..." (pays {2}, {T})
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Basking Broodscale, Delighted Halfling
+T7 P1: Attack with Basking Broodscale, Delighted Halfling
+  [Declare Blockers] P2 does not block
+T7 P1:   Basking Broodscale (2/2) → 2 dmg to player
+T7 P1:   Delighted Halfling (1/2) → 1 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 16 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Eldrazi Ramp (P2) ══════════════════════════
+║ Life: Eldrazi Ramp 13  |  Broodscale Bloodchief 15
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 46  |  Graveyard: 3
+║ Eldrazi Ramp board:
+║   Creatures: Icetill Explorer (2/4)
+║   Lands: Commercial District, Ugin's Labyrinth, Eldrazi Temple, Forest, Ugin's Labyrinth
+║ Broodscale Bloodchief board:
+║   Creatures: Basking Broodscale (2/2) [tapped], spawn Token (0/1), Delighted Halfling (1/2) [tapped], Construct Token (2/2)
+║   Other: Blade of the Bloodchief
+║   Lands: Stomping Ground [T], Eldrazi Temple [T], Boseiju, Who Endures [T], Urza's Saga [T], Urza's Saga [T], Grove of the Burnwillows
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Sowing Mycospawn
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Ugin's Labyrinth→C, Eldrazi Temple→CC, Forest→G (paying for Sowing Mycospawn, 2 mana remaining)
+T8 P2: Cast Sowing Mycospawn (3G)
+T8: Eldrazi Temple moved library -> battlefield (Sowing Mycospawn cast: land search)
+T8 P2: Sowing Mycospawn cast — search land (Eldrazi Temple)
+    [Priority] P1 passes (no response)
+T8: Resolve Sowing Mycospawn
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Icetill Explorer
+T8 P2: Attack with Icetill Explorer
+  [Declare Blockers] P1 does not block
+T8 P2:   Icetill Explorer (2/4) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 15 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Broodscale Bloodchief (P1) ══════════════════════════
+║ Life: Broodscale Bloodchief 13  |  Eldrazi Ramp 13
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 6  |  Opp lands: 6
+║ Library: 42  |  Graveyard: 7
+║ Broodscale Bloodchief board:
+║   Creatures: Basking Broodscale (2/2), spawn Token (0/1), Delighted Halfling (1/2), Construct Token (2/2)
+║   Other: Blade of the Bloodchief
+║   Lands: Stomping Ground, Eldrazi Temple, Boseiju, Who Endures, Urza's Saga, Urza's Saga, Grove of the Burnwillows
+║ Eldrazi Ramp board:
+║   Creatures: Icetill Explorer (2/4) [tapped], Sowing Mycospawn (3/3)
+║   Lands: Commercial District, Ugin's Labyrinth [T], Eldrazi Temple [T], Forest [T], Ugin's Labyrinth, Eldrazi Temple
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T8 P1: Urza's Saga tutors Vexing Bauble
+T8 P1: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+T8 P1: Sacrifice Urza's Saga (final chapter)
+  [Draw] P1 draws: Urza's Saga
+  [Main 1]
+T8 P1: Play Urza's Saga
+T8 P1: Create 1x Construct token(s)
+T8 P1: Urza's Saga activates "{2}, {T}: Create a 0/0 colorless Constru..." (pays {2}, {T})
+T8 P1: Activate Vexing Bauble (sacrifice)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+    → Goal: close_game
+    [Mana] Tap Boseiju, Who Endures→G, Urza's Saga→C, Grove of the Burnwillows→C (paying for Glaring Fleshraker, 1 mana remaining)
+T8 P1: Cast Glaring Fleshraker (2)
+    [Priority] P2 passes (no response)
+T8: Resolve Glaring Fleshraker
+  [End Step]
+
+╔══ TURN 9 — Eldrazi Ramp (P2) ══════════════════════════
+║ Life: Eldrazi Ramp 13  |  Broodscale Bloodchief 13
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 6  |  Opp lands: 6
+║ Library: 44  |  Graveyard: 3
+║ Eldrazi Ramp board:
+║   Creatures: Icetill Explorer (2/4), Sowing Mycospawn (3/3)
+║   Lands: Commercial District, Ugin's Labyrinth, Eldrazi Temple, Forest, Ugin's Labyrinth, Eldrazi Temple
+║ Broodscale Bloodchief board:
+║   Creatures: Basking Broodscale (2/2), spawn Token (0/1), Delighted Halfling (1/2), Construct Token (3/3), Construct Token (3/3), Glaring Fleshraker (2/2)
+║   Other: Blade of the Bloodchief
+║   Lands: Stomping Ground [T], Eldrazi Temple [T], Boseiju, Who Endures [T], Urza's Saga [T], Grove of the Burnwillows [T], Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Sowing Mycospawn
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Ugin's Labyrinth→C, Eldrazi Temple→CC, Forest→G, Ugin's Labyrinth→C, Eldrazi Temple→CC (paying for Devourer of Destiny, 1 mana remaining)
+T9 P2: Cast Devourer of Destiny (5)
+T9: Basking Broodscale moved battlefield -> exile (Devourer of Destiny cast: exile)
+T9 P2: Devourer of Destiny cast — exile Basking Broodscale
+    [Priority] P1 passes (no response)
+T9: Resolve Devourer of Destiny
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Icetill Explorer
+T9 P2: Attack with Icetill Explorer
+T9 P1:   [BLOCK] spawn Token (0/1) blocks Icetill Explorer (2/4) — lifespan_delta=+0.18
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T9: spawn Token dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Broodscale Bloodchief (P1) ══════════════════════════
+║ Life: Broodscale Bloodchief 13  |  Eldrazi Ramp 13
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 6  |  Opp lands: 6
+║ Library: 39  |  Graveyard: 9
+║ Broodscale Bloodchief board:
+║   Creatures: Delighted Halfling (1/2), Construct Token (3/3), Construct Token (3/3), Glaring Fleshraker (2/2)
+║   Other: Blade of the Bloodchief
+║   Lands: Stomping Ground, Eldrazi Temple, Boseiju, Who Endures, Urza's Saga, Grove of the Burnwillows, Urza's Saga
+║ Eldrazi Ramp board:
+║   Creatures: Icetill Explorer (2/4) [tapped], Sowing Mycospawn (3/3), Devourer of Destiny (6/6)
+║   Lands: Commercial District, Ugin's Labyrinth [T], Eldrazi Temple [T], Forest [T], Ugin's Labyrinth [T], Eldrazi Temple [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T9 P1: Urza's Saga tutors Haywire Mite
+T9 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+T9 P1: Sacrifice Urza's Saga (final chapter)
+  [Draw] P1 draws: The Mycosynth Gardens
+  [Main 1]
+T9 P1: Play The Mycosynth Gardens
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Delighted Halfling, Construct Token, Construct Token, Glaring Fleshraker, Haywire Mite
+T9 P1: Attack with Delighted Halfling, Construct Token, Construct Token, Glaring Fleshraker, Haywire Mite
+T9 P2:   [BLOCK-EMERGENCY] Sowing Mycospawn (3/3) blocks Construct Token (4/4) — lifespan_delta=-0.11
+T9 P2:   [BLOCK-EMERGENCY] Devourer of Destiny (6/6) blocks Construct Token (4/4) — lifespan_delta=+0.88
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T9 P1:   Delighted Halfling (1/2) → 1 dmg to player
+T9 P1:   Glaring Fleshraker (2/2) → 2 dmg to player
+T9 P1:   Haywire Mite (1/1) → 1 dmg to player
+T9: Construct Token dies
+T9: Sowing Mycospawn dies
+T9: Construct Token dies
+  [Combat Damage] 4 damage dealt → P2 life: 13 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Eldrazi Ramp (P2) ══════════════════════════
+║ Life: Eldrazi Ramp 9  |  Broodscale Bloodchief 13
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 6  |  Opp lands: 6
+║ Library: 43  |  Graveyard: 4
+║ Eldrazi Ramp board:
+║   Creatures: Icetill Explorer (2/4), Devourer of Destiny (6/6)
+║   Lands: Commercial District, Ugin's Labyrinth, Eldrazi Temple, Forest, Ugin's Labyrinth, Eldrazi Temple
+║ Broodscale Bloodchief board:
+║   Creatures: Delighted Halfling (1/2) [tapped], Glaring Fleshraker (2/2) [tapped], Haywire Mite (1/1) [tapped]
+║   Other: Blade of the Bloodchief
+║   Lands: Stomping Ground, Eldrazi Temple, Boseiju, Who Endures, Grove of the Burnwillows, Urza's Saga, The Mycosynth Gardens
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ugin's Labyrinth
+  [Main 1]
+T10 P2: Play Ugin's Labyrinth
+    → Goal: close_game
+    [Mana] Tap Ugin's Labyrinth→C, Eldrazi Temple→CC, Forest→G, Ugin's Labyrinth→C, Eldrazi Temple→CC (paying for Devourer of Destiny, 2 mana remaining)
+T10 P2: Cast Devourer of Destiny (5)
+T10: Delighted Halfling moved battlefield -> exile (Devourer of Destiny cast: exile)
+T10 P2: Devourer of Destiny cast — exile Delighted Halfling
+    [Priority] P1 passes (no response)
+T10: Resolve Devourer of Destiny
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Icetill Explorer, Devourer of Destiny
+T10 P2: Attack with Icetill Explorer, Devourer of Destiny
+  [Declare Blockers] P1 does not block
+T10 P2:   Icetill Explorer (2/4) → 2 dmg to player
+T10 P2:   Devourer of Destiny (6/6) → 6 dmg to player
+  [Combat Damage] 8 damage dealt → P1 life: 13 → 5
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Broodscale Bloodchief (P1) ══════════════════════════
+║ Life: Broodscale Bloodchief 5  |  Eldrazi Ramp 9
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 6  |  Opp lands: 7
+║ Library: 37  |  Graveyard: 10
+║ Broodscale Bloodchief board:
+║   Creatures: Glaring Fleshraker (2/2), Haywire Mite (1/1)
+║   Other: Blade of the Bloodchief
+║   Lands: Stomping Ground, Eldrazi Temple, Boseiju, Who Endures, Grove of the Burnwillows, Urza's Saga, The Mycosynth Gardens
+║ Eldrazi Ramp board:
+║   Creatures: Icetill Explorer (2/4) [tapped], Devourer of Destiny (6/6) [tapped], Devourer of Destiny (6/6)
+║   Lands: Commercial District, Ugin's Labyrinth [T], Eldrazi Temple [T], Forest [T], Ugin's Labyrinth [T], Eldrazi Temple [T], Ugin's Labyrinth
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T10 P1: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+  [Draw] P1 draws: Glaring Fleshraker
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Eldrazi Temple→CC, Boseiju, Who Endures→G (paying for Glaring Fleshraker, 4 mana remaining)
+T10 P1: Cast Glaring Fleshraker (2)
+    [Priority] P2 passes (no response)
+T10: Resolve Glaring Fleshraker
+T10 P1: Create 1x Construct token(s)
+T10 P1: Urza's Saga activates "{2}, {T}: Create a 0/0 colorless Constru..." (pays {2}, {T})
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Glaring Fleshraker, Haywire Mite
+T10 P1: Attack with Glaring Fleshraker, Haywire Mite
+  [Declare Blockers] P2 does not block
+T10 P1:   Glaring Fleshraker (2/2) → 2 dmg to player
+T10 P1:   Haywire Mite (1/1) → 1 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 9 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Eldrazi Ramp (P2) ══════════════════════════
+║ Life: Eldrazi Ramp 6  |  Broodscale Bloodchief 5
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 7  |  Opp lands: 6
+║ Library: 42  |  Graveyard: 4
+║ Eldrazi Ramp board:
+║   Creatures: Icetill Explorer (2/4), Devourer of Destiny (6/6), Devourer of Destiny (6/6)
+║   Lands: Commercial District, Ugin's Labyrinth, Eldrazi Temple, Forest, Ugin's Labyrinth, Eldrazi Temple, Ugin's Labyrinth
+║ Broodscale Bloodchief board:
+║   Creatures: Glaring Fleshraker (2/2) [tapped], Haywire Mite (1/1) [tapped], Glaring Fleshraker (2/2), Construct Token (3/3)
+║   Other: Blade of the Bloodchief
+║   Lands: Stomping Ground [T], Eldrazi Temple [T], Boseiju, Who Endures [T], Grove of the Burnwillows [T], Urza's Saga [T], The Mycosynth Gardens
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Devourer of Destiny
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Ugin's Labyrinth→C, Eldrazi Temple→CC, Forest→G, Ugin's Labyrinth→C, Eldrazi Temple→CC (paying for Devourer of Destiny, 2 mana remaining)
+T11 P2: Cast Devourer of Destiny (5)
+T11: Haywire Mite moved battlefield -> exile (Devourer of Destiny cast: exile)
+T11 P2: Devourer of Destiny cast — exile Haywire Mite
+    [Priority] P1 passes (no response)
+T11: Devourer of Destiny fizzles (all targets illegal, CR 608.2b)
+T11: Devourer of Destiny moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Icetill Explorer, Devourer of Destiny, Devourer of Destiny
+T11 P2: Attack with Icetill Explorer, Devourer of Destiny, Devourer of Destiny
+T11 P1:   [BLOCK-EMERGENCY] Construct Token (2/2) blocks Devourer of Destiny (6/6) — lifespan_delta=+99.86
+T11 P1:   [BLOCK-EMERGENCY] Glaring Fleshraker (2/2) blocks Devourer of Destiny (6/6) — lifespan_delta=+99.86
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T11 P2:   Icetill Explorer (2/4) → 2 dmg to player
+T11: Glaring Fleshraker dies
+T11: Construct Token dies
+  [Combat Damage] 2 damage dealt → P1 life: 5 → 3
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Broodscale Bloodchief (P1) ══════════════════════════
+║ Life: Broodscale Bloodchief 3  |  Eldrazi Ramp 6
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 6  |  Opp lands: 7
+║ Library: 36  |  Graveyard: 11
+║ Broodscale Bloodchief board:
+║   Creatures: Glaring Fleshraker (2/2)
+║   Other: Blade of the Bloodchief
+║   Lands: Stomping Ground, Eldrazi Temple, Boseiju, Who Endures, Grove of the Burnwillows, Urza's Saga, The Mycosynth Gardens
+║ Eldrazi Ramp board:
+║   Creatures: Icetill Explorer (2/4) [tapped], Devourer of Destiny (6/6) [tapped], Devourer of Destiny (6/6) [tapped]
+║   Lands: Commercial District, Ugin's Labyrinth [T], Eldrazi Temple [T], Forest [T], Ugin's Labyrinth [T], Eldrazi Temple [T], Ugin's Labyrinth
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T11 P1: Urza's Saga tutors Springleaf Drum
+T11 P1: Sacrifice Urza's Saga (final chapter)
+  [Draw] P1 draws: Shifting Woodland
+  [Main 1]
+T11 P1: Play Shifting Woodland (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Glaring Fleshraker
+T11 P1: Attack with Glaring Fleshraker
+  [Declare Blockers] P2 does not block
+T11 P1:   Glaring Fleshraker (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 6 → 4
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Eldrazi Ramp (P2) ══════════════════════════
+║ Life: Eldrazi Ramp 4  |  Broodscale Bloodchief 3
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 7  |  Opp lands: 6
+║ Library: 41  |  Graveyard: 5
+║ Eldrazi Ramp board:
+║   Creatures: Icetill Explorer (2/4), Devourer of Destiny (6/6), Devourer of Destiny (6/6)
+║   Lands: Commercial District, Ugin's Labyrinth, Eldrazi Temple, Forest, Ugin's Labyrinth, Eldrazi Temple, Ugin's Labyrinth
+║ Broodscale Bloodchief board:
+║   Creatures: Glaring Fleshraker (2/2) [tapped]
+║   Other: Blade of the Bloodchief, Springleaf Drum
+║   Lands: Stomping Ground, Eldrazi Temple, Boseiju, Who Endures, Grove of the Burnwillows, The Mycosynth Gardens, Shifting Woodland [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ugin, Eye of the Storms
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Ugin's Labyrinth→C, Eldrazi Temple→CC, Forest→G, Ugin's Labyrinth→C, Eldrazi Temple→CC (paying for Ugin, Eye of the Storms, 2 mana remaining)
+T12 P2: Cast Ugin, Eye of the Storms (7)
+T12: Stomping Ground moved battlefield -> exile (Ugin, Eye of the Storms cast: exile)
+T12 P2: Ugin, Eye of the Storms cast — exile Stomping Ground
+    [Priority] P1 passes (no response)
+T12: Resolve Ugin, Eye of the Storms
+T12 P2: Ugin, Eye of the Storms [+2] -> You gain 3 life and draw a card
+T12 P2: Gain 3 life from Ugin, Eye of the Storms (life: 7)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Icetill Explorer, Devourer of Destiny, Devourer of Destiny
+T12 P2: Attack with Icetill Explorer, Devourer of Destiny, Devourer of Destiny
+  [Declare Blockers] P1 does not block
+T12 P2:   Icetill Explorer (2/4) → 2 dmg to player
+T12 P2:   Devourer of Destiny (6/6) → 6 dmg to player
+T12 P2:   Devourer of Destiny (6/6) → 6 dmg to player
+P1 loses: life total -11
+  [Combat Damage] 14 damage dealt → P1 life: 3 → -11
+
+>>> Eldrazi Ramp wins Game 1 on turn 12 via damage
+    Final life: Broodscale Bloodchief=-11  Eldrazi Ramp=7
+
+======================================================================
+  GAME 2: Broodscale Bloodchief (P1) vs Eldrazi Ramp (P2)  —  seed 58004
+  Series: Broodscale Bloodchief 0 - 1 Eldrazi Ramp
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Eldrazi Ramp wins → chooses to play first
+║ P1 (on play): Eldrazi Ramp
+║ P2 (on draw): Broodscale Bloodchief
+╚═══════════════════════════════════════════════════════
+
+P1 (Broodscale Bloodchief) opening hand (2 lands, 5 spells):
+  • Blade of the Bloodchief [Spell, CMC 1]
+  • Vexing Bauble [Spell, CMC 1]
+  • Urza's Saga [Land, CMC 0]
+  • Glaring Fleshraker [Creature, CMC 3]
+  • Blade of the Bloodchief [Spell, CMC 1]
+  • Basking Broodscale [Creature, CMC 2]
+  • Verdant Catacombs [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Basking Broodscale, 5 cheap spells
+
+P2 (Eldrazi Ramp) opening hand (2 lands, 5 spells):
+  • Stomping Ground [Land, CMC 0]
+  • Talisman of Impulse [Spell, CMC 2]
+  • Emrakul, the Promised End [Creature, CMC 13]
+  • Stomping Ground [Land, CMC 0]
+  • Malevolent Rumble [Spell, CMC 2]
+  • Ugin, Eye of the Storms [Spell, CMC 7]
+  • Devourer of Destiny [Creature, CMC 7]
+→ P2 KEEPS 7 — has key card(s): Emrakul, the Promised End, 2 cheap spells
+
+
+╔══ TURN 1 — Eldrazi Ramp (P2) ══════════════════════════
+║ Life: Eldrazi Ramp 20  |  Broodscale Bloodchief 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Broodscale Bloodchief board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Stomping Ground (untapped, life: 20)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Broodscale Bloodchief (P1) ══════════════════════════
+║ Life: Broodscale Bloodchief 20  |  Eldrazi Ramp 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Broodscale Bloodchief board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Lands: Stomping Ground
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Delighted Halfling
+  [Main 1]
+T1 P1: Play Verdant Catacombs
+T1: Verdant Catacombs moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Verdant Catacombs (pay 1 life) -> Stomping Ground (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Eldrazi Ramp (P2) ══════════════════════════
+║ Life: Eldrazi Ramp 20  |  Broodscale Bloodchief 19
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Lands: Stomping Ground
+║ Broodscale Bloodchief board:
+║   Creatures: (empty)
+║   Lands: Stomping Ground [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Eldrazi Temple
+  [Main 1]
+T2 P2: Play Eldrazi Temple
+    → Goal: grind_value [enablers]
+    [Mana] Tap Eldrazi Temple→CC, Stomping Ground→G (paying for Malevolent Rumble, 1 mana remaining)
+T2 P2: Cast Malevolent Rumble (1G)
+    [Priority] P1 passes (no response)
+T2: Resolve Malevolent Rumble
+T2 P2: Create 1x spawn token(s)
+T2: Malevolent Rumble moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Broodscale Bloodchief (P1) ══════════════════════════
+║ Life: Broodscale Bloodchief 19  |  Eldrazi Ramp 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Broodscale Bloodchief board:
+║   Creatures: (empty)
+║   Lands: Stomping Ground
+║ Eldrazi Ramp board:
+║   Creatures: spawn Token (0/1)
+║   Lands: Stomping Ground [T], Eldrazi Temple [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Forest
+  [Main 1]
+T2 P1: Play Urza's Saga
+    → Goal: grind_value
+    [Mana] Tap Urza's Saga→C, Stomping Ground→G (paying for Basking Broodscale, 0 mana remaining)
+T2 P1: Cast Basking Broodscale (1G)
+    [Priority] P2 passes (no response)
+T2: Resolve Basking Broodscale
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Eldrazi Ramp (P2) ══════════════════════════
+║ Life: Eldrazi Ramp 20  |  Broodscale Bloodchief 19
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 1
+║ Eldrazi Ramp board:
+║   Creatures: spawn Token (0/1)
+║   Lands: Stomping Ground, Eldrazi Temple
+║ Broodscale Bloodchief board:
+║   Creatures: Basking Broodscale (2/2)
+║   Lands: Stomping Ground [T], Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Utopia Sprawl
+  [Main 1]
+T3 P2: Play Stomping Ground (untapped, life: 18)
+    → Goal: grind_value
+    [Mana] Tap Eldrazi Temple→CC (paying for Talisman of Impulse, 2 mana remaining)
+T3 P2: Cast Talisman of Impulse (2)
+    [Priority] P1 passes (no response)
+T3: Resolve Talisman of Impulse
+    → Goal: grind_value
+    [Mana] Tap Stomping Ground→G (paying for Utopia Sprawl, 2 mana remaining)
+T3 P2: Cast Utopia Sprawl (G)
+    [Priority] P1 passes (no response)
+T3: Resolve Utopia Sprawl
+T3 P2: Utopia Sprawl enters — colour chosen: B
+T3 P2: Utopia Sprawl enchants Stomping Ground
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Broodscale Bloodchief (P1) ══════════════════════════
+║ Life: Broodscale Bloodchief 19  |  Eldrazi Ramp 18
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Broodscale Bloodchief board:
+║   Creatures: Basking Broodscale (2/2)
+║   Lands: Stomping Ground, Urza's Saga
+║ Eldrazi Ramp board:
+║   Creatures: spawn Token (0/1)
+║   Other: Talisman of Impulse, Utopia Sprawl
+║   Lands: Stomping Ground [T], Eldrazi Temple [T], Stomping Ground
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T3 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P1 draws: Misty Rainforest
+  [Main 1]
+T3 P1: Play Misty Rainforest
+T3: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T3 P1: Crack Misty Rainforest -> Forest (untapped)
+    → Goal: grind_value
+    [Mana] Tap Urza's Saga→C, Forest→G, Stomping Ground→G (paying for Glaring Fleshraker, 0 mana remaining)
+T3 P1: Cast Glaring Fleshraker (2)
+    [Priority] P2 passes (no response)
+T3: Resolve Glaring Fleshraker
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Basking Broodscale
+T3 P1: Attack with Basking Broodscale
+T3 P2:   [BLOCK] spawn Token (0/1) blocks Basking Broodscale (2/2) — lifespan_delta=+0.50
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T3: spawn Token dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Eldrazi Ramp (P2) ══════════════════════════
+║ Life: Eldrazi Ramp 18  |  Broodscale Bloodchief 18
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 1
+║ Eldrazi Ramp board:
+║   Creatures: (empty)
+║   Other: Talisman of Impulse, Utopia Sprawl
+║   Lands: Stomping Ground, Eldrazi Temple, Stomping Ground
+║ Broodscale Bloodchief board:
+║   Creatures: Basking Broodscale (2/2) [tapped], Glaring Fleshraker (2/2)
+║   Lands: Stomping Ground [T], Urza's Saga [T], Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Sowing Mycospawn
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Eldrazi Temple→CC, Stomping Ground→G, Stomping Ground→GB (paying for Sowing Mycospawn, 2 mana remaining)
+T4 P2: Cast Sowing Mycospawn (3G)
+T4: Eldrazi Temple moved library -> battlefield (Sowing Mycospawn cast: land search)
+T4 P2: Sowing Mycospawn cast — search land (Eldrazi Temple)
+    [Priority] P1 passes (no response)
+T4: Resolve Sowing Mycospawn
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Broodscale Bloodchief (P1) ══════════════════════════
+║ Life: Broodscale Bloodchief 18  |  Eldrazi Ramp 18
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 2
+║ Broodscale Bloodchief board:
+║   Creatures: Basking Broodscale (2/2), Glaring Fleshraker (2/2)
+║   Lands: Stomping Ground, Urza's Saga, Forest
+║ Eldrazi Ramp board:
+║   Creatures: Sowing Mycospawn (3/3)
+║   Other: Talisman of Impulse, Utopia Sprawl
+║   Lands: Stomping Ground [T], Eldrazi Temple [T], Stomping Ground [T], Eldrazi Temple
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T4 P1: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+  [Draw] P1 draws: Grove of the Burnwillows
+  [Main 1]
+T4 P1: Play Forest
+    → Goal: close_game
+    [Mana] Tap Forest→G (paying for Delighted Halfling, 3 mana remaining)
+T4 P1: Cast Delighted Halfling (G)
+    [Priority] P2 passes (no response)
+T4: Resolve Delighted Halfling
+    → Goal: close_game
+    [Mana] Tap Urza's Saga→C (paying for Vexing Bauble, 2 mana remaining)
+T4 P1: Cast Vexing Bauble (1)
+    [Priority] P2 passes (no response)
+T4: Resolve Vexing Bauble
+T4: Vexing Bauble moved battlefield -> graveyard (activation cost (Vexing Bauble))
+T4 P1: activate Vexing Bauble — Draw a card.
+T4 P1: Vexing Bauble activated — draw 1 (Urza's Saga)
+    → Goal: close_game
+    [Mana] Tap Stomping Ground→G (paying for Blade of the Bloodchief, 0 mana remaining)
+T4 P1: Cast Blade of the Bloodchief (1)
+    [Priority] P2 passes (no response)
+T4: Resolve Blade of the Bloodchief
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Eldrazi Ramp (P2) ══════════════════════════
+║ Life: Eldrazi Ramp 18  |  Broodscale Bloodchief 18
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 1
+║ Eldrazi Ramp board:
+║   Creatures: Sowing Mycospawn (3/3)
+║   Other: Talisman of Impulse, Utopia Sprawl
+║   Lands: Stomping Ground, Eldrazi Temple, Stomping Ground, Eldrazi Temple
+║ Broodscale Bloodchief board:
+║   Creatures: Basking Broodscale (2/2), Glaring Fleshraker (2/2), Delighted Halfling (1/2)
+║   Other: Blade of the Bloodchief
+║   Lands: Stomping Ground [T], Urza's Saga [T], Forest [T], Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Devourer of Destiny
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Eldrazi Temple→CC, Eldrazi Temple→CC, Stomping Ground→G, Stomping Ground→GB (paying for Devourer of Destiny, 1 mana remaining)
+T5 P2: Cast Devourer of Destiny (5)
+T5: Basking Broodscale moved battlefield -> exile (Devourer of Destiny cast: exile)
+T5 P2: Devourer of Destiny cast — exile Basking Broodscale
+    [Priority] P1 passes (no response)
+T5: Devourer of Destiny fizzles (all targets illegal, CR 608.2b)
+T5: Devourer of Destiny moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Sowing Mycospawn
+T5 P2: Attack with Sowing Mycospawn
+  [Declare Blockers] P1 does not block
+T5 P2:   Sowing Mycospawn (3/3) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 18 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Broodscale Bloodchief (P1) ══════════════════════════
+║ Life: Broodscale Bloodchief 15  |  Eldrazi Ramp 18
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 3
+║ Broodscale Bloodchief board:
+║   Creatures: Glaring Fleshraker (2/2), Delighted Halfling (1/2)
+║   Other: Blade of the Bloodchief
+║   Lands: Stomping Ground, Urza's Saga, Forest, Forest
+║ Eldrazi Ramp board:
+║   Creatures: Sowing Mycospawn (3/3) [tapped]
+║   Other: Talisman of Impulse, Utopia Sprawl
+║   Lands: Stomping Ground [T], Eldrazi Temple [T], Stomping Ground [T], Eldrazi Temple [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T5 P1: Urza's Saga tutors Springleaf Drum
+T5 P1: Sacrifice Urza's Saga (final chapter)
+  [Draw] P1 draws: Emrakul, the Promised End
+  [Main 1]
+T5 P1: Play Urza's Saga
+T5 P1: Equip Blade of the Bloodchief to Delighted Halfling (cost 1)
+    → Goal: close_game
+    [Mana] Tap Forest→G (paying for Blade of the Bloodchief, 3 mana remaining)
+T5 P1: Cast Blade of the Bloodchief (1)
+    [Priority] P2 passes (no response)
+T5: Resolve Blade of the Bloodchief
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Glaring Fleshraker, Delighted Halfling
+T5 P1: Attack with Glaring Fleshraker, Delighted Halfling
+  [Declare Blockers] P2 does not block
+T5 P1:   Glaring Fleshraker (2/2) → 2 dmg to player
+T5 P1:   Delighted Halfling (1/2) → 1 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 18 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Eldrazi Ramp (P2) ══════════════════════════
+║ Life: Eldrazi Ramp 15  |  Broodscale Bloodchief 15
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 2
+║ Eldrazi Ramp board:
+║   Creatures: Sowing Mycospawn (3/3)
+║   Other: Talisman of Impulse, Utopia Sprawl
+║   Lands: Stomping Ground, Eldrazi Temple, Stomping Ground, Eldrazi Temple
+║ Broodscale Bloodchief board:
+║   Creatures: Glaring Fleshraker (2/2) [tapped], Delighted Halfling (1/2) [tapped]
+║   Other: Blade of the Bloodchief, Springleaf Drum, Blade of the Bloodchief
+║   Lands: Stomping Ground [T], Forest [T], Forest, Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Grove of the Burnwillows
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Eldrazi Temple→CC, Eldrazi Temple→CC, Stomping Ground→G, Stomping Ground→GB (paying for Ugin, Eye of the Storms, 1 mana remaining)
+T6 P2: Cast Ugin, Eye of the Storms (7)
+T6: Delighted Halfling moved battlefield -> exile (Ugin, Eye of the Storms cast: exile)
+T6 P2: Ugin, Eye of the Storms cast — exile Delighted Halfling
+    [Priority] P1 passes (no response)
+T6: Resolve Ugin, Eye of the Storms
+T6 P2: Play Grove of the Burnwillows
+T6 P2: Ugin, Eye of the Storms [+2] -> You gain 3 life and draw a card
+T6 P2: Gain 3 life from Ugin, Eye of the Storms (life: 18)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Sowing Mycospawn
+T6 P2: Attack with Sowing Mycospawn
+  [Declare Blockers] P1 does not block
+T6 P2:   Sowing Mycospawn (3/3) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 15 → 12
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Broodscale Bloodchief (P1) ══════════════════════════
+║ Life: Broodscale Bloodchief 12  |  Eldrazi Ramp 18
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 44  |  Graveyard: 4
+║ Broodscale Bloodchief board:
+║   Creatures: Glaring Fleshraker (2/2)
+║   Other: Blade of the Bloodchief, Springleaf Drum, Blade of the Bloodchief
+║   Lands: Stomping Ground, Forest, Forest, Urza's Saga
+║ Eldrazi Ramp board:
+║   Creatures: Sowing Mycospawn (3/3) [tapped]
+║   Other: Talisman of Impulse, Utopia Sprawl, Ugin, Eye of the Storms
+║   Lands: Stomping Ground [T], Eldrazi Temple [T], Stomping Ground [T], Eldrazi Temple [T], Grove of the Burnwillows
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T6 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P1 draws: Boseiju, Who Endures
+  [Main 1]
+T6 P1: Play Grove of the Burnwillows
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Glaring Fleshraker
+T6 P1: Attack with Glaring Fleshraker
+  [Declare Blockers] P2 does not block
+T6 P1:   Glaring Fleshraker (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 18 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Eldrazi Ramp (P2) ══════════════════════════
+║ Life: Eldrazi Ramp 16  |  Broodscale Bloodchief 12
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 2
+║ Eldrazi Ramp board:
+║   Creatures: Sowing Mycospawn (3/3)
+║   Other: Talisman of Impulse, Utopia Sprawl, Ugin, Eye of the Storms
+║   Lands: Stomping Ground, Eldrazi Temple, Stomping Ground, Eldrazi Temple, Grove of the Burnwillows
+║ Broodscale Bloodchief board:
+║   Creatures: Glaring Fleshraker (2/2) [tapped]
+║   Other: Blade of the Bloodchief, Springleaf Drum, Blade of the Bloodchief
+║   Lands: Stomping Ground, Forest, Forest, Urza's Saga, Grove of the Burnwillows
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ugin's Labyrinth
+  [Main 1]
+T7 P2: Play Ugin's Labyrinth
+    → Goal: close_game
+    [Mana] Tap Eldrazi Temple→CC, Eldrazi Temple→CC, Ugin's Labyrinth→C, Stomping Ground→G, Stomping Ground→GB (paying for Devourer of Destiny, 3 mana remaining)
+T7 P2: Cast Devourer of Destiny (5)
+T7: Stomping Ground moved battlefield -> exile (Devourer of Destiny cast: exile)
+T7 P2: Devourer of Destiny cast — exile Stomping Ground
+    [Priority] P1 passes (no response)
+T7: Resolve Devourer of Destiny
+T7 P2: Ugin, Eye of the Storms [+2] -> You gain 3 life and draw a card
+T7 P2: Gain 3 life from Ugin, Eye of the Storms (life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Sowing Mycospawn
+T7 P2: Attack with Sowing Mycospawn
+  [Declare Blockers] P1 does not block
+T7 P2:   Sowing Mycospawn (3/3) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 12 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Broodscale Bloodchief (P1) ══════════════════════════
+║ Life: Broodscale Bloodchief 9  |  Eldrazi Ramp 19
+║ Hand: 2 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 43  |  Graveyard: 4
+║ Broodscale Bloodchief board:
+║   Creatures: Glaring Fleshraker (2/2)
+║   Other: Blade of the Bloodchief, Springleaf Drum, Blade of the Bloodchief
+║   Lands: Forest, Forest, Urza's Saga, Grove of the Burnwillows
+║ Eldrazi Ramp board:
+║   Creatures: Sowing Mycospawn (3/3) [tapped], Devourer of Destiny (6/6)
+║   Other: Talisman of Impulse, Utopia Sprawl, Ugin, Eye of the Storms
+║   Lands: Stomping Ground [T], Eldrazi Temple [T], Stomping Ground [T], Eldrazi Temple [T], Grove of the Burnwillows, Ugin's Labyrinth [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T7 P1: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+  [Draw] P1 draws: Kozilek's Command
+  [Main 1]
+T7 P1: Play Boseiju, Who Endures
+T7 P1: Equip Blade of the Bloodchief to Glaring Fleshraker (cost 1)
+    → Goal: close_game
+    [Mana] Tap Urza's Saga→C, Grove of the Burnwillows→C (paying for Kozilek's Command, 2 mana remaining)
+T7 P1: Cast Kozilek's Command (2) (X=2)
+    [Priority] P2 passes (no response)
+T7: Resolve Kozilek's Command
+T7: Sowing Mycospawn moved battlefield -> exile (exiled)
+T7: Kozilek's Command moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Eldrazi Ramp (P2) ══════════════════════════
+║ Life: Eldrazi Ramp 19  |  Broodscale Bloodchief 9
+║ Hand: 1 cards  |  Opp hand: 1 cards
+║ Lands: 6  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 2
+║ Eldrazi Ramp board:
+║   Creatures: Devourer of Destiny (6/6)
+║   Other: Talisman of Impulse, Utopia Sprawl, Ugin, Eye of the Storms
+║   Lands: Stomping Ground, Eldrazi Temple, Stomping Ground, Eldrazi Temple, Grove of the Burnwillows, Ugin's Labyrinth
+║ Broodscale Bloodchief board:
+║   Creatures: Glaring Fleshraker (2/2)
+║   Other: Blade of the Bloodchief, Springleaf Drum, Blade of the Bloodchief
+║   Lands: Forest [T], Forest [T], Urza's Saga [T], Grove of the Burnwillows [T], Boseiju, Who Endures [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Sanctum of Ugin
+  [Main 1]
+T8 P2: Play Sanctum of Ugin
+T8 P2: Ugin, Eye of the Storms [+2] -> You gain 3 life and draw a card
+T8 P2: Gain 3 life from Ugin, Eye of the Storms (life: 22)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Devourer of Destiny
+T8 P2: Attack with Devourer of Destiny
+T8 P1:   [BLOCK-EMERGENCY] Glaring Fleshraker (2/2) blocks Devourer of Destiny (6/6) — lifespan_delta=+1.00
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T8: Blade of the Bloodchief falls off Glaring Fleshraker (unattached)
+T8: Glaring Fleshraker dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Broodscale Bloodchief (P1) ══════════════════════════
+║ Life: Broodscale Bloodchief 9  |  Eldrazi Ramp 22
+║ Hand: 1 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 42  |  Graveyard: 6
+║ Broodscale Bloodchief board:
+║   Creatures: (empty)
+║   Other: Blade of the Bloodchief, Springleaf Drum, Blade of the Bloodchief
+║   Lands: Forest, Forest, Urza's Saga, Grove of the Burnwillows, Boseiju, Who Endures
+║ Eldrazi Ramp board:
+║   Creatures: Devourer of Destiny (6/6) [tapped]
+║   Other: Talisman of Impulse, Utopia Sprawl, Ugin, Eye of the Storms
+║   Lands: Stomping Ground [T], Eldrazi Temple [T], Stomping Ground, Eldrazi Temple, Grove of the Burnwillows, Ugin's Labyrinth
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T8 P1: Urza's Saga tutors Soul-Guide Lantern
+T8 P1: Sacrifice Urza's Saga (final chapter)
+  [Draw] P1 draws: Grove of the Burnwillows
+  [Main 1]
+T8 P1: Play Grove of the Burnwillows
+T8: Soul-Guide Lantern moved battlefield -> graveyard (activation cost (Soul-Guide Lantern))
+T8 P1: activate Soul-Guide Lantern — Draw a card.
+T8 P1: Soul-Guide Lantern activated — draw 1 (Grove of the Burnwillows)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Eldrazi Ramp (P2) ══════════════════════════
+║ Life: Eldrazi Ramp 22  |  Broodscale Bloodchief 9
+║ Hand: 1 cards  |  Opp hand: 2 cards
+║ Lands: 6  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 3
+║ Eldrazi Ramp board:
+║   Creatures: Devourer of Destiny (6/6)
+║   Other: Talisman of Impulse, Utopia Sprawl, Ugin, Eye of the Storms
+║   Lands: Stomping Ground, Eldrazi Temple, Stomping Ground, Eldrazi Temple, Grove of the Burnwillows, Ugin's Labyrinth
+║ Broodscale Bloodchief board:
+║   Creatures: (empty)
+║   Other: Blade of the Bloodchief, Springleaf Drum, Blade of the Bloodchief
+║   Lands: Forest [T], Forest, Grove of the Burnwillows, Boseiju, Who Endures, Grove of the Burnwillows
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Utopia Sprawl
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Stomping Ground→G (paying for Utopia Sprawl, 9 mana remaining)
+T9 P2: Cast Utopia Sprawl (G)
+    [Priority] P1 passes (no response)
+T9: Resolve Utopia Sprawl
+T9 P2: Utopia Sprawl enters — colour chosen: B
+T9 P2: Utopia Sprawl enchants Stomping Ground
+T9 P2: Ugin, Eye of the Storms [+2] -> You gain 3 life and draw a card
+T9 P2: Gain 3 life from Ugin, Eye of the Storms (life: 25)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Devourer of Destiny
+T9 P2: Attack with Devourer of Destiny
+  [Declare Blockers] P1 does not block
+T9 P2:   Devourer of Destiny (6/6) → 6 dmg to player
+  [Combat Damage] 6 damage dealt → P1 life: 9 → 3
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Broodscale Bloodchief (P1) ══════════════════════════
+║ Life: Broodscale Bloodchief 3  |  Eldrazi Ramp 25
+║ Hand: 2 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 39  |  Graveyard: 8
+║ Broodscale Bloodchief board:
+║   Creatures: (empty)
+║   Other: Blade of the Bloodchief, Springleaf Drum, Blade of the Bloodchief
+║   Lands: Forest, Forest, Grove of the Burnwillows, Boseiju, Who Endures, Grove of the Burnwillows
+║ Eldrazi Ramp board:
+║   Creatures: Devourer of Destiny (6/6) [tapped]
+║   Other: Talisman of Impulse, Utopia Sprawl, Ugin, Eye of the Storms, Utopia Sprawl
+║   Lands: Stomping Ground [T], Eldrazi Temple, Stomping Ground, Eldrazi Temple, Grove of the Burnwillows, Ugin's Labyrinth
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Shifting Woodland
+  [Main 1]
+T9 P1: Play Grove of the Burnwillows
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Eldrazi Ramp (P2) ══════════════════════════
+║ Life: Eldrazi Ramp 25  |  Broodscale Bloodchief 3
+║ Hand: 1 cards  |  Opp hand: 2 cards
+║ Lands: 6  |  Opp lands: 6
+║ Library: 44  |  Graveyard: 3
+║ Eldrazi Ramp board:
+║   Creatures: Devourer of Destiny (6/6)
+║   Other: Talisman of Impulse, Utopia Sprawl, Ugin, Eye of the Storms, Utopia Sprawl
+║   Lands: Stomping Ground, Eldrazi Temple, Stomping Ground, Eldrazi Temple, Grove of the Burnwillows, Ugin's Labyrinth
+║ Broodscale Bloodchief board:
+║   Creatures: (empty)
+║   Other: Blade of the Bloodchief, Springleaf Drum, Blade of the Bloodchief
+║   Lands: Forest, Forest, Grove of the Burnwillows, Boseiju, Who Endures, Grove of the Burnwillows, Grove of the Burnwillows
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Sowing Mycospawn
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Eldrazi Temple→CC, Eldrazi Temple→CC, Stomping Ground→G (paying for Sowing Mycospawn, 7 mana remaining)
+T10 P2: Cast Sowing Mycospawn (3G)
+T10: Eldrazi Temple moved library -> battlefield (Sowing Mycospawn cast: land search)
+T10 P2: Sowing Mycospawn cast — search land (Eldrazi Temple)
+    [Priority] P1 passes (no response)
+T10: Resolve Sowing Mycospawn
+T10 P2: Ugin, Eye of the Storms [+2] -> You gain 3 life and draw a card
+T10 P2: Gain 3 life from Ugin, Eye of the Storms (life: 28)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Devourer of Destiny
+T10 P2: Attack with Devourer of Destiny
+  [Declare Blockers] P1 does not block
+T10 P2:   Devourer of Destiny (6/6) → 6 dmg to player
+P1 loses: life total -3
+  [Combat Damage] 6 damage dealt → P1 life: 3 → -3
+
+>>> Eldrazi Ramp wins Game 2 on turn 10 via damage
+    Final life: Broodscale Bloodchief=-3  Eldrazi Ramp=28
+
+======================================================================
+  MATCH RESULT: Eldrazi Ramp wins 2-0
+======================================================================
