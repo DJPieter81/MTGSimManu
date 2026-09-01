@@ -172,8 +172,18 @@ def resolve_damage_to_chosen_target(
                 and (target.template.is_creature
                      or CardType.PLANESWALKER in target.template.card_types)):
             deal_damage(source, target, amount)
+            # Name the burn's target so a legal kill (e.g. "6 damage
+            # kills a 7/7") isn't invisible to a log-only reader.
+            game.log.append(
+                f"T{game.display_turn} P{controller+1}: "
+                f"{getattr(source, 'name', 'source')} deals {amount} to "
+                f"{target.name}")
             return target
     deal_damage(source, game.players[opponent], amount)
+    game.log.append(
+        f"T{game.display_turn} P{controller+1}: "
+        f"{getattr(source, 'name', 'source')} deals {amount} to "
+        f"P{opponent+1} (face)")
     return None
 
 

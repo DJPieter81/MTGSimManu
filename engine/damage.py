@@ -215,6 +215,14 @@ def deal_damage(source: Any, target: Any, amount: int,
             gainer = lifelink_game.players[controller_idx]
             gainer.life += effective_amount
             gainer.life_gained_this_turn += effective_amount
+            # Log the lifelink gain — otherwise a legal "pay 7 from 5
+            # life" line (funded by lifelink in the same combat) reads
+            # as impossible to a log-only reader.
+            if effective_amount > 0:
+                lifelink_game.log.append(
+                    f"T{lifelink_game.display_turn} "
+                    f"P{controller_idx+1}: {getattr(source, 'name', 'source')} "
+                    f"lifelink — gain {effective_amount} (life: {gainer.life})")
 
     # ── Apply damage via the target's own method ──
     #
