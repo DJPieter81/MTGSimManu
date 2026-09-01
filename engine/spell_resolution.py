@@ -719,6 +719,20 @@ class ResolutionManager:
                                 and (target.template.is_creature
                                      or CardType.PLANESWALKER in target.template.card_types)):
                             deal_damage(item.source, target, amount)
+                elif ("all_creatures" in desc or "each creature" in desc
+                      or "all creatures" in desc):
+                    # Symmetric damage sweep (Pyroclasm / Anger of the Gods /
+                    # Sweltering Suns / Kozilek's Return): N damage to every
+                    # creature on both battlefields — and planeswalkers too
+                    # when the clause names them. It deals nothing to players;
+                    # without this case it fell through to the face fallback.
+                    also_pw = "planeswalker" in desc
+                    for _pl in game.players:
+                        for _perm in list(_pl.battlefield):
+                            if (_perm.template.is_creature
+                                    or (also_pw and CardType.PLANESWALKER
+                                        in _perm.template.card_types)):
+                                deal_damage(item.source, _perm, amount)
                 elif "each opponent" in desc or "player" in desc:
                     deal_damage(item.source, game.players[opponent], amount)
                 elif amount > 0:
