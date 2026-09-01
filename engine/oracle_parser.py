@@ -4022,6 +4022,36 @@ def parse_pump_spell(oracle: str) -> "tuple[int, int, str]":
     return power, tough, keyword
 
 
+def parse_equip_pt_grant(oracle: str) -> "tuple[int, int]":
+    """Parse an equipment's flat "Equipped creature gets +N/+M" grant
+    into (power, toughness).
+
+    Returns (0, 0) when there is no flat grant — including the
+    per-artifact SCALING form ("Equipped creature gets +1/+0 for each
+    artifact you control", Cranial Plating / Nettlecyst), which is
+    computed separately in ``_dynamic_base_power``/``_dynamic_base_toughness``
+    and must NOT be double-counted here.
+
+    Class size: hundreds of Modern-legal Equipment with a flat P/T grant
+    — the whole Sword cycle, Bonesplitter, Vulshok Morningstar, Short
+    Sword, O-Naginata, Kaldra Compleat, Bloodforged Battle-Axe,
+    Cori-Steel Cutter, ... Application had no branch at all, so every
+    such equipment left its creature at base P/T.
+    """
+    if not oracle:
+        return 0, 0
+    lo = strip_reminder_text(oracle).lower()
+    m = re.search(r'equipped creature gets \+(\d+)/\+(\d+)', lo)
+    if not m:
+        return 0, 0
+    # Exclude the per-artifact scaling form (handled elsewhere): if the
+    # grant clause continues with "for each", it is not a flat bonus.
+    tail = lo[m.end():m.end() + 20]
+    if tail.lstrip().startswith('for each'):
+        return 0, 0
+    return int(m.group(1)), int(m.group(2))
+
+
 def parse_has_x_counter_scaling(oracle: str) -> bool:
     """Return True when oracle grants X +1/+1 counters based on mana paid.
 

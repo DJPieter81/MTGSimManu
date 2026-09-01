@@ -806,6 +806,12 @@ class CardTemplate:
     # Pump grant -- True when oracle grants +X/+Y bonus ('gets +'/'additional +').
     # Populated by oracle_parser.parse_has_pump_grant.
     has_pump_grant: bool = False
+    # Flat "Equipped creature gets +N/+M" grant (Bonesplitter, the Sword
+    # cycle, Cori-Steel Cutter, ...). Populated by parse_equip_pt_grant;
+    # 0/0 for non-equipment and for per-artifact SCALING equipment (Cranial
+    # Plating), which is computed separately in _dynamic_base_power/toughness.
+    equip_power_grant: int = 0
+    equip_toughness_grant: int = 0
     # "target creature gets +N/+M until end of turn [and gains <kw>]"
     # combat trick — parsed once (parse_pump_spell). 0/0/"" = not one.
     pump_spell_power: int = 0
@@ -1720,6 +1726,12 @@ class CardInstance:
                         base += self._get_artifact_or_enchantment_count()
                     elif 'for each artifact' in eq_oracle or 'artifact you control' in eq_oracle:
                         base += self._get_artifact_count()
+                    else:
+                        # Flat "Equipped creature gets +N/+M" grant
+                        # (Bonesplitter, the Sword cycle, Cori-Steel Cutter,
+                        # ...). Parsed once at load into equip_power_grant;
+                        # 0 for non-pump equipment, so this is a no-op there.
+                        base += getattr(equip_perm.template, 'equip_power_grant', 0)
                 except (ValueError, AttributeError):
                     pass
         # Land-type conditional bonus: "gets +N/+N as long as you control
@@ -1800,6 +1812,11 @@ class CardInstance:
                                 base += self._get_artifact_or_enchantment_count()
                             else:
                                 base += self._get_artifact_count()
+                    else:
+                        # Flat "Equipped creature gets +N/+M" grant — parsed
+                        # once at load into equip_toughness_grant (0 for the
+                        # scaling form and for non-pump equipment).
+                        base += getattr(equip_perm.template, 'equip_toughness_grant', 0)
                 except (ValueError, AttributeError):
                     pass
         # Land-type conditional bonus (mirrors _dynamic_base_power logic).
