@@ -212,6 +212,17 @@ class ResolutionManager:
             else:
                 # Permanent enters battlefield
                 card.controller = item.controller
+                # Cascade is a cast trigger (CR 702.85a): the trigger and
+                # the free spell it casts resolve while the cascade SOURCE
+                # is still on the stack — so a cascaded mass-effect (board
+                # wipe, mass reanimation, mass bounce) must not see or
+                # affect the source. Resolve cascade BEFORE the source
+                # physically enters; the source enters last. Invisible for
+                # instant/sorcery sources (they hit the graveyard), so only
+                # a permanent source — entered first, then swept by its own
+                # cascaded spell — exposed the bug.
+                if Keyword.CASCADE in template.keywords:
+                    game._handle_cascade(item)
                 card.enter_battlefield()
                 game.players[item.controller].battlefield.append(card)
                 # Place counters for X-cost permanents — only if no dedicated
@@ -233,9 +244,6 @@ class ResolutionManager:
                             f"T{game.display_turn} P{item.controller+1}: "
                             f"{card.name} enters with {item.x_value} +1/+1 counter(s)")
                 game._handle_permanent_etb(card, item.controller, item=item)
-                # Cascade on permanents too
-                if Keyword.CASCADE in template.keywords:
-                    game._handle_cascade(item)
                 # Evoke: sacrifice after ETB triggers
                 if getattr(card, '_evoked', False):
                     if card in game.players[item.controller].battlefield:
