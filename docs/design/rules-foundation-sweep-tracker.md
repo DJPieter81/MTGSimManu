@@ -1933,3 +1933,37 @@ class bugs found and fixed, plus follow-ups.
   permanent, not the controller. A single-card variant today (Ral, Monsoon Mage); the
   shared handler is reached by ~29 coin-flip cards but only this one reads "to you", so it
   is below the abstraction bar — recorded, not fixed.
+
+## Audit round 3 2026-09-01 — control mirror, ramp/aggro, artifact/equipment, tempo/energy
+
+Four more parallel Bo3 audits. Two clean (Pinnacle Affinity vs Eldrazi Tron s55632 —
+Cranial Plating live-recount, Kappa CDA, improvise, Chalice MV-match, Warp, ward on
+Kozilek's Command all correct; Amulet vs Domain Zoo s55631 — Scion of Draco per-creature-
+by-own-color keyword grant, Territorial Kavu domain CDA, Amulet ramp all correct). The
+token-ETB fix was confirmed clean in-game (Guide of Souls fires once per token, correct
+controller, no double-fire). Three class bugs found and fixed:
+
+| Bug | Matchup | Seed | Root cause | Status |
+|---|---|---|---|---|
+| Owner!=controller permanent never removed on leaving battlefield (near-infinite SBA loop) | Izzet Prowess vs Boros | 55633 | move_card/_find_card_zone resolved source from card.owner; a stolen/opponent-cast permanent sits on the controller's battlefield | **FIXED** (`cfb6730`) |
+| amass mints a new Army token instead of growing the existing one | Dimir vs Azorius | 55630 | handler always created a fresh 1/1 (its own comment admitted "simplified") | **FIXED** (`e2a567d`) |
+| Planeswalker ETB duplicates its -3 loyalty bounce (double-bounce + token persists in hand) | Dimir vs Azorius | 55630 | re-added Teferi ETB handler re-implemented the -3; a documented fix had regressed | **FIXED** (`6ec9265`) |
+
+### Deferred (AI heuristic / below bar, recorded not fixed)
+- **AI under-sizes X on an X-cost "destroy MV <= energy paid" board wipe** (Wrath of the
+  Skies cast for X=0 at lethal life). Borderline sub-10 class; there is already
+  tests/test_x_cost_board_wipe_gate.py. An AI-scoring lead.
+- **AI sweeper sequencing** — a control deck spent its white pips on low-value spells
+  (Orim's Chant via Isochron Scepter, Prismatic Ending) before a game-saving Supreme
+  Verdict, leaving WW unpayable; compounded by over-valuing "can't cast spells this turn"
+  cast on one's own main phase. turn_planner ordering + play-scorer valuation. Lower
+  confidence; a --trace would confirm enumerated-but-outscored vs sequenced-out.
+
+## Session tally (2026-09-01): 11 engine fixes across 3 audit rounds
+revolt-reset, cascade-permanent ordering, ETB reveal-hand exile, ward-on-trigger-target,
+token-entry ETB watchers, every-blocker-deals-damage-back, flat-equipment P/T grant,
+owner!=controller zone removal, amass-grows-Army, planeswalker-ETB-no-duplicate-bounce
+(+ Practiced Offense allowlist). Every fix failing-test-first, all 7 ratchets at baseline,
+WR anchor re-verified after each drift (all drifts confirmed correct). Tracked follow-ups:
+modal per-mode resolver, equipment keyword rider, mass +1/+1-counter distribution, coin-flip
+"to you", plus the two round-3 AI-heuristic leads above.
