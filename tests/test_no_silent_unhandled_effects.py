@@ -88,6 +88,22 @@ ALLOWED_UNHANDLED: set[tuple[str, str]] = {
     # reminder text. The card was equally unmodeled before — a bogus
     # handler was masking it.
     ("Monstrous Rage", "spell"),
+    # "Put a +1/+1 counter on each creature target player controls. Target
+    # creature gains your choice of double strike or lifelink until end of
+    # turn." + Flashback — the mass +1/+1-counter distribution class (put a
+    # counter on EACH creature a player controls), not modeled by any
+    # handler/oracle branch. Deliberately allowlisted rather than
+    # half-implemented: the counter half alone is expressible, but shipping
+    # it would buff the whole board of two registered decks (Domain Zoo,
+    # Hollow One) and move the WR anchor, while still dropping the modal
+    # double-strike/lifelink grant — a mechanic build that belongs in a
+    # focused pass, not a card-flow-exposed fix. EXPOSED, not caused, by the
+    # 2026-09-01 ETB-reveal-hand-exile fix: that fix shifted Domain Zoo's
+    # game flow so the deck now reaches a turn where it casts this card at
+    # the sweep seeds; the card was equally unmodeled before, simply never
+    # cast in this deterministic sweep. Tracked in
+    # docs/design/rules-foundation-sweep-tracker.md.
+    ("Practiced Offense", "spell"),
 }
 
 
