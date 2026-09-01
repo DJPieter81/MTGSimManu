@@ -344,6 +344,12 @@ class PermanentEffects:
             kw_set = {kw_lookup[w.replace(" ", "_")]
                       for w in spec["keywords"]
                       if w.replace(" ", "_") in kw_lookup}
+            from .cards import Color as _Color
+            _letter_color = {"W": _Color.WHITE, "U": _Color.BLUE,
+                             "B": _Color.BLACK, "R": _Color.RED,
+                             "G": _Color.GREEN}
+            t_colors = {_letter_color[c] for c in spec.get("colors", [])
+                        if c in _letter_color}
         else:
             token_def = TOKEN_DEFS.get(token_type)
             if not token_def:
@@ -351,6 +357,7 @@ class PermanentEffects:
                              power or 1, toughness or 1, set())
             t_name, t_types, t_power, t_toughness, t_keywords = token_def
             kw_set = set(t_keywords)
+            t_colors = set()  # TOKEN_DEFS resource tokens carry no colour spec
 
         if power is not None:
             t_power = power
@@ -388,6 +395,7 @@ class PermanentEffects:
                 power=t_power,
                 toughness=t_toughness,
                 keywords=kw_set,
+                colors=set(t_colors),
                 tags={"token", "creature"},
                 oracle_text=token_oracle,
             )

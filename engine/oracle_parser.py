@@ -2636,7 +2636,7 @@ def derive_tags_from_oracle(oracle: str, keywords: set, card_types: set,
 _TOKEN_SPEC_RE = re.compile(
     r"create\s+(?:a|an|\d+)?\s*"
     r"(?P<power>\d+)\s*/\s*(?P<toughness>\d+)"
-    r"(?:\s+\w+)*?"        # color words, "phyrexian", etc.
+    r"(?P<pre>(?:\s+\w+)*?)"   # color words ("white"), "phyrexian", etc.
     r"\s+(?P<subtype>[A-Z][a-zA-Z]+)\s+"
     r"(?P<types>(?:artifact|creature|enchantment)"
     r"(?:\s+(?:artifact|creature|enchantment))*)\s+"
@@ -2704,12 +2704,19 @@ def parse_token_spec(oracle: str) -> Optional[Dict]:
         for word in _KEYWORD_WORDS:
             if word in kw_text:
                 keywords.append(word)
+    # Colour words sit between the P/T and the subtype ("1/1 WHITE Cat").
+    # "colorless" and non-colour words (e.g. "phyrexian") yield no colour.
+    _color_word = {"white": "W", "blue": "U", "black": "B",
+                   "red": "R", "green": "G"}
+    colors = [_color_word[w] for w in (m.group("pre") or "").lower().split()
+              if w in _color_word]
     return {
         "power": int(m.group("power")),
         "toughness": int(m.group("toughness")),
         "subtype": m.group("subtype"),
         "types": types,
         "keywords": keywords,
+        "colors": colors,
     }
 
 
