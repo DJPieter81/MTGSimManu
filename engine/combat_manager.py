@@ -290,7 +290,11 @@ class CombatManager:
             player_damage = 0
 
             if assignment.blocker_ids:
-                # CR 510.1a: Blocked creature assigns damage to blockers
+                # CR 510.1c: the attacker divides its power among its
+                # blockers, stopping when its power is spent. This pass
+                # ONLY assigns the attacker's own damage — a blocker
+                # dealing damage back is not gated by the attacker's
+                # assignment budget (see the separate pass below).
                 remaining_damage = attacker_power
 
                 for blocker_id in assignment.blocker_ids:
@@ -316,7 +320,19 @@ class CombatManager:
                                is_combat=True)
                     remaining_damage -= damage_to_blocker
 
-                    # Blocker deals damage back
+                # CR 509.2: EVERY blocking creature deals its own combat
+                # damage back to the attacker, independent of whether — or
+                # in what order — the attacker assigned damage to it. This
+                # pass is separate from the assignment loop above so a
+                # blocker the attacker's exhausted power never reached
+                # (gang block wider than the attacker's power) still deals
+                # its damage: previously the deal-back lived inside the
+                # assignment loop and was skipped once `remaining_damage`
+                # hit 0, letting a small attacker survive a lethal gang.
+                for blocker_id in assignment.blocker_ids:
+                    blocker = game.get_card_by_id(blocker_id)
+                    if not blocker or blocker.zone != "battlefield":
+                        continue
                     blocker_has_fs = (Keyword.FIRST_STRIKE in blocker.keywords or
                                      Keyword.DOUBLE_STRIKE in blocker.keywords)
                     should_deal_back = (
