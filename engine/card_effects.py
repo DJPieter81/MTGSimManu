@@ -2007,26 +2007,42 @@ def orcish_bowmasters_etb(game, card, controller, targets=None, item=None):
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Bowmasters deals 1 damage to opponent (life: {opp.life})")
 
-    # Create a 1/1 Orc Army token (simplified — in real MTG it grows)
-    from .cards import CardTemplate, CardType, ManaCost
-    token_template = CardTemplate(
-        name="Orc Army",
-        card_types=[CardType.CREATURE],
-        mana_cost=ManaCost(0, 0, 0, 0, 0, 0),
-        power=1,
-        toughness=1,
-        tags={"creature", "token"},
-    )
-    from .cards import CardInstance
-    token = CardInstance(
-        template=token_template, owner=controller,
-        controller=controller, instance_id=game.next_instance_id(),
-    )
-    token._game_state = game
-    token.enter_battlefield()
-    game.players[controller].battlefield.append(token)
-    game.log.append(f"T{game.display_turn} P{controller+1}: "
-                    f"Bowmasters creates 1/1 Orc Army token")
+    # amass Orcs 1 (CR 701.44a): put a +1/+1 counter on an Army you
+    # control; create a new Orc Army token only if you control none.
+    # An existing Army is identified by its "Army" subtype (mechanic-
+    # based, no token-name check), so the Army grows 1/1 -> 2/2 -> 3/3
+    # across repeated amass rather than spawning parallel 1/1 bodies.
+    existing_army = next(
+        (c for c in game.players[controller].creatures
+         if "Army" in (c.template.subtypes or [])),
+        None)
+    if existing_army is not None:
+        existing_army.plus_counters += 1
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: amass Orcs 1 — "
+            f"Orc Army grows to {existing_army.power}/{existing_army.toughness}")
+    else:
+        from .cards import CardTemplate, CardType, ManaCost
+        token_template = CardTemplate(
+            name="Orc Army",
+            card_types=[CardType.CREATURE],
+            mana_cost=ManaCost(0, 0, 0, 0, 0, 0),
+            power=1,
+            toughness=1,
+            subtypes=["Army"],
+            tags={"creature", "token"},
+        )
+        from .cards import CardInstance
+        token = CardInstance(
+            template=token_template, owner=controller,
+            controller=controller, instance_id=game.next_instance_id(),
+        )
+        token.is_token = True
+        token._game_state = game
+        token.enter_battlefield()
+        game.players[controller].battlefield.append(token)
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
+                        f"amass Orcs 1 — creates a 1/1 Orc Army token")
 
 
 @EFFECT_REGISTRY.register("Psychic Frog", EffectTiming.ETB,
