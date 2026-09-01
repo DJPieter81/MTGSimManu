@@ -72,7 +72,8 @@ def _control_at_life(life, small_attackers):
     opp.life = 20
     # Enough untapped mana to actually cast the removal.
     for _ in range(4):
-        _add(game, "Hallowed Fountain", 0, "battlefield")
+        _hf = _add(game, "Hallowed Fountain", 0, "battlefield")
+        _hf.tapped = False  # shocks enter tapped; model an untapped mana base
     for nm in small_attackers:
         _add(game, nm, 1, "battlefield")
     removal = _add(game, "Prismatic Ending", 0, "hand")
