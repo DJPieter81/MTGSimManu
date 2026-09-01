@@ -166,7 +166,22 @@ class ResolutionManager:
         # to the graveyard with no effect. Ported from the dead legacy
         # resolver (engine/stack.py, pre-unification); see
         # docs/proposals/resolver_sba_unification.md §5.1.
+        #
+        # Fizzling applies to the SPELL's own targets. A permanent spell
+        # (creature/artifact/enchantment/planeswalker) that is NOT an
+        # Aura enters the battlefield regardless of targets — a "when you
+        # cast this spell" trigger is a separate object (CR 603.3), and
+        # its target (recorded on this item and exiled by the trigger)
+        # must not fizzle the permanent. Only instants, sorceries, and
+        # Auras fizzle on all-illegal targets.
+        _pt = getattr(card.template, 'card_types', None) or []
+        _is_permanent_spell = any(
+            t in _pt for t in (CardType.CREATURE, CardType.ARTIFACT,
+                               CardType.ENCHANTMENT, CardType.PLANESWALKER))
+        _is_aura = getattr(card.template, 'aura_enchant_restriction', None) is not None
+        _fizzle_eligible = not (_is_permanent_spell and not _is_aura)
         if (item.item_type == StackItemType.SPELL and item.targets
+                and _fizzle_eligible
                 and ResolutionManager._spell_fizzles(game, item)):
             game.log.append(
                 f"T{game.display_turn}: {card.name} fizzles "
