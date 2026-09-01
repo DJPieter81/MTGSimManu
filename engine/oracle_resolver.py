@@ -1638,10 +1638,14 @@ def _transform_permanent(game: "GameState", perm: "CardInstance",
 
 
 def _permanent_is_colored(perm: "CardInstance") -> bool:
-    """True when a permanent is one or more colors (CR 105.2)."""
-    colors = getattr(perm.template, 'colors', None) or \
-        getattr(perm.template, 'color_identity', None) or set()
-    return bool(colors)
+    """True when a permanent is one or more colors (CR 105.2a).
+
+    Uses the object's COLORS, never its color identity — a devoid
+    creature and a colorless land each have a non-empty color identity
+    but are colorless, so they are not legal targets for a "target
+    permanent that's one or more colors" effect.
+    """
+    return bool(getattr(perm.template, 'colors', None))
 
 
 def resolve_self_cast_trigger(game: "GameState", caster_idx: int,
