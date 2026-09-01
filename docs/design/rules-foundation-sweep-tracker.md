@@ -1903,3 +1903,33 @@ A correct fix is therefore a real build, not a gate flip:
 Class ≈ 15 Command-cycle spells. Real-world sim blast radius is currently narrow (Kozilek's
 Command in Eldrazi Tron is the main in-pool carrier), which is why this is scheduled as a
 tracked build rather than rushed into this audit round's lean-fix batch.
+
+## Audit round 2 2026-09-01 — artifact/blink, storm, energy/evoke, prowess/reanimation
+
+Four more parallel Bo3 audits. Storm mechanics and prowess/reanimation both verified
+clean (Ruby Storm vs Amulet s55621 — storm count, splice, cost-reducer pip floor, ritual
+mana, flashback all correct; Izzet Prowess vs Goryo's s55623 — prowess per-spell/wears-off,
+Cori-Steel Cutter Flurry, Goryo's haste + end-step exile + Ephemerate all correct). Five
+class bugs found and fixed, plus follow-ups.
+
+| Bug | Matchup | Seed | Root cause | Status |
+|---|---|---|---|---|
+| Ward on a trigger-bound target counters the whole permanent spell | Affinity vs Jeskai Blink | 55620 | ward branch lacked the CR 603.3 permanent-spell exemption its sibling fizzle branch has | **FIXED** |
+| Token entry fires no ETB / creature-enters watchers | Boros vs 4c Omnath | 55622 | create_token never called _handle_permanent_etb (undying/persist paths do) | **FIXED** |
+| Multi-blocked attacker only takes damage from blockers reached before its power ran out | Boros vs 4c Omnath | 55622 | deal-back lived inside the attacker damage-assignment loop that breaks at remaining<=0 | **FIXED** |
+| Flat "Equipped creature gets +N/+M" grants never applied | Izzet Prowess vs Goryo's | 55623 | P/T accessors only handled per-artifact SCALING equipment; no flat-grant branch | **FIXED (P/T)** |
+| Practiced Offense silent no-op (mass +1/+1-counter class) | (CI-surfaced) | — | no handler for "put a +1/+1 counter on each creature target player controls" | **ALLOWLISTED** |
+
+### Follow-ups (tracked, not yet built)
+- **Equipment keyword rider** — "Equipped creature ... and has trample/haste" (Cori-Steel
+  Cutter, Kaldra Compleat, the Sword cycle's protection/triggers). The flat P/T grant is
+  now applied; the granted KEYWORDS are still dropped. Same parse-once pattern
+  (equip_keyword_grants field) + union in CardInstance.keywords, but it modifies a hot
+  accessor and moves combat/haste math — deserves its own test + WR-anchor verification.
+- **Mass +1/+1-counter distribution** — "put a +1/+1 counter on each creature you
+  control / target player controls" (Practiced Offense, Inspiring Call, ...). Allowlisted
+  for now; a real one-shot mass-counter resolver would model it.
+- **Coin-flip "deals 1 damage to you" lose-branch** — routes damage to the source
+  permanent, not the controller. A single-card variant today (Ral, Monsoon Mage); the
+  shared handler is reached by ~29 coin-flip cards but only this one reads "to you", so it
+  is below the abstraction bar — recorded, not fixed.
