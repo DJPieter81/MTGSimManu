@@ -1,0 +1,1491 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+======================================================================
+  GAME 1: Hollow One (P1) vs Boros Ponza (P2)  —  seed 58002
+  Series: Hollow One 0 - 0 Boros Ponza
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Hollow One wins → chooses to play first
+║ P1 (on play): Hollow One
+║ P2 (on draw): Boros Ponza
+╚═══════════════════════════════════════════════════════
+
+P1 (Hollow One) opening hand (2 lands, 5 spells):
+  • Burning Inquiry [Spell, CMC 1]
+  • Bloodstained Mire [Land, CMC 0]
+  • Burning Inquiry [Spell, CMC 1]
+  • Hardened Academic [Creature, CMC 2]
+  • Wooded Foothills [Land, CMC 0]
+  • Detective's Phoenix [Creature, CMC 3]
+  • Blazing Rootwalla [Creature, CMC 1]
+→ P1 KEEPS 7 — has key card(s): Blazing Rootwalla, Hardened Academic, 5 cheap spells
+
+P2 (Boros Ponza) opening hand (4 lands, 3 spells):
+  • Solitude [Creature, CMC 5]
+  • Arena of Glory [Land, CMC 0]
+  • Flagstones of Trokair [Land, CMC 0]
+  • Cleansing Wildfire [Spell, CMC 2]
+  • Fable of the Mirror-Breaker // Reflection of Kiki-Jiki [Spell, CMC 3]
+  • Inspiring Vantage [Land, CMC 0]
+  • Inspiring Vantage [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Cleansing Wildfire, 2 cheap spells
+
+
+╔══ TURN 1 — Hollow One (P1) ══════════════════════════
+║ Life: Hollow One 20  |  Boros Ponza 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Hollow One board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Bloodstained Mire
+T1: Bloodstained Mire moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Bloodstained Mire (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Boros Ponza (P2) ══════════════════════════
+║ Life: Boros Ponza 20  |  Hollow One 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Hollow One board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Elegant Parlor
+  [Main 1]
+T1 P2: Play Inspiring Vantage (untapped, 0 other lands)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Hollow One (P1) ══════════════════════════
+║ Life: Hollow One 19  |  Boros Ponza 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Hollow One board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Inspiring Vantage
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Hardened Academic
+  [Main 1]
+T2 P1: Play Wooded Foothills
+T2: Wooded Foothills moved battlefield -> graveyard (fetchland sacrifice)
+T2 P1: Crack Wooded Foothills (pay 1 life) -> Sacred Foundry (tapped, life: 18)
+    → Goal: deploy_engine
+    [Mana] Tap Sacred Foundry→R (paying for Blazing Rootwalla, 0 mana remaining)
+T2 P1: Cast Blazing Rootwalla (R)
+    [Priority] P2 passes (no response)
+T2: Resolve Blazing Rootwalla
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Ponza (P2) ══════════════════════════
+║ Life: Boros Ponza 20  |  Hollow One 18
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Inspiring Vantage
+║ Hollow One board:
+║   Creatures: Blazing Rootwalla (1/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Blood Moon
+  [Main 1]
+T2 P2: Play Flagstones of Trokair
+    → Goal: grind_value [enablers]
+    [Target] scarcest color source (Sacred Foundry)
+    [Mana] Tap Flagstones of Trokair→W, Inspiring Vantage→R (paying for Cleansing Wildfire, 0 mana remaining)
+T2 P2: Cast Cleansing Wildfire (1R)
+    [Priority] P1 passes (no response)
+T2: Resolve Cleansing Wildfire
+T2: Sacred Foundry moved battlefield -> graveyard (destroyed)
+T2 P2: Cleansing Wildfire destroys Sacred Foundry
+T2: Mountain moved library -> battlefield (Cleansing Wildfire basic-land replacement)
+T2 P1: searches a basic (Mountain, tapped) to replace the destroyed land
+T2: Cleansing Wildfire moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Hollow One (P1) ══════════════════════════
+║ Life: Hollow One 18  |  Boros Ponza 20
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 49  |  Graveyard: 3
+║ Hollow One board:
+║   Creatures: Blazing Rootwalla (1/1)
+║   Lands: Sacred Foundry, Mountain
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Inspiring Vantage [T], Flagstones of Trokair [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Detective's Phoenix
+  [Main 1]
+T3 P1: activate Blazing Rootwalla — This creature gets +2/+0 until end of turn.
+T3 P1: Blazing Rootwalla gets +2/+0 until end of turn
+    → Goal: execute_payoff
+    [Mana] Tap Sacred Foundry→R (paying for Burning Inquiry, 0 mana remaining)
+T3 P1: Cast Burning Inquiry (R)
+    [Priority] P2 passes (no response)
+T3: Resolve Burning Inquiry
+T3: Burning Inquiry moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Blazing Rootwalla
+T3 P1: Attack with Blazing Rootwalla
+  [Declare Blockers] P2 does not block
+T3 P1:   Blazing Rootwalla (3/1) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 20 → 17
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Ponza (P2) ══════════════════════════
+║ Life: Boros Ponza 17  |  Hollow One 18
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 1
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Inspiring Vantage, Flagstones of Trokair
+║ Hollow One board:
+║   Creatures: Blazing Rootwalla (1/1) [tapped]
+║   Lands: Sacred Foundry [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Plains
+  [Main 1]
+T3 P2: Play Marsh Flats
+T3: Marsh Flats moved battlefield -> graveyard (fetchland sacrifice)
+T3 P2: Crack Marsh Flats (pay 1 life) -> Sacred Foundry (untapped, life: 14)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Hollow One (P1) ══════════════════════════
+║ Life: Hollow One 18  |  Boros Ponza 14
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 4
+║ Hollow One board:
+║   Creatures: Blazing Rootwalla (1/1)
+║   Lands: Sacred Foundry, Mountain
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Inspiring Vantage, Flagstones of Trokair, Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Mountain
+  [Main 1]
+T4 P1: Play Mountain
+T4 P1: activate Blazing Rootwalla — This creature gets +2/+0 until end of turn.
+T4 P1: Blazing Rootwalla gets +2/+0 until end of turn
+    → Goal: execute_payoff
+    [Mana] Tap Mountain→R, Sacred Foundry→W (paying for Hardened Academic, 0 mana remaining)
+T4 P1: Cast Hardened Academic (WR)
+    [Priority] P2 passes (no response)
+T4: Resolve Hardened Academic
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Blazing Rootwalla, Hardened Academic
+T4 P1: Attack with Blazing Rootwalla, Hardened Academic
+  [Declare Blockers] P2 does not block
+T4 P1:   Blazing Rootwalla (3/1) → 3 dmg to player
+T4 P1:   Hardened Academic (3/2) → 3 dmg to player
+  [Combat Damage] 6 damage dealt → P2 life: 14 → 8
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Ponza (P2) ══════════════════════════
+║ Life: Boros Ponza 8  |  Hollow One 18
+║ Hand: 7 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 2
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Inspiring Vantage, Flagstones of Trokair, Sacred Foundry
+║ Hollow One board:
+║   Creatures: Blazing Rootwalla (1/1) [tapped], Hardened Academic (3/2) [tapped]
+║   Lands: Sacred Foundry [T], Mountain [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+T4 P2: Play Arid Mesa
+T4: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T4 P2: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (tapped, life: 7)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Hollow One (P1) ══════════════════════════
+║ Life: Hollow One 18  |  Boros Ponza 7
+║ Hand: 3 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 5
+║ Hollow One board:
+║   Creatures: Blazing Rootwalla (1/1), Hardened Academic (3/2)
+║   Lands: Sacred Foundry, Mountain, Mountain
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Inspiring Vantage, Flagstones of Trokair, Sacred Foundry, Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Hardened Academic
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Mountain→R, Mountain→R, Sacred Foundry→R (paying for Detective's Phoenix, 0 mana remaining)
+T5 P1: Cast Detective's Phoenix (2R)
+    [Priority] P2 passes (no response)
+T5: Resolve Detective's Phoenix
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Blazing Rootwalla, Hardened Academic, Detective's Phoenix
+T5 P1: Attack with Blazing Rootwalla, Hardened Academic, Detective's Phoenix
+  [Declare Blockers] P2 does not block
+T5 P1:   Blazing Rootwalla (1/1) → 1 dmg to player
+T5 P1:   Hardened Academic (5/4) → 5 dmg to player
+T5 P1:   Detective's Phoenix (2/2) → 2 dmg to player
+P2 loses: life total -1
+  [Combat Damage] 8 damage dealt → P2 life: 7 → -1
+
+>>> Hollow One wins Game 1 on turn 5 via damage
+    Final life: Hollow One=18  Boros Ponza=-1
+
+======================================================================
+  GAME 2: Boros Ponza (P1) vs Hollow One (P2)  —  seed 58003
+  Series: Hollow One 1 - 0 Boros Ponza
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Hollow One wins → chooses to play first
+║ P1 (on play): Hollow One
+║ P2 (on draw): Boros Ponza
+╚═══════════════════════════════════════════════════════
+
+P1 (Boros Ponza) opening hand (3 lands, 4 spells):
+  • Obsidian Charmaw [Creature, CMC 5]
+  • Arid Mesa [Land, CMC 0]
+  • Flagstones of Trokair [Land, CMC 0]
+  • Fable of the Mirror-Breaker // Reflection of Kiki-Jiki [Spell, CMC 3]
+  • Solitude [Creature, CMC 5]
+  • Cleansing Wildfire [Spell, CMC 2]
+  • Sunbaked Canyon [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Cleansing Wildfire, Obsidian Charmaw, 2 cheap spells
+
+P2 (Hollow One) opening hand (2 lands, 5 spells):
+  • Street Wraith [Creature, CMC 5]
+  • Faithless Looting [Spell, CMC 1]
+  • Faithless Looting [Spell, CMC 1]
+  • Arena of Glory [Land, CMC 0]
+  • Blazing Rootwalla [Creature, CMC 1]
+  • Bloodstained Mire [Land, CMC 0]
+  • Lightning Bolt [Spell, CMC 1]
+→ P2 KEEPS 7 — has key card(s): Blazing Rootwalla, Lightning Bolt, 4 cheap spells
+
+
+╔══ TURN 1 — Hollow One (P2) ══════════════════════════
+║ Life: Hollow One 20  |  Boros Ponza 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Hollow One board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Bloodstained Mire
+T1: Bloodstained Mire moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Bloodstained Mire (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+T1: Street Wraith moved hand -> graveyard (cycling)
+T1 P2: Cycle Street Wraith (pay 2 life, draw: Hollow One)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Boros Ponza (P1) ══════════════════════════
+║ Life: Boros Ponza 20  |  Hollow One 17
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Hollow One board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Blood Moon
+  [Main 1]
+T1 P1: Play Arid Mesa
+T1: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Hollow One (P2) ══════════════════════════
+║ Life: Hollow One 17  |  Boros Ponza 19
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 51  |  Graveyard: 2
+║ Hollow One board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Burning Inquiry
+  [Main 1]
+T2 P2: Play Arena of Glory (enters tapped)
+    → Goal: deploy_engine
+    [Mana] Tap Sacred Foundry→R (paying for Blazing Rootwalla, 0 mana remaining)
+T2 P2: Cast Blazing Rootwalla (R)
+    [Priority] P1 passes (no response)
+T2: Resolve Blazing Rootwalla
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Ponza (P1) ══════════════════════════
+║ Life: Boros Ponza 19  |  Hollow One 17
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Hollow One board:
+║   Creatures: Blazing Rootwalla (1/1)
+║   Lands: Sacred Foundry [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Plains
+  [Main 1]
+T2 P1: Play Flagstones of Trokair
+    → Goal: grind_value [enablers]
+    [Target] scarcest color source (Sacred Foundry)
+    [Mana] Tap Flagstones of Trokair→W, Sacred Foundry→R (paying for Cleansing Wildfire, 0 mana remaining)
+T2 P1: Cast Cleansing Wildfire (1R)
+    [Priority] P2 passes (no response)
+T2: Resolve Cleansing Wildfire
+T2: Sacred Foundry moved battlefield -> graveyard (destroyed)
+T2 P1: Cleansing Wildfire destroys Sacred Foundry
+T2: Mountain moved library -> battlefield (Cleansing Wildfire basic-land replacement)
+T2 P2: searches a basic (Mountain, tapped) to replace the destroyed land
+T2: Cleansing Wildfire moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Hollow One (P2) ══════════════════════════
+║ Life: Hollow One 17  |  Boros Ponza 19
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 49  |  Graveyard: 3
+║ Hollow One board:
+║   Creatures: Blazing Rootwalla (1/1)
+║   Lands: Arena of Glory, Mountain
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T], Flagstones of Trokair [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Sacred Foundry
+  [Main 1]
+T3 P2: Play Sacred Foundry (untapped, life: 17)
+T3: Hollow One moved hand -> graveyard (cycling)
+T3 P2: Cycle Hollow One (pay 2 mana, draw: Marauding Mako)
+T3 P2: activate Blazing Rootwalla — This creature gets +2/+0 until end of turn.
+T3 P2: Blazing Rootwalla gets +2/+0 until end of turn
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Blazing Rootwalla
+T3 P2: Attack with Blazing Rootwalla
+  [Declare Blockers] P1 does not block
+T3 P2:   Blazing Rootwalla (3/1) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 19 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Ponza (P1) ══════════════════════════
+║ Life: Boros Ponza 16  |  Hollow One 17
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Flagstones of Trokair
+║ Hollow One board:
+║   Creatures: Blazing Rootwalla (1/1) [tapped]
+║   Lands: Arena of Glory [T], Mountain [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ephemerate
+  [Main 1]
+T3 P1: Play Marsh Flats
+T3: Marsh Flats moved battlefield -> graveyard (fetchland sacrifice)
+T3 P1: Crack Marsh Flats (pay 1 life) -> Sacred Foundry (untapped, life: 13)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Hollow One (P2) ══════════════════════════
+║ Life: Hollow One 17  |  Boros Ponza 13
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 4
+║ Hollow One board:
+║   Creatures: Blazing Rootwalla (1/1)
+║   Lands: Arena of Glory, Mountain, Sacred Foundry
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Flagstones of Trokair, Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Vengevine
+  [Main 1]
+T4: Marauding Mako moved hand -> graveyard (cycling)
+T4 P2: Cycle Marauding Mako (pay 2 mana, draw: Bloodstained Mire)
+T4 P2: Play Bloodstained Mire
+T4: Bloodstained Mire moved battlefield -> graveyard (fetchland sacrifice)
+T4 P2: Crack Bloodstained Mire (pay 1 life) -> Sacred Foundry (tapped, life: 16)
+T4 P2: activate Blazing Rootwalla — This creature gets +2/+0 until end of turn.
+T4 P2: Blazing Rootwalla gets +2/+0 until end of turn
+  [Begin Combat]
+T4 P1: Evoke Solitude (exile Ephemerate)
+T4 P1: Cast Solitude (3WW)
+T4: Resolve Solitude
+T4: Blazing Rootwalla moved battlefield -> exile (exiled)
+T4 P1: Solitude exiles Blazing Rootwalla (opponent gains 3 life, now 19)
+T4: Solitude moved battlefield -> graveyard (evoke sacrifice)
+T4 P1: Solitude sacrificed (evoke)
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Ponza (P1) ══════════════════════════
+║ Life: Boros Ponza 13  |  Hollow One 19
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 4
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Flagstones of Trokair, Sacred Foundry
+║ Hollow One board:
+║   Creatures: (empty)
+║   Lands: Arena of Glory [T], Mountain [T], Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Plains
+  [Main 1]
+T4 P1: Play Sunbaked Canyon
+T4: Sunbaked Canyon moved battlefield -> graveyard (activation cost (Sunbaked Canyon))
+T4 P1: activate Sunbaked Canyon — Draw a card.
+T4 P1: Sunbaked Canyon activated — draw 1 (Mountain)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Hollow One (P2) ══════════════════════════
+║ Life: Hollow One 19  |  Boros Ponza 13
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 44  |  Graveyard: 6
+║ Hollow One board:
+║   Creatures: (empty)
+║   Lands: Arena of Glory, Mountain, Sacred Foundry, Sacred Foundry
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Flagstones of Trokair [T], Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Faithless Looting
+  [Main 1]
+    → Goal: push_damage
+    [Mana] Tap Arena of Glory→R (paying for Burning Inquiry, 3 mana remaining)
+T5 P2: Cast Burning Inquiry (R)
+    [Priority] P1 passes (no response)
+T5: Resolve Burning Inquiry
+T5: Burning Inquiry moved stack -> graveyard (resolution)
+    → Goal: push_damage
+    [Mana] Tap Mountain→R (paying for Faithless Looting, 2 mana remaining)
+T5 P2: Cast Faithless Looting (R)
+    [Priority] P1 passes (no response)
+T5: Resolve Faithless Looting
+T5 P2: Faithless Looting → draw 2 (Hollow One, Wooded Foothills)
+T5: Faithless Looting moved stack -> graveyard (resolution)
+T5 P2: Play Wooded Foothills
+T5: Wooded Foothills moved battlefield -> graveyard (fetchland sacrifice)
+T5 P2: Crack Wooded Foothills (pay 1 life) -> Sacred Foundry (tapped, life: 18)
+T5: Hollow One moved hand -> graveyard (cycling)
+T5 P2: Cycle Hollow One (pay 2 mana, draw: Wooded Foothills)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Ponza (P1) ══════════════════════════
+║ Life: Boros Ponza 13  |  Hollow One 18
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 5
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Flagstones of Trokair, Sacred Foundry
+║ Hollow One board:
+║   Creatures: (empty)
+║   Lands: Arena of Glory [T], Mountain [T], Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Lightning Bolt
+  [Main 1]
+T5 P1: Play Plains
+    → Goal: close_game
+    [Target] → face (3 dmg, life 18 → 15): face value 0.15
+    [Mana] Tap Sacred Foundry→R (paying for Lightning Bolt, 3 mana remaining)
+T5 P1: Cast Lightning Bolt (R)
+    [Priority] P2 passes (no response)
+T5: Resolve Lightning Bolt
+T5 P1: Lightning Bolt → 3 damage → life 15
+T5: Lightning Bolt moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Hollow One (P2) ══════════════════════════
+║ Life: Hollow One 15  |  Boros Ponza 13
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 39  |  Graveyard: 10
+║ Hollow One board:
+║   Creatures: (empty)
+║   Lands: Arena of Glory, Mountain, Sacred Foundry, Sacred Foundry, Sacred Foundry
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T], Flagstones of Trokair, Sacred Foundry, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wooded Foothills
+  [Main 1]
+T6 P2: Play Wooded Foothills
+T6: Wooded Foothills moved battlefield -> graveyard (fetchland sacrifice)
+T6 P2: Crack Wooded Foothills -> Mountain (untapped)
+    → Goal: push_damage
+    [Mana] Tap Arena of Glory→R (paying for Faithless Looting, 5 mana remaining)
+T6 P2: Cast Faithless Looting (R)
+    [Priority] P1 passes (no response)
+T6: Resolve Faithless Looting
+T6 P2: Faithless Looting → draw 2 (Burning Inquiry, Blazing Rootwalla)
+T6: Faithless Looting moved stack -> graveyard (resolution)
+    → Goal: push_damage
+    [Mana] Tap Mountain→R (paying for Burning Inquiry, 4 mana remaining)
+T6 P2: Cast Burning Inquiry (R)
+    [Priority] P1 passes (no response)
+T6: Resolve Burning Inquiry
+T6: Burning Inquiry moved stack -> graveyard (resolution)
+    → Goal: push_damage
+    [Mana] Tap Mountain→R (paying for Faithless Looting, 3 mana remaining)
+T6 P2: Cast Faithless Looting (R)
+    [Priority] P1 passes (no response)
+T6: Resolve Faithless Looting
+T6 P2: Faithless Looting → draw 2 (Marauding Mako, Blazing Rootwalla)
+T6: Faithless Looting moved stack -> graveyard (resolution)
+T6: Marauding Mako moved hand -> graveyard (cycling)
+T6 P2: Cycle Marauding Mako (pay 2 mana, draw: Detective's Phoenix)
+    → Goal: push_damage
+    [Target] → face (3 dmg, life 13 → 10): face value 0.15
+    [Mana] Tap Sacred Foundry→R (paying for Lightning Bolt, 0 mana remaining)
+T6 P2: Cast Lightning Bolt (R)
+    [Priority] P1 passes (no response)
+T6: Resolve Lightning Bolt
+T6 P2: Lightning Bolt → 3 damage → life 10
+T6: Lightning Bolt moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Boros Ponza (P1) ══════════════════════════
+║ Life: Boros Ponza 10  |  Hollow One 14
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 44  |  Graveyard: 6
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Flagstones of Trokair, Sacred Foundry, Plains
+║ Hollow One board:
+║   Creatures: (empty)
+║   Lands: Arena of Glory [T], Mountain [T], Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Solitude
+  [Main 1]
+T6 P1: Play Plains
+    → Goal: close_game
+    [Mana] Tap Flagstones of Trokair→W, Plains→W, Plains→W, Sacred Foundry→R, Sacred Foundry→R (paying for Solitude, 0 mana remaining)
+T6 P1: Cast Solitude (3WW)
+    [Priority] P2 passes (no response)
+T6: Resolve Solitude
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Hollow One (P2) ══════════════════════════
+║ Life: Hollow One 14  |  Boros Ponza 10
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 6  |  Opp lands: 5
+║ Library: 32  |  Graveyard: 16
+║ Hollow One board:
+║   Creatures: (empty)
+║   Lands: Arena of Glory, Mountain, Sacred Foundry, Sacred Foundry, Sacred Foundry, Mountain
+║ Boros Ponza board:
+║   Creatures: Solitude (3/2)
+║   Lands: Sacred Foundry [T], Flagstones of Trokair [T], Sacred Foundry [T], Plains [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Hardened Academic
+  [Main 1]
+T7 P2: Play Wooded Foothills
+T7: Wooded Foothills moved battlefield -> graveyard (fetchland sacrifice)
+T7 P2: Crack Wooded Foothills -> Mountain (untapped)
+    → Goal: push_damage
+    [Mana] Tap Arena of Glory→R, Mountain→R, Mountain→R (paying for Detective's Phoenix, 4 mana remaining)
+T7 P2: Cast Detective's Phoenix (2R)
+    [Priority] P1 passes (no response)
+T7: Resolve Detective's Phoenix
+    → Goal: push_damage
+    [Mana] Tap Mountain→R, Sacred Foundry→W (paying for Hardened Academic, 2 mana remaining)
+T7 P2: Cast Hardened Academic (WR)
+    [Priority] P1 passes (no response)
+T7: Resolve Hardened Academic
+    → Goal: push_damage
+    [Mana] Tap Sacred Foundry→R (paying for Blazing Rootwalla, 1 mana remaining)
+T7 P2: Cast Blazing Rootwalla (R)
+    [Priority] P1 passes (no response)
+T7: Resolve Blazing Rootwalla
+    → Goal: push_damage
+    [Mana] Tap Sacred Foundry→R (paying for Blazing Rootwalla, 0 mana remaining)
+T7 P2: Cast Blazing Rootwalla (R)
+    [Priority] P1 passes (no response)
+T7: Resolve Blazing Rootwalla
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Detective's Phoenix, Hardened Academic
+T7 P2: Attack with Detective's Phoenix, Hardened Academic
+  [Declare Blockers] P1 does not block
+T7 P2:   Detective's Phoenix (2/2) → 2 dmg to player
+T7 P2:   Hardened Academic (2/1) → 2 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 10 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Boros Ponza (P1) ══════════════════════════
+║ Life: Boros Ponza 6  |  Hollow One 13
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 7
+║ Library: 43  |  Graveyard: 6
+║ Boros Ponza board:
+║   Creatures: Solitude (3/2)
+║   Lands: Sacred Foundry, Flagstones of Trokair, Sacred Foundry, Plains, Plains
+║ Hollow One board:
+║   Creatures: Detective's Phoenix (2/2) [tapped], Hardened Academic (2/1) [tapped], Blazing Rootwalla (1/1), Blazing Rootwalla (1/1)
+║   Lands: Arena of Glory [T], Mountain [T], Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Mountain [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Inspiring Vantage
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Flagstones of Trokair→W, Plains→W, Plains→W, Sacred Foundry→R, Sacred Foundry→R (paying for Obsidian Charmaw, 0 mana remaining)
+T7 P1: Cast Obsidian Charmaw (3RR)
+    [Priority] P2 passes (no response)
+T7: Resolve Obsidian Charmaw
+T7 P1: Play Mountain
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Solitude
+T7 P1: Attack with Solitude
+  [Declare Blockers] P2 does not block
+T7 P1:   Solitude (3/2) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 13 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Hollow One (P2) ══════════════════════════
+║ Life: Hollow One 10  |  Boros Ponza 9
+║ Hand: 1 cards  |  Opp hand: 3 cards
+║ Lands: 7  |  Opp lands: 6
+║ Library: 30  |  Graveyard: 17
+║ Hollow One board:
+║   Creatures: Detective's Phoenix (2/2), Hardened Academic (2/1), Blazing Rootwalla (1/1), Blazing Rootwalla (1/1)
+║   Lands: Arena of Glory, Mountain, Sacred Foundry, Sacred Foundry, Sacred Foundry, Mountain, Mountain
+║ Boros Ponza board:
+║   Creatures: Solitude (3/2) [tapped], Obsidian Charmaw (4/4)
+║   Lands: Sacred Foundry [T], Flagstones of Trokair [T], Sacred Foundry [T], Plains [T], Plains [T], Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wooded Foothills
+  [Main 1]
+T8 P2: Play Wooded Foothills
+T8: Wooded Foothills moved battlefield -> graveyard (fetchland sacrifice)
+T8 P2: Crack Wooded Foothills -> Mountain (untapped)
+    → Goal: push_damage
+    [Mana] Tap Arena of Glory→R (paying for Faithless Looting, 7 mana remaining)
+T8 P2: Cast Faithless Looting (R)
+    [Priority] P1 passes (no response)
+T8: Resolve Faithless Looting
+T8 P2: Faithless Looting → draw 2 (Lightning Bolt, Blazing Rootwalla)
+T8: Faithless Looting moved stack -> exile (flashback resolution (CR 702.33a))
+    → Goal: push_damage
+    [Target] → Solitude: marginal threat 3.11 (3/2 body) — better than 3 face dmg
+    [Mana] Tap Mountain→R (paying for Lightning Bolt, 6 mana remaining)
+T8 P2: Cast Lightning Bolt (R)
+    [Priority] P1 passes (no response)
+T8: Resolve Lightning Bolt
+T8: Lightning Bolt moved stack -> graveyard (resolution)
+T8: Solitude dies
+    → Goal: push_damage
+    [Mana] Tap Mountain→R (paying for Faithless Looting, 5 mana remaining)
+T8 P2: Cast Faithless Looting (R)
+    [Priority] P1 passes (no response)
+T8: Resolve Faithless Looting
+T8 P2: Faithless Looting → draw 2 (Faithless Looting, Vengevine)
+T8: Faithless Looting moved stack -> exile (flashback resolution (CR 702.33a))
+    → Goal: push_damage
+    [Mana] Tap Mountain→R (paying for Faithless Looting, 4 mana remaining)
+T8 P2: Cast Faithless Looting (R)
+    [Priority] P1 passes (no response)
+T8: Resolve Faithless Looting
+T8 P2: Faithless Looting → draw 2 (Marauding Mako, Marauding Mako)
+T8: Faithless Looting moved stack -> graveyard (resolution)
+T8: Marauding Mako moved hand -> graveyard (cycling)
+T8 P2: Cycle Marauding Mako (pay 2 mana, draw: Street Wraith)
+T8: Street Wraith moved hand -> graveyard (cycling)
+T8 P2: Cycle Street Wraith (pay 2 life, draw: Burning Inquiry)
+T8: Marauding Mako moved hand -> graveyard (cycling)
+T8 P2: Cycle Marauding Mako (pay 2 mana, draw: Hollow One)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Detective's Phoenix, Hardened Academic, Blazing Rootwalla, Blazing Rootwalla
+T8 P2: Attack with Detective's Phoenix, Hardened Academic, Blazing Rootwalla, Blazing Rootwalla
+T8 P1:   [BLOCK-EMERGENCY] Obsidian Charmaw (4/4) blocks Hardened Academic (3/2) — lifespan_delta=+1.39
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T8 P2:   Detective's Phoenix (2/2) → 2 dmg to player
+T8 P2:   Blazing Rootwalla (1/1) → 1 dmg to player
+T8 P2:   Blazing Rootwalla (1/1) → 1 dmg to player
+T8: Hardened Academic dies
+  [Combat Damage] 4 damage dealt → P1 life: 9 → 5
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Boros Ponza (P1) ══════════════════════════
+║ Life: Boros Ponza 5  |  Hollow One 7
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 6  |  Opp lands: 8
+║ Library: 42  |  Graveyard: 7
+║ Boros Ponza board:
+║   Creatures: Obsidian Charmaw (4/4)
+║   Lands: Sacred Foundry, Flagstones of Trokair, Sacred Foundry, Plains, Plains, Mountain
+║ Hollow One board:
+║   Creatures: Detective's Phoenix (2/2) [tapped], Blazing Rootwalla (1/1) [tapped], Blazing Rootwalla (1/1) [tapped]
+║   Lands: Arena of Glory [T], Mountain [T], Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Mountain [T], Mountain [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+T8 P1: Play Inspiring Vantage (tapped, 6 other lands)
+    → Goal: close_game
+    [Mana] Tap Flagstones of Trokair→W, Mountain→R (paying for Ragavan, Nimble Pilferer, 4 mana remaining)
+T8 P1: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P2 passes (no response)
+T8: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Obsidian Charmaw, Ragavan, Nimble Pilferer
+T8 P1: Attack with Obsidian Charmaw, Ragavan, Nimble Pilferer
+  [Declare Blockers] P2 does not block
+T8 P1:   Obsidian Charmaw (4/4) → 4 dmg to player
+T8 P1:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T8 P1: Create 1x Treasure token(s)
+T8 P1: Ragavan, Nimble Pilferer exiles Lightning Bolt from top of P2's library
+T8 P1: Ragavan, Nimble Pilferer — may cast Lightning Bolt this turn
+  [Combat Damage] 6 damage dealt → P2 life: 7 → 1
+  [End Combat]
+  [Main 2]
+    → Goal: close_game
+    [Mana] Tap Sacred Foundry→R (paying for Lightning Bolt, 3 mana remaining)
+T8 P1: Cast Lightning Bolt (R)
+    [Priority] P2 passes (no response)
+T8: Resolve Lightning Bolt
+T8 P1: Lightning Bolt → 3 damage → life -2
+T8: Lightning Bolt moved stack -> graveyard (resolution)
+P2 loses: life total -2
+
+>>> Boros Ponza wins Game 2 on turn 8 via damage
+    Final life: Boros Ponza=5  Hollow One=-2
+
+======================================================================
+  GAME 3: Hollow One (P1) vs Boros Ponza (P2)  —  seed 58004
+  Series: Hollow One 1 - 1 Boros Ponza
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Boros Ponza wins → chooses to play first
+║ P1 (on play): Boros Ponza
+║ P2 (on draw): Hollow One
+╚═══════════════════════════════════════════════════════
+
+P1 (Hollow One) opening hand (2 lands, 5 spells):
+  • Burning Inquiry [Spell, CMC 1]
+  • Wooded Foothills [Land, CMC 0]
+  • Vengevine [Creature, CMC 4]
+  • Hollow One [Creature, CMC 5]
+  • Burning Inquiry [Spell, CMC 1]
+  • Blazing Rootwalla [Creature, CMC 1]
+  • Wooded Foothills [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Blazing Rootwalla, Hollow One, 3 cheap spells
+
+P2 (Boros Ponza) opening hand (4 lands, 3 spells):
+  • Pillage [Spell, CMC 3]
+  • Plains [Land, CMC 0]
+  • Cleansing Wildfire [Spell, CMC 2]
+  • Pillage [Spell, CMC 3]
+  • Mountain [Land, CMC 0]
+  • Sacred Foundry [Land, CMC 0]
+  • Arid Mesa [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Cleansing Wildfire, Pillage, 3 cheap spells
+
+
+╔══ TURN 1 — Boros Ponza (P2) ══════════════════════════
+║ Life: Boros Ponza 20  |  Hollow One 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Hollow One board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Arid Mesa
+T1: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Hollow One (P1) ══════════════════════════
+║ Life: Hollow One 20  |  Boros Ponza 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Hollow One board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Detective's Phoenix
+  [Main 1]
+T1 P1: Play Wooded Foothills
+T1: Wooded Foothills moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Wooded Foothills (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Ponza (P2) ══════════════════════════
+║ Life: Boros Ponza 19  |  Hollow One 19
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Hollow One board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Solitude
+  [Main 1]
+T2 P2: Play Plains
+    → Goal: grind_value [enablers]
+    [Target] scarcest color source (Sacred Foundry)
+    [Mana] Tap Plains→W, Sacred Foundry→R (paying for Cleansing Wildfire, 0 mana remaining)
+T2 P2: Cast Cleansing Wildfire (1R)
+    [Priority] P1 passes (no response)
+T2: Resolve Cleansing Wildfire
+T2: Sacred Foundry moved battlefield -> graveyard (destroyed)
+T2 P2: Cleansing Wildfire destroys Sacred Foundry
+T2: Mountain moved library -> battlefield (Cleansing Wildfire basic-land replacement)
+T2 P1: searches a basic (Mountain, tapped) to replace the destroyed land
+T2: Cleansing Wildfire moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Hollow One (P1) ══════════════════════════
+║ Life: Hollow One 19  |  Boros Ponza 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Hollow One board:
+║   Creatures: (empty)
+║   Lands: Mountain
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Vengevine
+  [Main 1]
+T2 P1: Play Wooded Foothills
+T2: Wooded Foothills moved battlefield -> graveyard (fetchland sacrifice)
+T2 P1: Crack Wooded Foothills (pay 1 life) -> Sacred Foundry (tapped, life: 18)
+    → Goal: deploy_engine
+    [Mana] Tap Mountain→R (paying for Blazing Rootwalla, 0 mana remaining)
+T2 P1: Cast Blazing Rootwalla (R)
+    [Priority] P2 passes (no response)
+T2: Resolve Blazing Rootwalla
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Ponza (P2) ══════════════════════════
+║ Life: Boros Ponza 19  |  Hollow One 18
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Plains
+║ Hollow One board:
+║   Creatures: Blazing Rootwalla (1/1)
+║   Lands: Mountain [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Seasoned Pyromancer
+  [Main 1]
+T3 P2: Play Marsh Flats
+T3: Marsh Flats moved battlefield -> graveyard (fetchland sacrifice)
+T3 P2: Crack Marsh Flats -> Elegant Parlor (tapped)
+T3 P2: surveil 1 → Ephemerate to GY
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Hollow One (P1) ══════════════════════════
+║ Life: Hollow One 18  |  Boros Ponza 18
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 3
+║ Hollow One board:
+║   Creatures: Blazing Rootwalla (1/1)
+║   Lands: Mountain, Sacred Foundry
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Plains, Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Marauding Mako
+  [Main 1]
+T3: Hollow One moved hand -> graveyard (cycling)
+T3 P1: Cycle Hollow One (pay 2 mana, draw: Mountain)
+T3 P1: Play Mountain
+T3 P1: activate Blazing Rootwalla — This creature gets +2/+0 until end of turn.
+T3 P1: Blazing Rootwalla gets +2/+0 until end of turn
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Blazing Rootwalla
+T3 P1: Attack with Blazing Rootwalla
+  [Declare Blockers] P2 does not block
+T3 P1:   Blazing Rootwalla (3/1) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 18 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Ponza (P2) ══════════════════════════
+║ Life: Boros Ponza 15  |  Hollow One 18
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 4
+║ Boros Ponza board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Plains, Elegant Parlor
+║ Hollow One board:
+║   Creatures: Blazing Rootwalla (1/1) [tapped]
+║   Lands: Mountain [T], Sacred Foundry [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Plains
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Sacred Foundry→R, Elegant Parlor→R (paying for Seasoned Pyromancer, 0 mana remaining)
+T4 P2: Cast Seasoned Pyromancer (1RR)
+    [Priority] P1 passes (no response)
+T4: Resolve Seasoned Pyromancer
+T4 P2: Seasoned Pyromancer: discard 2, draw 2 (Cleansing Wildfire, Inspiring Vantage) (no nonland discards)
+T4 P2: Play Plains
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Hollow One (P1) ══════════════════════════
+║ Life: Hollow One 18  |  Boros Ponza 15
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 4
+║ Hollow One board:
+║   Creatures: Blazing Rootwalla (1/1)
+║   Lands: Mountain, Sacred Foundry, Mountain
+║ Boros Ponza board:
+║   Creatures: Seasoned Pyromancer (2/2)
+║   Lands: Sacred Foundry [T], Plains [T], Elegant Parlor [T], Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Practiced Offense
+  [Main 1]
+T4 P1: activate Blazing Rootwalla — This creature gets +2/+0 until end of turn.
+T4 P1: Blazing Rootwalla gets +2/+0 until end of turn
+T4: Marauding Mako moved hand -> graveyard (cycling)
+T4 P1: Cycle Marauding Mako (pay 2 mana, draw: Marauding Mako)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Ponza (P2) ══════════════════════════
+║ Life: Boros Ponza 15  |  Hollow One 18
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 44  |  Graveyard: 6
+║ Boros Ponza board:
+║   Creatures: Seasoned Pyromancer (2/2)
+║   Lands: Sacred Foundry, Plains, Elegant Parlor, Plains
+║ Hollow One board:
+║   Creatures: Blazing Rootwalla (1/1)
+║   Lands: Mountain [T], Sacred Foundry [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Seasoned Pyromancer
+  [Main 1]
+T5 P2: Play Inspiring Vantage (tapped, 4 other lands)
+    → Goal: close_game
+    [Target] scarcest color source (Sacred Foundry)
+    [Mana] Tap Plains→W, Sacred Foundry→R (paying for Cleansing Wildfire, 2 mana remaining)
+T5 P2: Cast Cleansing Wildfire (1R)
+    [Priority] P1 passes (no response)
+T5: Resolve Cleansing Wildfire
+T5: Sacred Foundry moved battlefield -> graveyard (destroyed)
+T5 P2: Cleansing Wildfire destroys Sacred Foundry
+T5: Mountain moved library -> battlefield (Cleansing Wildfire basic-land replacement)
+T5 P1: searches a basic (Mountain, tapped) to replace the destroyed land
+T5: Cleansing Wildfire moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Seasoned Pyromancer
+T5 P2: Attack with Seasoned Pyromancer
+T5 P1:   [BLOCK] Blazing Rootwalla (1/1) blocks Seasoned Pyromancer (2/2) — lifespan_delta=+1.00
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T5: Blazing Rootwalla dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Hollow One (P1) ══════════════════════════
+║ Life: Hollow One 18  |  Boros Ponza 15
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 43  |  Graveyard: 7
+║ Hollow One board:
+║   Creatures: (empty)
+║   Lands: Mountain, Mountain, Mountain
+║ Boros Ponza board:
+║   Creatures: Seasoned Pyromancer (2/2) [tapped]
+║   Lands: Sacred Foundry [T], Plains [T], Elegant Parlor, Plains, Inspiring Vantage [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ox of Agonas
+  [Main 1]
+T5: Marauding Mako moved hand -> graveyard (cycling)
+T5 P1: Cycle Marauding Mako (pay 2 mana, draw: Blazing Rootwalla)
+    → Goal: execute_payoff
+    [Mana] Tap Mountain→R (paying for Burning Inquiry, 0 mana remaining)
+T5 P1: Cast Burning Inquiry (R)
+    [Priority] P2 passes (no response)
+T5: Resolve Burning Inquiry
+T5: Burning Inquiry moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Boros Ponza (P2) ══════════════════════════
+║ Life: Boros Ponza 15  |  Hollow One 18
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 42  |  Graveyard: 7
+║ Boros Ponza board:
+║   Creatures: Seasoned Pyromancer (2/2)
+║   Lands: Sacred Foundry, Plains, Elegant Parlor, Plains, Inspiring Vantage
+║ Hollow One board:
+║   Creatures: (empty)
+║   Lands: Mountain [T], Mountain [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Obsidian Charmaw
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Plains→W, Sacred Foundry→R, Elegant Parlor→R, Inspiring Vantage→R (paying for Solitude, 0 mana remaining)
+T6 P2: Cast Solitude (3WW)
+    [Priority] P1 passes (no response)
+T6: Resolve Solitude
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Seasoned Pyromancer
+T6 P2: Attack with Seasoned Pyromancer
+  [Declare Blockers] P1 does not block
+T6 P2:   Seasoned Pyromancer (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 18 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Hollow One (P1) ══════════════════════════
+║ Life: Hollow One 16  |  Boros Ponza 15
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 41  |  Graveyard: 9
+║ Hollow One board:
+║   Creatures: (empty)
+║   Lands: Mountain, Mountain, Mountain
+║ Boros Ponza board:
+║   Creatures: Seasoned Pyromancer (2/2) [tapped], Solitude (3/2)
+║   Lands: Sacred Foundry [T], Plains [T], Elegant Parlor [T], Plains [T], Inspiring Vantage [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Detective's Phoenix
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Mountain→R (paying for Burning Inquiry, 2 mana remaining)
+T6 P1: Cast Burning Inquiry (R)
+    [Priority] P2 passes (no response)
+T6: Resolve Burning Inquiry
+T6: Burning Inquiry moved stack -> graveyard (resolution)
+    → Goal: execute_payoff
+    [Mana] Tap Mountain→R (paying for Blazing Rootwalla, 1 mana remaining)
+T6 P1: Cast Blazing Rootwalla (R)
+    [Priority] P2 passes (no response)
+T6: Resolve Blazing Rootwalla
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Boros Ponza (P2) ══════════════════════════
+║ Life: Boros Ponza 15  |  Hollow One 16
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 41  |  Graveyard: 7
+║ Boros Ponza board:
+║   Creatures: Seasoned Pyromancer (2/2), Solitude (3/2)
+║   Lands: Sacred Foundry, Plains, Elegant Parlor, Plains, Inspiring Vantage
+║ Hollow One board:
+║   Creatures: Blazing Rootwalla (1/1)
+║   Lands: Mountain [T], Mountain [T], Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Pillage
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Plains→W, Sacred Foundry→R, Elegant Parlor→R, Inspiring Vantage→R (paying for Obsidian Charmaw, 0 mana remaining)
+T7 P2: Cast Obsidian Charmaw (3RR)
+    [Priority] P1 passes (no response)
+T7: Resolve Obsidian Charmaw
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Seasoned Pyromancer, Solitude
+T7 P2: Attack with Seasoned Pyromancer, Solitude
+T7 P1:   [BLOCK] Blazing Rootwalla (1/1) blocks Solitude (3/2) — lifespan_delta=+0.33
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T7 P2:   Seasoned Pyromancer (2/2) → 2 dmg to player
+T7: Blazing Rootwalla dies
+  [Combat Damage] 2 damage dealt → P1 life: 16 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Hollow One (P1) ══════════════════════════
+║ Life: Hollow One 14  |  Boros Ponza 16
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 40  |  Graveyard: 11
+║ Hollow One board:
+║   Creatures: (empty)
+║   Lands: Mountain, Mountain, Mountain
+║ Boros Ponza board:
+║   Creatures: Seasoned Pyromancer (2/2) [tapped], Solitude (3/2) [tapped], Obsidian Charmaw (4/4)
+║   Lands: Sacred Foundry [T], Plains [T], Elegant Parlor [T], Plains [T], Inspiring Vantage [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Sacred Foundry
+  [Main 1]
+T7 P1: Play Sacred Foundry (untapped, life: 14)
+    → Goal: execute_payoff
+    [Mana] Tap Mountain→R, Mountain→R, Mountain→R (paying for Detective's Phoenix, 1 mana remaining)
+T7 P1: Cast Detective's Phoenix (2R)
+    [Priority] P2 passes (no response)
+T7: Resolve Detective's Phoenix
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Boros Ponza (P2) ══════════════════════════
+║ Life: Boros Ponza 16  |  Hollow One 14
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 40  |  Graveyard: 7
+║ Boros Ponza board:
+║   Creatures: Seasoned Pyromancer (2/2), Solitude (3/2), Obsidian Charmaw (4/4)
+║   Lands: Sacred Foundry, Plains, Elegant Parlor, Plains, Inspiring Vantage
+║ Hollow One board:
+║   Creatures: Detective's Phoenix (2/2)
+║   Lands: Mountain [T], Mountain [T], Mountain [T], Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mountain
+  [Main 1]
+T8 P2: Play Mountain
+    → Goal: close_game
+    [Target] scarcest color source (Sacred Foundry)
+    [Mana] Tap Plains→W, Mountain→R, Sacred Foundry→R (paying for Pillage, 3 mana remaining)
+T8 P2: Cast Pillage (1RR)
+    [Priority] P1 passes (no response)
+T8: Resolve Pillage
+T8: Sacred Foundry moved battlefield -> graveyard (destroyed)
+T8 P2: Pillage destroys Sacred Foundry
+T8: Pillage moved stack -> graveyard (resolution)
+    → Goal: close_game
+    [Target] scarcest color source (Mountain)
+    [Mana] Tap Plains→W, Elegant Parlor→R, Inspiring Vantage→R (paying for Pillage, 0 mana remaining)
+T8 P2: Cast Pillage (1RR)
+    [Priority] P1 passes (no response)
+T8: Resolve Pillage
+T8: Mountain moved battlefield -> graveyard (destroyed)
+T8 P2: Pillage destroys Mountain
+T8: Pillage moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Seasoned Pyromancer, Solitude, Obsidian Charmaw
+T8 P2: Attack with Seasoned Pyromancer, Solitude, Obsidian Charmaw
+T8 P1:   [BLOCK-EMERGENCY] Detective's Phoenix (2/2) blocks Obsidian Charmaw (4/4) — lifespan_delta=+0.44
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T8 P2:   Seasoned Pyromancer (2/2) → 2 dmg to player
+T8 P2:   Solitude (3/2) → 3 dmg to player
+T8: Detective's Phoenix dies
+  [Combat Damage] 5 damage dealt → P1 life: 14 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Hollow One (P1) ══════════════════════════
+║ Life: Hollow One 9  |  Boros Ponza 19
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 6
+║ Library: 39  |  Graveyard: 14
+║ Hollow One board:
+║   Creatures: (empty)
+║   Lands: Mountain, Mountain
+║ Boros Ponza board:
+║   Creatures: Seasoned Pyromancer (2/2) [tapped], Solitude (3/2) [tapped], Obsidian Charmaw (4/4) [tapped]
+║   Lands: Sacred Foundry [T], Plains [T], Elegant Parlor [T], Plains [T], Inspiring Vantage [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Lightning Bolt
+  [Main 1]
+    → Goal: execute_payoff
+    [Target] → Solitude: marginal threat 10.50 (3/2 body) — better than 3 face dmg
+    [Mana] Tap Mountain→R (paying for Lightning Bolt, 1 mana remaining)
+T8 P1: Cast Lightning Bolt (R)
+    [Priority] P2 passes (no response)
+T8: Resolve Lightning Bolt
+T8: Lightning Bolt moved stack -> graveyard (resolution)
+T8: Solitude dies
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Boros Ponza (P2) ══════════════════════════
+║ Life: Boros Ponza 19  |  Hollow One 9
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 6  |  Opp lands: 2
+║ Library: 39  |  Graveyard: 10
+║ Boros Ponza board:
+║   Creatures: Seasoned Pyromancer (2/2), Obsidian Charmaw (4/4)
+║   Lands: Sacred Foundry, Plains, Elegant Parlor, Plains, Inspiring Vantage, Mountain
+║ Hollow One board:
+║   Creatures: (empty)
+║   Lands: Mountain [T], Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Blood Moon
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Mountain→R, Sacred Foundry→R (paying for Seasoned Pyromancer, 3 mana remaining)
+T9 P2: Cast Seasoned Pyromancer (1RR)
+    [Priority] P1 passes (no response)
+T9: Resolve Seasoned Pyromancer
+T9 P2: Create 2x Elemental token(s)
+T9 P2: Seasoned Pyromancer: discard 2, draw 2 (Lightning Bolt, Arid Mesa), create 2 Elemental(s)
+T9 P2: Play Arid Mesa
+T9: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T9 P2: Crack Arid Mesa -> Mountain (untapped)
+    → Goal: close_game
+    [Target] → face (3 dmg, life 9 → 6): face value 3.00
+    [Mana] Tap Mountain→R (paying for Lightning Bolt, 3 mana remaining)
+T9 P2: Cast Lightning Bolt (R)
+    [Priority] P1 passes (no response)
+T9: Resolve Lightning Bolt
+T9 P2: Lightning Bolt → 3 damage → life 6
+T9: Lightning Bolt moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Seasoned Pyromancer, Obsidian Charmaw
+T9 P2: Attack with Seasoned Pyromancer, Obsidian Charmaw
+  [Declare Blockers] P1 does not block
+T9 P2:   Seasoned Pyromancer (2/2) → 2 dmg to player
+T9 P2:   Obsidian Charmaw (4/4) → 4 dmg to player
+P1 loses: life total 0
+  [Combat Damage] 6 damage dealt → P1 life: 6 → 0
+
+>>> Boros Ponza wins Game 3 on turn 9 via damage
+    Final life: Hollow One=0  Boros Ponza=18
+
+======================================================================
+  MATCH RESULT: Boros Ponza wins 2-1
+======================================================================
