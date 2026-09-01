@@ -418,10 +418,13 @@ class OracleTextParser:
             return False
         text_lower = oracle_text.lower()
 
-        # "you may pay N life. If you don't, it enters tapped" → not tapped
-        # (handled by untap_life_cost; the default is untapped)
+        # "you may pay N life. If you don't, it enters tapped" (shock
+        # lands) → the DEFAULT is TAPPED; the untap_life_cost machinery
+        # (land_manager offer_optional_costs) flips it untapped only when
+        # the life payment is actually made. Returning False here made
+        # every shock enter untapped for free.
         if 'you may pay' in text_lower and 'enters tapped' in text_lower:
-            return False
+            return True
 
         for pattern in cls.ENTERS_TAPPED_PATTERNS:
             if re.search(pattern, text_lower):
@@ -1498,7 +1501,11 @@ class CardDatabase:
                 life_match = _re.search(r'you may pay (\d+) life.*enters tapped', ot)
                 if life_match:
                     untap_life_cost = int(life_match.group(1))
-                    enters_tapped = False  # can enter untapped (default)
+                    # Shock lands enter TAPPED by default; paying the life
+                    # (untap_life_cost, via land_manager's optional cost)
+                    # is what flips them untapped. Leaving this True was
+                    # the fix — resetting to False made shocks free.
+                    enters_tapped = True
                 # Conditional on land count: "enters tapped unless you control N or fewer other lands"
                 lands_match = _re.search(r'enters tapped unless you control (\w+) or fewer other lands', ot)
                 if lands_match:

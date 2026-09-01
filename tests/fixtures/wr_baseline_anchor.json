@@ -12,22 +12,22 @@
       "deck1": "Ruby Storm",
       "deck2": "Dimir Midrange",
       "seed": 50000,
-      "winner": "Dimir Midrange",
-      "turns": 7
+      "winner": "Ruby Storm",
+      "turns": 6
     },
     {
       "deck1": "Domain Zoo",
       "deck2": "Eldrazi Tron",
       "seed": 50000,
       "winner": "Domain Zoo",
-      "turns": 13
+      "turns": 19
     },
     {
       "deck1": "Amulet Titan",
       "deck2": "Living End",
       "seed": 50000,
       "winner": "Living End",
-      "turns": 10
+      "turns": 8
     },
     {
       "deck1": "Jeskai Blink",
@@ -41,28 +41,28 @@
       "deck2": "Izzet Prowess",
       "seed": 50000,
       "winner": "Izzet Prowess",
-      "turns": 5
+      "turns": 6
     },
     {
       "deck1": "Pinnacle Affinity",
       "deck2": "4/5c Control",
       "seed": 50000,
       "winner": "4/5c Control",
-      "turns": 11
+      "turns": 10
     },
     {
       "deck1": "Azorius Control",
       "deck2": "Azorius Control (WST)",
       "seed": 50000,
-      "winner": "Azorius Control (WST)",
-      "turns": 30
+      "winner": "Azorius Control",
+      "turns": 9
     },
     {
       "deck1": "Azorius Control (WST v2)",
       "deck2": "Boros Energy",
       "seed": 50000,
       "winner": "Azorius Control (WST v2)",
-      "turns": 7
+      "turns": 8
     },
     {
       "deck1": "Boros Energy",
@@ -75,8 +75,8 @@
       "deck1": "Affinity",
       "deck2": "Domain Zoo",
       "seed": 50500,
-      "winner": "Affinity",
-      "turns": 8
+      "winner": "Domain Zoo",
+      "turns": 10
     },
     {
       "deck1": "Eldrazi Tron",
@@ -96,7 +96,7 @@
       "deck1": "4c Omnath",
       "deck2": "Goryo's Vengeance",
       "seed": 50500,
-      "winner": "Goryo's Vengeance",
+      "winner": "4c Omnath",
       "turns": 8
     },
     {
@@ -104,7 +104,7 @@
       "deck2": "Dimir Midrange",
       "seed": 50500,
       "winner": "Izzet Prowess",
-      "turns": 8
+      "turns": 11
     },
     {
       "deck1": "4/5c Control",
@@ -139,7 +139,7 @@
       "deck2": "Boros Ponza",
       "seed": 51500,
       "winner": "Instant Reanimator",
-      "turns": 8
+      "turns": 10
     },
     {
       "deck1": "Eldrazi Ramp",
@@ -153,7 +153,7 @@
       "deck2": "Grixis Reanimator",
       "seed": 52000,
       "winner": "Grixis Reanimator",
-      "turns": 7
+      "turns": 9
     },
     {
       "deck1": "Azorius Blink",
@@ -167,7 +167,7 @@
       "deck2": "Creatures Toolbox",
       "seed": 52500,
       "winner": "Broodscale Bloodchief",
-      "turns": 9
+      "turns": 10
     },
     {
       "deck1": "Grixis Reanimator",
