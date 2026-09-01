@@ -423,6 +423,15 @@ class PermanentEffects:
             instance._game_state = game
             instance.enter_battlefield()
             game.players[controller].battlefield.append(instance)
+            # CR 603.6a / 111.10: a token entering is a permanent-entering
+            # event like any other — it fires the token's own ETB and every
+            # "whenever another creature you control enters" watcher (Guide of
+            # Souls, Impact Tremors, aristocrats, ...). enter_battlefield() is
+            # pure state; the trigger dispatch is _handle_permanent_etb, which
+            # create_token had skipped (the undying/persist re-entry paths in
+            # this file already call it). No StackItem — tokens are never cast
+            # (CR 111.2), matching the reanimate/blink item=None convention.
+            game._handle_permanent_etb(instance, controller)
             tokens.append(instance)
 
         if count > 0:
