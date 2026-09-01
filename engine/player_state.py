@@ -318,6 +318,35 @@ class PlayerState:
         self.temp_cost_reduction = 0
         self._landfall_count_this_turn = 0
 
+    def reset_cross_turn_event_counters(self):
+        """Reset only the "this turn" EVENT tallies — the counters that
+        record what happened during the current game turn and are read
+        at instant speed on the opponent's turn (revolt/morbid's
+        "a permanent left the battlefield this turn", spectacle's
+        "an opponent lost life this turn", "you gained/drew/dealt ...
+        this turn").
+
+        These share a single game-turn clock across both players, so they
+        must clear for the NON-active player at each turn boundary too —
+        otherwise a value from the player's own prior turn leaks through
+        the opponent's whole turn (e.g. a turn-old fetchland crack still
+        granting Revolt). This is deliberately a subset of
+        ``reset_turn_tracking``: it excludes the active-player resource
+        fields (land drops, cost reduction) and the special cross-turn
+        lifecycle state (the Orim's Chant silence hand-off,
+        ``flashback_granted_this_turn``), which belong solely to the
+        player whose turn is actually beginning.
+        """
+        self.creatures_died_this_turn = 0
+        self.life_gained_this_turn = 0
+        self.life_lost_this_turn = 0
+        self.damage_dealt_this_turn = 0
+        self.cards_drawn_this_turn = 0
+        self.spells_cast_this_turn = 0
+        self.nonartifact_spells_cast_this_turn = 0
+        self.removal_evokes_resolved_this_turn = 0
+        self._landfall_count_this_turn = 0
+
 
 # Planeswalker loyalty ability definitions: (plus_amount, minus_amount, ult_amount)
 def _parse_planeswalker_abilities(oracle_text: str, loyalty: int = 0) -> dict:

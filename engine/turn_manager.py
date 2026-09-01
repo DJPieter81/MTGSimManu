@@ -171,6 +171,14 @@ class TurnManager:
                     and "during each other player's untap step" in otext):
                 card.untap()
         player.reset_turn_tracking()
+        # CR "this turn" window is a single game-turn clock shared by both
+        # players: the non-active player's per-turn EVENT tallies must also
+        # reset at this boundary, or a value from their own prior turn (a
+        # fetchland crack granting Revolt, life gained, etc.) leaks through
+        # the active player's entire turn and is read at instant speed.
+        # The full reset (with the silence/flashback lifecycle) stays with
+        # the active player only.
+        game.players[1 - player_idx].reset_cross_turn_event_counters()
         # Recalculate extra land drops from permanents on battlefield
         # (Azusa gives +2, Dryad of the Ilysian Grove gives +1)
         extra = 0
