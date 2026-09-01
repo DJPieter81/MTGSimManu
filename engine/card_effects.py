@@ -2507,34 +2507,17 @@ def manamorphose_resolve(game, card, controller, targets=None, item=None):
 # Teferi, Time Raveler — bounce + shut off instant speed
 # ═══════════════════════════════════════════════════════════════════
 @EFFECT_REGISTRY.register("Teferi, Time Raveler", EffectTiming.ETB,
-                           description="Bounce target opponent permanent, draw a card")
+                           description="Apply the sorcery-speed static; the bounce is the -3 loyalty ability")
 def teferi_t3_etb(game, card, controller, targets=None, item=None):
-    """T3feri ETB: bounce opponent's best nonland permanent, draw a card."""
+    """T3feri ETB: apply ONLY the static "opponents cast at sorcery speed"
+    AI hint. The "return a permanent to hand, draw a card" effect is the
+    -3 LOYALTY ability (engine/planeswalker_manager.py), NOT an ETB —
+    performing it here made Teferi bounce twice the turn it landed (once
+    on ETB, once when the AI activated the real -3) and appended a bounced
+    token straight to hand where it wrongly persisted. This fake ETB had
+    been removed once for exactly that double-bounce and regressed."""
     opp_idx = 1 - controller
     opp = game.players[opp_idx]
-    player = game.players[controller]
-
-    # Bounce best opponent nonland permanent (by threat)
-    nonlands = [c for c in opp.battlefield if not c.template.is_land]
-    if nonlands:
-        target = max(nonlands, key=lambda c: _threat_score(c, game, opp))
-        opp.battlefield.remove(target)
-        if target in opp.creatures:
-            opp.creatures.remove(target)
-        target.zone = "hand"
-        opp.hand.append(target)
-        game.log.append(
-            f"T{game.display_turn} P{controller+1}: "
-            f"Teferi bounces {target.name}")
-
-    # Draw a card
-    if player.library:
-        drawn = player.library.pop(0)
-        drawn.zone = "hand"
-        player.hand.append(drawn)
-        game.log.append(
-            f"T{game.display_turn} P{controller+1}: "
-            f"Teferi draws {drawn.name}")
 
     # Static: opponents can only cast at sorcery speed.
     # Reducing counter_density is an AI hint; the hard engine restriction
