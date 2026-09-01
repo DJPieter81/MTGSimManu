@@ -2791,9 +2791,19 @@ class EVPlayer:
         opp = game.players[1 - self.player_idx]
 
         # Pre-combat pump (Psychic Frog etc.)
+        from engine.oracle_clauses import any_ability_with
         for creature in valid:
             oracle = (creature.template.oracle_text or "").lower()
-            if getattr(creature.template, 'has_discard_effect', False) and "+1/+1" in oracle:
+            # Only fire when the discard cost's OWN ability pumps this
+            # creature — i.e. a single ability paragraph carries both
+            # "discard" and "+1/+1" ("Discard a card: put a +1/+1 counter
+            # on this creature"). A whole-oracle "+1/+1" substring test
+            # false-fires on a discard-cost creature whose +1/+1 lives in
+            # an unrelated ability (Hardened Academic's discard grants
+            # lifelink; its +1/+1 is a separate graveyard trigger),
+            # fabricating counters it can never actually make.
+            if (getattr(creature.template, 'has_discard_effect', False)
+                    and any_ability_with(oracle, 'discard', '+1/+1')):
                 prof = self.profile
                 # Smart discard: protect removal/counters, discard excess lands/dupes/uncastable
                 hand_lands = [c for c in me.hand if c.template.is_land]
