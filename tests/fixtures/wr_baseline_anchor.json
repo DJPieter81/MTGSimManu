@@ -6,7 +6,7 @@
       "deck2": "Affinity",
       "seed": 50000,
       "winner": "Affinity",
-      "turns": 7
+      "turns": 6
     },
     {
       "deck1": "Ruby Storm",
@@ -75,8 +75,8 @@
       "deck1": "Affinity",
       "deck2": "Domain Zoo",
       "seed": 50500,
-      "winner": "Affinity",
-      "turns": 9
+      "winner": "Domain Zoo",
+      "turns": 7
     },
     {
       "deck1": "Eldrazi Tron",

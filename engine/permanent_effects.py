@@ -337,7 +337,11 @@ class PermanentEffects:
             t_name = spec["subtype"]
             t_types = [type_lookup[t] for t in spec["types"]
                        if t in type_lookup]
-            if CardType.CREATURE not in t_types:
+            # A named noncreature token (Munitions et al.) stays a
+            # noncreature permanent — do NOT force CREATURE onto it, or
+            # it becomes an illegal attacker. Only the P/T creature-token
+            # shape defaults to creature.
+            if not spec.get("is_noncreature") and CardType.CREATURE not in t_types:
                 t_types.append(CardType.CREATURE)
             t_power = spec["power"]
             t_toughness = spec["toughness"]
@@ -374,7 +378,7 @@ class PermanentEffects:
         if source_oracle:
             import re as _re
             inner = _re.search(
-                r"token\s+with\s+['\"]([^'\"]+)['\"]",
+                r"token(?:\s+named\s+\w+)?\s+with\s+['\"]([^'\"]+)['\"]",
                 source_oracle, flags=_re.IGNORECASE,
             )
             if inner:

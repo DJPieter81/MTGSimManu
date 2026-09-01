@@ -2652,6 +2652,20 @@ _TOKEN_KEYWORD_RE = re.compile(
 )
 
 
+# Named NONCREATURE token shape (no printed P/T): "create a[n] [colour]
+# artifact/enchantment token named X ...". Munitions, Powerstone-style,
+# etc. — a resource/artifact permanent that is not a creature and has no
+# power/toughness, so it cannot attack.
+_NAMED_NONCREATURE_TOKEN_RE = re.compile(
+    r"create\s+(?:a|an|\d+)?\s*"
+    r"(?P<pre>(?:\w+\s+)*?)"   # colour words ("colorless", "white")
+    r"(?P<types>(?:artifact|enchantment)"
+    r"(?:\s+(?:artifact|enchantment))*)\s+"
+    r"token\s+named\s+(?P<name>[A-Z][a-zA-Z]+)",
+    re.IGNORECASE,
+)
+
+
 # Keyword vocabulary — only the abilities the engine recognizes.
 # Source: engine.cards.Keyword enum members. Mapping the raw oracle
 # words to the canonical Keyword names handled at lookup time.
@@ -2691,7 +2705,25 @@ def parse_token_spec(oracle: str) -> Optional[Dict]:
         return None
     m = _TOKEN_SPEC_RE.search(oracle)
     if not m:
-        return None
+        # Named noncreature artifact/enchantment token (no P/T) — a
+        # resource permanent (Munitions et al.) that is NOT a creature.
+        nm = _NAMED_NONCREATURE_TOKEN_RE.search(oracle)
+        if nm is None:
+            return None
+        _color_word = {"white": "W", "blue": "U", "black": "B",
+                       "red": "R", "green": "G"}
+        colors = [_color_word[w]
+                  for w in (nm.group("pre") or "").lower().split()
+                  if w in _color_word]
+        return {
+            "power": None,
+            "toughness": None,
+            "subtype": nm.group("name"),
+            "types": [t.strip() for t in nm.group("types").lower().split()],
+            "keywords": [],
+            "colors": colors,
+            "is_noncreature": True,
+        }
     types = [t.strip() for t in m.group("types").lower().split()]
     keywords = []
     # Look for "with <keyword>[ and <keyword>]" within ~80 chars
