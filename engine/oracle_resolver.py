@@ -351,6 +351,56 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
                 f"{card.name} ETB: draw {draw_n} ({names})")
         return True
 
+    # ── "When ~ enters, target opponent reveals their hand. You choose a
+    #     [restricted] card ... and exile that card [until this creature
+    #     leaves the battlefield]." — ETB hand-disruption on a body ──
+    # Class: Thought-Knot Seer, Kitesail Freebooter, Tidehollow Sculler,
+    # Brain Maggot, Mesmeric Fiend, ... (~10-15 Modern creatures). This is
+    # the same reveal / choose-under-restriction / remove mechanic the
+    # spell path already resolves for Thoughtseize & Inquisition
+    # (resolve_spell_from_oracle below) — it was simply unreachable from
+    # an ETB trigger, so these creatures' disruption was a silent no-op.
+    # The choose-clause restriction ("nonland", "noncreature, nonland",
+    # any mana-value cap) is honoured via the same
+    # _targeted_discard_candidates helper the spell path uses. The card is
+    # EXILED (not discarded); a linked "until ~ leaves" / "return the
+    # exiled card" LTB (Freebooter/Sculler) gives it back — see
+    # resolve_dies_trigger. Permanent-exile shapes (Thought-Knot Seer,
+    # whose LTB instead lets the opponent draw) carry no return clause.
+    _reveal_exile_ability = next(
+        (a for a in split_abilities(oracle)
+         if a.strip().startswith('when') and 'enters' in a
+         and 'reveals their hand' in a
+         and 'exile that card' in a),
+        None)
+    if _reveal_exile_ability is not None:
+        opponent = 1 - controller
+        opp = game.players[opponent]
+        if opp.hand:
+            # Restrict to the CHOOSE clause only — the ability paragraph
+            # also says "this creature enters/leaves", whose bare "creature"
+            # would otherwise pollute the type allow-list and contradict a
+            # "noncreature" restriction (Kitesail Freebooter). Same scoping
+            # the spell path applies for Thoughtseize/Inquisition.
+            choose_clause = next(
+                (c for c in split_clauses(_reveal_exile_ability)
+                 if 'choose' in c and 'card' in c), _reveal_exile_ability)
+            legal = _targeted_discard_candidates(opp.hand, choose_clause)
+            if legal:
+                best = max(legal, key=lambda c: (c.template.cmc or 0))
+                game.zone_mgr.move_card_to_exile(
+                    game, best, cause="etb reveal-hand exile")
+                # Linked exile (CR 603.6e): record on the source so a
+                # "return the exiled card"/"until this creature leaves"
+                # LTB can give it back.
+                if not hasattr(card, '_etb_exiled_cards'):
+                    card._etb_exiled_cards = []
+                card._etb_exiled_cards.append(best)
+                game.log.append(
+                    f"T{game.display_turn} P{controller+1}: {card.name} "
+                    f"ETB: exiles {best.name} from opponent's hand")
+        return True
+
     # ── "When ~ enters, reveal the top N cards of your library. For each
     #     card type, you may put a card of that type ... into your hand.
     #     Put the rest on the bottom of your library ..." (Atraxa, Grand
@@ -1516,6 +1566,26 @@ def resolve_dies_trigger(game: "GameState", card: "CardInstance",
     # paragraph with its condition (CR 603.1); detail regexes run on
     # that paragraph.
     abilities = split_abilities(oracle)
+
+    # ── Linked-exile return (CR 603.6e): cards this permanent exiled on
+    #    ETB via "exile that card until this creature leaves the
+    #    battlefield" / a "return the exiled card to its owner's hand" LTB
+    #    (Kitesail Freebooter, Tidehollow Sculler, Brain Maggot) come back
+    #    to their owner's hand now. Permanent-exile shapes (Thought-Knot
+    #    Seer — "opponent draws a card" instead) carry no return clause and
+    #    fall through. Keyed on the source's own recorded linkage, not any
+    #    card name. ──
+    _exiled = getattr(card, '_etb_exiled_cards', None)
+    if _exiled and getattr(card.template, 'etb_exile_returns_on_leave', False):
+        for exiled_card in list(_exiled):
+            owner = game.players[exiled_card.owner]
+            if exiled_card in owner.exile:
+                game.zone_mgr.move_card_to_hand(
+                    game, exiled_card, cause="linked exile returns on leave")
+                game.log.append(
+                    f"T{game.display_turn}: {card.name} leaves — "
+                    f"{exiled_card.name} returns to its owner's hand")
+        card._etb_exiled_cards = []
 
     # ── "When this creature dies, draw a card" ──
     if any('dies' in a and 'draw' in a for a in abilities):

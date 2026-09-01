@@ -1864,6 +1864,15 @@ class CardDatabase:
         _ol = (oracle or "").lower()
         template.counters_colorless_only = (
             "counter target" in _ol and "colorless spell" in _ol)
+        # An ETB reveal-hand-exile whose exiled card returns when this
+        # permanent leaves (Kitesail Freebooter, Tidehollow Sculler, Brain
+        # Maggot) vs a permanent exile (Thought-Knot Seer — its LTB lets
+        # the opponent draw instead). Parsed once here; resolve_dies_trigger
+        # reads the field rather than re-inspecting oracle text at runtime.
+        template.etb_exile_returns_on_leave = (
+            "reveals their hand" in _ol and "exile that card" in _ol
+            and ("until this creature leaves the battlefield" in _ol
+                 or "return the exiled card" in _ol))
         template.is_land_sacrifice_tutor = parse_is_land_sacrifice_tutor(oracle)
         # Modal "Choose one/two —" spells: store the mode clauses and the
         # choose-count so resolution picks the chosen mode(s) rather than
