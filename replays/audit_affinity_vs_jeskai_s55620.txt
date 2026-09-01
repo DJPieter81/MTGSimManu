@@ -1,0 +1,1851 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+  Sideboard (Jeskai Blink vs Affinity): +1 Clarion Conqueror, +2 Wear // Tear, +3 Wrath of the Skies, -2 Consign to Memory, -2 Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, -2 Witch Enchanter
+  Sideboard (Jeskai Blink vs Affinity): +1 Clarion Conqueror, +2 Wear // Tear, +3 Wrath of the Skies, -2 Consign to Memory, -2 Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, -2 Witch Enchanter
+======================================================================
+  GAME 1: Affinity (P1) vs Jeskai Blink (P2)  —  seed 55620
+  Series: Affinity 0 - 0 Jeskai Blink
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Jeskai Blink wins → chooses to play first
+║ P1 (on play): Jeskai Blink
+║ P2 (on draw): Affinity
+╚═══════════════════════════════════════════════════════
+
+P1 (Affinity) opening hand (1 lands, 6 spells):
+  • Engineered Explosives [Spell, CMC 0]
+  • Fiery Islet [Land, CMC 0]
+  • Weapons Manufacturing [Spell, CMC 2]
+  • Mox Opal [Spell, CMC 0]
+  • Metallic Rebuke [Spell, CMC 3]
+  • Tormod's Crypt [Spell, CMC 0]
+  • Emry, Lurker of the Loch [Creature, CMC 3]
+→ P1 MULLIGANS (too few lands (1 < 2))
+  New hand (2 lands, 5 spells): ['Fiery Islet', "Mishra's Bauble", 'Spirebluff Canal', 'Kappa Cannoneer', "Tormod's Crypt", 'Mox Opal', 'Mox Opal']
+→ P1 mulligans to 6, bottoms: ['Mox Opal']
+  Keeps: ['Fiery Islet', "Mishra's Bauble", 'Spirebluff Canal', 'Kappa Cannoneer', "Tormod's Crypt", 'Mox Opal']
+
+P2 (Jeskai Blink) opening hand (2 lands, 5 spells):
+  • Fable of the Mirror-Breaker // Reflection of Kiki-Jiki [Spell, CMC 3]
+  • Galvanic Discharge [Spell, CMC 1]
+  • Fable of the Mirror-Breaker // Reflection of Kiki-Jiki [Spell, CMC 3]
+  • Flooded Strand [Land, CMC 0]
+  • Phelia, Exuberant Shepherd [Creature, CMC 2]
+  • Scalding Tarn [Land, CMC 0]
+  • Phelia, Exuberant Shepherd [Creature, CMC 2]
+→ P2 KEEPS 7 — has key card(s): Galvanic Discharge, 4 cheap spells
+
+
+╔══ TURN 1 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Scalding Tarn
+T1: Scalding Tarn moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Scalding Tarn (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Jeskai Blink 19
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Mishra's Bauble
+  [Main 1]
+T1 P1: Play Fiery Islet
+    → Goal: deploy_engine
+T1 P1: Cast Mishra's Bauble (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Mishra's Bauble
+    → Goal: deploy_engine
+T1 P1: Cast Mishra's Bauble (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Mishra's Bauble
+    → Goal: deploy_engine [engines]
+T1 P1: Cast Mox Opal (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Mox Opal
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 19  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble, Mishra's Bauble, Mox Opal
+║   Lands: Fiery Islet
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Quantum Riddler
+  [Main 1]
+T2 P2: Play Flooded Strand
+T2: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T2 P2: Crack Flooded Strand (pay 1 life) -> Steam Vents (tapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Jeskai Blink 18
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble, Mishra's Bauble, Mox Opal
+║   Lands: Fiery Islet
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Tormod's Crypt
+  [Main 1]
+T2 P1: Play Spirebluff Canal (untapped, 1 other lands)
+T2: Fiery Islet moved battlefield -> graveyard (activation cost (Fiery Islet))
+T2 P1: activate Fiery Islet — Draw a card.
+T2 P1: Fiery Islet activated — draw 1 (Metallic Rebuke)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 18  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 1
+║ Library: 50  |  Graveyard: 2
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Steam Vents
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble, Mishra's Bauble, Mox Opal
+║   Lands: Spirebluff Canal [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Meticulous Archive
+  [Main 1]
+T3 P2: surveil 1 → Ephemerate to GY
+T3 P2: Play Meticulous Archive (enters tapped)
+    → Goal: grind_value [enablers]
+    [Mana] Tap Sacred Foundry→W, Steam Vents→R (paying for Phelia, Exuberant Shepherd, 0 mana remaining)
+T3 P2: Cast Phelia, Exuberant Shepherd (1W)
+    [Priority] P1 passes (no response)
+T3: Resolve Phelia, Exuberant Shepherd
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Jeskai Blink 18
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble, Mishra's Bauble, Mox Opal
+║   Lands: Spirebluff Canal
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Lands: Sacred Foundry [T], Steam Vents [T], Meticulous Archive [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Weapons Manufacturing
+  [Main 1]
+    → Goal: curve_out
+T3 P1: Cast Tormod's Crypt (0)
+    [Priority] P2 passes (no response)
+T3: Resolve Tormod's Crypt
+    → Goal: curve_out
+T3 P1: Cast Tormod's Crypt (0)
+    [Priority] P2 passes (no response)
+T3: Resolve Tormod's Crypt
+    → Goal: curve_out
+T3 P1: Improvise — tap 5 artifact(s) for Kappa Cannoneer
+    [Mana] Tap Spirebluff Canal→U (paying for Kappa Cannoneer, 0 mana remaining)
+T3 P1: Cast Kappa Cannoneer (5U)
+    [Priority] P2 passes (no response)
+T3: Resolve Kappa Cannoneer
+T3 P1: Kappa Cannoneer gets +1/+1 counter (Kappa Cannoneer entered) → 5/5
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 18  |  Affinity 20
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 1
+║ Library: 48  |  Graveyard: 3
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Lands: Sacred Foundry, Steam Vents, Meticulous Archive
+║ Affinity board:
+║   Creatures: Kappa Cannoneer (5/5)
+║   Other: Mishra's Bauble, Mishra's Bauble, Mox Opal, Tormod's Crypt, Tormod's Crypt
+║   Lands: Spirebluff Canal [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+T4 P2: Play Flooded Strand
+T4: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T4 P2: Crack Flooded Strand (pay 1 life) -> Hallowed Fountain (tapped, life: 17)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Jeskai Blink 17
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 4
+║ Library: 50  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: Kappa Cannoneer (5/5)
+║   Other: Mishra's Bauble, Mishra's Bauble, Mox Opal, Tormod's Crypt, Tormod's Crypt
+║   Lands: Spirebluff Canal
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Lands: Sacred Foundry, Steam Vents, Meticulous Archive, Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Fiery Islet
+  [Main 1]
+T4 P1: Play Fiery Islet
+T4: Fiery Islet moved battlefield -> graveyard (activation cost (Fiery Islet))
+T4 P1: activate Fiery Islet — Draw a card.
+T4 P1: Fiery Islet activated — draw 1 (Pinnacle Emissary)
+  [Begin Combat]
+    [Mana] Tap Sacred Foundry→W, Steam Vents→R (paying for Phelia, Exuberant Shepherd, 1 mana remaining)
+T4 P2: Cast Phelia, Exuberant Shepherd (1W)
+T4: Phelia, Exuberant Shepherd moved stack -> graveyard (resolution)
+T4: Phelia, Exuberant Shepherd is countered by Kappa Cannoneer's ward
+  [Declare Attackers] P1 attacks with: Kappa Cannoneer
+T4 P1: Attack with Kappa Cannoneer
+T4 P2:   [BLOCK] Phelia, Exuberant Shepherd (2/2) blocks Kappa Cannoneer (5/5) — lifespan_delta=+1.00
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T4: Phelia, Exuberant Shepherd dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 17  |  Affinity 20
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 1
+║ Library: 46  |  Graveyard: 6
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Steam Vents, Meticulous Archive, Hallowed Fountain
+║ Affinity board:
+║   Creatures: Kappa Cannoneer (5/5) [tapped]
+║   Other: Mishra's Bauble, Mishra's Bauble, Mox Opal, Tormod's Crypt, Tormod's Crypt
+║   Lands: Spirebluff Canal [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+T5 P2: Play Flooded Strand
+T5: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T5 P2: Crack Flooded Strand -> Island (untapped)
+    → Goal: close_game
+    [Mana] Tap Island→U, Sacred Foundry→R, Steam Vents→U, Meticulous Archive→U, Hallowed Fountain→U (paying for Quantum Riddler, 0 mana remaining)
+T5 P2: Cast Quantum Riddler (3UU)
+    [Priority] P1 passes (no response)
+T5: Resolve Quantum Riddler
+T5 P2: Quantum Riddler ETB: draw 1 (Prismatic Ending)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Jeskai Blink 16
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 5
+║ Library: 48  |  Graveyard: 2
+║ Affinity board:
+║   Creatures: Kappa Cannoneer (5/5)
+║   Other: Mishra's Bauble, Mishra's Bauble, Mox Opal, Tormod's Crypt, Tormod's Crypt
+║   Lands: Spirebluff Canal
+║ Jeskai Blink board:
+║   Creatures: Quantum Riddler (4/6)
+║   Lands: Sacred Foundry [T], Steam Vents [T], Meticulous Archive [T], Hallowed Fountain [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Emry, Lurker of the Loch
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Spirebluff Canal→U (paying for Pinnacle Emissary, 0 mana remaining)
+T5 P1: Warp Pinnacle Emissary (pays 1)
+T5 P1: Cast Pinnacle Emissary (1UR)
+    [Priority] P2 passes (no response)
+T5: Resolve Pinnacle Emissary
+T5 P1: Kappa Cannoneer gets +1/+1 counter (Pinnacle Emissary entered) → 6/6
+T5 P1: Activate Tormod's Crypt (sacrifice)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Kappa Cannoneer
+T5 P1: Attack with Kappa Cannoneer
+  [Declare Blockers] P2 does not block
+T5 P1:   Kappa Cannoneer (6/6) → 6 dmg to player
+  [Combat Damage] 6 damage dealt → P2 life: 16 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+T5: Pinnacle Emissary moved battlefield -> exile (Warp exile)
+T5: Pinnacle Emissary exiled (Warp)
+
+╔══ TURN 6 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 10  |  Affinity 20
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 1
+║ Library: 43  |  Graveyard: 0
+║ Jeskai Blink board:
+║   Creatures: Quantum Riddler (4/6)
+║   Lands: Sacred Foundry, Steam Vents, Meticulous Archive, Hallowed Fountain, Island
+║ Affinity board:
+║   Creatures: Kappa Cannoneer (6/6) [tapped]
+║   Other: Mishra's Bauble, Mishra's Bauble, Mox Opal, Tormod's Crypt
+║   Lands: Spirebluff Canal [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+T6 P2: Play Arid Mesa
+T6: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T6 P2: Crack Arid Mesa -> Mountain (untapped)
+    → Goal: close_game
+    [Mana] Tap Sacred Foundry→W (paying for Prismatic Ending, 5 mana remaining)
+T6 P2: Cast Prismatic Ending (W)
+    [Priority] P1 passes (no response)
+T6: Prismatic Ending moved stack -> graveyard (resolution)
+T6: Prismatic Ending is countered by Kappa Cannoneer's ward
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Quantum Riddler
+T6 P2: Attack with Quantum Riddler
+  [Declare Blockers] P1 does not block
+T6 P2:   Quantum Riddler (4/6) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 20 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 16  |  Jeskai Blink 9
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 1  |  Opp lands: 6
+║ Library: 47  |  Graveyard: 3
+║ Affinity board:
+║   Creatures: Kappa Cannoneer (6/6)
+║   Other: Mishra's Bauble, Mishra's Bauble, Mox Opal, Tormod's Crypt
+║   Lands: Spirebluff Canal
+║ Jeskai Blink board:
+║   Creatures: Quantum Riddler (4/6) [tapped]
+║   Lands: Sacred Foundry [T], Steam Vents, Meticulous Archive, Hallowed Fountain, Island, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Island
+  [Main 1]
+T6 P1: Play Island
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Kappa Cannoneer
+T6 P1: Attack with Kappa Cannoneer
+  [Declare Blockers] P2 does not block
+T6 P1:   Kappa Cannoneer (6/6) → 6 dmg to player
+  [Combat Damage] 6 damage dealt → P2 life: 9 → 3
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 3  |  Affinity 16
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 6  |  Opp lands: 2
+║ Library: 41  |  Graveyard: 2
+║ Jeskai Blink board:
+║   Creatures: Quantum Riddler (4/6)
+║   Lands: Sacred Foundry, Steam Vents, Meticulous Archive, Hallowed Fountain, Island, Mountain
+║ Affinity board:
+║   Creatures: Kappa Cannoneer (6/6) [tapped]
+║   Other: Mishra's Bauble, Mishra's Bauble, Mox Opal, Tormod's Crypt
+║   Lands: Spirebluff Canal, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Island→U, Mountain→R (paying for Ragavan, Nimble Pilferer, 4 mana remaining)
+T7 P2: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P1 passes (no response)
+T7: Resolve Ragavan, Nimble Pilferer
+    → Goal: close_game
+    [Mana] Tap Sacred Foundry→R, Steam Vents→R, Meticulous Archive→U (paying for Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, 1 mana remaining)
+T7 P2: Cast Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2R)
+    [Priority] P1 passes (no response)
+T7: Resolve Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+T7 P2: Create 1x Goblin token(s)
+T7 P2: Fable Ch.I: Create 2/2 Goblin Shaman with haste
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Quantum Riddler, Ragavan, Nimble Pilferer, Goblin Token
+T7 P2: Attack with Quantum Riddler, Ragavan, Nimble Pilferer, Goblin Token
+  [Declare Blockers] P1 does not block
+T7 P2:   Quantum Riddler (4/6) → 4 dmg to player
+T7 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T7 P2: Create 1x Treasure token(s)
+T7 P2: Ragavan, Nimble Pilferer exiles Weapons Manufacturing from top of P1's library
+T7 P2: Ragavan, Nimble Pilferer — may cast Weapons Manufacturing this turn
+T7 P2:   Goblin Token (2/2) → 2 dmg to player
+  [Combat Damage] 8 damage dealt → P1 life: 16 → 8
+  [End Combat]
+  [Main 2]
+  [End Step]
+T7: Weapons Manufacturing returned to exile (uncast)
+T7: Ragavan, Nimble Pilferer moved battlefield -> hand (Dash return)
+T7: Ragavan, Nimble Pilferer returned to hand (Dash)
+
+╔══ TURN 7 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 8  |  Jeskai Blink 3
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 6
+║ Library: 45  |  Graveyard: 3
+║ Affinity board:
+║   Creatures: Kappa Cannoneer (6/6)
+║   Other: Mishra's Bauble, Mishra's Bauble, Mox Opal, Tormod's Crypt
+║   Lands: Spirebluff Canal, Island
+║ Jeskai Blink board:
+║   Creatures: Quantum Riddler (4/6) [tapped], Goblin Token (2/2) [tapped]
+║   Other: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, Treasure Token
+║   Lands: Sacred Foundry [T], Steam Vents [T], Meticulous Archive [T], Hallowed Fountain, Island [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Urza's Saga
+  [Main 1]
+T7 P1: Play Urza's Saga
+    → Goal: curve_out
+    [Mana] Tap Island→U, Spirebluff Canal→R (paying for Weapons Manufacturing, 1 mana remaining)
+T7 P1: Cast Weapons Manufacturing (1R)
+    [Priority] P2 passes (no response)
+T7: Resolve Weapons Manufacturing
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Kappa Cannoneer
+T7 P1: Attack with Kappa Cannoneer
+  [Declare Blockers] P2 does not block
+T7 P1:   Kappa Cannoneer (6/6) → 6 dmg to player
+P2 loses: life total -3
+  [Combat Damage] 6 damage dealt → P2 life: 3 → -3
+
+>>> Affinity wins Game 1 on turn 7 via damage
+    Final life: Affinity=8  Jeskai Blink=-3
+
+======================================================================
+  GAME 2: Jeskai Blink (P1) vs Affinity (P2)  —  seed 55621
+  Series: Affinity 1 - 0 Jeskai Blink
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Jeskai Blink wins → chooses to play first
+║ P1 (on play): Jeskai Blink
+║ P2 (on draw): Affinity
+╚═══════════════════════════════════════════════════════
+
+P1 (Jeskai Blink) opening hand (4 lands, 3 spells):
+  • Solitude [Creature, CMC 5]
+  • Arena of Glory [Land, CMC 0]
+  • Flooded Strand [Land, CMC 0]
+  • Elegant Parlor [Land, CMC 0]
+  • Hallowed Fountain [Land, CMC 0]
+  • Solitude [Creature, CMC 5]
+  • Solitude [Creature, CMC 5]
+→ P1 KEEPS 7 — 4 lands, 3 spells, score 26.0
+
+P2 (Affinity) opening hand (2 lands, 5 spells):
+  • Tormod's Crypt [Spell, CMC 0]
+  • Kappa Cannoneer [Creature, CMC 6]
+  • Metallic Rebuke [Spell, CMC 3]
+  • Mox Opal [Spell, CMC 0]
+  • Fiery Islet [Land, CMC 0]
+  • Fiery Islet [Land, CMC 0]
+  • Emry, Lurker of the Loch [Creature, CMC 3]
+→ P2 KEEPS 7 — has key card(s): Mox Opal, 4 cheap spells
+
+
+╔══ TURN 1 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Flooded Strand
+T1: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Flooded Strand (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Jeskai Blink 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Preordain
+  [Main 1]
+T1 P2: Play Fiery Islet
+    → Goal: deploy_engine [engines]
+T1 P2: Cast Mox Opal (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Mox Opal
+    → Goal: curve_out
+    [Mana] Tap Fiery Islet→U (paying for Preordain, 0 mana remaining)
+T1 P2: Cast Preordain (U)
+    [Priority] P1 passes (no response)
+T1: Resolve Preordain
+T1 P2: scry 2 (Spirebluff Canal, Engineered Explosives) → bottom: none
+T1 P2: Preordain → draw 1 (Spirebluff Canal)
+T1: Preordain moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 19  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal
+║   Lands: Fiery Islet [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Scalding Tarn
+  [Main 1]
+T2 P1: Play Scalding Tarn
+T2: Scalding Tarn moved battlefield -> graveyard (fetchland sacrifice)
+T2 P1: Crack Scalding Tarn -> Meticulous Archive (tapped)
+T2 P1: surveil 1 → Ragavan, Nimble Pilferer to GY
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Jeskai Blink 18
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal
+║   Lands: Fiery Islet
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Meticulous Archive [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Engineered Explosives
+  [Main 1]
+T2 P2: Play Fiery Islet
+    → Goal: curve_out
+    [Mana] Tap Fiery Islet→U, Fiery Islet→R (paying for Emry, Lurker of the Loch, 0 mana remaining)
+T2 P2: Cast Emry, Lurker of the Loch (2U)
+    [Priority] P1 passes (no response)
+T2: Resolve Emry, Lurker of the Loch
+T2 P2: Emry mills 4: Emry, Lurker of the Loch, Island, Tormod's Crypt, Shadowspear
+  [Begin Combat]
+T2 P1: Evoke Solitude (exile Solitude)
+T2 P1: Cast Solitude (3WW)
+T2: Resolve Solitude
+T2: Emry, Lurker of the Loch moved battlefield -> exile (exiled)
+T2 P1: Solitude exiles Emry, Lurker of the Loch (opponent gains 1 life, now 21)
+T2: Solitude moved battlefield -> graveyard (evoke sacrifice)
+T2 P1: Solitude sacrificed (evoke)
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 18  |  Affinity 21
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 49  |  Graveyard: 4
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Meticulous Archive
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal
+║   Lands: Fiery Islet [T], Fiery Islet [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arid Mesa
+  [Main 1]
+T3 P1: Play Arid Mesa
+T3: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T3 P1: Crack Arid Mesa -> Plains (untapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 21  |  Jeskai Blink 17
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 46  |  Graveyard: 5
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal
+║   Lands: Fiery Islet, Fiery Islet
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Meticulous Archive, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mox Opal
+  [Main 1]
+T3 P2: Play Spirebluff Canal (untapped, 2 other lands)
+T3: Fiery Islet moved battlefield -> graveyard (activation cost (Fiery Islet))
+T3 P2: activate Fiery Islet — Draw a card.
+T3 P2: Fiery Islet activated — draw 1 (Mishra's Bauble)
+    → Goal: curve_out
+T3 P2: Cast Mishra's Bauble (0)
+    [Priority] P1 passes (no response)
+T3: Resolve Mishra's Bauble
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 17  |  Affinity 21
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 47  |  Graveyard: 5
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Meticulous Archive, Plains
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Mishra's Bauble
+║   Lands: Fiery Islet [T], Spirebluff Canal
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Galvanic Discharge
+  [Main 1]
+T4 P1: Play Hallowed Fountain (tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 21  |  Jeskai Blink 17
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 44  |  Graveyard: 6
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Mishra's Bauble
+║   Lands: Fiery Islet, Spirebluff Canal
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Meticulous Archive, Plains, Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Urza's Saga
+  [Main 1]
+T4 P2: Play Urza's Saga
+T4: Fiery Islet moved battlefield -> graveyard (activation cost (Fiery Islet))
+T4 P2: activate Fiery Islet — Draw a card.
+T4 P2: Fiery Islet activated — draw 1 (Pinnacle Emissary)
+    → Goal: curve_out
+    [Mana] Tap Spirebluff Canal→U (paying for Pinnacle Emissary, 0 mana remaining)
+T4 P2: Warp Pinnacle Emissary (pays 1)
+T4 P2: Cast Pinnacle Emissary (1UR)
+    [Priority] P1 passes (no response)
+T4: Resolve Pinnacle Emissary
+  [Begin Combat]
+    [Mana] Tap Sacred Foundry→R (paying for Galvanic Discharge, 2 mana remaining)
+T4 P1: Cast Galvanic Discharge (R)
+T4: Resolve Galvanic Discharge
+T4: Pinnacle Emissary dies
+T4 P1: Galvanic Discharge deals 3 to Pinnacle Emissary (base 0 + 3 energy)
+T4: Galvanic Discharge moved stack -> graveyard (resolution)
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 17  |  Affinity 21
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 2
+║ Library: 46  |  Graveyard: 6
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Meticulous Archive, Plains, Hallowed Fountain
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Mishra's Bauble
+║   Lands: Spirebluff Canal [T], Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Phelia, Exuberant Shepherd
+  [Main 1]
+T5 P1: Play Arena of Glory (enters tapped)
+    → Goal: close_game
+    [Mana] Tap Plains→W, Sacred Foundry→R (paying for Phelia, Exuberant Shepherd, 2 mana remaining)
+T5 P1: Cast Phelia, Exuberant Shepherd (1W)
+    [Priority] P2 passes (no response)
+T5: Resolve Phelia, Exuberant Shepherd
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 21  |  Jeskai Blink 17
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 5
+║ Library: 42  |  Graveyard: 8
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Mishra's Bauble
+║   Lands: Spirebluff Canal, Urza's Saga
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Lands: Sacred Foundry [T], Meticulous Archive, Plains [T], Hallowed Fountain, Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T5 P2: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P2 draws: Metallic Rebuke
+  [Main 1]
+    → Goal: curve_out
+T5 P2: Cast Tormod's Crypt (0)
+    [Priority] P1 passes (no response)
+T5: Resolve Tormod's Crypt
+T5 P2: Activate Tormod's Crypt (sacrifice)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 17  |  Affinity 21
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 2
+║ Library: 45  |  Graveyard: 0
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Lands: Sacred Foundry, Meticulous Archive, Plains, Hallowed Fountain, Arena of Glory
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Mishra's Bauble
+║   Lands: Spirebluff Canal, Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Quantum Riddler
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Arena of Glory→R, Sacred Foundry→W, Meticulous Archive→U, Hallowed Fountain→U (paying for Solitude, 0 mana remaining)
+T6 P1: Cast Solitude (3WW)
+    [Priority] P2 responds with Metallic Rebuke
+T6 P2: Improvise — tap 1 artifact(s) for Metallic Rebuke
+    [Mana] Tap Urza's Saga→C, Spirebluff Canal→U (paying for Metallic Rebuke, 0 mana remaining)
+T6 P2: Cast Metallic Rebuke (2U)
+T6: Resolve Metallic Rebuke
+T6: Solitude moved stack -> graveyard (resolution)
+T6: Solitude is countered
+T6: Metallic Rebuke moved stack -> graveyard (resolution)
+T6 P1: surveil 1 → Scalding Tarn to GY
+T6 P1: Play Elegant Parlor (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Phelia, Exuberant Shepherd
+T6 P1: Phelia exiles Mox Opal (P2's)
+T6 P1: Attack with Phelia, Exuberant Shepherd
+  [Declare Blockers] P2 does not block
+T6 P1:   Phelia, Exuberant Shepherd (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 21 → 19
+  [End Combat]
+  [Main 2]
+  [End Step]
+T6: Mox Opal returns to battlefield (P2)
+
+╔══ TURN 6 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 19  |  Jeskai Blink 17
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 2  |  Opp lands: 6
+║ Library: 41  |  Graveyard: 10
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble, Mox Opal
+║   Lands: Spirebluff Canal, Urza's Saga
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2) [tapped]
+║   Lands: Sacred Foundry [T], Meticulous Archive [T], Plains [T], Hallowed Fountain [T], Arena of Glory [T], Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T6 P2: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+  [Draw] P2 draws: Weapons Manufacturing
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Urza's Saga→C, Spirebluff Canal→R (paying for Weapons Manufacturing, 0 mana remaining)
+T6 P2: Cast Weapons Manufacturing (1R)
+    [Priority] P1 passes (no response)
+T6: Resolve Weapons Manufacturing
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 17  |  Affinity 19
+║ Hand: 1 cards  |  Opp hand: 4 cards
+║ Lands: 6  |  Opp lands: 2
+║ Library: 43  |  Graveyard: 2
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Lands: Sacred Foundry, Meticulous Archive, Plains, Hallowed Fountain, Arena of Glory, Elegant Parlor
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble, Mox Opal, Weapons Manufacturing
+║   Lands: Spirebluff Canal [T], Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Flooded Strand
+  [Main 1]
+T7 P1: Play Flooded Strand
+T7: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T7 P1: Crack Flooded Strand (pay 1 life) -> Steam Vents (tapped, life: 16)
+    → Goal: close_game
+    [Mana] Tap Plains→W, Arena of Glory→R, Sacred Foundry→R, Meticulous Archive→U, Hallowed Fountain→U (paying for Quantum Riddler, 1 mana remaining)
+T7 P1: Cast Quantum Riddler (3UU)
+    [Priority] P2 passes (no response)
+T7: Resolve Quantum Riddler
+T7 P1: Quantum Riddler ETB: draw 1 (Wrath of the Skies)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Phelia, Exuberant Shepherd
+T7 P1: Phelia exiles Quantum Riddler (P1's)
+T7 P1: Attack with Phelia, Exuberant Shepherd
+  [Declare Blockers] P2 does not block
+T7 P1:   Phelia, Exuberant Shepherd (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 19 → 17
+  [End Combat]
+  [Main 2]
+  [End Step]
+T7: Quantum Riddler returns to battlefield (P1)
+T7 P1: Phelia, Exuberant Shepherd gets +1/+1 counter (3/3)
+
+╔══ TURN 7 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 17  |  Jeskai Blink 16
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 2  |  Opp lands: 7
+║ Library: 40  |  Graveyard: 10
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble, Mox Opal, Weapons Manufacturing
+║   Lands: Spirebluff Canal, Urza's Saga
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (3/3) [tapped], Quantum Riddler (4/6)
+║   Lands: Sacred Foundry [T], Meticulous Archive [T], Plains [T], Hallowed Fountain [T], Arena of Glory [T], Elegant Parlor, Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T7 P2: Urza's Saga tutors Pithing Needle
+T7 P2: Create 1x Munitions token(s)
+T7 P2: Weapons Manufacturing trigger → create 1 token(s) (Pithing Needle entered as nontoken=True artifact)
+T7 P2: Sacrifice Urza's Saga (final chapter)
+  [Draw] P2 draws: Urza's Saga
+  [Main 1]
+T7 P2: Play Urza's Saga
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 16  |  Affinity 17
+║ Hand: 1 cards  |  Opp hand: 4 cards
+║ Lands: 7  |  Opp lands: 2
+║ Library: 40  |  Graveyard: 3
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (3/3), Quantum Riddler (4/6)
+║   Lands: Sacred Foundry, Meticulous Archive, Plains, Hallowed Fountain, Arena of Glory, Elegant Parlor, Steam Vents
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble, Mox Opal, Weapons Manufacturing, Pithing Needle, Munitions Token
+║   Lands: Spirebluff Canal, Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Wrath of the Skies
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Phelia, Exuberant Shepherd, Quantum Riddler
+T8 P1: Phelia exiles Quantum Riddler (P1's)
+T8 P1: Attack with Phelia, Exuberant Shepherd, Quantum Riddler
+  [Declare Blockers] P2 does not block
+T8 P1:   Phelia, Exuberant Shepherd (3/3) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 17 → 14
+  [End Combat]
+  [Main 2]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Sacred Foundry→W (paying for Wrath of the Skies, 5 mana remaining)
+T8 P1: Cast Wrath of the Skies (1WW) (X=1)
+    [Priority] P2 passes (no response)
+T8: Resolve Wrath of the Skies
+T8: Mishra's Bauble moved battlefield -> graveyard (destroyed)
+T8: Mox Opal moved battlefield -> graveyard (destroyed)
+T8: Pithing Needle moved battlefield -> graveyard (destroyed)
+T8: Munitions Token moved battlefield -> graveyard (destroyed)
+T8: Urza's Saga moved battlefield -> graveyard (destroyed)
+T8 P1: Wrath of the Skies (X=1) sweeps the board, destroying 5 permanents
+T8: Wrath of the Skies moved stack -> graveyard (resolution)
+  [End Step]
+T8: Quantum Riddler returns to battlefield (P1)
+T8 P1: Phelia, Exuberant Shepherd gets +1/+1 counter (4/4)
+
+╔══ TURN 8 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 14  |  Jeskai Blink 16
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 1  |  Opp lands: 7
+║ Library: 38  |  Graveyard: 15
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Weapons Manufacturing
+║   Lands: Spirebluff Canal
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (4/4) [tapped], Quantum Riddler (4/6) [tapped]
+║   Lands: Sacred Foundry [T], Meticulous Archive [T], Plains [T], Hallowed Fountain, Arena of Glory, Elegant Parlor, Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Tormod's Crypt
+  [Main 1]
+    → Goal: curve_out
+T8 P2: Cast Mox Opal (0)
+    [Priority] P1 passes (no response)
+T8: Resolve Mox Opal
+T8 P2: Create 1x Munitions token(s)
+T8 P2: Weapons Manufacturing trigger → create 1 token(s) (Mox Opal entered as nontoken=True artifact)
+    → Goal: curve_out
+T8 P2: Cast Tormod's Crypt (0)
+    [Priority] P1 passes (no response)
+T8: Resolve Tormod's Crypt
+T8 P2: Create 1x Munitions token(s)
+T8 P2: Weapons Manufacturing trigger → create 1 token(s) (Tormod's Crypt entered as nontoken=True artifact)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 16  |  Affinity 14
+║ Hand: 1 cards  |  Opp hand: 3 cards
+║ Lands: 7  |  Opp lands: 1
+║ Library: 39  |  Graveyard: 4
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (4/4), Quantum Riddler (4/6)
+║   Lands: Sacred Foundry, Meticulous Archive, Plains, Hallowed Fountain, Arena of Glory, Elegant Parlor, Steam Vents
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Weapons Manufacturing, Mox Opal, Munitions Token, Tormod's Crypt, Munitions Token
+║   Lands: Spirebluff Canal
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Scalding Tarn
+  [Main 1]
+T9 P1: Play Scalding Tarn
+T9: Scalding Tarn moved battlefield -> graveyard (fetchland sacrifice)
+T9 P1: Crack Scalding Tarn -> Mountain (untapped)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Phelia, Exuberant Shepherd, Quantum Riddler
+T9 P1: Phelia exiles Quantum Riddler (P1's)
+T9 P1: Attack with Phelia, Exuberant Shepherd, Quantum Riddler
+  [Declare Blockers] P2 does not block
+T9 P1:   Phelia, Exuberant Shepherd (4/4) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 14 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+T9: Quantum Riddler returns to battlefield (P1)
+T9 P1: Phelia, Exuberant Shepherd gets +1/+1 counter (5/5)
+
+╔══ TURN 9 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 10  |  Jeskai Blink 15
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 1  |  Opp lands: 8
+║ Library: 37  |  Graveyard: 15
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Weapons Manufacturing, Mox Opal, Munitions Token, Tormod's Crypt, Munitions Token
+║   Lands: Spirebluff Canal
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (5/5) [tapped], Quantum Riddler (4/6) [tapped]
+║   Lands: Sacred Foundry, Meticulous Archive, Plains, Hallowed Fountain, Arena of Glory, Elegant Parlor, Steam Vents, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Engineered Explosives
+  [Main 1]
+T9 P2: Activate Tormod's Crypt (sacrifice)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 15  |  Affinity 10
+║ Hand: 1 cards  |  Opp hand: 4 cards
+║ Lands: 8  |  Opp lands: 1
+║ Library: 37  |  Graveyard: 0
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (5/5), Quantum Riddler (4/6)
+║   Lands: Sacred Foundry, Meticulous Archive, Plains, Hallowed Fountain, Arena of Glory, Elegant Parlor, Steam Vents, Mountain
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Weapons Manufacturing, Mox Opal, Munitions Token, Munitions Token
+║   Lands: Spirebluff Canal
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Arena of Glory→R (paying for Ragavan, Nimble Pilferer, 7 mana remaining)
+T10 P1: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P2 passes (no response)
+T10: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Phelia, Exuberant Shepherd, Quantum Riddler
+T10 P1: Phelia exiles Quantum Riddler (P1's)
+T10 P1: Attack with Phelia, Exuberant Shepherd, Quantum Riddler
+  [Declare Blockers] P2 does not block
+T10 P1:   Phelia, Exuberant Shepherd (5/5) → 5 dmg to player
+  [Combat Damage] 5 damage dealt → P2 life: 10 → 5
+  [End Combat]
+  [Main 2]
+  [End Step]
+T10: Quantum Riddler returns to battlefield (P1)
+T10 P1: Phelia, Exuberant Shepherd gets +1/+1 counter (6/6)
+
+╔══ TURN 10 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 5  |  Jeskai Blink 15
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 1  |  Opp lands: 8
+║ Library: 36  |  Graveyard: 16
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Weapons Manufacturing, Mox Opal, Munitions Token, Munitions Token
+║   Lands: Spirebluff Canal
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (6/6) [tapped], Ragavan, Nimble Pilferer (2/1), Quantum Riddler (4/6) [tapped]
+║   Lands: Sacred Foundry, Meticulous Archive, Plains, Hallowed Fountain, Arena of Glory [T], Elegant Parlor, Steam Vents, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Kappa Cannoneer
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 15  |  Affinity 5
+║ Hand: 1 cards  |  Opp hand: 5 cards
+║ Lands: 8  |  Opp lands: 1
+║ Library: 36  |  Graveyard: 0
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (6/6), Ragavan, Nimble Pilferer (2/1), Quantum Riddler (4/6)
+║   Lands: Sacred Foundry, Meticulous Archive, Plains, Hallowed Fountain, Arena of Glory, Elegant Parlor, Steam Vents, Mountain
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Weapons Manufacturing, Mox Opal, Munitions Token, Munitions Token
+║   Lands: Spirebluff Canal
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Prismatic Ending
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W (paying for Prismatic Ending, 7 mana remaining)
+T11 P1: Cast Prismatic Ending (2W) (X=2)
+    [Priority] P2 passes (no response)
+T11: Resolve Prismatic Ending
+T11: Mox Opal moved battlefield -> exile (exiled)
+T11 P1: Prismatic Ending exiles Mox Opal
+T11: Prismatic Ending moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Phelia, Exuberant Shepherd, Ragavan, Nimble Pilferer, Quantum Riddler
+T11 P1: Phelia exiles Quantum Riddler (P1's)
+T11 P1: Attack with Phelia, Exuberant Shepherd, Ragavan, Nimble Pilferer, Quantum Riddler
+  [Declare Blockers] P2 does not block
+T11 P1:   Phelia, Exuberant Shepherd (6/6) → 6 dmg to player
+T11 P1:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T11 P1: Create 1x Treasure token(s)
+T11 P1: Ragavan, Nimble Pilferer exiles Fiery Islet from top of P2's library
+T11 P1: Ragavan, Nimble Pilferer — may cast Fiery Islet this turn
+P2 loses: life total -3
+  [Combat Damage] 8 damage dealt → P2 life: 5 → -3
+
+>>> Jeskai Blink wins Game 2 on turn 11 via damage
+    Final life: Jeskai Blink=15  Affinity=-3
+
+======================================================================
+  GAME 3: Affinity (P1) vs Jeskai Blink (P2)  —  seed 55622
+  Series: Affinity 1 - 1 Jeskai Blink
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Jeskai Blink wins → chooses to play first
+║ P1 (on play): Jeskai Blink
+║ P2 (on draw): Affinity
+╚═══════════════════════════════════════════════════════
+
+P1 (Affinity) opening hand (2 lands, 5 spells):
+  • Preordain [Spell, CMC 1]
+  • Metallic Rebuke [Spell, CMC 3]
+  • Engineered Explosives [Spell, CMC 0]
+  • Welding Jar [Spell, CMC 0]
+  • Fiery Islet [Land, CMC 0]
+  • Shivan Reef [Land, CMC 0]
+  • Mox Opal [Spell, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Mox Opal, 5 cheap spells
+
+P2 (Jeskai Blink) opening hand (3 lands, 4 spells):
+  • Wrath of the Skies [Spell, CMC 2]
+  • Ephemerate [Spell, CMC 1]
+  • Flooded Strand [Land, CMC 0]
+  • Thundering Falls [Land, CMC 0]
+  • Quantum Riddler [Creature, CMC 5]
+  • Scalding Tarn [Land, CMC 0]
+  • Galvanic Discharge [Spell, CMC 1]
+→ P2 KEEPS 7 — has key card(s): Ephemerate, Galvanic Discharge, Quantum Riddler, 3 cheap spells
+
+
+╔══ TURN 1 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Flooded Strand
+T1: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Flooded Strand (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Jeskai Blink 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Spirebluff Canal
+  [Main 1]
+T1 P1: Play Shivan Reef
+    → Goal: deploy_engine
+T1 P1: Cast Welding Jar (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Welding Jar
+    → Goal: deploy_engine [engines]
+T1 P1: Cast Mox Opal (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Mox Opal
+    → Goal: curve_out
+    [Mana] Tap Shivan Reef→U (paying for Preordain, 0 mana remaining)
+T1 P1: Cast Preordain (U)
+    [Priority] P2 passes (no response)
+T1: Resolve Preordain
+T1 P1: scry 2 (Claws of Gix, Tormod's Crypt) → bottom: none
+T1 P1: Preordain → draw 1 (Claws of Gix)
+T1: Preordain moved stack -> graveyard (resolution)
+    → Goal: curve_out
+T1 P1: Cast Claws of Gix (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Claws of Gix
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 19  |  Affinity 19
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Welding Jar, Mox Opal, Claws of Gix
+║   Lands: Shivan Reef [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+T2 P2: Play Scalding Tarn
+T2: Scalding Tarn moved battlefield -> graveyard (fetchland sacrifice)
+T2 P2: Crack Scalding Tarn (pay 1 life) -> Hallowed Fountain (tapped, life: 18)
+    → Goal: grind_value
+    [Mana] Tap Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 0 mana remaining)
+T2 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T2: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 19  |  Jeskai Blink 18
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Welding Jar, Mox Opal, Claws of Gix
+║   Lands: Shivan Reef
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry [T], Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Tormod's Crypt
+  [Main 1]
+T2 P1: Play Fiery Islet
+    → Goal: curve_out
+T2 P1: Cast Tormod's Crypt (0)
+    [Priority] P2 passes (no response)
+T2: Resolve Tormod's Crypt
+T2: Fiery Islet moved battlefield -> graveyard (activation cost (Fiery Islet))
+T2 P1: activate Fiery Islet — Draw a card.
+T2 P1: Fiery Islet activated — draw 1 (Engineered Explosives)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 18  |  Affinity 19
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 1
+║ Library: 50  |  Graveyard: 2
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry, Hallowed Fountain
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Welding Jar, Mox Opal, Claws of Gix, Tormod's Crypt
+║   Lands: Shivan Reef [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Solitude
+  [Main 1]
+T3 P2: surveil 1 → Phelia, Exuberant Shepherd to GY
+T3 P2: Play Thundering Falls (enters tapped)
+    → Goal: grind_value [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Ephemerate, 1 mana remaining)
+T3 P2: Cast Ephemerate (W)
+    [Priority] P1 passes (no response)
+T3: Resolve Ephemerate
+T3: Blink Ragavan, Nimble Pilferer
+T3: Ephemerate moved stack -> exile (rebound (CR 702.86))
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 19  |  Jeskai Blink 18
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Welding Jar, Mox Opal, Claws of Gix, Tormod's Crypt
+║   Lands: Shivan Reef
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry [T], Hallowed Fountain, Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Mox Opal
+  [Main 1]
+T3 P1: Play Spirebluff Canal (untapped, 1 other lands)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 18  |  Affinity 19
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 48  |  Graveyard: 3
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry, Hallowed Fountain, Thundering Falls
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Welding Jar, Mox Opal, Claws of Gix, Tormod's Crypt
+║   Lands: Shivan Reef, Spirebluff Canal
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T4 P2: Cast Ephemerate (W)
+T4 P2: Rebound Ephemerate
+T4: Resolve Ephemerate
+T4: Blink Ragavan, Nimble Pilferer
+T4: Ephemerate moved stack -> graveyard (resolution)
+  [Draw] P2 draws: Island
+  [Main 1]
+T4 P2: Play Island
+    → Goal: close_game
+    [Mana] Tap Sacred Foundry→W, Hallowed Fountain→W (paying for Wrath of the Skies, 2 mana remaining)
+T4 P2: Cast Wrath of the Skies (WW)
+    [Priority] P1 passes (no response)
+T4: Resolve Wrath of the Skies
+T4: Welding Jar moved battlefield -> graveyard (destroyed)
+T4: Mox Opal moved battlefield -> graveyard (destroyed)
+T4: Claws of Gix moved battlefield -> graveyard (destroyed)
+T4: Tormod's Crypt moved battlefield -> graveyard (destroyed)
+T4 P2: Wrath of the Skies (X=0) sweeps the board, destroying 4 permanents
+T4: Wrath of the Skies moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 19  |  Jeskai Blink 18
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 6
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: Shivan Reef, Spirebluff Canal
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry [T], Hallowed Fountain [T], Thundering Falls, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Weapons Manufacturing
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Spirebluff Canal→R, Shivan Reef→C (paying for Weapons Manufacturing, 0 mana remaining)
+T4 P1: Cast Weapons Manufacturing (1R)
+    [Priority] P2 passes (no response)
+T4: Resolve Weapons Manufacturing
+    → Goal: curve_out
+T4 P1: Cast Mox Opal (0)
+    [Priority] P2 passes (no response)
+T4: Resolve Mox Opal
+T4 P1: Create 1x Munitions token(s)
+T4 P1: Weapons Manufacturing trigger → create 1 token(s) (Mox Opal entered as nontoken=True artifact)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 18  |  Affinity 19
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 2
+║ Library: 47  |  Graveyard: 5
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry, Hallowed Fountain, Thundering Falls, Island
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Weapons Manufacturing, Mox Opal, Munitions Token
+║   Lands: Shivan Reef [T], Spirebluff Canal [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Phelia, Exuberant Shepherd
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Island→U, Sacred Foundry→W (paying for Phelia, Exuberant Shepherd, 2 mana remaining)
+T5 P2: Cast Phelia, Exuberant Shepherd (1W)
+    [Priority] P1 passes (no response)
+T5: Resolve Phelia, Exuberant Shepherd
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T5 P2: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T5 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T5 P2: Create 1x Treasure token(s)
+T5 P2: Ragavan, Nimble Pilferer exiles Weapons Manufacturing from top of P1's library
+T5 P2: Ragavan, Nimble Pilferer — may cast Weapons Manufacturing this turn
+  [Combat Damage] 2 damage dealt → P1 life: 19 → 17
+  [End Combat]
+  [Main 2]
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→U, Thundering Falls→R (paying for Quantum Riddler, 0 mana remaining)
+T5 P2: Warp Quantum Riddler (pays 1U)
+T5 P2: Cast Quantum Riddler (3UU)
+    [Priority] P1 passes (no response)
+T5: Resolve Quantum Riddler
+T5 P2: Quantum Riddler ETB: draw 1 (Quantum Riddler)
+  [End Step]
+T5: Weapons Manufacturing returned to exile (uncast)
+T5: Quantum Riddler moved battlefield -> exile (Warp exile)
+T5: Quantum Riddler exiled (Warp)
+
+╔══ TURN 5 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 17  |  Jeskai Blink 18
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 6
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Weapons Manufacturing, Mox Opal, Munitions Token
+║   Lands: Shivan Reef, Spirebluff Canal
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Phelia, Exuberant Shepherd (2/2)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry [T], Hallowed Fountain [T], Thundering Falls [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Welding Jar
+  [Main 1]
+    → Goal: curve_out
+T5 P1: Cast Welding Jar (0)
+    [Priority] P2 passes (no response)
+T5: Resolve Welding Jar
+T5 P1: Create 1x Munitions token(s)
+T5 P1: Weapons Manufacturing trigger → create 1 token(s) (Welding Jar entered as nontoken=True artifact)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 18  |  Affinity 17
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 2
+║ Library: 45  |  Graveyard: 5
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Phelia, Exuberant Shepherd (2/2)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Hallowed Fountain, Thundering Falls, Island
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Weapons Manufacturing, Mox Opal, Munitions Token, Welding Jar, Munitions Token
+║   Lands: Shivan Reef, Spirebluff Canal
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Scalding Tarn
+  [Main 1]
+T6 P2: Play Scalding Tarn
+T6: Scalding Tarn moved battlefield -> graveyard (fetchland sacrifice)
+T6 P2: Crack Scalding Tarn (pay 1 life) -> Steam Vents (tapped, life: 17)
+    → Goal: close_game
+    [Mana] Tap Island→U, Sacred Foundry→R (paying for Quantum Riddler, 2 mana remaining)
+T6 P2: Warp Quantum Riddler (pays 1U)
+T6 P2: Cast Quantum Riddler (3UU)
+    [Priority] P1 responds with Metallic Rebuke
+T6 P1: Improvise — tap 1 artifact(s) for Metallic Rebuke
+    [Mana] Tap Spirebluff Canal→U, Shivan Reef→C (paying for Metallic Rebuke, 0 mana remaining)
+T6 P1: Cast Metallic Rebuke (2U)
+T6: Resolve Metallic Rebuke
+T6: Quantum Riddler moved stack -> graveyard (resolution)
+T6: Quantum Riddler is countered
+T6: Metallic Rebuke moved stack -> graveyard (resolution)
+    → Goal: close_game
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer, Phelia, Exuberant Shepherd
+T6 P2: Phelia exiles Mox Opal (P1's)
+T6 P2: Attack with Ragavan, Nimble Pilferer, Phelia, Exuberant Shepherd
+  [Declare Blockers] P1 does not block
+T6 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T6 P2: Create 1x Treasure token(s)
+T6 P2: Ragavan, Nimble Pilferer exiles Claws of Gix from top of P1's library
+T6 P2: Ragavan, Nimble Pilferer — may cast Claws of Gix this turn
+T6 P2:   Phelia, Exuberant Shepherd (2/2) → 2 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 17 → 13
+  [End Combat]
+  [Main 2]
+    → Goal: close_game
+  [End Step]
+T6: Mox Opal returns to battlefield (P1)
+T6 P1: Create 1x Munitions token(s)
+T6 P1: Weapons Manufacturing trigger → create 1 token(s) (Mox Opal entered as nontoken=True artifact)
+T6: Claws of Gix returned to exile (uncast)
+
+╔══ TURN 6 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 13  |  Jeskai Blink 17
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 5
+║ Library: 44  |  Graveyard: 7
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Weapons Manufacturing, Munitions Token, Welding Jar, Munitions Token, Mox Opal, Munitions Token
+║   Lands: Shivan Reef, Spirebluff Canal
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Phelia, Exuberant Shepherd (2/2) [tapped]
+║   Other: Treasure Token, Treasure Token
+║   Lands: Sacred Foundry [T], Hallowed Fountain, Thundering Falls, Island [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Tormod's Crypt
+  [Main 1]
+    → Goal: curve_out
+T6 P1: Cast Engineered Explosives (2) (X=2)
+    [Priority] P2 passes (no response)
+T6: Resolve Engineered Explosives
+T6 P1: Engineered Explosives enters with 3 charge counters
+T6 P1: Create 1x Munitions token(s)
+T6 P1: Weapons Manufacturing trigger → create 1 token(s) (Engineered Explosives entered as nontoken=True artifact)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 17  |  Affinity 13
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 2
+║ Library: 43  |  Graveyard: 7
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Phelia, Exuberant Shepherd (2/2)
+║   Other: Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Hallowed Fountain, Thundering Falls, Island, Steam Vents
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Weapons Manufacturing, Munitions Token, Welding Jar, Munitions Token, Mox Opal, Munitions Token, Engineered Explosives, Munitions Token
+║   Lands: Shivan Reef [T], Spirebluff Canal [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arena of Glory
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Island→U, Sacred Foundry→R, Hallowed Fountain→U, Thundering Falls→R, Steam Vents→R (paying for Quantum Riddler, 0 mana remaining)
+T7 P2: Cast Quantum Riddler (3UU)
+    [Priority] P1 passes (no response)
+T7: Resolve Quantum Riddler
+T7 P2: Quantum Riddler ETB: draw 1 (Prismatic Ending)
+T7 P2: Play Arena of Glory (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer, Phelia, Exuberant Shepherd
+T7 P2: Phelia exiles Quantum Riddler (P2's)
+T7 P2: Attack with Ragavan, Nimble Pilferer, Phelia, Exuberant Shepherd
+  [Declare Blockers] P1 does not block
+T7 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T7 P2: Create 1x Treasure token(s)
+T7 P2: Ragavan, Nimble Pilferer exiles Steam Vents from top of P1's library
+T7 P2: Ragavan, Nimble Pilferer — may cast Steam Vents this turn
+T7 P2:   Phelia, Exuberant Shepherd (2/2) → 2 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 13 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+T7: Quantum Riddler returns to battlefield (P2)
+T7 P2: Phelia, Exuberant Shepherd gets +1/+1 counter (3/3)
+T7: Steam Vents returned to exile (uncast)
+
+╔══ TURN 7 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 9  |  Jeskai Blink 17
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 6
+║ Library: 42  |  Graveyard: 7
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Weapons Manufacturing, Munitions Token, Welding Jar, Munitions Token, Mox Opal, Munitions Token, Engineered Explosives, Munitions Token
+║   Lands: Shivan Reef, Spirebluff Canal
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Phelia, Exuberant Shepherd (3/3) [tapped], Quantum Riddler (4/6)
+║   Other: Treasure Token, Treasure Token, Treasure Token
+║   Lands: Sacred Foundry [T], Hallowed Fountain [T], Thundering Falls [T], Island [T], Steam Vents [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Emry, Lurker of the Loch
+  [Main 1]
+    → Goal: curve_out
+T7 P1: Cast Engineered Explosives (2) (X=2)
+    [Priority] P2 passes (no response)
+T7: Resolve Engineered Explosives
+T7 P1: Engineered Explosives enters with 3 charge counters
+T7 P1: Create 1x Munitions token(s)
+T7 P1: Weapons Manufacturing trigger → create 1 token(s) (Engineered Explosives entered as nontoken=True artifact)
+    → Goal: curve_out
+T7 P1: Cast Tormod's Crypt (0)
+    [Priority] P2 passes (no response)
+T7: Resolve Tormod's Crypt
+T7 P1: Create 1x Munitions token(s)
+T7 P1: Weapons Manufacturing trigger → create 1 token(s) (Tormod's Crypt entered as nontoken=True artifact)
+T7 P1: Activate Tormod's Crypt (sacrifice)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 17  |  Affinity 9
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 6  |  Opp lands: 2
+║ Library: 41  |  Graveyard: 0
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Phelia, Exuberant Shepherd (3/3), Quantum Riddler (4/6)
+║   Other: Treasure Token, Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Hallowed Fountain, Thundering Falls, Island, Steam Vents, Arena of Glory
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Weapons Manufacturing, Munitions Token, Welding Jar, Munitions Token, Mox Opal, Munitions Token, Engineered Explosives, Munitions Token, Engineered Explosives, Munitions Token, Munitions Token
+║   Lands: Shivan Reef [T], Spirebluff Canal [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Quantum Riddler
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Island→U, Arena of Glory→R, Sacred Foundry→R, Hallowed Fountain→U, Thundering Falls→R (paying for Quantum Riddler, 1 mana remaining)
+T8 P1: Engineered Explosives (X=5) counters Quantum Riddler
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer, Phelia, Exuberant Shepherd, Quantum Riddler
+T8 P2: Phelia exiles Quantum Riddler (P2's)
+T8 P2: Attack with Ragavan, Nimble Pilferer, Phelia, Exuberant Shepherd, Quantum Riddler
+  [Declare Blockers] P1 does not block
+T8 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T8 P2: Create 1x Treasure token(s)
+T8 P2: Ragavan, Nimble Pilferer exiles Kappa Cannoneer from top of P1's library
+T8 P2: Ragavan, Nimble Pilferer — may cast Kappa Cannoneer this turn
+T8 P2:   Phelia, Exuberant Shepherd (3/3) → 3 dmg to player
+  [Combat Damage] 5 damage dealt → P1 life: 9 → 4
+  [End Combat]
+  [Main 2]
+  [End Step]
+T8: Quantum Riddler returns to battlefield (P2)
+T8 P2: Phelia, Exuberant Shepherd gets +1/+1 counter (4/4)
+T8: Kappa Cannoneer returned to exile (uncast)
+
+╔══ TURN 8 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 4  |  Jeskai Blink 17
+║ Hand: 1 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 6
+║ Library: 40  |  Graveyard: 8
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Weapons Manufacturing, Munitions Token, Welding Jar, Munitions Token, Mox Opal, Munitions Token, Engineered Explosives, Munitions Token, Engineered Explosives, Munitions Token, Munitions Token
+║   Lands: Shivan Reef, Spirebluff Canal
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Phelia, Exuberant Shepherd (4/4) [tapped], Quantum Riddler (4/6) [tapped]
+║   Other: Treasure Token, Treasure Token, Treasure Token, Treasure Token
+║   Lands: Sacred Foundry [T], Hallowed Fountain [T], Thundering Falls [T], Island [T], Steam Vents, Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Island
+  [Main 1]
+T8 P1: Play Island
+T8 P1: Activate Engineered Explosives (sacrifice)
+T8: Quantum Riddler dies
+T8 P1:   destroys Quantum Riddler (MV=5)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 17  |  Affinity 4
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 6  |  Opp lands: 3
+║ Library: 40  |  Graveyard: 2
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Phelia, Exuberant Shepherd (4/4)
+║   Other: Treasure Token, Treasure Token, Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Hallowed Fountain, Thundering Falls, Island, Steam Vents, Arena of Glory
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Weapons Manufacturing, Munitions Token, Welding Jar, Munitions Token, Mox Opal, Munitions Token, Munitions Token, Engineered Explosives, Munitions Token, Munitions Token
+║   Lands: Shivan Reef, Spirebluff Canal, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Island→U, Arena of Glory→R, Sacred Foundry→R, Hallowed Fountain→U, Thundering Falls→R (paying for Quantum Riddler, 1 mana remaining)
+T9 P1: Engineered Explosives (X=5) counters Quantum Riddler
+T9 P2: Play Flooded Strand
+T9: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T9 P2: Crack Flooded Strand -> Plains (untapped)
+    → Goal: close_game
+    [Mana] Tap Plains→W (paying for Prismatic Ending, 1 mana remaining)
+T9 P2: Cast Prismatic Ending (1W) (X=1)
+    [Priority] P1 passes (no response)
+T9: Resolve Prismatic Ending
+T9: Munitions Token moved battlefield -> exile (exiled)
+T9 P2: Prismatic Ending exiles Munitions Token
+T9: Prismatic Ending moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer, Phelia, Exuberant Shepherd
+T9 P2: Phelia exiles Welding Jar (P1's)
+T9 P2: Attack with Ragavan, Nimble Pilferer, Phelia, Exuberant Shepherd
+  [Declare Blockers] P1 does not block
+T9 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T9 P2: Create 1x Treasure token(s)
+T9 P2: Ragavan, Nimble Pilferer exiles Urza's Saga from top of P1's library
+T9 P2: Ragavan, Nimble Pilferer — may cast Urza's Saga this turn
+T9 P2:   Phelia, Exuberant Shepherd (4/4) → 4 dmg to player
+P1 loses: life total -2
+  [Combat Damage] 6 damage dealt → P1 life: 4 → -2
+
+>>> Jeskai Blink wins Game 3 on turn 9 via damage
+    Final life: Affinity=-2  Jeskai Blink=16
+
+======================================================================
+  MATCH RESULT: Jeskai Blink wins 2-1
+======================================================================
