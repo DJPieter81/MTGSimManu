@@ -2807,30 +2807,38 @@ def phelia_attack(game, card, controller, targets=None, item=None):
             f"T{game.display_turn} P{controller+1}: "
             f"Phelia exiles {target.name} (P{target_owner+1}'s)")
 
-        # Schedule return at end step
+        # Schedule return at the next end step. The +1/+1 counter is
+        # NOT applied here — the oracle grants it only when the card
+        # RETURNS under the controller's control (at the end step), so
+        # it lands in phelia_end_step, not on attack.
         if not hasattr(game, '_phelia_returns'):
             game._phelia_returns = []
-        game._phelia_returns.append((target, target_owner, controller))
-
-        # If it returns under controller's control, Phelia gets +1/+1
-        if target_owner == controller:
-            card.plus_counters += 1
-            game.log.append(
-                f"T{game.display_turn} P{controller+1}: "
-                f"Phelia gets +1/+1 counter ({card.power}/{card.toughness})")
+        # Carry the source instance so the delayed self-counter goes on
+        # the exact creature that attacked — no card-name lookup later.
+        game._phelia_returns.append((target, target_owner, controller, card))
 
 
 @EFFECT_REGISTRY.register("Phelia, Exuberant Shepherd", EffectTiming.END_STEP,
                            description="Return Phelia-exiled cards to battlefield")
 def phelia_end_step(game, card, controller, targets=None, item=None):
-    """Return all Phelia-exiled permanents to the battlefield."""
-    if not hasattr(game, '_phelia_returns') or not game._phelia_returns:
+    """Resolve the delayed "return at the next end step" trigger: return
+    each permanent scheduled by THIS player's Phelia attack, and — per
+    the oracle — put a +1/+1 counter on Phelia only for a card that
+    returns under her controller's control.
+
+    Processes only entries created by ``controller`` (the player whose
+    end step this is); other players' scheduled returns wait for their
+    own end step. Robust to ``card`` being None (the source may have
+    left the battlefield before the delayed trigger resolves — the
+    return still happens; the counter fizzles if Phelia is gone)."""
+    queue = getattr(game, '_phelia_returns', None)
+    if not queue:
         return
 
-    returns = list(game._phelia_returns)
-    game._phelia_returns.clear()
+    mine = [t for t in queue if t[2] == controller]
+    game._phelia_returns = [t for t in queue if t[2] != controller]
 
-    for exiled_card, owner_idx, phelia_controller in returns:
+    for exiled_card, owner_idx, phelia_controller, source in mine:
         owner = game.players[owner_idx]
         if exiled_card in owner.exile:
             owner.exile.remove(exiled_card)
@@ -2844,6 +2852,17 @@ def phelia_end_step(game, card, controller, targets=None, item=None):
                 f"{exiled_card.name} returns to battlefield (P{owner_idx+1})")
             # Trigger ETB on return
             game.trigger_etb(exiled_card, owner_idx)
+        # Oracle: "If it entered under your control, put a +1/+1 counter
+        # on [the source]." True exactly when the card returns under the
+        # source's controller's control — and only while the source is
+        # still on the battlefield (CR 603.10; else the counter fizzles).
+        if (owner_idx == phelia_controller
+                and source in game.players[phelia_controller].battlefield):
+            source.plus_counters += 1
+            game.log.append(
+                f"T{game.display_turn} P{phelia_controller+1}: "
+                f"{source.name} gets +1/+1 counter "
+                f"({source.power}/{source.toughness})")
 
 
 # ═══════════════════════════════════════════════════════════════════

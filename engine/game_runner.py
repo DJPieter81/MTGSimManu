@@ -910,18 +910,9 @@ class GameRunner:
                         break
                     # Activated artifacts: Expedition Map, Ratchet Bomb
                     self._activate_utility_artifacts(game, active)
-                    # Phelia blink returns: exiled permanents come back + trigger ETB
-                    if hasattr(game, '_phelia_returns') and game._phelia_returns:
-                        from engine.card_effects import EFFECT_REGISTRY, EffectTiming
-                        for perm in game.players[active].battlefield:
-                            # Generic: any creature with end-step return trigger
-                            p_oracle = (perm.template.oracle_text or '').lower()
-                            if ('end step' in p_oracle and 'return' in p_oracle
-                                    and 'exiled' in p_oracle):
-                                EFFECT_REGISTRY.execute(
-                                    perm.name, EffectTiming.END_STEP,
-                                    game, perm, active)
-                                break
+                    # Delayed "return at the next end step" blink triggers
+                    # (Phelia-style): resolve this player's scheduled returns.
+                    self._process_end_step_returns(game, active)
                     # End-step instant window: opponent can cast instants/flash
                     self._end_step_instant_window(game, opponent_ai, ai)
                     if game.game_over:
@@ -2277,6 +2268,21 @@ class GameRunner:
                 self._resolve_sac_effect(game, active, perm, effect_text)
                 if game.game_over:
                     return
+
+    def _process_end_step_returns(self, game: GameState, active: int):
+        """Resolve delayed "return at the next end step" blink triggers
+        (Phelia-style) scheduled during ``active``'s turn.
+
+        The scheduled-returns queue (``game._phelia_returns``) is the
+        authoritative record of the delayed triggered ability, so this
+        drains it directly — no oracle-text scan for a matching
+        permanent (which previously demanded the literal word "exiled"
+        and so never fired for "return that card" wording, and was lost
+        entirely if the source left the battlefield first)."""
+        if not getattr(game, '_phelia_returns', None):
+            return
+        from engine.card_effects import phelia_end_step
+        phelia_end_step(game, None, active)
 
     def _resolve_sac_effect(self, game: GameState, controller: int, sacrificed, effect_text: str):
         """Execute sacrifice ability effect, parsed from oracle text."""
