@@ -3986,6 +3986,42 @@ def parse_has_pump_grant(oracle: str) -> bool:
     return 'gets +' in lo or 'additional +' in lo
 
 
+def parse_pump_spell(oracle: str) -> "tuple[int, int, str]":
+    """Parse a "target creature gets +N/+M until end of turn [and
+    gains/has <keyword>]" combat-trick spell into (power, toughness,
+    keyword).
+
+    Returns (0, 0, "") when the oracle has no such clause. Reminder
+    text is stripped first so a Role token's "(...gets +1/+1 and has
+    trample.)" reminder does not pollute the spell's own bonus.
+
+    Class size: ~200 Modern-legal combat tricks (Giant Growth, Might of
+    Old Krosa, Monstrous Rage's base bonus, Blossoming Defense, ...).
+    The single generic resolver replaces the per-card EFFECT_REGISTRY
+    handlers this shape would otherwise need.
+    """
+    if not oracle:
+        return 0, 0, ""
+    text = strip_reminder_text(oracle).lower()
+    m = re.search(
+        r'target creature[^.]*?gets \+(\d+)/\+(\d+) until end of turn', text)
+    if not m:
+        return 0, 0, ""
+    power, tough = int(m.group(1)), int(m.group(2))
+    # A keyword granted in the same sentence ("and gains trample", "and
+    # has flying"). Scoped to the pump clause to avoid a later sentence.
+    clause = text[m.start():m.start() + 120]
+    keyword = ""
+    kw_m = re.search(r'(?:gains|has) ([a-z ]+?)(?: until end of turn|[.,]|$)',
+                     clause)
+    if kw_m:
+        for word in _KEYWORD_WORDS:
+            if word in kw_m.group(1):
+                keyword = word
+                break
+    return power, tough, keyword
+
+
 def parse_has_x_counter_scaling(oracle: str) -> bool:
     """Return True when oracle grants X +1/+1 counters based on mana paid.
 

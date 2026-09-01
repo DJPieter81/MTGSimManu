@@ -1794,7 +1794,7 @@ class CardDatabase:
             parse_has_cast_trigger, parse_has_recurring_trigger,
             parse_has_scaling_effect, parse_has_self_trigger,
             parse_has_recurring_draw_trigger, parse_has_each_opponent_effect,
-            parse_has_pump_grant, parse_has_x_counter_scaling,
+            parse_has_pump_grant, parse_pump_spell, parse_has_x_counter_scaling,
             parse_has_lifegain_equal_power, parse_has_lifegain_effect,
             parse_has_exile_own_creature, parse_has_converge,
             parse_has_delirium, parse_has_all_basic_land_types,
@@ -1952,6 +1952,10 @@ class CardDatabase:
         template.has_recurring_draw_trigger = parse_has_recurring_draw_trigger(oracle)
         template.has_each_opponent_effect = parse_has_each_opponent_effect(oracle)
         template.has_pump_grant = parse_has_pump_grant(oracle)
+        _pp, _pt, _pk = parse_pump_spell(oracle)
+        template.pump_spell_power = _pp
+        template.pump_spell_toughness = _pt
+        template.pump_spell_keyword = _pk
         template.has_x_counter_scaling = parse_has_x_counter_scaling(oracle)
         template.has_lifegain_equal_power = parse_has_lifegain_equal_power(oracle)
         template.has_lifegain_effect = parse_has_lifegain_effect(oracle)

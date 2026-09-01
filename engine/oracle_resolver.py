@@ -877,6 +877,41 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
             _resolve_mass_mode_clause(game, card, controller, oracle):
         return True
 
+    # ── Generic combat trick: "target creature gets +N/+M until end of
+    #    turn [and gains <keyword>]" — typed fields (parse_pump_spell),
+    #    no oracle inspection here. Reached only when no EFFECT_REGISTRY
+    #    handler took the spell, so bespoke pumps (Mutagenic Growth,
+    #    Violent Urge) never double-apply. Applies to the chosen target,
+    #    else the controller's best creature.
+    _pp = getattr(card.template, 'pump_spell_power', 0)
+    _pt = getattr(card.template, 'pump_spell_toughness', 0)
+    if oracle_override is None and (_pp or _pt):
+        from engine.cards import Keyword as _KW
+        me = game.players[controller]
+        tgt = None
+        for tid in (targets or []):
+            if isinstance(tid, int) and tid > 0:
+                c = game.get_card_by_id(tid)
+                if (c is not None and c.zone == 'battlefield'
+                        and c.template.is_creature):
+                    tgt = c
+                    break
+        if tgt is None and me.creatures:
+            tgt = max(me.creatures, key=lambda c: c.power or 0)
+        if tgt is not None:
+            tgt.temp_power_mod += _pp
+            tgt.temp_toughness_mod += _pt
+            _kw = getattr(card.template, 'pump_spell_keyword', '')
+            if _kw:
+                _kwe = getattr(_KW, _kw.upper().replace(' ', '_'), None)
+                if _kwe is not None:
+                    tgt.temp_keywords.add(_kwe)
+            game.log.append(
+                f"T{game.display_turn} P{controller+1}: "
+                f"{card.name} gives {tgt.name} +{_pp}/+{_pt}"
+                f"{' and ' + _kw if _kw else ''}")
+            return True
+
     # Clause-scoped predicates (E5): a spell effect's verbs live in one
     # ability paragraph (a spell's resolution text; an added ability
     # like flashback or suspend sits on its own line). Whole-text

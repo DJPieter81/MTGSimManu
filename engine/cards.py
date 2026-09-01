@@ -805,6 +805,11 @@ class CardTemplate:
     # Pump grant -- True when oracle grants +X/+Y bonus ('gets +'/'additional +').
     # Populated by oracle_parser.parse_has_pump_grant.
     has_pump_grant: bool = False
+    # "target creature gets +N/+M until end of turn [and gains <kw>]"
+    # combat trick — parsed once (parse_pump_spell). 0/0/"" = not one.
+    pump_spell_power: int = 0
+    pump_spell_toughness: int = 0
+    pump_spell_keyword: str = ""
     # X-counter scaling -- True when oracle grants 'X +1/+1 counter(s)' (Ballista pattern).
     # Populated by oracle_parser.parse_has_x_counter_scaling.
     has_x_counter_scaling: bool = False
