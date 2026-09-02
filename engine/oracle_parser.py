@@ -402,7 +402,13 @@ def parse_self_cost_reduction(oracle: str) -> Tuple[int, str]:
     plural "cost", not "this spell costs".  Consumed at DB load into
     ``CardTemplate.self_cost_reduction_amount`` / ``_unit``.
     """
-    text = strip_reminder_text(oracle or '').lower()
+    # Cheap early-out before the (regex-substitution) reminder strip: the
+    # shape always contains "less to cast for each"; skipping the strip for
+    # the ~99.9% of cards that cannot match keeps DB load fast (this ran
+    # strip_reminder_text on every one of 22k cards otherwise).
+    if not oracle or 'less to cast for each' not in oracle.lower():
+        return 0, ''
+    text = strip_reminder_text(oracle).lower()
     m = _SELF_COST_REDUCTION_RE.search(text)
     if not m:
         return 0, ''
@@ -2832,6 +2838,8 @@ def parse_madness_cost(oracle: str) -> "Optional[ManaCost]":
     Class size: 47 Modern-legal cards in the DB carry the keyword; all
     share this one template.
     """
+    if not oracle or 'madness' not in oracle.lower():
+        return None
     m = re.search(r'\bmadness\s+((?:\{[^}]+\})+)', oracle, re.IGNORECASE)
     if not m:
         return None

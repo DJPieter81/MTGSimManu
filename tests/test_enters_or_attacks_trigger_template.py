@@ -46,17 +46,18 @@ def test_combined_template_short_legendary_name_form():
         "Agrus Kos, Spirit of Justice")
 
 
-def test_every_real_enters_or_attacks_card_parses_as_an_attack_trigger():
+def test_every_real_enters_or_attacks_card_parses_as_an_attack_trigger(card_db):
     """Whole-class check against the real card DB, not invented strings.
 
     The bug was a template the parser had never seen, so the regression guard
     that matters is "no card carrying this template is left unflagged".
     """
-    from engine.card_database import CardDatabase
-
     import re
 
-    db = CardDatabase()
+    # Use the session-cached DB fixture rather than a fresh CardDatabase()
+    # load: the suite already holds one, so a second cold load here just
+    # doubled load time and risked the 120s per-test cap on slow runners.
+    db = card_db
     templates = list(db.cards.values() if hasattr(db, "cards") else [])
     # SELF-referential subject only ("this <noun>" or the card's own name).
     # "Whenever your commander enters or attacks" is a WATCHER on a different
