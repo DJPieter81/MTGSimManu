@@ -1,0 +1,1099 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+======================================================================
+  GAME 1: Hollow One (P1) vs Boros Energy (P2)  —  seed 56500
+  Series: Hollow One 0 - 0 Boros Energy
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Hollow One wins → chooses to play first
+║ P1 (on play): Hollow One
+║ P2 (on draw): Boros Energy
+╚═══════════════════════════════════════════════════════
+
+P1 (Hollow One) opening hand (2 lands, 5 spells):
+  • Lightning Bolt [Spell, CMC 1]
+  • Bloodstained Mire [Land, CMC 0]
+  • Wooded Foothills [Land, CMC 0]
+  • Burning Inquiry [Spell, CMC 1]
+  • Vengevine [Creature, CMC 4]
+  • Vengevine [Creature, CMC 4]
+  • Blazing Rootwalla [Creature, CMC 1]
+→ P1 KEEPS 7 — has key card(s): Blazing Rootwalla, Lightning Bolt, 3 cheap spells
+
+P2 (Boros Energy) opening hand (2 lands, 5 spells):
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Mana Tithe [Spell, CMC 1]
+  • Dalkovan Encampment [Land, CMC 0]
+  • Guide of Souls [Creature, CMC 1]
+  • Ranger-Captain of Eos [Creature, CMC 3]
+  • Guide of Souls [Creature, CMC 1]
+  • Dalkovan Encampment [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Guide of Souls, Ragavan, Nimble Pilferer, 5 cheap spells
+
+
+╔══ TURN 1 — Hollow One (P1) ══════════════════════════
+║ Life: Hollow One 20  |  Boros Energy 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Hollow One board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Wooded Foothills
+T1: Wooded Foothills moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Wooded Foothills (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Hollow One 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Hollow One board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Seasoned Pyromancer
+  [Main 1]
+T1 P2: Play Dalkovan Encampment (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Hollow One (P1) ══════════════════════════
+║ Life: Hollow One 19  |  Boros Energy 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Hollow One board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Dalkovan Encampment [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Hardened Academic
+  [Main 1]
+T2 P1: Play Bloodstained Mire
+T2: Bloodstained Mire moved battlefield -> graveyard (fetchland sacrifice)
+T2 P1: Crack Bloodstained Mire (pay 1 life) -> Sacred Foundry (tapped, life: 18)
+    → Goal: deploy_engine
+    [Mana] Tap Sacred Foundry→R (paying for Blazing Rootwalla, 0 mana remaining)
+T2 P1: Cast Blazing Rootwalla (R)
+    [Priority] P2 passes (no response)
+T2: Resolve Blazing Rootwalla
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Hollow One 18
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Dalkovan Encampment
+║ Hollow One board:
+║   Creatures: Blazing Rootwalla (1/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ocelot Pride
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Dalkovan Encampment→W (paying for Guide of Souls, 0 mana remaining)
+T2 P2: Cast Guide of Souls (W)
+    [Priority] P1 passes (no response)
+T2: Resolve Guide of Souls
+T2 P2: Play Dalkovan Encampment (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Hollow One (P1) ══════════════════════════
+║ Life: Hollow One 18  |  Boros Energy 20
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Hollow One board:
+║   Creatures: Blazing Rootwalla (1/1)
+║   Lands: Sacred Foundry, Sacred Foundry
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2)
+║   Lands: Dalkovan Encampment [T], Dalkovan Encampment [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Sacred Foundry
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R (paying for Hardened Academic, 0 mana remaining)
+T3 P1: Cast Hardened Academic (WR)
+    [Priority] P2 passes (no response)
+T3: Resolve Hardened Academic
+T3 P1: Play Sacred Foundry (tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Hardened Academic
+T3 P1: Attack with Hardened Academic
+  [Declare Blockers] P2 does not block
+T3 P1:   Hardened Academic (2/1) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 20 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 18  |  Hollow One 18
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2)
+║   Lands: Dalkovan Encampment, Dalkovan Encampment
+║ Hollow One board:
+║   Creatures: Blazing Rootwalla (1/1), Hardened Academic (2/1) [tapped]
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Voice of Victory
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Dalkovan Encampment→W (paying for Guide of Souls, 1 mana remaining)
+T3 P2: Cast Guide of Souls (W)
+    [Priority] P1 passes (no response)
+T3: Resolve Guide of Souls
+T3 P2: Gain 1 life from Guide of Souls (life: 19)
+T3 P2: +1 energy from Guide of Souls (total: 1)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Dalkovan Encampment→W (paying for Ocelot Pride, 0 mana remaining)
+T3 P2: Cast Ocelot Pride (W)
+    [Priority] P1 passes (no response)
+T3: Resolve Ocelot Pride
+T3 P2: Gain 1 life from Guide of Souls (life: 20)
+T3 P2: +1 energy from Guide of Souls (total: 2)
+T3 P2: Gain 1 life from Guide of Souls (life: 21)
+T3 P2: +1 energy from Guide of Souls (total: 3)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Guide of Souls
+T3 P2: Attack with Guide of Souls
+  [Declare Blockers] P1 does not block
+T3 P2:   Guide of Souls (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 18 → 17
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Hollow One (P1) ══════════════════════════
+║ Life: Hollow One 17  |  Boros Energy 21
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 49  |  Graveyard: 2
+║ Hollow One board:
+║   Creatures: Blazing Rootwalla (1/1), Hardened Academic (2/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2) [tapped], Guide of Souls (1/2), Ocelot Pride (1/1)
+║   Lands: Dalkovan Encampment [T], Dalkovan Encampment [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Marauding Mako
+  [Main 1]
+    → Goal: execute_payoff
+    [Target] → Ocelot Pride: marginal threat 7.93 (1/1 body) — better than 3 face dmg
+    [Mana] Tap Sacred Foundry→R (paying for Lightning Bolt, 2 mana remaining)
+T4 P1: Cast Lightning Bolt (R)
+    [Priority] P2 passes (no response)
+T4: Resolve Lightning Bolt
+T4 P1: Lightning Bolt deals 3 to Ocelot Pride
+T4: Lightning Bolt moved stack -> graveyard (resolution)
+T4: Ocelot Pride dies
+    → Goal: execute_payoff
+    [Mana] Tap Sacred Foundry→R (paying for Marauding Mako, 1 mana remaining)
+T4 P1: Cast Marauding Mako (R)
+    [Priority] P2 passes (no response)
+T4: Resolve Marauding Mako
+T4 P1: activate Blazing Rootwalla — This creature gets +2/+0 until end of turn.
+T4 P1: Blazing Rootwalla gets +2/+0 until end of turn
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Hardened Academic
+T4 P1: Attack with Hardened Academic
+  [Declare Blockers] P2 does not block
+T4 P1:   Hardened Academic (2/1) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 21 → 19
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 19  |  Hollow One 17
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2), Guide of Souls (1/2)
+║   Lands: Dalkovan Encampment, Dalkovan Encampment
+║ Hollow One board:
+║   Creatures: Blazing Rootwalla (1/1), Hardened Academic (2/1) [tapped], Marauding Mako (1/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Goblin Bombardment
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Dalkovan Encampment→W, Dalkovan Encampment→W (paying for Voice of Victory, 0 mana remaining)
+T4 P2: Cast Voice of Victory (1W)
+    [Priority] P1 passes (no response)
+T4: Resolve Voice of Victory
+T4 P2: Gain 1 life from Guide of Souls (life: 20)
+T4 P2: +1 energy from Guide of Souls (total: 4)
+T4 P2: Gain 1 life from Guide of Souls (life: 21)
+T4 P2: +1 energy from Guide of Souls (total: 5)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Guide of Souls, Guide of Souls
+T4 P2: Attack with Guide of Souls, Guide of Souls
+  [Declare Blockers] P1 does not block
+T4 P2:   Guide of Souls (1/2) → 1 dmg to player
+T4 P2:   Guide of Souls (1/2) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 17 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Hollow One (P1) ══════════════════════════
+║ Life: Hollow One 15  |  Boros Energy 21
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 48  |  Graveyard: 3
+║ Hollow One board:
+║   Creatures: Blazing Rootwalla (1/1), Hardened Academic (2/1), Marauding Mako (1/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2) [tapped], Guide of Souls (1/2) [tapped], Voice of Victory (1/3)
+║   Lands: Dalkovan Encampment [T], Dalkovan Encampment [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ox of Agonas
+  [Main 1]
+T5 P1: activate Blazing Rootwalla — This creature gets +2/+0 until end of turn.
+T5 P1: Blazing Rootwalla gets +2/+0 until end of turn
+    → Goal: execute_payoff
+    [Mana] Tap Sacred Foundry→R (paying for Burning Inquiry, 1 mana remaining)
+T5 P1: Cast Burning Inquiry (R)
+    [Priority] P2 passes (no response)
+T5: Resolve Burning Inquiry
+T5: Burning Inquiry moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Hardened Academic
+T5 P1: Attack with Hardened Academic
+  [Declare Blockers] P2 does not block
+T5 P1:   Hardened Academic (2/1) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 21 → 19
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 19  |  Hollow One 15
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2), Guide of Souls (1/2), Voice of Victory (1/3)
+║   Lands: Dalkovan Encampment, Dalkovan Encampment
+║ Hollow One board:
+║   Creatures: Blazing Rootwalla (1/1), Hardened Academic (2/1) [tapped], Marauding Mako (1/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Seasoned Pyromancer
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Guide of Souls, Guide of Souls, Voice of Victory
+T5 P2: Gain 1 life from Guide of Souls (life: 20)
+T5 P2: +1 energy from Guide of Souls (total: 6)
+T5 P2: Gain 1 life from Guide of Souls (life: 21)
+T5 P2: +1 energy from Guide of Souls (total: 7)
+T5 P2: Gain 1 life from Guide of Souls (life: 22)
+T5 P2: +1 energy from Guide of Souls (total: 8)
+T5 P2: Gain 1 life from Guide of Souls (life: 23)
+T5 P2: +1 energy from Guide of Souls (total: 9)
+T5 P2: Create 2x Warrior token(s)
+T5 P2: Voice of Victory mobilize 2 — create 2 1/1 tokens
+T5 P2: Attack with Guide of Souls, Guide of Souls, Voice of Victory
+  [Declare Blockers] P1 does not block
+T5 P2:   Guide of Souls (1/2) → 1 dmg to player
+T5 P2:   Guide of Souls (1/2) → 1 dmg to player
+T5 P2:   Voice of Victory (1/3) → 1 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 15 → 12
+  [End Combat]
+  [Main 2]
+  [End Step]
+T5: Warrior Token moved battlefield -> graveyard (Mobilize sacrifice)
+T5: Warrior Token sacrificed (Mobilize)
+T5: Warrior Token moved battlefield -> graveyard (Mobilize sacrifice)
+T5: Warrior Token sacrificed (Mobilize)
+
+╔══ TURN 6 — Hollow One (P1) ══════════════════════════
+║ Life: Hollow One 12  |  Boros Energy 23
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 47  |  Graveyard: 4
+║ Hollow One board:
+║   Creatures: Blazing Rootwalla (1/1), Hardened Academic (2/1), Marauding Mako (1/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2) [tapped], Guide of Souls (1/2) [tapped], Voice of Victory (1/3) [tapped]
+║   Lands: Dalkovan Encampment, Dalkovan Encampment
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Marauding Mako
+  [Main 1]
+T6 P1: activate Blazing Rootwalla — This creature gets +2/+0 until end of turn.
+T6 P1: Blazing Rootwalla gets +2/+0 until end of turn
+T6: Marauding Mako moved hand -> graveyard (cycling)
+T6 P1: Cycle Marauding Mako (pay 2 mana, draw: Vengevine)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Blazing Rootwalla, Hardened Academic, Marauding Mako
+T6 P1: Attack with Blazing Rootwalla, Hardened Academic, Marauding Mako
+  [Declare Blockers] P2 does not block
+T6 P1:   Blazing Rootwalla (3/1) → 3 dmg to player
+T6 P1:   Hardened Academic (2/1) → 2 dmg to player
+T6 P1:   Marauding Mako (1/1) → 1 dmg to player
+  [Combat Damage] 6 damage dealt → P2 life: 23 → 17
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 17  |  Hollow One 12
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2), Guide of Souls (1/2), Voice of Victory (1/3)
+║   Lands: Dalkovan Encampment, Dalkovan Encampment
+║ Hollow One board:
+║   Creatures: Blazing Rootwalla (1/1) [tapped], Hardened Academic (2/1) [tapped], Marauding Mako (1/1) [tapped]
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Dalkovan Encampment→W, Dalkovan Encampment→W (paying for Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, 0 mana remaining)
+T6 P2: Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)
+    [Priority] P1 passes (no response)
+T6: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T6 P2: Gain 1 life from Guide of Souls (life: 18)
+T6 P2: +1 energy from Guide of Souls (total: 10)
+T6 P2: Gain 1 life from Guide of Souls (life: 19)
+T6 P2: +1 energy from Guide of Souls (total: 11)
+T6 P2: Create 1x Cat token(s)
+T6 P2: Ajani creates 2/1 Cat Warrior token
+T6 P2: Gain 1 life from Guide of Souls (life: 20)
+T6 P2: +1 energy from Guide of Souls (total: 12)
+T6 P2: Gain 1 life from Guide of Souls (life: 21)
+T6 P2: +1 energy from Guide of Souls (total: 13)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Guide of Souls, Guide of Souls, Voice of Victory
+T6 P2: Gain 1 life from Guide of Souls (life: 22)
+T6 P2: +1 energy from Guide of Souls (total: 14)
+T6 P2: Gain 1 life from Guide of Souls (life: 23)
+T6 P2: +1 energy from Guide of Souls (total: 15)
+T6 P2: Gain 1 life from Guide of Souls (life: 24)
+T6 P2: +1 energy from Guide of Souls (total: 16)
+T6 P2: Gain 1 life from Guide of Souls (life: 25)
+T6 P2: +1 energy from Guide of Souls (total: 17)
+T6 P2: Create 2x Warrior token(s)
+T6 P2: Voice of Victory mobilize 2 — create 2 1/1 tokens
+T6 P2: Attack with Guide of Souls, Guide of Souls, Voice of Victory
+  [Declare Blockers] P1 does not block
+T6 P2:   Guide of Souls (1/2) → 1 dmg to player
+T6 P2:   Guide of Souls (1/2) → 1 dmg to player
+T6 P2:   Voice of Victory (1/3) → 1 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 12 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+T6: Warrior Token moved battlefield -> graveyard (Mobilize sacrifice)
+T6: Warrior Token sacrificed (Mobilize)
+T6: Warrior Token moved battlefield -> graveyard (Mobilize sacrifice)
+T6: Warrior Token sacrificed (Mobilize)
+
+╔══ TURN 7 — Hollow One (P1) ══════════════════════════
+║ Life: Hollow One 9  |  Boros Energy 25
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 45  |  Graveyard: 5
+║ Hollow One board:
+║   Creatures: Blazing Rootwalla (1/1), Hardened Academic (2/1), Marauding Mako (1/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2) [tapped], Guide of Souls (1/2) [tapped], Voice of Victory (1/3) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Lands: Dalkovan Encampment [T], Dalkovan Encampment [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Detective's Phoenix
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Sacred Foundry→R, Sacred Foundry→R, Sacred Foundry→R (paying for Detective's Phoenix, 0 mana remaining)
+T7 P1: Cast Detective's Phoenix (2R)
+    [Priority] P2 passes (no response)
+T7: Resolve Detective's Phoenix
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Hardened Academic, Detective's Phoenix
+T7 P1: Attack with Hardened Academic, Detective's Phoenix
+  [Declare Blockers] P2 does not block
+T7 P1:   Hardened Academic (2/1) → 2 dmg to player
+T7 P1:   Detective's Phoenix (2/2) → 2 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 25 → 21
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 21  |  Hollow One 9
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2), Guide of Souls (1/2), Voice of Victory (1/3), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Lands: Dalkovan Encampment, Dalkovan Encampment
+║ Hollow One board:
+║   Creatures: Blazing Rootwalla (1/1), Hardened Academic (2/1) [tapped], Marauding Mako (1/1), Detective's Phoenix (2/2) [tapped]
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Marsh Flats
+  [Main 1]
+T7 P2: Play Marsh Flats
+T7: Marsh Flats moved battlefield -> graveyard (fetchland sacrifice)
+T7 P2: Crack Marsh Flats (pay 1 life) -> Sacred Foundry (tapped, life: 20)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Guide of Souls, Guide of Souls, Voice of Victory, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+T7 P2: Gain 1 life from Guide of Souls (life: 21)
+T7 P2: +1 energy from Guide of Souls (total: 18)
+T7 P2: Gain 1 life from Guide of Souls (life: 22)
+T7 P2: +1 energy from Guide of Souls (total: 19)
+T7 P2: Gain 1 life from Guide of Souls (life: 23)
+T7 P2: +1 energy from Guide of Souls (total: 20)
+T7 P2: Gain 1 life from Guide of Souls (life: 24)
+T7 P2: +1 energy from Guide of Souls (total: 21)
+T7 P2: Create 2x Warrior token(s)
+T7 P2: Voice of Victory mobilize 2 — create 2 1/1 tokens
+T7 P2: Attack with Guide of Souls, Guide of Souls, Voice of Victory, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+T7 P1:   [BLOCK-EMERGENCY] Blazing Rootwalla (1/1) blocks Cat Token (2/1) — lifespan_delta=-0.17
+T7 P1:   [BLOCK-EMERGENCY] Marauding Mako (1/1) blocks Guide of Souls (1/2) — lifespan_delta=-0.67
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T7 P2:   Guide of Souls (1/2) → 1 dmg to player
+T7 P2:   Voice of Victory (1/3) → 1 dmg to player
+T7 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+T7: Blazing Rootwalla dies
+T7: Marauding Mako dies
+T7: Cat Token dies
+  [Combat Damage] 3 damage dealt → P1 life: 9 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+T7: Warrior Token moved battlefield -> graveyard (Mobilize sacrifice)
+T7: Warrior Token sacrificed (Mobilize)
+T7: Warrior Token moved battlefield -> graveyard (Mobilize sacrifice)
+T7: Warrior Token sacrificed (Mobilize)
+
+╔══ TURN 8 — Hollow One (P1) ══════════════════════════
+║ Life: Hollow One 6  |  Boros Energy 24
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 44  |  Graveyard: 7
+║ Hollow One board:
+║   Creatures: Hardened Academic (2/1), Detective's Phoenix (2/2)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2) [tapped], Guide of Souls (1/2) [tapped], Voice of Victory (1/3) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped]
+║   Lands: Dalkovan Encampment, Dalkovan Encampment, Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Burning Inquiry
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Sacred Foundry→R (paying for Burning Inquiry, 2 mana remaining)
+T8 P1: Cast Burning Inquiry (R)
+    [Priority] P2 passes (no response)
+T8: Resolve Burning Inquiry
+T8: Burning Inquiry moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Hardened Academic, Detective's Phoenix
+T8 P1: Attack with Hardened Academic, Detective's Phoenix
+  [Declare Blockers] P2 does not block
+T8 P1:   Hardened Academic (2/1) → 2 dmg to player
+T8 P1:   Detective's Phoenix (2/2) → 2 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 24 → 20
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Hollow One 6
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 45  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2), Guide of Souls (1/2), Voice of Victory (1/3), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)
+║   Lands: Dalkovan Encampment, Dalkovan Encampment, Sacred Foundry
+║ Hollow One board:
+║   Creatures: Hardened Academic (2/1) [tapped], Detective's Phoenix (2/2) [tapped]
+║   Lands: Sacred Foundry [T], Sacred Foundry, Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Dalkovan Encampment→W, Sacred Foundry→R (paying for Goblin Bombardment, 1 mana remaining)
+T8 P2: Cast Goblin Bombardment (1R)
+    [Priority] P1 passes (no response)
+T8: Resolve Goblin Bombardment
+T8 P2: Goblin Bombardment enters — sacrifice creatures for 1 damage each
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Guide of Souls, Guide of Souls, Voice of Victory, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T8 P2: Gain 1 life from Guide of Souls (life: 21)
+T8 P2: +1 energy from Guide of Souls (total: 22)
+T8 P2: Gain 1 life from Guide of Souls (life: 22)
+T8 P2: +1 energy from Guide of Souls (total: 23)
+T8 P2: Gain 1 life from Guide of Souls (life: 23)
+T8 P2: +1 energy from Guide of Souls (total: 24)
+T8 P2: Gain 1 life from Guide of Souls (life: 24)
+T8 P2: +1 energy from Guide of Souls (total: 25)
+T8 P2: Create 2x Warrior token(s)
+T8 P2: Voice of Victory mobilize 2 — create 2 1/1 tokens
+T8 P2: Attack with Guide of Souls, Guide of Souls, Voice of Victory, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [Declare Blockers] P1 does not block
+T8 P2:   Guide of Souls (1/2) → 1 dmg to player
+T8 P2:   Guide of Souls (1/2) → 1 dmg to player
+T8 P2:   Voice of Victory (1/3) → 1 dmg to player
+T8 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 6 → 2
+  [End Combat]
+  [Main 2]
+T8: Warrior Token moved battlefield -> graveyard (activation cost (Goblin Bombardment))
+T8 P2: activate Goblin Bombardment — This enchantment deals 1 damage to any target.
+T8 P2: Goblin Bombardment deals 1 to P1 (face)
+T8: Warrior Token moved battlefield -> graveyard (activation cost (Goblin Bombardment))
+T8 P2: activate Goblin Bombardment — This enchantment deals 1 damage to any target.
+T8 P2: Goblin Bombardment deals 1 to P1 (face)
+P1 loses: life total 0
+
+>>> Boros Energy wins Game 1 on turn 8 via damage
+    Final life: Hollow One=0  Boros Energy=24
+
+======================================================================
+  GAME 2: Hollow One (P1) vs Boros Energy (P2)  —  seed 56501
+  Series: Hollow One 0 - 1 Boros Energy
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Hollow One wins → chooses to play first
+║ P1 (on play): Hollow One
+║ P2 (on draw): Boros Energy
+╚═══════════════════════════════════════════════════════
+
+P1 (Hollow One) opening hand (4 lands, 3 spells):
+  • Wooded Foothills [Land, CMC 0]
+  • Mountain [Land, CMC 0]
+  • Burning Inquiry [Spell, CMC 1]
+  • Street Wraith [Creature, CMC 5]
+  • Faithless Looting [Spell, CMC 1]
+  • Sacred Foundry [Land, CMC 0]
+  • Arid Mesa [Land, CMC 0]
+→ P1 MULLIGANS (too many lands (4 > 3); first-turn value 3 < 5)
+  New hand (2 lands, 5 spells): ['Lightning Bolt', 'Arid Mesa', 'Marauding Mako', 'Wooded Foothills', 'Street Wraith', 'Hardened Academic', 'Vengevine']
+→ P1 mulligans to 6, bottoms: ['Vengevine']
+  Keeps: ['Lightning Bolt', 'Arid Mesa', 'Marauding Mako', 'Wooded Foothills', 'Street Wraith', 'Hardened Academic']
+
+P2 (Boros Energy) opening hand (2 lands, 5 spells):
+  • Flooded Strand [Land, CMC 0]
+  • Voice of Victory [Creature, CMC 2]
+  • Seasoned Pyromancer [Creature, CMC 3]
+  • Goblin Bombardment [Spell, CMC 2]
+  • Fable of the Mirror-Breaker // Reflection of Kiki-Jiki [Spell, CMC 3]
+  • Marsh Flats [Land, CMC 0]
+  • Mana Tithe [Spell, CMC 1]
+→ P2 KEEPS 7 — 2 lands, 5 spells, score 37.0
+
+
+╔══ TURN 1 — Hollow One (P1) ══════════════════════════
+║ Life: Hollow One 20  |  Boros Energy 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 54  |  Graveyard: 0
+║ Hollow One board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Arid Mesa
+T1: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+T1: Street Wraith moved hand -> graveyard (cycling)
+T1 P1: Cycle Street Wraith (pay 2 life, draw: Mountain)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Hollow One 17
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Hollow One board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+T1 P2: Play Flooded Strand
+T1: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Flooded Strand (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Hollow One (P1) ══════════════════════════
+║ Life: Hollow One 17  |  Boros Energy 19
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 2
+║ Hollow One board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Detective's Phoenix
+  [Main 1]
+T2 P1: Play Wooded Foothills
+T2: Wooded Foothills moved battlefield -> graveyard (fetchland sacrifice)
+T2 P1: Crack Wooded Foothills (pay 1 life) -> Sacred Foundry (tapped, life: 16)
+    → Goal: deploy_engine
+    [Mana] Tap Sacred Foundry→R (paying for Marauding Mako, 0 mana remaining)
+T2 P1: Cast Marauding Mako (R)
+    [Priority] P2 passes (no response)
+T2: Resolve Marauding Mako
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 19  |  Hollow One 16
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Hollow One board:
+║   Creatures: Marauding Mako (1/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Marsh Flats
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 0 mana remaining)
+T2 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T2: Resolve Ragavan, Nimble Pilferer
+T2 P2: Play Marsh Flats
+T2: Marsh Flats moved battlefield -> graveyard (fetchland sacrifice)
+T2 P2: Crack Marsh Flats (pay 1 life) -> Sacred Foundry (tapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Hollow One (P1) ══════════════════════════
+║ Life: Hollow One 16  |  Boros Energy 18
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 3
+║ Hollow One board:
+║   Creatures: Marauding Mako (1/1)
+║   Lands: Sacred Foundry, Sacred Foundry
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Bloodstained Mire
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R (paying for Hardened Academic, 0 mana remaining)
+T3 P1: Cast Hardened Academic (WR)
+    [Priority] P2 passes (no response)
+T3: Resolve Hardened Academic
+T3 P1: Play Bloodstained Mire
+T3: Bloodstained Mire moved battlefield -> graveyard (fetchland sacrifice)
+T3 P1: Crack Bloodstained Mire (pay 1 life) -> Sacred Foundry (tapped, life: 15)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Hardened Academic
+T3 P1: Attack with Hardened Academic
+  [Declare Blockers] P2 does not block
+T3 P1:   Hardened Academic (2/1) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 18 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 16  |  Hollow One 15
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry, Sacred Foundry
+║ Hollow One board:
+║   Creatures: Marauding Mako (1/1), Hardened Academic (2/1) [tapped]
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ocelot Pride
+  [Main 1]
+T3 P2: Play Marsh Flats
+T3: Marsh Flats moved battlefield -> graveyard (fetchland sacrifice)
+T3 P2: Crack Marsh Flats (pay 1 life) -> Sacred Foundry (tapped, life: 15)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R (paying for Voice of Victory, 0 mana remaining)
+T3 P2: Cast Voice of Victory (1W)
+    [Priority] P1 passes (no response)
+T3: Resolve Voice of Victory
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T3 P2: Attack with Ragavan, Nimble Pilferer
+T3 P1:   [BLOCK] Marauding Mako (1/1) blocks Ragavan, Nimble Pilferer (2/1) — lifespan_delta=+0.67
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T3: Marauding Mako dies
+T3: Ragavan, Nimble Pilferer dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Hollow One (P1) ══════════════════════════
+║ Life: Hollow One 15  |  Boros Energy 15
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 5
+║ Hollow One board:
+║   Creatures: Hardened Academic (2/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry
+║ Boros Energy board:
+║   Creatures: Voice of Victory (1/3)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Burning Inquiry
+  [Main 1]
+T4 P1: Play Mountain
+    → Goal: execute_payoff
+    [Mana] Tap Mountain→R (paying for Burning Inquiry, 3 mana remaining)
+T4 P1: Cast Burning Inquiry (R)
+    [Priority] P2 passes (no response)
+T4: Resolve Burning Inquiry
+T4: Burning Inquiry moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Hardened Academic
+T4 P1: Attack with Hardened Academic
+  [Declare Blockers] P2 does not block
+T4 P1:   Hardened Academic (2/1) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 15 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 13  |  Hollow One 15
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 4
+║ Boros Energy board:
+║   Creatures: Voice of Victory (1/3)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry
+║ Hollow One board:
+║   Creatures: Hardened Academic (2/1) [tapped]
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→R, Sacred Foundry→R, Sacred Foundry→R (paying for Seasoned Pyromancer, 0 mana remaining)
+T4 P2: Cast Seasoned Pyromancer (1RR)
+    [Priority] P1 passes (no response)
+T4: Resolve Seasoned Pyromancer
+T4 P2: Create 2x Elemental token(s)
+T4 P2: Seasoned Pyromancer: discard 2, draw 2 (Dalkovan Encampment, Plains), create 2 Elemental(s)
+T4 P2: Play Plains
+  [Begin Combat]
+    [Mana] Tap Sacred Foundry→R (paying for Lightning Bolt, 2 mana remaining)
+T4 P1: Cast Lightning Bolt (R)
+T4: Resolve Lightning Bolt
+T4 P1: Lightning Bolt deals 3 to Seasoned Pyromancer
+T4: Lightning Bolt moved stack -> graveyard (resolution)
+T4: Seasoned Pyromancer dies
+  [Declare Attackers] P2 attacks with: Voice of Victory
+T4 P2: Create 2x Warrior token(s)
+T4 P2: Voice of Victory mobilize 2 — create 2 1/1 tokens
+T4 P2: Attack with Voice of Victory
+  [Declare Blockers] P1 does not block
+T4 P2:   Voice of Victory (1/3) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 15 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Warrior Token moved battlefield -> graveyard (Mobilize sacrifice)
+T4: Warrior Token sacrificed (Mobilize)
+T4: Warrior Token moved battlefield -> graveyard (Mobilize sacrifice)
+T4: Warrior Token sacrificed (Mobilize)
+
+╔══ TURN 5 — Hollow One (P1) ══════════════════════════
+║ Life: Hollow One 14  |  Boros Energy 13
+║ Hand: 1 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 7
+║ Hollow One board:
+║   Creatures: Hardened Academic (2/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Mountain
+║ Boros Energy board:
+║   Creatures: Voice of Victory (1/3) [tapped], Elemental Token (1/1), Elemental Token (1/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Mountain
+  [Main 1]
+T5 P1: Play Mountain
+    → Goal: execute_payoff
+    [Mana] Tap Mountain→R, Mountain→R, Sacred Foundry→R (paying for Detective's Phoenix, 2 mana remaining)
+T5 P1: Cast Detective's Phoenix (2R)
+    [Priority] P2 passes (no response)
+T5: Resolve Detective's Phoenix
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Hardened Academic, Detective's Phoenix
+T5 P1: Attack with Hardened Academic, Detective's Phoenix
+  [Declare Blockers] P2 does not block
+T5 P1:   Hardened Academic (2/1) → 2 dmg to player
+T5 P1:   Detective's Phoenix (2/2) → 2 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 13 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 9  |  Hollow One 14
+║ Hand: 4 cards  |  Opp hand: 0 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 44  |  Graveyard: 7
+║ Boros Energy board:
+║   Creatures: Voice of Victory (1/3), Elemental Token (1/1), Elemental Token (1/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains
+║ Hollow One board:
+║   Creatures: Hardened Academic (2/1) [tapped], Detective's Phoenix (2/2) [tapped]
+║   Lands: Sacred Foundry [T], Sacred Foundry, Sacred Foundry, Mountain [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ranger-Captain of Eos
+  [Main 1]
+T5 P2: Play Dalkovan Encampment (enters tapped)
+    → Goal: curve_out
+    [Mana] Tap Plains→W, Sacred Foundry→W, Sacred Foundry→R (paying for Ranger-Captain of Eos, 1 mana remaining)
+T5 P2: Cast Ranger-Captain of Eos (1WW)
+    [Priority] P1 passes (no response)
+T5: Resolve Ranger-Captain of Eos
+T5 P2: Ranger-Captain tutors Guide of Souls to hand
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 0 mana remaining)
+T5 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T5: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Voice of Victory, Elemental Token, Elemental Token
+T5 P2: Create 2x Warrior token(s)
+T5 P2: Voice of Victory mobilize 2 — create 2 1/1 tokens
+T5 P2: Attack with Voice of Victory, Elemental Token, Elemental Token
+  [Declare Blockers] P1 does not block
+T5 P2:   Voice of Victory (1/3) → 1 dmg to player
+T5 P2:   Elemental Token (1/1) → 1 dmg to player
+T5 P2:   Elemental Token (1/1) → 1 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 14 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+T5: Warrior Token moved battlefield -> graveyard (Mobilize sacrifice)
+T5: Warrior Token sacrificed (Mobilize)
+T5: Warrior Token moved battlefield -> graveyard (Mobilize sacrifice)
+T5: Warrior Token sacrificed (Mobilize)
+
+╔══ TURN 6 — Hollow One (P1) ══════════════════════════
+║ Life: Hollow One 11  |  Boros Energy 9
+║ Hand: 0 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 7
+║ Hollow One board:
+║   Creatures: Hardened Academic (2/1), Detective's Phoenix (2/2)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Mountain, Mountain
+║ Boros Energy board:
+║   Creatures: Voice of Victory (1/3) [tapped], Elemental Token (1/1) [tapped], Elemental Token (1/1) [tapped], Ranger-Captain of Eos (3/3), Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Plains [T], Dalkovan Encampment [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Practiced Offense
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Hardened Academic, Detective's Phoenix
+T6 P1: Attack with Hardened Academic, Detective's Phoenix
+  [Declare Blockers] P2 does not block
+T6 P1:   Hardened Academic (2/1) → 2 dmg to player
+T6 P1:   Detective's Phoenix (2/2) → 2 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 9 → 5
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 5  |  Hollow One 11
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 42  |  Graveyard: 7
+║ Boros Energy board:
+║   Creatures: Voice of Victory (1/3), Elemental Token (1/1), Elemental Token (1/1), Ranger-Captain of Eos (3/3), Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains, Dalkovan Encampment
+║ Hollow One board:
+║   Creatures: Hardened Academic (2/1) [tapped], Detective's Phoenix (2/2) [tapped]
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Mountain, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+T6 P2: Play Flooded Strand
+T6: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T6 P2: Crack Flooded Strand -> Plains (untapped)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Plains→W (paying for Guide of Souls, 5 mana remaining)
+T6 P2: Cast Guide of Souls (W)
+    [Priority] P1 passes (no response)
+T6: Resolve Guide of Souls
+    → Goal: curve_out
+    [Mana] Tap Dalkovan Encampment→W, Sacred Foundry→R (paying for Goblin Bombardment, 3 mana remaining)
+T6 P2: Cast Goblin Bombardment (1R)
+    [Priority] P1 passes (no response)
+T6: Resolve Goblin Bombardment
+T6 P2: Goblin Bombardment enters — sacrifice creatures for 1 damage each
+    → Goal: curve_out
+    [Mana] Tap Plains→W, Sacred Foundry→R, Sacred Foundry→R (paying for Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, 0 mana remaining)
+T6 P2: Cast Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2R)
+    [Priority] P1 passes (no response)
+T6: Resolve Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+T6 P2: Gain 1 life from Guide of Souls (life: 5)
+T6 P2: +1 energy from Guide of Souls (total: 1)
+T6 P2: Create 1x Goblin token(s)
+T6 P2: Fable Ch.I: Create 2/2 Goblin Shaman with haste
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Voice of Victory, Elemental Token, Elemental Token, Ranger-Captain of Eos, Ragavan, Nimble Pilferer, Goblin Token
+T6 P2: Gain 1 life from Guide of Souls (life: 6)
+T6 P2: +1 energy from Guide of Souls (total: 2)
+T6 P2: Gain 1 life from Guide of Souls (life: 7)
+T6 P2: +1 energy from Guide of Souls (total: 3)
+T6 P2: Create 2x Warrior token(s)
+T6 P2: Voice of Victory mobilize 2 — create 2 1/1 tokens
+T6 P2: Attack with Voice of Victory, Elemental Token, Elemental Token, Ranger-Captain of Eos, Ragavan, Nimble Pilferer, Goblin Token
+  [Declare Blockers] P1 does not block
+T6 P2:   Voice of Victory (1/3) → 1 dmg to player
+T6 P2:   Elemental Token (1/1) → 1 dmg to player
+T6 P2:   Elemental Token (1/1) → 1 dmg to player
+T6 P2:   Ranger-Captain of Eos (3/3) → 3 dmg to player
+T6 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T6 P2: Create 1x Treasure token(s)
+T6 P2: Ragavan, Nimble Pilferer exiles Hollow One from top of P1's library
+T6 P2: Ragavan, Nimble Pilferer — may cast Hollow One this turn
+T6 P2:   Goblin Token (2/2) → 2 dmg to player
+  [Combat Damage] 10 damage dealt → P1 life: 11 → 1
+  [End Combat]
+  [Main 2]
+T6: Elemental Token moved battlefield -> graveyard (activation cost (Goblin Bombardment))
+T6 P2: activate Goblin Bombardment — This enchantment deals 1 damage to any target.
+T6 P2: Goblin Bombardment deals 1 to P1 (face)
+P1 loses: life total 0
+
+>>> Boros Energy wins Game 2 on turn 6 via damage
+    Final life: Hollow One=0  Boros Energy=7
+
+======================================================================
+  MATCH RESULT: Boros Energy wins 2-0
+======================================================================

@@ -1,1 +1,1137 @@
 Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+======================================================================
+  GAME 1: Creatures Toolbox (P1) vs Boros Energy (P2)  —  seed 56200
+  Series: Creatures Toolbox 0 - 0 Boros Energy
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Boros Energy wins → chooses to play first
+║ P1 (on play): Boros Energy
+║ P2 (on draw): Creatures Toolbox
+╚═══════════════════════════════════════════════════════
+
+P1 (Creatures Toolbox) opening hand (0 lands, 7 spells):
+  • Agatha's Soul Cauldron [Spell, CMC 2]
+  • Walking Ballista [Creature, CMC 0]
+  • Green Sun's Zenith [Spell, CMC 1]
+  • Nature's Rhythm [Spell, CMC 2]
+  • Tyvar, Jubilant Brawler [Spell, CMC 3]
+  • Nature's Rhythm [Spell, CMC 2]
+  • Leyline of Abundance [Spell, CMC 4]
+→ P1 MULLIGANS (0 lands — no mana-producing artifacts/spells in hand)
+  New hand (2 lands, 5 spells): ["Nature's Rhythm", 'Devoted Druid', 'Dryad Arbor', 'Tyvar, Jubilant Brawler', 'Dryad Arbor', 'Leyline of Abundance', 'Badgermole Cub']
+→ P1 mulligans to 6, bottoms: ['Leyline of Abundance']
+  Keeps: ["Nature's Rhythm", 'Devoted Druid', 'Dryad Arbor', 'Tyvar, Jubilant Brawler', 'Dryad Arbor', 'Badgermole Cub']
+
+P2 (Boros Energy) opening hand (2 lands, 5 spells):
+  • Ocelot Pride [Creature, CMC 1]
+  • Ajani, Nacatl Pariah // Ajani, Nacatl Avenger [Creature, CMC 2]
+  • Galvanic Discharge [Spell, CMC 1]
+  • Galvanic Discharge [Spell, CMC 1]
+  • Arid Mesa [Land, CMC 0]
+  • Dalkovan Encampment [Land, CMC 0]
+  • The Legend of Roku // Avatar Roku [Spell, CMC 4]
+→ P2 KEEPS 7 — has key card(s): Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Galvanic Discharge, Ocelot Pride, 4 cheap spells
+
+
+╔══ TURN 1 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Creatures Toolbox 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Arid Mesa
+T1: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 20  |  Boros Energy 19
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 0
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Leyline of Abundance
+  [Main 1]
+T1 P1: Play Dryad Arbor
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 19  |  Creatures Toolbox 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Creatures Toolbox board:
+║   Creatures: Dryad Arbor (1/1)
+║   Lands: Dryad Arbor
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ranger-Captain of Eos
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Ocelot Pride, 0 mana remaining)
+T2 P2: Cast Ocelot Pride (W)
+    [Priority] P1 passes (no response)
+T2: Resolve Ocelot Pride
+T2 P2: Play Dalkovan Encampment (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 20  |  Boros Energy 19
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 53  |  Graveyard: 0
+║ Creatures Toolbox board:
+║   Creatures: Dryad Arbor (1/1)
+║   Lands: Dryad Arbor
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1)
+║   Lands: Sacred Foundry [T], Dalkovan Encampment [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Tyvar, Jubilant Brawler
+  [Main 1]
+T2 P1: Play Dryad Arbor
+    → Goal: deploy_engine
+    [Mana] Tap Dryad Arbor→G, Dryad Arbor→G (paying for Badgermole Cub, 0 mana remaining)
+T2 P1: Cast Badgermole Cub (1G)
+    [Priority] P2 passes (no response)
+T2: Resolve Badgermole Cub
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 19  |  Creatures Toolbox 20
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1)
+║   Lands: Sacred Foundry, Dalkovan Encampment
+║ Creatures Toolbox board:
+║   Creatures: Dryad Arbor (1/1) [tapped], Dryad Arbor (1/1) [tapped], Badgermole Cub (2/2)
+║   Lands: Dryad Arbor [T], Dryad Arbor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Plains
+  [Main 1]
+T3 P2: Play Plains
+    → Goal: curve_out
+    [Mana] Tap Dalkovan Encampment→W, Plains→W, Sacred Foundry→R (paying for Ranger-Captain of Eos, 0 mana remaining)
+T3 P2: Cast Ranger-Captain of Eos (1WW)
+    [Priority] P1 passes (no response)
+T3: Resolve Ranger-Captain of Eos
+T3 P2: Ranger-Captain tutors Guide of Souls to hand
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ocelot Pride
+T3 P2: Attack with Ocelot Pride
+  [Declare Blockers] P1 does not block
+T3 P2: Ocelot Pride lifelink — gain 1 (life: 20)
+T3 P2:   Ocelot Pride (1/1) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 20 → 19
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 19  |  Boros Energy 20
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 52  |  Graveyard: 0
+║ Creatures Toolbox board:
+║   Creatures: Dryad Arbor (1/1), Dryad Arbor (1/1), Badgermole Cub (2/2)
+║   Lands: Dryad Arbor, Dryad Arbor
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1) [tapped], Ranger-Captain of Eos (3/3)
+║   Lands: Sacred Foundry [T], Dalkovan Encampment [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Nature's Rhythm
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Dryad Arbor→GG (paying for Devoted Druid, 2 mana remaining)
+T3 P1: Cast Devoted Druid (1G)
+    [Priority] P2 passes (no response)
+T3: Resolve Devoted Druid
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Creatures Toolbox 19
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 49  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ranger-Captain of Eos (3/3)
+║   Lands: Sacred Foundry, Dalkovan Encampment, Plains
+║ Creatures Toolbox board:
+║   Creatures: Dryad Arbor (1/1) [tapped], Dryad Arbor (1/1), Badgermole Cub (2/2), Devoted Druid (0/2)
+║   Lands: Dryad Arbor [T], Dryad Arbor
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Dalkovan Encampment→W, Plains→W (paying for Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, 1 mana remaining)
+T4 P2: Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)
+    [Priority] P1 passes (no response)
+T4: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T4 P2: Create 1x Cat token(s)
+T4 P2: Ajani creates 2/1 Cat Warrior token
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Guide of Souls, 0 mana remaining)
+T4 P2: Cast Guide of Souls (W)
+    [Priority] P1 passes (no response)
+T4: Resolve Guide of Souls
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ocelot Pride, Ranger-Captain of Eos
+T4 P2: Attack with Ocelot Pride, Ranger-Captain of Eos
+T4 P1:   [BLOCK] Devoted Druid (0/2) blocks Ranger-Captain of Eos (3/3) — lifespan_delta=+0.38
+T4 P1:   [BLOCK] Badgermole Cub (2/2) blocks Ocelot Pride (1/1) — lifespan_delta=+0.46
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T4 P2: Ocelot Pride lifelink — gain 1 (life: 21)
+T4: Devoted Druid dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 19  |  Boros Energy 21
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 1
+║ Creatures Toolbox board:
+║   Creatures: Dryad Arbor (1/1), Dryad Arbor (1/1), Badgermole Cub (2/2)
+║   Lands: Dryad Arbor, Dryad Arbor
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1) [tapped], Ranger-Captain of Eos (3/3) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1), Guide of Souls (1/2)
+║   Lands: Sacred Foundry [T], Dalkovan Encampment [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Forest
+  [Main 1]
+T4 P1: Play Forest
+    → Goal: execute_payoff
+    [Mana] Tap Dryad Arbor→GG, Dryad Arbor→GG (paying for Leyline of Abundance, 1 mana remaining)
+T4 P1: Cast Leyline of Abundance (2GG)
+    [Priority] P2 passes (no response)
+T4: Resolve Leyline of Abundance
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 21  |  Creatures Toolbox 19
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ranger-Captain of Eos (3/3), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1), Guide of Souls (1/2)
+║   Lands: Sacred Foundry, Dalkovan Encampment, Plains
+║ Creatures Toolbox board:
+║   Creatures: Dryad Arbor (1/1) [tapped], Dryad Arbor (1/1) [tapped], Badgermole Cub (2/2)
+║   Other: Leyline of Abundance
+║   Lands: Dryad Arbor [T], Dryad Arbor [T], Forest
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Voice of Victory
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Dalkovan Encampment→W, Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T5 P2: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P1 passes (no response)
+T5: Resolve Ragavan, Nimble Pilferer
+T5 P2: Gain 1 life from Guide of Souls (life: 22)
+T5 P2: +1 energy from Guide of Souls (total: 1)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ocelot Pride, Ranger-Captain of Eos, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token, Guide of Souls, Ragavan, Nimble Pilferer
+T5 P2: Attack with Ocelot Pride, Ranger-Captain of Eos, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token, Guide of Souls, Ragavan, Nimble Pilferer
+T5 P1:   [BLOCK] Badgermole Cub (2/2) blocks Ocelot Pride (1/1) — lifespan_delta=+0.31
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T5 P2: Ocelot Pride lifelink — gain 1 (life: 23)
+T5 P2:   Ranger-Captain of Eos (3/3) → 3 dmg to player
+T5 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+T5 P2:   Cat Token (2/1) → 2 dmg to player
+T5 P2:   Guide of Souls (1/2) → 1 dmg to player
+T5 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T5 P2: Create 1x Treasure token(s)
+T5 P2: Ragavan, Nimble Pilferer exiles Delighted Halfling from top of P1's library
+T5 P2: Ragavan, Nimble Pilferer — may cast Delighted Halfling this turn
+  [Combat Damage] 9 damage dealt → P1 life: 19 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+T5: Delighted Halfling returned to exile (uncast)
+T5: Ragavan, Nimble Pilferer moved battlefield -> hand (Dash return)
+T5: Ragavan, Nimble Pilferer returned to hand (Dash)
+
+╔══ TURN 5 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 10  |  Boros Energy 23
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 1
+║ Creatures Toolbox board:
+║   Creatures: Dryad Arbor (1/1), Dryad Arbor (1/1), Badgermole Cub (2/2)
+║   Other: Leyline of Abundance
+║   Lands: Dryad Arbor, Dryad Arbor, Forest
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1) [tapped], Ranger-Captain of Eos (3/3) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Cat Token (2/1) [tapped], Guide of Souls (1/2) [tapped]
+║   Other: Treasure Token
+║   Lands: Sacred Foundry [T], Dalkovan Encampment [T], Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Eternal Witness
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Dryad Arbor→GGG (paying for Eternal Witness, 4 mana remaining)
+T5 P1: Cast Eternal Witness (1GG)
+    [Priority] P2 passes (no response)
+T5: Resolve Eternal Witness
+T5 P1: Eternal Witness returns Devoted Druid from graveyard to hand
+    → Goal: execute_payoff
+    [Mana] Tap Dryad Arbor→GGG (paying for Devoted Druid, 2 mana remaining)
+T5 P1: Cast Devoted Druid (1G)
+    [Priority] P2 passes (no response)
+T5: Resolve Devoted Druid
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Badgermole Cub
+T5 P1: Attack with Badgermole Cub
+  [Declare Blockers] P2 does not block
+T5 P1:   Badgermole Cub (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 23 → 21
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 21  |  Creatures Toolbox 10
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ranger-Captain of Eos (3/3), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1), Guide of Souls (1/2)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Dalkovan Encampment, Plains
+║ Creatures Toolbox board:
+║   Creatures: Dryad Arbor (1/1) [tapped], Dryad Arbor (1/1) [tapped], Badgermole Cub (2/2) [tapped], Eternal Witness (2/1), Devoted Druid (0/2)
+║   Other: Leyline of Abundance
+║   Lands: Dryad Arbor [T], Dryad Arbor [T], Forest
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+T6 P2: Play Flooded Strand
+T6: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T6 P2: Crack Flooded Strand (pay 1 life) -> Sacred Foundry (tapped, life: 20)
+    → Goal: curve_out [interaction]
+    [Target] → Badgermole Cub: marginal threat 14.67 (2/2 body) — better than 3 face dmg
+    [Mana] Tap Sacred Foundry→R (paying for Galvanic Discharge, 2 mana remaining)
+T6 P2: Cast Galvanic Discharge (R)
+    [Priority] P1 passes (no response)
+T6: Resolve Galvanic Discharge
+T6: Badgermole Cub dies
+T6 P2: Galvanic Discharge deals 2 to Badgermole Cub (base 0 + 2 energy)
+T6: Galvanic Discharge moved stack -> graveyard (resolution)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Dalkovan Encampment→W, Plains→W (paying for Voice of Victory, 0 mana remaining)
+T6 P2: Cast Voice of Victory (1W)
+    [Priority] P1 passes (no response)
+T6: Resolve Voice of Victory
+T6 P2: Gain 1 life from Guide of Souls (life: 21)
+T6 P2: +1 energy from Guide of Souls (total: 3)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ocelot Pride, Ranger-Captain of Eos, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token, Guide of Souls
+T6 P2: Attack with Ocelot Pride, Ranger-Captain of Eos, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token, Guide of Souls
+T6 P1:   [BLOCK-EMERGENCY] Devoted Druid (0/2) blocks Ranger-Captain of Eos (3/3) — lifespan_delta=+0.33
+T6 P1:   [BLOCK-EMERGENCY] Eternal Witness (2/1) blocks Cat Token (2/1) — lifespan_delta=-4.21
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T6 P2: Ocelot Pride lifelink — gain 1 (life: 22)
+T6 P2:   Ocelot Pride (1/1) → 1 dmg to player
+T6 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+T6 P2:   Guide of Souls (1/2) → 1 dmg to player
+T6: Eternal Witness dies
+T6: Devoted Druid dies
+T6: Cat Token dies
+  [Combat Damage] 3 damage dealt → P1 life: 10 → 7
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 7  |  Boros Energy 22
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 3
+║ Creatures Toolbox board:
+║   Creatures: Dryad Arbor (1/1), Dryad Arbor (1/1)
+║   Other: Leyline of Abundance
+║   Lands: Dryad Arbor, Dryad Arbor, Forest
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1) [tapped], Ranger-Captain of Eos (3/3) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Guide of Souls (1/2) [tapped], Voice of Victory (1/3)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry [T], Dalkovan Encampment [T], Plains [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Badgermole Cub
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Dryad Arbor→GG (paying for Badgermole Cub, 3 mana remaining)
+T6 P1: Cast Badgermole Cub (1G)
+    [Priority] P2 passes (no response)
+T6: Resolve Badgermole Cub
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 22  |  Creatures Toolbox 7
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 45  |  Graveyard: 3
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ranger-Captain of Eos (3/3), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Guide of Souls (1/2), Voice of Victory (1/3)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Dalkovan Encampment, Plains, Sacred Foundry
+║ Creatures Toolbox board:
+║   Creatures: Dryad Arbor (1/1) [tapped], Dryad Arbor (1/1), Badgermole Cub (2/2)
+║   Other: Leyline of Abundance
+║   Lands: Dryad Arbor [T], Dryad Arbor, Forest
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Marsh Flats
+  [Main 1]
+T7 P2: Play Marsh Flats
+T7: Marsh Flats moved battlefield -> graveyard (fetchland sacrifice)
+T7 P2: Crack Marsh Flats (pay 1 life) -> Sacred Foundry (tapped, life: 21)
+    → Goal: curve_out
+    [Mana] Tap Dalkovan Encampment→W, Plains→W, Sacred Foundry→R, Sacred Foundry→R (paying for The Legend of Roku // Avatar Roku, 0 mana remaining)
+T7 P2: Cast The Legend of Roku // Avatar Roku (2RR)
+    [Priority] P1 passes (no response)
+T7: Resolve The Legend of Roku // Avatar Roku
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ocelot Pride, Ranger-Captain of Eos, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Guide of Souls, Voice of Victory
+T7 P2: Gain 1 life from Guide of Souls (life: 22)
+T7 P2: +1 energy from Guide of Souls (total: 4)
+T7 P2: Gain 1 life from Guide of Souls (life: 23)
+T7 P2: +1 energy from Guide of Souls (total: 5)
+T7 P2: Create 2x Warrior token(s)
+T7 P2: Voice of Victory mobilize 2 — create 2 1/1 tokens
+T7 P2: Attack with Ocelot Pride, Ranger-Captain of Eos, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Guide of Souls, Voice of Victory
+T7 P1:   [BLOCK-EMERGENCY] Dryad Arbor (1/1) blocks Ranger-Captain of Eos (3/3) — lifespan_delta=-1.58
+T7 P1:   [BLOCK-EMERGENCY] Badgermole Cub (2/2) blocks Ocelot Pride (1/1) — lifespan_delta=+0.21
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T7 P2: Ocelot Pride lifelink — gain 1 (life: 24)
+T7 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+T7 P2:   Guide of Souls (1/2) → 1 dmg to player
+T7 P2:   Voice of Victory (1/3) → 1 dmg to player
+T7: Dryad Arbor dies
+  [Combat Damage] 3 damage dealt → P1 life: 7 → 4
+  [End Combat]
+  [Main 2]
+  [End Step]
+T7: Warrior Token moved battlefield -> graveyard (Mobilize sacrifice)
+T7: Warrior Token sacrificed (Mobilize)
+T7: Warrior Token moved battlefield -> graveyard (Mobilize sacrifice)
+T7: Warrior Token sacrificed (Mobilize)
+
+╔══ TURN 7 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 4  |  Boros Energy 24
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 4
+║ Creatures Toolbox board:
+║   Creatures: Dryad Arbor (1/1), Badgermole Cub (2/2)
+║   Other: Leyline of Abundance
+║   Lands: Dryad Arbor, Forest
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1) [tapped], Ranger-Captain of Eos (3/3) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Guide of Souls (1/2) [tapped], Voice of Victory (1/3) [tapped]
+║   Other: Treasure Token, The Legend of Roku // Avatar Roku
+║   Lands: Sacred Foundry [T], Dalkovan Encampment [T], Plains [T], Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Birds of Paradise
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Dryad Arbor→GGG (paying for Birds of Paradise, 3 mana remaining)
+T7 P1: Cast Birds of Paradise (G)
+    [Priority] P2 passes (no response)
+T7: Resolve Birds of Paradise
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Badgermole Cub
+T7 P1: Attack with Badgermole Cub
+  [Declare Blockers] P2 does not block
+T7 P1:   Badgermole Cub (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 24 → 22
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 22  |  Creatures Toolbox 4
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 2
+║ Library: 43  |  Graveyard: 4
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ranger-Captain of Eos (3/3), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Guide of Souls (1/2), Voice of Victory (1/3)
+║   Other: Treasure Token, The Legend of Roku // Avatar Roku
+║   Lands: Sacred Foundry, Dalkovan Encampment, Plains, Sacred Foundry, Sacred Foundry
+║ Creatures Toolbox board:
+║   Creatures: Dryad Arbor (1/1) [tapped], Badgermole Cub (2/2) [tapped], Birds of Paradise (0/1)
+║   Other: Leyline of Abundance
+║   Lands: Dryad Arbor [T], Forest
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+T8 P2: Play Flooded Strand
+T8: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T8 P2: Crack Flooded Strand -> Plains (untapped)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Dalkovan Encampment→W, Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 4 mana remaining)
+T8 P2: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P1 passes (no response)
+T8: Resolve Ragavan, Nimble Pilferer
+T8 P2: Gain 1 life from Guide of Souls (life: 22)
+T8 P2: +1 energy from Guide of Souls (total: 6)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ocelot Pride, Ranger-Captain of Eos, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Guide of Souls, Voice of Victory, Ragavan, Nimble Pilferer
+T8 P2: Gain 1 life from Guide of Souls (life: 23)
+T8 P2: +1 energy from Guide of Souls (total: 7)
+T8 P2: Gain 1 life from Guide of Souls (life: 24)
+T8 P2: +1 energy from Guide of Souls (total: 8)
+T8 P2: Create 2x Warrior token(s)
+T8 P2: Voice of Victory mobilize 2 — create 2 1/1 tokens
+T8 P2: Attack with Ocelot Pride, Ranger-Captain of Eos, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Guide of Souls, Voice of Victory, Ragavan, Nimble Pilferer
+T8 P1:   [BLOCK-EMERGENCY] Birds of Paradise (0/1) blocks Ranger-Captain of Eos (3/3) — lifespan_delta=+0.27
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T8 P2: Ocelot Pride lifelink — gain 1 (life: 25)
+T8 P2:   Ocelot Pride (1/1) → 1 dmg to player
+T8 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+T8 P2:   Guide of Souls (1/2) → 1 dmg to player
+T8 P2:   Voice of Victory (1/3) → 1 dmg to player
+T8 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T8 P2: Create 1x Treasure token(s)
+T8 P2: Ragavan, Nimble Pilferer exiles Nature's Rhythm from top of P1's library
+T8 P2: Ragavan, Nimble Pilferer — may cast Nature's Rhythm this turn
+P1 loses: life total -2
+  [Combat Damage] 6 damage dealt → P1 life: 4 → -2
+
+>>> Boros Energy wins Game 1 on turn 8 via damage
+    Final life: Creatures Toolbox=-2  Boros Energy=25
+
+======================================================================
+  GAME 2: Creatures Toolbox (P1) vs Boros Energy (P2)  —  seed 56201
+  Series: Creatures Toolbox 0 - 1 Boros Energy
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Creatures Toolbox wins → chooses to play first
+║ P1 (on play): Creatures Toolbox
+║ P2 (on draw): Boros Energy
+╚═══════════════════════════════════════════════════════
+
+P1 (Creatures Toolbox) opening hand (3 lands, 4 spells):
+  • Verdant Catacombs [Land, CMC 0]
+  • Forest [Land, CMC 0]
+  • Delighted Halfling [Creature, CMC 1]
+  • Overgrown Tomb [Land, CMC 0]
+  • Fiend Artisan [Creature, CMC 2]
+  • Devoted Druid [Creature, CMC 2]
+  • Tyvar, Jubilant Brawler [Spell, CMC 3]
+→ P1 KEEPS 7 — has key card(s): Delighted Halfling, Devoted Druid, 4 cheap spells
+
+P2 (Boros Energy) opening hand (1 lands, 6 spells):
+  • Thraben Charm [Spell, CMC 2]
+  • Thraben Charm [Spell, CMC 2]
+  • Ocelot Pride [Creature, CMC 1]
+  • Galvanic Discharge [Spell, CMC 1]
+  • The Legend of Roku // Avatar Roku [Spell, CMC 4]
+  • Flooded Strand [Land, CMC 0]
+  • Guide of Souls [Creature, CMC 1]
+→ P2 MULLIGANS (too few lands (1 < 2))
+  New hand (3 lands, 4 spells): ['The Legend of Roku // Avatar Roku', 'Guide of Souls', 'Voice of Victory', 'Flooded Strand', 'Arena of Glory', 'Marsh Flats', 'Ranger-Captain of Eos']
+→ P2 mulligans to 6, bottoms: ['The Legend of Roku // Avatar Roku']
+  Keeps: ['Guide of Souls', 'Voice of Victory', 'Flooded Strand', 'Arena of Glory', 'Marsh Flats', 'Ranger-Captain of Eos']
+
+
+╔══ TURN 1 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 20  |  Boros Energy 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Verdant Catacombs
+T1: Verdant Catacombs moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Verdant Catacombs (pay 1 life) -> Overgrown Tomb (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Creatures Toolbox 19
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ocelot Pride
+  [Main 1]
+T1 P2: Play Flooded Strand
+T1: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Flooded Strand (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 19  |  Boros Energy 19
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Devoted Druid
+  [Main 1]
+T2 P1: Play Forest
+    → Goal: deploy_engine
+    [Mana] Tap Forest→G (paying for Delighted Halfling, 1 mana remaining)
+T2 P1: Cast Delighted Halfling (G)
+    [Priority] P2 passes (no response)
+T2: Resolve Delighted Halfling
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 19  |  Creatures Toolbox 19
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2)
+║   Lands: Overgrown Tomb, Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Guide of Souls, 0 mana remaining)
+T2 P2: Cast Guide of Souls (W)
+    [Priority] P1 passes (no response)
+T2: Resolve Guide of Souls
+T2 P2: Play Marsh Flats
+T2: Marsh Flats moved battlefield -> graveyard (fetchland sacrifice)
+T2 P2: Crack Marsh Flats (pay 1 life) -> Sacred Foundry (tapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 19  |  Boros Energy 18
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2)
+║   Lands: Overgrown Tomb, Forest
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Windswept Heath
+  [Main 1]
+T3 P1: Play Windswept Heath
+T3: Windswept Heath moved battlefield -> graveyard (fetchland sacrifice)
+T3 P1: Crack Windswept Heath (pay 1 life) -> Temple Garden (tapped, life: 18)
+    → Goal: execute_payoff
+    [Mana] Tap Forest→G, Overgrown Tomb→B, Delighted Halfling→B (paying for Tyvar, Jubilant Brawler, 0 mana remaining)
+T3 P1: Cast Tyvar, Jubilant Brawler (1BG)
+    [Priority] P2 passes (no response)
+T3: Resolve Tyvar, Jubilant Brawler
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 18  |  Creatures Toolbox 18
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2)
+║   Lands: Sacred Foundry, Sacred Foundry
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2) [tapped]
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Overgrown Tomb [T], Forest [T], Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ranger-Captain of Eos
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R (paying for Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, 0 mana remaining)
+T3 P2: Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)
+    [Priority] P1 passes (no response)
+T3: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T3 P2: Gain 1 life from Guide of Souls (life: 19)
+T3 P2: +1 energy from Guide of Souls (total: 1)
+T3 P2: Create 1x Cat token(s)
+T3 P2: Ajani creates 2/1 Cat Warrior token
+T3 P2: Gain 1 life from Guide of Souls (life: 20)
+T3 P2: +1 energy from Guide of Souls (total: 2)
+T3 P2: Play Arena of Glory (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Guide of Souls
+T3 P2: Attack with Guide of Souls
+  [Declare Blockers] P1 does not block
+T3 P2:   Guide of Souls (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 18 → 17
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 17  |  Boros Energy 20
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Overgrown Tomb, Forest, Temple Garden
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Nurturing Peatland
+  [Main 1]
+T4 P1: Play Overgrown Tomb (untapped, life: 15)
+    → Goal: execute_payoff
+    [Mana] Tap Forest→G, Overgrown Tomb→B (paying for Devoted Druid, 3 mana remaining)
+T4 P1: Cast Devoted Druid (1G)
+    [Priority] P2 passes (no response)
+T4: Resolve Devoted Druid
+    → Goal: execute_payoff
+    [Mana] Tap Temple Garden→G, Overgrown Tomb→B (paying for Devoted Druid, 1 mana remaining)
+T4 P1: Cast Devoted Druid (1G)
+    [Priority] P2 passes (no response)
+T4: Resolve Devoted Druid
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Creatures Toolbox 15
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Arena of Glory
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2), Devoted Druid (0/2), Devoted Druid (0/2)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Overgrown Tomb [T], Forest [T], Temple Garden [T], Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Elegant Parlor
+  [Main 1]
+T4 P2: surveil 1 → Elegant Parlor to GY
+T4 P2: Play Elegant Parlor (enters tapped)
+    → Goal: curve_out
+    [Mana] Tap Arena of Glory→R, Sacred Foundry→W, Sacred Foundry→W (paying for Ranger-Captain of Eos, 0 mana remaining)
+T4 P2: Cast Ranger-Captain of Eos (1WW)
+    [Priority] P1 passes (no response)
+T4: Resolve Ranger-Captain of Eos
+T4 P2: Ranger-Captain tutors Guide of Souls to hand
+T4 P2: Gain 1 life from Guide of Souls (life: 21)
+T4 P2: +1 energy from Guide of Souls (total: 3)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Guide of Souls, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+T4 P2: Attack with Guide of Souls, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token
+T4 P1:   [BLOCK] Delighted Halfling (1/2) blocks Cat Token (2/1) — lifespan_delta=+1.14
+T4 P1:   [BLOCK] Devoted Druid (0/2) blocks Guide of Souls (1/2) — lifespan_delta=+0.14
+T4 P1:   [BLOCK] Devoted Druid (0/2) blocks Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) — lifespan_delta=+0.14
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T4: Delighted Halfling dies
+T4: Cat Token dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 15  |  Boros Energy 21
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 3
+║ Creatures Toolbox board:
+║   Creatures: Devoted Druid (0/2), Devoted Druid (0/2)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Overgrown Tomb, Forest, Temple Garden, Overgrown Tomb
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Ranger-Captain of Eos (3/3)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Arena of Glory [T], Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Leyline of Abundance
+  [Main 1]
+T5 P1: Play Nurturing Peatland
+T5: Nurturing Peatland moved battlefield -> graveyard (activation cost (Nurturing Peatland))
+T5 P1: activate Nurturing Peatland — Draw a card.
+T5 P1: Nurturing Peatland activated — draw 1 (Misty Rainforest)
+    → Goal: execute_payoff
+    [Mana] Tap Devoted Druid→G, Devoted Druid→G, Overgrown Tomb→B, Temple Garden→G (paying for Leyline of Abundance, 1 mana remaining)
+T5 P1: Cast Leyline of Abundance (2GG)
+    [Priority] P2 passes (no response)
+T5: Resolve Leyline of Abundance
+T5 P1: puts 1 -1/-1 counter(s) on Devoted Druid (activation cost)
+T5 P1: activate Devoted Druid — Untap this creature.
+T5 P1: Devoted Druid activated — untaps itself
+T5 P1: puts 1 -1/-1 counter(s) on Devoted Druid (activation cost)
+T5 P1: activate Devoted Druid — Untap this creature.
+T5 P1: Devoted Druid activated — untaps itself
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 21  |  Creatures Toolbox 15
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 3
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Ranger-Captain of Eos (3/3)
+║   Lands: Sacred Foundry, Sacred Foundry, Arena of Glory, Elegant Parlor
+║ Creatures Toolbox board:
+║   Creatures: Devoted Druid (-1/1), Devoted Druid (-1/1)
+║   Other: Tyvar, Jubilant Brawler, Leyline of Abundance
+║   Lands: Overgrown Tomb [T], Forest [T], Temple Garden [T], Overgrown Tomb
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Guide of Souls
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Ocelot Pride, 3 mana remaining)
+T5 P2: Cast Ocelot Pride (W)
+    [Priority] P1 passes (no response)
+T5: Resolve Ocelot Pride
+T5 P2: Gain 1 life from Guide of Souls (life: 22)
+T5 P2: +1 energy from Guide of Souls (total: 4)
+    → Goal: curve_out
+    [Mana] Tap Arena of Glory→R, Sacred Foundry→W, Elegant Parlor→W (paying for Ranger-Captain of Eos, 0 mana remaining)
+T5 P2: Cast Ranger-Captain of Eos (1WW)
+    [Priority] P1 passes (no response)
+T5: Resolve Ranger-Captain of Eos
+T5 P2: Ranger-Captain tutors Guide of Souls to hand
+T5 P2: Gain 1 life from Guide of Souls (life: 23)
+T5 P2: +1 energy from Guide of Souls (total: 5)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Guide of Souls, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Ranger-Captain of Eos
+T5 P2: Attack with Guide of Souls, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Ranger-Captain of Eos
+T5 P1:   [BLOCK] Devoted Druid (-1/1) blocks Ranger-Captain of Eos (3/3) — lifespan_delta=+0.33
+T5 P1:   [BLOCK] Devoted Druid (-1/1) blocks Guide of Souls (1/2) — lifespan_delta=+0.11
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T5 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+T5: Devoted Druid dies
+T5: Devoted Druid dies
+  [Combat Damage] 1 damage dealt → P1 life: 15 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 14  |  Boros Energy 23
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 6
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Tyvar, Jubilant Brawler, Leyline of Abundance
+║   Lands: Overgrown Tomb, Forest, Temple Garden, Overgrown Tomb
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Ranger-Captain of Eos (3/3) [tapped], Ocelot Pride (1/1), Ranger-Captain of Eos (3/3)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Arena of Glory [T], Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Nature's Rhythm
+  [Main 1]
+T6 P1: Play Misty Rainforest
+T6: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T6 P1: Crack Misty Rainforest -> Dryad Arbor (untapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 23  |  Creatures Toolbox 13
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 44  |  Graveyard: 3
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Ranger-Captain of Eos (3/3), Ocelot Pride (1/1), Ranger-Captain of Eos (3/3)
+║   Lands: Sacred Foundry, Sacred Foundry, Arena of Glory, Elegant Parlor
+║ Creatures Toolbox board:
+║   Creatures: Dryad Arbor (1/1)
+║   Other: Tyvar, Jubilant Brawler, Leyline of Abundance
+║   Lands: Overgrown Tomb, Forest, Temple Garden, Overgrown Tomb, Dryad Arbor
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thraben Charm
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Arena of Glory→R, Sacred Foundry→W (paying for Voice of Victory, 2 mana remaining)
+T6 P2: Cast Voice of Victory (1W)
+    [Priority] P1 passes (no response)
+T6: Resolve Voice of Victory
+T6 P2: Gain 1 life from Guide of Souls (life: 24)
+T6 P2: +1 energy from Guide of Souls (total: 6)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Guide of Souls, 1 mana remaining)
+T6 P2: Cast Guide of Souls (W)
+    [Priority] P1 passes (no response)
+T6: Resolve Guide of Souls
+T6 P2: Gain 1 life from Guide of Souls (life: 25)
+T6 P2: +1 energy from Guide of Souls (total: 7)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Elegant Parlor→W (paying for Guide of Souls, 0 mana remaining)
+T6 P2: Cast Guide of Souls (W)
+    [Priority] P1 passes (no response)
+T6: Resolve Guide of Souls
+T6 P2: Gain 1 life from Guide of Souls (life: 26)
+T6 P2: +1 energy from Guide of Souls (total: 8)
+T6 P2: Gain 1 life from Guide of Souls (life: 27)
+T6 P2: +1 energy from Guide of Souls (total: 9)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Guide of Souls, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Ranger-Captain of Eos, Ocelot Pride, Ranger-Captain of Eos
+T6 P2: Attack with Guide of Souls, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Ranger-Captain of Eos, Ocelot Pride, Ranger-Captain of Eos
+T6 P1:   [BLOCK-EMERGENCY] Dryad Arbor (1/1) blocks Ranger-Captain of Eos (3/3) — lifespan_delta=+0.25
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T6 P2: Ocelot Pride lifelink — gain 1 (life: 28)
+T6 P2:   Ocelot Pride (1/1) → 1 dmg to player
+T6 P2:   Guide of Souls (1/2) → 1 dmg to player
+T6 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+T6 P2:   Ranger-Captain of Eos (3/3) → 3 dmg to player
+T6: Dryad Arbor dies
+  [Combat Damage] 6 damage dealt → P1 life: 13 → 7
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 7  |  Boros Energy 28
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 44  |  Graveyard: 8
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Tyvar, Jubilant Brawler, Leyline of Abundance
+║   Lands: Overgrown Tomb, Forest, Temple Garden, Overgrown Tomb
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Ranger-Captain of Eos (3/3) [tapped], Ocelot Pride (1/1) [tapped], Ranger-Captain of Eos (3/3) [tapped], Voice of Victory (1/3), Guide of Souls (1/2), Guide of Souls (1/2)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Arena of Glory [T], Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Verdant Catacombs
+  [Main 1]
+T7 P1: Play Verdant Catacombs
+T7: Verdant Catacombs moved battlefield -> graveyard (fetchland sacrifice)
+T7 P1: Crack Verdant Catacombs -> Forest (untapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 28  |  Creatures Toolbox 6
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 43  |  Graveyard: 3
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Ranger-Captain of Eos (3/3), Ocelot Pride (1/1), Ranger-Captain of Eos (3/3), Voice of Victory (1/3), Guide of Souls (1/2), Guide of Souls (1/2)
+║   Lands: Sacred Foundry, Sacred Foundry, Arena of Glory, Elegant Parlor
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Tyvar, Jubilant Brawler, Leyline of Abundance
+║   Lands: Overgrown Tomb, Forest, Temple Garden, Overgrown Tomb, Forest
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Guide of Souls, 3 mana remaining)
+T7 P2: Cast Guide of Souls (W)
+    [Priority] P1 passes (no response)
+T7: Resolve Guide of Souls
+T7 P2: Gain 1 life from Guide of Souls (life: 29)
+T7 P2: +1 energy from Guide of Souls (total: 10)
+T7 P2: Gain 1 life from Guide of Souls (life: 30)
+T7 P2: +1 energy from Guide of Souls (total: 11)
+T7 P2: Gain 1 life from Guide of Souls (life: 31)
+T7 P2: +1 energy from Guide of Souls (total: 12)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Arena of Glory→R (paying for Ragavan, Nimble Pilferer, 2 mana remaining)
+T7 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T7: Resolve Ragavan, Nimble Pilferer
+T7 P2: Gain 1 life from Guide of Souls (life: 32)
+T7 P2: +1 energy from Guide of Souls (total: 13)
+T7 P2: Gain 1 life from Guide of Souls (life: 33)
+T7 P2: +1 energy from Guide of Souls (total: 14)
+T7 P2: Gain 1 life from Guide of Souls (life: 34)
+T7 P2: +1 energy from Guide of Souls (total: 15)
+T7 P2: Gain 1 life from Guide of Souls (life: 35)
+T7 P2: +1 energy from Guide of Souls (total: 16)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Guide of Souls, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Ranger-Captain of Eos, Ocelot Pride, Ranger-Captain of Eos, Voice of Victory, Guide of Souls, Guide of Souls
+T7 P2: Gain 1 life from Guide of Souls (life: 36)
+T7 P2: +1 energy from Guide of Souls (total: 17)
+T7 P2: Gain 1 life from Guide of Souls (life: 37)
+T7 P2: +1 energy from Guide of Souls (total: 18)
+T7 P2: Gain 1 life from Guide of Souls (life: 38)
+T7 P2: +1 energy from Guide of Souls (total: 19)
+T7 P2: Gain 1 life from Guide of Souls (life: 39)
+T7 P2: +1 energy from Guide of Souls (total: 20)
+T7 P2: Gain 1 life from Guide of Souls (life: 40)
+T7 P2: +1 energy from Guide of Souls (total: 21)
+T7 P2: Gain 1 life from Guide of Souls (life: 41)
+T7 P2: +1 energy from Guide of Souls (total: 22)
+T7 P2: Gain 1 life from Guide of Souls (life: 42)
+T7 P2: +1 energy from Guide of Souls (total: 23)
+T7 P2: Gain 1 life from Guide of Souls (life: 43)
+T7 P2: +1 energy from Guide of Souls (total: 24)
+T7 P2: Create 2x Warrior token(s)
+T7 P2: Voice of Victory mobilize 2 — create 2 1/1 tokens
+T7 P2: Attack with Guide of Souls, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Ranger-Captain of Eos, Ocelot Pride, Ranger-Captain of Eos, Voice of Victory, Guide of Souls, Guide of Souls
+  [Declare Blockers] P1 does not block
+T7 P2: Ocelot Pride lifelink — gain 1 (life: 44)
+T7 P2:   Ocelot Pride (1/1) → 1 dmg to player
+T7 P2:   Guide of Souls (1/2) → 1 dmg to player
+T7 P2:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+T7 P2:   Ranger-Captain of Eos (3/3) → 3 dmg to player
+T7 P2:   Ranger-Captain of Eos (3/3) → 3 dmg to player
+T7 P2:   Voice of Victory (1/3) → 1 dmg to player
+T7 P2:   Guide of Souls (1/2) → 1 dmg to player
+T7 P2:   Guide of Souls (1/2) → 1 dmg to player
+P1 loses: life total -6
+  [Combat Damage] 12 damage dealt → P1 life: 6 → -6
+
+>>> Boros Energy wins Game 2 on turn 7 via damage
+    Final life: Creatures Toolbox=-6  Boros Energy=44
+
+======================================================================
+  MATCH RESULT: Boros Energy wins 2-0
+======================================================================

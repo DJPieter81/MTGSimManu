@@ -1,0 +1,1095 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+  Sideboard (Boros Energy vs Affinity): +1 Wear // Tear, +2 Wrath of the Skies, -1 Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, -2 Voice of Victory
+======================================================================
+  GAME 1: Affinity (P1) vs Boros Energy (P2)  —  seed 56300
+  Series: Affinity 0 - 0 Boros Energy
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Affinity wins → chooses to play first
+║ P1 (on play): Affinity
+║ P2 (on draw): Boros Energy
+╚═══════════════════════════════════════════════════════
+
+P1 (Affinity) opening hand (2 lands, 5 spells):
+  • Urza's Saga [Land, CMC 0]
+  • Kappa Cannoneer [Creature, CMC 6]
+  • Urza's Saga [Land, CMC 0]
+  • Mox Opal [Spell, CMC 0]
+  • Weapons Manufacturing [Spell, CMC 2]
+  • Mishra's Bauble [Spell, CMC 0]
+  • Kappa Cannoneer [Creature, CMC 6]
+→ P1 KEEPS 7 — has key card(s): Mox Opal, 3 cheap spells
+
+P2 (Boros Energy) opening hand (3 lands, 4 spells):
+  • Thraben Charm [Spell, CMC 2]
+  • Ocelot Pride [Creature, CMC 1]
+  • Seasoned Pyromancer [Creature, CMC 3]
+  • Dalkovan Encampment [Land, CMC 0]
+  • Flooded Strand [Land, CMC 0]
+  • Thraben Charm [Spell, CMC 2]
+  • Sacred Foundry [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Ocelot Pride, 4 cheap spells
+
+
+╔══ TURN 1 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Boros Energy 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Urza's Saga
+    → Goal: deploy_engine
+T1 P1: Cast Mishra's Bauble (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Mishra's Bauble
+    → Goal: deploy_engine [engines]
+T1 P1: Cast Mox Opal (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Mox Opal
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble, Mox Opal
+║   Lands: Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Dalkovan Encampment
+  [Main 1]
+T1 P2: Play Flooded Strand
+T1: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Flooded Strand (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Boros Energy 19
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble, Mox Opal
+║   Lands: Urza's Saga
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T2 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P1 draws: Kappa Cannoneer
+  [Main 1]
+T2 P1: Play Urza's Saga
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 19  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble, Mox Opal
+║   Lands: Urza's Saga, Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Goblin Bombardment
+  [Main 1]
+T2 P2: Play Sacred Foundry (tapped)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Ocelot Pride, 0 mana remaining)
+T2 P2: Cast Ocelot Pride (W)
+    [Priority] P1 passes (no response)
+T2: Resolve Ocelot Pride
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Boros Energy 19
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble, Mox Opal
+║   Lands: Urza's Saga, Urza's Saga
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T3 P1: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+T3 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P1 draws: Fiery Islet
+  [Main 1]
+T3 P1: Play Fiery Islet
+    → Goal: curve_out
+    [Mana] Tap Urza's Saga→C, Fiery Islet→R (paying for Weapons Manufacturing, 1 mana remaining)
+T3 P1: Cast Weapons Manufacturing (1R)
+    [Priority] P2 passes (no response)
+T3: Resolve Weapons Manufacturing
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 19  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1)
+║   Lands: Sacred Foundry, Sacred Foundry
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble, Mox Opal, Weapons Manufacturing
+║   Lands: Urza's Saga [T], Urza's Saga, Fiery Islet [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+T3 P2: Play Flooded Strand
+T3: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T3 P2: Crack Flooded Strand (pay 1 life) -> Sacred Foundry (tapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ocelot Pride
+T3 P2: Attack with Ocelot Pride
+  [Declare Blockers] P1 does not block
+T3 P2: Ocelot Pride lifelink — gain 1 (life: 19)
+T3 P2:   Ocelot Pride (1/1) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 20 → 19
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 19  |  Boros Energy 19
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble, Mox Opal, Weapons Manufacturing
+║   Lands: Urza's Saga, Urza's Saga, Fiery Islet
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1) [tapped]
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T4 P1: Urza's Saga tutors Pithing Needle
+T4 P1: Create 1x Munitions token(s)
+T4 P1: Weapons Manufacturing trigger → create 1 token(s) (Pithing Needle entered as nontoken=True artifact)
+T4 P1: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+T4 P1: Sacrifice Urza's Saga (final chapter)
+  [Draw] P1 draws: Urza's Saga
+  [Main 1]
+    → Goal: curve_out
+T4 P1: Improvise — tap 4 artifact(s) for Kappa Cannoneer
+    [Mana] Tap Urza's Saga→C, Fiery Islet→U (paying for Kappa Cannoneer, 0 mana remaining)
+T4 P1: Cast Kappa Cannoneer (5U)
+    [Priority] P2 passes (no response)
+T4: Resolve Kappa Cannoneer
+T4 P1: Kappa Cannoneer gets +1/+1 counter (Kappa Cannoneer entered) → 5/5
+T4 P1: Kappa Cannoneer gets +1/+1 counter (Munitions Token entered) → 6/6
+T4 P1: Create 1x Munitions token(s)
+T4 P1: Weapons Manufacturing trigger → create 1 token(s) (Kappa Cannoneer entered as nontoken=True artifact)
+T4 P1: Play Urza's Saga
+T4 P1: Activate Fiery Islet (sacrifice)
+  [Begin Combat]
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R (paying for Thraben Charm, 0 mana remaining)
+T4 P2: Cast Thraben Charm (1W)
+T4: Thraben Charm moved stack -> graveyard (resolution)
+T4: Thraben Charm is countered by Kappa Cannoneer's ward
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+    → Goal: curve_out
+T4 P1: Cast Welding Jar (0)
+    [Priority] P2 passes (no response)
+T4: Resolve Welding Jar
+T4 P1: Kappa Cannoneer gets +1/+1 counter (Welding Jar entered) → 7/7
+T4 P1: Kappa Cannoneer gets +1/+1 counter (Munitions Token entered) → 8/8
+T4 P1: Create 1x Munitions token(s)
+T4 P1: Weapons Manufacturing trigger → create 1 token(s) (Welding Jar entered as nontoken=True artifact)
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 19  |  Affinity 19
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 48  |  Graveyard: 3
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry
+║ Affinity board:
+║   Creatures: Kappa Cannoneer (8/8)
+║   Other: Mishra's Bauble, Mox Opal, Weapons Manufacturing, Pithing Needle, Munitions Token, Munitions Token, Welding Jar, Munitions Token
+║   Lands: Urza's Saga [T], Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ocelot Pride
+  [Main 1]
+    → Goal: curve_out [interaction]
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R (paying for Thraben Charm, 1 mana remaining)
+T4 P2: Cast Thraben Charm (1W)
+    [Priority] P1 passes (no response)
+T4: Thraben Charm moved stack -> graveyard (resolution)
+T4: Thraben Charm is countered by Kappa Cannoneer's ward
+T4 P2: Play Dalkovan Encampment (enters tapped)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Ocelot Pride, 0 mana remaining)
+T4 P2: Cast Ocelot Pride (W)
+    [Priority] P1 passes (no response)
+T4: Resolve Ocelot Pride
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 19  |  Boros Energy 19
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 2
+║ Affinity board:
+║   Creatures: Kappa Cannoneer (8/8)
+║   Other: Mishra's Bauble, Mox Opal, Weapons Manufacturing, Pithing Needle, Munitions Token, Munitions Token, Welding Jar, Munitions Token
+║   Lands: Urza's Saga, Urza's Saga
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ocelot Pride (1/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Dalkovan Encampment [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T5 P1: Urza's Saga tutors Shadowspear
+T5 P1: Kappa Cannoneer gets +1/+1 counter (Shadowspear entered) → 9/9
+T5 P1: Kappa Cannoneer gets +1/+1 counter (Munitions Token entered) → 10/10
+T5 P1: Create 1x Munitions token(s)
+T5 P1: Weapons Manufacturing trigger → create 1 token(s) (Shadowspear entered as nontoken=True artifact)
+T5 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+T5 P1: Sacrifice Urza's Saga (final chapter)
+  [Draw] P1 draws: Preordain
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Kappa Cannoneer
+T5 P1: Attack with Kappa Cannoneer
+T5 P2:   [BLOCK] Ocelot Pride (1/1) blocks Kappa Cannoneer (10/10) — lifespan_delta=+1.00
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T5: illegal block dropped — Ocelot Pride cannot legally block Kappa Cannoneer
+T5 P1:   Kappa Cannoneer (10/10) → 10 dmg to player
+  [Combat Damage] 10 damage dealt → P2 life: 19 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 9  |  Affinity 19
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 1
+║ Library: 47  |  Graveyard: 4
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ocelot Pride (1/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Dalkovan Encampment
+║ Affinity board:
+║   Creatures: Kappa Cannoneer (10/10) [tapped]
+║   Other: Mishra's Bauble, Mox Opal, Weapons Manufacturing, Pithing Needle, Munitions Token, Munitions Token, Welding Jar, Munitions Token, Shadowspear, Munitions Token
+║   Lands: Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [Main 1]
+T5 P2: Play Dalkovan Encampment (enters tapped)
+    → Goal: curve_out
+    [Mana] Tap Dalkovan Encampment→W, Sacred Foundry→R (paying for Goblin Bombardment, 2 mana remaining)
+T5 P2: Cast Goblin Bombardment (1R)
+    [Priority] P1 passes (no response)
+T5: Resolve Goblin Bombardment
+T5 P2: Goblin Bombardment enters — sacrifice creatures for 1 damage each
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R (paying for Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, 0 mana remaining)
+T5 P2: Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)
+    [Priority] P1 passes (no response)
+T5: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T5 P2: Create 1x Cat token(s)
+T5 P2: Ajani creates 2/1 Cat Warrior token
+T5: Cat Token moved battlefield -> graveyard (activation cost (Goblin Bombardment))
+T5 P2: activate Goblin Bombardment — This enchantment deals 1 damage to any target.
+T5 P2: Goblin Bombardment deals 1 to P1 (face)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ocelot Pride, Ocelot Pride
+T5 P2: Attack with Ocelot Pride, Ocelot Pride
+  [Declare Blockers] P1 does not block
+T5 P2: Ocelot Pride lifelink — gain 1 (life: 10)
+T5 P2:   Ocelot Pride (1/1) → 1 dmg to player
+T5 P2: Ocelot Pride lifelink — gain 1 (life: 11)
+T5 P2:   Ocelot Pride (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 18 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 16  |  Boros Energy 11
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 1  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 3
+║ Affinity board:
+║   Creatures: Kappa Cannoneer (10/10)
+║   Other: Mishra's Bauble, Mox Opal, Weapons Manufacturing, Pithing Needle, Munitions Token, Munitions Token, Welding Jar, Munitions Token, Shadowspear, Munitions Token
+║   Lands: Urza's Saga
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1) [tapped], Ocelot Pride (1/1) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)
+║   Other: Goblin Bombardment
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Dalkovan Encampment [T], Dalkovan Encampment [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T6 P1: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+  [Draw] P1 draws: Engineered Explosives
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Kappa Cannoneer
+T6 P1: Attack with Kappa Cannoneer
+T6 P2:   [BLOCK-EMERGENCY] Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) blocks Kappa Cannoneer (10/10) — lifespan_delta=-1.67
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T6: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 11  |  Affinity 16
+║ Hand: 1 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 1
+║ Library: 46  |  Graveyard: 5
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ocelot Pride (1/1)
+║   Other: Goblin Bombardment
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Dalkovan Encampment, Dalkovan Encampment
+║ Affinity board:
+║   Creatures: Kappa Cannoneer (10/10) [tapped]
+║   Other: Mishra's Bauble, Mox Opal, Weapons Manufacturing, Pithing Needle, Munitions Token, Munitions Token, Welding Jar, Munitions Token, Shadowspear, Munitions Token
+║   Lands: Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Galvanic Discharge
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Dalkovan Encampment→W, Sacred Foundry→R, Sacred Foundry→R (paying for Seasoned Pyromancer, 2 mana remaining)
+T6 P2: Cast Seasoned Pyromancer (1RR)
+    [Priority] P1 passes (no response)
+T6: Resolve Seasoned Pyromancer
+T6 P2: Create 1x Elemental token(s)
+T6 P2: Seasoned Pyromancer: discard 2, draw 2 (Elegant Parlor, Goblin Bombardment), create 1 Elemental(s)
+    → Goal: curve_out
+    [Mana] Tap Dalkovan Encampment→W, Sacred Foundry→R (paying for Goblin Bombardment, 0 mana remaining)
+T6 P2: Cast Goblin Bombardment (1R)
+    [Priority] P1 passes (no response)
+T6: Resolve Goblin Bombardment
+T6 P2: Goblin Bombardment enters — sacrifice creatures for 1 damage each
+T6 P2: surveil 1 → Galvanic Discharge to GY
+T6 P2: Play Elegant Parlor (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ocelot Pride, Ocelot Pride
+T6 P2: Attack with Ocelot Pride, Ocelot Pride
+  [Declare Blockers] P1 does not block
+T6 P2: Ocelot Pride lifelink — gain 1 (life: 12)
+T6 P2:   Ocelot Pride (1/1) → 1 dmg to player
+T6 P2: Ocelot Pride lifelink — gain 1 (life: 13)
+T6 P2:   Ocelot Pride (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 16 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 14  |  Boros Energy 13
+║ Hand: 4 cards  |  Opp hand: 0 cards
+║ Lands: 1  |  Opp lands: 6
+║ Library: 45  |  Graveyard: 3
+║ Affinity board:
+║   Creatures: Kappa Cannoneer (10/10)
+║   Other: Mishra's Bauble, Mox Opal, Weapons Manufacturing, Pithing Needle, Munitions Token, Munitions Token, Welding Jar, Munitions Token, Shadowspear, Munitions Token
+║   Lands: Urza's Saga
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1) [tapped], Ocelot Pride (1/1) [tapped], Seasoned Pyromancer (2/2), Elemental Token (1/1)
+║   Other: Goblin Bombardment, Goblin Bombardment
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Dalkovan Encampment [T], Dalkovan Encampment [T], Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T7 P1: Urza's Saga tutors Skateboard
+T7 P1: Kappa Cannoneer gets +1/+1 counter (Skateboard entered) → 11/11
+T7 P1: Kappa Cannoneer gets +1/+1 counter (Munitions Token entered) → 12/12
+T7 P1: Create 1x Munitions token(s)
+T7 P1: Weapons Manufacturing trigger → create 1 token(s) (Skateboard entered as nontoken=True artifact)
+T7 P1: Sacrifice Urza's Saga (final chapter)
+  [Draw] P1 draws: Island
+  [Main 1]
+T7 P1: Play Island
+    → Goal: curve_out
+T7 P1: Improvise — tap 5 artifact(s) for Kappa Cannoneer
+    [Mana] Tap Island→U (paying for Kappa Cannoneer, 0 mana remaining)
+T7 P1: Cast Kappa Cannoneer (5U)
+    [Priority] P2 passes (no response)
+T7: Resolve Kappa Cannoneer
+T7 P1: Kappa Cannoneer gets +1/+1 counter (Kappa Cannoneer entered) → 13/13
+T7 P1: Kappa Cannoneer gets +1/+1 counter (Kappa Cannoneer entered) → 5/5
+T7 P1: Kappa Cannoneer gets +1/+1 counter (Munitions Token entered) → 14/14
+T7 P1: Kappa Cannoneer gets +1/+1 counter (Munitions Token entered) → 6/6
+T7 P1: Create 1x Munitions token(s)
+T7 P1: Weapons Manufacturing trigger → create 1 token(s) (Kappa Cannoneer entered as nontoken=True artifact)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 13  |  Affinity 14
+║ Hand: 0 cards  |  Opp hand: 3 cards
+║ Lands: 6  |  Opp lands: 1
+║ Library: 42  |  Graveyard: 7
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ocelot Pride (1/1), Seasoned Pyromancer (2/2), Elemental Token (1/1)
+║   Other: Goblin Bombardment, Goblin Bombardment
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Dalkovan Encampment, Dalkovan Encampment, Elegant Parlor
+║ Affinity board:
+║   Creatures: Kappa Cannoneer (14/14) [tapped], Kappa Cannoneer (6/6)
+║   Other: Mishra's Bauble, Mox Opal, Weapons Manufacturing, Pithing Needle, Munitions Token, Munitions Token, Welding Jar, Munitions Token, Shadowspear, Munitions Token, Skateboard, Munitions Token, Munitions Token
+║   Lands: Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Plains
+  [Main 1]
+T7 P2: Play Plains
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ocelot Pride, Ocelot Pride, Seasoned Pyromancer, Elemental Token
+T7 P2: Attack with Ocelot Pride, Ocelot Pride, Seasoned Pyromancer, Elemental Token
+  [Declare Blockers] P1 does not block
+T7 P2: Ocelot Pride lifelink — gain 1 (life: 14)
+T7 P2:   Ocelot Pride (1/1) → 1 dmg to player
+T7 P2: Ocelot Pride lifelink — gain 1 (life: 15)
+T7 P2:   Ocelot Pride (1/1) → 1 dmg to player
+T7 P2:   Seasoned Pyromancer (2/2) → 2 dmg to player
+T7 P2:   Elemental Token (1/1) → 1 dmg to player
+  [Combat Damage] 5 damage dealt → P1 life: 14 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 9  |  Boros Energy 15
+║ Hand: 3 cards  |  Opp hand: 0 cards
+║ Lands: 1  |  Opp lands: 7
+║ Library: 43  |  Graveyard: 4
+║ Affinity board:
+║   Creatures: Kappa Cannoneer (14/14), Kappa Cannoneer (6/6)
+║   Other: Mishra's Bauble, Mox Opal, Weapons Manufacturing, Pithing Needle, Munitions Token, Munitions Token, Welding Jar, Munitions Token, Shadowspear, Munitions Token, Skateboard, Munitions Token, Munitions Token
+║   Lands: Island
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1) [tapped], Ocelot Pride (1/1) [tapped], Seasoned Pyromancer (2/2) [tapped], Elemental Token (1/1) [tapped]
+║   Other: Goblin Bombardment, Goblin Bombardment
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Dalkovan Encampment, Dalkovan Encampment, Elegant Parlor, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Engineered Explosives
+  [Main 1]
+T8 P1: Equip Skateboard to Kappa Cannoneer (cost 1)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Kappa Cannoneer, Kappa Cannoneer
+T8 P1: Attack with Kappa Cannoneer, Kappa Cannoneer
+  [Declare Blockers] P2 does not block
+T8 P1:   Kappa Cannoneer (15/14) → 15 dmg to player
+T8 P1:   Kappa Cannoneer (6/6) → 6 dmg to player
+P2 loses: life total -6
+  [Combat Damage] 21 damage dealt → P2 life: 15 → -6
+
+>>> Affinity wins Game 1 on turn 8 via damage
+    Final life: Affinity=9  Boros Energy=-6
+
+======================================================================
+  GAME 2: Boros Energy (P1) vs Affinity (P2)  —  seed 56301
+  Series: Affinity 1 - 0 Boros Energy
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Boros Energy wins → chooses to play first
+║ P1 (on play): Boros Energy
+║ P2 (on draw): Affinity
+╚═══════════════════════════════════════════════════════
+
+P1 (Boros Energy) opening hand (2 lands, 5 spells):
+  • Ocelot Pride [Creature, CMC 1]
+  • Marsh Flats [Land, CMC 0]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Arid Mesa [Land, CMC 0]
+  • Ajani, Nacatl Pariah // Ajani, Nacatl Avenger [Creature, CMC 2]
+  • Ocelot Pride [Creature, CMC 1]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+→ P1 KEEPS 7 — has key card(s): Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Ocelot Pride, Ragavan, Nimble Pilferer, 4 cheap spells
+
+P2 (Affinity) opening hand (1 lands, 6 spells):
+  • Metallic Rebuke [Spell, CMC 3]
+  • Pinnacle Emissary [Creature, CMC 3]
+  • Claws of Gix [Spell, CMC 0]
+  • Emry, Lurker of the Loch [Creature, CMC 3]
+  • Emry, Lurker of the Loch [Creature, CMC 3]
+  • Urza's Saga [Land, CMC 0]
+  • Shadowspear [Spell, CMC 1]
+→ P2 MULLIGANS (too few lands (1 < 2))
+  New hand (2 lands, 5 spells): ['Spirebluff Canal', 'Weapons Manufacturing', "Urza's Saga", "Mishra's Bauble", 'Mox Opal', 'Emry, Lurker of the Loch', 'Kappa Cannoneer']
+→ P2 mulligans to 6, bottoms: ['Kappa Cannoneer']
+  Keeps: ['Spirebluff Canal', 'Weapons Manufacturing', "Urza's Saga", "Mishra's Bauble", 'Mox Opal', 'Emry, Lurker of the Loch']
+
+
+╔══ TURN 1 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Arid Mesa
+T1: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Boros Energy 19
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Urza's Saga
+  [Main 1]
+T1 P2: Play Urza's Saga
+    → Goal: deploy_engine
+T1 P2: Cast Mishra's Bauble (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Mishra's Bauble
+    → Goal: deploy_engine [engines]
+T1 P2: Cast Mox Opal (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Mox Opal
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 19  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble, Mox Opal
+║   Lands: Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Flooded Strand
+  [Main 1]
+T2 P1: Play Marsh Flats
+T2: Marsh Flats moved battlefield -> graveyard (fetchland sacrifice)
+T2 P1: Crack Marsh Flats (pay 1 life) -> Sacred Foundry (tapped, life: 18)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Ocelot Pride, 0 mana remaining)
+T2 P1: Cast Ocelot Pride (W)
+    [Priority] P2 passes (no response)
+T2: Resolve Ocelot Pride
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Boros Energy 18
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble, Mox Opal
+║   Lands: Urza's Saga
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T2 P2: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P2 draws: Kappa Cannoneer
+  [Main 1]
+T2 P2: Play Spirebluff Canal (untapped, 1 other lands)
+    → Goal: curve_out
+    [Mana] Tap Spirebluff Canal→U (paying for Emry, Lurker of the Loch, 1 mana remaining)
+T2 P2: Cast Emry, Lurker of the Loch (2U)
+    [Priority] P1 passes (no response)
+T2: Resolve Emry, Lurker of the Loch
+T2 P2: Emry mills 4: Pinnacle Emissary, Island, Shivan Reef, Mox Opal
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 18  |  Affinity 20
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1)
+║   Lands: Sacred Foundry, Sacred Foundry
+║ Affinity board:
+║   Creatures: Emry, Lurker of the Loch (1/2)
+║   Other: Mishra's Bauble, Mox Opal
+║   Lands: Urza's Saga, Spirebluff Canal [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Galvanic Discharge
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→R, Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 0 mana remaining)
+T3 P1: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P2 passes (no response)
+T3: Resolve Ragavan, Nimble Pilferer
+T3 P1: Play Flooded Strand
+T3: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T3 P1: Crack Flooded Strand (pay 1 life) -> Sacred Foundry (tapped, life: 17)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ragavan, Nimble Pilferer
+T3 P1: Attack with Ragavan, Nimble Pilferer
+T3 P2:   [BLOCK] Emry, Lurker of the Loch (1/2) blocks Ragavan, Nimble Pilferer (2/1) — lifespan_delta=+4.00
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T3: Ragavan, Nimble Pilferer dies
+T3: Emry, Lurker of the Loch dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 20  |  Boros Energy 17
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 5
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble, Mox Opal
+║   Lands: Urza's Saga, Spirebluff Canal
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T3 P2: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+  [Draw] P2 draws: Engineered Explosives
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Urza's Saga→C, Spirebluff Canal→R (paying for Weapons Manufacturing, 0 mana remaining)
+T3 P2: Cast Weapons Manufacturing (1R)
+    [Priority] P1 passes (no response)
+T3: Resolve Weapons Manufacturing
+T3 P2: Play Urza's Saga
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 17  |  Affinity 20
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 4
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble, Mox Opal, Weapons Manufacturing
+║   Lands: Urza's Saga [T], Spirebluff Canal [T], Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Mana Tithe
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R (paying for Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, 1 mana remaining)
+T4 P1: Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)
+    [Priority] P2 passes (no response)
+T4: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T4 P1: Create 1x Cat token(s)
+T4 P1: Ajani creates 2/1 Cat Warrior token
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Ocelot Pride, 0 mana remaining)
+T4 P1: Cast Ocelot Pride (W)
+    [Priority] P2 passes (no response)
+T4: Resolve Ocelot Pride
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ocelot Pride
+T4 P1: Attack with Ocelot Pride
+  [Declare Blockers] P2 does not block
+T4 P1: Ocelot Pride lifelink — gain 1 (life: 18)
+T4 P1:   Ocelot Pride (1/1) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P2 life: 20 → 19
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 19  |  Boros Energy 18
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 5
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mishra's Bauble, Mox Opal, Weapons Manufacturing
+║   Lands: Urza's Saga, Spirebluff Canal, Urza's Saga
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1), Ocelot Pride (1/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T4 P2: Urza's Saga tutors Pithing Needle
+T4 P2: Create 1x Munitions token(s)
+T4 P2: Weapons Manufacturing trigger → create 1 token(s) (Pithing Needle entered as nontoken=True artifact)
+T4 P2: Urza's Saga Ch.I: gains "{T}: Add {C}."
+T4 P2: Sacrifice Urza's Saga (final chapter)
+  [Draw] P2 draws: Pinnacle Emissary
+  [Main 1]
+    → Goal: curve_out
+T4 P2: Improvise — tap 4 artifact(s) for Kappa Cannoneer
+    [Mana] Tap Urza's Saga→C, Spirebluff Canal→U (paying for Kappa Cannoneer, 0 mana remaining)
+T4 P2: Cast Kappa Cannoneer (5U)
+    [Priority] P1 passes (no response)
+T4: Resolve Kappa Cannoneer
+T4 P2: Kappa Cannoneer gets +1/+1 counter (Kappa Cannoneer entered) → 5/5
+T4 P2: Kappa Cannoneer gets +1/+1 counter (Munitions Token entered) → 6/6
+T4 P2: Create 1x Munitions token(s)
+T4 P2: Weapons Manufacturing trigger → create 1 token(s) (Kappa Cannoneer entered as nontoken=True artifact)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 18  |  Affinity 19
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 47  |  Graveyard: 4
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1), Ocelot Pride (1/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry
+║ Affinity board:
+║   Creatures: Kappa Cannoneer (6/6)
+║   Other: Mishra's Bauble, Mox Opal, Weapons Manufacturing, Pithing Needle, Munitions Token, Munitions Token
+║   Lands: Spirebluff Canal [T], Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Thraben Charm
+  [Main 1]
+    → Goal: curve_out [interaction]
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R (paying for Thraben Charm, 1 mana remaining)
+T5 P1: Cast Thraben Charm (1W)
+    [Priority] P2 passes (no response)
+T5: Thraben Charm moved stack -> graveyard (resolution)
+T5: Thraben Charm is countered by Kappa Cannoneer's ward
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 0 mana remaining)
+T5 P1: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P2 passes (no response)
+T5: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 19  |  Boros Energy 18
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 45  |  Graveyard: 6
+║ Affinity board:
+║   Creatures: Kappa Cannoneer (6/6)
+║   Other: Mishra's Bauble, Mox Opal, Weapons Manufacturing, Pithing Needle, Munitions Token, Munitions Token
+║   Lands: Spirebluff Canal, Urza's Saga
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1), Ocelot Pride (1/1), Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T5 P2: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+  [Draw] P2 draws: Weapons Manufacturing
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Urza's Saga→C (paying for Pinnacle Emissary, 1 mana remaining)
+T5 P2: Warp Pinnacle Emissary (pays 1)
+T5 P2: Cast Pinnacle Emissary (1UR)
+    [Priority] P1 passes (no response)
+T5: Resolve Pinnacle Emissary
+T5 P2: Kappa Cannoneer gets +1/+1 counter (Pinnacle Emissary entered) → 7/7
+T5 P2: Kappa Cannoneer gets +1/+1 counter (Munitions Token entered) → 8/8
+T5 P2: Create 1x Munitions token(s)
+T5 P2: Weapons Manufacturing trigger → create 1 token(s) (Pinnacle Emissary entered as nontoken=True artifact)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Kappa Cannoneer
+T5 P2: Attack with Kappa Cannoneer
+T5 P1:   [BLOCK] Ocelot Pride (1/1) blocks Kappa Cannoneer (8/8) — lifespan_delta=+0.27
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T5: illegal block dropped — Ocelot Pride cannot legally block Kappa Cannoneer
+T5 P2:   Kappa Cannoneer (8/8) → 8 dmg to player
+  [Combat Damage] 8 damage dealt → P1 life: 18 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+T5: Pinnacle Emissary moved battlefield -> exile (Warp exile)
+T5: Pinnacle Emissary exiled (Warp)
+
+╔══ TURN 6 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 10  |  Affinity 19
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 46  |  Graveyard: 5
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1), Ocelot Pride (1/1), Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry
+║ Affinity board:
+║   Creatures: Kappa Cannoneer (8/8) [tapped]
+║   Other: Mishra's Bauble, Mox Opal, Weapons Manufacturing, Pithing Needle, Munitions Token, Munitions Token, Munitions Token
+║   Lands: Spirebluff Canal, Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Voice of Victory
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R (paying for Voice of Victory, 1 mana remaining)
+T6 P1: Cast Voice of Victory (1W)
+    [Priority] P2 passes (no response)
+T6: Resolve Voice of Victory
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ocelot Pride, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token, Ocelot Pride, Ragavan, Nimble Pilferer
+T6 P1: Attack with Ocelot Pride, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token, Ocelot Pride, Ragavan, Nimble Pilferer
+  [Declare Blockers] P2 does not block
+T6 P1: Ocelot Pride lifelink — gain 1 (life: 11)
+T6 P1:   Ocelot Pride (1/1) → 1 dmg to player
+T6 P1: Ocelot Pride lifelink — gain 1 (life: 12)
+T6 P1:   Ocelot Pride (1/1) → 1 dmg to player
+T6 P1:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+T6 P1:   Cat Token (2/1) → 2 dmg to player
+T6 P1:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T6 P1: Create 1x Treasure token(s)
+T6 P1: Ragavan, Nimble Pilferer exiles Shivan Reef from top of P2's library
+T6 P1: Ragavan, Nimble Pilferer — may cast Shivan Reef this turn
+  [Combat Damage] 7 damage dealt → P2 life: 19 → 12
+  [End Combat]
+  [Main 2]
+T6 P1: Play Shivan Reef
+  [End Step]
+
+╔══ TURN 6 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 12  |  Boros Energy 12
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 43  |  Graveyard: 6
+║ Affinity board:
+║   Creatures: Kappa Cannoneer (8/8)
+║   Other: Mishra's Bauble, Mox Opal, Weapons Manufacturing, Pithing Needle, Munitions Token, Munitions Token, Munitions Token
+║   Lands: Spirebluff Canal, Urza's Saga
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Cat Token (2/1) [tapped], Ocelot Pride (1/1) [tapped], Ragavan, Nimble Pilferer (2/1) [tapped], Voice of Victory (1/3)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry, Shivan Reef
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T6 P2: Urza's Saga tutors Skateboard
+T6 P2: Kappa Cannoneer gets +1/+1 counter (Skateboard entered) → 9/9
+T6 P2: Kappa Cannoneer gets +1/+1 counter (Munitions Token entered) → 10/10
+T6 P2: Create 1x Munitions token(s)
+T6 P2: Weapons Manufacturing trigger → create 1 token(s) (Skateboard entered as nontoken=True artifact)
+T6 P2: Sacrifice Urza's Saga (final chapter)
+  [Draw] P2 draws: Preordain
+  [Main 1]
+T6 P2: Equip Skateboard to Kappa Cannoneer (cost 1)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Kappa Cannoneer
+T6 P2: Attack with Kappa Cannoneer
+T6 P1:   [BLOCK-EMERGENCY] Voice of Victory (1/3) blocks Kappa Cannoneer (11/10) — lifespan_delta=+0.79
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T6: illegal block dropped — Voice of Victory cannot legally block Kappa Cannoneer
+T6 P2:   Kappa Cannoneer (11/10) → 11 dmg to player
+  [Combat Damage] 11 damage dealt → P1 life: 12 → 1
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 1  |  Affinity 12
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 1
+║ Library: 45  |  Graveyard: 5
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1), Ocelot Pride (1/1), Ragavan, Nimble Pilferer (2/1), Voice of Victory (1/3)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Shivan Reef
+║ Affinity board:
+║   Creatures: Kappa Cannoneer (11/10) [tapped]
+║   Other: Mishra's Bauble, Mox Opal, Weapons Manufacturing, Pithing Needle, Munitions Token, Munitions Token, Munitions Token, Skateboard, Munitions Token
+║   Lands: Spirebluff Canal [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Plains
+  [Main 1]
+T7 P1: Play Plains
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ocelot Pride, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token, Ocelot Pride, Ragavan, Nimble Pilferer, Voice of Victory
+T7 P1: Create 2x Warrior token(s)
+T7 P1: Voice of Victory mobilize 2 — create 2 1/1 tokens
+T7 P1: Attack with Ocelot Pride, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Cat Token, Ocelot Pride, Ragavan, Nimble Pilferer, Voice of Victory
+  [Declare Blockers] P2 does not block
+T7 P1: Ocelot Pride lifelink — gain 1 (life: 2)
+T7 P1:   Ocelot Pride (1/1) → 1 dmg to player
+T7 P1: Ocelot Pride lifelink — gain 1 (life: 3)
+T7 P1:   Ocelot Pride (1/1) → 1 dmg to player
+T7 P1:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+T7 P1:   Cat Token (2/1) → 2 dmg to player
+T7 P1:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T7 P1: Create 1x Treasure token(s)
+T7 P1: Ragavan, Nimble Pilferer exiles Weapons Manufacturing from top of P2's library
+T7 P1: Ragavan, Nimble Pilferer — may cast Weapons Manufacturing this turn
+T7 P1:   Voice of Victory (1/3) → 1 dmg to player
+  [Combat Damage] 8 damage dealt → P2 life: 12 → 4
+  [End Combat]
+  [Main 2]
+    → Goal: curve_out
+    [Mana] Tap Plains→W, Sacred Foundry→R (paying for Weapons Manufacturing, 3 mana remaining)
+T7 P1: Cast Weapons Manufacturing (1R)
+    [Priority] P2 passes (no response)
+T7: Resolve Weapons Manufacturing
+  [End Step]
+T7: Warrior Token moved battlefield -> graveyard (Mobilize sacrifice)
+T7: Warrior Token sacrificed (Mobilize)
+T7: Warrior Token moved battlefield -> graveyard (Mobilize sacrifice)
+T7: Warrior Token sacrificed (Mobilize)
+
+╔══ TURN 7 — Affinity (P2) ══════════════════════════
+║ Life: Affinity 4  |  Boros Energy 3
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 1  |  Opp lands: 5
+║ Library: 40  |  Graveyard: 7
+║ Affinity board:
+║   Creatures: Kappa Cannoneer (11/10)
+║   Other: Mishra's Bauble, Mox Opal, Weapons Manufacturing, Pithing Needle, Munitions Token, Munitions Token, Munitions Token, Skateboard, Munitions Token
+║   Lands: Spirebluff Canal
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Cat Token (2/1) [tapped], Ocelot Pride (1/1) [tapped], Ragavan, Nimble Pilferer (2/1) [tapped], Voice of Victory (1/3) [tapped]
+║   Other: Treasure Token, Treasure Token, Weapons Manufacturing
+║   Lands: Sacred Foundry [T], Sacred Foundry, Sacred Foundry, Shivan Reef, Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Metallic Rebuke
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Kappa Cannoneer
+T7 P2: Attack with Kappa Cannoneer
+  [Declare Blockers] P1 does not block
+T7 P2:   Kappa Cannoneer (11/10) → 11 dmg to player
+P1 loses: life total -8
+  [Combat Damage] 11 damage dealt → P1 life: 3 → -8
+
+>>> Affinity wins Game 2 on turn 7 via damage
+    Final life: Boros Energy=-8  Affinity=4
+
+======================================================================
+  MATCH RESULT: Affinity wins 2-0
+======================================================================
