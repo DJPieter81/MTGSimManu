@@ -2067,6 +2067,10 @@ class CardDatabase:
         # classification, dispatched through the shared board-sweep resolver.
         from .oracle_parser import parse_board_sweep
         template.board_sweep_data = parse_board_sweep(oracle)
+        # Targeted destroy/exile removal — parse-once typed classification,
+        # dispatched through the shared nonland-permanent-removal resolver.
+        from .oracle_parser import parse_targeted_removal
+        template.targeted_removal_data = parse_targeted_removal(oracle)
 
         return template
 

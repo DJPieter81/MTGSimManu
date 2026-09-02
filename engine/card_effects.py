@@ -712,14 +712,18 @@ def prismatic_ending_resolve(game, card, controller, targets=None, item=None):
     )
 
 
-@EFFECT_REGISTRY.register("March of Otherworldly Light", EffectTiming.SPELL_RESOLVE,
-                           description="Exile target artifact, creature, or enchantment with MV <= X")
-def march_otherworldly_light_resolve(game, card, controller, targets=None, item=None):
-    _resolve_nonland_permanent_removal(
-        game, card, controller, targets, item,
-        zone_dest="exile", types=frozenset({"artifact", "creature", "enchantment"}),
-        mv_max_fn=_march_otherworldly_light_mv_max, log_verb="exiles",
-    )
+# "destroy/exile target <permanent> [with mana value N/X or less]" — the whole
+# targeted-removal shape (~100 Modern cards) is now classified once at DB load
+# into CardTemplate.targeted_removal_data (oracle_parser.parse_targeted_removal)
+# and dispatched — no oracle inspection at resolve time — through the same
+# shared _resolve_nonland_permanent_removal in
+# oracle_resolver.resolve_spell_from_oracle's typed-field branch. Abrupt Decay
+# (destroy nonland, MV<=3 literal) and March of Otherworldly Light (exile
+# artifact/creature/enchantment, MV<=X) are DELETED — verified redundant with
+# the typed path first (tests/test_targeted_removal_shared_resolver.py). The
+# non-generic conditions keep their handlers: Assassin's Trophy (basic-land
+# search rider), Fatal Push ("if it has" revolt), Prismatic Ending (Converge
+# colors-spent), Leyline Binding (ETB linked "until leaves" exile).
 
 
 @EFFECT_REGISTRY.register("Ephemerate", EffectTiming.SPELL_RESOLVE,
@@ -1646,13 +1650,11 @@ def _march_otherworldly_light_mv_max(game, card, controller, item):
     return item.x_value if item and hasattr(item, 'x_value') else 0
 
 
-@EFFECT_REGISTRY.register("Abrupt Decay", EffectTiming.SPELL_RESOLVE,
-                           description="Destroy target nonland permanent with MV 3 or less")
-def abrupt_decay_resolve(game, card, controller, targets=None, item=None):
-    _resolve_nonland_permanent_removal(
-        game, card, controller, targets, item,
-        zone_dest="graveyard", mv_max_fn=lambda g, c, ctl, it: _ABRUPT_DECAY_MV,
-    )
+# Abrupt Decay ("destroy target nonland permanent with mana value 3 or less")
+# is handled by the typed targeted_removal_data path (see the note at the
+# top of the removal section); its handler is deleted. _ABRUPT_DECAY_MV and
+# _march_otherworldly_light_mv_max are retained as documented mv-threshold
+# fixtures for tests/test_nonland_permanent_removal_mv_threshold.py.
 
 
 @EFFECT_REGISTRY.register("Assassin's Trophy", EffectTiming.SPELL_RESOLVE,

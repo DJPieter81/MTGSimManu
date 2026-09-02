@@ -5346,6 +5346,91 @@ def parse_board_sweep(oracle: str):
     return {'action': 'destroy', 'types': ['creature']}
 
 
+# ── Targeted removal ("destroy/exile target <permanent> [MV <= N|X]") ──
+# The single most common removal shape in Magic: a spell whose whole
+# resolution is destroying or exiling one chosen permanent of a stated type,
+# optionally gated by a printed mana-value ceiling. ~100 Modern
+# instants/sorceries. Only ~6 had per-card EFFECT_REGISTRY handlers; the rest
+# silently resolved to nothing (no generic destroy/exile-target branch
+# existed), so this typed path is a large correctness fix as well as a
+# consolidation. A rider (search, draw, sacrifice, a second effect) or a
+# non-literal condition (Prismatic Ending's colors-spent, Fatal Push's
+# revolt "if it has") is refused and keeps whatever bespoke handling it has.
+_REMOVAL_TYPESPEC = {
+    'nonland permanent': ('permanent_nonland',),
+    'permanent': ('permanent',),
+    'creature': ('creature',),
+    'creature or planeswalker': ('creature', 'planeswalker'),
+    'artifact': ('artifact',),
+    'enchantment': ('enchantment',),
+    'artifact or enchantment': ('artifact', 'enchantment'),
+    'artifact or creature': ('artifact', 'creature'),
+    'artifact, creature, or enchantment': ('artifact', 'creature', 'enchantment'),
+}
+# Longest typespecs first so "artifact, creature, or enchantment" is not
+# captured as bare "artifact".
+_REMOVAL_TYPESPEC_ALT = '|'.join(
+    re.escape(k) for k in sorted(_REMOVAL_TYPESPEC, key=len, reverse=True))
+_TARGETED_REMOVAL_RE = re.compile(
+    r'^(destroy|exile) target (' + _REMOVAL_TYPESPEC_ALT + r')'
+    r'(?: an opponent controls)?'
+    r'(?: with mana value (\d+|x) or less)?\.?$')
+_REMOVAL_RIDER_TOKENS = (
+    'search', 'draw', 'gain', 'you may', 'create', ' then ', 'sacrific',
+    'loses', 'counter', 'put ', 'shuffle', 'instead', ' if ', 'scry',
+    'return', 'discard', 'damage',
+)
+
+
+def parse_targeted_removal(oracle: str):
+    """Classify a "destroy/exile target <permanent type> [with mana value
+    N/X or less]" instant/sorcery. Returns a dict of typed params or ``None``:
+
+      {'action': 'destroy'|'exile',
+       'types': [type tokens for target_solver._matches_type],
+       'mv': int | 'x' | None}   # resolution-time mana-value ceiling
+
+    Parsed once at DB load into ``CardTemplate.targeted_removal_data`` and
+    dispatched (no oracle inspection at resolve time) through the shared
+    ``card_effects._resolve_nonland_permanent_removal``. owner_scope is always
+    the opponent (the sim's removal convention; the caster picks the target).
+    """
+    if not oracle:
+        return None
+    low0 = oracle.lower()
+    if 'destroy target' not in low0 and 'exile target' not in low0:
+        return None
+    text = strip_reminder_text(oracle).strip()
+    lines = [ln.strip() for ln in text.split('\n') if ln.strip()]
+    hit = None
+    for ln in lines:
+        m = _TARGETED_REMOVAL_RE.match(ln.lower())
+        if m:
+            hit = m
+            break
+    if hit is None:
+        return None
+    for ln in lines:
+        low = ln.lower()
+        if _TARGETED_REMOVAL_RE.match(low):
+            continue
+        lead = re.split(r"[ —–\-{:]", low, 1)[0]
+        if lead in _KEYWORD_ABILITY_LEADS:
+            continue
+        if "can't be countered" in low or 'less to cast' in low \
+                or 'additional cost' in low:
+            continue
+        if any(tok in low for tok in _REMOVAL_RIDER_TOKENS):
+            return None  # a real extra resolution effect — refuse
+    mv_raw = hit.group(3)
+    mv = None if mv_raw is None else ('x' if mv_raw == 'x' else int(mv_raw))
+    return {
+        'action': hit.group(1),
+        'types': list(_REMOVAL_TYPESPEC[hit.group(2)]),
+        'mv': mv,
+    }
+
+
 # ═══════════════════════════════════════════════════════════════════
 # Planeswalker loyalty abilities (CR 606)
 # ═══════════════════════════════════════════════════════════════════

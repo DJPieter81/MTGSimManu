@@ -1088,6 +1088,12 @@ class CardTemplate:
     # Dispatched off the typed field through card_effects._resolve_board_sweep.
     # Populated by oracle_parser.parse_board_sweep.
     board_sweep_data: Optional[dict] = None
+    # -- Targeted removal ("destroy/exile target <permanent> [MV <= N|X]") --
+    # {'action','types','mv'} for the destroy/exile-one-chosen-permanent shape
+    # (~100 Modern cards). None otherwise. Dispatched off the typed field
+    # through card_effects._resolve_nonland_permanent_removal. Populated by
+    # oracle_parser.parse_targeted_removal.
+    targeted_removal_data: Optional[dict] = None
     # Printed `[±N]: effect` loyalty abilities (CR 606), classified once at
     # DB load by oracle_parser.parse_loyalty_abilities into
     # {slot: LoyaltyAbility}.  `PlaneswalkerManager` dispatches off

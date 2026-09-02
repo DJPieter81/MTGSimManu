@@ -1165,6 +1165,32 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
             action=_bs['action'], types=frozenset(_bs['types']))
         return True
 
+    # ── Targeted removal ("destroy/exile target <permanent> [MV <= N|X]") —
+    #    typed-field gate, no oracle inspection at resolve time
+    #    (classification: parse_targeted_removal). Routes through the shared
+    #    _resolve_nonland_permanent_removal, exactly as the per-card removal
+    #    handlers did by hand; owner_scope is the opponent (the sim's removal
+    #    convention). A large correctness fix too — before this, the ~90
+    #    unregistered removal spells of this shape resolved to nothing.
+    _rm = getattr(card.template, 'targeted_removal_data', None)
+    if oracle_override is None and _rm:
+        from engine.card_effects import _resolve_nonland_permanent_removal
+        _mv = _rm.get('mv')
+        if _mv is None:
+            _mv_fn = None
+        elif _mv == 'x':
+            _mv_fn = lambda g, c, ctl, it, _x=x_value: _x
+        else:
+            _mv_fn = lambda g, c, ctl, it, _n=_mv: _n
+        _exile = _rm['action'] == 'exile'
+        _resolve_nonland_permanent_removal(
+            game, card, controller, targets, None,
+            zone_dest='exile' if _exile else 'graveyard',
+            types=frozenset(_rm['types']),
+            mv_max_fn=_mv_fn,
+            log_verb='exiles' if _exile else 'destroys')
+        return True
+
     # ── "Target opponent reveals their hand. You choose a nonland card
     #     and that player discards it." (Thoughtseize, Inquisition) ──
     # The template spans several sentences of ONE paragraph (reveal /

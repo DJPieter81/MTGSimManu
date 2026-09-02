@@ -2111,3 +2111,37 @@ Ending / Fatal Push are bespoke colors-spent / revolt conditionals). The bulk
 of the remaining 91 entries are genuinely card-specific effects, not
 duplicated shared-resolver delegations — the audit's "45-50 consolidatable"
 estimate did not survive a handler-body census.
+
+## EFFECT_REGISTRY targeted-removal consolidation — typed field (2026-09-02)
+
+Third registry cluster, and the highest-value one: it is a large correctness
+fix as well as a consolidation. `parse_targeted_removal` classifies the whole
+"destroy/exile target <permanent type> [with mana value N/X or less]" shape
+into `CardTemplate.targeted_removal_data` ({action, types, mv}); 102 DB cards
+populate it. `resolve_spell_from_oracle` dispatches off the typed field (no
+oracle inspection at resolve time) into the shared
+`card_effects._resolve_nonland_permanent_removal`, opponent-scoped.
+
+Before this, only ~6 removal spells of this shape had EFFECT_REGISTRY handlers;
+the other ~96 (Murder, Dreadbore, Hero's Downfall, Terminal Agony, …) resolved
+to NOTHING — a confirmed no-op (a synthetic cast left the target alive). They
+now destroy/exile correctly. Abrupt Decay (destroy nonland, MV<=3 literal) and
+March of Otherworldly Light (exile a/c/e, MV<=X) — the two cleanly-generic
+registered handlers — are DELETED, verified redundant with the typed path
+first (`tests/test_targeted_removal_shared_resolver.py`). Card-name-registry
+baseline 91 → 89. Non-generic conditions keep their handlers: Assassin's Trophy
+(basic-land search rider), Fatal Push ("if it has" revolt), Prismatic Ending
+(Converge colors-spent), Leyline Binding (ETB linked "until leaves" exile).
+
+Meta exposure is contained: of the ~96 newly-functional removal spells, only
+Shattering Spree (Affinity sideboard) is in a registered deck. WR baseline
+anchor unchanged (29 pins hold), all 7 ratchets at baseline. The parser refuses
+riders (search/draw/sacrifice/second effect), non-literal conditions, sweeps,
+bounce, and land destruction (its own typed path).
+
+**Registry surface across the three clusters: 95 → 89 (−6).** The realistic
+clean-consolidation ceiling is now essentially reached — the remaining 89
+entries are genuinely card-specific effects or non-generic conditionals, not
+duplicated shared-resolver delegations. The audit's "45-50 consolidatable"
+estimate did not survive a handler-body census; the real, durable win here was
+the ~96-card removal no-op correctness fix that the consolidation surfaced.
