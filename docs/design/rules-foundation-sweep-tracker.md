@@ -1993,3 +1993,53 @@ Every fix failing-test-first, all 7 ratchets at baseline (zone-mutation improved
 anchor re-verified after each drift (all confirmed correct). Tracked follow-ups: modal per-mode
 resolver, equipment keyword rider, mass +1/+1-counter distribution, coin-flip "to you", plus the
 round-3 AI-heuristic leads (Wrath X-sizing, sweeper sequencing).
+
+## Disguised single-card patches — the narrow-typed-field ratchet (2026-09-02)
+
+The `name == "X"` ratchet is at 0, but card-specific knowledge can still be
+laundered past every source-grep guard: parse ONE card's exact oracle wording
+at load time into a typed `CardTemplate` mechanic field, and a
+`card.name == "Omnath"` conditional becomes a `template.landfall_third_damage`
+boolean that only Omnath populates — functionally identical, invisible to the
+regex ratchets, and reads as "abstracted" in review. This is the most dangerous
+abstraction leak precisely because it *looks* generic (handled via a variable,
+in a typed field) while being as narrow as a card name.
+
+**Guardrail:** `tools/check_narrow_typed_fields.py` measures, empirically over
+the whole 22.5k-card DB, how many cards actually populate each typed mechanic
+field, and flags any whose real class is `<= THRESHOLD` (2) cards — a
+single/near-single-card carrier. The logic holds NO card, field, or mechanic
+names; the grandfathered set lives in `tools/narrow_typed_fields_baseline.json`
+(data, like every ratchet's baseline). A NEW narrow field fails CI until the
+author either (a) generalises the parser so the field covers its real Modern
+class (>THRESHOLD), or (b) declares it in the baseline with a `reason`, turning
+a silent leak into a counted, deliberate exception. The baseline may only
+shrink — a field leaves it by ceasing to be narrow.
+
+Wired into `.github/workflows/abstraction-contract.yml` as a standalone step
+(after the DB is assembled) plus `tests/test_narrow_typed_fields.py` in the
+abstraction-contract pytest set. Grandfathered set at introduction — 17 fields,
+`reason` empty (the baseline entry is itself the declaration):
+
+| Field | Cards | Kind |
+|---|---|---|
+| `landfall_second_mana_colors`, `landfall_third_damage` | Omnath | genuinely unique CDA |
+| `has_cc_tap_draw` | Endbringer | genuinely unique |
+| `enters_type_counter` | Kappa Cannoneer | candidate for a counters-on-ETB class |
+| `has_energy_damage_target` | Galvanic Discharge | candidate for an energy-payoff class |
+| `has_mana_value_wipe` | Wrath of the Skies | candidate for the MV-sweep class |
+| `is_land_sacrifice_tutor` | Scapeshift | candidate for a land-tutor class |
+| `landfall_first_life_gain` | Whispering Snitch | candidate for a landfall class |
+| `cycling_watch_trigger_damage` | Drannith Stinger | candidate for a cycling-payoff class |
+| `library_search_trigger_draws_card`, `has_library_search_opponent_trigger` | Wan Shi Tong (+Ob Nixilis) | candidate for a search-watcher class |
+| `aura_mana_color_chosen` | Utopia Sprawl, Shimmerwilds Growth | 2-card mana-aura class |
+| `counters_colorless_only` | Ceremonious Rejection, Consign to Memory | 2-card soft-counter class |
+| `limits_opponent_spell_timing` | Teferi ×2 | 2-card static |
+| `prevents_graveyard_etb` | Grafdigger's Cage, Kunoros | 2-card static |
+| `self_cost_reduction_amount`, `self_cost_reduction_unit` | Emrakul, Hollow One | 2-card cost-reduction class |
+
+Per the standing directive these are **grandfathered, not hand-fixed** — the
+ratchet's job is to stop the *next* disguised patch and make the existing ones
+counted and visible. The "candidate for a class" rows are the natural Phase-3
+generalisation backlog: when a second card of that shape enters Modern, the
+parser generalises and the field drops out of the baseline automatically.

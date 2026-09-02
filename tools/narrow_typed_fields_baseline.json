@@ -1,0 +1,115 @@
+{
+  "_comment": "Narrow-typed-field ratchet baseline. Each entry is a CardTemplate typed mechanic field whose real class is <= threshold cards \u2014 a single/near-single-card carrier. This is a DECLARED, grandfathered set: a NEW narrow field not listed here fails CI. Shrink it by generalising a parser (so its field covers its real Modern class) or removing a dead field. To justify a genuinely-unique card, set its 'reason'. See tools/check_narrow_typed_fields.py and docs/design/rules-foundation-sweep-tracker.md.",
+  "threshold": 2,
+  "fields": {
+    "aura_mana_color_chosen": {
+      "cards": [
+        "Shimmerwilds Growth",
+        "Utopia Sprawl"
+      ],
+      "reason": ""
+    },
+    "counters_colorless_only": {
+      "cards": [
+        "Ceremonious Rejection",
+        "Consign to Memory"
+      ],
+      "reason": ""
+    },
+    "cycling_watch_trigger_damage": {
+      "cards": [
+        "Drannith Stinger"
+      ],
+      "reason": ""
+    },
+    "enters_type_counter": {
+      "cards": [
+        "Kappa Cannoneer"
+      ],
+      "reason": ""
+    },
+    "has_cc_tap_draw": {
+      "cards": [
+        "Endbringer"
+      ],
+      "reason": ""
+    },
+    "has_energy_damage_target": {
+      "cards": [
+        "Galvanic Discharge"
+      ],
+      "reason": ""
+    },
+    "has_library_search_opponent_trigger": {
+      "cards": [
+        "Ob Nixilis, Unshackled",
+        "Wan Shi Tong, Librarian"
+      ],
+      "reason": ""
+    },
+    "has_mana_value_wipe": {
+      "cards": [
+        "Wrath of the Skies"
+      ],
+      "reason": ""
+    },
+    "is_land_sacrifice_tutor": {
+      "cards": [
+        "Scapeshift"
+      ],
+      "reason": ""
+    },
+    "landfall_first_life_gain": {
+      "cards": [
+        "Whispering Snitch"
+      ],
+      "reason": ""
+    },
+    "landfall_second_mana_colors": {
+      "cards": [
+        "Omnath, Locus of Creation"
+      ],
+      "reason": ""
+    },
+    "landfall_third_damage": {
+      "cards": [
+        "Omnath, Locus of Creation"
+      ],
+      "reason": ""
+    },
+    "library_search_trigger_draws_card": {
+      "cards": [
+        "Wan Shi Tong, Librarian"
+      ],
+      "reason": ""
+    },
+    "limits_opponent_spell_timing": {
+      "cards": [
+        "Teferi, Mage of Zhalfir",
+        "Teferi, Time Raveler"
+      ],
+      "reason": ""
+    },
+    "prevents_graveyard_etb": {
+      "cards": [
+        "Grafdigger's Cage",
+        "Kunoros, Hound of Athreos"
+      ],
+      "reason": ""
+    },
+    "self_cost_reduction_amount": {
+      "cards": [
+        "Emrakul, the Promised End",
+        "Hollow One"
+      ],
+      "reason": ""
+    },
+    "self_cost_reduction_unit": {
+      "cards": [
+        "Emrakul, the Promised End",
+        "Hollow One"
+      ],
+      "reason": ""
+    }
+  }
+}
