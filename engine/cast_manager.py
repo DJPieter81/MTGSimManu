@@ -380,10 +380,15 @@ class CastManager:
             effective_cmc = max(
                 0, effective_cmc - template.domain_reduction * domain)
         # Generic cost reduction from permanents on battlefield
-        from .oracle_resolver import count_cost_reducers
+        from .oracle_resolver import count_cost_reducers, self_cost_reduction
         generic_reduction = count_cost_reducers(game, player_idx, template)
         if generic_reduction > 0:
             effective_cmc = max(0, effective_cmc - generic_reduction)
+        # Self-scaling reduction ("this spell costs {N} less for each
+        # <live unit>") — generic-only, already capped by the helper.
+        own_reduction = self_cost_reduction(game, player_idx, template)
+        if own_reduction > 0:
+            effective_cmc = max(0, effective_cmc - own_reduction)
         # Affinity for artifacts
         if Keyword.AFFINITY in template.keywords:
             artifact_count = sum(

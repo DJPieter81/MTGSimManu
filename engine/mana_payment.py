@@ -220,8 +220,12 @@ class ManaPayment:
             for c in all_cards:
                 if c.template.name == card_name:
                     # Generic cost reduction from permanents
-                    from .oracle_resolver import count_cost_reducers
+                    from .oracle_resolver import (count_cost_reducers,
+                                                  self_cost_reduction)
                     reduction += count_cost_reducers(game, player_idx, c.template)
+                    # Self-scaling own-cost reduction (per-turn discard/
+                    # cycle count, graveyard card types, ...).
+                    reduction += self_cost_reduction(game, player_idx, c.template)
                     # Temporary cost reduction (Ral PW +1 "until your next turn")
                     if c.template.is_instant or c.template.is_sorcery:
                         reduction += player.temp_cost_reduction

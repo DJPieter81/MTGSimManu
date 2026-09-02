@@ -1783,6 +1783,7 @@ class CardDatabase:
             parse_domain_reduction, detect_power_scaling, parse_splice_cost,
             parse_counter_tax, parse_protection_from, parse_ward_cost,
             parse_is_land_sacrifice_tutor, parse_x_creature_tutor,
+            parse_self_cost_reduction,
             parse_can_target_player, parse_can_target_planeswalker,
             grants_flashback_to_gy_spells, parse_deals_targeted_damage,
             parse_has_scaling_token_finisher,
@@ -1855,6 +1856,8 @@ class CardDatabase:
         template.x_cost_data = parse_x_cost(oracle, name, data.get("manaCost", ""))
         template.is_cost_reducer = 'cost_reducer' in template.tags
         template.domain_reduction = parse_domain_reduction(oracle) or 0
+        (template.self_cost_reduction_amount,
+         template.self_cost_reduction_unit) = parse_self_cost_reduction(oracle)
         template.splice_cost = parse_splice_cost(oracle)
         template.power_scales_with = detect_power_scaling(oracle)
 

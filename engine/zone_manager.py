@@ -76,6 +76,15 @@ class ZoneManager:
         if from_zone == "battlefield":
             self._cleanup_leaving_battlefield(card)
 
+        # ── Per-turn discard accounting (CR 701.8a) ─────────────────
+        # Every hand -> graveyard transition is a discard by definition
+        # (cycling included, CR 702.29a); this is the ONE place the
+        # per-turn counter advances, so no caller counts per card.  The
+        # OWNER is credited — "cards you've discarded" is about whose
+        # hand the card left, not who forced it.
+        if from_zone == "hand" and to_zone == "graveyard":
+            game.players[owner].cards_discarded_or_cycled_this_turn += 1
+
         # ── Add to destination zone ─────────────────────────────────
         card.zone = actual_to
         dest_list = self._get_zone_list(game, owner, actual_to)
