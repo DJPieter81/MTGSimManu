@@ -1587,6 +1587,7 @@ class CardDatabase:
             has_delve, parse_dash_cost, parse_extra_land_drops,
             parse_escape_cost, parse_equip_cost, derive_tags_from_oracle,
             parse_splice_cost, parse_warp_cost, parse_spectacle_cost,
+            parse_madness_cost,
             parse_flashback_mana_cost, parse_land_type_bonuses,
         )
         oracle_text = template.oracle_text or ''
@@ -1645,6 +1646,11 @@ class CardDatabase:
         spectacle = parse_spectacle_cost(oracle_text)
         if spectacle is not None:
             template.spectacle_cost = spectacle
+
+        # Madness cost (CR 702.35): discard → exile, then castable for this cost
+        madness = parse_madness_cost(oracle_text)
+        if madness is not None:
+            template.madness_cost = madness
 
         # Flashback cost (CR 702.33): mana cost to cast from graveyard (exiles after)
         fb = parse_flashback_mana_cost(oracle_text)

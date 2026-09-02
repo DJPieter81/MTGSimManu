@@ -847,6 +847,12 @@ class CardTemplate:
     # an opponent lost life this turn. None when the card has no spectacle.
     # Populated by oracle_parser.parse_spectacle_cost.
     spectacle_cost: Optional[ManaCost] = None
+    # Madness alternate cost (CR 702.35): when this card is discarded it goes to
+    # exile instead, and may then be cast for this cost (else it falls to the
+    # graveyard). An empty ManaCost means "Madness {0}" — a real, free cost.
+    # None when the card has no Madness keyword.
+    # Populated by oracle_parser.parse_madness_cost.
+    madness_cost: Optional[ManaCost] = None
     # Flashback cost (CR 702.33): cast from graveyard for this cost (card exiles after).
     # None when the card has no printed Flashback. Cards granted flashback by Past in
     # Flames use template.mana_cost instead (this field stays None for them).
@@ -1099,6 +1105,7 @@ class CardTemplate:
                                         parse_escape_cost as _pec,
                                         parse_splice_cost as _psc,
                                         parse_spectacle_cost as _pspc,
+                                        parse_madness_cost as _pmc,
                                         parse_can_target_player as _pctp,
                                         parse_can_target_planeswalker as _pctpw,
                                         parse_has_attack_trigger as _phat,
@@ -1148,6 +1155,8 @@ class CardTemplate:
                 self.splice_cost = _psc(self.oracle_text)
             if self.spectacle_cost is None:
                 self.spectacle_cost = _pspc(self.oracle_text)
+            if self.madness_cost is None:
+                self.madness_cost = _pmc(self.oracle_text)
             # Targeting capability flags — always derived (not gated on
             # a sentinel) since they default False and any oracle text
             # can contain the relevant phrases.

@@ -35,6 +35,7 @@ from .delayed_triggers import (
     DelayedTrigger, DelayedTriggerQueue, DelayedTriggerStep,
 )
 from .callbacks import GameCallbacks, DefaultCallbacks
+from .discard_manager import DiscardManager
 from .constants import (
     STARTING_LIFE, MAX_HAND_SIZE, MAX_TURNS, SBA_MAX_ITERATIONS,
     FETCH_LAND_LIFE_COST,
@@ -705,10 +706,17 @@ class GameState:
                 # Thoughtseize-text "nonland card" clause means nothing
                 # else can be discarded. Stop the loop.
                 break
-            self.zone_mgr.move_card(
-                self, card, "hand", "graveyard",
+            self.discard_card(
+                player_idx, card,
                 cause="forced discard" if not self_discard else "discard"
             )
+
+    def discard_card(self, player_idx: int, card: CardInstance,
+                     cause: str = "discard") -> str:
+        """The discard event (CR 701.8) for one chosen card — the single
+        funnel every discard site uses, so discard replacements (madness,
+        CR 702.35) apply uniformly. Returns the zone the card ended in."""
+        return DiscardManager.discard_card(self, player_idx, card, cause)
 
     # ─── TRIGGERS ────────────────────────────────────────────────
 

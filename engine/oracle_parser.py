@@ -2813,6 +2813,32 @@ def parse_spectacle_cost(oracle: str) -> "Optional[ManaCost]":
     return cost if cost.cmc > 0 else None
 
 
+def parse_madness_cost(oracle: str) -> "Optional[ManaCost]":
+    """Parse a Madness alternative cost from oracle text (CR 702.35).
+
+    Oracle pattern: "Madness {cost} (If you discard this card, discard it
+    into exile. When you do, cast it for its madness cost or put it into
+    your graveyard.)"
+
+    Returns the madness cost as a ManaCost, or None when the card has no
+    Madness keyword.  Unlike warp/spectacle, a ZERO cost is meaningful
+    here — "Madness {0}" (Blazing Rootwalla class) is a real, always-
+    payable cost — so an empty ManaCost is returned rather than None.
+    The reminder sentence carries no mana symbols, so only the keyword's
+    own braces form the cost.  A sentence that merely *refers* to madness
+    ("if it has madness, you may cast it …") has no braces after the
+    word and yields None.
+
+    Class size: 47 Modern-legal cards in the DB carry the keyword; all
+    share this one template.
+    """
+    m = re.search(r'\bmadness\s+((?:\{[^}]+\})+)', oracle, re.IGNORECASE)
+    if not m:
+        return None
+    symbols = re.findall(r'\{([^}]+)\}', m.group(1))
+    return _parse_mana_symbols_to_cost(symbols)
+
+
 def parse_equip_cost(oracle: str) -> Optional[int]:
     """Parse Equip cost from oracle text.
 

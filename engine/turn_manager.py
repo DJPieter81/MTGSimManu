@@ -290,10 +290,18 @@ class TurnManager:
             card = game.callbacks.choose_discard(
                 game, game.active_player, list(active.hand),
                 self_discard=True)
-            game.zone_mgr.move_card(
-                game, card, "hand", "graveyard",
-                cause="discard to hand size"
-            )
+            game.discard_card(
+                game.active_player, card, cause="discard to hand size")
+
+        # CR 514.3a: if the discard put anything on the stack (a madness
+        # cast made as the reflexive trigger resolved), it resolves now
+        # and the cleanup continues — the turn does not end with a
+        # spell still pending.
+        while not game.stack.is_empty:
+            game.resolve_stack()
+            game.check_state_based_actions()
+            if game.game_over:
+                return
 
         # Remove damage from creatures
         for player in game.players:

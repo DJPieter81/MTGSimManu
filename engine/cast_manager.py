@@ -268,6 +268,30 @@ class CastManager:
         if getattr(player, 'silenced_this_turn', False):
             return False
 
+        # Madness (CR 702.35b): a card just discarded into exile may be
+        # cast from there for its madness cost. The offer is made while
+        # the reflexive trigger resolves, so it ignores sorcery-speed
+        # timing (CR 608.2g) — only payability and target legality gate
+        # it. `_madness_pending` is raised by the discard funnel
+        # (engine/discard_manager.py) for the duration of the offer only.
+        if card.zone == "exile" and getattr(card, '_madness_pending', False):
+            if template.madness_cost is None:
+                return False
+            if template.is_instant or template.is_sorcery:
+                from .target_solver import (has_legal_target_for_spell,
+                                            parse as _parse_targets)
+                requirements = _parse_targets(template.oracle_text or "")
+                if not has_legal_target_for_spell(
+                        game, player_idx, requirements, exclude=card):
+                    return False
+            total_mana = (player.untapped_mana_capacity()
+                          + player.mana_pool.total()
+                          + player._tron_mana_bonus())
+            return (total_mana >= template.madness_cost.cmc
+                    and CastManager._can_pay_colored_pips(
+                        game, player_idx, player.untapped_mana_sources,
+                        template.madness_cost))
+
         # Warp: previously warped permanents may be cast again from exile.
         if card.zone == "exile" and getattr(card, '_warped', False):
             has_artifact = any(
@@ -1151,8 +1175,16 @@ class CastManager:
         dashed = False
         warped = False
         spectacled = False
+        madnessed = False
         if not free_cast:
             untapped = player.untapped_mana_capacity() + player.mana_pool.total() + player._tron_mana_bonus()
+
+            # Madness (CR 702.35b): the card sits in exile inside the
+            # discard funnel's offer window; it is cast for the madness
+            # cost and no other alternative-cost route applies.
+            madnessed = (template.madness_cost is not None
+                         and card.zone == "exile"
+                         and getattr(card, '_madness_pending', False))
 
             # Warp: cast from hand for cheaper alternative cost; creature exiles
             # at beginning of the next end step.  Use Warp when we have an
@@ -1177,7 +1209,8 @@ class CastManager:
             # Spectacle (CR 702.131): use spectacle cost when an opponent lost
             # life this turn and the player cannot afford the normal cost —
             # or when spectacle is strictly cheaper than the normal cost.
-            if template.spectacle_cost is not None and not warped:
+            if (template.spectacle_cost is not None and not warped
+                    and not madnessed):
                 opp_lost_life_s = any(
                     game.players[i].life_lost_this_turn > 0
                     for i in range(len(game.players))
@@ -1205,7 +1238,7 @@ class CastManager:
             # Don't Dash when...
             #   1) We want a permanent body and opponent has few threats
             #   2) We're low on mana and Dash costs more than normal
-            if template.dash_cost is not None:
+            if template.dash_cost is not None and not madnessed:
                 can_normal = untapped >= template.mana_cost.cmc
                 can_dash = untapped >= template.dash_cost.cmc
 
@@ -1237,6 +1270,7 @@ class CastManager:
             # Unified board evaluation: evoke when the body isn't worth waiting for
             should_evoke = (
                 not dashed and not escaped and not spectacled
+                and not madnessed
                 and template.evoke_cost is not None
                 and untapped < template.mana_cost.cmc
                 and game.callbacks.should_evoke(game, player_idx, card)
@@ -1329,7 +1363,8 @@ class CastManager:
 
             # Delve: exile cards from graveyard to reduce generic mana cost
             delve_exiled = 0
-            if template.has_delve and not evoked and not dashed and not escaped:
+            if (template.has_delve and not evoked and not dashed
+                    and not escaped and not madnessed):
                 colored_cost = (template.mana_cost.white + template.mana_cost.blue +
                                template.mana_cost.black + template.mana_cost.red +
                                template.mana_cost.green)
@@ -1353,7 +1388,13 @@ class CastManager:
                                    f"Delve {delve_exiled} cards for {card.name}")
 
             # Pay mana
-            if spectacled:
+            if madnessed:
+                # Pay the madness cost (CR 702.35b) instead of the mana
+                # cost. A zero cost ("Madness {0}") pays trivially.
+                if not game.tap_lands_for_mana(player_idx, template.madness_cost,
+                                                 card_name=template.name):
+                    return False
+            elif spectacled:
                 # Pay Spectacle cost (CR 702.131) instead of normal cost
                 if not game.tap_lands_for_mana(player_idx, template.spectacle_cost,
                                                  card_name=template.name):
@@ -1498,6 +1539,8 @@ class CastManager:
         card._dashed = dashed  # Track for haste + return to hand at end of turn
         card._escaped = getattr(card, '_escaped', False) or (escaped if not free_cast else False)  # Track for sacrifice-unless-escaped
         card._warped = warped  # Track for exile at beginning of next end step
+        card._madness = madnessed  # Cast via the madness route (CR 702.35b)
+        card._madness_pending = False  # The exile offer window is consumed
         # Turn-scoped budget for `_eval_evoke`: each removal-class
         # evoke ramps the cost of the next one. Increment at cast
         # time (not on resolve) — even a fizzling evoke pitches the
