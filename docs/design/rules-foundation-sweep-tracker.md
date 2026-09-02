@@ -1967,3 +1967,29 @@ owner!=controller zone removal, amass-grows-Army, planeswalker-ETB-no-duplicate-
 WR anchor re-verified after each drift (all drifts confirmed correct). Tracked follow-ups:
 modal per-mode resolver, equipment keyword rider, mass +1/+1-counter distribution, coin-flip
 "to you", plus the two round-3 AI-heuristic leads above.
+
+## Audit round 4 2026-09-01 — blink/cascade, reanimation/aggro, control/tempo, prison/storm
+
+Four more parallel Bo3 audits. Regression checks all PASSED in-game: cascade-permanent
+survives its own Living End (Jeskai/LivingEnd), Thought-Knot Seer ETB strips a nonland card
+never a land (Eldrazi/Storm), Teferi phantom-ETB double-bounce absent (4-5c/Prowess),
+prowess/Chalice/storm-count all correct. Four class bugs found and fixed:
+
+| Bug | Matchup | Seed | Root cause | Status |
+|---|---|---|---|---|
+| Non-trample attacker discards damage over a blocker's lethal (lifelink under-gains) | Goryo's vs Zoo | 55641 | assignment capped at lethal; overflow consumed only by the trample branch | **FIXED** (`c4a247b`) |
+| Creature-only exile ("exile target creature") illegally targets a planeswalker | Eldrazi Tron vs Storm | 55643 | coarse can_exile_permanent flag; AI gate enumerated all nonland permanents | **FIXED** (`bc67892`) |
+| Resolve handler re-charges a Phyrexian-mana cast cost (double life loss) | 4/5c Control vs Prowess | 55642 | Mutagenic Growth resolve handler had a stray life -= 2 (cost is the cast path's) | **FIXED** (`ad368aa`) |
+| Mass return fires returned ETBs mid-resolution (before both boards settle) | Jeskai Blink vs Living End | 55640 | _resolve_living_end processed each player fully before the next, firing ETBs inline | **FIXED** (`91842e2`) |
+
+## Session tally (2026-09-01): 15 engine/AI fixes across 4 audit rounds
+Round 1: revolt-reset, cascade-permanent ordering, ETB reveal-hand exile.
+Round 2: ward-on-trigger-target, token-entry ETB watchers, every-blocker-deals-damage-back,
+flat-equipment P/T grant (+ Practiced Offense allowlist).
+Round 3: owner!=controller zone removal, amass-grows-Army, planeswalker-ETB-no-duplicate-bounce.
+Round 4: non-trample damage overflow, creature-only-exile target restriction, resolve-handler-
+no-recharge-cast-cost, mass-return-defers-ETBs.
+Every fix failing-test-first, all 7 ratchets at baseline (zone-mutation improved 75->73), WR
+anchor re-verified after each drift (all confirmed correct). Tracked follow-ups: modal per-mode
+resolver, equipment keyword rider, mass +1/+1-counter distribution, coin-flip "to you", plus the
+round-3 AI-heuristic leads (Wrath X-sizing, sweeper sequencing).
