@@ -136,7 +136,7 @@ class TriggerManager:
                     or required_type in entering_types):
                 continue
             for _ in range(trigger_multiplier):
-                watcher.plus_counters += spec['counter_power']
+                watcher.add_plus_counters(spec['counter_power'], game, source=card)
                 if spec.get('unblockable_this_turn'):
                     watcher.cannot_be_blocked_this_turn = True
             game.log.append(
@@ -208,6 +208,40 @@ class TriggerManager:
                 f"({card.name} entered as nontoken={not is_entering_token} "
                 f"{req_type})")
 
+
+    @staticmethod
+    def trigger_counter_placement(game: "GameState", card: CardInstance,
+                                  n: int, source=None):
+        """Resolve a "whenever one or more +1/+1 counters are put on this
+        <permanent>, <effect>" trigger (CR 122 / 603.2c).
+
+        Called ONLY from `CardInstance.add_plus_counters` — the single
+        counter funnel — once per placement event, after the funnel has
+        checked the card is on the battlefield and declares the trigger.
+        The rider is dispatched off the typed `CounterPlacementTrigger`
+        parsed at load; token creation goes through the one token factory
+        so the token's own granted ability ("Sacrifice this token: Add
+        {C}") is honoured. An unresolved rider still logs the trigger.
+        """
+        from .cards import (COUNTER_TRIGGER_EFFECT_TOKEN,
+                            COUNTER_TRIGGER_EFFECT_DRAW)
+        trig = card.template.counter_placement_trigger
+        controller = card.controller
+        via = f" via {source.name}" if source is not None else ""
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: {card.name} — "
+            f"{n} +1/+1 counter(s) put on it{via} → trigger "
+            f"({trig.effect})")
+        if trig.effect == COUNTER_TRIGGER_EFFECT_TOKEN:
+            from .permanent_effects import PermanentEffects
+            PermanentEffects.create_token(
+                game, controller, "counter_trigger_token",
+                count=trig.count, source_oracle=trig.effect_text)
+        elif trig.effect == COUNTER_TRIGGER_EFFECT_DRAW:
+            game.draw_cards(controller, trig.count)
+            game.log.append(
+                f"T{game.display_turn} P{controller+1}: "
+                f"{card.name} → draws {trig.count} card(s)")
 
     @staticmethod
     def trigger_attack(game: "GameState", attacker: CardInstance, controller: int):

@@ -286,7 +286,7 @@ def murktike_etb(game, card, controller, targets=None, item=None):
     # These are PERMANENT +1/+1 counters, not temp mods that reset at cleanup.
     delved_spells = getattr(card, '_delved_spells', 0)
     if delved_spells > 0:
-        card.plus_counters += delved_spells
+        card.add_plus_counters(delved_spells, game)
     game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Murktide Regent enters as {card.power}/{card.toughness}"
                     f" ({delved_spells} +1/+1 counters from delved instants/sorceries)")
@@ -1863,7 +1863,7 @@ def wan_shi_tong_etb(game, card, controller, targets=None, item=None):
     opponent = 1 - controller
     x = game.players[opponent].library_searches_this_game
     if x > 0:
-        card.plus_counters += x
+        card.add_plus_counters(x, game)
         draw_count = x // 2
         if draw_count > 0:
             game.draw_cards(controller, draw_count)
@@ -2784,7 +2784,7 @@ def phelia_attack(game, card, controller, targets=None, item=None):
 
         # If it returns under controller's control, Phelia gets +1/+1
         if target_owner == controller:
-            card.plus_counters += 1
+            card.add_plus_counters(1, game)
             game.log.append(
                 f"T{game.display_turn} P{controller+1}: "
                 f"Phelia gets +1/+1 counter ({card.power}/{card.toughness})")

@@ -437,7 +437,7 @@ class PermanentEffects:
             creature.cleanup_damage()
             creature.controller = controller
             creature.enter_battlefield()
-            creature.plus_counters += 1
+            creature.add_plus_counters(1, game)
             game.players[controller].battlefield.append(creature)
             game.log.append(f"T{game.display_turn}: {creature.name} returns (undying)")
             # CR 603.6a: the returned creature is a NEW object entering the
@@ -507,7 +507,7 @@ class PermanentEffects:
             ]
             if _artifact_creatures:
                 _target = max(_artifact_creatures, key=lambda c: c.power)
-                _target.plus_counters += _modular_counters
+                _target.add_plus_counters(_modular_counters, game, source=creature)
                 game.log.append(
                     f"T{game.display_turn}: {creature.name} modular — "
                     f"move {_modular_counters} counter(s) to {_target.name}"

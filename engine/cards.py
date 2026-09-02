@@ -108,6 +108,15 @@ COUNTER_KIND_PLUS = "+1/+1"
 COUNTER_KIND_MINUS = "-1/-1"
 COUNTER_KIND_LOYALTY = "loyalty"
 
+# Effect shapes a counter-placement trigger ("whenever one or more +1/+1
+# counters are put on this creature, …") can resolve to. Parsed once by
+# `oracle_parser.parse_counter_placement_trigger`; dispatched by
+# `TriggerManager.trigger_counter_placement`. UNRESOLVED means the trigger
+# fires (and logs) but its rider is a shape the engine does not resolve.
+COUNTER_TRIGGER_EFFECT_TOKEN = "create_token"
+COUNTER_TRIGGER_EFFECT_DRAW = "draw"
+COUNTER_TRIGGER_EFFECT_UNRESOLVED = "unresolved"
+
 
 class ActivationEffectKind(Enum):
     """What an activated ability actually does (CR 602).
@@ -289,6 +298,30 @@ class TapForManaTrigger:
     watch: str
     units: Tuple[Tuple[str, ...], ...] = ()
     mirror_source: bool = False
+
+
+@dataclass(frozen=True)
+class CounterPlacementTrigger:
+    """A "whenever one or more +1/+1 counters are put on this <permanent>,
+    <effect>" trigger (CR 122 / CR 603.2c).
+
+    16 Modern cards carry the self-scoped shape (Basking Broodscale, Herd
+    Baloth, Scurry Oak, Dusk Legion Duelist, Pensive Professor, Fetid
+    Gargantua, Benthic Biomancer, Knighted Myr, …). Parsed once by
+    `oracle_parser.parse_counter_placement_trigger`; fired by the ONE counter
+    funnel `CardInstance.add_plus_counters`, once per placement EVENT ("one
+    or more"), regardless of how many counters that event put on.
+
+    `effect` is one of the `COUNTER_TRIGGER_EFFECT_*` shapes; `count` is the
+    number of tokens created / cards drawn; `effect_text` is the rider
+    clause, handed to `PermanentEffects.create_token` as `source_oracle` so
+    the token-shape parse keeps its single owner (mirrors
+    `CardTemplate.cast_trigger_token`).
+    """
+    effect: str
+    count: int = 1
+    effect_text: str = ""
+    optional: bool = False
 
 
 @dataclass
@@ -810,6 +843,11 @@ class CardTemplate:
     # DIES: its +1/+1 counters may be placed on a target artifact creature.
     # Populated by card_database.py oracle-derived properties section.
     modular_n: int = 0
+    # "Whenever one or more +1/+1 counters are put on this <permanent>, …"
+    # (CR 122 / 603.2c, 16 Modern cards). See CounterPlacementTrigger. Read
+    # by `CardInstance.add_plus_counters` — the single +1/+1 counter funnel —
+    # so no placement path can put counters without the trigger seeing it.
+    counter_placement_trigger: Optional["CounterPlacementTrigger"] = None
     # -- Land destruction (spell tranche) -----------------------------------
     # True when the card is a spell-shaped "Destroy target land" effect with
     # only supported riders (see oracle_parser.parse_land_destruction).
@@ -868,7 +906,8 @@ class CardTemplate:
                                         parse_is_storm_spell as _piss,
                                         parse_has_charge_counter_ability as _phcca,
                                         parse_cast_trigger_token as _pctt,
-                                        parse_enters_type_counter as _petc)
+                                        parse_enters_type_counter as _petc,
+                                        parse_counter_placement_trigger as _pcpt)
             from .card_database import KEYWORD_MAP as _KM
             import re as _re
             if self.warp_cost is None:
@@ -953,6 +992,9 @@ class CardTemplate:
                 self.cast_trigger_token = _pctt(self.oracle_text)
             if self.enters_type_counter is None:
                 self.enters_type_counter = _petc(self.oracle_text)
+            if self.counter_placement_trigger is None:
+                self.counter_placement_trigger = _pcpt(self.oracle_text,
+                                                       name=self.name)
             if self.land_type_bonuses is None:
                 from .oracle_parser import parse_land_type_bonuses as _pltb
                 self.land_type_bonuses = _pltb(self.oracle_text)
@@ -1249,13 +1291,41 @@ class CardInstance:
             return self.loyalty_counters
         return self.other_counters.get(kind, 0)
 
+    def add_plus_counters(self, n: int, game=None, source=None) -> None:
+        """Put `n` +1/+1 counters on this permanent — the ONE funnel for
+        every +1/+1 placement in the engine (modular entry, "enters with X
+        counters", tutor-entry riders, ETB watchers, activation costs, …).
+
+        One call is one placement EVENT: a template that declares a
+        "whenever one or more +1/+1 counters are put on this …" trigger
+        (`CardTemplate.counter_placement_trigger`) fires it exactly once
+        per call, however many counters the call put on (CR 603.2c, "one
+        or more"). Counters put on an object that is not on the battlefield
+        do not trigger battlefield abilities (CR 122). `game` defaults to
+        the instance's bound game state; `source` is the object that put
+        the counters (logging only).
+        """
+        if n <= 0:
+            return
+        self.plus_counters += n
+        game = game if game is not None else self._game_state
+        if (game is None or self.zone != "battlefield"
+                or self.template.counter_placement_trigger is None):
+            return
+        from .triggers import TriggerManager
+        TriggerManager.trigger_counter_placement(game, self, n, source)
+
     def adjust_counters(self, kind: str, delta: int) -> None:
         """Add (or, with a negative delta, remove) counters of `kind`.
 
         Counts never go below zero — CR 122.3: removing more counters than
         are present simply removes what is there.
         """
-        if kind == COUNTER_KIND_PLUS:
+        if kind == COUNTER_KIND_PLUS and delta > 0:
+            # A positive +1/+1 delta IS a placement event: route through the
+            # funnel so the counter-placement trigger sees it.
+            self.add_plus_counters(delta)
+        elif kind == COUNTER_KIND_PLUS:
             self.plus_counters = max(0, self.plus_counters + delta)
         elif kind == COUNTER_KIND_MINUS:
             self.minus_counters = max(0, self.minus_counters + delta)
