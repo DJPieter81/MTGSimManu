@@ -1,0 +1,1585 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+  Sideboard (Dimir Midrange vs Amulet Titan): +2 Flusterstorm, +2 Mystical Dispute, -2 Archmage's Charm, -2 Fatal Push
+  Sideboard (Dimir Midrange vs Amulet Titan): +2 Flusterstorm, +2 Mystical Dispute, -2 Archmage's Charm, -2 Fatal Push
+======================================================================
+  GAME 1: Amulet Titan (P1) vs Dimir Midrange (P2)  —  seed 56100
+  Series: Amulet Titan 0 - 0 Dimir Midrange
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Amulet Titan wins → chooses to play first
+║ P1 (on play): Amulet Titan
+║ P2 (on draw): Dimir Midrange
+╚═══════════════════════════════════════════════════════
+
+P1 (Amulet Titan) opening hand (4 lands, 3 spells):
+  • Green Sun's Zenith [Spell, CMC 1]
+  • Urza's Cave [Land, CMC 0]
+  • Mirrorpool [Land, CMC 0]
+  • Simic Growth Chamber [Land, CMC 0]
+  • Primeval Titan [Creature, CMC 6]
+  • Urza's Saga [Land, CMC 0]
+  • Summoner's Pact [Spell, CMC 0]
+→ P1 MULLIGANS (no cost reducer and no ritual+cantrip+finisher backup)
+  New hand (3 lands, 4 spells): ['The Mycosynth Gardens', 'Arboreal Grazer', 'Arboreal Grazer', 'Shifting Woodland', 'Otawara, Soaring City', 'Spelunking', 'Malevolent Rumble']
+→ P1 mulligans to 6, bottoms: ['Malevolent Rumble']
+  Keeps: ['The Mycosynth Gardens', 'Arboreal Grazer', 'Arboreal Grazer', 'Shifting Woodland', 'Otawara, Soaring City', 'Spelunking']
+
+P2 (Dimir Midrange) opening hand (5 lands, 2 spells):
+  • Polluted Delta [Land, CMC 0]
+  • Subtlety [Creature, CMC 4]
+  • Darkslick Shores [Land, CMC 0]
+  • Swamp [Land, CMC 0]
+  • Polluted Delta [Land, CMC 0]
+  • Island [Land, CMC 0]
+  • Psychic Frog [Creature, CMC 2]
+→ P2 MULLIGANS (too many lands (5 > 4); first-turn value 1 < 5)
+  New hand (2 lands, 5 spells): ['Consider', 'Psychic Frog', 'Counterspell', 'Watery Grave', 'Psychic Frog', 'Thoughtseize', 'Island']
+→ P2 mulligans to 6, bottoms: ['Counterspell']
+  Keeps: ['Consider', 'Psychic Frog', 'Watery Grave', 'Psychic Frog', 'Thoughtseize', 'Island']
+
+
+╔══ TURN 1 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Dimir Midrange 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 54  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play The Mycosynth Gardens
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: The Mycosynth Gardens
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Polluted Delta
+  [Main 1]
+T1 P2: Play Polluted Delta
+T1: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Polluted Delta (pay 1 life) -> Watery Grave (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Dimir Midrange 19
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: The Mycosynth Gardens
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Spelunking
+  [Main 1]
+T2 P1: Play Otawara, Soaring City
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: The Mycosynth Gardens, Otawara, Soaring City
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Murktide Regent
+  [Main 1]
+T2 P2: Play Watery Grave (tapped)
+    → Goal: grind_value [enablers]
+    [Mana] Tap Watery Grave→U (paying for Consider, 0 mana remaining)
+T2 P2: Cast Consider (U)
+    [Priority] P1 passes (no response)
+T2: Resolve Consider
+T2 P2: surveil 1 → Polluted Delta to GY
+T2 P2: Consider → draw 1 (Fatal Push)
+T2: Consider moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Dimir Midrange 19
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: The Mycosynth Gardens, Otawara, Soaring City
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T], Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Green Sun's Zenith
+  [Main 1]
+T3 P1: Play Shifting Woodland (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 3
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Watery Grave
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: The Mycosynth Gardens, Otawara, Soaring City, Shifting Woodland [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Consider
+  [Main 1]
+T3 P2: Play Island
+    → Goal: grind_value [payoffs]
+    [Mana] Tap Island→U, Watery Grave→B (paying for Psychic Frog, 1 mana remaining)
+T3 P2: Cast Psychic Frog (UB)
+    [Priority] P1 passes (no response)
+T3: Resolve Psychic Frog
+    → Goal: grind_value [enablers]
+    [Mana] Tap Watery Grave→U (paying for Consider, 0 mana remaining)
+T3 P2: Cast Consider (U)
+    [Priority] P1 passes (no response)
+T3: Resolve Consider
+T3 P2: surveil 1 → Subtlety to GY
+T3 P2: Consider → draw 1 (Scalding Tarn)
+T3: Consider moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Dimir Midrange 19
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 52  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: The Mycosynth Gardens, Otawara, Soaring City, Shifting Woodland
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (1/2)
+║   Lands: Watery Grave [T], Watery Grave [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Boseiju, Who Endures
+  [Main 1]
+    → Goal: ramp [enablers]
+    [Mana] Tap Shifting Woodland→G (paying for Arboreal Grazer, 2 mana remaining)
+T4 P1: Cast Arboreal Grazer (G)
+    [Priority] P2 passes (no response)
+T4: Resolve Arboreal Grazer
+T4 P1: Arboreal Grazer puts Boseiju, Who Endures onto battlefield
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 5
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (1/2)
+║   Lands: Watery Grave, Watery Grave, Island
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Lands: The Mycosynth Gardens, Otawara, Soaring City, Shifting Woodland [T], Boseiju, Who Endures [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Darkslick Shores
+  [Main 1]
+T4 P2: Play Scalding Tarn
+T4: Scalding Tarn moved battlefield -> graveyard (fetchland sacrifice)
+T4 P2: Crack Scalding Tarn -> Island (untapped)
+    → Goal: close_game
+T4 P2: Delve 5 cards for Murktide Regent
+    [Mana] Tap Island→U, Island→U (paying for Murktide Regent, 2 mana remaining)
+T4 P2: Cast Murktide Regent (5UU)
+    [Priority] P1 passes (no response)
+T4: Resolve Murktide Regent
+T4 P2: Murktide Regent enters as 5/5 (2 +1/+1 counters from delved instants/sorceries)
+    → Goal: close_game
+    [Mana] Tap Watery Grave→B (paying for Fatal Push, 1 mana remaining)
+T4 P2: Cast Fatal Push (B)
+    [Priority] P1 passes (no response)
+T4: Resolve Fatal Push
+T4: Arboreal Grazer dies
+T4 P2: Fatal Push destroys Arboreal Grazer
+T4: Fatal Push moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Psychic Frog
+T4 P2: Attack with Psychic Frog
+  [Declare Blockers] P1 does not block
+T4 P2:   Psychic Frog (2/3) → 2 dmg to player
+T4 P2: Psychic Frog deals combat damage — draw a card
+  [Combat Damage] 2 damage dealt → P1 life: 20 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 18  |  Dimir Midrange 18
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 51  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: The Mycosynth Gardens, Otawara, Soaring City, Shifting Woodland, Boseiju, Who Endures
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (2/3) [tapped], Murktide Regent (5/5)
+║   Lands: Watery Grave [T], Watery Grave, Island [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Simic Growth Chamber
+  [Main 1]
+T5 P1: Play Simic Growth Chamber (enters tapped)
+T5: Otawara, Soaring City moved battlefield -> hand (Simic Growth Chamber ETB returns Otawara, Soaring City to hand)
+    → Goal: ramp
+    [Mana] Tap Shifting Woodland→G (paying for Green Sun's Zenith, 2 mana remaining)
+T5 P1: Cast Green Sun's Zenith (2G) (X=2)
+    [Priority] P2 passes (no response)
+T5: Resolve Green Sun's Zenith
+T5: Aftermath Analyst moved library -> battlefield (Green Sun's Zenith tutor)
+T5: Amulet of Vigor moved library -> graveyard (Aftermath Analyst mill)
+T5: Amulet of Vigor moved library -> graveyard (Aftermath Analyst mill)
+T5: Green Sun's Zenith moved library -> graveyard (Aftermath Analyst mill)
+T5 P1: Aftermath Analyst ETB: mill 3
+T5 P1: Green Sun's Zenith finds Aftermath Analyst
+T5: Green Sun's Zenith moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 18  |  Amulet Titan 18
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 43  |  Graveyard: 3
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (2/3), Murktide Regent (5/5)
+║   Lands: Watery Grave, Watery Grave, Island, Island
+║ Amulet Titan board:
+║   Creatures: Aftermath Analyst (1/3)
+║   Lands: The Mycosynth Gardens [T], Shifting Woodland [T], Boseiju, Who Endures [T], Simic Growth Chamber [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Scalding Tarn
+  [Main 1]
+T5 P2: Play Scalding Tarn
+T5: Scalding Tarn moved battlefield -> graveyard (fetchland sacrifice)
+T5 P2: Crack Scalding Tarn -> Island (untapped)
+    → Goal: close_game
+    [Mana] Tap Island→U, Watery Grave→B (paying for Psychic Frog, 3 mana remaining)
+T5 P2: Cast Psychic Frog (UB)
+    [Priority] P1 passes (no response)
+T5: Resolve Psychic Frog
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Psychic Frog, Murktide Regent
+T5 P2: Attack with Psychic Frog, Murktide Regent
+T5 P1:   [BLOCK] Aftermath Analyst (1/3) blocks Psychic Frog (3/4) — lifespan_delta=+0.33
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T5 P2:   Murktide Regent (5/5) → 5 dmg to player
+T5: Aftermath Analyst dies
+  [Combat Damage] 5 damage dealt → P1 life: 18 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 13  |  Dimir Midrange 17
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 6
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: The Mycosynth Gardens, Shifting Woodland, Boseiju, Who Endures, Simic Growth Chamber
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (3/4) [tapped], Murktide Regent (5/5) [tapped], Psychic Frog (1/2)
+║   Lands: Watery Grave [T], Watery Grave, Island [T], Island, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Crumbling Vestige
+  [Main 1]
+T6 P1: Play Otawara, Soaring City
+    → Goal: ramp [enablers]
+    [Mana] Tap Shifting Woodland→G, Boseiju, Who Endures→G, Otawara, Soaring City→U (paying for Spelunking, 3 mana remaining)
+T6 P1: Cast Spelunking (2G)
+    [Priority] P2 passes (no response)
+T6: Resolve Spelunking
+    → Goal: ramp [enablers]
+    [Mana] Tap Simic Growth Chamber→GU, The Mycosynth Gardens→C (paying for Spelunking, 0 mana remaining)
+T6 P1: Cast Spelunking (2G)
+    [Priority] P2 passes (no response)
+T6: Resolve Spelunking
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 17  |  Amulet Titan 13
+║ Hand: 1 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 41  |  Graveyard: 5
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (3/4), Murktide Regent (5/5), Psychic Frog (1/2)
+║   Lands: Watery Grave, Watery Grave, Island, Island, Island
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Spelunking, Spelunking
+║   Lands: The Mycosynth Gardens [T], Shifting Woodland [T], Boseiju, Who Endures [T], Simic Growth Chamber [T], Otawara, Soaring City [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Orcish Bowmasters
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Island→U, Watery Grave→B (paying for Orcish Bowmasters, 3 mana remaining)
+T6 P2: Cast Orcish Bowmasters (1B)
+    [Priority] P1 passes (no response)
+T6: Resolve Orcish Bowmasters
+T6 P2: Bowmasters deals 1 damage to opponent (life: 12)
+T6 P2: amass Orcs 1 — creates a 1/1 Orc Army token
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Psychic Frog, Murktide Regent, Psychic Frog
+T6 P2: Attack with Psychic Frog, Murktide Regent, Psychic Frog
+  [Declare Blockers] P1 does not block
+T6 P2:   Psychic Frog (3/4) → 3 dmg to player
+T6 P2: Psychic Frog deals combat damage — draw a card
+T6 P2:   Murktide Regent (5/5) → 5 dmg to player
+T6 P2:   Psychic Frog (1/2) → 1 dmg to player
+T6 P2: Psychic Frog deals combat damage — draw a card
+  [Combat Damage] 9 damage dealt → P1 life: 12 → 3
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 3  |  Dimir Midrange 17
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 6
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Spelunking, Spelunking
+║   Lands: The Mycosynth Gardens, Shifting Woodland, Boseiju, Who Endures, Simic Growth Chamber, Otawara, Soaring City
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (3/4) [tapped], Murktide Regent (5/5) [tapped], Psychic Frog (1/2) [tapped], Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave [T], Watery Grave, Island [T], Island, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Scapeshift
+  [Main 1]
+T7 P1: Play Crumbling Vestige (enters tapped)
+T7 P1: Spelunking — Crumbling Vestige enters untapped
+    → Goal: ramp [enablers]
+    [Mana] Tap Shifting Woodland→G (paying for Arboreal Grazer, 6 mana remaining)
+T7 P1: Cast Arboreal Grazer (G)
+    [Priority] P2 passes (no response)
+T7: Resolve Arboreal Grazer
+  [Begin Combat]
+    [Mana] Tap Watery Grave→B (paying for Fatal Push, 2 mana remaining)
+T7 P2: Cast Fatal Push (B)
+T7: Resolve Fatal Push
+T7: Arboreal Grazer dies
+T7 P2: Fatal Push destroys Arboreal Grazer
+T7: Fatal Push moved stack -> graveyard (resolution)
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 17  |  Amulet Titan 3
+║ Hand: 2 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 38  |  Graveyard: 6
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (3/4), Murktide Regent (5/5), Psychic Frog (1/2), Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave, Watery Grave, Island, Island, Island
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Spelunking, Spelunking
+║   Lands: The Mycosynth Gardens, Shifting Woodland [T], Boseiju, Who Endures, Simic Growth Chamber, Otawara, Soaring City, Crumbling Vestige
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Spell Pierce
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Watery Grave→B, Watery Grave→B (paying for Dauthi Voidwalker, 3 mana remaining)
+T7 P2: Cast Dauthi Voidwalker (BB)
+    [Priority] P1 passes (no response)
+T7: Resolve Dauthi Voidwalker
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Psychic Frog, Murktide Regent, Psychic Frog, Orcish Bowmasters, Orc Army
+T7 P2: Attack with Psychic Frog, Murktide Regent, Psychic Frog, Orcish Bowmasters, Orc Army
+  [Declare Blockers] P1 does not block
+T7 P2:   Psychic Frog (3/4) → 3 dmg to player
+T7 P2: Psychic Frog deals combat damage — draw a card
+T7 P2:   Murktide Regent (5/5) → 5 dmg to player
+T7 P2:   Psychic Frog (1/2) → 1 dmg to player
+T7 P2: Psychic Frog deals combat damage — draw a card
+T7 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T7 P2:   Orc Army (1/1) → 1 dmg to player
+P1 loses: life total -8
+  [Combat Damage] 11 damage dealt → P1 life: 3 → -8
+
+>>> Dimir Midrange wins Game 1 on turn 7 via damage
+    Final life: Amulet Titan=-8  Dimir Midrange=17
+
+======================================================================
+  GAME 2: Amulet Titan (P1) vs Dimir Midrange (P2)  —  seed 56101
+  Series: Amulet Titan 0 - 1 Dimir Midrange
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Dimir Midrange wins → chooses to play first
+║ P1 (on play): Dimir Midrange
+║ P2 (on draw): Amulet Titan
+╚═══════════════════════════════════════════════════════
+
+P1 (Amulet Titan) opening hand (1 lands, 6 spells):
+  • Forest [Land, CMC 0]
+  • Amulet of Vigor [Spell, CMC 1]
+  • Aftermath Analyst [Creature, CMC 2]
+  • Spelunking [Spell, CMC 3]
+  • Summoner's Pact [Spell, CMC 0]
+  • Amulet of Vigor [Spell, CMC 1]
+  • Amulet of Vigor [Spell, CMC 1]
+→ P1 MULLIGANS (too few lands (1 < 2))
+  New hand (3 lands, 4 spells): ['Spelunking', 'Crumbling Vestige', 'Arboreal Grazer', 'Simic Growth Chamber', 'Primeval Titan', 'Crumbling Vestige', 'Scapeshift']
+→ P1 mulligans to 6, bottoms: ['Crumbling Vestige']
+  Keeps: ['Spelunking', 'Arboreal Grazer', 'Simic Growth Chamber', 'Primeval Titan', 'Crumbling Vestige', 'Scapeshift']
+
+P2 (Dimir Midrange) opening hand (2 lands, 5 spells):
+  • Counterspell [Spell, CMC 2]
+  • Swamp [Land, CMC 0]
+  • Consider [Spell, CMC 1]
+  • Spell Pierce [Spell, CMC 1]
+  • Murktide Regent [Creature, CMC 7]
+  • Polluted Delta [Land, CMC 0]
+  • Thoughtseize [Spell, CMC 1]
+→ P2 KEEPS 7 — has key card(s): Consider, Thoughtseize, 4 cheap spells
+
+
+╔══ TURN 1 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Polluted Delta
+T1: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Polluted Delta (pay 1 life) -> Watery Grave (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Dimir Midrange 19
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Gruul Turf
+  [Main 1]
+T1 P1: Play Crumbling Vestige (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Island
+  [Main 1]
+T2 P2: Play Swamp
+    → Goal: grind_value [enablers]
+    [Mana] Tap Watery Grave→U (paying for Consider, 1 mana remaining)
+T2 P2: Cast Consider (U)
+    [Priority] P1 passes (no response)
+T2: Resolve Consider
+T2 P2: surveil 1 → Underground River to GY
+T2 P2: Consider → draw 1 (Orcish Bowmasters)
+T2: Consider moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Dimir Midrange 19
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T], Swamp
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arboreal Grazer
+  [Main 1]
+T2 P1: Play Simic Growth Chamber (enters tapped)
+T2: Crumbling Vestige moved battlefield -> hand (Simic Growth Chamber ETB returns Crumbling Vestige to hand)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 1
+║ Library: 49  |  Graveyard: 3
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Swamp
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Simic Growth Chamber [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Otawara, Soaring City
+  [Main 1]
+T3 P2: Play Island
+    → Goal: grind_value
+    [Mana] Tap Swamp→B, Island→U (paying for Orcish Bowmasters, 1 mana remaining)
+T3 P2: Cast Orcish Bowmasters (1B)
+    [Priority] P1 passes (no response)
+T3: Resolve Orcish Bowmasters
+T3 P2: Bowmasters deals 1 damage to opponent (life: 19)
+T3 P2: amass Orcs 1 — creates a 1/1 Orc Army token
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 19  |  Dimir Midrange 19
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 3
+║ Library: 52  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Simic Growth Chamber
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave, Swamp [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Dryad Arbor
+  [Main 1]
+T3 P1: Play Crumbling Vestige (enters tapped)
+    → Goal: ramp [enablers]
+    [Mana] Tap Simic Growth Chamber→GU (paying for Arboreal Grazer, 1 mana remaining)
+T3 P1: Cast Arboreal Grazer (G)
+    [Priority] P2 passes (no response)
+T3: Resolve Arboreal Grazer
+T3: Crumbling Vestige moved battlefield -> hand (Gruul Turf ETB returns Crumbling Vestige to hand)
+T3 P1: Arboreal Grazer puts Gruul Turf onto battlefield
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Amulet Titan 19
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 48  |  Graveyard: 3
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave, Swamp, Island
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Lands: Simic Growth Chamber [T], Gruul Turf [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Scalding Tarn
+  [Main 1]
+T4 P2: Play Scalding Tarn
+T4: Scalding Tarn moved battlefield -> graveyard (fetchland sacrifice)
+T4 P2: Crack Scalding Tarn (pay 1 life) -> Watery Grave (tapped, life: 18)
+    → Goal: close_game
+T4 P2: Delve 4 cards for Murktide Regent
+    [Mana] Tap Swamp→B, Island→U, Watery Grave→U (paying for Murktide Regent, 0 mana remaining)
+T4 P2: Cast Murktide Regent (5UU)
+    [Priority] P1 passes (no response)
+T4: Resolve Murktide Regent
+T4 P2: Murktide Regent enters as 4/4 (1 +1/+1 counters from delved instants/sorceries)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army
+T4 P2: Attack with Orcish Bowmasters, Orc Army
+T4 P1:   [BLOCK] Arboreal Grazer (0/3) blocks Orcish Bowmasters (1/1) — lifespan_delta=+0.17
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T4 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P1 life: 19 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 18  |  Dimir Midrange 18
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 51  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Lands: Simic Growth Chamber, Gruul Turf
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped], Murktide Regent (4/4)
+║   Lands: Watery Grave [T], Swamp [T], Island [T], Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arboreal Grazer
+  [Main 1]
+T4 P1: Play Crumbling Vestige (enters tapped)
+    → Goal: ramp [enablers]
+    [Mana] Tap Simic Growth Chamber→GU, Gruul Turf→RG (paying for Spelunking, 1 mana remaining)
+T4 P1: Cast Spelunking (2G)
+    [Priority] P2 passes (no response)
+T4: Resolve Spelunking
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 18  |  Amulet Titan 18
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 46  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1), Murktide Regent (4/4)
+║   Lands: Watery Grave, Swamp, Island, Watery Grave
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Spelunking
+║   Lands: Simic Growth Chamber [T], Gruul Turf [T], Crumbling Vestige [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Counterspell
+  [Main 1]
+T5 P2: Play Otawara, Soaring City
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army, Murktide Regent
+T5 P2: Attack with Orcish Bowmasters, Orc Army, Murktide Regent
+T5 P1:   [BLOCK] Arboreal Grazer (0/3) blocks Murktide Regent (4/4) — lifespan_delta=+0.67
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T5 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T5 P2:   Orc Army (1/1) → 1 dmg to player
+T5: Arboreal Grazer dies
+  [Combat Damage] 2 damage dealt → P1 life: 18 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 16  |  Dimir Midrange 18
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 50  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Spelunking
+║   Lands: Simic Growth Chamber, Gruul Turf, Crumbling Vestige
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped], Murktide Regent (4/4) [tapped]
+║   Lands: Watery Grave, Swamp, Island, Watery Grave, Otawara, Soaring City
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Gruul Turf
+  [Main 1]
+T5 P1: Play Dryad Arbor
+    → Goal: ramp [enablers]
+    [Mana] Tap Dryad Arbor→G (paying for Arboreal Grazer, 5 mana remaining)
+T5 P1: Cast Arboreal Grazer (G)
+    [Priority] P2 responds with Counterspell
+    [Mana] Tap Island→U, Otawara, Soaring City→U (paying for Counterspell, 3 mana remaining)
+T5 P2: Cast Counterspell (UU)
+T5: Resolve Counterspell
+T5: Arboreal Grazer moved stack -> graveyard (resolution)
+T5: Arboreal Grazer is countered
+T5: Counterspell moved stack -> graveyard (resolution)
+    → Goal: ramp [enablers]
+    [Mana] Tap Simic Growth Chamber→GU (paying for Arboreal Grazer, 4 mana remaining)
+T5 P1: Cast Arboreal Grazer (G)
+    [Priority] P2 passes (no response)
+T5: Resolve Arboreal Grazer
+T5: Dryad Arbor moved battlefield -> hand (Gruul Turf ETB returns Dryad Arbor to hand)
+T5 P1: Spelunking — Gruul Turf enters untapped
+T5 P1: Arboreal Grazer puts Gruul Turf onto battlefield
+    → Goal: ramp [payoffs]
+    [Mana] Tap Gruul Turf→RG, Gruul Turf→RG, Crumbling Vestige→C (paying for Primeval Titan, 0 mana remaining)
+T5 P1: Cast Primeval Titan (4GG)
+    [Priority] P2 passes (no response)
+T5: Resolve Primeval Titan
+T5 P1: Spelunking — Tolaria West enters untapped
+T5 P1: Primeval Titan searches for Tolaria West
+T5 P1: Spelunking — Hanweir Battlements // Hanweir, the Writhing Township enters untapped
+T5 P1: Primeval Titan searches for Hanweir Battlements // Hanweir, the Writhing Township
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 18  |  Amulet Titan 16
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 45  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1), Murktide Regent (4/4)
+║   Lands: Watery Grave, Swamp, Island, Watery Grave, Otawara, Soaring City
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Primeval Titan (6/6)
+║   Other: Spelunking
+║   Lands: Simic Growth Chamber [T], Gruul Turf [T], Crumbling Vestige [T], Gruul Turf [T], Tolaria West, Hanweir Battlements // Hanweir, the Writhing Township
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Consider
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Island→U (paying for Consider, 4 mana remaining)
+T6 P2: Cast Consider (U)
+    [Priority] P1 passes (no response)
+T6: Resolve Consider
+T6 P2: surveil 1 → Thoughtseize to GY
+T6 P2: Consider → draw 1 (Fatal Push)
+T6: Consider moved stack -> graveyard (resolution)
+    → Goal: close_game
+    [Mana] Tap Swamp→B (paying for Fatal Push, 3 mana remaining)
+T6 P2: Cast Fatal Push (B)
+    [Priority] P1 passes (no response)
+T6: Resolve Fatal Push
+T6: Fatal Push moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army, Murktide Regent
+T6 P2: Attack with Orcish Bowmasters, Orc Army, Murktide Regent
+T6 P1:   [BLOCK] Arboreal Grazer (0/3) blocks Murktide Regent (4/4) — lifespan_delta=+0.67
+T6 P1:   [BLOCK] Primeval Titan (6/6) blocks Orcish Bowmasters (1/1) — lifespan_delta=+0.70
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T6 P2:   Orc Army (1/1) → 1 dmg to player
+T6: Arboreal Grazer dies
+T6: Orcish Bowmasters dies
+  [Combat Damage] 1 damage dealt → P1 life: 16 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 15  |  Dimir Midrange 18
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 6  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 3
+║ Amulet Titan board:
+║   Creatures: Primeval Titan (6/6)
+║   Other: Spelunking
+║   Lands: Simic Growth Chamber, Gruul Turf, Crumbling Vestige, Gruul Turf, Tolaria West, Hanweir Battlements // Hanweir, the Writhing Township
+║ Dimir Midrange board:
+║   Creatures: Orc Army (1/1) [tapped], Murktide Regent (4/4) [tapped]
+║   Lands: Watery Grave, Swamp [T], Island [T], Watery Grave, Otawara, Soaring City
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Malevolent Rumble
+  [Main 1]
+T6 P1: Play Dryad Arbor
+    → Goal: ramp
+    [Mana] Tap Tolaria West→U, Dryad Arbor→G (paying for Malevolent Rumble, 8 mana remaining)
+T6 P1: Cast Malevolent Rumble (1G)
+    [Priority] P2 passes (no response)
+T6: Resolve Malevolent Rumble
+T6 P1: Create 1x spawn token(s)
+T6: Malevolent Rumble moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Primeval Titan
+T6 P1: Spelunking — Mirrorpool enters untapped
+T6 P1: Primeval Titan searches for Mirrorpool
+T6 P1: Spelunking — Crumbling Vestige enters untapped
+T6 P1: Primeval Titan searches for Crumbling Vestige
+T6 P1: Attack with Primeval Titan
+  [Declare Blockers] P2 does not block
+T6 P1:   Primeval Titan (6/6) → 6 dmg to player
+  [Combat Damage] 6 damage dealt → P2 life: 18 → 12
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 12  |  Amulet Titan 15
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 9
+║ Library: 42  |  Graveyard: 5
+║ Dimir Midrange board:
+║   Creatures: Orc Army (1/1), Murktide Regent (4/4)
+║   Lands: Watery Grave, Swamp, Island, Watery Grave, Otawara, Soaring City
+║ Amulet Titan board:
+║   Creatures: Primeval Titan (6/6) [tapped], Dryad Arbor (1/1) [tapped], spawn Token (0/1)
+║   Other: Spelunking
+║   Lands: Simic Growth Chamber, Gruul Turf, Crumbling Vestige, Gruul Turf, Tolaria West [T], Hanweir Battlements // Hanweir, the Writhing Township, Dryad Arbor [T], Mirrorpool, Crumbling Vestige
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Orcish Bowmasters
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Swamp→B, Island→U (paying for Orcish Bowmasters, 3 mana remaining)
+T7 P2: Cast Orcish Bowmasters (1B)
+    [Priority] P1 passes (no response)
+T7: Resolve Orcish Bowmasters
+T7 P2: Bowmasters deals 1 damage to Dryad Arbor
+T7 P2: amass Orcs 1 — Orc Army grows to 2/2
+T7: Dryad Arbor dies
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orc Army, Murktide Regent
+T7 P2: Attack with Orc Army, Murktide Regent
+T7 P1:   [BLOCK] spawn Token (0/1) blocks Orc Army (2/2) — lifespan_delta=+0.29
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T7 P2:   Murktide Regent (4/4) → 4 dmg to player
+T7: spawn Token dies
+  [Combat Damage] 4 damage dealt → P1 life: 15 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 11  |  Dimir Midrange 12
+║ Hand: 1 cards  |  Opp hand: 3 cards
+║ Lands: 8  |  Opp lands: 5
+║ Library: 44  |  Graveyard: 5
+║ Amulet Titan board:
+║   Creatures: Primeval Titan (6/6)
+║   Other: Spelunking
+║   Lands: Simic Growth Chamber, Gruul Turf, Crumbling Vestige, Gruul Turf, Tolaria West, Hanweir Battlements // Hanweir, the Writhing Township, Mirrorpool, Crumbling Vestige
+║ Dimir Midrange board:
+║   Creatures: Orc Army (2/2) [tapped], Murktide Regent (4/4) [tapped], Orcish Bowmasters (1/1)
+║   Lands: Watery Grave, Swamp [T], Island [T], Watery Grave, Otawara, Soaring City
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Boseiju, Who Endures
+  [Main 1]
+T7 P1: Play Boseiju, Who Endures
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Primeval Titan
+T7 P1: Spelunking — Crumbling Vestige enters untapped
+T7 P1: Primeval Titan searches for Crumbling Vestige
+T7: Tolaria West moved battlefield -> hand (Gruul Turf ETB returns Tolaria West to hand)
+T7 P1: Spelunking — Gruul Turf enters untapped
+T7 P1: Primeval Titan searches for Gruul Turf
+T7 P1: Attack with Primeval Titan
+  [Declare Blockers] P2 does not block
+T7 P1:   Primeval Titan (6/6) → 6 dmg to player
+  [Combat Damage] 6 damage dealt → P2 life: 12 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 6  |  Amulet Titan 11
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 10
+║ Library: 41  |  Graveyard: 5
+║ Dimir Midrange board:
+║   Creatures: Orc Army (2/2), Murktide Regent (4/4), Orcish Bowmasters (1/1)
+║   Lands: Watery Grave, Swamp, Island, Watery Grave, Otawara, Soaring City
+║ Amulet Titan board:
+║   Creatures: Primeval Titan (6/6) [tapped]
+║   Other: Spelunking
+║   Lands: Simic Growth Chamber, Gruul Turf, Crumbling Vestige, Gruul Turf, Hanweir Battlements // Hanweir, the Writhing Township, Mirrorpool, Crumbling Vestige, Boseiju, Who Endures, Crumbling Vestige, Gruul Turf
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Underground River
+  [Main 1]
+T8 P2: Play Underground River
+    → Goal: close_game
+    [Mana] Tap Swamp→B (paying for Thoughtseize, 5 mana remaining)
+T8 P2: Cast Thoughtseize (B)
+    [Priority] P1 passes (no response)
+T8: Resolve Thoughtseize
+T8: Scapeshift moved hand -> graveyard (forced discard)
+T8 P2: Thoughtseize → opponent discards 1
+T8: Thoughtseize moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orc Army, Murktide Regent, Orcish Bowmasters
+T8 P2: Attack with Orc Army, Murktide Regent, Orcish Bowmasters
+  [Declare Blockers] P1 does not block
+T8 P2:   Orc Army (2/2) → 2 dmg to player
+T8 P2:   Murktide Regent (4/4) → 4 dmg to player
+T8 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+  [Combat Damage] 7 damage dealt → P1 life: 11 → 4
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 4  |  Dimir Midrange 4
+║ Hand: 1 cards  |  Opp hand: 2 cards
+║ Lands: 10  |  Opp lands: 6
+║ Library: 41  |  Graveyard: 6
+║ Amulet Titan board:
+║   Creatures: Primeval Titan (6/6)
+║   Other: Spelunking
+║   Lands: Simic Growth Chamber, Gruul Turf, Crumbling Vestige, Gruul Turf, Hanweir Battlements // Hanweir, the Writhing Township, Mirrorpool, Crumbling Vestige, Boseiju, Who Endures, Crumbling Vestige, Gruul Turf
+║ Dimir Midrange board:
+║   Creatures: Orc Army (2/2) [tapped], Murktide Regent (4/4) [tapped], Orcish Bowmasters (1/1) [tapped]
+║   Lands: Watery Grave, Swamp [T], Island, Watery Grave, Otawara, Soaring City, Underground River
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Urza's Saga
+  [Main 1]
+T8 P1: Play Urza's Saga
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Primeval Titan
+T8 P1: Spelunking — Shifting Woodland enters untapped
+T8 P1: Primeval Titan searches for Shifting Woodland
+T8: Hanweir Battlements // Hanweir, the Writhing Township moved battlefield -> hand (Simic Growth Chamber ETB returns Hanweir Battlements // Hanweir, the Writhing Township to hand)
+T8 P1: Spelunking — Simic Growth Chamber enters untapped
+T8 P1: Primeval Titan searches for Simic Growth Chamber
+T8 P1: Attack with Primeval Titan
+  [Declare Blockers] P2 does not block
+T8 P1:   Primeval Titan (6/6) → 6 dmg to player
+P2 loses: life total -2
+  [Combat Damage] 6 damage dealt → P2 life: 4 → -2
+
+>>> Amulet Titan wins Game 2 on turn 8 via damage
+    Final life: Amulet Titan=4  Dimir Midrange=-2
+
+======================================================================
+  GAME 3: Dimir Midrange (P1) vs Amulet Titan (P2)  —  seed 56102
+  Series: Amulet Titan 1 - 1 Dimir Midrange
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Dimir Midrange wins → chooses to play first
+║ P1 (on play): Dimir Midrange
+║ P2 (on draw): Amulet Titan
+╚═══════════════════════════════════════════════════════
+
+P1 (Dimir Midrange) opening hand (3 lands, 4 spells):
+  • Subtlety [Creature, CMC 4]
+  • Watery Grave [Land, CMC 0]
+  • Watery Grave [Land, CMC 0]
+  • Thoughtseize [Spell, CMC 1]
+  • Counterspell [Spell, CMC 2]
+  • Counterspell [Spell, CMC 2]
+  • Scalding Tarn [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Thoughtseize, 3 cheap spells
+
+P2 (Amulet Titan) opening hand (4 lands, 3 spells):
+  • Urza's Cave [Land, CMC 0]
+  • Urza's Saga [Land, CMC 0]
+  • Scapeshift [Spell, CMC 4]
+  • Primeval Titan [Creature, CMC 6]
+  • Forest [Land, CMC 0]
+  • Boseiju, Who Endures [Land, CMC 0]
+  • Green Sun's Zenith [Spell, CMC 1]
+→ P2 KEEPS 7 — has key card(s): Green Sun's Zenith, 1 cheap spells
+
+
+╔══ TURN 1 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Watery Grave (tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Dimir Midrange 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Simic Growth Chamber
+  [Main 1]
+T1 P2: Play Forest
+    → Goal: deploy_engine [enablers]
+    [Mana] Tap Forest→G (paying for Green Sun's Zenith, 0 mana remaining)
+T1 P2: Cast Green Sun's Zenith (G)
+    [Priority] P1 passes (no response)
+T1: Resolve Green Sun's Zenith
+T1: Dryad Arbor moved library -> battlefield (Green Sun's Zenith tutor)
+T1 P2: Green Sun's Zenith finds Dryad Arbor
+T1: Green Sun's Zenith moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 53  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1)
+║   Lands: Forest [T], Dryad Arbor
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Island
+  [Main 1]
+T2 P1: Play Scalding Tarn
+T2: Scalding Tarn moved battlefield -> graveyard (fetchland sacrifice)
+T2 P1: Crack Scalding Tarn -> Island (untapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Dimir Midrange 19
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1)
+║   Lands: Forest, Dryad Arbor
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Spelunking
+  [Main 1]
+T2 P2: Play Urza's Saga
+    → Goal: deploy_engine [engines]
+    [Mana] Tap Forest→G, Dryad Arbor→G, Urza's Saga→C (paying for Spelunking, 0 mana remaining)
+T2 P2: Cast Spelunking (2G)
+    [Priority] P1 passes (no response)
+T2: Resolve Spelunking
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Island
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1) [tapped]
+║   Other: Spelunking
+║   Lands: Forest [T], Dryad Arbor [T], Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Murktide Regent
+  [Main 1]
+T3 P1: Play Watery Grave (untapped, life: 17)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Dimir Midrange 17
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1)
+║   Other: Spelunking
+║   Lands: Forest, Dryad Arbor, Urza's Saga
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Island, Watery Grave
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T3 P2: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P2 draws: Spelunking
+  [Main 1]
+T3 P2: Play Urza's Cave
+    → Goal: ramp [enablers]
+    [Mana] Tap Forest→G, Dryad Arbor→G, Urza's Saga→C (paying for Spelunking, 1 mana remaining)
+T3 P2: Cast Spelunking (2G)
+    [Priority] P1 passes (no response)
+T3: Resolve Spelunking
+T3 P2: Activate Urza's Cave (sacrifice)
+T3 P2:   finds Shifting Woodland
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 17  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Island, Watery Grave
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1) [tapped]
+║   Other: Spelunking, Spelunking
+║   Lands: Forest [T], Dryad Arbor [T], Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Psychic Frog
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Island→U, Watery Grave→B (paying for Psychic Frog, 1 mana remaining)
+T4 P1: Cast Psychic Frog (UB)
+    [Priority] P2 passes (no response)
+T4: Resolve Psychic Frog
+T4 P1: Play Island
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Dimir Midrange 17
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1)
+║   Other: Spelunking, Spelunking
+║   Lands: Forest, Dryad Arbor, Urza's Saga
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (1/2)
+║   Lands: Watery Grave [T], Island [T], Watery Grave, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T4 P2: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+  [Draw] P2 draws: Gruul Turf
+  [Main 1]
+T4 P2: Play Boseiju, Who Endures
+T4 P2: Create 1x Construct token(s)
+T4 P2: Urza's Saga activates "{2}, {T}: Create a 0/0 colorless Constru..." (pays {2}, {T})
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 17  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (1/2)
+║   Lands: Watery Grave, Island, Watery Grave, Island
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1) [tapped], Construct Token (1/1)
+║   Other: Spelunking, Spelunking
+║   Lands: Forest [T], Dryad Arbor [T], Urza's Saga [T], Boseiju, Who Endures
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Drown in the Loch
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Island→U, Island→U, Watery Grave→B, Watery Grave→B (paying for Subtlety, 0 mana remaining)
+T5 P1: Cast Subtlety (2UU)
+    [Priority] P2 passes (no response)
+T5: Resolve Subtlety
+T5 P1: Subtlety enters (no creature/PW spell on stack to target)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Psychic Frog
+T5 P1: Attack with Psychic Frog
+T5 P2:   [BLOCK] Construct Token (1/1) blocks Psychic Frog (2/3) — lifespan_delta=+0.40
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T5: Construct Token dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Dimir Midrange 17
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1)
+║   Other: Spelunking, Spelunking
+║   Lands: Forest, Dryad Arbor, Urza's Saga, Boseiju, Who Endures
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (2/3) [tapped], Subtlety (3/3)
+║   Lands: Watery Grave [T], Island [T], Watery Grave [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T5 P2: Urza's Saga tutors Amulet of Vigor
+T5 P2: Sacrifice Urza's Saga (final chapter)
+  [Draw] P2 draws: Crumbling Vestige
+  [Main 1]
+T5 P2: Play Crumbling Vestige (enters tapped)
+T5 P2: Amulet of Vigor untaps Crumbling Vestige
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 17  |  Amulet Titan 20
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 2
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (2/3), Subtlety (3/3)
+║   Lands: Watery Grave, Island, Watery Grave, Island
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1)
+║   Other: Spelunking, Spelunking, Amulet of Vigor
+║   Lands: Forest, Dryad Arbor, Boseiju, Who Endures, Crumbling Vestige
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Murktide Regent
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Psychic Frog, Subtlety
+T6 P1: Attack with Psychic Frog, Subtlety
+T6 P2:   [BLOCK] Dryad Arbor (1/1) blocks Psychic Frog (3/4) — lifespan_delta=+0.50
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T6 P1:   Subtlety (3/3) → 3 dmg to player
+T6: Dryad Arbor dies
+  [Combat Damage] 3 damage dealt → P2 life: 20 → 17
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 17  |  Dimir Midrange 17
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 4
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Spelunking, Spelunking, Amulet of Vigor
+║   Lands: Forest, Boseiju, Who Endures, Crumbling Vestige
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (3/4) [tapped], Subtlety (3/3) [tapped]
+║   Lands: Watery Grave, Island, Watery Grave, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Cultivator Colossus
+  [Main 1]
+T6 P2: Play Simic Growth Chamber (enters tapped)
+T6 P2: Amulet of Vigor untaps Simic Growth Chamber
+T6: Forest moved battlefield -> hand (Simic Growth Chamber ETB returns Forest to hand)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 17  |  Amulet Titan 17
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 3
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (3/4), Subtlety (3/3)
+║   Lands: Watery Grave, Island, Watery Grave, Island
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Spelunking, Spelunking, Amulet of Vigor
+║   Lands: Boseiju, Who Endures, Crumbling Vestige, Simic Growth Chamber
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Shelldock Isle
+  [Main 1]
+T7 P1: Play Shelldock Isle (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Psychic Frog, Subtlety
+T7 P1: Attack with Psychic Frog, Subtlety
+  [Declare Blockers] P2 does not block
+T7 P1:   Psychic Frog (3/4) → 3 dmg to player
+T7 P1: Psychic Frog deals combat damage — draw a card
+T7 P1:   Subtlety (3/3) → 3 dmg to player
+  [Combat Damage] 6 damage dealt → P2 life: 17 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 11  |  Dimir Midrange 17
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 44  |  Graveyard: 4
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Spelunking, Spelunking, Amulet of Vigor
+║   Lands: Boseiju, Who Endures, Crumbling Vestige, Simic Growth Chamber
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (3/4) [tapped], Subtlety (3/3) [tapped]
+║   Lands: Watery Grave, Island, Watery Grave, Island, Shelldock Isle [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Boseiju, Who Endures
+  [Main 1]
+T7 P2: Play Gruul Turf (enters tapped)
+T7 P2: Amulet of Vigor untaps Gruul Turf
+T7: Boseiju, Who Endures moved battlefield -> hand (Gruul Turf ETB returns Boseiju, Who Endures to hand)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 17  |  Amulet Titan 11
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 45  |  Graveyard: 3
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (3/4), Subtlety (3/3)
+║   Lands: Watery Grave, Island, Watery Grave, Island, Shelldock Isle
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Spelunking, Spelunking, Amulet of Vigor
+║   Lands: Crumbling Vestige, Simic Growth Chamber, Gruul Turf
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Counterspell
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Psychic Frog, Subtlety
+T8 P1: Attack with Psychic Frog, Subtlety
+  [Declare Blockers] P2 does not block
+T8 P1:   Psychic Frog (3/4) → 3 dmg to player
+T8 P1: Psychic Frog deals combat damage — draw a card
+T8 P1:   Subtlety (3/3) → 3 dmg to player
+  [Combat Damage] 6 damage dealt → P2 life: 11 → 5
+  [End Combat]
+  [Main 2]
+T8 P1: Play Creeping Tar Pit (enters tapped)
+  [End Step]
+
+╔══ TURN 8 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 5  |  Dimir Midrange 17
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 6
+║ Library: 43  |  Graveyard: 4
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Spelunking, Spelunking, Amulet of Vigor
+║   Lands: Crumbling Vestige, Simic Growth Chamber, Gruul Turf
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (3/4) [tapped], Subtlety (3/3) [tapped]
+║   Lands: Watery Grave, Island, Watery Grave, Island, Shelldock Isle, Creeping Tar Pit [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Amulet of Vigor
+  [Main 1]
+T8 P2: Play Forest
+    → Goal: ramp [payoffs]
+    [Mana] Tap Forest→G, Simic Growth Chamber→GU, Gruul Turf→RG, Crumbling Vestige→C (paying for Primeval Titan, 0 mana remaining)
+T8 P2: Cast Primeval Titan (4GG)
+    [Priority] P1 responds with Counterspell
+    [Mana] Tap Island→U, Island→U (paying for Counterspell, 3 mana remaining)
+T8 P1: Cast Counterspell (UU)
+T8: Resolve Counterspell
+T8: Primeval Titan moved stack -> graveyard (resolution)
+T8: Primeval Titan is countered
+T8: Counterspell moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 17  |  Amulet Titan 5
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 6  |  Opp lands: 4
+║ Library: 43  |  Graveyard: 4
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (3/4), Subtlety (3/3)
+║   Lands: Watery Grave, Island, Watery Grave, Island, Shelldock Isle, Creeping Tar Pit
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Spelunking, Spelunking, Amulet of Vigor
+║   Lands: Crumbling Vestige [T], Simic Growth Chamber [T], Gruul Turf [T], Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Creeping Tar Pit
+  [Main 1]
+T9 P1: Play Creeping Tar Pit (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Psychic Frog, Subtlety
+T9 P1: Attack with Psychic Frog, Subtlety
+  [Declare Blockers] P2 does not block
+T9 P1:   Psychic Frog (3/4) → 3 dmg to player
+T9 P1: Psychic Frog deals combat damage — draw a card
+T9 P1:   Subtlety (3/3) → 3 dmg to player
+P2 loses: life total -1
+  [Combat Damage] 6 damage dealt → P2 life: 5 → -1
+
+>>> Dimir Midrange wins Game 3 on turn 9 via damage
+    Final life: Dimir Midrange=17  Amulet Titan=-1
+
+======================================================================
+  MATCH RESULT: Dimir Midrange wins 2-1
+======================================================================
