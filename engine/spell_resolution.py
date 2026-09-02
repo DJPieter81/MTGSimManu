@@ -486,48 +486,61 @@ class ResolutionManager:
         # same clause is handled without a name check.
         hate_card = game._gy_reanimation_hate_source()
 
-        # For each player: exile battlefield creatures, return graveyard creatures
+        # CR 608.2 / 614: Living End resolves as a SINGLE event. Exile ALL
+        # creatures from BOTH battlefields, then return ALL creatures from
+        # BOTH graveyards, and only THEN put the returned creatures' ETB
+        # triggers on the stack. A returned creature's ETB (Solitude, Grief,
+        # ...) must see the FINISHED board — every original already exiled,
+        # every graveyard creature already returned — not a half-resolved
+        # one where the other player's originals are still present and look
+        # like legal targets. The old per-player exile/return/fire-ETB loop
+        # fired P0's ETBs while P1's originals were still on the battlefield.
+
+        # Phase 1: exile every creature on both battlefields.
         for p_idx in range(2):
             player = game.players[p_idx]
-
-            # Collect creatures on battlefield to exile
-            bf_creatures = [c for c in player.battlefield if c.template.is_creature]
-            # Collect creatures in graveyard to return
-            gy_creatures = [c for c in player.graveyard if c.template.is_creature]
-
-            # Exile battlefield creatures (zone funnel handles removal,
-            # cleanup, and exile-list append).
-            for creature in bf_creatures:
+            for creature in [c for c in player.battlefield if c.template.is_creature]:
                 game.zone_mgr.move_card(
-                    game, creature, "battlefield", "exile",
-                    cause="living end"
-                )
+                    game, creature, "battlefield", "exile", cause="living end")
 
-            # Return graveyard creatures to battlefield (gated by Cage)
-            if hate_card is not None:
+        if hate_card is not None:
+            # Grafdigger's Cage: creatures can't enter from graveyards; the
+            # exile above still happened, but the return is prevented.
+            for p_idx in range(2):
+                gy_creatures = [c for c in game.players[p_idx].graveyard
+                                if c.template.is_creature]
                 if gy_creatures:
                     game.log.append(
                         f"T{game.display_turn}: {hate_card.name} prevents "
                         f"{len(gy_creatures)} creature(s) from returning "
                         f"to the battlefield for P{p_idx+1} "
-                        f"(cards stay in graveyard)."
-                    )
-                continue
+                        f"(cards stay in graveyard).")
+        else:
+            # Phase 2: return every graveyard creature to the battlefield
+            # (physical entry only — ETBs are deferred to phase 3). CR 614
+            # simultaneity: bulk-remove from each GY before entering, so an
+            # ETB that later mutates a graveyard can't desync a live list.
+            returned = []  # (creature, p_idx), in turn order
+            for p_idx in range(2):
+                player = game.players[p_idx]
+                gy_creatures = [c for c in player.graveyard
+                                if c.template.is_creature]
+                to_return = set(map(id, gy_creatures))
+                player.graveyard[:] = [c for c in player.graveyard
+                                       if id(c) not in to_return]
+                for creature in gy_creatures:
+                    creature.controller = p_idx
+                    creature.enter_battlefield()
+                    player.battlefield.append(creature)
+                    returned.append((creature, p_idx))
+                    game.log.append(f"T{game.display_turn}: Living End returns "
+                                    f"{creature.name} for P{p_idx+1}")
 
-            # CR 614 simultaneous return: bulk-remove from GY before
-            # firing any ETB. An ETB that mutates this same GY (e.g.,
-            # Endurance's clear) would otherwise desync the snapshot
-            # from the live list and raise on .remove().
-            to_return = set(map(id, gy_creatures))
-            player.graveyard[:] = [c for c in player.graveyard
-                                   if id(c) not in to_return]
-            for creature in gy_creatures:
-                creature.controller = p_idx
-                creature.enter_battlefield()
-                player.battlefield.append(creature)
-                game._handle_permanent_etb(creature, p_idx)
-                game.log.append(f"T{game.display_turn}: Living End returns "
-                                f"{creature.name} for P{p_idx+1}")
+            # Phase 3: now that every creature is exiled and every returnee
+            # is on the battlefield, fire the returned creatures' ETBs.
+            for creature, p_idx in returned:
+                if creature.zone == "battlefield":
+                    game._handle_permanent_etb(creature, p_idx)
 
         # Mark the controller's next combat as aggressive. Living End resets the
         # board in our favour; the AI should swing all-in even with blockers back
