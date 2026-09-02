@@ -1012,7 +1012,8 @@ class EVPlayer:
                     return min(ev, PATIENCE_GATE_REJECT_SENTINEL)
         return ev
 
-    def _gate_x_cost_board_wipe(self, ev: float, t, tags, snap: EVSnapshot, opp):
+    def _gate_x_cost_board_wipe(self, ev: float, t, tags, snap: EVSnapshot, opp,
+                                game=None):
         """Hard gate: hold an X-cost board wipe when its X-budget can't
         meaningfully clear the board. Returns a clamped float to short-circuit
         scoring, or None to continue. Kill count is derived from the oracle's
@@ -1047,9 +1048,28 @@ class EVPlayer:
         destroyed_types = {ct for word, ct in type_words.items() if word in clause}
         if not destroyed_types:
             destroyed_types = {CardType.CREATURE}
+        # Judge the wipe at the X the AI will ACTUALLY pick at resolution
+        # (engine.cast_manager.pick_wipe_x_value), not the max-affordable
+        # `cap`. The gate and the resolution-time picker must agree:
+        # counting kills at `cap` let a single worthless in-budget target
+        # (a power-0 high-MV enchantment) pass the gate, after which the
+        # picker chose X=0 and the sweeper was thrown away. If the picker's
+        # value-maximizing X destroys nothing, hold the wipe regardless of
+        # desperation.
+        effective_x = cap
+        if game is not None:
+            try:
+                from engine.cast_manager import pick_wipe_x_value
+                best_x, _best_score, best_kill_count = pick_wipe_x_value(
+                    game, self.player_idx, cap)
+                effective_x = best_x
+                if best_kill_count == 0:
+                    return min(ev, X_BOARD_WIPE_WASTE_FLOOR)
+            except Exception:
+                effective_x = cap  # picker unavailable — fall back to cap
         killable = [c for c in opp_nonland
                     if (set(c.template.card_types) & destroyed_types)
-                    and (c.template.cmc or 0) <= cap]
+                    and (c.template.cmc or 0) <= effective_x]
         kill_count = len(killable)
         killable_power = sum((c.power or 0) for c in killable)
         from ai.clock import LifePhase, life_phase
@@ -1509,7 +1529,7 @@ class EVPlayer:
                 ev -= waste_penalty
 
         # X-cost board-wipe waste gate (hold when X can't meaningfully clear).
-        x_gate = self._gate_x_cost_board_wipe(ev, t, tags, snap, opp)
+        x_gate = self._gate_x_cost_board_wipe(ev, t, tags, snap, opp, game)
         if x_gate is not None:
             return x_gate
 
