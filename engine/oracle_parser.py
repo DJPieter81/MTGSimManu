@@ -426,6 +426,149 @@ _KEYWORD_ONLY_LINE_RE = re.compile(
     r"(?:[ —-]*(?:\{[^}]+\}|\d+))*")
 
 
+# ---------------------------------------------------------------------------
+# Team pump until end of turn (Overrun shape) — parse-once classification.
+#
+# "[Other] creatures you control get +N/+M [and gain <kw>[ and <kw>]] until
+# end of turn" — or, "+X/+X ..., where X is the number of creatures you
+# control / the greatest power among creatures you control".  Two carriers
+# share one mechanic: a permanent's own ETB trigger (Craterhoof Behemoth,
+# End-Raze Forerunners, Inspiring Captain, ...) and an instant/sorcery's
+# resolution text (Overrun, Overwhelming Stampede, Charge, ...).  Both
+# resolve through `oracle_resolver._resolve_team_pump`, which writes the
+# until-EOT channels (temp_power_mod / temp_toughness_mod / temp_keywords).
+#
+# Refusal policy (field stays None, nothing half-executes): an intervening
+# "if" condition, a sentence outside the shape in the same ability, a
+# keyword the until-EOT channel does not carry, an activated/modal/watcher
+# form, or "+X/+X" with a definition of X this parser does not scale by.
+# ---------------------------------------------------------------------------
+
+# Keywords CardInstance.temp_keywords can carry, by printed word.
+_TEAM_PUMP_KEYWORDS = {
+    'flying': 'flying', 'first strike': 'first_strike',
+    'double strike': 'double_strike', 'deathtouch': 'deathtouch',
+    'lifelink': 'lifelink', 'trample': 'trample', 'haste': 'haste',
+    'vigilance': 'vigilance', 'reach': 'reach', 'menace': 'menace',
+    'hexproof': 'hexproof', 'indestructible': 'indestructible',
+}
+
+_TEAM_PUMP_SCALING = {
+    'the number of creatures you control': 'creature_count',
+    'the greatest power among creatures you control': 'greatest_power',
+}
+
+_TEAM_PUMP_PT = r'\+(?:\d+|x)/\+(?:\d+|x)'
+_TEAM_PUMP_SENTENCE_RE = re.compile(
+    r'(?P<pre>until end of turn, )?'
+    r'(?P<others>other )?creatures you control '
+    r'(?:get (?P<pt1>' + _TEAM_PUMP_PT + r')(?: and gain (?P<kw1>[a-z ]+?))?'
+    r'|gain (?P<kw2>[a-z ]+?) and get (?P<pt2>' + _TEAM_PUMP_PT + r'))'
+    r'(?P<post> until end of turn)?'
+    r'(?:, where x is (?P<xdef>[a-z ]+))?')
+
+# The permanent's OWN entry trigger.  A subject opening with an article
+# ("a creature", "another creature", "one or more ...") is a watcher of
+# other permanents entering, not this permanent's ETB.
+_TEAM_PUMP_ETB_RE = re.compile(
+    r'when (?P<subj>(?!(?:a|an|another|one or more|each|any)\b)[^,]+?) '
+    r'enters, (?P<rest>.+)')
+_TEAM_PUMP_OWN_ETB_RE = re.compile(r'when [^,]+? enters,')
+
+
+def _team_pump_keywords(words: Optional[str]) -> Optional[List[str]]:
+    """Map "vigilance and trample" to keyword values; None on any word
+    outside the until-EOT keyword vocabulary."""
+    if not words:
+        return []
+    out: List[str] = []
+    for w in re.split(r',? and |, ', words.strip()):
+        kw = _TEAM_PUMP_KEYWORDS.get(w.strip())
+        if kw is None:
+            return None
+        out.append(kw)
+    return out
+
+
+def _team_pump_from_sentence(sentence: str, trigger: str) -> Optional[Dict]:
+    m = _TEAM_PUMP_SENTENCE_RE.fullmatch(sentence.strip())
+    if m is None or not (m.group('pre') or m.group('post')):
+        return None
+    keywords = _team_pump_keywords(m.group('kw1') or m.group('kw2'))
+    if keywords is None:
+        return None
+    pt = m.group('pt1') or m.group('pt2')
+    p_tok, t_tok = pt[1:].split('/+')
+    xdef = m.group('xdef')
+    if p_tok == 'x' or t_tok == 'x':
+        scaling = _TEAM_PUMP_SCALING.get((xdef or '').strip())
+        if scaling is None or p_tok != 'x' or t_tok != 'x':
+            return None
+        power = toughness = None
+    else:
+        if xdef is not None:
+            return None
+        scaling = ''
+        power, toughness = int(p_tok), int(t_tok)
+    return {'trigger': trigger, 'power': power, 'toughness': toughness,
+            'scaling': scaling, 'keywords': keywords,
+            'others_only': bool(m.group('others'))}
+
+
+def parse_team_pump(oracle: str) -> Optional[Dict]:
+    """Parse the Overrun-shape team pump into a typed spec, or None.
+
+    Parsed once at DB load into `CardTemplate.team_pump_data`; the resolver
+    reads the field only (oracle-runtime-parse ratchet).  Returns::
+
+        {'trigger': 'etb' | 'spell',
+         'power': int | None, 'toughness': int | None,   # fixed +N/+M
+         'scaling': '' | 'creature_count' | 'greatest_power',  # +X/+X
+         'keywords': [Keyword.value, ...],               # granted until EOT
+         'others_only': bool}                            # "other creatures"
+
+    'etb' — the shape is the WHOLE effect of the permanent's own "When
+    this ~ enters," paragraph (and no second own-ETB paragraph exists, so
+    another ETB branch cannot be silently pre-empted).  'spell' — the
+    shape is the only resolution paragraph of the card (every other
+    paragraph a keyword line); `card_database` keeps this form only on
+    instants and sorceries.
+    """
+    if not oracle:
+        return None
+    low = oracle.lower()
+    if 'creatures you control' not in low or 'until end of turn' not in low:
+        return None
+    text = strip_reminder_text(oracle).lower()
+
+    paragraphs = split_abilities(text)
+    etb_paras = [p for p in paragraphs
+                 if _TEAM_PUMP_OWN_ETB_RE.match(p.strip())]
+    if etb_paras:
+        if len(etb_paras) != 1:
+            return None
+        m = _TEAM_PUMP_ETB_RE.fullmatch(etb_paras[0].strip().rstrip('.'))
+        if m is None or m.group('rest').startswith('if '):
+            return None
+        sentences = split_clauses(m.group('rest'))
+        if len(sentences) != 1:
+            return None
+        return _team_pump_from_sentence(sentences[0], 'etb')
+
+    effect_paras = [p for p in paragraphs
+                    if not _KEYWORD_ONLY_LINE_RE.fullmatch(
+                        p.strip().rstrip('.'))]
+    if len(effect_paras) != 1:
+        return None
+    para = effect_paras[0].strip()
+    if ':' in para or para.startswith(('•', 'whenever ', 'at ')):
+        return None
+    sentences = split_clauses(para)
+    if len(sentences) != 1:
+        return None
+    return _team_pump_from_sentence(sentences[0], 'spell')
+
+
 def parse_x_creature_tutor(oracle: str) -> Optional[Dict]:
     """Parse the Green Sun's Zenith shape from a SPELL's own resolution
     text: an X-bound search for a creature card with mana value X or less,

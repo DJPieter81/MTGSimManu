@@ -573,6 +573,15 @@ class CardTemplate:
     # valuation gate keys off this field, so it must never be set for a
     # card `oracle_resolver._resolve_x_creature_tutor` cannot deliver.
     x_creature_tutor_data: Optional[Dict] = None
+    # Overrun-shape team pump: "[other] creatures you control get +N/+M
+    # [and gain <kw>...] until end of turn" (or +X/+X scaled by creature
+    # count / greatest power), on the permanent's own ETB trigger
+    # ('etb': Craterhoof Behemoth class) or an instant/sorcery's resolution
+    # ('spell': Overrun class). {'trigger', 'power', 'toughness',
+    # 'scaling', 'keywords', 'others_only'}, parsed once at DB load by
+    # parse_team_pump(); None = not this shape or a refused variant.
+    # `oracle_resolver._resolve_team_pump` is the only consumer.
+    team_pump_data: Optional[Dict] = None
     is_cost_reducer: bool = False             # reduces spell costs (from tags)
     domain_reduction: int = 0                 # cost reduction per basic land type
     back_face_oracle: str = ""                # oracle text for back face (transform cards)

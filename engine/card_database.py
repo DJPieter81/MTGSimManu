@@ -1768,6 +1768,7 @@ class CardDatabase:
             parse_is_land_sacrifice_tutor, parse_x_creature_tutor,
             parse_modal_spell,
             parse_loyalty_abilities,
+            parse_team_pump,
             parse_can_target_player, parse_can_target_planeswalker,
             grants_flashback_to_gy_spells, parse_deals_targeted_damage,
             parse_has_scaling_token_finisher,
@@ -1892,6 +1893,15 @@ class CardDatabase:
         # what it cannot execute before charging loyalty.
         template.loyalty_abilities = parse_loyalty_abilities(
             oracle, template.loyalty)
+        # Overrun-shape team pump. The 'spell' form is an instant/sorcery's
+        # own resolution; on any other card type the same paragraph would
+        # be a static/other ability this resolver does not own.
+        team_pump = parse_team_pump(oracle)
+        if (team_pump is not None and team_pump['trigger'] == 'spell'
+                and not (CardType.INSTANT in template.card_types
+                         or CardType.SORCERY in template.card_types)):
+            team_pump = None
+        template.team_pump_data = team_pump
         template.protection_from_colors = parse_protection_from(oracle)
         template.ward_cost = parse_ward_cost(oracle)
         template.can_target_player = parse_can_target_player(oracle)
