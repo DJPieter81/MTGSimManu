@@ -4,77 +4,105 @@
   "goals": [
     {
       "goal_type": "DEPLOY_ENGINE",
-      "description": "Deploy artifact count enablers: Mox Opal, Springleaf Drum, 0-drops",
+      "description": "Deploy Pinnacle Emissary ASAP, dump 0-cost artifacts (Bauble, Crypt, Claws, Jar) for Drone tokens and metalcraft, land Urza's Saga early so its Construct activation comes online by turn 4",
       "card_priorities": {
-        "Mox Opal": 25.0,
-        "Springleaf Drum": 22.0,
-        "Ornithopter": 20.0,
-        "Memnite": 20.0,
-        "Signal Pest": 18.0
+        "Pinnacle Emissary": 25.0,
+        "Mox Opal": 24.0,
+        "Urza's Saga": 22.0,
+        "Mishra's Bauble": 16.0,
+        "Tormod's Crypt": 14.0,
+        "Claws of Gix": 14.0,
+        "Welding Jar": 12.0,
+        "Preordain": 10.0
       },
       "card_roles": {
         "engines": [
+          "Pinnacle Emissary",
           "Mox Opal",
-          "Springleaf Drum"
+          "Urza's Saga"
         ],
         "enablers": [
-          "Memnite",
-          "Ornithopter"
+          "Mishra's Bauble",
+          "Tormod's Crypt",
+          "Claws of Gix",
+          "Welding Jar",
+          "Preordain"
         ]
-      }
-    },
-    {
-      "goal_type": "CURVE_OUT",
-      "description": "Deploy threats and equipment: Cranial Plating, Nettlecyst",
-      "card_priorities": {
-        "Cranial Plating": 22.0,
-        "Nettlecyst": 20.0,
-        "Thought Monitor": 18.0,
-        "Sojourner's Companion": 16.0,
-        "Frogmite": 14.0,
-        "Signal Pest": 12.0
       },
-      "card_roles": {
-        "payoffs": [
-          "Cranial Plating",
-          "Nettlecyst"
-        ],
-        "enablers": [
-          "Frogmite",
-          "Sojourner's Companion",
-          "Thought Monitor"
-        ]
-      }
+      "min_turns": 1
     },
     {
       "goal_type": "PUSH_DAMAGE",
-      "description": "Equip and attack for massive damage",
+      "description": "Deploy Kappa Cannoneer or Weapons Manufacturing to convert the artifact board into lethal damage; Emry rebuys spent artifacts",
       "card_priorities": {
-        "Cranial Plating": 20.0,
-        "Signal Pest": 15.0
+        "Kappa Cannoneer": 25.0,
+        "Weapons Manufacturing": 22.0,
+        "Shadowspear": 16.0,
+        "Skateboard": 14.0,
+        "Emry, Lurker of the Loch": 14.0
+      },
+      "card_roles": {
+        "payoffs": [
+          "Kappa Cannoneer",
+          "Weapons Manufacturing"
+        ],
+        "engines": [
+          "Emry, Lurker of the Loch"
+        ],
+        "enablers": [
+          "Shadowspear",
+          "Skateboard"
+        ]
+      }
+    },
+    {
+      "goal_type": "CLOSE_GAME",
+      "description": "Attack with a massive Kappa or Construct/Drone board, counter removal with Metallic Rebuke, sweep chump blockers with Engineered Explosives",
+      "card_priorities": {
+        "Kappa Cannoneer": 25.0,
+        "Weapons Manufacturing": 20.0,
+        "Metallic Rebuke": 18.0,
+        "Engineered Explosives": 12.0
+      },
+      "card_roles": {
+        "payoffs": [
+          "Kappa Cannoneer",
+          "Weapons Manufacturing"
+        ],
+        "interaction": [
+          "Metallic Rebuke",
+          "Engineered Explosives"
+        ]
       }
     }
   ],
   "mulligan_keys": [
-    "Cranial Plating",
-    "Memnite",
+    "Pinnacle Emissary",
+    "Kappa Cannoneer",
     "Mox Opal",
-    "Ornithopter",
-    "Springleaf Drum"
+    "Weapons Manufacturing",
+    "Urza's Saga"
   ],
   "mulligan_min_lands": 2,
   "mulligan_max_lands": 3,
   "land_priorities": {
-    "Urza's Saga": 3.0,
-    "Darksteel Citadel": 1.5
+    "Urza's Saga": 3.0
   },
+  "mulligan_combo_sets": [
+    ["Pinnacle Emissary", "Mox Opal", "Mishra's Bauble", "Tormod's Crypt", "Claws of Gix", "Welding Jar"]
+  ],
   "always_early": [
-    "Memnite",
+    "Pinnacle Emissary",
     "Mox Opal",
-    "Ornithopter",
-    "Springleaf Drum"
+    "Mishra's Bauble",
+    "Claws of Gix"
   ],
   "reactive_only": [
-    "Engineered Explosives"
+    "Engineered Explosives",
+    "Metallic Rebuke"
+  ],
+  "critical_pieces": [
+    "Pinnacle Emissary",
+    "Kappa Cannoneer"
   ]
 }
