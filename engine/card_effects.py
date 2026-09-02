@@ -997,7 +997,10 @@ def mutagenic_growth_resolve(game, card, controller, targets=None, item=None):
         best = max(my_creatures, key=lambda c: c.power or 0)
         best.temp_power_mod += 2
         best.temp_toughness_mod += 2
-    game.players[controller].life -= 2
+    # NOTE: no life deduction here. Mutagenic Growth's {G/P} pip is a CAST
+    # cost paid once by cast_manager (pay 2 life instead of {G}); a stray
+    # `life -= 2` here re-charged it, so the caster lost 2 extra life on
+    # every resolution — even when the pip was paid with real green mana.
 
 
 @EFFECT_REGISTRY.register("Violent Urge", EffectTiming.SPELL_RESOLVE,
