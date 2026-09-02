@@ -1618,7 +1618,7 @@ def resolve_dies_trigger(game: "GameState", card: "CardInstance",
             # Heuristic: transfer to the artifact creature with the highest
             # current power (maximises board presence).
             target = max(_artifact_creatures, key=lambda c: c.power)
-            target.plus_counters += card.plus_counters
+            target.add_plus_counters(card.plus_counters, game, source=card)
             game.log.append(
                 f"T{game.display_turn}: {card.name} modular — "
                 f"move {card.plus_counters} counter(s) to {target.name}"

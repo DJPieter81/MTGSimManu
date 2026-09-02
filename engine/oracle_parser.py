@@ -2096,6 +2096,76 @@ def parse_tap_for_mana_trigger(oracle: str):
     return None
 
 
+def parse_counter_placement_trigger(oracle: str, name: str = ""):
+    """Parse "whenever one or more +1/+1 counters are put on this
+    <permanent>, <effect>" (CR 122 / CR 603.2c) into a typed trigger.
+
+    16 Modern cards carry the self-scoped shape — Basking Broodscale, Herd
+    Baloth, Scurry Oak (tokens); Dusk Legion Duelist, Pensive Professor,
+    Fetid Gargantua (draw); Benthic Biomancer, Constable of the Realm, Cursed
+    Wombat, Dreamdrinker Vampire, Emperor of Bones, Evolution Witness,
+    Growth-Chamber Guardian, Knighted Myr, Sharktocrab, Berta (riders the
+    engine does not resolve — the TRIGGER still fires and logs).
+
+    Returns a `CounterPlacementTrigger`, or ``None`` when the oracle carries
+    no such trigger. `name` lets a legendary self-reference ("put on Berta")
+    match — MTGJSON prints the short name instead of "this creature".
+
+    Deliberately NOT matched (each below the ~10-card class threshold):
+      * other-scoped watchers — "another creature you control", "a creature
+        you control", "a permanent you control" (8 cards): a different watch
+        scope, two of which loop back onto counter placement.
+      * "whenever A +1/+1 counter is put on" (2 cards): fires once per
+        COUNTER rather than per event, so it is not this trigger shape.
+    """
+    from .cards import (CounterPlacementTrigger, COUNTER_TRIGGER_EFFECT_TOKEN,
+                        COUNTER_TRIGGER_EFFECT_DRAW,
+                        COUNTER_TRIGGER_EFFECT_UNRESOLVED)
+
+    if not oracle or "counters are put on" not in oracle.lower():
+        return None
+    subjects = [r"this (?:creature|permanent|artifact|enchantment|land)",
+                r"it"]
+    short = (name or "").split(",")[0].strip()
+    if short:
+        subjects.append(re.escape(short))
+    m = re.search(
+        r"whenever one or more \+1/\+1 counters are put on (?:"
+        + "|".join(subjects) + r"),\s*(?P<effect>[^\n]+)",
+        oracle, flags=re.IGNORECASE)
+    if m is None:
+        return None
+    effect_text = m.group("effect").strip()
+    low = effect_text.lower()
+    optional = low.startswith("you may")
+
+    # Shape 1: "[you may] create <N> <P/T> … creature token[ with '…']".
+    if parse_token_spec(effect_text) is not None:
+        count = 1
+        cm = re.search(r"create (a|an|one|two|three|four|\d+)\b", low)
+        if cm:
+            tok = cm.group(1)
+            count = int(tok) if tok.isdigit() else _NUM_WORDS.get(tok, 1)
+        return CounterPlacementTrigger(
+            effect=COUNTER_TRIGGER_EFFECT_TOKEN, count=count,
+            effect_text=effect_text, optional=optional)
+
+    # Shape 2: "[you may] draw <N> card(s)." and NOTHING else in the clause —
+    # "draw a card, then discard a card" is a loot, not a draw.
+    dm = re.fullmatch(
+        r"(?:you may )?draw (a|an|one|two|three|four|\d+) cards?\.?", low)
+    if dm:
+        tok = dm.group(1)
+        count = int(tok) if tok.isdigit() else _NUM_WORDS.get(tok, 1)
+        return CounterPlacementTrigger(
+            effect=COUNTER_TRIGGER_EFFECT_DRAW, count=count,
+            effect_text=effect_text, optional=optional)
+
+    return CounterPlacementTrigger(
+        effect=COUNTER_TRIGGER_EFFECT_UNRESOLVED, count=0,
+        effect_text=effect_text, optional=optional)
+
+
 def parse_sacrifice_mana_units(oracle: str) -> Optional[List[List[str]]]:
     """Parse a "Sacrifice this <thing>: Add <mana>" ability into mana units.
 

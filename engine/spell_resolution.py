@@ -254,7 +254,7 @@ class ResolutionManager:
                             f"T{game.display_turn} P{item.controller+1}: "
                             f"{card.name} enters with {item.x_value} charge counter(s)")
                     elif effect == "plus1_counters":
-                        card.plus_counters += item.x_value
+                        card.add_plus_counters(item.x_value, game)
                         game.log.append(
                             f"T{game.display_turn} P{item.controller+1}: "
                             f"{card.name} enters with {item.x_value} +1/+1 counter(s)")
@@ -352,7 +352,7 @@ class ResolutionManager:
         # from "Modular N" in oracle text). Works for all modular cards — no card
         # names involved.  "Modular—Sunburst" has modular_n == 0 and is skipped.
         if Keyword.MODULAR in template.keywords and template.modular_n > 0:
-            card.plus_counters += template.modular_n
+            card.add_plus_counters(template.modular_n, game)
             game.log.append(
                 f"T{game.display_turn} P{controller+1}: "
                 f"{template.name} enters with {template.modular_n} "

@@ -2882,7 +2882,7 @@ class EVPlayer:
                         me.graveyard.append(card_to_discard)
                         # Permanent +1/+1 counters, not temp mods
                         if hasattr(creature, 'plus_counters'):
-                            creature.plus_counters += 1
+                            creature.add_plus_counters(1, game)
                         else:
                             creature.temp_power_mod += 1
                             creature.temp_toughness_mod += 1

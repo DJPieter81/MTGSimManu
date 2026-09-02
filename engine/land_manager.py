@@ -275,7 +275,7 @@ class LandManager:
         for c in opp.battlefield:
             if c.template.has_library_search_opponent_trigger:
                 # +1/+1 counter
-                c.plus_counters += 1
+                c.add_plus_counters(1, game)
                 # Draw a card if the trigger says so (pre-computed at load time)
                 if c.template.library_search_trigger_draws_card:
                     game.draw_cards(opp_idx, 1)

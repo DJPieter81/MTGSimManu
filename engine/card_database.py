@@ -2044,6 +2044,11 @@ class CardDatabase:
         template.cast_trigger_token = parse_cast_trigger_token(oracle)
         template.ordinal_cast_trigger = parse_ordinal_cast_trigger(oracle)
         template.enters_type_counter = parse_enters_type_counter(oracle)
+        # "Whenever one or more +1/+1 counters are put on this …" (CR 122,
+        # 16 cards). Fired by the CardInstance.add_plus_counters funnel.
+        from .oracle_parser import parse_counter_placement_trigger
+        template.counter_placement_trigger = parse_counter_placement_trigger(
+            oracle, name=template.name)
         # Land destruction (spell tranche) — parse-once typed classification.
         from .oracle_parser import parse_land_destruction
         template.land_destruction_data = parse_land_destruction(oracle)

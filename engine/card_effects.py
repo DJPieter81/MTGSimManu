@@ -286,7 +286,7 @@ def murktike_etb(game, card, controller, targets=None, item=None):
     # These are PERMANENT +1/+1 counters, not temp mods that reset at cleanup.
     delved_spells = getattr(card, '_delved_spells', 0)
     if delved_spells > 0:
-        card.plus_counters += delved_spells
+        card.add_plus_counters(delved_spells, game)
     game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Murktide Regent enters as {card.power}/{card.toughness}"
                     f" ({delved_spells} +1/+1 counters from delved instants/sorceries)")
@@ -1894,7 +1894,7 @@ def wan_shi_tong_etb(game, card, controller, targets=None, item=None):
     opponent = 1 - controller
     x = game.players[opponent].library_searches_this_game
     if x > 0:
-        card.plus_counters += x
+        card.add_plus_counters(x, game)
         draw_count = x // 2
         if draw_count > 0:
             game.draw_cards(controller, draw_count)
@@ -2018,7 +2018,7 @@ def orcish_bowmasters_etb(game, card, controller, targets=None, item=None):
          if "Army" in (c.template.subtypes or [])),
         None)
     if existing_army is not None:
-        existing_army.plus_counters += 1
+        existing_army.add_plus_counters(1, game)
         game.log.append(
             f"T{game.display_turn} P{controller+1}: amass Orcs 1 — "
             f"Orc Army grows to {existing_army.power}/{existing_army.toughness}")
@@ -2858,7 +2858,7 @@ def phelia_end_step(game, card, controller, targets=None, item=None):
         # still on the battlefield (CR 603.10; else the counter fizzles).
         if (owner_idx == phelia_controller
                 and source in game.players[phelia_controller].battlefield):
-            source.plus_counters += 1
+            source.add_plus_counters(1, game)
             game.log.append(
                 f"T{game.display_turn} P{phelia_controller+1}: "
                 f"{source.name} gets +1/+1 counter "

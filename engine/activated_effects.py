@@ -140,7 +140,7 @@ def put_tutor_target(game: "GameState", found: "CardInstance",
         if spec.get('tapped'):
             found.tapped = True
         if entry_counters:
-            found.plus_counters += entry_counters
+            found.add_plus_counters(entry_counters, game)
         game._handle_permanent_etb(found, controller)
     else:
         game.zone_mgr.move_card(game, found, found.zone, "hand", cause=cause)
