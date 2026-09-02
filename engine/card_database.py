@@ -2059,6 +2059,10 @@ class CardDatabase:
         from .oracle_parser import parse_land_destruction
         template.land_destruction_data = parse_land_destruction(oracle)
         template.destroys_target_land = template.land_destruction_data is not None
+        # Fixed-amount face-legal "deals N damage to any target" — parse-once
+        # typed classification, dispatched through the shared burn resolver.
+        from .oracle_parser import parse_direct_damage_spell
+        template.direct_damage_data = parse_direct_damage_spell(oracle)
 
         return template
 

@@ -5223,6 +5223,79 @@ def parse_land_destruction(oracle: str):
     return data if found_destroy else None
 
 
+# ── Direct-damage spell (fixed amount, face-legal "any target") ─────────
+# The whole resolution is exactly "<source> deals N damage to <face-legal
+# target spec>." with no rider. ~33 Modern instants/sorceries share this
+# shape (Lightning Bolt, Shock, Lightning Strike, Searing Spear, …). The
+# amount is the only card-specific datum and it is a printed LITERAL here;
+# scaled amounts (delirium/domain/storm) are a DIFFERENT mechanic and are
+# deliberately NOT matched — they keep their own resolution. Face-legal
+# specs only (any target / target creature or player / target player /
+# target creature, player, or planeswalker) so the shared resolver's
+# face-fallback contract holds; creature-only / no-face burn is excluded.
+_DIRECT_DMG_TARGET = (
+    r'(?:any target|target creature or player|'
+    r'target creature, player,? or planeswalker|target player)'
+)
+_DIRECT_DMG_RE = re.compile(
+    r'^.{0,40}?\bdeals?\s+(\d+)\s+damage\s+to\s+' + _DIRECT_DMG_TARGET + r'\.?$'
+)
+# Resolution-verb riders on any OTHER line refuse the whole card (a
+# burn+lifegain / burn+draw / "divided" / "instead" card is not a pure
+# fixed-N burn and must keep its own handling). Keyword-ability lines
+# (flashback, buyback, overload, madness, …) carry none of these, so a
+# flashback burn like Lava Dart still qualifies.
+_DIRECT_DMG_RIDER_TOKENS = (
+    'gain', 'draw', 'exile', 'return', 'counter', 'scry', 'create',
+    'discard', 'destroy', '+1/+1', '-1/-1', 'sacrific', 'instead',
+    'divided', ' each ', 'loses', 'lochoose',
+)
+# A line whose FIRST word is one of these is a keyword-ability cost/rider
+# line (its cost is paid on cast/re-cast, not part of resolving the spell),
+# so it never disqualifies a fixed-N burn — e.g. Lava Dart's
+# "Flashback—Sacrifice a Mountain." is a cost, not a second effect.
+_KEYWORD_ABILITY_LEADS = frozenset({
+    'flashback', 'buyback', 'madness', 'overload', 'retrace', 'jump-start',
+    'escape', 'aftermath', 'replicate', 'kicker', 'multikicker', 'entwine',
+    'escalate', 'conspire', 'spectacle', 'surge', 'awaken', 'cascade',
+    'storm', 'cycling', 'embalm', 'eternalize', 'unearth', 'foretell',
+    'disturb', 'blitz', 'casualty', 'bargain', 'plot', 'gift', 'bloodrush',
+    'rebound', 'flashbacks',
+})
+
+
+def parse_direct_damage_spell(oracle: str):
+    """Classify a fixed-amount, face-legal "deals N damage to any target"
+    instant/sorcery. Returns ``{'amount': N}`` or ``None``.
+
+    Parsed once at DB load into ``CardTemplate.direct_damage_data`` and
+    dispatched (no oracle inspection at resolve time) through the single
+    shared owner ``oracle_resolver.resolve_damage_to_chosen_target`` — the
+    same call every per-card burn handler already made by hand. Making the
+    shape typed retires those per-card EFFECT_REGISTRY handlers and lets any
+    printed fixed-N burn resolve without a bespoke entry.
+    """
+    if not oracle or 'damage' not in oracle.lower():
+        return None
+    text = strip_reminder_text(oracle).strip()
+    if not text:
+        return None
+    lines = [ln.strip() for ln in text.split('\n') if ln.strip()]
+    if not lines:
+        return None
+    m = _DIRECT_DMG_RE.match(lines[0].lower())
+    if not m:
+        return None
+    for extra in lines[1:]:
+        low = extra.lower()
+        lead = re.split(r"[ —–\-{:]", low, 1)[0]
+        if lead in _KEYWORD_ABILITY_LEADS:
+            continue  # keyword-ability cost line — not a resolution rider
+        if any(tok in low for tok in _DIRECT_DMG_RIDER_TOKENS):
+            return None  # a real resolution rider — refuse, don't half-execute
+    return {'amount': int(m.group(1))}
+
+
 # ═══════════════════════════════════════════════════════════════════
 # Planeswalker loyalty abilities (CR 606)
 # ═══════════════════════════════════════════════════════════════════

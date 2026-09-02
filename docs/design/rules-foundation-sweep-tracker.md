@@ -2043,3 +2043,43 @@ ratchet's job is to stop the *next* disguised patch and make the existing ones
 counted and visible. The "candidate for a class" rows are the natural Phase-3
 generalisation backlog: when a second card of that shape enters Modern, the
 parser generalises and the field drops out of the baseline automatically.
+
+## EFFECT_REGISTRY fixed-N burn consolidation — typed field (2026-09-02)
+
+Registry-consolidation arc (post max-effort abstraction audit, which graded
+the codebase C+ / not-maxed and flagged ~45-50 nominally-consolidatable
+EFFECT_REGISTRY handlers). A handler census corrected that estimate: the
+pure-redundancy deletions were already done by the earlier Phase-3 clusters
+(Omnath/Quantum Riddler/Thought Monitor draw-N, Preordain, etc.), and the
+generic spell-oracle fallback did NOT independently cover damage/removal — so
+the remaining thin wrappers were **load-bearing**, not redundant. Real
+consolidation therefore means building a guarded generic branch first, then
+deleting the handler.
+
+First cluster, done as the verified proof: **fixed-amount face-legal burn**.
+`parse_direct_damage_spell` classifies the whole-effect "deals N damage to
+<any target / target creature or player / target player / target creature,
+player, or planeswalker>" shape (N a printed LITERAL; rider verbs and
+keyword-ability cost lines handled — a burn+lifegain/draw or a delirium/
+domain/storm-scaled amount is refused, a flashback cost line is not) into the
+typed field `CardTemplate.direct_damage_data`. 79 DB cards populate it — a
+genuine class, well clear of the narrow-typed-field ratchet's threshold.
+`resolve_spell_from_oracle` dispatches off the typed field (no oracle
+inspection at resolve time) into the shared owner
+`resolve_damage_to_chosen_target`. `lightning_bolt_resolve` (N=3) and
+`lava_dart_resolve` (N=1) — the two registered pure fixed-N handlers — are
+DELETED, verified redundant with the typed path first
+(`tests/test_direct_damage_shared_resolver.py::TestRegisteredBurnHandlersRetired`).
+Card-name-registry baseline 95 → 93. Unholy Heat (delirium) and Grapeshot
+(storm) keep their handlers — a derived/conditional amount is a different
+mechanic the typed field deliberately does not carry. WR anchor unchanged (29
+pins hold — the path change is behaviour-identical), all 7 ratchets at
+baseline. A bonus: ~30 unregistered fixed-N burn spells that previously
+resolved to nothing now resolve through the typed path.
+
+**Remaining clean-deletion candidates** (thin wrappers around an existing
+shared resolver, each needs a guarded generic branch built the same way, not
+just a delete): nonland-permanent removal (~4 of 6 — Abrupt Decay/Assassin's
+Trophy/Leyline Binding/March; Prismatic Ending's colors-spent and Fatal Push's
+revolt cap stay bespoke), board-sweep (Damnation/Supreme Verdict/Wrath of the
+Skies/All Is Dust). Realistic remaining ceiling ~6-8, not the audit's 45-50.

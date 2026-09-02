@@ -1141,6 +1141,18 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
     if getattr(card.template, 'destroys_target_land', False):
         return _resolve_destroy_target_land(game, card, controller, targets)
 
+    # ── Fixed-amount face-legal burn ("deals N damage to any target") —
+    #    typed-field gate, no oracle inspection at resolve time
+    #    (classification: parse_direct_damage_spell). Routes through the
+    #    single shared damage owner resolve_damage_to_chosen_target, exactly
+    #    as every per-card burn EFFECT_REGISTRY handler did by hand; the
+    #    typed field retires those handlers and covers unregistered burn too.
+    _dd = getattr(card.template, 'direct_damage_data', None)
+    if oracle_override is None and _dd:
+        resolve_damage_to_chosen_target(
+            game, card, controller, _dd['amount'], targets)
+        return True
+
     # ── "Target opponent reveals their hand. You choose a nonland card
     #     and that player discards it." (Thoughtseize, Inquisition) ──
     # The template spans several sentences of ONE paragraph (reveal /

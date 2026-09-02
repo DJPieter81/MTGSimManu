@@ -388,29 +388,24 @@ def springleaf_drum_etb(game, card, controller, targets=None, item=None):
 # Spell Resolution Effects
 # ═══════════════════════════════════════════════════════════════════
 
-# The next three handlers (Lightning Bolt, Lava Dart, Unholy Heat) —
-# plus Grapeshot, registered further below — are all instances of one
-# mechanic shape: "deal N damage to any target". Each used to
-# re-implement its own copy of "walk the declared target list, apply
-# damage to the first eligible creature/planeswalker, else go face."
-# That inline duplication is now `engine.oracle_resolver.
-# resolve_damage_to_chosen_target`, the single shared owner (routes
-# through `engine.damage.deal_damage` so lifelink/deathtouch/SBA
-# scheduling are correct by construction). See
-# docs/design/rules-foundation-sweep-tracker.md (Phase 3) for the
-# full cluster research — which cards were included/excluded and why.
-@EFFECT_REGISTRY.register("Lightning Bolt", EffectTiming.SPELL_RESOLVE,
-                           description="Deal 3 damage to any target")
-def lightning_bolt_resolve(game, card, controller, targets=None, item=None):
-    from .oracle_resolver import resolve_damage_to_chosen_target
-    resolve_damage_to_chosen_target(game, card, controller, 3, targets)
-
-
-@EFFECT_REGISTRY.register("Lava Dart", EffectTiming.SPELL_RESOLVE,
-                           description="Deal 1 damage to any target")
-def lava_dart_resolve(game, card, controller, targets=None, item=None):
-    from .oracle_resolver import resolve_damage_to_chosen_target
-    resolve_damage_to_chosen_target(game, card, controller, 1, targets)
+# The "deal N damage to any target" mechanic shape used to need a per-card
+# EFFECT_REGISTRY handler (Lightning Bolt, Lava Dart, …), each a one-line
+# `resolve_damage_to_chosen_target(game, card, controller, N, targets)` call
+# differing only in the literal N. That whole shape is now classified once at
+# DB load into `CardTemplate.direct_damage_data` (oracle_parser.
+# parse_direct_damage_spell) and dispatched — with no oracle inspection at
+# resolve time — through the same shared owner in
+# `oracle_resolver.resolve_spell_from_oracle`'s typed-field branch, so the
+# fixed-amount face-legal burn spells (~79 in the DB) need no registration.
+#
+# Lightning Bolt (N=3) and Lava Dart (N=1) were the two registered pure
+# fixed-N handlers; both are DELETED here, verified redundant with the typed
+# path first (tests/test_direct_damage_shared_resolver.py::
+# TestRegisteredBurnHandlersRetired). Unholy Heat (delirium-scaled amount)
+# and Grapeshot (storm-copied) keep their handlers — a derived/conditional
+# amount is a different mechanic the typed field deliberately does not carry.
+# See docs/design/rules-foundation-sweep-tracker.md (Phase 3) for the full
+# cluster research — which cards were included/excluded and why.
 
 
 @EFFECT_REGISTRY.register("Unholy Heat", EffectTiming.SPELL_RESOLVE,

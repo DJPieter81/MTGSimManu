@@ -1075,6 +1075,13 @@ class CardTemplate:
     # whole card — never half-executed).
     # Populated by oracle_parser.parse_land_destruction.
     land_destruction_data: Optional[dict] = None
+    # -- Direct-damage spell (fixed amount, face-legal "any target") --------
+    # {'amount': N} for a whole-effect "deals N damage to any target"-shape
+    # instant/sorcery (~33 Modern cards). None otherwise. Dispatched off the
+    # typed field (no oracle inspection at resolve time) through the shared
+    # resolve_damage_to_chosen_target, retiring per-card burn handlers.
+    # Populated by oracle_parser.parse_direct_damage_spell.
+    direct_damage_data: Optional[dict] = None
     # Printed `[±N]: effect` loyalty abilities (CR 606), classified once at
     # DB load by oracle_parser.parse_loyalty_abilities into
     # {slot: LoyaltyAbility}.  `PlaneswalkerManager` dispatches off

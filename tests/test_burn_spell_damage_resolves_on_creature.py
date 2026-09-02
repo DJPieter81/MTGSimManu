@@ -22,8 +22,8 @@ import random
 import pytest
 
 from engine.cards import CardInstance
-from engine.card_effects import EFFECT_REGISTRY, EffectTiming
 from engine.game_state import GameState
+from engine.oracle_resolver import resolve_spell_from_oracle
 
 
 def _put_creature_in_play(game, card_db, name, controller):
@@ -62,12 +62,10 @@ def test_burn_spell_damage_resolves_on_creature_target(card_db):
     target = _put_creature_in_play(game, card_db, "Tarmogoyf", 1)
     spell = _make_spell(game, card_db, "Lightning Bolt", 0)
 
-    fired = EFFECT_REGISTRY.execute(
-        "Lightning Bolt", EffectTiming.SPELL_RESOLVE,
-        game, spell, 0, targets=[target.instance_id],
-    )
+    handled = resolve_spell_from_oracle(
+        game, spell, 0, targets=[target.instance_id])
 
-    assert fired, "Lightning Bolt SPELL_RESOLVE handler did not fire"
+    assert handled, "Lightning Bolt did not resolve via the typed damage path"
     assert target.damage_marked == 3, (
         f"expected 3 damage marked on creature, got {target.damage_marked}"
     )
@@ -80,12 +78,9 @@ def test_burn_spell_damage_resolves_to_face(card_db):
     life_before = opp.life
     spell = _make_spell(game, card_db, "Lightning Bolt", 0)
 
-    fired = EFFECT_REGISTRY.execute(
-        "Lightning Bolt", EffectTiming.SPELL_RESOLVE,
-        game, spell, 0, targets=[-1],
-    )
+    handled = resolve_spell_from_oracle(game, spell, 0, targets=[-1])
 
-    assert fired
+    assert handled
     assert opp.life == life_before - 3, (
         f"expected opponent life {life_before - 3}, got {opp.life}"
     )
