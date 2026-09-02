@@ -177,6 +177,65 @@ def resolve_damage_to_chosen_target(
     return None
 
 
+# ---------------------------------------------------------------------------
+# Team pump until end of turn (Overrun shape) — typed-field-gated resolution.
+# ONE application for every carrier — a permanent's own ETB trigger
+# (Craterhoof Behemoth class), an instant/sorcery (Overrun class) and the
+# X-bound creature tutor's "+X/+X and haste" rider — driven by
+# CardTemplate.team_pump_data (oracle_parser.parse_team_pump). No oracle
+# text is inspected here.
+# ---------------------------------------------------------------------------
+
+
+def _apply_team_pump(game: "GameState", controller: int,
+                     source: "CardInstance", power: int, toughness: int,
+                     keywords, *, others_only: bool = False) -> None:
+    """"[Other] creatures you control get +P/+T [and gain <keywords>] until
+    end of turn": the until-EOT P/T and keyword channels (cleared at
+    cleanup, CR 514.2) — the same ones the activated pump/haste kinds
+    write to."""
+    player = game.players[controller]
+    granted = set(keywords)
+    for creature in player.creatures:
+        if others_only and creature is source:
+            continue
+        creature.temp_power_mod += power
+        creature.temp_toughness_mod += toughness
+        creature.temp_keywords |= granted
+    kw_note = (" and " + ", ".join(sorted(k.value for k in granted))
+               if granted else "")
+    game.log.append(f"T{game.display_turn} P{controller+1}: "
+                    f"{source.name} — {'other ' if others_only else ''}"
+                    f"creatures get +{power}/+{toughness}{kw_note}")
+
+
+def _resolve_team_pump(game: "GameState", card: "CardInstance",
+                       controller: int) -> bool:
+    """Resolve the parsed team-pump shape carried by ``card``.
+
+    "+X/+X, where X is the number of creatures you control" reads the
+    count at resolution (CR 608.2h) — the entering permanent is on the
+    battlefield by then, so it counts itself; "the greatest power among
+    creatures you control" likewise reads current power.
+    """
+    from .cards import Keyword
+
+    data = card.template.team_pump_data or {}
+    player = game.players[controller]
+    scaling = data.get('scaling') or ''
+    if scaling == 'creature_count':
+        power = toughness = len(player.creatures)
+    elif scaling == 'greatest_power':
+        power = toughness = max((c.power for c in player.creatures),
+                                default=0)
+    else:
+        power, toughness = int(data['power']), int(data['toughness'])
+    _apply_team_pump(game, controller, card, power, toughness,
+                     {Keyword(k) for k in data.get('keywords', ())},
+                     others_only=bool(data.get('others_only')))
+    return True
+
+
 def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
                              controller: int) -> bool:
     """Resolve ETB effects via classifier-tag dispatch.
@@ -203,6 +262,14 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
     contract — they are the patchwork pattern Wave 2 will delete
     elsewhere; we don't ADD them here.
     """
+    # ── "When this ~ enters, [other] creatures you control get +N/+N
+    #     [and gain <kw>] until end of turn" (Overrun shape on a body) ──
+    # Typed-field gate, no oracle inspection at resolve time
+    # (classification: parse_team_pump). Class: ~30 Modern permanents
+    # (Craterhoof Behemoth, End-Raze Forerunners, Inspiring Captain, ...).
+    if (card.template.team_pump_data or {}).get('trigger') == 'etb':
+        return _resolve_team_pump(game, card, controller)
+
     oracle = (card.template.oracle_text or '').lower()
     if not oracle:
         return False
@@ -517,16 +584,10 @@ def _resolve_x_creature_tutor(game: "GameState", card: "CardInstance",
     team_at = spec.get('team_pump_haste_at_x')
     if team_at is not None and x_value >= team_at:
         # "creatures you control get +X/+X and gain haste until end of
-        # turn" — the until-EOT P/T and keyword channels (cleared at
-        # cleanup, CR 514), the same ones the activated pump/haste kinds
-        # write to.
-        for creature in player.creatures:
-            creature.temp_power_mod += x_value
-            creature.temp_toughness_mod += x_value
-            creature.temp_keywords.add(Keyword.HASTE)
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"{card.name} — creatures get +{x_value}/+{x_value} "
-                        f"and haste")
+        # turn" — the Overrun-shape application shared with the ETB and
+        # spell carriers of the team-pump mechanic.
+        _apply_team_pump(game, controller, card, x_value, x_value,
+                         {Keyword.HASTE})
 
     finish_library_search(game, controller)
 
@@ -705,6 +766,12 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
     #    at resolve time (classification: parse_x_creature_tutor).
     if getattr(card.template, 'x_creature_tutor_data', None):
         return _resolve_x_creature_tutor(game, card, controller, x_value)
+
+    # ── "Creatures you control get +N/+N [and gain <kw>] until end of
+    #    turn" (Overrun class, ~100 Modern instants/sorceries) — the same
+    #    typed gate and application as the ETB form above.
+    if (card.template.team_pump_data or {}).get('trigger') == 'spell':
+        return _resolve_team_pump(game, card, controller)
 
     oracle = (card.template.oracle_text or '').lower()
     if not oracle:
