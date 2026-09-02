@@ -340,16 +340,19 @@ def mox_opal_etb(game, card, controller, targets=None, item=None):
 @EFFECT_REGISTRY.register("Nettlecyst", EffectTiming.ETB,
                            description="Create Germ token, equip it")
 def nettlecyst_etb(game, card, controller, targets=None, item=None):
-    game.create_token(
+    # create_token returns the CardInstance(s) it just put onto the
+    # battlefield — use that directly rather than re-finding the token by a
+    # `"Germ" in c.name` substring gate (a card-name check the abstraction
+    # contract forbids, and one that would also match any other creature
+    # whose name happens to contain "Germ").
+    tokens = game.create_token(
         controller, "germ", count=1,
         source_oracle=card.template.oracle_text,
     )
-    germs = [c for c in game.players[controller].creatures
-             if "Germ" in c.name]
-    if germs:
+    if tokens:
         # Use instance_id-based tag so the generic equipment scaling in _dynamic_base_power
         # and _dynamic_base_toughness picks it up correctly.
-        germs[-1].instance_tags.add(f"equipped_{card.instance_id}")
+        tokens[-1].instance_tags.add(f"equipped_{card.instance_id}")
 
 
 @EFFECT_REGISTRY.register("Springleaf Drum", EffectTiming.ETB,

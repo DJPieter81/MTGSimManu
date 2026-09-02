@@ -2145,3 +2145,20 @@ entries are genuinely card-specific effects or non-generic conditionals, not
 duplicated shared-resolver delegations. The audit's "45-50 consolidatable"
 estimate did not survive a handler-body census; the real, durable win here was
 the ~96-card removal no-op correctness fix that the consolidation surfaced.
+
+## Card-name substring gates hidden from the ratchet (2026-09-02)
+
+`check_abstraction.py` matches `name == "X"` but not substring `"X" in …name`
+forms, so two real card-name gates were invisible. Audited both:
+
+- **FIXED** `card_effects.py` nettlecyst_etb: `"Germ" in c.name` searched the
+  battlefield for the token it had just created. `game.create_token` already
+  returns the created `CardInstance`s — use the return value. Behaviour-
+  identical (WR anchor's 29 pins hold), and the gate no longer exists.
+- **DEFERRED** `card_database.py:972` `"Living End" in name → tags.add("combo")`.
+  No clean typed predicate matches exactly Living End: `has_symmetric_reanimation`
+  is True for 32 cards (Liliana Vess, Rise of the Dark Realms, …), so tagging
+  "combo" off it would relabel 31 unrelated cards and shift AI scoring. The
+  distinguishing feature (a cascade/suspend-cast mass-reanimation payoff) needs
+  a purpose-built predicate + WR validation — a tracked follow-up, not a safe
+  drop-in. Left as-is rather than risk a reanimation-archetype WR regression.
