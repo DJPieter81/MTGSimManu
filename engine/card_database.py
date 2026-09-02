@@ -1787,6 +1787,7 @@ class CardDatabase:
             parse_is_tutor, parse_has_noncreature_spell_cast_trigger,
             parse_has_artifact_synergy,
             parse_has_draw_effect, parse_can_exile_permanent,
+            parse_exile_hits_noncreature,
             parse_has_symmetric_reanimation,
             parse_has_token_effect, parse_has_graveyard_recursion,
             parse_has_graveyard_hate, parse_has_spell_chain_hate,
@@ -1944,6 +1945,7 @@ class CardDatabase:
         template.deals_targeted_damage = parse_deals_targeted_damage(oracle)
         template.has_scaling_token_finisher = parse_has_scaling_token_finisher(oracle)
         template.can_exile_permanent = parse_can_exile_permanent(oracle)
+        template.exile_hits_noncreature = parse_exile_hits_noncreature(oracle)
         template.has_symmetric_reanimation = parse_has_symmetric_reanimation(oracle)
         # CR 107.4f — total Phyrexian pips, read off the parsed MANA COST
         # (template.mana_cost.phyrexian), never off the reminder text.

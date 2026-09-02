@@ -3421,6 +3421,32 @@ def parse_can_exile_permanent(oracle: str) -> bool:
     ))
 
 
+def parse_exile_hits_noncreature(oracle: str) -> bool:
+    """Return True if an 'exile target ...' clause can target a NONCREATURE
+    permanent (nonland permanent / permanent / artifact / enchantment /
+    planeswalker), as opposed to a creature-only exile ("exile target
+    creature", Path to Exile / Reality Shift).
+
+    ``parse_can_exile_permanent`` is deliberately coarse — it flags any
+    permanent-exile removal, creature-only included, for removal-path
+    detection. But the AI's "this removal can hit a noncreature" gate must
+    NOT treat a creature-only exile as able to hit a planeswalker/artifact:
+    doing so let Path to Exile illegally target a transformed Ral (audit:
+    Eldrazi Tron vs Ruby Storm, s55643). This narrower predicate answers
+    only that question.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    for m in re.finditer(r'exile[^.]*?target\s+([a-z ]+)', lo):
+        clause = m.group(1)
+        if any(k in clause for k in (
+                'nonland permanent', 'permanent', 'artifact',
+                'enchantment', 'planeswalker')):
+            return True
+    return False
+
+
 def parse_has_symmetric_reanimation(oracle: str) -> bool:
     """Return True if the card returns creatures from ALL graveyards simultaneously.
 

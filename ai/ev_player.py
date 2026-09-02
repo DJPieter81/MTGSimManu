@@ -3800,7 +3800,7 @@ class EVPlayer:
         if 'removal' in tags and 'board_wipe' not in tags:
             t = spell.template
             can_hit_noncreature = (t.can_destroy_nonland_permanent
-                                   or t.can_exile_permanent
+                                   or getattr(t, 'exile_hits_noncreature', False)
                                    or t.can_destroy_artifact)
 
             if can_hit_noncreature:

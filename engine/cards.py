@@ -695,6 +695,12 @@ class CardTemplate:
     # Covers instant/sorcery removal that exiles rather than destroys.
     # Populated by oracle_parser.parse_can_exile_permanent.
     can_exile_permanent: bool = False
+    # True only when an 'exile target ...' clause can hit a NONCREATURE
+    # permanent (not a creature-only exile). Populated by
+    # oracle_parser.parse_exile_hits_noncreature. Gates the AI's
+    # "removal can hit a noncreature" target enumeration so a creature-only
+    # exile (Path to Exile) never targets a planeswalker/artifact.
+    exile_hits_noncreature: bool = False
     # Symmetric reanimation — True for Living End-class mass reanimation from
     # all graveyards simultaneously.
     # Populated by oracle_parser.parse_has_symmetric_reanimation.
