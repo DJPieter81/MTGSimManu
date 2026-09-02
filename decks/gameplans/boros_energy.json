@@ -29,7 +29,7 @@
         ],
         "interaction": [
           "Galvanic Discharge",
-          "Static Prison",
+          "Mana Tithe",
           "Thraben Charm"
         ]
       }
@@ -40,7 +40,7 @@
       "card_priorities": {
         "Galvanic Discharge": 15.0,
         "Thraben Charm": 12.0,
-        "Phlage, Titan of Fire's Fury": 18.0,
+        "Ranger-Captain of Eos": 18.0,
         "Blood Moon": 10.0
       },
       "card_roles": {
@@ -49,7 +49,7 @@
           "Thraben Charm"
         ],
         "payoffs": [
-          "Phlage, Titan of Fire's Fury"
+          "Ranger-Captain of Eos"
         ]
       }
     },
@@ -58,7 +58,7 @@
       "description": "Convert board advantage into lethal damage",
       "card_priorities": {
         "Goblin Bombardment": 15.0,
-        "Phlage, Titan of Fire's Fury": 12.0
+        "Ranger-Captain of Eos": 12.0
       }
     }
   ],

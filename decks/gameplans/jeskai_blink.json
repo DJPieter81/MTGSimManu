@@ -39,13 +39,13 @@
         "Solitude": 20.0,
         "Ephemerate": 18.0,
         "Phelia, Exuberant Shepherd": 17.0,
-        "Phlage, Titan of Fire's Fury": 16.0
+        "Fable of the Mirror-Breaker // Reflection of Kiki-Jiki": 16.0
       },
       "card_roles": {
         "payoffs": [
           "Quantum Riddler",
           "Solitude",
-          "Phlage, Titan of Fire's Fury"
+          "Fable of the Mirror-Breaker // Reflection of Kiki-Jiki"
         ],
         "enablers": [
           "Ephemerate",
@@ -59,11 +59,11 @@
     },
     {
       "goal_type": "CLOSE_GAME",
-      "description": "Close with Quantum Riddler beats or Solitude + Ephemerate lock",
+      "description": "Close with Quantum Riddler beats, Reflection of Kiki-Jiki copies, or Solitude + Ephemerate lock",
       "card_priorities": {
         "Quantum Riddler": 18.0,
         "Solitude": 15.0,
-        "Phlage, Titan of Fire's Fury": 14.0
+        "Fable of the Mirror-Breaker // Reflection of Kiki-Jiki": 14.0
       }
     }
   ],

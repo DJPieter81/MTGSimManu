@@ -28,7 +28,6 @@
         "Lava Dart": 18.0,
         "Unholy Heat": 16.0,
         "Mutagenic Growth": 22.0,
-        "Violent Urge": 18.0,
         "Mishra's Bauble": 15.0,
         "Expressive Iteration": 14.0,
         "Preordain": 12.0
@@ -37,8 +36,7 @@
         "enablers": [
           "Lava Dart",
           "Mishra's Bauble",
-          "Mutagenic Growth",
-          "Violent Urge"
+          "Mutagenic Growth"
         ],
         "interaction": [
           "Lightning Bolt",
@@ -55,8 +53,7 @@
       "description": "Burn face to finish, deploy Murktide as backup",
       "card_priorities": {
         "Lightning Bolt": 20.0,
-        "Lava Dart": 15.0,
-        "Murktide Regent": 18.0
+        "Lava Dart": 15.0
       }
     }
   ],

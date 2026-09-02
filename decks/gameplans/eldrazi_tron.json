@@ -8,8 +8,8 @@
       "card_priorities": {
         "Expedition Map": 24.0,
         "Chalice of the Void": 22.0,
-        "Eldrazi Mimic": 15.0,
-        "Matter Reshaper": 14.0
+        "Glaring Fleshraker": 15.0,
+        "Mind Stone": 14.0
       },
       "card_roles": {
         "engines": [
@@ -17,8 +17,8 @@
         ],
         "enablers": [
           "Chalice of the Void",
-          "Eldrazi Mimic",
-          "Matter Reshaper"
+          "Glaring Fleshraker",
+          "Mind Stone"
         ]
       },
       "resource_target": 5,
@@ -26,22 +26,22 @@
     },
     {
       "goal_type": "CURVE_OUT",
-      "description": "Deploy Eldrazi threats: TKS strips hand, Smasher closes fast",
+      "description": "Deploy Eldrazi threats: TKS strips hand, Karn locks and tutors, Devourer closes fast",
       "card_priorities": {
         "Thought-Knot Seer": 24.0,
-        "Reality Smasher": 22.0,
-        "Endbringer": 18.0,
+        "Karn, the Great Creator": 22.0,
+        "Devourer of Destiny": 18.0,
         "Walking Ballista": 15.0,
-        "Matter Reshaper": 12.0
+        "Glaring Fleshraker": 12.0
       },
       "card_roles": {
         "payoffs": [
-          "Endbringer",
-          "Reality Smasher",
+          "Devourer of Destiny",
+          "Karn, the Great Creator",
           "Thought-Knot Seer"
         ],
         "enablers": [
-          "Matter Reshaper",
+          "Glaring Fleshraker",
           "Walking Ballista"
         ]
       }
@@ -50,15 +50,15 @@
       "goal_type": "CLOSE_GAME",
       "description": "Ugin or All Is Dust as sweepers, attack with Eldrazi",
       "card_priorities": {
-        "Ugin, the Spirit Dragon": 20.0,
+        "Ugin, Eye of the Storms": 20.0,
         "All Is Dust": 18.0,
-        "Reality Smasher": 16.0,
+        "Devourer of Destiny": 16.0,
         "Kozilek's Command": 15.0
       },
       "card_roles": {
         "payoffs": [
           "All Is Dust",
-          "Ugin, the Spirit Dragon"
+          "Ugin, Eye of the Storms"
         ]
       }
     }
@@ -67,7 +67,7 @@
     "Chalice of the Void",
     "Eldrazi Temple",
     "Expedition Map",
-    "Matter Reshaper",
+    "Glaring Fleshraker",
     "Thought-Knot Seer"
   ],
   "mulligan_min_lands": 2,
@@ -82,7 +82,7 @@
     "Urza's Tower": 8.0,
     "Urza's Mine": 8.0,
     "Urza's Power Plant": 8.0,
-    "Cavern of Souls": 5.0
+    "Ugin's Labyrinth": 5.0
   },
   "always_early": [
     "Chalice of the Void",

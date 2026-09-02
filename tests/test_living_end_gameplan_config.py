@@ -2,8 +2,11 @@
 
 Diagnostic: docs/diagnostics/2026-04-24_living_end_consolidated_findings.md
 
-LE-G1: Violent Outburst must be listed as a critical piece (it's the third
-       cascade enabler alongside Shardless Agent and Demonic Dread).
+LE-G1: every cascade spell the deck plays must be listed as a critical
+       piece (originally phrased as "Violent Outburst must be a critical
+       piece"; Outburst has since left the list, and the rule is the
+       generic one — the EXECUTE_PAYOFF cascaders, whatever they are,
+       are the pieces the discard/mulligan protection must guard).
 LE-G3: FILL_RESOURCE goal's resource_target must be at least 4 so the
        half-target fallback (ai/gameplan.py:524) requires >=2 GY creatures
        before advancing to EXECUTE_PAYOFF — cascading with a near-empty
@@ -11,6 +14,8 @@ LE-G3: FILL_RESOURCE goal's resource_target must be at least 4 so the
 """
 import json
 import os
+
+from decks.modern_meta import MODERN_DECKS
 
 GAMEPLAN_PATH = os.path.join(
     os.path.dirname(__file__), "..", "decks", "gameplans", "living_end.json"
@@ -35,13 +40,24 @@ def test_living_end_gameplan_parses():
     assert data["deck_name"] == "Living End"
 
 
-def test_violent_outburst_in_critical_pieces():
-    """LE-G1: Violent Outburst is the suspend-cascade enabler and must be
-    tracked as a critical piece alongside the other cascade spells."""
+def test_every_cascade_payoff_is_a_critical_piece():
+    """LE-G1: the cascade spells (the EXECUTE_PAYOFF goal's payoffs) are
+    the pieces the deck cannot function without, so each must be tracked
+    as a critical piece — and every critical piece must be a card the
+    deck actually plays, or the protection guards a phantom."""
     data = _load_gameplan()
-    critical = data.get("critical_pieces", [])
-    assert "Violent Outburst" in critical, (
-        f"Violent Outburst missing from critical_pieces: {critical}"
+    critical = set(data.get("critical_pieces", []))
+    execute = [g for g in data["goals"] if g.get("goal_type") == "EXECUTE_PAYOFF"]
+    assert execute, "Living End must have an EXECUTE_PAYOFF goal"
+    cascaders = set(execute[0].get("card_roles", {}).get("payoffs", []))
+    assert cascaders, "EXECUTE_PAYOFF must declare its cascade spells as payoffs"
+    assert cascaders <= critical, (
+        f"cascade spells missing from critical_pieces: {cascaders - critical}"
+    )
+    mainboard = set(MODERN_DECKS["Living End"]["mainboard"])
+    assert critical <= mainboard, (
+        f"critical_pieces name cards the deck does not play: "
+        f"{critical - mainboard}"
     )
 
 
