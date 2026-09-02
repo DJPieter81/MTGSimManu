@@ -101,7 +101,8 @@ class ActivationManager:
                 ActivationEffectKind.UNTAP_TARGET_PERMANENT,
                 ActivationEffectKind.EXILE_FROM_GRAVEYARD,
                 ActivationEffectKind.PUT_COUNTER_SELF,
-                ActivationEffectKind.PUT_COUNTER_TARGET):
+                ActivationEffectKind.PUT_COUNTER_TARGET,
+                ActivationEffectKind.ADAPT):
             return False
 
         # 9b-pc. A put-counter line whose shape did not parse is schema

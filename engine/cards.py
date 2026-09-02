@@ -175,6 +175,17 @@ class ActivationEffectKind(Enum):
     # and toughness and, unlike PUMP_SELF_UEOT, does not expire.
     PUT_COUNTER_SELF = "put_counter_self"
     PUT_COUNTER_TARGET = "put_counter_target"
+    # "[Cost]: Adapt N." (CR 702.132) — if this creature has no +1/+1
+    # counters on it, put N +1/+1 counters on it. 23 Modern cards carry
+    # the activated form (Basking Broodscale, Growth-Chamber Guardian,
+    # Incubation Druid, Zegana, ...). `amount` is N. The no-counters test
+    # is a RESOLUTION condition (702.132a), not a legality one: activating
+    # on an already-adapted creature is legal and resolves as a no-op —
+    # declining that is the AI's judgment. Counters land on the instance's
+    # own `plus_counters` through `adjust_counters`, the same funnel the
+    # counter-cost payer uses, so P/T moves and any later
+    # counters-placed trigger routing has a single place to hook.
+    ADAPT = "adapt"
     UNCLASSIFIED = "unclassified"
 
 
