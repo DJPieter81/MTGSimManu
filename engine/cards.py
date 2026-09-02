@@ -584,6 +584,13 @@ class CardTemplate:
     team_pump_data: Optional[Dict] = None
     is_cost_reducer: bool = False             # reduces spell costs (from tags)
     domain_reduction: int = 0                 # cost reduction per basic land type
+    # Self-scaling own-cost reduction — "This spell costs {N} less to cast
+    # for each <unit>" (CR 601.2f).  `amount` is N; `unit` is one of the
+    # oracle_parser.SELF_COST_UNIT_* vocabulary the engine counts live
+    # (per-turn discard/cycle counter, distinct graveyard card types).
+    # (0, "") when absent or when the unit is unmodelled (refused outright).
+    self_cost_reduction_amount: int = 0
+    self_cost_reduction_unit: str = ""
     back_face_oracle: str = ""                # oracle text for back face (transform cards)
     back_face_loyalty: int = 0                # starting loyalty for back face planeswalker
     # Full back-face characteristics for ANY multi-face card (not just
@@ -1047,6 +1054,10 @@ class CardTemplate:
             if self.loyalty_abilities is None:
                 from .oracle_parser import parse_loyalty_abilities as _pl
                 self.loyalty_abilities = _pl(self.oracle_text, self.loyalty)
+            from .oracle_parser import parse_self_cost_reduction as _pscr
+            if not self.self_cost_reduction_unit:
+                (self.self_cost_reduction_amount,
+                 self.self_cost_reduction_unit) = _pscr(self.oracle_text)
             from .oracle_parser import (parse_warp_cost as _pwc,
                                         parse_dash_cost as _pdc,
                                         parse_escape_cost as _pec,

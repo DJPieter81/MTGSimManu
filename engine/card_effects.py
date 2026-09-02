@@ -874,9 +874,8 @@ def seasoned_pyromancer_etb(game, card, controller, targets=None, item=None):
             ))
             if not worst.template.is_land:
                 discarded_nonland += 1
-            player.hand.remove(worst)
-            worst.zone = "graveyard"
-            player.graveyard.append(worst)
+            game.zone_mgr.move_card(game, worst, "hand", "graveyard",
+                                    cause="discard")
     _sp_drawn = game.draw_cards(controller, 2)
     _sp_names = ", ".join(c.name for c in _sp_drawn)
     # Create 1/1 Elemental tokens for each nonland discarded
@@ -1722,9 +1721,8 @@ def archon_of_cruelty_etb(game, card, controller, targets=None, item=None):
     if opp.hand:
         # Discard the worst card (lowest CMC non-land)
         discard = min(opp.hand, key=lambda c: c.template.cmc if not c.template.is_land else 99)
-        opp.hand.remove(discard)
-        discard.zone = "graveyard"
-        game.players[discard.owner].graveyard.append(discard)
+        game.zone_mgr.move_card(game, discard, "hand", "graveyard",
+                                cause="forced discard")
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Archon of Cruelty: P{opponent+1} discards {discard.name}")
 
@@ -3058,9 +3056,8 @@ def territorial_kavu_attack(game, card, controller, targets=None, item=None):
                 # still must discard if loot mode chosen.  Discard the
                 # extra land; cantrip value still net-zero.
                 worst = min(hand, key=lambda c: c.template.cmc or 0)
-        hand.remove(worst)
-        worst.zone = "graveyard"
-        me.graveyard.append(worst)
+        game.zone_mgr.move_card(game, worst, "hand", "graveyard",
+                                cause="discard")
         game.draw_cards(controller, 1)
         game.log.append(
             f"T{game.display_turn} P{controller+1}: "

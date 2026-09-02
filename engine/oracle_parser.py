@@ -362,6 +362,58 @@ def parse_cost_reduction(oracle: str) -> Optional[Dict]:
     return {'target': target, 'amount': amount, 'color': color}
 
 
+# ── Self-scaling own-cost reduction ────────────────────────────────
+#
+# "This spell costs {N} less to cast for each <dynamic quantity>" —
+# the spell discounts ITSELF by a live count the caster controls (CR
+# 601.2f).  Distinct from `parse_cost_reduction` above, which models a
+# PERMANENT statically discounting OTHER spells.  The unit is a small
+# closed vocabulary the engine can count live; anything else is refused
+# outright as (0, '') so a card is never half-applied with a guessed
+# count.  Domain ("for each basic land type") is deliberately NOT
+# claimed here — `parse_domain_reduction` owns it and claiming it twice
+# would double-discount.
+SELF_COST_UNIT_DISCARDED_OR_CYCLED = 'discarded_or_cycled_this_turn'
+SELF_COST_UNIT_GRAVEYARD_CARD_TYPES = 'graveyard_card_types'
+
+_SELF_COST_REDUCTION_RE = re.compile(
+    r"this spell costs\s*\{(\d+)\}\s*less to cast for each ([^.\n]+)")
+
+_SELF_COST_UNIT_PATTERNS = (
+    (re.compile(r"^cards? you(?:'ve| have)? "
+                r"(?:cycled or discarded|discarded or cycled) this turn$"),
+     SELF_COST_UNIT_DISCARDED_OR_CYCLED),
+    (re.compile(r"^card type among cards in your graveyard$"),
+     SELF_COST_UNIT_GRAVEYARD_CARD_TYPES),
+)
+
+
+def parse_self_cost_reduction(oracle: str) -> Tuple[int, str]:
+    """Parse "This spell costs {N} less to cast for each <unit>".
+
+    Returns ``(amount, unit)`` where ``unit`` is one of the
+    ``SELF_COST_UNIT_*`` constants, or ``(0, '')`` when the card carries
+    no self-scaling reduction OR its unit is one the engine cannot
+    count live.  Reminder text is stripped first (a cycling reminder
+    mentions "Discard this card" and must not leak into the unit).
+
+    Static reducers ("Instant and sorcery spells you cast cost {1}
+    less") never match: their subject is other spells and the verb is
+    plural "cost", not "this spell costs".  Consumed at DB load into
+    ``CardTemplate.self_cost_reduction_amount`` / ``_unit``.
+    """
+    text = strip_reminder_text(oracle or '').lower()
+    m = _SELF_COST_REDUCTION_RE.search(text)
+    if not m:
+        return 0, ''
+    amount = int(m.group(1))
+    unit_phrase = m.group(2).strip()
+    for pattern, unit in _SELF_COST_UNIT_PATTERNS:
+        if pattern.match(unit_phrase):
+            return amount, unit
+    return 0, ''
+
+
 def parse_is_land_sacrifice_tutor(oracle: str) -> bool:
     """True for the Scapeshift shape: a spell that sacrifices any number of
     the caster's lands and searches the library for that many lands.

@@ -47,6 +47,13 @@ class PlayerState:
     life_lost_this_turn: int = 0   # CR 702.131 spectacle condition tracker
     damage_dealt_this_turn: int = 0
     cards_drawn_this_turn: int = 0
+    # Cards this player has discarded or cycled this turn (cycling IS a
+    # discard, CR 702.29a).  Incremented once at the zone funnel
+    # (ZoneManager.move_card, hand -> graveyard) so every discard route
+    # — forced, voluntary, hand-size, cycling — is counted exactly once.
+    # Unit for the self-scaling cost reduction "for each card you've
+    # cycled or discarded this turn".
+    cards_discarded_or_cycled_this_turn: int = 0
     # Diminishing-return budget for `_eval_evoke`: each successful
     # removal-class evoke this turn ramps the cost of the next one.
     # See `ai/board_eval.py::_eval_evoke` for consumption.
@@ -307,6 +314,7 @@ class PlayerState:
         self.life_lost_this_turn = 0
         self.damage_dealt_this_turn = 0
         self.cards_drawn_this_turn = 0
+        self.cards_discarded_or_cycled_this_turn = 0
         self.removal_evokes_resolved_this_turn = 0
         self.flashback_granted_this_turn = False
         self.silenced_this_turn = False

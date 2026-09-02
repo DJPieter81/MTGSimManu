@@ -1163,9 +1163,8 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
                 # mana value) — the existing heuristic, now applied to
                 # the correct pool.
                 best = max(legal, key=lambda c: (c.template.cmc or 0))
-                opp.hand.remove(best)
-                best.zone = "graveyard"
-                game.players[opponent].graveyard.append(best)
+                game.zone_mgr.move_card(game, best, "hand", "graveyard",
+                                        cause="discard")
                 game.log.append(
                     f"T{game.display_turn} P{controller+1}: "
                     f"{card.name} discards {best.name}")
@@ -2088,6 +2087,41 @@ def check_static_ability(game: "GameState", card: "CardInstance",
     if not oracle:
         return False
     return False
+
+
+def count_graveyard_card_types(game, player_idx: int) -> int:
+    """Number of DISTINCT card types (CR 205.2a) among cards in the
+    player's graveyard — the live unit for the "for each card type among
+    cards in your graveyard" self-scaling reduction (and any other
+    "card types in your graveyard" count, e.g. delirium thresholds)."""
+    player = game.players[player_idx]
+    return len({t for c in player.graveyard for t in c.template.card_types})
+
+
+def self_cost_reduction(game, player_idx: int, card_template) -> int:
+    """Generic mana the SPELL ITSELF discounts via "This spell costs {N}
+    less to cast for each <unit>" (CR 601.2f).
+
+    Reads the typed `self_cost_reduction_amount` / `_unit` fields
+    (parsed once at DB load — no oracle inspection here) and multiplies
+    by the live unit count.  Capped at the printed generic portion:
+    cost reductions never touch coloured pips.  Returns 0 when the card
+    has no (modelled) self-scaling reduction.
+    """
+    from engine.oracle_parser import (SELF_COST_UNIT_DISCARDED_OR_CYCLED,
+                                      SELF_COST_UNIT_GRAVEYARD_CARD_TYPES)
+    template = card_template
+    amount = template.self_cost_reduction_amount
+    if amount <= 0:
+        return 0
+    unit = template.self_cost_reduction_unit
+    if unit == SELF_COST_UNIT_DISCARDED_OR_CYCLED:
+        count = game.players[player_idx].cards_discarded_or_cycled_this_turn
+    elif unit == SELF_COST_UNIT_GRAVEYARD_CARD_TYPES:
+        count = count_graveyard_card_types(game, player_idx)
+    else:
+        return 0  # unmodelled unit — refused outright at parse time too
+    return min(amount * count, max(0, template.mana_cost.generic))
 
 
 def count_cost_reducers(game, player_idx: int, card_template) -> int:
