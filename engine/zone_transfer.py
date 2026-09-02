@@ -59,8 +59,10 @@ class TransferKind(Enum):
 
     The set is intentionally minimal — exactly the categories the
     audit's findings identified as needing distinct fan-outs. New
-    kinds (Surveil, Madness, Adventure-into-exile, …) extend the
-    enum and register their fan-out in `_TRIGGER_FANOUT` below.
+    kinds (Surveil, Adventure-into-exile, …) extend the enum and
+    register their fan-out in `_TRIGGER_FANOUT` below. (Madness is a
+    *replacement* on the discard event rather than a transfer kind; it
+    lives in `engine/discard_manager.py`.)
     """
     DRAW = "draw"
     """Library top → hand. Fires 'whenever you draw' / 'whenever an

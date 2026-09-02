@@ -197,6 +197,15 @@ class AICallbacks(GameCallbacks):
         from ai.discard_advisor import choose_discard as _choose
         return _choose(game, player_idx, hand, self_discard)
 
+    def decide_offered_cast(self, game, player_idx, card) -> bool:
+        """Castability-driven: the engine only offers a cast it has
+        verified as legal and payable, and the card is otherwise lost
+        (madness → graveyard), so an affordable offer is always taken.
+        Plan-aware refinement (e.g. a reanimation plan preferring the
+        creature in the graveyard) is a scoring concern for a later
+        EV projection through `best_choice`, not for this seam."""
+        return True
+
     def choose_sacrifice(self, game, player_idx, legal):
         from ai.activation_ev import choose_sacrifice_victim
         return choose_sacrifice_victim(game, player_idx, legal)

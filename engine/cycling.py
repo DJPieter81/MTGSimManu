@@ -107,8 +107,10 @@ class CyclingManager:
                         break
                     land.tapped = True
                     remaining -= 1
-        # Move card from hand to graveyard
-        game.zone_mgr.move_card(game, card, "hand", "graveyard", cause="cycling")
+        # Discard the card as the cost (CR 702.29a: "Discard this card").
+        # Routed through the discard funnel so discard replacements
+        # (madness, CR 702.35) apply to cost-discards too.
+        game.discard_card(player_idx, card, cause="cycling")
         # Fire "whenever you cycle (another card)" triggers from
         # battlefield permanents controlled by the cycling player.
         # CR 702.28c family: Drannith Stinger, Drannith Healer,
