@@ -2083,3 +2083,31 @@ just a delete): nonland-permanent removal (~4 of 6 — Abrupt Decay/Assassin's
 Trophy/Leyline Binding/March; Prismatic Ending's colors-spent and Fatal Push's
 revolt cap stay bespoke), board-sweep (Damnation/Supreme Verdict/Wrath of the
 Skies/All Is Dust). Realistic remaining ceiling ~6-8, not the audit's 45-50.
+
+## EFFECT_REGISTRY board-sweep consolidation — typed field (2026-09-02)
+
+Second registry-consolidation cluster, same pattern as the fixed-N burn one.
+`parse_board_sweep` classifies the symmetric "destroy all creatures"
+instant/sorcery shape (optional "they can't be regenerated" no-op rider; a
+scope/condition — opponents-only, power-gated, nonland, or an extra
+resolution rider — is refused) into the typed field
+`CardTemplate.board_sweep_data`. 6 DB cards populate it (Damnation, Supreme
+Verdict, Wrath of God, Day of Judgment, Doomskar, Vanquish the Horde) — a
+genuine class. `resolve_spell_from_oracle` dispatches off the typed field (no
+oracle inspection at resolve time) into the shared owner
+`card_effects._resolve_board_sweep`. `damnation_resolve` and
+`supreme_verdict_resolve` — byte-identical `_resolve_board_sweep(destroy,
+{creature})` handlers — are DELETED, verified redundant first
+(`tests/test_board_sweep_shared_resolver.py`). Card-name-registry baseline
+93 → 91. All Is Dust (color filter), Wrath of the Skies (MV-gated energy
+wipe) keep their handlers — a resolution-time parameter the plain typed field
+does not carry. WR anchor unchanged (29 pins), all ratchets at baseline.
+
+**Registry surface after two clusters: 95 → 91.** The realistic remaining
+clean ceiling is small (~2-4): targeted MV-gated removal (Abrupt Decay,
+March of Otherworldly Light are cleanly generic; Assassin's Trophy has an
+unmodelled search rider, Leyline Binding is an ETB linked-exile, Prismatic
+Ending / Fatal Push are bespoke colors-spent / revolt conditionals). The bulk
+of the remaining 91 entries are genuinely card-specific effects, not
+duplicated shared-resolver delegations — the audit's "45-50 consolidatable"
+estimate did not survive a handler-body census.

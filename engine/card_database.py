@@ -2063,6 +2063,10 @@ class CardDatabase:
         # typed classification, dispatched through the shared burn resolver.
         from .oracle_parser import parse_direct_damage_spell
         template.direct_damage_data = parse_direct_damage_spell(oracle)
+        # Symmetric "destroy all creatures" sweep — parse-once typed
+        # classification, dispatched through the shared board-sweep resolver.
+        from .oracle_parser import parse_board_sweep
+        template.board_sweep_data = parse_board_sweep(oracle)
 
         return template
 

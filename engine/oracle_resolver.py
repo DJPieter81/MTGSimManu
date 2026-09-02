@@ -1153,6 +1153,18 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
             game, card, controller, _dd['amount'], targets)
         return True
 
+    # ── Symmetric board sweep ("destroy all creatures") — typed-field gate,
+    #    no oracle inspection at resolve time (classification:
+    #    parse_board_sweep). Routes through the shared board-sweep resolver,
+    #    exactly as the per-card wrath handlers did by hand.
+    _bs = getattr(card.template, 'board_sweep_data', None)
+    if oracle_override is None and _bs:
+        from engine.card_effects import _resolve_board_sweep
+        _resolve_board_sweep(
+            game, card, controller, targets, item=None,
+            action=_bs['action'], types=frozenset(_bs['types']))
+        return True
+
     # ── "Target opponent reveals their hand. You choose a nonland card
     #     and that player discards it." (Thoughtseize, Inquisition) ──
     # The template spans several sentences of ONE paragraph (reveal /

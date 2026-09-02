@@ -1082,6 +1082,12 @@ class CardTemplate:
     # resolve_damage_to_chosen_target, retiring per-card burn handlers.
     # Populated by oracle_parser.parse_direct_damage_spell.
     direct_damage_data: Optional[dict] = None
+    # -- Board sweep ("destroy all creatures") ------------------------------
+    # {'action': 'destroy', 'types': ['creature']} for a symmetric
+    # destroy-all-creatures instant/sorcery (~7 Modern cards). None otherwise.
+    # Dispatched off the typed field through card_effects._resolve_board_sweep.
+    # Populated by oracle_parser.parse_board_sweep.
+    board_sweep_data: Optional[dict] = None
     # Printed `[±N]: effect` loyalty abilities (CR 606), classified once at
     # DB load by oracle_parser.parse_loyalty_abilities into
     # {slot: LoyaltyAbility}.  `PlaneswalkerManager` dispatches off

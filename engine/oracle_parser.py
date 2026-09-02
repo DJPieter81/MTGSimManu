@@ -5296,6 +5296,56 @@ def parse_direct_damage_spell(oracle: str):
     return {'amount': int(m.group(1))}
 
 
+# ── Board sweep ("destroy all creatures") ──────────────────────────────
+# Symmetric whole-board destroy-all-creatures (Damnation, Wrath of God,
+# Supreme Verdict, Day of Judgment, …; ~7 Modern instants/sorceries). Only
+# the plain symmetric form — a scope/condition ("all creatures your
+# opponents control", "with power 4 or greater", "all nonland permanents")
+# is a different sweep and is NOT matched here. "They can't be regenerated"
+# is a no-op rider in this engine (no regeneration modelled) and is allowed.
+_BOARD_SWEEP_ALL_CREATURES_RE = re.compile(
+    r"^destroy all creatures\.?(?:\s+they can'?t be regenerated\.?)?$")
+# Non-sweep lines that are allowed alongside the sweep (casting statics /
+# cost modifiers, not resolution effects).
+_SWEEP_ALLOWED_SUBSTR = (
+    "can't be countered", 'less to cast', 'additional cost', 'as an additional',
+)
+_SWEEP_RIDER_TOKENS = (
+    'gain', 'draw', 'create', 'return', 'exile', 'you may', 'put ', 'deals',
+    'damage', 'scry', 'discard', ' each ', 'loses', 'search', ' tap ',
+)
+
+
+def parse_board_sweep(oracle: str):
+    """Classify a symmetric "destroy all creatures" instant/sorcery.
+    Returns ``{'action': 'destroy', 'types': ['creature']}`` or ``None``.
+
+    Parsed once at DB load into ``CardTemplate.board_sweep_data`` and
+    dispatched (no oracle inspection at resolve time) through the shared
+    ``card_effects._resolve_board_sweep`` — the same call the per-card sweep
+    handlers made by hand — retiring those handlers and covering unregistered
+    wraths too.
+    """
+    if not oracle or 'destroy all creatures' not in oracle.lower():
+        return None
+    text = strip_reminder_text(oracle).strip()
+    lines = [ln.strip() for ln in text.split('\n') if ln.strip()]
+    if not any(_BOARD_SWEEP_ALL_CREATURES_RE.match(ln.lower()) for ln in lines):
+        return None
+    for ln in lines:
+        low = ln.lower()
+        if _BOARD_SWEEP_ALL_CREATURES_RE.match(low):
+            continue
+        lead = re.split(r"[ —–\-{:]", low, 1)[0]
+        if lead in _KEYWORD_ABILITY_LEADS:
+            continue
+        if any(s in low for s in _SWEEP_ALLOWED_SUBSTR):
+            continue
+        if any(tok in low for tok in _SWEEP_RIDER_TOKENS):
+            return None  # a real extra resolution effect — refuse
+    return {'action': 'destroy', 'types': ['creature']}
+
+
 # ═══════════════════════════════════════════════════════════════════
 # Planeswalker loyalty abilities (CR 606)
 # ═══════════════════════════════════════════════════════════════════

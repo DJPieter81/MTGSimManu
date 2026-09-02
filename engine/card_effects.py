@@ -2048,18 +2048,18 @@ def psychic_frog_etb(game, card, controller, targets=None, item=None):
     card.instance_tags.add("psychic_frog")
 
 
-@EFFECT_REGISTRY.register("Damnation", EffectTiming.SPELL_RESOLVE,
-                           description="Destroy all creatures")
-def damnation_resolve(game, card, controller, targets=None, item=None):
-    """Damnation: destroy all creatures. They can't be regenerated
-    (no regeneration mechanic modeled in this engine, so no-op) —
-    still subject to CR 702.12b indestructible like any destroy
-    effect (bug fix: the pre-migration handler destroyed unconditionally,
-    with no indestructible check at all)."""
-    _resolve_board_sweep(
-        game, card, controller, targets, item,
-        action="destroy", types=frozenset({"creature"}),
-    )
+# The symmetric "destroy all creatures" sweep (Damnation, Supreme Verdict,
+# Wrath of God, …) is now classified once at DB load into
+# CardTemplate.board_sweep_data (oracle_parser.parse_board_sweep) and
+# dispatched — no oracle inspection at resolve time — through the same shared
+# _resolve_board_sweep in oracle_resolver.resolve_spell_from_oracle's
+# typed-field branch, so these wraths need no per-card registration. Damnation
+# and Supreme Verdict (both byte-identical destroy-all-creatures handlers) are
+# DELETED, verified redundant with the typed path first
+# (tests/test_board_sweep_shared_resolver.py). Conditional/asymmetric sweeps
+# (All Is Dust's color filter, Wrath of the Skies' MV-gated energy wipe) keep
+# their handlers — those carry resolution-time parameters the plain typed
+# field does not. See docs/design/rules-foundation-sweep-tracker.md (Phase 3).
 
 
 @EFFECT_REGISTRY.register("Sheoldred, the Apocalypse", EffectTiming.ETB,
@@ -2527,20 +2527,11 @@ def teferi_t3_etb(game, card, controller, targets=None, item=None):
 # ═══════════════════════════════════════════════════════════════════
 # Supreme Verdict — uncounterable board wipe
 # ═══════════════════════════════════════════════════════════════════
-@EFFECT_REGISTRY.register("Supreme Verdict", EffectTiming.SPELL_RESOLVE,
-                           description="Destroy all creatures (can't be countered)")
-def supreme_verdict_resolve(game, card, controller, targets=None, item=None):
-    """Supreme Verdict: destroy all creatures. "Can't be countered" is
-    a casting-time property, not a resolution-time board-sweep effect
-    — out of this cluster's scope. (Verified: no `is_uncounterable`/
-    "can't be countered" enforcement exists anywhere in engine/ today;
-    Supreme Verdict is castable-and-counterable like any other spell
-    in the current implementation. A real, separate gap — belongs
-    with 1a's counter-tax framework, not this sweep-resolver slice.)"""
-    _resolve_board_sweep(
-        game, card, controller, targets, item,
-        action="destroy", types=frozenset({"creature"}),
-    )
+# Supreme Verdict's "destroy all creatures" is handled by the typed
+# board_sweep_data path (see the Damnation note above); its handler is deleted.
+# "Can't be countered" is a casting-time property, unmodelled in engine/ today
+# either way — a separate gap that belongs with 1a's counter-tax framework,
+# not this sweep slice.
 
 
 # ═══════════════════════════════════════════════════════════════════
