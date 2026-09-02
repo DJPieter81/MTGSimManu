@@ -320,6 +320,25 @@ class CombatManager:
                                is_combat=True)
                     remaining_damage -= damage_to_blocker
 
+                # CR 510.1c: a blocked attacker WITHOUT trample cannot hold
+                # back damage — once every blocker has its lethal, the
+                # excess must still be assigned to a blocker (conventionally
+                # the last). Otherwise a big attacker into a small blocker
+                # under-reports the damage it deals, and lifelink (which
+                # gains life equal to damage dealt) under-gains. Trample
+                # instead sends the excess to the player (handled below), so
+                # this only fires for the non-trample case.
+                if remaining_damage > 0 and not has_trample:
+                    _dump_target = next(
+                        (b for b in (game.get_card_by_id(bid)
+                                     for bid in reversed(assignment.blocker_ids))
+                         if b is not None and b.zone == "battlefield"),
+                        None)
+                    if _dump_target is not None:
+                        deal_damage(attacker, _dump_target, remaining_damage,
+                                   is_combat=True)
+                        remaining_damage = 0
+
                 # CR 509.2: EVERY blocking creature deals its own combat
                 # damage back to the attacker, independent of whether — or
                 # in what order — the attacker assigned damage to it. This
