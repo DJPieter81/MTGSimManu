@@ -1059,6 +1059,15 @@ def classify_activation_effect(effect_text: str):
     if 'becomes a' in low and 'creature until end of turn' in low:
         return K.ANIMATE_SELF_UEOT, 0, 0, 0
 
+    # Adapt N (CR 702.132). Reminder text is already stripped by the
+    # caller, so the body is the bare keyword-action sentence. ANCHORED:
+    # "Adapt 4. This ability costs {1} less ..." is a cost-reduction
+    # rider the cost schema cannot hold, and must stay UNCLASSIFIED rather
+    # than execute at the printed cost.
+    m = re.fullmatch(r'adapt (\d+)', low)
+    if m:
+        return K.ADAPT, int(m.group(1)), 0, 0
+
     # Combat-enabler grant (Hanweir Battlements-shape). ANCHORED to the
     # exact single-target sentence: composite grants ("gets +2/+0 and
     # gains vigilance and haste") and non-targeted grants ("creatures you

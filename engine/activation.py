@@ -99,7 +99,8 @@ class ActivationManager:
                 ActivationEffectKind.TUTOR_CREATURE_TO_BATTLEFIELD,
                 ActivationEffectKind.TUTOR_TO_HAND,
                 ActivationEffectKind.UNTAP_TARGET_PERMANENT,
-                ActivationEffectKind.EXILE_FROM_GRAVEYARD):
+                ActivationEffectKind.EXILE_FROM_GRAVEYARD,
+                ActivationEffectKind.ADAPT):
             return False
 
         # 9b-gy. A graveyard-exile line whose shape did not parse is

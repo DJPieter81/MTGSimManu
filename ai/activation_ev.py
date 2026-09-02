@@ -445,6 +445,28 @@ def activation_candidates(game, player_idx, snap, excluded=None):
                     continue
                 reason = (f"activate: +{ability.power_mod}/"
                           f"+{ability.toughness_mod} improves the race")
+            elif kind is _K.ADAPT:
+                # A PERMANENT +N/+N (CR 702.132), unlike PUMP_SELF_UEOT:
+                # the counters stay, so `position_value`'s board terms
+                # read the gain correctly and no race gate is needed. The
+                # no-counters condition is a resolution condition the
+                # engine does not refuse on; an adapted creature would pay
+                # for a no-op, so it is simply not a candidate. The
+                # projected delta is the printed N — no magnitude of our
+                # own.
+                from engine.cards import COUNTER_KIND_PLUS as _PLUS
+                if perm.counter_count(_PLUS) > 0:
+                    continue
+                if not perm.effective_is_creature:
+                    continue
+                updates["my_power"] = (
+                    updates.get("my_power", snap.my_power) + ability.amount)
+                updates["my_toughness"] = (
+                    updates.get("my_toughness", snap.my_toughness)
+                    + ability.amount)
+                after = snap.fast_replace(**updates)
+                reason = (f"activate: adapt {ability.amount} — permanent "
+                          f"+{ability.amount}/+{ability.amount}")
             elif kind is _K.GRANT_HASTE_TARGET:
                 # Pre-combat only, same MAIN1 justification as land
                 # animation and pump: the grant's whole value is converting

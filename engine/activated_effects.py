@@ -424,6 +424,31 @@ def resolve_activated_ability(game: "GameState", source: "CardInstance",
             return _resolve_graveyard_exile(game, source, controller,
                                             ability, targets)
 
+        if kind is ActivationEffectKind.ADAPT:
+            # CR 702.132a — "If this creature has no +1/+1 counters on it,
+            # put N +1/+1 counters on it." The condition is checked on
+            # RESOLUTION: an activation on an already-adapted creature was
+            # legal, its cost is spent, and it does nothing here. A source
+            # that left the battlefield has nothing to receive counters.
+            from .cards import COUNTER_KIND_PLUS
+            if source.zone != "battlefield":
+                return False
+            if source.counter_count(COUNTER_KIND_PLUS) > 0:
+                game.log.append(
+                    f"T{game.display_turn} P{controller+1}: {source.name} "
+                    f"adapt {ability.amount} — already has +1/+1 counters, "
+                    f"nothing happens")
+                return False
+            # The ONE place adapt writes counters: the instance counter
+            # funnel, so P/T moves and a counters-placed trigger hook
+            # routes here in a single edit.
+            source.adjust_counters(COUNTER_KIND_PLUS, ability.amount)
+            game.log.append(
+                f"T{game.display_turn} P{controller+1}: {source.name} "
+                f"adapt {ability.amount} — puts {ability.amount} +1/+1 "
+                f"counter(s) on it (now {source.power}/{source.toughness})")
+            return True
+
         # ANIMATE_SELF_UEOT is owned by `parse_land_animation` / `animate_land`
         # and must never be double-executed here; it reaches this branch only
         # if the enumerator's skip was bypassed.

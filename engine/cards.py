@@ -159,6 +159,17 @@ class ActivationEffectKind(Enum):
     # only the 'cards' scope declares card targets. Every exile is a zone
     # change and routes through the zone funnel.
     EXILE_FROM_GRAVEYARD = "exile_from_graveyard"
+    # "[Cost]: Adapt N." (CR 702.132) — if this creature has no +1/+1
+    # counters on it, put N +1/+1 counters on it. 23 Modern cards carry
+    # the activated form (Basking Broodscale, Growth-Chamber Guardian,
+    # Incubation Druid, Zegana, ...). `amount` is N. The no-counters test
+    # is a RESOLUTION condition (702.132a), not a legality one: activating
+    # on an already-adapted creature is legal and resolves as a no-op —
+    # declining that is the AI's judgment. Counters land on the instance's
+    # own `plus_counters` through `adjust_counters`, the same funnel the
+    # counter-cost payer uses, so P/T moves and any later
+    # counters-placed trigger routing has a single place to hook.
+    ADAPT = "adapt"
     UNCLASSIFIED = "unclassified"
 
 
