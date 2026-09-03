@@ -207,6 +207,17 @@ class ContinuousEffectsManager:
                     for card in player.battlefield:
                         if effect.affected(game, card):
                             effect.apply(game, card)
+            elif effect.affected is not None and effect.apply is None:
+                # A continuous/static effect that SELECTS cards but carries no
+                # ``apply`` callable silently modifies nothing — the static-
+                # application path has exhausted its known handlers for this
+                # source and would otherwise no-op invisibly. Make it observable
+                # (parallel to the spell/etb/activated silent-miss sinks). Every
+                # factory-built effect pairs affected+apply, so a real card never
+                # reaches here; a future registration that forgets the executor
+                # turns the guardrail red instead of mis-playing in silence.
+                from .effect_diagnostics import record_unhandled_effect
+                record_unhandled_effect(effect.source_name, "static")
 
     def _derive_static_effects(self, game: "GameState") -> List[ContinuousEffect]:
         """Build the continuous effects that permanents currently on the

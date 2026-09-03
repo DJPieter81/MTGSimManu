@@ -100,6 +100,25 @@ class ZoneManager:
         dest_list = self._get_zone_list(game, owner, actual_to)
         dest_list.append(card)
 
+        # ── Replacement-effect resolution path (CR 614) ─────────────
+        # "If a card would be put into a graveyard, exile it instead"
+        # (Rest in Peace / Leyline of the Void / Anafenza family) is a
+        # continuous REPLACEMENT the engine does not model — the card
+        # reaches the graveyard here regardless. When such a static is on
+        # the battlefield as a card enters a graveyard, the replacement
+        # that should have fired silently did nothing; record the
+        # unmodeled static (typed-field gate, no oracle re-parse) so a new
+        # card in this family turns the guardrail red. Behaviour is
+        # unchanged — this only observes the miss.
+        if actual_to == "graveyard":
+            for _p in game.players:
+                for _perm in _p.battlefield:
+                    if getattr(_perm.template,
+                               "exiles_cards_bound_for_graveyard", False):
+                        from .effect_diagnostics import record_unhandled_effect
+                        record_unhandled_effect(_perm.template.name,
+                                                "replacement")
+
         # ── Handle entering battlefield ─────────────────────────────
         if actual_to == "battlefield":
             if controller_override is not None:

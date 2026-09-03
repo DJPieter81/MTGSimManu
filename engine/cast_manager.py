@@ -939,6 +939,14 @@ class CastManager:
             return False
         parsed = CastManager._parse_suspend_clause(template)
         if parsed is None:
+            # The card carries the SUSPEND keyword (it HAS the alternative-cast
+            # mechanic) but the engine's alt-cast enumeration cannot parse its
+            # Suspend clause — a suspend-only card left in this state is
+            # silently uncastable. Record the miss (parallel to the spell/etb/
+            # activated sinks) so a new card whose clause we can't read turns
+            # the guardrail red instead of sitting dead in hand.
+            from .effect_diagnostics import record_unhandled_effect
+            record_unhandled_effect(template.name, "alt_cast")
             return False
         _, cost = parsed
 

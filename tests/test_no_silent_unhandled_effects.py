@@ -104,6 +104,17 @@ ALLOWED_UNHANDLED: set[tuple[str, str]] = {
     # cast in this deterministic sweep. Tracked in
     # docs/design/rules-foundation-sweep-tracker.md.
     ("Practiced Offense", "spell"),
+    # ── Replacement path (newly observable as of the diagnostic's
+    #    coverage of ZoneManager.move_card) ──────────────────────────
+    # "If a card would be put into a(n opponent's) graveyard, exile it
+    # instead" — the Rest in Peace / Leyline of the Void continuous
+    # REPLACEMENT family. The engine models the sideboard ADVICE value of
+    # these statics (ai/discard_advisor) but not the graveyard-exile
+    # replacement itself: graveyard-bound cards still reach the graveyard.
+    # Grandfathered here (make-it-visible-then-declare) until a generic
+    # graveyard-exile replacement mechanic lands.
+    ("Dauthi Voidwalker", "replacement"),
+    ("Sanctifier en-Vec", "replacement"),
 }
 
 
