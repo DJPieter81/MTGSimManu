@@ -2162,3 +2162,31 @@ forms, so two real card-name gates were invisible. Audited both:
   distinguishing feature (a cascade/suspend-cast mass-reanimation payoff) needs
   a purpose-built predicate + WR validation — a tracked follow-up, not a safe
   drop-in. Left as-is rather than risk a reanimation-archetype WR regression.
+
+## Oracle-runtime-parse ratchet: false-negative confirmed, but 14× bigger than estimated (2026-09-02)
+
+The max-effort audit flagged `tools/check_oracle_runtime_parse.py` as a false
+negative: it reports total=0, but its detector is a regex keyed to 6 whitelisted
+variable-name prefixes, so any oracle-text variable under another name (e.g.
+`o = (card.template.oracle_text or '').lower()` in ai/ev_evaluator.py) evades it.
+The audit estimated ~17 evading sites (the ones duplicating typed fields).
+
+An AST data-flow detector (taint any local bound from `.oracle_text`/`.oracle`,
+then count membership / `.count/.find/index` / `re.*` on it, per function scope)
+was written and validated — it correctly finds the evading sites and skips the
+parse-once modules. It reveals the true count is **238** (180 excluding the
+sanctioned resolve-time oracle-fallback layer: oracle_resolver.py / triggers.py /
+spell_resolution.py). Concentrated in ai/ev_player.py (49), ai/ev_evaluator.py
+(33), engine/game_runner.py (21). The audit's "~17" was a 10-14× under-count.
+
+DECISION DEFERRED (not shipped): re-baselining 0 -> 238 is not a mechanical
+widen. Two real questions must be settled first: (1) scope — is the oracle-driven
+RESOLUTION layer (oracle_resolver/triggers/spell_resolution) the sanctioned
+oracle-reader counterpart to oracle_parser (exempt), or in-scope debt to shrink?
+(2) the number is coupled to the typed-field migration — each typed-field cluster
+(burn/sweep/removal/impulse this session) removes oracle inspections, so the
+ratchet would track migration progress rather than gate a fixed contract. The
+original regex ratchet (weak but not broken) is left in place at 0/0; the AST
+detector is proven and can be dropped in once the scope/baseline call is made.
+The old-ratchet-reports-0 is a known false negative, documented here so it is not
+mistaken for a clean surface.
