@@ -166,8 +166,8 @@
       "deck1": "Broodscale Bloodchief",
       "deck2": "Creatures Toolbox",
       "seed": 52500,
-      "winner": "Creatures Toolbox",
-      "turns": 11
+      "winner": "Broodscale Bloodchief",
+      "turns": 10
     },
     {
       "deck1": "Grixis Reanimator",
@@ -181,7 +181,7 @@
       "deck2": "Eldrazi Ramp",
       "seed": 53500,
       "winner": "Hollow One",
-      "turns": 8
+      "turns": 11
     },
     {
       "deck1": "Broodscale Bloodchief",

@@ -4833,6 +4833,18 @@ def parse_library_dig(oracle: str) -> Optional[Dict]:
     else:
         return None
 
+    # Refuse a dig that ALSO carries a resolution rider the dig resolver does
+    # not execute — create a token, deal damage, gain life, sacrifice/destroy/
+    # exile. "Refuse rather than half-execute" (CLAUDE.md): a half-handled
+    # Malevolent Rumble would dig but silently drop its 0/1 Eldrazi Spawn body,
+    # so it falls through to the token-creation path instead. The pure
+    # "look/reveal top N, take to hand, rest to bottom/graveyard" shape
+    # (Ancient Stirrings, Consult the Star Charts, …) carries none of these.
+    _DIG_RIDER_TOKENS = ('create', 'token', ' deals ', ' damage', 'sacrifice',
+                         'destroy ', 'exile ', 'gain ', 'each opponent')
+    if any(t in lo for t in _DIG_RIDER_TOKENS):
+        return None
+
     m = _DIG_START_RE.search(lo)
     if m is None:
         return None

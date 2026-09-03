@@ -42,11 +42,13 @@ ALLOWED_UNHANDLED: set[tuple[str, str]] = {
     #    `CardTemplate.library_dig_data` (oracle_parser.parse_library_dig)
     #    and `oracle_resolver._resolve_library_dig`, which moves cards
     #    through the zone funnel (no on-draw watchers — CR 121.1c).
-    #    Consult the Star Charts, Malevolent Rumble and Ancient Stirrings
-    #    join that class; Wrenn's Resolve (exile-and-play "impulse draw")
-    #    is handled separately by the Tag.IMPULSE_DRAW branch.
-    #    (Malevolent Rumble's 0/1 Eldrazi Spawn token is a minor unmodeled
-    #    rider — the primary card-selection effect fires.)
+    #    Consult the Star Charts and Ancient Stirrings join that class;
+    #    Wrenn's Resolve (exile-and-play "impulse draw") is handled by the
+    #    Tag.IMPULSE_DRAW branch. Malevolent Rumble carries a create-token
+    #    rider the dig resolver does not execute, so parse_library_dig REFUSES
+    #    it ("refuse rather than half-execute") — it falls through to the
+    #    token-creation path, which makes its 0/1 Eldrazi Spawn (the dig half
+    #    stays unmodeled, but the card is not a silent no-op: the token fires).
     # "Each player draws 3, then discards 3 at random" — symmetric
     # wheel/hellbent effect, not modeled by any handler/oracle branch:
     # the spell resolves without drawing/discarding for either player.

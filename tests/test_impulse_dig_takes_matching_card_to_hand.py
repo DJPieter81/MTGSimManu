@@ -98,12 +98,15 @@ def _cast(game: GameState, name: str, controller: int,
 
 
 def test_impulse_dig_takes_matching_card_to_hand_without_firing_draw_watchers():
-    """A permanent-predicate dig (Malevolent Rumble shape) keeps a
-    permanent card from the top N and fires ZERO on-draw watchers.
+    """A permanent-predicate dig (graveyard-rest shape) keeps a permanent
+    card from the top N and fires ZERO on-draw watchers.
 
     With two Bowmasters opposing, treating the dig as a draw would deal
     damage per moved card. The dig moves cards through the zone funnel,
-    so the caster's life is unchanged.
+    so the caster's life is unchanged. (A pure dig — no create-token /
+    damage rider — since parse_library_dig refuses a dig that carries a
+    rider it does not execute; Malevolent Rumble's real oracle, with its
+    Eldrazi Spawn token, is deliberately routed to token creation instead.)
     """
     game = _fresh_game()
     caster, opp = 0, 1
@@ -119,11 +122,10 @@ def test_impulse_dig_takes_matching_card_to_hand_without_firing_draw_watchers():
     game.players[caster].library[:] = [creature] + fillers
 
     spell = _cast(
-        game, "Malevolent Rumble", caster,
+        game, "Synthetic Permanent Dig", caster,
         "Reveal the top four cards of your library. You may put a permanent "
         "card from among them into your hand. Put the rest into your "
-        "graveyard. Create a 0/1 colorless Eldrazi Spawn creature token with "
-        "\"Sacrifice this token: Add {C}.\"")
+        "graveyard.")
 
     life_before = game.players[caster].life
     hand_names_before = {c.name for c in game.players[caster].hand}
