@@ -2179,14 +2179,20 @@ sanctioned resolve-time oracle-fallback layer: oracle_resolver.py / triggers.py 
 spell_resolution.py). Concentrated in ai/ev_player.py (49), ai/ev_evaluator.py
 (33), engine/game_runner.py (21). The audit's "~17" was a 10-14× under-count.
 
-DECISION DEFERRED (not shipped): re-baselining 0 -> 238 is not a mechanical
-widen. Two real questions must be settled first: (1) scope — is the oracle-driven
-RESOLUTION layer (oracle_resolver/triggers/spell_resolution) the sanctioned
-oracle-reader counterpart to oracle_parser (exempt), or in-scope debt to shrink?
-(2) the number is coupled to the typed-field migration — each typed-field cluster
-(burn/sweep/removal/impulse this session) removes oracle inspections, so the
-ratchet would track migration progress rather than gate a fixed contract. The
-original regex ratchet (weak but not broken) is left in place at 0/0; the AST
-detector is proven and can be dropped in once the scope/baseline call is made.
-The old-ratchet-reports-0 is a known false negative, documented here so it is not
-mistaken for a clean surface.
+SHIPPED (2026-09-03): the AST detector replaced the regex one, baseline
+0 -> 180. Scope decision made: the RESOLUTION-fallback layer
+(oracle_resolver.py / triggers.py / spell_resolution.py) is the sanctioned
+resolve-time oracle-reading counterpart to the parse-once layer (oracle_parser /
+card_database / target_solver / ai/card_features), so those three are EXCLUDED
+alongside the parse-once modules. The ratchet now polices oracle inspection
+LEAKING into scoring / decision / bookkeeping code — the audit's real concern.
+The 180 remaining sites are concentrated in ai/ev_player.py (49) and
+ai/ev_evaluator.py (33). It is shrink-only: a new inspection fails CI (build a
+typed CardTemplate field), and a typed-field migration lowers the baseline via
+`--update` in the same commit — so the number tracks migration progress. Unit
+tests pin the new detection power (a non-whitelisted variable name and `not in`,
+which the old regex missed). The false-negative 0 is retired.
+
+Follow-up (tracked, not urgent): the 180 is a backlog to migrate to typed
+fields incrementally — each `parse_*` + typed-field cluster removes some. No
+single sweep; opportunistic as scoring code is touched.

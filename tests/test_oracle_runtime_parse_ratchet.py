@@ -72,6 +72,62 @@ def test_oracle_runtime_parse_ratchet():
         )
 
 
+def _detector():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("_crop", str(SCRIPT))
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def _count_source(src: str) -> int:
+    import os
+    import tempfile
+    from pathlib import Path as _P
+    mod = _detector()
+    with tempfile.NamedTemporaryFile("w", suffix=".py", delete=False) as f:
+        f.write(src)
+        p = f.name
+    try:
+        return len(mod._count_violations(_P(p)))
+    finally:
+        os.unlink(p)
+
+
+def test_ast_detector_catches_oracle_under_any_variable_name():
+    """The whole point of the AST rewrite: an oracle-text variable named
+    anything (not just the old regex's 6 whitelisted prefixes) is caught, and
+    both `in` and `not in` forms count. The bare binding is NOT a violation;
+    a same-named non-oracle variable is NOT a violation."""
+    m = _detector()
+    # Non-whitelisted name `o`, bound from .oracle_text, then `in` tested.
+    assert _count_source(
+        "def f(c):\n"
+        "    o = (c.template.oracle_text or '').lower()\n"
+        "    return 'flying' in o\n") == 1
+    # `not in` form is caught too.
+    assert _count_source(
+        "def f(c):\n"
+        "    zo = c.template.oracle_text.lower()\n"
+        "    return 'draw' not in zo\n") == 1
+    # A parameter named `oracle` is tainted by convention.
+    assert _count_source(
+        "def f(oracle):\n"
+        "    return oracle.count('enters')\n") == 1
+    # A non-oracle variable of a similar name is NOT flagged.
+    assert _count_source(
+        "def f(c):\n"
+        "    name = c.name.lower()\n"
+        "    return 'bolt' in name\n") == 0
+    # A bare binding with no substring/regex test is NOT a violation.
+    assert _count_source(
+        "def f(c):\n"
+        "    o = c.template.oracle_text\n"
+        "    return len(o)\n") == 0
+    assert "engine/oracle_resolver.py" in m._EXCLUDED, (
+        "the resolution-fallback layer must be excluded")
+
+
 def test_oracle_runtime_parse_stale_high_baseline_fails():
     """Ratchet must fail when baseline > actual count (improvement made but not claimed).
 

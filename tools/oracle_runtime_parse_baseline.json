@@ -1,1 +1,4 @@
-{"total": 0, "description": "oracle-text substring checks outside oracle_parser.py — baseline must equal actual count; both regressions (total > baseline) and stale baselines (total < baseline) fail CI"}
+{
+  "total": 180,
+  "description": "runtime oracle-text inspections in scoring / AI / bookkeeping code (AST data-flow detector; the parse-once and resolution-fallback layers are excluded \u2014 see check_oracle_runtime_parse.py). May only shrink: a new inspection fails CI (build a typed CardTemplate field), a typed-field migration lowers this in the same commit."
+}
