@@ -1596,7 +1596,11 @@ def _resolve_nonland_permanent_removal(
 
 
 def _fatal_push_mv_max(game, card, controller, item):
-    has_revolt = game.players[controller].creatures_died_this_turn > 0
+    # CR 702.139 revolt: "a permanent left the battlefield under your control
+    # this turn". Read the broad per-turn funnel tally, not the narrower
+    # creature-death signal — a fetchland crack, a sacrifice, a bounce, or a
+    # blink turns revolt on just as a creature death does.
+    has_revolt = game.players[controller].permanents_left_battlefield_this_turn > 0
     return _FATAL_PUSH_REVOLT_MV if has_revolt else _FATAL_PUSH_BASE_MV
 
 

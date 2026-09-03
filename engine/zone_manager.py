@@ -84,6 +84,13 @@ class ZoneManager:
 
         # ── Clean up state when leaving battlefield ─────────────────
         if from_zone == "battlefield":
+            # CR 702.139 revolt: "a permanent left the battlefield under your
+            # control this turn". This is the ONE funnel every battlefield
+            # departure passes through — fetch cracks, sacrifice, bounce,
+            # exile, creature deaths — so the per-turn revolt tally advances
+            # here exactly once and no caller counts per card. Credit the
+            # permanent's controller (control, not ownership: CR 108.4).
+            game.players[card.controller].permanents_left_battlefield_this_turn += 1
             self._cleanup_leaving_battlefield(card)
 
         # ── Per-turn discard accounting (CR 701.8a) ─────────────────

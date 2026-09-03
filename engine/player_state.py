@@ -43,6 +43,13 @@ class PlayerState:
     spells_cast_this_turn: int = 0
     nonartifact_spells_cast_this_turn: int = 0
     creatures_died_this_turn: int = 0
+    # CR 702.139 revolt: "a permanent left the battlefield under your control
+    # this turn". Broader than creatures_died_this_turn — a fetchland crack,
+    # a sacrifice, a bounce, an exile, a blink, or a creature death all
+    # satisfy it. Incremented exactly once at the zone funnel
+    # (ZoneManager.move_card) whenever a permanent leaves its controller's
+    # battlefield to any zone, so no caller counts per card.
+    permanents_left_battlefield_this_turn: int = 0
     life_gained_this_turn: int = 0
     life_lost_this_turn: int = 0   # CR 702.131 spectacle condition tracker
     damage_dealt_this_turn: int = 0
@@ -310,6 +317,7 @@ class PlayerState:
         self.spells_cast_this_turn = 0
         self.nonartifact_spells_cast_this_turn = 0
         self.creatures_died_this_turn = 0
+        self.permanents_left_battlefield_this_turn = 0
         self.life_gained_this_turn = 0
         self.life_lost_this_turn = 0
         self.damage_dealt_this_turn = 0

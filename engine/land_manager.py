@@ -178,12 +178,13 @@ class LandManager:
                 return
             player.life -= profile.life_cost
 
-        # Sacrifice the fetchland (triggers revolt)
+        # Sacrifice the fetchland (triggers revolt). The battlefield -> graveyard
+        # move funnels through ZoneManager.move_card, which advances the
+        # controller's permanents_left_battlefield_this_turn (CR 702.139 revolt)
+        # exactly once — so no per-fetch counter bump is needed here, and a land
+        # crack is correctly NOT miscounted as a creature death.
         game.zone_mgr.move_card(game, fetch_card, "battlefield", "graveyard",
                                 cause="fetchland sacrifice")
-        # Track that a permanent left the battlefield (for revolt)
-        player.creatures_died_this_turn = max(
-            player.creatures_died_this_turn, 1)
 
         # ── Hand-aware fetch target selection via callbacks ──
         # `profile.count` is the printed number of land cards one
