@@ -1103,6 +1103,16 @@ class CardTemplate:
     # Same, for the back face of a transforming planeswalker DFC.  Set by
     # CardDatabase after `back_face_oracle` / `back_face_loyalty` land.
     back_face_loyalty_abilities: Optional[Dict[str, "LoyaltyAbility"]] = None
+    # -- Impulse / library-dig (CR 120 card selection) ---------------------
+    # Structured data for the "look at / reveal the top N cards, take a
+    # predicate-matching card to your hand, put the rest on the bottom / into
+    # your graveyard" family (Ancient Stirrings, Malevolent Rumble, Consult
+    # the Star Charts, …).  None when the card is not in the class.  Distinct
+    # from the exile-and-play "impulse draw" shape (Tag.IMPULSE_DRAW).  The
+    # resolver moves cards through the zone funnel, never game.draw_cards, so
+    # on-draw watchers do not fire (CR 121.1c).
+    # Populated by oracle_parser.parse_library_dig.
+    library_dig_data: Optional[dict] = None
 
     def __post_init__(self) -> None:
         # Derive fields from oracle text for templates not loaded through
@@ -1287,6 +1297,11 @@ class CardTemplate:
                 from .oracle_parser import parse_land_destruction as _pld
                 self.land_destruction_data = _pld(self.oracle_text)
                 self.destroys_target_land = self.land_destruction_data is not None
+            # Impulse / library-dig (CR 120): derive for synthetic templates;
+            # CardDatabase sets this explicitly for DB-loaded cards.
+            if self.library_dig_data is None:
+                from .oracle_parser import parse_library_dig as _pldig
+                self.library_dig_data = _pldig(self.oracle_text)
 
     @property
     def is_creature(self) -> bool:

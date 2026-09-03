@@ -2071,6 +2071,10 @@ class CardDatabase:
         # dispatched through the shared nonland-permanent-removal resolver.
         from .oracle_parser import parse_targeted_removal
         template.targeted_removal_data = parse_targeted_removal(oracle)
+        # Impulse / library-dig (CR 120 card selection) — parse-once typed
+        # classification consumed by oracle_resolver._resolve_library_dig.
+        from .oracle_parser import parse_library_dig
+        template.library_dig_data = parse_library_dig(oracle)
 
         return template
 

@@ -954,6 +954,97 @@ def _resolve_mass_mode_clause(game, card, controller: int, clause: str) -> bool:
     return False
 
 
+# Card-type values (CardType.value) that make a card a permanent.
+_DIG_PERMANENT_TYPE_VALUES = {
+    'creature', 'artifact', 'enchantment', 'land', 'planeswalker', 'battle',
+}
+
+
+def _dig_predicate_matches(template, kind: str, types: list) -> bool:
+    """True when a library card satisfies a library-dig take-predicate.
+
+    ``kind``/``types`` come verbatim from the parse-once
+    ``library_dig_data`` — no oracle inspection here.
+    """
+    if kind == 'any':
+        return True
+    if kind == 'colorless':
+        # MTGJSON `colors` empty ⇒ colorless (Eldrazi, artifacts, lands).
+        return not template.colors
+    if kind == 'permanent':
+        return any(ct.value in _DIG_PERMANENT_TYPE_VALUES
+                   for ct in template.card_types)
+    if kind == 'historic':
+        from .cards import Supertype
+        if any(ct.value == 'artifact' for ct in template.card_types):
+            return True
+        if Supertype.LEGENDARY in template.supertypes:
+            return True
+        return any(str(st).lower() == 'saga' for st in template.subtypes)
+    if kind == 'types':
+        return any(ct.value in types for ct in template.card_types)
+    return False
+
+
+def _resolve_library_dig(game: "GameState", card: "CardInstance",
+                         controller: int) -> bool:
+    """Resolve an impulse / library-dig spell (CR 120 card selection).
+
+    Looks at the top N cards, moves the best predicate-matching card(s) to
+    hand and the remaining looked-at cards to their declared destination
+    (bottom of library / graveyard).  All moves go through the zone funnel
+    (``game.zone_mgr.move_card``) — NEVER ``game.draw_cards`` — so on-draw
+    watchers (Orcish Bowmasters / Sheoldred) do not fire (CR 121.1c).
+
+    "Best" is a deterministic engine-rational pick (highest mana value among
+    the matches); the strategic choice of which card to keep is not modeled
+    beyond that, consistent with the other resolve-time selection branches.
+    """
+    data = card.template.library_dig_data
+    player = game.players[controller]
+
+    if data['n_dynamic'] == 'lands_controlled':
+        n = sum(1 for c in player.battlefield if c.template.is_land)
+    else:
+        n = data['n_seen']
+    if n <= 0:
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: "
+            f"{card.name} → library-dig sees 0 cards")
+        return True
+
+    seen = list(player.library[:n])  # index 0 == top of library
+    if not seen:
+        return True
+
+    kind = data['predicate_kind']
+    types = data['predicate_types']
+    matches = [c for c in seen
+               if _dig_predicate_matches(c.template, kind, types)]
+    # Highest mana value first — deterministic rational pick.
+    matches.sort(key=lambda c: (c.template.cmc or 0), reverse=True)
+    if data['take_all_matching']:
+        taken = matches
+    else:
+        taken = matches[:data['count_taken']]
+
+    for c in taken:
+        game.zone_mgr.move_card(game, c, "library", "hand",
+                                cause=f"{card.name} library-dig")
+    # The remaining looked-at cards go to the declared destination.
+    rest_dest = "graveyard" if data['rest_destination'] == 'graveyard' \
+        else "library"
+    for c in seen:
+        if c in taken:
+            continue
+        game.zone_mgr.move_card(game, c, "library", rest_dest,
+                                cause=f"{card.name} library-dig rest")
+
+    took = ", ".join(c.name for c in taken) if taken else "nothing"
+    game.log.append(
+        f"T{game.display_turn} P{controller+1}: {card.name} → "
+        f"library-dig {n} (took {took}; rest to {data['rest_destination']})")
+    return True
 def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
                                controller: int, targets: list = None,
                                *, x_value: int = 0,
@@ -1190,6 +1281,15 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
             mv_max_fn=_mv_fn,
             log_verb='exiles' if _exile else 'destroys')
         return True
+
+    # ── Impulse / library-dig (CR 120 card selection) — typed-field gate,
+    #    no oracle inspection at resolve time.  Classification data comes
+    #    from oracle_parser.parse_library_dig at DB load.  Placed before the
+    #    card-draw branch so a dig routes through the zone funnel (no on-draw
+    #    watchers — CR 121.1c) instead of the has_look_hand_selection→draw
+    #    approximation.
+    if getattr(card.template, 'library_dig_data', None):
+        return _resolve_library_dig(game, card, controller)
 
     # ── "Target opponent reveals their hand. You choose a nonland card
     #     and that player discards it." (Thoughtseize, Inquisition) ──

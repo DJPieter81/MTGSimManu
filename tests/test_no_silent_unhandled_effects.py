@@ -35,23 +35,18 @@ ALLOWED_UNHANDLED: set[tuple[str, str]] = {
     # Cascade itself (the payoff) is handled by the engine cascade mechanic;
     # only Demonic Dread's minor "target creature gets -3/-0" rider is unmodeled.
     ("Demonic Dread", "spell"),
-    # "Look at the top X cards, put one into your hand" — card-selection /
-    # impulse-style advantage not modeled by the legacy parser.
-    ("Consult the Star Charts", "spell"),
-    # "Exile the top two cards; you may play them" — impulse draw not modeled
-    # for this specific card by any handler/oracle branch.
-    ("Wrenn's Resolve", "spell"),
-    # "Reveal top 4, may take a permanent to hand, mill the rest, make a
-    # mana token" — same impulse/library-dig class as the two entries
-    # above, not modeled by any handler/oracle branch. Newly registered
-    # in Amulet Titan's Aug 2026 decklist refresh (PR #486); tracked here
-    # rather than rushing a fresh engine mechanic into a data-only PR.
-    ("Malevolent Rumble", "spell"),
-    # "Look at top 5, may take a colorless card to hand, rest to bottom" —
-    # same impulse/library-dig class as the entries above, not modeled.
-    # Newly registered via Eldrazi Ramp / Broodscale Bloodchief (Aug 2026
-    # meta-gap fill, PR #486).
-    ("Ancient Stirrings", "spell"),
+    # ── Impulse / library-dig (CR 120) — NOW HANDLED, retired from the
+    #    allowlist. The "look at / reveal top N, take a predicate-matching
+    #    card to hand, put the rest on the bottom / into the graveyard" class
+    #    resolves via the parse-once typed field
+    #    `CardTemplate.library_dig_data` (oracle_parser.parse_library_dig)
+    #    and `oracle_resolver._resolve_library_dig`, which moves cards
+    #    through the zone funnel (no on-draw watchers — CR 121.1c).
+    #    Consult the Star Charts, Malevolent Rumble and Ancient Stirrings
+    #    join that class; Wrenn's Resolve (exile-and-play "impulse draw")
+    #    is handled separately by the Tag.IMPULSE_DRAW branch.
+    #    (Malevolent Rumble's 0/1 Eldrazi Spawn token is a minor unmodeled
+    #    rider — the primary card-selection effect fires.)
     # "Each player draws 3, then discards 3 at random" — symmetric
     # wheel/hellbent effect, not modeled by any handler/oracle branch:
     # the spell resolves without drawing/discarding for either player.

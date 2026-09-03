@@ -4767,6 +4767,141 @@ def parse_has_look_hand_selection(oracle: str) -> bool:
     return 'put one of them into your hand' in lo or 'put them into your hand' in lo
 
 
+# ── Impulse / library-dig classification (CR 120 card selection) ──────────
+# The "look at / reveal the top N cards of your library, take one (matching a
+# predicate) to your hand, put the rest on the bottom / into your graveyard"
+# family — Ancient Stirrings, Malevolent Rumble, Consult the Star Charts,
+# Commune with Nature, Grisly Salvage, Adventurous Impulse, … (45 spells in
+# the Modern DB).  This is deliberate card SELECTION, not a literal draw: the
+# resolver moves cards through the zone funnel and must NOT fire on-draw
+# watchers (Orcish Bowmasters / Sheoldred — CR 121.1c).  The exile-and-play
+# "impulse draw" shape ("exile the top N, you may play those cards") is a
+# SEPARATE mechanic already handled by the Tag.IMPULSE_DRAW branch.
+_DIG_WORD_NUM = {'a': 1, 'an': 1, 'one': 1, 'two': 2, 'three': 3, 'four': 4,
+                 'five': 5, 'six': 6, 'seven': 7, 'eight': 8, 'nine': 9,
+                 'ten': 10}
+# Bare card-type words a take-predicate may name (CardType.value strings).
+_DIG_TYPE_WORDS = {'creature', 'land', 'artifact', 'enchantment', 'instant',
+                   'sorcery', 'planeswalker', 'battle'}
+_DIG_START_RE = re.compile(
+    r'(?:look at|reveal) the top (\w+) cards? of your library')
+# The take clause: "(reveal|put) [qualifier] <TYPE PHRASE> card(s)
+# (from among them|into your hand)".  The reveal-top-N clause itself never
+# matches because it is not followed by "from among them"/"into your hand".
+_DIG_TAKE_RE = re.compile(
+    r'(?:reveal|put) '
+    # Longest / most-specific qualifier first — ordered alternation would
+    # otherwise let bare "a" swallow the front of "an" / "any number of".
+    r'(any number of|up to \w+|one of those|one of them|an|a|two)?\s*'
+    r'([a-z/ ]*?)\s*cards?\s*(?:from among them|into your hand)')
+
+
+def parse_library_dig(oracle: str) -> Optional[Dict]:
+    """Classify an impulse / library-dig spell into typed resolver data.
+
+    Returns None when the text is not the "look/reveal top N, take a
+    predicate-matching card to hand, put the rest on the bottom / into the
+    graveyard" shape, OR when its X-count source or take-predicate falls
+    outside what the resolver models (refuse — never half-execute).
+
+    Returned dict fields (read by
+    ``oracle_resolver._resolve_library_dig``):
+
+      n_seen             int  — fixed count of cards looked at (0 if dynamic)
+      n_dynamic          str  — '' or 'lands_controlled' (Consult / Seismic
+                                Sense: X = number of lands you control)
+      predicate_kind     str  — 'any' | 'colorless' | 'permanent' |
+                                'historic' | 'types'
+      predicate_types    list — CardType.value strings when kind == 'types'
+      count_taken        int  — base cards taken to hand (kicker/conditional
+                                riders that raise it are not modeled)
+      take_all_matching  bool — 'any number of <type> cards' — take every match
+      rest_destination   str  — 'bottom' | 'graveyard'
+
+    Stored on CardTemplate as ``library_dig_data``.
+    """
+    if not oracle:
+        return None
+    lo = oracle.lower()
+    # Cheap substring early-out before any regex work (22k-card load).
+    if 'top' not in lo or 'your library' not in lo or 'into your hand' not in lo:
+        return None
+    if 'put the rest on the bottom of your library' in lo:
+        rest = 'bottom'
+    elif 'put the rest into your graveyard' in lo:
+        rest = 'graveyard'
+    else:
+        return None
+
+    m = _DIG_START_RE.search(lo)
+    if m is None:
+        return None
+    tok = m.group(1)
+    n_seen = 0
+    n_dynamic = ''
+    if tok == 'x':
+        # Only the "X = number of lands you control" source is modeled;
+        # other X sources (paid X, devotion, …) are refused.
+        if 'number of lands you control' in lo:
+            n_dynamic = 'lands_controlled'
+        else:
+            return None
+    elif tok.isdigit():
+        n_seen = int(tok)
+    else:
+        n_seen = _DIG_WORD_NUM.get(tok, 0)
+    if n_seen <= 0 and not n_dynamic:
+        return None
+
+    take_m = _DIG_TAKE_RE.search(lo)
+    if take_m is None:
+        return None
+    qual = (take_m.group(1) or '').strip()
+    type_phrase = (take_m.group(2) or '').strip()
+
+    count_taken = 1
+    take_all = False
+    if qual == 'any number of':
+        take_all = True
+    elif qual.startswith('up to '):
+        w = qual[len('up to '):].strip()
+        count_taken = int(w) if w.isdigit() else _DIG_WORD_NUM.get(w, 1)
+    elif qual == 'two':
+        count_taken = 2
+
+    if not type_phrase:
+        predicate_kind = 'any'
+        predicate_types: list = []
+    elif type_phrase == 'colorless':
+        predicate_kind = 'colorless'
+        predicate_types = []
+    elif type_phrase == 'permanent':
+        predicate_kind = 'permanent'
+        predicate_types = []
+    elif type_phrase == 'historic':
+        predicate_kind = 'historic'
+        predicate_types = []
+    else:
+        # Whitespace-bounded separators only — a bare "and"/"or" would
+        # otherwise split inside "land" / "sorcery".
+        words = re.split(r'\s+(?:and/or|and|or)\s+|\s*,\s*', type_phrase)
+        predicate_types = [w for w in words if w in _DIG_TYPE_WORDS]
+        if not predicate_types:
+            # Unrecognised predicate — refuse rather than mis-resolve.
+            return None
+        predicate_kind = 'types'
+
+    return {
+        'n_seen': n_seen,
+        'n_dynamic': n_dynamic,
+        'predicate_kind': predicate_kind,
+        'predicate_types': predicate_types,
+        'count_taken': count_taken,
+        'take_all_matching': take_all,
+        'rest_destination': rest,
+    }
+
+
 def parse_has_cast_spell_draw(oracle: str) -> bool:
     """Return True when oracle draws a card whenever a spell is cast.
 
