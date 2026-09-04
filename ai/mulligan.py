@@ -503,9 +503,22 @@ class MulliganDecider:
             # gate is now `policy.requires_combo_backup`, a per-deck
             # data flag.  Default for archetype="combo" is True; non-combo
             # decks default to False (the gate is skipped).
+            # The backup SHAPE (ritual + cantrip + finisher) is the storm
+            # chain: rituals make the mana, cantrips find the next spell,
+            # a finisher closes.  It is only meaningful for a gameplan
+            # whose declared combo resource zone is "storm"; a graveyard /
+            # mana / undeclared-zone combo deck has no chain to back up,
+            # and applying the rule there shipped good hands back
+            # (creature-combo 3-lander with dork + tutor mulled to 5).
+            # Zone read is the same gameplan primitive `assess_combo` uses.
+            from ai.combo_calc import _find_resource_zone
+            _chain_zone, _chain_target, _ = _find_resource_zone(self.goal_engine)
+            gameplan_has_storm_chain = (_chain_zone == "storm"
+                                        and _chain_target > 0)
             if (gp.always_early
                     and cards_in_hand >= MULLIGAN_STARTING_HAND_SIZE
-                    and self._policy().requires_combo_backup):
+                    and self._policy().requires_combo_backup
+                    and gameplan_has_storm_chain):
                 # Include only IMMEDIATE cost-reducers: the always_early
                 # list (curated per deck — e.g. Ruby Medallion) plus any
                 # non-creature cost_reducer-tagged card in hand.

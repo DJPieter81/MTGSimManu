@@ -2322,3 +2322,33 @@ pinned the fabricated default and was replaced. Replay after: 6 tutor casts
 in the match (0 before), Craterhoof line closes G2 on T6. WR anchor: one
 turn-only drift (Broodscale Bloodchief vs Creatures Toolbox s52500, 10 → 9,
 winner unchanged) refreshed. All 7 ratchets at baseline.
+
+## Storm-chain mulligan backup rule applied to every combo deck (2026-09-04)
+
+Second layer of the Creatures Toolbox outlier (after the combo-hold fix
+above, the field only moved 10.4% → 18.3%), found via
+`--bo3 "Creatures Toolbox" "Dimir Midrange" -s 50000`: G2 mulliganed a 3-land
+7 with Devoted Druid, Fiend Artisan, Green Sun's Zenith and Leyline down to 5
+with reason "no cost reducer and no ritual+cantrip+finisher backup".
+
+That keep rule in `ai/mulligan.py` fires whenever a combo-archetype gameplan
+declares `always_early` and none of those cards is in hand, and then demands
+the STORM chain shape (ritual + cantrip + finisher) as backup. The shape is
+storm's: rituals make the mana, cantrips find the next spell, a storm finisher
+closes. A graveyard / mana / undeclared-zone combo deck has no such chain, so
+the rule shipped good hands back. Blast radius — every non-storm combo
+gameplan with an `always_early` list: Amulet Titan (22.7%), Creatures Toolbox,
+Goryo's Vengeance, Hollow One (25.4%), Instant Reanimator.
+
+Fix: the gate now also requires the gameplan to declare a "storm" combo
+resource zone (`_find_resource_zone` — the same primitive `assess_combo`
+reads). `requires_combo_backup` (the per-deck policy flag) is unchanged;
+it still gates the rule, but the rule only has a shape to test against a
+storm chain. Failing-test-first
+(`tests/test_mulligan_chain_backup_shape_is_zone_derived.py`): the replay
+hand is kept under a non-storm combo gameplan; a Ruby Storm 7 with draw +
+two finishers and no ritual is still rejected with the same reason.
+Replay after: G2 keeps the 7 and survives to T11 (was T7). Field n=5:
+Creatures Toolbox 18.3% → 23.3%. WR anchor: three turn-only drifts (winners
+unchanged; Creatures Toolbox ×2, Hollow One) refreshed. All 7 ratchets at
+baseline.
