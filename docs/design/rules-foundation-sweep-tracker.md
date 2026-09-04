@@ -2352,3 +2352,19 @@ Replay after: G2 keeps the 7 and survives to T11 (was T7). Field n=5:
 Creatures Toolbox 18.3% → 23.3%. WR anchor: three turn-only drifts (winners
 unchanged; Creatures Toolbox ×2, Hollow One) refreshed. All 7 ratchets at
 baseline.
+
+### Residual after both layers (tracked, not patched)
+
+Post-fix replay `--bo3 "Creatures Toolbox" "Dimir Midrange" -s 50000`: G1 is
+lost from 20 life on T6 with no decision error left to point at — the deck
+spends T3–T5 on Eternal Witness (only fetchlands in the yard), a second
+Leyline and Tyvar while Frog + Bowmasters + Subtlety race, and its only
+untapped blocker dies to Drown in the Loch. The deck's actual kill (Devoted
+Druid + Vizier of Remedies → unbounded mana → Walking Ballista) is not
+modelled: the engine has no counter-placement replacement class ("if a
+-1/-1 counter would be put on…, instead …"). That is a mechanic build
+(Vizier, Solemnity, Melira, Hex Parasite shells), not a Toolbox patch — it
+is the next root cause for this deck and is left here rather than opened
+as a third diagnostic. Amulet Titan (22.7% → 19.2% at n=5, within noise)
+shares the mulligan fix but not the residual; its own replay root cause is
+still owed.
