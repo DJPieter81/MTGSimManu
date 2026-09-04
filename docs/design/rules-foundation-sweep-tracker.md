@@ -2459,7 +2459,17 @@ generic gap, not a Toolbox rule):
    `value` carries `noncombat_opportunity_cost` so its trade-down and
    board-presence terms see an engine half as the loss it is. The
    racing/desperate "send everything" branch applies the same gate.
-6. *Cast feasibility saw the engine's units but not its colours.* With the
+6. *An untapped-land life payment must buy the spell it enables.* Once
+   life was priced honestly the bare pay/skip delta always read as a loss
+   (a turn-two sweeper went uncast behind a tapped shock — anchor pin
+   Pinnacle Affinity vs 4/5c Control s50000). `decide_optional_cost`
+   now offers a pay-variant per MARGINAL spell (cheapest-first packing
+   over `spells_enabled_by_one_more`, colours checked per scenario),
+   projected through the cast projection. The sentinel-CLIFF half of the
+   clock fix was also built, A/B-measured (Creatures Toolbox 17.5% ->
+   11.7%, Jeskai Blink 30.8% -> 27.5%, n=5 same seeds) and reverted;
+   recorded as an addendum on the 2026-08-30 falsified diagnostic.
+7. *Cast feasibility saw the engine's units but not its colours.* With the
    loop live (`mana=85` in the trace) Craterhoof {5}{G}{G}{G} was not even
    a candidate: `_mana_source_units` (the colour-pip feasibility builder)
    lacked the engine. It now appends the engine's printed units per

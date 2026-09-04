@@ -146,3 +146,22 @@ removal SHOULD project negative for this deck; with the inversion confirmed
 as the source of that belief, the fixture's expectation is itself suspect
 and is the obvious next thread — but the measurement above says pulling it
 will not, by itself, move the win rate.
+
+
+## Addendum (2026-09-04): the halves, measured separately
+
+The sign half alone shipped (the losing branch as the mirror of the winning
+one, `-CAP / opp_clock`), because it was the direct blocker for deploying a
+zero-power mana creature (Creatures Toolbox engine work, PR #569). The
+sentinel-cliff half was then built on top (one saturating form
+`CAP/min(clock, NO_CLOCK)` per side) and A/B-measured at n=5 field, same
+seeds, on a quiet box:
+
+| deck | sign half only | sign + cliff |
+|---|---|---|
+| Creatures Toolbox | 17.5 | 11.7 |
+| Jeskai Blink | 30.8 | 27.5 |
+
+The cliff half repeats the combined fix's finding — a win-rate cost and no
+benefit — so it is reverted; the sign half stays. Do not re-run the cliff
+half as a standalone lever either.
