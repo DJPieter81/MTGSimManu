@@ -4445,6 +4445,45 @@ def parse_equip_keyword_grant(oracle: str) -> "frozenset":
     return frozenset(granted)
 
 
+def parse_team_keyword_grant(oracle: str):
+    """Parse a STATIC team keyword anthem ("Creatures you control have
+    trample", "Other creatures you control have vigilance").
+
+    Returns ``{'keywords': frozenset(Keyword.value strings), 'others_only':
+    bool}`` or None when the card has no such static. Only UNCONDITIONAL grants
+    are matched — a conditional ("as long as", "if", a colour word) is skipped,
+    so a colour-conditional anthem (Scion of Draco) keeps its bespoke handler
+    and is never double-granted. The one-shot "gain <kw> until end of turn"
+    pump form (Craterhoof Behemoth) is a DIFFERENT shape and is not matched
+    here. ~600 Modern permanents grant a keyword to your team this way
+    (Kaheera, Momo, Shang-Chi, Tyvar, the lord/anthem cycle, …); every such
+    grant was a silent no-op.
+    """
+    if not oracle or 'you control' not in oracle.lower():
+        return None
+    lo = strip_reminder_text(oracle).lower()
+    keywords = set()
+    others_only = False
+    for sentence in re.split(r'[.\n]', lo):
+        m = re.search(
+            r'\b(other )?(?:creatures?|each creature) you control '
+            r'(?:have|has|gain|gains)\b', sentence)
+        if not m:
+            continue
+        if 'as long as' in sentence or ' if ' in sentence:
+            continue  # conditional — not modelled; keep any bespoke handler
+        if 'until end of turn' in sentence:
+            continue  # one-shot pump, not a static anthem — different shape
+        for kw in _EQUIP_GRANTABLE_KEYWORDS:
+            if re.search(r'\b' + re.escape(kw) + r'\b', sentence):
+                keywords.add(kw.replace(' ', '_'))
+                if m.group(1):  # "other creatures you control"
+                    others_only = True
+    if not keywords:
+        return None
+    return {'keywords': frozenset(keywords), 'others_only': others_only}
+
+
 def parse_has_x_counter_scaling(oracle: str) -> bool:
     """Return True when oracle grants X +1/+1 counters based on mana paid.
 

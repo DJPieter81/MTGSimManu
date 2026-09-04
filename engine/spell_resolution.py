@@ -359,6 +359,38 @@ class ResolutionManager:
                 f"+1/+1 counter(s) (modular)"
             )
 
+        # Static team keyword anthem ("Creatures you control have trample"):
+        # register a continuous lord effect granting the parsed keywords to the
+        # controller's creatures (CR 611). Typed-field gated
+        # (parse_team_keyword_grant), no card names. The continuous-effects
+        # manager re-derives it each recalculate() (so later-entering creatures
+        # are covered) and retracts it when the source leaves the battlefield.
+        # Colour-conditional anthems (Scion of Draco) parse to None and keep
+        # their bespoke handler.
+        _tkg = getattr(template, 'team_keyword_grant', None)
+        if _tkg and _tkg.get('keywords'):
+            from .cards import Keyword as _KW, _KEYWORD_BY_VALUE
+            from .continuous_effects import create_lord_effect
+            _kws = {_KEYWORD_BY_VALUE[v] for v in _tkg['keywords']
+                    if v in _KEYWORD_BY_VALUE}
+            _others = _tkg.get('others_only', False)
+            _src_id = card.instance_id
+
+            def _team_affected(g, c, _ctl=controller, _sid=_src_id,
+                               _oth=_others):
+                if not (c.controller == _ctl and c.template.is_creature):
+                    return False
+                return not (_oth and c.instance_id == _sid)
+
+            for effect in create_lord_effect(
+                    source_id=_src_id, source_name=template.name,
+                    affected_fn=_team_affected, power_bonus=0, toughness_bonus=0,
+                    keyword_grants=_kws,
+                    description="grants " + ", ".join(sorted(k.value for k in _kws))
+                                + " to your creatures"):
+                game.continuous_effects.register(effect)
+            game.continuous_effects.recalculate(game)
+
         # Energy production on ETB (from oracle-derived template property)
         if template.energy_production > 0:
             game.players[controller].add_energy(template.energy_production)

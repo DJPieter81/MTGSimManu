@@ -896,6 +896,12 @@ class CardTemplate:
     # empty for non-granting equipment. Populated by parse_equip_keyword_grant,
     # applied in CardInstance.keywords. ~200 Modern Equipment; was a no-op.
     equip_keyword_grant: frozenset = field(default_factory=frozenset)
+    # Static team keyword anthem: {'keywords': frozenset(Keyword.value),
+    # 'others_only': bool} or None. "Creatures you control have trample". ~600
+    # Modern permanents; registered as a continuous lord effect on ETB
+    # (spell_resolution._handle_permanent_etb). Populated by
+    # oracle_parser.parse_team_keyword_grant. Was a silent no-op.
+    team_keyword_grant: Optional[dict] = None
     # "target creature gets +N/+M until end of turn [and gains <kw>]"
     # combat trick — parsed once (parse_pump_spell). 0/0/"" = not one.
     pump_spell_power: int = 0

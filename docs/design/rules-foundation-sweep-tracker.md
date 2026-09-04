@@ -2257,3 +2257,31 @@ closes a turn faster; Affinity vs Domain Zoo flips to Affinity as its
 Skateboard (haste) + Shadowspear (trample+lifelink), tutored via Urza's Saga,
 finally function. Anchor refreshed to the corrected outcomes. All 7 ratchets at
 baseline.
+
+## Static team keyword anthem (CR 611) (2026-09-03)
+
+"Creatures you control have trample/vigilance/…" statically granted no keyword —
+only Scion of Draco's colour-conditional grant had a bespoke handler; the
+unconditional class (~121 Modern permanents: Archetype of Aggression, Archetype
+of Imagination, the anthem cycle, …) was a silent no-op, so a creature next to
+such an anthem never gained the keyword.
+
+Built generically on the existing continuous-effects machinery (which already
+supports keyword lord effects — Scion proves it): `parse_team_keyword_grant` ->
+typed field `CardTemplate.team_keyword_grant` ({keywords, others_only} | None;
+121 cards, no card names), registered as a `create_lord_effect` on ETB in the
+generic `spell_resolution._handle_permanent_etb` hook (alongside modular /
+aura-attach). The manager re-derives it each recalculate() (later-entering
+creatures are covered) and retracts it when the source leaves. Unconditional
+grants only — a colour/type condition ("if it's green", "that's a Cat") or the
+one-shot "gain <kw> until end of turn" pump (Craterhoof, already handled via
+team_pump_data) is deliberately NOT matched here.
+
+Scope note: an initial keyword-word scan suggested 5 registered-deck hits, but
+they were false positives — Kaheera's grant is type-restricted, Momo's is a
+trigger, Shang-Chi/Tyvar's is "activate abilities as though they had haste"
+(not combat haste). The stricter parser correctly excludes all four, so this
+class has NO current registered-deck impact — it is pool-level correctness (a
+whole class the engine now models), like the equipment keyword grant's DB tail.
+WR anchor unchanged (29/29). Failing-test-first (tests/test_team_keyword_anthem.py,
+8), all 7 ratchets at baseline.

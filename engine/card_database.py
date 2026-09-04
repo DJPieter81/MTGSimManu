@@ -1998,6 +1998,8 @@ class CardDatabase:
         template.equip_toughness_grant = _eqt
         from .oracle_parser import parse_equip_keyword_grant
         template.equip_keyword_grant = parse_equip_keyword_grant(oracle)
+        from .oracle_parser import parse_team_keyword_grant
+        template.team_keyword_grant = parse_team_keyword_grant(oracle)
         template.has_x_counter_scaling = parse_has_x_counter_scaling(oracle)
         template.has_lifegain_equal_power = parse_has_lifegain_equal_power(oracle)
         template.has_lifegain_effect = parse_has_lifegain_effect(oracle)
