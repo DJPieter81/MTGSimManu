@@ -783,31 +783,25 @@ def position_value(snap: "EVSnapshot") -> float:
         snap.opp_evasion_power, snap.my_toughness
     )
 
-    # Clock differential: positive = I'm winning the race
-    clock_diff = opp_clock - my_clock
-
-    # Normalize clock diff to prevent extreme values when one clock is NO_CLOCK
-    if my_clock >= NO_CLOCK and opp_clock >= NO_CLOCK:
-        clock_diff = 0.0  # neither player has a clock — stalled
-    elif my_clock >= NO_CLOCK:
-        # I have no clock, opponent does → I'm losing; worse as opp gets
-        # faster. Mirror of the winning branch below: saturating in the
-        # opponent's turns-to-lethal, so a SLOWER opposing clock (a blocker
-        # deployed, a threat removed) is never a worse position than a
-        # faster one. The prior `-opp_clock` was the inverse of this
-        # comment (a 50-turn clock scored -50, a 1-turn clock -1); it
-        # priced every defensive play on a creatureless board as a
-        # downgrade and projected a zero-power mana creature at -34.
-        # docs/diagnostics/2026-08-30_clock_sign_inversion_fix_falsified.md
-        # confirms the defect and falsifies only the prediction that
-        # repairing it (together with the sentinel cliff) lifts
-        # creature-light control; this is the sign half alone.
-        clock_diff = -CLOCK_LETHAL_ADVANTAGE_CAP / opp_clock
-    elif opp_clock >= NO_CLOCK:
-        # Opponent has no clock, I do → I'm winning; better as I get faster.
-        # Invert: lower my_clock = bigger advantage. CLOCK_LETHAL_ADVANTAGE_CAP
-        # caps the differential near Modern starting life when I have lethal.
-        clock_diff = CLOCK_LETHAL_ADVANTAGE_CAP / my_clock
+    # Clock differential: positive = I'm winning the race.
+    #
+    # One saturating form for every case: each side's clock is converted
+    # to PRESSURE, CLOCK_LETHAL_ADVANTAGE_CAP / turns-to-lethal, with the
+    # NO_CLOCK sentinel as the floor (99 turns -> ~0.2 pressure). Sign-
+    # preserving by construction (1/a > 1/b <=> b > a), continuous at the
+    # sentinel, and it reuses the constant the winning branch always
+    # applied. The four-branch predecessor had two defects, both pinned
+    # by tests/test_position_value_no_clock_sign.py: the losing branch
+    # scored `-opp_clock` (a SLOWER opponent read as worse — every
+    # defensive play on a creatureless board priced as a downgrade), and
+    # the finite branch was unbounded below while the sentinel branch was
+    # bounded, so acquiring a real-but-slow clock scored far worse than
+    # having none (a 2/1 deployed into a 6-turn opposing clock read as a
+    # loss). docs/diagnostics/2026-08-30_clock_sign_inversion_fix_falsified.md
+    # confirms both defects and falsifies only the prediction that this
+    # lifts creature-light control; no such claim is attached here.
+    clock_diff = (CLOCK_LETHAL_ADVANTAGE_CAP / min(my_clock, NO_CLOCK)
+                  - CLOCK_LETHAL_ADVANTAGE_CAP / min(opp_clock, NO_CLOCK))
 
     # Resource advantage: cards and mana as future clock changes
     card_diff = snap.my_hand_size - snap.opp_hand_size

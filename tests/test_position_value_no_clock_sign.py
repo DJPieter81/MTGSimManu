@@ -54,3 +54,22 @@ def test_losing_branch_is_the_mirror_of_the_winning_branch():
     theirs = _snap(my_power=0, opp_power=4, my_creature_count=0,
                    opp_creature_count=1)
     assert position_value(mine) == pytest.approx(-position_value(theirs))
+
+
+def test_acquiring_a_slow_clock_never_scores_below_having_none():
+    """The sentinel cliff: a real-but-slow clock must not score worse than
+    no clock at all against the same opposing clock."""
+    none = _snap(my_power=0, opp_power=3)
+    slow = _snap(my_power=2, opp_power=3, my_creature_count=1)
+    assert position_value(slow) >= position_value(none)
+
+
+def test_position_is_continuous_across_the_no_clock_sentinel():
+    """Just under the sentinel and at the sentinel must be a hair apart,
+    not tens of points."""
+    from ai.clock import combat_clock, NO_CLOCK
+    # combat_clock saturates to NO_CLOCK only at zero power; the smallest
+    # real clock the model produces is one power into twenty life.
+    tiny = _snap(my_power=1, opp_power=3, my_creature_count=1)
+    none = _snap(my_power=0, opp_power=3)
+    assert abs(position_value(tiny) - position_value(none)) < 5.0

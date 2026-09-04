@@ -173,7 +173,66 @@ class AICallbacks(GameCallbacks):
             name=f"skip:{opt.name}", apply=_skip,
             source="optional_cost",
         )
-        return best_choice(game, player_idx, archetype, [pay, skip]) is pay
+        choices = [pay, skip]
+        # What an ETB-untapped payment BUYS is the spell it enables THIS
+        # turn. The bare snapshot delta (life down, one more untapped mana)
+        # cannot see that: `position_value`'s mana term is a surplus over
+        # the opponent's, not "can I cast my two-drop now", so once life is
+        # priced honestly the payment always looked like a loss and a
+        # turn-two sweeper went uncast behind a tapped shock. Offer one
+        # extra pay-variant per spell in hand that is castable only with
+        # the extra mana of this land's colours — the mana planner's own
+        # `spells_enabled_by_one_more` — projected through the same spell
+        # projection every cast is scored with. Generic: any "pay to enter
+        # untapped" land, any deck.
+        player = game.players[player_idx]
+        # Minimal test stubs carry no hand; the enablement branch needs a
+        # real player (same tolerance the stagger gate shows for
+        # `turn_number` above).
+        if (opt.cost.kind == "life" and opt.effect.kind == "etb_untapped"
+                and hasattr(player, "hand")
+                and hasattr(player, "effective_cmc_overrides")):
+            from ai.mana_planner import analyze_mana_needs
+            from ai.ev_evaluator import _project_spell
+            needs = analyze_mana_needs(
+                game, player_idx, player.effective_cmc_overrides)
+            land_colors = set(opt.effect.colors or ())
+            reachable = needs.existing_colors | land_colors
+            # The MARGINAL spell: what fits this turn with one more mana
+            # that did not fit without it. Cheapest-first packing over the
+            # hand's castable-colour spells — two one-drops on three mana
+            # are both castable, but the payment is what lets a third one
+            # be cast, so "castable without paying" is a property of the
+            # turn's budget, not of a single spell's cost.
+            candidates = sorted(
+                ((cmc, spell, spell_colors) for spell, spell_colors, _i, cmc
+                 in needs.spells_enabled_by_one_more),
+                key=lambda t: t[0])
+
+            def _fits(budget, colours):
+                out, spent = [], 0
+                for cmc, spell, spell_colors in candidates:
+                    if spell_colors <= colours and spent + cmc <= budget:
+                        out.append(spell)
+                        spent += cmc
+                return out
+
+            # Without the payment: this turn's untapped colours only.
+            without = {id(sp) for sp in _fits(needs.total_mana,
+                                              needs.existing_colors)}
+            for spell in _fits(needs.total_mana + 1, reachable):
+                if id(spell) in without:
+                    continue
+
+                def _pay_then_cast(s, _spell=spell, _apply=opt.apply_to_snap):
+                    s = _apply(s)
+                    return _project_spell(_spell, s, None, game, player_idx)
+
+                choices.append(Choice(
+                    name=f"{opt.name} -> cast {spell.name}",
+                    apply=_pay_then_cast, source="optional_cost"))
+        best = best_choice(game, player_idx, archetype, choices)
+        return best is not None and best is not skip
 
     def choose_fetch_target(self, game, player_idx, fetch_card, library, fetch_colors):
         player = game.players[player_idx]
