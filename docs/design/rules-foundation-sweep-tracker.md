@@ -2484,5 +2484,24 @@ Failing-test-first: `tests/test_counter_placement_replacement.py` (12),
 `tests/test_block_prices_blocker_noncombat_value.py` (5). All 7 ratchets at
 baseline (the new typed field populates 14 cards, well above the narrow
 threshold). Replay after: the CR 726 shortcut fires from T5 ("loops Devoted
-Druid ×2"), Vizier is tutored on sight of a Druid, and the engine halves are
-neither chumped nor sacrificed while a fresh body is available.
+Druid ×8 — cast Craterhoof Behemoth"), Vizier is tutored on sight of a
+Druid, and the engine halves are neither chumped nor sacrificed while a
+fresh body is available; the seed-50000 match vs Boros goes 2-0 (was 0-2).
+
+WR anchor: 12 drifts, 5 winner flips, each replayed through the anchor's
+exact harness (`run_meta._run_game`, deadline neutralised, verbose) in the
+pre-change worktree and the final tree and diffed at the first divergence.
+All five stem from pricing life honestly (the sign half): 4/5c Control at 11
+life facing five power plays its shock tapped and survives at 1 instead of
+dying (s50500); Hollow One pays two life to deploy a two-drop and attacks
+(s53500); Boros Ponza keeps two life, dashes instead of hard-casting, and
+wins (s51000); Azorius bounces with Teferi instead of a four-mana Wrath in
+the mirror (s50000); 4/5c takes a five-permanent Wrath on T3 over a
+three-permanent one on T2 and loses that single game (s50000) — a
+defensible choice, not a defect. Refreshed.
+
+Field at n=5 (same seeds, quiet box): Creatures Toolbox 17.5% (matrix
+baseline 10.4%), Jeskai Blink 30.8% (baseline 30.2%). The deck is still
+out of band: with Vizier a one-of, the engine assembles in a minority of
+games; the next lever is a fair one (a second Druid untapper / the Soul
+Cauldron line), tracked, not patched.
