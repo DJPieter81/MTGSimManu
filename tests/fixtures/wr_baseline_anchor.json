@@ -75,8 +75,8 @@
       "deck1": "Affinity",
       "deck2": "Domain Zoo",
       "seed": 50500,
-      "winner": "Domain Zoo",
-      "turns": 7
+      "winner": "Affinity",
+      "turns": 8
     },
     {
       "deck1": "Eldrazi Tron",
@@ -104,7 +104,7 @@
       "deck2": "Dimir Midrange",
       "seed": 50500,
       "winner": "Izzet Prowess",
-      "turns": 11
+      "turns": 10
     },
     {
       "deck1": "4/5c Control",

@@ -2230,3 +2230,30 @@ in any deck, now resolves correctly. All 7 ratchets at baseline.
 Deferred-cast family follow-ups (same primitive): hideaway, emerge, and bestow's
 graveyard cast; a full unification of warp/suspend/plot into one
 deferred-cast-from-exile primitive is the tracked next step.
+
+## Equipment keyword-grant rider (CR 301.5c / 613) (2026-09-03)
+
+Equipment could grant P/T but not KEYWORDS — "Equipped creature has trample and
+haste" was a silent no-op for ~172 DB Equipment (Shadowspear, Cori-Steel Cutter,
+Lavaspur Boots, Skateboard, the Sword cycle, …), so an equipped creature never
+gained trample/haste/lifelink/etc. Haste changes attack legality; lifelink/
+trample change combat maths — a real robustness gap in every equipment deck.
+
+Built as a generic class, mirroring the existing equip P/T-grant machinery:
+`oracle_parser.parse_equip_keyword_grant` → typed field
+`CardTemplate.equip_keyword_grant` (frozenset of Keyword.value strings; 172
+cards, no card names), applied in `CardInstance.keywords` via the same
+`equipped_{iid}` instance-tag scan the P/T grant uses (no oracle re-parse). Only
+unconditional grants match — a conditional ("as long as", "if") is skipped so the
+sim never grants a keyword it cannot gate. DamageSource hooks (has_lifelink,
+has_deathtouch) follow automatically since they read off `keywords`.
+
+Failing-test-first: `tests/test_equipment_keyword_grant.py` (8) — parse
+(multi-keyword, alongside-P/T, conditional-skip, no-clause), grant applied,
+haste/trample visible, pure-P/T grants nothing, grant removed on unequip. WR
+anchor drifted 2 pins, both traced by game log solely to keyword-granting
+equipment (opponents run none): Izzet Prowess (Cori-Steel Cutter trample+haste)
+closes a turn faster; Affinity vs Domain Zoo flips to Affinity as its
+Skateboard (haste) + Shadowspear (trample+lifelink), tutored via Urza's Saga,
+finally function. Anchor refreshed to the corrected outcomes. All 7 ratchets at
+baseline.

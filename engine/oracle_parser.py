@@ -4405,6 +4405,46 @@ def parse_equip_pt_grant(oracle: str) -> "tuple[int, int]":
     return int(m.group(1)), int(m.group(2))
 
 
+# Combat-relevant static keywords Equipment commonly grants. Colour-dependent
+# (protection) and count/state keywords (modular, annihilator, …) are excluded
+# — this covers the keywords that change combat/attack legality directly.
+_EQUIP_GRANTABLE_KEYWORDS = (
+    'first strike', 'double strike', 'deathtouch', 'lifelink', 'trample',
+    'haste', 'vigilance', 'reach', 'menace', 'flying', 'hexproof',
+    'indestructible',
+)
+
+
+def parse_equip_keyword_grant(oracle: str) -> "frozenset":
+    """Parse the keywords an Equipment statically grants its equipped creature
+    ("Equipped creature has trample and haste.").
+
+    Returns a frozenset of ``Keyword.value`` strings (e.g. {'trample','haste'}),
+    empty when no keyword is granted. Only UNCONDITIONAL grants in an "equipped
+    creature ... has/gains <kw>" clause are matched — a conditional ("as long
+    as", "if") is skipped so the sim never grants a keyword it cannot gate.
+    ~200 Modern Equipment grant a keyword this way (Shadowspear, Cori-Steel
+    Cutter, Lavaspur Boots, Skateboard, the Sword cycle, …); every such grant
+    was a silent no-op before this.
+    """
+    if not oracle or 'equipped creature' not in oracle.lower():
+        return frozenset()
+    lo = strip_reminder_text(oracle).lower()
+    granted = set()
+    for sentence in re.split(r'[.\n]', lo):
+        if 'equipped creature' not in sentence:
+            continue
+        if not (' has ' in sentence or ' gains ' in sentence
+                or ' have ' in sentence):
+            continue
+        if 'as long as' in sentence or ' if ' in sentence:
+            continue  # conditional grant — not modelled; don't over-grant
+        for kw in _EQUIP_GRANTABLE_KEYWORDS:
+            if re.search(r'\b' + re.escape(kw) + r'\b', sentence):
+                granted.add(kw.replace(' ', '_'))
+    return frozenset(granted)
+
+
 def parse_has_x_counter_scaling(oracle: str) -> bool:
     """Return True when oracle grants X +1/+1 counters based on mana paid.
 

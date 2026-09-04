@@ -62,6 +62,11 @@ class Keyword(Enum):
     MODULAR = "modular"
 
 
+# value -> Keyword, for resolving parsed keyword strings (e.g. equipment
+# keyword grants stored as Keyword.value) back to enum members.
+_KEYWORD_BY_VALUE = {k.value: k for k in Keyword}
+
+
 class AbilityType(Enum):
     ACTIVATED = "activated"
     TRIGGERED = "triggered"
@@ -886,6 +891,11 @@ class CardTemplate:
     # Plating), which is computed separately in _dynamic_base_power/toughness.
     equip_power_grant: int = 0
     equip_toughness_grant: int = 0
+    # Keywords an Equipment statically grants its equipped creature ("Equipped
+    # creature has trample and haste"). A frozenset of Keyword.value strings;
+    # empty for non-granting equipment. Populated by parse_equip_keyword_grant,
+    # applied in CardInstance.keywords. ~200 Modern Equipment; was a no-op.
+    equip_keyword_grant: frozenset = field(default_factory=frozenset)
     # "target creature gets +N/+M until end of turn [and gains <kw>]"
     # combat trick — parsed once (parse_pump_spell). 0/0/"" = not one.
     pump_spell_power: int = 0
@@ -1993,7 +2003,33 @@ class CardInstance:
 
     @property
     def keywords(self) -> Set[Keyword]:
-        return self.template.keywords | self.temp_keywords | self.cem_keywords
+        return (self.template.keywords | self.temp_keywords | self.cem_keywords
+                | self._equip_granted_keywords())
+
+    def _equip_granted_keywords(self) -> Set[Keyword]:
+        """Keywords granted by Equipment attached to this creature ("Equipped
+        creature has trample and haste"). Reads the equipment's typed
+        equip_keyword_grant (parsed once at load) via the same equipped_{iid}
+        instance-tag scan the equip P/T grant uses — no oracle re-parse."""
+        granted: Set[Keyword] = set()
+        if self._game_state is None:
+            return granted
+        for tag in self.instance_tags:
+            if not tag.startswith("equipped_"):
+                continue
+            try:
+                equip_iid = int(tag[len("equipped_"):])
+            except ValueError:
+                continue
+            equip_perm = self._game_state.get_card_by_id(equip_iid)
+            if equip_perm is None:
+                continue
+            for kw_val in getattr(equip_perm.template, 'equip_keyword_grant',
+                                  frozenset()):
+                kw = _KEYWORD_BY_VALUE.get(kw_val)
+                if kw is not None:
+                    granted.add(kw)
+        return granted
 
     @property
     def colors(self) -> Set[Color]:
