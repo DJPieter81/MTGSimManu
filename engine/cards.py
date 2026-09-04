@@ -567,6 +567,10 @@ class CardTemplate:
     dash_cost: Optional[ManaCost] = None  # Full ManaCost preserving colour pips
     # Warp cost (alternative cast from hand for less mana; creature exiles at end of turn)
     warp_cost: Optional[ManaCost] = None
+    # Plot cost (CR 702.170): pay this and exile from hand; cast the card free
+    # as a sorcery on a LATER turn. A deferred-cast-from-exile mechanic in the
+    # warp/suspend family. Populated by oracle_parser.parse_plot_cost.
+    plot_cost: Optional[ManaCost] = None
     # Escape cost (alternative cast from graveyard)
     escape_cost: Optional[ManaCost] = None  # Full ManaCost preserving colour pips
     escape_exile_count: int = 0  # Number of other cards to exile from graveyard
@@ -1130,6 +1134,7 @@ class CardTemplate:
                 (self.self_cost_reduction_amount,
                  self.self_cost_reduction_unit) = _pscr(self.oracle_text)
             from .oracle_parser import (parse_warp_cost as _pwc,
+                                        parse_plot_cost as _ppc,
                                         parse_dash_cost as _pdc,
                                         parse_escape_cost as _pec,
                                         parse_splice_cost as _psc,
@@ -1172,6 +1177,8 @@ class CardTemplate:
             import re as _re
             if self.warp_cost is None:
                 self.warp_cost = _pwc(self.oracle_text)
+            if self.plot_cost is None:
+                self.plot_cost = _ppc(self.oracle_text)
             if self.dash_cost is None:
                 self.dash_cost = _pdc(self.oracle_text)
             if self.escape_cost is None:

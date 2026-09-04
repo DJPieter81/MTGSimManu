@@ -1038,6 +1038,74 @@ class CastManager:
             f"({n} time counter{'s' if n != 1 else ''})")
         return True
 
+    # ── Plot (CR 702.170) — a deferred-cast-from-exile mechanic in the
+    #    warp/suspend family. Pay the plot cost and exile the card from hand;
+    #    cast it for FREE as a sorcery on a LATER turn. Generic (typed-field
+    #    driven, no card names); reuses the proven suspend/rebound free-cast
+    #    path (cast_spell(free_cast=True)) so ETB/storm/cascade wiring applies.
+    @staticmethod
+    def can_plot(game: "GameState", player_idx: int,
+                 card: "CardInstance") -> bool:
+        """Legality of paying a card's plot cost from hand. Sorcery-speed /
+        phase gating is applied by the caller (get_legal_plays / the AI's
+        special-action enumeration), mirroring suspend."""
+        template = card.template
+        if getattr(template, 'plot_cost', None) is None:
+            return False
+        player = game.players[player_idx]
+        if card not in player.hand:
+            return False
+        total_mana = (player.untapped_mana_capacity()
+                      + player.mana_pool.total()
+                      + player._tron_mana_bonus())
+        return (total_mana >= template.plot_cost.cmc
+                and CastManager._can_pay_colored_pips(
+                    game, player_idx, player.untapped_lands, template.plot_cost))
+
+    @staticmethod
+    def plot_card(game: "GameState", player_idx: int,
+                  card: "CardInstance") -> bool:
+        """Pay the plot cost and exile the card from hand (CR 702.170).
+        Returns True on success; on failure returns False without mutating."""
+        if not CastManager.can_plot(game, player_idx, card):
+            return False
+        player = game.players[player_idx]
+        if not game.tap_lands_for_mana(player_idx, card.template.plot_cost,
+                                        card_name=card.template.name):
+            return False
+        # Route the hand -> exile transition through the single zone funnel so
+        # any leave-hand / enter-exile triggers fire (CR 603/614).
+        game.zone_mgr.move_card(game, card, "hand", "exile", cause="Plot")
+        card._plotted = True
+        card._plotted_turn = game.turn_number
+        game.log.append(
+            f"T{game.display_turn} P{player_idx+1}: Plot {card.template.name}")
+        return True
+
+    @staticmethod
+    def can_cast_plotted(game: "GameState", player_idx: int,
+                         card: "CardInstance") -> bool:
+        """A plotted card in exile may be cast (free, as a sorcery) on a turn
+        LATER than the one it was plotted on — never the same turn."""
+        return (card.zone == "exile"
+                and getattr(card, '_plotted', False)
+                and card in game.players[player_idx].exile
+                and game.turn_number > getattr(card, '_plotted_turn', 10**9))
+
+    @staticmethod
+    def cast_plotted(game: "GameState", player_idx: int,
+                     card: "CardInstance", targets=None) -> bool:
+        """Cast a plotted card from exile for free (CR 702.170). Routes through
+        the standard free-cast path so ETB/storm/cascade triggers fire."""
+        if not CastManager.can_cast_plotted(game, player_idx, card):
+            return False
+        # Move exile -> hand through the funnel, then cast from hand for free so
+        # the standard free-cast path (ETB/storm/cascade wiring) applies.
+        game.zone_mgr.move_card(game, card, "exile", "hand", cause="cast plotted")
+        card._plotted = False
+        card._free_cast_opportunity = True
+        return game.cast_spell(player_idx, card, targets=targets, free_cast=True)
+
     @staticmethod
     def tick_suspend_upkeep(game: "GameState", player_idx: int) -> None:
         """Remove one time counter from each suspended card controlled by

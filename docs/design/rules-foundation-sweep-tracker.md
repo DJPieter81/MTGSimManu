@@ -2196,3 +2196,37 @@ which the old regex missed). The false-negative 0 is retired.
 Follow-up (tracked, not urgent): the 180 is a backlog to migrate to typed
 fields incrementally — each `parse_*` + typed-field cluster removes some. No
 single sweep; opportunistic as scoring code is touched.
+
+## Plot mechanic — deferred-cast-from-exile (CR 702.170) (2026-09-03)
+
+A silently-no-op mainboard mechanic (Slickshot Show-Off in Izzet Prowess; 31 DB
+cards) built as a GENERIC class, not a one-card patch — the "what really
+abstracts / makes the simulator more robust" direction: it expands the fraction
+of Modern the engine correctly models. Plot generalizes the warp/suspend
+deferred-cast family: pay the plot cost and exile from hand at sorcery speed,
+then cast for FREE as a sorcery on a LATER turn.
+
+- `oracle_parser.parse_plot_cost` → `CardTemplate.plot_cost` (ManaCost), parsed
+  once at load, mirroring parse_warp_cost. 31 cards — a genuine class (clears the
+  narrow-field threshold), no card names.
+- `CastManager.can_plot` / `plot_card` / `can_cast_plotted` / `cast_plotted`
+  (+ game_state wrappers, game_runner dispatch for the `plot` / `cast_plotted`
+  special actions). Zone moves go through the funnel (`zone_mgr.move_card`); the
+  later cast reuses the proven suspend/rebound free-cast path
+  (`cast_spell(free_cast=True)`), so no change to cast-cost logic and no new raw
+  zone mutations.
+- AI (ev_player): enumerates `cast_plotted` (free, scored as the card's cast EV)
+  and `plot` — the latter gated to cards NOT castable at full cost this turn, so
+  plotting never displaces simply casting now. No new magic numbers (reuses
+  `_score_spell`).
+
+Failing-test-first: `tests/test_plot_mechanic.py` (5) pins parse, exile+pay,
+not-castable-same-turn, and free-cast-on-a-later-turn. WR anchor 29/29 unchanged
+— correctly, since the one registered plot card (Slickshot Show-Off) has plot
+cost = mana cost, so casting now is strictly better and the AI never plots it.
+The value is the generalized engine mechanic + correct AI gating: any plot card,
+in any deck, now resolves correctly. All 7 ratchets at baseline.
+
+Deferred-cast family follow-ups (same primitive): hideaway, emerge, and bestow's
+graveyard cast; a full unification of warp/suspend/plot into one
+deferred-cast-from-exile primitive is the tracked next step.

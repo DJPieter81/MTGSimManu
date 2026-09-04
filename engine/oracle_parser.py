@@ -2794,6 +2794,25 @@ def parse_warp_cost(oracle: str) -> Optional["ManaCost"]:
     return cost if cost.cmc > 0 else None
 
 
+def parse_plot_cost(oracle: str) -> Optional["ManaCost"]:
+    """Parse the Plot cost from oracle text (CR 702.170).
+
+    "Plot {1}{R} (You may pay {1}{R} and exile this card from your hand.
+    Cast it as a sorcery on a later turn without paying its mana cost.
+    Plot only as a sorcery.)" → ManaCost(generic=1, red=1).
+
+    A deferred-cast-from-exile mechanic in the warp/suspend family: parsed
+    once here into ``CardTemplate.plot_cost`` and dispatched generically (the
+    engine has no card-name plot handling). Returns None for a card with no
+    plot clause. Same shape and shared symbol parser as parse_warp_cost.
+    """
+    m = re.search(r'[Pp]lot\s+((?:\{[^}]+\})+)', oracle)
+    if not m:
+        return None
+    cost = _parse_mana_symbols_to_cost(re.findall(r'\{([^}]+)\}', m.group(1)))
+    return cost if cost.cmc > 0 else None
+
+
 def parse_spectacle_cost(oracle: str) -> "Optional[ManaCost]":
     """Parse a Spectacle alternate cost from oracle text (CR 702.131).
 

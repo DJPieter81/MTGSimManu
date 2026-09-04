@@ -492,6 +492,21 @@ class GameState:
         """LE-E2: pay the suspend cost and exile the card with time counters."""
         return CastManager.suspend_card(self, player_idx, card)
 
+    def can_plot(self, player_idx: int, card: CardInstance) -> bool:
+        return CastManager.can_plot(self, player_idx, card)
+
+    def plot_card(self, player_idx: int, card: CardInstance) -> bool:
+        """CR 702.170: pay the plot cost and exile the card from hand."""
+        return CastManager.plot_card(self, player_idx, card)
+
+    def can_cast_plotted(self, player_idx: int, card: CardInstance) -> bool:
+        return CastManager.can_cast_plotted(self, player_idx, card)
+
+    def cast_plotted(self, player_idx: int, card: CardInstance,
+                     targets=None) -> bool:
+        """CR 702.170: cast a plotted card from exile for free on a later turn."""
+        return CastManager.cast_plotted(self, player_idx, card, targets)
+
     def tick_suspend_upkeep(self, player_idx: int) -> None:
         """LE-E2: upkeep hook — decrement one counter on each suspended
         card the player controls; when the last is removed, cast for free."""

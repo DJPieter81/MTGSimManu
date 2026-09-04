@@ -1281,6 +1281,10 @@ class GameRunner:
                 game.activate_cycling(ai.player_idx, card)
             elif action == "suspend":
                 game.suspend_card(ai.player_idx, card)
+            elif action == "plot":
+                game.plot_card(ai.player_idx, card)
+            elif action == "cast_plotted":
+                game.cast_plotted(ai.player_idx, card, targets)
             elif action == "equip":
                 # targets[0] = creature instance_id to equip to
                 if targets:

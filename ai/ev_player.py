@@ -550,6 +550,30 @@ class EVPlayer:
             candidates.append(Play("suspend", card, [], ev,
                                    f"Suspend: {card.name}"))
 
+        # Plot (CR 702.170) — a sorcery-speed special action generalizing the
+        # warp/suspend deferred-cast family. Typed-field driven
+        # (template.plot_cost), no card names. Two plays:
+        #   * cast_plotted: a card plotted on an EARLIER turn is cast for FREE
+        #     now — pure upside, scored as the card's normal cast EV.
+        #   * plot: pay the (usually cheaper) plot cost and bank the card for a
+        #     free cast later. Enumerated ONLY for cards NOT castable at full
+        #     cost this turn, so plotting never displaces simply casting now —
+        #     it converts a card you could not deploy into a free future play.
+        # This enumeration runs in the sorcery-speed main-phase context (same
+        # as suspend/cycling above), so no separate phase gate is needed.
+        for card in list(me.exile):
+            if game.can_cast_plotted(self.player_idx, card):
+                ev = self._score_spell(card, snap, game, me, opp)
+                candidates.append(Play("cast_plotted", card, [], ev,
+                                       f"Cast plotted: {card.name} (free)"))
+        for card in me.hand:
+            if (getattr(card.template, 'plot_cost', None) is not None
+                    and game.can_plot(self.player_idx, card)
+                    and not game.can_cast(self.player_idx, card)):
+                ev = self._score_spell(card, snap, game, me, opp)
+                candidates.append(Play("plot", card, [], ev,
+                                       f"Plot: {card.name}"))
+
         # Score land plays — lands compete with spells for priority
         if lands and me.lands_played_this_turn < (1 + me.extra_land_drops):
             # A fetchland whose printed activation cost includes a life

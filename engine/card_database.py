@@ -1632,6 +1632,12 @@ class CardDatabase:
         if warp is not None:
             template.warp_cost = warp
 
+        # Plot cost (CR 702.170): pay + exile from hand, cast free on a later turn.
+        from .oracle_parser import parse_plot_cost
+        plot = parse_plot_cost(oracle_text)
+        if plot is not None:
+            template.plot_cost = plot
+
         # Modular N (CR 702.43): parse the counter count from "Modular N" in oracle text.
         # The KEYWORD_MAP / word-boundary scan already added Keyword.MODULAR to keywords;
         # this step extracts the integer N so ETB placement and death-trigger transfer
