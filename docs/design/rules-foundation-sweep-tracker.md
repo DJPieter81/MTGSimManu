@@ -2501,7 +2501,9 @@ three-permanent one on T2 and loses that single game (s50000) — a
 defensible choice, not a defect. Refreshed.
 
 Field at n=5 (same seeds, quiet box): Creatures Toolbox 17.5% (matrix
-baseline 10.4%), Jeskai Blink 30.8% (baseline 30.2%). The deck is still
+baseline 10.4%), Jeskai Blink 27.5% at the final code (30.8% before the
+untapped-payment change, 30.2% matrix baseline — inside n=5 noise, no
+regression signal). The deck is still
 out of band: with Vizier a one-of, the engine assembles in a minority of
 games; the next lever is a fair one (a second Druid untapper / the Soul
 Cauldron line), tracked, not patched.
