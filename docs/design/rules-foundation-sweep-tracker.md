@@ -2285,3 +2285,40 @@ class has NO current registered-deck impact — it is pool-level correctness (a
 whole class the engine now models), like the equipment keyword grant's DB tail.
 WR anchor unchanged (29/29). Failing-test-first (tests/test_team_keyword_anthem.py,
 8), all 7 ratchets at baseline.
+
+## Combo hold applied to a resource nobody declared (2026-09-04)
+
+Root cause of the Creatures Toolbox 10.4% outlier (worst deck on the
+2026-09-04 matrix), found via `--bo3 "Creatures Toolbox" "Boros Energy" -s 50000`
++ `--trace`: the deck never cast any of its 8 tutors (Green Sun's Zenith,
+Nature's Rhythm) or Fiend Artisan — every one scored ≈ −46 while the
+projection said −0.1 … +3.9. `card_combo_modifier` was charging
+`−COMBO_NON_READY_POTENTIAL_FALLBACK × combo_value` (≈ −50) to each of them.
+
+Two generic defects, both in `ai/combo_calc.py`:
+
+1. `_find_resource_zone` fabricated `("graveyard", 0, 0)` for any gameplan with
+   no positive `resource_target`. The graveyard assessor then reported
+   `is_ready=False` whenever the payoff was not in hand — a permanent,
+   unsatisfiable "not ready" for a resource nobody declared — so every
+   payoff-role card in hand ate the full non-ready hold penalty. Three
+   registered combo-archetype decks have no FILL_RESOURCE goal and were all
+   in the trap: Creatures Toolbox (10.4%), Hollow One (25.4%; its 5-cmc
+   payoffs never "affordable" against printed cmc), Grixis Reanimator.
+   Fix: return zone `None` → `assess_combo` yields the null assessment →
+   modifier is 0 and the projection scores the cards.
+2. `card_combo_role`'s tag fallback mapped every `tutor`-tagged card to
+   `'payoff'`. A tutor is finisher ACCESS, not the finisher; the
+   TUTOR-AS-FINISHER-ACCESS branch already scores tutors with a real target
+   before any role check, and the module's own trailing comment says tutors
+   are projection-scored. Fallback is now `'dig'` (card selection). Decks
+   whose gameplans declare tutors in roles (Storm's Wish, Amulet's GSZ/Pact)
+   are unaffected — the role cache wins.
+
+Failing-test-first (`tests/test_combo_calc.py`): no-declared-resource → no
+zone; end-to-end null assessment with 0 modifier for a payoff-role card;
+tutor-tag fallback is not `'payoff'`. The old `test_default_when_no_target`
+pinned the fabricated default and was replaced. Replay after: 6 tutor casts
+in the match (0 before), Craterhoof line closes G2 on T6. WR anchor: one
+turn-only drift (Broodscale Bloodchief vs Creatures Toolbox s52500, 10 → 9,
+winner unchanged) refreshed. All 7 ratchets at baseline.

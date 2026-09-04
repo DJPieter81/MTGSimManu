@@ -150,12 +150,38 @@ class TestResourceZoneFinding:
         zone, target, min_cmc = _find_resource_zone(ge)
         assert zone == "mana"
 
-    def test_default_when_no_target(self):
+    def test_no_declared_resource_yields_no_zone(self):
+        """A gameplan that declares no resource requirement has no zone to
+        assess: readiness is undefined, so there is nothing to hold a
+        payoff for.  Fabricating a default zone with target 0 produced a
+        permanent `is_ready=False` (payoff-not-in-hand) that charged every
+        payoff-role card the full non-ready hold penalty."""
         goal = MockGoal(resource_target=0)
         ge = MockGoalEngine(gameplan=MockGameplan(goals=[goal]))
         zone, target, _ = _find_resource_zone(ge)
-        assert zone == "graveyard"
+        assert zone is None
         assert target == 0
+
+    def test_no_declared_resource_gives_null_assessment_and_no_hold(self):
+        """End-to-end: combo deck whose gameplan names payoffs but declares
+        no resource target → assess_combo is the null assessment and the
+        payoff-hold modifier is exactly 0 for a payoff-role card."""
+        goal = MockGoal(resource_target=0,
+                        card_roles={'payoffs': {'Big Payoff'}})
+        ge = MockGoalEngine(gameplan=MockGameplan(goals=[goal]))
+        snap = _make_snap(opp_life=20, my_mana=3)
+        payoff = MockCard(name="Big Payoff", instance_id=1,
+                          template=MockTemplate(name="Big Payoff", cmc=8))
+        me = type('', (), {'spells_cast_this_turn': 0, 'hand': [payoff],
+                           'library': [], 'graveyard': [],
+                           'battlefield': [], 'sideboard': []})()
+        opp = type('', (), {'spells_cast_this_turn': 0, 'hand': [],
+                            'library': [], 'graveyard': [],
+                            'battlefield': []})()
+        game = type('', (), {'players': [me, opp]})()
+        a = assess_combo(game, 0, ge, snap)
+        assert not a.resource_zone  # null assessment: no zone to be ready for
+        assert card_combo_modifier(payoff, a, snap, me, game, 0) == 0.0
 
 
 # ─── Payoff name collection ──────────────────────────────────
@@ -206,6 +232,14 @@ class TestCardComboRole:
         card = MockCard(name="Opt", template=MockTemplate(
             name="Opt", tags={'cantrip'}))
         assert card_combo_role(card, a) == 'dig'
+
+    def test_role_fallback_tutor_tag_is_not_payoff(self):
+        """A tutor is finisher ACCESS, not the finisher: with no gameplan
+        role it must not inherit the payoff hold-until-ready penalty."""
+        a = ComboAssessment()
+        card = MockCard(name="Any Tutor", template=MockTemplate(
+            name="Any Tutor", tags={'tutor'}))
+        assert card_combo_role(card, a) != 'payoff'
 
     def test_role_fallback_cascade_keyword(self):
         from engine.cards import Keyword
