@@ -1010,8 +1010,20 @@ class EVPlayer:
 
         delivered_cmc = target.template.cmc or 0
         per_mana = mana_clock_impact(snap) * CLOCK_IMPACT_LIFE_SCALING
-        ev += (creature_tutor_x_net_value(best_x, delivered_cmc)
-               * mult * per_mana)
+        # Delivered value in mana units: the body's mana value — or, when
+        # the delivered piece completes an unbounded mana engine with the
+        # board (engine-side rules query; CR 726.4 shortcut material),
+        # the engine's shortcut allowance, which is the mana the piece
+        # actually delivers. Same credit the activated-tutor branch of
+        # ai/activation_ev.py applies.
+        from engine.activation import ActivationManager
+        from engine.constants import LOOP_SHORTCUT_MANA
+        engine_bonus = 0
+        if ActivationManager.would_complete_unbounded_engine(
+                game, self.player_idx, target.template):
+            engine_bonus = LOOP_SHORTCUT_MANA - delivered_cmc
+        ev += ((creature_tutor_x_net_value(best_x, delivered_cmc)
+                + engine_bonus) * mult * per_mana)
 
         top_cmc = top.template.cmc or 0
         forfeited_gap = top_cmc - delivered_cmc
@@ -2931,7 +2943,25 @@ class EVPlayer:
             return False
         total_power = sum(c.power for c in valid if (c.power or 0) > 0)
         if total_power >= opp.life:
-            return [c for c in valid if _has_combat_value(c)]
+            # On-board lethal if unblocked: send what is NEEDED. A creature
+            # whose non-combat worth (`ai.clock.noncombat_opportunity_cost`
+            # — mana production, unbounded-engine membership, abilities,
+            # equipment ceiling; life-point units) exceeds the damage it
+            # adds (its power, the same units) stays home when the rest
+            # still reach lethal — the same rule the combat planner's
+            # lethal shortcut applies, so both paths agree.
+            from ai.clock import noncombat_opportunity_cost
+            from ai.ev_evaluator import snapshot_from_game
+            _snap_lethal = snapshot_from_game(game, self.player_idx)
+            kept = [c for c in valid if _has_combat_value(c)]
+            worth = {c.instance_id: noncombat_opportunity_cost(c, me, _snap_lethal)
+                     for c in kept}
+            for c in sorted(kept, key=lambda c: -worth[c.instance_id]):
+                if worth[c.instance_id] > (c.power or 0) and (
+                        sum((k.power or 0) for k in kept) - (c.power or 0)
+                        >= opp.life):
+                    kept.remove(c)
+            return kept
 
         # No blockers = free damage. Always attack into an empty board.
         # Still exclude 0-power non-trigger creatures — tapping them is pure waste.
@@ -3124,7 +3154,19 @@ class EVPlayer:
         # If racing, desperate, or vs combo, send everything even if risky.
         # Still exclude 0-power non-trigger creatures — they add no damage.
         if (is_racing or is_desperate or opp_is_spell_deck) and valid:
-            return [c for c in valid if _has_combat_value(c)]
+            # "Everything" still prices what each body gives up: a creature
+            # whose NON-combat worth (`ai.clock.noncombat_opportunity_cost`
+            # — mana production, unbounded-engine membership, abilities,
+            # equipment ceiling; life-point units) exceeds the damage it
+            # would add (its power, the same units) stays home. A vanilla
+            # body has no such worth and is sent exactly as before.
+            from ai.clock import noncombat_opportunity_cost
+            from ai.ev_evaluator import snapshot_from_game
+            _snap_all_in = snapshot_from_game(game, self.player_idx)
+            return [c for c in valid
+                    if _has_combat_value(c)
+                    and (c.power or 0) >= noncombat_opportunity_cost(
+                        c, me, _snap_all_in)]
 
         return safe if safe else []
 
@@ -3341,6 +3383,18 @@ class EVPlayer:
         my_life_after_block = my_life - damage_through
         opp_power_after_block = opp_power - (a_pow if b_kills_attacker else 0)
         my_power_after_block = my_power - (b_pow if a_kills_blocker else 0)
+        if a_kills_blocker:
+            # What the dead blocker gives up BEYOND its power — mana
+            # production, unbounded-engine membership, activated
+            # abilities, equipment ceiling — priced by the one owner of
+            # that question (`ai.clock.noncombat_opportunity_cost`, value
+            # units at the life-point scale) and charged to the block
+            # post-state as virtual life, which `life_as_resource` already
+            # converts to survival turns. Its power is charged through
+            # `my_power_after_block` above; nothing is counted twice.
+            from ai.clock import noncombat_opportunity_cost
+            my_life_after_block -= noncombat_opportunity_cost(
+                blocker, game.players[self.player_idx], snap)
 
         my_life_after_no_block = my_life - a_pow
         opp_power_after_no_block = opp_power
@@ -3625,15 +3679,18 @@ class EVPlayer:
             a_tough = attacker.toughness or 0
             b_power = best_blocker.power or 0
             if b_power < a_tough and Keyword.DEATHTOUCH not in best_blocker.keywords:
-                for b2 in valid_blockers:
-                    if b2.instance_id in used_set:
-                        continue
-                    if not _flying_ok(attacker, b2):
-                        continue
-                    if b_power + (b2.power or 0) >= a_tough:
-                        blocker_ids.append(b2.instance_id)
-                        used_set.add(b2.instance_id)
-                        break
+                # Among the blockers that complete the kill, spend the one
+                # that gives up least (`ai.clock.opportunity_cost`, the same
+                # ranking coverage uses) — not the first in list order.
+                adequate = [
+                    b2 for b2 in valid_blockers
+                    if b2.instance_id not in used_set
+                    and _flying_ok(attacker, b2)
+                    and b_power + (b2.power or 0) >= a_tough]
+                if adequate:
+                    b2 = min(adequate, key=_cost_fn)
+                    blocker_ids.append(b2.instance_id)
+                    used_set.add(b2.instance_id)
 
         blocks, used = optimize_pass(
             sorted_attackers, valid_blockers, {}, set(),

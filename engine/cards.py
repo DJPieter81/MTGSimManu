@@ -449,6 +449,26 @@ class FetchLandProfile:
     # land." 0 means the fetch prints no such rider.
     untap_target_min_lands: int = 0
 @dataclass(frozen=True)
+class CounterPlacementReplacement:
+    """"If one or more <kind> counters would be put on <scope> you control,
+    <f(that many)> are put on it instead" (CR 614.1c / CR 122) — parsed once
+    by `oracle_parser.parse_counter_placement_replacement` and applied by the
+    ONE counter funnel (`CardInstance.add_plus_counters` / `adjust_counters`).
+
+    `kind` is a canonical counter kind or None for "counters" of any kind.
+    `scope` holds lower-case type / subtype words the recipient must match
+    (any of them); `self_only` scopes the effect to the source itself
+    ("would be put on Mowu"). `op` is 'add' (n may be negative — the
+    "minus one" shape) or 'mul'.
+    """
+    kind: Optional[str]
+    scope: Tuple[str, ...]
+    op: str
+    n: int
+    self_only: bool = False
+
+
+@dataclass(frozen=True)
 class CounterPlacementTrigger:
     """A "whenever one or more +1/+1 counters are put on this <permanent>,
     <effect>" trigger (CR 122 / CR 603.2c).
@@ -1082,6 +1102,13 @@ class CardTemplate:
     # by `CardInstance.add_plus_counters` — the single +1/+1 counter funnel —
     # so no placement path can put counters without the trigger seeing it.
     counter_placement_trigger: Optional["CounterPlacementTrigger"] = None
+    # "If one or more <kind> counters would be put on <scope> you control,
+    # <that many ±1 | twice that many> are put on it instead" (CR 614.1c,
+    # 14 Modern cards). Applied inside the ONE counter funnel
+    # (`CardInstance.add_plus_counters` / `adjust_counters`), so every
+    # placement path (activation costs, put-counter effects, persist,
+    # modular, enters-with-N) sees it without a hook of its own.
+    counter_placement_replacement: Optional["CounterPlacementReplacement"] = None
     # -- Land destruction (spell tranche) -----------------------------------
     # True when the card is a spell-shaped "Destroy target land" effect with
     # only supported riders (see oracle_parser.parse_land_destruction).
@@ -1292,6 +1319,11 @@ class CardTemplate:
             if self.counter_placement_trigger is None:
                 self.counter_placement_trigger = _pcpt(self.oracle_text,
                                                        name=self.name)
+            if self.counter_placement_replacement is None:
+                from .oracle_parser import (
+                    parse_counter_placement_replacement as _pcpr)
+                self.counter_placement_replacement = _pcpr(
+                    self.oracle_text, name=self.name)
             if self.land_type_bonuses is None:
                 from .oracle_parser import parse_land_type_bonuses as _pltb
                 self.land_type_bonuses = _pltb(self.oracle_text)
@@ -1619,8 +1651,11 @@ class CardInstance:
         """
         if n <= 0:
             return
-        self.plus_counters += n
         game = game if game is not None else self._game_state
+        n = self.replaced_counter_amount(COUNTER_KIND_PLUS, n, game)
+        if n <= 0:
+            return
+        self.plus_counters += n
         if (game is None or self.zone != "battlefield"
                 or self.template.counter_placement_trigger is None):
             return
@@ -1640,12 +1675,57 @@ class CardInstance:
         elif kind == COUNTER_KIND_PLUS:
             self.plus_counters = max(0, self.plus_counters + delta)
         elif kind == COUNTER_KIND_MINUS:
+            if delta > 0:
+                delta = self.replaced_counter_amount(kind, delta)
             self.minus_counters = max(0, self.minus_counters + delta)
         elif kind == COUNTER_KIND_LOYALTY:
             self.loyalty_counters = max(0, self.loyalty_counters + delta)
         else:
+            if delta > 0:
+                delta = self.replaced_counter_amount(kind, delta)
             self.other_counters[kind] = max(
                 0, self.other_counters.get(kind, 0) + delta)
+
+    def replaced_counter_amount(self, kind: str, n: int, game=None) -> int:
+        """How many `kind` counters actually land when `n` would be put on
+        this permanent — the counter-placement replacement layer (CR
+        614.1c) of the ONE counter funnel.
+
+        Every `CardTemplate.counter_placement_replacement` controlled by
+        this permanent's controller whose kind and scope match applies
+        exactly once (CR 614.5). CR 616.1 gives the affected object's
+        controller the ordering choice; additive replacements are applied
+        before multiplicative ones, the controller-optimal order for the
+        printed shapes (both "+1" and "×2" grow, "−1" shrinks a kind the
+        controller never wants). Counters put on an object off the
+        battlefield are not modified (CR 122 — no permanents' static
+        abilities apply). Never returns below zero.
+        """
+        if n <= 0:
+            return n
+        game = game if game is not None else self._game_state
+        if game is None or self.zone != "battlefield":
+            return n
+        repls = []
+        for perm in game.players[self.controller].battlefield:
+            r = perm.template.counter_placement_replacement
+            if r is None:
+                continue
+            if r.kind is not None and r.kind != kind:
+                continue
+            if r.self_only:
+                if perm is not self:
+                    continue
+            else:
+                words = {t.value.lower() for t in self.effective_card_types}
+                words |= {st.lower() for st in self.effective_subtypes}
+                words.add("permanent")
+                if not any(w in words for w in r.scope):
+                    continue
+            repls.append(r)
+        for r in sorted(repls, key=lambda r: 0 if r.op == "add" else 1):
+            n = n + r.n if r.op == "add" else n * r.n
+        return max(0, n)
 
     def _get_domain_count(self) -> int:
         """Count basic land types among lands controlled by this card's controller."""

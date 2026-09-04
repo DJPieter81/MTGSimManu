@@ -40,6 +40,15 @@ MAX_STACK_RESOLVES = 100
 # machinery inherits a bound instead of a hang.
 ACTIVATION_MAX_DEPTH = 1
 
+# CR 726.4: a player shortcutting a loop with no decision points proposes a
+# FINITE number of iterations. An unbounded mana engine (a self-untapping
+# mana source whose untap cost is fully replaced away — see
+# `ActivationManager.unbounded_mana_engines`) is credited this many mana in
+# every capacity estimate, and payment executes only the iterations a cost
+# actually needs. Four starting life totals lets any {X}{X} finisher exceed
+# a doubled life total, which is the largest sink a single turn can use.
+LOOP_SHORTCUT_MANA = 4 * STARTING_LIFE
+
 # ── Win conditions ──
 POISON_COUNTER_LETHAL = 10
 MILL_LOSS_THRESHOLD = 0  # Lose when library is empty on draw

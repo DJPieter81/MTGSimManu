@@ -280,14 +280,23 @@ class PlayerState:
         # made this estimate disagree with what the engine could actually pay.
         sources = self.untapped_mana_sources
         # PlayerState holds no game back-reference, but every CardInstance
-        # does — derive it from the sources themselves.
-        game = next((getattr(s, '_game_state', None) for s in sources
+        # does — derive it from the battlefield (a tapped-out board with an
+        # unbounded engine still has a game to ask).
+        game = next((getattr(s, '_game_state', None) for s in self.battlefield
                      if getattr(s, '_game_state', None) is not None), None)
         if game is not None:
             from .mana_payment import ManaPayment
-            idx = sources[0].controller
-            return sum(len(ManaPayment.land_mana_units(game, idx, src))
-                       for src in sources)
+            from .activation import ActivationManager
+            from .constants import LOOP_SHORTCUT_MANA
+            idx = self.battlefield[0].controller
+            total = sum(len(ManaPayment.land_mana_units(game, idx, src))
+                        for src in sources)
+            # An unbounded mana engine (free self-untapping mana source) is
+            # credited the finite CR 726.4 shortcut allowance the payment
+            # path will actually execute, so estimate and payment agree.
+            total += LOOP_SHORTCUT_MANA * len(
+                ActivationManager.unbounded_mana_engines(game, idx))
+            return total
         return sum(src.template.mana_count for src in sources)
 
     def available_mana_colors(self) -> Dict[str, int]:

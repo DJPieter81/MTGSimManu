@@ -156,12 +156,22 @@ def finish_library_search(game: "GameState", controller: int) -> None:
     game._trigger_library_search(controller)
 
 
-def default_tutor_rank(card: "CardInstance") -> Tuple[int, int]:
-    """Engine-default delivery ranking: highest mana value first, P/T
-    tie-break — the same ranking the GSZ resolver and
-    `pick_creature_tutor_x_value` use (several premium targets are 0/0
-    with a characteristic-defining ability)."""
-    return ((card.template.cmc or 0),
+def default_tutor_rank(card: "CardInstance") -> Tuple[int, int, int]:
+    """Engine-default delivery ranking, rules-derived: a candidate that
+    completes an unbounded mana engine with its controller's board (CR
+    726.4 shortcut material — see
+    `ActivationManager.would_complete_unbounded_engine`) ranks first; then
+    highest mana value, P/T tie-break — the same ranking the GSZ resolver
+    and `pick_creature_tutor_x_value` use (several premium targets are 0/0
+    with a characteristic-defining ability). The engine key reads the
+    instance's bound game; an unbound instance ranks on printed values."""
+    game = getattr(card, '_game_state', None)
+    completes = 0
+    if game is not None:
+        from .activation import ActivationManager
+        completes = int(ActivationManager.would_complete_unbounded_engine(
+            game, card.controller, card.template))
+    return (completes, (card.template.cmc or 0),
             (card.template.power or 0) + (card.template.toughness or 0))
 
 

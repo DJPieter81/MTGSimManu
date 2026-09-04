@@ -631,12 +631,35 @@ def opportunity_cost(card: "CardInstance", board: Optional["PlayerState"],
     simply omitted, matching ``creature_threat_value``'s existing
     "no game/controller in scope" fallback.
     """
+    combat, extras = _opportunity_cost_terms(card, board, snap)
+    return combat + extras
+
+
+def noncombat_opportunity_cost(card: "CardInstance",
+                               board: Optional["PlayerState"],
+                               snap: "EVSnapshot") -> float:
+    """The part of `opportunity_cost` that is NOT the creature's own
+    combat clock: activated abilities, equipment ceiling, mana production,
+    unbounded-engine membership. The block scorer charges this as virtual
+    life when a block kills the blocker — its combat contribution is
+    already modelled there through `my_power_after`, so charging the
+    whole opportunity cost would double-count power."""
+    _combat, extras = _opportunity_cost_terms(card, board, snap)
+    return extras
+
+
+def _opportunity_cost_terms(card: "CardInstance",
+                            board: Optional["PlayerState"],
+                            snap: "EVSnapshot"):
+    """(combat_term, non_combat_terms) behind `opportunity_cost` — one
+    computation, two views."""
     if not getattr(card.template, 'is_creature', False):
-        return 0.0
+        return 0.0, 0.0
 
     from ai.scoring_constants import CREATURE_VALUE_OUTER_SCALE
 
-    base = creature_clock_impact_from_card(card, snap) * CREATURE_VALUE_OUTER_SCALE
+    combat = creature_clock_impact_from_card(card, snap) * CREATURE_VALUE_OUTER_SCALE
+    base = 0.0
 
     if _has_activated_ability(card):
         base += card_clock_impact(snap) * CREATURE_VALUE_OUTER_SCALE
@@ -647,7 +670,32 @@ def opportunity_cost(card: "CardInstance", board: Optional["PlayerState"],
         from ai.permanent_threat import _equipment_ceiling_for_creature
         ceiling_lift = _equipment_ceiling_for_creature(card, board, game)
 
-    return base + ceiling_lift
+    # 4. Mana production — a mana source's future is the mana it taps
+    #    for, priced at `mana_clock_impact` per unit (the same per-mana
+    #    rate `position_value` charges for spent mana), in these value
+    #    units. Read from the parse-once mana fields via
+    #    `ai.activation_ev.tap_mana_units`.
+    from ai.activation_ev import tap_mana_units
+    mana_units = tap_mana_units(card)
+    if mana_units > 0:
+        base += mana_units * mana_clock_impact(snap) * CREATURE_VALUE_OUTER_SCALE
+
+    # 5. Unbounded-engine membership — a permanent that is half of a free
+    #    self-untapping mana loop (CR 726.4 shortcut material; engine-side
+    #    rules query, summoning sickness ignored because the loop is live
+    #    from the next untap step) gives up the engine's whole shortcut
+    #    allowance when spent. Membership is either side: the untapper
+    #    itself, or the counter-placement replacement that frees it.
+    if game is not None:
+        from engine.activation import ActivationManager
+        from engine.constants import LOOP_SHORTCUT_MANA
+        lost = ActivationManager.engines_lost_if_removed(
+            game, card.controller, card)
+        if lost:
+            base += (lost * LOOP_SHORTCUT_MANA * mana_clock_impact(snap)
+                     * CREATURE_VALUE_OUTER_SCALE)
+
+    return combat, base + ceiling_lift
 
 
 # ─────────────────────────────────────────────────────────────
@@ -742,8 +790,19 @@ def position_value(snap: "EVSnapshot") -> float:
     if my_clock >= NO_CLOCK and opp_clock >= NO_CLOCK:
         clock_diff = 0.0  # neither player has a clock — stalled
     elif my_clock >= NO_CLOCK:
-        # I have no clock, opponent does → I'm losing; worse as opp gets faster
-        clock_diff = -opp_clock
+        # I have no clock, opponent does → I'm losing; worse as opp gets
+        # faster. Mirror of the winning branch below: saturating in the
+        # opponent's turns-to-lethal, so a SLOWER opposing clock (a blocker
+        # deployed, a threat removed) is never a worse position than a
+        # faster one. The prior `-opp_clock` was the inverse of this
+        # comment (a 50-turn clock scored -50, a 1-turn clock -1); it
+        # priced every defensive play on a creatureless board as a
+        # downgrade and projected a zero-power mana creature at -34.
+        # docs/diagnostics/2026-08-30_clock_sign_inversion_fix_falsified.md
+        # confirms the defect and falsifies only the prediction that
+        # repairing it (together with the sentinel cliff) lifts
+        # creature-light control; this is the sign half alone.
+        clock_diff = -CLOCK_LETHAL_ADVANTAGE_CAP / opp_clock
     elif opp_clock >= NO_CLOCK:
         # Opponent has no clock, I do → I'm winning; better as I get faster.
         # Invert: lower my_clock = bigger advantage. CLOCK_LETHAL_ADVANTAGE_CAP

@@ -249,7 +249,18 @@ class CombatPlanner:
         # Quick lethal check: if total power >= opp life, attack with everything
         total_power = sum(c.power for c in valid_attackers)
         if total_power >= board.opp_life:
-            return valid_attackers, LETHAL_BONUS
+            # On-board lethal if unblocked: send everything that is NEEDED.
+            # A creature worth more than the damage it adds (`value` carries
+            # its non-combat worth in life-point units; power is the same
+            # units) stays home when the rest still reach lethal — an
+            # engine half is not thrown into blockers for two points.
+            committed = sorted(valid_attackers, key=lambda c: c.value)
+            kept = list(committed)
+            for c in sorted(valid_attackers, key=lambda c: -c.value):
+                if c.value > c.power and (
+                        sum(k.power for k in kept) - c.power >= board.opp_life):
+                    kept.remove(c)
+            return kept, LETHAL_BONUS
 
         opp_blockers = [c for c in board.opp_creatures
                         if not c.is_tapped]
@@ -1191,12 +1202,30 @@ def extract_virtual_board(game: "GameState", player_idx: int) -> VirtualBoard:
     me = game.players[player_idx]
     opp = game.players[1 - player_idx]
 
+    from ai.clock import noncombat_opportunity_cost
+    from ai.ev_evaluator import snapshot_from_game
+    _snaps = {}
+
+    def _snap_for(controller_idx):
+        if controller_idx not in _snaps:
+            _snaps[controller_idx] = snapshot_from_game(game, controller_idx)
+        return _snaps[controller_idx]
+
     def to_virtual_creature(card, controller_idx) -> VirtualCreature:
         controller = game.players[controller_idx]
         kw_set = set()
         for kw in card.keywords:
             kw_name = kw.name.lower() if hasattr(kw, 'name') else str(kw).lower()
             kw_set.add(kw_name)
+        # A creature's planning value is its combat heuristic PLUS what it
+        # gives up beyond combat when it dies — mana production, unbounded-
+        # engine membership, abilities, equipment ceiling — priced by the
+        # one owner of that question (`ai.clock.noncombat_opportunity_cost`,
+        # life-point units), so the planner's trade-down and board-presence
+        # terms see an engine half as the loss it is.
+        value = (_permanent_value(card, controller, game, controller_idx)
+                 + noncombat_opportunity_cost(card, controller,
+                                              _snap_for(controller_idx)))
         return VirtualCreature(
             instance_id=card.instance_id,
             name=card.name,
@@ -1205,7 +1234,7 @@ def extract_virtual_board(game: "GameState", player_idx: int) -> VirtualBoard:
             keywords=kw_set,
             is_tapped=card.tapped or card.summoning_sick,
             controller=controller_idx,
-            value=_permanent_value(card, controller, game, controller_idx),
+            value=value,
             cmc=card.template.cmc or 0,
             has_etb="etb_value" in card.template.tags,
             has_combat_damage_player_trigger=getattr(

@@ -23,7 +23,7 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING, List
 
-from .cards import (
+from .cards import (COUNTER_KIND_MINUS,
     CardInstance, CardTemplate, CardType, Keyword, Supertype, Color,
 )
 from .card_effects import EFFECT_REGISTRY, EffectTiming
@@ -475,8 +475,11 @@ class PermanentEffects:
             creature.cleanup_damage()
             creature.controller = controller
             creature.enter_battlefield()
-            creature.minus_counters += 1
             game.players[controller].battlefield.append(creature)
+            # CR 702.77a: returns with a -1/-1 counter — through the counter
+            # funnel, so a counter-placement replacement (Vizier shape)
+            # applies exactly as it does in paper.
+            creature.adjust_counters(COUNTER_KIND_MINUS, 1)
             game.log.append(f"T{game.display_turn}: {creature.name} returns (persist)")
             # CR 603.6a: the returned creature is a NEW object entering the
             # battlefield — its ETB triggers fire again (mirror reanimate()).

@@ -2102,6 +2102,59 @@ def parse_tap_for_mana_trigger(oracle: str):
     return None
 
 
+_CPR_KIND_RE = r"(?P<kind>\+1/\+1|-1/-1)?\s*counters? would be put on "
+_CPR_SUBJECT_RE = (r"(?:an? (?P<scope>[a-z ,]+?) you control"
+                   r"|(?P<self>{self}))")
+_CPR_FORM_RE = (r"(?P<form>twice that many|that many"
+                r"(?:\s+(?:\+1/\+1|-1/-1)\s+counters?)?\s+(?:plus|minus) one)")
+
+
+def parse_counter_placement_replacement(oracle: str, name: str = ""):
+    """Parse "If one or more <kind> counters would be put on <scope> you
+    control, <twice that many | that many plus one | that many minus one>
+    … are put on it instead" (CR 614.1c) into a `CounterPlacementReplacement`.
+
+    14 Modern cards carry the shape: Hardened Scales, Conclave Mentor,
+    Winding Constrictor, Ozolith the Shattered Spire, Kami of Whispered
+    Hopes, Mauhúr (plus one); Branching Evolution, Corpsejack Menace, The
+    Earth Crystal, Loading Zone (twice); Vizier of Remedies (minus one);
+    Mowu, Caradora, Michelangelo's token text (self-scoped "put on <name>").
+
+    `kind` is None for the kind-agnostic "counters" form (Winding
+    Constrictor: "that many plus one of each of those kinds"). `scope` is
+    the printed noun list split on "or"/"," — type or subtype words matched
+    against the recipient's effective types. Returns None for any other
+    text, including the "whenever … counters ARE put on" trigger shape.
+    """
+    from .cards import CounterPlacementReplacement, COUNTER_KIND_PLUS, COUNTER_KIND_MINUS
+    if not oracle or "would be put on" not in oracle.lower():
+        return None
+    short = re.escape((name or "").split(",")[0].strip()) or "(?!x)x"
+    pat = (r"if one or more " + _CPR_KIND_RE
+           + _CPR_SUBJECT_RE.format(self=short)
+           + r", " + _CPR_FORM_RE + r"[^.]*?instead")
+    m = re.search(pat, oracle, flags=re.IGNORECASE)
+    if m is None:
+        return None
+    kind_txt = (m.group("kind") or "").strip()
+    kind = (COUNTER_KIND_PLUS if kind_txt == "+1/+1"
+            else COUNTER_KIND_MINUS if kind_txt == "-1/-1" else None)
+    form = m.group("form").lower()
+    if form.startswith("twice"):
+        op, n = "mul", 2
+    elif form.endswith("plus one"):
+        op, n = "add", 1
+    else:
+        op, n = "add", -1
+    if m.group("self"):
+        return CounterPlacementReplacement(kind=kind, scope=(), op=op, n=n,
+                                           self_only=True)
+    scope = tuple(w.strip().lower()
+                  for w in re.split(r",|\bor\b", m.group("scope") or "")
+                  if w.strip())
+    return CounterPlacementReplacement(kind=kind, scope=scope, op=op, n=n)
+
+
 def parse_counter_placement_trigger(oracle: str, name: str = ""):
     """Parse "whenever one or more +1/+1 counters are put on this
     <permanent>, <effect>" (CR 122 / CR 603.2c) into a typed trigger.

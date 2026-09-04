@@ -172,6 +172,63 @@ class ManaPayment:
             game._paying_mana -= 1
 
     @staticmethod
+    def _run_loop_shortcut(game: "GameState", player_idx: int,
+                           cost: ManaCost,
+                           exclude_instance_id: Optional[int]) -> None:
+        """Fill the mana pool from unbounded engines by exactly the cost's
+        shortfall (bounded by LOOP_SHORTCUT_MANA per engine). No-op when
+        every other source already covers the cost."""
+        from .activation import ActivationManager
+        from .constants import LOOP_SHORTCUT_MANA
+        player = game.players[player_idx]
+        engines = [e for e in ActivationManager.unbounded_mana_engines(
+                       game, player_idx)
+                   if e.instance_id != exclude_instance_id]
+        if not engines:
+            return
+        other_units = sum(
+            len(ManaPayment.land_mana_units(game, player_idx, src))
+            for src in player.untapped_mana_sources
+            if src.instance_id != exclude_instance_id and src not in engines)
+        shortfall = cost.cmc - other_units - player.mana_pool.total()
+        if shortfall <= 0:
+            return
+        needed = cost.to_dict()
+        for engine in engines:
+            if shortfall <= 0:
+                break
+            units = ManaPayment.land_mana_units(game, player_idx, engine)
+            if not units:
+                continue
+            ability = ActivationManager.free_self_untap_ability(game, engine)
+            iters = 0
+            produced = 0
+            while shortfall > 0 and iters < LOOP_SHORTCUT_MANA:
+                if engine.tapped:
+                    # Pay the untap cost through the funnel, then untap.
+                    if ability.cost.put_counter_kind is not None:
+                        engine.adjust_counters(ability.cost.put_counter_kind,
+                                               ability.cost.put_counter_amount)
+                    engine.untap()
+                engine.tap()
+                for options in units:
+                    # Prefer a colour the cost still asks for; else the
+                    # first printed option.
+                    color = next((c for c in options
+                                  if needed.get(c, 0) > 0), options[0])
+                    if needed.get(color, 0) > 0:
+                        needed[color] -= 1
+                    player.mana_pool.add(color, 1)
+                    produced += 1
+                    shortfall -= 1
+                iters += 1
+            if iters:
+                game.log.append(
+                    f"T{game.display_turn} P{player_idx+1}: loops "
+                    f"{engine.name} ×{iters} (CR 726 shortcut) — "
+                    f"{produced} mana")
+
+    @staticmethod
     def _tap_lands_for_mana_inner(game: "GameState", player_idx: int,
                                   cost: ManaCost,
                                   card_name: str = None,
@@ -355,6 +412,18 @@ class ManaPayment:
                         # the pool's own payment logic sort out the rest.
                         player.mana_pool.add(unit[0], 1)
                         spent += 1
+
+        # CR 726.4 loop shortcut. An unbounded mana engine (a mana source
+        # whose self-untap cost depletes nothing — see
+        # `ActivationManager.unbounded_mana_engines`) is iterated exactly
+        # as many times as this cost falls short of every other source:
+        # untap (paying the replaced-to-zero counter cost through the
+        # counter funnel, so the rules still see each placement), tap for
+        # its printed units into the pool, repeat. One log line records the
+        # shortcut. The engine ends tapped and so drops out of `untapped`
+        # below — no unit is counted twice.
+        ManaPayment._run_loop_shortcut(game, player_idx, cost,
+                                       exclude_instance_id)
 
         untapped = [l for l in player.lands if not l.tapped
                     and l.instance_id != exclude_instance_id]

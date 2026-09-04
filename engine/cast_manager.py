@@ -824,6 +824,19 @@ class CastManager:
         for color in ["W", "U", "B", "R", "G", "C"]:
             for _ in range(player.mana_pool.get(color)):
                 sources.append({color})
+        # CR 726.4 loop shortcut: an unbounded mana engine (free
+        # self-untapping mana source — `ActivationManager.
+        # unbounded_mana_engines`) yields its printed units once per
+        # iteration; the same finite allowance the capacity estimate and
+        # the payment path use, so feasibility, estimate and payment agree
+        # on both QUANTITY and COLOUR.
+        from .activation import ActivationManager
+        from .constants import LOOP_SHORTCUT_MANA
+        for engine in ActivationManager.unbounded_mana_engines(game, player_idx):
+            units = _MP.land_mana_units(game, player_idx, engine)
+            for _ in range(LOOP_SHORTCUT_MANA):
+                for options in units:
+                    sources.append(set(options))
         return sources
 
     @staticmethod

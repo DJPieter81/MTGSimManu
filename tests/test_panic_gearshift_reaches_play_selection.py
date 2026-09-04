@@ -191,10 +191,15 @@ def test_panic_upweight_never_scores_defensive_play_below_identity(
     ev_identity = compute_play_ev(removal, snap, "control", game, 0,
                                   bhi=player.bhi)
 
-    assert ev_identity < 0, (
-        "fixture invariant: the removal's raw projection EV must be "
-        "negative here — that is the play class the gear-shift buries"
-    )
+    # The fixture used to assert `ev_identity < 0` ("the removal's raw
+    # projection EV must be negative here"). That negativity was an
+    # artefact of `position_value`'s inverted no-clock branch
+    # (docs/diagnostics/2026-08-30_clock_sign_inversion_fix_falsified.md
+    # names this fixture as the place the bug was load-bearing): with the
+    # sign repaired, removing an attacker while holding no clock of your
+    # own is correctly a gain. The rule under test is the multiplier's
+    # monotonicity — the gear-shift may never DEMOTE a defensive play —
+    # which holds regardless of the raw EV's sign.
     assert ev_geared >= ev_identity, (
         f"PANIC defensive up-weight must never DEMOTE a defensive play: "
         f"geared EV {ev_geared:.3f} < identity EV {ev_identity:.3f}. "

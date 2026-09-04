@@ -113,25 +113,29 @@ def choose_sacrifice_victim(game, player_idx, legal):
     """Pick which permanent pays a sacrifice cost — the AI half of the
     `choose_sacrifice` callback seam.
 
-    Minimises what the board gives up, on values derived from the game
-    state and printed card data (no bare score tiers): a creature's cost
-    is its `creature_threat_value` on the current snapshot; a
-    non-creature's proxy is its printed mana investment. The legal set is
-    normally type-homogeneous (the cost names one permanent type), so the
-    two scales rarely mix; when a wildcard "permanent" cost does mix
-    them, cheap non-creatures rank as the smaller loss — the intended
-    tie-break.
+    Minimises what the board gives up, through the ONE primitive that
+    prices it: `ai.clock.opportunity_cost` (clock impact, activated
+    abilities, equipment ceiling, mana production, unbounded-engine
+    membership) — the same function the blocker path consults, so a
+    creature the AI would not chump with is not fed to a sacrifice cost
+    either. A non-creature's proxy is its printed mana investment plus
+    its production; the legal set is normally type-homogeneous, and when
+    a wildcard "permanent" cost mixes them, cheap non-creatures rank as
+    the smaller loss — the intended tie-break.
     """
-    from ai.ev_evaluator import creature_threat_value, snapshot_from_game
+    from ai.clock import opportunity_cost, mana_clock_impact
+    from ai.ev_evaluator import snapshot_from_game
 
     if not legal:
         return None
     snap = snapshot_from_game(game, player_idx)
+    board = game.players[player_idx]
+    per_mana = mana_clock_impact(snap) * CLOCK_IMPACT_LIFE_SCALING
 
     def _loss(c):
         if c.effective_is_creature:
-            return creature_threat_value(c, snap)
-        return float(c.template.cmc or 0)
+            return opportunity_cost(c, board, snap)
+        return float(c.template.cmc or 0) + tap_mana_units(c) * per_mana
 
     return min(legal, key=_loss)
 
@@ -149,12 +153,23 @@ def choose_tutor_delivery(game, player_idx, eligible):
     investment, the same proxy the engine ranking uses.
     """
     from ai.ev_evaluator import creature_threat_value, snapshot_from_game
+    from ai.clock import mana_clock_impact
+    from engine.activation import ActivationManager
+    from engine.constants import LOOP_SHORTCUT_MANA
 
     if not eligible:
         return None
     snap = snapshot_from_game(game, player_idx)
+    # A candidate that completes an unbounded mana engine with the board
+    # (engine-side rules query) is worth the engine's shortcut allowance —
+    # the same credit the delivery-conditioned valuation above applies, so
+    # the X priced for it is the X that delivers it.
+    per_mana = mana_clock_impact(snap) * CLOCK_IMPACT_LIFE_SCALING
 
     def _worth(c):
+        if ActivationManager.would_complete_unbounded_engine(
+                game, player_idx, c.template):
+            return LOOP_SHORTCUT_MANA * per_mana
         if c.template.is_creature:
             return creature_threat_value(c, snap)
         return float(c.template.cmc or 0)
@@ -781,13 +796,26 @@ def activation_candidates(game, player_idx, snap, excluded=None):
                     # tutor gate uses, converted at the projection's
                     # per-mana clock scale.
                     delivered_cmc = target.template.cmc or 0
+                    # What the delivery is WORTH, in mana units: the
+                    # body's mana value — or, when the delivered piece
+                    # completes an unbounded mana engine with the board
+                    # (CR 726.4 shortcut material, an engine-side rules
+                    # query), the engine's shortcut allowance: that is
+                    # the mana the piece actually delivers next turn.
+                    from engine.activation import ActivationManager
+                    from engine.constants import LOOP_SHORTCUT_MANA
+                    delivered_value = delivered_cmc
+                    if ActivationManager.would_complete_unbounded_engine(
+                            game, player_idx, target.template):
+                        delivered_value = LOOP_SHORTCUT_MANA
                     if (ability.tutor_data or {}).get('mv_bound_is_x'):
                         from engine.cast_manager import (
                             creature_tutor_x_net_value)
-                        delivered_net = creature_tutor_x_net_value(
+                        delivered_net = (creature_tutor_x_net_value(
                             best_x, delivered_cmc)
+                            + (delivered_value - delivered_cmc))
                     else:
-                        delivered_net = delivered_cmc
+                        delivered_net = delivered_value
                     per_mana = (mana_clock_impact(snap)
                                 * CLOCK_IMPACT_LIFE_SCALING)
                     ev = ((position_value(after) - base)

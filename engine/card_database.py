@@ -2065,6 +2065,11 @@ class CardDatabase:
         from .oracle_parser import parse_counter_placement_trigger
         template.counter_placement_trigger = parse_counter_placement_trigger(
             oracle, name=template.name)
+        # "If one or more … counters would be put on …, <±1 | ×2> instead"
+        # (CR 614.1c, 14 cards). Applied inside the counter funnel.
+        from .oracle_parser import parse_counter_placement_replacement
+        template.counter_placement_replacement = (
+            parse_counter_placement_replacement(oracle, name=template.name))
         # Land destruction (spell tranche) — parse-once typed classification.
         from .oracle_parser import parse_land_destruction
         template.land_destruction_data = parse_land_destruction(oracle)

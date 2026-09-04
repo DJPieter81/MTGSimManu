@@ -2368,3 +2368,111 @@ is the next root cause for this deck and is left here rather than opened
 as a third diagnostic. Amulet Titan (22.7% → 19.2% at n=5, within noise)
 shares the mulligan fix but not the residual; its own replay root cause is
 still owed.
+
+## Counter-placement replacements + unbounded untap-engine shortcut (2026-09-04)
+
+The Creatures Toolbox residual above, built as two mechanic classes.
+
+**Counter-placement replacement (CR 614.1c).** "If one or more <kind>
+counters would be put on <a creature/artifact/permanent you control | this>,
+<that many plus one | that many minus one | twice that many> are put on it
+instead." 14 Modern cards (Hardened Scales, Conclave Mentor, Winding
+Constrictor, Ozolith the Shattered Spire, Kami of Whispered Hopes, Mauhúr,
+Branching Evolution, Corpsejack Menace, The Earth Crystal, Loading Zone,
+Vizier of Remedies, Mowu, Caradora, Michelangelo) — none was modelled; every
+counter-doubling shell was under-counted and the "-1/-1 minus one" shape
+that frees a "put a -1/-1 counter: untap" mana engine never fired. Parsed
+once (`parse_counter_placement_replacement` → typed
+`CardTemplate.counter_placement_replacement`) and applied inside the ONE
+counter funnel (`CardInstance.add_plus_counters` / `adjust_counters` →
+`replaced_counter_amount`), so activation costs, put-counter effects,
+persist (now routed through the funnel too), modular and enters-with-N all
+see it. CR 614.5 each applies once; CR 616.1 additive before multiplicative
+(controller-optimal for the printed shapes). All 14 DB parses verified.
+
+**Unbounded untap-engine shortcut (CR 726.4).** Rule 9 refuses to stack a
+free repeatable ability (nothing depletes → nothing terminates the loop).
+That is a sim safety valve, not a rule of Magic: with the counter cost fully
+replaced away the loop is legal and a paper player shortcuts it. The engine
+now reads the REPLACED cost amount in rule 9 (`_cost_depletes_a_resource`),
+keeps the free untap off the stack (no spin), and exposes the loop as mana:
+`ActivationManager.unbounded_mana_engines` names free self-untapping mana
+sources; `untapped_mana_capacity` credits `LOOP_SHORTCUT_MANA`
+(= 4 × starting life, the finite iteration count the shortcut proposes) per
+engine; `ManaPayment._run_loop_shortcut` executes exactly the iterations a
+cost falls short by (untap paying the replaced-to-zero cost through the
+funnel, tap into the pool), logging one "CR 726 shortcut" line. Colours the
+engine cannot make still fail payment.
+
+**Toolbox awareness.** `would_complete_unbounded_engine(game, idx, template)`
+is a pure rules query (phantom permanent, engines before/after, both
+directions: replacement source freeing an existing untapper, or untapper
+freed by an existing replacement). `default_tutor_rank` — the engine's
+delivery ranking every tutor picker and resolver shares — leads with it, and
+both tutor valuations (`ai/activation_ev.py` activated X-tutor,
+`EVPlayer._gate_x_tutor_payoff` cast X-tutor) credit an engine-completing
+delivery at `LOOP_SHORTCUT_MANA` mana units instead of its printed mana
+value: what the piece actually delivers.
+
+**What it took for the AI to actually use it** (each step replay-diagnosed,
+`--bo3 "Creatures Toolbox" "Boros Energy" -s 50000` + `--trace`, and each a
+generic gap, not a Toolbox rule):
+
+1. *Zero-power creatures never cast.* `position_value`'s "I have no clock,
+   opponent does" branch scored `-opp_clock` — the inverse of its own
+   comment — so deploying a 0/2 that stretched the opposing clock from 17 to
+   51 turns projected at -34. docs/diagnostics/2026-08-30_clock_sign_inversion_fix_falsified.md
+   confirms the defect and falsifies only the prediction that repairing it
+   (with the sentinel cliff, together) lifts creature-light control. This
+   ships the SIGN HALF alone, as the mirror of the winning branch
+   (`-CLOCK_LETHAL_ADVANTAGE_CAP / opp_clock`), with no WR claim for control
+   attached. The panic-gearshift fixture that had frozen the inverted sign
+   as an invariant (named in that doc) drops the invariant; the rule it
+   tests (the multiplier never demotes) is unchanged.
+2. *Tutor delivery blind to the engine.* The engine's `default_tutor_rank`
+   leads with `would_complete_unbounded_engine`, but the AI callbacks that
+   actually decide (`choose_tutor_delivery`, `choose_sacrifice_victim` in
+   ai/activation_ev.py) ranked by `creature_threat_value` alone — so a
+   two-mana Vizier lost to any 2/2 and the Druid was the first creature fed
+   to Fiend Artisan. Delivery now credits an engine-completing candidate at
+   `LOOP_SHORTCUT_MANA`; sacrifice routes through `opportunity_cost`.
+3. *`opportunity_cost` ignored mana and engines.* The one primitive that
+   prices "what the board gives up" (chump, sacrifice, discard) gained a
+   mana-production term (`tap_mana_units × mana_clock_impact`) and an
+   engine term — `engines_lost_if_removed` × allowance, so the replacement
+   source that frees three untappers costs three engines and one of three
+   untappers costs one.
+4. *Blocks priced a dead blocker at its power.* The lifespan-delta block
+   scorer charged a killed blocker only through `my_power_after`, so a
+   0-power engine half chump-blocked a 2/1 at 16 life one turn after being
+   tutored. Its non-combat worth (`noncombat_opportunity_cost`) is now
+   charged to the block post-state as virtual life — the scale
+   `life_as_resource` already converts to survival turns — and the
+   double-block helper picks the cheapest adequate second blocker instead of
+   the first in list order.
+5. *Attacks spent the engine half for two points.* Both on-board-lethal
+   shortcuts (`decide_attackers`' early return and the combat planner's)
+   sent every creature with combat value; Vizier attacked into a 3/3 with
+   the opponent at 1 and the engine died with it. Each now sends what is
+   NEEDED: a creature whose non-combat worth exceeds its power stays home
+   when the rest still reach lethal, and the planner's per-creature
+   `value` carries `noncombat_opportunity_cost` so its trade-down and
+   board-presence terms see an engine half as the loss it is. The
+   racing/desperate "send everything" branch applies the same gate.
+6. *Cast feasibility saw the engine's units but not its colours.* With the
+   loop live (`mana=85` in the trace) Craterhoof {5}{G}{G}{G} was not even
+   a candidate: `_mana_source_units` (the colour-pip feasibility builder)
+   lacked the engine. It now appends the engine's printed units per
+   iteration, so feasibility, estimate and payment agree on quantity AND
+   colour.
+
+Failing-test-first: `tests/test_counter_placement_replacement.py` (12),
+`tests/test_unbounded_untap_mana_engine_shortcut.py` (15),
+`tests/test_tutor_credit_for_engine_completing_piece.py` (4),
+`tests/test_position_value_no_clock_sign.py` (3),
+`tests/test_opportunity_cost_prices_mana_and_engines.py` (5),
+`tests/test_block_prices_blocker_noncombat_value.py` (5). All 7 ratchets at
+baseline (the new typed field populates 14 cards, well above the narrow
+threshold). Replay after: the CR 726 shortcut fires from T5 ("loops Devoted
+Druid ×2"), Vizier is tutored on sight of a Druid, and the engine halves are
+neither chumped nor sacrificed while a fresh body is available.

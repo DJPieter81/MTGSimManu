@@ -84,7 +84,8 @@ class ActivationManager:
         # life cost depletes the life total, a sacrifice-another cost
         # depletes the board and a discard cost depletes the hand — each
         # terminates the loop.
-        if not ActivationManager._cost_depletes_a_resource(perm, ability):
+        if not ActivationManager._cost_depletes_a_resource(perm, ability,
+                                                           game):
             return False
 
         # 9b. An effect kind the resolver cannot execute must be refused
@@ -278,7 +279,8 @@ class ActivationManager:
 
     @staticmethod
     def _cost_depletes_a_resource(perm: "CardInstance",
-                                  ability: "ActivatedAbility") -> bool:
+                                  ability: "ActivatedAbility",
+                                  game: "GameState" = None) -> bool:
         """Rule 9's predicate: does paying this cost consume something
         finite, so that repeating the activation terminates?
 
@@ -317,9 +319,126 @@ class ActivationManager:
             return True
         if (cost.put_counter_kind == COUNTER_KIND_MINUS
                 and cost.put_counter_amount > 0):
-            return bool(perm.effective_is_creature
-                        or getattr(perm, 'is_animated', False))
+            # The counter depletes only if it actually LANDS: a
+            # counter-placement replacement (CR 614.1c, "that many minus
+            # one … instead") can absorb the whole cost, and then nothing
+            # walks the toughness down. Read through the same funnel
+            # payment will use, so legality and payment agree.
+            amount = cost.put_counter_amount
+            if game is not None:
+                amount = perm.replaced_counter_amount(
+                    COUNTER_KIND_MINUS, amount, game)
+            return bool(amount > 0 and (perm.effective_is_creature
+                                        or getattr(perm, 'is_animated', False)))
         return False
+
+    @staticmethod
+    def free_self_untap_ability(game: "GameState", perm: "CardInstance"):
+        """The permanent's self-untap ability whose cost depletes nothing
+        (after counter-placement replacements), or None.
+
+        Rule 9 keeps such an ability OFF the stack (nothing would terminate
+        the loop). It is nonetheless a legal, repeatable loop in paper
+        Magic, so `unbounded_mana_engines` exposes it as a mana source the
+        payment path shortcuts (CR 726.4) instead.
+        """
+        for ability in (perm.template.activated_abilities or []):
+            if not ActivationManager._untaps_its_own_source(ability):
+                continue
+            if (not ability.from_battlefield or ability.cost.unpayable
+                    or ability.restrictions or ability.cost.x_count):
+                continue
+            if ActivationManager._cost_depletes_a_resource(perm, ability,
+                                                           game):
+                continue
+            return ability
+        return None
+
+    @staticmethod
+    def would_complete_unbounded_engine(game: "GameState", player_idx: int,
+                                        template) -> bool:
+        """Would putting a permanent of `template` onto this player's
+        battlefield create an unbounded mana engine that does not exist
+        yet? Pure rules query (no scoring): it asks whether the LOOP would
+        exist, ignoring the newcomer's summoning sickness — the loop is
+        live from the next untap step either way.
+
+        Both directions count: the candidate may be the replacement
+        source (the "minus one" shape) that frees an existing self-untapper,
+        or the self-untapping mana source that an existing replacement
+        frees. Used by the tutor delivery ranking and the AI's delivered-
+        value credit, so a toolbox finds its engine piece instead of the
+        biggest body.
+        """
+        from .cards import CardInstance
+        if template is None or not template.activated_abilities and \
+                template.counter_placement_replacement is None:
+            return False
+        player = game.players[player_idx]
+        before = {p.instance_id for p in
+                  ActivationManager.unbounded_mana_engines(
+                      game, player_idx, ignore_summoning_sickness=True)}
+        phantom = CardInstance(template=template, owner=player_idx,
+                               controller=player_idx, instance_id=-1,
+                               zone="battlefield")
+        phantom._game_state = game
+        player.battlefield.append(phantom)
+        try:
+            after = {p.instance_id for p in
+                     ActivationManager.unbounded_mana_engines(
+                         game, player_idx, ignore_summoning_sickness=True)}
+        finally:
+            player.battlefield.remove(phantom)
+        return bool(after - before)
+
+    @staticmethod
+    def engines_lost_if_removed(game: "GameState", player_idx: int,
+                                perm: "CardInstance") -> int:
+        """How many unbounded mana engines stop existing if `perm` leaves
+        the battlefield (summoning sickness ignored — the loop's
+        existence, not this turn's spin). Pure rules query: the
+        replacement source that frees three untappers loses three; one of
+        three untappers loses one; an unrelated permanent loses none."""
+        player = game.players[player_idx]
+        if perm not in player.battlefield:
+            return 0
+        before = len(ActivationManager.unbounded_mana_engines(
+            game, player_idx, ignore_summoning_sickness=True))
+        if before == 0:
+            return 0
+        idx = player.battlefield.index(perm)
+        player.battlefield.remove(perm)
+        try:
+            after = len(ActivationManager.unbounded_mana_engines(
+                game, player_idx, ignore_summoning_sickness=True))
+        finally:
+            player.battlefield.insert(idx, perm)
+        return max(0, before - after)
+
+    @staticmethod
+    def unbounded_mana_engines(game: "GameState", player_idx: int,
+                               ignore_summoning_sickness: bool = False
+                               ) -> List["CardInstance"]:
+        """Battlefield permanents that tap for mana AND untap themselves
+        for free: an unbounded mana loop (CR 726.4 shortcut material).
+
+        A creature's tap ability needs it free of summoning sickness
+        (CR 302.6); being currently tapped does not matter, since the
+        first iteration untaps it. Pure rules enumeration, zero scoring —
+        the AI decides whether the loop is worth spinning."""
+        out: List["CardInstance"] = []
+        for perm in game.players[player_idx].battlefield:
+            t = perm.template
+            if not (t.mana_units or t.produces_mana):
+                continue
+            if (CardType.CREATURE in t.card_types
+                    and perm.has_summoning_sickness
+                    and not ignore_summoning_sickness):
+                continue
+            if ActivationManager.free_self_untap_ability(game, perm) is None:
+                continue
+            out.append(perm)
+        return out
 
     @staticmethod
     def _refills_its_own_cost(ability: "ActivatedAbility") -> bool:
