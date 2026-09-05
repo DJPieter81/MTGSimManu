@@ -1200,6 +1200,25 @@ class EVPlayer:
             from ai.land_denial import land_denial_value
             ev += land_denial_value(t, game, self.player_idx, snap)
 
+        # ── Flashback additional cost: the land it sacrifices ──
+        # A spell cast from the graveyard whose printed Flashback cost
+        # sacrifices a land (typed `flashback_sacrifice_subtype`) pays
+        # that land on top of the mana the effective cost already
+        # charges.  Its value to the caster is the own-side land-denial
+        # term (tempo below the curve top + stranded colour pips,
+        # ai/land_denial.own_land_loss_value).  Unpriced, a one-damage
+        # burn spell was flashed back on turn 2 by sacrificing the only
+        # untapped land for one face damage at 17 life (Izzet Prowess vs
+        # Dimir s50500 after the burn-branch fix).
+        if (getattr(card, 'zone', None) == 'graveyard'
+                and getattr(t, 'flashback_sacrifice_subtype', None)
+                and game is not None):
+            from ai.land_denial import (flashback_sacrifice_land,
+                                        own_land_loss_value)
+            sac = flashback_sacrifice_land(game, self.player_idx, t)
+            if sac is not None:
+                ev -= own_land_loss_value(game, self.player_idx, sac, snap)
+
         # ── Hand-denial overlay (caster-chosen discard class) ──
         # The projection books a forced discard as a card-neutral trade;
         # a caster-chosen strip takes the BEST eligible card of the
@@ -1702,8 +1721,8 @@ class EVPlayer:
         # three decisions stay consistent.
         if ('removal' in tags and not 'board_wipe' in tags
                 and not t.is_creature and opp.creatures):
-            from decks.card_knowledge_loader import get_burn_damage
-            burn_dmg = get_burn_damage(t.name) if t.name else 0
+            from ai.card_classes import burn_damage
+            burn_dmg = burn_damage(t)
             reachable = []
             for c in opp.creatures:
                 if burn_dmg > 0:
@@ -3812,6 +3831,32 @@ class EVPlayer:
     # TARGETING — simple heuristic
     # ═══════════════════════════════════════════════════════════
 
+    def _burn_reach_this_turn(self, spell, snap, me, game) -> int:
+        """Damage this spell and the other face-legal burn in hand can
+        deal THIS turn: this spell's amount plus the others packed
+        cheapest-first into the mana left after it (the same packing
+        the holdback pricer uses for held responses).  Amounts come
+        from `ai.card_classes.burn_damage`; costs from `effective_cmc`."""
+        from ai.card_classes import burn_damage
+        from ai.effective_cmc import effective_cmc as _ecmc
+        total = burn_damage(spell.template)
+        mana = snap.my_mana - max(0, _ecmc(spell, snap, game=game,
+                                           player_idx=self.player_idx) or 0)
+        others = []
+        for c in me.hand:
+            if c is spell or not getattr(c.template, 'can_target_player', False):
+                continue
+            d = burn_damage(c.template)
+            if d <= 0:
+                continue
+            cost = max(0, _ecmc(c, snap, game=game, player_idx=self.player_idx) or 0)
+            others.append((cost, d))
+        for cost, d in sorted(others):
+            if cost <= mana:
+                mana -= cost
+                total += d
+        return total
+
     def _enumerate_burn_targets(
         self, game, spell, damage: int,
     ) -> List[Tuple[int, float, str]]:
@@ -3972,15 +4017,26 @@ class EVPlayer:
             return []
 
         # Burn spells FIRST — they can always target face as fallback
-        from decks.card_knowledge_loader import get_burn_damage
+        from ai.card_classes import burn_damage
         from engine.cards import Keyword as Kw2
-        dmg = get_burn_damage(t.name)
+        dmg = burn_damage(t)
         # Storm spells (Grapeshot) deal 1 damage × storm copies — always target face
         if Kw2.STORM in getattr(t, 'keywords', set()) and 'removal' in tags:
             return [-1]  # Grapeshot always goes face (storm copies auto-target)
         if dmg > 0:
             if dmg >= opp.life and t.can_target_player:
                 return [-1]  # face = lethal AND legal to target player
+            # Lethal is a property of the TURN: this spell plus the other
+            # burn in hand castable with the mana left after it (cheapest
+            # first, the same packing the holdback pricer uses) adding up
+            # to the opponent's life is lethal — every one of them goes
+            # face.  A one-damage spell was aimed at a 5/5 for six turns
+            # while the opponent sat at 1–3 life with lethal burn in hand
+            # (Izzet Prowess vs Domain Zoo s50000 G3).
+            if t.can_target_player and self._burn_reach_this_turn(
+                    spell, snap, game.players[self.player_idx], game) >= opp.life:
+                self._last_target_reason = "face — lethal with this turn's burn"
+                return [-1]
 
             # M10 (Aggro Pattern D / Fix 4): enumerate the FULL candidate
             # set — face (when legal), opp creatures, AND opp planeswalkers
@@ -4152,8 +4208,8 @@ class EVPlayer:
         snap = snapshot_from_game(game, player_idx)
         candidates = list(creatures)
         # For burn removal, filter out creatures this spell cannot kill.
-        from decks.card_knowledge_loader import get_burn_damage
-        dmg = get_burn_damage(card.template.name) if card.template else 0
+        from ai.card_classes import burn_damage
+        dmg = burn_damage(card.template) if card.template else 0
         if dmg > 0:
             killable = [c for c in candidates
                         if ((c.toughness or 0) - getattr(c, 'damage_marked', 0)) <= dmg]
@@ -4488,8 +4544,8 @@ class EVPlayer:
         if 'removal' not in tags:
             return False
 
-        from decks.card_knowledge_loader import get_burn_damage
-        dmg = get_burn_damage(spell.template.name) if spell.template else 0
+        from ai.card_classes import burn_damage
+        dmg = burn_damage(spell.template) if spell.template else 0
         prof = self.profile
         floor = float(prof.big_creature_power)  # e.g. 4.0 EV floor
 

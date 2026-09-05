@@ -154,3 +154,22 @@ def deck_can_return(template: "CardTemplate", returners) -> bool:
         if getattr(rt, 'mass_graveyard_return', False):
             return True
     return False
+
+
+def burn_damage(template: "CardTemplate") -> int:
+    """Damage a direct-damage spell deals to a single target.
+
+    The parsed oracle amount (`CardTemplate.direct_damage_data`,
+    oracle_parser.parse_direct_damage_spell — "deals N damage to any
+    target") is the answer for every printed fixed-amount burn spell;
+    the card-knowledge table (`decks/card_knowledge_loader`) is only the
+    fallback for modal / variable shapes the parser does not type.  One
+    accessor for every decision-layer reader: a burn spell the table
+    never listed read as 0 and was aimed like creature removal.
+    """
+    data = getattr(template, 'direct_damage_data', None) or {}
+    amount = data.get('amount')
+    if amount:
+        return int(amount)
+    from decks.card_knowledge_loader import get_burn_damage
+    return get_burn_damage(getattr(template, 'name', '') or '')

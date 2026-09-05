@@ -28,6 +28,12 @@
       ],
       "reason": ""
     },
+    "flashback_sacrifice_subtype": {
+      "cards": [
+        "Lava Dart"
+      ],
+      "reason": "Only one Modern-legal card prints a Flashback cost that sacrifices a land (Lava Dart, 'Flashback\u2014Sacrifice a Mountain.'); the field carries the parsed subtype so the cast path and the AI's land-loss pricing share one owner instead of a runtime regex. Other Flashback riders (pay life, sacrifice a creature) are a separate shape and are not yet paid by the engine."
+    },
     "has_cc_tap_draw": {
       "cards": [
         "Endbringer"

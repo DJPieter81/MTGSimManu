@@ -238,6 +238,19 @@ def grants_flashback_to_gy_spells(oracle: str) -> bool:
     )
 
 
+def parse_flashback_sacrifice(oracle: str) -> Optional[str]:
+    """The land subtype a printed Flashback cost sacrifices ("Flashback—
+    Sacrifice a Mountain."), lowercased, or None when the flashback cost
+    is mana only (or the card has no flashback).  CR 702.33a: the whole
+    flashback cost — mana AND the additional cost — is paid to cast from
+    the graveyard.  Parse-once; read by the cast path (which land is
+    sacrificed) and by the AI (what that land is worth)."""
+    if not oracle:
+        return None
+    m = re.search(r'flashback\s*[—\-:]\s*sacrifice an? (\w+)', oracle.lower())
+    return m.group(1) if m else None
+
+
 def parse_flashback_mana_cost(oracle: str) -> "Optional[ManaCost]":
     """Parse the mana portion of a native Flashback cost from oracle text.
 

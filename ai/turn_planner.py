@@ -1278,8 +1278,8 @@ def extract_virtual_board(game: "GameState", player_idx: int) -> VirtualBoard:
 
 def _spell_damage(card) -> int:
     """Extract damage amount from a spell (for burn/removal spells)."""
-    from decks.card_knowledge_loader import get_burn_damage
-    known = get_burn_damage(card.template.name)
+    from ai.card_classes import burn_damage
+    known = burn_damage(card.template)
     if known > 0:
         return known
     if "removal" in card.template.tags:

@@ -3052,6 +3052,87 @@ Domain Zoo 60 / 40 (field cell 40 / 60 in the other seat) — the
 cascade-reanimator's cycling credit survives the predicate (its
 returner is the typed mass return); no regression.
 
+### Iteration 3 — Izzet Prowess (80%): burn damage read from a card-name table; lethal not a property of the turn
+
+`--bo3 "Izzet Prowess" "Domain Zoo" -s 50000` (Zoo 2-1). G3: Prowess
+puts Zoo to 3 life on turn 3 (Swiftspear, Bolt, Bolt, Bolt); Zoo then
+sits at 3 → 2 → 1 life from turn 3 to turn 9 while Prowess casts its
+one-damage burn spell into a 4/4 (turn 5) and twice into a 5/5 (turn 9,
+with Zoo at 1) — and Zoo wins at 1 life. Two class defects:
+
+1. **Burn damage came from a card-name table**
+   (`decks/card_knowledge_loader.get_burn_damage`, eight decision-layer
+   readers). A "deals N damage to any target" spell the table never
+   listed read as 0, skipped the burn branch and was aimed like creature
+   removal; the face-lethal rule (`dmg >= opp.life`) could never fire
+   for it. Built: `ai/card_classes.py::burn_damage(template)` — the
+   parsed oracle amount (typed `direct_damage_data`, 79 pool cards) with
+   the table only as the fallback for modal / variable shapes; all eight
+   readers rewired.
+2. **Lethal was a single-spell property.** Built: a burn spell goes
+   face when this turn's castable burn is lethal together — its own
+   amount plus the other face-legal burn in hand packed cheapest-first
+   into the mana left after it (the holdback pricer's packing) —
+   `_burn_reach_this_turn`, derived from `burn_damage` and
+   `effective_cmc`. Guard pinned: out of lethal reach, burn still prefers
+   a killable creature over chip damage.
+
+Tests (failing-test-first,
+`tests/test_burn_damage_reads_the_typed_field_and_face_lethal_reach.py`,
+4). Burn, face and response suites green (112); all 7 ratchets at
+baseline. Replay after: the one-damage spell now goes face ("[Target] →
+face (1 dmg, life 2 → 1)"), G3 ends on turn 6 with Zoo at 0, match 1-2
+→ 2-1 on this seed.
+
+Anchor after the burn fix: one turn-only drift and one winner flip,
+Izzet Prowess vs Dimir Midrange s50500 (Prowess T10 → Dimir T12).
+Anchor-exact replay: with the one-damage spell now in the burn branch,
+Prowess **flashbacked it on turn 2 by sacrificing its only untapped
+land** for one face damage at 17 life ("face value 0.15") and stayed on
+one land — the fix had exposed two further class defects:
+
+3. **A Flashback additional cost was paid but never priced.** The engine
+   paid "Flashback—Sacrifice a Mountain" by a runtime regex at cast time;
+   the AI priced a graveyard cast at its mana only. Built: typed
+   `CardTemplate.flashback_sacrifice_subtype` (`parse_flashback_sacrifice`;
+   the cast path reads it instead of the regex) and
+   `ai/land_denial.py::own_land_loss_value` — the own-side land-denial
+   term: a mana short on every turn until a replacement is drawn (the
+   reciprocal of the library's land density, capped by the library) while
+   below the curve top, plus the colour pips stranded when the land was
+   the last source — subtracted by `_score_spell` for a graveyard cast
+   through `flashback_sacrifice_land` (the same land the cast path picks).
+   The field is declared narrow in `tools/narrow_typed_fields_baseline.json`
+   (one Modern card prints that rider); other Flashback riders (pay life,
+   sacrifice a creature) are a separate shape the engine does not yet pay.
+4. **Damage-based removal was projected as killing the biggest threat**
+   whatever its damage: `_project_spell`'s removal branch took the
+   highest-threat creature off the board for any removal-tagged spell, so
+   the one-damage spell scored +8.9 against a 5/5 (that is why it was
+   aimed there three times). Damage now removes only what it kills
+   (toughness ≤ amount, the enumerator's killability); pinned.
+
+Tests: `tests/test_flashback_sacrifice_cost_is_priced.py` (4 — parsed
+subtype; the cast path pays the typed cost; a graveyard cast is charged
+exactly the land it gives up; a flooded caster pays nothing) and the
+projection-killability pin in the burn file (5 total there). Burn,
+flashback, removal, projection and land-denial suites green (175).
+
+Anchor on the final state: the s50500 flip persists — the turn-2
+flashback for one face damage now scores **−0.34** (projection +0.03,
+land −0.37 on a synthetic replica of the state) and is still executed:
+`decide_main_phase` runs the best non-deferred candidate unless it is
+below `PLAY_VALUE_FLOOR` (−5.0, the M3 sentinel that tolerates the
+holdback penalty's scale), so a mildly negative real play with nothing
+better available is taken. That floor is the responsible subsystem for
+"negative-EV plays are executed"; it is a documented design decision
+(`docs/history/audits/2026-05-16_5panel_bo3_audit.md`, M3) and not
+reopened inside this loop. The flip is accepted as the burn deck's own
+plan (face damage every turn) priced correctly at the margin; fixture
+refreshed, 29/29. Prowess vs Zoo s50000 on the final state: 2-1 (G1 and
+G3 won on turn 6 with the burn going face). Both chunks green on the
+final state (a-g 2223, h-z 2228 + the two anchor pins refreshed).
+
 **Hollow One (85%) — recorded lead, next iteration.** `--bo3 "Hollow One"
 "Domain Zoo" -s 50000` (Zoo 2-0): the trace scores "cycle: Street Wraith"
 at **+8.3** and "cycle: Hollow One" at **+7.8** against +0.9 for a

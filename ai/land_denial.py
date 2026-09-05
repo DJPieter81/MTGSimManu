@@ -224,3 +224,60 @@ def land_denial_value(tmpl: "CardTemplate", game: "GameState",
     premium = card_clock_impact(snap) * stranded_pips
 
     return tempo + premium
+
+
+def own_land_loss_value(game: "GameState", player_idx: int,
+                        land: "CardInstance", snap: "EVSnapshot") -> float:
+    """What losing ``land`` costs its OWN controller — the same two terms
+    the opponent-side valuation charges, applied to oneself: a land-drop
+    turn of tempo while still below the curve top (``mana_clock_impact``
+    per constrained turn), plus the pips of a demanded colour that are
+    stranded when this was the last source (``card_clock_impact`` per
+    stranded pip).  Used to price an additional cost that sacrifices a
+    land (a Flashback "Sacrifice a Mountain" rider): the mana part of the
+    cost is already in the effective cost; this is the land itself.
+    """
+    curve_top, pips = _opponent_unplayed_demand(game, player_idx)
+    counts = _opponent_color_sources(game, player_idx)
+    me = game.players[player_idx]
+    my_lands = sum(1 for p in me.battlefield if p.template.is_land)
+    # A land given up below the curve top is a mana short on every
+    # following turn until a replacement is drawn: the expected wait is
+    # the reciprocal of the library's land density (a derived draw
+    # horizon, capped by the library), not one land-drop turn.
+    constrained_turns = 0
+    if my_lands - 1 < curve_top:
+        library = list(me.library)
+        land_density = (sum(1 for c in library if c.template.is_land)
+                        / len(library)) if library else 0.0
+        constrained_turns = (min(len(library), 1.0 / land_density)
+                             if land_density > 0 else len(library))
+    tempo = mana_clock_impact(snap) * constrained_turns
+    stranded_pips = 0
+    for code in set(land.template.produces_mana or []):
+        if code not in COLOR_MAP:
+            continue
+        need = pips.get(code, 0)
+        remaining = counts.get(code, 0) - 1
+        if need > remaining:
+            stranded_pips += need - remaining
+    premium = card_clock_impact(snap) * stranded_pips
+    return tempo + premium
+
+
+def flashback_sacrifice_land(game: "GameState", player_idx: int,
+                             tmpl: "CardTemplate") -> Optional["CardInstance"]:
+    """The land the cast path will sacrifice for this spell's Flashback
+    additional cost (first land carrying the typed subtype — the same
+    choice ``engine/cast_manager`` makes), or None when the cost is mana
+    only or no such land is on the battlefield."""
+    needed = getattr(tmpl, 'flashback_sacrifice_subtype', None)
+    if not needed:
+        return None
+    for l in game.players[player_idx].battlefield:
+        if not l.template.is_land:
+            continue
+        if (needed in [s.lower() for s in (l.template.subtypes or [])]
+                or needed in (l.template.name or '').lower()):
+            return l
+    return None

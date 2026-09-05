@@ -887,6 +887,9 @@ class CardTemplate:
     # Flames use template.mana_cost instead (this field stays None for them).
     # Populated by oracle_parser.parse_flashback_mana_cost.
     flashback_cost: Optional[ManaCost] = None
+    # Land subtype a printed Flashback cost sacrifices ("Flashback—Sacrifice
+    # a Mountain."), or None. oracle_parser.parse_flashback_sacrifice.
+    flashback_sacrifice_subtype: Optional[str] = None
     # Discard effect -- True when oracle causes the target to discard cards.
     # Populated by oracle_parser.parse_has_discard_effect.
     has_discard_effect: bool = False

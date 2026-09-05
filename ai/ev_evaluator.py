@@ -2244,12 +2244,28 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
     if 'removal' in tags and not 'board_wipe' in tags:
         if snap.opp_creature_count > 0 and game:
             opp = game.players[1 - player_idx]
-            # Target the highest-THREAT creature (oracle-driven), not the
-            # highest-power one. This ensures battle-cry / scaling threats
-            # (e.g. Signal Pest, Ragavan) project correctly as removal-worthy
-            # even when their raw power is 0.
-            best_target = max(opp.creatures,
-                               key=lambda c: creature_threat_value(c, snap))
+            # Damage-based removal removes only what its damage KILLS
+            # (toughness ≤ amount — the same killability the target
+            # enumerator applies).  Projecting the biggest threat off the
+            # board for a one-damage spell credited a 5/5 kill to a spell
+            # that could not touch it (Izzet Prowess vs Domain Zoo s50000:
+            # the one-damage burn aimed at a 5/5 three times at +8.9).
+            from ai.card_classes import burn_damage
+            dmg_cap = burn_damage(t)
+            killable = [c for c in opp.creatures
+                        if dmg_cap <= 0 or (c.toughness or 0) <= dmg_cap]
+            if not killable:
+                best_target = None
+            else:
+                # Target the highest-THREAT creature (oracle-driven), not the
+                # highest-power one. This ensures battle-cry / scaling threats
+                # (e.g. Signal Pest, Ragavan) project correctly as removal-worthy
+                # even when their raw power is 0.
+                best_target = max(killable,
+                                  key=lambda c: creature_threat_value(c, snap))
+        else:
+            best_target = None
+        if best_target is not None:
             # Effective power removed includes a threat-equivalent bonus
             # for triggered abilities the raw P/T doesn't capture.
             eff_power = best_target.power or 0
@@ -2338,8 +2354,8 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
             # cannot be reduced to a literal numeral. The fallback
             # table is shrinking as oracle parsing improves; the
             # abstraction contract treats it as a TODO surface.
-            from decks.card_knowledge_loader import get_burn_damage
-            dmg = get_burn_damage(t.name)
+            from ai.card_classes import burn_damage
+            dmg = burn_damage(t)
         if dmg > 0:
             # Value of face damage depends on proximity to lethal: a point of
             # burn against a 20-life opp with no clock is a hope; the same

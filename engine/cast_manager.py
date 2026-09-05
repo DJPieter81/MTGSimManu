@@ -1616,14 +1616,12 @@ class CastManager:
             # If cast from GY via flashback (not escape), mark for exile after resolution
             if card.has_flashback and not (escaped if not free_cast else False):
                 cast_with_flashback = True
-                # Pay flashback additional cost (sacrifice a {subtype}).
+                # Pay flashback additional cost (sacrifice a {subtype}) —
+                # typed `flashback_sacrifice_subtype` (parse-once; the AI
+                # prices the same land through ai/land_denial).
                 # can_cast already guarantees a matching land exists.
-                import re as _re_fbc
-                fb_oracle_c = (template.oracle_text or '').lower()
-                m_fb = _re_fbc.search(
-                    r'flashback\s*[—\-:]\s*sacrifice a (\w+)', fb_oracle_c)
-                if m_fb:
-                    needed = m_fb.group(1).strip()
+                needed = getattr(template, 'flashback_sacrifice_subtype', None)
+                if needed:
                     sac = next((
                         l for l in player.lands
                         if needed in [s.lower() for s in (l.template.subtypes or [])]

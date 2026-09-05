@@ -41,7 +41,7 @@
       "deck2": "Izzet Prowess",
       "seed": 50000,
       "winner": "Izzet Prowess",
-      "turns": 7
+      "turns": 6
     },
     {
       "deck1": "Pinnacle Affinity",
@@ -103,8 +103,8 @@
       "deck1": "Izzet Prowess",
       "deck2": "Dimir Midrange",
       "seed": 50500,
-      "winner": "Izzet Prowess",
-      "turns": 10
+      "winner": "Dimir Midrange",
+      "turns": 12
     },
     {
       "deck1": "4/5c Control",

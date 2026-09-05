@@ -1654,6 +1654,8 @@ class CardDatabase:
         fb = parse_flashback_mana_cost(oracle_text)
         if fb is not None:
             template.flashback_cost = fb
+        from .oracle_parser import parse_flashback_sacrifice
+        template.flashback_sacrifice_subtype = parse_flashback_sacrifice(oracle_text)
 
         # Land-type conditional bonus (Wild Nacatl pattern): "gets +N/+N as long as
         # you control a [LandType]". Stored in template.land_type_bonuses dict.
