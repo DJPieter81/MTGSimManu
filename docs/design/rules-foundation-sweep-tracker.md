@@ -2639,3 +2639,35 @@ Related suites 29 green; ratchets at baseline; anchor: two turn-only
 drifts (4/5c vs Pinnacle 21→18, Azorius vs WST 17→16, winners unchanged —
 both control decks, consistent with the lock now landing on the right
 turn) refreshed.
+
+**Measurement (n=20, 50000 grid, quiet box):** Azorius Control vs Domain Zoo
+25 / 75 (baseline cell 20 / 80) — +5pp toward band on the cell (cell noise
+~±10pp at n=20; the field re-read decides movement). Same log: the
+sideboard plan for this pairing is "+2 Mystical Dispute, −2 Orim's Chant" —
+the lock piece is boarded OUT against Zoo, so games 2 and 3 never see the
+fix. The solver has no clause for the turn-scoped-restriction class at all
+(it values such a card at its body, i.e. zero), so it is swapped out
+against every opponent: next lead, class-sized.
+
+**Field re-read (n=20, 50000 grid, quiet box, head `114d094`): flat
+67.3%** (baseline 67.5%). Cell-by-cell against iteration 0: Azorius Blink
+90 → 75 (the only cell that moved by more than one match; direction of the
+iteration-1 fix), Azorius Control 80 → 80, Instant Reanimator 55 → 60, WST
+v2 50 → 55, every other cell identical. Cells ≥85% now: Goryo's Vengeance
+100, Creatures Toolbox 95, Affinity 90, Amulet Titan 85, Boros Ponza 85,
+Grixis Reanimator 85, Hollow One 85. No field movement (<2.2pp): **code
+iteration 2 of the loop-break count (2 of 3)**. Stop gate: not met.
+
+Sideboard finding resolved: the "+2 Mystical Dispute, −2 Orim's Chant"
+plan is produced by the LEGACY path. `engine/sideboard_manager.py::sideboard`
+defaults to `SB_SOLVER=old`, a deck-name × card-name string table (Chant
+boards out against any opponent whose name contains "domain"/"control"/
+"tron"/"titan"…; Dispute boards in against "zoo"/"energy"/"prowess"/
+"affinity"). The oracle solver — the path both sideboard fixes in this
+loop improved — only runs opt-in (`SB_SOLVER=new`), held there by the
+recorded Phase 2/2.5/2.6 decisions in `docs/proposals/sideboard_solver.md`
+(Goryo's −4pp regression, ±25–35pp pairing volatility at n=20). So neither
+sideboard-solver change in this loop reached a live game. Flipping the
+default reopens a held decision with a matrix-wide blast radius and is not
+taken inside this loop; it is recorded here as the standing reason the
+defending side's post-board games do not see the loop's fixes.
