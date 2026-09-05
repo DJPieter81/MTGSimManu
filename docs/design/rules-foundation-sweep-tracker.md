@@ -2867,3 +2867,27 @@ precondition is met on the mechanism (the line exists and is kept);
 the Goryo's cell itself is now a race the registered list mostly loses
 to a turn-5 kill. Full field re-read follows as the restarted loop's
 iteration-0 baseline.
+
+## Domain Zoo band loop — restart (2026-09-05)
+
+### Iteration 0 — baseline on `94475d0` (measurement only)
+
+`run_meta.py --field "Domain Zoo" -n 20 --parallel`, 50000 grid, quiet
+box, offline scorer. **Flat 65.0%** (pre-restart 65.8%; the original
+loop's baseline was 67.5%). Against the last row: Goryo's Vengeance
+100 → 85 (the self-discard-outlet line), Instant Reanimator 65 → 60,
+every other cell identical. Cells ≥85%: Creatures Toolbox 95, Affinity
+90, Amulet Titan 85, Goryo's Vengeance 85, Boros Ponza 85, Hollow One
+85. At band or below: Ruby Storm / Eldrazi Tron 25, 4c Omnath 45, Dimir /
+Broodscale 50, Boros Energy / WST v2 55, Jeskai Blink / Living End /
+4/5c / WST / Instant Reanimator 60, Pinnacle / Eldrazi Ramp / Grixis 65.
+Stop gate: the field average sits at the band edge but six cells are
+≥85% — not met. Loop-break counter reset (new loop).
+
+Target selection (rule: largest excess, no tracked root cause, no clean
+audit): Creatures Toolbox (Soul Cauldron line, tracked), Affinity (audited
+race), Amulet Titan (rediagnosis doc) and Goryo's (measured above as a
+race after the outlet fix) are skipped; **Boros Ponza 85 and Hollow One
+85** are the two registered lists with no replay audit at all. Iteration
+1 opens both with `--bo3 … -s 50000` replays and follows whichever shows a
+class-sized defending-side defect.
