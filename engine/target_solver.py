@@ -88,6 +88,12 @@ class TargetRequirement:
     mode_group: Optional[int] = None
     raw_phrase: str = ""
     max_mana_value: Optional[int] = None
+    # "with mana value X or less": the ceiling is the X the caster pays,
+    # chosen before targets (CR 601.2b/c). Bound at enumeration time by
+    # the `x_ceiling` the caller derives from its affordable X; with no
+    # ceiling supplied the requirement is unbounded (resolution-time
+    # checks still apply).
+    max_mana_value_is_x: bool = False
 
 
 # ── Regex catalogue ─────────────────────────────────────────────────
@@ -451,7 +457,34 @@ def parse(oracle_text: str) -> List[TargetRequirement]:
             raw_phrase=player_match.group(0),
         ))
 
+    _attach_mana_value_bound(oracle_l, out)
     return out
+
+_MV_BOUND_AFTER_RE = re.compile(
+    r"^(?:\s+(?:an opponent controls|you don't control|you control))?"
+    r"\s+with mana value (x|\d+) or less")
+
+
+def _attach_mana_value_bound(oracle_l: str, reqs: List[TargetRequirement]) -> None:
+    """Attach a trailing "with mana value N/X or less" clause to the
+    battlefield requirement it follows (CR 601.2c: the printed ceiling is
+    part of the target's legality). Numeric ceilings populate
+    `max_mana_value`; an X ceiling sets `max_mana_value_is_x`, bound at
+    enumeration time by the caller's affordable X."""
+    import dataclasses as _dc
+    for n, req in enumerate(reqs):
+        if req.zone != "battlefield" or not req.raw_phrase:
+            continue
+        idx = oracle_l.find(req.raw_phrase)
+        if idx < 0:
+            continue
+        m = _MV_BOUND_AFTER_RE.match(oracle_l[idx + len(req.raw_phrase):])
+        if m is None:
+            continue
+        if m.group(1) == "x":
+            reqs[n] = _dc.replace(req, max_mana_value_is_x=True)
+        elif req.max_mana_value is None:
+            reqs[n] = _dc.replace(req, max_mana_value=int(m.group(1)))
 
 
 def _types_for_word(type_word: str) -> FrozenSet[str]:
@@ -696,7 +729,8 @@ def _spell_token_matches(item_source: "CardInstance",
 
 def has_legal_target(game: "GameState", controller: int,
                      req: TargetRequirement,
-                     exclude: Optional["CardInstance"] = None) -> bool:
+                     exclude: Optional["CardInstance"] = None,
+                     x_ceiling: Optional[int] = None) -> bool:
     """CR 601.2c — does at least one legal target exist for this
     requirement in the current game state?
 
@@ -741,6 +775,9 @@ def has_legal_target(game: "GameState", controller: int,
         if req.zone == "battlefield" and _blocked_by_hexproof(card, controller):
             continue
         # Owner already pre-filtered by _zone_cards.
+        if req.max_mana_value_is_x and x_ceiling is not None and \
+                (card.template.cmc or 0) > x_ceiling:
+            continue  # CR 601.2c: beyond the X the caster can pay
         return True
     return False
 
@@ -748,6 +785,7 @@ def has_legal_target(game: "GameState", controller: int,
 def enumerate_legal_targets(game: "GameState", controller: int,
                             req: TargetRequirement,
                             exclude: Optional["CardInstance"] = None,
+                            x_ceiling: Optional[int] = None,
                             ) -> List["CardInstance"]:
     """Same predicate as ``has_legal_target`` but returns every
     candidate. Phase 6 will use this for AI scoring (best-target
@@ -789,6 +827,9 @@ def enumerate_legal_targets(game: "GameState", controller: int,
         if req.max_mana_value is not None and \
                 (card.template.cmc or 0) > req.max_mana_value:
             continue
+        if req.max_mana_value_is_x and x_ceiling is not None and \
+                (card.template.cmc or 0) > x_ceiling:
+            continue  # CR 601.2c: beyond the X the caster can pay
         out.append(card)
     return out
 
@@ -796,6 +837,7 @@ def enumerate_legal_targets(game: "GameState", controller: int,
 def has_legal_target_for_spell(game: "GameState", controller: int,
                                requirements: List[TargetRequirement],
                                exclude: Optional["CardInstance"] = None,
+                               x_ceiling: Optional[int] = None,
                                ) -> bool:
     """Convenience wrapper used by Phase 3 cast_manager migration.
 
@@ -821,14 +863,14 @@ def has_legal_target_for_spell(game: "GameState", controller: int,
         if req.is_optional:
             continue
         if req.mode_group is None:
-            if not has_legal_target(game, controller, req, exclude=exclude):
+            if not has_legal_target(game, controller, req, exclude=exclude, x_ceiling=x_ceiling):
                 return False
         else:
             modal_groups.setdefault(req.mode_group, []).append(req)
 
     # For each modal group, at least one requirement must be legal.
     for group_id, group_reqs in modal_groups.items():
-        if not any(has_legal_target(game, controller, r, exclude=exclude)
+        if not any(has_legal_target(game, controller, r, exclude=exclude, x_ceiling=x_ceiling)
                    for r in group_reqs):
             return False
     return True

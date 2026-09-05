@@ -3903,6 +3903,17 @@ class EVPlayer:
             can_hit_noncreature = (t.can_destroy_nonland_permanent
                                    or getattr(t, 'exile_hits_noncreature', False)
                                    or t.can_destroy_artifact)
+            # An X-bound target ("with mana value X or less") is legal
+            # only up to the X the caster can pay — the same engine formula
+            # cast-time legality uses (CR 601.2b/c). Candidates beyond it
+            # are not targets at all, whatever their threat.
+            _x_ceiling = None
+            if (getattr(t, 'targeted_removal_data', None) or {}).get('mv') == 'x':
+                from engine.cast_manager import CastManager
+                _x_ceiling = CastManager.affordable_x(game, self.player_idx, t)
+
+            def _reachable(c):
+                return _x_ceiling is None or (c.template.cmc or 0) <= _x_ceiling
 
             if can_hit_noncreature:
                 # Evaluate all nonland permanents via marginal threat
@@ -3916,7 +3927,8 @@ class EVPlayer:
                 # for the rule each constant encodes.
                 from ai.permanent_threat import permanent_threat
                 from ai.engine_disruption import engine_disruption_value
-                nonland = [c for c in opp.battlefield if not c.template.is_land]
+                nonland = [c for c in opp.battlefield
+                           if not c.template.is_land and _reachable(c)]
                 if nonland:
                     best = max(nonland,
                                key=lambda c: (permanent_threat(c, opp, game)
@@ -3948,8 +3960,9 @@ class EVPlayer:
                 # docs/diagnostics/2026-05-02_affinity_88pct_hypothesis_list.md
                 # and the regression test in
                 # tests/test_creature_removal_targets_threat_amplifiers.py.
-                if opp.creatures:
-                    best = max(opp.creatures,
+                _cands = [c for c in opp.creatures if _reachable(c)]
+                if _cands:
+                    best = max(_cands,
                                key=lambda c: creature_threat_value(c, snap))
                     return [best.instance_id]
                 return []
@@ -3962,6 +3975,17 @@ class EVPlayer:
         if spell.template.can_exile_permanent and 'blink' not in tags:
             from engine.cards import CardType
             nonland = [c for c in opp.battlefield if not c.template.is_land]
+            # An X-bound target ("with mana value X or less") is legal only
+            # up to the X the caster can pay — the same engine formula
+            # cast-time legality uses (CR 601.2b/c). Before this the pick
+            # was the HIGHEST mana value regardless of X, so the spell was
+            # cast at an unreachable target and resolved doing nothing.
+            if (getattr(t, 'targeted_removal_data', None) or {}).get('mv') == 'x':
+                from engine.cast_manager import CastManager
+                ceiling = CastManager.affordable_x(game, self.player_idx, t)
+                if ceiling is not None:
+                    nonland = [c for c in nonland
+                               if (c.template.cmc or 0) <= ceiling]
             if nonland:
                 best = max(nonland, key=lambda c: c.template.cmc)
                 return [best.instance_id]

@@ -2070,6 +2070,11 @@ class CardDatabase:
         from .oracle_parser import parse_counter_placement_replacement
         template.counter_placement_replacement = (
             parse_counter_placement_replacement(oracle, name=template.name))
+        # "When this ~ enters, destroy/exile target <type> …" (CR 603.3d,
+        # 141 cards). Dispatched by resolve_etb_from_oracle.
+        from .oracle_parser import parse_etb_targeted_removal
+        template.etb_targeted_removal_data = parse_etb_targeted_removal(
+            oracle, name=template.name)
         # Land destruction (spell tranche) — parse-once typed classification.
         from .oracle_parser import parse_land_destruction
         template.land_destruction_data = parse_land_destruction(oracle)

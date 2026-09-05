@@ -5680,6 +5680,53 @@ _REMOVAL_RIDER_TOKENS = (
 )
 
 
+_ETB_TARGETED_REMOVAL_RE = re.compile(
+    r"^when (?:this (?:creature|permanent|artifact|enchantment|land)|[^,]{1,40}?) "
+    r"enters(?: the battlefield)?, (?P<opt>you may )?(?P<action>destroy|exile) target "
+    r"(?P<types>" + _REMOVAL_TYPESPEC_ALT + r")"
+    r"(?P<scope> an opponent controls| you don't control)?"
+    r"(?: with mana value (?P<mv>\d+) or less)?\.?$")
+
+
+def parse_etb_targeted_removal(oracle: str, name: str = ""):
+    """Classify "When this ~ enters, [you may] destroy/exile target
+    <permanent type> [an opponent controls] [with mana value N or less]"
+    (CR 603.2, 603.3d — a triggered ability with a printed target).
+
+    141 Modern permanents carry an ETB destroy/exile-target clause; the
+    naturalize subclass alone is ~24 (Reclamation Sage, Witch Enchanter,
+    Conclave Naturalists, Harmonic Sliver, Foundation Breaker, …). Returns
+    the same dict shape as `parse_targeted_removal` plus `owner_scope`
+    ('opponent' | 'any') and `optional`, or ``None``. Parsed once at load
+    into `CardTemplate.etb_targeted_removal_data`; dispatched from
+    `oracle_resolver.resolve_etb_from_oracle` through the shared
+    `card_effects._resolve_nonland_permanent_removal`.
+
+    Deliberately NOT matched: the linked "exile … until this leaves the
+    battlefield" shape (`etb_exile_returns_on_leave`, a different
+    mechanic), non-permanent targets (cards in graveyards, spells), and
+    any rider after the removal clause.
+    """
+    if not oracle or 'enters' not in oracle.lower():
+        return None
+    text = strip_reminder_text(oracle)
+    for ln in text.split('\n'):
+        low = ln.strip().lower()
+        if not low.startswith('when '):
+            continue
+        m = _ETB_TARGETED_REMOVAL_RE.match(low)
+        if m is None:
+            continue
+        return {
+            'action': m.group('action'),
+            'types': list(_REMOVAL_TYPESPEC[m.group('types')]),
+            'mv': int(m.group('mv')) if m.group('mv') else None,
+            'owner_scope': 'opponent' if m.group('scope') else 'any',
+            'optional': bool(m.group('opt')),
+        }
+    return None
+
+
 def parse_targeted_removal(oracle: str):
     """Classify a "destroy/exile target <permanent type> [with mana value
     N/X or less]" instant/sorcery. Returns a dict of typed params or ``None``:

@@ -280,6 +280,30 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
     if (card.template.team_pump_data or {}).get('trigger') == 'etb':
         return _resolve_team_pump(game, card, controller)
 
+    # ── "When this ~ enters, [you may] destroy/exile target <type> [an
+    #     opponent controls] [with mana value N or less]" (CR 603.3d) ──
+    # Typed-field gate (parse_etb_targeted_removal, 141 cards; the
+    # naturalize subclass ~24). Resolved through the SAME shared resolver
+    # the spell class uses, so target legality (CR 601.2c via
+    # target_solver), indestructible (CR 702.12b), the mana-value ceiling
+    # (CR 608.2c) and the zone funnels are all one code path. No
+    # pre-chosen target: the resolver auto-picks the highest-threat legal
+    # candidate; an optional trigger with no legal target simply does
+    # nothing (the controller declines).
+    _etr = card.template.etb_targeted_removal_data
+    if _etr:
+        from .card_effects import _resolve_nonland_permanent_removal
+        _mv = _etr.get('mv')
+        _resolve_nonland_permanent_removal(
+            game, card, controller, None, None,
+            zone_dest="exile" if _etr['action'] == 'exile' else "graveyard",
+            types=frozenset(_etr['types']),
+            owner_scope=_etr.get('owner_scope', 'opponent'),
+            mv_max_fn=(lambda g, c, ctl, it, _m=_mv: _m) if _mv is not None else None,
+            log_verb="exiles" if _etr['action'] == 'exile' else "destroys",
+        )
+        return True
+
     oracle = (card.template.oracle_text or '').lower()
     if not oracle:
         return False

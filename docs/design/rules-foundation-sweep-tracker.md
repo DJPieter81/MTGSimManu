@@ -2530,3 +2530,62 @@ End / 4/5c / WST 60, Pinnacle Affinity / Eldrazi Ramp 65. Stop gate: not
 met. Target for iteration 1: Azorius Blink (90%; registered list whose
 defensive plan exists but is switched off — `archetype: aggro` in its
 gameplan makes `holdback_applies` False).
+
+### Iteration 1 — Azorius Blink (90%): the holdback lead is falsified by the log
+
+`--bo3 "Azorius Blink" "Domain Zoo" -s 50000` (Zoo 2-0, T9/T8). Blink DOES
+deploy its instant-speed interaction on Zoo's turns — T3 both games it
+evokes Solitude on Scion of Draco at Zoo's begin-combat (G2 with Ephemerate
+in response, the intended line). The archetype-gated holdback hypothesis is
+not what this matchup shows; not pursued. What the log shows instead, both
+defending-side and class-sized:
+
+1. **March of Otherworldly Light cast into nothing.** G1 T3 (Zoo's turn):
+   "Cast March (1W) (X=1) → Resolve → graveyard", no exile line — Zoo's board
+   held Leyline Binding (MV 6) and Scion (MV 12), nothing of MV ≤ 1. G2 T6
+   and T7: "Cast March (W)" (X=0) the same way. An X-bound targeted removal
+   spell ("… with mana value X or less") is cast with an X that reaches no
+   target, burning the card and the mana. Class: every X-bound targeted
+   removal spell; the fix is the delivery-conditioned discipline the X
+   creature tutor already has (`pick_creature_tutor_x_value`): choose X to
+   reach the best legal target, and no candidate when none is reachable.
+2. **Witch Enchanter's enters-the-battlefield destroy never fires.** G1 T4:
+   "Cast Witch Enchanter → Resolve", no destroy line, while Leyline Binding
+   (an enchantment) held Ocelot Pride in exile. `CardTemplate` carries no
+   typed field for the "when this enters, destroy/exile target
+   <artifact/enchantment/…> an opponent controls" ETB shape
+   (`targeted_removal_data` is the SPELL class from the 2026-09-02
+   consolidation). A blink deck's whole plan is re-triggering exactly this
+   class with Ephemerate.
+
+Built (both failing-test-first, rule-phrased):
+
+- **ETB targeted removal class** (`tests/test_etb_targeted_removal_class.py`,
+  10): `parse_etb_targeted_removal` → typed
+  `CardTemplate.etb_targeted_removal_data` (same dict shape as the spell
+  class plus owner_scope/optional; 141 pool cards carry the shape, the
+  naturalize subclass ~24), dispatched from `resolve_etb_from_oracle`
+  through the shared `_resolve_nonland_permanent_removal` — so target
+  legality (CR 601.2c), indestructible (702.12b), the printed mana-value
+  ceiling (608.2c) and the zone funnels are one code path. The linked
+  "exile … until this leaves" shape stays on its own mechanic.
+- **X-bound target legality + X payment** (`tests/test_x_bound_target_legality.py`,
+  6; 19 pool cards bound a target by X): `target_solver` now attaches a
+  trailing "with mana value N/X or less" clause to the battlefield
+  requirement it follows (`max_mana_value_is_x`), `enumerate_legal_targets`
+  / `has_legal_target(_for_spell)` take an `x_ceiling`, `can_cast` supplies
+  it from the new `CastManager.affordable_x` (one formula: (capacity −
+  fixed cost) // X pips), the cast path pays X = the chosen target's mana
+  value (CR 601.2b), and both AI target branches filter candidates by the
+  same ceiling. A spell whose affordable X reaches no target is no longer
+  castable, and the AI no longer picks the highest-MV permanent regardless
+  of X.
+
+Neighbouring suites 362 green; all 7 ratchets at baseline (the new typed
+field populates 141 cards); WR anchor 29/29 unchanged.
+
+Replay after (`--bo3 "Azorius Blink" "Domain Zoo" -s 50000`): both fixes fire
+in-game — "T4 Witch Enchanter destroys Leyline Binding", "T5 Cast March
+(X=2) → exiles Territorial Kavu" (X paid for the target's mana value, not
+the whole pool). The match is still 0-2 (G1 lasts T11, was T9): one seed,
+not the measurement. Targeted n=20 follows.

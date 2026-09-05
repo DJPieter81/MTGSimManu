@@ -1109,6 +1109,11 @@ class CardTemplate:
     # placement path (activation costs, put-counter effects, persist,
     # modular, enters-with-N) sees it without a hook of its own.
     counter_placement_replacement: Optional["CounterPlacementReplacement"] = None
+    # "When this ~ enters, [you may] destroy/exile target <type> [an opponent
+    # controls] [with mana value N or less]" (CR 603.3d, 141 cards; the
+    # naturalize subclass ~24). Same dict shape as `targeted_removal_data`
+    # plus owner_scope/optional. Dispatched by `resolve_etb_from_oracle`.
+    etb_targeted_removal_data: Optional[dict] = None
     # -- Land destruction (spell tranche) -----------------------------------
     # True when the card is a spell-shaped "Destroy target land" effect with
     # only supported riders (see oracle_parser.parse_land_destruction).
@@ -1323,6 +1328,11 @@ class CardTemplate:
                 from .oracle_parser import (
                     parse_counter_placement_replacement as _pcpr)
                 self.counter_placement_replacement = _pcpr(
+                    self.oracle_text, name=self.name)
+            if self.etb_targeted_removal_data is None:
+                from .oracle_parser import (
+                    parse_etb_targeted_removal as _petr)
+                self.etb_targeted_removal_data = _petr(
                     self.oracle_text, name=self.name)
             if self.land_type_bonuses is None:
                 from .oracle_parser import parse_land_type_bonuses as _pltb

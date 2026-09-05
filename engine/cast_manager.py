@@ -246,6 +246,24 @@ class CastManager:
     """Cast-time legality + special-case handlers. Stateless."""
 
     @staticmethod
+    def affordable_x(game: "GameState", player_idx: int, template) -> "int | None":
+        """The largest X the controller can pay for an X-cost spell right
+        now: (castable capacity − the cost's fixed part) // X-pip count.
+        None for a spell with no {X}. ONE formula shared by cast-time
+        target legality (CR 601.2b/c — X is chosen before targets, so it
+        bounds any "mana value X or less" target) and the AI's target
+        choice, so the target the AI prices is one the engine will accept."""
+        x_info = getattr(template, 'x_cost_data', None)
+        if not x_info:
+            return None
+        player = game.players[player_idx]
+        capacity = (player.untapped_mana_capacity()
+                    + player.mana_pool.total()
+                    + player._tron_mana_bonus())
+        mult = max(1, int(x_info.get('multiplier', 1) or 1))
+        return max(0, (capacity - (template.cmc or 0)) // mult)
+
+    @staticmethod
     def can_cast(game: "GameState", player_idx: int,
                  card: "CardInstance") -> bool:
         """Check if a player can cast a card."""
@@ -418,7 +436,8 @@ class CastManager:
                                         parse as _parse_targets)
             requirements = _parse_targets(template.oracle_text or "")
             if not has_legal_target_for_spell(
-                    game, player_idx, requirements, exclude=card):
+                    game, player_idx, requirements, exclude=card,
+                    x_ceiling=CastManager.affordable_x(game, player_idx, template)):
                 return False
 
         # Check mana (pool + untapped lands + non-land mana sources + Tron bonus)
@@ -1730,6 +1749,18 @@ class CastManager:
                     game, player_idx, int(x_value), template
                 )
                 x_value = best_x
+            elif (getattr(template, 'targeted_removal_data', None) or {}).get('mv') == 'x' \
+                    and targets:
+                # X-bound targeted removal: X is what the chosen target
+                # needs (CR 601.2b — X must reach the target's mana value;
+                # every point above it is mana buying nothing). Capped at
+                # the affordable X the legality check already applied.
+                need = 0
+                for tid in targets:
+                    tgt = game.get_card_by_id(tid)
+                    if tgt is not None:
+                        need = max(need, tgt.template.cmc or 0)
+                x_value = max(int(x_info.get('min_x', 0) or 0), min(int(x_value), need))
             # +1/+1 counter creatures: use max mana (Ballista-style)
             # (default x_value is already max)
             # Pay the actual X cost
