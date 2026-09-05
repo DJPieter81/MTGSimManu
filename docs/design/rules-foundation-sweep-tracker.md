@@ -2507,3 +2507,26 @@ regression signal). The deck is still
 out of band: with Vizier a one-of, the engine assembles in a minority of
 games; the next lever is a fair one (a second Druid untapper / the Soul
 Cauldron line), tracked, not patched.
+
+## Domain Zoo band loop (2026-09-05)
+
+Self-paced loop until Domain Zoo's flat field WR is inside [50, 65]. Stop
+gate (noise-aware): n=20 Bo3 on the 50000 matchup grid inside the band AND no
+single cell ≥85% AND reproduced on the 40000 matrix grid, on pushed CI-green
+code. Lanes closed before this loop and not reopened: the decklist swap
+(falsified), the clock sentinel-cliff (falsified twice), the "defensive fixes
+lift control" prediction (falsified), Zoo-vs-4/5c (structural for that list).
+
+### Iteration 0 — baseline on `0335e9e` (measurement only)
+
+`run_meta.py --field "Domain Zoo" -n 20 --parallel`, quiet box, offline
+scorer. **Flat 67.5%** (this is the loop's baseline; the 65.6% matrix
+headline is on the other seed grid and is not comparable). Cells ≥85%:
+Goryo's Vengeance 100, Creatures Toolbox 95, Affinity 90, Azorius Blink 90,
+Amulet Titan 85, Boros Ponza 85, Grixis Reanimator 85, Hollow One 85. At
+band or below: Ruby Storm 25, Eldrazi Tron 25, 4c Omnath 45, WST v2 /
+Broodscale 50, Boros Energy / Instant Reanimator 55, Jeskai Blink / Living
+End / 4/5c / WST 60, Pinnacle Affinity / Eldrazi Ramp 65. Stop gate: not
+met. Target for iteration 1: Azorius Blink (90%; registered list whose
+defensive plan exists but is switched off — `archetype: aggro` in its
+gameplan makes `holdback_applies` False).
