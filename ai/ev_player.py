@@ -1200,6 +1200,20 @@ class EVPlayer:
             from ai.land_denial import land_denial_value
             ev += land_denial_value(t, game, self.player_idx, snap)
 
+        # ── Hand-denial overlay (caster-chosen discard class) ──
+        # The projection books a forced discard as a card-neutral trade;
+        # a caster-chosen strip takes the BEST eligible card of the
+        # hidden hand.  ai/hand_denial.py derives that selection value
+        # from the opponent's observable pool (exact order statistic
+        # over the resolution's own ranking) and retracts the average-
+        # card credit.  Typed-field gate (parse-once); covers every
+        # "you choose … from it" hand attack.
+        if (game is not None
+                and (getattr(t, 'hand_attack_data', None) or {}).get('chooser')
+                == 'caster'):
+            from ai.hand_denial import hand_denial_value
+            ev += hand_denial_value(t, game, self.player_idx, snap)
+
         # ── Evoke overlay: projection doesn't model 2-card cost ──
         if ('evoke' in tags or 'evoke_pitch' in tags) and snap.my_mana < (t.cmc or 0):
             # Evoking costs an extra card — subtract its future clock value

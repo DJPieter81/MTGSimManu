@@ -959,6 +959,14 @@ def _is_immediate_interaction(oracle: str, tags, template) -> bool:
     # (oracle_parser.parse_has_discard_effect) — no runtime oracle scan.
     if template.can_target_player and getattr(template, 'has_discard_effect', False):
         return True
+    # Targeted hand attack (typed field, parse-once): the caster-chosen
+    # "you choose a nonland card from it. That player discards that
+    # card" shape says "discards THAT card", which the generic discard
+    # predicate did not read, so the whole Thoughtseize / Inquisition /
+    # Duress class carried no this-turn signal and was deferred forever
+    # (Goryo's Vengeance vs Domain Zoo s50000: Thoughtseize held T1–T5).
+    if getattr(template, 'hand_attack_data', None):
+        return True
     return False
 
 

@@ -4049,7 +4049,61 @@ def parse_has_discard_effect(oracle: str) -> bool:
         or 'discards their hand' in lo
         or 'discard two cards' in lo
         or 'discards two cards' in lo
+        # Caster-chosen hand attack: "You choose a nonland card from
+        # it. That player discards that card." (Thoughtseize shape).
+        or 'discards that card' in lo
+        or 'discards those cards' in lo
     )
+
+
+# Caster-chosen hand attack: "target player/opponent reveals their hand.
+# You choose a <restricted> card from it. That player discards that card."
+# The choose clause is kept verbatim (lowercased) — the engine's revealed-
+# hand filter (`oracle_resolver._targeted_discard_candidates`) reads the
+# mana-value cap and type words from it, and the AI's hand-denial
+# valuation reuses that same filter so cast-time expectation and
+# resolution agree.
+_HAND_ATTACK_CASTER_RE = re.compile(
+    r"target (player|opponent) reveals (?:their|his or her) hand\. "
+    r"you choose (?P<clause>[^.]*?)\. "
+    r"(?:that player|they) discards? (?:that|those|the chosen) cards?")
+# Victim-chosen ("target player discards a card") and random forms.
+_HAND_ATTACK_VICTIM_RE = re.compile(
+    r"target (player|opponent) discards (a|an|one|two|three|four|\d+) "
+    r"cards?( at random)?")
+_HAND_ATTACK_COUNT_WORDS = {'a': 1, 'an': 1, 'one': 1, 'two': 2,
+                            'three': 3, 'four': 4}
+
+
+def parse_hand_attack(oracle: str) -> Optional[dict]:
+    """Classify a targeted forced discard by who chooses the card.
+
+    Returns ``{'chooser': 'caster' | 'victim' | 'random', 'target':
+    'player' | 'opponent', 'choose_clause': str | None, 'count': int}``
+    or ``None`` when the text is not a targeted hand attack (own-hand
+    looting, symmetric "each player discards", reveal-then-exile).
+
+    ``chooser == 'caster'`` is the Thoughtseize / Inquisition / Duress /
+    Despise shape ("you choose … from it"); ``choose_clause`` is the
+    restriction text between "you choose" and the sentence end, read
+    by ``engine.oracle_resolver._targeted_discard_candidates``.  The
+    victim-chosen and random shapes carry no choose clause.
+    """
+    if not oracle:
+        return None
+    lo = oracle.lower()
+    m = _HAND_ATTACK_CASTER_RE.search(lo)
+    if m:
+        return {'chooser': 'caster', 'target': m.group(1),
+                'choose_clause': m.group('clause'), 'count': 1}
+    m = _HAND_ATTACK_VICTIM_RE.search(lo)
+    if m:
+        tok = m.group(2)
+        count = int(tok) if tok.isdigit() else _HAND_ATTACK_COUNT_WORDS[tok]
+        return {'chooser': 'random' if m.group(3) else 'victim',
+                'target': m.group(1), 'choose_clause': None,
+                'count': count}
+    return None
 
 
 def parse_is_storm_spell(oracle: str) -> bool:

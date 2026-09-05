@@ -2671,3 +2671,66 @@ sideboard-solver change in this loop reached a live game. Flipping the
 default reopens a held decision with a matrix-wide blast radius and is not
 taken inside this loop; it is recorded here as the standing reason the
 defending side's post-board games do not see the loop's fixes.
+
+### Iteration 3 — Goryo's Vengeance (100%): the hand attack is never cast
+
+`--bo3 "Goryo's Vengeance" "Domain Zoo" -s 50000` (Zoo 2-1; `--trace`
+reproduces G1). G1: Goryo's keeps Thoughtseize and holds it through turns
+1–5 with black open while Zoo deploys Ragavan and Scion, casting it on
+turn 6 at five life ("−0.1 cast_spell: Thoughtseize" every main phase);
+G3 casts Inquisition + two Thoughtseize on turn 11. Two defects, both
+class-sized, both on the hand-attack class (150 pool cards carry the new
+typed field: 51 caster-chosen, 99 victim-chosen, 6 random):
+
+1. **The class carried no this-turn signal.** `_is_immediate_interaction`
+   gates forced discard on the typed `has_discard_effect`, whose parser
+   read "discards a card" but not "discards THAT card" — the caster-chosen
+   shape ("You choose a nonland card from it. That player discards that
+   card"). Every Thoughtseize / Inquisition / Duress was therefore scored
+   as deferrable (−exposure) and skipped by the pass-preference filter no
+   matter what its EV said. The RC-2 fix of 2026-07-05 (`docs/diagnostics/
+   2026-07-05_goryos_field_13pct_root_cause.md`) had corrected the
+   *phrasing* gate; the later typed-field migration re-broke it, and its
+   pinning test used a stub template with `has_discard_effect=True`.
+2. **A caster-chosen strip was priced as a card-neutral trade.** The
+   projection charges the caster's card, credits one average opponent
+   card and bills the life cost — net −0.1 — although the caster takes
+   the BEST eligible card of the hand.
+
+Built (failing-test-first, `tests/test_hand_attack_values_the_best_card_of_a_hidden_hand.py`,
+12): typed `CardTemplate.hand_attack_data` (chooser caster / victim /
+random, target, verbatim choose clause, count; `parse_hand_attack`);
+`_is_immediate_interaction` reads it (and `parse_has_discard_effect` now
+covers "discards that card"); `ai/hand_denial.py::hand_denial_value`, the
+mirror of `ai/land_denial.py`: eligible pool = opponent hand ∪ library
+(the BHI public-decklist premise) filtered through the engine's own
+revealed-hand restriction filter, ranked by the resolution's own strip
+scorer, exact hypergeometric order statistic for "rank-k card is the
+strip", denied value = `creature_threat_value` for a creature and
+`card_clock_impact` otherwise, minus the projection's average-card
+credit; zero into an empty hand. Overlay hooked in `_score_spell` beside
+the land-denial overlay, typed-field gated. No new literals; all 7
+ratchets at baseline.
+
+Replay after: G1 Thoughtseize on turn 1 (takes a Stubborn Denial), G3
+Thoughtseize turn 2 + Inquisition turn 6; the match is still 1-2 (one
+seed, not the measurement). Second finding recorded as a lead, not
+built: G1 T6 (and the anchor game below) Goryo's casts Undying Evil on an
+OPPONENT's creature to dodge the cleanup discard — a beneficial targeted
+effect aimed at the wrong side; `can_cast` correctly refuses it on an
+empty board (verified), so the defect is the AI's target choice for
+beneficial effects plus the cast-anything-rather-than-discard branch.
+Class: pump / protection / keyword-grant instants.
+
+WR anchor: two winner flips + one turn-only drift, both flips replayed
+through the anchor-exact harness before/after and accepted as the class
+firing on its intended turn: 4c Omnath vs Goryo's s50500 (Goryo's T9 →
+Omnath T6; first divergence T1 "Cast Thoughtseize" taking Ephemerate,
+then T4 Inquisition taking Solitude; the loss follows from Goryo's not
+casting Faithful Mending with WU open after the turn-4 Inquisition and
+the Undying Evil misfire on turn 5 — pre-existing sequencing, recorded
+above) and Creatures Toolbox vs Grixis Reanimator s52000 (Grixis T9 →
+Toolbox T9; first divergence T2 "Cast Thoughtseize" taking Tyvar, the
+deck's combo piece, then a second on T4; Grixis pays 4 life and is raced
+by the creature curve). Instant Reanimator vs Boros Ponza s51500 11 → 10
+turn-only. Fixture refreshed via `tools/refresh_wr_baseline.py`, 29/29.

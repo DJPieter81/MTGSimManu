@@ -1120,6 +1120,13 @@ class CardTemplate:
     # | 'fog' | None. Read by the AI's this-turn-signal enumerator and the
     # runner's imprint-copy timing.
     turn_scoped_restriction: Optional[str] = None
+    # Targeted forced discard classified by who chooses the card:
+    # {'chooser': 'caster'|'victim'|'random', 'target', 'choose_clause',
+    # 'count'} (oracle_parser.parse_hand_attack). The caster-chosen
+    # shape ("you choose a nonland card from it") is valued by
+    # ai/hand_denial.py; the choose clause feeds the engine's
+    # revealed-hand filter.
+    hand_attack_data: Optional[dict] = None
     # -- Land destruction (spell tranche) -----------------------------------
     # True when the card is a spell-shaped "Destroy target land" effect with
     # only supported riders (see oracle_parser.parse_land_destruction).
@@ -1344,6 +1351,9 @@ class CardTemplate:
                 from .oracle_parser import (
                     parse_turn_scoped_restriction as _ptsr)
                 self.turn_scoped_restriction = _ptsr(self.oracle_text)
+            if self.hand_attack_data is None:
+                from .oracle_parser import parse_hand_attack as _pha
+                self.hand_attack_data = _pha(self.oracle_text)
             if self.land_type_bonuses is None:
                 from .oracle_parser import parse_land_type_bonuses as _pltb
                 self.land_type_bonuses = _pltb(self.oracle_text)

@@ -2078,6 +2078,10 @@ class CardDatabase:
         # Turn-scoped opponent restriction (silence / no-attacks / fog).
         from .oracle_parser import parse_turn_scoped_restriction
         template.turn_scoped_restriction = parse_turn_scoped_restriction(oracle)
+        # Targeted forced discard, classified by who chooses the card
+        # (caster-chosen Thoughtseize shape vs victim-chosen / random).
+        from .oracle_parser import parse_hand_attack
+        template.hand_attack_data = parse_hand_attack(oracle)
         # Land destruction (spell tranche) — parse-once typed classification.
         from .oracle_parser import parse_land_destruction
         template.land_destruction_data = parse_land_destruction(oracle)
