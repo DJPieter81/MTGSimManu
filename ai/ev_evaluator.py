@@ -1093,6 +1093,17 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
     tags = getattr(t, 'tags', set())
     signals = []
 
+    # 0. Turn-scoped OPPONENT restriction ("can't cast spells this turn",
+    #    "creatures can't attack this turn", fog): the effect expires
+    #    before the opponent acts when cast on the caster's own turn, so
+    #    it carries no this-turn value there (deferrable); on the
+    #    opponent's turn the restriction covers their whole turn.
+    #    Typed field (parse-once), 30 instants.
+    if getattr(t, 'turn_scoped_restriction', None):
+        if game is not None and getattr(game, 'active_player', player_idx) == player_idx:
+            return []
+        return ['opponent_turn_restriction']
+
     # 1. Self-ETB trigger with a material effect.
     if _has_self_etb_effect(oracle):
         signals.append('etb_trigger')

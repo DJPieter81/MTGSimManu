@@ -1114,6 +1114,12 @@ class CardTemplate:
     # naturalize subclass ~24). Same dict shape as `targeted_removal_data`
     # plus owner_scope/optional. Dispatched by `resolve_etb_from_oracle`.
     etb_targeted_removal_data: Optional[dict] = None
+    # "… can't cast spells this turn" / "creatures can't attack this turn" /
+    # "prevent all (combat) damage … this turn" — an effect that restricts
+    # the OPPONENT for this turn (30 instants). 'no_spells' | 'no_attacks'
+    # | 'fog' | None. Read by the AI's this-turn-signal enumerator and the
+    # runner's imprint-copy timing.
+    turn_scoped_restriction: Optional[str] = None
     # -- Land destruction (spell tranche) -----------------------------------
     # True when the card is a spell-shaped "Destroy target land" effect with
     # only supported riders (see oracle_parser.parse_land_destruction).
@@ -1334,6 +1340,10 @@ class CardTemplate:
                     parse_etb_targeted_removal as _petr)
                 self.etb_targeted_removal_data = _petr(
                     self.oracle_text, name=self.name)
+            if self.turn_scoped_restriction is None:
+                from .oracle_parser import (
+                    parse_turn_scoped_restriction as _ptsr)
+                self.turn_scoped_restriction = _ptsr(self.oracle_text)
             if self.land_type_bonuses is None:
                 from .oracle_parser import parse_land_type_bonuses as _pltb
                 self.land_type_bonuses = _pltb(self.oracle_text)

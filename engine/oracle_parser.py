@@ -5688,6 +5688,36 @@ _ETB_TARGETED_REMOVAL_RE = re.compile(
     r"(?: with mana value (?P<mv>\d+) or less)?\.?$")
 
 
+_TURN_SCOPED_RESTRICTION_RES = (
+    ('no_spells', re.compile(r"(?:target player|each opponent|your opponents|each player)"
+                             r" can't cast spells this turn")),
+    ('no_attacks', re.compile(r"creatures can't attack this turn")),
+    ('fog', re.compile(r"prevent all (?:combat )?damage that would be dealt this turn")),
+)
+
+
+def parse_turn_scoped_restriction(oracle: str) -> "str | None":
+    """Classify an effect that restricts the OPPONENT for "this turn":
+
+      'no_spells'  — "target player / each opponent can't cast spells this turn"
+      'no_attacks' — "creatures can't attack this turn"
+      'fog'        — "prevent all (combat) damage that would be dealt this turn"
+
+    30 Modern instants carry one of these shapes. Such an effect expires
+    before the opponent acts when cast on the caster's own turn, so the AI
+    defers the hand-cast to the opponent's turn and the imprint hook fires
+    a 'no_spells' copy in the opponent's upkeep rather than its controller's
+    main phase. Parsed once at load into `CardTemplate.turn_scoped_restriction`.
+    """
+    if not oracle or 'this turn' not in oracle.lower():
+        return None
+    low = strip_reminder_text(oracle).lower()
+    for kind, rx in _TURN_SCOPED_RESTRICTION_RES:
+        if rx.search(low):
+            return kind
+    return None
+
+
 def parse_etb_targeted_removal(oracle: str, name: str = ""):
     """Classify "When this ~ enters, [you may] destroy/exile target
     <permanent type> [an opponent controls] [with mana value N or less]"

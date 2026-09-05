@@ -805,6 +805,14 @@ class GameRunner:
                     self._process_saga_chapters(game, active)
                     # Activated abilities fired on our upkeep (Isochron Scepter, etc.)
                     self._process_upkeep_activations(game, active)
+                    # The NON-active player's imprinted turn-scoped
+                    # restrictions (silence / fog) fire now, in the active
+                    # player's upkeep — the only window where "this turn"
+                    # covers the opponent's whole turn.
+                    self._process_imprint_copy_activations(
+                        game, 1 - active, timing="opp_upkeep")
+                    if game.game_over:
+                        break
                     # LE-E2: decrement suspend time counters on active
                     # player's suspended cards; cast free when the last
                     # counter is removed. See
@@ -1852,7 +1860,8 @@ class GameRunner:
         return
 
     def _process_imprint_copy_activations(self, game: GameState,
-                                          active: int):
+                                          active: int,
+                                          timing: str = "own_main"):
         """Fire 'imprint + you may copy' artifacts at a main phase.
 
         Generic mechanic (oracle-driven, no card names):
@@ -1893,6 +1902,15 @@ class GameRunner:
                 continue
 
             template = imp_inst.template
+            # Timing: a copy whose effect restricts the OPPONENT for "this
+            # turn" (typed `turn_scoped_restriction`: silence / no-attacks
+            # / fog) expires before the opponent acts if fired in its
+            # controller's main phase; it is fired in the opponent's
+            # upkeep instead (timing="opp_upkeep", `active` = the holder).
+            # Every other copy keeps the sorcery-speed main-phase firing.
+            wants_opp_turn = bool(getattr(template, 'turn_scoped_restriction', None))
+            if wants_opp_turn != (timing == "opp_upkeep"):
+                continue
             # CR 601.2c — every non-optional target requirement of the
             # copy must have a legal candidate NOW, or the ability is
             # not activated at all (no fizzle-casting).

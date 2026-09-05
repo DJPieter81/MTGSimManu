@@ -2611,3 +2611,31 @@ mana-value ceiling; creature removal keeps its threat-based clause (now
 also ceiling-aware). Whether Witch Enchanter should stay in against Zoo is
 a judgment the solver still makes on the numbers — not tuned. Ratchets at
 baseline; WR anchor 29/29 (Bo1 pins carry no sideboarding).
+
+### Iteration 2 — Azorius Control (80%): the lock is cast on the wrong turn
+
+`--bo3 "Azorius Control" "Domain Zoo" -s 50000` (Zoo 2-0, T11/T7). G1:
+control stabilises — two Solitudes (T3, T5), Teferi bounce (T4), Wrath X=2
+(T7), Supreme Verdict (T8) — and sits at 17 life on T9 with Zoo's board
+swept. It then casts Orim's Chant through Isochron Scepter on T9, T10 and
+T11 **on its own turn** ("silences P2 this turn" during P1's turn), which
+restricts nothing — Zoo casts Ragavan, Riddler and Frog on its own turns
+and attacks for 4/6/10 — while control holds 5–6 cards and never
+presents a clock (Hall of Storm Giants never animated). The Scepter-Chant
+lock, that list's actual win plan, only works cast in the opponent's
+upkeep. G2 is a mulligan-to-tempo loss to two Scions (T7), no decision
+error beyond a desperate-attack at 3 life facing 8 power.
+
+Built (failing-test-first, `tests/test_turn_scoped_opponent_restriction_timing.py`, 6):
+a typed `CardTemplate.turn_scoped_restriction` ('no_spells' | 'no_attacks' |
+'fog'; 30 instants, `parse_turn_scoped_restriction`). The AI's this-turn
+signal enumerator returns no signal for such a card on the caster's own turn
+(deferrable) and a signal on the opponent's turn; the runner's imprint hook
+(`_process_imprint_copy_activations`, an engine-side auto-fire that predates
+the AI activation seam) is timing-aware — a restriction copy fires in the
+OPPONENT's upkeep (new call for the non-active player) and never in its
+controller's main phase, every other copy keeps the sorcery-speed firing.
+Related suites 29 green; ratchets at baseline; anchor: two turn-only
+drifts (4/5c vs Pinnacle 21→18, Azorius vs WST 17→16, winners unchanged —
+both control decks, consistent with the lock now landing on the right
+turn) refreshed.

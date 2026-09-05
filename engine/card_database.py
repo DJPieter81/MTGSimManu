@@ -2075,6 +2075,9 @@ class CardDatabase:
         from .oracle_parser import parse_etb_targeted_removal
         template.etb_targeted_removal_data = parse_etb_targeted_removal(
             oracle, name=template.name)
+        # Turn-scoped opponent restriction (silence / no-attacks / fog).
+        from .oracle_parser import parse_turn_scoped_restriction
+        template.turn_scoped_restriction = parse_turn_scoped_restriction(oracle)
         # Land destruction (spell tranche) — parse-once typed classification.
         from .oracle_parser import parse_land_destruction
         template.land_destruction_data = parse_land_destruction(oracle)
