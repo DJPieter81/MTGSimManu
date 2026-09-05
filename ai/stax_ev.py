@@ -26,8 +26,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional, Callable
 
 from ai.scoring_constants import (
-    BLOOD_MOON_DISRUPTION_CAP,
-    BLOOD_MOON_DISRUPTION_COEFFICIENT,
     CANONIST_DENSITY_FLOOR,
     CANONIST_DISRUPTION_COEFFICIENT,
     CANONIST_DISRUPTION_TURN_COUNT,
@@ -164,58 +162,113 @@ def _chalice_lock_ev(template, me, opp, snap) -> float:
     return best_net * impact * ARTIFACT_EXPECTED_LIFETIME * REALISM_DISCOUNT
 
 
+# Families that derive their own horizon (how long the lock keeps biting)
+# from the game state and so must not be multiplied by the turn-decay
+# table: a land-type lock is worth what it makes uncastable for the rest
+# of the game, whether it lands on turn 3 or turn 7.
+_SELF_HORIZON_FAMILIES = frozenset({'blood_moon'})
+
+
+def _lock_horizon_draws(snap, pool_size: int) -> int:
+    """Draws a player still gets while the lock holds: the shorter of the
+    two combat clocks (the same `combat_clock` position_value reads);
+    with no clock on either side the lock holds for the rest of the
+    library."""
+    from ai.clock import NO_CLOCK, combat_clock
+    my_clock = combat_clock(snap.my_power, snap.opp_life,
+                            snap.my_evasion_power, snap.opp_toughness)
+    opp_clock = combat_clock(snap.opp_power, snap.my_life,
+                             snap.opp_evasion_power, snap.my_toughness)
+    horizon = min(my_clock, opp_clock)
+    if horizon >= NO_CLOCK:
+        return pool_size
+    return max(0, int(horizon))
+
+
+def _dead_card_value(template, snap) -> float:
+    """What a player forfeits per card the lock makes uncastable: a
+    creature's clock impact (the `creature_threat_value` base term,
+    template-only) or the average card's clock impact in the life units
+    the stax family already uses."""
+    from ai.clock import card_clock_impact, creature_clock_impact
+    from ai.scoring_constants import CREATURE_VALUE_OUTER_SCALE
+    if template.is_creature:
+        kws = {kw.value if hasattr(kw, 'value') else str(kw).lower()
+               for kw in (getattr(template, 'keywords', None) or set())}
+        return (creature_clock_impact(template.power or 0,
+                                      template.toughness or 0, kws, snap)
+                * CREATURE_VALUE_OUTER_SCALE)
+    return card_clock_impact(snap) * CLOCK_IMPACT_LIFE_SCALING
+
+
+def _dead_cards_under_forced_type(player, forced_color: str) -> list:
+    """Nonland cards in the player's hand and library that need a colour
+    the player can no longer produce.  Under the lock every nonbasic
+    land makes only ``forced_color`` (CR 305.7), so a colour survives
+    only through BASIC lands of that type — on the battlefield, or still
+    in hand / library to be played (fetching them is gone with the
+    fetch ability)."""
+    from ai.mana_planner import COLOR_MAP
+    from engine.cards import Supertype
+    live = {forced_color}
+    for zone in (player.battlefield, player.hand, player.library):
+        for c in zone:
+            t = c.template
+            if t.is_land and Supertype.BASIC in (t.supertypes or []):
+                live.update(t.produces_mana or [])
+    dead = []
+    for zone in (player.hand, player.library):
+        for c in zone:
+            t = c.template
+            if t.is_land:
+                continue
+            mc = t.mana_cost
+            need = {code for code, attr in COLOR_MAP.items()
+                    if getattr(mc, attr, 0) > 0}
+            if need - live:
+                dead.append(t)
+    return dead
+
+
 def _blood_moon_lock_ev(template, me, opp, snap) -> float:
-    """Blood Moon family: nonbasic lands become forced basic type.
+    """Forced-basic land-type family ("Nonbasic lands are Mountains").
 
-    Value depends on opp's mana base (nonbasic count) and color palette
-    (do they still get their colors through the forced basic type?).
+    The lock is worth the cards it makes uncastable, for as long as the
+    game lasts — for BOTH players, since the effect is symmetric:
+
+      value = Σ_opp dead_card_value × P(seen) − Σ_me dead_card_value × P(seen)
+
+    where a card is dead when its cost needs a colour the player can no
+    longer make (`_dead_cards_under_forced_type`), and P(seen) is the
+    share of the player's pool (hand ∪ library) they will hold or draw
+    before the game ends (`_lock_horizon_draws`).  No coefficient, no
+    cap, no turn table: a mono-coloured opponent on basics yields zero,
+    a five-colour opponent on duals yields most of its deck.
     """
-    from ai.clock import card_clock_impact
-
-    # Typed field parsed once at DB load (oracle_parser.parse_stax_forced_basic).
     forced_basic = getattr(template, 'stax_forced_basic', None)
     if forced_basic is None:
         return 0.0
-
-    # Count opp's nonbasic lands across all zones.
-    # "Basic" is a supertype on the CardTemplate, not a string field.
-    from engine.cards import Supertype
-    nonbasic_count = 0
-    for zone in (opp.library, opp.hand, opp.battlefield):
-        for c in zone:
-            if c.template.is_land and Supertype.BASIC not in c.template.supertypes:
-                nonbasic_count += 1
-    if nonbasic_count == 0:
-        return 0.0
-
-    # Approximate opp's color requirements from mana costs of their spells.
-    colors_used: set[str] = set()
-    for zone in (opp.library, opp.hand):
-        for c in zone:
-            mc = c.template.mana_cost
-            if getattr(mc, 'white', 0) > 0: colors_used.add('W')
-            if getattr(mc, 'blue', 0) > 0:  colors_used.add('U')
-            if getattr(mc, 'black', 0) > 0: colors_used.add('B')
-            if getattr(mc, 'red', 0) > 0:   colors_used.add('R')
-            if getattr(mc, 'green', 0) > 0: colors_used.add('G')
-
-    forced_color = {'mountain': 'R', 'island': 'U', 'plains': 'W',
-                    'swamp': 'B', 'forest': 'G'}[forced_basic]
-
-    # If opp plays only the forced color, Blood Moon does nothing.
-    other_colors = len(colors_used - {forced_color})
-    if other_colors == 0:
-        return 0.0
-
-    # Disruption scales with nonbasic count × missing colors.
-    # Coefficient keeps magnitudes in the same range as Chalice; cap
-    # avoids dominating all other considerations.
-    disruption = min(
-        nonbasic_count * other_colors * BLOOD_MOON_DISRUPTION_COEFFICIENT,
-        BLOOD_MOON_DISRUPTION_CAP,
-    )
-    impact = card_clock_impact(snap) * CLOCK_IMPACT_LIFE_SCALING
-    return disruption * impact * ENCHANTMENT_EXPECTED_LIFETIME * REALISM_DISCOUNT
+    # A second copy while the effect is already in play (either side)
+    # changes nothing: every card it would make dead is dead already.
+    for player in (me, opp):
+        for c in player.battlefield:
+            if getattr(c.template, 'stax_forced_basic', None):
+                return 0.0
+    from engine.constants import BASIC_LAND_TYPE_COLORS
+    forced_color = BASIC_LAND_TYPE_COLORS[forced_basic]
+    total = 0.0
+    for player, sign in ((opp, 1.0), (me, -1.0)):
+        pool_size = len(player.hand) + len(player.library)
+        if pool_size == 0:
+            continue
+        dead = _dead_cards_under_forced_type(player, forced_color)
+        if not dead:
+            continue
+        seen = min(pool_size,
+                   len(player.hand) + _lock_horizon_draws(snap, pool_size))
+        p_seen = seen / pool_size
+        total += sign * p_seen * sum(_dead_card_value(t, snap) for t in dead)
+    return total
 
 
 def _canonist_lock_ev(template, me, opp, snap) -> float:
@@ -300,6 +353,8 @@ def stax_lock_ev(template: 'CardTemplate',
     family = classify_stax(template)
     if family is None:
         return 0.0
+    if family in _SELF_HORIZON_FAMILIES:
+        return _DISPATCH[family](template, me, opp, snap)
     decay = _turn_decay(snap.turn_number)
     if decay == 0.0:
         return 0.0

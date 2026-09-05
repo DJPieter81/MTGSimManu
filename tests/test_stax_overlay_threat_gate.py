@@ -129,45 +129,9 @@ def test_stax_overlay_added_when_holdback_zero(card_db, monkeypatch):
     )
 
 
-def test_stax_overlay_silenced_when_holdback_fires(card_db, monkeypatch):
-    """When `_holdback_penalty` returns a non-zero (negative) value —
-    i.e. a held instant-speed response would be sacrificed — the stax
-    overlay must NOT be applied. Verify by forcing holdback to a fixed
-    -1.0 and comparing against the natural (open-gate) score:
-
-        delta = score_open - score_closed
-              = (base + stax_bonus + 0) - (base + 0 + (-1.0))
-              = stax_bonus + 1.0
-
-    Pre-wiring: `score_open` and `score_closed` differ only by the
-    forced holdback (no stax bonus on either side), so delta = 1.0
-    and this test fails.
-    """
-    from ai import stax_ev as stax_mod
-    real_stax_lock_ev = stax_mod.stax_lock_ev
-
-    game, chalice, player, snap, me, opp = _scenario_pieces(card_db)
-    expected_bonus = real_stax_lock_ev(chalice.template, me, opp, snap)
-    assert expected_bonus > 0.5, (
-        "test setup needs a stax bonus comfortably above the forced "
-        "holdback magnitude (-1.0) to give a clean assertion margin"
-    )
-
-    # Score with natural (open) holdback — should include stax overlay.
-    score_open = player._score_spell(chalice, snap, game, me, opp)
-
-    # Force `_holdback_penalty` to fire on the next call.
-    monkeypatch.setattr(EVPlayer, "_holdback_penalty",
-                        lambda self, *a, **kw: -1.0)
-    score_closed = player._score_spell(chalice, snap, game, me, opp)
-
-    delta = score_open - score_closed
-    # Expected post-wiring: delta ≈ stax_bonus + 1.0.
-    # Pre-wiring (no overlay): delta = 1.0 → fails the bound below.
-    assert delta > 1.0 + 0.5 * expected_bonus, (
-        f"With holdback firing, stax overlay must be silenced. "
-        f"Open-gate − closed-gate delta should be ≈ "
-        f"stax_bonus + holdback_magnitude = {expected_bonus + 1.0:.3f}. "
-        f"Pre-wiring delta is 1.0 (forced holdback only) and fails. "
-        f"Got delta = {delta:.3f}."
-    )
+# The former "overlay silenced when holdback fires" rule was inverted on
+# 2026-09-05: the tap-out cost is the signed holdback penalty already in
+# the score, and silencing the overlay on top of it charged it twice.
+# The replacement rule is pinned in
+# tests/test_forced_land_type_is_a_continuous_effect.py
+# (test_stax_overlay_is_priced_by_the_holdback_penalty_not_silenced).

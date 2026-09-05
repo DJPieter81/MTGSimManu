@@ -2891,3 +2891,82 @@ race after the outlet fix) are skipped; **Boros Ponza 85 and Hollow One
 85** are the two registered lists with no replay audit at all. Iteration
 1 opens both with `--bo3 … -s 50000` replays and follows whichever shows a
 class-sized defending-side defect.
+
+### Iteration 1 — Boros Ponza (85%): the land-type lock is neither a continuous effect nor valued past turn 4
+
+`--bo3 "Boros Ponza" "Domain Zoo" -s 50000` (Ponza 2-1 on this seed). G1:
+Ponza casts Blood Moon on turn 10 — after the game — and G2 the same;
+`--trace` shows it drawn on turn 7 against a five-colour deck on duals and
+fetches and scored **−0.2** every turn until turn 11 (+1.3). Two class
+defects, engine and AI:
+
+1. **Engine.** "Nonbasic lands are Mountains" ran as a one-shot ETB handler
+   on the OPPONENT's lands then on the battlefield, swapping in a per-
+   instance template copy: lands played afterwards kept their colours,
+   the caster's own nonbasics were untouched (the real card is symmetric —
+   Ponza runs basics for that reason), and a fetchland under the effect
+   could still be cracked. Built: a **layer-4 land-type SET continuous
+   effect** derived every `recalculate()` from any permanent with the
+   typed `stax_forced_basic` (`create_forced_land_type_effect`; CR 613.1d,
+   305.7, 611.2a) — every nonbasic land on both battlefields, entering
+   later included, produces only that basic type's colour
+   (`ManaPayment.effective_produces_mana`, `available_mana_colors`) and
+   has no fetch ability (`crack_fetchland` refuses, reading the live layer
+   state and the source for a land cracked as it enters); the effect ends
+   with its source. `BASIC_LAND_TYPE_COLORS` (CR 305.6) in
+   `engine/constants.py` is the one type→colour map. The Blood Moon ETB
+   registry entry is retired (87, baseline lowered); Magus of the Moon and
+   Harbinger of the Seas get the effect for free.
+2. **AI.** `ai/stax_ev._blood_moon_lock_ev` was a coefficient × nonbasic
+   count with a cap, multiplied by a turn-decay table that reaches ZERO on
+   turn 5, and the whole stax overlay was silenced by `holdback >= 0` —
+   any instant in hand hid the lock's value. Built: the lock is worth the
+   cards it makes uncastable, for both players (symmetric): a card is dead
+   when its cost needs a colour the player can no longer make (basics of
+   that type on the battlefield, in hand or in the library keep it alive;
+   fetching is gone), each dead card is valued by `creature_clock_impact`
+   (creatures) or `card_clock_impact` in the family's life units, weighted
+   by the share of the pool the player will see before the game ends
+   (`_lock_horizon_draws` from the two combat clocks; the whole library
+   when neither side has a clock). No coefficient, cap or turn table; the
+   family bypasses `_turn_decay`. The overlay gate is removed — the tap-out
+   is priced once, by the signed holdback penalty already in the score
+   (the inverted "silenced" pin retired; the rule re-pinned).
+
+Tests (failing-test-first, rule-phrased,
+`tests/test_forced_land_type_is_a_continuous_effect.py`, 9): symmetric and
+retracting on both battlefields; a land entering later is affected (and
+the untapped colour census agrees); a fetchland has no fetch ability; no
+card-name handler and a second family member works; the value counts
+the opponent's dead cards and is zero for a one-colour opponent on
+basics; it does not expire on a turn number; a colour still reachable
+through basics is not dead; the caster pays for its own dead cards; the
+overlay is priced by holdback, not silenced. Existing pins
+(`tests/test_stax_ev.py` Blood Moon > 2.0 vs a UW nonbasic base, 0 vs
+mono-red on basics) hold on the derived formula. Ratchets: registry 87
+(lowered), others at baseline.
+
+Replay after the valuation alone: Blood Moon scored **+8.7** on turn 7,
+was the best candidate — and was still passed: a lock permanent carried
+no "this-turn signal", so the pass-preference filter deferred it forever
+whatever its EV (the same gate that hid the hand-attack class). Built:
+a typed-`stax_class` permanent carries the signal
+`lock_before_opponent_turn` (it restricts the opponent's NEXT turn, so
+cast-now and cast-later are different states); pinned. A second copy
+while the effect is in play (either side) is worth zero; pinned. Replay
+after both: Blood Moon on **turn 4** in G1 (Ponza wins T9) and turn 4 in
+G2; Ponza's own fetchlands lose their ability under it as the rules say
+("Marsh Flats has no fetch ability"); match 1-2 on this seed (one seed,
+not the measurement). Anchor: one turn-only drift (Boros Ponza vs Boros
+Energy s51000, 13 → 17) refreshed.
+
+**Hollow One (85%) — recorded lead, next iteration.** `--bo3 "Hollow One"
+"Domain Zoo" -s 50000` (Zoo 2-0): the trace scores "cycle: Street Wraith"
+at **+8.3** and "cycle: Hollow One" at **+7.8** against +0.9 for a
+one-drop creature, so the deck cycles its own payoff on turn 5 instead of
+sequencing cycles into the turn it casts it, and Hollow One is never cast
+in either game. The cycling action's valuation (a flat draw bonus that
+dwarfs board plays) and the per-turn "costs {1} less for each card
+cycled or discarded this turn" discount not being planned as a same-turn
+sequence are the subsystems; class = every cycling card and every
+this-turn cost reducer.

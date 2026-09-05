@@ -157,6 +157,19 @@ class LandManager:
         profile = fetch_card.template.fetchland
         if profile is None:
             return
+        # A nonbasic land whose type is SET to a basic type (Blood Moon
+        # family, CR 305.7) has only that type's mana ability — no fetch.
+        # Read the live layer state, and the source directly for a land
+        # cracked as it enters (before the next recalculate()).
+        from .cards import Supertype
+        from .continuous_effects import forced_land_type_in_play
+        if (getattr(fetch_card, 'cem_land_type_set', None)
+                or (forced_land_type_in_play(game)
+                    and Supertype.BASIC not in (fetch_card.template.supertypes or []))):
+            game.log.append(
+                f"T{game.display_turn} P{player_idx+1}: "
+                f"{fetch_name} has no fetch ability (its land type is set)")
+            return
         fetch_colors = list(profile.colors)
 
         # Life is part of the printed activation cost ("Pay 1 life") — the

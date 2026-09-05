@@ -1824,23 +1824,17 @@ class EVPlayer:
             ev += holdback
 
         # ── Stax lock-piece overlay (P1-1) ──
-        # `stax_lock_ev` returns a positive EV for stax permanents
-        # (Chalice, Blood Moon, Canonist, Torpor Orb) based on
-        # opponent deck composition. The bonus is GATED on
-        # `holdback >= 0`: if tapping out for this play would
-        # forfeit held instant-speed interaction, the overlay must
-        # not crowd out the concrete answer. Without this gate the
-        # AI casts T2 Chalice over a held Counterspell (the WST
-        # regression that caused the previous wiring to be reverted).
-        #
-        # M3 (signed holdback): `holdback >= 0.0` captures both the
-        # pre-M3 "no holdback" state (= 0.0) AND the new positive-
-        # bonus branch (no defensive use → proactive tap-out is
-        # actively rewarded).  Equivalent intent: the gate fires
-        # whenever the held-response penalty path is silent.
-        if holdback >= 0.0:
-            from ai.stax_ev import stax_lock_ev
-            ev += stax_lock_ev(t, me, opp, snap)
+        # `stax_lock_ev` returns the EV of a lock permanent (Chalice,
+        # the forced-land-type family, Canonist, Torpor Orb) from both
+        # players' deck composition.  The cost of tapping out for it —
+        # the held responses it forfeits — is the signed holdback
+        # penalty already added above; the overlay is not silenced on
+        # top of that (the former `holdback >= 0` gate charged the
+        # tap-out twice and hid a lock's value behind ANY held instant:
+        # Boros Ponza vs Domain Zoo s50000, Blood Moon at -0.2 against a
+        # five-colour deck while Bolt was in hand).
+        from ai.stax_ev import stax_lock_ev
+        ev += stax_lock_ev(t, me, opp, snap)
 
         phyrexian_count = getattr(t, 'phyrexian_pip_count', 0)
         if phyrexian_count > 0:

@@ -192,6 +192,8 @@ class ContinuousEffectsManager:
                 card.cem_keywords.clear()
                 # Layer-5 colour SET: None means "printed colour"
                 card.cem_colors_set = None
+                # Layer-4 land-type SET: None means "printed types"
+                card.cem_land_type_set = None
 
         # Sort effects by (layer, pt_sublayer, timestamp)
         sorted_effects = sorted(self._effects + derived, key=lambda e: (
@@ -244,6 +246,14 @@ class ContinuousEffectsManager:
                         controller=controller,
                         scope=scope,
                         colors=ALL_COLORS,
+                        timestamp=source.instance_id,
+                    ))
+                forced = getattr(source.template, 'stax_forced_basic', None)
+                if forced:
+                    derived.extend(create_forced_land_type_effect(
+                        source_id=source.instance_id,
+                        source_name=source.template.name,
+                        basic_type=forced,
                         timestamp=source.instance_id,
                     ))
         return derived
@@ -328,6 +338,57 @@ def create_color_setting_effect(source_id: int, source_name: str,
         description=f"{source_name}: {scope} is all colors",
         timestamp=timestamp,
     )]
+
+
+def create_forced_land_type_effect(source_id: int, source_name: str,
+                                   basic_type: str,
+                                   timestamp: int = 0) -> List[ContinuousEffect]:
+    """Layer-4 land-type SET ("Nonbasic lands are Mountains", CR 613.1d,
+    CR 305.7).
+
+    Every nonbasic land on EVERY battlefield — the source's controller's
+    included, and lands that enter while the source is out — loses its
+    printed land types and abilities and is the named basic type: it
+    produces that type's colour and nothing else, and has no other
+    activated ability (a fetchland cannot be cracked).  The effect is
+    re-derived each `recalculate()` from the source's presence, so it
+    ends the moment the source leaves (CR 611.2a).
+
+    `basic_type` is the parsed `CardTemplate.stax_forced_basic`
+    (oracle_parser.parse_stax_forced_basic) — Blood Moon, Magus of the
+    Moon, Harbinger of the Seas, … all reuse this one effect.
+    """
+    from .cards import Supertype
+
+    def affects_nonbasic_lands(game, card):
+        return (CardType.LAND in card.effective_card_types
+                and Supertype.BASIC not in (card.template.supertypes or []))
+
+    def apply_type(game, card):
+        card.cem_land_type_set = basic_type
+
+    return [ContinuousEffect(
+        source_id=source_id,
+        source_name=source_name,
+        layer=Layer.TYPE,
+        affected=affects_nonbasic_lands,
+        apply=apply_type,
+        description=f"{source_name}: nonbasic lands are {basic_type}s",
+        timestamp=timestamp,
+    )]
+
+
+def forced_land_type_in_play(game: "GameState") -> Optional[str]:
+    """The basic type every nonbasic land currently IS, or None.  Read
+    by paths that run before the next `recalculate()` (a fetchland
+    cracked as it enters) so a land never briefly keeps an ability the
+    effect has already removed."""
+    for player in game.players:
+        for source in player.battlefield:
+            forced = getattr(source.template, 'stax_forced_basic', None)
+            if forced:
+                return forced
+    return None
 
 
 def create_equipment_effect(source_id: int, source_name: str,

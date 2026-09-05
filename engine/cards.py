@@ -1501,6 +1501,12 @@ class CardInstance:
     # database objects and a mutation there leaks into every other
     # game in the process.
     cem_colors_set: Optional[frozenset] = None
+    # Layer-4 land-type SET ("Nonbasic lands are Mountains", CR 305.7):
+    # the lowercase basic type this land currently IS, or None for its
+    # printed types.  Written only by ContinuousEffectsManager.recalculate;
+    # read by the mana accessors (a set land produces that basic type's
+    # colour and nothing else) and by the fetch path (no other abilities).
+    cem_land_type_set: Optional[str] = None
     # Land animation ("this land becomes an N/M creature until end of
     # turn") — Track H. While True the instance belongs to the combat
     # class (creatures property, can_attack/can_block, SBA death

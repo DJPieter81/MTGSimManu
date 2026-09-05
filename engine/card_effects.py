@@ -2559,46 +2559,12 @@ def goblin_bombardment_etb(game, card, controller, targets=None, item=None):
 
 
 # ═══════════════════════════════════════════════════════════════════
-# Blood Moon — nonbasic lands are Mountains
-# ═══════════════════════════════════════════════════════════════════
-@EFFECT_REGISTRY.register("Blood Moon", EffectTiming.ETB,
-                           description="Nonbasic lands are Mountains")
-def blood_moon_etb(game, card, controller, targets=None, item=None):
-    """Blood Moon enters: opponent's nonbasic lands become Mountains.
-
-    CRITICAL: Do NOT mutate `land.template.produces_mana` — templates are
-    shared across every CardInstance of that land in every game in the
-    matrix worker. The old implementation permanently corrupted the
-    CardDatabase for all subsequent games, which is the primary cause of
-    Boros's 94% WR (Blood Moon SB → opponent lands become Mountains in
-    game 1 → stay broken for games 2..N because mana-tap logic reads the
-    shared template).
-
-    Fix: give each affected land instance its own shallow-copied template
-    with produces_mana=['R']. Only the instance sees the change; the
-    shared CardDatabase template is untouched.
-    """
-    import copy
-    opp_idx = 1 - controller
-    opp = game.players[opp_idx]
-    affected = 0
-    for land in opp.lands:
-        supertypes = getattr(land.template, 'supertypes', [])
-        if 'Basic' in supertypes:
-            continue
-        old_colors = set(land.template.produces_mana)
-        if old_colors == {'R'} or old_colors == set():
-            continue
-        # Shallow-copy the template, then replace produces_mana in the copy.
-        # Assigning land.template rebinds only this instance's reference.
-        per_instance_tmpl = copy.copy(land.template)
-        per_instance_tmpl.produces_mana = ['R']
-        land.template = per_instance_tmpl
-        affected += 1
-    if affected > 0:
-        game.log.append(
-            f"T{game.display_turn} P{controller+1}: "
-            f"Blood Moon: {affected} opponent nonbasic lands become Mountains")
+# Blood Moon family — "Nonbasic lands are Mountains" is a LAYER-4
+# continuous effect derived from the typed `stax_forced_basic` field
+# (engine/continuous_effects.py::create_forced_land_type_effect):
+# symmetric, covers lands that enter later, strips the fetch ability,
+# and ends with its source.  The per-card ETB handler that swapped an
+# opponent-only template copy at entry time was retired with it.
 
 
 # ═══════════════════════════════════════════════════════════════════

@@ -1148,6 +1148,16 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
     if t.is_tutor:
         signals.append('tutor')
 
+    # 6b. Lock permanent (typed `stax_class`: forced land type, Chalice,
+    #     Canonist, Torpor Orb …): it restricts what the opponent can do
+    #     on THEIR next turn, so casting now and casting a turn later are
+    #     not the same state — the turn in between is the turn it would
+    #     have stopped.  Without this the pass-preference filter deferred
+    #     every lock forever whatever its EV said (Boros Ponza vs Domain
+    #     Zoo s50000: Blood Moon at +8.7, best play, passed on turn 7).
+    if getattr(t, 'stax_class', None):
+        signals.append('lock_before_opponent_turn')
+
     # 7. Creature body with power > 0 (future combat clock contribution).
     if t.is_creature and (t.power or 0) > 0:
         signals.append('creature_body_with_power')

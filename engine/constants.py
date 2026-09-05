@@ -73,6 +73,12 @@ ZONE_SIDEBOARD = "sideboard"
 
 # ── Basic land types (for domain, fetch targeting, etc.) ──
 BASIC_LAND_TYPES = frozenset({"Plains", "Island", "Swamp", "Mountain", "Forest"})
+# CR 305.6: each basic land type carries exactly one intrinsic mana ability.
+# A land whose type is SET to a basic type (Blood Moon family, layer 4)
+# produces that colour and nothing else (CR 305.7).
+BASIC_LAND_TYPE_COLORS = {
+    "plains": "W", "island": "U", "swamp": "B", "mountain": "R", "forest": "G",
+}
 
 # ── Mana colors ──
 MANA_COLORS = frozenset({"W", "U", "B", "R", "G"})

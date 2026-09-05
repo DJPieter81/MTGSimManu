@@ -73,6 +73,14 @@ class ManaPayment:
         Opal).  Non-lands only use the metalcraft branch; the Leyline
         branch is gated to lands.
         """
+        # Layer-4 land-type SET (Blood Moon family, CR 305.7): the land
+        # IS the named basic type and has only that type's mana ability.
+        # Written by ContinuousEffectsManager.recalculate; checked first
+        # because a set type replaces every printed and granted ability.
+        forced = getattr(card, 'cem_land_type_set', None)
+        if forced:
+            from .constants import BASIC_LAND_TYPE_COLORS
+            return [BASIC_LAND_TYPE_COLORS[forced]]
         # Leyline of the Guildpact: only applies to lands.
         if card.template.is_land and ManaPayment.has_leyline_of_guildpact(game, player_idx):
             return ALL_COLORS
