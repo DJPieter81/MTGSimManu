@@ -2853,4 +2853,17 @@ Polluted Delta, Atraxa, Thoughtseize, Ephemerate) — the exact self-
 outlet shape — where it previously mulled to 5; it self-Thoughtseizes
 Atraxa on turn 2 and reanimates it on turn 3 for 7, then loses a Bolt +
 Ragavan race at 3 life. The deck's real line, one seed's race — accepted;
-fixture refreshed, 29/29.
+fixture refreshed, 29/29. Both CI chunks green (a-g 2196, h-z 2231);
+pushed as `94475d0`.
+
+**Measurement (n=20, 50000 grid, quiet box):** Goryo's Vengeance vs
+Domain Zoo 5 / 95 (was 0 / 100) — one match, direction only; Goryo's
+game wins now land on turns 5–8 (were 5–6), Zoo's on 4–8. Guards:
+Grixis Reanimator vs Domain Zoo 40 / 60 (the self-outlet class fires
+there too — Thoughtseize + Archon; no regression against the 35 / 65
+field cell), Dimir Midrange vs Domain Zoo 55 / 45 (no graveyard plan,
+still targets the opponent; field cell 50 / 50). The restart
+precondition is met on the mechanism (the line exists and is kept);
+the Goryo's cell itself is now a race the registered list mostly loses
+to a turn-5 kill. Full field re-read follows as the restarted loop's
+iteration-0 baseline.
