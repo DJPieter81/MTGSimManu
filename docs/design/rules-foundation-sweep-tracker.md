@@ -2958,7 +2958,29 @@ after both: Blood Moon on **turn 4** in G1 (Ponza wins T9) and turn 4 in
 G2; Ponza's own fetchlands lose their ability under it as the rules say
 ("Marsh Flats has no fetch ability"); match 1-2 on this seed (one seed,
 not the measurement). Anchor: one turn-only drift (Boros Ponza vs Boros
-Energy s51000, 13 → 17) refreshed.
+Energy s51000, 13 → 17) refreshed. Both CI chunks green on the commit
+state (a-g 2207, h-z 2230); pushed as `77f7527`.
+
+**Measurement (n=20, 50000 grid, quiet box):** Boros Ponza vs Domain Zoo
+**45 / 55** (baseline cell 15 / 85) — a 30pp cell move; Ponza's wins land
+on turns 7–13, Zoo's on 5–16 (11 of 20 matches to game 3). The cell-move
+rule (≥15pp) triggers the full field re-read below. Regression guard —
+Azorius Control (WST) vs Domain Zoo, the pairing the removed overlay gate
+was introduced for (T2 Chalice over a held Counterspell): 20 / 75 (one
+match unresolved) against a 40 / 60 field cell — a 15pp move the wrong
+way at n=20 (cell noise ±10pp); the field re-read decides whether the
+gate's removal re-opened that regression, and if it did the Chalice
+family's coefficient valuation is the next subsystem, not the gate.
+
+**Field re-read (n=20, 50000 grid, quiet box, head `77f7527`): flat
+63.8%** (restart baseline 65.0%). Cells: Boros Ponza 85 → 60, Boros
+Energy 55 → 50, Azorius Control (WST) 60 → 60 (the guard's 20 / 75 was
+noise in the other seat), every other cell identical. 1.2pp is under the
+2.2pp movement rule: **code iteration 1 of the loop-break count (1 of
+3)**, although the targeted cell moved 25pp. Stop gate: field inside the
+band but five cells ≥85% (Creatures Toolbox 95, Affinity 90, Amulet Titan
+85, Goryo's Vengeance 85, Hollow One 85) — not met. Iteration 2 target:
+Hollow One (recorded lead above).
 
 **Hollow One (85%) — recorded lead, next iteration.** `--bo3 "Hollow One"
 "Domain Zoo" -s 50000` (Zoo 2-0): the trace scores "cycle: Street Wraith"
