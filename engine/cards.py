@@ -1127,6 +1127,11 @@ class CardTemplate:
     # ai/hand_denial.py; the choose clause feeds the engine's
     # revealed-hand filter.
     hand_attack_data: Optional[dict] = None
+    # Untargeted mass return of creature cards from graveyards onto the
+    # battlefield (Living End shape), excluding self-returns
+    # (oracle_parser.parse_mass_graveyard_return). Read by
+    # ai.card_classes.deck_can_return — "is this card reanimation equity".
+    mass_graveyard_return: bool = False
     # -- Land destruction (spell tranche) -----------------------------------
     # True when the card is a spell-shaped "Destroy target land" effect with
     # only supported riders (see oracle_parser.parse_land_destruction).
@@ -1354,6 +1359,9 @@ class CardTemplate:
             if self.hand_attack_data is None:
                 from .oracle_parser import parse_hand_attack as _pha
                 self.hand_attack_data = _pha(self.oracle_text)
+            if not self.mass_graveyard_return:
+                from .oracle_parser import parse_mass_graveyard_return as _pmgr
+                self.mass_graveyard_return = _pmgr(self.oracle_text)
             if self.land_type_bonuses is None:
                 from .oracle_parser import parse_land_type_bonuses as _pltb
                 self.land_type_bonuses = _pltb(self.oracle_text)

@@ -78,7 +78,6 @@ def self_discard_outlet_targets(template: "CardTemplate", hand,
         return []
     from ai.combo_calc import _find_resource_zone
     from engine.oracle_resolver import _targeted_discard_candidates
-    from engine.target_solver import _matches_supertype, parse
 
     class _Plan:  # _find_resource_zone reads goal_engine.gameplan
         pass
@@ -88,28 +87,70 @@ def self_discard_outlet_targets(template: "CardTemplate", hand,
     if zone != "graveyard":
         return []
 
-    # Graveyard target requirements of every payoff in hand.
-    returners = []
-    for c in hand:
-        for req in parse(c.template.oracle_text or ""):
-            if req.zone == "graveyard" and "creature" in req.types:
-                returners.append(req)
-    if not returners:
-        return []
+    # A payoff in hand must be able to return the binned card
+    # (`deck_can_return`: the payoff's parsed graveyard requirement).
+    payoffs = [c for c in hand if c.template is not template]
 
     def _returnable(card) -> bool:
-        if not card.template.is_creature:
-            return False
-        for req in returners:
-            if not _matches_supertype(card, req.supertype):
-                continue
-            mv = req.max_mana_value
-            if mv is not None and (card.template.cmc or 0) > mv:
-                continue
-            return True
-        return False
+        return deck_can_return(card.template, payoffs)
 
     legal = _targeted_discard_candidates(
         [c for c in hand if c.template is not template],
         data.get('choose_clause') or '')
     return [c for c in legal if _returnable(c)]
+
+
+def deck_can_return(template: "CardTemplate", returners) -> bool:
+    """True when some card among ``returners`` (templates or instances)
+    can put ``template`` from a graveyard onto the battlefield.
+
+    Derived, never named:
+      * a TARGETED returner ("return target [legendary] creature card
+        [with mana value N or less] from your graveyard to the
+        battlefield") counts when its parsed graveyard requirement
+        admits the card — creature type, supertype, mana-value ceiling
+        (`engine.target_solver.parse` / `_matches_supertype`);
+      * an UNTARGETED mass return ("each player … puts all cards they
+        exiled this way onto the battlefield", Living End shape) counts
+        for any creature card;
+      * a returner that only returns ITSELF ("return this card from your
+        graveyard to the battlefield" — the Vengevine / Phoenix shape) is
+        no path for anything else.
+
+    One owner for "is this card reanimation equity in this deck":
+    the cycling scorer and the self-discard-outlet line both read it.
+    """
+    from engine.target_solver import _matches_supertype, parse
+
+    if not getattr(template, 'is_creature', False):
+        return False
+
+    class _Probe:  # `_matches_supertype` reads card.template.supertypes
+        pass
+    probe = _Probe()
+    probe.template = template
+
+    for r in returners:
+        rt = getattr(r, 'template', r)
+        oracle = (getattr(rt, 'oracle_text', '') or '').lower()
+        if not oracle or rt is template:
+            continue
+        targeted = False
+        for req in parse(oracle):
+            if req.zone != "graveyard" or "creature" not in req.types:
+                continue
+            targeted = True
+            if not _matches_supertype(probe, req.supertype):
+                continue
+            mv = req.max_mana_value
+            if mv is not None and (template.cmc or 0) > mv:
+                continue
+            return True
+        if targeted:
+            continue
+        # Untargeted: a mass return of creature cards from graveyards
+        # onto the battlefield (typed `mass_graveyard_return`, parse-once;
+        # self-returns excluded there).
+        if getattr(rt, 'mass_graveyard_return', False):
+            return True
+    return False

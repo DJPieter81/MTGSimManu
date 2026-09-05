@@ -274,8 +274,18 @@ def parse(oracle_text: str) -> List[TargetRequirement]:
 
     # ── 1. Graveyard targets ────────────────────────────────────────
     gy_match = _GRAVEYARD_PATTERN.search(oracle_l)
-    if gy_match is None and any(h in oracle_l for h in _GRAVEYARD_ZONE_HINTS):
-        gy_match = _GRAVEYARD_LOOSE_PATTERN.search(oracle_l)
+    if gy_match is None:
+        # The loose fallback needs a graveyard-zone hint; reminder text
+        # (CR 207.2 — parenthesised, no rules meaning) must not supply
+        # it: a flashback / escape reminder says "from your graveyard"
+        # on a spell whose real target is on the battlefield ("Target
+        # creature gains … / Flashback {1}{W} (You may cast this card
+        # from your graveyard …)"), and the fallback then read the
+        # battlefield creature as a graveyard-creature target.
+        from .oracle_parser import strip_reminder_text
+        hint_text = strip_reminder_text(oracle_text).lower()
+        if any(h in hint_text for h in _GRAVEYARD_ZONE_HINTS):
+            gy_match = _GRAVEYARD_LOOSE_PATTERN.search(oracle_l)
     if gy_match is not None:
         super_word = (gy_match.group(1) or "").strip() or None
         type_word = gy_match.group(2)

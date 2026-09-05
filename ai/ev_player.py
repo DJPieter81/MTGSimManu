@@ -2575,6 +2575,22 @@ class EVPlayer:
                 return int(goal.resource_target or 0)
         return 0
 
+    def _deck_can_return_card(self, card, game, me) -> bool:
+        """Is THIS card reanimation equity in this deck: the gameplan
+        declares the cascade-reanimator signature (`prefer_cycling`), or
+        some returner among the visible pool (hand, battlefield, and the
+        library once DeckKnowledge is initialised) can take it —
+        `ai.card_classes.deck_can_return`."""
+        if self.goal_engine and self.goal_engine.gameplan:
+            if getattr(self.goal_engine.gameplan, 'prefer_cycling', False):
+                return True
+        from ai.card_classes import deck_can_return
+        zones = [me.hand, me.battlefield]
+        if self._dk is not None:
+            zones.append(me.library)
+        pool = [c for zone in zones for c in zone if c is not card]
+        return deck_can_return(card.template, pool)
+
     def _has_reanimation_path(self, game, me) -> bool:
         """True if the deck has an oracle-visible way to return
         creatures from graveyard to battlefield — required for the
@@ -2666,12 +2682,42 @@ class EVPlayer:
         # Drawing a card: future clock change
         ev = card_clock_impact(snap) * CLOCK_IMPACT_LIFE_SCALING  # scale to match spell scores
 
+        # Cycling SPENDS the card: a creature cycled away is a body that
+        # never reaches the board.  Charge its clock value (the same
+        # `creature_clock_impact` the threat scorer uses) weighted by how
+        # castable it is at the current mana — the mana gating
+        # `card_clock_impact` applies to an average card, here applied
+        # to this card's effective cost (cost reducers included).  An
+        # uncastable body costs little to cycle; a payoff the deck could
+        # deploy is not free to throw away (Hollow One vs Domain Zoo
+        # s50000: the 4/4 payoff cycled on turns 3 and 5).
+        if card.template.is_creature:
+            from ai.clock import creature_clock_impact
+            from ai.effective_cmc import effective_cmc as _ecmc
+            from ai.scoring_constants import CREATURE_VALUE_OUTER_SCALE
+            cost = max(1, _ecmc(card, snap, game=game, player_idx=self.player_idx) or 0)
+            castable_fraction = min(1.0, snap.my_mana / cost)
+            kws = {kw.value if hasattr(kw, 'value') else str(kw).lower()
+                   for kw in (getattr(card.template, 'keywords', None) or set())}
+            ev -= (creature_clock_impact(card.template.power or 0,
+                                         card.template.toughness or 0, kws, snap)
+                   * CREATURE_VALUE_OUTER_SCALE * castable_fraction)
+
         # Cycling creatures into GY: Living End-style reanimation gameplan.
         # Design: docs/design/ev_correctness_overhaul.md §2.E — the
         # "creature in graveyard = future reanimation target" bonus fires
         # ONLY when the deck has a visible reanimation path.  A dead
         # creature in Boros Energy's graveyard is not equity.
-        if card.template.is_creature and self._has_reanimation_path(game, me):
+        # The credit is the value of a returner in the deck that can take
+        # THIS card (ai.card_classes.deck_can_return: a targeted returner
+        # by its parsed graveyard requirement, an untargeted mass return
+        # by its scope; a creature that only returns itself is no path
+        # for anything else).  A deck-wide "some reanimation text exists"
+        # scan credited a Vengevine-shaped deck for cycling its own
+        # payoff (Hollow One vs Domain Zoo s50000, "cycle: Hollow One"
+        # +7.8 on turn 5).  The gameplan's `prefer_cycling` (the cascade-
+        # reanimator signature) remains authoritative when declared.
+        if card.template.is_creature and self._deck_can_return_card(card, game, me):
             power = card.template.power or 0
             # Creature in GY = future reanimation target
             ev += (CYCLING_GY_REANIMATE_BASE + power * CYCLING_GY_REANIMATE_PER_POWER)

@@ -2074,6 +2074,9 @@ class CardDatabase:
         # (caster-chosen Thoughtseize shape vs victim-chosen / random).
         from .oracle_parser import parse_hand_attack
         template.hand_attack_data = parse_hand_attack(oracle)
+        # Untargeted mass graveyard→battlefield return (Living End shape).
+        from .oracle_parser import parse_mass_graveyard_return
+        template.mass_graveyard_return = parse_mass_graveyard_return(oracle)
         # Land destruction (spell tranche) — parse-once typed classification.
         from .oracle_parser import parse_land_destruction
         template.land_destruction_data = parse_land_destruction(oracle)

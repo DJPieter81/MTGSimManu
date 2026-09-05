@@ -2982,6 +2982,58 @@ band but five cells ≥85% (Creatures Toolbox 95, Affinity 90, Amulet Titan
 85, Goryo's Vengeance 85, Hollow One 85) — not met. Iteration 2 target:
 Hollow One (recorded lead above).
 
+### Iteration 2 — Hollow One (85%): cycling credited as reanimation equity a self-returner cannot provide
+
+The +7.8 for "cycle: Hollow One" decomposes as draw value (~1.7) plus
+the "creature in graveyard = future reanimation target" credit
+(`CYCLING_GY_REANIMATE_BASE` + power × per-power ≈ 6). That credit was
+gated on `_has_reanimation_path`: any oracle text in the deck returning
+a creature from a graveyard to the battlefield. The Hollow One list's
+Vengevine ("you may return **this card** from your graveyard to the
+battlefield") satisfies that scan, so the deck credited cycling its own
+4/4 payoff — and every other creature — with equity only Vengevine gets.
+Class: every cycling creature in every deck with a self-returning
+creature (Vengevine, the Phoenixes, Arclight shapes).
+
+Built (failing-test-first,
+`tests/test_cycling_credits_a_graveyard_body_only_if_the_deck_can_return_it.py`,
+5): `ai/card_classes.py::deck_can_return(template, returners)` — the one
+owner of "is this card reanimation equity in this deck": a targeted
+returner counts by its parsed graveyard requirement (creature type,
+legendary / any, mana-value ceiling — `target_solver.parse`), an
+untargeted mass return by the new parse-once typed
+`CardTemplate.mass_graveyard_return` (Living End shape, 45 pool cards;
+self-returns excluded at parse), and a returner that only returns itself
+counts for nothing else. `_score_cycling` credits the graveyard body
+only when `deck_can_return` holds over the visible pool (or the gameplan
+declares `prefer_cycling`); the self-discard-outlet line now reads the
+same predicate. Runtime-parse ratchet held at 180 by moving the mass-
+return shape to load time; narrow-field ratchet unchanged.
+
+Replay after the credit fix alone: Hollow One still cycled on turns 3
+and 5 — the scorer never charged the cycled card's own value (a card
+draw ≈ an average body's clock impact, so cycling anything beat casting
+a one-drop). Built: cycling SPENDS the card — a creature's
+`creature_clock_impact` × outer scale, weighted by how castable it is at
+the current mana against its effective cost (the same mana gating
+`card_clock_impact` applies to an average card), is subtracted; an
+uncastable body costs little to cycle, a deployable payoff is not free
+to throw away. Pinned ("the same 4/4 costs more to cycle when the mana
+to deploy it is there").
+
+Replay after both: the credit was STILL applied (+6.2) — the predicate
+found a "returner" in the deck: a flashback pump spell ("Target creature
+gains … / Flashback {1}{W} (You may cast this card from your
+graveyard …)"). `target_solver.parse`'s loose graveyard fallback takes
+its zone hint from the whole text, and the flashback REMINDER supplied
+"from your graveyard", so a battlefield creature target parsed as a
+graveyard-creature target — every flashback / escape spell with a
+creature target was mis-zoned this way. Fixed at the solver: the zone
+hint is read from reminder-stripped text (CR 207.2;
+`oracle_parser.strip_reminder_text`), pinned ("reminder text never
+supplies a target zone"). Target-solver suites green; runtime-parse
+ratchet 180.
+
 **Hollow One (85%) — recorded lead, next iteration.** `--bo3 "Hollow One"
 "Domain Zoo" -s 50000` (Zoo 2-0): the trace scores "cycle: Street Wraith"
 at **+8.3** and "cycle: Hollow One" at **+7.8** against +0.9 for a

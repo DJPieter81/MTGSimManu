@@ -4106,6 +4106,36 @@ def parse_hand_attack(oracle: str) -> Optional[dict]:
     return None
 
 
+def parse_mass_graveyard_return(oracle: str) -> bool:
+    """True for an UNTARGETED return of creature cards from graveyards
+    onto the battlefield that is not limited to the source itself —
+    the Living End shape ("each player exiles all creature cards from
+    their graveyard … puts all cards they exiled this way onto the
+    battlefield").  A creature that returns only "this card" from its
+    graveyard (the Vengevine / Phoenix shape) is excluded: it is no
+    reanimation path for anything else.  Targeted returners are
+    classified by `engine.target_solver.parse` (graveyard requirement),
+    not here.  Parse-once; read by `ai.card_classes.deck_can_return`.
+    """
+    if not oracle:
+        return False
+    lo = oracle.lower()
+    if 'graveyard' not in lo or 'battlefield' not in lo:
+        return False
+    if 'this card' in lo or 'this creature' in lo:
+        return False
+    if 'target' in lo and 'graveyard' in lo[lo.find('target'):]:
+        return False  # a targeted returner — the target solver's job
+    gy = lo.find('graveyard')
+    bf = lo.find('battlefield', gy)
+    if gy < 0 or bf < 0:
+        return False
+    window = lo[:bf]
+    return ('creature card' in window
+            and ('return' in window or 'put' in window
+                 or 'exiled this way' in window))
+
+
 def parse_is_storm_spell(oracle: str) -> bool:
     """Return True when the card has the Storm keyword (CR 702.39).
 
