@@ -3032,7 +3032,25 @@ creature target was mis-zoned this way. Fixed at the solver: the zone
 hint is read from reminder-stripped text (CR 207.2;
 `oracle_parser.strip_reminder_text`), pinned ("reminder text never
 supplies a target zone"). Target-solver suites green; runtime-parse
-ratchet 180.
+ratchet 180. Replay after all three: Hollow One kept on turn 3, match
+0-2 → 1-2 on this seed. Anchor 29/29 unchanged; both chunks green;
+pushed as `303e7de`.
+
+**Measurement (n=20, 50000 grid, quiet box):** Hollow One vs Domain Zoo
+5 / 95 (field cell 15 / 85 in the other seat) — no movement toward band;
+Zoo's wins land on turns 4–9, Hollow One's on 5–8. The three fixes are
+class-correct (a self-returner no longer credits cycling anything, a
+deployable body is not free to cycle, flashback reminders no longer
+mis-zone a target) but the cell is held by the list's speed against a
+turn-5 kill when the discard outlets are not drawn. Code iteration 2 of
+the restarted loop; the field re-read that decides the loop-break count
+for iterations 2–3 runs after iteration 3. Remaining ≥85% cells all
+carry a tracked or measured cause (Creatures Toolbox, Affinity, Amulet
+Titan, Goryo's, now Hollow One), so the target rule moves to the
+highest untracked cell: **Izzet Prowess 80**. Guard: Living End vs
+Domain Zoo 60 / 40 (field cell 40 / 60 in the other seat) — the
+cascade-reanimator's cycling credit survives the predicate (its
+returner is the typed mass return); no regression.
 
 **Hollow One (85%) — recorded lead, next iteration.** `--bo3 "Hollow One"
 "Domain Zoo" -s 50000` (Zoo 2-0): the trace scores "cycle: Street Wraith"
