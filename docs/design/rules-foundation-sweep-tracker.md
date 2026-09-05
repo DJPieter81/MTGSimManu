@@ -2734,3 +2734,33 @@ Toolbox T9; first divergence T2 "Cast Thoughtseize" taking Tyvar, the
 deck's combo piece, then a second on T4; Grixis pays 4 life and is raced
 by the creature curve). Instant Reanimator vs Boros Ponza s51500 11 → 10
 turn-only. Fixture refreshed via `tools/refresh_wr_baseline.py`, 29/29.
+Both CI chunks green locally (a-g 2199 + the seeded magic-number baseline
+for the new file, h-z 2216); pushed as `6487ab6`.
+
+**Measurement (n=20, 50000 grid, quiet box):** Goryo's Vengeance vs Domain
+Zoo 0 / 100 (baseline cell 0 / 100) — no movement; Zoo's wins land on
+turns 5–7 (17 sweeps). Regression guard Azorius Control vs Domain Zoo
+25 / 75, identical to the iteration-2 cell. In the same replay Goryo's
+mulligans to 4, 5 and 5 in the three games ("combo path under-covered …
+need enabler+payoff" on 7 and 6, "goal conjunction unreachable" on 6):
+a reanimator keeping 4–5 cards every game cannot race a turn-5 kill
+whatever its hand attacks do. The keep/mull rule for combo paths
+(`ai/mulligan.py`) is the subsystem this cell now points at; not built
+inside this loop (third code iteration — the field re-read below decides
+the loop-break).
+
+**Field re-read (n=20, 50000 grid, quiet box, head `6487ab6`): flat
+65.8%** (baseline 67.5%, previous 67.3%). Cells that moved against
+iteration 2: Grixis Reanimator 85 → 65 and Dimir Midrange 70 → 50 (both
+hand-attack decks — the class fix landing where the class lives),
+Instant Reanimator 60 → 65; every other cell identical, including the six
+still ≥85% (Goryo's 100, Creatures Toolbox 95, Affinity 90, Amulet Titan
+85, Boros Ponza 85, Hollow One 85). 1.7pp over the loop is under the
+2.2pp movement rule: **third consecutive code iteration without field
+movement → loop-break.** Stop gate not met (65.8 is above the band edge
+and six cells ≥85%). The required primary doc is
+`docs/diagnostics/2026-09-05_zoo_band_loop_break.md`: it names the
+pre-turn-1 mulligan of the reanimator side (combo-path keep rule in
+`ai/mulligan.py`, class = every FILL_RESOURCE deck) as the residual
+subsystem, records the other five cells' owners, and states the restart
+condition. Loop ended.
