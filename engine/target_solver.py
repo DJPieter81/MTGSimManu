@@ -874,3 +874,33 @@ def has_legal_target_for_spell(game: "GameState", controller: int,
                    for r in group_reqs):
             return False
     return True
+
+
+def player_index_for_target(game: "GameState", controller: int,
+                            tid) -> Optional[int]:
+    """Map a player-target sentinel in a spell's target list to a player
+    index: ``PLAYER_TARGET_OPPONENT`` (-1, the historical "face" value)
+    → the caster's opponent, ``PLAYER_TARGET_SELF`` (-2) → the caster.
+    Any other id is a permanent instance id → None.  One owner for the
+    encoding (engine/constants.py); every player-target effect —
+    face burn, targeted discard — resolves through here."""
+    from .constants import PLAYER_TARGET_OPPONENT, PLAYER_TARGET_SELF
+    if tid == PLAYER_TARGET_OPPONENT:
+        return 1 - controller
+    if tid == PLAYER_TARGET_SELF:
+        return controller
+    return None
+
+
+def targeted_player(game: "GameState", controller: int,
+                    targets: Optional[list], default_opponent: bool = True
+                    ) -> Optional[int]:
+    """The player a resolving spell targets, from its target list.  With
+    no player sentinel in the list the opponent is assumed when
+    ``default_opponent`` (the pre-sentinel behaviour every existing
+    caller relied on)."""
+    for tid in targets or []:
+        idx = player_index_for_target(game, controller, tid)
+        if idx is not None:
+            return idx
+    return (1 - controller) if default_opponent else None

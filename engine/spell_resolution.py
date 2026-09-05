@@ -777,10 +777,12 @@ class ResolutionManager:
                         continue
 
                 if item.targets:
+                    from .target_solver import player_index_for_target
                     for tid in item.targets:
-                        if tid == -1:
-                            # AI chose face — route to player damage.
-                            deal_damage(item.source, game.players[opponent], amount)
+                        _pidx = player_index_for_target(game, controller, tid)
+                        if _pidx is not None:
+                            # A player sentinel — route to player damage.
+                            deal_damage(item.source, game.players[_pidx], amount)
                             continue
                         target = game.get_card_by_id(tid)
                         if (target and target.zone == "battlefield"

@@ -2764,3 +2764,93 @@ pre-turn-1 mulligan of the reanimator side (combo-path keep rule in
 `ai/mulligan.py`, class = every FILL_RESOURCE deck) as the residual
 subsystem, records the other five cells' owners, and states the restart
 condition. Loop ended.
+
+### Restart precondition — a "target player" discard can target its caster (2026-09-05)
+
+User decision after the loop-break: fix the keep/mull residual first,
+then restart. The residual is not a looser rule (RC-3's flat sets stay
+falsified and untouched); it is a line the sim could not play at all:
+**cast a "target player … discards" spell on yourself** to bin the
+reanimation target. Three coupled gaps, one class (75 pool cards can
+target their caster: 11 caster-chosen, 62 victim-chosen, 2 random):
+
+1. **Engine.** The Thoughtseize registry handler hardcoded the opponent
+   as victim and ignored the target list; the generic reveal-choose
+   resolver did the same and picked the discard by mana value inside the
+   engine. Built: named player-target sentinels in `engine/constants.py`
+   (`PLAYER_TARGET_OPPONENT = -1`, the historical face value;
+   `PLAYER_TARGET_SELF = -2`) resolved by
+   `target_solver.player_index_for_target` / `targeted_player` (the face-
+   burn path reads the same helper); the reveal-choose branch is gated on
+   the typed `hand_attack_data`, resolves the victim from the chosen
+   target (opponent when none is chosen — every existing caller
+   unchanged; "target opponent" wording can only hit the opponent),
+   applies the choose clause through the engine's restriction filter,
+   and delegates WHICH card goes through the one discard funnel
+   (`GameState._force_discard(..., candidates=)`: strip advisor against an
+   opponent, the self-discard advisor — the one that already targets
+   reanimation fuel — for one's own hand). The Thoughtseize registry
+   entry is retired (card-name registry 89 → 88, baseline lowered).
+2. **AI.** `ai/card_classes.py::self_discard_outlet_targets(template,
+   hand, gameplan)`: the cards in hand a self-targetable hand attack
+   could bin for the deck's own graveyard plan — the gameplan declares a
+   graveyard FILL_RESOURCE goal, the choose clause admits the card
+   (engine filter), and a payoff in hand can return it (the payoff's
+   parsed graveyard target requirement: legendary / any / mana-value
+   ceiling). `_choose_targets` aims the spell at the caster when the
+   self-fill value exceeds `hand_denial_value`; the self-fill value is
+   the reanimation readiness boost (`_reanimation_readiness_boost`, the
+   GV-2 quantity factored into one owner) when the bin moves the
+   graveyard from below the declared resource target to at or above it,
+   zero otherwise. `_score_spell` credits the larger of the two lines.
+3. **Mulligan.** The 7/6-card typed-path gate and `conjunction_unreachable`
+   count a self-targetable outlet that can bin a returnable creature in
+   the same hand as enabler coverage; a hand attack with nothing to bin
+   covers nothing (the tightness that keeps RC-3 closed).
+
+Fidelity fix found on the way: `engine/card_database.py` carried a
+card-name table stamping LEGENDARY on Archon of Cruelty (real type line
+"Creature — Archon") so a legendary-only reanimation could hit it — wrong
+reanimation legality and a wrong legend rule for that card, plus a test
+(`tests/test_archon_of_cruelty_is_legendary.py`, GV2-7) pinning the
+fabricated value on a false premise. Table and test removed; the rule
+"supertypes come from the printed type line" is pinned in the new file.
+The gameplan's `mulligan_combo_sets` still list [Mending, Goryo's,
+Archon] (rules-invalid; used only by the color check) — left as data,
+recorded here.
+
+Tests (failing-test-first, rule-phrased,
+`tests/test_target_player_discard_can_target_its_caster.py`, 15): the
+victim is the targeted player including the caster (life cost still
+paid); default opponent with no target; choose clause honoured on the
+caster; the choice is delegated to the callback (cheapest-card stub
+obeyed; self-discard flag set for one's own hand); no card-name handler;
+supertypes from the printed line; the graveyard-fill deck targets itself
+with a binnable target and a payoff, the opponent once the target is
+already in the graveyard, never without a graveyard plan; the self line
+scores positive; mulligan: outlet + returnable creature covers the
+enabler bucket, a capped outlet (IoK vs an 8-drop) does not, the payoff
+must be able to return the binned card (legendary-only vs any), no
+binnable target leaves the rule unchanged, and the outlet makes the
+conjunction reachable at the keep floor. One existing fixture
+(`test_goryos_mulls_payoff_only_at_6`) held Thoughtseize + a creature
+Unburial Rites could return — no longer "payoff-only" — and now carries a
+blink spell instead. Ratchets: registry 88 (lowered), others at baseline.
+
+Replay after (`--bo3 "Goryo's Vengeance" "Domain Zoo" -s 50000`, still
+1-2): the line exists now — G1 "[Target] own hand — bin the reanimation
+target … Thoughtseize discards Griselbrand (own hand)" on turn 2, G3 the
+same on turn 2 with Goryo's Vengeance turn 3 (countered by Stubborn
+Denial) and turn 4 (resolves). Kept hand sizes 4/5/5 → 5/5/5: the
+opening 7 with two Goryo's and no fatty is still shipped (nothing to
+bin), the 5 with Griselbrand + Thoughtseize + Rites is now reachable.
+
+WR anchor: one turn-only drift (Goryo's vs Izzet Prowess s50000, 6 → 7)
+and one winner flip, replayed through the anchor-exact harness: Instant
+Reanimator vs Boros Ponza s51500 (IR T10 → Ponza T6). First divergence
+is the mulligan: IR now KEEPS its 6 (Marsh Flats, Goryo's Vengeance,
+Polluted Delta, Atraxa, Thoughtseize, Ephemerate) — the exact self-
+outlet shape — where it previously mulled to 5; it self-Thoughtseizes
+Atraxa on turn 2 and reanimates it on turn 3 for 7, then loses a Bolt +
+Ragavan race at 3 life. The deck's real line, one seed's race — accepted;
+fixture refreshed, 29/29.

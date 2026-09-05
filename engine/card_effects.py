@@ -554,12 +554,13 @@ def galvanic_relay_resolve(game, card, controller, targets=None, item=None):
     game.draw_cards(controller, draw_count)
 
 
-@EFFECT_REGISTRY.register("Thoughtseize", EffectTiming.SPELL_RESOLVE,
-                           description="Opponent discards nonland, you lose 2 life")
-def thoughtseize_resolve(game, card, controller, targets=None, item=None):
-    opponent = 1 - controller
-    game.players[controller].life -= 2
-    game._force_discard(opponent, 1)
+# The Thoughtseize-shaped hand attack ("target player reveals their hand,
+# you choose a nonland card, that player discards it, you lose N life")
+# resolves through the generic reveal-choose branch in
+# engine/oracle_resolver.py (typed `hand_attack_data`), which honours
+# the TARGETED player — including the caster — and delegates the card
+# choice to the decision layer.  The per-card handler that hardcoded
+# the opponent as victim was retired with it.
 
 
 @EFFECT_REGISTRY.register("Faithful Mending", EffectTiming.SPELL_RESOLVE,

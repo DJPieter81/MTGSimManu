@@ -165,14 +165,20 @@ class TestMulliganTypedComboPathsRequireEnablerAndPayoff:
         reanimators but no Mending.  The 6-card escape clause keeps
         any hand where ``max_progress >= 1``, but a Goryo's-only hand
         has no path to the graveyard.  The typed-paths fix applies
-        at 6 cards too: every non-empty bucket needs ≥1 in hand."""
+        at 6 cards too: every non-empty bucket needs ≥1 in hand.
+
+        The hand attack is a self-discard outlet only when the hand
+        holds a creature a payoff can return
+        (tests/test_target_player_discard_can_target_its_caster.py);
+        with no creature in hand it covers nothing, so this fixture
+        carries a blink spell rather than a body."""
         hand = [
             _hand_card(card_db, "Swamp", iid=31),
             _hand_card(card_db, "Thoughtseize", iid=32),
             _hand_card(card_db, "Goryo's Vengeance", iid=33),
             _hand_card(card_db, "Unburial Rites", iid=34),
             _hand_card(card_db, "Unburial Rites", iid=35),
-            _hand_card(card_db, "Solitude", iid=36),
+            _hand_card(card_db, "Ephemerate", iid=36),
         ]
         decider = _goryos_decider()
         keep = decider.decide(hand, cards_in_hand=6)

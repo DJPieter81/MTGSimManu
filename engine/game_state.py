@@ -694,7 +694,8 @@ class GameState:
     def _bounce_permanent(self, permanent: CardInstance):
         PermanentEffects._bounce_permanent(self, permanent)
 
-    def _force_discard(self, player_idx: int, count: int, self_discard: bool = False):
+    def _force_discard(self, player_idx: int, count: int, self_discard: bool = False,
+                       candidates: Optional[List[CardInstance]] = None):
         """Discard cards from hand. The per-card choice is delegated
         to self.callbacks.choose_discard — the AI wire-up installs
         ai.discard_advisor.choose_discard, the default picks the
@@ -703,6 +704,11 @@ class GameState:
         self_discard=True means the player chose to discard (Faithful
         Mending, etc.). self_discard=False means an opponent forced
         the discard (Thoughtseize, etc.).
+
+        ``candidates`` narrows the choice to the cards the effect may
+        legally take (a reveal-and-choose clause's restriction — "a
+        nonland card … with mana value 3 or less"); the engine names
+        the legal set, the callback picks within it.  None = whole hand.
 
         Bug E2 fix: opponent-forced discard (self_discard=False) routes
         through ai.discard_advisor, which delegates scoring to
@@ -714,8 +720,12 @@ class GameState:
         for _ in range(min(count, len(player.hand))):
             if not player.hand:
                 break
+            pool = (list(player.hand) if candidates is None
+                    else [c for c in candidates if c in player.hand])
+            if not pool:
+                break
             card = self.callbacks.choose_discard(
-                self, player_idx, list(player.hand), self_discard)
+                self, player_idx, pool, self_discard)
             if card is None:
                 # Opponent-forced discard on an all-lands hand: the
                 # Thoughtseize-text "nonland card" clause means nothing

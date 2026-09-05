@@ -1212,7 +1212,11 @@ class EVPlayer:
                 and (getattr(t, 'hand_attack_data', None) or {}).get('chooser')
                 == 'caster'):
             from ai.hand_denial import hand_denial_value
-            ev += hand_denial_value(t, game, self.player_idx, snap)
+            # The spell goes where it is worth more: at the opponent's
+            # best card, or at the caster's own hand to bin the
+            # reanimation target (the self-discard-outlet line).
+            ev += max(hand_denial_value(t, game, self.player_idx, snap),
+                      self._self_fill_value(card, snap, me))
 
         # ── Evoke overlay: projection doesn't model 2-card cost ──
         if ('evoke' in tags or 'evoke_pitch' in tags) and snap.my_mana < (t.cmc or 0):
@@ -1301,13 +1305,7 @@ class EVPlayer:
         if is_reanimate_tagged or is_reanimate_oracle:
             fill_target = self._cascade_graveyard_target()
             if fill_target > 0 and snap.my_gy_creatures >= fill_target:
-                # Boost: opp life still to burn through, halved to
-                # reflect that reanimation covers ~half the damage
-                # gap in expectation (the rest comes from follow-up
-                # turns / burn / bonus triggers). Stays well below
-                # the +40 hard override in decide_main_phase — this
-                # is a soft nudge, not a force-cast.
-                ev += snap.opp_life / 2.0
+                ev += self._reanimation_readiness_boost(snap)
 
         # ── S-2: EXECUTE_PAYOFF finisher mana-sequencing gate ──
         # Observed in Storm vs Affinity T3 (game 1): Storm in
@@ -2525,6 +2523,43 @@ class EVPlayer:
             ev += declared * LAND_GAMEPLAN_PRIORITY_SCALE
 
         return ev
+
+    def _reanimation_readiness_boost(self, snap: EVSnapshot) -> float:
+        """The GV-2 readiness nudge a reanimation spell earns once the
+        graveyard holds its target: the opponent's remaining life,
+        halved — reanimation covers roughly half the damage gap in
+        expectation (the rest comes from follow-up turns / burn /
+        bonus triggers).  Stays well below the +40 hard override in
+        decide_main_phase — a soft nudge, not a force-cast.  One
+        owner: the reanimation scorer and the self-discard-outlet
+        valuation (what putting the target INTO the graveyard is
+        worth) read the same quantity."""
+        return snap.opp_life / 2.0
+
+    def _self_fill_value(self, spell: "CardInstance", snap: EVSnapshot,
+                         me) -> float:
+        """Value of aiming a "target player … discards" spell at its
+        own caster: binning a creature a payoff in hand can return
+        completes the graveyard plan.  Zero unless the deck declares a
+        graveyard FILL_RESOURCE goal, the hand holds a card the spell
+        may legally bin that a payoff in hand can return
+        (`ai.card_classes.self_discard_outlet_targets`), and that bin
+        moves the graveyard from below the declared resource target
+        to at or above it — then it is worth exactly the readiness
+        boost the reanimation spell earns from the completed set-up."""
+        from ai.card_classes import self_discard_outlet_targets
+        gameplan = (self.goal_engine.gameplan
+                    if self.goal_engine is not None else None)
+        if not self_discard_outlet_targets(spell.template, me.hand, gameplan):
+            return 0.0
+        fill_target = self._cascade_graveyard_target()
+        if fill_target <= 0:
+            return 0.0
+        if snap.my_gy_creatures >= fill_target:
+            return 0.0  # already set up — the strip goes at the opponent
+        if snap.my_gy_creatures + 1 < fill_target:
+            return 0.0  # one bin does not complete the set-up
+        return self._reanimation_readiness_boost(snap)
 
     def _cascade_graveyard_target(self) -> int:
         """Return the FILL_RESOURCE goal's `resource_target` for GY creatures.
@@ -3855,6 +3890,21 @@ class EVPlayer:
         # Live snapshot so creature_value / threat_value reflect actual
         # board state, not a blank default board.
         snap = snapshot_from_game(game, self.player_idx)
+
+        # Targeted hand attack whose target may be its caster (typed
+        # field, parse-once): aim it at the caster's own hand when
+        # binning the reanimation target is worth more than the best
+        # card the opponent's hidden hand can hold; otherwise the
+        # opponent (the pre-sentinel default — an empty list).
+        if (getattr(t, 'hand_attack_data', None) or {}).get('target') == 'player':
+            from engine.constants import PLAYER_TARGET_SELF
+            from ai.hand_denial import hand_denial_value
+            me = game.players[self.player_idx]
+            self_value = self._self_fill_value(spell, snap, me)
+            if self_value > hand_denial_value(t, game, self.player_idx, snap):
+                self._last_target_reason = (
+                    "own hand — bin the reanimation target")
+                return [PLAYER_TARGET_SELF]
 
         # Land destruction (typed field, parse-once): the target is the
         # opponent's scarcest color source — denying the only source of

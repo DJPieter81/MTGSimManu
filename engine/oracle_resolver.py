@@ -1321,27 +1321,45 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
     # choose / discard), so the co-occurrence scope is the ability
     # paragraph — local enough to reject a 'discard' verb from a
     # separate ability while keeping the multi-sentence template intact.
-    if any_ability_with(oracle, 'reveals', 'hand', 'discard'):
-        opp = game.players[opponent]
-        if opp.hand:
+    hand_attack = (getattr(card.template, 'hand_attack_data', None) or {}
+                   if oracle_override is None else {})
+    if (hand_attack.get('chooser') == 'caster'
+            or any_ability_with(oracle, 'reveals', 'hand', 'discard')):
+        # The victim is the TARGETED player (CR 115.1): a "target
+        # player" hand attack may be aimed at its own caster — the
+        # self-discard outlet line of a graveyard deck.  "Target
+        # opponent" wording can only hit the opponent; with no player
+        # sentinel in the target list the opponent is assumed.
+        from .target_solver import targeted_player
+        if hand_attack.get('target') == 'opponent':
+            victim_idx = opponent
+        else:
+            victim_idx = targeted_player(game, controller, targets)
+        victim = game.players[victim_idx]
+        if victim.hand:
             # Honor the choose-clause's stated restriction (mana-value
             # cap and/or card-type filter) instead of taking the
             # highest-mana-value nonland unconditionally. The choose
             # clause is the sentence that names what may be chosen.
-            choose_clause = next(
+            choose_clause = hand_attack.get('choose_clause') or next(
                 (c for c in split_clauses(oracle)
                  if 'choose' in c and 'card' in c), '')
-            legal = _targeted_discard_candidates(opp.hand, choose_clause)
+            legal = _targeted_discard_candidates(victim.hand, choose_clause)
             if legal:
-                # Among the legal candidates, take the best (highest
-                # mana value) — the existing heuristic, now applied to
-                # the correct pool.
-                best = max(legal, key=lambda c: (c.template.cmc or 0))
-                game.zone_mgr.move_card(game, best, "hand", "graveyard",
-                                        cause="discard")
-                game.log.append(
-                    f"T{game.display_turn} P{controller+1}: "
-                    f"{card.name} discards {best.name}")
+                # The engine names the legal set; WHICH card goes is the
+                # decision layer's (strip ranking against an opponent,
+                # reanimation fuel for oneself) through the one discard
+                # funnel every discard site uses.
+                before = list(victim.hand)
+                game._force_discard(
+                    victim_idx, 1, self_discard=(victim_idx == controller),
+                    candidates=legal)
+                gone = [c for c in before if c not in victim.hand]
+                for c in gone:
+                    game.log.append(
+                        f"T{game.display_turn} P{controller+1}: "
+                        f"{card.name} discards {c.name}"
+                        + (" (own hand)" if victim_idx == controller else ""))
                 handled = True
         # Life loss for Thoughtseize — the "You lose N life" rider is
         # its own sentence; parse the amount from that clause.

@@ -367,13 +367,22 @@ class MulliganDecider:
                 best_covered = 0  # number of buckets covered in best path
                 best_total = 0    # number of non-empty buckets in best path
                 keep_ok = False
+                # A self-targetable hand attack that can bin a creature
+                # a payoff in hand can return IS a discard outlet the
+                # deck owns (ai.card_classes.self_discard_outlet_targets)
+                # — it covers the enabler bucket exactly as a declared
+                # enabler does.  Derived from oracle + the gameplan's
+                # graveyard resource goal; a hand with the outlet but
+                # nothing to bin gains nothing here.
+                has_self_outlet = self._has_self_discard_outlet(hand)
                 for path in paths:
                     enablers = set(path.get("enablers", []))
                     payoffs = set(path.get("payoffs", []))
                     # Bucket coverage flags.  Empty bucket = vacuously
                     # covered (don't constrain a path that doesn't
                     # declare it).
-                    enabler_ok = (not enablers) or bool(hand_names & enablers)
+                    enabler_ok = ((not enablers) or bool(hand_names & enablers)
+                                  or has_self_outlet)
                     payoff_ok = (not payoffs) or bool(hand_names & payoffs)
                     non_empty = sum(1 for b in (enablers, payoffs) if b)
                     covered = sum(
@@ -741,6 +750,22 @@ class MulliganDecider:
             return []
         return self.goal_engine.gameplan.mulligan_combo_paths or []
 
+    def _has_self_discard_outlet(self, hand: List["CardInstance"]) -> bool:
+        """True when some card in hand is a "target player … discards"
+        spell that could bin a creature in this same hand which a payoff
+        in the hand can return — the self-discard-outlet line
+        (`ai.card_classes.self_discard_outlet_targets`).  Such a card
+        covers the enabler role the same way a declared outlet does."""
+        if not (self.goal_engine and self.goal_engine.gameplan):
+            return False
+        from ai.card_classes import self_discard_outlet_targets
+        gameplan = self.goal_engine.gameplan
+        return any(
+            self_discard_outlet_targets(c.template, hand, gameplan)
+            for c in hand
+            if getattr(c.template, 'hand_attack_data', None)
+        )
+
     def _conjunction_covered_buckets(self, hand_names: set) -> int:
         """Covered non-empty role buckets on the best declared path
         (0 when the deck declares no typed paths)."""
@@ -774,6 +799,12 @@ class MulliganDecider:
             return False
         hand_names = {c.name for c in hand}
         enabler_names: set = set()
+        # A self-targetable hand attack that can bin a returnable
+        # creature in this hand covers the enabler role (same rule as
+        # the 7/6-card gate) and is itself a dig path to the missing
+        # role — it puts the target where the payoff needs it.
+        if self._has_self_discard_outlet(hand):
+            return False
         for path in paths:
             buckets = [set(b) for b in path.values() if b]
             enabler_names |= set(path.get("enablers", []))

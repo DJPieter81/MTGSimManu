@@ -41,7 +41,7 @@
       "deck2": "Izzet Prowess",
       "seed": 50000,
       "winner": "Izzet Prowess",
-      "turns": 6
+      "turns": 7
     },
     {
       "deck1": "Pinnacle Affinity",
@@ -138,8 +138,8 @@
       "deck1": "Instant Reanimator",
       "deck2": "Boros Ponza",
       "seed": 51500,
-      "winner": "Instant Reanimator",
-      "turns": 10
+      "winner": "Boros Ponza",
+      "turns": 6
     },
     {
       "deck1": "Eldrazi Ramp",

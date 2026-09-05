@@ -1372,21 +1372,13 @@ class CardDatabase:
                     r"\b" + re.escape(st_name) + r"\b", head):
                     supertypes.append(st_enum)
 
-        # Fallback 2: direct corrections for cards whose MTGJSON entry is
-        # corrupt in BOTH the supertypes array AND the type-line string.
-        # Keep this list minimal — prefer fixing upstream data when possible.
-        # - Archon of Cruelty (MH2): printed as "Legendary Creature — Archon",
-        #   but the current ModernAtomic dump has type "Creature — Archon" and
-        #   supertypes []. Without this correction Goryo's Vengeance (legendary
-        #   reanimation, CR 608.2b + oracle "target legendary creature card")
-        #   can never hit Archon, silently removing it from the Goryo's kit.
-        SUPERTYPE_CORRECTIONS = {
-            "Archon of Cruelty": [Supertype.LEGENDARY],
-        }
-        if name in SUPERTYPE_CORRECTIONS:
-            for st_enum in SUPERTYPE_CORRECTIONS[name]:
-                if st_enum not in supertypes:
-                    supertypes.append(st_enum)
+        # Supertypes come from the printed type line only.  A former
+        # card-name "correction" table fabricated LEGENDARY on a card
+        # whose real type line is "Creature — Archon" so a legendary-only
+        # reanimation spell could hit it; that was a fidelity bug (the
+        # legend rule would kill a second copy, and the reanimation
+        # legality was wrong), not a data repair.  Bad upstream data is
+        # fixed in the MTGJSON export, never by name here.
 
         # Parse mana cost
         mana_cost = parse_mana_cost_mtgjson(data.get("manaCost", ""))

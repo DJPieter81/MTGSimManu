@@ -49,6 +49,16 @@ ACTIVATION_MAX_DEPTH = 1
 # a doubled life total, which is the largest sink a single turn can use.
 LOOP_SHORTCUT_MANA = 4 * STARTING_LIFE
 
+# ── Player targets ──
+# A spell's target list carries permanent instance ids; a PLAYER target is
+# encoded as a negative sentinel. -1 has always meant "the opponent's face"
+# (burn to face); -2 is the caster themself, legal for every "target
+# player" / "any target" requirement (CR 115.1) — the self-discard outlet
+# line of a graveyard deck. Resolve either through
+# `engine.target_solver.player_index_for_target`.
+PLAYER_TARGET_OPPONENT = -1
+PLAYER_TARGET_SELF = -2
+
 # ── Win conditions ──
 POISON_COUNTER_LETHAL = 10
 MILL_LOSS_THRESHOLD = 0  # Lose when library is empty on draw
