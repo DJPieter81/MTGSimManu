@@ -168,17 +168,27 @@ def _chain_reliance(opp_templates: List["CardTemplate"]) -> float:
 # ─────────────────────────────────────────────────────────────
 
 def _clause_creature_removal(oracle: str,
-                              opp_templates: List["CardTemplate"]) -> float:
+                              opp_templates: List["CardTemplate"],
+                              template: "CardTemplate" = None) -> float:
     """Value of single-target creature removal.
 
     avg_threat × creature_density × residency
     """
     if not re.search(r'(destroy|exile) target creature', oracle):
         return 0.0
-    creature_density = _density(lambda t: t.is_creature, opp_templates)
+    # A printed mana-value ceiling (typed field, parse-once) limits which
+    # creatures the removal can legally hit — count only those.
+    data = getattr(template, 'targeted_removal_data', None) if template is not None else None
+    ceiling = data['mv'] if data and isinstance(data.get('mv'), int) else None
+
+    def _hittable(t):
+        return t.is_creature and (ceiling is None or (t.cmc or 0) <= ceiling)
+
+    creature_density = _density(_hittable, opp_templates)
     if creature_density <= 0:
         return 0.0
-    return _avg_creature_threat(opp_templates) * creature_density * PERMANENT_VALUE_WINDOW
+    hittable = [t for t in opp_templates if _hittable(t)]
+    return _avg_creature_threat(hittable) * creature_density * PERMANENT_VALUE_WINDOW
 
 
 def _clause_counterspell(template: "CardTemplate",
@@ -364,6 +374,61 @@ def _clause_artifact_removal(card: "CardTemplate",
     return base
 
 
+def _clause_permanent_type_removal(card: "CardTemplate",
+                                   opp_templates: List["CardTemplate"]) -> float:
+    """Value of removal by the opponent's density of the permanent TYPES
+    it can hit — read from the typed removal fields (parse-once):
+
+      * `targeted_removal_data`      — the spell class ("destroy/exile
+                                       target <types> [MV ≤ N|X]")
+      * `etb_targeted_removal_data`  — the enters-the-battlefield class
+                                       ("When this ~ enters, destroy/exile
+                                       target <types> …")
+
+    plus the tag-based mass / artifact detection `_clause_artifact_removal`
+    already covered (kept as the fallback for cards without typed data).
+    Creatures are NOT counted here — `_clause_creature_removal` prices
+    creature removal on threat, and pricing them twice would double-count.
+
+    density(matching nonland, within the printed MV ceiling) × avg CMC of
+    the matched permanents × residency — the artifact clause's own shape,
+    generalised; no new constants.
+    """
+    from engine.cards import CardType
+    fallback = _clause_artifact_removal(card, opp_templates)
+    data = (getattr(card, 'targeted_removal_data', None)
+            or getattr(card, 'etb_targeted_removal_data', None))
+    if not data:
+        return fallback
+    types = set(data.get('types') or ())
+    if types & {'permanent', 'permanent_nonland'}:
+        wanted = {CardType.ARTIFACT, CardType.ENCHANTMENT, CardType.PLANESWALKER}
+    else:
+        wanted = set()
+        if 'artifact' in types:
+            wanted.add(CardType.ARTIFACT)
+        if 'enchantment' in types:
+            wanted.add(CardType.ENCHANTMENT)
+        if 'planeswalker' in types:
+            wanted.add(CardType.PLANESWALKER)
+    if not wanted:
+        return fallback
+    mv = data.get('mv')
+    ceiling = mv if isinstance(mv, int) else None
+    nonland = _nonland(opp_templates)
+    if not nonland:
+        return fallback
+    hits = [t for t in nonland
+            if not t.is_creature
+            and any(ct in (t.card_types or []) for ct in wanted)
+            and (ceiling is None or (t.cmc or 0) <= ceiling)]
+    if not hits:
+        return fallback
+    density = len(hits) / len(nonland)
+    avg_cmc = sum(t.cmc or 0 for t in hits) / len(hits)
+    return max(fallback, density * avg_cmc * PERMANENT_VALUE_WINDOW)
+
+
 # ─────────────────────────────────────────────────────────────
 # Main API
 # ─────────────────────────────────────────────────────────────
@@ -384,11 +449,11 @@ def sb_value(template: "CardTemplate",
 
     value = 0.0
     value += _clause_body_value(template)
-    value += _clause_creature_removal(oracle, opp_templates)
+    value += _clause_creature_removal(oracle, opp_templates, template)
     value += _clause_counterspell(template, opp_templates)
     value += _clause_protection_color(oracle, opp_templates, body_power)
     value += _clause_gy_hate(template, opp_templates, opp_gameplan)
-    value += _clause_artifact_removal(template, opp_templates)
+    value += _clause_permanent_type_removal(template, opp_templates)
     value += _clause_spell_chain_hate(template, opp_templates)
 
     return value

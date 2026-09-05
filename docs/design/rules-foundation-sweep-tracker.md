@@ -2589,3 +2589,25 @@ in-game — "T4 Witch Enchanter destroys Leyline Binding", "T5 Cast March
 (X=2) → exiles Territorial Kavu" (X paid for the target's mana value, not
 the whole pool). The match is still 0-2 (G1 lasts T11, was T9): one seed,
 not the measurement. Targeted n=20 follows.
+
+**Measurement (n=20, 50000 grid, quiet box):** Azorius Blink vs Domain Zoo
+5% / 95% (baseline cell 10 / 90) — no movement; code iteration 1 of the
+loop-break count. The deterministic sideboard plan for this pairing is
+"+2 Spell Pierce, −2 Witch Enchanter": the naturalize body that now works
+is boarded OUT against a deck running 4 Leyline Binding + 4 Leyline of the
+Guildpact, so games 2 and 3 never see the fix. That swap is the next
+defending-side lead (the solver's card valuation vs the opponent's
+permanent density), subject to the class-size check.
+Regression guard: Azorius Control vs Domain Zoo 20 / 80 at n=20 — identical
+to the baseline cell; no regression from iteration 1.
+
+Follow-up built (`tests/test_sideboard_values_permanent_type_removal.py`,
+2): the sideboard solver's removal clause was artifact-only and keyed to
+spell tags, so an ETB naturalize body was valued as a bare 2/2. It now
+prices removal by the opponent's density of the permanent TYPES it can hit
+(artifact / enchantment / planeswalker), read from the typed fields
+(`targeted_removal_data`, `etb_targeted_removal_data`), within the printed
+mana-value ceiling; creature removal keeps its threat-based clause (now
+also ceiling-aware). Whether Witch Enchanter should stay in against Zoo is
+a judgment the solver still makes on the numbers — not tuned. Ratchets at
+baseline; WR anchor 29/29 (Bo1 pins carry no sideboarding).
