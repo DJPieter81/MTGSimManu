@@ -3131,7 +3131,29 @@ reopened inside this loop. The flip is accepted as the burn deck's own
 plan (face damage every turn) priced correctly at the margin; fixture
 refreshed, 29/29. Prowess vs Zoo s50000 on the final state: 2-1 (G1 and
 G3 won on turn 6 with the burn going face). Both chunks green on the
-final state (a-g 2223, h-z 2228 + the two anchor pins refreshed).
+final state (a-g 2223, h-z 2228 + the two anchor pins refreshed);
+pushed as `d8cbd0f`.
+
+**Measurement (n=20, 50000 grid, quiet box):** Izzet Prowess vs Domain
+Zoo 25 / 75 (field cell 20 / 80 in the other seat) — noise-level;
+Prowess's wins land on turns 5–12, Zoo's on 5–11. Guard: Boros Energy vs
+Domain Zoo 30 / 70 against a 50 / 50 field cell in the other seat — the
+field re-read below decides whether the burn class change moved that
+cell or the seat did. Code iteration 3 of the restarted loop; the field
+re-read decides the loop-break count for iterations 2–3.
+
+**Field re-read (n=20, 50000 grid, quiet box, head `d8cbd0f`): flat
+64.0%** (previous 63.8%, restart baseline 65.0%). Cells against the
+previous row: Izzet Prowess 80 → 75, Boros Energy 50 → 45 (the guard's
+30 / 70 was the seat), Boros Ponza 60 → 55, 4c Omnath 45 → 50, Living End
+60 → 65, Ruby Storm / Eldrazi Tron 25 → 30; every other cell identical,
+including the five still ≥85% (Creatures Toolbox 95, Affinity 90, Amulet
+Titan 85, Goryo's Vengeance 85, Hollow One 85). Iterations 2–3 moved the
+field 0.2pp: with iteration 1's 1.2pp that is **three consecutive code
+iterations without ≥2.2pp field movement → loop-break**, the second for
+this lane. Stop gate: the field is inside the band; five cells ≥85% —
+not met. Record: `docs/diagnostics/2026-09-05_zoo_band_loop_break.md`
+(restart section). Loop ended.
 
 **Hollow One (85%) — recorded lead, next iteration.** `--bo3 "Hollow One"
 "Domain Zoo" -s 50000` (Zoo 2-0): the trace scores "cycle: Street Wraith"
