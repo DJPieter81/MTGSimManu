@@ -3452,3 +3452,60 @@ whole story). Still out of the field bands: Amulet 27.9 vs [45,60],
 Instant Reanimator 47.7 in [45,60] (now IN), Jeskai Blink 26.0 vs
 [45,60], Creatures Toolbox 21.9 and Hollow One 28.3 vs the [30,70]
 default.
+
+### Phase B — card-level detail
+
+`extract_card_data.py 10` on `30c0fa2`: 300 pairs × 10 verbose Bo3 =
+3000 matches, **37 min 39 s** single-threaded (08:36 → 09:13 UTC).
+Coverage: 300/300 insights, 93/300 sideboard entries (31 %, the
+sweep-bound ceiling), 25/25 summaries, 1180 finisher descriptions,
+25/25 damage data. Merged into `metagame_data.jsx` (compact JSON, the
+`const D = … ;\nconst N` sentinels kept) and the dashboard rebuilt
+(401 KB). Pushed as `8800041`.
+
+### Phase C — showcase
+
+`build_showcase.py mtgsimmanu_showcase.html` on the merged JSX:
+stats, validation bars, heatmap, archetype / turn arrays regenerated in
+`templates/reference_showcase.html` and the root copy (which had been a
+refresh behind since 08-27). Every deck now carries card detail, so the
+heatmap grew from 19 to 25 columns; a headless-Chromium render (with
+the CDN Chart.js stubbed — the sandbox blocks it) shows the 25-column
+grid inside its container with rotated labels. Hand-authored parts
+updated: run date, "38 of 96" calibration figure, the heatmap title
+(was still "19 × 19"), and one timeline entry for the two band loops.
+Pushed as `c31722d`.
+
+Tooling notes for the next refresh: `build_dashboard.py` has no
+`--merge` flag (CLAUDE.md's text is stale — `--save` calls the
+`merge()` function directly); `weekly_refresh.sh` still runs `--decks
+16`, which the merge guard now refuses on a 25-deck dashboard; the
+`mtg-dashboard-refresh` skill's timings and counts describe the 16-deck
+field. The real 25-deck costs on this box: matrix 28 min, extraction 38
+min.
+
+### Phase D — post-sim outlier replays (the trigger the 09-04 refresh skipped)
+
+Targets picked from the fresh JSX against `tools/calibration_bands.json`
+(field bands + the [30,70] default): each outlier deck's worst and best
+cell, capped at eight pairs; seeds 60100–60107; logs in `replays/*.txt`,
+viewers in `replays/replay_*.html`.
+
+| Seed | Pair | Why | Result | One-line read |
+|---|---|---|---|---|
+| 60100 | Jeskai Blink vs 4c Omnath | Jeskai 26.0 vs [45,60], worst cell 0 | Omnath 2-0 (T13, T9) | Omnath mulligans twice in G1 and still wins a 13-turn grind — Jeskai's answer→close residual (`ai/gameplan.py`, task #19 lane), not a rules gap. |
+| 60101 | Jeskai Blink vs Pinnacle Affinity | best cell 65 | Jeskai 2-0 (T11, T11) | Solitude + Ephemerate value games; Pinnacle mulligans a 0-lander in G1. Legitimate. |
+| 60102 | Amulet Titan vs Boros Energy | Amulet 27.9 vs [45,60], worst cell 0 | Boros 2-1 | Boros mulligans a four-land seven **twice** in G2 ("too many lands 4 > 3") and loses that game; wins G1/G3 on turns 9/6 against Pact-only keeps. Amulet lane + the mulligan-cap lead below. |
+| 60103 | Amulet Titan vs Jeskai Blink | best cell 70 | Jeskai 2-0 (T11, T9) | Amulet keeps Zenith / Spelunking / Pact hands and never assembles by turn 9 — the Amulet primary doc. |
+| 60104 | Ruby Storm vs Pinnacle Affinity | Storm 63.5 vs [40,55], worst cell 30 | Pinnacle 2-0 (T8, T4) | A turn-4 kill through a ritual-heavy keep: race, no defect visible. |
+| 60105 | Ruby Storm vs 4/5c Control | best cell 95 | Storm 2-1 (T8 / T10 / T6) | Storm mulligans a four-land seven in G3 and still wins on turn 6; 4/5c's G2 win is a Teferi + Wrenn keep. The 95 cell is the deck-level Storm-vs-control residual (combo speed vs sparse counters). |
+| 60106 | Dimir Midrange vs Eldrazi Tron | Dimir 68.5 vs [45,60], worst cell 40 | Eldrazi Tron 2-0 (T8, T10) | Dimir mulligans a five-land seven ("5 > 4") in G2; Tron's Temple + Thought-Knot keeps. Legitimate. |
+| 60107 | Dimir Midrange vs Hollow One | best cell 100 | Dimir 2-0 (T7, T7) | Hollow One mulligans a 0-lander in G2; both games a Frog / Push curve. Legitimate. |
+
+**Lead surfaced (recurring, not built):** the per-deck flat
+`mulligan_max_lands` cap mulligans standard four-land sevens — Boros
+Energy (twice, s60102 G2), Ruby Storm (s60105 G3), Hollow One (Pinnacle
+loop), and Dimir's five-land seven; nine gameplans sit at 3. A
+derivation from the deck's curve (rather than a per-deck integer) is
+the class-sized shape; it is deck configuration today, so it stays out
+of every measurement task.

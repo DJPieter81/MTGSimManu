@@ -1,0 +1,1393 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+  Sideboard (Jeskai Blink vs Amulet Titan): +1 Mystical Dispute, -1 Galvanic Discharge
+======================================================================
+  GAME 1: Amulet Titan (P1) vs Jeskai Blink (P2)  —  seed 60103
+  Series: Amulet Titan 0 - 0 Jeskai Blink
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Jeskai Blink wins → chooses to play first
+║ P1 (on play): Jeskai Blink
+║ P2 (on draw): Amulet Titan
+╚═══════════════════════════════════════════════════════
+
+P1 (Amulet Titan) opening hand (2 lands, 5 spells):
+  • Spelunking [Spell, CMC 3]
+  • Scapeshift [Spell, CMC 4]
+  • Summoner's Pact [Spell, CMC 0]
+  • Simic Growth Chamber [Land, CMC 0]
+  • Forest [Land, CMC 0]
+  • Green Sun's Zenith [Spell, CMC 1]
+  • Primeval Titan [Creature, CMC 6]
+→ P1 KEEPS 7 — has key card(s): Green Sun's Zenith, Spelunking, Summoner's Pact, 3 cheap spells
+
+P2 (Jeskai Blink) opening hand (3 lands, 4 spells):
+  • Island [Land, CMC 0]
+  • Fable of the Mirror-Breaker // Reflection of Kiki-Jiki [Spell, CMC 3]
+  • Plains [Land, CMC 0]
+  • Consign to Memory [Spell, CMC 1]
+  • Arid Mesa [Land, CMC 0]
+  • Solitude [Creature, CMC 5]
+  • Phelia, Exuberant Shepherd [Creature, CMC 2]
+→ P2 KEEPS 7 — has key card(s): Solitude, 3 cheap spells
+
+
+╔══ TURN 1 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 20  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Arid Mesa
+T1: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Arid Mesa (pay 1 life) -> Hallowed Fountain (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Jeskai Blink 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Gruul Turf
+  [Main 1]
+T1 P1: Play Forest
+    → Goal: deploy_engine
+T1 P1: Cast Summoner's Pact (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Summoner's Pact
+T1 P1: Summoner's Pact finds Primeval Titan
+T1: Summoner's Pact moved stack -> graveyard (resolution)
+    → Goal: deploy_engine [enablers]
+    [Mana] Tap Forest→G (paying for Green Sun's Zenith, 0 mana remaining)
+T1 P1: Cast Green Sun's Zenith (G)
+    [Priority] P2 passes (no response)
+T1: Resolve Green Sun's Zenith
+T1: Dryad Arbor moved library -> battlefield (Green Sun's Zenith tutor)
+T1 P1: Green Sun's Zenith finds Dryad Arbor
+T1: Green Sun's Zenith moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 19  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 1
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1)
+║   Lands: Forest [T], Dryad Arbor
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Quantum Riddler
+  [Main 1]
+T2 P2: Play Island
+    → Goal: grind_value [enablers]
+    [Mana] Tap Island→U, Hallowed Fountain→W (paying for Phelia, Exuberant Shepherd, 0 mana remaining)
+T2 P2: Cast Phelia, Exuberant Shepherd (1W)
+    [Priority] P1 passes (no response)
+T2: Resolve Phelia, Exuberant Shepherd
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Jeskai Blink 19
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1)
+║   Lands: Forest, Dryad Arbor
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Lands: Hallowed Fountain [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Tolaria West
+  [Main 1]
+T2 P1: Play Simic Growth Chamber (enters tapped)
+T2: Forest moved battlefield -> hand (Simic Growth Chamber ETB returns Forest to hand)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 19  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Lands: Hallowed Fountain, Island
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1)
+║   Lands: Dryad Arbor, Simic Growth Chamber [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Quantum Riddler
+  [Main 1]
+T3 P2: Play Plains
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Phelia, Exuberant Shepherd
+T3 P2: Attack with Phelia, Exuberant Shepherd
+T3 P1:   [BLOCK] Dryad Arbor (1/1) blocks Phelia, Exuberant Shepherd (2/2) — lifespan_delta=+0.04
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T3: Dryad Arbor dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Jeskai Blink 19
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 3
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Simic Growth Chamber
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2) [tapped]
+║   Lands: Hallowed Fountain, Island, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Vesuva
+  [Main 1]
+T3 P1: Play Forest
+    → Goal: ramp [enablers]
+    [Mana] Tap Forest→G, Simic Growth Chamber→GU (paying for Spelunking, 0 mana remaining)
+T3 P1: Cast Spelunking (2G)
+    [Priority] P2 passes (no response)
+T3: Resolve Spelunking
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 19  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 1
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Lands: Hallowed Fountain, Island, Plains
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Spelunking
+║   Lands: Simic Growth Chamber [T], Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Phelia, Exuberant Shepherd
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Phelia, Exuberant Shepherd
+T4 P2: Phelia exiles Spelunking (P1's)
+T4 P2: Attack with Phelia, Exuberant Shepherd
+  [Declare Blockers] P1 does not block
+T4 P2:   Phelia, Exuberant Shepherd (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 20 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Spelunking returns to battlefield (P1)
+
+╔══ TURN 4 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 18  |  Jeskai Blink 19
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 3
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Spelunking
+║   Lands: Simic Growth Chamber, Forest
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2) [tapped]
+║   Lands: Hallowed Fountain, Island, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Scapeshift
+  [Main 1]
+T4 P1: Play Vesuva
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+    [Mana] Tap Island→U, Plains→W (paying for Phelia, Exuberant Shepherd, 1 mana remaining)
+T4 P2: Cast Phelia, Exuberant Shepherd (1W)
+T4: Resolve Phelia, Exuberant Shepherd
+T4: Phelia, Exuberant Shepherd moved battlefield -> graveyard (SBA 704.5j: legend rule (Phelia, Exuberant Shepherd))
+
+╔══ TURN 5 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 19  |  Amulet Titan 18
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Lands: Hallowed Fountain, Island, Plains
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Spelunking
+║   Lands: Simic Growth Chamber, Forest, Vesuva
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+T5 P2: Play Arid Mesa
+T5: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T5 P2: Crack Arid Mesa (pay 1 life) -> Steam Vents (untapped, life: 16)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Phelia, Exuberant Shepherd
+T5 P2: Phelia exiles Spelunking (P1's)
+T5 P2: Attack with Phelia, Exuberant Shepherd
+  [Declare Blockers] P1 does not block
+T5 P2:   Phelia, Exuberant Shepherd (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 18 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+T5: Spelunking returns to battlefield (P1)
+
+╔══ TURN 5 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 16  |  Jeskai Blink 16
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 3
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Spelunking
+║   Lands: Simic Growth Chamber, Forest, Vesuva
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2) [tapped]
+║   Lands: Hallowed Fountain, Island, Plains, Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arboreal Grazer
+  [Main 1]
+T5 P1: Play Gruul Turf (enters tapped)
+T5: Vesuva moved battlefield -> hand (Gruul Turf ETB returns Vesuva to hand)
+T5 P1: Spelunking — Gruul Turf enters untapped
+    → Goal: ramp [enablers]
+    [Mana] Tap Forest→G (paying for Arboreal Grazer, 4 mana remaining)
+T5 P1: Cast Arboreal Grazer (G)
+    [Priority] P2 passes (no response)
+T5: Resolve Arboreal Grazer
+T5 P1: Spelunking — Tolaria West enters untapped
+T5 P1: Arboreal Grazer puts Tolaria West onto battlefield
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 16  |  Amulet Titan 16
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 3
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Lands: Hallowed Fountain, Island, Plains, Steam Vents
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Spelunking
+║   Lands: Simic Growth Chamber, Forest [T], Gruul Turf, Tolaria West
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Island→U, Steam Vents→R (paying for Ragavan, Nimble Pilferer, 2 mana remaining)
+T6 P2: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P1 passes (no response)
+T6: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Phelia, Exuberant Shepherd, Ragavan, Nimble Pilferer
+T6 P2: Phelia exiles Arboreal Grazer (P1's)
+T6 P2: Attack with Phelia, Exuberant Shepherd, Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T6 P2:   Phelia, Exuberant Shepherd (2/2) → 2 dmg to player
+T6 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T6 P2: Create 1x Treasure token(s)
+T6 P2: Ragavan, Nimble Pilferer exiles Gruul Turf from top of P1's library
+T6 P2: Ragavan, Nimble Pilferer — may cast Gruul Turf this turn
+  [Combat Damage] 4 damage dealt → P1 life: 16 → 12
+  [End Combat]
+  [Main 2]
+T6 P2: Play Gruul Turf (enters tapped)
+T6: Island moved battlefield -> hand (Gruul Turf ETB returns Island to hand)
+  [End Step]
+T6: Arboreal Grazer returns to battlefield (P1)
+T6: Ragavan, Nimble Pilferer moved battlefield -> hand (Dash return)
+T6: Ragavan, Nimble Pilferer returned to hand (Dash)
+
+╔══ TURN 6 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 12  |  Jeskai Blink 16
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 3
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Spelunking
+║   Lands: Simic Growth Chamber, Forest, Gruul Turf, Tolaria West
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2) [tapped]
+║   Other: Treasure Token
+║   Lands: Hallowed Fountain, Plains, Steam Vents [T], Gruul Turf [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Aftermath Analyst
+  [Main 1]
+T6 P1: Play Vesuva
+    → Goal: ramp [payoffs]
+    [Mana] Tap Forest→G, Tolaria West→U, Simic Growth Chamber→GU, Gruul Turf→RG (paying for Primeval Titan, 0 mana remaining)
+T6 P1: Cast Primeval Titan (4GG)
+    [Priority] P2 passes (no response)
+T6: Resolve Primeval Titan
+T6 P1: Spelunking — Crumbling Vestige enters untapped
+T6 P1: Primeval Titan searches for Crumbling Vestige
+T6 P1: Spelunking — Hanweir Battlements // Hanweir, the Writhing Township enters untapped
+T6 P1: Primeval Titan searches for Hanweir Battlements // Hanweir, the Writhing Township
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 16  |  Amulet Titan 12
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 7
+║ Library: 46  |  Graveyard: 3
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Other: Treasure Token
+║   Lands: Hallowed Fountain, Plains, Steam Vents, Gruul Turf
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Primeval Titan (6/6)
+║   Other: Spelunking
+║   Lands: Simic Growth Chamber [T], Forest [T], Gruul Turf [T], Tolaria West [T], Vesuva, Crumbling Vestige, Hanweir Battlements // Hanweir, the Writhing Township
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Elegant Parlor
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Hallowed Fountain→W, Steam Vents→R, Gruul Turf→RG (paying for Solitude, 0 mana remaining)
+T7 P2: Cast Solitude (3WW)
+    [Priority] P1 passes (no response)
+T7: Resolve Solitude
+T7: Primeval Titan moved battlefield -> exile (exiled)
+T7 P2: Solitude exiles Primeval Titan (opponent gains 6 life, now 18)
+T7 P2: Play Island
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Phelia, Exuberant Shepherd
+T7 P2: Phelia exiles Solitude (P2's)
+T7 P2: Attack with Phelia, Exuberant Shepherd
+T7 P1:   [BLOCK] Arboreal Grazer (0/3) blocks Phelia, Exuberant Shepherd (2/2) — lifespan_delta=+1.00
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+  [End Combat]
+  [Main 2]
+  [End Step]
+T7: Solitude returns to battlefield (P2)
+T7 P2: Phelia, Exuberant Shepherd gets +1/+1 counter (3/3)
+
+╔══ TURN 7 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 18  |  Jeskai Blink 16
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 7  |  Opp lands: 5
+║ Library: 42  |  Graveyard: 3
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Spelunking
+║   Lands: Simic Growth Chamber, Forest, Gruul Turf, Tolaria West, Vesuva, Crumbling Vestige, Hanweir Battlements // Hanweir, the Writhing Township
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (3/3) [tapped], Solitude (3/2)
+║   Other: Treasure Token
+║   Lands: Hallowed Fountain [T], Plains [T], Steam Vents [T], Gruul Turf [T], Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Simic Growth Chamber
+  [Main 1]
+T7 P1: Play Simic Growth Chamber (enters tapped)
+T7: Vesuva moved battlefield -> hand (Simic Growth Chamber ETB returns Vesuva to hand)
+T7 P1: Spelunking — Simic Growth Chamber enters untapped
+    → Goal: ramp [payoffs]
+    [Mana] Tap Forest→G, Tolaria West→U, Hanweir Battlements // Hanweir, the Writhing Township→C, Simic Growth Chamber→GU, Gruul Turf→RG (paying for Primeval Titan, 4 mana remaining)
+T7 P1: Cast Primeval Titan (4GG)
+    [Priority] P2 passes (no response)
+T7: Resolve Primeval Titan
+T7 P1: Spelunking — Crumbling Vestige enters untapped
+T7 P1: Primeval Titan searches for Crumbling Vestige
+T7 P1: Spelunking — Mirrorpool enters untapped
+T7 P1: Primeval Titan searches for Mirrorpool
+    → Goal: ramp
+    [Mana] Tap Simic Growth Chamber→GU (paying for Aftermath Analyst, 4 mana remaining)
+T7 P1: Cast Aftermath Analyst (1G)
+    [Priority] P2 passes (no response)
+T7: Resolve Aftermath Analyst
+T7: Primeval Titan moved library -> graveyard (Aftermath Analyst mill)
+T7: Crumbling Vestige moved library -> graveyard (Aftermath Analyst mill)
+T7: The Mycosynth Gardens moved library -> graveyard (Aftermath Analyst mill)
+T7 P1: Aftermath Analyst ETB: mill 3
+T7 P1: Activate Aftermath Analyst (sacrifice)
+T7 P1: Returned Dryad Arbor to battlefield
+T7 P1: Returned Crumbling Vestige to battlefield
+T7 P1: Returned The Mycosynth Gardens to battlefield
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 16  |  Amulet Titan 18
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 12
+║ Library: 45  |  Graveyard: 3
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (3/3), Solitude (3/2)
+║   Other: Treasure Token
+║   Lands: Hallowed Fountain, Plains, Steam Vents, Gruul Turf, Island
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Primeval Titan (6/6), Dryad Arbor (1/1) [tapped]
+║   Other: Spelunking
+║   Lands: Simic Growth Chamber [T], Forest [T], Gruul Turf [T], Tolaria West [T], Crumbling Vestige, Hanweir Battlements // Hanweir, the Writhing Township [T], Simic Growth Chamber [T], Crumbling Vestige, Mirrorpool, Dryad Arbor [T], Crumbling Vestige [T], The Mycosynth Gardens [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+T8 P2: surveil 1 → Galvanic Discharge to GY
+T8 P2: Play Elegant Parlor (enters tapped)
+    → Goal: close_game
+    [Mana] Tap Plains→W, Island→U, Hallowed Fountain→U, Gruul Turf→RG (paying for Quantum Riddler, 1 mana remaining)
+T8 P2: Cast Quantum Riddler (3UU)
+    [Priority] P1 passes (no response)
+T8: Resolve Quantum Riddler
+T8 P2: Quantum Riddler ETB: draw 1 (Sacred Foundry)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Phelia, Exuberant Shepherd, Solitude
+T8 P2: Phelia exiles Solitude (P2's)
+T8 P2: Attack with Phelia, Exuberant Shepherd, Solitude
+T8 P1:   [BLOCK] Arboreal Grazer (0/3) blocks Phelia, Exuberant Shepherd (3/3) — lifespan_delta=+0.43
+T8 P1:   [BLOCK] Primeval Titan (6/6) blocks Phelia, Exuberant Shepherd (3/3) — lifespan_delta=+2.36
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T8: Arboreal Grazer dies
+T8: Phelia, Exuberant Shepherd dies
+  [End Combat]
+  [Main 2]
+    → Goal: close_game
+    [Mana] Tap Steam Vents→R (paying for Ragavan, Nimble Pilferer, 0 mana remaining)
+T8 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T8: Resolve Ragavan, Nimble Pilferer
+  [End Step]
+T8: Solitude returns to battlefield (P2)
+
+╔══ TURN 8 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 18  |  Jeskai Blink 16
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 12  |  Opp lands: 6
+║ Library: 36  |  Graveyard: 5
+║ Amulet Titan board:
+║   Creatures: Primeval Titan (6/6), Dryad Arbor (1/1)
+║   Other: Spelunking
+║   Lands: Simic Growth Chamber, Forest, Gruul Turf, Tolaria West, Crumbling Vestige, Hanweir Battlements // Hanweir, the Writhing Township, Simic Growth Chamber, Crumbling Vestige, Mirrorpool, Dryad Arbor, Crumbling Vestige, The Mycosynth Gardens
+║ Jeskai Blink board:
+║   Creatures: Quantum Riddler (4/6), Ragavan, Nimble Pilferer (2/1), Solitude (3/2) [tapped]
+║   Other: Treasure Token
+║   Lands: Hallowed Fountain [T], Plains [T], Steam Vents [T], Gruul Turf [T], Island [T], Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Boseiju, Who Endures
+  [Main 1]
+T8 P1: Play Vesuva
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Primeval Titan
+T8 P1: Spelunking — Crumbling Vestige enters untapped
+T8 P1: Primeval Titan searches for Crumbling Vestige
+T8 P1: Spelunking — Shifting Woodland enters untapped
+T8 P1: Primeval Titan searches for Shifting Woodland
+T8 P1: Attack with Primeval Titan
+  [Declare Blockers] P2 does not block
+T8 P1:   Primeval Titan (6/6) → 6 dmg to player
+  [Combat Damage] 6 damage dealt → P2 life: 16 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 10  |  Amulet Titan 18
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 6  |  Opp lands: 15
+║ Library: 42  |  Graveyard: 5
+║ Jeskai Blink board:
+║   Creatures: Quantum Riddler (4/6), Ragavan, Nimble Pilferer (2/1), Solitude (3/2)
+║   Other: Treasure Token
+║   Lands: Hallowed Fountain, Plains, Steam Vents, Gruul Turf, Island, Elegant Parlor
+║ Amulet Titan board:
+║   Creatures: Primeval Titan (6/6) [tapped], Dryad Arbor (1/1)
+║   Other: Spelunking
+║   Lands: Simic Growth Chamber, Forest, Gruul Turf, Tolaria West, Crumbling Vestige, Hanweir Battlements // Hanweir, the Writhing Township, Simic Growth Chamber, Crumbling Vestige, Mirrorpool, Dryad Arbor, Crumbling Vestige, The Mycosynth Gardens, Vesuva, Crumbling Vestige, Shifting Woodland
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+  [Main 1]
+T9 P2: Play Sacred Foundry (untapped, life: 8)
+    → Goal: close_game
+    [Mana] Tap Plains→W, Island→U, Hallowed Fountain→U, Gruul Turf→RG (paying for Quantum Riddler, 3 mana remaining)
+T9 P2: Cast Quantum Riddler (3UU)
+    [Priority] P1 passes (no response)
+T9: Resolve Quantum Riddler
+T9 P2: Quantum Riddler ETB: draw 1 (Ragavan, Nimble Pilferer)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Quantum Riddler, Ragavan, Nimble Pilferer, Solitude
+T9 P2: Attack with Quantum Riddler, Ragavan, Nimble Pilferer, Solitude
+  [Declare Blockers] P1 does not block
+T9 P2:   Quantum Riddler (4/6) → 4 dmg to player
+T9 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T9 P2: Create 1x Treasure token(s)
+T9 P2: Ragavan, Nimble Pilferer exiles Cultivator Colossus from top of P1's library
+T9 P2: Ragavan, Nimble Pilferer — may cast Cultivator Colossus this turn
+T9 P2: Solitude lifelink — gain 3 (life: 11)
+T9 P2:   Solitude (3/2) → 3 dmg to player
+  [Combat Damage] 9 damage dealt → P1 life: 18 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+T9: Cultivator Colossus returned to exile (uncast)
+
+╔══ TURN 9 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 9  |  Jeskai Blink 11
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 15  |  Opp lands: 7
+║ Library: 32  |  Graveyard: 5
+║ Amulet Titan board:
+║   Creatures: Primeval Titan (6/6), Dryad Arbor (1/1)
+║   Other: Spelunking
+║   Lands: Simic Growth Chamber, Forest, Gruul Turf, Tolaria West, Crumbling Vestige, Hanweir Battlements // Hanweir, the Writhing Township, Simic Growth Chamber, Crumbling Vestige, Mirrorpool, Dryad Arbor, Crumbling Vestige, The Mycosynth Gardens, Vesuva, Crumbling Vestige, Shifting Woodland
+║ Jeskai Blink board:
+║   Creatures: Quantum Riddler (4/6) [tapped], Ragavan, Nimble Pilferer (2/1) [tapped], Solitude (3/2) [tapped], Quantum Riddler (4/6)
+║   Other: Treasure Token, Treasure Token
+║   Lands: Hallowed Fountain [T], Plains [T], Steam Vents, Gruul Turf [T], Island [T], Elegant Parlor, Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Spelunking
+  [Main 1]
+T9 P1: Play Boseiju, Who Endures
+    → Goal: ramp [enablers]
+    [Mana] Tap Forest→G, Tolaria West→U, Hanweir Battlements // Hanweir, the Writhing Township→C (paying for Spelunking, 15 mana remaining)
+T9 P1: Cast Spelunking (2G)
+    [Priority] P2 passes (no response)
+T9: Resolve Spelunking
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Primeval Titan
+T9: Forest moved battlefield -> hand (Gruul Turf ETB returns Forest to hand)
+T9 P1: Spelunking — Gruul Turf enters untapped
+T9 P1: Primeval Titan searches for Gruul Turf
+T9: Tolaria West moved battlefield -> hand (Simic Growth Chamber ETB returns Tolaria West to hand)
+T9 P1: Spelunking — Simic Growth Chamber enters untapped
+T9 P1: Primeval Titan searches for Simic Growth Chamber
+T9 P1: Attack with Primeval Titan
+  [Declare Blockers] P2 does not block
+T9 P1:   Primeval Titan (6/6) → 6 dmg to player
+  [Combat Damage] 6 damage dealt → P2 life: 11 → 5
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 5  |  Amulet Titan 9
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 7  |  Opp lands: 16
+║ Library: 40  |  Graveyard: 5
+║ Jeskai Blink board:
+║   Creatures: Quantum Riddler (4/6), Ragavan, Nimble Pilferer (2/1), Solitude (3/2), Quantum Riddler (4/6)
+║   Other: Treasure Token, Treasure Token
+║   Lands: Hallowed Fountain, Plains, Steam Vents, Gruul Turf, Island, Elegant Parlor, Sacred Foundry
+║ Amulet Titan board:
+║   Creatures: Primeval Titan (6/6) [tapped], Dryad Arbor (1/1)
+║   Other: Spelunking, Spelunking
+║   Lands: Simic Growth Chamber, Gruul Turf, Crumbling Vestige, Hanweir Battlements // Hanweir, the Writhing Township [T], Simic Growth Chamber, Crumbling Vestige, Mirrorpool, Dryad Arbor, Crumbling Vestige, The Mycosynth Gardens, Vesuva, Crumbling Vestige, Shifting Woodland, Boseiju, Who Endures, Gruul Turf, Simic Growth Chamber
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Solitude
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Island→U, Hallowed Fountain→W, Gruul Turf→RG (paying for Solitude, 3 mana remaining)
+T10 P2: Cast Solitude (3WW)
+    [Priority] P1 passes (no response)
+T10: Resolve Solitude
+T10: Primeval Titan moved battlefield -> exile (exiled)
+T10 P2: Solitude exiles Primeval Titan (opponent gains 6 life, now 15)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Quantum Riddler, Ragavan, Nimble Pilferer, Solitude, Quantum Riddler
+T10 P2: Attack with Quantum Riddler, Ragavan, Nimble Pilferer, Solitude, Quantum Riddler
+T10 P1:   [BLOCK-EMERGENCY] Dryad Arbor (1/1) blocks Solitude (3/2) — lifespan_delta=-0.69
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T10 P2:   Quantum Riddler (4/6) → 4 dmg to player
+T10 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T10 P2: Create 1x Treasure token(s)
+T10 P2: Ragavan, Nimble Pilferer exiles Urza's Saga from top of P1's library
+T10 P2: Ragavan, Nimble Pilferer — may cast Urza's Saga this turn
+T10 P2: Solitude lifelink — gain 1 (life: 6)
+T10 P2: Solitude lifelink — gain 2 (life: 8)
+T10 P2:   Quantum Riddler (4/6) → 4 dmg to player
+T10: Dryad Arbor dies
+  [Combat Damage] 10 damage dealt → P1 life: 15 → 5
+  [End Combat]
+  [Main 2]
+T10 P2: Urza's Saga Ch.I: gains "{T}: Add {C}."
+T10 P2: Play Urza's Saga
+  [End Step]
+
+╔══ TURN 10 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 5  |  Jeskai Blink 8
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 15  |  Opp lands: 8
+║ Library: 28  |  Graveyard: 6
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Spelunking, Spelunking
+║   Lands: Simic Growth Chamber, Gruul Turf, Crumbling Vestige, Hanweir Battlements // Hanweir, the Writhing Township, Simic Growth Chamber, Crumbling Vestige, Mirrorpool, Crumbling Vestige, The Mycosynth Gardens, Vesuva, Crumbling Vestige, Shifting Woodland, Boseiju, Who Endures, Gruul Turf, Simic Growth Chamber
+║ Jeskai Blink board:
+║   Creatures: Quantum Riddler (4/6) [tapped], Ragavan, Nimble Pilferer (2/1) [tapped], Solitude (3/2) [tapped], Quantum Riddler (4/6) [tapped], Solitude (3/2)
+║   Other: Treasure Token, Treasure Token, Treasure Token
+║   Lands: Hallowed Fountain [T], Plains [T], Steam Vents, Gruul Turf [T], Island [T], Elegant Parlor, Sacred Foundry, Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Echoing Deeps
+  [Main 1]
+T10 P1: Play Forest
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 8  |  Amulet Titan 5
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 8  |  Opp lands: 16
+║ Library: 39  |  Graveyard: 5
+║ Jeskai Blink board:
+║   Creatures: Quantum Riddler (4/6), Ragavan, Nimble Pilferer (2/1), Solitude (3/2), Quantum Riddler (4/6), Solitude (3/2)
+║   Other: Treasure Token, Treasure Token, Treasure Token
+║   Lands: Hallowed Fountain, Plains, Steam Vents, Gruul Turf, Island, Elegant Parlor, Sacred Foundry, Urza's Saga
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Spelunking, Spelunking
+║   Lands: Simic Growth Chamber, Gruul Turf, Crumbling Vestige, Hanweir Battlements // Hanweir, the Writhing Township, Simic Growth Chamber, Crumbling Vestige, Mirrorpool, Crumbling Vestige, The Mycosynth Gardens, Vesuva, Crumbling Vestige, Shifting Woodland, Boseiju, Who Endures, Gruul Turf, Simic Growth Chamber, Forest
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wrath of the Skies
+  [Main 1]
+T11 P2: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+T11 P2: Create 1x Construct token(s)
+T11 P2: Urza's Saga activates "{2}, {T}: Create a 0/0 colorless Constru..." (pays {2}, {T})
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Quantum Riddler, Ragavan, Nimble Pilferer, Solitude, Quantum Riddler, Solitude
+T11 P2: Attack with Quantum Riddler, Ragavan, Nimble Pilferer, Solitude, Quantum Riddler, Solitude
+  [Declare Blockers] P1 does not block
+T11 P2:   Quantum Riddler (4/6) → 4 dmg to player
+T11 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T11 P2: Create 1x Treasure token(s)
+T11 P2: Ragavan, Nimble Pilferer exiles Green Sun's Zenith from top of P1's library
+T11 P2: Ragavan, Nimble Pilferer — may cast Green Sun's Zenith this turn
+T11 P2: Solitude lifelink — gain 3 (life: 11)
+T11 P2:   Solitude (3/2) → 3 dmg to player
+T11 P2:   Quantum Riddler (4/6) → 4 dmg to player
+T11 P2: Solitude lifelink — gain 3 (life: 14)
+T11 P2:   Solitude (3/2) → 3 dmg to player
+P1 loses: life total -11
+  [Combat Damage] 16 damage dealt → P1 life: 5 → -11
+
+>>> Jeskai Blink wins Game 1 on turn 11 via damage
+    Final life: Amulet Titan=-11  Jeskai Blink=14
+
+======================================================================
+  GAME 2: Amulet Titan (P1) vs Jeskai Blink (P2)  —  seed 60104
+  Series: Amulet Titan 0 - 1 Jeskai Blink
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Jeskai Blink wins → chooses to play first
+║ P1 (on play): Jeskai Blink
+║ P2 (on draw): Amulet Titan
+╚═══════════════════════════════════════════════════════
+
+P1 (Amulet Titan) opening hand (3 lands, 4 spells):
+  • Spelunking [Spell, CMC 3]
+  • Forest [Land, CMC 0]
+  • Green Sun's Zenith [Spell, CMC 1]
+  • Crumbling Vestige [Land, CMC 0]
+  • Amulet of Vigor [Spell, CMC 1]
+  • Urza's Cave [Land, CMC 0]
+  • Summoner's Pact [Spell, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Amulet of Vigor, Green Sun's Zenith, Spelunking, Summoner's Pact, 4 cheap spells
+
+P2 (Jeskai Blink) opening hand (4 lands, 3 spells):
+  • Flooded Strand [Land, CMC 0]
+  • Arid Mesa [Land, CMC 0]
+  • Scalding Tarn [Land, CMC 0]
+  • Arid Mesa [Land, CMC 0]
+  • Consign to Memory [Spell, CMC 1]
+  • Fable of the Mirror-Breaker // Reflection of Kiki-Jiki [Spell, CMC 3]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+→ P2 KEEPS 7 — has key card(s): Ragavan, Nimble Pilferer, 3 cheap spells
+
+
+╔══ TURN 1 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 20  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Scalding Tarn
+T1: Scalding Tarn moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Scalding Tarn (pay 1 life) -> Steam Vents (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Jeskai Blink 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Scapeshift
+  [Main 1]
+T1 P1: Play Crumbling Vestige (enters tapped)
+    → Goal: deploy_engine
+T1 P1: Cast Summoner's Pact (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Summoner's Pact
+T1 P1: Summoner's Pact finds Primeval Titan
+T1: Summoner's Pact moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 19  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Steam Vents
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Witch Enchanter // Witch-Blessed Meadow
+  [Main 1]
+T2 P2: Play Flooded Strand
+T2: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T2 P2: Crack Flooded Strand (pay 1 life) -> Sacred Foundry (untapped, life: 16)
+    → Goal: grind_value
+    [Mana] Tap Steam Vents→R, Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 0 mana remaining)
+T2 P2: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P1 passes (no response)
+T2: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T2 P2: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T2 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T2 P2: Create 1x Treasure token(s)
+T2 P2: Ragavan, Nimble Pilferer exiles Simic Growth Chamber from top of P1's library
+T2 P2: Ragavan, Nimble Pilferer — may cast Simic Growth Chamber this turn
+  [Combat Damage] 2 damage dealt → P1 life: 20 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+T2: Simic Growth Chamber returned to exile (uncast)
+T2: Ragavan, Nimble Pilferer moved battlefield -> hand (Dash return)
+T2: Ragavan, Nimble Pilferer returned to hand (Dash)
+
+╔══ TURN 2 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 18  |  Jeskai Blink 16
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Other: Treasure Token
+║   Lands: Steam Vents [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Gruul Turf
+  [Main 1]
+T2 P1: Play Urza's Cave
+    → Goal: deploy_engine [engines]
+    [Mana] Tap Urza's Cave→C (paying for Amulet of Vigor, 1 mana remaining)
+T2 P1: Cast Amulet of Vigor (1)
+    [Priority] P2 passes (no response)
+T2: Resolve Amulet of Vigor
+T2 P1: Activate Urza's Cave (sacrifice)
+T2 P1:   finds Tolaria West
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 16  |  Amulet Titan 18
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 1
+║ Library: 50  |  Graveyard: 2
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Other: Treasure Token
+║   Lands: Steam Vents, Sacred Foundry
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Phelia, Exuberant Shepherd
+  [Main 1]
+T3 P2: Play Arid Mesa
+T3: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T3 P2: Crack Arid Mesa (pay 1 life) -> Hallowed Fountain (tapped, life: 15)
+    → Goal: grind_value
+    [Mana] Tap Steam Vents→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T3 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T3: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 18  |  Jeskai Blink 15
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Other: Treasure Token
+║   Lands: Steam Vents [T], Sacred Foundry, Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Scapeshift
+  [Main 1]
+T3 P1: Play Gruul Turf (enters tapped)
+T3 P1: Amulet of Vigor untaps Gruul Turf
+T3: Crumbling Vestige moved battlefield -> hand (Gruul Turf ETB returns Crumbling Vestige to hand)
+    → Goal: ramp
+    [Mana] Tap Gruul Turf→RG (paying for Green Sun's Zenith, 1 mana remaining)
+T3 P1: Cast Green Sun's Zenith (1G) (X=1)
+    [Priority] P2 passes (no response)
+T3: Resolve Green Sun's Zenith
+T3: Dryad Arbor moved library -> battlefield (Green Sun's Zenith tutor)
+T3 P1: Green Sun's Zenith finds Dryad Arbor
+T3: Green Sun's Zenith moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 15  |  Amulet Titan 18
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 48  |  Graveyard: 3
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Other: Treasure Token
+║   Lands: Steam Vents, Sacred Foundry, Hallowed Fountain
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1)
+║   Other: Amulet of Vigor
+║   Lands: Gruul Turf [T], Dryad Arbor
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+  [Main 1]
+T4 P2: Play Arid Mesa
+T4: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T4 P2: Crack Arid Mesa -> Plains (untapped)
+    → Goal: close_game
+    [Mana] Tap Plains→W, Steam Vents→R (paying for Phelia, Exuberant Shepherd, 2 mana remaining)
+T4 P2: Cast Phelia, Exuberant Shepherd (1W)
+    [Priority] P1 passes (no response)
+T4: Resolve Phelia, Exuberant Shepherd
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T4 P2: Attack with Ragavan, Nimble Pilferer
+T4 P1:   [BLOCK] Dryad Arbor (1/1) blocks Ragavan, Nimble Pilferer (2/1) — lifespan_delta=+3.69
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T4: Dryad Arbor dies
+T4: Ragavan, Nimble Pilferer dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 18  |  Jeskai Blink 14
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 4
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor
+║   Lands: Gruul Turf
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Other: Treasure Token
+║   Lands: Steam Vents [T], Sacred Foundry, Hallowed Fountain, Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Spelunking
+  [Main 1]
+T4 P1: Play Crumbling Vestige (enters tapped)
+T4 P1: Amulet of Vigor untaps Crumbling Vestige
+    → Goal: ramp [enablers]
+    [Mana] Tap Gruul Turf→RG, Crumbling Vestige→C (paying for Spelunking, 0 mana remaining)
+T4 P1: Cast Spelunking (2G)
+    [Priority] P2 passes (no response)
+T4: Resolve Spelunking
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 14  |  Amulet Titan 18
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 2
+║ Library: 46  |  Graveyard: 5
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Other: Treasure Token
+║   Lands: Steam Vents, Sacred Foundry, Hallowed Fountain, Plains
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Gruul Turf [T], Crumbling Vestige [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arena of Glory
+  [Main 1]
+T5 P2: Play Arena of Glory (enters tapped)
+    → Goal: close_game
+    [Mana] Tap Plains→W, Steam Vents→R, Sacred Foundry→R, Hallowed Fountain→U (paying for Witch Enchanter // Witch-Blessed Meadow, 0 mana remaining)
+T5 P2: Cast Witch Enchanter // Witch-Blessed Meadow (3W)
+    [Priority] P1 passes (no response)
+T5: Resolve Witch Enchanter // Witch-Blessed Meadow
+T5: Spelunking moved battlefield -> graveyard (destroyed)
+T5 P2: Witch Enchanter // Witch-Blessed Meadow destroys Spelunking
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Phelia, Exuberant Shepherd
+T5 P2: Phelia exiles Witch Enchanter // Witch-Blessed Meadow (P2's)
+T5 P2: Attack with Phelia, Exuberant Shepherd
+  [Declare Blockers] P1 does not block
+T5 P2:   Phelia, Exuberant Shepherd (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 18 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+T5: Witch Enchanter // Witch-Blessed Meadow returns to battlefield (P2)
+T5 P2: Phelia, Exuberant Shepherd gets +1/+1 counter (3/3)
+
+╔══ TURN 5 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 16  |  Jeskai Blink 14
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 5
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor
+║   Lands: Gruul Turf, Crumbling Vestige
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (3/3) [tapped], Witch Enchanter // Witch-Blessed Meadow (2/2)
+║   Other: Treasure Token
+║   Lands: Steam Vents [T], Sacred Foundry [T], Hallowed Fountain [T], Plains [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Simic Growth Chamber
+  [Main 1]
+T5 P1: Play Simic Growth Chamber (enters tapped)
+T5 P1: Amulet of Vigor untaps Simic Growth Chamber
+T5: Crumbling Vestige moved battlefield -> hand (Simic Growth Chamber ETB returns Crumbling Vestige to hand)
+    → Goal: ramp [enablers]
+    [Mana] Tap Gruul Turf→RG, Simic Growth Chamber→GU (paying for Spelunking, 1 mana remaining)
+T5 P1: Cast Spelunking (2G)
+    [Priority] P2 passes (no response)
+T5: Resolve Spelunking
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 14  |  Amulet Titan 16
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 5  |  Opp lands: 2
+║ Library: 45  |  Graveyard: 5
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (3/3), Witch Enchanter // Witch-Blessed Meadow (2/2)
+║   Other: Treasure Token
+║   Lands: Steam Vents, Sacred Foundry, Hallowed Fountain, Plains, Arena of Glory
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Gruul Turf [T], Simic Growth Chamber [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Quantum Riddler
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Arena of Glory→R, Steam Vents→U, Sacred Foundry→R, Hallowed Fountain→U (paying for Quantum Riddler, 0 mana remaining)
+T6 P2: Cast Quantum Riddler (3UU)
+    [Priority] P1 passes (no response)
+T6: Resolve Quantum Riddler
+T6 P2: Quantum Riddler ETB: draw 1 (Scalding Tarn)
+T6 P2: Play Scalding Tarn
+T6: Scalding Tarn moved battlefield -> graveyard (fetchland sacrifice)
+T6 P2: Crack Scalding Tarn -> Island (untapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Phelia, Exuberant Shepherd, Witch Enchanter // Witch-Blessed Meadow
+T6 P2: Phelia exiles Quantum Riddler (P2's)
+T6 P2: Attack with Phelia, Exuberant Shepherd, Witch Enchanter // Witch-Blessed Meadow
+  [Declare Blockers] P1 does not block
+T6 P2:   Phelia, Exuberant Shepherd (3/3) → 3 dmg to player
+T6 P2:   Witch Enchanter // Witch-Blessed Meadow (2/2) → 2 dmg to player
+  [Combat Damage] 5 damage dealt → P1 life: 16 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+T6: Quantum Riddler returns to battlefield (P2)
+T6 P2: Phelia, Exuberant Shepherd gets +1/+1 counter (4/4)
+
+╔══ TURN 6 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 11  |  Jeskai Blink 13
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 6
+║ Library: 44  |  Graveyard: 5
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Gruul Turf, Simic Growth Chamber
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (4/4) [tapped], Witch Enchanter // Witch-Blessed Meadow (2/2) [tapped], Quantum Riddler (4/6)
+║   Other: Treasure Token
+║   Lands: Steam Vents [T], Sacred Foundry [T], Hallowed Fountain [T], Plains [T], Arena of Glory [T], Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Forest
+  [Main 1]
+T6 P1: Play Crumbling Vestige (enters tapped)
+T6 P1: Amulet of Vigor untaps Crumbling Vestige
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 13  |  Amulet Titan 11
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 6  |  Opp lands: 3
+║ Library: 42  |  Graveyard: 6
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (4/4), Witch Enchanter // Witch-Blessed Meadow (2/2), Quantum Riddler (4/6)
+║   Other: Treasure Token
+║   Lands: Steam Vents, Sacred Foundry, Hallowed Fountain, Plains, Arena of Glory, Island
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Gruul Turf, Simic Growth Chamber, Crumbling Vestige
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ephemerate
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W (paying for Ephemerate, 5 mana remaining)
+T7 P2: Cast Ephemerate (W)
+    [Priority] P1 passes (no response)
+T7: Resolve Ephemerate
+T7 P2: Quantum Riddler ETB: draw 1 (Flooded Strand)
+T7: Blink Quantum Riddler
+T7: Ephemerate moved stack -> exile (rebound (CR 702.86))
+T7 P2: Play Flooded Strand
+T7: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T7 P2: Crack Flooded Strand -> Thundering Falls (tapped)
+T7 P2: surveil 1 → Arid Mesa to GY
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Phelia, Exuberant Shepherd, Witch Enchanter // Witch-Blessed Meadow
+T7 P2: Phelia exiles Quantum Riddler (P2's)
+T7 P2: Attack with Phelia, Exuberant Shepherd, Witch Enchanter // Witch-Blessed Meadow
+  [Declare Blockers] P1 does not block
+T7 P2:   Phelia, Exuberant Shepherd (4/4) → 4 dmg to player
+T7 P2:   Witch Enchanter // Witch-Blessed Meadow (2/2) → 2 dmg to player
+  [Combat Damage] 6 damage dealt → P1 life: 11 → 5
+  [End Combat]
+  [Main 2]
+  [End Step]
+T7: Quantum Riddler returns to battlefield (P2)
+T7 P2: Phelia, Exuberant Shepherd gets +1/+1 counter (5/5)
+
+╔══ TURN 7 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 5  |  Jeskai Blink 12
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 7
+║ Library: 43  |  Graveyard: 5
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Gruul Turf, Simic Growth Chamber, Crumbling Vestige
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (5/5) [tapped], Witch Enchanter // Witch-Blessed Meadow (2/2) [tapped], Quantum Riddler (4/6)
+║   Other: Treasure Token
+║   Lands: Steam Vents, Sacred Foundry, Hallowed Fountain, Plains [T], Arena of Glory, Island, Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: The Mycosynth Gardens
+  [Main 1]
+T7 P1: Play Forest
+    → Goal: ramp [payoffs]
+    [Mana] Tap Forest→G, Gruul Turf→RG, Simic Growth Chamber→GU, Crumbling Vestige→C (paying for Primeval Titan, 0 mana remaining)
+T7 P1: Cast Primeval Titan (4GG)
+    [Priority] P2 passes (no response)
+T7: Resolve Primeval Titan
+T7 P1: Amulet of Vigor untaps Gruul Turf
+T7: Forest moved battlefield -> hand (Gruul Turf ETB returns Forest to hand)
+T7 P1: Primeval Titan searches for Gruul Turf
+T7 P1: Amulet of Vigor untaps Hanweir Battlements // Hanweir, the Writhing Township
+T7 P1: Primeval Titan searches for Hanweir Battlements // Hanweir, the Writhing Township
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 12  |  Amulet Titan 5
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 7  |  Opp lands: 5
+║ Library: 38  |  Graveyard: 8
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (5/5), Witch Enchanter // Witch-Blessed Meadow (2/2), Quantum Riddler (4/6)
+║   Other: Treasure Token
+║   Lands: Steam Vents, Sacred Foundry, Hallowed Fountain, Plains, Arena of Glory, Island, Thundering Falls
+║ Amulet Titan board:
+║   Creatures: Primeval Titan (6/6)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Gruul Turf [T], Simic Growth Chamber [T], Crumbling Vestige [T], Gruul Turf, Hanweir Battlements // Hanweir, the Writhing Township
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T8 P2: Rebound Ephemerate declined (CR 702.88b)
+  [Draw] P2 draws: Consign to Memory
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Phelia, Exuberant Shepherd, Witch Enchanter // Witch-Blessed Meadow, Quantum Riddler
+T8 P2: Phelia exiles Quantum Riddler (P2's)
+T8 P2: Attack with Phelia, Exuberant Shepherd, Witch Enchanter // Witch-Blessed Meadow, Quantum Riddler
+T8 P1:   [BLOCK-EMERGENCY] Primeval Titan (6/6) blocks Phelia, Exuberant Shepherd (5/5) — lifespan_delta=+102.50
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T8 P2:   Witch Enchanter // Witch-Blessed Meadow (2/2) → 2 dmg to player
+T8: Phelia, Exuberant Shepherd dies
+  [Combat Damage] 2 damage dealt → P1 life: 5 → 3
+  [End Combat]
+  [Main 2]
+  [End Step]
+T8: Quantum Riddler returns to battlefield (P2)
+
+╔══ TURN 8 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 3  |  Jeskai Blink 12
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 7
+║ Library: 40  |  Graveyard: 5
+║ Amulet Titan board:
+║   Creatures: Primeval Titan (6/6)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Gruul Turf, Simic Growth Chamber, Crumbling Vestige, Gruul Turf, Hanweir Battlements // Hanweir, the Writhing Township
+║ Jeskai Blink board:
+║   Creatures: Witch Enchanter // Witch-Blessed Meadow (2/2) [tapped], Quantum Riddler (4/6) [tapped]
+║   Other: Treasure Token
+║   Lands: Steam Vents, Sacred Foundry, Hallowed Fountain, Plains, Arena of Glory, Island, Thundering Falls
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arboreal Grazer
+  [Main 1]
+T8 P1: Play Forest
+    → Goal: ramp [enablers]
+    [Mana] Tap Forest→G (paying for Arboreal Grazer, 8 mana remaining)
+T8 P1: Cast Arboreal Grazer (G)
+    [Priority] P2 passes (no response)
+T8: Resolve Arboreal Grazer
+T8 P1: Amulet of Vigor untaps Tolaria West
+T8 P1: Arboreal Grazer puts Tolaria West onto battlefield
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Primeval Titan
+T8 P1: Amulet of Vigor untaps Gruul Turf
+T8: Forest moved battlefield -> hand (Gruul Turf ETB returns Forest to hand)
+T8 P1: Primeval Titan searches for Gruul Turf
+T8 P1: Amulet of Vigor untaps Crumbling Vestige
+T8 P1: Primeval Titan searches for Crumbling Vestige
+T8 P1: Attack with Primeval Titan
+  [Declare Blockers] P2 does not block
+T8 P1:   Primeval Titan (6/6) → 6 dmg to player
+  [Combat Damage] 6 damage dealt → P2 life: 12 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 6  |  Amulet Titan 3
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 7  |  Opp lands: 8
+║ Library: 37  |  Graveyard: 9
+║ Jeskai Blink board:
+║   Creatures: Witch Enchanter // Witch-Blessed Meadow (2/2), Quantum Riddler (4/6)
+║   Other: Treasure Token
+║   Lands: Steam Vents, Sacred Foundry, Hallowed Fountain, Plains, Arena of Glory, Island, Thundering Falls
+║ Amulet Titan board:
+║   Creatures: Primeval Titan (6/6) [tapped], Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Gruul Turf, Simic Growth Chamber, Crumbling Vestige, Gruul Turf, Hanweir Battlements // Hanweir, the Writhing Township, Tolaria West, Gruul Turf, Crumbling Vestige
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Arena of Glory→R, Island→U (paying for Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, 4 mana remaining)
+T9 P2: Cast Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2R)
+    [Priority] P1 passes (no response)
+T9: Resolve Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+T9 P2: Create 1x Goblin token(s)
+T9 P2: Fable Ch.I: Create 2/2 Goblin Shaman with haste
+    → Goal: close_game
+    [Mana] Tap Steam Vents→R, Sacred Foundry→R, Hallowed Fountain→U (paying for Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, 1 mana remaining)
+T9 P2: Cast Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2R)
+    [Priority] P1 passes (no response)
+T9: Resolve Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+T9 P2: Create 1x Goblin token(s)
+T9 P2: Fable Ch.I: Create 2/2 Goblin Shaman with haste
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Witch Enchanter // Witch-Blessed Meadow, Quantum Riddler, Goblin Token, Goblin Token
+T9 P2: Attack with Witch Enchanter // Witch-Blessed Meadow, Quantum Riddler, Goblin Token, Goblin Token
+T9 P1:   [BLOCK-EMERGENCY] Arboreal Grazer (0/3) blocks Quantum Riddler (4/6) — lifespan_delta=+100.30
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T9 P2:   Witch Enchanter // Witch-Blessed Meadow (2/2) → 2 dmg to player
+T9 P2:   Goblin Token (2/2) → 2 dmg to player
+T9 P2:   Goblin Token (2/2) → 2 dmg to player
+P1 loses: life total -3
+  [Combat Damage] 6 damage dealt → P1 life: 3 → -3
+
+>>> Jeskai Blink wins Game 2 on turn 9 via damage
+    Final life: Amulet Titan=-3  Jeskai Blink=6
+
+======================================================================
+  MATCH RESULT: Jeskai Blink wins 2-0
+======================================================================

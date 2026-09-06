@@ -1,0 +1,979 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+======================================================================
+  GAME 1: Dimir Midrange (P1) vs Hollow One (P2)  —  seed 60107
+  Series: Dimir Midrange 0 - 0 Hollow One
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Hollow One wins → chooses to play first
+║ P1 (on play): Hollow One
+║ P2 (on draw): Dimir Midrange
+╚═══════════════════════════════════════════════════════
+
+P1 (Dimir Midrange) opening hand (5 lands, 2 spells):
+  • Creeping Tar Pit [Land, CMC 0]
+  • Polluted Delta [Land, CMC 0]
+  • Subtlety [Creature, CMC 4]
+  • Darkslick Shores [Land, CMC 0]
+  • Darkslick Shores [Land, CMC 0]
+  • Murktide Regent [Creature, CMC 7]
+  • Watery Grave [Land, CMC 0]
+→ P1 MULLIGANS (too many lands (5 > 4); first-turn value 0 < 5)
+  New hand (4 lands, 3 spells): ['Underground River', 'Dauthi Voidwalker', 'Drown in the Loch', 'Polluted Delta', 'Darkslick Shores', 'Thoughtseize', 'Creeping Tar Pit']
+→ P1 mulligans to 6, bottoms: ['Polluted Delta']
+  Keeps: ['Underground River', 'Dauthi Voidwalker', 'Drown in the Loch', 'Darkslick Shores', 'Thoughtseize', 'Creeping Tar Pit']
+
+P2 (Hollow One) opening hand (3 lands, 4 spells):
+  • Bloodstained Mire [Land, CMC 0]
+  • Arena of Glory [Land, CMC 0]
+  • Detective's Phoenix [Creature, CMC 3]
+  • Hardened Academic [Creature, CMC 2]
+  • Lightning Bolt [Spell, CMC 1]
+  • Sacred Foundry [Land, CMC 0]
+  • Hardened Academic [Creature, CMC 2]
+→ P2 KEEPS 7 — has key card(s): Hardened Academic, Lightning Bolt, 4 cheap spells
+
+
+╔══ TURN 1 — Hollow One (P2) ══════════════════════════
+║ Life: Hollow One 20  |  Dimir Midrange 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Hollow One board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Bloodstained Mire
+T1: Bloodstained Mire moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Bloodstained Mire (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Hollow One 19
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Hollow One board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Darkslick Shores
+  [Main 1]
+T1 P1: Play Underground River
+    → Goal: disrupt [interaction]
+    [Mana] Tap Underground River→B (paying for Thoughtseize, 0 mana remaining)
+T1 P1: Cast Thoughtseize (B)
+    [Priority] P2 passes (no response)
+T1: Resolve Thoughtseize
+T1: Lightning Bolt moved hand -> graveyard (forced discard)
+T1 P1: Thoughtseize discards Lightning Bolt
+T1: Thoughtseize moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Hollow One (P2) ══════════════════════════
+║ Life: Hollow One 19  |  Dimir Midrange 17
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 2
+║ Hollow One board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Blazing Rootwalla
+  [Main 1]
+T2 P2: Play Sacred Foundry (tapped)
+    → Goal: deploy_engine
+    [Mana] Tap Sacred Foundry→R (paying for Blazing Rootwalla, 0 mana remaining)
+T2 P2: Cast Blazing Rootwalla (R)
+    [Priority] P1 passes (no response)
+T2: Resolve Blazing Rootwalla
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 17  |  Hollow One 19
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 53  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River
+║ Hollow One board:
+║   Creatures: Blazing Rootwalla (1/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Fatal Push
+  [Main 1]
+T2 P1: Play Darkslick Shores (untapped, 1 other lands)
+    → Goal: grind_value
+    [Mana] Tap Darkslick Shores→B, Underground River→B (paying for Dauthi Voidwalker, 0 mana remaining)
+T2 P1: Cast Dauthi Voidwalker (BB)
+    [Priority] P2 passes (no response)
+T2: Resolve Dauthi Voidwalker
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Hollow One (P2) ══════════════════════════
+║ Life: Hollow One 19  |  Dimir Midrange 16
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 2
+║ Hollow One board:
+║   Creatures: Blazing Rootwalla (1/1)
+║   Lands: Sacred Foundry, Sacred Foundry
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2)
+║   Lands: Underground River [T], Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Street Wraith
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R (paying for Hardened Academic, 0 mana remaining)
+T3 P2: Cast Hardened Academic (WR)
+    [Priority] P1 passes (no response)
+T3: Resolve Hardened Academic
+T3 P2: Play Arena of Glory (enters tapped)
+T3: Street Wraith moved hand -> graveyard (cycling)
+T3 P2: Cycle Street Wraith (pay 2 life, draw: Hollow One)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Hardened Academic
+T3 P2: Attack with Hardened Academic
+  [Declare Blockers] P1 does not block
+T3 P2:   Hardened Academic (2/1) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 16 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 14  |  Hollow One 17
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 52  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2)
+║   Lands: Underground River, Darkslick Shores
+║ Hollow One board:
+║   Creatures: Blazing Rootwalla (1/1), Hardened Academic (2/1) [tapped]
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Psychic Frog
+  [Main 1]
+T3 P1: Play Creeping Tar Pit (enters tapped)
+    → Goal: grind_value [interaction]
+    [Mana] Tap Darkslick Shores→U, Underground River→B (paying for Drown in the Loch, 0 mana remaining)
+T3 P1: Cast Drown in the Loch (UB)
+    [Priority] P2 passes (no response)
+T3: Resolve Drown in the Loch
+T3: Hardened Academic dies
+T3: Drown in the Loch moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Dauthi Voidwalker
+T3 P1: Attack with Dauthi Voidwalker
+T3 P2:   [BLOCK] Blazing Rootwalla (1/1) blocks Dauthi Voidwalker (3/2) — lifespan_delta=+0.74
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T3: illegal block dropped — Blazing Rootwalla cannot legally block Dauthi Voidwalker
+T3 P1:   Dauthi Voidwalker (3/2) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 17 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Hollow One (P2) ══════════════════════════
+║ Life: Hollow One 14  |  Dimir Midrange 13
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 4
+║ Hollow One board:
+║   Creatures: Blazing Rootwalla (1/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Arena of Glory
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2) [tapped]
+║   Lands: Underground River [T], Darkslick Shores [T], Creeping Tar Pit [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Bloodstained Mire
+  [Main 1]
+T4 P2: activate Blazing Rootwalla — This creature gets +2/+0 until end of turn.
+T4 P2: Blazing Rootwalla gets +2/+0 until end of turn
+T4 P2: Play Bloodstained Mire
+T4: Bloodstained Mire moved battlefield -> graveyard (fetchland sacrifice)
+T4 P2: Crack Bloodstained Mire (pay 1 life) -> Sacred Foundry (tapped, life: 13)
+    → Goal: execute_payoff
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R (paying for Hardened Academic, 0 mana remaining)
+T4 P2: Cast Hardened Academic (WR)
+    [Priority] P1 passes (no response)
+T4: Resolve Hardened Academic
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Blazing Rootwalla, Hardened Academic
+T4 P2: Attack with Blazing Rootwalla, Hardened Academic
+  [Declare Blockers] P1 does not block
+T4 P2:   Blazing Rootwalla (3/1) → 3 dmg to player
+T4 P2:   Hardened Academic (2/1) → 2 dmg to player
+  [Combat Damage] 5 damage dealt → P1 life: 13 → 8
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 8  |  Hollow One 13
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 51  |  Graveyard: 2
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2)
+║   Lands: Underground River, Darkslick Shores, Creeping Tar Pit
+║ Hollow One board:
+║   Creatures: Blazing Rootwalla (1/1) [tapped], Hardened Academic (2/1) [tapped]
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Arena of Glory [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Murktide Regent
+  [Main 1]
+T4 P1: Play Darkslick Shores (tapped, 3 other lands)
+    → Goal: close_game
+    [Mana] Tap Darkslick Shores→U, Creeping Tar Pit→B (paying for Psychic Frog, 1 mana remaining)
+T4 P1: Cast Psychic Frog (UB)
+    [Priority] P2 passes (no response)
+T4: Resolve Psychic Frog
+    → Goal: close_game
+    [Mana] Tap Underground River→B (paying for Fatal Push, 0 mana remaining)
+T4 P1: Cast Fatal Push (B)
+    [Priority] P2 passes (no response)
+T4: Resolve Fatal Push
+T4: Hardened Academic dies
+T4 P1: Fatal Push destroys Hardened Academic
+T4: Fatal Push moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Dauthi Voidwalker
+T4 P1: Attack with Dauthi Voidwalker
+  [Declare Blockers] P2 does not block
+T4 P1:   Dauthi Voidwalker (3/2) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 13 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Hollow One (P2) ══════════════════════════
+║ Life: Hollow One 10  |  Dimir Midrange 7
+║ Hand: 2 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 6
+║ Hollow One board:
+║   Creatures: Blazing Rootwalla (1/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Arena of Glory, Sacred Foundry
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2) [tapped], Psychic Frog (1/2)
+║   Lands: Underground River [T], Darkslick Shores [T], Creeping Tar Pit [T], Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Sacred Foundry
+  [Main 1]
+T5 P2: Play Sacred Foundry (tapped)
+T5 P2: activate Blazing Rootwalla — This creature gets +2/+0 until end of turn.
+T5 P2: Blazing Rootwalla gets +2/+0 until end of turn
+    → Goal: execute_payoff
+    [Mana] Tap Sacred Foundry→R, Sacred Foundry→R, Sacred Foundry→R (paying for Detective's Phoenix, 0 mana remaining)
+T5 P2: Cast Detective's Phoenix (2R)
+    [Priority] P1 passes (no response)
+T5: Resolve Detective's Phoenix
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Blazing Rootwalla, Detective's Phoenix
+T5 P2: Attack with Blazing Rootwalla, Detective's Phoenix
+T5 P1:   [BLOCK-EMERGENCY] Psychic Frog (1/2) blocks Blazing Rootwalla (3/1) — lifespan_delta=+1.37
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T5 P2:   Detective's Phoenix (2/2) → 2 dmg to player
+T5: Psychic Frog dies
+T5: Blazing Rootwalla dies
+  [Combat Damage] 2 damage dealt → P1 life: 7 → 5
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 5  |  Hollow One 10
+║ Hand: 1 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 50  |  Graveyard: 4
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2)
+║   Lands: Underground River, Darkslick Shores, Creeping Tar Pit, Darkslick Shores
+║ Hollow One board:
+║   Creatures: Detective's Phoenix (2/2) [tapped]
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Arena of Glory [T], Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Creeping Tar Pit
+  [Main 1]
+    → Goal: close_game
+T5 P1: Delve 4 cards for Murktide Regent
+    [Mana] Tap Darkslick Shores→U, Creeping Tar Pit→U, Darkslick Shores→U (paying for Murktide Regent, 1 mana remaining)
+T5 P1: Cast Murktide Regent (5UU)
+    [Priority] P2 passes (no response)
+T5: Resolve Murktide Regent
+T5 P1: Murktide Regent enters as 6/6 (3 +1/+1 counters from delved instants/sorceries)
+T5 P1: Play Creeping Tar Pit (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Dauthi Voidwalker
+T5 P1: Attack with Dauthi Voidwalker
+  [Declare Blockers] P2 does not block
+T5 P1:   Dauthi Voidwalker (3/2) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 10 → 7
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Hollow One (P2) ══════════════════════════
+║ Life: Hollow One 7  |  Dimir Midrange 5
+║ Hand: 1 cards  |  Opp hand: 0 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 7
+║ Hollow One board:
+║   Creatures: Detective's Phoenix (2/2)
+║   Lands: Sacred Foundry, Sacred Foundry, Arena of Glory, Sacred Foundry, Sacred Foundry
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2) [tapped], Murktide Regent (6/6)
+║   Lands: Underground River, Darkslick Shores [T], Creeping Tar Pit [T], Darkslick Shores [T], Creeping Tar Pit [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Blazing Rootwalla
+  [Main 1]
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Arena of Glory→R, Sacred Foundry→R, Sacred Foundry→R, Sacred Foundry→R, Sacred Foundry→R (paying for Hollow One, 0 mana remaining)
+T6 P2: Cast Hollow One (5)
+    [Priority] P1 passes (no response)
+T6: Resolve Hollow One
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 5  |  Hollow One 7
+║ Hand: 0 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 49  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2), Murktide Regent (6/6)
+║   Lands: Underground River, Darkslick Shores, Creeping Tar Pit, Darkslick Shores, Creeping Tar Pit
+║ Hollow One board:
+║   Creatures: Detective's Phoenix (2/2), Hollow One (4/4)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Arena of Glory [T], Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Counterspell
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Dauthi Voidwalker, Murktide Regent
+T6 P1: Attack with Dauthi Voidwalker, Murktide Regent
+T6 P2:   [BLOCK-EMERGENCY] Detective's Phoenix (2/2) blocks Murktide Regent (6/6) — lifespan_delta=+0.25
+T6 P2:   [BLOCK-EMERGENCY] Hollow One (4/4) blocks Dauthi Voidwalker (3/2) — lifespan_delta=+0.72
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T6: illegal block dropped — Hollow One cannot legally block Dauthi Voidwalker
+T6 P1:   Dauthi Voidwalker (3/2) → 3 dmg to player
+T6: Detective's Phoenix dies
+  [Combat Damage] 3 damage dealt → P2 life: 7 → 4
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Hollow One (P2) ══════════════════════════
+║ Life: Hollow One 4  |  Dimir Midrange 5
+║ Hand: 1 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 8
+║ Hollow One board:
+║   Creatures: Hollow One (4/4)
+║   Lands: Sacred Foundry, Sacred Foundry, Arena of Glory, Sacred Foundry, Sacred Foundry
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2) [tapped], Murktide Regent (6/6) [tapped]
+║   Lands: Underground River, Darkslick Shores, Creeping Tar Pit, Darkslick Shores, Creeping Tar Pit
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Street Wraith
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Arena of Glory→R (paying for Blazing Rootwalla, 4 mana remaining)
+T7 P2: Cast Blazing Rootwalla (R)
+    [Priority] P1 responds with Counterspell
+    [Mana] Tap Darkslick Shores→U, Creeping Tar Pit→U (paying for Counterspell, 3 mana remaining)
+T7 P1: Cast Counterspell (UU)
+T7: Resolve Counterspell
+T7: Blazing Rootwalla moved stack -> graveyard (resolution)
+T7: Blazing Rootwalla is countered
+T7: Counterspell moved stack -> graveyard (resolution)
+T7: Street Wraith moved hand -> graveyard (cycling)
+T7 P2: Cycle Street Wraith (pay 2 life, draw: Wooded Foothills)
+T7 P2: Play Wooded Foothills
+T7: Wooded Foothills moved battlefield -> graveyard (fetchland sacrifice)
+T7 P2: Crack Wooded Foothills -> Mountain (untapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Hollow One
+T7 P2: Attack with Hollow One
+  [Declare Blockers] P1 does not block
+T7 P2:   Hollow One (4/4) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 5 → 1
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Dimir Midrange (P1) ══════════════════════════
+║ Life: Dimir Midrange 1  |  Hollow One 1
+║ Hand: 0 cards  |  Opp hand: 0 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 48  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2), Murktide Regent (6/6)
+║   Lands: Underground River, Darkslick Shores, Creeping Tar Pit, Darkslick Shores, Creeping Tar Pit
+║ Hollow One board:
+║   Creatures: Hollow One (4/4) [tapped]
+║   Lands: Sacred Foundry, Sacred Foundry, Arena of Glory [T], Sacred Foundry, Sacred Foundry, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Orcish Bowmasters
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Darkslick Shores→B, Creeping Tar Pit→U (paying for Orcish Bowmasters, 3 mana remaining)
+T7 P1: Cast Orcish Bowmasters (1B)
+    [Priority] P2 passes (no response)
+T7: Resolve Orcish Bowmasters
+T7 P1: Bowmasters deals 1 damage to opponent (life: 0)
+T7 P1: amass Orcs 1 — creates a 1/1 Orc Army token
+P2 loses: life total 0
+
+>>> Dimir Midrange wins Game 1 on turn 7 via damage
+    Final life: Dimir Midrange=1  Hollow One=0
+
+======================================================================
+  GAME 2: Hollow One (P1) vs Dimir Midrange (P2)  —  seed 60108
+  Series: Dimir Midrange 1 - 0 Hollow One
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Hollow One wins → chooses to play first
+║ P1 (on play): Hollow One
+║ P2 (on draw): Dimir Midrange
+╚═══════════════════════════════════════════════════════
+
+P1 (Hollow One) opening hand (0 lands, 7 spells):
+  • Lightning Bolt [Spell, CMC 1]
+  • Hardened Academic [Creature, CMC 2]
+  • Detective's Phoenix [Creature, CMC 3]
+  • Faithless Looting [Spell, CMC 1]
+  • Blazing Rootwalla [Creature, CMC 1]
+  • Practiced Offense [Spell, CMC 3]
+  • Marauding Mako [Creature, CMC 1]
+→ P1 MULLIGANS (0 lands — no mana-producing artifacts/spells in hand)
+  New hand (1 lands, 6 spells): ['Burning Inquiry', 'Lightning Bolt', 'Burning Inquiry', 'Blazing Rootwalla', 'Hardened Academic', 'Sacred Foundry', 'Faithless Looting']
+→ P1 mulligans to 6, bottoms: ['Burning Inquiry']
+  Keeps: ['Lightning Bolt', 'Burning Inquiry', 'Blazing Rootwalla', 'Hardened Academic', 'Sacred Foundry', 'Faithless Looting']
+
+P2 (Dimir Midrange) opening hand (3 lands, 4 spells):
+  • Underground River [Land, CMC 0]
+  • Murktide Regent [Creature, CMC 7]
+  • Archmage's Charm [Spell, CMC 3]
+  • Psychic Frog [Creature, CMC 2]
+  • Drown in the Loch [Spell, CMC 2]
+  • Watery Grave [Land, CMC 0]
+  • Island [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Psychic Frog, 3 cheap spells
+
+
+╔══ TURN 1 — Hollow One (P1) ══════════════════════════
+║ Life: Hollow One 20  |  Dimir Midrange 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 54  |  Graveyard: 0
+║ Hollow One board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Sacred Foundry (tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Hollow One 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Hollow One board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Polluted Delta
+  [Main 1]
+T1 P2: Play Underground River
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Hollow One (P1) ══════════════════════════
+║ Life: Hollow One 20  |  Dimir Midrange 20
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 0
+║ Hollow One board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Sacred Foundry
+  [Main 1]
+T2 P1: Play Sacred Foundry (tapped)
+    → Goal: deploy_engine
+    [Mana] Tap Sacred Foundry→R (paying for Blazing Rootwalla, 0 mana remaining)
+T2 P1: Cast Blazing Rootwalla (R)
+    [Priority] P2 passes (no response)
+T2: Resolve Blazing Rootwalla
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Hollow One 20
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River
+║ Hollow One board:
+║   Creatures: Blazing Rootwalla (1/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Subtlety
+  [Main 1]
+T2 P2: Play Polluted Delta
+T2: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T2 P2: Crack Polluted Delta (pay 1 life) -> Watery Grave (untapped, life: 17)
+    → Goal: grind_value [payoffs]
+    [Mana] Tap Watery Grave→U, Underground River→B (paying for Psychic Frog, 0 mana remaining)
+T2 P2: Cast Psychic Frog (UB)
+    [Priority] P1 passes (no response)
+T2: Resolve Psychic Frog
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Hollow One (P1) ══════════════════════════
+║ Life: Hollow One 20  |  Dimir Midrange 16
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 53  |  Graveyard: 0
+║ Hollow One board:
+║   Creatures: Blazing Rootwalla (1/1)
+║   Lands: Sacred Foundry, Sacred Foundry
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (1/2)
+║   Lands: Underground River [T], Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ox of Agonas
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R (paying for Hardened Academic, 0 mana remaining)
+T3 P1: Cast Hardened Academic (WR)
+    [Priority] P2 passes (no response)
+T3: Resolve Hardened Academic
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Hardened Academic
+T3 P1: Attack with Hardened Academic
+  [Declare Blockers] P2 does not block
+T3 P1:   Hardened Academic (2/1) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 16 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 14  |  Hollow One 20
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (1/2)
+║   Lands: Underground River, Watery Grave
+║ Hollow One board:
+║   Creatures: Blazing Rootwalla (1/1), Hardened Academic (2/1) [tapped]
+║   Lands: Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Orcish Bowmasters
+  [Main 1]
+    → Goal: grind_value
+    [Mana] Tap Watery Grave→B, Underground River→C (paying for Orcish Bowmasters, 0 mana remaining)
+T3 P2: Cast Orcish Bowmasters (1B)
+    [Priority] P1 passes (no response)
+T3: Resolve Orcish Bowmasters
+T3 P2: Bowmasters deals 1 damage to Hardened Academic
+T3 P2: amass Orcs 1 — creates a 1/1 Orc Army token
+T3: Hardened Academic dies
+T3 P2: Play Watery Grave (tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Psychic Frog
+T3 P2: Attack with Psychic Frog
+T3 P1:   [BLOCK] Blazing Rootwalla (1/1) blocks Psychic Frog (2/3) — lifespan_delta=+0.32
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T3: Blazing Rootwalla dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Hollow One (P1) ══════════════════════════
+║ Life: Hollow One 20  |  Dimir Midrange 14
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 52  |  Graveyard: 2
+║ Hollow One board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (2/3) [tapped], Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Underground River [T], Watery Grave [T], Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Blazing Rootwalla
+  [Main 1]
+    → Goal: execute_payoff
+    [Target] → Psychic Frog: marginal threat 7.00 (2/3 body) — better than 3 face dmg
+    [Mana] Tap Sacred Foundry→R (paying for Lightning Bolt, 1 mana remaining)
+T4 P1: Cast Lightning Bolt (R)
+    [Priority] P2 passes (no response)
+T4: Resolve Lightning Bolt
+T4 P1: Lightning Bolt deals 3 to Psychic Frog
+T4: Lightning Bolt moved stack -> graveyard (resolution)
+T4: Psychic Frog dies
+    → Goal: execute_payoff
+    [Mana] Tap Sacred Foundry→R (paying for Burning Inquiry, 0 mana remaining)
+T4 P1: Cast Burning Inquiry (R)
+    [Priority] P2 passes (no response)
+T4: Resolve Burning Inquiry
+T4: Burning Inquiry moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 14  |  Hollow One 20
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 49  |  Graveyard: 3
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Underground River, Watery Grave, Watery Grave
+║ Hollow One board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Fatal Push
+  [Main 1]
+T4 P2: Play Island
+    → Goal: close_game
+    [Mana] Tap Island→U, Watery Grave→U, Watery Grave→B, Underground River→C (paying for Subtlety, 0 mana remaining)
+T4 P2: Cast Subtlety (2UU)
+    [Priority] P1 passes (no response)
+T4: Resolve Subtlety
+T4 P2: Subtlety enters (no creature/PW spell on stack to target)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army
+T4 P2: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P1 does not block
+T4 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T4 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 20 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Hollow One (P1) ══════════════════════════
+║ Life: Hollow One 18  |  Dimir Midrange 14
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 51  |  Graveyard: 4
+║ Hollow One board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped], Subtlety (3/3)
+║   Lands: Underground River [T], Watery Grave [T], Watery Grave [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Wooded Foothills
+  [Main 1]
+T5 P1: Play Wooded Foothills
+T5: Wooded Foothills moved battlefield -> graveyard (fetchland sacrifice)
+T5 P1: Crack Wooded Foothills (pay 1 life) -> Sacred Foundry (tapped, life: 17)
+    → Goal: execute_payoff
+    [Mana] Tap Sacred Foundry→R (paying for Blazing Rootwalla, 1 mana remaining)
+T5 P1: Cast Blazing Rootwalla (R)
+    [Priority] P2 passes (no response)
+T5: Resolve Blazing Rootwalla
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Faithless Looting, 0 mana remaining)
+T5 P1: Cast Faithless Looting (R)
+    [Priority] P2 passes (no response)
+T5: Resolve Faithless Looting
+T5 P1: Faithless Looting → draw 2 (Blazing Rootwalla, Arid Mesa)
+T5: Faithless Looting moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 14  |  Hollow One 15
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 3
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1), Subtlety (3/3)
+║   Lands: Underground River, Watery Grave, Watery Grave, Island
+║ Hollow One board:
+║   Creatures: Blazing Rootwalla (1/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Archmage's Charm
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Island→U, Watery Grave→B (paying for Drown in the Loch, 2 mana remaining)
+T5 P2: Cast Drown in the Loch (UB)
+    [Priority] P1 passes (no response)
+T5: Resolve Drown in the Loch
+T5: Blazing Rootwalla dies
+T5: Drown in the Loch moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army, Subtlety
+T5 P2: Attack with Orcish Bowmasters, Orc Army, Subtlety
+  [Declare Blockers] P1 does not block
+T5 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T5 P2:   Orc Army (1/1) → 1 dmg to player
+T5 P2:   Subtlety (3/3) → 3 dmg to player
+  [Combat Damage] 5 damage dealt → P1 life: 15 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Hollow One (P1) ══════════════════════════
+║ Life: Hollow One 10  |  Dimir Midrange 14
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 7
+║ Hollow One board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped], Subtlety (3/3) [tapped]
+║   Lands: Underground River, Watery Grave [T], Watery Grave, Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Street Wraith
+  [Main 1]
+T6 P1: Play Arid Mesa
+T6: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T6 P1: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (tapped, life: 9)
+T6: Street Wraith moved hand -> graveyard (cycling)
+T6 P1: Cycle Street Wraith (pay 2 life, draw: Bloodstained Mire)
+    → Goal: execute_payoff
+    [Mana] Tap Sacred Foundry→R (paying for Blazing Rootwalla, 2 mana remaining)
+T6 P1: Cast Blazing Rootwalla (R)
+    [Priority] P2 passes (no response)
+T6: Resolve Blazing Rootwalla
+  [Begin Combat]
+    [Mana] Tap Watery Grave→B (paying for Fatal Push, 1 mana remaining)
+T6 P2: Cast Fatal Push (B)
+T6: Resolve Fatal Push
+T6: Blazing Rootwalla dies
+T6 P2: Fatal Push destroys Blazing Rootwalla
+T6: Fatal Push moved stack -> graveyard (resolution)
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 14  |  Hollow One 6
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 5
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1), Subtlety (3/3)
+║   Lands: Underground River, Watery Grave, Watery Grave, Island
+║ Hollow One board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T], Sacred Foundry, Sacred Foundry, Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Island
+  [Main 1]
+T6 P2: Play Island
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army, Subtlety
+T6 P2: Attack with Orcish Bowmasters, Orc Army, Subtlety
+  [Declare Blockers] P1 does not block
+T6 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T6 P2:   Orc Army (1/1) → 1 dmg to player
+T6 P2:   Subtlety (3/3) → 3 dmg to player
+  [Combat Damage] 5 damage dealt → P1 life: 6 → 1
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Hollow One (P1) ══════════════════════════
+║ Life: Hollow One 1  |  Dimir Midrange 14
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 44  |  Graveyard: 10
+║ Hollow One board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Sacred Foundry
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped], Subtlety (3/3) [tapped]
+║   Lands: Underground River, Watery Grave, Watery Grave, Island, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Detective's Phoenix
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Sacred Foundry→R, Sacred Foundry→R, Sacred Foundry→R (paying for Detective's Phoenix, 1 mana remaining)
+T7 P1: Cast Detective's Phoenix (2R)
+    [Priority] P2 passes (no response)
+T7: Resolve Detective's Phoenix
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Detective's Phoenix
+T7 P1: Attack with Detective's Phoenix
+  [Declare Blockers] P2 does not block
+T7 P1:   Detective's Phoenix (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 14 → 12
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 12  |  Hollow One 1
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 5
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1), Subtlety (3/3)
+║   Lands: Underground River, Watery Grave, Watery Grave, Island, Island
+║ Hollow One board:
+║   Creatures: Detective's Phoenix (2/2) [tapped]
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thoughtseize
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Watery Grave→B (paying for Thoughtseize, 4 mana remaining)
+T7 P2: Cast Thoughtseize (B)
+    [Priority] P1 passes (no response)
+T7: Resolve Thoughtseize
+T7: Ox of Agonas moved hand -> graveyard (forced discard)
+T7 P2: Thoughtseize discards Ox of Agonas
+T7: Thoughtseize moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army, Subtlety
+T7 P2: Attack with Orcish Bowmasters, Orc Army, Subtlety
+  [Declare Blockers] P1 does not block
+T7 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T7 P2:   Orc Army (1/1) → 1 dmg to player
+T7 P2:   Subtlety (3/3) → 3 dmg to player
+P1 loses: life total -4
+  [Combat Damage] 5 damage dealt → P1 life: 1 → -4
+
+>>> Dimir Midrange wins Game 2 on turn 7 via damage
+    Final life: Hollow One=-4  Dimir Midrange=10
+
+======================================================================
+  MATCH RESULT: Dimir Midrange wins 2-0
+======================================================================
