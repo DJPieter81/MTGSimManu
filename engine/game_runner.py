@@ -41,6 +41,10 @@ def _saga_iii_eligible_targets(
 
     Excludes legendary artifacts that would collide (legend rule)
     with one already on the controller's battlefield.
+
+    "With mana cost {0} or {1}" requires a PRINTED mana cost (CR
+    202.2): an artifact land has mana value 0 but no mana cost, so it
+    never satisfies the condition (`CardTemplate.has_mana_cost`).
     """
     player = game.players[player_idx]
     owned_legend_names = {
@@ -50,6 +54,7 @@ def _saga_iii_eligible_targets(
     eligible = []
     for c in player.library:
         if (CardType.ARTIFACT in c.template.card_types
+                and c.template.has_mana_cost
                 and (c.template.cmc or 0) <= 1):
             if (Supertype.LEGENDARY in c.template.supertypes
                     and c.name in owned_legend_names):
@@ -801,8 +806,6 @@ class GameRunner:
                     game.fire_delayed_triggers(DelayedTriggerStep.UPKEEP)
                     # Rebound (CR 702.88b): offer the free recast
                     self._process_rebound_recasts(game, active, ai)
-                    # Urza's Saga chapter triggers
-                    self._process_saga_chapters(game, active)
                     # Activated abilities fired on our upkeep (Isochron Scepter, etc.)
                     self._process_upkeep_activations(game, active)
                     # The NON-active player's imprinted turn-scoped
@@ -841,6 +844,12 @@ class GameRunner:
                     game.current_phase = Phase.MAIN1
                     _vlog(f'  [Main 1]')
                     _emit(KIND_PHASE, phase="Main1", pidx=active)
+                    # CR 714.2b: lore counters are added as the precombat
+                    # main phase begins (after the draw step), and the
+                    # chapter that number reaches triggers now.
+                    self._process_saga_chapters(game, active)
+                    if game.game_over:
+                        break
                     prev_lands = len(game.players[active].lands)
                     self._execute_main_phase(game, ai, opponent_ai)
                     if game.game_over:
@@ -1695,10 +1704,13 @@ class GameRunner:
                             f"Rebound {rc.name}")
 
     def _process_saga_chapters(self, game: GameState, active: int):
-        """Process saga chapter triggers during upkeep.
+        """Add this turn's lore counters and fire the chapters they reach.
 
-        Each saga gains a lore counter per turn (starting the turn after
-        ETB). Chapter shapes (see engine/oracle_parser.py):
+        CR 714.2: the first counter (and chapter I) come with the entry
+        itself (`engine/saga.py::saga_enters`, reached from the ETB
+        fan-out); each later counter is added as the controller's
+        precombat main phase begins — the runner calls this at the start
+        of MAIN1.  Chapter shapes (see engine/oracle_parser.py):
 
         * Ability grants ('This Saga gains "<cost>: <effect>"') attach
           the quoted activated ability to the permanent — the effect is
@@ -1709,34 +1721,33 @@ class GameRunner:
         """
         from engine.oracle_parser import (
             parse_saga_chapters, extract_granted_ability)
+        from engine.saga import LORE_COUNTER, is_saga, saga_enters
         player = game.players[active]
         sagas_to_sacrifice = []
         sagas_to_transform = []
         for card in list(player.battlefield):
-            is_saga = 'Saga' in (card.template.subtypes or [])
-            if not is_saga:
+            if not is_saga(card):
                 continue
-            # Initialize lore counter on first upkeep
             if not hasattr(card, 'other_counters') or card.other_counters is None:
                 card.other_counters = {}
             chapters = parse_saga_chapters(card.template.oracle_text or '')
             final_chapter = max(chapters) if chapters else 3
-            lore = card.other_counters.get('lore', 0)
-            # Saga entered this turn — skip first upkeep (it gets chapter I on ETB)
+            lore = card.other_counters.get(LORE_COUNTER, 0)
             if lore == 0:
-                card.other_counters['lore'] = 1
-                # Chapter I fires as the saga enters; an ability-grant
-                # chapter I attaches its ability now. (Mana abilities
-                # granted this way are already reflected in the land's
-                # produces_mana parse; the stored text is inert for them.)
-                granted = extract_granted_ability(chapters.get(1))
-                if granted is not None:
-                    card.granted_abilities.append(granted)
-                    game.log.append(f"T{game.display_turn} P{active+1}: "
-                                    f"{card.name} Ch.I: gains \"{granted}\"")
+                # Reached the battlefield outside the ETB fan-out (a
+                # fixture append): give it the entry counter + chapter I
+                # now and let the next main phase advance it.
+                saga_enters(game, card, active)
                 continue
             lore += 1
-            card.other_counters['lore'] = lore
+            card.other_counters[LORE_COUNTER] = lore
+
+            if lore >= final_chapter and card.granted_abilities:
+                # CR 603.3 / 714.4: the final chapter's ability is on the
+                # stack and the Saga is still on the battlefield; its
+                # controller holds priority and may activate what the
+                # earlier chapters granted before the sacrifice.
+                self._activate_granted_token_ability(game, active, card)
 
             card_oracle = (card.template.oracle_text or '').lower()
 
@@ -2115,6 +2126,59 @@ class GameRunner:
                         f"Ratchet Bomb ({new_charges}) destroys "
                         f"{len(targets_at_cmc)} permanents")
 
+    def _activate_granted_token_ability(self, game: GameState, active: int,
+                                        perm: CardInstance) -> bool:
+        """Activate one granted "[{N},] {T}: Create ... token" ability on
+        `perm` if its printed cost is payable (pool first, then untapped
+        lands other than the source).  Instance-level: the grant lives on
+        `perm.granted_abilities`, not the template.  Returns True when an
+        activation fired (the tap state enforces one per turn).
+
+        Called from the main-phase dispatch and, per CR 714.4 / 603.3, in
+        response to the permanent's own final-chapter trigger — the Saga
+        is still on the battlefield while that ability is on the stack,
+        so its controller may activate before the sacrifice."""
+        import re
+        from engine.cards import CardType
+        from engine.mana import ManaCost as _ManaCost
+        if perm.tapped:
+            return False
+        player = game.players[active]
+        for granted in list(getattr(perm, 'granted_abilities', None) or ()):
+            g = granted.lower()
+            m_grant = re.match(
+                r'(?:\{(\d+)\}\s*,\s*)?\{t\}\s*:\s*create\b', g)
+            if not m_grant or 'token' not in g:
+                continue
+            cost_n = int(m_grant.group(1) or 0)
+            # {N} generic can be paid from mana pool OR untapped lands.
+            # Use pool first (Mox Opal, Springleaf Drum etc.), then tap lands.
+            pool_cover = min(player.mana_pool.total(), cost_n)
+            still_needed = cost_n - pool_cover
+            payers = [l for l in player.untapped_lands if l is not perm]
+            if len(payers) < still_needed:
+                continue
+            if pool_cover:
+                player.mana_pool.pay(_ManaCost(generic=pool_cover))
+            for land in payers[:still_needed]:
+                land.tapped = True
+            perm.tapped = True
+            tokens = game.create_token(
+                active, "construct" if "construct" in g else "creature",
+                count=1, source_oracle=granted,
+            )
+            for t in tokens:
+                if 'artifact' in g and CardType.ARTIFACT not in t.template.card_types:
+                    t.template.card_types.append(CardType.ARTIFACT)
+                if 'artifact' in g:
+                    t.template.tags.add("artifact")
+            game.log.append(
+                f"T{game.display_turn} P{active+1}: "
+                f"{perm.name} activates \"{granted[:40]}...\" "
+                f"(pays {{{cost_n}}}, {{T}})")
+            return True  # one activation per permanent per turn (tap-enforced)
+        return False
+
     def _activate_tap_abilities(self, game: GameState, active: int):
         """Generic {T}: ability dispatch for non-planeswalker permanents.
 
@@ -2135,49 +2199,8 @@ class GameRunner:
             if perm.template.is_creature and getattr(perm, 'summoning_sick', False):
                 continue
 
-            # ── Granted activated abilities (saga chapters etc.):
-            #    "[{N},] {T}: Create ... token" — pay the printed generic
-            #    cost by tapping N other untapped lands, tap the source,
-            #    create the token from the granted text's own token spec.
-            #    Instance-level: lives on perm.granted_abilities, not the
-            #    template, because the grant belongs to this permanent. ──
-            fired_granted = False
-            for granted in list(getattr(perm, 'granted_abilities', None) or ()):
-                g = granted.lower()
-                m_grant = re.match(
-                    r'(?:\{(\d+)\}\s*,\s*)?\{t\}\s*:\s*create\b', g)
-                if not m_grant or 'token' not in g:
-                    continue
-                cost_n = int(m_grant.group(1) or 0)
-                # {N} generic can be paid from mana pool OR untapped lands.
-                # Use pool first (Mox Opal, Springleaf Drum etc.), then tap lands.
-                from engine.mana import ManaCost as _ManaCost
-                pool_cover = min(player.mana_pool.total(), cost_n)
-                still_needed = cost_n - pool_cover
-                payers = [l for l in player.untapped_lands if l is not perm]
-                if len(payers) < still_needed:
-                    continue
-                if pool_cover:
-                    player.mana_pool.pay(_ManaCost(generic=pool_cover))
-                for land in payers[:still_needed]:
-                    land.tapped = True
-                perm.tapped = True
-                tokens = game.create_token(
-                    active, "construct" if "construct" in g else "creature",
-                    count=1, source_oracle=granted,
-                )
-                for t in tokens:
-                    if 'artifact' in g and CardType.ARTIFACT not in t.template.card_types:
-                        t.template.card_types.append(CardType.ARTIFACT)
-                    if 'artifact' in g:
-                        t.template.tags.add("artifact")
-                game.log.append(
-                    f"T{game.display_turn} P{active+1}: "
-                    f"{perm.name} activates \"{granted[:40]}...\" "
-                    f"(pays {{{cost_n}}}, {{T}})")
-                fired_granted = True
-                break  # one activation per permanent per turn (tap-enforced)
-            if fired_granted:
+            # ── Granted activated abilities (saga chapters etc.) ──
+            if self._activate_granted_token_ability(game, active, perm):
                 continue
 
             oracle = (perm.template.oracle_text or '').lower()

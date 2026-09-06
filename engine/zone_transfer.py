@@ -365,6 +365,11 @@ def _fire_etb_triggers(game: "GameState", card: "CardInstance",
     """
     from .card_effects import EFFECT_REGISTRY, EffectTiming
     from .oracle_resolver import resolve_etb_from_oracle
+    from .saga import saga_enters
+
+    # CR 714.2a: a Saga's first lore counter and chapter I come with the
+    # entry itself, before any other ETB handling.
+    saga_enters(game, card, controller)
 
     has_specific = card.name in EFFECT_REGISTRY._handlers and any(
         h.timing == EffectTiming.ETB

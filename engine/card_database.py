@@ -1851,6 +1851,9 @@ class CardDatabase:
         template.is_cascade = has_cascade(oracle)
         template.grants_flashback_to_gy_spells = grants_flashback_to_gy_spells(oracle)
         template.x_cost_data = parse_x_cost(oracle, name, data.get("manaCost", ""))
+        # CR 202.2 — the printed cost's PRESENCE, distinct from its value:
+        # "{0}" is a mana cost; an absent key (lands, Living End) is not.
+        template.has_mana_cost = bool(data.get("manaCost"))
         template.is_cost_reducer = 'cost_reducer' in template.tags
         template.domain_reduction = parse_domain_reduction(oracle) or 0
         (template.self_cost_reduction_amount,

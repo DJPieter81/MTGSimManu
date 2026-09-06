@@ -3175,14 +3175,64 @@ Stop gate: not met. Target rule (skip victim decks whose outlier has a
 tracked cause — Amulet, Toolbox, Hollow One, Goryo's): **Boros Ponza 95**
 (Pillage ×3 and Wear // Tear are its plan against an artifact deck),
 with Broodscale Bloodchief 80 as the secondary replay per the plan.
+(A stale copy of the Zoo-loop Hollow One lead — built as restart
+iteration 2 — was removed from this section.)
 
-**Hollow One (85%) — recorded lead, next iteration.** `--bo3 "Hollow One"
-"Domain Zoo" -s 50000` (Zoo 2-0): the trace scores "cycle: Street Wraith"
-at **+8.3** and "cycle: Hollow One" at **+7.8** against +0.9 for a
-one-drop creature, so the deck cycles its own payoff on turn 5 instead of
-sequencing cycles into the turn it casts it, and Hollow One is never cast
-in either game. The cycling action's valuation (a flat draw bonus that
-dwarfs board plays) and the per-turn "costs {1} less for each card
-cycled or discarded this turn" discount not being planned as a same-turn
-sequence are the subsystems; class = every cycling card and every
-this-turn cost reducer.
+### Iteration 1 — Saga chapters follow the printed timing; "with mana cost" excludes lands
+
+**Replays (`-s 50000`).** Pinnacle vs Boros Ponza (Pinnacle 2-1): Urza's
+Saga's chapter III tutored **Darksteel Citadel** and **Silverbluff
+Bridge** — artifact LANDS. A land has no mana cost (CR 202.2), so "an
+artifact card with mana cost {0} or {1}" can never find one; the filter
+(`_saga_iii_eligible_targets`) tested mana VALUE ≤ 1 only. The chapters
+also ran a full turn cycle late: the first lore counter landed at the
+controller's next upkeep instead of on entry (CR 714.2a), and later
+counters were added in the upkeep instead of as the precombat main
+phase begins (CR 714.2b). Pinnacle vs Broodscale Bloodchief (Pinnacle
+2-0, G1 turn 5): victim-side only — Kozilek's Command resolves as
+nothing (the modal "choose two" no-op, task #40), kicker is unsupported,
+and Basking Broodscale's sacrifice line is never assembled; no
+Pinnacle-side over-credit beyond the Saga.
+
+**Build (this iteration, one commit).**
+- `CardTemplate.has_mana_cost` (typed, from MTGJSON `manaCost`
+  presence; synthetic templates derive "not a land"). The final-chapter
+  search requires it. Class: every "with mana cost {N}" / mana-value
+  condition evaluated over a library that holds lands.
+- `engine/saga.py::saga_enters` — lore 1 + chapter I attached from the
+  zone-transfer ETB fan-out (one path for every Saga); the runner's
+  lore-0 branch is now the fixture fallback calling the same function.
+- `_process_saga_chapters` moved from the UPKEEP block to the start of
+  MAIN1 (after the draw step). Net timing: Saga played on the
+  controller's turn N → chapter II on turn N+1 → chapter III (tutor +
+  sacrifice) on turn N+2, as printed. Before: I at N+1, II at N+2, III
+  at N+3.
+- **Response window before the final-chapter sacrifice** (CR 603.3 /
+  714.4). The anchor-exact replays of the two pins that flipped after
+  the timing change alone (Pinnacle vs 4/5c s50000, Affinity vs Zoo
+  s50500) both diverged at the same place: chapter III resolved and the
+  Saga was sacrificed with its controller never able to activate the
+  chapter-II Construct ability in response — the standard real-world
+  line, and with the printed timing the Saga now has ONE main phase
+  with chapter II active instead of two, so the miss cost a Construct
+  per Saga. The granted-token activation was lifted out of the
+  main-phase dispatch into `_activate_granted_token_ability` and is
+  offered once more when a Saga reaches its final chapter, before the
+  chapter effect and the sacrifice. Class: every permanent whose
+  earlier chapter grants an activated ability.
+- Tests: `tests/test_saga_chapters_follow_printed_timing.py` (8, incl.
+  a runner-level log-order check that chapter II fires after the draw
+  step, never in the upkeep, and the response-window pair). Existing
+  saga suites unchanged and green.
+
+**Anchor.** Timing + land exclusion alone: 2 winner flips + 2 turn
+drifts. With the response window: 0 flips, 6 turn-only drifts, every
+one in a pair with a four-Saga deck (Amulet, Broodscale, Affinity,
+Pinnacle); refreshed via `tools/refresh_wr_baseline.py`.
+
+Direction note: the timing fix and the response window make every Saga
+deck FASTER (Pinnacle, Affinity, Amulet, Broodscale); the land exclusion
+removes a free mana source from the same decks. All three are fidelity;
+the measurement decides the net. Recorded lead, not built: the granted
+activation is still runner-driven ("activate whenever payable"), a
+decision the AI layer should price like any other activation.

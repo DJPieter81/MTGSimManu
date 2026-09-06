@@ -1130,6 +1130,12 @@ class CardTemplate:
     # ai/hand_denial.py; the choose clause feeds the engine's
     # revealed-hand filter.
     hand_attack_data: Optional[dict] = None
+    # CR 202.2: a card with no printed mana cost (lands, Living End
+    # shapes) does not HAVE a mana cost — its mana value is 0 by
+    # convention, but it never satisfies "with mana cost {0} or {1}".
+    # Set from the MTGJSON `manaCost` key at load; None derives to
+    # "not a land" for synthetic templates (`__post_init__`).
+    has_mana_cost: Optional[bool] = None
     # Untargeted mass return of creature cards from graveyards onto the
     # battlefield (Living End shape), excluding self-returns
     # (oracle_parser.parse_mass_graveyard_return). Read by
@@ -1191,6 +1197,10 @@ class CardTemplate:
         # Derive fields from oracle text for templates not loaded through
         # CardDatabase (e.g. synthetic templates in tests). CardDatabase sets
         # these explicitly; this fires only for empty/None fields.
+        if self.has_mana_cost is None:
+            # Lands never carry a mana cost (CR 202.2); every other
+            # synthetic template is assumed to print one.
+            self.has_mana_cost = CardType.LAND not in self.card_types
         if self.oracle_text:
             from .oracle_parser import parse_is_land_sacrifice_tutor as _plst
             if not self.is_land_sacrifice_tutor:

@@ -76,14 +76,14 @@
       "deck2": "Domain Zoo",
       "seed": 50500,
       "winner": "Affinity",
-      "turns": 8
+      "turns": 7
     },
     {
       "deck1": "Eldrazi Tron",
       "deck2": "Amulet Titan",
       "seed": 50500,
       "winner": "Eldrazi Tron",
-      "turns": 13
+      "turns": 14
     },
     {
       "deck1": "Living End",
@@ -111,7 +111,7 @@
       "deck2": "Pinnacle Affinity",
       "seed": 50500,
       "winner": "4/5c Control",
-      "turns": 18
+      "turns": 15
     },
     {
       "deck1": "Azorius Control (WST)",
@@ -146,7 +146,7 @@
       "deck2": "Broodscale Bloodchief",
       "seed": 52000,
       "winner": "Broodscale Bloodchief",
-      "turns": 6
+      "turns": 8
     },
     {
       "deck1": "Creatures Toolbox",
@@ -167,7 +167,7 @@
       "deck2": "Creatures Toolbox",
       "seed": 52500,
       "winner": "Broodscale Bloodchief",
-      "turns": 9
+      "turns": 10
     },
     {
       "deck1": "Grixis Reanimator",
@@ -188,7 +188,7 @@
       "deck2": "Hollow One",
       "seed": 53500,
       "winner": "Hollow One",
-      "turns": 8
+      "turns": 7
     }
   ]
 }
