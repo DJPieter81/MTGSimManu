@@ -3305,3 +3305,18 @@ Arena of Glory in hand, Wrenn and Six + Teferi held) takes Temple
 Garden instead of a second R/W source; Living End (Breeding Pool +
 Indatha Triome in hand) takes Ketria Triome instead of a Watery Grave
 whose black the Triome already covers. Fixture refreshed.
+
+**Verify → push.** Both CI chunks green locally (2223 + 2243); pushed
+as `25ca7cb`.
+
+**Measure (n=20 Bo3, 50000 grid).**
+
+| Cell | Before | After 25ca7cb |
+|---|---|---|
+| Pinnacle vs Goryo's (target) | 95 | **85** (10 sweeps, 10 deciders; Goryo's wins avg T10.0, Pinnacle avg T6.2) |
+| Pinnacle vs 4/5c Control (guard, holdback-on) | 50 | 45 (8 sweeps, 12 deciders) |
+
+Goryo's wins arrive on turns 7–14 — a turn-3/4 combo deck closing on
+turn 10 on average is the tracked keep / assembly residual, not this
+lane. The cell moved 10pp (under the 15pp rule); the field is re-read
+after iteration 3.
