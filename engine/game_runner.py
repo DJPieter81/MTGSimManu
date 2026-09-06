@@ -413,6 +413,10 @@ class GameRunner:
     def __init__(self, card_db: CardDatabase, rng: random.Random = None):
         self.card_db = card_db
         self.rng = rng or random.Random()
+        # The pool this runner plays from is the process's pool: lazy
+        # consumers (sideboard solver, gameplan derivation) resolve
+        # `CardDatabase.shared()` instead of loading a second copy.
+        CardDatabase.register_shared(card_db)
 
     def build_deck(self, deck_list: Dict[str, int]) -> List[CardTemplate]:
         """Convert a deck list (name -> count) to a list of CardTemplates."""
