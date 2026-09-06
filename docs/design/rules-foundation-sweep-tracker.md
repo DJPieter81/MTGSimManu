@@ -3236,3 +3236,16 @@ removes a free mana source from the same decks. All three are fidelity;
 the measurement decides the net. Recorded lead, not built: the granted
 activation is still runner-driven ("activate whenever payable"), a
 decision the AI layer should price like any other activation.
+
+**Verify → push.** Ratchets at baseline; both CI chunks green locally
+(2223 + 2238 passed); pushed as `c4f8ca5`.
+
+**Measure (n=20 Bo3, 50000 grid, quiet box).**
+
+| Cell | Iteration 0 | After c4f8ca5 |
+|---|---|---|
+| Pinnacle vs Boros Ponza (target) | 95 | **70** (11 sweeps, 9 deciders; Pinnacle avg T7.9) |
+| Affinity vs Pinnacle (guard, Pinnacle's side) | 65 | 45 (Affinity 55; both sides run four Sagas) |
+
+The target moved 25pp, past the 15pp rule, so the full field is
+re-read now rather than at the 2–3 iteration cadence.
