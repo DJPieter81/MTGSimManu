@@ -82,11 +82,13 @@ def main() -> None:
         from engine.card_database import CardDatabase
         from engine.game_runner import GameRunner
 
-        # Neutralise the wall-clock deadline for the SAME reason the anchor
-        # test does (tests/test_wr_baseline_anchor.py::_ANCHOR_TIMEOUT_SECONDS,
+        # Neutralise the safety budget for the SAME reason the anchor test
+        # does (tests/test_wr_baseline_anchor.py::_ANCHOR_TIMEOUT_SECONDS,
         # and its `_replay` docstring): the engine's GAME_TIMEOUT_SECONDS
-        # breaks out of the turn loop and abandons the game, so a recorded
-        # outcome becomes a function of MACHINE SPEED as well as of the seed.
+        # (CPU time via engine.game_budget since 2026-09-06; wall-clock
+        # before) breaks out of the turn loop and abandons the game, so a
+        # recorded outcome becomes a function of MACHINE SPEED as well as of
+        # the seed.
         #
         # The test was hardened for this; the refresher was not, and that gap
         # nearly poisoned the fixture: run on a loaded container (a 4x-slower
