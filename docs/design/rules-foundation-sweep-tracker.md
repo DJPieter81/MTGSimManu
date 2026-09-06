@@ -3264,3 +3264,44 @@ own keep rule is the tracked residual). Stop gate: band met, three cells
 its own tracked outlier). Next: iteration 2 replays Pinnacle vs Goryo's
 s50000 on both sides; the skip rule for victim decks still applies to
 what gets BUILT (class-sized only), but the gate needs those cells read.
+
+### Iteration 2 — a land decision counts the lands in hand as sources
+
+**Replays (`-s 50000`).** Pinnacle vs Goryo's (Pinnacle 2-0, G1 T5,
+G2 T8). G1: Goryo's kept Faithful Mending + Goryo's Vengeance +
+Griselbrand + two Unburial Rites with Flooded Strand and Concealed
+Courtyard — a strong keep — and did nothing on turns 2–3. The turn-1
+fetch took **Godless Shrine (W/B) while the hand held Concealed
+Courtyard (W/B)**; Mending (WU) stayed uncastable until a Watery Grave
+was drawn on turn 4, when the deck was at 4 life facing 9 power. G2:
+mulligan to 5 (the tracked keep-rule residual). Pinnacle's side: every
+Saga chapter, warp and Drone line as printed. Pinnacle vs Amulet Titan
+(Pinnacle 2-0, T5 / T6): Amulet kept a Grazer-only hand; its cell is
+held by the rediagnosis doc's causes — no Pinnacle-side over-credit.
+
+**Mechanic.** `ai/mana_planner.py::analyze_mana_needs` measured colour
+deficits against the battlefield only, so on turn 1 every colour the
+hand needs is "missing" and the fetch's choice among duals is a tie the
+redundancy weights break. A non-fetch land in hand is a committed
+source: its colours arrive with the coming drops, so the search's
+marginal value is in the colours no held land produces. Hand lands now
+join the deficit basis (`source_counts` / `all_land_colors`, recorded
+in a new `pending_colors`) — never this turn's castability
+(`existing_colors`); a fetchland in hand commits to nothing and covers
+no colour. One module; no constant. Class: every fetch, land-search
+and shock-colour decision in every multicolour deck.
+
+**Tests first (red → green):**
+`tests/test_land_choice_counts_lands_in_hand_as_sources.py` (5): a held
+land is a pending source, not a deficit; the fetch fills the colour no
+held land provides; a fetchland in hand covers nothing; without a held
+land every needed colour is a deficit (anchor); a battlefield source and
+a held source add up for a double pip. All mana / land / fetch / shock
+suites green (404), ratchets at baseline.
+
+**Anchor:** 2 winner flips, both replayed anchor-exact and both the
+same divergence — a better fetch: 4/5c (Hallowed Fountain in play,
+Arena of Glory in hand, Wrenn and Six + Teferi held) takes Temple
+Garden instead of a second R/W source; Living End (Breeding Pool +
+Indatha Triome in hand) takes Ketria Triome instead of a Watery Grave
+whose black the Triome already covers. Fixture refreshed.

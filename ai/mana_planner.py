@@ -61,6 +61,10 @@ class ManaNeeds:
     needed_colors: Dict[str, int] = field(default_factory=dict)
     # Colors already available on untapped lands
     existing_colors: Set[str] = field(default_factory=set)
+    # Colors the non-fetch lands still in HAND will provide once played —
+    # committed sources the player will have, counted toward the deficit
+    # basis (`missing_colors`) but never toward this turn's castability.
+    pending_colors: Set[str] = field(default_factory=set)
     # Colors we need but don't yet have
     missing_colors: Set[str] = field(default_factory=set)
     # Basic land types already on the battlefield (for domain)
@@ -270,6 +274,22 @@ def analyze_mana_needs(game: "GameState", player_idx: int,
             for st in getattr(bf_card.template, "subtypes", []):
                 if st in BASIC_LAND_TYPES:
                     needs.existing_subtypes.add(st)
+
+    # ── Lands still in hand are sources the player WILL have ──
+    # A non-fetch land in hand is a committed source: its colours arrive
+    # with the coming land drops, so a search / shock choice made now has
+    # its marginal value in the colours no held land produces. Counted on
+    # the same basis as battlefield lands for the deficit below, never for
+    # this turn's castability (`existing_colors`). A fetchland in hand
+    # commits to nothing until it is cracked and covers no colour.
+    for hand_card in player.hand:
+        tmpl = hand_card.template
+        if not tmpl.is_land or tmpl.fetchland is not None:
+            continue
+        for c in tmpl.produces_mana:
+            needs.pending_colors.add(c)
+            all_land_colors.add(c)
+            source_counts[c] = source_counts.get(c, 0) + 1
 
     # `untapped_land_count` counts LANDS, one mana each. That silently ignores
     # every source whose output is not one-mana-per-land: mana rocks and dorks,
