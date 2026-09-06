@@ -3377,3 +3377,18 @@ at **2 of 3**. Stop gate: band met; three cells ≥85% remain (Amulet,
 Goryo's, Hollow One), every one a victim deck with its own tracked
 outlier. Goryo's held at 85 (the block fix changes the s50000 G1 line
 but the keep / assembly residual decides the cell).
+
+### Loop close (2026-09-06)
+
+Second Amulet seed (s50500, Pinnacle 2-0) confirms the victim side:
+Amulet's own engine (Grazer keep, turn-2 Zenith for Arbor with Amulet
+in play, Titan on turn 6) — and surfaces an engine gap: **Summoner's
+Pact resolved as a free tutor on turn 1 with one land; the "pay
+{2}{G}{G} at your next upkeep or lose" is never enforced** (five-card
+Pact family; recorded as a lead for the Amulet lane, not built here).
+Band met at 54.8%; the three ≥85% cells are held by Amulet / Goryo's /
+Hollow One's own tracked defects; a fourth iteration would reopen
+another deck's primary lane or build below class size. Halted one code
+iteration short of the formal loop-break with the record in
+`docs/diagnostics/2026-09-06_pinnacle_band_loop_close.md` (active /
+primary; restart condition stated there).
