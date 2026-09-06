@@ -6,8 +6,8 @@
       "goal_type": "DEPLOY_ENGINE",
       "description": "Deploy enablers and engines",
       "card_roles": {
-        "engines": [],
-        "enablers": []
+        "engines": ["Devoted Druid"],
+        "enablers": ["Vizier of Remedies"]
       }
     },
     {
