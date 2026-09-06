@@ -3476,6 +3476,21 @@ updated: run date, "38 of 96" calibration figure, the heatmap title
 (was still "19 × 19"), and one timeline entry for the two band loops.
 Pushed as `c31722d`.
 
+**Showcase defect found afterwards (fixed, same day).** The user saw a
+higher Zoo WR in the showcase: (1) GitHub Pages serves `main`, where the
+08-27 showcase still showed Zoo at 84.8 — the refresh reaches the site
+only when PR #569 merges; (2) `build_showcase.py`'s `wrData` regex had
+no whitespace in its character class, so a hand edit's `[73.5, 68.5,
+…]` never matched and the WR bar chart silently kept the 19 stale 09-04
+values (Zoo 65.6) under 25 fresh labels; the bar colour arrays were
+never regenerated at all. Fixed: whitespace-tolerant pattern, colour
+arrays derived from the same sorted values (`WR_TIER_TEAL` /
+`WR_TIER_AMBER`), the validation bands read from
+`tools/calibration_bands.json` (all 25 decks, not an 8-deck literal),
+and a post-patch self-check that refuses to write when any regenerated
+array is not parallel to the deck list. Chart now plots Zoo at 61.9
+weighted / valData 60 in band.
+
 Tooling notes for the next refresh: `build_dashboard.py` has no
 `--merge` flag (CLAUDE.md's text is stale — `--save` calls the
 `merge()` function directly); `weekly_refresh.sh` still runs `--decks
