@@ -3489,8 +3489,12 @@ class EVPlayer:
         damage_through = max(0, a_pow - b_tou) if has_trample else 0
 
         my_life_after_block = my_life - damage_through
-        opp_power_after_block = opp_power - (a_pow if b_kills_attacker else 0)
-        my_power_after_block = my_power - (b_pow if a_kills_blocker else 0)
+        # CR 301.5c: a dead creature's Equipment stays and re-attaches, so
+        # only the creature's OWN power leaves its side's board.
+        a_own = a_pow - attacker.equipment_power_bonus()
+        b_own = b_pow - blocker.equipment_power_bonus()
+        opp_power_after_block = opp_power - (a_own if b_kills_attacker else 0)
+        my_power_after_block = my_power - (b_own if a_kills_blocker else 0)
         if a_kills_blocker:
             # What the dead blocker gives up BEYOND its power — mana
             # production, unbounded-engine membership, activated

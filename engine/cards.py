@@ -2015,33 +2015,7 @@ class CardInstance:
         if getattr(self.template, 'has_artifact_count_scaling', False):
             base = self._effective_printed_power() + self._get_artifact_count()
         # Equipment scaling (Cranial Plating, Nettlecyst, etc.)
-        # Tags are equipped_{instance_id} — unique per equipment, supports stacking.
-        for tag in self.instance_tags:
-            if tag.startswith("equipped_"):
-                try:
-                    equip_iid = int(tag[len("equipped_"):])
-                    if self._game_state is None:
-                        continue
-                    equip_perm = self._game_state.get_card_by_id(equip_iid)
-                    if equip_perm is None:
-                        continue
-                    eq_oracle = (equip_perm.template.oracle_text or '').lower()
-                    # "X and/or Y" clauses (Nettlecyst: artifact and/or
-                    # enchantment) count the union, not just X. Detect
-                    # the union form before the artifact-only form.
-                    if ('artifact and/or enchantment' in eq_oracle
-                            or 'enchantment and/or artifact' in eq_oracle):
-                        base += self._get_artifact_or_enchantment_count()
-                    elif 'for each artifact' in eq_oracle or 'artifact you control' in eq_oracle:
-                        base += self._get_artifact_count()
-                    else:
-                        # Flat "Equipped creature gets +N/+M" grant
-                        # (Bonesplitter, the Sword cycle, Cori-Steel Cutter,
-                        # ...). Parsed once at load into equip_power_grant;
-                        # 0 for non-pump equipment, so this is a no-op there.
-                        base += getattr(equip_perm.template, 'equip_power_grant', 0)
-                except (ValueError, AttributeError):
-                    pass
+        base += self.equipment_power_bonus()
         # Land-type conditional bonus: "gets +N/+N as long as you control
         # a [LandType]" (Wild Nacatl / similar creatures). Each bonus fires
         # when the controller has at least one land of the matching subtype.
@@ -2056,6 +2030,46 @@ class CardInstance:
                 ):
                     base += bonus
         return base
+
+    def equipment_power_bonus(self) -> int:
+        """Power this creature has from attached Equipment — the share
+        that SURVIVES the creature (CR 301.5c: Equipment stays on the
+        battlefield when the equipped creature leaves, and re-attaches
+        for its equip cost).  Counters, Auras and the creature's own
+        scaling are the creature's own and die with it.
+
+        Tags are equipped_{instance_id} — unique per Equipment, so
+        stacked Equipment adds up.
+        """
+        bonus = 0
+        for tag in self.instance_tags:
+            if not tag.startswith("equipped_"):
+                continue
+            try:
+                equip_iid = int(tag[len("equipped_"):])
+                if self._game_state is None:
+                    continue
+                equip_perm = self._game_state.get_card_by_id(equip_iid)
+                if equip_perm is None:
+                    continue
+                eq_oracle = (equip_perm.template.oracle_text or '').lower()
+                # "X and/or Y" clauses (Nettlecyst: artifact and/or
+                # enchantment) count the union, not just X. Detect
+                # the union form before the artifact-only form.
+                if ('artifact and/or enchantment' in eq_oracle
+                        or 'enchantment and/or artifact' in eq_oracle):
+                    bonus += self._get_artifact_or_enchantment_count()
+                elif 'for each artifact' in eq_oracle or 'artifact you control' in eq_oracle:
+                    bonus += self._get_artifact_count()
+                else:
+                    # Flat "Equipped creature gets +N/+M" grant
+                    # (Bonesplitter, the Sword cycle, Cori-Steel Cutter,
+                    # ...). Parsed once at load into equip_power_grant;
+                    # 0 for non-pump equipment, so this is a no-op there.
+                    bonus += getattr(equip_perm.template, 'equip_power_grant', 0)
+            except (ValueError, AttributeError):
+                pass
+        return bonus
 
     def _dynamic_base_toughness(self) -> int:
         """Calculate base toughness — mirrors _dynamic_base_power scaling logic."""

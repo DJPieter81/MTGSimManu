@@ -115,6 +115,9 @@ class VirtualCreature:
     # Typed field — replaces getattr(vc, 'oracle', None) oracle check in ev_player.py.
     # Populated by extract_virtual_board from card.template.has_combat_damage_player_trigger.
     has_combat_damage_player_trigger: bool = False
+    # Power from attached Equipment — the share that survives the creature
+    # (CR 301.5c). Populated from `CardInstance.equipment_power_bonus()`.
+    equipment_power: int = 0
 
     @property
     def is_dead(self) -> bool:
@@ -133,6 +136,7 @@ class VirtualCreature:
             cmc=self.cmc,
             damage_marked=self.damage_marked,
             has_etb=self.has_etb,
+            equipment_power=self.equipment_power,
             has_combat_damage_player_trigger=self.has_combat_damage_player_trigger,
         )
 
@@ -749,8 +753,13 @@ class CombatPlanner:
 
         defender_life = board.opp_life
         my_life_after_block = defender_life - damage_through
-        opp_power_after_block = attacker_power_total - (a_pow if b_kills_attacker else 0)
-        my_power_after_block = defender_power_total - (b_pow if a_kills_blocker else 0)
+        # CR 301.5c: a dead creature's Equipment stays and re-attaches, so
+        # only the creature's OWN power leaves its side's board — the same
+        # split `EVPlayer._score_block_lifespan_delta` applies.
+        a_own = a_pow - attacker.equipment_power
+        b_own = b_pow - blocker.equipment_power
+        opp_power_after_block = attacker_power_total - (a_own if b_kills_attacker else 0)
+        my_power_after_block = defender_power_total - (b_own if a_kills_blocker else 0)
 
         my_life_after_no_block = defender_life - a_pow
 
@@ -1239,6 +1248,7 @@ def extract_virtual_board(game: "GameState", player_idx: int) -> VirtualBoard:
             has_etb="etb_value" in card.template.tags,
             has_combat_damage_player_trigger=getattr(
                 card.template, 'has_combat_damage_player_trigger', False),
+            equipment_power=card.equipment_power_bonus(),
         )
 
     def to_virtual_spell(card) -> VirtualSpell:

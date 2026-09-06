@@ -3320,3 +3320,44 @@ Goryo's wins arrive on turns 7–14 — a turn-3/4 combo deck closing on
 turn 10 on average is the tracked keep / assembly residual, not this
 lane. The cell moved 10pp (under the 15pp rule); the field is re-read
 after iteration 3.
+
+### Iteration 3 — killing an equipped creature removes only its own power
+
+**Replays (`-s 50000`).** Pinnacle vs Goryo's re-replayed on `25ca7cb`
+(Pinnacle 2-0, G1 T6): the fetch now takes Watery Grave, Mending
+resolves on turn 2, Goryo's Vengeance returns Griselbrand on turn 3
+(draw 7, swing for 7 lifelink, Ephemerate keeps it) — the printed
+line. Turn 4: **Griselbrand (7/7) blocks and trades with a 1/1 Drone
+carrying Cranial Plating + Lavaspur Boots (8/1)**; both Equipment stay,
+re-attach to Memnite, and Goryo's loses two turns later. Pinnacle vs
+Hollow One (Pinnacle 2-0): Hollow One mulligans a 4-land / 1-drop /
+2-drop / Vengevine seven under its gameplan's `mulligan_max_lands: 3`
+(deck config, not touched), then two land-less hands to four cards;
+victim-side and seed luck — no Pinnacle-side over-credit.
+
+**Mechanic.** `_score_block_lifespan_delta` (and the planner's
+`_predict_block_score`, the same formula on VirtualCreatures) credited
+a kill with the attacker's WHOLE power leaving the opponent's board.
+CR 301.5c: Equipment stays on the battlefield when the equipped
+creature dies and re-attaches for its equip cost, so only the
+creature's own power leaves — +1/+1 counters, Auras and the creature's
+own scaling die with it. Engine accessor
+`CardInstance.equipment_power_bonus()` (the Equipment loop lifted out
+of `_dynamic_base_power`, one owner of the number); both block scorers
+subtract it from the dead creature's power on either side (a blocker
+that dies wearing Equipment keeps the Equipment's power for its side);
+`VirtualCreature.equipment_power` carries it into the prediction. No
+constant. Class: every Equipment in every deck, both sides of every
+block decision and every predicted block. The RC-2 chump-futility
+gate (attacker survives, Equipment rebinds) is untouched — a different
+rule.
+
+**Tests first (red → green):**
+`tests/test_killing_an_equipped_attacker_removes_only_its_own_power.py`
+(5): the Equipment share is the Equipment's only; a trade into an
+equipped attacker scores below the same trade into a natural one; the
+replayed decision (7/7 lifelink engine vs a 1/1 carrying seven points
+of Equipment) scores below not blocking; a blocker that dies wearing
+Equipment keeps its share for its side; the predicted block uses the
+same split. Block / equipment / planner suites green (149 + 14),
+ratchets at baseline.
