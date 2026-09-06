@@ -3249,3 +3249,18 @@ decision the AI layer should price like any other activation.
 
 The target moved 25pp, past the 15pp rule, so the full field is
 re-read now rather than at the 2–3 iteration cadence.
+
+**Field after iteration 1 (`c4f8ca5`, n=20 Bo3, 50000 grid): 55.0%**
+(iteration 0: 65.2%; −10.2pp, loop-break counter 0 of 3). Row: Goryo's
+95, Amulet Titan 85, Hollow One 85, Creatures Toolbox 75, Boros Ponza
+70, Storm / Prowess 65, Eldrazi Tron / WST 60, Living End / Azorius
+Control / Eldrazi Ramp / Broodscale / Grixis / Azorius Blink 55, Omnath
+/ 4/5c 50, Affinity / Instant Reanimator 45, WST v2 35, Boros Energy /
+Jeskai Blink 30, Dimir 25, Zoo 20. Movers: Boros Ponza 95 → 70, Toolbox
+95 → 75, Broodscale 80 → 55, Azorius Control 80 → 55, Affinity 65 → 45,
+Zoo 30 → 20; Goryo's 80 → **95** (the faster Saga races a deck whose
+own keep rule is the tracked residual). Stop gate: band met, three cells
+≥85% remain (Goryo's, Amulet, Hollow One — every one a victim deck with
+its own tracked outlier). Next: iteration 2 replays Pinnacle vs Goryo's
+s50000 on both sides; the skip rule for victim decks still applies to
+what gets BUILT (class-sized only), but the gate needs those cells read.
