@@ -3361,3 +3361,19 @@ of Equipment) scores below not blocking; a blocker that dies wearing
 Equipment keeps its share for its side; the predicted block uses the
 same split. Block / equipment / planner suites green (149 + 14),
 ratchets at baseline.
+
+**Verify → push.** Anchor 29/29 unchanged; both CI chunks green
+locally (2223 + 2248); pushed as `593901d`.
+
+**Field after iteration 3 (`593901d`, n=20 Bo3, 50000 grid): 54.8%**
+(after iteration 1: 55.0%; iteration 0: 65.2%). Row: Amulet Titan 90,
+Goryo's 85, Hollow One 85, Creatures Toolbox 80, Boros Ponza 70, Storm
+/ Prowess 65, Eldrazi Tron / Living End / WST / Grixis 60, Azorius
+Control / Eldrazi Ramp / Broodscale / Azorius Blink 55, Instant
+Reanimator 50, Affinity / Omnath / 4/5c 45, WST v2 35, Boros Energy 30,
+Jeskai Blink / Dimir 25, Zoo 15. Iterations 2 and 3 together moved the
+field 0.2pp — under the 2.2pp rule — so the loop-break counter stands
+at **2 of 3**. Stop gate: band met; three cells ≥85% remain (Amulet,
+Goryo's, Hollow One), every one a victim deck with its own tracked
+outlier. Goryo's held at 85 (the block fix changes the s50000 G1 line
+but the keep / assembly residual decides the cell).
