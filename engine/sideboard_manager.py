@@ -383,16 +383,15 @@ def sideboard(mainboard: Dict[str, int], sideboard_cards: Dict[str, int],
 # Oracle-driven solver backend (SB_SOLVER=new)
 # ─────────────────────────────────────────────────────────────
 
-_SB_SOLVER_CARD_DB = None
-
-
 def _get_card_db():
-    """Lazy CardDatabase singleton — SB planning needs template lookups."""
-    global _SB_SOLVER_CARD_DB
-    if _SB_SOLVER_CARD_DB is None:
-        from engine.card_database import CardDatabase
-        _SB_SOLVER_CARD_DB = CardDatabase()
-    return _SB_SOLVER_CARD_DB
+    """The process-wide CardDatabase — SB planning needs template lookups.
+
+    Resolves `CardDatabase.shared()` (the pool the GameRunner registered)
+    rather than keeping a private singleton: the private copy was a second
+    full 22.5k-card load in every process that already held one.
+    """
+    from engine.card_database import CardDatabase
+    return CardDatabase.shared()
 
 
 def _load_gameplan(deck_name: str):

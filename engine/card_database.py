@@ -1201,6 +1201,36 @@ class CardDatabase:
     # merge_db.py recovery in load().
     _MIN_REAL_DB_CARDS = 1000
 
+    # The one process-wide instance of the REAL card pool. Loading it costs
+    # ~16 s and ~a GB; before this accessor existed, lazy consumers
+    # (`sideboard_manager._get_card_db`, reached from every gameplan lookup)
+    # built a second copy in every process that already held one — 2x the
+    # start-up of every parallel worker and 2x its memory. `GameRunner`
+    # registers the database it was built with; every lazy consumer resolves
+    # `shared()`; fixture-sized databases are never registered, so a test
+    # that builds a runner on a stub pool cannot poison the process pool.
+    _shared: "Optional[CardDatabase]" = None
+
+    @property
+    def is_real_pool(self) -> bool:
+        """A full ModernAtomic load, as opposed to a fixture or partial."""
+        return len(self.cards) >= self._MIN_REAL_DB_CARDS
+
+    @classmethod
+    def register_shared(cls, db: "CardDatabase") -> None:
+        """Make `db` the process-wide pool if it is a real one and none is
+        registered yet. Idempotent; silently ignores fixture pools."""
+        if cls._shared is None and db is not None and db.is_real_pool:
+            cls._shared = db
+
+    @classmethod
+    def shared(cls) -> "CardDatabase":
+        """The process-wide real card pool, loaded on first use if nothing
+        registered one first."""
+        if cls._shared is None:
+            cls._shared = cls()
+        return cls._shared
+
     def __init__(self, json_path: str = None):
         self.cards: Dict[str, CardTemplate] = {}
         self._raw_data: Dict[str, Any] = {}

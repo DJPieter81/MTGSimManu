@@ -23,6 +23,7 @@ from __future__ import annotations
 import functools
 from typing import TYPE_CHECKING, List, Optional
 
+from . import game_budget
 from .cards import ActivationEffectKind, CardType
 from .constants import ACTIVATION_MAX_DEPTH
 from .stack import StackItem, StackItemType
@@ -41,8 +42,6 @@ class ActivationManager:
                      perm: "CardInstance",
                      ability: "ActivatedAbility") -> bool:
         """Is this activation legal right now? Ordered cheapest-first."""
-        import time as _time
-
         # 1. CR 605.3 — only mana abilities during cost payment. See module doc.
         if getattr(game, '_paying_mana', 0) > 0:
             return False
@@ -51,9 +50,9 @@ class ActivationManager:
         if getattr(game, '_activation_depth', 0) >= ACTIVATION_MAX_DEPTH:
             return False
 
-        # 3. Wall-clock deadline (same valve every engine loop head carries).
-        deadline = getattr(game, '_game_deadline', None)
-        if deadline is not None and _time.monotonic() > deadline:
+        # 3. The shared CPU budget (the same valve every engine loop head
+        #    carries — engine.game_budget owns it, nothing here does).
+        if game_budget.expired(game):
             return False
 
         # 4. Mana abilities belong to ManaPayment, not to the play enumerator.

@@ -4,11 +4,14 @@ The anchor is this project's primary behavioural guarantee: 27 seeded matchups
 whose winner and turn count are asserted to be unchanged. That guarantee is only
 worth anything if the outcome is a function of the SEED, not of the hardware.
 
-It was not. `engine/game_runner` arms a wall-clock deadline
-(`GAME_TIMEOUT_SECONDS`, 8.0s) and, when it fires, breaks out of the turn loop,
-sets `game_over`, and abandons stack resolution. A seeded game that finishes in
-~4s on a fast machine can exceed 8s on a loaded 2-core CI runner and terminate
-in a different state — flipping the recorded winner.
+It was not. `engine/game_runner` armed a wall-clock deadline
+(`GAME_TIMEOUT_SECONDS`, then 8.0s) and, when it fired, broke out of the turn
+loop, set `game_over`, and abandoned stack resolution. A seeded game that
+finishes in ~4s on a fast machine could exceed 8s on a loaded 2-core CI runner
+and terminate in a different state — flipping the recorded winner. Since
+2026-09-06 the budget is CPU time owned by `engine.game_budget` (load-invariant,
+see `tests/test_game_budget_is_load_invariant.py`); the anchor still neutralises
+it because machine SPEED remains a term.
 
 Observed: `Amulet Titan vs Living End @ 50000` passed locally (29/29) and
 simultaneously failed in CI with `- Living End / + Amulet Titan`, on the same

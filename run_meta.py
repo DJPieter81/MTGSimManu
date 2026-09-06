@@ -13,7 +13,7 @@ import multiprocessing as mp
 import os
 import random
 import sys
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, NamedTuple, Optional, Tuple
 
 from engine.card_database import CardDatabase
 from engine.game_runner import GameRunner
@@ -60,6 +60,37 @@ def score_game_result(winner_deck, deck1, deck2):
     if winner_deck == deck2:
         return (0, 1, 0)
     return (0, 0, 1)
+
+
+def _tally(r, deck1, deck2):
+    """Score one GameResult or MatchResult as
+    ``(deck1_won, deck2_won, drawn, aborted_games)``.
+
+    `drawn` is a RULES outcome nobody won (CR 104.4 turn cap, simultaneous
+    loss). `aborted_games` counts games the CPU safety budget cut off
+    (`engine.game_budget`, `win_condition == "aborted"`); such a result is
+    not a game outcome at all and is never counted as a draw either — the
+    aggregators count it separately and announce it, because a run with
+    aborts is not calibration-grade.
+    """
+    d1w, d2w, drawn = score_game_result(r.winner_deck, deck1, deck2)
+    aborted = getattr(r, 'aborted_games', None)
+    if aborted is None:
+        aborted = 1 if getattr(r, 'win_condition', '') == 'aborted' else 0
+    aborted = int(aborted)
+    if aborted:
+        drawn = 0
+    return d1w, d2w, drawn, aborted
+
+
+def _report_aborts(aborted: int) -> None:
+    """Announce, loudly, that a run contained budget aborts. Aggregates
+    already count them (never credit them); this is the human-facing line
+    so the number is never read as calibration-grade by mistake."""
+    if aborted:
+        print(f'\nWARNING: {aborted} game(s) aborted on the CPU safety budget '
+              f'(engine.game_budget) — results are NOT calibration-grade; '
+              f're-run on a quiet box.', file=sys.stderr)
 
 
 SEED_STEP = 500            # reproducibility contract: historical grid step
@@ -196,13 +227,14 @@ def _report_worker_errors(worker_results, sample_lines: int = 30):
     `_worker_matchup`. The sample traceback shown is truncated to
     `sample_lines` to keep matrix-run output usable.
     """
-    total = sum(len(errs) for _, _, _, errs in worker_results)
+    total = sum(len(w.errors) for w in worker_results)
     if total == 0:
         return
     print(f'\n[parallel-worker errors] {total} game(s) failed across '
-          f'{sum(1 for _, _, _, e in worker_results if e)} matchups',
+          f'{sum(1 for w in worker_results if w.errors)} matchups',
           file=sys.stderr)
-    for d1, d2, _pct, errs in worker_results:
+    for w in worker_results:
+        d1, d2, errs = w.d1, w.d2, w.errors
         if not errs:
             continue
         seed_sample, tb_sample = errs[0]
@@ -214,30 +246,52 @@ def _report_worker_errors(worker_results, sample_lines: int = 30):
             print(f'    {line}', file=sys.stderr)
 
 
+class WorkerResult(NamedTuple):
+    """One matchup's tally, as produced by `_worker_matchup` (and by the
+    serial paths, which share the same shape).
+
+    `pct` is d1's wins / n and `pct_reverse` is d2's wins / n — NOT
+    `100 - pct`. A drawn or aborted game is credited to nobody, so the two
+    cells sum to 100 only when every game had a winner. `draws` counts rules
+    draws (games, or matches in Bo3 mode); `aborted` counts GAMES cut off by
+    the CPU safety budget, which make the run not calibration-grade.
+
+    `errors` stays at index 3 (older unpackers read it positionally): it is
+    the dispatch contract that lets the parent distinguish a crashing worker
+    from a deck that cleanly lost every game (both report pct=0).
+    """
+    d1: str
+    d2: str
+    pct: int
+    errors: list
+    pct_reverse: int = 0
+    draws: int = 0
+    aborted: int = 0
+
+
 def _worker_matchup(args):
     """Worker function for parallel matchup execution.
     Uses the pre-initialized _worker_runner (one DB load per process).
 
     Args tuple: (d1_name, d2_name, n_games, seed_start, bo1).
-    Returns (d1_name, d2_name, pct, errors) — pct is MATCH WR in Bo3
-    mode; errors is a list of (seed, traceback_str) for any games
-    that raised. The errors field is the dispatch contract that lets
-    the parent process distinguish a crashing worker from a deck
-    that cleanly lost every game (both report pct=0).
+    Returns a `WorkerResult` — pct is MATCH WR in Bo3 mode; errors is a
+    list of (seed, traceback_str) for any games that raised.
     """
     import traceback
     d1_name, d2_name, n_games, seed_start, bo1 = args
     runner = _worker_runner
-    wins = {d1_name: 0, d2_name: 0}
+    d1w = d2w = draws = aborted = 0
     errors = []
     for seed in seed_grid(n_games, seed_start):
         try:
             r = _run_pair(runner, d1_name, d2_name, seed, bo1=bo1)
-            wins[r.winner_deck] = wins.get(r.winner_deck, 0) + 1
+            a, b, d, ab = _tally(r, d1_name, d2_name)
+            d1w += a; d2w += b; draws += d; aborted += ab
         except Exception:
             errors.append((seed, traceback.format_exc()))
-    pct = round(wins.get(d1_name, 0) / max(n_games, 1) * 100)
-    return (d1_name, d2_name, pct, errors)
+    n = max(n_games, 1)
+    return WorkerResult(d1_name, d2_name, round(d1w / n * 100), errors,
+                        round(d2w / n * 100), draws, aborted)
 
 
 def _run_game_no_runner(d1_name, d2_name, seed):
@@ -307,13 +361,15 @@ def run_matchup(deck1: str, deck2: str, n_games: int = 50,
     bo1 = not bo3
     runner = _get_runner()
     wins = {deck1: 0, deck2: 0, 'draw': 0}
+    aborted = 0
     turn_wins = {deck1: [], deck2: []}
     match_scores = []  # list of (p1_games_won, p2_games_won) for Bo3
 
     for i in range(n_games):
         seed = seed_start + i * 500
         r = _run_pair(runner, deck1, deck2, seed, bo1=bo1, verbose=verbose)
-        wins[r.winner_deck] = wins.get(r.winner_deck, 0) + 1
+        a, b, d, ab = _tally(r, deck1, deck2)
+        wins[deck1] += a; wins[deck2] += b; wins['draw'] += d; aborted += ab
         if bo1:
             if r.winner_deck in turn_wins:
                 turn_wins[r.winner_deck].append(r.turns)
@@ -329,9 +385,11 @@ def run_matchup(deck1: str, deck2: str, n_games: int = 50,
     avg_turn1 = (sum(turn_wins[deck1]) / len(turn_wins[deck1])) if turn_wins[deck1] else 0
     avg_turn2 = (sum(turn_wins[deck2]) / len(turn_wins[deck2])) if turn_wins[deck2] else 0
 
+    _report_aborts(aborted)
     result = {
         'deck1': deck1, 'deck2': deck2, 'games': n_games,
         'wins': wins, 'pct1': pct1, 'pct2': pct2,
+        'draws': wins['draw'], 'aborted': aborted,
         'avg_turn1': round(avg_turn1, 1), 'avg_turn2': round(avg_turn2, 1),
         'turn_dist1': sorted(turn_wins[deck1]), 'turn_dist2': sorted(turn_wins[deck2]),
         'format': 'bo1' if bo1 else 'bo3',
@@ -363,20 +421,26 @@ def run_field(deck: str, n_games: int = 30, opponents: List[str] = None,
         args = [(deck, opp, n_games, MATCHUP_SEED_START, bo1) for opp in opponents]
         with mp.Pool(_DEFAULT_WORKERS, initializer=_init_worker) as pool:
             worker_results = pool.map(_worker_matchup, args)
-        results = {d2: pct for d1, d2, pct, _errs in worker_results}
         _report_worker_errors(worker_results)
     else:
         runner = _get_runner()
-        results = {}
+        worker_results = []
         for opp in opponents:
-            wins = {deck: 0, opp: 0}
+            d1w = draws = aborted = 0
             for seed in seed_grid(n_games, MATCHUP_SEED_START):
                 r = _run_pair(runner, deck, opp, seed, bo1=bo1)
-                wins[r.winner_deck] = wins.get(r.winner_deck, 0) + 1
-            results[opp] = round(wins[deck] / n_games * 100)
+                a, _b, d, ab = _tally(r, deck, opp)
+                d1w += a; draws += d; aborted += ab
+            worker_results.append(WorkerResult(
+                deck, opp, round(d1w / n_games * 100), [], 0, draws, aborted))
 
+    results = {w.d2: w.pct for w in worker_results}
+    draws = sum(w.draws for w in worker_results)
+    aborted = sum(w.aborted for w in worker_results)
+    _report_aborts(aborted)
     avg = sum(results.values()) / len(results) if results else 0
     return {'deck': deck, 'matchups': results, 'average': round(avg, 1),
+            'draws': draws, 'aborted': aborted,
             'format': 'bo1' if bo1 else 'bo3',
             'seed_geometry': {'grid': 'field',
                               'seed_start': MATCHUP_SEED_START,
@@ -428,14 +492,19 @@ def run_probe(deck: str, opponent: Optional[str] = None, n_games: int = 20,
             for opp in opponents
         ]
 
-    results = {d2: pct for _d1, d2, pct, _errs in worker_results}
-    n_errors = sum(len(errs) for _, _, _, errs in worker_results)
+    results = {w.d2: w.pct for w in worker_results}
+    n_errors = sum(len(w.errors) for w in worker_results)
+    draws = sum(w.draws for w in worker_results)
+    aborted = sum(w.aborted for w in worker_results)
+    _report_aborts(aborted)
     avg = sum(results.values()) / len(results) if results else 0
     return {
         'deck': deck,
         'opponent': opponent,
         'matchups': results,
         'average': round(avg, 1),
+        'draws': draws,
+        'aborted': aborted,
         'format': 'bo1' if bo1 else 'bo3',
         'n_games': n_games,
         'errors': n_errors,
@@ -490,6 +559,29 @@ def run_meta_matrix(top_tier: int = None, n_games: int = 20,
 
     total = len(pairs)
     matrix = {}
+    # Per-cell counts of games credited to nobody. Keyed like `matrix` on
+    # the (d1, d2) pair as run (i < j); a draw or abort belongs to the pair,
+    # not to a side.
+    cell_draws = {}
+    cell_aborted = {}
+
+    def _record(w: WorkerResult):
+        # The reverse cell is the OPPONENT'S wins, never `100 - pct`: a
+        # drawn or aborted game is credited to nobody, so the two cells sum
+        # to 100 only when every game had a winner. (`100 - pct` handed
+        # every draw to the second-named deck as a win.)
+        matrix[(w.d1, w.d2)] = w.pct
+        matrix[(w.d2, w.d1)] = w.pct_reverse
+        cell_draws[(w.d1, w.d2)] = w.draws
+        cell_aborted[(w.d1, w.d2)] = w.aborted
+
+    def _cell_line(i, w):
+        err_tag = f' [{len(w.errors)} ERR]' if w.errors else ''
+        nobody = ''
+        if w.draws or w.aborted:
+            nobody = f' (draws {w.draws}, aborted {w.aborted})'
+        return (f'  [{i+1}/{total}] {w.d1} vs {w.d2}: '
+                f'{w.pct}%-{w.pct_reverse}%{nobody}{err_tag}')
 
     if parallel and total > 1:
         workers = min(_DEFAULT_WORKERS, total)
@@ -498,29 +590,30 @@ def run_meta_matrix(top_tier: int = None, n_games: int = 20,
               f'({workers} workers)', file=sys.stderr)
         with mp.Pool(workers, initializer=_init_worker) as pool:
             collected = []
-            for i, result in enumerate(pool.imap_unordered(_worker_matchup, pairs)):
-                d1, d2, pct, errors = result
-                matrix[(d1, d2)] = pct
-                matrix[(d2, d1)] = 100 - pct
-                err_tag = f' [{len(errors)} ERR]' if errors else ''
-                print(f'  [{i+1}/{total}] {d1} vs {d2}: {pct}%-{100-pct}%{err_tag}',
-                      file=sys.stderr)
-                collected.append(result)
+            for i, w in enumerate(pool.imap_unordered(_worker_matchup, pairs)):
+                _record(w)
+                print(_cell_line(i, w), file=sys.stderr)
+                collected.append(w)
             _report_worker_errors(collected)
     else:
         runner = _get_runner()
         for idx, (d1_name, d2_name, ng, ss, _bo1) in enumerate(pairs):
-            wins = {d1_name: 0, d2_name: 0}
+            d1w = d2w = draws = aborted = 0
             for seed in seed_grid(ng, ss):
                 try:
                     r = _run_pair(runner, d1_name, d2_name, seed, bo1=_bo1)
-                    wins[r.winner_deck] = wins.get(r.winner_deck, 0) + 1
+                    a, b, d, ab = _tally(r, d1_name, d2_name)
+                    d1w += a; d2w += b; draws += d; aborted += ab
                 except Exception:
                     pass
-            pct = round(wins.get(d1_name, 0) / ng * 100)
-            matrix[(d1_name, d2_name)] = pct
-            matrix[(d2_name, d1_name)] = 100 - pct
-            print(f'  [{idx+1}/{total}] {d1_name} vs {d2_name}: {pct}%-{100-pct}%', file=sys.stderr)
+            w = WorkerResult(d1_name, d2_name, round(d1w / ng * 100), [],
+                             round(d2w / ng * 100), draws, aborted)
+            _record(w)
+            print(_cell_line(idx, w), file=sys.stderr)
+
+    total_draws = sum(cell_draws.values())
+    total_aborted = sum(cell_aborted.values())
+    _report_aborts(total_aborted)
 
     # Determine T1 (top 5) and T2 (next 6) by meta share
     all_by_share = sorted(METAGAME_SHARES.keys(),
@@ -549,11 +642,12 @@ def run_meta_matrix(top_tier: int = None, n_games: int = 20,
         rankings.append((round(avg, 1), d, meta_wr))
     rankings.sort(key=lambda x: x[2], reverse=True)
 
-    # ── Symmetry check: flag pairs where wr(A,B) + wr(B,A) deviates from 100.
-    # The matrix is constructed symmetrically by `matrix[(d2,d1)] = 100 - pct`
-    # above, so deviations only arise from rounding. This still catches any
-    # future code path that populates (d2,d1) independently (e.g. separate
-    # per-seat runs, go-first-advantage studies).
+    # ── Symmetry check: every game is exactly one of {d1 win, d2 win,
+    # draw, abort}, so wr(A,B) + wr(B,A) + nobody(A,B) must be 100 (up to
+    # rounding). The reverse cell is populated from the opponent's own wins,
+    # so this is a real invariant over the tally, not a tautology — it
+    # catches any path that populates (d2,d1) independently (separate
+    # per-seat runs, go-first-advantage studies) or drops games.
     symmetry_issues: List[Tuple[str, str, float, float, float]] = []
     checked = set()
     for (d1, d2), wr1 in list(matrix.items()):
@@ -563,13 +657,14 @@ def run_meta_matrix(top_tier: int = None, n_games: int = 20,
         wr2 = matrix.get((d2, d1))
         if wr2 is None:
             continue
-        total = wr1 + wr2
+        nobody = cell_draws.get((d1, d2), 0) + cell_aborted.get((d1, d2), 0)
+        total = wr1 + wr2 + round(nobody / n_games * 100)
         if abs(total - 100) > 10:
             symmetry_issues.append((d1, d2, wr1, wr2, total - 100))
     symmetry_issues.sort(key=lambda t: -abs(t[4]))
     if symmetry_issues:
-        print(f'Symmetry: {len(symmetry_issues)} pair(s) with |wr1+wr2 - 100| > 10',
-              file=sys.stderr)
+        print(f'Symmetry: {len(symmetry_issues)} pair(s) with '
+              f'|wr1+wr2+nobody - 100| > 10', file=sys.stderr)
         for d1, d2, wr1, wr2, delta in symmetry_issues[:10]:
             print(f'  {d1} vs {d2}: {wr1}% / {wr2}% (Δ={delta:+.0f})', file=sys.stderr)
 
@@ -587,6 +682,8 @@ def run_meta_matrix(top_tier: int = None, n_games: int = 20,
     return {'matrix': matrix, 'rankings': rankings, 'names': names,
             'tier1': sorted(tier1), 'tier2': sorted(tier2),
             'n_games': n_games, 'format': 'bo1' if bo1 else 'bo3',
+            'draws': total_draws, 'aborted': total_aborted,
+            'cell_draws': cell_draws, 'cell_aborted': cell_aborted,
             'symmetry_issues': symmetry_issues,
             'seed_geometry': {'grid': 'matrix', 'seed_start': seed_start,
                               'step': SEED_STEP, 'n_games': n_games}}
@@ -1171,9 +1268,15 @@ def save_results(result: Dict, path: str = RESULTS_FILE):
         'names': result.get('names', []),
         'matrix': {f'{k[0]}|{k[1]}': v for k, v in result['matrix'].items()} if 'matrix' in result else {},
     }
+    # Per-cell games credited to nobody (same tuple keys as the matrix).
+    for cell_key in ('cell_draws', 'cell_aborted'):
+        if cell_key in result:
+            data[cell_key] = {f'{k[0]}|{k[1]}': v
+                              for k, v in result[cell_key].items()}
     # Preserve any extra fields
     for key in result:
-        if key not in ('matrix', 'rankings', 'names'):
+        if key not in ('matrix', 'rankings', 'names',
+                       'cell_draws', 'cell_aborted'):
             data[key] = result[key]
 
     # Command stamp (structural finding #5: "numbers always stamped
@@ -1249,6 +1352,19 @@ def print_saved_results(path: str = RESULTS_FILE):
 # ─── Pretty printing ─────────────────────────────────────────
 
 
+def _print_nobody(result: Dict, indent: str = '  '):
+    """Games credited to nobody: rules draws are reported; budget aborts
+    are reported AND flagged, because they make the run not
+    calibration-grade (see `_tally`)."""
+    draws = result.get('draws', 0)
+    aborted = result.get('aborted', 0)
+    if draws:
+        print(f'{indent}draws (credited to nobody): {draws}')
+    if aborted:
+        print(f'{indent}WARNING: {aborted} game(s) aborted on the CPU safety '
+              f'budget — NOT calibration-grade; re-run on a quiet box')
+
+
 def print_matrix(result: Dict):
     """Pretty-print a metagame matrix result."""
     names = result['names']
@@ -1283,6 +1399,8 @@ def print_matrix(result: Dict):
                 pct = matrix.get((d1, d2), 50)
                 cells.append(f'{pct:>11d}%')
         print(f'{short[d1]:>14s} | ' + ' | '.join(cells))
+    print()
+    _print_nobody(result)
 
 
 def print_matchup(result: Dict):
@@ -1300,6 +1418,7 @@ def print_matchup(result: Dict):
         print(f'  {result["deck1"]} wins on: {result["turn_dist1"]}')
     if result['turn_dist2']:
         print(f'  {result["deck2"]} wins on: {result["turn_dist2"]}')
+    _print_nobody(result)
 
 
 def print_field(result: Dict):
@@ -1308,6 +1427,7 @@ def print_field(result: Dict):
     for opp, pct in sorted(result['matchups'].items(), key=lambda x: -x[1]):
         bar = '#' * (pct // 2)
         print(f'  vs {opp:25s}: {pct:3d}%  {bar}')
+    _print_nobody(result)
 
 
 def print_probe(result: Dict):
@@ -1326,6 +1446,7 @@ def print_probe(result: Dict):
     if result.get('errors'):
         print(f'  WARNING: {result["errors"]} game(s) raised — '
               f'see stderr for tracebacks')
+    _print_nobody(result)
 
 
 # ─── CLI ──────────────────────────────────────────────────────

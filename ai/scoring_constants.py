@@ -4743,13 +4743,27 @@ loops in non-combo archetypes where 40 actions would never occur.
 Used by `engine/game_runner.py` to gate the per-turn action budget.
 """
 
-GAME_TIMEOUT_SECONDS: float = 8.0
-"""Rules-constant: per-game wall-clock safety timeout. 8 seconds
-covers the slowest registered Modern matchup (Tron mirror) with
-~2× headroom. Beyond this, the game is aborted as a draw rather
-than risk a hung simulator.
+GAME_TIMEOUT_SECONDS: float = 30.0
+"""Rules-constant: per-game safety budget in CPU-SECONDS
+(`time.process_time`), armed by `engine/game_budget.py`. Not a
+wall-clock deadline any more — under load a starved process accrues
+no CPU, so contention cannot exhaust the budget, while a genuinely
+spinning loop still does. This is what makes a seeded outcome a
+function of the seed rather than of machine load.
 
-Used by `engine/game_runner.py` as the deadline anchor.
+Sizing (2026-09-06, idle 4-core box, 24-game probe over four
+matchups): the slowest legitimate game costs 3.9 CPU-s; most finish
+under 1 s; control mirrors reach the turn cap in ~0.9 s; the WR-anchor
+incident recorded ~4 s on a slow CI runner. 30 s is >7× the slowest
+legitimate game ever recorded, so it fires only on a runaway game.
+The previous 8 s wall-clock value fired on healthy games whenever the
+box was busy (`083393b`; the 2026-09-06 all-draws field run).
+
+A game that exhausts it is reported as `win_condition == "aborted"`
+and counted, never credited to either deck.
+
+The name is kept because `tests/test_wr_baseline_anchor.py` and
+`tools/refresh_wr_baseline.py` rebind it to neutralise the valve.
 """
 
 SHOCK_LETHAL_LIFE_THRESHOLD: int = 2

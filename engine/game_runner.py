@@ -17,6 +17,7 @@ from .turn_manager import TurnManager, TurnStep
 
 from .combat_manager import CombatManager
 from .callbacks import GameCallbacks
+from . import game_budget
 
 # MTG rule: "Urza's Tron" — three specific lands that produce 7 colorless
 # when all three are in play. Analogous to basic land type → color mapping.
@@ -361,7 +362,11 @@ class GameResult:
     turns: int
     winner_life: int
     loser_life: int
-    win_condition: str  # "damage", "mill", "combo", "concede", "timeout"
+    # "damage", "mill", "combo", "concede" — a winner; "timeout" — turn-cap
+    # draw (CR 104.4); "draw" — simultaneous loss; "aborted" — the CPU safety
+    # budget fired (engine.game_budget), NOT a game result: count it, never
+    # credit it.
+    win_condition: str
     deck1_name: str = ""
     deck2_name: str = ""
     deck1_lands_played: int = 0
@@ -389,6 +394,18 @@ class MatchResult:
     deck1_name: str = ""
     deck2_name: str = ""
 
+    @property
+    def aborted_games(self) -> int:
+        """Games in this match cut off by the CPU safety budget."""
+        return sum(1 for g in self.games if g.win_condition == "aborted")
+
+    @property
+    def drawn_games(self) -> int:
+        """Games in this match that ended without a winner for a RULES
+        reason (turn cap or simultaneous loss) — aborts excluded."""
+        return sum(1 for g in self.games
+                   if g.winner is None and g.win_condition != "aborted")
+
 
 class GameRunner:
     """Runs complete MTG games and matches between two AI players."""
@@ -396,6 +413,10 @@ class GameRunner:
     def __init__(self, card_db: CardDatabase, rng: random.Random = None):
         self.card_db = card_db
         self.rng = rng or random.Random()
+        # The pool this runner plays from is the process's pool: lazy
+        # consumers (sideboard solver, gameplan derivation) resolve
+        # `CardDatabase.shared()` instead of loading a second copy.
+        CardDatabase.register_shared(card_db)
 
     def build_deck(self, deck_list: Dict[str, int]) -> List[CardTemplate]:
         """Convert a deck list (name -> count) to a list of CardTemplates."""
@@ -708,14 +729,12 @@ class GameRunner:
         turn_mgr = game.turn_mgr
         turn_mgr.first_player = first_player
 
-        # Game loop — driven by TurnManager
-        import time as _time
-        _game_start = _time.monotonic()
-        from ai.constants import GAME_TIMEOUT_SECONDS
-        _max_game_time = GAME_TIMEOUT_SECONDS
-        game._game_deadline = _game_start + _max_game_time
+        # Game loop — driven by TurnManager. The safety valve is a CPU
+        # budget owned by engine.game_budget (see that module for why it
+        # is not a wall-clock deadline).
+        game_budget.arm(game)
         while not game.game_over and game.turn_number < game.max_turns:
-            if _time.monotonic() > game._game_deadline:
+            if game_budget.expired(game):
                 break
             active = game.active_player
             ai = ais[active]
@@ -732,8 +751,7 @@ class GameRunner:
             for step in turn_mgr.iterate_turn(game):
                 if game.game_over:
                     break
-                if _time.monotonic() > game._game_deadline:
-                    game.game_over = True
+                if game_budget.expired(game):
                     break
 
                 def _board_summary():
@@ -1030,6 +1048,14 @@ class GameRunner:
                     win_condition = "mill"
                 else:
                     win_condition = "combo"
+        elif game_budget.exhausted(game):
+            # The CPU safety valve fired (engine.game_budget). This is not a
+            # game result at all — the game was cut off mid-play — so it is
+            # labelled distinctly from a CR 104.4 draw and aggregators count
+            # it instead of crediting it to either deck.
+            winner = None
+            loser = None
+            win_condition = "aborted"
         elif game.turn_number >= game.max_turns:
             # CR 104.4 — a game that does not end with a winner is a DRAW.
             # `MAX_TURNS` is a wall-clock safety valve, not a tiebreak, so
@@ -1128,11 +1154,10 @@ class GameRunner:
         is not empty, the top item resolves. Then SBAs are checked,
         triggers are put on the stack, and the active player gets priority.
         """
-        import time as _time
         _max_resolves = 100  # safety valve
         _resolves = 0
         while not game.stack.is_empty and _resolves < _max_resolves:
-            if hasattr(game, '_game_deadline') and _time.monotonic() > game._game_deadline:
+            if game_budget.expired(game):
                 game.stack.items.clear()
                 return
             game.resolve_stack()
@@ -1288,8 +1313,7 @@ class GameRunner:
                              opponent_ai: AIPlayer):
         """Execute a main phase with priority-based stack interaction.
         """
-        import time as _time
-        if hasattr(game, '_game_deadline') and _time.monotonic() > game._game_deadline:
+        if game_budget.expired(game):
             return
         # Per CR 117.3a: Active player receives priority at the beginning
         # of the main phase. They can play lands, cast spells, or pass.
@@ -1321,7 +1345,7 @@ class GameRunner:
         _excluded_activations: set = set()
 
         while actions < max_actions and not game.game_over:
-            if hasattr(game, '_game_deadline') and _time.monotonic() > game._game_deadline:
+            if game_budget.expired(game):
                 return
             decision = ai.decide_main_phase(
                 game, excluded_cards=_excluded,

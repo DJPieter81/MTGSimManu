@@ -366,6 +366,16 @@ def run_check(results_path: str = DEFAULT_RESULTS_PATH,
         results = json.load(f)
     bands = load_bands(bands_path)
     findings = check_results(results, bands)
+    # A game the CPU safety budget cut off (engine.game_budget) is not a
+    # game result; run_meta counts such games instead of crediting them,
+    # and a results file that contains any is announced before the bands
+    # so the verdict below is never read as ground truth by mistake. A
+    # verdict line, not a gate: the user decides whether to re-run.
+    aborted = int(results.get("aborted") or 0)
+    if aborted:
+        print(f"!! NOT CALIBRATION-GRADE (aborted={aborted}): {aborted} "
+              f"game(s) were cut off by the CPU safety budget — re-run on a "
+              f"quiet box before reading the bands below.")
     _, n_out, _ = print_report(findings, results_path, bands_path)
     return 1 if (strict and n_out) else 0
 
