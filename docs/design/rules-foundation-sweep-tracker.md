@@ -3155,6 +3155,27 @@ this lane. Stop gate: the field is inside the band; five cells ≥85% —
 not met. Record: `docs/diagnostics/2026-09-05_zoo_band_loop_break.md`
 (restart section). Loop ended.
 
+## Pinnacle Affinity band loop (2026-09-06)
+
+Plan: bring Pinnacle Affinity's flat field WR inside [50, 65] on the
+50000 matchup grid (n=20 Bo3), no cell ≥85%, reproduced on the matrix
+grid; same protocol as the Zoo loop (class-sized fixes only, failing-test-
+first, no list / gameplan tuning, loop-break after three code iterations
+without ≥2.2pp field movement). Last matrix (40000 grid): 67.1%.
+
+### Iteration 0 — baseline on `ff8176c` (measurement only)
+
+`run_meta.py --field "Pinnacle Affinity" -n 20 --parallel`, quiet box,
+offline scorer. **Flat 65.2%**. Cells ≥85%: Amulet Titan 100, Boros Ponza
+95, Creatures Toolbox 95, Hollow One 95. Then Goryo's / Azorius Control /
+Broodscale 80; Eldrazi Tron / Omnath / Instant Reanimator 70; Affinity /
+4/5c / Eldrazi Ramp / Grixis 65; Prowess 60; WST 55; Jeskai Blink / WST v2
+/ Azorius Blink 50; Boros Energy / Storm / Living End 45; Dimir 40; Zoo 30.
+Stop gate: not met. Target rule (skip victim decks whose outlier has a
+tracked cause — Amulet, Toolbox, Hollow One, Goryo's): **Boros Ponza 95**
+(Pillage ×3 and Wear // Tear are its plan against an artifact deck),
+with Broodscale Bloodchief 80 as the secondary replay per the plan.
+
 **Hollow One (85%) — recorded lead, next iteration.** `--bo3 "Hollow One"
 "Domain Zoo" -s 50000` (Zoo 2-0): the trace scores "cycle: Street Wraith"
 at **+8.3** and "cycle: Hollow One" at **+7.8** against +0.9 for a
