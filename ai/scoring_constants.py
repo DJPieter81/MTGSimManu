@@ -4751,10 +4751,10 @@ no CPU, so contention cannot exhaust the budget, while a genuinely
 spinning loop still does. This is what makes a seeded outcome a
 function of the seed rather than of machine load.
 
-Sizing (2026-09-06, idle 4-core box): the slowest legitimate game
-measured is 1.7 s (Ruby Storm vs Domain Zoo, seed 50500); control
-mirrors reach the turn cap in ~0.9 s; the WR-anchor incident recorded
-~4 s for the same game on a slow CI runner. 30 s is ≥7× the slowest
+Sizing (2026-09-06, idle 4-core box, 24-game probe over four
+matchups): the slowest legitimate game costs 3.9 CPU-s; most finish
+under 1 s; control mirrors reach the turn cap in ~0.9 s; the WR-anchor
+incident recorded ~4 s on a slow CI runner. 30 s is >7× the slowest
 legitimate game ever recorded, so it fires only on a runaway game.
 The previous 8 s wall-clock value fired on healthy games whenever the
 box was busy (`083393b`; the 2026-09-06 all-draws field run).
