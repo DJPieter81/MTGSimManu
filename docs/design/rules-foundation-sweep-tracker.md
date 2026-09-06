@@ -3392,3 +3392,63 @@ another deck's primary lane or build below class size. Halted one code
 iteration short of the formal loop-break with the record in
 `docs/diagnostics/2026-09-06_pinnacle_band_loop_close.md` (active /
 primary; restart condition stated there).
+
+## Meta refresh (2026-09-06)
+
+Full refresh on `b22f357` (both band loops merged; nothing pending):
+matrix → dashboard → card-level detail → showcase → outlier replays.
+Same geometry as the 2026-09-04 refresh (`run_meta.py --matrix -n 20
+--save`, matrix grid 40000 + 500·k, Bo3, 3 workers, offline scorer), so
+the two runs compare directly.
+
+### Phase A — matrix
+
+**Wall-clock: 28 min 25 s** (08:06:17 → 08:34:42 UTC) for 300 pairs ×
+20 Bo3 = 6000 matches on 3 workers — the first recorded timing for the
+25-deck grid; the "order of magnitude slower" fear from
+`docs/diagnostics/2026-08-30_post_cage_fix_perf_and_provisional_wr.md`
+does not hold on this head. Calibration (`tools/check_calibration.py`,
+auto-run by `--save`): **38 in band / 58 out** (09-04: 30 / 66). Field
+transition: **Domain Zoo OUT → IN**. Dashboard merged and rebuilt by
+`--save` (`modern_meta_matrix_full.html`, 401 KB; `matchup_cards` 300
+and `deck_cards` 25 preserved for Phase B).
+
+| Deck | 09-04 | 09-06 | Δ |
+|---|---|---|---|
+| Boros Energy | 59.2 | **68.8** | +9.6 |
+| Dimir Midrange | 67.5 | 68.5 | +1.0 |
+| Eldrazi Tron | 73.5 | 68.1 | −5.4 |
+| Broodscale Bloodchief | 64.8 | 64.8 | 0.0 |
+| Ruby Storm | 65.0 | 63.5 | −1.5 |
+| Eldrazi Ramp | 63.8 | 62.7 | −1.1 |
+| Pinnacle Affinity | 67.1 | 61.5 | −5.6 |
+| Domain Zoo | 65.6 | 60.2 | −5.4 |
+| 4c Omnath | 68.5 | 59.0 | −9.5 |
+| Azorius Control (WST v2) | 56.9 | 58.3 | +1.4 |
+| Grixis Reanimator | 43.8 | 53.1 | +9.3 |
+| Living End | 57.1 | 52.3 | −4.8 |
+| Izzet Prowess | 54.8 | 52.3 | −2.5 |
+| 4/5c Control | 54.0 | 50.8 | −3.2 |
+| Instant Reanimator | 46.0 | 47.7 | +1.7 |
+| Azorius Control (WST) | 46.7 | 47.5 | +0.8 |
+| Boros Ponza | 44.0 | 46.2 | +2.2 |
+| Affinity | 45.4 | 44.0 | −1.4 |
+| Azorius Control | 36.7 | 43.8 | +7.1 |
+| Goryo's Vengeance | 49.6 | 41.5 | −8.1 |
+| Azorius Blink | 31.5 | 31.2 | −0.3 |
+| Hollow One | 25.4 | 28.3 | +2.9 |
+| Amulet Titan | 22.7 | 27.9 | +5.2 |
+| Jeskai Blink | 30.2 | 26.0 | −4.2 |
+| Creatures Toolbox | 10.4 | 21.9 | +11.5 |
+
+Reading (matrix grid; the band loops measured on the 50000 grid, so
+the levels differ but the directions agree): Pinnacle 67.1 → 61.5 and
+Zoo 65.6 → 60.2 (both loops' fixes), Omnath −9.5 and Eldrazi Tron −5.4
+(the hand-lands and equipment rules on the defending side), Toolbox
++11.5 / Grixis +9.3 / Amulet +5.2 (the victims of the fixed
+over-credits recover), Boros Energy +9.6 (now above its [50,70] band
+at 68.8 — a new lead), Goryo's −8.1 (its keep residual is now the
+whole story). Still out of the field bands: Amulet 27.9 vs [45,60],
+Instant Reanimator 47.7 in [45,60] (now IN), Jeskai Blink 26.0 vs
+[45,60], Creatures Toolbox 21.9 and Hollow One 28.3 vs the [30,70]
+default.
