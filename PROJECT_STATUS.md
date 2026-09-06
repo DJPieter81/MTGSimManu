@@ -183,7 +183,7 @@ python3 merge_db.py                                    # canonical DB first — 
 python tools/check_calibration.py metagame_results.json
 ```
 
-**Current status (definitive 19-deck Bo3 n=20 matrix, PR #466, 2026-07-05): 12 in band / 17 out of band.** Out-of-band entries are divergence probes — each points at a generic subsystem bug, not deck tuning.
+**Current status (25-deck Bo3 n=20 matrix, 2026-09-06 meta refresh on `b22f357`, PR #569): 38 in band / 58 out of band** (2026-09-04: 30 / 66; the 19-deck 2026-07-05 baseline was 12 / 17). Out-of-band entries are divergence probes — each points at a generic subsystem bug, not deck tuning. Run record: `docs/design/rules-foundation-sweep-tracker.md` § "Meta refresh (2026-09-06)".
 
 Field-level outliers (sim field WR vs expected band):
 

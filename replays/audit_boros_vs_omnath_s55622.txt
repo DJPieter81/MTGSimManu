@@ -1,0 +1,2221 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+  Sideboard (Boros Energy vs 4c Omnath): +2 Blood Moon, -2 Thraben Charm
+  Sideboard (Boros Energy vs 4c Omnath): +2 Blood Moon, -2 Thraben Charm
+======================================================================
+  GAME 1: Boros Energy (P1) vs 4c Omnath (P2)  —  seed 55622
+  Series: Boros Energy 0 - 0 4c Omnath
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: 4c Omnath wins → chooses to play first
+║ P1 (on play): 4c Omnath
+║ P2 (on draw): Boros Energy
+╚═══════════════════════════════════════════════════════
+
+P1 (Boros Energy) opening hand (2 lands, 5 spells):
+  • Mana Tithe [Spell, CMC 1]
+  • Mana Tithe [Spell, CMC 1]
+  • Goblin Bombardment [Spell, CMC 2]
+  • Sacred Foundry [Land, CMC 0]
+  • Ajani, Nacatl Pariah // Ajani, Nacatl Avenger [Creature, CMC 2]
+  • Guide of Souls [Creature, CMC 1]
+  • Dalkovan Encampment [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Guide of Souls, 5 cheap spells
+
+P2 (4c Omnath) opening hand (2 lands, 5 spells):
+  • Orcish Bowmasters [Creature, CMC 2]
+  • Undercity Sewers [Land, CMC 0]
+  • Solitude [Creature, CMC 5]
+  • Teferi, Time Raveler [Spell, CMC 3]
+  • Forest [Land, CMC 0]
+  • Leyline Binding [Spell, CMC 6]
+  • Elesh Norn, Mother of Machines [Creature, CMC 5]
+→ P2 KEEPS 7 — has key card(s): Leyline Binding, Solitude, Teferi, Time Raveler, 2 cheap spells
+
+
+╔══ TURN 1 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 20  |  Boros Energy 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: surveil 1 → Misty Rainforest to GY
+T1 P2: Play Undercity Sewers (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 20  |  4c Omnath 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Undercity Sewers [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ocelot Pride
+  [Main 1]
+T1 P1: Play Sacred Foundry (tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 20  |  Boros Energy 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Undercity Sewers
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ephemerate
+  [Main 1]
+T2 P2: Play Forest
+    → Goal: grind_value
+    [Mana] Tap Forest→G, Undercity Sewers→B (paying for Orcish Bowmasters, 0 mana remaining)
+T2 P2: Cast Orcish Bowmasters (1B)
+    [Priority] P1 passes (no response)
+T2: Resolve Orcish Bowmasters
+T2 P2: Bowmasters deals 1 damage to opponent (life: 19)
+T2 P2: Bowmasters creates 1/1 Orc Army token
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 19  |  4c Omnath 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ 4c Omnath board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Undercity Sewers [T], Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Goblin Bombardment
+  [Main 1]
+T2 P1: Play Dalkovan Encampment (enters tapped)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Guide of Souls, 0 mana remaining)
+T2 P1: Cast Guide of Souls (W)
+    [Priority] P2 passes (no response)
+T2: Resolve Guide of Souls
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 20  |  Boros Energy 19
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ 4c Omnath board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Undercity Sewers, Forest
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2)
+║   Lands: Sacred Foundry [T], Dalkovan Encampment [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Temple Garden
+  [Main 1]
+T3 P2: Play Temple Garden (tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 19  |  4c Omnath 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2)
+║   Lands: Sacred Foundry, Dalkovan Encampment
+║ 4c Omnath board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Undercity Sewers, Forest, Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Flooded Strand
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Dalkovan Encampment→W, Sacred Foundry→R (paying for Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, 0 mana remaining)
+T3 P1: Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)
+    [Priority] P2 passes (no response)
+T3: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T3 P1: Create 1x Cat token(s)
+T3 P1: Ajani creates 2/1 Cat Warrior token
+T3 P1: Gain 1 life from Guide of Souls (life: 20)
+T3 P1: +1 energy from Guide of Souls (total: 1)
+T3 P1: Play Flooded Strand
+T3: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T3 P1: Crack Flooded Strand (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Guide of Souls
+T3 P1: Attack with Guide of Souls
+T3 P2:   [BLOCK] Orcish Bowmasters (1/1) blocks Guide of Souls (1/2) — lifespan_delta=+0.25
+T3 P2:   [BLOCK] Orc Army (1/1) blocks Guide of Souls (1/2) — lifespan_delta=+0.25
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T3: Orcish Bowmasters dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 20  |  Boros Energy 19
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 2
+║ 4c Omnath board:
+║   Creatures: Orc Army (1/1)
+║   Lands: Undercity Sewers, Forest, Temple Garden
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Lands: Sacred Foundry [T], Dalkovan Encampment [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Prismatic Ending
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Forest→G, Temple Garden→W (paying for Leyline Binding, 1 mana remaining)
+T4 P2: Cast Leyline Binding (5W)
+    [Priority] P1 passes (no response)
+T4: Resolve Leyline Binding
+T4: Cat Token moved battlefield -> exile (exiled)
+T4 P2: Leyline Binding exiles Cat Token
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 19  |  4c Omnath 20
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2)
+║   Lands: Sacred Foundry, Dalkovan Encampment, Sacred Foundry
+║ 4c Omnath board:
+║   Creatures: Orc Army (1/1)
+║   Other: Leyline Binding
+║   Lands: Undercity Sewers, Forest [T], Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Marsh Flats
+  [Main 1]
+T4 P1: Play Marsh Flats
+T4: Marsh Flats moved battlefield -> graveyard (fetchland sacrifice)
+T4 P1: Crack Marsh Flats (pay 1 life) -> Sacred Foundry (tapped, life: 18)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Dalkovan Encampment→W (paying for Ocelot Pride, 2 mana remaining)
+T4 P1: Cast Ocelot Pride (W)
+    [Priority] P2 passes (no response)
+T4: Resolve Ocelot Pride
+T4 P1: Gain 1 life from Guide of Souls (life: 19)
+T4 P1: +1 energy from Guide of Souls (total: 2)
+    → Goal: curve_out
+    [Mana] Tap Sacred Foundry→R, Sacred Foundry→R (paying for Goblin Bombardment, 0 mana remaining)
+T4 P1: Cast Goblin Bombardment (1R)
+    [Priority] P2 passes (no response)
+T4: Resolve Goblin Bombardment
+T4 P1: Goblin Bombardment enters — sacrifice creatures for 1 damage each
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Guide of Souls, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T4 P1: Attack with Guide of Souls, Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T4 P2:   [BLOCK] Orc Army (1/1) blocks Guide of Souls (1/2) — lifespan_delta=+0.33
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T4 P1:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+T4: Orc Army dies
+  [Combat Damage] 1 damage dealt → P2 life: 20 → 19
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 19  |  Boros Energy 19
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 3
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Other: Leyline Binding
+║   Lands: Undercity Sewers, Forest, Temple Garden
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Ocelot Pride (1/1)
+║   Other: Goblin Bombardment
+║   Lands: Sacred Foundry [T], Dalkovan Encampment [T], Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ephemerate
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Forest→G, Undercity Sewers→U, Temple Garden→W (paying for Teferi, Time Raveler, 0 mana remaining)
+T5 P2: Cast Teferi, Time Raveler (1WU)
+    [Priority] P1 passes (no response)
+T5: Resolve Teferi, Time Raveler
+T5 P2: Teferi bounces Guide of Souls
+T5 P2: Teferi draws Endurance
+T5 P2: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
+T5: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger moved battlefield -> hand (bounced)
+T5 P2:   returns Ajani, Nacatl Pariah // Ajani, Nacatl Avenger to its owner's hand
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 19  |  4c Omnath 19
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1)
+║   Other: Goblin Bombardment
+║   Lands: Sacred Foundry, Dalkovan Encampment, Sacred Foundry, Sacred Foundry
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Other: Leyline Binding, Teferi, Time Raveler
+║   Lands: Undercity Sewers [T], Forest [T], Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arena of Glory
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Dalkovan Encampment→W, Sacred Foundry→R (paying for Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, 2 mana remaining)
+T5 P1: Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)
+    [Priority] P2 passes (no response)
+T5: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T5 P1: Create 1x Cat token(s)
+T5 P1: Ajani creates 2/1 Cat Warrior token
+T5 P1: Play Arena of Glory (enters tapped)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Guide of Souls, 1 mana remaining)
+T5 P1: Cast Guide of Souls (W)
+    [Priority] P2 passes (no response)
+T5: Resolve Guide of Souls
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ocelot Pride
+T5 P1: Attack with Ocelot Pride
+  [Declare Blockers] P2 does not block
+T5 P1: Ocelot Pride lifelink — gain 1 (life: 20)
+T5 P1:   Ocelot Pride (1/1) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P2 life: 19 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 18  |  Boros Energy 20
+║ Hand: 7 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 3
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Other: Leyline Binding, Teferi, Time Raveler
+║   Lands: Undercity Sewers, Forest, Temple Garden
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1) [tapped], Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1), Guide of Souls (1/2) [tapped]
+║   Other: Goblin Bombardment
+║   Lands: Sacred Foundry [T], Dalkovan Encampment [T], Sacred Foundry [T], Sacred Foundry, Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Misty Rainforest
+  [Main 1]
+T6 P2: Play Misty Rainforest
+T6: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T6 P2: Crack Misty Rainforest (pay 1 life) -> Hallowed Fountain (untapped, life: 15)
+    → Goal: close_game
+    [Mana] Tap Forest→G, Undercity Sewers→B, Temple Garden→G (paying for Endurance, 1 mana remaining)
+T6 P2: Cast Endurance (1GG)
+T6: Resolve Endurance
+T6 P2: Endurance ETB: P1 shuffles 2 cards from GY into library
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→W (paying for Ephemerate, 0 mana remaining)
+T6 P2: Cast Ephemerate (W)
+T6: Resolve Ephemerate
+T6 P2: Endurance ETB: P2 shuffles 4 cards from GY into library
+T6: Blink Endurance
+T6: Ephemerate moved stack -> exile (rebound (CR 702.86))
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 20  |  4c Omnath 15
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1), Guide of Souls (1/2)
+║   Other: Goblin Bombardment
+║   Lands: Sacred Foundry, Dalkovan Encampment, Sacred Foundry, Sacred Foundry, Arena of Glory
+║ 4c Omnath board:
+║   Creatures: Endurance (3/4)
+║   Other: Leyline Binding, Teferi, Time Raveler
+║   Lands: Undercity Sewers [T], Forest [T], Temple Garden [T], Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Dalkovan Encampment→W, Arena of Glory→R (paying for Ragavan, Nimble Pilferer, 3 mana remaining)
+T6 P1: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P2 passes (no response)
+T6: Resolve Ragavan, Nimble Pilferer
+T6 P1: Gain 1 life from Guide of Souls (life: 21)
+T6 P1: +1 energy from Guide of Souls (total: 3)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T6: Ragavan, Nimble Pilferer moved battlefield -> hand (Dash return)
+T6: Ragavan, Nimble Pilferer returned to hand (Dash)
+
+╔══ TURN 7 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 15  |  Boros Energy 21
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 48  |  Graveyard: 0
+║ 4c Omnath board:
+║   Creatures: Endurance (3/4)
+║   Other: Leyline Binding, Teferi, Time Raveler
+║   Lands: Undercity Sewers, Forest, Temple Garden, Hallowed Fountain
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1), Guide of Souls (1/2)
+║   Other: Goblin Bombardment
+║   Lands: Sacred Foundry, Dalkovan Encampment [T], Sacred Foundry, Sacred Foundry, Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T7 P2: Cast Ephemerate (W)
+T7 P2: Rebound Ephemerate
+T7: Resolve Ephemerate
+T7: Blink Endurance
+T7: Ephemerate moved stack -> graveyard (resolution)
+  [Draw] P2 draws: Orcish Bowmasters
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Forest→G, Undercity Sewers→B (paying for Orcish Bowmasters, 2 mana remaining)
+T7 P2: Cast Orcish Bowmasters (1B)
+T7: Resolve Orcish Bowmasters
+T7 P2: Bowmasters deals 1 damage to Cat Token
+T7 P2: Bowmasters creates 1/1 Orc Army token
+T7: Cat Token dies
+    → Goal: close_game
+    [Mana] Tap Temple Garden→W (paying for Ephemerate, 1 mana remaining)
+T7 P2: Cast Ephemerate (W)
+T7: Resolve Ephemerate
+T7 P2: Endurance ETB: P2 shuffles 1 cards from GY into library
+T7: Blink Endurance
+T7: Ephemerate moved stack -> exile (rebound (CR 702.86))
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 21  |  4c Omnath 15
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Guide of Souls (1/2)
+║   Other: Goblin Bombardment
+║   Lands: Sacred Foundry, Dalkovan Encampment, Sacred Foundry, Sacred Foundry, Arena of Glory
+║ 4c Omnath board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1), Endurance (3/4)
+║   Other: Leyline Binding, Teferi, Time Raveler
+║   Lands: Undercity Sewers [T], Forest [T], Temple Garden [T], Hallowed Fountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: The Legend of Roku // Avatar Roku
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Dalkovan Encampment→W, Arena of Glory→R (paying for Goblin Bombardment, 3 mana remaining)
+T7 P1: Cast Goblin Bombardment (1R)
+    [Priority] P2 passes (no response)
+T7: Resolve Goblin Bombardment
+T7 P1: Goblin Bombardment enters — sacrifice creatures for 1 damage each
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→R, Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T7 P1: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P2 passes (no response)
+T7: Resolve Ragavan, Nimble Pilferer
+T7 P1: Gain 1 life from Guide of Souls (life: 22)
+T7 P1: +1 energy from Guide of Souls (total: 4)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ragavan, Nimble Pilferer
+T7 P1: Attack with Ragavan, Nimble Pilferer
+T7 P2:   [BLOCK] Endurance (3/4) blocks Ragavan, Nimble Pilferer (2/1) — lifespan_delta=+2.40
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T7: Ragavan, Nimble Pilferer dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 15  |  Boros Energy 22
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 48  |  Graveyard: 0
+║ 4c Omnath board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1), Endurance (3/4)
+║   Other: Leyline Binding, Teferi, Time Raveler
+║   Lands: Undercity Sewers, Forest, Temple Garden, Hallowed Fountain
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Guide of Souls (1/2)
+║   Other: Goblin Bombardment, Goblin Bombardment
+║   Lands: Sacred Foundry [T], Dalkovan Encampment [T], Sacred Foundry [T], Sacred Foundry, Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T8 P2: Cast Ephemerate (W)
+T8 P2: Rebound Ephemerate
+T8: Resolve Ephemerate
+T8 P2: Endurance ETB: P1 shuffles 1 cards from GY into library
+T8: Blink Endurance
+T8: Ephemerate moved stack -> graveyard (resolution)
+  [Draw] P2 draws: Wrenn and Six
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 22  |  4c Omnath 15
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Guide of Souls (1/2)
+║   Other: Goblin Bombardment, Goblin Bombardment
+║   Lands: Sacred Foundry, Dalkovan Encampment, Sacred Foundry, Sacred Foundry, Arena of Glory
+║ 4c Omnath board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1), Endurance (3/4)
+║   Other: Leyline Binding, Teferi, Time Raveler
+║   Lands: Undercity Sewers, Forest, Temple Garden, Hallowed Fountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ocelot Pride
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Dalkovan Encampment→W, Arena of Glory→R, Sacred Foundry→R, Sacred Foundry→R (paying for The Legend of Roku // Avatar Roku, 1 mana remaining)
+T8 P1: Cast The Legend of Roku // Avatar Roku (2RR)
+    [Priority] P2 passes (no response)
+T8: Resolve The Legend of Roku // Avatar Roku
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Ocelot Pride, 0 mana remaining)
+T8 P1: Cast Ocelot Pride (W)
+    [Priority] P2 passes (no response)
+T8: Resolve Ocelot Pride
+T8 P1: Gain 1 life from Guide of Souls (life: 23)
+T8 P1: +1 energy from Guide of Souls (total: 5)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 15  |  Boros Energy 23
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 1
+║ 4c Omnath board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1), Endurance (3/4)
+║   Other: Leyline Binding, Teferi, Time Raveler
+║   Lands: Undercity Sewers, Forest, Temple Garden, Hallowed Fountain
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1), Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Guide of Souls (1/2), Ocelot Pride (1/1)
+║   Other: Goblin Bombardment, Goblin Bombardment, The Legend of Roku // Avatar Roku
+║   Lands: Sacred Foundry [T], Dalkovan Encampment [T], Sacred Foundry [T], Sacred Foundry [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Indatha Triome
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Temple Garden→W (paying for Prismatic Ending, 3 mana remaining)
+T9 P2: Cast Prismatic Ending (3W) (X=3)
+T9: Resolve Prismatic Ending
+T9: Ocelot Pride moved battlefield -> exile (exiled)
+T9 P2: Prismatic Ending exiles Ocelot Pride
+T9: Prismatic Ending moved stack -> graveyard (resolution)
+T9 P2: Play Indatha Triome (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Endurance
+T9 P2: Attack with Endurance
+  [Declare Blockers] P1 does not block
+T9 P2:   Endurance (3/4) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 23 → 20
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 20  |  4c Omnath 15
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Guide of Souls (1/2), Ocelot Pride (1/1)
+║   Other: Goblin Bombardment, Goblin Bombardment, The Legend of Roku // Avatar Roku
+║   Lands: Sacred Foundry, Dalkovan Encampment, Sacred Foundry, Sacred Foundry, Arena of Glory
+║ 4c Omnath board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1), Endurance (3/4) [tapped]
+║   Other: Leyline Binding, Teferi, Time Raveler
+║   Lands: Undercity Sewers [T], Forest [T], Temple Garden [T], Hallowed Fountain [T], Indatha Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Dalkovan Encampment
+  [Main 1]
+T9 P1: Play Dalkovan Encampment (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Guide of Souls
+T9 P1: Attack with Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, Guide of Souls
+  [Declare Blockers] P2 does not block
+T9 P1:   Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) → 1 dmg to player
+T9 P1:   Guide of Souls (1/2) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 15 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 13  |  Boros Energy 20
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 46  |  Graveyard: 2
+║ 4c Omnath board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1), Endurance (3/4)
+║   Other: Leyline Binding, Teferi, Time Raveler
+║   Lands: Undercity Sewers, Forest, Temple Garden, Hallowed Fountain, Indatha Triome
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) [tapped], Guide of Souls (1/2) [tapped], Ocelot Pride (1/1)
+║   Other: Goblin Bombardment, Goblin Bombardment, The Legend of Roku // Avatar Roku
+║   Lands: Sacred Foundry, Dalkovan Encampment, Sacred Foundry, Sacred Foundry, Arena of Glory, Dalkovan Encampment [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Leyline Binding
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Forest→G, Temple Garden→W (paying for Leyline Binding, 3 mana remaining)
+T10 P2: Cast Leyline Binding (5W)
+T10: Resolve Leyline Binding
+T10: Ocelot Pride moved battlefield -> exile (exiled)
+T10 P2: Leyline Binding exiles Ocelot Pride
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army, Endurance
+T10 P2: Attack with Orcish Bowmasters, Orc Army, Endurance
+  [Declare Blockers] P1 does not block
+T10 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T10 P2:   Orc Army (1/1) → 1 dmg to player
+T10 P2:   Endurance (3/4) → 3 dmg to player
+  [Combat Damage] 5 damage dealt → P1 life: 20 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 15  |  4c Omnath 13
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 6  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Guide of Souls (1/2)
+║   Other: Goblin Bombardment, Goblin Bombardment, The Legend of Roku // Avatar Roku
+║   Lands: Sacred Foundry, Dalkovan Encampment, Sacred Foundry, Sacred Foundry, Arena of Glory, Dalkovan Encampment
+║ 4c Omnath board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped], Endurance (3/4) [tapped]
+║   Other: Leyline Binding, Teferi, Time Raveler, Leyline Binding
+║   Lands: Undercity Sewers, Forest [T], Temple Garden [T], Hallowed Fountain, Indatha Triome
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T10 P1: Create 1x Treasure token(s)
+T10 P1: The Legend of Roku // Avatar Roku Ch.II: adds mana (Treasure)
+  [Draw] P1 draws: Voice of Victory
+  [Main 1]
+T10: Guide of Souls moved battlefield -> graveyard (activation cost (Goblin Bombardment))
+T10 P1: activate Goblin Bombardment — This enchantment deals 1 damage to any target.
+T10 P1: Goblin Bombardment deals 1 to P2 (face)
+T10: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger moved battlefield -> graveyard (activation cost (Goblin Bombardment))
+T10 P1: activate Goblin Bombardment — This enchantment deals 1 damage to any target.
+T10 P1: Goblin Bombardment deals 1 to P2 (face)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Dalkovan Encampment→W, Arena of Glory→R (paying for Voice of Victory, 4 mana remaining)
+T10 P1: Cast Voice of Victory (1W)
+    [Priority] P2 passes (no response)
+T10: Resolve Voice of Victory
+T10: Voice of Victory moved battlefield -> graveyard (activation cost (Goblin Bombardment))
+T10 P1: activate Goblin Bombardment — This enchantment deals 1 damage to any target.
+T10 P1: Goblin Bombardment deals 1 to P2 (face)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 10  |  Boros Energy 15
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 45  |  Graveyard: 2
+║ 4c Omnath board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1), Endurance (3/4)
+║   Other: Leyline Binding, Teferi, Time Raveler, Leyline Binding
+║   Lands: Undercity Sewers, Forest, Temple Garden, Hallowed Fountain, Indatha Triome
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Other: Goblin Bombardment, Goblin Bombardment, The Legend of Roku // Avatar Roku, Treasure Token
+║   Lands: Sacred Foundry, Dalkovan Encampment [T], Sacred Foundry, Sacred Foundry, Arena of Glory [T], Dalkovan Encampment
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Prismatic Ending
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Forest→G, Undercity Sewers→B, Temple Garden→W, Hallowed Fountain→U, Indatha Triome→B (paying for Elesh Norn, Mother of Machines, 0 mana remaining)
+T11 P2: Cast Elesh Norn, Mother of Machines (4W)
+T11: Resolve Elesh Norn, Mother of Machines
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army, Endurance
+T11 P2: Attack with Orcish Bowmasters, Orc Army, Endurance
+  [Declare Blockers] P1 does not block
+T11 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T11 P2:   Orc Army (1/1) → 1 dmg to player
+T11 P2:   Endurance (3/4) → 3 dmg to player
+  [Combat Damage] 5 damage dealt → P1 life: 15 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 10  |  4c Omnath 10
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 6  |  Opp lands: 5
+║ Library: 44  |  Graveyard: 3
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Other: Goblin Bombardment, Goblin Bombardment, The Legend of Roku // Avatar Roku, Treasure Token
+║   Lands: Sacred Foundry, Dalkovan Encampment, Sacred Foundry, Sacred Foundry, Arena of Glory, Dalkovan Encampment
+║ 4c Omnath board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped], Endurance (3/4) [tapped], Elesh Norn, Mother of Machines (4/7)
+║   Other: Leyline Binding, Teferi, Time Raveler, Leyline Binding
+║   Lands: Undercity Sewers [T], Forest [T], Temple Garden [T], Hallowed Fountain [T], Indatha Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T11 P1: Create 1x Avatar token(s)
+T11 P1: The Legend of Roku // Avatar Roku Ch.III: transforms into Avatar Roku (4/4)
+  [Draw] P1 draws: Elegant Parlor
+  [Main 1]
+T11 P1: surveil 1 → Seasoned Pyromancer to GY
+T11 P1: Play Elegant Parlor (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 10  |  Boros Energy 10
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 7
+║ Library: 44  |  Graveyard: 2
+║ 4c Omnath board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1), Endurance (3/4), Elesh Norn, Mother of Machines (4/7)
+║   Other: Leyline Binding, Teferi, Time Raveler, Leyline Binding
+║   Lands: Undercity Sewers, Forest, Temple Garden, Hallowed Fountain, Indatha Triome
+║ Boros Energy board:
+║   Creatures: Avatar Roku (4/4)
+║   Other: Goblin Bombardment, Goblin Bombardment, Treasure Token
+║   Lands: Sacred Foundry, Dalkovan Encampment, Sacred Foundry, Sacred Foundry, Arena of Glory, Dalkovan Encampment, Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+T12 P2: Play Flooded Strand
+T12: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T12 P2: Crack Flooded Strand (pay 1 life) -> Steam Vents (tapped, life: 9)
+    → Goal: close_game
+    [Mana] Tap Forest→G, Undercity Sewers→B, Temple Garden→W, Hallowed Fountain→W, Indatha Triome→B (paying for Solitude, 0 mana remaining)
+T12 P2: Cast Solitude (3WW)
+T12: Resolve Solitude
+T12: Avatar Roku moved battlefield -> exile (exiled)
+T12 P2: Solitude exiles Avatar Roku (opponent gains 4 life, now 14)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army, Endurance, Elesh Norn, Mother of Machines
+T12 P2: Attack with Orcish Bowmasters, Orc Army, Endurance, Elesh Norn, Mother of Machines
+  [Declare Blockers] P1 does not block
+T12 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T12 P2:   Orc Army (1/1) → 1 dmg to player
+T12 P2:   Endurance (3/4) → 3 dmg to player
+T12 P2:   Elesh Norn, Mother of Machines (4/7) → 4 dmg to player
+  [Combat Damage] 9 damage dealt → P1 life: 14 → 5
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 5  |  4c Omnath 9
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 7  |  Opp lands: 6
+║ Library: 42  |  Graveyard: 4
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Other: Goblin Bombardment, Goblin Bombardment, Treasure Token
+║   Lands: Sacred Foundry, Dalkovan Encampment, Sacred Foundry, Sacred Foundry, Arena of Glory, Dalkovan Encampment, Elegant Parlor
+║ 4c Omnath board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped], Endurance (3/4) [tapped], Elesh Norn, Mother of Machines (4/7), Solitude (3/2)
+║   Other: Leyline Binding, Teferi, Time Raveler, Leyline Binding
+║   Lands: Undercity Sewers [T], Forest [T], Temple Garden [T], Hallowed Fountain [T], Indatha Triome [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Marsh Flats
+  [Main 1]
+T12 P1: Play Marsh Flats
+T12: Marsh Flats moved battlefield -> graveyard (fetchland sacrifice)
+T12 P1: Crack Marsh Flats -> Plains (untapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 13 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 9  |  Boros Energy 4
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 6  |  Opp lands: 8
+║ Library: 42  |  Graveyard: 3
+║ 4c Omnath board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1), Endurance (3/4), Elesh Norn, Mother of Machines (4/7), Solitude (3/2)
+║   Other: Leyline Binding, Teferi, Time Raveler, Leyline Binding
+║   Lands: Undercity Sewers, Forest, Temple Garden, Hallowed Fountain, Indatha Triome, Steam Vents
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Other: Goblin Bombardment, Goblin Bombardment, Treasure Token
+║   Lands: Sacred Foundry, Dalkovan Encampment, Sacred Foundry, Sacred Foundry, Arena of Glory, Dalkovan Encampment, Elegant Parlor, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Risen Reef
+  [Main 1]
+    → Goal: close_game
+    [Target] → face (3 dmg, life 4 → 1): face value 3.00
+    [Mana] Tap Steam Vents→R (paying for Lightning Bolt, 5 mana remaining)
+T13 P2: Cast Lightning Bolt (R)
+T13: Resolve Lightning Bolt
+T13 P2: Lightning Bolt deals 3 to P1 (face)
+T13: Lightning Bolt moved stack -> graveyard (resolution)
+    → Goal: close_game
+    [Mana] Tap Forest→G, Undercity Sewers→U, Temple Garden→G (paying for Risen Reef, 2 mana remaining)
+T13 P2: Cast Risen Reef (1UG)
+T13: Resolve Risen Reef
+T13: Lush Portico moved library -> battlefield (Risen Reef → Lush Portico enters tapped (land))
+T13 P2: Risen Reef → draws a card
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→W (paying for Prismatic Ending, 1 mana remaining)
+T13 P2: Cast Prismatic Ending (1W) (X=1)
+T13: Resolve Prismatic Ending
+T13: Goblin Bombardment moved battlefield -> exile (exiled)
+T13 P2: Prismatic Ending exiles Goblin Bombardment
+T13: Prismatic Ending moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army, Endurance, Elesh Norn, Mother of Machines, Solitude
+T13 P2: Attack with Orcish Bowmasters, Orc Army, Endurance, Elesh Norn, Mother of Machines, Solitude
+  [Declare Blockers] P1 does not block
+T13 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T13 P2:   Orc Army (1/1) → 1 dmg to player
+T13 P2:   Endurance (3/4) → 3 dmg to player
+T13 P2:   Elesh Norn, Mother of Machines (4/7) → 4 dmg to player
+T13 P2: Solitude lifelink — gain 3 (life: 12)
+T13 P2:   Solitude (3/2) → 3 dmg to player
+P1 loses: life total -11
+  [Combat Damage] 12 damage dealt → P1 life: 1 → -11
+
+>>> 4c Omnath wins Game 1 on turn 13 via damage
+    Final life: Boros Energy=-11  4c Omnath=12
+
+======================================================================
+  GAME 2: Boros Energy (P1) vs 4c Omnath (P2)  —  seed 55623
+  Series: Boros Energy 0 - 1 4c Omnath
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: 4c Omnath wins → chooses to play first
+║ P1 (on play): 4c Omnath
+║ P2 (on draw): Boros Energy
+╚═══════════════════════════════════════════════════════
+
+P1 (Boros Energy) opening hand (3 lands, 4 spells):
+  • Flooded Strand [Land, CMC 0]
+  • Marsh Flats [Land, CMC 0]
+  • Flooded Strand [Land, CMC 0]
+  • Fable of the Mirror-Breaker // Reflection of Kiki-Jiki [Spell, CMC 3]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Seasoned Pyromancer [Creature, CMC 3]
+  • Blood Moon [Spell, CMC 3]
+→ P1 KEEPS 7 — has key card(s): Ragavan, Nimble Pilferer, 4 cheap spells
+
+P2 (4c Omnath) opening hand (2 lands, 5 spells):
+  • Prismatic Ending [Spell, CMC 1]
+  • Windswept Heath [Land, CMC 0]
+  • Leyline Binding [Spell, CMC 6]
+  • Undercity Sewers [Land, CMC 0]
+  • Risen Reef [Creature, CMC 3]
+  • Lightning Bolt [Spell, CMC 1]
+  • Ephemerate [Spell, CMC 1]
+→ P2 KEEPS 7 — has key card(s): Ephemerate, Leyline Binding, Prismatic Ending, 4 cheap spells
+
+
+╔══ TURN 1 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 20  |  Boros Energy 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Windswept Heath
+T1: Windswept Heath moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Windswept Heath (pay 1 life) -> Temple Garden (untapped, life: 17)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 20  |  4c Omnath 17
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Temple Garden
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ocelot Pride
+  [Main 1]
+T1 P1: Play Flooded Strand
+T1: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Flooded Strand (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 17  |  Boros Energy 19
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Temple Garden
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Orcish Bowmasters
+  [Main 1]
+T2 P2: surveil 1 → Ephemerate to GY
+T2 P2: Play Undercity Sewers (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 19  |  4c Omnath 17
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Temple Garden, Undercity Sewers [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arid Mesa
+  [Main 1]
+T2 P1: Play Marsh Flats
+T2: Marsh Flats moved battlefield -> graveyard (fetchland sacrifice)
+T2 P1: Crack Marsh Flats (pay 1 life) -> Sacred Foundry (tapped, life: 18)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Ocelot Pride, 0 mana remaining)
+T2 P1: Cast Ocelot Pride (W)
+    [Priority] P2 passes (no response)
+T2: Resolve Ocelot Pride
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 17  |  Boros Energy 18
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Temple Garden, Undercity Sewers
+║ Boros Energy board:
+║   Creatures: Ocelot Pride (1/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Omnath, Locus of Creation
+  [Main 1]
+    → Goal: grind_value
+    [Mana] Tap Temple Garden→W, Undercity Sewers→B (paying for Leyline Binding, 0 mana remaining)
+T3 P2: Cast Leyline Binding (5W)
+    [Priority] P1 passes (no response)
+T3: Resolve Leyline Binding
+T3: Ocelot Pride moved battlefield -> exile (exiled)
+T3 P2: Leyline Binding exiles Ocelot Pride
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 18  |  4c Omnath 17
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 49  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Other: Leyline Binding
+║   Lands: Temple Garden [T], Undercity Sewers [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+T3 P1: Play Flooded Strand
+T3: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T3 P1: Crack Flooded Strand (pay 1 life) -> Sacred Foundry (tapped, life: 17)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T3 P1: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P2 passes (no response)
+T3: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 17  |  Boros Energy 17
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Other: Leyline Binding
+║   Lands: Temple Garden, Undercity Sewers
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry, Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Omnath, Locus of Creation
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Temple Garden→G, Undercity Sewers→B (paying for Orcish Bowmasters, 0 mana remaining)
+T4 P2: Cast Orcish Bowmasters (1B)
+    [Priority] P1 passes (no response)
+T4: Resolve Orcish Bowmasters
+T4 P2: Bowmasters deals 1 damage to Ragavan, Nimble Pilferer
+T4 P2: Bowmasters creates 1/1 Orc Army token
+T4: Ragavan, Nimble Pilferer dies
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 17  |  4c Omnath 17
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 47  |  Graveyard: 4
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry
+║ 4c Omnath board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Other: Leyline Binding
+║   Lands: Temple Garden [T], Undercity Sewers [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Goblin Bombardment
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→R, Sacred Foundry→R, Sacred Foundry→R (paying for Seasoned Pyromancer, 0 mana remaining)
+T4 P1: Cast Seasoned Pyromancer (1RR)
+    [Priority] P2 passes (no response)
+T4: Resolve Seasoned Pyromancer
+T4 P1: Create 1x Elemental token(s)
+T4 P1: Seasoned Pyromancer: discard 2, draw 2 (Seasoned Pyromancer, Voice of Victory), create 1 Elemental(s)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 17  |  Boros Energy 15
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 2
+║ 4c Omnath board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Other: Leyline Binding
+║   Lands: Temple Garden, Undercity Sewers
+║ Boros Energy board:
+║   Creatures: Seasoned Pyromancer (2/2), Elemental Token (1/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Phelia, Exuberant Shepherd
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Temple Garden→W (paying for Prismatic Ending, 1 mana remaining)
+T5 P2: Cast Prismatic Ending (W)
+    [Priority] P1 passes (no response)
+T5: Resolve Prismatic Ending
+T5: Prismatic Ending moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 15  |  4c Omnath 17
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 44  |  Graveyard: 6
+║ Boros Energy board:
+║   Creatures: Seasoned Pyromancer (2/2), Elemental Token (1/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry
+║ 4c Omnath board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Other: Leyline Binding
+║   Lands: Temple Garden [T], Undercity Sewers
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ocelot Pride
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Sacred Foundry→W, Sacred Foundry→R (paying for Voice of Victory, 1 mana remaining)
+T5 P1: Cast Voice of Victory (1W)
+    [Priority] P2 passes (no response)
+T5: Resolve Voice of Victory
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Ocelot Pride, 0 mana remaining)
+T5 P1: Cast Ocelot Pride (W)
+    [Priority] P2 passes (no response)
+T5: Resolve Ocelot Pride
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Seasoned Pyromancer
+T5 P1: Attack with Seasoned Pyromancer
+T5 P2:   [BLOCK] Orcish Bowmasters (1/1) blocks Seasoned Pyromancer (2/2) — lifespan_delta=+0.40
+T5 P2:   [BLOCK] Orc Army (1/1) blocks Seasoned Pyromancer (2/2) — lifespan_delta=+0.40
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T5: Seasoned Pyromancer dies
+T5: Orcish Bowmasters dies
+T5: Orc Army dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 17  |  Boros Energy 15
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 5
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Other: Leyline Binding
+║   Lands: Temple Garden, Undercity Sewers
+║ Boros Energy board:
+║   Creatures: Elemental Token (1/1), Voice of Victory (1/3), Ocelot Pride (1/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Omnath, Locus of Creation
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Temple Garden→W, Undercity Sewers→B (paying for Phelia, Exuberant Shepherd, 0 mana remaining)
+T6 P2: Cast Phelia, Exuberant Shepherd (1W)
+    [Priority] P1 passes (no response)
+T6: Resolve Phelia, Exuberant Shepherd
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 15  |  4c Omnath 17
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 43  |  Graveyard: 7
+║ Boros Energy board:
+║   Creatures: Elemental Token (1/1), Voice of Victory (1/3), Ocelot Pride (1/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry
+║ 4c Omnath board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Other: Leyline Binding
+║   Lands: Temple Garden [T], Undercity Sewers [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Plains
+  [Main 1]
+T6 P1: Play Plains
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Voice of Victory
+T6 P1: Create 2x Warrior token(s)
+T6 P1: Voice of Victory mobilize 2 — create 2 1/1 tokens
+T6 P1: Attack with Voice of Victory
+T6 P2:   [BLOCK] Phelia, Exuberant Shepherd (2/2) blocks Voice of Victory (1/3) — lifespan_delta=+0.20
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+  [End Combat]
+  [Main 2]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Plains→W, Sacred Foundry→R, Sacred Foundry→R (paying for Seasoned Pyromancer, 1 mana remaining)
+T6 P1: Cast Seasoned Pyromancer (1RR)
+    [Priority] P2 passes (no response)
+T6: Resolve Seasoned Pyromancer
+T6 P1: Create 2x Elemental token(s)
+T6 P1: Seasoned Pyromancer: discard 2, draw 2 (Ragavan, Nimble Pilferer, Voice of Victory), create 2 Elemental(s)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 0 mana remaining)
+T6 P1: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P2 passes (no response)
+T6: Resolve Ragavan, Nimble Pilferer
+  [End Step]
+T6: Warrior Token moved battlefield -> graveyard (Mobilize sacrifice)
+T6: Warrior Token sacrificed (Mobilize)
+T6: Warrior Token moved battlefield -> graveyard (Mobilize sacrifice)
+T6: Warrior Token sacrificed (Mobilize)
+
+╔══ TURN 7 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 17  |  Boros Energy 15
+║ Hand: 6 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 5
+║ 4c Omnath board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Other: Leyline Binding
+║   Lands: Temple Garden, Undercity Sewers
+║ Boros Energy board:
+║   Creatures: Elemental Token (1/1), Voice of Victory (1/3) [tapped], Ocelot Pride (1/1), Seasoned Pyromancer (2/2), Elemental Token (1/1), Elemental Token (1/1), Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Risen Reef
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Temple Garden→W (paying for Ephemerate, 1 mana remaining)
+T7 P2: Cast Ephemerate (W)
+    [Priority] P1 passes (no response)
+T7: Resolve Ephemerate
+T7: Blink Phelia, Exuberant Shepherd
+T7: Ephemerate moved stack -> exile (rebound (CR 702.86))
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 15  |  4c Omnath 17
+║ Hand: 2 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 2
+║ Library: 40  |  Graveyard: 9
+║ Boros Energy board:
+║   Creatures: Elemental Token (1/1), Voice of Victory (1/3), Ocelot Pride (1/1), Seasoned Pyromancer (2/2), Elemental Token (1/1), Elemental Token (1/1), Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains
+║ 4c Omnath board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Other: Leyline Binding
+║   Lands: Temple Garden [T], Undercity Sewers
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Dalkovan Encampment
+  [Main 1]
+T7 P1: Play Dalkovan Encampment (enters tapped)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Plains→W, Sacred Foundry→R (paying for Voice of Victory, 2 mana remaining)
+T7 P1: Cast Voice of Victory (1W)
+    [Priority] P2 passes (no response)
+T7: Resolve Voice of Victory
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Elemental Token, Voice of Victory, Ocelot Pride, Seasoned Pyromancer, Elemental Token, Elemental Token, Ragavan, Nimble Pilferer
+T7 P1: Create 2x Warrior token(s)
+T7 P1: Voice of Victory mobilize 2 — create 2 1/1 tokens
+T7 P1: Attack with Elemental Token, Voice of Victory, Ocelot Pride, Seasoned Pyromancer, Elemental Token, Elemental Token, Ragavan, Nimble Pilferer
+T7 P2:   [BLOCK] Phelia, Exuberant Shepherd (2/2) blocks Seasoned Pyromancer (2/2) — lifespan_delta=+0.45
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T7 P1: Ocelot Pride lifelink — gain 1 (life: 16)
+T7 P1:   Ocelot Pride (1/1) → 1 dmg to player
+T7 P1:   Elemental Token (1/1) → 1 dmg to player
+T7 P1:   Voice of Victory (1/3) → 1 dmg to player
+T7 P1:   Elemental Token (1/1) → 1 dmg to player
+T7 P1:   Elemental Token (1/1) → 1 dmg to player
+T7 P1:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T7 P1: Create 1x Treasure token(s)
+T7 P1: Ragavan, Nimble Pilferer exiles Hallowed Fountain from top of P2's library
+T7 P1: Ragavan, Nimble Pilferer — may cast Hallowed Fountain this turn
+T7: Seasoned Pyromancer dies
+T7: Phelia, Exuberant Shepherd dies
+  [Combat Damage] 7 damage dealt → P2 life: 17 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+T7: Hallowed Fountain returned to exile (uncast)
+T7: Warrior Token moved battlefield -> graveyard (Mobilize sacrifice)
+T7: Warrior Token sacrificed (Mobilize)
+T7: Warrior Token moved battlefield -> graveyard (Mobilize sacrifice)
+T7: Warrior Token sacrificed (Mobilize)
+
+╔══ TURN 8 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 10  |  Boros Energy 16
+║ Hand: 6 cards  |  Opp hand: 1 cards
+║ Lands: 2  |  Opp lands: 5
+║ Library: 44  |  Graveyard: 6
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Other: Leyline Binding
+║   Lands: Temple Garden, Undercity Sewers
+║ Boros Energy board:
+║   Creatures: Elemental Token (1/1) [tapped], Voice of Victory (1/3) [tapped], Ocelot Pride (1/1) [tapped], Elemental Token (1/1) [tapped], Elemental Token (1/1) [tapped], Ragavan, Nimble Pilferer (2/1) [tapped], Voice of Victory (1/3)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry [T], Sacred Foundry, Sacred Foundry, Plains [T], Dalkovan Encampment [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T8 P2: Rebound Ephemerate skipped (no valid target)
+  [Draw] P2 draws: Indatha Triome
+  [Main 1]
+T8 P2: Play Indatha Triome (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 16  |  4c Omnath 10
+║ Hand: 1 cards  |  Opp hand: 6 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 39  |  Graveyard: 10
+║ Boros Energy board:
+║   Creatures: Elemental Token (1/1), Voice of Victory (1/3), Ocelot Pride (1/1), Elemental Token (1/1), Elemental Token (1/1), Ragavan, Nimble Pilferer (2/1), Voice of Victory (1/3)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains, Dalkovan Encampment
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Other: Leyline Binding
+║   Lands: Temple Garden, Undercity Sewers, Indatha Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Guide of Souls
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Plains→W (paying for Guide of Souls, 4 mana remaining)
+T8 P1: Cast Guide of Souls (W)
+    [Priority] P2 passes (no response)
+T8: Resolve Guide of Souls
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Elemental Token, Voice of Victory, Ocelot Pride, Elemental Token, Elemental Token, Ragavan, Nimble Pilferer, Voice of Victory
+T8 P1: Create 2x Warrior token(s)
+T8 P1: Voice of Victory mobilize 2 — create 2 1/1 tokens
+T8 P1: Create 2x Warrior token(s)
+T8 P1: Voice of Victory mobilize 2 — create 2 1/1 tokens
+T8 P1: Attack with Elemental Token, Voice of Victory, Ocelot Pride, Elemental Token, Elemental Token, Ragavan, Nimble Pilferer, Voice of Victory
+  [Declare Blockers] P2 does not block
+T8 P1: Ocelot Pride lifelink — gain 1 (life: 17)
+T8 P1:   Ocelot Pride (1/1) → 1 dmg to player
+T8 P1:   Elemental Token (1/1) → 1 dmg to player
+T8 P1:   Voice of Victory (1/3) → 1 dmg to player
+T8 P1:   Elemental Token (1/1) → 1 dmg to player
+T8 P1:   Elemental Token (1/1) → 1 dmg to player
+T8 P1:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T8 P1: Create 1x Treasure token(s)
+T8 P1: Ragavan, Nimble Pilferer exiles Windswept Heath from top of P2's library
+T8 P1: Ragavan, Nimble Pilferer — may cast Windswept Heath this turn
+T8 P1:   Voice of Victory (1/3) → 1 dmg to player
+  [Combat Damage] 8 damage dealt → P2 life: 10 → 2
+  [End Combat]
+  [Main 2]
+T8 P1: Play Windswept Heath
+T8 P1: Crack Windswept Heath -> Plains (untapped)
+  [End Step]
+T8: Warrior Token moved battlefield -> graveyard (Mobilize sacrifice)
+T8: Warrior Token sacrificed (Mobilize)
+T8: Warrior Token moved battlefield -> graveyard (Mobilize sacrifice)
+T8: Warrior Token sacrificed (Mobilize)
+T8: Warrior Token moved battlefield -> graveyard (Mobilize sacrifice)
+T8: Warrior Token sacrificed (Mobilize)
+T8: Warrior Token moved battlefield -> graveyard (Mobilize sacrifice)
+T8: Warrior Token sacrificed (Mobilize)
+
+╔══ TURN 9 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 2  |  Boros Energy 16
+║ Hand: 6 cards  |  Opp hand: 1 cards
+║ Lands: 3  |  Opp lands: 6
+║ Library: 42  |  Graveyard: 6
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Other: Leyline Binding
+║   Lands: Temple Garden, Undercity Sewers, Indatha Triome
+║ Boros Energy board:
+║   Creatures: Elemental Token (1/1) [tapped], Voice of Victory (1/3) [tapped], Ocelot Pride (1/1) [tapped], Elemental Token (1/1) [tapped], Elemental Token (1/1) [tapped], Ragavan, Nimble Pilferer (2/1) [tapped], Voice of Victory (1/3) [tapped], Guide of Souls (1/2)
+║   Other: Treasure Token, Treasure Token
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry, Plains [T], Dalkovan Encampment, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wrenn and Six
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Temple Garden→G, Undercity Sewers→U, Indatha Triome→B (paying for Risen Reef, 0 mana remaining)
+T9 P2: Cast Risen Reef (1UG)
+    [Priority] P1 passes (no response)
+T9: Resolve Risen Reef
+T9 P2: Risen Reef → draws a card
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Boros Energy (P1) ══════════════════════════
+║ Life: Boros Energy 16  |  4c Omnath 2
+║ Hand: 1 cards  |  Opp hand: 7 cards
+║ Lands: 6  |  Opp lands: 3
+║ Library: 37  |  Graveyard: 11
+║ Boros Energy board:
+║   Creatures: Elemental Token (1/1), Voice of Victory (1/3), Ocelot Pride (1/1), Elemental Token (1/1), Elemental Token (1/1), Ragavan, Nimble Pilferer (2/1), Voice of Victory (1/3), Guide of Souls (1/2)
+║   Other: Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains, Dalkovan Encampment, Plains
+║ 4c Omnath board:
+║   Creatures: Risen Reef (1/1)
+║   Other: Leyline Binding
+║   Lands: Temple Garden [T], Undercity Sewers [T], Indatha Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arid Mesa
+  [Main 1]
+T9 P1: Play Arid Mesa
+T9: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T9 P1: Crack Arid Mesa -> Elegant Parlor (tapped)
+T9 P1: surveil 1 → Ajani, Nacatl Pariah // Ajani, Nacatl Avenger to GY
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Elemental Token, Voice of Victory, Ocelot Pride, Elemental Token, Elemental Token, Ragavan, Nimble Pilferer, Voice of Victory, Guide of Souls
+T9 P1: Create 2x Warrior token(s)
+T9 P1: Voice of Victory mobilize 2 — create 2 1/1 tokens
+T9 P1: Create 2x Warrior token(s)
+T9 P1: Voice of Victory mobilize 2 — create 2 1/1 tokens
+T9 P1: Attack with Elemental Token, Voice of Victory, Ocelot Pride, Elemental Token, Elemental Token, Ragavan, Nimble Pilferer, Voice of Victory, Guide of Souls
+T9 P2:   [BLOCK-EMERGENCY] Risen Reef (1/1) blocks Ragavan, Nimble Pilferer (2/1) — lifespan_delta=+100.18
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T9 P1: Ocelot Pride lifelink — gain 1 (life: 16)
+T9 P1:   Ocelot Pride (1/1) → 1 dmg to player
+T9 P1:   Elemental Token (1/1) → 1 dmg to player
+T9 P1:   Voice of Victory (1/3) → 1 dmg to player
+T9 P1:   Elemental Token (1/1) → 1 dmg to player
+T9 P1:   Elemental Token (1/1) → 1 dmg to player
+T9 P1:   Voice of Victory (1/3) → 1 dmg to player
+T9 P1:   Guide of Souls (1/2) → 1 dmg to player
+P2 loses: life total -5
+  [Combat Damage] 7 damage dealt → P2 life: 2 → -5
+
+>>> Boros Energy wins Game 2 on turn 9 via damage
+    Final life: Boros Energy=16  4c Omnath=-5
+
+======================================================================
+  GAME 3: 4c Omnath (P1) vs Boros Energy (P2)  —  seed 55624
+  Series: Boros Energy 1 - 1 4c Omnath
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Boros Energy wins → chooses to play first
+║ P1 (on play): Boros Energy
+║ P2 (on draw): 4c Omnath
+╚═══════════════════════════════════════════════════════
+
+P1 (4c Omnath) opening hand (4 lands, 3 spells):
+  • Temple Garden [Land, CMC 0]
+  • Indatha Triome [Land, CMC 0]
+  • Wrenn and Six [Spell, CMC 2]
+  • Prismatic Ending [Spell, CMC 1]
+  • Prismatic Ending [Spell, CMC 1]
+  • Stomping Ground [Land, CMC 0]
+  • Misty Rainforest [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Prismatic Ending, Wrenn and Six, 3 cheap spells
+
+P2 (Boros Energy) opening hand (3 lands, 4 spells):
+  • Marsh Flats [Land, CMC 0]
+  • Mana Tithe [Spell, CMC 1]
+  • Marsh Flats [Land, CMC 0]
+  • Guide of Souls [Creature, CMC 1]
+  • Flooded Strand [Land, CMC 0]
+  • Galvanic Discharge [Spell, CMC 1]
+  • Blood Moon [Spell, CMC 3]
+→ P2 KEEPS 7 — has key card(s): Galvanic Discharge, Guide of Souls, 4 cheap spells
+
+
+╔══ TURN 1 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 20  |  4c Omnath 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Marsh Flats
+T1: Marsh Flats moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Marsh Flats (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — 4c Omnath (P1) ══════════════════════════
+║ Life: 4c Omnath 20  |  Boros Energy 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Elesh Norn, Mother of Machines
+  [Main 1]
+T1 P1: Play Temple Garden (untapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 19  |  4c Omnath 18
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Temple Garden
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Marsh Flats
+  [Main 1]
+T2 P2: Play Marsh Flats
+T2: Marsh Flats moved battlefield -> graveyard (fetchland sacrifice)
+T2 P2: Crack Marsh Flats (pay 1 life) -> Sacred Foundry (tapped, life: 18)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→W (paying for Guide of Souls, 0 mana remaining)
+T2 P2: Cast Guide of Souls (W)
+    [Priority] P1 passes (no response)
+T2: Resolve Guide of Souls
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — 4c Omnath (P1) ══════════════════════════
+║ Life: 4c Omnath 18  |  Boros Energy 18
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Temple Garden
+║ Boros Energy board:
+║   Creatures: Guide of Souls (1/2)
+║   Lands: Sacred Foundry [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Solitude
+  [Main 1]
+T2 P1: Play Stomping Ground (untapped, life: 16)
+    → Goal: grind_value
+    [Mana] Tap Temple Garden→W (paying for Prismatic Ending, 1 mana remaining)
+T2 P1: Cast Prismatic Ending (1W) (X=1)
+    [Priority] P2 passes (no response)
+T2: Resolve Prismatic Ending
+T2: Guide of Souls moved battlefield -> exile (exiled)
+T2 P1: Prismatic Ending exiles Guide of Souls
+T2: Prismatic Ending moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 18  |  4c Omnath 16
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Temple Garden [T], Stomping Ground [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Goblin Bombardment
+  [Main 1]
+T3 P2: Play Flooded Strand
+T3: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T3 P2: Crack Flooded Strand (pay 1 life) -> Sacred Foundry (tapped, life: 17)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — 4c Omnath (P1) ══════════════════════════
+║ Life: 4c Omnath 16  |  Boros Energy 17
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 1
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Temple Garden, Stomping Ground
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Quantum Riddler
+  [Main 1]
+T3 P1: Play Misty Rainforest
+T3: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T3 P1: Crack Misty Rainforest (pay 1 life) -> Hallowed Fountain (tapped, life: 15)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 17  |  4c Omnath 15
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 3
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Temple Garden, Stomping Ground, Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+T4 P2: Play Marsh Flats
+T4: Marsh Flats moved battlefield -> graveyard (fetchland sacrifice)
+T4 P2: Crack Marsh Flats -> Plains (untapped)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 3 mana remaining)
+T4 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T4: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — 4c Omnath (P1) ══════════════════════════
+║ Life: 4c Omnath 15  |  Boros Energy 16
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 2
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Temple Garden, Stomping Ground, Hallowed Fountain
+║ Boros Energy board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry [T], Sacred Foundry, Sacred Foundry, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Supreme Verdict
+  [Main 1]
+T4 P1: Play Indatha Triome (enters tapped)
+    → Goal: close_game
+    [Mana] Tap Temple Garden→G, Stomping Ground→R (paying for Wrenn and Six, 1 mana remaining)
+T4 P1: Cast Wrenn and Six (RG)
+    [Priority] P2 passes (no response)
+T4: Resolve Wrenn and Six
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→W (paying for Prismatic Ending, 0 mana remaining)
+T4 P1: Cast Prismatic Ending (W)
+    [Priority] P2 responds with Mana Tithe
+    [Mana] Tap Plains→W (paying for Mana Tithe, 2 mana remaining)
+T4 P2: Cast Mana Tithe (W)
+T4: Resolve Mana Tithe
+T4: Prismatic Ending moved stack -> graveyard (resolution)
+T4: Prismatic Ending is countered
+T4: Mana Tithe moved stack -> graveyard (resolution)
+T4 P1: Wrenn and Six [-1] -> Wrenn and Six deals 1 damage to any target
+T4 P1: Wrenn and Six deals 1 to Ragavan, Nimble Pilferer
+T4: Ragavan, Nimble Pilferer dies
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 16  |  4c Omnath 15
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 6
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Other: Wrenn and Six
+║   Lands: Temple Garden [T], Stomping Ground [T], Hallowed Fountain [T], Indatha Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+T5 P2: Play Flooded Strand
+T5: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T5 P2: Crack Flooded Strand -> Plains (untapped)
+    → Goal: curve_out [interaction]
+    [Target] → Wrenn and Six: kill PW (loyalty 2 ≤ 3 dmg) — value 5.00
+    [Mana] Tap Sacred Foundry→R (paying for Galvanic Discharge, 4 mana remaining)
+T5 P2: Cast Galvanic Discharge (R)
+    [Priority] P1 passes (no response)
+T5: Resolve Galvanic Discharge
+T5: Wrenn and Six moved battlefield -> graveyard (SBA 704.5p: zero loyalty)
+T5 P2: Galvanic Discharge deals 2 to Wrenn and Six (base 0 + 2 energy)
+T5: Galvanic Discharge moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — 4c Omnath (P1) ══════════════════════════
+║ Life: 4c Omnath 15  |  Boros Energy 15
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 48  |  Graveyard: 4
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Temple Garden, Stomping Ground, Hallowed Fountain, Indatha Triome
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T], Sacred Foundry, Sacred Foundry, Plains, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Flooded Strand
+  [Main 1]
+T5 P1: Play Flooded Strand
+T5: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T5 P1: Crack Flooded Strand (pay 1 life) -> Steam Vents (tapped, life: 14)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 15  |  4c Omnath 14
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 44  |  Graveyard: 8
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains, Plains
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Temple Garden, Stomping Ground, Hallowed Fountain, Indatha Triome, Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Galvanic Discharge
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — 4c Omnath (P1) ══════════════════════════
+║ Life: 4c Omnath 14  |  Boros Energy 15
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 5
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Temple Garden, Stomping Ground, Hallowed Fountain, Indatha Triome, Steam Vents
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ephemerate
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Temple Garden→W, Stomping Ground→G, Hallowed Fountain→U, Steam Vents→R, Indatha Triome→B (paying for Elesh Norn, Mother of Machines, 0 mana remaining)
+T6 P1: Cast Elesh Norn, Mother of Machines (4W)
+    [Priority] P2 passes (no response)
+T6: Resolve Elesh Norn, Mother of Machines
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 15  |  4c Omnath 14
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 43  |  Graveyard: 8
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains, Plains
+║ 4c Omnath board:
+║   Creatures: Elesh Norn, Mother of Machines (4/7)
+║   Lands: Temple Garden [T], Stomping Ground [T], Hallowed Fountain [T], Indatha Triome [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Goblin Bombardment
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Plains→W, Sacred Foundry→R (paying for Goblin Bombardment, 3 mana remaining)
+T7 P2: Cast Goblin Bombardment (1R)
+    [Priority] P1 passes (no response)
+T7: Resolve Goblin Bombardment
+T7 P2: Goblin Bombardment enters — sacrifice creatures for 1 damage each
+    → Goal: curve_out
+    [Mana] Tap Plains→W, Sacred Foundry→R (paying for Goblin Bombardment, 1 mana remaining)
+T7 P2: Cast Goblin Bombardment (1R)
+    [Priority] P1 passes (no response)
+T7: Resolve Goblin Bombardment
+T7 P2: Goblin Bombardment enters — sacrifice creatures for 1 damage each
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — 4c Omnath (P1) ══════════════════════════
+║ Life: 4c Omnath 14  |  Boros Energy 15
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 5
+║ 4c Omnath board:
+║   Creatures: Elesh Norn, Mother of Machines (4/7)
+║   Lands: Temple Garden, Stomping Ground, Hallowed Fountain, Indatha Triome, Steam Vents
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Other: Goblin Bombardment, Goblin Bombardment
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry, Plains [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Flooded Strand
+  [Main 1]
+T7 P1: Play Flooded Strand
+T7: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T7 P1: Crack Flooded Strand -> Plains (untapped)
+    → Goal: close_game
+    [Mana] Tap Plains→W, Temple Garden→W, Stomping Ground→G, Hallowed Fountain→U, Steam Vents→R (paying for Solitude, 1 mana remaining)
+T7 P1: Cast Solitude (3WW)
+    [Priority] P2 passes (no response)
+T7: Resolve Solitude
+    → Goal: close_game
+    [Mana] Tap Indatha Triome→W (paying for Ephemerate, 0 mana remaining)
+T7 P1: Cast Ephemerate (W)
+    [Priority] P2 responds with Galvanic Discharge
+    [Mana] Tap Sacred Foundry→R (paying for Galvanic Discharge, 0 mana remaining)
+T7 P2: Cast Galvanic Discharge (R)
+T7: Resolve Galvanic Discharge
+T7: Solitude dies
+T7 P2: Galvanic Discharge deals 2 to Solitude (base 0 + 2 energy)
+T7: Galvanic Discharge moved stack -> graveyard (resolution)
+T7: Ephemerate fizzles (all targets illegal, CR 608.2b)
+T7: Ephemerate moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Elesh Norn, Mother of Machines
+T7 P1: Attack with Elesh Norn, Mother of Machines
+  [Declare Blockers] P2 does not block
+T7 P1:   Elesh Norn, Mother of Machines (4/7) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 15 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 11  |  4c Omnath 13
+║ Hand: 1 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 42  |  Graveyard: 9
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Other: Goblin Bombardment, Goblin Bombardment
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains, Plains
+║ 4c Omnath board:
+║   Creatures: Elesh Norn, Mother of Machines (4/7)
+║   Lands: Temple Garden [T], Stomping Ground [T], Hallowed Fountain [T], Indatha Triome [T], Steam Vents [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Seasoned Pyromancer
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Plains→W, Sacred Foundry→R, Sacred Foundry→R (paying for Seasoned Pyromancer, 2 mana remaining)
+T8 P2: Cast Seasoned Pyromancer (1RR)
+    [Priority] P1 passes (no response)
+T8: Resolve Seasoned Pyromancer
+T8 P2: Create 1x Elemental token(s)
+T8 P2: Seasoned Pyromancer: discard 2, draw 2 (Elegant Parlor, Galvanic Discharge), create 1 Elemental(s)
+T8: Elemental Token moved battlefield -> graveyard (activation cost (Goblin Bombardment))
+T8 P2: activate Goblin Bombardment — This enchantment deals 1 damage to any target.
+T8 P2: Goblin Bombardment deals 1 to P1 (face)
+T8 P2: surveil 1 → Flooded Strand to GY
+T8 P2: Play Elegant Parlor (enters tapped)
+T8: Seasoned Pyromancer moved battlefield -> graveyard (activation cost (Goblin Bombardment))
+T8 P2: activate Goblin Bombardment — This enchantment deals 1 damage to any target.
+T8 P2: Goblin Bombardment deals 1 to P1 (face)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — 4c Omnath (P1) ══════════════════════════
+║ Life: 4c Omnath 11  |  Boros Energy 11
+║ Hand: 2 cards  |  Opp hand: 1 cards
+║ Lands: 6  |  Opp lands: 6
+║ Library: 43  |  Graveyard: 8
+║ 4c Omnath board:
+║   Creatures: Elesh Norn, Mother of Machines (4/7)
+║   Lands: Temple Garden, Stomping Ground, Hallowed Fountain, Indatha Triome, Steam Vents, Plains
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Other: Goblin Bombardment, Goblin Bombardment
+║   Lands: Sacred Foundry [T], Sacred Foundry [T], Sacred Foundry, Plains [T], Plains, Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ephemerate
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Temple Garden→G, Stomping Ground→G, Hallowed Fountain→U, Steam Vents→U (paying for Quantum Riddler, 1 mana remaining)
+T8 P1: Cast Quantum Riddler (3UU)
+    [Priority] P2 passes (no response)
+T8: Resolve Quantum Riddler
+T8 P1: Quantum Riddler ETB: draw 1 (Risen Reef)
+    → Goal: close_game
+    [Mana] Tap Indatha Triome→W (paying for Ephemerate, 0 mana remaining)
+T8 P1: Cast Ephemerate (W)
+    [Priority] P2 responds with Galvanic Discharge
+    [Mana] Tap Sacred Foundry→R (paying for Galvanic Discharge, 1 mana remaining)
+T8 P2: Cast Galvanic Discharge (R)
+T8: Resolve Galvanic Discharge
+T8 P2: Galvanic Discharge deals 5 to Elesh Norn, Mother of Machines (base 0 + 5 energy)
+T8: Galvanic Discharge moved stack -> graveyard (resolution)
+T8: Resolve Ephemerate
+T8 P1: Quantum Riddler ETB: draw 1 (Wrenn and Six)
+T8: Blink Quantum Riddler
+T8: Ephemerate moved stack -> exile (rebound (CR 702.86))
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Elesh Norn, Mother of Machines
+T8 P1: Attack with Elesh Norn, Mother of Machines
+  [Declare Blockers] P2 does not block
+T8 P1:   Elesh Norn, Mother of Machines (4/7) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 11 → 7
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 7  |  4c Omnath 11
+║ Hand: 0 cards  |  Opp hand: 3 cards
+║ Lands: 6  |  Opp lands: 6
+║ Library: 38  |  Graveyard: 13
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Other: Goblin Bombardment, Goblin Bombardment
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains, Plains, Elegant Parlor
+║ 4c Omnath board:
+║   Creatures: Elesh Norn, Mother of Machines (4/7), Quantum Riddler (4/6)
+║   Lands: Temple Garden [T], Stomping Ground [T], Hallowed Fountain [T], Indatha Triome [T], Steam Vents [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Plains→W, Plains→W (paying for Ajani, Nacatl Pariah // Ajani, Nacatl Avenger, 4 mana remaining)
+T9 P2: Cast Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1W)
+    [Priority] P1 passes (no response)
+T9: Resolve Ajani, Nacatl Pariah // Ajani, Nacatl Avenger
+T9 P2: Create 1x Cat token(s)
+T9 P2: Ajani creates 2/1 Cat Warrior token
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — 4c Omnath (P1) ══════════════════════════
+║ Life: 4c Omnath 11  |  Boros Energy 7
+║ Hand: 3 cards  |  Opp hand: 0 cards
+║ Lands: 6  |  Opp lands: 6
+║ Library: 40  |  Graveyard: 8
+║ 4c Omnath board:
+║   Creatures: Elesh Norn, Mother of Machines (4/7), Quantum Riddler (4/6)
+║   Lands: Temple Garden, Stomping Ground, Hallowed Fountain, Indatha Triome, Steam Vents, Plains
+║ Boros Energy board:
+║   Creatures: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2), Cat Token (2/1)
+║   Other: Goblin Bombardment, Goblin Bombardment
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains [T], Plains [T], Elegant Parlor
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T9 P1: Rebound Ephemerate declined (CR 702.88b)
+  [Draw] P1 draws: Phelia, Exuberant Shepherd
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Temple Garden→G, Stomping Ground→R (paying for Wrenn and Six, 4 mana remaining)
+T9 P1: Cast Wrenn and Six (RG)
+    [Priority] P2 passes (no response)
+T9: Resolve Wrenn and Six
+    → Goal: close_game
+    [Mana] Tap Plains→W, Hallowed Fountain→U (paying for Phelia, Exuberant Shepherd, 2 mana remaining)
+T9 P1: Cast Phelia, Exuberant Shepherd (1W)
+    [Priority] P2 passes (no response)
+T9: Resolve Phelia, Exuberant Shepherd
+T9 P1: Wrenn and Six [-1] -> Wrenn and Six deals 1 damage to any target
+T9 P1: Wrenn and Six deals 1 to Cat Token
+T9: Cat Token dies
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Elesh Norn, Mother of Machines, Quantum Riddler
+T9 P1: Attack with Elesh Norn, Mother of Machines, Quantum Riddler
+T9 P2:   [BLOCK-EMERGENCY] Ajani, Nacatl Pariah // Ajani, Nacatl Avenger (1/2) blocks Elesh Norn, Mother of Machines (4/7) — lifespan_delta=+0.40
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T9 P1:   Quantum Riddler (4/6) → 4 dmg to player
+T9: Ajani, Nacatl Pariah // Ajani, Nacatl Avenger dies
+  [Combat Damage] 4 damage dealt → P2 life: 7 → 3
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Boros Energy (P2) ══════════════════════════
+║ Life: Boros Energy 3  |  4c Omnath 11
+║ Hand: 0 cards  |  Opp hand: 2 cards
+║ Lands: 6  |  Opp lands: 6
+║ Library: 37  |  Graveyard: 14
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Other: Goblin Bombardment, Goblin Bombardment
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains, Plains, Elegant Parlor
+║ 4c Omnath board:
+║   Creatures: Elesh Norn, Mother of Machines (4/7), Quantum Riddler (4/6) [tapped], Phelia, Exuberant Shepherd (2/2)
+║   Other: Wrenn and Six
+║   Lands: Temple Garden [T], Stomping Ground [T], Hallowed Fountain [T], Indatha Triome, Steam Vents, Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+T10 P2: Play Arid Mesa
+T10: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T10 P2: Crack Arid Mesa -> Elegant Parlor (tapped)
+T10 P2: surveil 1 → Ocelot Pride to GY
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — 4c Omnath (P1) ══════════════════════════
+║ Life: 4c Omnath 11  |  Boros Energy 2
+║ Hand: 2 cards  |  Opp hand: 0 cards
+║ Lands: 6  |  Opp lands: 7
+║ Library: 39  |  Graveyard: 8
+║ 4c Omnath board:
+║   Creatures: Elesh Norn, Mother of Machines (4/7), Quantum Riddler (4/6), Phelia, Exuberant Shepherd (2/2)
+║   Other: Wrenn and Six
+║   Lands: Temple Garden, Stomping Ground, Hallowed Fountain, Indatha Triome, Steam Vents, Plains
+║ Boros Energy board:
+║   Creatures: (empty)
+║   Other: Goblin Bombardment, Goblin Bombardment
+║   Lands: Sacred Foundry, Sacred Foundry, Sacred Foundry, Plains, Plains, Elegant Parlor, Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Boseiju, Who Endures
+  [Main 1]
+T10 P1: Play Boseiju, Who Endures
+    → Goal: close_game
+    [Mana] Tap Plains→W, Boseiju, Who Endures→G, Hallowed Fountain→U (paying for Risen Reef, 4 mana remaining)
+T10 P1: Cast Risen Reef (1UG)
+    [Priority] P2 passes (no response)
+T10: Resolve Risen Reef
+T10: Island moved library -> battlefield (Risen Reef → Island enters tapped (land))
+T10: Lush Portico moved library -> battlefield (Risen Reef → Lush Portico enters tapped (land))
+T10 P1: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+T10: Misty Rainforest moved graveyard -> hand (returned to hand)
+T10 P1:   returns Misty Rainforest from graveyard to hand
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Elesh Norn, Mother of Machines, Quantum Riddler, Phelia, Exuberant Shepherd
+T10 P1: Phelia exiles Quantum Riddler (P1's)
+T10 P1: Attack with Elesh Norn, Mother of Machines, Quantum Riddler, Phelia, Exuberant Shepherd
+  [Declare Blockers] P2 does not block
+T10 P1:   Elesh Norn, Mother of Machines (4/7) → 4 dmg to player
+T10 P1:   Phelia, Exuberant Shepherd (2/2) → 2 dmg to player
+P2 loses: life total -4
+  [Combat Damage] 6 damage dealt → P2 life: 2 → -4
+
+>>> 4c Omnath wins Game 3 on turn 10 via damage
+    Final life: 4c Omnath=11  Boros Energy=-4
+
+======================================================================
+  MATCH RESULT: 4c Omnath wins 2-1
+======================================================================

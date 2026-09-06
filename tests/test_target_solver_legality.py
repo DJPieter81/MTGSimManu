@@ -285,6 +285,37 @@ def test_target_legendary_creature_card_legal_with_legendary_in_gy(card_db):
     assert has_legal_target(game, 0, req) is True
 
 
+def test_mana_value_capped_graveyard_target_excludes_expensive_creature(card_db):
+    """Unearth's shape ('target creature card with mana value 3 or
+    less from your graveyard') must not offer a creature above the
+    cap as a legal target — the live bug this pins reanimated an
+    8-mana-value creature off a 'mana value 3 or less' spell."""
+    game = _new_game()
+    _graveyard(game, card_db, "Archon of Cruelty", 0)  # mana value 8
+    reqs = parse(
+        "Return target creature card with mana value 3 or less from "
+        "your graveyard to the battlefield."
+    )
+    req = reqs[0]
+    assert req.max_mana_value == 3
+    assert enumerate_legal_targets(game, 0, req) == [], (
+        "an 8-mana-value creature must not be a legal target for a "
+        "'mana value 3 or less' reanimation effect"
+    )
+
+
+def test_mana_value_capped_graveyard_target_includes_cheap_creature(card_db):
+    game = _new_game()
+    _graveyard(game, card_db, "Memnite", 0)  # mana value 0
+    reqs = parse(
+        "Return target creature card with mana value 3 or less from "
+        "your graveyard to the battlefield."
+    )
+    req = reqs[0]
+    candidates = enumerate_legal_targets(game, 0, req)
+    assert len(candidates) == 1 and candidates[0].name == "Memnite"
+
+
 def test_target_card_from_a_graveyard_owner_any_searches_both_graveyards(card_db):
     # Surgical Extraction-style: "target card from a graveyard" — any
     # graveyard counts. Test: card only in opponent's graveyard.

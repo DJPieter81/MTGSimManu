@@ -502,6 +502,12 @@ class ResponseDecider:
             if (instant.template.counter_target_kind == 'instant_or_sorcery_spell'
                     and not (target_spell.is_instant or target_spell.is_sorcery)):
                 continue
+            # "Counter target ... colorless spell" (Consign to Memory)
+            # can never counter a colored spell — CR 105 colour, not
+            # colour identity.
+            if (getattr(instant.template, 'counters_colorless_only', False)
+                    and (target_spell.colors or set())):
+                continue
             # Symmetric EV of the 1a counter-tax framework: a "counter
             # unless its controller pays {N}" candidate is DEAD when the
             # payer can afford the tax — a rational opponent who already
@@ -969,6 +975,7 @@ class ResponseDecider:
             return False
 
         from decks.card_knowledge_loader import get_burn_damage
+        from ai.card_classes import burn_damage
 
         target_toughness = tmpl.toughness or 0
         # We use printed toughness as the resolved value — affinity /
@@ -992,7 +999,7 @@ class ResponseDecider:
                 continue
 
             # Burn removal: filter by lethality on the target's toughness.
-            burn = get_burn_damage(i_tmpl.name)
+            burn = burn_damage(i_tmpl)
             if burn > 0:
                 if burn < target_toughness:
                     continue
@@ -1019,6 +1026,7 @@ class ResponseDecider:
         from ai.ev_evaluator import EVSnapshot, snapshot_from_game, evaluate_board
         from ai.ev_evaluator import _project_spell
         from decks.card_knowledge_loader import get_threat_value, get_burn_damage
+        from ai.card_classes import burn_damage
 
         source = stack_item.source
         template = source.template
@@ -1056,7 +1064,7 @@ class ResponseDecider:
         # constant — any spell that kills us is worth countering above all
         # else, so we pin it at the top of the threat scale.  Sourced
         # from ai/scoring_constants.py (LETHAL_THREAT).
-        known_burn = get_burn_damage(source.name)
+        known_burn = burn_damage(source.template) if getattr(source, 'template', None) else get_burn_damage(source.name)
         if known_burn > 0:
             my_life = game.players[self.player_idx].life
             if my_life <= known_burn:

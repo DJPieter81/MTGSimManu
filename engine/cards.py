@@ -7,9 +7,11 @@ from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Set, Tuple, Callable, Any, TYPE_CHECKING
 from enum import Enum
 from .mana import ManaCost, Color
+from .delayed_triggers import DelayedTriggerTiming
 
 if TYPE_CHECKING:
     from .game_state import GameState
+    from .target_solver import TargetRequirement
 
 
 class CardType(Enum):
@@ -39,6 +41,7 @@ class Keyword(Enum):
     VIGILANCE = "vigilance"
     REACH = "reach"
     MENACE = "menace"
+    SHADOW = "shadow"
     FLASH = "flash"
     HEXPROOF = "hexproof"
     INDESTRUCTIBLE = "indestructible"
@@ -57,6 +60,11 @@ class Keyword(Enum):
     ANNIHILATOR = "annihilator"
     IMPROVISE = "improvise"
     MODULAR = "modular"
+
+
+# value -> Keyword, for resolving parsed keyword strings (e.g. equipment
+# keyword grants stored as Keyword.value) back to enum members.
+_KEYWORD_BY_VALUE = {k.value: k for k in Keyword}
 
 
 class AbilityType(Enum):
@@ -107,6 +115,15 @@ class Ability:
 COUNTER_KIND_PLUS = "+1/+1"
 COUNTER_KIND_MINUS = "-1/-1"
 COUNTER_KIND_LOYALTY = "loyalty"
+
+# Effect shapes a counter-placement trigger ("whenever one or more +1/+1
+# counters are put on this creature, …") can resolve to. Parsed once by
+# `oracle_parser.parse_counter_placement_trigger`; dispatched by
+# `TriggerManager.trigger_counter_placement`. UNRESOLVED means the trigger
+# fires (and logs) but its rider is a shape the engine does not resolve.
+COUNTER_TRIGGER_EFFECT_TOKEN = "create_token"
+COUNTER_TRIGGER_EFFECT_DRAW = "draw"
+COUNTER_TRIGGER_EFFECT_UNRESOLVED = "unresolved"
 
 
 class ActivationEffectKind(Enum):
@@ -159,6 +176,30 @@ class ActivationEffectKind(Enum):
     # only the 'cards' scope declares card targets. Every exile is a zone
     # change and routes through the zone funnel.
     EXILE_FROM_GRAVEYARD = "exile_from_graveyard"
+    # "[Cost]: Put N <kind> counter(s) on this/target <permanent>" — the
+    # put-counter class (157 Modern activated abilities across 156 cards).
+    # Counter COSTS became payable in tranche 4; this is the EFFECT half,
+    # which until now landed in UNCLASSIFIED and so was refused by rule 9b
+    # before any cost was charged. The parsed shape rides on
+    # `ActivatedAbility.put_counter_data`; SCOPE is split across two kinds
+    # rather than carried as a flag because the SELF form is not targeted
+    # at all (CR 115.1) and `targets_required == 0` is the discriminator
+    # the resolver reads. Counters go on the permanent through the
+    # instance's existing counter fields, so a +1/+1 counter moves power
+    # and toughness and, unlike PUMP_SELF_UEOT, does not expire.
+    PUT_COUNTER_SELF = "put_counter_self"
+    PUT_COUNTER_TARGET = "put_counter_target"
+    # "[Cost]: Adapt N." (CR 702.132) — if this creature has no +1/+1
+    # counters on it, put N +1/+1 counters on it. 23 Modern cards carry
+    # the activated form (Basking Broodscale, Growth-Chamber Guardian,
+    # Incubation Druid, Zegana, ...). `amount` is N. The no-counters test
+    # is a RESOLUTION condition (702.132a), not a legality one: activating
+    # on an already-adapted creature is legal and resolves as a no-op —
+    # declining that is the AI's judgment. Counters land on the instance's
+    # own `plus_counters` through `adjust_counters`, the same funnel the
+    # counter-cost payer uses, so P/T moves and any later
+    # counters-placed trigger routing has a single place to hook.
+    ADAPT = "adapt"
     UNCLASSIFIED = "unclassified"
 
 
@@ -214,6 +255,16 @@ class ActivationCost:
     put_counter_amount: int = 0
     remove_counter_kind: Optional[str] = None
     remove_counter_amount: int = 0
+    # Tranche 5 payable cost: the number of cards exiled from the
+    # ACTIVATOR'S OWN graveyard as part of the cost (CR 602.2b). Untyped
+    # and fixed-count only ("Exile three cards from your graveyard"); a
+    # type-restricted, "all"/"any number", {X}-counted, or other-zone
+    # exile stays in `unpayable` rather than being approximated by a
+    # count. Payable only while the graveyard actually holds that many
+    # cards (CR 601.2h), and depleting for the no-free-repeatable rule:
+    # the graveyard is finite and each payment strictly shrinks it.
+    # 11 Modern activated abilities charge it.
+    exile_from_graveyard_cards: int = 0
     # Number of {X} pips in the mana cost. X is chosen at activation time
     # (CR 601.2b) and is chargeable exactly when the classified effect
     # BINDS X (a tutor's "mana value X or less"); an {X} pip on any other
@@ -262,6 +313,19 @@ class ActivatedAbility:
     # ('cards'/'target_player'/'all'/'each_opponent'), count, up_to,
     # types, owner, single_graveyard. None for every other effect kind.
     graveyard_exile_data: Optional[Dict] = None
+    # PUT_COUNTER_* kinds only: the structured shape from
+    # `oracle_parser.parse_activation_put_counter` -- kind (canonical
+    # counter kind), amount, self (bool), types. None for every other
+    # effect kind.
+    put_counter_data: Optional[Dict] = None
+    # Delayed timing (CR 603.7): non-None when the effect happens at a
+    # LATER step ("Draw a card at the beginning of the next turn's
+    # upkeep"). `effect_kind` is the INNER effect's kind — the delay is
+    # orthogonal, so every executable kind gets its delayed form for free
+    # instead of each spawning a delayed twin. Parsed once at DB load by
+    # `oracle_parser.parse_activation_delay`; `resolve_activated_ability`
+    # dispatches off it into `GameState.register_delayed_trigger`.
+    delayed_timing: Optional["DelayedTriggerTiming"] = None
 
 
 @dataclass(frozen=True)
@@ -289,6 +353,143 @@ class TapForManaTrigger:
     watch: str
     units: Tuple[Tuple[str, ...], ...] = ()
     mirror_source: bool = False
+
+
+class LoyaltyEffectKind(Enum):
+    """What a planeswalker loyalty ability actually does (CR 606).
+
+    Same shape and same discipline as `ActivationEffectKind` above: a
+    CLOSED set with an explicit `UNCLASSIFIED` escape hatch.  A loyalty
+    ability whose printed effect this engine cannot execute is refused
+    BEFORE its loyalty is paid (`PlaneswalkerManager.activate_planeswalker`,
+    mirroring `ActivationManager.can_activate` rule 9b) — visible-but-
+    refused beats silently-dropped.
+
+    The kinds below the RETURN_TO_HAND line are the pre-existing dispatch
+    branches, moved from runtime substring tests to load-time
+    classification without changing which abilities they take or what they
+    do.  Their names describe the shape they execute, not a card.
+    """
+    # "Return [up to N] target <filter> to its owner's hand" (battlefield)
+    # and "Return target <filter> card from your graveyard to your hand".
+    # Resolved through `engine.target_solver` + the zone funnel — the same
+    # seam ETB / spell resolution / triggers use.
+    RETURN_TO_HAND = "return_to_hand"
+    # "<walker> deals N damage to …" — targeted burn, kill-or-face.
+    DAMAGE = "damage"
+    # "You gain N life, draw N cards, …" — the Ugin-shape value ultimate.
+    GAIN_LIFE_AND_DRAW = "gain_life_and_draw"
+    # "Draw a card. Untap up to two lands."
+    DRAW_AND_UNTAP_LANDS = "draw_and_untap_lands"
+    # "Put target <permanent> into its owner's library Nth from the top."
+    TUCK_TARGET_INTO_LIBRARY = "tuck_target_into_library"
+    # An emblem line whose executed part exiles an opposing permanent.
+    EMBLEM_EXILE_PERMANENT = "emblem_exile_permanent"
+    UNCLASSIFIED = "unclassified"
+
+
+@dataclass(frozen=True)
+class LoyaltyAbility:
+    """One printed `[±N]: effect` line, classified once at DB load.
+
+    `text` is the PRINTED oracle text of the ability — it is what the log
+    shows and what the AI's description-driven chooser reads, so it must
+    never be paraphrased.  `effect_kind` is what the resolver dispatches
+    on; `target` (a `target_solver.TargetRequirement`) and `draws` carry
+    the parsed payload for the kinds that need one.
+    """
+    slot: str          # "plus" | "zero" | "minus" | "ult"
+    cost: int          # signed loyalty change (+1, 0, -3, …)
+    text: str
+    effect_kind: "LoyaltyEffectKind" = LoyaltyEffectKind.UNCLASSIFIED
+    target: Optional["TargetRequirement"] = None
+    # Printed "Draw a card" / "Draw N cards" rider on the same ability.
+    draws: int = 0
+
+
+@dataclass(frozen=True)
+class FetchLandProfile:
+    """The printed shape of a fetchland's self-sacrifice search ability.
+
+    The mechanic: a land whose activated ability sacrifices ITSELF to put a
+    land card from its controller's library onto the battlefield, where the
+    search is constrained by BASIC LAND TYPES ("a Mountain or Plains card",
+    "a basic Forest, Plains, or Island card", "a basic land card").  ~43
+    Modern lands print it — the Onslaught/Zendikar cycles, the Panorama and
+    Landscape cycles, Evolving Wilds, Terramorphic Expanse, Fabled Passage,
+    Prismatic Vista, Escape Tunnel, Hobbit Hole and friends.
+
+    Everything the engine needs to execute one is printed on the card, so
+    everything here is parsed once by
+    `oracle_parser.parse_fetchland_profile` at DB load and read off the
+    typed field afterwards.  In particular the life payment is part of the
+    printed activation cost ("{T}, Pay 1 life, Sacrifice this land: …") and
+    the fetched land's entry state is part of the printed effect ("put it
+    onto the battlefield" vs "… onto the battlefield tapped", plus Fabled
+    Passage's "Then if you control four or more lands, untap that land").
+
+    `colors` are the mana colours of the basic land types the search may
+    name, in canonical WUBRG order — the colour-fixing view the mana
+    planner scores fetches by.  A search that names NO land type (Urza's
+    Cave: "search your library for a land card") is refused rather than
+    approximated as five colours: it can find any land at all, which this
+    colour-set model cannot express.
+    """
+    colors: Tuple[str, ...]
+    # Life paid as part of the activation cost ("Pay 1 life"). 0 for the
+    # Panorama/Landscape/Evolving Wilds families, which pay none.
+    life_cost: int = 0
+    # How many land cards the one activation finds ("up to two basic land
+    # cards" — Blighted Woodland).
+    count: int = 1
+    # "put it onto the battlefield TAPPED" — a property of the FETCH, not
+    # of the land it finds (which carries its own enters-tapped rules).
+    target_enters_tapped: bool = False
+    # Fabled Passage's "Then if you control N or more lands, untap that
+    # land." 0 means the fetch prints no such rider.
+    untap_target_min_lands: int = 0
+@dataclass(frozen=True)
+class CounterPlacementReplacement:
+    """"If one or more <kind> counters would be put on <scope> you control,
+    <f(that many)> are put on it instead" (CR 614.1c / CR 122) — parsed once
+    by `oracle_parser.parse_counter_placement_replacement` and applied by the
+    ONE counter funnel (`CardInstance.add_plus_counters` / `adjust_counters`).
+
+    `kind` is a canonical counter kind or None for "counters" of any kind.
+    `scope` holds lower-case type / subtype words the recipient must match
+    (any of them); `self_only` scopes the effect to the source itself
+    ("would be put on Mowu"). `op` is 'add' (n may be negative — the
+    "minus one" shape) or 'mul'.
+    """
+    kind: Optional[str]
+    scope: Tuple[str, ...]
+    op: str
+    n: int
+    self_only: bool = False
+
+
+@dataclass(frozen=True)
+class CounterPlacementTrigger:
+    """A "whenever one or more +1/+1 counters are put on this <permanent>,
+    <effect>" trigger (CR 122 / CR 603.2c).
+
+    16 Modern cards carry the self-scoped shape (Basking Broodscale, Herd
+    Baloth, Scurry Oak, Dusk Legion Duelist, Pensive Professor, Fetid
+    Gargantua, Benthic Biomancer, Knighted Myr, …). Parsed once by
+    `oracle_parser.parse_counter_placement_trigger`; fired by the ONE counter
+    funnel `CardInstance.add_plus_counters`, once per placement EVENT ("one
+    or more"), regardless of how many counters that event put on.
+
+    `effect` is one of the `COUNTER_TRIGGER_EFFECT_*` shapes; `count` is the
+    number of tokens created / cards drawn; `effect_text` is the rider
+    clause, handed to `PermanentEffects.create_token` as `source_oracle` so
+    the token-shape parse keeps its single owner (mirrors
+    `CardTemplate.cast_trigger_token`).
+    """
+    effect: str
+    count: int = 1
+    effect_text: str = ""
+    optional: bool = False
 
 
 @dataclass
@@ -359,6 +560,11 @@ class CardTemplate:
     # from inside `ManaPayment.land_mana_units` — the single per-source unit
     # resolver — so mana CAPACITY and actual PRODUCTION cannot disagree.
     tap_for_mana_trigger: Optional["TapForManaTrigger"] = None
+    # The printed self-sacrifice land search (fetchland mechanic).  See
+    # FetchLandProfile; populated by oracle_parser.parse_fetchland_profile.
+    # `None` means the card is not a fetchland — that predicate replaces the
+    # old FETCH_LAND_COLORS card-name table.
+    fetchland: Optional["FetchLandProfile"] = None
     # 'When this land enters, return a land you control to its owner's
     # hand' — structural ETB clause of the karoo family (E1b), a
     # sibling of `enters_tapped`.
@@ -374,6 +580,8 @@ class CardTemplate:
     # For split/modal cards
     is_modal: bool = False
     modes: List[Dict] = field(default_factory=list)
+    # How many modes a "Choose N —" modal spell picks (CR 700.2d).
+    modal_choose_count: int = 1
     # Oracle text (raw rules text from card database)
     oracle_text: str = ""
     # Tags for AI strategy
@@ -384,6 +592,10 @@ class CardTemplate:
     dash_cost: Optional[ManaCost] = None  # Full ManaCost preserving colour pips
     # Warp cost (alternative cast from hand for less mana; creature exiles at end of turn)
     warp_cost: Optional[ManaCost] = None
+    # Plot cost (CR 702.170): pay this and exile from hand; cast the card free
+    # as a sorcery on a LATER turn. A deferred-cast-from-exile mechanic in the
+    # warp/suspend family. Populated by oracle_parser.parse_plot_cost.
+    plot_cost: Optional[ManaCost] = None
     # Escape cost (alternative cast from graveyard)
     escape_cost: Optional[ManaCost] = None  # Full ManaCost preserving colour pips
     escape_exile_count: int = 0  # Number of other cards to exile from graveyard
@@ -421,8 +633,24 @@ class CardTemplate:
     # valuation gate keys off this field, so it must never be set for a
     # card `oracle_resolver._resolve_x_creature_tutor` cannot deliver.
     x_creature_tutor_data: Optional[Dict] = None
+    # Overrun-shape team pump: "[other] creatures you control get +N/+M
+    # [and gain <kw>...] until end of turn" (or +X/+X scaled by creature
+    # count / greatest power), on the permanent's own ETB trigger
+    # ('etb': Craterhoof Behemoth class) or an instant/sorcery's resolution
+    # ('spell': Overrun class). {'trigger', 'power', 'toughness',
+    # 'scaling', 'keywords', 'others_only'}, parsed once at DB load by
+    # parse_team_pump(); None = not this shape or a refused variant.
+    # `oracle_resolver._resolve_team_pump` is the only consumer.
+    team_pump_data: Optional[Dict] = None
     is_cost_reducer: bool = False             # reduces spell costs (from tags)
     domain_reduction: int = 0                 # cost reduction per basic land type
+    # Self-scaling own-cost reduction — "This spell costs {N} less to cast
+    # for each <unit>" (CR 601.2f).  `amount` is N; `unit` is one of the
+    # oracle_parser.SELF_COST_UNIT_* vocabulary the engine counts live
+    # (per-turn discard/cycle counter, distinct graveyard card types).
+    # (0, "") when absent or when the unit is unmodelled (refused outright).
+    self_cost_reduction_amount: int = 0
+    self_cost_reduction_unit: str = ""
     back_face_oracle: str = ""                # oracle text for back face (transform cards)
     back_face_loyalty: int = 0                # starting loyalty for back face planeswalker
     # Full back-face characteristics for ANY multi-face card (not just
@@ -449,6 +677,8 @@ class CardTemplate:
     is_counterspell: bool = False              # has a "counter target ..." effect
     counter_target_kind: str = ""              # "spell"/"creature_spell"/"noncreature_spell"/"instant_or_sorcery_spell"
     counter_tax_amount: int = 0                # {N} from "unless its controller pays {N}"; 0 = hard counter
+    counters_colorless_only: bool = False      # "counter target ... colorless spell" (Consign to Memory)
+    etb_exile_returns_on_leave: bool = False   # ETB-exiled card comes back when this leaves (Freebooter/Sculler); False = permanent exile (Thought-Knot Seer)
     is_land_sacrifice_tutor: bool = False      # Scapeshift shape: sac any number of lands + search (typed, parse-once)
     # Combat/targeting legality (CR 702.16d/e) — colors this permanent
     # has protection from. Empty = no protection. Populated at load
@@ -552,13 +782,25 @@ class CardTemplate:
     # Covers instant/sorcery removal that exiles rather than destroys.
     # Populated by oracle_parser.parse_can_exile_permanent.
     can_exile_permanent: bool = False
+    # True only when an 'exile target ...' clause can hit a NONCREATURE
+    # permanent (not a creature-only exile). Populated by
+    # oracle_parser.parse_exile_hits_noncreature. Gates the AI's
+    # "removal can hit a noncreature" target enumeration so a creature-only
+    # exile (Path to Exile) never targets a planeswalker/artifact.
+    exile_hits_noncreature: bool = False
     # Symmetric reanimation — True for Living End-class mass reanimation from
     # all graveyards simultaneously.
     # Populated by oracle_parser.parse_has_symmetric_reanimation.
     has_symmetric_reanimation: bool = False
-    # Phyrexian pip count — number of {X/P} Phyrexian mana symbols; each
-    # allows paying 2 life instead of 1 mana.
-    # Populated by oracle_parser.parse_phyrexian_pip_count.
+    # Phyrexian pip count (CR 107.4f) — TOTAL number of {C/P} pips in the
+    # printed MANA COST; each may be paid with 2 life instead of one mana
+    # of that pip's colour.  The per-colour breakdown lives on the cost
+    # itself (`mana_cost.phyrexian`) because which colour a pip waives is
+    # load-bearing; this field is the sum, kept for consumers that only
+    # need the life price.
+    # Populated at DB load from `mana_cost.phyrexian` — NOT from oracle
+    # text, whose reminder clause names the symbol once however many pips
+    # the cost carries.
     phyrexian_pip_count: int = 0
     # -- Batch 7 typed fields -----------------------------------------------
     # Token-creation effect -- True when oracle contains "create ... token" /
@@ -634,11 +876,20 @@ class CardTemplate:
     # an opponent lost life this turn. None when the card has no spectacle.
     # Populated by oracle_parser.parse_spectacle_cost.
     spectacle_cost: Optional[ManaCost] = None
+    # Madness alternate cost (CR 702.35): when this card is discarded it goes to
+    # exile instead, and may then be cast for this cost (else it falls to the
+    # graveyard). An empty ManaCost means "Madness {0}" — a real, free cost.
+    # None when the card has no Madness keyword.
+    # Populated by oracle_parser.parse_madness_cost.
+    madness_cost: Optional[ManaCost] = None
     # Flashback cost (CR 702.33): cast from graveyard for this cost (card exiles after).
     # None when the card has no printed Flashback. Cards granted flashback by Past in
     # Flames use template.mana_cost instead (this field stays None for them).
     # Populated by oracle_parser.parse_flashback_mana_cost.
     flashback_cost: Optional[ManaCost] = None
+    # Land subtype a printed Flashback cost sacrifices ("Flashback—Sacrifice
+    # a Mountain."), or None. oracle_parser.parse_flashback_sacrifice.
+    flashback_sacrifice_subtype: Optional[str] = None
     # Discard effect -- True when oracle causes the target to discard cards.
     # Populated by oracle_parser.parse_has_discard_effect.
     has_discard_effect: bool = False
@@ -657,6 +908,28 @@ class CardTemplate:
     # Pump grant -- True when oracle grants +X/+Y bonus ('gets +'/'additional +').
     # Populated by oracle_parser.parse_has_pump_grant.
     has_pump_grant: bool = False
+    # Flat "Equipped creature gets +N/+M" grant (Bonesplitter, the Sword
+    # cycle, Cori-Steel Cutter, ...). Populated by parse_equip_pt_grant;
+    # 0/0 for non-equipment and for per-artifact SCALING equipment (Cranial
+    # Plating), which is computed separately in _dynamic_base_power/toughness.
+    equip_power_grant: int = 0
+    equip_toughness_grant: int = 0
+    # Keywords an Equipment statically grants its equipped creature ("Equipped
+    # creature has trample and haste"). A frozenset of Keyword.value strings;
+    # empty for non-granting equipment. Populated by parse_equip_keyword_grant,
+    # applied in CardInstance.keywords. ~200 Modern Equipment; was a no-op.
+    equip_keyword_grant: frozenset = field(default_factory=frozenset)
+    # Static team keyword anthem: {'keywords': frozenset(Keyword.value),
+    # 'others_only': bool} or None. "Creatures you control have trample". ~600
+    # Modern permanents; registered as a continuous lord effect on ETB
+    # (spell_resolution._handle_permanent_etb). Populated by
+    # oracle_parser.parse_team_keyword_grant. Was a silent no-op.
+    team_keyword_grant: Optional[dict] = None
+    # "target creature gets +N/+M until end of turn [and gains <kw>]"
+    # combat trick — parsed once (parse_pump_spell). 0/0/"" = not one.
+    pump_spell_power: int = 0
+    pump_spell_toughness: int = 0
+    pump_spell_keyword: str = ""
     # X-counter scaling -- True when oracle grants 'X +1/+1 counter(s)' (Ballista pattern).
     # Populated by oracle_parser.parse_has_x_counter_scaling.
     has_x_counter_scaling: bool = False
@@ -678,6 +951,12 @@ class CardTemplate:
     # All basic land types -- True when oracle grants all basic land types to lands.
     # Populated by oracle_parser.parse_has_all_basic_land_types.
     has_all_basic_land_types: bool = False
+    # Colour-setting static (CR 105.2b, continuous-effects layer 5):
+    # "" | "self" | "your_nonland_permanents".  Populated by
+    # oracle_parser.parse_color_setting_scope; consumed by
+    # ContinuousEffectsManager.recalculate, which derives the layer-5
+    # effect from every permanent on the battlefield carrying it.
+    color_setting_scope: str = ""
     # Destroy or exile -- True when oracle destroys or exiles a permanent.
     # Populated by oracle_parser.parse_has_destroy_or_exile.
     has_destroy_or_exile: bool = False
@@ -796,6 +1075,17 @@ class CardTemplate:
     # Talrand/instant-or-sorcery). None when absent.
     # Populated by oracle_parser.parse_cast_trigger_token.
     cast_trigger_token: Optional[dict] = None
+    # ORDINAL cast trigger (CR 603.2) -- dict
+    # {"ordinal": int, "caster_scope": "you"|"any"|"opponent",
+    #  "reset": "turn", "clause": str} for
+    # "whenever you cast your Nth spell each turn, <effect>".
+    # `ordinal` is which spell of the turn meets the condition; `reset`
+    # records that the counter's scope is the TURN, not the game (CR 500.8);
+    # `caster_scope` says whose spells are counted. None when absent.
+    # 45 cards in the pool carry this trigger shape -- it is the condition
+    # gate for every effect on such a card, not just token creation.
+    # Populated by oracle_parser.parse_ordinal_cast_trigger.
+    ordinal_cast_trigger: Optional[dict] = None
     # Permanent-enters counter by card TYPE (CR 603) -- dict
     # {"permanent_type": str, "counter_power": int,
     #  "counter_toughness": int, "unblockable_this_turn": bool} for
@@ -810,6 +1100,47 @@ class CardTemplate:
     # DIES: its +1/+1 counters may be placed on a target artifact creature.
     # Populated by card_database.py oracle-derived properties section.
     modular_n: int = 0
+    # "Whenever one or more +1/+1 counters are put on this <permanent>, …"
+    # (CR 122 / 603.2c, 16 Modern cards). See CounterPlacementTrigger. Read
+    # by `CardInstance.add_plus_counters` — the single +1/+1 counter funnel —
+    # so no placement path can put counters without the trigger seeing it.
+    counter_placement_trigger: Optional["CounterPlacementTrigger"] = None
+    # "If one or more <kind> counters would be put on <scope> you control,
+    # <that many ±1 | twice that many> are put on it instead" (CR 614.1c,
+    # 14 Modern cards). Applied inside the ONE counter funnel
+    # (`CardInstance.add_plus_counters` / `adjust_counters`), so every
+    # placement path (activation costs, put-counter effects, persist,
+    # modular, enters-with-N) sees it without a hook of its own.
+    counter_placement_replacement: Optional["CounterPlacementReplacement"] = None
+    # "When this ~ enters, [you may] destroy/exile target <type> [an opponent
+    # controls] [with mana value N or less]" (CR 603.3d, 141 cards; the
+    # naturalize subclass ~24). Same dict shape as `targeted_removal_data`
+    # plus owner_scope/optional. Dispatched by `resolve_etb_from_oracle`.
+    etb_targeted_removal_data: Optional[dict] = None
+    # "… can't cast spells this turn" / "creatures can't attack this turn" /
+    # "prevent all (combat) damage … this turn" — an effect that restricts
+    # the OPPONENT for this turn (30 instants). 'no_spells' | 'no_attacks'
+    # | 'fog' | None. Read by the AI's this-turn-signal enumerator and the
+    # runner's imprint-copy timing.
+    turn_scoped_restriction: Optional[str] = None
+    # Targeted forced discard classified by who chooses the card:
+    # {'chooser': 'caster'|'victim'|'random', 'target', 'choose_clause',
+    # 'count'} (oracle_parser.parse_hand_attack). The caster-chosen
+    # shape ("you choose a nonland card from it") is valued by
+    # ai/hand_denial.py; the choose clause feeds the engine's
+    # revealed-hand filter.
+    hand_attack_data: Optional[dict] = None
+    # CR 202.2: a card with no printed mana cost (lands, Living End
+    # shapes) does not HAVE a mana cost — its mana value is 0 by
+    # convention, but it never satisfies "with mana cost {0} or {1}".
+    # Set from the MTGJSON `manaCost` key at load; None derives to
+    # "not a land" for synthetic templates (`__post_init__`).
+    has_mana_cost: Optional[bool] = None
+    # Untargeted mass return of creature cards from graveyards onto the
+    # battlefield (Living End shape), excluding self-returns
+    # (oracle_parser.parse_mass_graveyard_return). Read by
+    # ai.card_classes.deck_can_return — "is this card reanimation equity".
+    mass_graveyard_return: bool = False
     # -- Land destruction (spell tranche) -----------------------------------
     # True when the card is a spell-shaped "Destroy target land" effect with
     # only supported riders (see oracle_parser.parse_land_destruction).
@@ -823,20 +1154,71 @@ class CardTemplate:
     # whole card — never half-executed).
     # Populated by oracle_parser.parse_land_destruction.
     land_destruction_data: Optional[dict] = None
+    # -- Direct-damage spell (fixed amount, face-legal "any target") --------
+    # {'amount': N} for a whole-effect "deals N damage to any target"-shape
+    # instant/sorcery (~33 Modern cards). None otherwise. Dispatched off the
+    # typed field (no oracle inspection at resolve time) through the shared
+    # resolve_damage_to_chosen_target, retiring per-card burn handlers.
+    # Populated by oracle_parser.parse_direct_damage_spell.
+    direct_damage_data: Optional[dict] = None
+    # -- Board sweep ("destroy all creatures") ------------------------------
+    # {'action': 'destroy', 'types': ['creature']} for a symmetric
+    # destroy-all-creatures instant/sorcery (~7 Modern cards). None otherwise.
+    # Dispatched off the typed field through card_effects._resolve_board_sweep.
+    # Populated by oracle_parser.parse_board_sweep.
+    board_sweep_data: Optional[dict] = None
+    # -- Targeted removal ("destroy/exile target <permanent> [MV <= N|X]") --
+    # {'action','types','mv'} for the destroy/exile-one-chosen-permanent shape
+    # (~100 Modern cards). None otherwise. Dispatched off the typed field
+    # through card_effects._resolve_nonland_permanent_removal. Populated by
+    # oracle_parser.parse_targeted_removal.
+    targeted_removal_data: Optional[dict] = None
+    # Printed `[±N]: effect` loyalty abilities (CR 606), classified once at
+    # DB load by oracle_parser.parse_loyalty_abilities into
+    # {slot: LoyaltyAbility}.  `PlaneswalkerManager` dispatches off
+    # `effect_kind` and refuses UNCLASSIFIED lines before charging loyalty.
+    # None means "not parsed yet"; {} means "parsed, no loyalty abilities".
+    loyalty_abilities: Optional[Dict[str, "LoyaltyAbility"]] = None
+    # Same, for the back face of a transforming planeswalker DFC.  Set by
+    # CardDatabase after `back_face_oracle` / `back_face_loyalty` land.
+    back_face_loyalty_abilities: Optional[Dict[str, "LoyaltyAbility"]] = None
+    # -- Impulse / library-dig (CR 120 card selection) ---------------------
+    # Structured data for the "look at / reveal the top N cards, take a
+    # predicate-matching card to your hand, put the rest on the bottom / into
+    # your graveyard" family (Ancient Stirrings, Malevolent Rumble, Consult
+    # the Star Charts, …).  None when the card is not in the class.  Distinct
+    # from the exile-and-play "impulse draw" shape (Tag.IMPULSE_DRAW).  The
+    # resolver moves cards through the zone funnel, never game.draw_cards, so
+    # on-draw watchers do not fire (CR 121.1c).
+    # Populated by oracle_parser.parse_library_dig.
+    library_dig_data: Optional[dict] = None
 
     def __post_init__(self) -> None:
         # Derive fields from oracle text for templates not loaded through
         # CardDatabase (e.g. synthetic templates in tests). CardDatabase sets
         # these explicitly; this fires only for empty/None fields.
+        if self.has_mana_cost is None:
+            # Lands never carry a mana cost (CR 202.2); every other
+            # synthetic template is assumed to print one.
+            self.has_mana_cost = CardType.LAND not in self.card_types
         if self.oracle_text:
             from .oracle_parser import parse_is_land_sacrifice_tutor as _plst
             if not self.is_land_sacrifice_tutor:
                 self.is_land_sacrifice_tutor = _plst(self.oracle_text)
+            if self.loyalty_abilities is None:
+                from .oracle_parser import parse_loyalty_abilities as _pl
+                self.loyalty_abilities = _pl(self.oracle_text, self.loyalty)
+            from .oracle_parser import parse_self_cost_reduction as _pscr
+            if not self.self_cost_reduction_unit:
+                (self.self_cost_reduction_amount,
+                 self.self_cost_reduction_unit) = _pscr(self.oracle_text)
             from .oracle_parser import (parse_warp_cost as _pwc,
+                                        parse_plot_cost as _ppc,
                                         parse_dash_cost as _pdc,
                                         parse_escape_cost as _pec,
                                         parse_splice_cost as _psc,
                                         parse_spectacle_cost as _pspc,
+                                        parse_madness_cost as _pmc,
                                         parse_can_target_player as _pctp,
                                         parse_can_target_planeswalker as _pctpw,
                                         parse_has_attack_trigger as _phat,
@@ -861,18 +1243,21 @@ class CardTemplate:
                                         parse_has_draw_effect as _phde,
                                         parse_can_exile_permanent as _pcep,
                                         parse_has_symmetric_reanimation as _phsr,
-                                        parse_phyrexian_pip_count as _pppc,
                                         parse_has_token_effect as _phte,
                                         parse_has_graveyard_recursion as _phgr,
                                         parse_has_discard_effect as _phde2,
                                         parse_is_storm_spell as _piss,
                                         parse_has_charge_counter_ability as _phcca,
                                         parse_cast_trigger_token as _pctt,
-                                        parse_enters_type_counter as _petc)
+                                        parse_ordinal_cast_trigger as _poct,
+                                        parse_enters_type_counter as _petc,
+                                        parse_counter_placement_trigger as _pcpt)
             from .card_database import KEYWORD_MAP as _KM
             import re as _re
             if self.warp_cost is None:
                 self.warp_cost = _pwc(self.oracle_text)
+            if self.plot_cost is None:
+                self.plot_cost = _ppc(self.oracle_text)
             if self.dash_cost is None:
                 self.dash_cost = _pdc(self.oracle_text)
             if self.escape_cost is None:
@@ -885,6 +1270,8 @@ class CardTemplate:
                 self.splice_cost = _psc(self.oracle_text)
             if self.spectacle_cost is None:
                 self.spectacle_cost = _pspc(self.oracle_text)
+            if self.madness_cost is None:
+                self.madness_cost = _pmc(self.oracle_text)
             # Targeting capability flags — always derived (not gated on
             # a sentinel) since they default False and any oracle text
             # can contain the relevant phrases.
@@ -938,7 +1325,17 @@ class CardTemplate:
             if not self.has_symmetric_reanimation:
                 self.has_symmetric_reanimation = _phsr(self.oracle_text)
             if self.phyrexian_pip_count == 0:
-                self.phyrexian_pip_count = _pppc(self.oracle_text)
+                # `mana_cost` is Optional: a template can be constructed
+                # without one (lands, and test fixtures that only exercise
+                # oracle-derived fields). Deriving the pip count from the
+                # COST rather than from oracle reminder text is what makes
+                # it correct for multi-pip cards, but it must not turn a
+                # cost-less template into an AttributeError at construction.
+                _mc = self.mana_cost
+                self.phyrexian_pip_count = (
+                    sum(_mc.phyrexian.values())
+                    if _mc is not None and getattr(_mc, 'phyrexian', None)
+                    else 0)
             if not self.has_token_effect:
                 self.has_token_effect = _phte(self.oracle_text)
             if not self.has_graveyard_recursion:
@@ -951,8 +1348,33 @@ class CardTemplate:
                 self.has_charge_counter_ability = _phcca(self.oracle_text)
             if self.cast_trigger_token is None:
                 self.cast_trigger_token = _pctt(self.oracle_text)
+            if self.ordinal_cast_trigger is None:
+                self.ordinal_cast_trigger = _poct(self.oracle_text)
             if self.enters_type_counter is None:
                 self.enters_type_counter = _petc(self.oracle_text)
+            if self.counter_placement_trigger is None:
+                self.counter_placement_trigger = _pcpt(self.oracle_text,
+                                                       name=self.name)
+            if self.counter_placement_replacement is None:
+                from .oracle_parser import (
+                    parse_counter_placement_replacement as _pcpr)
+                self.counter_placement_replacement = _pcpr(
+                    self.oracle_text, name=self.name)
+            if self.etb_targeted_removal_data is None:
+                from .oracle_parser import (
+                    parse_etb_targeted_removal as _petr)
+                self.etb_targeted_removal_data = _petr(
+                    self.oracle_text, name=self.name)
+            if self.turn_scoped_restriction is None:
+                from .oracle_parser import (
+                    parse_turn_scoped_restriction as _ptsr)
+                self.turn_scoped_restriction = _ptsr(self.oracle_text)
+            if self.hand_attack_data is None:
+                from .oracle_parser import parse_hand_attack as _pha
+                self.hand_attack_data = _pha(self.oracle_text)
+            if not self.mass_graveyard_return:
+                from .oracle_parser import parse_mass_graveyard_return as _pmgr
+                self.mass_graveyard_return = _pmgr(self.oracle_text)
             if self.land_type_bonuses is None:
                 from .oracle_parser import parse_land_type_bonuses as _pltb
                 self.land_type_bonuses = _pltb(self.oracle_text)
@@ -981,6 +1403,11 @@ class CardTemplate:
                 from .oracle_parser import parse_land_destruction as _pld
                 self.land_destruction_data = _pld(self.oracle_text)
                 self.destroys_target_land = self.land_destruction_data is not None
+            # Impulse / library-dig (CR 120): derive for synthetic templates;
+            # CardDatabase sets this explicitly for DB-loaded cards.
+            if self.library_dig_data is None:
+                from .oracle_parser import parse_library_dig as _pldig
+                self.library_dig_data = _pldig(self.oracle_text)
 
     @property
     def is_creature(self) -> bool:
@@ -1085,6 +1512,22 @@ class CardInstance:
     cem_power_mod: int = 0
     cem_toughness_mod: int = 0
     cem_keywords: Set[Keyword] = field(default_factory=set)
+    # Layer-5 colour SET (CR 105.2b / CR 613.1e).  None = no
+    # colour-setting effect applies and the permanent is its printed
+    # colour; a frozenset REPLACES the printed colour (a set, not an
+    # accumulator — unlike the cem_* fields above — because that is
+    # what "is all colors" does).  Written only by
+    # ContinuousEffectsManager.recalculate, read through the `colors`
+    # property below.  Never write the template: templates are shared
+    # database objects and a mutation there leaks into every other
+    # game in the process.
+    cem_colors_set: Optional[frozenset] = None
+    # Layer-4 land-type SET ("Nonbasic lands are Mountains", CR 305.7):
+    # the lowercase basic type this land currently IS, or None for its
+    # printed types.  Written only by ContinuousEffectsManager.recalculate;
+    # read by the mana accessors (a set land produces that basic type's
+    # colour and nothing else) and by the fetch path (no other abilities).
+    cem_land_type_set: Optional[str] = None
     # Land animation ("this land becomes an N/M creature until end of
     # turn") — Track H. While True the instance belongs to the combat
     # class (creatures property, can_attack/can_block, SBA death
@@ -1249,21 +1692,97 @@ class CardInstance:
             return self.loyalty_counters
         return self.other_counters.get(kind, 0)
 
+    def add_plus_counters(self, n: int, game=None, source=None) -> None:
+        """Put `n` +1/+1 counters on this permanent — the ONE funnel for
+        every +1/+1 placement in the engine (modular entry, "enters with X
+        counters", tutor-entry riders, ETB watchers, activation costs, …).
+
+        One call is one placement EVENT: a template that declares a
+        "whenever one or more +1/+1 counters are put on this …" trigger
+        (`CardTemplate.counter_placement_trigger`) fires it exactly once
+        per call, however many counters the call put on (CR 603.2c, "one
+        or more"). Counters put on an object that is not on the battlefield
+        do not trigger battlefield abilities (CR 122). `game` defaults to
+        the instance's bound game state; `source` is the object that put
+        the counters (logging only).
+        """
+        if n <= 0:
+            return
+        game = game if game is not None else self._game_state
+        n = self.replaced_counter_amount(COUNTER_KIND_PLUS, n, game)
+        if n <= 0:
+            return
+        self.plus_counters += n
+        if (game is None or self.zone != "battlefield"
+                or self.template.counter_placement_trigger is None):
+            return
+        from .triggers import TriggerManager
+        TriggerManager.trigger_counter_placement(game, self, n, source)
+
     def adjust_counters(self, kind: str, delta: int) -> None:
         """Add (or, with a negative delta, remove) counters of `kind`.
 
         Counts never go below zero — CR 122.3: removing more counters than
         are present simply removes what is there.
         """
-        if kind == COUNTER_KIND_PLUS:
+        if kind == COUNTER_KIND_PLUS and delta > 0:
+            # A positive +1/+1 delta IS a placement event: route through the
+            # funnel so the counter-placement trigger sees it.
+            self.add_plus_counters(delta)
+        elif kind == COUNTER_KIND_PLUS:
             self.plus_counters = max(0, self.plus_counters + delta)
         elif kind == COUNTER_KIND_MINUS:
+            if delta > 0:
+                delta = self.replaced_counter_amount(kind, delta)
             self.minus_counters = max(0, self.minus_counters + delta)
         elif kind == COUNTER_KIND_LOYALTY:
             self.loyalty_counters = max(0, self.loyalty_counters + delta)
         else:
+            if delta > 0:
+                delta = self.replaced_counter_amount(kind, delta)
             self.other_counters[kind] = max(
                 0, self.other_counters.get(kind, 0) + delta)
+
+    def replaced_counter_amount(self, kind: str, n: int, game=None) -> int:
+        """How many `kind` counters actually land when `n` would be put on
+        this permanent — the counter-placement replacement layer (CR
+        614.1c) of the ONE counter funnel.
+
+        Every `CardTemplate.counter_placement_replacement` controlled by
+        this permanent's controller whose kind and scope match applies
+        exactly once (CR 614.5). CR 616.1 gives the affected object's
+        controller the ordering choice; additive replacements are applied
+        before multiplicative ones, the controller-optimal order for the
+        printed shapes (both "+1" and "×2" grow, "−1" shrinks a kind the
+        controller never wants). Counters put on an object off the
+        battlefield are not modified (CR 122 — no permanents' static
+        abilities apply). Never returns below zero.
+        """
+        if n <= 0:
+            return n
+        game = game if game is not None else self._game_state
+        if game is None or self.zone != "battlefield":
+            return n
+        repls = []
+        for perm in game.players[self.controller].battlefield:
+            r = perm.template.counter_placement_replacement
+            if r is None:
+                continue
+            if r.kind is not None and r.kind != kind:
+                continue
+            if r.self_only:
+                if perm is not self:
+                    continue
+            else:
+                words = {t.value.lower() for t in self.effective_card_types}
+                words |= {st.lower() for st in self.effective_subtypes}
+                words.add("permanent")
+                if not any(w in words for w in r.scope):
+                    continue
+            repls.append(r)
+        for r in sorted(repls, key=lambda r: 0 if r.op == "add" else 1):
+            n = n + r.n if r.op == "add" else n * r.n
+        return max(0, n)
 
     def _get_domain_count(self) -> int:
         """Count basic land types among lands controlled by this card's controller."""
@@ -1496,27 +2015,7 @@ class CardInstance:
         if getattr(self.template, 'has_artifact_count_scaling', False):
             base = self._effective_printed_power() + self._get_artifact_count()
         # Equipment scaling (Cranial Plating, Nettlecyst, etc.)
-        # Tags are equipped_{instance_id} — unique per equipment, supports stacking.
-        for tag in self.instance_tags:
-            if tag.startswith("equipped_"):
-                try:
-                    equip_iid = int(tag[len("equipped_"):])
-                    if self._game_state is None:
-                        continue
-                    equip_perm = self._game_state.get_card_by_id(equip_iid)
-                    if equip_perm is None:
-                        continue
-                    eq_oracle = (equip_perm.template.oracle_text or '').lower()
-                    # "X and/or Y" clauses (Nettlecyst: artifact and/or
-                    # enchantment) count the union, not just X. Detect
-                    # the union form before the artifact-only form.
-                    if ('artifact and/or enchantment' in eq_oracle
-                            or 'enchantment and/or artifact' in eq_oracle):
-                        base += self._get_artifact_or_enchantment_count()
-                    elif 'for each artifact' in eq_oracle or 'artifact you control' in eq_oracle:
-                        base += self._get_artifact_count()
-                except (ValueError, AttributeError):
-                    pass
+        base += self.equipment_power_bonus()
         # Land-type conditional bonus: "gets +N/+N as long as you control
         # a [LandType]" (Wild Nacatl / similar creatures). Each bonus fires
         # when the controller has at least one land of the matching subtype.
@@ -1531,6 +2030,46 @@ class CardInstance:
                 ):
                     base += bonus
         return base
+
+    def equipment_power_bonus(self) -> int:
+        """Power this creature has from attached Equipment — the share
+        that SURVIVES the creature (CR 301.5c: Equipment stays on the
+        battlefield when the equipped creature leaves, and re-attaches
+        for its equip cost).  Counters, Auras and the creature's own
+        scaling are the creature's own and die with it.
+
+        Tags are equipped_{instance_id} — unique per Equipment, so
+        stacked Equipment adds up.
+        """
+        bonus = 0
+        for tag in self.instance_tags:
+            if not tag.startswith("equipped_"):
+                continue
+            try:
+                equip_iid = int(tag[len("equipped_"):])
+                if self._game_state is None:
+                    continue
+                equip_perm = self._game_state.get_card_by_id(equip_iid)
+                if equip_perm is None:
+                    continue
+                eq_oracle = (equip_perm.template.oracle_text or '').lower()
+                # "X and/or Y" clauses (Nettlecyst: artifact and/or
+                # enchantment) count the union, not just X. Detect
+                # the union form before the artifact-only form.
+                if ('artifact and/or enchantment' in eq_oracle
+                        or 'enchantment and/or artifact' in eq_oracle):
+                    bonus += self._get_artifact_or_enchantment_count()
+                elif 'for each artifact' in eq_oracle or 'artifact you control' in eq_oracle:
+                    bonus += self._get_artifact_count()
+                else:
+                    # Flat "Equipped creature gets +N/+M" grant
+                    # (Bonesplitter, the Sword cycle, Cori-Steel Cutter,
+                    # ...). Parsed once at load into equip_power_grant;
+                    # 0 for non-pump equipment, so this is a no-op there.
+                    bonus += getattr(equip_perm.template, 'equip_power_grant', 0)
+            except (ValueError, AttributeError):
+                pass
+        return bonus
 
     def _dynamic_base_toughness(self) -> int:
         """Calculate base toughness — mirrors _dynamic_base_power scaling logic."""
@@ -1595,6 +2134,11 @@ class CardInstance:
                                 base += self._get_artifact_or_enchantment_count()
                             else:
                                 base += self._get_artifact_count()
+                    else:
+                        # Flat "Equipped creature gets +N/+M" grant — parsed
+                        # once at load into equip_toughness_grant (0 for the
+                        # scaling form and for non-pump equipment).
+                        base += getattr(equip_perm.template, 'equip_toughness_grant', 0)
                 except (ValueError, AttributeError):
                     pass
         # Land-type conditional bonus (mirrors _dynamic_base_power logic).
@@ -1616,7 +2160,48 @@ class CardInstance:
 
     @property
     def keywords(self) -> Set[Keyword]:
-        return self.template.keywords | self.temp_keywords | self.cem_keywords
+        return (self.template.keywords | self.temp_keywords | self.cem_keywords
+                | self._equip_granted_keywords())
+
+    def _equip_granted_keywords(self) -> Set[Keyword]:
+        """Keywords granted by Equipment attached to this creature ("Equipped
+        creature has trample and haste"). Reads the equipment's typed
+        equip_keyword_grant (parsed once at load) via the same equipped_{iid}
+        instance-tag scan the equip P/T grant uses — no oracle re-parse."""
+        granted: Set[Keyword] = set()
+        if self._game_state is None:
+            return granted
+        for tag in self.instance_tags:
+            if not tag.startswith("equipped_"):
+                continue
+            try:
+                equip_iid = int(tag[len("equipped_"):])
+            except ValueError:
+                continue
+            equip_perm = self._game_state.get_card_by_id(equip_iid)
+            if equip_perm is None:
+                continue
+            for kw_val in getattr(equip_perm.template, 'equip_keyword_grant',
+                                  frozenset()):
+                kw = _KEYWORD_BY_VALUE.get(kw_val)
+                if kw is not None:
+                    granted.add(kw)
+        return granted
+
+    @property
+    def colors(self) -> Set[Color]:
+        """This permanent's CURRENT colour (CR 105.2, CR 613 layer 5).
+
+        The printed colour unless a colour-setting continuous effect
+        applies, in which case that effect's colour replaces it
+        (CR 105.2b "is all colors" SETS colour, it does not add).
+        Every runtime colour read on a permanent goes through here so
+        that layer-5 effects are visible to colour-conditional rules
+        (protection, colour-conditional keyword grants, "permanents
+        that are one or more colors" sweeps)."""
+        if self.cem_colors_set is not None:
+            return set(self.cem_colors_set)
+        return set(self.template.colors)
 
     @property
     def has_deathtouch(self) -> bool:

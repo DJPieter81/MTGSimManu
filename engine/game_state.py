@@ -31,7 +31,11 @@ from .sba_manager import SBAManager
 from .turn_manager import TurnManager, TurnStep
 from .card_effects import EFFECT_REGISTRY, EffectTiming
 from .continuous_effects import ContinuousEffectsManager
+from .delayed_triggers import (
+    DelayedTrigger, DelayedTriggerQueue, DelayedTriggerStep,
+)
 from .callbacks import GameCallbacks, DefaultCallbacks
+from .discard_manager import DiscardManager
 from .constants import (
     STARTING_LIFE, MAX_HAND_SIZE, MAX_TURNS, SBA_MAX_ITERATIONS,
     FETCH_LAND_LIFE_COST,
@@ -108,6 +112,13 @@ class GameState:
         # end step" (Mobilize, CR 702 Mobilize reminder text). Entries are
         # CardInstance objects; processed and cleared in end_of_turn_cleanup.
         self._end_of_turn_sacrifices: List["CardInstance"] = []
+        # General delayed-trigger queue (CR 603.7) — "at the beginning of
+        # <a later step>, <effect>". The two lists above are the engine's
+        # two pre-queue special cases (end-step-only, effect hard-coded at
+        # the firing site); everything new goes here, where the timing rule
+        # and the fire-once guarantee are stated once. See
+        # engine/delayed_triggers.py for the measured card class.
+        self.delayed_triggers = DelayedTriggerQueue()
         # Game log
         self.log: List[str] = []
         self.max_turns: int = MAX_TURNS
@@ -128,6 +139,26 @@ class GameState:
         other tokens are unaffected.
         """
         self._end_of_turn_sacrifices.append(card)
+
+    def register_delayed_trigger(self, trigger: "DelayedTrigger") -> None:
+        """Queue a delayed triggered ability (CR 603.7).
+
+        The trigger's `effect` closes over everything it needs at creation
+        time, so it keeps working after its source has left the battlefield
+        — CR 603.7d, and the reason a self-sacrificing source (Mishra's
+        Bauble pays its own cost by sacrificing itself) still delivers.
+        """
+        self.delayed_triggers.register(trigger)
+
+    def fire_delayed_triggers(self, step: "DelayedTriggerStep") -> int:
+        """Drain every delayed trigger due at `step`. Returns how many fired.
+
+        Called from the two places the turn loop reaches those steps — the
+        upkeep step in `GameRunner`, the end step in
+        `TurnManager.end_of_turn_cleanup` — so a delayed effect fires at its
+        printed moment no matter which subsystem created it.
+        """
+        return self.delayed_triggers.fire_for_step(self, step)
 
     def register_end_of_turn_exile(self, card: CardInstance,
                                    controller: int) -> None:
@@ -461,6 +492,21 @@ class GameState:
         """LE-E2: pay the suspend cost and exile the card with time counters."""
         return CastManager.suspend_card(self, player_idx, card)
 
+    def can_plot(self, player_idx: int, card: CardInstance) -> bool:
+        return CastManager.can_plot(self, player_idx, card)
+
+    def plot_card(self, player_idx: int, card: CardInstance) -> bool:
+        """CR 702.170: pay the plot cost and exile the card from hand."""
+        return CastManager.plot_card(self, player_idx, card)
+
+    def can_cast_plotted(self, player_idx: int, card: CardInstance) -> bool:
+        return CastManager.can_cast_plotted(self, player_idx, card)
+
+    def cast_plotted(self, player_idx: int, card: CardInstance,
+                     targets=None) -> bool:
+        """CR 702.170: cast a plotted card from exile for free on a later turn."""
+        return CastManager.cast_plotted(self, player_idx, card, targets)
+
     def tick_suspend_upkeep(self, player_idx: int) -> None:
         """LE-E2: upkeep hook — decrement one counter on each suspended
         card the player controls; when the last is removed, cast for free."""
@@ -525,22 +571,47 @@ class GameState:
             land.tapped = True
             remaining -= 1
 
-        if 'equipment' in getattr(template, 'tags', set()) or 'pump' in getattr(template, 'tags', set()):
-            # Use instance_id-based tag so stacking the same equipment works correctly.
-            # Format: equipped_{equipment.instance_id}  (unique per equipment object)
-            equip_tag = f"equipped_{equipment.instance_id}"
-            # Remove this specific equipment from any creature it was previously on
-            for c in player.creatures:
-                c.instance_tags.discard(equip_tag)
-            # Attach to new creature
-            creature.instance_tags.add(equip_tag)
-            # Mark equipment as attached
-            equipment.instance_tags.discard("equipment_unattached")
-            equipment.instance_tags.add("equipment_attached")
+        self.attach_equipment(player_idx, equipment, creature)
 
         self.log.append(f"T{self.display_turn} P{player_idx+1}: "
                         f"Equip {equipment.name} to {creature.name} "
                         f"(cost {template.equip_cost})")
+        return True
+
+    def attach_equipment(self, player_idx: int, equipment: CardInstance,
+                         creature: CardInstance) -> bool:
+        """Attach an Equipment to a creature (CR 301.5), cost-free.
+
+        The attachment step of `equip_creature`, split out because equipping
+        is not the only way an Equipment becomes attached: a triggered
+        ability may attach it as part of its effect ("create a token, then
+        attach this Equipment to it") with no equip cost and no activation.
+        Both paths must leave the same state behind, which is why they share
+        this one owner:
+
+          - `equipped_{instance_id}` on the creature (instance-id keyed, so
+            several Equipment stack on one creature);
+          - CR 301.5c — an Equipment is attached to at most one creature, so
+            the tag is removed from whatever it was on before;
+          - `equipment_attached` on the Equipment and, crucially,
+            `equipment_unattached` removed: that tag is what the AI's equip
+            planner reads to find Equipment still needing an activation.
+        """
+        template = equipment.template
+        if not ('equipment' in getattr(template, 'tags', set())
+                or 'pump' in getattr(template, 'tags', set())):
+            return False
+        # Use instance_id-based tag so stacking the same equipment works correctly.
+        # Format: equipped_{equipment.instance_id}  (unique per equipment object)
+        equip_tag = f"equipped_{equipment.instance_id}"
+        # Remove this specific equipment from any creature it was previously on
+        for c in self.players[player_idx].creatures:
+            c.instance_tags.discard(equip_tag)
+        # Attach to new creature
+        creature.instance_tags.add(equip_tag)
+        # Mark equipment as attached
+        equipment.instance_tags.discard("equipment_unattached")
+        equipment.instance_tags.add("equipment_attached")
         return True
 
     def cast_spell(self, player_idx: int, card: CardInstance,
@@ -623,7 +694,8 @@ class GameState:
     def _bounce_permanent(self, permanent: CardInstance):
         PermanentEffects._bounce_permanent(self, permanent)
 
-    def _force_discard(self, player_idx: int, count: int, self_discard: bool = False):
+    def _force_discard(self, player_idx: int, count: int, self_discard: bool = False,
+                       candidates: Optional[List[CardInstance]] = None):
         """Discard cards from hand. The per-card choice is delegated
         to self.callbacks.choose_discard — the AI wire-up installs
         ai.discard_advisor.choose_discard, the default picks the
@@ -632,6 +704,11 @@ class GameState:
         self_discard=True means the player chose to discard (Faithful
         Mending, etc.). self_discard=False means an opponent forced
         the discard (Thoughtseize, etc.).
+
+        ``candidates`` narrows the choice to the cards the effect may
+        legally take (a reveal-and-choose clause's restriction — "a
+        nonland card … with mana value 3 or less"); the engine names
+        the legal set, the callback picks within it.  None = whole hand.
 
         Bug E2 fix: opponent-forced discard (self_discard=False) routes
         through ai.discard_advisor, which delegates scoring to
@@ -643,17 +720,28 @@ class GameState:
         for _ in range(min(count, len(player.hand))):
             if not player.hand:
                 break
+            pool = (list(player.hand) if candidates is None
+                    else [c for c in candidates if c in player.hand])
+            if not pool:
+                break
             card = self.callbacks.choose_discard(
-                self, player_idx, list(player.hand), self_discard)
+                self, player_idx, pool, self_discard)
             if card is None:
                 # Opponent-forced discard on an all-lands hand: the
                 # Thoughtseize-text "nonland card" clause means nothing
                 # else can be discarded. Stop the loop.
                 break
-            self.zone_mgr.move_card(
-                self, card, "hand", "graveyard",
+            self.discard_card(
+                player_idx, card,
                 cause="forced discard" if not self_discard else "discard"
             )
+
+    def discard_card(self, player_idx: int, card: CardInstance,
+                     cause: str = "discard") -> str:
+        """The discard event (CR 701.8) for one chosen card — the single
+        funnel every discard site uses, so discard replacements (madness,
+        CR 702.35) apply uniformly. Returns the zone the card ended in."""
+        return DiscardManager.discard_card(self, player_idx, card, cause)
 
     # ─── TRIGGERS ────────────────────────────────────────────────
 

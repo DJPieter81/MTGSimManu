@@ -154,7 +154,9 @@ class TestFatalPushRevoltThreshold:
 
     def test_mv_threshold_is_four_with_revolt(self, card_db):
         game = GameState(rng=random.Random(0))
-        game.players[0].creatures_died_this_turn = 1
+        # CR 702.139 revolt reads the broad "a permanent left the battlefield
+        # this turn" tally, not the narrower creature-death signal.
+        game.players[0].permanents_left_battlefield_this_turn = 1
         assert _fatal_push_mv_max(game, None, 0, None) == 4
 
 

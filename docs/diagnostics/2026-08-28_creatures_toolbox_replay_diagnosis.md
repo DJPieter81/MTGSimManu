@@ -1,6 +1,6 @@
 ---
 title: Creatures Toolbox — replay diagnosis; X-creature-tutor valuation is credited without a resolver, and the list is ~40% inert
-status: active
+status: superseded
 priority: primary
 session: 2026-08-28
 supersedes: []
@@ -28,6 +28,29 @@ summary: >
   the resolver gap (class-wide, Chord of Calling / Eldritch Evolution too),
   then lower this row's band to ~10-20% until the mana-doubling and
   untap-counter classes exist.
+---
+
+**SUPERSEDED (2026-08-31).** §7's primary fix — a generic resolver for
+`x_creature_tutor_data` shared by every card carrying the X-bound
+creature-tutor shape — landed the same day this doc was written, in
+`b9f4010`/PR #565 ("generic X-creature-tutor resolver"). Verified still live
+at HEAD: `engine/oracle_resolver.py::_resolve_x_creature_tutor` is the sole
+resolver, the Green Sun's Zenith per-card handler is deleted with a comment
+pointing at the replacement, and `x_creature_tutor_data` now parses for
+Nature's Rhythm, Chord of Calling, Finale of Devastation and Vision Quest
+in addition to GSZ. `tests/test_x_creature_tutor_generic_resolution.py` +
+`tests/test_x_cost_tutor_uses_paid_x.py` — 26 tests, green.
+
+**The 25-deck matrix run on 2026-08-30 (n=20) measured Creatures Toolbox at
+12.9%** — inside this doc's own predicted band (~10-20%) for a deck still
+missing the mana-doubling-on-tap and untap-via-counter-cost classes (§5).
+Per this doc's own verdict ("stop treating the row as a calibration
+mystery"), 12.9% is not re-diagnosed here. The three engine gaps in §5
+(Leyline of Abundance / Badgermole Cub mana-doubling — 8 cards; Devoted
+Druid untap-via-counter — 4 cards + Vizier; Walking Ballista
+remove-counter-as-cost) remain unbuilt and are the next lever if this row
+is revisited, not a fresh replay pass.
+
 ---
 
 # Creatures Toolbox — replay diagnosis (2026-08-28)

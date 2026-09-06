@@ -1,0 +1,884 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+======================================================================
+  GAME 1: Domain Zoo (P1) vs Izzet Prowess (P2)  —  seed 57001
+  Series: Domain Zoo 0 - 0 Izzet Prowess
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Domain Zoo wins → chooses to play first
+║ P1 (on play): Domain Zoo
+║ P2 (on draw): Izzet Prowess
+╚═══════════════════════════════════════════════════════
+
+P1 (Domain Zoo) opening hand (2 lands, 5 spells):
+  • Arid Mesa [Land, CMC 0]
+  • Leyline Binding [Spell, CMC 6]
+  • Psychic Frog [Creature, CMC 2]
+  • Scion of Draco [Creature, CMC 12]
+  • Psychic Frog [Creature, CMC 2]
+  • Territorial Kavu [Creature, CMC 2]
+  • Indatha Triome [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Leyline Binding, Territorial Kavu, 3 cheap spells
+
+P2 (Izzet Prowess) opening hand (1 lands, 6 spells):
+  • Dragon's Rage Channeler [Creature, CMC 1]
+  • Mishra's Bauble [Spell, CMC 0]
+  • Preordain [Spell, CMC 1]
+  • Preordain [Spell, CMC 1]
+  • Mutagenic Growth [Spell, CMC 1]
+  • Wooded Foothills [Land, CMC 0]
+  • Mutagenic Growth [Spell, CMC 1]
+→ P2 KEEPS 7 — has key card(s): Dragon's Rage Channeler, 6 cheap spells
+
+
+╔══ TURN 1 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 20  |  Izzet Prowess 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Indatha Triome (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 20  |  Domain Zoo 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Indatha Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+T1 P2: Play Wooded Foothills
+T1: Wooded Foothills moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Wooded Foothills (pay 1 life) -> Steam Vents (tapped, life: 19)
+    → Goal: curve_out
+T1 P2: Cast Mishra's Bauble (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Mishra's Bauble
+T1: Mishra's Bauble moved battlefield -> graveyard (activation cost (Mishra's Bauble))
+T1 P2: activate Mishra's Bauble — Look at the top card of target player's library. Draw a card at the beginning of the next turn's upkeep.
+T1 P2: Mishra's Bauble queues a delayed trigger (next_upkeep)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 20  |  Izzet Prowess 19
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Indatha Triome
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T2: delayed trigger — Mishra's Bauble: Look at the top card of target player's library. Draw a card at the beginning of the next turn's upkeep.
+T2 P2: Mishra's Bauble activated — draw 1 (Lightning Bolt)
+  [Draw] P1 draws: Psychic Frog
+  [Main 1]
+T2 P1: Play Arid Mesa
+T2: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T2 P1: Crack Arid Mesa (pay 1 life) -> Steam Vents (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 19  |  Domain Zoo 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: Steam Vents
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Indatha Triome, Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mishra's Bauble
+  [Main 1]
+T2 P2: Play Arid Mesa
+T2: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T2 P2: Crack Arid Mesa (pay 1 life) -> Steam Vents (tapped, life: 18)
+    → Goal: curve_out
+    [Target] → face (3 dmg, life 19 → 16): face value 0.45
+    [Mana] Tap Steam Vents→R (paying for Lightning Bolt, 0 mana remaining)
+T2 P2: Cast Lightning Bolt (R)
+    [Priority] P1 passes (no response)
+T2: Resolve Lightning Bolt
+T2 P2: Lightning Bolt → 3 damage → life 16
+T2: Lightning Bolt moved stack -> graveyard (resolution)
+    → Goal: curve_out
+T2 P2: Cast Mishra's Bauble (0)
+    [Priority] P1 passes (no response)
+T2: Resolve Mishra's Bauble
+T2: Mishra's Bauble moved battlefield -> graveyard (activation cost (Mishra's Bauble))
+T2 P2: activate Mishra's Bauble — Look at the top card of target player's library. Draw a card at the beginning of the next turn's upkeep.
+T2 P2: Mishra's Bauble queues a delayed trigger (next_upkeep)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 16  |  Izzet Prowess 18
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Indatha Triome, Steam Vents
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: Steam Vents [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T3: delayed trigger — Mishra's Bauble: Look at the top card of target player's library. Draw a card at the beginning of the next turn's upkeep.
+T3 P2: Mishra's Bauble activated — draw 1 (Violent Urge)
+  [Draw] P1 draws: Leyline of the Guildpact
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Steam Vents→R, Indatha Triome→B (paying for Scion of Draco, 0 mana remaining)
+T3 P1: Cast Scion of Draco (12)
+    [Priority] P2 passes (no response)
+T3: Resolve Scion of Draco
+T3 P1: Scion of Draco enters — creatures gain vigilance/hexproof/lifelink/first strike/trample if white/blue/black/red/green
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 18  |  Domain Zoo 16
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 47  |  Graveyard: 5
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Steam Vents
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4)
+║   Lands: Indatha Triome [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Bloodstained Mire
+  [Main 1]
+T3 P2: Play Bloodstained Mire
+T3: Bloodstained Mire moved battlefield -> graveyard (fetchland sacrifice)
+T3 P2: Crack Bloodstained Mire (pay 1 life) -> Steam Vents (untapped, life: 15)
+    → Goal: curve_out
+    [Mana] Tap Steam Vents→U (paying for Preordain, 2 mana remaining)
+T3 P2: Cast Preordain (U)
+    [Priority] P1 passes (no response)
+T3: Resolve Preordain
+T3 P2: scry 2 (Monastery Swiftspear, Bloodstained Mire) → bottom: none
+T3 P2: Preordain → draw 1 (Monastery Swiftspear)
+T3: Preordain moved stack -> graveyard (resolution)
+    → Goal: curve_out
+    [Mana] Tap Steam Vents→U (paying for Preordain, 1 mana remaining)
+T3 P2: Cast Preordain (U)
+    [Priority] P1 passes (no response)
+T3: Resolve Preordain
+T3 P2: scry 2 (Bloodstained Mire, Lava Dart) → bottom: none
+T3 P2: Preordain → draw 1 (Bloodstained Mire)
+T3: Preordain moved stack -> graveyard (resolution)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Steam Vents→R (paying for Dragon's Rage Channeler, 0 mana remaining)
+T3 P2: Cast Dragon's Rage Channeler (R)
+    [Priority] P1 passes (no response)
+T3: Resolve Dragon's Rage Channeler
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 16  |  Izzet Prowess 15
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4)
+║   Lands: Indatha Triome, Steam Vents
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (3/3)
+║   Lands: Steam Vents [T], Steam Vents [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Indatha Triome→W (paying for Leyline Binding, 1 mana remaining)
+T4 P1: Cast Leyline Binding (5W)
+    [Priority] P2 passes (no response)
+T4: Resolve Leyline Binding
+T4: Dragon's Rage Channeler moved battlefield -> exile (exiled)
+T4 P1: Leyline Binding exiles Dragon's Rage Channeler
+    → Goal: curve_out [enablers]
+    [Mana] Tap Steam Vents→R (paying for Ragavan, Nimble Pilferer, 0 mana remaining)
+T4 P1: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P2 passes (no response)
+T4: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Scion of Draco
+T4 P1: Attack with Scion of Draco
+  [Declare Blockers] P2 does not block
+T4 P1:   Scion of Draco (4/4) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 15 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 11  |  Domain Zoo 16
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 43  |  Graveyard: 8
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Steam Vents, Steam Vents
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4) [tapped], Ragavan, Nimble Pilferer (2/1)
+║   Other: Leyline Binding
+║   Lands: Indatha Triome [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Lava Dart
+  [Main 1]
+T4 P2: Play Bloodstained Mire
+T4: Bloodstained Mire moved battlefield -> graveyard (fetchland sacrifice)
+T4 P2: Crack Bloodstained Mire -> Mountain (untapped)
+    → Goal: curve_out
+    [Mana] Tap Mountain→R (paying for Lava Dart, 3 mana remaining)
+T4 P2: Cast Lava Dart (R)
+    [Priority] P1 passes (no response)
+T4: Resolve Lava Dart
+T4: Lava Dart moved stack -> graveyard (resolution)
+    → Goal: curve_out
+    [Mana] Tap Steam Vents→R (paying for Lava Dart, 2 mana remaining)
+T4 P2: Flashback Lava Dart — sacrifice Steam Vents
+T4 P2: Cast Lava Dart (R)
+    [Priority] P1 passes (no response)
+T4: Resolve Lava Dart
+T4: Lava Dart moved stack -> exile (flashback resolution (CR 702.33a))
+    → Goal: curve_out [enablers]
+    [Mana] Tap Steam Vents→R (paying for Monastery Swiftspear, 1 mana remaining)
+T4 P2: Cast Monastery Swiftspear (R)
+    [Priority] P1 passes (no response)
+T4: Resolve Monastery Swiftspear
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 16  |  Izzet Prowess 10
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4), Ragavan, Nimble Pilferer (2/1)
+║   Other: Leyline Binding
+║   Lands: Indatha Triome, Steam Vents
+║ Izzet Prowess board:
+║   Creatures: Monastery Swiftspear (1/2)
+║   Lands: Steam Vents [T], Steam Vents, Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Quantum Riddler
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Steam Vents→U, Indatha Triome→B (paying for Quantum Riddler, 0 mana remaining)
+T5 P1: Warp Quantum Riddler (pays 1U)
+T5 P1: Cast Quantum Riddler (3UU)
+    [Priority] P2 passes (no response)
+T5: Resolve Quantum Riddler
+T5 P1: Quantum Riddler ETB: draw 1 (Psychic Frog)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Scion of Draco, Ragavan, Nimble Pilferer
+T5 P1: Attack with Scion of Draco, Ragavan, Nimble Pilferer
+T5 P2:   [BLOCK-EMERGENCY] Monastery Swiftspear (1/2) blocks Ragavan, Nimble Pilferer (2/1) — lifespan_delta=+0.45
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T5: Monastery Swiftspear dies
+T5 P1:   Scion of Draco (4/4) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 10 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+T5: Quantum Riddler moved battlefield -> exile (Warp exile)
+T5: Quantum Riddler exiled (Warp)
+
+╔══ TURN 5 — Izzet Prowess (P2) ══════════════════════════
+║ Life: Izzet Prowess 6  |  Domain Zoo 16
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 41  |  Graveyard: 11
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Steam Vents, Mountain
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4) [tapped], Ragavan, Nimble Pilferer (2/1) [tapped]
+║   Other: Leyline Binding
+║   Lands: Indatha Triome [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mountain
+  [Main 1]
+T5 P2: Play Mountain
+    → Goal: curve_out
+    [Mana] Tap Mountain→R (paying for Violent Urge, 3 mana remaining)
+T5 P2: Cast Violent Urge (R)
+    [Priority] P1 passes (no response)
+T5: Resolve Violent Urge
+T5: Violent Urge moved stack -> graveyard (resolution)
+    → Goal: curve_out
+T5 P2: Pay 2 life (Phyrexian mana) for Mutagenic Growth
+T5 P2: Cast Mutagenic Growth (G)
+    [Priority] P1 passes (no response)
+T5: Resolve Mutagenic Growth
+T5: Mutagenic Growth moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 16  |  Izzet Prowess 2
+║ Hand: 6 cards  |  Opp hand: 1 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4), Ragavan, Nimble Pilferer (2/1)
+║   Other: Leyline Binding
+║   Lands: Indatha Triome, Steam Vents
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Steam Vents, Mountain [T], Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Leyline of the Guildpact
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Steam Vents→U, Indatha Triome→B (paying for Psychic Frog, 0 mana remaining)
+T6 P1: Cast Psychic Frog (UB)
+    [Priority] P2 passes (no response)
+T6: Resolve Psychic Frog
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Scion of Draco, Ragavan, Nimble Pilferer
+T6 P1: Attack with Scion of Draco, Ragavan, Nimble Pilferer
+  [Declare Blockers] P2 does not block
+T6 P1:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T6 P1: Create 1x Treasure token(s)
+T6 P1: Ragavan, Nimble Pilferer exiles Lava Dart from top of P2's library
+T6 P1: Ragavan, Nimble Pilferer — may cast Lava Dart this turn
+P2 loses: life total 0
+  [Combat Damage] 2 damage dealt → P2 life: 2 → 0
+
+>>> Domain Zoo wins Game 1 on turn 6 via damage
+    Final life: Domain Zoo=16  Izzet Prowess=0
+
+======================================================================
+  GAME 2: Izzet Prowess (P1) vs Domain Zoo (P2)  —  seed 57002
+  Series: Domain Zoo 1 - 0 Izzet Prowess
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Domain Zoo wins → chooses to play first
+║ P1 (on play): Domain Zoo
+║ P2 (on draw): Izzet Prowess
+╚═══════════════════════════════════════════════════════
+
+P1 (Izzet Prowess) opening hand (1 lands, 6 spells):
+  • Fiery Islet [Land, CMC 0]
+  • Violent Urge [Spell, CMC 1]
+  • Dragon's Rage Channeler [Creature, CMC 1]
+  • Dragon's Rage Channeler [Creature, CMC 1]
+  • Preordain [Spell, CMC 1]
+  • Expressive Iteration [Spell, CMC 2]
+  • Monastery Swiftspear [Creature, CMC 1]
+→ P1 KEEPS 7 — has key card(s): Dragon's Rage Channeler, Monastery Swiftspear, 6 cheap spells
+
+P2 (Domain Zoo) opening hand (3 lands, 4 spells):
+  • Temple Garden [Land, CMC 0]
+  • Practiced Offense [Spell, CMC 3]
+  • Polluted Delta [Land, CMC 0]
+  • Stubborn Denial [Spell, CMC 1]
+  • Scion of Draco [Creature, CMC 12]
+  • Meticulous Archive [Land, CMC 0]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+→ P2 KEEPS 7 — has key card(s): Ragavan, Nimble Pilferer, 3 cheap spells
+
+
+╔══ TURN 1 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 20  |  Izzet Prowess 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Polluted Delta
+T1: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Polluted Delta (pay 1 life) -> Steam Vents (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Izzet Prowess (P1) ══════════════════════════
+║ Life: Izzet Prowess 20  |  Domain Zoo 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Dragon's Rage Channeler
+  [Main 1]
+T1 P1: Play Fiery Islet
+    → Goal: curve_out [enablers]
+    [Mana] Tap Fiery Islet→R (paying for Dragon's Rage Channeler, 0 mana remaining)
+T1 P1: Cast Dragon's Rage Channeler (R)
+    [Priority] P2 passes (no response)
+T1: Resolve Dragon's Rage Channeler
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 19  |  Izzet Prowess 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Steam Vents
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (1/1)
+║   Lands: Fiery Islet [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Indatha Triome
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Steam Vents→R (paying for Ragavan, Nimble Pilferer, 0 mana remaining)
+T2 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T2: Resolve Ragavan, Nimble Pilferer
+T2 P2: Play Temple Garden (untapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Izzet Prowess (P1) ══════════════════════════
+║ Life: Izzet Prowess 20  |  Domain Zoo 19
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (1/1)
+║   Lands: Fiery Islet
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Steam Vents [T], Temple Garden
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Lava Dart
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Fiery Islet→U (paying for Preordain, 0 mana remaining)
+T2 P1: Cast Preordain (U)
+T2 P1: surveil 1 → Unholy Heat to GY
+    [Priority] P2 passes (no response)
+T2: Resolve Preordain
+T2 P1: scry 2 (Mutagenic Growth, Wooded Foothills) → bottom: none
+T2 P1: Preordain → draw 1 (Mutagenic Growth)
+T2: Preordain moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 19  |  Izzet Prowess 20
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 1
+║ Library: 51  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Steam Vents, Temple Garden
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (1/1)
+║   Lands: Fiery Islet [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Leyline of the Guildpact
+  [Main 1]
+T3 P2: Play Indatha Triome (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T3 P2: Attack with Ragavan, Nimble Pilferer
+T3 P1:   [BLOCK] Dragon's Rage Channeler (1/1) blocks Ragavan, Nimble Pilferer (2/1) — lifespan_delta=+1.00
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T3: Dragon's Rage Channeler dies
+T3: Ragavan, Nimble Pilferer dies
+  [End Combat]
+  [Main 2]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Steam Vents→R, Temple Garden→G (paying for Scion of Draco, 0 mana remaining)
+T3 P2: Cast Scion of Draco (12)
+    [Priority] P1 passes (no response)
+T3: Resolve Scion of Draco
+T3 P2: Scion of Draco enters — creatures gain vigilance/hexproof/lifelink/first strike/trample if white/blue/black/red/green
+  [End Step]
+
+╔══ TURN 3 — Izzet Prowess (P1) ══════════════════════════
+║ Life: Izzet Prowess 20  |  Domain Zoo 19
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 3
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: Fiery Islet
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4)
+║   Lands: Steam Vents [T], Temple Garden [T], Indatha Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Wooded Foothills
+  [Main 1]
+T3 P1: Play Wooded Foothills
+T3: Wooded Foothills moved battlefield -> graveyard (fetchland sacrifice)
+T3 P1: Crack Wooded Foothills (pay 1 life) -> Steam Vents (tapped, life: 19)
+    → Goal: curve_out
+    [Mana] Tap Fiery Islet→R (paying for Lava Dart, 0 mana remaining)
+T3 P1: Cast Lava Dart (R)
+    [Priority] P2 passes (no response)
+T3: Resolve Lava Dart
+T3: Lava Dart moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 19  |  Izzet Prowess 19
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4)
+║   Lands: Steam Vents, Temple Garden, Indatha Triome
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: Fiery Islet [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+T4 P2: surveil 1 → Fatal Push to GY
+T4 P2: Play Meticulous Archive (enters tapped)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Steam Vents→R (paying for Ragavan, Nimble Pilferer, 2 mana remaining)
+T4 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T4: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Scion of Draco
+T4 P2: Attack with Scion of Draco
+  [Declare Blockers] P1 does not block
+T4 P2:   Scion of Draco (4/4) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 19 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Izzet Prowess (P1) ══════════════════════════
+║ Life: Izzet Prowess 15  |  Domain Zoo 19
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 5
+║ Izzet Prowess board:
+║   Creatures: (empty)
+║   Lands: Fiery Islet, Steam Vents
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4) [tapped], Ragavan, Nimble Pilferer (2/1)
+║   Lands: Steam Vents [T], Temple Garden, Indatha Triome, Meticulous Archive [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Scalding Tarn
+  [Main 1]
+T4 P1: Play Scalding Tarn
+T4: Scalding Tarn moved battlefield -> graveyard (fetchland sacrifice)
+T4 P1: Crack Scalding Tarn (pay 1 life) -> Steam Vents (untapped, life: 12)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Fiery Islet→R (paying for Dragon's Rage Channeler, 2 mana remaining)
+T4 P1: Cast Dragon's Rage Channeler (R)
+    [Priority] P2 passes (no response)
+T4: Resolve Dragon's Rage Channeler
+    → Goal: curve_out
+    [Mana] Tap Steam Vents→R (paying for Lava Dart, 1 mana remaining)
+T4 P1: Flashback Lava Dart — sacrifice Steam Vents
+T4 P1: Cast Lava Dart (R)
+T4 P1: surveil 1 → Lava Dart to GY
+    [Priority] P2 passes (no response)
+T4: Resolve Lava Dart
+T4: Lava Dart moved stack -> exile (flashback resolution (CR 702.33a))
+    → Goal: curve_out
+    [Mana] Tap Steam Vents→R (paying for Lava Dart, 0 mana remaining)
+T4 P1: Flashback Lava Dart — sacrifice Steam Vents
+T4 P1: Cast Lava Dart (R)
+T4 P1: surveil 1 → Slickshot Show-Off to GY
+    [Priority] P2 passes (no response)
+T4: Resolve Lava Dart
+T4: Lava Dart moved stack -> exile (flashback resolution (CR 702.33a))
+T4 P1: Activate Fiery Islet (sacrifice)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 19  |  Izzet Prowess 12
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 0
+║ Library: 48  |  Graveyard: 3
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4), Ragavan, Nimble Pilferer (2/1)
+║   Lands: Steam Vents, Temple Garden, Indatha Triome, Meticulous Archive
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (3/3)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+T5 P2: Play Flooded Strand
+T5: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T5 P2: Crack Flooded Strand (pay 1 life) -> Hallowed Fountain (tapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Scion of Draco, Ragavan, Nimble Pilferer
+T5 P2: Attack with Scion of Draco, Ragavan, Nimble Pilferer
+T5 P1:   [BLOCK] Dragon's Rage Channeler (3/3) blocks Ragavan, Nimble Pilferer (2/1) — lifespan_delta=+1.33
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T5 P2:   Scion of Draco (4/4) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 12 → 8
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Izzet Prowess (P1) ══════════════════════════
+║ Life: Izzet Prowess 8  |  Domain Zoo 18
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 0  |  Opp lands: 5
+║ Library: 42  |  Graveyard: 9
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (3/3)
+║   Lands: (none)
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4) [tapped], Ragavan, Nimble Pilferer (2/1) [tapped]
+║   Lands: Steam Vents, Temple Garden, Indatha Triome, Meticulous Archive, Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Mutagenic Growth
+  [Main 1]
+T5 P1: Play Wooded Foothills
+T5: Wooded Foothills moved battlefield -> graveyard (fetchland sacrifice)
+T5 P1: Crack Wooded Foothills (pay 1 life) -> Steam Vents (tapped, life: 7)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Dragon's Rage Channeler
+T5 P1: Attack with Dragon's Rage Channeler
+  [Declare Blockers] P2 does not block
+T5 P1:   Dragon's Rage Channeler (3/3) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 18 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 15  |  Izzet Prowess 7
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 5  |  Opp lands: 1
+║ Library: 46  |  Graveyard: 4
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4), Ragavan, Nimble Pilferer (2/1)
+║   Lands: Steam Vents, Temple Garden, Indatha Triome, Meticulous Archive, Hallowed Fountain
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (3/3) [tapped]
+║   Lands: Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Territorial Kavu
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Steam Vents→R, Temple Garden→G (paying for Territorial Kavu, 3 mana remaining)
+T6 P2: Cast Territorial Kavu (RG)
+    [Priority] P1 passes (no response)
+T6: Resolve Territorial Kavu
+T6 P2: Territorial Kavu enters as 5/5 (domain=5)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Scion of Draco, Ragavan, Nimble Pilferer
+T6 P2: Attack with Scion of Draco, Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T6 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T6 P2: Create 1x Treasure token(s)
+T6 P2: Ragavan, Nimble Pilferer exiles Monastery Swiftspear from top of P1's library
+T6 P2: Ragavan, Nimble Pilferer — may cast Monastery Swiftspear this turn
+T6 P2:   Scion of Draco (4/4) → 4 dmg to player
+  [Combat Damage] 6 damage dealt → P1 life: 7 → 1
+  [End Combat]
+  [Main 2]
+  [End Step]
+T6: Monastery Swiftspear returned to exile (uncast)
+
+╔══ TURN 6 — Izzet Prowess (P1) ══════════════════════════
+║ Life: Izzet Prowess 1  |  Domain Zoo 15
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 1  |  Opp lands: 5
+║ Library: 39  |  Graveyard: 10
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (3/3)
+║   Lands: Steam Vents
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4) [tapped], Ragavan, Nimble Pilferer (2/1) [tapped], Territorial Kavu (5/5)
+║   Other: Treasure Token
+║   Lands: Steam Vents [T], Temple Garden [T], Indatha Triome, Meticulous Archive, Hallowed Fountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Slickshot Show-Off
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Steam Vents→R (paying for Monastery Swiftspear, 0 mana remaining)
+T6 P1: Cast Monastery Swiftspear (R)
+    [Priority] P2 passes (no response)
+T6: Resolve Monastery Swiftspear
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Dragon's Rage Channeler, Monastery Swiftspear
+T6 P1: Attack with Dragon's Rage Channeler, Monastery Swiftspear
+  [Declare Blockers] P2 does not block
+T6 P1:   Dragon's Rage Channeler (3/3) → 3 dmg to player
+T6 P1:   Monastery Swiftspear (1/2) → 1 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 15 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 11  |  Izzet Prowess 1
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 5  |  Opp lands: 1
+║ Library: 45  |  Graveyard: 4
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4), Ragavan, Nimble Pilferer (2/1), Territorial Kavu (5/5)
+║   Other: Treasure Token
+║   Lands: Steam Vents, Temple Garden, Indatha Triome, Meticulous Archive, Hallowed Fountain
+║ Izzet Prowess board:
+║   Creatures: Dragon's Rage Channeler (3/3) [tapped], Monastery Swiftspear (1/2) [tapped]
+║   Lands: Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Quantum Riddler
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Steam Vents→U, Temple Garden→G, Meticulous Archive→U, Hallowed Fountain→U, Indatha Triome→B (paying for Quantum Riddler, 0 mana remaining)
+T7 P2: Cast Quantum Riddler (3UU)
+    [Priority] P1 passes (no response)
+T7: Resolve Quantum Riddler
+T7 P2: Quantum Riddler ETB: draw 1 (Territorial Kavu)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Scion of Draco, Ragavan, Nimble Pilferer, Territorial Kavu
+T7 P2: Territorial Kavu loots — discard Stubborn Denial, draw 1
+T7 P2: Attack with Scion of Draco, Ragavan, Nimble Pilferer, Territorial Kavu
+  [Declare Blockers] P1 does not block
+T7 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T7 P2: Create 1x Treasure token(s)
+T7 P2: Ragavan, Nimble Pilferer exiles Lightning Bolt from top of P1's library
+T7 P2: Ragavan, Nimble Pilferer — may cast Lightning Bolt this turn
+T7 P2:   Territorial Kavu (5/5) → 5 dmg to player
+P1 loses: life total -6
+  [Combat Damage] 7 damage dealt → P1 life: 1 → -6
+
+>>> Domain Zoo wins Game 2 on turn 7 via damage
+    Final life: Izzet Prowess=-6  Domain Zoo=11
+
+======================================================================
+  MATCH RESULT: Domain Zoo wins 2-0
+======================================================================

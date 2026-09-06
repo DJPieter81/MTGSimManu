@@ -87,6 +87,13 @@ class TargetRequirement:
     count_max: int = 1
     mode_group: Optional[int] = None
     raw_phrase: str = ""
+    max_mana_value: Optional[int] = None
+    # "with mana value X or less": the ceiling is the X the caster pays,
+    # chosen before targets (CR 601.2b/c). Bound at enumeration time by
+    # the `x_ceiling` the caller derives from its affordable X; with no
+    # ceiling supplied the requirement is unbounded (resolution-time
+    # checks still apply).
+    max_mana_value_is_x: bool = False
 
 
 # ── Regex catalogue ─────────────────────────────────────────────────
@@ -133,10 +140,16 @@ def _is_optional_at(oracle_l: str, idx: int) -> bool:
 # "cards" is optional so "target card from a graveyard" matches with
 # the type word being "card" itself.
 _GRAVEYARD_PATTERN = re.compile(
-    r"target\s+((?:non)?legendary\s+)?"
-    r"(creature|instant|sorcery|artifact|enchantment|"
+    r"target\s+(?P<super>(?:non)?legendary\s+)?"
+    r"(?P<type>creature|instant|sorcery|artifact|enchantment|"
     r"planeswalker|land|permanent|card)"
-    r"(?:\s+cards?)?\s+(?:from|in)\s+(your|a)\s+graveyard"
+    r"(?:\s+cards?)?"
+    # Optional mana-value ceiling between the type word and the
+    # graveyard-zone phrase (Unearth: "target creature card WITH MANA
+    # VALUE 3 OR LESS from your graveyard"). Not tied to any card
+    # name — any reanimation-shaped effect with this clause parses it.
+    r"(?:\s+with\s+(?:total\s+)?mana\s+value\s+(?P<mv>\d+)\s+or\s+less)?"
+    r"\s+(?:from|in)\s+(?P<scope>your|a)\s+graveyard"
 )
 
 # Loose graveyard fallback — same source-zone phrase but without the
@@ -157,6 +170,13 @@ _GRAVEYARD_ZONE_HINTS = (
 # Battlefield compound patterns — same dispatch order as the existing
 # _battlefield_legal_targets() helper.
 _BATTLEFIELD_COMPOUND = [
+    # Three-type compound (Teferi Time Raveler's -3, March of Otherworldly
+    # Light, Angelic Purge, Banishing Stroke, … — 13 cards in the pool).
+    # Listed FIRST so the two-type and single-type patterns below cannot
+    # capture just "artifact" and silently narrow a three-type target set
+    # down to artifacts only.
+    ("target artifact, creature, or enchantment",
+     frozenset({"artifact", "creature", "enchantment"})),
     ("target artifact or creature",     frozenset({"artifact", "creature"})),
     ("target artifact or enchantment",  frozenset({"artifact", "enchantment"})),
     ("target creature or planeswalker", frozenset({"creature", "planeswalker"})),
@@ -254,22 +274,37 @@ def parse(oracle_text: str) -> List[TargetRequirement]:
 
     # ── 1. Graveyard targets ────────────────────────────────────────
     gy_match = _GRAVEYARD_PATTERN.search(oracle_l)
-    if gy_match is None and any(h in oracle_l for h in _GRAVEYARD_ZONE_HINTS):
-        gy_match = _GRAVEYARD_LOOSE_PATTERN.search(oracle_l)
+    if gy_match is None:
+        # The loose fallback needs a graveyard-zone hint; reminder text
+        # (CR 207.2 — parenthesised, no rules meaning) must not supply
+        # it: a flashback / escape reminder says "from your graveyard"
+        # on a spell whose real target is on the battlefield ("Target
+        # creature gains … / Flashback {1}{W} (You may cast this card
+        # from your graveyard …)"), and the fallback then read the
+        # battlefield creature as a graveyard-creature target.
+        from .oracle_parser import strip_reminder_text
+        hint_text = strip_reminder_text(oracle_text).lower()
+        if any(h in hint_text for h in _GRAVEYARD_ZONE_HINTS):
+            gy_match = _GRAVEYARD_LOOSE_PATTERN.search(oracle_l)
     if gy_match is not None:
         super_word = (gy_match.group(1) or "").strip() or None
         type_word = gy_match.group(2)
-        # Source-zone scope. The strict pattern captures (your|a) as
-        # group 3; the loose fallback has no group 3, so we infer from
-        # the explicit zone hint phrase ("from a graveyard" → any,
-        # "from your graveyard" / "in your graveyard" → you).
-        groups = gy_match.groups()
-        if len(groups) >= 3 and groups[2]:
-            zone_scope_word = groups[2]
-        elif "from a graveyard" in oracle_l or "in a graveyard" in oracle_l:
-            zone_scope_word = "a"
-        else:
-            zone_scope_word = "your"
+        # Named groups only exist on the strict pattern — the loose
+        # fallback has neither, so groupdict() safely returns {} and
+        # both fall through to their existing inference below.
+        gd = gy_match.groupdict()
+        mv_word = gd.get("mv")
+        max_mv = int(mv_word) if mv_word else None
+        # Source-zone scope: the strict pattern's named 'scope' group,
+        # else infer from the explicit zone hint phrase ("from a
+        # graveyard" → any, "from your graveyard" / "in your
+        # graveyard" → you).
+        zone_scope_word = gd.get("scope")
+        if not zone_scope_word:
+            if "from a graveyard" in oracle_l or "in a graveyard" in oracle_l:
+                zone_scope_word = "a"
+            else:
+                zone_scope_word = "your"
         owner: OwnerScope = "you" if zone_scope_word == "your" else "any"
         types = _types_for_word(type_word)
         out.append(TargetRequirement(
@@ -283,6 +318,7 @@ def parse(oracle_text: str) -> List[TargetRequirement]:
             mode_group=_detect_mode_group(oracle_l, gy_match.start(),
                                           modal_start),
             raw_phrase=gy_match.group(0),
+            max_mana_value=max_mv,
         ))
         return out
 
@@ -431,7 +467,34 @@ def parse(oracle_text: str) -> List[TargetRequirement]:
             raw_phrase=player_match.group(0),
         ))
 
+    _attach_mana_value_bound(oracle_l, out)
     return out
+
+_MV_BOUND_AFTER_RE = re.compile(
+    r"^(?:\s+(?:an opponent controls|you don't control|you control))?"
+    r"\s+with mana value (x|\d+) or less")
+
+
+def _attach_mana_value_bound(oracle_l: str, reqs: List[TargetRequirement]) -> None:
+    """Attach a trailing "with mana value N/X or less" clause to the
+    battlefield requirement it follows (CR 601.2c: the printed ceiling is
+    part of the target's legality). Numeric ceilings populate
+    `max_mana_value`; an X ceiling sets `max_mana_value_is_x`, bound at
+    enumeration time by the caller's affordable X."""
+    import dataclasses as _dc
+    for n, req in enumerate(reqs):
+        if req.zone != "battlefield" or not req.raw_phrase:
+            continue
+        idx = oracle_l.find(req.raw_phrase)
+        if idx < 0:
+            continue
+        m = _MV_BOUND_AFTER_RE.match(oracle_l[idx + len(req.raw_phrase):])
+        if m is None:
+            continue
+        if m.group(1) == "x":
+            reqs[n] = _dc.replace(req, max_mana_value_is_x=True)
+        elif req.max_mana_value is None:
+            reqs[n] = _dc.replace(req, max_mana_value=int(m.group(1)))
 
 
 def _types_for_word(type_word: str) -> FrozenSet[str]:
@@ -676,7 +739,8 @@ def _spell_token_matches(item_source: "CardInstance",
 
 def has_legal_target(game: "GameState", controller: int,
                      req: TargetRequirement,
-                     exclude: Optional["CardInstance"] = None) -> bool:
+                     exclude: Optional["CardInstance"] = None,
+                     x_ceiling: Optional[int] = None) -> bool:
     """CR 601.2c — does at least one legal target exist for this
     requirement in the current game state?
 
@@ -721,6 +785,9 @@ def has_legal_target(game: "GameState", controller: int,
         if req.zone == "battlefield" and _blocked_by_hexproof(card, controller):
             continue
         # Owner already pre-filtered by _zone_cards.
+        if req.max_mana_value_is_x and x_ceiling is not None and \
+                (card.template.cmc or 0) > x_ceiling:
+            continue  # CR 601.2c: beyond the X the caster can pay
         return True
     return False
 
@@ -728,6 +795,7 @@ def has_legal_target(game: "GameState", controller: int,
 def enumerate_legal_targets(game: "GameState", controller: int,
                             req: TargetRequirement,
                             exclude: Optional["CardInstance"] = None,
+                            x_ceiling: Optional[int] = None,
                             ) -> List["CardInstance"]:
     """Same predicate as ``has_legal_target`` but returns every
     candidate. Phase 6 will use this for AI scoring (best-target
@@ -766,6 +834,12 @@ def enumerate_legal_targets(game: "GameState", controller: int,
             continue
         if req.zone == "battlefield" and _blocked_by_hexproof(card, controller):
             continue
+        if req.max_mana_value is not None and \
+                (card.template.cmc or 0) > req.max_mana_value:
+            continue
+        if req.max_mana_value_is_x and x_ceiling is not None and \
+                (card.template.cmc or 0) > x_ceiling:
+            continue  # CR 601.2c: beyond the X the caster can pay
         out.append(card)
     return out
 
@@ -773,6 +847,7 @@ def enumerate_legal_targets(game: "GameState", controller: int,
 def has_legal_target_for_spell(game: "GameState", controller: int,
                                requirements: List[TargetRequirement],
                                exclude: Optional["CardInstance"] = None,
+                               x_ceiling: Optional[int] = None,
                                ) -> bool:
     """Convenience wrapper used by Phase 3 cast_manager migration.
 
@@ -798,14 +873,44 @@ def has_legal_target_for_spell(game: "GameState", controller: int,
         if req.is_optional:
             continue
         if req.mode_group is None:
-            if not has_legal_target(game, controller, req, exclude=exclude):
+            if not has_legal_target(game, controller, req, exclude=exclude, x_ceiling=x_ceiling):
                 return False
         else:
             modal_groups.setdefault(req.mode_group, []).append(req)
 
     # For each modal group, at least one requirement must be legal.
     for group_id, group_reqs in modal_groups.items():
-        if not any(has_legal_target(game, controller, r, exclude=exclude)
+        if not any(has_legal_target(game, controller, r, exclude=exclude, x_ceiling=x_ceiling)
                    for r in group_reqs):
             return False
     return True
+
+
+def player_index_for_target(game: "GameState", controller: int,
+                            tid) -> Optional[int]:
+    """Map a player-target sentinel in a spell's target list to a player
+    index: ``PLAYER_TARGET_OPPONENT`` (-1, the historical "face" value)
+    → the caster's opponent, ``PLAYER_TARGET_SELF`` (-2) → the caster.
+    Any other id is a permanent instance id → None.  One owner for the
+    encoding (engine/constants.py); every player-target effect —
+    face burn, targeted discard — resolves through here."""
+    from .constants import PLAYER_TARGET_OPPONENT, PLAYER_TARGET_SELF
+    if tid == PLAYER_TARGET_OPPONENT:
+        return 1 - controller
+    if tid == PLAYER_TARGET_SELF:
+        return controller
+    return None
+
+
+def targeted_player(game: "GameState", controller: int,
+                    targets: Optional[list], default_opponent: bool = True
+                    ) -> Optional[int]:
+    """The player a resolving spell targets, from its target list.  With
+    no player sentinel in the list the opponent is assumed when
+    ``default_opponent`` (the pre-sentinel behaviour every existing
+    caller relied on)."""
+    for tid in targets or []:
+        idx = player_index_for_target(game, controller, tid)
+        if idx is not None:
+            return idx
+    return (1 - controller) if default_opponent else None

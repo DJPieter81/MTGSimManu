@@ -21,6 +21,7 @@ mana_payment.py.
 """
 from __future__ import annotations
 
+from itertools import product as _product
 from typing import TYPE_CHECKING
 
 from .cards import CardType, Keyword
@@ -191,8 +192,76 @@ def pick_creature_tutor_x_value(
     return best_x, best_target, top_candidate
 
 
+def pick_converge_x_value(
+        game: "GameState", player_idx: int, x_budget: int,
+        template) -> "tuple[int, object]":
+    """Engine-side X picker for Converge-conditioned target-removal
+    spells (the Prismatic Ending shape: "exile/destroy target nonland
+    permanent if its mana value is <= the number of colors of mana spent
+    to cast this spell").
+
+    Mirrors `pick_wipe_x_value` / `pick_creature_tutor_x_value`: a
+    module-level helper so the AI's proactive-cast gate
+    (`ai.ev_player.EVPlayer._has_high_threat_target`) consults the SAME
+    picker the engine uses at cast time. The naive fallback every other
+    X-cost spell uses — "pay the maximum affordable mana" — is actively
+    wrong here: Converge's ceiling is capped by distinct colors spent
+    (`card_effects.converge_reachable_max_mv`, capped at 5), so pouring
+    in more generic mana never reaches a target beyond what the
+    manabase's color diversity allows, and can pay for an X that
+    reaches nothing at all.
+
+    Args:
+        game: GameState.
+        player_idx: controller of the spell.
+        x_budget: max X the controller can afford (ignored beyond the
+          colors-of-mana ceiling — Converge never benefits from more).
+        template: the spell's CardTemplate.
+
+    Returns:
+        (best_x, best_target): best_x is the cheapest mana spend that
+        reaches best_target's mana value (0 when no target exists at
+        all colors_spent counts); best_target is the highest-mana-value
+        legal permanent this manabase's color diversity can actually
+        reach, or None when nothing on the battlefield is reachable —
+        the caller should decline to cast rather than pay for a
+        guaranteed whiff.
+    """
+    from .card_effects import _removal_legal_pool, converge_reachable_max_mv
+
+    max_mv = converge_reachable_max_mv(game, player_idx)
+    legal = _removal_legal_pool(game, player_idx, "opponent",
+                                frozenset({"permanent_nonland"}))
+    reachable = [c for c in legal.values() if (c.template.cmc or 0) <= max_mv]
+    if not reachable:
+        return 0, None
+
+    best_target = max(reachable, key=lambda c: c.template.cmc or 0)
+    needed_colors = int(best_target.template.cmc or 0)
+    best_x = max(0, min(needed_colors, int(x_budget)))
+    return best_x, best_target
+
+
 class CastManager:
     """Cast-time legality + special-case handlers. Stateless."""
+
+    @staticmethod
+    def affordable_x(game: "GameState", player_idx: int, template) -> "int | None":
+        """The largest X the controller can pay for an X-cost spell right
+        now: (castable capacity − the cost's fixed part) // X-pip count.
+        None for a spell with no {X}. ONE formula shared by cast-time
+        target legality (CR 601.2b/c — X is chosen before targets, so it
+        bounds any "mana value X or less" target) and the AI's target
+        choice, so the target the AI prices is one the engine will accept."""
+        x_info = getattr(template, 'x_cost_data', None)
+        if not x_info:
+            return None
+        player = game.players[player_idx]
+        capacity = (player.untapped_mana_capacity()
+                    + player.mana_pool.total()
+                    + player._tron_mana_bonus())
+        mult = max(1, int(x_info.get('multiplier', 1) or 1))
+        return max(0, (capacity - (template.cmc or 0)) // mult)
 
     @staticmethod
     def can_cast(game: "GameState", player_idx: int,
@@ -216,6 +285,30 @@ class CastManager:
         # Applies to every cast route (hand, flashback, escape).
         if getattr(player, 'silenced_this_turn', False):
             return False
+
+        # Madness (CR 702.35b): a card just discarded into exile may be
+        # cast from there for its madness cost. The offer is made while
+        # the reflexive trigger resolves, so it ignores sorcery-speed
+        # timing (CR 608.2g) — only payability and target legality gate
+        # it. `_madness_pending` is raised by the discard funnel
+        # (engine/discard_manager.py) for the duration of the offer only.
+        if card.zone == "exile" and getattr(card, '_madness_pending', False):
+            if template.madness_cost is None:
+                return False
+            if template.is_instant or template.is_sorcery:
+                from .target_solver import (has_legal_target_for_spell,
+                                            parse as _parse_targets)
+                requirements = _parse_targets(template.oracle_text or "")
+                if not has_legal_target_for_spell(
+                        game, player_idx, requirements, exclude=card):
+                    return False
+            total_mana = (player.untapped_mana_capacity()
+                          + player.mana_pool.total()
+                          + player._tron_mana_bonus())
+            return (total_mana >= template.madness_cost.cmc
+                    and CastManager._can_pay_colored_pips(
+                        game, player_idx, player.untapped_mana_sources,
+                        template.madness_cost))
 
         # Warp: previously warped permanents may be cast again from exile.
         if card.zone == "exile" and getattr(card, '_warped', False):
@@ -343,7 +436,8 @@ class CastManager:
                                         parse as _parse_targets)
             requirements = _parse_targets(template.oracle_text or "")
             if not has_legal_target_for_spell(
-                    game, player_idx, requirements, exclude=card):
+                    game, player_idx, requirements, exclude=card,
+                    x_ceiling=CastManager.affordable_x(game, player_idx, template)):
                 return False
 
         # Check mana (pool + untapped lands + non-land mana sources + Tron bonus)
@@ -380,10 +474,15 @@ class CastManager:
             effective_cmc = max(
                 0, effective_cmc - template.domain_reduction * domain)
         # Generic cost reduction from permanents on battlefield
-        from .oracle_resolver import count_cost_reducers
+        from .oracle_resolver import count_cost_reducers, self_cost_reduction
         generic_reduction = count_cost_reducers(game, player_idx, template)
         if generic_reduction > 0:
             effective_cmc = max(0, effective_cmc - generic_reduction)
+        # Self-scaling reduction ("this spell costs {N} less for each
+        # <live unit>") — generic-only, already capped by the helper.
+        own_reduction = self_cost_reduction(game, player_idx, template)
+        if own_reduction > 0:
+            effective_cmc = max(0, effective_cmc - own_reduction)
         # Affinity for artifacts
         if Keyword.AFFINITY in template.keywords:
             artifact_count = sum(
@@ -402,13 +501,22 @@ class CastManager:
             delve_reduction = min(gy_count, generic_portion)
             effective_cmc = max(colored_cost, effective_cmc - delve_reduction)
 
-        # Phyrexian mana: 2 life per Phyrexian symbol instead of mana
-        oracle = (template.oracle_text or '')
-        if '/P}' in oracle or '/p}' in oracle.lower():
-            phyrexian_count = oracle.lower().count('/p}')
-            life_cost = phyrexian_count * 2
-            if player.life > life_cost:
-                effective_cmc = max(0, effective_cmc - phyrexian_count)
+        # Phyrexian mana (CR 107.4f): each {C/P} pip in the cost may be paid
+        # with 2 life INSTEAD of one mana of that pip's colour.  Waiving a pip
+        # therefore does TWO things — it drops one mana off the quantity AND
+        # removes one COLOURED requirement — and the second half is what makes
+        # Dismember castable off Mountains.  The quantity half is applied
+        # optimistically here (largest waiver life can afford) so the early
+        # quantity gates below cannot reject a spell life could pay for; the
+        # exact per-colour waiver is chosen by the colour solver further down,
+        # which is the only place that can tell whether waiving a given pip is
+        # legal.  `effective_cmc` itself is left un-discounted so the improvise
+        # and delve arithmetic above/below keeps its printed floor.
+        phyrexian_pips = ({} if _using_flashback_cost
+                          else dict(template.mana_cost.phyrexian))
+        max_phyrexian_waived = min(
+            sum(phyrexian_pips.values()),
+            CastManager._phyrexian_pips_life_can_pay(player.life))
 
         # Evoke as alternative cost (Solitude, Endurance, Grief, etc.)
         # Evoke is independent of the hardcast path: it is a *choice*
@@ -547,7 +655,11 @@ class CastManager:
                         if has_exile_target:
                             return True  # Can cast for free
 
-        if total_mana < effective_cmc:
+        # Quantity floor: the cheapest the cost can get is the printed
+        # cost minus every Phyrexian pip life can cover (computed here, after
+        # improvise has had its say on `effective_cmc`).
+        min_effective_cmc = max(0, effective_cmc - max_phyrexian_waived)
+        if total_mana < min_effective_cmc:
             return False
 
         # Detailed color check using greedy constraint solving (MRV).
@@ -555,12 +667,7 @@ class CastManager:
         cost = (template.flashback_cost
                 if _using_flashback_cost
                 else template.mana_cost)
-        color_needs = []
-        for color, needed in [("W", cost.white), ("U", cost.blue),
-                              ("B", cost.black), ("R", cost.red),
-                              ("G", cost.green), ("C", cost.colorless)]:
-            for _ in range(needed):
-                color_needs.append(color)
+        color_needs = CastManager._color_pip_list(cost)
 
         # Routes through `_effective_produces_mana` so Leyline of the
         # Guildpact and dynamic mana abilities (E1: Mox Opal metalcraft,
@@ -568,23 +675,195 @@ class CastManager:
         # solver.
         # E1: one source per mana UNIT — a multi-mana land contributes
         # one entry per unit (fixed karoo units stay single-color).
+        sources = CastManager._mana_source_units(game, player_idx,
+                                                 untapped_lands)
+
+        if len(sources) < min_effective_cmc:
+            return False
+
+        # CR 107.4f — try every Phyrexian waiver life can afford, fewest pips
+        # first, and accept the spell if ANY of them is payable.  A waived pip
+        # drops out of `color_needs` (it is no longer a coloured requirement)
+        # and off the quantity, so exactly one pass of the existing MRV solver
+        # decides each candidate.  With no Phyrexian pips this degenerates to
+        # a single pass over the printed cost — unchanged behaviour for the
+        # other ~22k cards.
+        for waived in CastManager._phyrexian_waivers(phyrexian_pips,
+                                                     max_phyrexian_waived):
+            k = sum(waived.values())
+            if CastManager._color_assignment_feasible(
+                    sources,
+                    CastManager._without_waived_pips(color_needs, waived),
+                    max(0, effective_cmc - k)):
+                break
+        else:
+            return False
+
+        # Blink spells require a friendly creature target
+        if 'blink' in (template.tags or set()):
+            if not player.creatures:
+                return False
+
+        return True
+
+    # ─── Phyrexian mana (CR 107.4f) ───────────────────────────────────
+    #
+    # "{C/P} can be paid with either {C} or 2 life."  Two consequences the
+    # cast path must respect, and one invariant:
+    #   * a waived pip is no longer a COLOURED requirement — Dismember
+    #     ({1}{B/P}{B/P}) is castable with no black source at all, which is
+    #     the entire reason decks play it;
+    #   * only that pip's OWN colour is waived — {U}{G/P} still demands a
+    #     blue source, so a blanket "ignore the coloured pips" rule is wrong
+    #     in the other direction;
+    #   * legality (`can_cast`) and payment (`cast_spell`) call the SAME
+    #     helpers with the SAME life rule, so `can_cast` can never green-light
+    #     a waiver the payment then refuses.
+    #
+    # Life rule: `life > 2 * waived` (strict).  Paying down to exactly 0 is
+    # lethal (CR 104.3b), so a player may never spend their last 2 life on a
+    # Phyrexian pip; the payment path has always used the strict form and the
+    # legality path now matches it exactly.
+
+    @staticmethod
+    def _phyrexian_pips_life_can_pay(life: int) -> int:
+        """Largest pip count N satisfying `life > 2 * N` (CR 107.4f)."""
+        return max(0, (life - 1) // 2)
+
+    @staticmethod
+    def _phyrexian_waivers(pips: dict, max_waived: int):
+        """Yield each waiver {colour: pips paid with life}, fewest pips first.
+
+        `pips` is a colour -> count map (``ManaCost.phyrexian``).  Always
+        yields the empty waiver first, so a cost that is payable with real
+        mana never spends life.
+        """
+        colors = sorted(pips)
+        options = []
+        for counts in _product(*[range(pips[c] + 1) for c in colors]):
+            total = sum(counts)
+            if total <= max_waived:
+                options.append(
+                    (total, {c: n for c, n in zip(colors, counts) if n}))
+        options.sort(key=lambda item: item[0])
+        for _total, waived in options:
+            yield waived
+
+    @staticmethod
+    def _choose_phyrexian_waiver(game: "GameState", player_idx: int,
+                                 cost: "ManaCost") -> dict:
+        """Pick the FEWEST Phyrexian pips to pay with life (CR 107.4f).
+
+        A deck that actually has the colour should not bleed life for
+        nothing, so the empty waiver is tried first and only grows until the
+        remainder is payable.  Uses the same feasibility solver as
+        ``can_cast``, so a spell legality approved is a spell payment can
+        settle.  Falls back to the cheapest COLOUR-feasible waiver when no
+        candidate clears the quantity bar with the raw printed cost: the
+        payment funnel applies cost reductions this side cannot see, and
+        those reduce generic only — never a coloured pip.
+        """
+        player = game.players[player_idx]
+        pips = dict(cost.phyrexian)
+        if not pips:
+            return {}
+        sources = CastManager._mana_source_units(
+            game, player_idx, player.untapped_mana_sources)
+        color_needs = CastManager._color_pip_list(cost)
+        max_waived = min(sum(pips.values()),
+                         CastManager._phyrexian_pips_life_can_pay(player.life))
+        color_only_fallback = None
+        for waived in CastManager._phyrexian_waivers(pips, max_waived):
+            k = sum(waived.values())
+            needs = CastManager._without_waived_pips(color_needs, waived)
+            if CastManager._color_assignment_feasible(sources, needs,
+                                                      max(0, cost.cmc - k)):
+                return waived
+            if (color_only_fallback is None
+                    and CastManager._color_assignment_feasible(
+                        sources, needs, len(needs))):
+                color_only_fallback = waived
+        return color_only_fallback if color_only_fallback is not None else {}
+
+    @staticmethod
+    def _cost_without_pips(cost: "ManaCost", waived: dict) -> "ManaCost":
+        """The mana still owed once `waived` Phyrexian pips are paid in life.
+
+        Only the waived pips' own colours shrink; every other coloured pip
+        and the generic portion survive untouched.
+        """
+        if not waived:
+            return cost
+        from .mana import ManaCost
+        field_of = {"W": "white", "U": "blue", "B": "black",
+                    "R": "red", "G": "green", "C": "colorless"}
+        amounts = {"generic": cost.generic, "white": cost.white,
+                   "blue": cost.blue, "black": cost.black, "red": cost.red,
+                   "green": cost.green, "colorless": cost.colorless}
+        left = dict(cost.phyrexian)
+        for color, count in waived.items():
+            key = field_of[color]
+            amounts[key] = max(0, amounts[key] - count)
+            left[color] = max(0, left.get(color, 0) - count)
+        residual = ManaCost(**amounts)
+        residual.phyrexian = {c: n for c, n in left.items() if n}
+        return residual
+
+    @staticmethod
+    def _color_pip_list(cost: "ManaCost") -> list:
+        """Flatten a cost's coloured pips into one entry per pip."""
+        needs = []
+        for color, needed in [("W", cost.white), ("U", cost.blue),
+                              ("B", cost.black), ("R", cost.red),
+                              ("G", cost.green), ("C", cost.colorless)]:
+            needs.extend([color] * needed)
+        return needs
+
+    @staticmethod
+    def _without_waived_pips(color_needs: list, waived: dict) -> list:
+        """Drop the waived Phyrexian pips from a flattened pip list."""
+        if not waived:
+            return color_needs
+        remaining = list(color_needs)
+        for color, count in waived.items():
+            for _ in range(count):
+                remaining.remove(color)
+        return remaining
+
+    @staticmethod
+    def _mana_source_units(game: "GameState", player_idx: int,
+                           untapped_lands) -> list:
+        """One colour-option set per UNIT of mana currently available."""
         from .mana_payment import ManaPayment as _MP
+        player = game.players[player_idx]
         sources = []
         for land in untapped_lands:
             for options in _MP.land_mana_units(game, player_idx, land):
                 sources.append(set(options))
-        # Mana pool as fixed-color sources
         for color in ["W", "U", "B", "R", "G", "C"]:
-            pool_amount = player.mana_pool.get(color)
-            for _ in range(pool_amount):
+            for _ in range(player.mana_pool.get(color)):
                 sources.append({color})
+        # CR 726.4 loop shortcut: an unbounded mana engine (free
+        # self-untapping mana source — `ActivationManager.
+        # unbounded_mana_engines`) yields its printed units once per
+        # iteration; the same finite allowance the capacity estimate and
+        # the payment path use, so feasibility, estimate and payment agree
+        # on both QUANTITY and COLOUR.
+        from .activation import ActivationManager
+        from .constants import LOOP_SHORTCUT_MANA
+        for engine in ActivationManager.unbounded_mana_engines(game, player_idx):
+            units = _MP.land_mana_units(game, player_idx, engine)
+            for _ in range(LOOP_SHORTCUT_MANA):
+                for options in units:
+                    sources.append(set(options))
+        return sources
 
-        if len(sources) < effective_cmc:
-            return False
-
-        # Color assignment: greedy with re-sorting after each step.
+    @staticmethod
+    def _color_assignment_feasible(sources: list, color_needs: list,
+                                   total_needed: int) -> bool:
+        """MRV greedy: can each coloured pip claim its own source, with
+        enough sources left over for the generic remainder?"""
         used = [False] * len(sources)
-
         remaining_needs = list(color_needs)
         while remaining_needs:
             # Re-sort by scarcity
@@ -609,16 +888,7 @@ class CastManager:
 
         # Check total mana (generic portion)
         remaining_sources = sum(1 for u in used if not u)
-        generic_needed = effective_cmc - len(color_needs)
-        if remaining_sources < generic_needed:
-            return False
-
-        # Blink spells require a friendly creature target
-        if 'blink' in (template.tags or set()):
-            if not player.creatures:
-                return False
-
-        return True
+        return remaining_sources >= total_needed - len(color_needs)
 
     # ─── Shared colour-verification helper ────────────────────────────
 
@@ -627,54 +897,35 @@ class CastManager:
                               untapped_lands, cost: "ManaCost") -> bool:
         """Return True iff lands + mana pool can satisfy cost's coloured pips.
 
-        Used by alternative-cost mechanics (dash, escape) that replace the
-        normal mana cost with a different ManaCost object.  Applies the same
-        MRV (minimum-remaining-values) greedy algorithm as the main can_cast
-        colour check.  Does NOT verify total quantity — callers confirm
-        ``total_mana >= cost.cmc`` first.
-        """
-        from .mana_payment import ManaPayment as _MP
-        player = game.players[player_idx]
-        sources = []
-        for land in untapped_lands:
-            for options in _MP.land_mana_units(game, player_idx, land):
-                sources.append(set(options))
-        for color in ["W", "U", "B", "R", "G", "C"]:
-            pool_amount = player.mana_pool.get(color)
-            for _ in range(pool_amount):
-                sources.append({color})
+        Used by alternative-cost mechanics (dash, escape, warp, spectacle)
+        that replace the normal mana cost with a different ManaCost object.
+        Applies the same MRV (minimum-remaining-values) greedy algorithm as
+        the main can_cast colour check.  Does NOT verify total quantity —
+        callers confirm ``total_mana >= cost.cmc`` first.
 
-        color_needs = []
-        for color, needed in [("W", cost.white), ("U", cost.blue),
-                              ("B", cost.black), ("R", cost.red),
-                              ("G", cost.green), ("C", cost.colorless)]:
-            for _ in range(needed):
-                color_needs.append(color)
+        Phyrexian pips (CR 107.4f) on the alternative cost are waived by the
+        same rule the main path and the payment path use: because the pips
+        live on ``ManaCost`` rather than on the card, every alternative cost
+        parsed by ``parse_mana_cost_mtgjson`` gets this for free.
+        """
+        player = game.players[player_idx]
+        sources = CastManager._mana_source_units(game, player_idx,
+                                                 untapped_lands)
+        color_needs = CastManager._color_pip_list(cost)
 
         if not color_needs:
             return True  # No coloured pips — quantity check already done
 
-        used = [False] * len(sources)
-        remaining_needs = list(color_needs)
-        while remaining_needs:
-            remaining_needs.sort(
-                key=lambda c: sum(
-                    1 for i, s in enumerate(sources)
-                    if c in s and not used[i])
-            )
-            c = remaining_needs.pop(0)
-            best_idx = -1
-            best_flex = 999
-            for i, s in enumerate(sources):
-                if not used[i] and c in s:
-                    if len(s) < best_flex:
-                        best_flex = len(s)
-                        best_idx = i
-            if best_idx == -1:
-                return False
-            used[best_idx] = True
-
-        return True
+        pips = dict(cost.phyrexian)
+        max_waived = min(sum(pips.values()),
+                         CastManager._phyrexian_pips_life_can_pay(player.life))
+        for waived in CastManager._phyrexian_waivers(pips, max_waived):
+            needs = CastManager._without_waived_pips(color_needs, waived)
+            # Quantity is the caller's job; ask only the colour question.
+            if CastManager._color_assignment_feasible(sources, needs,
+                                                      len(needs)):
+                return True
+        return False
 
     # ─── Suspend (LE-E2) ─────────────────────────────────────────────
     # Parse "Suspend N—{cost}" from oracle text. Returns (N, ManaCost) or
@@ -720,6 +971,14 @@ class CastManager:
             return False
         parsed = CastManager._parse_suspend_clause(template)
         if parsed is None:
+            # The card carries the SUSPEND keyword (it HAS the alternative-cast
+            # mechanic) but the engine's alt-cast enumeration cannot parse its
+            # Suspend clause — a suspend-only card left in this state is
+            # silently uncastable. Record the miss (parallel to the spell/etb/
+            # activated sinks) so a new card whose clause we can't read turns
+            # the guardrail red instead of sitting dead in hand.
+            from .effect_diagnostics import record_unhandled_effect
+            record_unhandled_effect(template.name, "alt_cast")
             return False
         _, cost = parsed
 
@@ -810,6 +1069,74 @@ class CastManager:
             f"T{game.display_turn} P{player_idx+1}: Suspend {card.template.name} "
             f"({n} time counter{'s' if n != 1 else ''})")
         return True
+
+    # ── Plot (CR 702.170) — a deferred-cast-from-exile mechanic in the
+    #    warp/suspend family. Pay the plot cost and exile the card from hand;
+    #    cast it for FREE as a sorcery on a LATER turn. Generic (typed-field
+    #    driven, no card names); reuses the proven suspend/rebound free-cast
+    #    path (cast_spell(free_cast=True)) so ETB/storm/cascade wiring applies.
+    @staticmethod
+    def can_plot(game: "GameState", player_idx: int,
+                 card: "CardInstance") -> bool:
+        """Legality of paying a card's plot cost from hand. Sorcery-speed /
+        phase gating is applied by the caller (get_legal_plays / the AI's
+        special-action enumeration), mirroring suspend."""
+        template = card.template
+        if getattr(template, 'plot_cost', None) is None:
+            return False
+        player = game.players[player_idx]
+        if card not in player.hand:
+            return False
+        total_mana = (player.untapped_mana_capacity()
+                      + player.mana_pool.total()
+                      + player._tron_mana_bonus())
+        return (total_mana >= template.plot_cost.cmc
+                and CastManager._can_pay_colored_pips(
+                    game, player_idx, player.untapped_lands, template.plot_cost))
+
+    @staticmethod
+    def plot_card(game: "GameState", player_idx: int,
+                  card: "CardInstance") -> bool:
+        """Pay the plot cost and exile the card from hand (CR 702.170).
+        Returns True on success; on failure returns False without mutating."""
+        if not CastManager.can_plot(game, player_idx, card):
+            return False
+        player = game.players[player_idx]
+        if not game.tap_lands_for_mana(player_idx, card.template.plot_cost,
+                                        card_name=card.template.name):
+            return False
+        # Route the hand -> exile transition through the single zone funnel so
+        # any leave-hand / enter-exile triggers fire (CR 603/614).
+        game.zone_mgr.move_card(game, card, "hand", "exile", cause="Plot")
+        card._plotted = True
+        card._plotted_turn = game.turn_number
+        game.log.append(
+            f"T{game.display_turn} P{player_idx+1}: Plot {card.template.name}")
+        return True
+
+    @staticmethod
+    def can_cast_plotted(game: "GameState", player_idx: int,
+                         card: "CardInstance") -> bool:
+        """A plotted card in exile may be cast (free, as a sorcery) on a turn
+        LATER than the one it was plotted on — never the same turn."""
+        return (card.zone == "exile"
+                and getattr(card, '_plotted', False)
+                and card in game.players[player_idx].exile
+                and game.turn_number > getattr(card, '_plotted_turn', 10**9))
+
+    @staticmethod
+    def cast_plotted(game: "GameState", player_idx: int,
+                     card: "CardInstance", targets=None) -> bool:
+        """Cast a plotted card from exile for free (CR 702.170). Routes through
+        the standard free-cast path so ETB/storm/cascade triggers fire."""
+        if not CastManager.can_cast_plotted(game, player_idx, card):
+            return False
+        # Move exile -> hand through the funnel, then cast from hand for free so
+        # the standard free-cast path (ETB/storm/cascade wiring) applies.
+        game.zone_mgr.move_card(game, card, "exile", "hand", cause="cast plotted")
+        card._plotted = False
+        card._free_cast_opportunity = True
+        return game.cast_spell(player_idx, card, targets=targets, free_cast=True)
 
     @staticmethod
     def tick_suspend_upkeep(game: "GameState", player_idx: int) -> None:
@@ -956,8 +1283,16 @@ class CastManager:
         dashed = False
         warped = False
         spectacled = False
+        madnessed = False
         if not free_cast:
             untapped = player.untapped_mana_capacity() + player.mana_pool.total() + player._tron_mana_bonus()
+
+            # Madness (CR 702.35b): the card sits in exile inside the
+            # discard funnel's offer window; it is cast for the madness
+            # cost and no other alternative-cost route applies.
+            madnessed = (template.madness_cost is not None
+                         and card.zone == "exile"
+                         and getattr(card, '_madness_pending', False))
 
             # Warp: cast from hand for cheaper alternative cost; creature exiles
             # at beginning of the next end step.  Use Warp when we have an
@@ -982,7 +1317,8 @@ class CastManager:
             # Spectacle (CR 702.131): use spectacle cost when an opponent lost
             # life this turn and the player cannot afford the normal cost —
             # or when spectacle is strictly cheaper than the normal cost.
-            if template.spectacle_cost is not None and not warped:
+            if (template.spectacle_cost is not None and not warped
+                    and not madnessed):
                 opp_lost_life_s = any(
                     game.players[i].life_lost_this_turn > 0
                     for i in range(len(game.players))
@@ -1010,7 +1346,7 @@ class CastManager:
             # Don't Dash when...
             #   1) We want a permanent body and opponent has few threats
             #   2) We're low on mana and Dash costs more than normal
-            if template.dash_cost is not None:
+            if template.dash_cost is not None and not madnessed:
                 can_normal = untapped >= template.mana_cost.cmc
                 can_dash = untapped >= template.dash_cost.cmc
 
@@ -1042,6 +1378,7 @@ class CastManager:
             # Unified board evaluation: evoke when the body isn't worth waiting for
             should_evoke = (
                 not dashed and not escaped and not spectacled
+                and not madnessed
                 and template.evoke_cost is not None
                 and untapped < template.mana_cost.cmc
                 and game.callbacks.should_evoke(game, player_idx, card)
@@ -1134,7 +1471,8 @@ class CastManager:
 
             # Delve: exile cards from graveyard to reduce generic mana cost
             delve_exiled = 0
-            if template.has_delve and not evoked and not dashed and not escaped:
+            if (template.has_delve and not evoked and not dashed
+                    and not escaped and not madnessed):
                 colored_cost = (template.mana_cost.white + template.mana_cost.blue +
                                template.mana_cost.black + template.mana_cost.red +
                                template.mana_cost.green)
@@ -1158,7 +1496,13 @@ class CastManager:
                                    f"Delve {delve_exiled} cards for {card.name}")
 
             # Pay mana
-            if spectacled:
+            if madnessed:
+                # Pay the madness cost (CR 702.35b) instead of the mana
+                # cost. A zero cost ("Madness {0}") pays trivially.
+                if not game.tap_lands_for_mana(player_idx, template.madness_cost,
+                                                 card_name=template.name):
+                    return False
+            elif spectacled:
                 # Pay Spectacle cost (CR 702.131) instead of normal cost
                 if not game.tap_lands_for_mana(player_idx, template.spectacle_cost,
                                                  card_name=template.name):
@@ -1236,26 +1580,30 @@ class CastManager:
                                                          card_name=template.name):
                             return False
                     else:
-                        # Phyrexian mana: pay 2 life per Phyrexian symbol instead of colored mana
-                        phyrexian_count = getattr(template, 'phyrexian_pip_count', 0)
-                        if phyrexian_count > 0 and player.life > phyrexian_count * 2:
-                            life_cost = phyrexian_count * 2
+                        # Phyrexian mana (CR 107.4f): 2 life instead of one
+                        # mana of the pip's colour.  Waive the FEWEST pips
+                        # that make the rest payable — chosen by the same
+                        # helper `can_cast` uses, so legality and payment
+                        # cannot disagree — and pay the genuine remainder,
+                        # keeping the non-Phyrexian coloured pips intact
+                        # ({W}{U}{B/P}{R}{G} must still tap WURG).
+                        waived = CastManager._choose_phyrexian_waiver(
+                            game, player_idx, template.mana_cost)
+                        life_cost = 2 * sum(waived.values()) if waived else 0
+                        residual = CastManager._cost_without_pips(
+                            template.mana_cost, waived)
+                        if life_cost:
                             player.life -= life_cost
-                            # Reduce the effective cost — Mutagenic Growth {G/P} becomes free
-                            remaining_cmc = max(0, template.mana_cost.cmc - phyrexian_count)
-                            if remaining_cmc > 0:
-                                from .mana import ManaCost
-                                phyrexian_cost = ManaCost(generic=remaining_cmc)
-                                if not game.tap_lands_for_mana(player_idx, phyrexian_cost,
-                                                                 card_name=template.name):
-                                    player.life += life_cost  # refund
-                                    return False
+                        if not game.tap_lands_for_mana(
+                                player_idx, residual,
+                                card_name=template.name):
+                            player.life += life_cost  # refund
+                            return False
+                        if life_cost:
                             game.log.append(
                                 f"T{game.display_turn} P{player_idx+1}: "
-                                f"Pay {life_cost} life (Phyrexian mana) for {template.name}")
-                        elif not game.tap_lands_for_mana(player_idx, template.mana_cost,
-                                                         card_name=template.name):
-                            return False
+                                f"Pay {life_cost} life (Phyrexian mana) for "
+                                f"{template.name}")
 
         # Remove from zone and track cast-from-graveyard for flashback exile
         cast_with_flashback = False
@@ -1268,14 +1616,12 @@ class CastManager:
             # If cast from GY via flashback (not escape), mark for exile after resolution
             if card.has_flashback and not (escaped if not free_cast else False):
                 cast_with_flashback = True
-                # Pay flashback additional cost (sacrifice a {subtype}).
+                # Pay flashback additional cost (sacrifice a {subtype}) —
+                # typed `flashback_sacrifice_subtype` (parse-once; the AI
+                # prices the same land through ai/land_denial).
                 # can_cast already guarantees a matching land exists.
-                import re as _re_fbc
-                fb_oracle_c = (template.oracle_text or '').lower()
-                m_fb = _re_fbc.search(
-                    r'flashback\s*[—\-:]\s*sacrifice a (\w+)', fb_oracle_c)
-                if m_fb:
-                    needed = m_fb.group(1).strip()
+                needed = getattr(template, 'flashback_sacrifice_subtype', None)
+                if needed:
                     sac = next((
                         l for l in player.lands
                         if needed in [s.lower() for s in (l.template.subtypes or [])]
@@ -1299,6 +1645,8 @@ class CastManager:
         card._dashed = dashed  # Track for haste + return to hand at end of turn
         card._escaped = getattr(card, '_escaped', False) or (escaped if not free_cast else False)  # Track for sacrifice-unless-escaped
         card._warped = warped  # Track for exile at beginning of next end step
+        card._madness = madnessed  # Cast via the madness route (CR 702.35b)
+        card._madness_pending = False  # The exile offer window is consumed
         # Turn-scoped budget for `_eval_evoke`: each removal-class
         # evoke ramps the cost of the next one. Increment at cast
         # time (not on resolve) — even a fizzling evoke pitches the
@@ -1384,6 +1732,33 @@ class CastManager:
                     game, player_idx, int(x_value), template
                 )
                 x_value = best_x
+            elif (getattr(template, 'has_converge', False)
+                  and (getattr(template, 'can_destroy_nonland_permanent', False)
+                       or getattr(template, 'can_exile_permanent', False))):
+                # Converge target-removal (Prismatic Ending shape): the
+                # resolver's condition is gated by colors of mana spent,
+                # not raw mana — "pay max affordable" (the default below)
+                # can pour mana into an X that still reaches nothing.
+                # Delegate to the module-level `pick_converge_x_value` —
+                # the AI's proactive-cast gate
+                # (`ai/ev_player.py::EVPlayer._has_high_threat_target`)
+                # consults the SAME picker.
+                best_x, _target = pick_converge_x_value(
+                    game, player_idx, int(x_value), template
+                )
+                x_value = best_x
+            elif (getattr(template, 'targeted_removal_data', None) or {}).get('mv') == 'x' \
+                    and targets:
+                # X-bound targeted removal: X is what the chosen target
+                # needs (CR 601.2b — X must reach the target's mana value;
+                # every point above it is mana buying nothing). Capped at
+                # the affordable X the legality check already applied.
+                need = 0
+                for tid in targets:
+                    tgt = game.get_card_by_id(tid)
+                    if tgt is not None:
+                        need = max(need, tgt.template.cmc or 0)
+                x_value = max(int(x_info.get('min_x', 0) or 0), min(int(x_value), need))
             # +1/+1 counter creatures: use max mana (Ballista-style)
             # (default x_value is already max)
             # Pay the actual X cost
@@ -1552,12 +1927,36 @@ class CastManager:
                 if 'noncreature spell' not in c_oracle and 'instant or sorcery' not in c_oracle:
                     continue
                 import re
-                pump = re.search(r'gets?\s+\+(\d+)/\+(\d+)', c_oracle)
+                # Anchor the pump search to the actual "whenever you cast
+                # ... spell" triggered-ability CLAUSE (up to the next
+                # sentence boundary) rather than the creature's whole
+                # oracle text. A creature can print a "+N/+N" elsewhere for
+                # an unrelated reason (a delirium condition, an oil-counter
+                # static, an anthem for another creature type) alongside a
+                # real cast-trigger whose own effect has no P/T component
+                # (e.g. Dragon's Rage Channeler's trigger only surveils —
+                # its "+2/+2" belongs to a separate Delirium static). Class:
+                # >=11 Modern creatures share this "unrelated pump text
+                # co-present with a cast trigger" shape; searching the
+                # whole blob re-applies that unrelated bonus on every spell
+                # cast instead of leaving it to the static/condition that
+                # actually grants it.
+                trigger_clause = next(
+                    (m.group(0) for m in re.finditer(
+                        r'whenever you cast[^.]*?'
+                        r'(?:noncreature spell|instant or sorcery)[^.]*\.',
+                        c_oracle,
+                    )),
+                    None,
+                )
+                if trigger_clause is None:
+                    continue
+                pump = re.search(r'gets?\s+\+(\d+)/\+(\d+)', trigger_clause)
                 if pump:
                     creature.temp_power_mod += int(pump.group(1))
                     creature.temp_toughness_mod += int(pump.group(2))
-                elif re.search(r'gets?\s+\+(\d+)/\+0', c_oracle):
-                    m = re.search(r'gets?\s+\+(\d+)/\+0', c_oracle)
+                elif re.search(r'gets?\s+\+(\d+)/\+0', trigger_clause):
+                    m = re.search(r'gets?\s+\+(\d+)/\+0', trigger_clause)
                     creature.temp_power_mod += int(m.group(1))
                 # Delirium — check actual GY card types via _has_delirium()
                 # _dynamic_base_power() already scales to 3 with delirium; we also

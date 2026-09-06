@@ -1,0 +1,869 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+======================================================================
+  GAME 1: Ruby Storm (P1) vs Amulet Titan (P2)  —  seed 55621
+  Series: Ruby Storm 0 - 0 Amulet Titan
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Ruby Storm wins → chooses to play first
+║ P1 (on play): Ruby Storm
+║ P2 (on draw): Amulet Titan
+╚═══════════════════════════════════════════════════════
+
+P1 (Ruby Storm) opening hand (3 lands, 4 spells):
+  • Desperate Ritual [Spell, CMC 2]
+  • Wish [Spell, CMC 3]
+  • Arid Mesa [Land, CMC 0]
+  • Scalding Tarn [Land, CMC 0]
+  • Bloodstained Mire [Land, CMC 0]
+  • Desperate Ritual [Spell, CMC 2]
+  • Desperate Ritual [Spell, CMC 2]
+→ P1 MULLIGANS (no cost reducer and no ritual+cantrip+finisher backup)
+  New hand (3 lands, 4 spells): ['Pyretic Ritual', 'Manamorphose', 'Pyretic Ritual', 'Wooded Foothills', 'Glimpse the Impossible', 'Elegant Parlor', 'Arid Mesa']
+→ P1 mulligans to 6, bottoms: ['Wooded Foothills']
+  Keeps: ['Pyretic Ritual', 'Manamorphose', 'Pyretic Ritual', 'Glimpse the Impossible', 'Elegant Parlor', 'Arid Mesa']
+
+P2 (Amulet Titan) opening hand (2 lands, 5 spells):
+  • Echoing Deeps [Land, CMC 0]
+  • Green Sun's Zenith [Spell, CMC 1]
+  • Summoner's Pact [Spell, CMC 0]
+  • Simic Growth Chamber [Land, CMC 0]
+  • Primeval Titan [Creature, CMC 6]
+  • Primeval Titan [Creature, CMC 6]
+  • Spelunking [Spell, CMC 3]
+→ P2 KEEPS 7 — has key card(s): Green Sun's Zenith, Spelunking, Summoner's Pact, 3 cheap spells
+
+
+╔══ TURN 1 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 20  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 54  |  Graveyard: 0
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Arid Mesa
+T1: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Ruby Storm 19
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Gruul Turf
+  [Main 1]
+T1 P2: Play Simic Growth Chamber (enters tapped)
+T1: Simic Growth Chamber moved battlefield -> hand (Simic Growth Chamber ETB returns Simic Growth Chamber to hand)
+    → Goal: deploy_engine
+T1 P2: Cast Summoner's Pact (0)
+    [Priority] P1 passes (no response)
+T1: Resolve Summoner's Pact
+T1 P2: Summoner's Pact finds Primeval Titan
+T1: Summoner's Pact moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T1: Echoing Deeps moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 2 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 19  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 1
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Desperate Ritual
+  [Main 1]
+T2 P1: surveil 1 → Ruby Medallion to GY
+T2 P1: Play Elegant Parlor (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Ruby Storm 19
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Urza's Saga
+  [Main 1]
+T2 P2: Play Urza's Saga
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 19  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 1
+║ Library: 51  |  Graveyard: 2
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Elegant Parlor
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Scalding Tarn
+  [Main 1]
+T3 P1: Play Scalding Tarn
+T3: Scalding Tarn moved battlefield -> graveyard (fetchland sacrifice)
+T3 P1: Crack Scalding Tarn -> Mountain (untapped)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R, Sacred Foundry→R, Elegant Parlor→R (paying for Glimpse the Impossible, 0 mana remaining)
+T3 P1: Cast Glimpse the Impossible (2R)
+    [Priority] P2 passes (no response)
+T3: Resolve Glimpse the Impossible
+T3 P1: Glimpse the Impossible → impulse-reveal 3 (March of Reckless Joy, Wish, Manamorphose)
+T3: Glimpse the Impossible moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Ruby Storm 18
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Urza's Saga
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T], Elegant Parlor [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T3 P2: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P2 draws: Crumbling Vestige
+  [Main 1]
+T3 P2: Play Crumbling Vestige (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 18  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 46  |  Graveyard: 4
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Elegant Parlor, Mountain
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Urza's Saga, Crumbling Vestige [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Gemstone Caverns
+  [Main 1]
+T4 P1: Play Gemstone Caverns
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R, Gemstone Caverns→C (paying for Manamorphose, 2 mana remaining)
+T4 P1: Cast Manamorphose (2)
+    [Priority] P2 passes (no response)
+T4: Resolve Manamorphose
+T4 P1: Manamorphose adds 2 any mana
+T4: Manamorphose moved stack -> graveyard (resolution)
+    → Goal: execute_payoff
+T4 P1: Cast Ral, Monsoon Mage // Ral, Leyline Prodigy (1R)
+    [Priority] P2 passes (no response)
+T4: Resolve Ral, Monsoon Mage // Ral, Leyline Prodigy
+T4 P1: Ral, Monsoon Mage enters — instants/sorceries cost {1} less
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Manamorphose, 1 mana remaining)
+T4 P1: Cast Manamorphose (2)
+T4 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy — lost coin flip, takes 1 damage
+    [Priority] P2 passes (no response)
+T4: Resolve Manamorphose
+T4 P1: Manamorphose adds 2 any mana
+T4: Manamorphose moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T4 P1: Cast Reckless Impulse (1R)
+T4 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy — lost coin flip, takes 1 damage
+    [Priority] P2 passes (no response)
+T4: Resolve Reckless Impulse
+T4 P1: Reckless Impulse → impulse-reveal 2 (Ruby Medallion, Manamorphose)
+T4: Reckless Impulse moved stack -> graveyard (resolution)
+    → Goal: execute_payoff
+    [Mana] Tap Elegant Parlor→R (paying for Ruby Medallion, 0 mana remaining)
+T4 P1: Cast Ruby Medallion (2)
+    [Priority] P2 passes (no response)
+T4: Resolve Ruby Medallion
+    → Goal: execute_payoff [enablers]
+T4 P1: Cast Manamorphose (2)
+T4 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy — won coin flip!
+T4 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy transforms! (loyalty: 8) [+6 extra]
+    [Priority] P2 passes (no response)
+T4: Resolve Manamorphose
+T4 P1: Manamorphose adds 2 any mana
+T4: Manamorphose moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T4 P1: Cast March of Reckless Joy (1R) (X=1)
+    [Priority] P2 passes (no response)
+T4: Resolve March of Reckless Joy
+T4 P1: March of Reckless Joy → impulse-reveal 2 (Pyretic Ritual, Sunbaked Canyon)
+T4: March of Reckless Joy moved stack -> graveyard (resolution)
+T4 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy [-2] -> Ral deals 2 damage divided as you choose among one or two targets. Draw a card if you control a blue permanent other than Ral
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 18  |  Ruby Storm 18
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Urza's Saga, Crumbling Vestige
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry [T], Elegant Parlor [T], Mountain [T], Gemstone Caverns [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T4 P2: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+  [Draw] P2 draws: Simic Growth Chamber
+  [Main 1]
+T4 P2: Play Gruul Turf (enters tapped)
+T4: Urza's Saga moved battlefield -> hand (Gruul Turf ETB returns Urza's Saga to hand)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Simic Growth Chamber moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 5 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 18  |  Amulet Titan 18
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 2
+║ Library: 38  |  Graveyard: 9
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry, Elegant Parlor, Mountain, Gemstone Caverns
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige, Gruul Turf [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Past in Flames
+  [Main 1]
+T5 P1: Play Sunbaked Canyon
+T5: Sunbaked Canyon moved battlefield -> graveyard (activation cost (Sunbaked Canyon))
+T5 P1: activate Sunbaked Canyon — Draw a card.
+T5 P1: Sunbaked Canyon activated — draw 1 (Scalding Tarn)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Pyretic Ritual, 2 mana remaining)
+T5 P1: Cast Pyretic Ritual (1R)
+    [Priority] P2 passes (no response)
+T5: Resolve Pyretic Ritual
+T5 P1: Pyretic Ritual adds 3 R mana
+T5: Pyretic Ritual moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T5 P1: Cast Pyretic Ritual (1R)
+    [Priority] P2 passes (no response)
+T5: Resolve Pyretic Ritual
+T5 P1: Pyretic Ritual adds 3 R mana
+T5: Pyretic Ritual moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T5 P1:   Splice Desperate Ritual onto Desperate Ritual
+T5 P1: Cast Desperate Ritual (1R)
+    [Priority] P2 passes (no response)
+T5: Resolve Desperate Ritual
+T5 P1: Desperate Ritual adds 3 R mana
+T5 P1:   Spliced Desperate Ritual adds 3 R mana
+T5: Desperate Ritual moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T5 P1: Cast Desperate Ritual (1R)
+    [Priority] P2 passes (no response)
+T5: Resolve Desperate Ritual
+T5 P1: Desperate Ritual adds 3 R mana
+T5: Desperate Ritual moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T5 P1: Cast Pyretic Ritual (1R)
+    [Priority] P2 passes (no response)
+T5: Resolve Pyretic Ritual
+T5 P1: Pyretic Ritual adds 3 R mana
+T5: Pyretic Ritual moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T5 P1: Cast Past in Flames (3R)
+    [Priority] P2 passes (no response)
+T5: Resolve Past in Flames
+T5 P1: Past in Flames grants flashback
+T5: Past in Flames moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T5 P1: Cast Wish (2R)
+    [Priority] P2 passes (no response)
+T5: Resolve Wish
+T5 P1: Wish finds Past in Flames (from sideboard)
+T5: Wish moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T5 P1: Cast Glimpse the Impossible (2R)
+    [Priority] P2 passes (no response)
+T5: Resolve Glimpse the Impossible
+T5 P1: Glimpse the Impossible → impulse-reveal 3 (Wrenn's Resolve, Grapeshot, Ral, Monsoon Mage // Ral, Leyline Prodigy)
+T5: Glimpse the Impossible moved stack -> exile (flashback resolution (CR 702.33a))
+    → Goal: execute_payoff [enablers]
+T5 P1: Cast Wrenn's Resolve (1R)
+    [Priority] P2 passes (no response)
+T5: Resolve Wrenn's Resolve
+T5 P1: Wrenn's Resolve → impulse-reveal 2 (Valakut Awakening // Valakut Stoneforge, Wooded Foothills)
+T5: Wrenn's Resolve moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T5 P1: Cast Reckless Impulse (1R)
+    [Priority] P2 passes (no response)
+T5: Resolve Reckless Impulse
+T5 P1: Reckless Impulse → impulse-reveal 2 (Reckless Impulse, Wish)
+T5: Reckless Impulse moved stack -> exile (flashback resolution (CR 702.33a))
+    → Goal: execute_payoff [enablers]
+T5 P1: Cast Reckless Impulse (1R)
+    [Priority] P2 passes (no response)
+T5: Resolve Reckless Impulse
+T5 P1: Reckless Impulse → impulse-reveal 2 (Ral, Monsoon Mage // Ral, Leyline Prodigy, Desperate Ritual)
+T5: Reckless Impulse moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T5 P1: Cast Manamorphose (2)
+    [Priority] P2 passes (no response)
+T5: Resolve Manamorphose
+T5 P1: Manamorphose adds 2 any mana
+T5: Manamorphose moved stack -> exile (flashback resolution (CR 702.33a))
+    → Goal: execute_payoff [enablers]
+T5 P1: Cast Manamorphose (2)
+    [Priority] P2 passes (no response)
+T5: Resolve Manamorphose
+T5 P1: Manamorphose adds 2 any mana
+T5: Manamorphose moved stack -> exile (flashback resolution (CR 702.33a))
+    → Goal: execute_payoff [enablers]
+T5 P1: Cast Manamorphose (2)
+    [Priority] P2 passes (no response)
+T5: Resolve Manamorphose
+T5 P1: Manamorphose adds 2 any mana
+T5: Manamorphose moved stack -> exile (flashback resolution (CR 702.33a))
+    → Goal: execute_payoff [enablers]
+T5 P1: Cast Desperate Ritual (1R)
+    [Priority] P2 passes (no response)
+T5: Resolve Desperate Ritual
+T5 P1: Desperate Ritual adds 3 R mana
+T5: Desperate Ritual moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T5 P1: Cast Pyretic Ritual (1R)
+    [Priority] P2 passes (no response)
+T5: Resolve Pyretic Ritual
+T5 P1: Pyretic Ritual adds 3 R mana
+T5: Pyretic Ritual moved stack -> exile (flashback resolution (CR 702.33a))
+    → Goal: execute_payoff [enablers]
+T5 P1: Cast Wish (2R)
+    [Priority] P2 passes (no response)
+T5: Resolve Wish
+T5 P1: Wish finds Grapeshot (from sideboard)
+T5: Wish moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [payoffs]
+T5 P1: Cast Grapeshot (1R)
+    [Priority] P2 passes (no response)
+T5: Resolve Grapeshot
+T5 P1: Grapeshot deals 1 to P2 (face)
+T5 P1: Grapeshot deals 1 damage (opponent life: 17)
+T5: Storm copies: 17
+T5 P1: Grapeshot deals 1 to P2 (face)
+T5 P1: Grapeshot deals 1 damage (opponent life: 16)
+T5 P1: Grapeshot deals 1 to P2 (face)
+T5 P1: Grapeshot deals 1 damage (opponent life: 15)
+T5 P1: Grapeshot deals 1 to P2 (face)
+T5 P1: Grapeshot deals 1 damage (opponent life: 14)
+T5 P1: Grapeshot deals 1 to P2 (face)
+T5 P1: Grapeshot deals 1 damage (opponent life: 13)
+T5 P1: Grapeshot deals 1 to P2 (face)
+T5 P1: Grapeshot deals 1 damage (opponent life: 12)
+T5 P1: Grapeshot deals 1 to P2 (face)
+T5 P1: Grapeshot deals 1 damage (opponent life: 11)
+T5 P1: Grapeshot deals 1 to P2 (face)
+T5 P1: Grapeshot deals 1 damage (opponent life: 10)
+T5 P1: Grapeshot deals 1 to P2 (face)
+T5 P1: Grapeshot deals 1 damage (opponent life: 9)
+T5 P1: Grapeshot deals 1 to P2 (face)
+T5 P1: Grapeshot deals 1 damage (opponent life: 8)
+T5 P1: Grapeshot deals 1 to P2 (face)
+T5 P1: Grapeshot deals 1 damage (opponent life: 7)
+T5 P1: Grapeshot deals 1 to P2 (face)
+T5 P1: Grapeshot deals 1 damage (opponent life: 6)
+T5 P1: Grapeshot deals 1 to P2 (face)
+T5 P1: Grapeshot deals 1 damage (opponent life: 5)
+T5 P1: Grapeshot deals 1 to P2 (face)
+T5 P1: Grapeshot deals 1 damage (opponent life: 4)
+T5 P1: Grapeshot deals 1 to P2 (face)
+T5 P1: Grapeshot deals 1 damage (opponent life: 3)
+T5 P1: Grapeshot deals 1 to P2 (face)
+T5 P1: Grapeshot deals 1 damage (opponent life: 2)
+T5 P1: Grapeshot deals 1 to P2 (face)
+T5 P1: Grapeshot deals 1 damage (opponent life: 1)
+T5 P1: Grapeshot deals 1 to P2 (face)
+T5 P1: Grapeshot deals 1 damage (opponent life: 0)
+T5: Grapeshot moved stack -> graveyard (resolution)
+P2 loses: life total 0
+
+>>> Ruby Storm wins Game 1 on turn 5 via damage
+    Final life: Ruby Storm=18  Amulet Titan=0
+
+======================================================================
+  GAME 2: Amulet Titan (P1) vs Ruby Storm (P2)  —  seed 55622
+  Series: Ruby Storm 1 - 0 Amulet Titan
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Ruby Storm wins → chooses to play first
+║ P1 (on play): Ruby Storm
+║ P2 (on draw): Amulet Titan
+╚═══════════════════════════════════════════════════════
+
+P1 (Amulet Titan) opening hand (4 lands, 3 spells):
+  • Gruul Turf [Land, CMC 0]
+  • Zuran Orb [Spell, CMC 0]
+  • Urza's Saga [Land, CMC 0]
+  • Urza's Cave [Land, CMC 0]
+  • Primeval Titan [Creature, CMC 6]
+  • Arboreal Grazer [Creature, CMC 1]
+  • Simic Growth Chamber [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Arboreal Grazer, 2 cheap spells
+
+P2 (Ruby Storm) opening hand (3 lands, 4 spells):
+  • Glimpse the Impossible [Spell, CMC 3]
+  • Manamorphose [Spell, CMC 2]
+  • Scalding Tarn [Land, CMC 0]
+  • Sunbaked Canyon [Land, CMC 0]
+  • Ruby Medallion [Spell, CMC 2]
+  • Thundering Falls [Land, CMC 0]
+  • Reckless Impulse [Spell, CMC 2]
+→ P2 KEEPS 7 — has key card(s): Manamorphose, Reckless Impulse, Ruby Medallion, 4 cheap spells
+
+
+╔══ TURN 1 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 20  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Scalding Tarn
+T1: Scalding Tarn moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Scalding Tarn (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Ruby Storm 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Aftermath Analyst
+  [Main 1]
+T1 P1: Play Urza's Saga
+    → Goal: deploy_engine
+T1 P1: Cast Zuran Orb (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Zuran Orb
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 19  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Zuran Orb
+║   Lands: Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ruby Medallion
+  [Main 1]
+T2 P2: Play Sunbaked Canyon
+    → Goal: deploy_engine [engines]
+    [Mana] Tap Sacred Foundry→R, Sunbaked Canyon→R (paying for Ruby Medallion, 0 mana remaining)
+T2 P2: Cast Ruby Medallion (2)
+    [Priority] P1 passes (no response)
+T2: Resolve Ruby Medallion
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Ruby Storm 19
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Zuran Orb
+║   Lands: Urza's Saga
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry [T], Sunbaked Canyon [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T2 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P1 draws: Urza's Saga
+  [Main 1]
+T2 P1: Play Gruul Turf (enters tapped)
+T2: Urza's Saga moved battlefield -> hand (Gruul Turf ETB returns Urza's Saga to hand)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 19  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 1
+║ Library: 51  |  Graveyard: 1
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry, Sunbaked Canyon
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Zuran Orb
+║   Lands: Gruul Turf [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Grapeshot
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Sacred Foundry→R, Sunbaked Canyon→R (paying for Ruby Medallion, 0 mana remaining)
+T3 P2: Cast Ruby Medallion (2)
+    [Priority] P1 passes (no response)
+T3: Resolve Ruby Medallion
+T3 P2: surveil 1 → Wrenn's Resolve to GY
+T3 P2: Play Thundering Falls (enters tapped)
+    → Goal: execute_payoff [enablers]
+T3 P2: Cast Manamorphose (2)
+    [Priority] P1 passes (no response)
+T3: Resolve Manamorphose
+T3 P2: Manamorphose adds 2 any mana
+T3: Manamorphose moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T3 P2: Cast Glimpse the Impossible (2R)
+    [Priority] P1 passes (no response)
+T3: Resolve Glimpse the Impossible
+T3 P2: Glimpse the Impossible → impulse-reveal 3 (Mountain, Elegant Parlor, Scalding Tarn)
+T3: Glimpse the Impossible moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T3 P2: Cast Reckless Impulse (1R)
+    [Priority] P1 passes (no response)
+T3: Resolve Reckless Impulse
+T3 P2: Reckless Impulse → impulse-reveal 2 (Wooded Foothills, Grapeshot)
+T3: Reckless Impulse moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Ruby Storm 19
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Zuran Orb
+║   Lands: Gruul Turf
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion, Ruby Medallion
+║   Lands: Sacred Foundry [T], Sunbaked Canyon [T], Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Forest
+  [Main 1]
+T3 P1: Play Urza's Saga
+    → Goal: ramp
+    [Mana] Tap Gruul Turf→RG (paying for Aftermath Analyst, 1 mana remaining)
+T3 P1: Cast Aftermath Analyst (1G)
+    [Priority] P2 passes (no response)
+T3: Resolve Aftermath Analyst
+T3: Urza's Saga moved library -> graveyard (Aftermath Analyst mill)
+T3: Boseiju, Who Endures moved library -> graveyard (Aftermath Analyst mill)
+T3: The Mycosynth Gardens moved library -> graveyard (Aftermath Analyst mill)
+T3 P1: Aftermath Analyst ETB: mill 3
+T3 P1: Activate Aftermath Analyst (sacrifice)
+T3 P1: Returned Urza's Saga to battlefield
+T3 P1: Returned Boseiju, Who Endures to battlefield
+T3 P1: Returned The Mycosynth Gardens to battlefield
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 19  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 43  |  Graveyard: 5
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion, Ruby Medallion
+║   Lands: Sacred Foundry, Sunbaked Canyon, Thundering Falls
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Zuran Orb
+║   Lands: Gruul Turf [T], Urza's Saga, Urza's Saga [T], Boseiju, Who Endures [T], The Mycosynth Gardens [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Reckless Impulse
+  [Main 1]
+T4 P2: Play Wooded Foothills
+T4: Wooded Foothills moved battlefield -> graveyard (fetchland sacrifice)
+T4 P2: Crack Wooded Foothills -> Mountain (untapped)
+T4: Sunbaked Canyon moved battlefield -> graveyard (activation cost (Sunbaked Canyon))
+T4 P2: activate Sunbaked Canyon — Draw a card.
+T4 P2: Sunbaked Canyon activated — draw 1 (Glimpse the Impossible)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Reckless Impulse, 1 mana remaining)
+T4 P2: Cast Reckless Impulse (1R)
+    [Priority] P1 passes (no response)
+T4: Resolve Reckless Impulse
+T4 P2: Reckless Impulse → impulse-reveal 2 (Desperate Ritual, Manamorphose)
+T4: Reckless Impulse moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T4 P2: Cast Manamorphose (2)
+    [Priority] P1 passes (no response)
+T4: Resolve Manamorphose
+T4 P2: Manamorphose adds 2 any mana
+T4: Manamorphose moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T4 P2: Cast Desperate Ritual (1R)
+    [Priority] P1 passes (no response)
+T4: Resolve Desperate Ritual
+T4 P2: Desperate Ritual adds 3 R mana
+T4: Desperate Ritual moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T4 P2: Cast Glimpse the Impossible (2R)
+    [Priority] P1 passes (no response)
+T4: Resolve Glimpse the Impossible
+T4 P2: Glimpse the Impossible → impulse-reveal 3 (Pyretic Ritual, Bloodstained Mire, Arid Mesa)
+T4: Glimpse the Impossible moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T4 P2: Cast Pyretic Ritual (1R)
+    [Priority] P1 passes (no response)
+T4: Resolve Pyretic Ritual
+T4 P2: Pyretic Ritual adds 3 R mana
+T4: Pyretic Ritual moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T4 P2: Cast Wish (2R)
+    [Priority] P1 passes (no response)
+T4: Resolve Wish
+T4 P2: Wish finds Past in Flames (from sideboard)
+T4: Wish moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T4 P2: Cast Past in Flames (3R)
+    [Priority] P1 passes (no response)
+T4: Resolve Past in Flames
+T4 P2: Past in Flames grants flashback
+T4: Past in Flames moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T4 P2: Cast Wish (2R)
+    [Priority] P1 passes (no response)
+T4: Resolve Wish
+T4 P2: Wish finds Grapeshot (from sideboard)
+T4: Wish moved stack -> exile (flashback resolution (CR 702.33a))
+    → Goal: execute_payoff [payoffs]
+T4 P2: Cast Grapeshot (1R)
+    [Priority] P1 passes (no response)
+T4: Resolve Grapeshot
+T4 P2: Grapeshot deals 1 to P1 (face)
+T4 P2: Grapeshot deals 1 damage (opponent life: 19)
+T4: Storm copies: 8
+T4 P2: Grapeshot deals 1 to P1 (face)
+T4 P2: Grapeshot deals 1 damage (opponent life: 18)
+T4 P2: Grapeshot deals 1 to P1 (face)
+T4 P2: Grapeshot deals 1 damage (opponent life: 17)
+T4 P2: Grapeshot deals 1 to P1 (face)
+T4 P2: Grapeshot deals 1 damage (opponent life: 16)
+T4 P2: Grapeshot deals 1 to P1 (face)
+T4 P2: Grapeshot deals 1 damage (opponent life: 15)
+T4 P2: Grapeshot deals 1 to P1 (face)
+T4 P2: Grapeshot deals 1 damage (opponent life: 14)
+T4 P2: Grapeshot deals 1 to P1 (face)
+T4 P2: Grapeshot deals 1 damage (opponent life: 13)
+T4 P2: Grapeshot deals 1 to P1 (face)
+T4 P2: Grapeshot deals 1 damage (opponent life: 12)
+T4 P2: Grapeshot deals 1 to P1 (face)
+T4 P2: Grapeshot deals 1 damage (opponent life: 11)
+T4: Grapeshot moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Thundering Falls→R (paying for Grapeshot, 0 mana remaining)
+T4 P2: Cast Grapeshot (1R)
+    [Priority] P1 passes (no response)
+T4: Resolve Grapeshot
+T4 P2: Grapeshot deals 1 to P1 (face)
+T4 P2: Grapeshot deals 1 damage (opponent life: 10)
+T4: Storm copies: 9
+T4 P2: Grapeshot deals 1 to P1 (face)
+T4 P2: Grapeshot deals 1 damage (opponent life: 9)
+T4 P2: Grapeshot deals 1 to P1 (face)
+T4 P2: Grapeshot deals 1 damage (opponent life: 8)
+T4 P2: Grapeshot deals 1 to P1 (face)
+T4 P2: Grapeshot deals 1 damage (opponent life: 7)
+T4 P2: Grapeshot deals 1 to P1 (face)
+T4 P2: Grapeshot deals 1 damage (opponent life: 6)
+T4 P2: Grapeshot deals 1 to P1 (face)
+T4 P2: Grapeshot deals 1 damage (opponent life: 5)
+T4 P2: Grapeshot deals 1 to P1 (face)
+T4 P2: Grapeshot deals 1 damage (opponent life: 4)
+T4 P2: Grapeshot deals 1 to P1 (face)
+T4 P2: Grapeshot deals 1 damage (opponent life: 3)
+T4 P2: Grapeshot deals 1 to P1 (face)
+T4 P2: Grapeshot deals 1 damage (opponent life: 2)
+T4 P2: Grapeshot deals 1 to P1 (face)
+T4 P2: Grapeshot deals 1 damage (opponent life: 1)
+T4: Grapeshot moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T4 P2: Cast Manamorphose (2)
+    [Priority] P1 passes (no response)
+T4: Resolve Manamorphose
+T4 P2: Manamorphose adds 2 any mana
+T4: Manamorphose moved stack -> exile (flashback resolution (CR 702.33a))
+    → Goal: execute_payoff
+T4 P2: Cast Ral, Monsoon Mage // Ral, Leyline Prodigy (1R)
+    [Priority] P1 passes (no response)
+T4: Resolve Ral, Monsoon Mage // Ral, Leyline Prodigy
+T4 P2: Ral, Monsoon Mage enters — instants/sorceries cost {1} less
+    → Goal: execute_payoff [payoffs]
+T4 P2: Cast Grapeshot (1R)
+T4 P2: Ral, Monsoon Mage // Ral, Leyline Prodigy — lost coin flip, takes 1 damage
+    [Priority] P1 passes (no response)
+T4: Resolve Grapeshot
+T4 P2: Grapeshot deals 1 to P1 (face)
+T4 P2: Grapeshot deals 1 damage (opponent life: 0)
+T4: Storm copies: 12
+T4 P2: Grapeshot deals 1 to P1 (face)
+T4 P2: Grapeshot deals 1 damage (opponent life: -1)
+T4 P2: Grapeshot deals 1 to P1 (face)
+T4 P2: Grapeshot deals 1 damage (opponent life: -2)
+T4 P2: Grapeshot deals 1 to P1 (face)
+T4 P2: Grapeshot deals 1 damage (opponent life: -3)
+T4 P2: Grapeshot deals 1 to P1 (face)
+T4 P2: Grapeshot deals 1 damage (opponent life: -4)
+T4 P2: Grapeshot deals 1 to P1 (face)
+T4 P2: Grapeshot deals 1 damage (opponent life: -5)
+T4 P2: Grapeshot deals 1 to P1 (face)
+T4 P2: Grapeshot deals 1 damage (opponent life: -6)
+T4 P2: Grapeshot deals 1 to P1 (face)
+T4 P2: Grapeshot deals 1 damage (opponent life: -7)
+T4 P2: Grapeshot deals 1 to P1 (face)
+T4 P2: Grapeshot deals 1 damage (opponent life: -8)
+T4 P2: Grapeshot deals 1 to P1 (face)
+T4 P2: Grapeshot deals 1 damage (opponent life: -9)
+T4 P2: Grapeshot deals 1 to P1 (face)
+T4 P2: Grapeshot deals 1 damage (opponent life: -10)
+T4 P2: Grapeshot deals 1 to P1 (face)
+T4 P2: Grapeshot deals 1 damage (opponent life: -11)
+T4 P2: Grapeshot deals 1 to P1 (face)
+T4 P2: Grapeshot deals 1 damage (opponent life: -12)
+T4: Grapeshot moved stack -> graveyard (resolution)
+P1 loses: life total -12
+
+>>> Ruby Storm wins Game 2 on turn 4 via damage
+    Final life: Amulet Titan=-12  Ruby Storm=18
+
+======================================================================
+  MATCH RESULT: Ruby Storm wins 2-0
+======================================================================

@@ -1,0 +1,1485 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+======================================================================
+  GAME 1: Jeskai Blink (P1) vs 4c Omnath (P2)  —  seed 60100
+  Series: Jeskai Blink 0 - 0 4c Omnath
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Jeskai Blink wins → chooses to play first
+║ P1 (on play): Jeskai Blink
+║ P2 (on draw): 4c Omnath
+╚═══════════════════════════════════════════════════════
+
+P1 (Jeskai Blink) opening hand (3 lands, 4 spells):
+  • Meticulous Archive [Land, CMC 0]
+  • Flooded Strand [Land, CMC 0]
+  • Witch Enchanter // Witch-Blessed Meadow [Creature, CMC 4]
+  • Arid Mesa [Land, CMC 0]
+  • Solitude [Creature, CMC 5]
+  • Fable of the Mirror-Breaker // Reflection of Kiki-Jiki [Spell, CMC 3]
+  • Ephemerate [Spell, CMC 1]
+→ P1 KEEPS 7 — has key card(s): Ephemerate, Solitude, 2 cheap spells
+
+P2 (4c Omnath) opening hand (1 lands, 6 spells):
+  • Ephemerate [Spell, CMC 1]
+  • Teferi, Time Raveler [Spell, CMC 3]
+  • Phelia, Exuberant Shepherd [Creature, CMC 2]
+  • Orcish Bowmasters [Creature, CMC 2]
+  • Risen Reef [Creature, CMC 3]
+  • Plains [Land, CMC 0]
+  • Elesh Norn, Mother of Machines [Creature, CMC 5]
+→ P2 MULLIGANS (too few lands (1 < 2))
+  New hand (1 lands, 6 spells): ['Prismatic Ending', 'Leyline Binding', 'Quantum Riddler', 'Quantum Riddler', 'Omnath, Locus of Creation', 'Solitude', 'Raugrin Triome']
+→ P2 MULLIGANS (too few lands (1 < 2))
+  New hand (1 lands, 6 spells): ['Omnath, Locus of Creation', 'Phelia, Exuberant Shepherd', 'Risen Reef', 'Phelia, Exuberant Shepherd', 'Quantum Riddler', 'Indatha Triome', 'Teferi, Time Raveler']
+→ P2 mulligans to 5, bottoms: ['Phelia, Exuberant Shepherd', 'Phelia, Exuberant Shepherd']
+  Keeps: ['Omnath, Locus of Creation', 'Risen Reef', 'Quantum Riddler', 'Indatha Triome', 'Teferi, Time Raveler']
+
+
+╔══ TURN 1 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 20  |  4c Omnath 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Arid Mesa
+T1: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 20  |  Jeskai Blink 19
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 55  |  Graveyard: 0
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+T1 P2: Play Flooded Strand
+T1: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Flooded Strand (pay 1 life) -> Steam Vents (untapped, life: 17)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 19  |  4c Omnath 17
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Phelia, Exuberant Shepherd
+  [Main 1]
+T2 P1: Play Flooded Strand
+T2: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T2 P1: Crack Flooded Strand (pay 1 life) -> Hallowed Fountain (tapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 17  |  Jeskai Blink 18
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 53  |  Graveyard: 1
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Steam Vents
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Orcish Bowmasters
+  [Main 1]
+T2 P2: Play Indatha Triome (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 18  |  4c Omnath 17
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Hallowed Fountain
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Indatha Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+T3 P1: surveil 1 → Arid Mesa to GY
+T3 P1: Play Meticulous Archive (enters tapped)
+    → Goal: grind_value [enablers]
+    [Mana] Tap Sacred Foundry→W, Hallowed Fountain→U (paying for Phelia, Exuberant Shepherd, 0 mana remaining)
+T3 P1: Cast Phelia, Exuberant Shepherd (1W)
+    [Priority] P2 passes (no response)
+T3: Resolve Phelia, Exuberant Shepherd
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 17  |  Jeskai Blink 18
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 52  |  Graveyard: 1
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Indatha Triome
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Lands: Sacred Foundry [T], Hallowed Fountain [T], Meticulous Archive [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Quantum Riddler
+  [Main 1]
+    → Goal: grind_value
+    [Mana] Tap Steam Vents→R, Indatha Triome→B (paying for Orcish Bowmasters, 0 mana remaining)
+T3 P2: Cast Orcish Bowmasters (1B)
+    [Priority] P1 passes (no response)
+T3: Resolve Orcish Bowmasters
+T3 P2: Bowmasters deals 1 damage to opponent (life: 17)
+T3 P2: amass Orcs 1 — creates a 1/1 Orc Army token
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 17  |  4c Omnath 17
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 48  |  Graveyard: 3
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Lands: Sacred Foundry, Hallowed Fountain, Meticulous Archive
+║ 4c Omnath board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Steam Vents [T], Indatha Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Prismatic Ending
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Sacred Foundry→W (paying for Prismatic Ending, 2 mana remaining)
+T4 P1: Cast Prismatic Ending (2W) (X=2)
+    [Priority] P2 passes (no response)
+T4: Resolve Prismatic Ending
+T4: Orcish Bowmasters moved battlefield -> exile (exiled)
+T4 P1: Prismatic Ending exiles Orcish Bowmasters
+T4: Prismatic Ending moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Phelia, Exuberant Shepherd
+T4 P1: Phelia exiles Orc Army (P2's)
+T4 P1: Attack with Phelia, Exuberant Shepherd
+  [Declare Blockers] P2 does not block
+T4 P1:   Phelia, Exuberant Shepherd (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 17 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 15  |  Jeskai Blink 17
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 1
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Steam Vents, Indatha Triome
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2) [tapped]
+║   Lands: Sacred Foundry [T], Hallowed Fountain [T], Meticulous Archive [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Leyline Binding
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Indatha Triome→W (paying for Leyline Binding, 1 mana remaining)
+T4 P2: Cast Leyline Binding (5W)
+    [Priority] P1 passes (no response)
+T4: Resolve Leyline Binding
+T4: Phelia, Exuberant Shepherd moved battlefield -> exile (exiled)
+T4 P2: Leyline Binding exiles Phelia, Exuberant Shepherd
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 17  |  4c Omnath 15
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 47  |  Graveyard: 4
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Hallowed Fountain, Meticulous Archive
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Other: Leyline Binding
+║   Lands: Steam Vents, Indatha Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Consign to Memory
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 2 mana remaining)
+T5 P1: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P2 passes (no response)
+T5: Resolve Ragavan, Nimble Pilferer
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→W (paying for Ephemerate, 1 mana remaining)
+T5 P1: Cast Ephemerate (W)
+    [Priority] P2 passes (no response)
+T5: Resolve Ephemerate
+T5: Blink Ragavan, Nimble Pilferer
+T5: Ephemerate moved stack -> exile (rebound (CR 702.86))
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 15  |  Jeskai Blink 17
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Other: Leyline Binding
+║   Lands: Steam Vents, Indatha Triome
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry [T], Hallowed Fountain [T], Meticulous Archive
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Prismatic Ending
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Indatha Triome→W (paying for Prismatic Ending, 1 mana remaining)
+T5 P2: Cast Prismatic Ending (1W) (X=1)
+    [Priority] P1 passes (no response)
+T5: Resolve Prismatic Ending
+T5: Ragavan, Nimble Pilferer moved battlefield -> exile (exiled)
+T5 P2: Prismatic Ending exiles Ragavan, Nimble Pilferer
+T5: Prismatic Ending moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 17  |  4c Omnath 15
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 46  |  Graveyard: 4
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Hallowed Fountain, Meticulous Archive
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Other: Leyline Binding
+║   Lands: Steam Vents [T], Indatha Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T6 P1: Rebound Ephemerate skipped (no valid target)
+  [Draw] P1 draws: Island
+  [Main 1]
+T6 P1: Play Island
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 15  |  Jeskai Blink 17
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 2
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Other: Leyline Binding
+║   Lands: Steam Vents, Indatha Triome
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Hallowed Fountain, Meticulous Archive, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Leyline Binding
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 17  |  4c Omnath 15
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 2
+║ Library: 45  |  Graveyard: 4
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Hallowed Fountain, Meticulous Archive, Island
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Other: Leyline Binding
+║   Lands: Steam Vents, Indatha Triome
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Scalding Tarn
+  [Main 1]
+T7 P1: Play Scalding Tarn
+T7: Scalding Tarn moved battlefield -> graveyard (fetchland sacrifice)
+T7 P1: Crack Scalding Tarn (pay 1 life) -> Steam Vents (tapped, life: 16)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 15  |  Jeskai Blink 16
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 5
+║ Library: 48  |  Graveyard: 2
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Other: Leyline Binding
+║   Lands: Steam Vents, Indatha Triome
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Hallowed Fountain, Meticulous Archive, Island, Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Leyline Binding
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 16  |  4c Omnath 15
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 5  |  Opp lands: 2
+║ Library: 43  |  Graveyard: 5
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Hallowed Fountain, Meticulous Archive, Island, Steam Vents
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Other: Leyline Binding
+║   Lands: Steam Vents, Indatha Triome
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Flooded Strand
+  [Main 1]
+T8 P1: Play Flooded Strand
+T8: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T8 P1: Crack Flooded Strand -> Plains (untapped)
+    → Goal: close_game
+    [Mana] Tap Island→U, Plains→W, Sacred Foundry→W, Hallowed Fountain→U, Meticulous Archive→U (paying for Solitude, 1 mana remaining)
+T8 P1: Cast Solitude (3WW)
+    [Priority] P2 passes (no response)
+T8: Resolve Solitude
+  [Begin Combat]
+    [Mana] Tap Indatha Triome→W (paying for Leyline Binding, 1 mana remaining)
+T8 P2: Cast Leyline Binding (5W)
+T8: Resolve Leyline Binding
+T8: Solitude moved battlefield -> exile (exiled)
+T8 P2: Leyline Binding exiles Solitude
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 15  |  Jeskai Blink 15
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 6
+║ Library: 47  |  Graveyard: 2
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Other: Leyline Binding, Leyline Binding
+║   Lands: Steam Vents, Indatha Triome
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T], Hallowed Fountain [T], Meticulous Archive [T], Island [T], Steam Vents, Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Island
+  [Main 1]
+T8 P2: Play Island
+    → Goal: close_game
+    [Mana] Tap Island→U, Steam Vents→R, Indatha Triome→W (paying for Teferi, Time Raveler, 0 mana remaining)
+T8 P2: Cast Teferi, Time Raveler (1WU)
+    [Priority] P1 passes (no response)
+T8: Resolve Teferi, Time Raveler
+T8 P2: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 15  |  4c Omnath 15
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 6  |  Opp lands: 3
+║ Library: 41  |  Graveyard: 6
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Hallowed Fountain, Meticulous Archive, Island, Steam Vents, Plains
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Other: Leyline Binding, Leyline Binding, Teferi, Time Raveler
+║   Lands: Steam Vents [T], Indatha Triome [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Scalding Tarn
+  [Main 1]
+T9 P1: Play Scalding Tarn
+T9: Scalding Tarn moved battlefield -> graveyard (fetchland sacrifice)
+T9 P1: Crack Scalding Tarn -> Mountain (untapped)
+    → Goal: close_game
+    [Mana] Tap Island→U, Plains→W, Mountain→R, Sacred Foundry→R (paying for Witch Enchanter // Witch-Blessed Meadow, 3 mana remaining)
+T9 P1: Cast Witch Enchanter // Witch-Blessed Meadow (3W)
+    [Priority] P2 passes (no response)
+T9: Resolve Witch Enchanter // Witch-Blessed Meadow
+T9: Leyline Binding moved battlefield -> graveyard (destroyed)
+T9 P1: Witch Enchanter // Witch-Blessed Meadow destroys Leyline Binding
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 15  |  Jeskai Blink 14
+║ Hand: 6 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 7
+║ Library: 45  |  Graveyard: 3
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Other: Leyline Binding, Teferi, Time Raveler
+║   Lands: Steam Vents, Indatha Triome, Island
+║ Jeskai Blink board:
+║   Creatures: Witch Enchanter // Witch-Blessed Meadow (2/2)
+║   Lands: Sacred Foundry [T], Hallowed Fountain, Meticulous Archive, Island [T], Steam Vents, Plains [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Lush Portico
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Indatha Triome→W (paying for Leyline Binding, 2 mana remaining)
+T9 P2: Cast Leyline Binding (5W)
+T9: Resolve Leyline Binding
+T9: Witch Enchanter // Witch-Blessed Meadow moved battlefield -> exile (exiled)
+T9 P2: Leyline Binding exiles Witch Enchanter // Witch-Blessed Meadow
+T9 P2: surveil 1 → Wrenn and Six to GY
+T9 P2: Play Lush Portico (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 14  |  4c Omnath 15
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 7  |  Opp lands: 4
+║ Library: 39  |  Graveyard: 7
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Hallowed Fountain, Meticulous Archive, Island, Steam Vents, Plains, Mountain
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Other: Leyline Binding, Teferi, Time Raveler, Leyline Binding
+║   Lands: Steam Vents, Indatha Triome [T], Island, Lush Portico [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Galvanic Discharge
+  [Main 1]
+    → Goal: close_game
+    [Target] → Teferi, Time Raveler: kill PW (loyalty 1 ≤ 3 dmg) — value 4.50
+    [Mana] Tap Mountain→R (paying for Galvanic Discharge, 6 mana remaining)
+T10 P1: Cast Galvanic Discharge (R)
+    [Priority] P2 passes (no response)
+T10: Resolve Galvanic Discharge
+T10: Teferi, Time Raveler moved battlefield -> graveyard (SBA 704.5p: zero loyalty)
+T10 P1: Galvanic Discharge deals 1 to Teferi, Time Raveler (base 0 + 1 energy)
+T10: Galvanic Discharge moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 15  |  Jeskai Blink 14
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 7
+║ Library: 43  |  Graveyard: 5
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Other: Leyline Binding, Leyline Binding
+║   Lands: Steam Vents, Indatha Triome, Island, Lush Portico
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Hallowed Fountain, Meticulous Archive, Island, Steam Vents, Plains, Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Omnath, Locus of Creation
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Island→U, Steam Vents→R, Lush Portico→W, Indatha Triome→G (paying for Omnath, Locus of Creation, 0 mana remaining)
+T10 P2: Cast Omnath, Locus of Creation (WURG)
+    [Priority] P1 passes (no response)
+T10: Resolve Omnath, Locus of Creation
+T10 P2: Omnath, Locus of Creation ETB: draw 1 (Misty Rainforest)
+T10 P2: Play Misty Rainforest
+T10: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T10 P2: Crack Misty Rainforest (pay 1 life) -> Hallowed Fountain (tapped, life: 14)
+T10 P2: Omnath, Locus of Creation 2nd landfall: add mana
+    → Goal: close_game
+T10 P2: Cast Ephemerate (W)
+    [Priority] P1 passes (no response)
+T10: Resolve Ephemerate
+T10 P2: Omnath, Locus of Creation ETB: draw 1 (Omnath, Locus of Creation)
+T10: Blink Omnath, Locus of Creation
+T10: Ephemerate moved stack -> exile (rebound (CR 702.86))
+    → Goal: close_game
+T10 P2: Cast Risen Reef (1UG)
+    [Priority] P1 passes (no response)
+T10: Resolve Risen Reef
+T10: Misty Rainforest moved library -> battlefield (Risen Reef → Misty Rainforest enters tapped (land))
+T10 P2: Omnath, Locus of Creation 3rd landfall: 4 damage
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 10  |  4c Omnath 14
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 7  |  Opp lands: 6
+║ Library: 38  |  Graveyard: 8
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Hallowed Fountain, Meticulous Archive, Island, Steam Vents, Plains, Mountain
+║ 4c Omnath board:
+║   Creatures: Omnath, Locus of Creation (4/4), Risen Reef (1/1)
+║   Other: Leyline Binding, Leyline Binding
+║   Lands: Steam Vents [T], Indatha Triome [T], Island [T], Lush Portico [T], Hallowed Fountain [T], Misty Rainforest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 14  |  Jeskai Blink 10
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 6  |  Opp lands: 7
+║ Library: 38  |  Graveyard: 6
+║ 4c Omnath board:
+║   Creatures: Omnath, Locus of Creation (4/4), Risen Reef (1/1)
+║   Other: Leyline Binding, Leyline Binding
+║   Lands: Steam Vents, Indatha Triome, Island, Lush Portico, Hallowed Fountain, Misty Rainforest
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Hallowed Fountain, Meticulous Archive, Island, Steam Vents, Plains, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T11 P2: Rebound Ephemerate declined (CR 702.88b)
+  [Draw] P2 draws: Lightning Bolt
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Island→U, Steam Vents→U, Lush Portico→G, Hallowed Fountain→U, Indatha Triome→B (paying for Quantum Riddler, 0 mana remaining)
+T11 P2: Cast Quantum Riddler (3UU)
+    [Priority] P1 passes (no response)
+T11: Resolve Quantum Riddler
+T11 P2: Quantum Riddler ETB: draw 1 (Hedge Maze)
+T11 P2: surveil 1 → Wrenn and Six to GY
+T11 P2: Play Hedge Maze (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Omnath, Locus of Creation, Risen Reef
+T11 P2: Attack with Omnath, Locus of Creation, Risen Reef
+  [Declare Blockers] P1 does not block
+T11 P2:   Omnath, Locus of Creation (4/4) → 4 dmg to player
+T11 P2:   Risen Reef (1/1) → 1 dmg to player
+  [Combat Damage] 5 damage dealt → P1 life: 10 → 5
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 5  |  4c Omnath 14
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 7  |  Opp lands: 7
+║ Library: 37  |  Graveyard: 8
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Hallowed Fountain, Meticulous Archive, Island, Steam Vents, Plains, Mountain
+║ 4c Omnath board:
+║   Creatures: Omnath, Locus of Creation (4/4) [tapped], Risen Reef (1/1) [tapped], Quantum Riddler (4/6)
+║   Other: Leyline Binding, Leyline Binding
+║   Lands: Steam Vents [T], Indatha Triome [T], Island [T], Lush Portico [T], Hallowed Fountain [T], Misty Rainforest, Hedge Maze [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Galvanic Discharge
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Island→U, Plains→W, Mountain→R (paying for Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, 4 mana remaining)
+T12 P1: Cast Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2R)
+    [Priority] P2 passes (no response)
+T12: Resolve Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+T12 P1: Create 1x Goblin token(s)
+T12 P1: Fable Ch.I: Create 2/2 Goblin Shaman with haste
+    → Goal: close_game
+    [Target] → Risen Reef: marginal threat 0.07 (1/1 body) — better than 3 face dmg
+    [Mana] Tap Sacred Foundry→R (paying for Galvanic Discharge, 3 mana remaining)
+T12 P1: Cast Galvanic Discharge (R)
+    [Priority] P2 passes (no response)
+T12: Resolve Galvanic Discharge
+T12: Risen Reef dies
+T12 P1: Galvanic Discharge deals 1 to Risen Reef (base 0 + 1 energy)
+T12: Galvanic Discharge moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Goblin Token
+T12 P1: Attack with Goblin Token
+  [Declare Blockers] P2 does not block
+T12 P1:   Goblin Token (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 14 → 12
+  [End Combat]
+  [Main 2]
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→U, Meticulous Archive→U, Steam Vents→R (paying for Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, 0 mana remaining)
+T12 P1: Cast Fable of the Mirror-Breaker // Reflection of Kiki-Jiki (2R)
+    [Priority] P2 passes (no response)
+T12: Resolve Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+T12 P1: Create 1x Goblin token(s)
+T12 P1: Fable Ch.I: Create 2/2 Goblin Shaman with haste
+  [End Step]
+
+╔══ TURN 12 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 12  |  Jeskai Blink 5
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 7  |  Opp lands: 7
+║ Library: 35  |  Graveyard: 8
+║ 4c Omnath board:
+║   Creatures: Omnath, Locus of Creation (4/4), Quantum Riddler (4/6)
+║   Other: Leyline Binding, Leyline Binding
+║   Lands: Steam Vents, Indatha Triome, Island, Lush Portico, Hallowed Fountain, Misty Rainforest, Hedge Maze
+║ Jeskai Blink board:
+║   Creatures: Goblin Token (2/2) [tapped], Goblin Token (2/2)
+║   Other: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+║   Lands: Sacred Foundry [T], Hallowed Fountain [T], Meticulous Archive [T], Island [T], Steam Vents [T], Plains [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Windswept Heath
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Steam Vents→R, Lush Portico→G (paying for Wrenn and Six, 4 mana remaining)
+T12 P2: Cast Wrenn and Six (RG)
+    [Priority] P1 passes (no response)
+T12: Resolve Wrenn and Six
+T12 P2: Play Windswept Heath
+T12: Windswept Heath moved battlefield -> graveyard (fetchland sacrifice)
+T12 P2: Crack Windswept Heath (pay 1 life) -> Stomping Ground (untapped, life: 9)
+T12 P2: Omnath, Locus of Creation 2nd landfall: add mana
+    → Goal: close_game
+    [Target] → Goblin Token: marginal threat 9.25 (2/2 body) — better than 3 face dmg
+T12 P2: Cast Lightning Bolt (R)
+    [Priority] P1 passes (no response)
+T12: Resolve Lightning Bolt
+T12 P2: Lightning Bolt deals 3 to Goblin Token
+T12: Lightning Bolt moved stack -> graveyard (resolution)
+T12: Goblin Token dies
+    → Goal: close_game
+    [Mana] Tap Island→U, Hallowed Fountain→U (paying for Quantum Riddler, 3 mana remaining)
+T12 P2: Cast Quantum Riddler (3UU)
+    [Priority] P1 passes (no response)
+T12: Resolve Quantum Riddler
+T12 P2: Quantum Riddler ETB: draw 1 (Solitude)
+T12 P2: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+T12: Flooded Strand moved graveyard -> hand (returned to hand)
+T12 P2:   returns Flooded Strand from graveyard to hand
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Omnath, Locus of Creation, Quantum Riddler
+T12 P2: Attack with Omnath, Locus of Creation, Quantum Riddler
+T12 P1:   [BLOCK-EMERGENCY] Goblin Token (2/2) blocks Omnath, Locus of Creation (4/4) — lifespan_delta=+0.33
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T12 P2:   Quantum Riddler (4/6) → 4 dmg to player
+T12: Goblin Token dies
+  [Combat Damage] 4 damage dealt → P1 life: 5 → 1
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 13 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 1  |  4c Omnath 9
+║ Hand: 1 cards  |  Opp hand: 4 cards
+║ Lands: 7  |  Opp lands: 7
+║ Library: 36  |  Graveyard: 9
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Other: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+║   Lands: Sacred Foundry, Hallowed Fountain, Meticulous Archive, Island, Steam Vents, Plains, Mountain
+║ 4c Omnath board:
+║   Creatures: Omnath, Locus of Creation (4/4) [tapped], Quantum Riddler (4/6) [tapped], Quantum Riddler (4/6)
+║   Other: Leyline Binding, Leyline Binding, Wrenn and Six
+║   Lands: Steam Vents [T], Indatha Triome [T], Island [T], Lush Portico [T], Hallowed Fountain [T], Hedge Maze, Stomping Ground
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Quantum Riddler
+  [Main 1]
+T13: Consign to Memory moved hand -> graveyard (discard)
+T13: Quantum Riddler moved hand -> graveyard (discard)
+T13 P1: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki Ch.II: loot 2 (drew: Witch Enchanter // Witch-Blessed Meadow, Arid Mesa)
+T13: Arid Mesa moved hand -> graveyard (discard)
+T13: Witch Enchanter // Witch-Blessed Meadow moved hand -> graveyard (discard)
+T13 P1: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki Ch.II: loot 2 (drew: Ragavan, Nimble Pilferer, Flooded Strand)
+    → Goal: close_game
+    [Mana] Tap Island→U, Mountain→R (paying for Ragavan, Nimble Pilferer, 5 mana remaining)
+T13 P1: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P2 passes (no response)
+T13: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ragavan, Nimble Pilferer
+T13 P1: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P2 does not block
+T13 P1:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T13 P1: Create 1x Treasure token(s)
+T13 P1: Ragavan, Nimble Pilferer exiles Phelia, Exuberant Shepherd from top of P2's library
+T13 P1: Ragavan, Nimble Pilferer — may cast Phelia, Exuberant Shepherd this turn
+  [Combat Damage] 2 damage dealt → P2 life: 9 → 7
+  [End Combat]
+  [Main 2]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Sacred Foundry→R (paying for Phelia, Exuberant Shepherd, 3 mana remaining)
+T13 P1: Cast Phelia, Exuberant Shepherd (1W)
+    [Priority] P2 passes (no response)
+T13: Resolve Phelia, Exuberant Shepherd
+  [End Step]
+T13: Ragavan, Nimble Pilferer moved battlefield -> hand (Dash return)
+T13: Ragavan, Nimble Pilferer returned to hand (Dash)
+
+╔══ TURN 13 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 7  |  Jeskai Blink 1
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 7  |  Opp lands: 7
+║ Library: 31  |  Graveyard: 9
+║ 4c Omnath board:
+║   Creatures: Omnath, Locus of Creation (4/4), Quantum Riddler (4/6), Quantum Riddler (4/6)
+║   Other: Leyline Binding, Leyline Binding, Wrenn and Six
+║   Lands: Steam Vents, Indatha Triome, Island, Lush Portico, Hallowed Fountain, Hedge Maze, Stomping Ground
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Other: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, Fable of the Mirror-Breaker // Reflection of Kiki-Jiki, Treasure Token
+║   Lands: Sacred Foundry [T], Hallowed Fountain, Meticulous Archive, Island [T], Steam Vents, Plains [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Undercity Sewers
+  [Main 1]
+T13 P2: Play Flooded Strand
+T13: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T13 P2: Crack Flooded Strand (pay 1 life) -> Temple Garden (untapped, life: 4)
+T13 P2: Omnath, Locus of Creation 2nd landfall: add mana
+    → Goal: close_game
+    [Mana] Tap Lush Portico→W (paying for Solitude, 7 mana remaining)
+T13 P2: Cast Solitude (3WW)
+    [Priority] P1 passes (no response)
+T13: Resolve Solitude
+T13: Phelia, Exuberant Shepherd moved battlefield -> exile (exiled)
+T13 P2: Solitude exiles Phelia, Exuberant Shepherd (opponent gains 2 life, now 3)
+T13 P2: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+T13: Misty Rainforest moved graveyard -> hand (returned to hand)
+T13 P2:   returns Misty Rainforest from graveyard to hand
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Omnath, Locus of Creation, Quantum Riddler, Quantum Riddler
+T13 P2: Attack with Omnath, Locus of Creation, Quantum Riddler, Quantum Riddler
+  [Declare Blockers] P1 does not block
+T13 P2:   Omnath, Locus of Creation (4/4) → 4 dmg to player
+T13 P2:   Quantum Riddler (4/6) → 4 dmg to player
+T13 P2:   Quantum Riddler (4/6) → 4 dmg to player
+P1 loses: life total -9
+  [Combat Damage] 12 damage dealt → P1 life: 3 → -9
+
+>>> 4c Omnath wins Game 1 on turn 13 via damage
+    Final life: Jeskai Blink=-9  4c Omnath=4
+
+======================================================================
+  GAME 2: Jeskai Blink (P1) vs 4c Omnath (P2)  —  seed 60101
+  Series: Jeskai Blink 0 - 1 4c Omnath
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Jeskai Blink wins → chooses to play first
+║ P1 (on play): Jeskai Blink
+║ P2 (on draw): 4c Omnath
+╚═══════════════════════════════════════════════════════
+
+P1 (Jeskai Blink) opening hand (2 lands, 5 spells):
+  • Phelia, Exuberant Shepherd [Creature, CMC 2]
+  • Witch Enchanter // Witch-Blessed Meadow [Creature, CMC 4]
+  • Prismatic Ending [Spell, CMC 1]
+  • Galvanic Discharge [Spell, CMC 1]
+  • Arid Mesa [Land, CMC 0]
+  • Arid Mesa [Land, CMC 0]
+  • Solitude [Creature, CMC 5]
+→ P1 KEEPS 7 — has key card(s): Galvanic Discharge, Solitude, 3 cheap spells
+
+P2 (4c Omnath) opening hand (4 lands, 3 spells):
+  • Ephemerate [Spell, CMC 1]
+  • Raugrin Triome [Land, CMC 0]
+  • Endurance [Creature, CMC 3]
+  • Hedge Maze [Land, CMC 0]
+  • Indatha Triome [Land, CMC 0]
+  • Quantum Riddler [Creature, CMC 5]
+  • Windswept Heath [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Ephemerate, 2 cheap spells
+
+
+╔══ TURN 1 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 20  |  4c Omnath 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Arid Mesa
+T1: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 20  |  Jeskai Blink 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Phelia, Exuberant Shepherd
+  [Main 1]
+T1 P2: Play Windswept Heath
+T1: Windswept Heath moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Windswept Heath (pay 1 life) -> Temple Garden (untapped, life: 17)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 19  |  4c Omnath 17
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Temple Garden
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+T2 P1: Play Arid Mesa
+T2: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T2 P1: Crack Arid Mesa (pay 1 life) -> Hallowed Fountain (tapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 17  |  Jeskai Blink 18
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Temple Garden
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ephemerate
+  [Main 1]
+T2 P2: Play Raugrin Triome (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 18  |  4c Omnath 17
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Hallowed Fountain
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Temple Garden, Raugrin Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Quantum Riddler
+  [Main 1]
+    → Goal: grind_value
+    [Mana] Tap Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T3 P1: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P2 passes (no response)
+T3: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 17  |  Jeskai Blink 18
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 1
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Temple Garden, Raugrin Triome
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry [T], Hallowed Fountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Quantum Riddler
+  [Main 1]
+T3 P2: Play Indatha Triome (enters tapped)
+    → Goal: grind_value
+    [Mana] Tap Temple Garden→W, Raugrin Triome→R (paying for Phelia, Exuberant Shepherd, 0 mana remaining)
+T3 P2: Cast Phelia, Exuberant Shepherd (1W)
+    [Priority] P1 passes (no response)
+T3: Resolve Phelia, Exuberant Shepherd
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 18  |  4c Omnath 17
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry, Hallowed Fountain
+║ 4c Omnath board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Lands: Temple Garden [T], Raugrin Triome [T], Indatha Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Steam Vents
+  [Main 1]
+T4 P1: Play Steam Vents (tapped)
+    → Goal: close_game
+    [Mana] Tap Sacred Foundry→W, Hallowed Fountain→U (paying for Phelia, Exuberant Shepherd, 0 mana remaining)
+T4 P1: Cast Phelia, Exuberant Shepherd (1W)
+    [Priority] P2 passes (no response)
+T4: Resolve Phelia, Exuberant Shepherd
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ragavan, Nimble Pilferer
+T4 P1: Attack with Ragavan, Nimble Pilferer
+T4 P2:   [BLOCK] Phelia, Exuberant Shepherd (2/2) blocks Ragavan, Nimble Pilferer (2/1) — lifespan_delta=+4.75
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T4: Ragavan, Nimble Pilferer dies
+T4: Phelia, Exuberant Shepherd dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 17  |  Jeskai Blink 18
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Temple Garden, Raugrin Triome, Indatha Triome
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Lands: Sacred Foundry [T], Hallowed Fountain [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Misty Rainforest
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Temple Garden→G, Raugrin Triome→R, Indatha Triome→G (paying for Endurance, 0 mana remaining)
+T4 P2: Cast Endurance (1GG)
+    [Priority] P1 passes (no response)
+T4: Resolve Endurance
+T4 P2: Endurance ETB: P1 shuffles 3 cards from GY into library
+T4 P2: Play Misty Rainforest
+T4: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T4 P2: Crack Misty Rainforest (pay 1 life) -> Hallowed Fountain (tapped, life: 16)
+  [Begin Combat]
+T4 P1: Evoke Solitude (exile Prismatic Ending)
+T4 P1: Cast Solitude (3WW)
+T4: Resolve Solitude
+T4: Endurance moved battlefield -> exile (exiled)
+T4 P1: Solitude exiles Endurance (opponent gains 3 life, now 19)
+T4: Solitude moved battlefield -> graveyard (evoke sacrifice)
+T4 P1: Solitude sacrificed (evoke)
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 18  |  4c Omnath 19
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 51  |  Graveyard: 1
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Lands: Sacred Foundry, Hallowed Fountain, Steam Vents
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Temple Garden [T], Raugrin Triome [T], Indatha Triome [T], Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Consign to Memory
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Phelia, Exuberant Shepherd
+T5 P1: Attack with Phelia, Exuberant Shepherd
+  [Declare Blockers] P2 does not block
+T5 P1:   Phelia, Exuberant Shepherd (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 19 → 17
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 17  |  Jeskai Blink 18
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 3
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Temple Garden, Raugrin Triome, Indatha Triome, Hallowed Fountain
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2) [tapped]
+║   Lands: Sacred Foundry, Hallowed Fountain, Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Phelia, Exuberant Shepherd
+  [Main 1]
+T5 P2: surveil 1 → Prismatic Ending to GY
+T5 P2: Play Hedge Maze (enters tapped)
+    → Goal: close_game
+    [Mana] Tap Temple Garden→W, Hallowed Fountain→U (paying for Phelia, Exuberant Shepherd, 2 mana remaining)
+T5 P2: Cast Phelia, Exuberant Shepherd (1W)
+    [Priority] P1 passes (no response)
+T5: Resolve Phelia, Exuberant Shepherd
+    → Goal: close_game
+    [Mana] Tap Raugrin Triome→W (paying for Ephemerate, 1 mana remaining)
+T5 P2: Cast Ephemerate (W)
+    [Priority] P1 responds with Galvanic Discharge
+    [Mana] Tap Sacred Foundry→R (paying for Galvanic Discharge, 2 mana remaining)
+T5 P1: Cast Galvanic Discharge (R)
+T5: Resolve Galvanic Discharge
+T5: Phelia, Exuberant Shepherd dies
+T5 P1: Galvanic Discharge deals 2 to Phelia, Exuberant Shepherd (base 0 + 2 energy)
+T5: Galvanic Discharge moved stack -> graveyard (resolution)
+T5: Ephemerate fizzles (all targets illegal, CR 608.2b)
+T5: Ephemerate moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 18  |  4c Omnath 17
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 50  |  Graveyard: 2
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Lands: Sacred Foundry, Hallowed Fountain, Steam Vents
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Temple Garden [T], Raugrin Triome [T], Indatha Triome, Hallowed Fountain [T], Hedge Maze [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Prismatic Ending
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Phelia, Exuberant Shepherd
+T6 P1: Attack with Phelia, Exuberant Shepherd
+  [Declare Blockers] P2 does not block
+T6 P1:   Phelia, Exuberant Shepherd (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 17 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 15  |  Jeskai Blink 18
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 45  |  Graveyard: 6
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Temple Garden, Raugrin Triome, Indatha Triome, Hallowed Fountain, Hedge Maze
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2) [tapped]
+║   Lands: Sacred Foundry, Hallowed Fountain, Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Undercity Sewers
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Temple Garden→G, Hallowed Fountain→U, Hedge Maze→U, Raugrin Triome→R, Indatha Triome→B (paying for Quantum Riddler, 0 mana remaining)
+T6 P2: Cast Quantum Riddler (3UU)
+    [Priority] P1 passes (no response)
+T6: Resolve Quantum Riddler
+T6 P2: Quantum Riddler ETB: draw 1 (Flooded Strand)
+T6 P2: Play Flooded Strand
+T6: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T6 P2: Crack Flooded Strand -> Plains (untapped)
+    → Goal: close_game
+    [Mana] Tap Plains→W (paying for Ephemerate, 0 mana remaining)
+T6 P2: Cast Ephemerate (W)
+    [Priority] P1 passes (no response)
+T6: Resolve Ephemerate
+T6 P2: Quantum Riddler ETB: draw 1 (Leyline Binding)
+T6: Blink Quantum Riddler
+T6: Ephemerate moved stack -> exile (rebound (CR 702.86))
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 18  |  4c Omnath 14
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 6
+║ Library: 49  |  Graveyard: 2
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Lands: Sacred Foundry, Hallowed Fountain, Steam Vents
+║ 4c Omnath board:
+║   Creatures: Quantum Riddler (4/6)
+║   Lands: Temple Garden [T], Raugrin Triome [T], Indatha Triome [T], Hallowed Fountain [T], Hedge Maze [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Quantum Riddler
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Sacred Foundry→W (paying for Prismatic Ending, 2 mana remaining)
+T7 P1: Cast Prismatic Ending (W)
+    [Priority] P2 passes (no response)
+T7: Resolve Prismatic Ending
+T7: Prismatic Ending moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 14  |  Jeskai Blink 18
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 6  |  Opp lands: 3
+║ Library: 41  |  Graveyard: 7
+║ 4c Omnath board:
+║   Creatures: Quantum Riddler (4/6)
+║   Lands: Temple Garden, Raugrin Triome, Indatha Triome, Hallowed Fountain, Hedge Maze, Plains
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Lands: Sacred Foundry [T], Hallowed Fountain, Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T7 P2: Rebound Ephemerate declined (CR 702.88b)
+  [Draw] P2 draws: Teferi, Time Raveler
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W (paying for Leyline Binding, 5 mana remaining)
+T7 P2: Cast Leyline Binding (5W)
+    [Priority] P1 passes (no response)
+T7: Resolve Leyline Binding
+T7: Phelia, Exuberant Shepherd moved battlefield -> exile (exiled)
+T7 P2: Leyline Binding exiles Phelia, Exuberant Shepherd
+T7 P2: surveil 1 → Prismatic Ending to GY
+T7 P2: Play Undercity Sewers (enters tapped)
+    → Goal: close_game
+    [Mana] Tap Temple Garden→G, Hallowed Fountain→U, Hedge Maze→U, Raugrin Triome→R, Indatha Triome→B (paying for Quantum Riddler, 0 mana remaining)
+T7 P2: Cast Quantum Riddler (3UU)
+    [Priority] P1 passes (no response)
+T7: Resolve Quantum Riddler
+T7 P2: Quantum Riddler ETB: draw 1 (Supreme Verdict)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Quantum Riddler
+T7 P2: Attack with Quantum Riddler
+  [Declare Blockers] P1 does not block
+T7 P2:   Quantum Riddler (4/6) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 18 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 14  |  4c Omnath 14
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 7
+║ Library: 48  |  Graveyard: 3
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Hallowed Fountain, Steam Vents
+║ 4c Omnath board:
+║   Creatures: Quantum Riddler (4/6) [tapped], Quantum Riddler (4/6)
+║   Other: Leyline Binding
+║   Lands: Temple Garden [T], Raugrin Triome [T], Indatha Triome [T], Hallowed Fountain [T], Hedge Maze [T], Plains [T], Undercity Sewers [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 14  |  Jeskai Blink 14
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 7  |  Opp lands: 3
+║ Library: 38  |  Graveyard: 8
+║ 4c Omnath board:
+║   Creatures: Quantum Riddler (4/6), Quantum Riddler (4/6)
+║   Other: Leyline Binding
+║   Lands: Temple Garden, Raugrin Triome, Indatha Triome, Hallowed Fountain, Hedge Maze, Plains, Undercity Sewers
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Hallowed Fountain, Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+T8 P2: Play Flooded Strand
+T8: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T8 P2: Crack Flooded Strand (pay 1 life) -> Steam Vents (tapped, life: 13)
+    → Goal: close_game
+    [Mana] Tap Plains→W, Temple Garden→G, Hallowed Fountain→U (paying for Teferi, Time Raveler, 4 mana remaining)
+T8 P2: Cast Teferi, Time Raveler (1WU)
+    [Priority] P1 passes (no response)
+T8: Resolve Teferi, Time Raveler
+T8 P2: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Quantum Riddler, Quantum Riddler
+T8 P2: Attack with Quantum Riddler, Quantum Riddler
+  [Declare Blockers] P1 does not block
+T8 P2:   Quantum Riddler (4/6) → 4 dmg to player
+T8 P2:   Quantum Riddler (4/6) → 4 dmg to player
+  [Combat Damage] 8 damage dealt → P1 life: 14 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 6  |  4c Omnath 13
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 8
+║ Library: 47  |  Graveyard: 3
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Hallowed Fountain, Steam Vents
+║ 4c Omnath board:
+║   Creatures: Quantum Riddler (4/6) [tapped], Quantum Riddler (4/6) [tapped]
+║   Other: Leyline Binding, Teferi, Time Raveler
+║   Lands: Temple Garden [T], Raugrin Triome, Indatha Triome, Hallowed Fountain [T], Hedge Maze, Plains [T], Undercity Sewers, Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Sacred Foundry→R, Hallowed Fountain→U (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T9 P1: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P2 passes (no response)
+T9: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ragavan, Nimble Pilferer
+T9 P1: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P2 does not block
+T9 P1:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T9 P1: Create 1x Treasure token(s)
+T9 P1: Ragavan, Nimble Pilferer exiles Risen Reef from top of P2's library
+T9 P1: Ragavan, Nimble Pilferer — may cast Risen Reef this turn
+  [Combat Damage] 2 damage dealt → P2 life: 13 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+T9: Risen Reef returned to exile (uncast)
+T9: Ragavan, Nimble Pilferer moved battlefield -> hand (Dash return)
+T9: Ragavan, Nimble Pilferer returned to hand (Dash)
+
+╔══ TURN 9 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 11  |  Jeskai Blink 6
+║ Hand: 2 cards  |  Opp hand: 6 cards
+║ Lands: 8  |  Opp lands: 3
+║ Library: 34  |  Graveyard: 9
+║ 4c Omnath board:
+║   Creatures: Quantum Riddler (4/6), Quantum Riddler (4/6)
+║   Other: Leyline Binding, Teferi, Time Raveler
+║   Lands: Temple Garden, Raugrin Triome, Indatha Triome, Hallowed Fountain, Hedge Maze, Plains, Undercity Sewers, Steam Vents
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry [T], Hallowed Fountain [T], Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Lush Portico
+  [Main 1]
+T9 P2: surveil 1 → Leyline Binding to GY
+T9 P2: Play Lush Portico (enters tapped)
+    → Goal: close_game
+    [Mana] Tap Plains→W, Temple Garden→W, Hallowed Fountain→U, Hedge Maze→G, Undercity Sewers→B (paying for Solitude, 3 mana remaining)
+T9 P2: Cast Solitude (3WW)
+T9: Resolve Solitude
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Quantum Riddler, Quantum Riddler
+T9 P2: Attack with Quantum Riddler, Quantum Riddler
+  [Declare Blockers] P1 does not block
+T9 P2:   Quantum Riddler (4/6) → 4 dmg to player
+T9 P2:   Quantum Riddler (4/6) → 4 dmg to player
+P1 loses: life total -2
+  [Combat Damage] 8 damage dealt → P1 life: 6 → -2
+
+>>> 4c Omnath wins Game 2 on turn 9 via damage
+    Final life: Jeskai Blink=-2  4c Omnath=11
+
+======================================================================
+  MATCH RESULT: 4c Omnath wins 2-0
+======================================================================

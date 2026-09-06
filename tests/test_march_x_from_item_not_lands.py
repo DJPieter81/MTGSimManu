@@ -27,9 +27,9 @@ import random
 
 import pytest
 
-from engine.card_effects import march_otherworldly_light_resolve
 from engine.cards import CardInstance
 from engine.game_state import GameState, Phase
+from engine.oracle_resolver import resolve_spell_from_oracle
 
 
 def _add_to_battlefield(game, card_db, name, controller):
@@ -99,9 +99,11 @@ class TestMarchXFromItemNotLands:
         stack_item = game.stack.items[-1]
         stack_item.x_value = 0
 
-        march_otherworldly_light_resolve(
-            game, march, controller=0, targets=None, item=stack_item
-        )
+        # March now resolves through the typed targeted_removal path, which
+        # reads the mana-value ceiling from the X actually paid (threaded as
+        # resolve_spell_from_oracle's x_value — item.x_value in the real cast
+        # flow), never the land count.
+        resolve_spell_from_oracle(game, march, 0, targets=None, x_value=0)
 
         opp_bf_names = [c.name for c in game.players[1].battlefield]
         assert ragavan.name in opp_bf_names, (
@@ -147,9 +149,7 @@ class TestMarchXFromItemNotLands:
         stack_item = game.stack.items[-1]
         stack_item.x_value = 1
 
-        march_otherworldly_light_resolve(
-            game, march, controller=0, targets=None, item=stack_item
-        )
+        resolve_spell_from_oracle(game, march, 0, targets=None, x_value=1)
 
         opp_bf_names = [c.name for c in game.players[1].battlefield]
         assert ragavan.name not in opp_bf_names, (

@@ -4,18 +4,28 @@ Pure-parser tests for four new CardTemplate fields introduced in batch 6:
   has_draw_effect         — draw / impulse-draw detection
   can_exile_permanent     — 'exile target <permanent-type>'
   has_symmetric_reanimation — Living End-class mass reanimation
-  phyrexian_pip_count     — count of {X/P} Phyrexian mana pips
+  phyrexian_pip_count     — count of {X/P} Phyrexian mana pips.  Now parsed
+                            from the MANA COST rather than the oracle text
+                            (CR 107.4f): the reminder clause names the symbol
+                            once however many pips the cost carries, so an
+                            oracle-derived count is wrong for every multi-pip
+                            cost.  See tests/test_phyrexian_mana_cr107_4f.py.
 
 Each function is tested in isolation (no CardDatabase load).
 Pattern C: card names appear only in module docstrings and fixture comments.
 """
 import pytest
+from engine.card_database import parse_mana_cost_mtgjson
 from engine.oracle_parser import (
     parse_has_draw_effect,
     parse_can_exile_permanent,
     parse_has_symmetric_reanimation,
-    parse_phyrexian_pip_count,
 )
+
+
+def parse_phyrexian_pip_count(mana_cost: str) -> int:
+    """Total Phyrexian pips in a printed MANA COST (CR 107.4f)."""
+    return sum(parse_mana_cost_mtgjson(mana_cost).phyrexian.values())
 
 
 class TestHasDrawEffect:
@@ -142,25 +152,31 @@ class TestHasSymmetricReanimation:
 
 
 class TestPhyrexianPipCount:
-    """parse_phyrexian_pip_count counts {X/P} Phyrexian mana symbols."""
+    """Phyrexian pips are counted in the printed MANA COST (CR 107.4f), never
+    in oracle text — the reminder clause names the symbol once however many
+    pips the cost has."""
 
     def test_single_pip_counted(self):
-        # Gitaxian Probe pattern
-        assert parse_phyrexian_pip_count("{U/P}: Look at target player's hand. Draw a card.") == 1
+        assert parse_phyrexian_pip_count("{U/P}") == 1
 
     def test_two_pips_counted(self):
-        # Gut Shot / Mutagenic Growth with two pips
-        assert parse_phyrexian_pip_count("{W/P}{W/P}: ...") == 2
+        assert parse_phyrexian_pip_count("{1}{W/P}{W/P}") == 2
 
     def test_three_pips_counted(self):
-        assert parse_phyrexian_pip_count("{G/P}{G/P}{G/P}: ...") == 3
+        assert parse_phyrexian_pip_count("{4}{G/P}{G/P}{G/P}") == 3
 
     def test_no_pips_zero(self):
-        assert parse_phyrexian_pip_count("Draw a card.") == 0
+        assert parse_phyrexian_pip_count("{2}{R}") == 0
 
-    def test_empty_oracle_zero(self):
+    def test_empty_cost_zero(self):
         assert parse_phyrexian_pip_count("") == 0
 
     def test_regular_mana_not_counted(self):
         # {U}, {W}, {G} etc. should not match
-        assert parse_phyrexian_pip_count("{U}{U}: Counter target spell.") == 0
+        assert parse_phyrexian_pip_count("{U}{U}") == 0
+
+    def test_pip_is_recorded_under_its_own_colour(self):
+        """Waiving a pip excuses that colour and no other, so the colour is
+        kept, not collapsed into a total."""
+        cost = parse_mana_cost_mtgjson("{W}{U}{B/P}{R}{G}")
+        assert cost.phyrexian == {"B": 1}

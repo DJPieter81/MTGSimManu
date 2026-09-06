@@ -23,7 +23,7 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING, List
 
-from .cards import (
+from .cards import (COUNTER_KIND_MINUS,
     CardInstance, CardTemplate, CardType, Keyword, Supertype, Color,
 )
 from .card_effects import EFFECT_REGISTRY, EffectTiming
@@ -337,13 +337,23 @@ class PermanentEffects:
             t_name = spec["subtype"]
             t_types = [type_lookup[t] for t in spec["types"]
                        if t in type_lookup]
-            if CardType.CREATURE not in t_types:
+            # A named noncreature token (Munitions et al.) stays a
+            # noncreature permanent — do NOT force CREATURE onto it, or
+            # it becomes an illegal attacker. Only the P/T creature-token
+            # shape defaults to creature.
+            if not spec.get("is_noncreature") and CardType.CREATURE not in t_types:
                 t_types.append(CardType.CREATURE)
             t_power = spec["power"]
             t_toughness = spec["toughness"]
             kw_set = {kw_lookup[w.replace(" ", "_")]
                       for w in spec["keywords"]
                       if w.replace(" ", "_") in kw_lookup}
+            from .cards import Color as _Color
+            _letter_color = {"W": _Color.WHITE, "U": _Color.BLUE,
+                             "B": _Color.BLACK, "R": _Color.RED,
+                             "G": _Color.GREEN}
+            t_colors = {_letter_color[c] for c in spec.get("colors", [])
+                        if c in _letter_color}
         else:
             token_def = TOKEN_DEFS.get(token_type)
             if not token_def:
@@ -351,6 +361,7 @@ class PermanentEffects:
                              power or 1, toughness or 1, set())
             t_name, t_types, t_power, t_toughness, t_keywords = token_def
             kw_set = set(t_keywords)
+            t_colors = set()  # TOKEN_DEFS resource tokens carry no colour spec
 
         if power is not None:
             t_power = power
@@ -367,7 +378,7 @@ class PermanentEffects:
         if source_oracle:
             import re as _re
             inner = _re.search(
-                r"token\s+with\s+['\"]([^'\"]+)['\"]",
+                r"token(?:\s+named\s+\w+)?\s+with\s+['\"]([^'\"]+)['\"]",
                 source_oracle, flags=_re.IGNORECASE,
             )
             if inner:
@@ -388,6 +399,7 @@ class PermanentEffects:
                 power=t_power,
                 toughness=t_toughness,
                 keywords=kw_set,
+                colors=set(t_colors),
                 tags={"token", "creature"},
                 oracle_text=token_oracle,
             )
@@ -411,6 +423,15 @@ class PermanentEffects:
             instance._game_state = game
             instance.enter_battlefield()
             game.players[controller].battlefield.append(instance)
+            # CR 603.6a / 111.10: a token entering is a permanent-entering
+            # event like any other — it fires the token's own ETB and every
+            # "whenever another creature you control enters" watcher (Guide of
+            # Souls, Impact Tremors, aristocrats, ...). enter_battlefield() is
+            # pure state; the trigger dispatch is _handle_permanent_etb, which
+            # create_token had skipped (the undying/persist re-entry paths in
+            # this file already call it). No StackItem — tokens are never cast
+            # (CR 111.2), matching the reanimate/blink item=None convention.
+            game._handle_permanent_etb(instance, controller)
             tokens.append(instance)
 
         if count > 0:
@@ -437,7 +458,7 @@ class PermanentEffects:
             creature.cleanup_damage()
             creature.controller = controller
             creature.enter_battlefield()
-            creature.plus_counters += 1
+            creature.add_plus_counters(1, game)
             game.players[controller].battlefield.append(creature)
             game.log.append(f"T{game.display_turn}: {creature.name} returns (undying)")
             # CR 603.6a: the returned creature is a NEW object entering the
@@ -454,8 +475,11 @@ class PermanentEffects:
             creature.cleanup_damage()
             creature.controller = controller
             creature.enter_battlefield()
-            creature.minus_counters += 1
             game.players[controller].battlefield.append(creature)
+            # CR 702.77a: returns with a -1/-1 counter — through the counter
+            # funnel, so a counter-placement replacement (Vizier shape)
+            # applies exactly as it does in paper.
+            creature.adjust_counters(COUNTER_KIND_MINUS, 1)
             game.log.append(f"T{game.display_turn}: {creature.name} returns (persist)")
             # CR 603.6a: the returned creature is a NEW object entering the
             # battlefield — its ETB triggers fire again (mirror reanimate()).
@@ -507,7 +531,7 @@ class PermanentEffects:
             ]
             if _artifact_creatures:
                 _target = max(_artifact_creatures, key=lambda c: c.power)
-                _target.plus_counters += _modular_counters
+                _target.add_plus_counters(_modular_counters, game, source=creature)
                 game.log.append(
                     f"T{game.display_turn}: {creature.name} modular — "
                     f"move {_modular_counters} counter(s) to {_target.name}"

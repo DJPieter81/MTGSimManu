@@ -113,25 +113,29 @@ def choose_sacrifice_victim(game, player_idx, legal):
     """Pick which permanent pays a sacrifice cost — the AI half of the
     `choose_sacrifice` callback seam.
 
-    Minimises what the board gives up, on values derived from the game
-    state and printed card data (no bare score tiers): a creature's cost
-    is its `creature_threat_value` on the current snapshot; a
-    non-creature's proxy is its printed mana investment. The legal set is
-    normally type-homogeneous (the cost names one permanent type), so the
-    two scales rarely mix; when a wildcard "permanent" cost does mix
-    them, cheap non-creatures rank as the smaller loss — the intended
-    tie-break.
+    Minimises what the board gives up, through the ONE primitive that
+    prices it: `ai.clock.opportunity_cost` (clock impact, activated
+    abilities, equipment ceiling, mana production, unbounded-engine
+    membership) — the same function the blocker path consults, so a
+    creature the AI would not chump with is not fed to a sacrifice cost
+    either. A non-creature's proxy is its printed mana investment plus
+    its production; the legal set is normally type-homogeneous, and when
+    a wildcard "permanent" cost mixes them, cheap non-creatures rank as
+    the smaller loss — the intended tie-break.
     """
-    from ai.ev_evaluator import creature_threat_value, snapshot_from_game
+    from ai.clock import opportunity_cost, mana_clock_impact
+    from ai.ev_evaluator import snapshot_from_game
 
     if not legal:
         return None
     snap = snapshot_from_game(game, player_idx)
+    board = game.players[player_idx]
+    per_mana = mana_clock_impact(snap) * CLOCK_IMPACT_LIFE_SCALING
 
     def _loss(c):
         if c.effective_is_creature:
-            return creature_threat_value(c, snap)
-        return float(c.template.cmc or 0)
+            return opportunity_cost(c, board, snap)
+        return float(c.template.cmc or 0) + tap_mana_units(c) * per_mana
 
     return min(legal, key=_loss)
 
@@ -149,17 +153,48 @@ def choose_tutor_delivery(game, player_idx, eligible):
     investment, the same proxy the engine ranking uses.
     """
     from ai.ev_evaluator import creature_threat_value, snapshot_from_game
+    from ai.clock import mana_clock_impact
+    from engine.activation import ActivationManager
+    from engine.constants import LOOP_SHORTCUT_MANA
 
     if not eligible:
         return None
     snap = snapshot_from_game(game, player_idx)
+    # A candidate that completes an unbounded mana engine with the board
+    # (engine-side rules query) is worth the engine's shortcut allowance —
+    # the same credit the delivery-conditioned valuation above applies, so
+    # the X priced for it is the X that delivers it.
+    per_mana = mana_clock_impact(snap) * CLOCK_IMPACT_LIFE_SCALING
 
     def _worth(c):
+        if ActivationManager.would_complete_unbounded_engine(
+                game, player_idx, c.template):
+            return LOOP_SHORTCUT_MANA * per_mana
         if c.template.is_creature:
             return creature_threat_value(c, snap)
         return float(c.template.cmc or 0)
 
     return max(eligible, key=_worth)
+
+
+def counter_pt_delta(counter_kind: str, amount: int) -> int:
+    """Signed power/toughness a stack of `amount` counters of this kind
+    moves on a creature.
+
+    The single place the counter-kind → P/T mapping lives, so the COST side
+    (`_counter_cost_pt_delta`) and the EFFECT side (the PUT_COUNTER_*
+    scoring branch) cannot drift apart. Derived from the counters' own
+    printed semantics, not a tuned weight: +1/+1 and -1/-1 move power and
+    toughness by the same amount, so one signed number describes both, and
+    a kind with no P/T meaning (charge, oil, page) contributes 0.
+    """
+    from engine.cards import COUNTER_KIND_MINUS, COUNTER_KIND_PLUS
+
+    if counter_kind == COUNTER_KIND_PLUS:
+        return amount
+    if counter_kind == COUNTER_KIND_MINUS:
+        return -amount
+    return 0
 
 
 def _counter_cost_pt_delta(cost) -> int:
@@ -169,19 +204,14 @@ def _counter_cost_pt_delta(cost) -> int:
     Derived from the counters' own printed semantics, not a tuned weight:
     +1/+1 and -1/-1 counters move power and toughness by the same amount,
     so one signed number describes both. Kinds with no P/T meaning
-    (charge, oil, page) contribute 0.
+    (charge, oil, page) contribute 0. The kind → P/T mapping itself lives
+    in `counter_pt_delta`, shared with the effect side.
     """
-    from engine.cards import COUNTER_KIND_MINUS, COUNTER_KIND_PLUS
-
-    delta = 0
-    if cost.put_counter_kind == COUNTER_KIND_PLUS:
-        delta += cost.put_counter_amount
-    elif cost.put_counter_kind == COUNTER_KIND_MINUS:
-        delta -= cost.put_counter_amount
-    if cost.remove_counter_kind == COUNTER_KIND_PLUS:
-        delta -= cost.remove_counter_amount
-    elif cost.remove_counter_kind == COUNTER_KIND_MINUS:
-        delta += cost.remove_counter_amount
+    delta = counter_pt_delta(cost.put_counter_kind or '',
+                             cost.put_counter_amount)
+    # Removing a counter is the same mapping with the sign flipped.
+    delta -= counter_pt_delta(cost.remove_counter_kind or '',
+                              cost.remove_counter_amount)
     return delta
 
 
@@ -208,6 +238,57 @@ def tap_mana_units(card) -> int:
                 units = 1
                 break
     return units
+
+
+def put_counter_beneficiary(game, player_idx, perm, ability):
+    """Which permanent this put-counter activation should put its counters
+    on, or None when no recipient turns the counters into position.
+
+    Strategy, not legality — `can_activate` has already ruled on whether a
+    legal target exists (CR 601.2c). The choice follows the counters' own
+    sign, which is the only thing the engine knows about them:
+
+      * A P/T-POSITIVE stack belongs on one of OUR creatures. Among ours
+        the projection is not indifferent: `position_value` prices
+        `my_evasion_power` separately from `my_power`, so power added to an
+        evasive body is worth strictly more. Evasive first, then the
+        largest body — both read off the snapshot's own fields rather than
+        an invented preference.
+      * A P/T-NEGATIVE stack belongs on an OPPONENT creature, largest
+        first: shrinking the biggest body removes the most opposing power,
+        and `position_value` prices exactly that.
+      * A counter with NO P/T meaning (charge, oil, page) has no recipient
+        that changes a projected field. Returning None here is the honest
+        answer — inventing a value for "a charge counter" would be a
+        magnitude with no primitive behind it.
+
+    The SELF scope has no choice to make: the source is the recipient, and
+    it is only worth anything while the source is a creature.
+    """
+    spec = ability.put_counter_data or {}
+    delta = counter_pt_delta(spec.get('kind', ''), int(spec.get('amount', 0)))
+    if delta == 0:
+        return None
+
+    if spec.get('self'):
+        return perm if perm.effective_is_creature else None
+
+    # The parsed OWNER scope is a legality bound, not a preference: an
+    # ability printed "target creature you control" cannot aim at the
+    # opponent's board however much a -1/-1 counter would like to. Sign
+    # chooses the side only where the requirement leaves the choice open.
+    if spec.get('owner') == 'you':
+        pool = list(game.players[player_idx].creatures)
+    elif delta > 0:
+        pool = list(game.players[player_idx].creatures)
+    else:
+        pool = list(game.players[1 - player_idx].creatures)
+    if not pool:
+        return None
+    return max(pool, key=lambda c: (bool({k.value for k in c.keywords}
+                                         & _EVASION_WORDS) if delta > 0
+                                    else False,
+                                    max(0, c.power or 0)))
 
 
 def untap_beneficiary(game, player_idx, perm, ability):
@@ -401,6 +482,20 @@ def activation_candidates(game, player_idx, snap, excluded=None):
             if ability.cost.discard_cards:
                 cost_updates["my_hand_size"] = max(
                     0, snap.my_hand_size - ability.cost.discard_cards)
+            # An exile-from-your-own-graveyard cost is deliberately NOT
+            # charged here, and that is a measured omission rather than an
+            # oversight. The only graveyard term the snapshot carries is
+            # `my_gy_creatures`, and `position_value` — the sole valuation
+            # this function projects into — does not read it, so charging
+            # it would move no EV. Pricing what a lost reanimation target
+            # is worth means either inventing a magnitude for it or
+            # extending `position_value` with a graveyard term, and both
+            # are changes to the VALUATION, not to this tranche's cost
+            # projection. Until one of them lands the cost reads as free
+            # to the scorer; the engine still refuses the activation
+            # outright whenever the graveyard cannot cover it
+            # (`can_activate` rule 9e-gy), so nothing illegal follows from
+            # the silence.
             # A counter cost that moves P/T is a real board change and must
             # be charged, or "Put a -1/-1 counter on this creature: ..."
             # scores as free right up to the point the creature dies. The
@@ -422,7 +517,20 @@ def activation_candidates(game, player_idx, snap, excluded=None):
                     updates.get("my_hand_size", snap.my_hand_size)
                     + ability.amount)
                 after = snap.fast_replace(**updates)
-                reason = f"activate: draw {ability.amount}"
+                # A DELAYED draw (CR 603.7 — "draw a card at the beginning
+                # of the next turn's upkeep") is projected as the same +1
+                # hand: `position_value` has no time axis, so there is no
+                # representable difference between a card now and a card at
+                # the next upkeep, and discounting the one step would mean
+                # inventing a magnitude no primitive supplies. The delay is
+                # named in the reason so the log does not claim otherwise.
+                # It is still the right call to enumerate: the card arrives
+                # unconditionally, and the alternative — no candidate — is
+                # exactly the dead-ability failure this branch exists to
+                # prevent.
+                reason = (f"activate: draw {ability.amount}"
+                          + (f" ({ability.delayed_timing.value})"
+                             if ability.delayed_timing is not None else ""))
             elif kind is _K.DAMAGE_ANY_TARGET:
                 updates["opp_life"] = snap.opp_life - ability.amount
                 after = snap.fast_replace(**updates)
@@ -445,6 +553,28 @@ def activation_candidates(game, player_idx, snap, excluded=None):
                     continue
                 reason = (f"activate: +{ability.power_mod}/"
                           f"+{ability.toughness_mod} improves the race")
+            elif kind is _K.ADAPT:
+                # A PERMANENT +N/+N (CR 702.132), unlike PUMP_SELF_UEOT:
+                # the counters stay, so `position_value`'s board terms
+                # read the gain correctly and no race gate is needed. The
+                # no-counters condition is a resolution condition the
+                # engine does not refuse on; an adapted creature would pay
+                # for a no-op, so it is simply not a candidate. The
+                # projected delta is the printed N — no magnitude of our
+                # own.
+                from engine.cards import COUNTER_KIND_PLUS as _PLUS
+                if perm.counter_count(_PLUS) > 0:
+                    continue
+                if not perm.effective_is_creature:
+                    continue
+                updates["my_power"] = (
+                    updates.get("my_power", snap.my_power) + ability.amount)
+                updates["my_toughness"] = (
+                    updates.get("my_toughness", snap.my_toughness)
+                    + ability.amount)
+                after = snap.fast_replace(**updates)
+                reason = (f"activate: adapt {ability.amount} — permanent "
+                          f"+{ability.amount}/+{ability.amount}")
             elif kind is _K.GRANT_HASTE_TARGET:
                 # Pre-combat only, same MAIN1 justification as land
                 # animation and pump: the grant's whole value is converting
@@ -499,6 +629,78 @@ def activation_candidates(game, player_idx, snap, excluded=None):
                              f"attack this turn (clock "
                              f"{my_clock_without:.0f}→{my_clock_with:.0f} "
                              f"vs opp {opp_clock:.0f})")))
+                continue
+            elif kind in (_K.PUT_COUNTER_SELF, _K.PUT_COUNTER_TARGET):
+                # WITHHELD DELIBERATELY — the engine class is complete and
+                # correct (148 abilities classify, resolve, and are legal);
+                # what is missing is a valuation honest enough to drive it.
+                #
+                # `EVSnapshot` has no term for card QUALITY, only
+                # `my_hand_size`, priced at `card_clock_impact` ~= 0.125
+                # against 0.23-4.07 for a single +1/+1 counter. So every
+                # marginal activation of a card-costed counter ability
+                # reads positive and the AI repeats it until the hand is
+                # EMPTY: measured at seed 51000, five cards including two
+                # Solitude pitched on turn 3 to grow one creature.
+                #
+                # Two fixes were tried and rejected on evidence, not taste:
+                # charging the card `ai.discard_advisor.choose_discard`
+                # would pick (inexpressible — the snapshot has no field for
+                # it), and a discrete-clock race gate mirroring
+                # PUMP_SELF_UEOT (measured WORSE: at low power each counter
+                # does move the clock, so the gate passes).
+                #
+                # A/B field sweep, n=6 Bo3 over 24 opponents, enabled vs
+                # disabled: Instant Reanimator 53.5/57.7, Dimir 65.2/56.9,
+                # Grixis Reanimator 56.1/48.0, Creatures Toolbox 9.1/9.1.
+                # Not decisive on win rate (~1-2 SE), but enabling pushes
+                # Dimir ABOVE its [45,60] band and does nothing at all for
+                # Creatures Toolbox, the deck this class was expected to
+                # help. Shipping a scoring path that demonstrably misplays
+                # is worse than leaving the mechanic unused, so it waits
+                # for a snapshot that can price a card.
+                continue
+                # A counter is a PERMANENT board change, which is exactly
+                # what `position_value` measures — so unlike PUMP_SELF_UEOT
+                # this needs no until-end-of-turn gate and invents no
+                # magnitude. The projected fields move by the counters' own
+                # printed P/T semantics, through the same
+                # `counter_pt_delta` mapping the COST side uses, so the two
+                # halves of one activation cannot price counters
+                # differently.
+                #
+                # A counter with no P/T meaning (charge, oil, page) moves no
+                # projected field: the beneficiary chooser returns None and
+                # no candidate is emitted, rather than a value being
+                # invented for a resource the engine cannot spend.
+                spec = ability.put_counter_data or {}
+                delta = counter_pt_delta(spec.get('kind', ''),
+                                         int(spec.get('amount', 0)))
+                tgt = put_counter_beneficiary(game, player_idx, perm,
+                                              ability)
+                if tgt is None or delta == 0:
+                    continue
+                mine = tgt.controller == player_idx
+                p_key = "my_power" if mine else "opp_power"
+                t_key = "my_toughness" if mine else "opp_toughness"
+                updates[p_key] = max(
+                    0, updates.get(p_key, getattr(snap, p_key)) + delta)
+                updates[t_key] = max(
+                    0, updates.get(t_key, getattr(snap, t_key)) + delta)
+                if mine and ({k.value for k in tgt.keywords}
+                             & _EVASION_WORDS):
+                    updates["my_evasion_power"] = max(
+                        0, updates.get("my_evasion_power",
+                                       snap.my_evasion_power) + delta)
+                after = snap.fast_replace(**updates)
+                ev = position_value(after) - base
+                if ev <= 0.0:
+                    continue
+                tgt_ids = ([tgt.instance_id]
+                           if ability.targets_required else [])
+                out.append((perm, ability.index, tgt_ids, ev,
+                            f"activate: {abs(delta)} "
+                            f"{spec.get('kind')} counter(s) on {tgt.name}"))
                 continue
             elif kind is _K.UNTAP_TARGET_PERMANENT:
                 # What an untap BUYS is the mana the freed permanent taps
@@ -594,13 +796,26 @@ def activation_candidates(game, player_idx, snap, excluded=None):
                     # tutor gate uses, converted at the projection's
                     # per-mana clock scale.
                     delivered_cmc = target.template.cmc or 0
+                    # What the delivery is WORTH, in mana units: the
+                    # body's mana value — or, when the delivered piece
+                    # completes an unbounded mana engine with the board
+                    # (CR 726.4 shortcut material, an engine-side rules
+                    # query), the engine's shortcut allowance: that is
+                    # the mana the piece actually delivers next turn.
+                    from engine.activation import ActivationManager
+                    from engine.constants import LOOP_SHORTCUT_MANA
+                    delivered_value = delivered_cmc
+                    if ActivationManager.would_complete_unbounded_engine(
+                            game, player_idx, target.template):
+                        delivered_value = LOOP_SHORTCUT_MANA
                     if (ability.tutor_data or {}).get('mv_bound_is_x'):
                         from engine.cast_manager import (
                             creature_tutor_x_net_value)
-                        delivered_net = creature_tutor_x_net_value(
+                        delivered_net = (creature_tutor_x_net_value(
                             best_x, delivered_cmc)
+                            + (delivered_value - delivered_cmc))
                     else:
-                        delivered_net = delivered_cmc
+                        delivered_net = delivered_value
                     per_mana = (mana_clock_impact(snap)
                                 * CLOCK_IMPACT_LIFE_SCALING)
                     ev = ((position_value(after) - base)

@@ -56,15 +56,25 @@ class ZoneManager:
         """
         owner = card.owner
 
+        # A card physically sits in its OWNER's zone for every zone EXCEPT
+        # the battlefield, where a stolen / opponent-cast permanent sits
+        # under its CONTROLLER (CR 108.4 — control differs from ownership
+        # only on the battlefield/stack). The SOURCE list must be located
+        # where the card actually is; the DESTINATION still routes to the
+        # owner (CR 400.3, handled below).
+        source_owner = card.controller if from_zone == "battlefield" else owner
+
         # Validate: card should be in from_zone
-        source_list = self._get_zone_list(game, owner, from_zone)
+        source_list = self._get_zone_list(game, source_owner, from_zone)
         if card not in source_list:
-            # Card is not where we expect — try to find it
-            actual_zone = self._find_card_zone(game, card)
-            if actual_zone is None:
+            # Card is not where we expect — find where it actually is,
+            # across ALL players (not just the owner), so an owner!=
+            # controller permanent on the controller's battlefield is found.
+            located = self._find_card_location(game, card)
+            if located is None:
                 return False
-            from_zone = actual_zone
-            source_list = self._get_zone_list(game, owner, from_zone)
+            source_owner, from_zone = located
+            source_list = self._get_zone_list(game, source_owner, from_zone)
 
         actual_to = to_zone
 
@@ -74,12 +84,47 @@ class ZoneManager:
 
         # ── Clean up state when leaving battlefield ─────────────────
         if from_zone == "battlefield":
+            # CR 702.139 revolt: "a permanent left the battlefield under your
+            # control this turn". This is the ONE funnel every battlefield
+            # departure passes through — fetch cracks, sacrifice, bounce,
+            # exile, creature deaths — so the per-turn revolt tally advances
+            # here exactly once and no caller counts per card. Credit the
+            # permanent's controller (control, not ownership: CR 108.4).
+            game.players[card.controller].permanents_left_battlefield_this_turn += 1
             self._cleanup_leaving_battlefield(card)
+
+        # ── Per-turn discard accounting (CR 701.8a) ─────────────────
+        # Every hand -> graveyard transition is a discard by definition
+        # (cycling included, CR 702.29a); this is the ONE place the
+        # per-turn counter advances, so no caller counts per card.  The
+        # OWNER is credited — "cards you've discarded" is about whose
+        # hand the card left, not who forced it.
+        if from_zone == "hand" and to_zone == "graveyard":
+            game.players[owner].cards_discarded_or_cycled_this_turn += 1
 
         # ── Add to destination zone ─────────────────────────────────
         card.zone = actual_to
         dest_list = self._get_zone_list(game, owner, actual_to)
         dest_list.append(card)
+
+        # ── Replacement-effect resolution path (CR 614) ─────────────
+        # "If a card would be put into a graveyard, exile it instead"
+        # (Rest in Peace / Leyline of the Void / Anafenza family) is a
+        # continuous REPLACEMENT the engine does not model — the card
+        # reaches the graveyard here regardless. When such a static is on
+        # the battlefield as a card enters a graveyard, the replacement
+        # that should have fired silently did nothing; record the
+        # unmodeled static (typed-field gate, no oracle re-parse) so a new
+        # card in this family turns the guardrail red. Behaviour is
+        # unchanged — this only observes the miss.
+        if actual_to == "graveyard":
+            for _p in game.players:
+                for _perm in _p.battlefield:
+                    if getattr(_perm.template,
+                               "exiles_cards_bound_for_graveyard", False):
+                        from .effect_diagnostics import record_unhandled_effect
+                        record_unhandled_effect(_perm.template.name,
+                                                "replacement")
 
         # ── Handle entering battlefield ─────────────────────────────
         if actual_to == "battlefield":
@@ -243,12 +288,35 @@ class ZoneManager:
     def _find_card_zone(
         self, game: "GameState", card: "CardInstance"
     ) -> Optional[str]:
-        """Find which zone a card is actually in."""
-        player = game.players[card.owner]
-        for zone_name in ["library", "hand", "battlefield", "graveyard", "exile"]:
-            zone_list = getattr(player, zone_name)
-            if card in zone_list:
-                return zone_name
+        """Find which zone a card is actually in (owner's zones only).
+
+        Retained for callers that only need the zone name; prefer
+        ``_find_card_location`` when the card may be controlled by a
+        non-owner (its battlefield presence is under the controller).
+        """
+        located = self._find_card_location(game, card)
+        return located[1] if located is not None else None
+
+    def _find_card_location(
+        self, game: "GameState", card: "CardInstance"
+    ) -> Optional[tuple]:
+        """Find (player_idx, zone_name) for where a card actually sits.
+
+        Searches every player's zones, not just the owner's, so a
+        permanent controlled by a non-owner (stolen / opponent-cast) is
+        found on the CONTROLLER's battlefield rather than reported missing
+        (CR 108.4). The owner's own zones are checked first as the common
+        case.
+        """
+        order = [card.owner] + [
+            i for i in range(len(game.players)) if i != card.owner
+        ]
+        for player_idx in order:
+            player = game.players[player_idx]
+            for zone_name in ["library", "hand", "battlefield",
+                              "graveyard", "exile"]:
+                if card in getattr(player, zone_name):
+                    return (player_idx, zone_name)
         return None
 
     def _cleanup_leaving_battlefield(self, card: "CardInstance"):

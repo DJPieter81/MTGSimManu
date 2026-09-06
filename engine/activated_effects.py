@@ -140,7 +140,7 @@ def put_tutor_target(game: "GameState", found: "CardInstance",
         if spec.get('tapped'):
             found.tapped = True
         if entry_counters:
-            found.plus_counters += entry_counters
+            found.add_plus_counters(entry_counters, game)
         game._handle_permanent_etb(found, controller)
     else:
         game.zone_mgr.move_card(game, found, found.zone, "hand", cause=cause)
@@ -156,12 +156,22 @@ def finish_library_search(game: "GameState", controller: int) -> None:
     game._trigger_library_search(controller)
 
 
-def default_tutor_rank(card: "CardInstance") -> Tuple[int, int]:
-    """Engine-default delivery ranking: highest mana value first, P/T
-    tie-break — the same ranking the GSZ resolver and
-    `pick_creature_tutor_x_value` use (several premium targets are 0/0
-    with a characteristic-defining ability)."""
-    return ((card.template.cmc or 0),
+def default_tutor_rank(card: "CardInstance") -> Tuple[int, int, int]:
+    """Engine-default delivery ranking, rules-derived: a candidate that
+    completes an unbounded mana engine with its controller's board (CR
+    726.4 shortcut material — see
+    `ActivationManager.would_complete_unbounded_engine`) ranks first; then
+    highest mana value, P/T tie-break — the same ranking the GSZ resolver
+    and `pick_creature_tutor_x_value` use (several premium targets are 0/0
+    with a characteristic-defining ability). The engine key reads the
+    instance's bound game; an unbound instance ranks on printed values."""
+    game = getattr(card, '_game_state', None)
+    completes = 0
+    if game is not None:
+        from .activation import ActivationManager
+        completes = int(ActivationManager.would_complete_unbounded_engine(
+            game, card.controller, card.template))
+    return (completes, (card.template.cmc or 0),
             (card.template.power or 0) + (card.template.toughness or 0))
 
 
@@ -326,6 +336,52 @@ def _resolve_graveyard_exile(game: "GameState", source: "CardInstance",
     return True
 
 
+def _resolve_put_counter(game: "GameState", source: "CardInstance",
+                         controller: int, ability: "ActivatedAbility",
+                         targets: Optional[List[int]]) -> bool:
+    """Put counters on the recipients this ability names (CR 121.1).
+
+    Two scopes, one branch, mirroring the untap resolver: a DECLARED target
+    receives the counters (CR 608.2b — one that has left the battlefield is
+    skipped, never silently redirected onto something else), and the
+    untargeted SELF form puts them on the source, only while the source is
+    still there.
+
+    Counters are written through `CardInstance.adjust_counters`, the same
+    accessor the counter COST payer uses, so a +1/+1 counter moves power and
+    toughness and a -1/-1 counter walks toughness toward the zero-toughness
+    SBA. There is no parallel ledger and no until-end-of-turn expiry — that
+    is the whole difference from `PUMP_SELF_UEOT`.
+    """
+    spec = ability.put_counter_data
+    if not spec:
+        return False
+    counter_kind = spec['kind']
+    amount = int(spec['amount'])
+    if amount <= 0:
+        return False
+
+    if spec['self']:
+        recipients = [source] if source.zone == "battlefield" else []
+    else:
+        recipients = []
+        for tid in (targets or []):
+            found = game.get_card_by_id(tid)
+            if found is None or found.zone != "battlefield":
+                continue
+            recipients.append(found)
+
+    applied = False
+    for recipient in recipients:
+        recipient.adjust_counters(counter_kind, amount)
+        applied = True
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: {source.name} "
+            f"activated — {amount} {counter_kind} counter"
+            f"{'s' if amount != 1 else ''} on {recipient.name}")
+    return applied
+
+
 def resolve_activated_ability(game: "GameState", source: "CardInstance",
                               controller: int,
                               targets: Optional[List[int]] = None,
@@ -342,6 +398,37 @@ def resolve_activated_ability(game: "GameState", source: "CardInstance",
     kind = ability.effect_kind
     game._activation_depth = getattr(game, '_activation_depth', 0) + 1
     try:
+        # CR 603.7 — a delayed effect does not happen now. It creates a
+        # delayed triggered ability that fires at its stated step, ONCE,
+        # and independently of this source (CR 603.7d): the closure below
+        # captures the controller and a delay-free copy of the ability, so
+        # a source that sacrificed itself to pay its own cost still
+        # delivers. Dispatch is on the parsed field, never on oracle text.
+        if ability.delayed_timing is not None:
+            from dataclasses import replace as _dc_replace
+            from .delayed_triggers import DelayedTrigger
+
+            immediate = _dc_replace(ability, delayed_timing=None)
+            captured_targets = list(targets or [])
+
+            def _fire(g, _ab=immediate, _src=source, _ctrl=controller,
+                      _tgts=captured_targets, _x=x_value):
+                resolve_activated_ability(g, _src, _ctrl, _tgts,
+                                          ability=_ab, x_value=_x)
+
+            game.register_delayed_trigger(DelayedTrigger(
+                timing=ability.delayed_timing,
+                controller=controller,
+                effect=_fire,
+                description=f"{source.name}: {ability.effect_text}",
+                created_turn=game.turn_number,
+            ))
+            game.log.append(
+                f"T{game.display_turn} P{controller+1}: {source.name} "
+                f"queues a delayed trigger "
+                f"({ability.delayed_timing.value})")
+            return True
+
         if kind is ActivationEffectKind.DAMAGE_ANY_TARGET:
             from .oracle_resolver import resolve_damage_to_chosen_target
             return bool(resolve_damage_to_chosen_target(
@@ -423,6 +510,35 @@ def resolve_activated_ability(game: "GameState", source: "CardInstance",
         if kind is ActivationEffectKind.EXILE_FROM_GRAVEYARD:
             return _resolve_graveyard_exile(game, source, controller,
                                             ability, targets)
+
+        if kind in (ActivationEffectKind.PUT_COUNTER_SELF,
+                    ActivationEffectKind.PUT_COUNTER_TARGET):
+            return _resolve_put_counter(game, source, controller,
+                                        ability, targets)
+        if kind is ActivationEffectKind.ADAPT:
+            # CR 702.132a — "If this creature has no +1/+1 counters on it,
+            # put N +1/+1 counters on it." The condition is checked on
+            # RESOLUTION: an activation on an already-adapted creature was
+            # legal, its cost is spent, and it does nothing here. A source
+            # that left the battlefield has nothing to receive counters.
+            from .cards import COUNTER_KIND_PLUS
+            if source.zone != "battlefield":
+                return False
+            if source.counter_count(COUNTER_KIND_PLUS) > 0:
+                game.log.append(
+                    f"T{game.display_turn} P{controller+1}: {source.name} "
+                    f"adapt {ability.amount} — already has +1/+1 counters, "
+                    f"nothing happens")
+                return False
+            # The ONE place adapt writes counters: the instance counter
+            # funnel, so P/T moves and a counters-placed trigger hook
+            # routes here in a single edit.
+            source.adjust_counters(COUNTER_KIND_PLUS, ability.amount)
+            game.log.append(
+                f"T{game.display_turn} P{controller+1}: {source.name} "
+                f"adapt {ability.amount} — puts {ability.amount} +1/+1 "
+                f"counter(s) on it (now {source.power}/{source.toughness})")
+            return True
 
         # ANIMATE_SELF_UEOT is owned by `parse_land_animation` / `animate_land`
         # and must never be double-executed here; it reaches this branch only

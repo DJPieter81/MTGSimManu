@@ -63,7 +63,20 @@ METAGAME_SHARES = {
     "Jeskai Blink": 3.80,
     "Living End": 3.47,
     "4/5c Control": 1.50,
-    "Domain Zoo": 6.07,
+    # 2026-08-30: 6.07 -> 4.0. The 6.07 was "Domain Aggro" (2.78) +
+    # "4/5c Aggro" (3.29) merged on the 2026-08-09 finding that the
+    # fetched mtgtop8 "4/5c Aggro" list IS this deck. That identity call
+    # stands, but it has one consequence the merge did not follow
+    # through: if 4/5c Aggro is this deck, then this deck's share is
+    # 4/5c Aggro's share as mtgtop8 reports it (4.0%), not the sum of two
+    # buckets from two differently-sourced cohorts. "Domain Zoo" does not
+    # appear anywhere in the mtgtop8 top-16 breakdown
+    # (data/tier1_decklists/2026-08-08/DIFF_REPORT.md), so there is no
+    # second bucket to add. The decklist is updated to the real one in
+    # the same commit — adopting the share and the list together is the
+    # point; taking one without the other is what produced the
+    # inconsistency.
+    "Domain Zoo": 4.0,
     "Boros Ponza": 2.75,
     "Dimir Midrange": 2.14,
     "Azorius Control": 2.13,
@@ -447,47 +460,53 @@ MODERN_DECKS: Dict[str, Dict[str, Dict[str, int]]] = {
         },
     },
     "Domain Zoo": {
-        # Mariscal — 5-0, Modern League (April 5, 2026)
-        # July 2026 post-ban refresh: Phlage banned 2026-05-19.
-        # -4 Phlage → +4 Wild Nacatl (turn-1 3/3 under Leyline of the
-        # Guildpact; the aggro slot post-ban "Domain Aggro" lists lean on).
+        # Aug 2026 — the real mtgtop8 "4/5c Aggro" list (event 89330,
+        # deck 877936), fetched by tools/fetch_tier1_decklists.py on
+        # 2026-08-08. Adopted 2026-08-30 together with that bucket's real
+        # 4.0% share; see the METAGAME_SHARES note above for why the two
+        # must move together.
+        #
+        # Supersedes an older approximation whose 20-card domain core
+        # (Ragavan / Scion of Draco / Territorial Kavu / both Leylines)
+        # matched, but whose spells did not: it ran 4 Lightning Bolt,
+        # 4 Wild Nacatl and 4 Doorkeeper Thrull where the real deck runs
+        # 4 Psychic Frog, 3 Quantum Riddler, 3 Fatal Push and 2 Wrath of
+        # the Skies. The real deck is midrange with spot removal and a
+        # sweeper; the approximation was pure beatdown with neither.
+        #
+        # Measured before adopting (n=6 Bo3, 24 opponents, same tree):
+        # the real list scores HIGHER, 84.7% vs 79.2%. It is adopted for
+        # fidelity, not to move a number — the flat WR goes UP while the
+        # weighted contribution goes DOWN with the share correction. The
+        # decklist-is-the-cause hypothesis is falsified in
+        # docs/diagnostics/2026-08-30_zoo_decklist_hypothesis_falsified.md.
+        #
+        # Side effect worth recording: the dropped 4 Doorkeeper Thrull
+        # were a 4-of NO-OP. Its Torpor Orb clause writes
+        # `game._etb_suppressed` and nothing in engine/ or ai/ ever reads
+        # that flag. The class (Torpor Orb, Hushbringer, Hushwing Gryff,
+        # Tocatli Honor Guard, Doorkeeper Thrull) is 5 cards, below the
+        # ~10-card build threshold, and after this change no registered
+        # deck plays any of them — so it is recorded here rather than
+        # built.
         "mainboard": {
-            "Ragavan, Nimble Pilferer": 4,
-            "Doorkeeper Thrull": 4,
+            "Psychic Frog": 4, "Quantum Riddler": 3,
+            "Ragavan, Nimble Pilferer": 4, "Scion of Draco": 4,
             "Territorial Kavu": 4,
-            "Wild Nacatl": 4,
-            "Scion of Draco": 4,
-            "Teferi, Time Raveler": 1,
-            "Lightning Bolt": 4,
-            "Consign to Memory": 1,
-            "Stubborn Denial": 2,
-            "Leyline Binding": 4,
+            "Fatal Push": 3, "Practiced Offense": 2, "Stubborn Denial": 4,
+            "Wrath of the Skies": 2, "Leyline Binding": 4,
             "Leyline of the Guildpact": 4,
-            "Fable of the Mirror-Breaker // Reflection of Kiki-Jiki": 1,
-            "The Legend of Roku": 1,
-            "Arid Mesa": 4,
-            "Flooded Strand": 4,
-            "Wooded Foothills": 3,
-            "Arena of Glory": 2,
-            "Steam Vents": 2,
-            "Blood Crypt": 1,
-            "Temple Garden": 1,
-            "Indatha Triome": 1,
-            "Lush Portico": 1,
+            "Arid Mesa": 4, "Blood Crypt": 1, "Breeding Pool": 1,
+            "Flooded Strand": 4, "Godless Shrine": 1, "Hallowed Fountain": 1,
+            "Indatha Triome": 1, "Meticulous Archive": 1, "Plains": 1,
+            "Polluted Delta": 4, "Steam Vents": 1, "Temple Garden": 1,
             "Thundering Falls": 1,
-            "Mountain": 1,
-            "Plains": 1,
         },
         "sideboard": {
-            "Consign to Memory": 2,
-            "Damping Sphere": 2,
-            "Mystical Dispute": 2,
-            "Obsidian Charmaw": 2,
-            "Wear // Tear": 2,
-            "Wrath of the Skies": 2,
-            "Clarion Conqueror": 1,
-            "Nihil Spellbomb": 1,
-            "Surgical Extraction": 1,
+            "Ashiok, Dream Render": 2, "Consign to Memory": 3,
+            "High Noon": 2, "Mystical Dispute": 2,
+            "Obsidian Charmaw": 3, "Wear // Tear": 2,
+            "Wrath of the Skies": 1,
         },
     },
     "Living End": {
@@ -528,43 +547,72 @@ MODERN_DECKS: Dict[str, Dict[str, Dict[str, int]]] = {
         },
     },
     "Izzet Prowess": {
-        # July 2026 refresh — real meta tracks this as "UR Cutter Prowess"
-        # (~3.99%): stock June-2026 builds run the full 4 Cori-Steel Cutter
-        # (mtgdecks/mtggoldfish archetype pages, June 2026).
-        # +2 Cori-Steel Cutter (2→4), -2 Violent Urge.
+        # Aug 2026 — the "UR Cutter Prowess" MTGO Challenge-winning list,
+        # supplied verbatim by the project owner. Plan, in the pilot's own
+        # words: close out games quickly through a combination of creature
+        # damage and direct burn spells.
+        #
+        # Replaces the June-2026 archetype-page approximation. The two
+        # structural corrections are worth naming, because both change how
+        # the deck must be modelled rather than just its counts:
+        #   * NO green splash. Stomping Ground and the 3 SB Pick Your Poison
+        #     are gone, so this is straight UR and its mana solver no longer
+        #     has to find G. Independently corroborated by the mtgtop8 list
+        #     this repo's own fetch_tier1_decklists.py pulled on 2026-08-08.
+        #   * The pump suite is wider and cheaper: Expressive Iteration 4→2
+        #     and Mutagenic Growth 4→3 pay for 2 Monstrous Rage and 2 Violent
+        #     Urge, both of which are combat tricks rather than card
+        #     advantage — the list leans harder on connecting than on
+        #     refuelling.
+        # Unholy Heat moves mostly to the board (MB 2→1, SB 0→3), the
+        # standard concession to matchups where a 6-damage delirium mode is
+        # dead. Murktide Regent and Spell Snare are out entirely.
+        #
+        # Registering this list is what exposed the Phyrexian-mana gap, and
+        # the note is kept because it explains a WR discontinuity in this
+        # deck's history: with Stomping Ground gone there are ZERO green
+        # sources, and `CastManager.can_cast` used to refuse {G/P} without a
+        # green source, making the 3 Mutagenic Growth dead cards. The old
+        # approximation hid it by running a green source. FIXED — coloured
+        # pips payable with life (CR 107.4f) are no longer treated as
+        # colour requirements, so numbers from before that fix understate
+        # this deck.
         "mainboard": {
             # Creatures (12)
             "Dragon's Rage Channeler": 4,
             "Monastery Swiftspear": 4,
             "Slickshot Show-Off": 4,
-            # Spells (30)
-            "Lightning Bolt": 4,
+            # Instants and sorceries (22)
+            "Expressive Iteration": 2,
             "Lava Dart": 4,
-            "Unholy Heat": 2,
-            "Mutagenic Growth": 4,
-            "Mishra's Bauble": 4,
-            "Expressive Iteration": 4,
+            "Lightning Bolt": 4,
+            "Monstrous Rage": 2,
+            "Mutagenic Growth": 3,
             "Preordain": 4,
+            "Unholy Heat": 1,
+            "Violent Urge": 2,
+            # Other spells (8)
             "Cori-Steel Cutter": 4,
+            "Mishra's Bauble": 4,
             # Lands (18)
-            "Scalding Tarn": 3,
-            "Wooded Foothills": 3,
             "Arid Mesa": 2,
-            "Bloodstained Mire": 2,
-            "Steam Vents": 2,
-            "Stomping Ground": 1,
-            "Fiery Islet": 1,
-            "Thundering Falls": 2,
-            "Mountain": 2,
+            "Bloodstained Mire": 3,
+            "Fiery Islet": 2,
+            "Mountain": 3,
+            "Scalding Tarn": 2,
+            "Steam Vents": 3,
+            "Thundering Falls": 1,
+            "Wooded Foothills": 2,
         },
         "sideboard": {
-            "Consign to Memory": 4,
-            "Pick Your Poison": 3,
-            "Murktide Regent": 2,
+            "Abhorrent Oculus": 1,
+            "Consign to Memory": 3,
+            "Expressive Iteration": 1,
+            "Meltdown": 2,
             "Spell Pierce": 2,
             "Surgical Extraction": 2,
-            "Meltdown": 1,
-            "Spell Snare": 1,
+            "Tormod's Crypt": 1,
+            "Unholy Heat": 3,
         },
     },
     "Dimir Midrange": {

@@ -4,13 +4,11 @@
   "goals": [
     {
       "goal_type": "CURVE_OUT",
-      "description": "T0 Leyline of the Guildpact, T1 Ragavan/Thrull, T2 Kavu, T3 Scion/Phlage — maximize early pressure",
+      "description": "T0 Leyline of the Guildpact, T1 Ragavan/Nacatl/Thrull, T2 Kavu, T3 Scion \u2014 maximize early pressure",
       "card_priorities": {
         "Ragavan, Nimble Pilferer": 24.0,
-        "Doorkeeper Thrull": 22.0,
         "Territorial Kavu": 22.0,
         "Scion of Draco": 18.0,
-        "Phlage, Titan of Fire's Fury": 18.0,
         "Leyline of the Guildpact": 20.0
       },
       "card_roles": {
@@ -19,8 +17,6 @@
           "Leyline of the Guildpact"
         ],
         "payoffs": [
-          "Doorkeeper Thrull",
-          "Phlage, Titan of Fire's Fury",
           "Scion of Draco",
           "Territorial Kavu"
         ]
@@ -31,14 +27,11 @@
       "description": "Remove blockers with Binding/Bolt, attack with domain creatures",
       "card_priorities": {
         "Leyline Binding": 18.0,
-        "Lightning Bolt": 17.0,
-        "Phlage, Titan of Fire's Fury": 16.0,
         "Consign to Memory": 14.0
       },
       "card_roles": {
         "interaction": [
           "Leyline Binding",
-          "Lightning Bolt",
           "Stubborn Denial",
           "Consign to Memory"
         ]
@@ -46,15 +39,11 @@
     },
     {
       "goal_type": "CLOSE_GAME",
-      "description": "Burn face with Lightning Bolt + Phlage to finish",
-      "card_priorities": {
-        "Lightning Bolt": 20.0,
-        "Phlage, Titan of Fire's Fury": 16.0
-      }
+      "description": "Burn face with Lightning Bolt to finish",
+      "card_priorities": {}
     }
   ],
   "mulligan_keys": [
-    "Doorkeeper Thrull",
     "Leyline Binding",
     "Ragavan, Nimble Pilferer",
     "Territorial Kavu"

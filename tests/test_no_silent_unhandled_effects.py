@@ -35,23 +35,20 @@ ALLOWED_UNHANDLED: set[tuple[str, str]] = {
     # Cascade itself (the payoff) is handled by the engine cascade mechanic;
     # only Demonic Dread's minor "target creature gets -3/-0" rider is unmodeled.
     ("Demonic Dread", "spell"),
-    # "Look at the top X cards, put one into your hand" — card-selection /
-    # impulse-style advantage not modeled by the legacy parser.
-    ("Consult the Star Charts", "spell"),
-    # "Exile the top two cards; you may play them" — impulse draw not modeled
-    # for this specific card by any handler/oracle branch.
-    ("Wrenn's Resolve", "spell"),
-    # "Reveal top 4, may take a permanent to hand, mill the rest, make a
-    # mana token" — same impulse/library-dig class as the two entries
-    # above, not modeled by any handler/oracle branch. Newly registered
-    # in Amulet Titan's Aug 2026 decklist refresh (PR #486); tracked here
-    # rather than rushing a fresh engine mechanic into a data-only PR.
-    ("Malevolent Rumble", "spell"),
-    # "Look at top 5, may take a colorless card to hand, rest to bottom" —
-    # same impulse/library-dig class as the entries above, not modeled.
-    # Newly registered via Eldrazi Ramp / Broodscale Bloodchief (Aug 2026
-    # meta-gap fill, PR #486).
-    ("Ancient Stirrings", "spell"),
+    # ── Impulse / library-dig (CR 120) — NOW HANDLED, retired from the
+    #    allowlist. The "look at / reveal top N, take a predicate-matching
+    #    card to hand, put the rest on the bottom / into the graveyard" class
+    #    resolves via the parse-once typed field
+    #    `CardTemplate.library_dig_data` (oracle_parser.parse_library_dig)
+    #    and `oracle_resolver._resolve_library_dig`, which moves cards
+    #    through the zone funnel (no on-draw watchers — CR 121.1c).
+    #    Consult the Star Charts and Ancient Stirrings join that class;
+    #    Wrenn's Resolve (exile-and-play "impulse draw") is handled by the
+    #    Tag.IMPULSE_DRAW branch. Malevolent Rumble carries a create-token
+    #    rider the dig resolver does not execute, so parse_library_dig REFUSES
+    #    it ("refuse rather than half-execute") — it falls through to the
+    #    token-creation path, which makes its 0/1 Eldrazi Spawn (the dig half
+    #    stays unmodeled, but the card is not a silent no-op: the token fires).
     # "Each player draws 3, then discards 3 at random" — symmetric
     # wheel/hellbent effect, not modeled by any handler/oracle branch:
     # the spell resolves without drawing/discarding for either player.
@@ -64,6 +61,57 @@ ALLOWED_UNHANDLED: set[tuple[str, str]] = {
     # the resolve path to be counted as unhandled for the graveyard-cast
     # variant (Harmonize cost-reduction/exile sequence not modeled).
     ("Nature's Rhythm", "spell"),
+    # "Target creature gets +2/+0 until end of turn. Create a Monster Role
+    # token attached to it." — the ROLE TOKEN class (31 Modern cards):
+    # an Aura token that attaches, replaces any other Role its controller
+    # has on that creature, and grants a static buff (+1/+1 and trample
+    # here). Not modeled.
+    #
+    # Deliberately allowlisted rather than half-implemented. The pump half
+    # alone IS expressible, but shipping it without the Role would be the
+    # "refuse rather than half-execute" rule inverted — the card would
+    # silently apply +2/+0 where the real card applies +3/+1 and trample
+    # permanently. The Role half needs the attached-permanent static-buff
+    # infrastructure that is missing engine-wide (`_dynamic_base_power`
+    # applies only artifact-COUNT scaling from `equipped_` tags; there is
+    # no path for "enchanted/equipped creature gets +N/+M and has X"),
+    # which is a hundreds-of-cards mechanic and would move combat maths
+    # and the WR anchor broadly.
+    #
+    # Registered via the real UR Cutter Prowess list (2026-08-30). It was
+    # EXPOSED, not caused, by the ordinal-cast-trigger fix in the same
+    # session: stripping reminder text removed 15 pool-wide false-positive
+    # token handlers, one of which had been firing on this card's Role
+    # reminder text. The card was equally unmodeled before — a bogus
+    # handler was masking it.
+    ("Monstrous Rage", "spell"),
+    # "Put a +1/+1 counter on each creature target player controls. Target
+    # creature gains your choice of double strike or lifelink until end of
+    # turn." + Flashback — the mass +1/+1-counter distribution class (put a
+    # counter on EACH creature a player controls), not modeled by any
+    # handler/oracle branch. Deliberately allowlisted rather than
+    # half-implemented: the counter half alone is expressible, but shipping
+    # it would buff the whole board of two registered decks (Domain Zoo,
+    # Hollow One) and move the WR anchor, while still dropping the modal
+    # double-strike/lifelink grant — a mechanic build that belongs in a
+    # focused pass, not a card-flow-exposed fix. EXPOSED, not caused, by the
+    # 2026-09-01 ETB-reveal-hand-exile fix: that fix shifted Domain Zoo's
+    # game flow so the deck now reaches a turn where it casts this card at
+    # the sweep seeds; the card was equally unmodeled before, simply never
+    # cast in this deterministic sweep. Tracked in
+    # docs/design/rules-foundation-sweep-tracker.md.
+    ("Practiced Offense", "spell"),
+    # ── Replacement path (newly observable as of the diagnostic's
+    #    coverage of ZoneManager.move_card) ──────────────────────────
+    # "If a card would be put into a(n opponent's) graveyard, exile it
+    # instead" — the Rest in Peace / Leyline of the Void continuous
+    # REPLACEMENT family. The engine models the sideboard ADVICE value of
+    # these statics (ai/discard_advisor) but not the graveyard-exile
+    # replacement itself: graveyard-bound cards still reach the graveyard.
+    # Grandfathered here (make-it-visible-then-declare) until a generic
+    # graveyard-exile replacement mechanic lands.
+    ("Dauthi Voidwalker", "replacement"),
+    ("Sanctifier en-Vec", "replacement"),
 }
 
 

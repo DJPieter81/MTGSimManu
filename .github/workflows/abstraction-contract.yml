@@ -61,6 +61,13 @@ jobs:
       - name: Card-name-registry ratchet
         run: python tools/check_card_name_registry.py
 
+      - name: Gameplan/decklist consistency gate
+        # Every card a decks/gameplans/*.json names must be in that deck's
+        # MODERN_DECKS mainboard or sideboard. Decklist refreshes used to
+        # leave gameplans naming cut cards, which silently misdirected the
+        # mulligan keystone protection and gameplan weighting.
+        run: python tools/check_gameplan_consistency.py
+
       - name: Assemble card DB
         # ModernAtomic.json is gitignored, so a fresh checkout doesn't have
         # it. The classifier gate below constructs CardDatabase() directly
@@ -74,8 +81,19 @@ jobs:
       - name: Classifier coverage gate (tag-gated engine behavior)
         run: python tools/check_classifier_coverage.py
 
+      - name: Loyalty-dispatch ratchet (needs the assembled card DB)
+        run: python tools/check_loyalty_dispatch.py
+
+      - name: Narrow-typed-field ratchet (needs the assembled card DB)
+        # Blocks a NEW disguised single-card patch: a typed CardTemplate
+        # mechanic field that only ~1 card in the whole DB populates is a
+        # `card.name == "X"` gate in a generic costume, invisible to the
+        # source-grep ratchets. The baseline grandfathers the current set;
+        # a new narrow field fails until generalised or declared.
+        run: python tools/check_narrow_typed_fields.py
+
       - name: Run abstraction-contract pytest
-        run: python -m pytest tests/test_abstraction_contract.py tests/test_check_abstraction_deck_gates.py tests/test_doc_hygiene.py tests/test_magic_numbers_ratchet.py tests/test_check_magic_numbers.py tests/test_zone_mutation_ratchet.py tests/test_oracle_runtime_parse_ratchet.py --timeout=60 -q
+        run: python -m pytest tests/test_abstraction_contract.py tests/test_check_abstraction_deck_gates.py tests/test_doc_hygiene.py tests/test_magic_numbers_ratchet.py tests/test_check_magic_numbers.py tests/test_zone_mutation_ratchet.py tests/test_oracle_runtime_parse_ratchet.py tests/test_gameplan_consistency.py tests/test_narrow_typed_fields.py --timeout=60 -q
 
       - name: Run full test suite
         # The full suite now runs in CI. It became feasible once the

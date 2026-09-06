@@ -65,13 +65,30 @@ def _ensure_fallback_db():
     _orig_init = CardDatabase.__init__
 
     def _patched_init(self, json_path=None):
-        if json_path is None:
-            if not _canonical_available():
-                return _orig_init(self, sidecar)
+        # Default (json_path is None) constructions share ONE parsed DB
+        # across the whole pytest process. The 22k-card parse costs ~20s;
+        # without sharing, every test that builds its own CardDatabase()
+        # re-paid it (~10+ tests), which pushed cold loads toward the 120s
+        # per-test cap on slow CI runners. The database is read-only in
+        # tests, so cloning the cached instance's already-parsed state is
+        # safe. Explicit-path constructions (fixtures needing a distinct DB)
+        # skip this and load normally.
+        if json_path is None and _canonical_available():
+            import tests._card_db_cache as _dbcache
+            if _dbcache._DB is not None:
+                # Share the already-parsed state (read-only) — no re-parse.
+                self.__dict__.update(_dbcache._DB.__dict__)
+                return
+            # First construction: do the real load, then cache THIS instance
+            # so every later default construction reuses it.
             try:
-                return _orig_init(self, None)
+                _orig_init(self, None)
             except (json.JSONDecodeError, ValueError):
-                return _orig_init(self, sidecar)
+                _orig_init(self, sidecar)
+            _dbcache._DB = self
+            return
+        if json_path is None:
+            return _orig_init(self, sidecar)
         try:
             return _orig_init(self, json_path)
         except (json.JSONDecodeError, ValueError):

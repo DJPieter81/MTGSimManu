@@ -1,0 +1,1887 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+======================================================================
+  GAME 1: Amulet Titan (P1) vs Living End (P2)  —  seed 57007
+  Series: Amulet Titan 0 - 0 Living End
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Living End wins → chooses to play first
+║ P1 (on play): Living End
+║ P2 (on draw): Amulet Titan
+╚═══════════════════════════════════════════════════════
+
+P1 (Amulet Titan) opening hand (1 lands, 6 spells):
+  • Spelunking [Spell, CMC 3]
+  • Crumbling Vestige [Land, CMC 0]
+  • Spelunking [Spell, CMC 3]
+  • Primeval Titan [Creature, CMC 6]
+  • Scapeshift [Spell, CMC 4]
+  • Aftermath Analyst [Creature, CMC 2]
+  • Cultivator Colossus [Creature, CMC 7]
+→ P1 MULLIGANS (too few lands (1 < 2))
+  New hand (4 lands, 3 spells): ['Boseiju, Who Endures', "Urza's Saga", "Green Sun's Zenith", 'Spelunking', 'Otawara, Soaring City', 'Amulet of Vigor', 'Crumbling Vestige']
+→ P1 mulligans to 6, bottoms: ['Boseiju, Who Endures']
+  Keeps: ["Urza's Saga", "Green Sun's Zenith", 'Spelunking', 'Otawara, Soaring City', 'Amulet of Vigor', 'Crumbling Vestige']
+
+P2 (Living End) opening hand (3 lands, 4 spells):
+  • Verdant Catacombs [Land, CMC 0]
+  • Force of Negation [Spell, CMC 3]
+  • Overgrown Tomb [Land, CMC 0]
+  • Misty Rainforest [Land, CMC 0]
+  • Waker of Waves [Creature, CMC 7]
+  • Shardless Agent [Creature, CMC 3]
+  • Living End [Spell, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Shardless Agent, 3 cheap spells
+
+
+╔══ TURN 1 — Living End (P2) ══════════════════════════
+║ Life: Living End 20  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Misty Rainforest
+T1: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Misty Rainforest (pay 1 life) -> Breeding Pool (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Living End 19
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Hanweir Battlements // Hanweir, the Writhing Township
+  [Main 1]
+T1 P1: Play Crumbling Vestige (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Living End (P2) ══════════════════════════
+║ Life: Living End 19  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Subtlety
+  [Main 1]
+T2 P2: Play Verdant Catacombs
+T2: Verdant Catacombs moved battlefield -> graveyard (fetchland sacrifice)
+T2 P2: Crack Verdant Catacombs (pay 1 life) -> Watery Grave (tapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Living End 18
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool, Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Crumbling Vestige
+  [Main 1]
+T2 P1: Play Urza's Saga
+    → Goal: deploy_engine [engines]
+    [Mana] Tap Urza's Saga→C (paying for Amulet of Vigor, 1 mana remaining)
+T2 P1: Cast Amulet of Vigor (1)
+    [Priority] P2 passes (no response)
+T2: Resolve Amulet of Vigor
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Living End (P2) ══════════════════════════
+║ Life: Living End 18  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool, Watery Grave
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige, Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Zagoth Triome
+  [Main 1]
+T3 P2: Play Overgrown Tomb (untapped, life: 18)
+T3: Zagoth Triome moved hand -> graveyard (cycling)
+T3 P2: Cycle Zagoth Triome (pay 3 mana, draw: Blood Crypt)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Living End 18
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 52  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige, Urza's Saga
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool [T], Watery Grave [T], Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T3 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P1 draws: Green Sun's Zenith
+  [Main 1]
+T3 P1: Play Crumbling Vestige (enters tapped)
+T3 P1: Amulet of Vigor untaps Crumbling Vestige
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Living End (P2) ══════════════════════════
+║ Life: Living End 18  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 3
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool, Watery Grave, Overgrown Tomb
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige, Urza's Saga, Crumbling Vestige
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ketria Triome
+  [Main 1]
+T4: Ketria Triome moved hand -> graveyard (cycling)
+T4 P2: Cycle Ketria Triome (pay 3 mana, draw: Striped Riverwinder)
+T4 P2: Play Blood Crypt (untapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Living End 18
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 51  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige, Urza's Saga, Crumbling Vestige
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool [T], Watery Grave [T], Overgrown Tomb [T], Blood Crypt
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T4 P1: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+  [Draw] P1 draws: Arboreal Grazer
+  [Main 1]
+T4 P1: Play Otawara, Soaring City
+T4 P1: Create 1x Construct token(s)
+T4 P1: Urza's Saga activates "{2}, {T}: Create a 0/0 colorless Constru..." (pays {2}, {T})
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Living End (P2) ══════════════════════════
+║ Life: Living End 18  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 4
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool, Watery Grave, Overgrown Tomb, Blood Crypt
+║ Amulet Titan board:
+║   Creatures: Construct Token (2/2)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige [T], Urza's Saga [T], Crumbling Vestige [T], Otawara, Soaring City
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Architects of Will
+  [Main 1]
+T5: Striped Riverwinder moved hand -> graveyard (cycling)
+T5 P2: Cycle Striped Riverwinder (pay 1 mana, draw: Island)
+T5: Architects of Will moved hand -> graveyard (cycling)
+T5 P2: Cycle Architects of Will (pay 0 mana, draw: Shardless Agent)
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Watery Grave→U, Overgrown Tomb→G, Blood Crypt→B (paying for Shardless Agent, 0 mana remaining)
+T5 P2: Cast Shardless Agent (1UG)
+    [Priority] P1 passes (no response)
+T5: Resolve Shardless Agent
+T5: Cascade (CMC < 3)
+T5: Cascade hits Living End
+T5: Living End resolves!
+T5: Construct Token moved battlefield -> exile (living end)
+T5: Shardless Agent moved battlefield -> exile (living end)
+T5: Living End returns Striped Riverwinder for P2
+T5: Living End returns Architects of Will for P2
+T5 P2: Play Island
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Living End 18
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 50  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige, Urza's Saga, Crumbling Vestige, Otawara, Soaring City
+║ Living End board:
+║   Creatures: Striped Riverwinder (5/5), Architects of Will (3/3)
+║   Lands: Breeding Pool [T], Watery Grave [T], Overgrown Tomb [T], Blood Crypt [T], Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T5 P1: Urza's Saga tutors Zuran Orb
+T5 P1: Sacrifice Urza's Saga (final chapter)
+  [Draw] P1 draws: Scapeshift
+  [Main 1]
+T5 P1: Play Hanweir Battlements // Hanweir, the Writhing Township
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Living End (P2) ══════════════════════════
+║ Life: Living End 18  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 42  |  Graveyard: 5
+║ Living End board:
+║   Creatures: Striped Riverwinder (5/5), Architects of Will (3/3)
+║   Lands: Breeding Pool, Watery Grave, Overgrown Tomb, Blood Crypt, Island
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Zuran Orb
+║   Lands: Crumbling Vestige, Crumbling Vestige, Otawara, Soaring City, Hanweir Battlements // Hanweir, the Writhing Township
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Force of Negation
+  [Main 1]
+    → Goal: push_damage
+    [Mana] Tap Island→U, Breeding Pool→U, Watery Grave→B, Overgrown Tomb→B (paying for Subtlety, 1 mana remaining)
+T6 P2: Cast Subtlety (2UU)
+    [Priority] P1 passes (no response)
+T6: Resolve Subtlety
+T6 P2: Subtlety enters (no creature/PW spell on stack to target)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Striped Riverwinder, Architects of Will
+T6 P2: Attack with Striped Riverwinder, Architects of Will
+  [Declare Blockers] P1 does not block
+T6 P2:   Striped Riverwinder (5/5) → 5 dmg to player
+T6 P2:   Architects of Will (3/3) → 3 dmg to player
+  [Combat Damage] 8 damage dealt → P1 life: 20 → 12
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 12  |  Living End 18
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 48  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Zuran Orb
+║   Lands: Crumbling Vestige, Crumbling Vestige, Otawara, Soaring City, Hanweir Battlements // Hanweir, the Writhing Township
+║ Living End board:
+║   Creatures: Striped Riverwinder (5/5) [tapped], Architects of Will (3/3) [tapped], Subtlety (3/3)
+║   Lands: Breeding Pool [T], Watery Grave [T], Overgrown Tomb [T], Blood Crypt, Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Malevolent Rumble
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Living End (P2) ══════════════════════════
+║ Life: Living End 18  |  Amulet Titan 12
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 41  |  Graveyard: 5
+║ Living End board:
+║   Creatures: Striped Riverwinder (5/5), Architects of Will (3/3), Subtlety (3/3)
+║   Lands: Breeding Pool, Watery Grave, Overgrown Tomb, Blood Crypt, Island
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Zuran Orb
+║   Lands: Crumbling Vestige, Crumbling Vestige, Otawara, Soaring City, Hanweir Battlements // Hanweir, the Writhing Township
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Demonic Dread
+  [Main 1]
+    → Goal: push_damage
+    [Mana] Tap Island→U, Breeding Pool→G, Watery Grave→B (paying for Shardless Agent, 2 mana remaining)
+T7 P2: Cast Shardless Agent (1UG)
+    [Priority] P1 passes (no response)
+T7: Resolve Shardless Agent
+T7: Cascade (CMC < 3)
+T7: Cascade hits Living End
+T7: Living End resolves!
+T7: Striped Riverwinder moved battlefield -> exile (living end)
+T7: Architects of Will moved battlefield -> exile (living end)
+T7: Subtlety moved battlefield -> exile (living end)
+T7: Shardless Agent moved battlefield -> exile (living end)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 12  |  Living End 18
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Zuran Orb
+║   Lands: Crumbling Vestige, Crumbling Vestige, Otawara, Soaring City, Hanweir Battlements // Hanweir, the Writhing Township
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool [T], Watery Grave [T], Overgrown Tomb, Blood Crypt, Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Spelunking
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Living End (P2) ══════════════════════════
+║ Life: Living End 18  |  Amulet Titan 12
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 39  |  Graveyard: 6
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool, Watery Grave, Overgrown Tomb, Blood Crypt, Island
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Zuran Orb
+║   Lands: Crumbling Vestige, Crumbling Vestige, Otawara, Soaring City, Hanweir Battlements // Hanweir, the Writhing Township
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Demonic Dread
+  [Main 1]
+    [Mana] Tap Island→U, Breeding Pool→G, Watery Grave→B, Overgrown Tomb→B (paying for Living End, 1 mana remaining)
+T8 P2: Suspend Living End (3 time counters)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 12  |  Living End 18
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Zuran Orb
+║   Lands: Crumbling Vestige, Crumbling Vestige, Otawara, Soaring City, Hanweir Battlements // Hanweir, the Writhing Township
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool [T], Watery Grave [T], Overgrown Tomb [T], Blood Crypt, Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Green Sun's Zenith
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T8: Arboreal Grazer moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 9 — Living End (P2) ══════════════════════════
+║ Life: Living End 18  |  Amulet Titan 12
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 38  |  Graveyard: 6
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool, Watery Grave, Overgrown Tomb, Blood Crypt, Island
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Zuran Orb
+║   Lands: Crumbling Vestige, Crumbling Vestige, Otawara, Soaring City, Hanweir Battlements // Hanweir, the Writhing Township
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Striped Riverwinder
+  [Main 1]
+T9: Striped Riverwinder moved hand -> graveyard (cycling)
+T9 P2: Cycle Striped Riverwinder (pay 1 mana, draw: Botanical Sanctum)
+T9 P2: Play Botanical Sanctum (tapped, 5 other lands)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 12  |  Living End 18
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 45  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Zuran Orb
+║   Lands: Crumbling Vestige, Crumbling Vestige, Otawara, Soaring City, Hanweir Battlements // Hanweir, the Writhing Township
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool [T], Watery Grave, Overgrown Tomb, Blood Crypt, Island, Botanical Sanctum [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Crumbling Vestige
+  [Main 1]
+T9 P1: Play Crumbling Vestige (enters tapped)
+T9 P1: Amulet of Vigor untaps Crumbling Vestige
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Living End (P2) ══════════════════════════
+║ Life: Living End 18  |  Amulet Titan 12
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 6  |  Opp lands: 5
+║ Library: 36  |  Graveyard: 7
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool, Watery Grave, Overgrown Tomb, Blood Crypt, Island, Botanical Sanctum
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Zuran Orb
+║   Lands: Crumbling Vestige, Crumbling Vestige, Otawara, Soaring City, Hanweir Battlements // Hanweir, the Writhing Township, Crumbling Vestige
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Living End
+  [Main 1]
+    [Mana] Tap Island→U, Breeding Pool→G, Watery Grave→B, Overgrown Tomb→B (paying for Living End, 2 mana remaining)
+T10 P2: Suspend Living End (3 time counters)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 12  |  Living End 18
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 44  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Zuran Orb
+║   Lands: Crumbling Vestige, Crumbling Vestige, Otawara, Soaring City, Hanweir Battlements // Hanweir, the Writhing Township, Crumbling Vestige
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool [T], Watery Grave [T], Overgrown Tomb [T], Blood Crypt, Island [T], Botanical Sanctum
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Boseiju, Who Endures
+  [Main 1]
+T10 P1: Play Boseiju, Who Endures
+    → Goal: push_damage
+    [Mana] Tap Boseiju, Who Endures→G (paying for Green Sun's Zenith, 5 mana remaining)
+T10 P1: Cast Green Sun's Zenith (2G) (X=2)
+    [Priority] P2 responds with Force of Negation
+T10 P2: Pay alternate cost: exile Force of Negation for Force of Negation
+T10 P2: Cast Force of Negation (1UU)
+T10: Resolve Force of Negation
+T10: Green Sun's Zenith moved stack -> graveyard (resolution)
+T10: Green Sun's Zenith is countered
+T10: Force of Negation moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Living End (P2) ══════════════════════════
+║ Life: Living End 18  |  Amulet Titan 12
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 6  |  Opp lands: 6
+║ Library: 35  |  Graveyard: 8
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool, Watery Grave, Overgrown Tomb, Blood Crypt, Island, Botanical Sanctum
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Zuran Orb
+║   Lands: Crumbling Vestige [T], Crumbling Vestige [T], Otawara, Soaring City, Hanweir Battlements // Hanweir, the Writhing Township, Crumbling Vestige, Boseiju, Who Endures [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T11 P2: Cast Living End (0)
+T11: Resolve Living End
+T11: Living End resolves!
+T11: Living End returns Arboreal Grazer for P1
+T11: Living End returns Striped Riverwinder for P2
+T11: Living End moved stack -> graveyard (resolution)
+  [Draw] P2 draws: Demonic Dread
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 12  |  Living End 18
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 6  |  Opp lands: 6
+║ Library: 43  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor, Zuran Orb
+║   Lands: Crumbling Vestige, Crumbling Vestige, Otawara, Soaring City, Hanweir Battlements // Hanweir, the Writhing Township, Crumbling Vestige, Boseiju, Who Endures
+║ Living End board:
+║   Creatures: Striped Riverwinder (5/5)
+║   Lands: Breeding Pool, Watery Grave, Overgrown Tomb, Blood Crypt, Island, Botanical Sanctum
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arboreal Grazer
+  [Main 1]
+    → Goal: push_damage
+    [Mana] Tap Boseiju, Who Endures→G (paying for Green Sun's Zenith, 5 mana remaining)
+T11 P1: Cast Green Sun's Zenith (2G) (X=2)
+    [Priority] P2 passes (no response)
+T11: Resolve Green Sun's Zenith
+T11: Aftermath Analyst moved library -> battlefield (Green Sun's Zenith tutor)
+T11: Shifting Woodland moved library -> graveyard (Aftermath Analyst mill)
+T11: Dryad Arbor moved library -> graveyard (Aftermath Analyst mill)
+T11: Arboreal Grazer moved library -> graveyard (Aftermath Analyst mill)
+T11 P1: Aftermath Analyst ETB: mill 3
+T11 P1: Green Sun's Zenith finds Aftermath Analyst
+T11: Green Sun's Zenith moved stack -> graveyard (resolution)
+T11 P1: Activate Aftermath Analyst (sacrifice)
+T11 P1: Returned Urza's Saga to battlefield — 1 damage to P2 (life: 17)
+T11 P1: Returned Shifting Woodland to battlefield — 1 damage to P2 (life: 16)
+T11 P1: Returned Dryad Arbor to battlefield — 1 damage to P2 (life: 15)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Living End (P2) ══════════════════════════
+║ Life: Living End 15  |  Amulet Titan 12
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 6  |  Opp lands: 9
+║ Library: 34  |  Graveyard: 8
+║ Living End board:
+║   Creatures: Striped Riverwinder (5/5)
+║   Lands: Breeding Pool, Watery Grave, Overgrown Tomb, Blood Crypt, Island, Botanical Sanctum
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Dryad Arbor (1/1) [tapped]
+║   Other: Amulet of Vigor, Zuran Orb
+║   Lands: Crumbling Vestige [T], Crumbling Vestige [T], Otawara, Soaring City, Hanweir Battlements // Hanweir, the Writhing Township, Crumbling Vestige, Boseiju, Who Endures [T], Urza's Saga [T], Shifting Woodland [T], Dryad Arbor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Island
+  [Main 1]
+T12 P2: Play Island
+    → Goal: push_damage
+    [Mana] Tap Island→U, Island→U, Breeding Pool→G, Watery Grave→B, Overgrown Tomb→B, Blood Crypt→B, Botanical Sanctum→G (paying for Waker of Waves, 0 mana remaining)
+T12 P2: Cast Waker of Waves (5UU)
+    [Priority] P1 passes (no response)
+T12: Resolve Waker of Waves
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Striped Riverwinder
+T12 P2: Attack with Striped Riverwinder
+T12 P1:   [BLOCK] Arboreal Grazer (0/3) blocks Striped Riverwinder (5/5) — lifespan_delta=+0.42
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T12: Arboreal Grazer dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 12  |  Living End 15
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 9  |  Opp lands: 7
+║ Library: 38  |  Graveyard: 5
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1)
+║   Other: Amulet of Vigor, Zuran Orb
+║   Lands: Crumbling Vestige, Crumbling Vestige, Otawara, Soaring City, Hanweir Battlements // Hanweir, the Writhing Township, Crumbling Vestige, Boseiju, Who Endures, Urza's Saga, Shifting Woodland, Dryad Arbor
+║ Living End board:
+║   Creatures: Striped Riverwinder (5/5) [tapped], Waker of Waves (7/7)
+║   Lands: Breeding Pool [T], Watery Grave [T], Overgrown Tomb [T], Blood Crypt [T], Island [T], Botanical Sanctum [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T12 P1: Urza's Saga tutors Amulet of Vigor
+T12 P1: Sacrifice Urza's Saga (final chapter)
+  [Draw] P1 draws: Mirrorpool
+  [Main 1]
+T12 P1: Play Mirrorpool (enters tapped)
+T12 P1: Amulet of Vigor, Amulet of Vigor untaps Mirrorpool (x2)
+    → Goal: push_damage
+    [Mana] Tap Boseiju, Who Endures→G (paying for Green Sun's Zenith, 8 mana remaining)
+T12 P1: Cast Green Sun's Zenith (7G) (X=7)
+    [Priority] P2 passes (no response)
+T12: Resolve Green Sun's Zenith
+T12: Primeval Titan moved library -> battlefield (Green Sun's Zenith tutor)
+T12 P1: Amulet of Vigor, Amulet of Vigor untaps Gruul Turf (x2)
+T12: Otawara, Soaring City moved battlefield -> hand (Gruul Turf ETB returns Otawara, Soaring City to hand)
+T12 P1: Primeval Titan searches for Gruul Turf
+T12 P1: Amulet of Vigor, Amulet of Vigor untaps Simic Growth Chamber (x2)
+T12: Hanweir Battlements // Hanweir, the Writhing Township moved battlefield -> hand (Simic Growth Chamber ETB returns Hanweir Battlements // Hanweir, the Writhing Township to hand)
+T12 P1: Primeval Titan searches for Simic Growth Chamber
+T12 P1: Green Sun's Zenith finds Primeval Titan
+T12: Green Sun's Zenith moved stack -> graveyard (resolution)
+    → Goal: push_damage
+    [Mana] Tap Mirrorpool→C, Gruul Turf→RG (paying for Spelunking, 2 mana remaining)
+T12 P1: Cast Spelunking (2G)
+    [Priority] P2 passes (no response)
+T12: Resolve Spelunking
+    → Goal: push_damage
+    [Mana] Tap Simic Growth Chamber→GU (paying for Arboreal Grazer, 1 mana remaining)
+T12 P1: Cast Arboreal Grazer (G)
+    [Priority] P2 passes (no response)
+T12: Resolve Arboreal Grazer
+T12 P1: Amulet of Vigor, Amulet of Vigor untaps Otawara, Soaring City (x2)
+T12 P1: Arboreal Grazer puts Otawara, Soaring City onto battlefield
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 13 — Living End (P2) ══════════════════════════
+║ Life: Living End 15  |  Amulet Titan 12
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 7  |  Opp lands: 10
+║ Library: 33  |  Graveyard: 8
+║ Living End board:
+║   Creatures: Striped Riverwinder (5/5), Waker of Waves (7/7)
+║   Lands: Breeding Pool, Watery Grave, Overgrown Tomb, Blood Crypt, Island, Botanical Sanctum, Island
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1) [tapped], Primeval Titan (6/6), Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor, Zuran Orb, Amulet of Vigor, Spelunking
+║   Lands: Crumbling Vestige [T], Crumbling Vestige [T], Crumbling Vestige [T], Boseiju, Who Endures [T], Shifting Woodland [T], Dryad Arbor [T], Mirrorpool [T], Gruul Turf [T], Simic Growth Chamber [T], Otawara, Soaring City
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T13 P2: Cast Living End (0)
+T13: Resolve Living End
+T13: Living End resolves!
+T13: Dryad Arbor moved battlefield -> exile (living end)
+T13: Primeval Titan moved battlefield -> exile (living end)
+T13: Arboreal Grazer moved battlefield -> exile (living end)
+T13 P1: Amulet of Vigor, Amulet of Vigor untaps Hanweir Battlements // Hanweir, the Writhing Township (x2)
+T13 P1: Arboreal Grazer puts Hanweir Battlements // Hanweir, the Writhing Township onto battlefield
+T13: Living End returns Arboreal Grazer for P1
+T13: Forest moved library -> graveyard (Aftermath Analyst mill)
+T13: Tolaria West moved library -> graveyard (Aftermath Analyst mill)
+T13: Spelunking moved library -> graveyard (Aftermath Analyst mill)
+T13 P1: Aftermath Analyst ETB: mill 3
+T13: Living End returns Aftermath Analyst for P1
+T13: Living End returns Arboreal Grazer for P1
+T13: Striped Riverwinder moved battlefield -> exile (living end)
+T13: Waker of Waves moved battlefield -> exile (living end)
+T13: Living End moved stack -> graveyard (resolution)
+  [Draw] P2 draws: Raugrin Triome
+  [Main 1]
+T13: Raugrin Triome moved hand -> graveyard (cycling)
+T13 P2: Cycle Raugrin Triome (pay 3 mana, draw: Blooming Marsh)
+T13 P2: Play Blooming Marsh (tapped, 7 other lands)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 13 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 12  |  Living End 15
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 10  |  Opp lands: 8
+║ Library: 30  |  Graveyard: 7
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Aftermath Analyst (1/3), Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor, Zuran Orb, Amulet of Vigor, Spelunking
+║   Lands: Crumbling Vestige, Crumbling Vestige, Crumbling Vestige, Boseiju, Who Endures, Shifting Woodland, Mirrorpool, Gruul Turf, Simic Growth Chamber, Otawara, Soaring City, Hanweir Battlements // Hanweir, the Writhing Township
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool [T], Watery Grave [T], Overgrown Tomb [T], Blood Crypt, Island, Botanical Sanctum, Island, Blooming Marsh [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Green Sun's Zenith
+  [Main 1]
+    → Goal: push_damage
+    [Mana] Tap Boseiju, Who Endures→G (paying for Green Sun's Zenith, 11 mana remaining)
+T13 P1: Cast Green Sun's Zenith (7G) (X=7)
+    [Priority] P2 passes (no response)
+T13: Resolve Green Sun's Zenith
+T13: Primeval Titan moved library -> battlefield (Green Sun's Zenith tutor)
+T13 P1: Amulet of Vigor, Amulet of Vigor untaps Gruul Turf (x2)
+T13: Boseiju, Who Endures moved battlefield -> hand (Gruul Turf ETB returns Boseiju, Who Endures to hand)
+T13 P1: Primeval Titan searches for Gruul Turf
+T13 P1: Amulet of Vigor, Amulet of Vigor untaps Crumbling Vestige (x2)
+T13 P1: Primeval Titan searches for Crumbling Vestige
+T13 P1: Green Sun's Zenith finds Primeval Titan
+T13: Green Sun's Zenith moved stack -> graveyard (resolution)
+T13 P1: activate Hanweir Battlements // Hanweir, the Writhing Township — Target creature gains haste until end of turn.
+T13 P1: Hanweir Battlements // Hanweir, the Writhing Township grants Primeval Titan haste until end of turn
+T13 P1: Play Boseiju, Who Endures
+    → Goal: push_damage
+    [Mana] Tap Otawara, Soaring City→U (paying for Spelunking, 6 mana remaining)
+    → Goal: push_damage
+T13 P1: Cast Malevolent Rumble (1G)
+    [Priority] P2 passes (no response)
+T13: Resolve Malevolent Rumble
+T13 P1: Create 1x spawn token(s)
+T13: Malevolent Rumble moved stack -> graveyard (resolution)
+T13 P1: Activate Aftermath Analyst (sacrifice)
+T13 P1: Returned Urza's Saga to battlefield — 1 damage to P2 (life: 14)
+T13 P1: Returned Forest to battlefield — 1 damage to P2 (life: 13)
+T13 P1: Returned Tolaria West to battlefield — 1 damage to P2 (life: 12)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Primeval Titan
+T13 P1: Amulet of Vigor, Amulet of Vigor untaps Simic Growth Chamber (x2)
+T13: Shifting Woodland moved battlefield -> hand (Simic Growth Chamber ETB returns Shifting Woodland to hand)
+T13 P1: Primeval Titan searches for Simic Growth Chamber
+T13 P1: Amulet of Vigor, Amulet of Vigor untaps Simic Growth Chamber (x2)
+T13: Mirrorpool moved battlefield -> hand (Simic Growth Chamber ETB returns Mirrorpool to hand)
+T13 P1: Primeval Titan searches for Simic Growth Chamber
+T13 P1: Attack with Primeval Titan
+  [Declare Blockers] P2 does not block
+T13 P1:   Primeval Titan (6/6) → 6 dmg to player
+  [Combat Damage] 6 damage dealt → P2 life: 12 → 6
+  [End Combat]
+  [Main 2]
+    → Goal: push_damage
+    [Mana] Tap Boseiju, Who Endures→G, Simic Growth Chamber→GU (paying for Spelunking, 5 mana remaining)
+T13 P1: Cast Spelunking (2G)
+    [Priority] P2 passes (no response)
+T13: Resolve Spelunking
+  [End Step]
+
+╔══ TURN 14 — Living End (P2) ══════════════════════════
+║ Life: Living End 6  |  Amulet Titan 12
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 8  |  Opp lands: 15
+║ Library: 31  |  Graveyard: 10
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool, Watery Grave, Overgrown Tomb, Blood Crypt, Island, Botanical Sanctum, Island, Blooming Marsh
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Arboreal Grazer (0/3), Primeval Titan (6/6) [tapped], spawn Token (0/1)
+║   Other: Amulet of Vigor, Zuran Orb, Amulet of Vigor, Spelunking, Spelunking
+║   Lands: Crumbling Vestige [T], Crumbling Vestige [T], Crumbling Vestige [T], Gruul Turf [T], Simic Growth Chamber [T], Otawara, Soaring City [T], Hanweir Battlements // Hanweir, the Writhing Township [T], Gruul Turf [T], Crumbling Vestige, Boseiju, Who Endures [T], Urza's Saga [T], Forest [T], Tolaria West [T], Simic Growth Chamber, Simic Growth Chamber
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Street Wraith
+  [Main 1]
+T14: Street Wraith moved hand -> graveyard (cycling)
+T14 P2: Cycle Street Wraith (pay 2 life, draw: Misty Rainforest)
+T14 P2: Play Misty Rainforest
+T14: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T14 P2: Crack Misty Rainforest -> Forest (untapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 14 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 12  |  Living End 3
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 15  |  Opp lands: 9
+║ Library: 24  |  Graveyard: 7
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Arboreal Grazer (0/3), Primeval Titan (6/6), spawn Token (0/1)
+║   Other: Amulet of Vigor, Zuran Orb, Amulet of Vigor, Spelunking, Spelunking
+║   Lands: Crumbling Vestige, Crumbling Vestige, Crumbling Vestige, Gruul Turf, Simic Growth Chamber, Otawara, Soaring City, Hanweir Battlements // Hanweir, the Writhing Township, Gruul Turf, Crumbling Vestige, Boseiju, Who Endures, Urza's Saga, Forest, Tolaria West, Simic Growth Chamber, Simic Growth Chamber
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool, Watery Grave, Overgrown Tomb, Blood Crypt, Island, Botanical Sanctum, Island, Blooming Marsh, Forest
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T14 P1: Urza's Saga tutors Amulet of Vigor
+T14 P1: Sacrifice Urza's Saga (final chapter)
+  [Draw] P1 draws: Scapeshift
+  [Main 1]
+T14 P1: Play Shifting Woodland (enters tapped)
+T14 P1: Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Shifting Woodland (x3)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Primeval Titan
+T14 P1: Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Simic Growth Chamber (x3)
+T14: Otawara, Soaring City moved battlefield -> hand (Simic Growth Chamber ETB returns Otawara, Soaring City to hand)
+T14 P1: Primeval Titan searches for Simic Growth Chamber
+T14 P1: Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Gruul Turf (x3)
+T14: Hanweir Battlements // Hanweir, the Writhing Township moved battlefield -> hand (Gruul Turf ETB returns Hanweir Battlements // Hanweir, the Writhing Township to hand)
+T14 P1: Primeval Titan searches for Gruul Turf
+T14 P1: Attack with Primeval Titan
+  [Declare Blockers] P2 does not block
+T14 P1:   Primeval Titan (6/6) → 6 dmg to player
+P2 loses: life total -3
+  [Combat Damage] 6 damage dealt → P2 life: 3 → -3
+
+>>> Amulet Titan wins Game 1 on turn 14 via damage
+    Final life: Amulet Titan=12  Living End=-3
+
+======================================================================
+  GAME 2: Living End (P1) vs Amulet Titan (P2)  —  seed 57008
+  Series: Amulet Titan 1 - 0 Living End
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Amulet Titan wins → chooses to play first
+║ P1 (on play): Amulet Titan
+║ P2 (on draw): Living End
+╚═══════════════════════════════════════════════════════
+
+P1 (Living End) opening hand (4 lands, 3 spells):
+  • Force of Negation [Spell, CMC 3]
+  • Island [Land, CMC 0]
+  • Raugrin Triome [Land, CMC 0]
+  • Botanical Sanctum [Land, CMC 0]
+  • Shardless Agent [Creature, CMC 3]
+  • Curator of Mysteries [Creature, CMC 4]
+  • Verdant Catacombs [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Shardless Agent, 2 cheap spells
+
+P2 (Amulet Titan) opening hand (5 lands, 2 spells):
+  • Gruul Turf [Land, CMC 0]
+  • Otawara, Soaring City [Land, CMC 0]
+  • Gruul Turf [Land, CMC 0]
+  • Malevolent Rumble [Spell, CMC 2]
+  • Simic Growth Chamber [Land, CMC 0]
+  • Summoner's Pact [Spell, CMC 0]
+  • Crumbling Vestige [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Summoner's Pact, 2 cheap spells
+
+
+╔══ TURN 1 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Living End 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Crumbling Vestige (enters tapped)
+    → Goal: deploy_engine
+T1 P2: Cast Summoner's Pact (0)
+    [Priority] P1 responds with Force of Negation
+T1 P1: Pay alternate cost: exile Island for Force of Negation
+T1 P1: Cast Force of Negation (1UU)
+T1: Resolve Force of Negation
+T1: Summoner's Pact moved stack -> graveyard (resolution)
+T1: Summoner's Pact is countered
+T1: Force of Negation moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Living End (P1) ══════════════════════════
+║ Life: Living End 20  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 1
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Force of Negation
+  [Main 1]
+T1 P1: Play Raugrin Triome (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Living End 20
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Raugrin Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Hanweir Battlements // Hanweir, the Writhing Township
+  [Main 1]
+T2 P2: Play Otawara, Soaring City
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Living End (P1) ══════════════════════════
+║ Life: Living End 20  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 1
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Raugrin Triome
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige, Otawara, Soaring City
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Demonic Dread
+  [Main 1]
+T2: Curator of Mysteries moved hand -> graveyard (cycling)
+T2 P1: Cycle Curator of Mysteries (pay 1 mana, draw: Architects of Will)
+T2 P1: Play Verdant Catacombs
+T2: Verdant Catacombs moved battlefield -> graveyard (fetchland sacrifice)
+T2 P1: Crack Verdant Catacombs -> Zagoth Triome (tapped)
+T2: Architects of Will moved hand -> graveyard (cycling)
+T2 P1: Cycle Architects of Will (pay 0 mana, draw: Forest)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Living End 19
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige, Otawara, Soaring City
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Raugrin Triome [T], Zagoth Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Amulet of Vigor
+  [Main 1]
+T3 P2: Play Hanweir Battlements // Hanweir, the Writhing Township
+    → Goal: ramp
+    [Mana] Tap Otawara, Soaring City→U (paying for Amulet of Vigor, 2 mana remaining)
+T3 P2: Cast Amulet of Vigor (1)
+    [Priority] P1 passes (no response)
+T3: Resolve Amulet of Vigor
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Living End (P1) ══════════════════════════
+║ Life: Living End 19  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 4
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Raugrin Triome, Zagoth Triome
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige, Otawara, Soaring City [T], Hanweir Battlements // Hanweir, the Writhing Township
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Forest
+  [Main 1]
+T3 P1: Play Forest
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Forest→G, Raugrin Triome→U, Zagoth Triome→B (paying for Shardless Agent, 0 mana remaining)
+T3 P1: Cast Shardless Agent (1UG)
+    [Priority] P2 passes (no response)
+T3: Resolve Shardless Agent
+T3: Cascade (CMC < 3)
+T3: Cascade hits Living End
+T3: Living End resolves!
+T3: Shardless Agent moved battlefield -> exile (living end)
+T3: Living End returns Curator of Mysteries for P1
+T3: Living End returns Architects of Will for P1
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Living End 19
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige, Otawara, Soaring City, Hanweir Battlements // Hanweir, the Writhing Township
+║ Living End board:
+║   Creatures: Curator of Mysteries (4/4), Architects of Will (3/3)
+║   Lands: Raugrin Triome [T], Zagoth Triome [T], Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Boseiju, Who Endures
+  [Main 1]
+T4 P2: Play Gruul Turf (enters tapped)
+T4 P2: Amulet of Vigor untaps Gruul Turf
+T4: Otawara, Soaring City moved battlefield -> hand (Gruul Turf ETB returns Otawara, Soaring City to hand)
+    → Goal: ramp
+    [Mana] Tap Gruul Turf→RG (paying for Malevolent Rumble, 2 mana remaining)
+T4 P2: Cast Malevolent Rumble (1G)
+    [Priority] P1 passes (no response)
+T4: Resolve Malevolent Rumble
+T4 P2: Create 1x spawn token(s)
+T4: Malevolent Rumble moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Living End (P1) ══════════════════════════
+║ Life: Living End 19  |  Amulet Titan 20
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 46  |  Graveyard: 3
+║ Living End board:
+║   Creatures: Curator of Mysteries (4/4), Architects of Will (3/3)
+║   Lands: Raugrin Triome, Zagoth Triome, Forest
+║ Amulet Titan board:
+║   Creatures: spawn Token (0/1)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige, Hanweir Battlements // Hanweir, the Writhing Township, Gruul Turf [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Island
+  [Main 1]
+T4 P1: Play Forest
+    → Goal: push_damage
+    [Mana] Tap Forest→G, Raugrin Triome→R, Zagoth Triome→B (paying for Demonic Dread, 1 mana remaining)
+T4 P1: Cast Demonic Dread (1BR)
+    [Priority] P2 passes (no response)
+T4: Resolve Demonic Dread
+T4: Cascade (CMC < 3)
+T4: Cascade hits Living End
+T4: Living End resolves!
+T4: Curator of Mysteries moved battlefield -> exile (living end)
+T4: Architects of Will moved battlefield -> exile (living end)
+T4: spawn Token moved battlefield -> exile (living end)
+T4: Demonic Dread moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Living End 19
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 50  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige, Hanweir Battlements // Hanweir, the Writhing Township, Gruul Turf
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Raugrin Triome [T], Zagoth Triome [T], Forest [T], Forest
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Scapeshift
+  [Main 1]
+T5 P2: Play Gruul Turf (enters tapped)
+T5 P2: Amulet of Vigor untaps Gruul Turf
+T5: Hanweir Battlements // Hanweir, the Writhing Township moved battlefield -> hand (Gruul Turf ETB returns Hanweir Battlements // Hanweir, the Writhing Township to hand)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Living End (P1) ══════════════════════════
+║ Life: Living End 19  |  Amulet Titan 20
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 44  |  Graveyard: 5
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Raugrin Triome, Zagoth Triome, Forest, Forest
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige, Gruul Turf, Gruul Turf
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Verdant Catacombs
+  [Main 1]
+T5 P1: Play Verdant Catacombs
+T5: Verdant Catacombs moved battlefield -> graveyard (fetchland sacrifice)
+T5 P1: Crack Verdant Catacombs (pay 1 life) -> Breeding Pool (tapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Living End 18
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 49  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor
+║   Lands: Crumbling Vestige, Gruul Turf, Gruul Turf
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Raugrin Triome, Zagoth Triome, Forest, Forest, Breeding Pool [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arboreal Grazer
+  [Main 1]
+T6 P2: Play Simic Growth Chamber (enters tapped)
+T6 P2: Amulet of Vigor untaps Simic Growth Chamber
+T6: Crumbling Vestige moved battlefield -> hand (Simic Growth Chamber ETB returns Crumbling Vestige to hand)
+    → Goal: ramp [enablers]
+    [Mana] Tap Gruul Turf→RG (paying for Arboreal Grazer, 5 mana remaining)
+T6 P2: Cast Arboreal Grazer (G)
+    [Priority] P1 passes (no response)
+T6: Resolve Arboreal Grazer
+T6 P2: Amulet of Vigor untaps Crumbling Vestige
+T6 P2: Arboreal Grazer puts Crumbling Vestige onto battlefield
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Living End (P1) ══════════════════════════
+║ Life: Living End 18  |  Amulet Titan 20
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 42  |  Graveyard: 6
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Raugrin Triome, Zagoth Triome, Forest, Forest, Breeding Pool
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor
+║   Lands: Gruul Turf [T], Gruul Turf, Simic Growth Chamber, Crumbling Vestige
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Misty Rainforest
+  [Main 1]
+T6 P1: Play Misty Rainforest
+T6: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T6 P1: Crack Misty Rainforest (pay 1 life) -> Watery Grave (tapped, life: 17)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Living End 17
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 48  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor
+║   Lands: Gruul Turf, Gruul Turf, Simic Growth Chamber, Crumbling Vestige
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Raugrin Triome, Zagoth Triome, Forest, Forest, Breeding Pool, Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Simic Growth Chamber
+  [Main 1]
+T7 P2: Play Simic Growth Chamber (enters tapped)
+T7 P2: Amulet of Vigor untaps Simic Growth Chamber
+T7: Crumbling Vestige moved battlefield -> hand (Simic Growth Chamber ETB returns Crumbling Vestige to hand)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Living End (P1) ══════════════════════════
+║ Life: Living End 17  |  Amulet Titan 20
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 6  |  Opp lands: 4
+║ Library: 40  |  Graveyard: 7
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Raugrin Triome, Zagoth Triome, Forest, Forest, Breeding Pool, Watery Grave
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor
+║   Lands: Gruul Turf, Gruul Turf, Simic Growth Chamber, Simic Growth Chamber
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Misty Rainforest
+  [Main 1]
+T7 P1: Play Misty Rainforest
+T7: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T7 P1: Crack Misty Rainforest (pay 1 life) -> Overgrown Tomb (tapped, life: 16)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Living End 16
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 7
+║ Library: 47  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor
+║   Lands: Gruul Turf, Gruul Turf, Simic Growth Chamber, Simic Growth Chamber
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Raugrin Triome, Zagoth Triome, Forest, Forest, Breeding Pool, Watery Grave, Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Scapeshift
+  [Main 1]
+T8 P2: Play Crumbling Vestige (enters tapped)
+T8 P2: Amulet of Vigor untaps Crumbling Vestige
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Living End (P1) ══════════════════════════
+║ Life: Living End 16  |  Amulet Titan 20
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 7  |  Opp lands: 5
+║ Library: 38  |  Graveyard: 8
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Raugrin Triome, Zagoth Triome, Forest, Forest, Breeding Pool, Watery Grave, Overgrown Tomb
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor
+║   Lands: Gruul Turf, Gruul Turf, Simic Growth Chamber, Simic Growth Chamber, Crumbling Vestige
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Blooming Marsh
+  [Main 1]
+T8 P1: Play Island
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Living End 16
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 8
+║ Library: 46  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor
+║   Lands: Gruul Turf, Gruul Turf, Simic Growth Chamber, Simic Growth Chamber, Crumbling Vestige
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Raugrin Triome, Zagoth Triome, Forest, Forest, Breeding Pool, Watery Grave, Overgrown Tomb, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mirrorpool
+  [Main 1]
+T9 P2: Play Boseiju, Who Endures
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Living End (P1) ══════════════════════════
+║ Life: Living End 16  |  Amulet Titan 20
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 8  |  Opp lands: 6
+║ Library: 37  |  Graveyard: 8
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Raugrin Triome, Zagoth Triome, Forest, Forest, Breeding Pool, Watery Grave, Overgrown Tomb, Island
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor
+║   Lands: Gruul Turf, Gruul Turf, Simic Growth Chamber, Simic Growth Chamber, Crumbling Vestige, Boseiju, Who Endures
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Blood Crypt
+  [Main 1]
+T9 P1: Play Blood Crypt (untapped, life: 16)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Living End 16
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 6  |  Opp lands: 9
+║ Library: 45  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor
+║   Lands: Gruul Turf, Gruul Turf, Simic Growth Chamber, Simic Growth Chamber, Crumbling Vestige, Boseiju, Who Endures
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Raugrin Triome, Zagoth Triome, Forest, Forest, Breeding Pool, Watery Grave, Overgrown Tomb, Island, Blood Crypt
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Urza's Saga
+  [Main 1]
+T10 P2: Play Urza's Saga
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Living End (P1) ══════════════════════════
+║ Life: Living End 16  |  Amulet Titan 20
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 9  |  Opp lands: 7
+║ Library: 36  |  Graveyard: 8
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Raugrin Triome, Zagoth Triome, Forest, Forest, Breeding Pool, Watery Grave, Overgrown Tomb, Island, Blood Crypt
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor
+║   Lands: Gruul Turf, Gruul Turf, Simic Growth Chamber, Simic Growth Chamber, Crumbling Vestige, Boseiju, Who Endures, Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Blooming Marsh
+  [Main 1]
+T10 P1: Play Botanical Sanctum (tapped, 9 other lands)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Living End 16
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 7  |  Opp lands: 10
+║ Library: 44  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor
+║   Lands: Gruul Turf, Gruul Turf, Simic Growth Chamber, Simic Growth Chamber, Crumbling Vestige, Boseiju, Who Endures, Urza's Saga
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Raugrin Triome, Zagoth Triome, Forest, Forest, Breeding Pool, Watery Grave, Overgrown Tomb, Island, Blood Crypt, Botanical Sanctum [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T11 P2: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P2 draws: Zuran Orb
+  [Main 1]
+T11 P2: Play Otawara, Soaring City
+    → Goal: ramp
+T11 P2: Cast Zuran Orb (0)
+    [Priority] P1 passes (no response)
+T11: Resolve Zuran Orb
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Living End (P1) ══════════════════════════
+║ Life: Living End 16  |  Amulet Titan 20
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 10  |  Opp lands: 8
+║ Library: 35  |  Graveyard: 8
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Raugrin Triome, Zagoth Triome, Forest, Forest, Breeding Pool, Watery Grave, Overgrown Tomb, Island, Blood Crypt, Botanical Sanctum
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor, Zuran Orb
+║   Lands: Gruul Turf, Gruul Turf, Simic Growth Chamber, Simic Growth Chamber, Crumbling Vestige, Boseiju, Who Endures, Urza's Saga, Otawara, Soaring City
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Misty Rainforest
+  [Main 1]
+T11 P1: Play Misty Rainforest
+T11: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T11 P1: Crack Misty Rainforest -> Ketria Triome (tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Living End 15
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 8  |  Opp lands: 11
+║ Library: 43  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor, Zuran Orb
+║   Lands: Gruul Turf, Gruul Turf, Simic Growth Chamber, Simic Growth Chamber, Crumbling Vestige, Boseiju, Who Endures, Urza's Saga, Otawara, Soaring City
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Raugrin Triome, Zagoth Triome, Forest, Forest, Breeding Pool, Watery Grave, Overgrown Tomb, Island, Blood Crypt, Botanical Sanctum, Ketria Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T12 P2: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+  [Draw] P2 draws: Spelunking
+  [Main 1]
+T12 P2: Play Hanweir Battlements // Hanweir, the Writhing Township
+    → Goal: ramp [enablers]
+    [Mana] Tap Boseiju, Who Endures→G, Urza's Saga→C, Otawara, Soaring City→U (paying for Spelunking, 10 mana remaining)
+T12 P2: Cast Spelunking (2G)
+    [Priority] P1 passes (no response)
+T12: Resolve Spelunking
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Living End (P1) ══════════════════════════
+║ Life: Living End 15  |  Amulet Titan 20
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 11  |  Opp lands: 9
+║ Library: 33  |  Graveyard: 9
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Raugrin Triome, Zagoth Triome, Forest, Forest, Breeding Pool, Watery Grave, Overgrown Tomb, Island, Blood Crypt, Botanical Sanctum, Ketria Triome
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor, Zuran Orb, Spelunking
+║   Lands: Gruul Turf, Gruul Turf, Simic Growth Chamber, Simic Growth Chamber, Crumbling Vestige, Boseiju, Who Endures [T], Urza's Saga [T], Otawara, Soaring City [T], Hanweir Battlements // Hanweir, the Writhing Township
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Verdant Catacombs
+  [Main 1]
+T12 P1: Play Verdant Catacombs
+T12: Verdant Catacombs moved battlefield -> graveyard (fetchland sacrifice)
+T12 P1: Crack Verdant Catacombs -> Swamp (untapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 13 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Living End 14
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 9  |  Opp lands: 12
+║ Library: 42  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor, Zuran Orb, Spelunking
+║   Lands: Gruul Turf, Gruul Turf, Simic Growth Chamber, Simic Growth Chamber, Crumbling Vestige, Boseiju, Who Endures, Urza's Saga, Otawara, Soaring City, Hanweir Battlements // Hanweir, the Writhing Township
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Raugrin Triome, Zagoth Triome, Forest, Forest, Breeding Pool, Watery Grave, Overgrown Tomb, Island, Blood Crypt, Botanical Sanctum, Ketria Triome, Swamp
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T13 P2: Urza's Saga tutors Amulet of Vigor
+T13 P2: Sacrifice Urza's Saga (final chapter)
+  [Draw] P2 draws: Malevolent Rumble
+  [Main 1]
+T13 P2: Play Mirrorpool (enters tapped)
+T13 P2: Amulet of Vigor, Amulet of Vigor untaps Mirrorpool (x2)
+    → Goal: ramp
+    [Mana] Tap Boseiju, Who Endures→G, Otawara, Soaring City→U (paying for Malevolent Rumble, 11 mana remaining)
+T13 P2: Cast Malevolent Rumble (1G)
+    [Priority] P1 passes (no response)
+T13: Resolve Malevolent Rumble
+T13 P2: Create 1x spawn token(s)
+T13: Malevolent Rumble moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 13 — Living End (P1) ══════════════════════════
+║ Life: Living End 14  |  Amulet Titan 20
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 12  |  Opp lands: 9
+║ Library: 31  |  Graveyard: 10
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Raugrin Triome, Zagoth Triome, Forest, Forest, Breeding Pool, Watery Grave, Overgrown Tomb, Island, Blood Crypt, Botanical Sanctum, Ketria Triome, Swamp
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), spawn Token (0/1)
+║   Other: Amulet of Vigor, Zuran Orb, Spelunking, Amulet of Vigor
+║   Lands: Gruul Turf, Gruul Turf, Simic Growth Chamber, Simic Growth Chamber, Crumbling Vestige, Boseiju, Who Endures [T], Otawara, Soaring City [T], Hanweir Battlements // Hanweir, the Writhing Township, Mirrorpool
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Demonic Dread
+  [Main 1]
+T13 P1: Play Blooming Marsh (tapped, 12 other lands)
+    → Goal: push_damage
+    [Mana] Tap Forest→G, Swamp→B, Blood Crypt→R (paying for Demonic Dread, 9 mana remaining)
+T13 P1: Cast Demonic Dread (1BR)
+    [Priority] P2 passes (no response)
+T13: Resolve Demonic Dread
+T13: Cascade (CMC < 3)
+T13: Cascade hits Living End
+T13: Living End resolves!
+T13: Arboreal Grazer moved battlefield -> exile (living end)
+T13: spawn Token moved battlefield -> exile (living end)
+T13: Demonic Dread moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 14 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Living End 14
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 9  |  Opp lands: 13
+║ Library: 40  |  Graveyard: 4
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Zuran Orb, Spelunking, Amulet of Vigor
+║   Lands: Gruul Turf, Gruul Turf, Simic Growth Chamber, Simic Growth Chamber, Crumbling Vestige, Boseiju, Who Endures, Otawara, Soaring City, Hanweir Battlements // Hanweir, the Writhing Township, Mirrorpool
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Raugrin Triome, Zagoth Triome, Forest [T], Forest, Breeding Pool, Watery Grave, Overgrown Tomb, Island, Blood Crypt [T], Botanical Sanctum, Ketria Triome, Swamp [T], Blooming Marsh [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Cultivator Colossus
+  [Main 1]
+    → Goal: ramp [payoffs]
+    [Mana] Tap Boseiju, Who Endures→G, Otawara, Soaring City→U, Hanweir Battlements // Hanweir, the Writhing Township→C, Gruul Turf→RG, Gruul Turf→RG (paying for Cultivator Colossus, 6 mana remaining)
+T14 P2: Cast Cultivator Colossus (4GGG)
+    [Priority] P1 passes (no response)
+T14: Resolve Cultivator Colossus
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 14 — Living End (P1) ══════════════════════════
+║ Life: Living End 14  |  Amulet Titan 20
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 13  |  Opp lands: 9
+║ Library: 29  |  Graveyard: 12
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Raugrin Triome, Zagoth Triome, Forest, Forest, Breeding Pool, Watery Grave, Overgrown Tomb, Island, Blood Crypt, Botanical Sanctum, Ketria Triome, Swamp, Blooming Marsh
+║ Amulet Titan board:
+║   Creatures: Cultivator Colossus (9/9)
+║   Other: Amulet of Vigor, Zuran Orb, Spelunking, Amulet of Vigor
+║   Lands: Gruul Turf [T], Gruul Turf [T], Simic Growth Chamber, Simic Growth Chamber, Crumbling Vestige, Boseiju, Who Endures [T], Otawara, Soaring City [T], Hanweir Battlements // Hanweir, the Writhing Township [T], Mirrorpool
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Waker of Waves
+  [Main 1]
+T14 P1: Play Blooming Marsh (tapped, 13 other lands)
+    → Goal: push_damage
+    [Mana] Tap Forest→G, Forest→G, Island→U, Swamp→B, Breeding Pool→U, Watery Grave→B, Overgrown Tomb→B (paying for Waker of Waves, 6 mana remaining)
+T14 P1: Cast Waker of Waves (5UU)
+    [Priority] P2 passes (no response)
+T14: Resolve Waker of Waves
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 15 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Living End 14
+║ Hand: 2 cards  |  Opp hand: 1 cards
+║ Lands: 9  |  Opp lands: 14
+║ Library: 39  |  Graveyard: 4
+║ Amulet Titan board:
+║   Creatures: Cultivator Colossus (9/9)
+║   Other: Amulet of Vigor, Zuran Orb, Spelunking, Amulet of Vigor
+║   Lands: Gruul Turf, Gruul Turf, Simic Growth Chamber, Simic Growth Chamber, Crumbling Vestige, Boseiju, Who Endures, Otawara, Soaring City, Hanweir Battlements // Hanweir, the Writhing Township, Mirrorpool
+║ Living End board:
+║   Creatures: Waker of Waves (7/7)
+║   Lands: Raugrin Triome, Zagoth Triome, Forest [T], Forest [T], Breeding Pool [T], Watery Grave [T], Overgrown Tomb [T], Island [T], Blood Crypt, Botanical Sanctum, Ketria Triome, Swamp [T], Blooming Marsh, Blooming Marsh [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Green Sun's Zenith
+  [Main 1]
+    → Goal: ramp
+    [Mana] Tap Boseiju, Who Endures→G (paying for Green Sun's Zenith, 12 mana remaining)
+T15 P2: Cast Green Sun's Zenith (6G) (X=6)
+    [Priority] P1 responds with Force of Negation
+    [Mana] Tap Blood Crypt→B, Botanical Sanctum→U, Raugrin Triome→U (paying for Force of Negation, 3 mana remaining)
+T15 P1: Cast Force of Negation (1UU)
+T15: Resolve Force of Negation
+T15: Green Sun's Zenith moved stack -> graveyard (resolution)
+T15: Green Sun's Zenith is countered
+T15: Force of Negation moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Cultivator Colossus
+T15 P2: Attack with Cultivator Colossus
+T15 P1:   [BLOCK-EMERGENCY] Waker of Waves (7/7) blocks Cultivator Colossus (9/9) — lifespan_delta=-6.37
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T15 P2:   Cultivator Colossus (9/9) → 2 dmg to player (trample)
+T15: Waker of Waves dies
+  [Combat Damage] 2 damage dealt → P1 life: 14 → 12
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 15 — Living End (P1) ══════════════════════════
+║ Life: Living End 12  |  Amulet Titan 20
+║ Hand: 0 cards  |  Opp hand: 2 cards
+║ Lands: 14  |  Opp lands: 9
+║ Library: 28  |  Graveyard: 14
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Raugrin Triome, Zagoth Triome, Forest, Forest, Breeding Pool, Watery Grave, Overgrown Tomb, Island, Blood Crypt, Botanical Sanctum, Ketria Triome, Swamp, Blooming Marsh, Blooming Marsh
+║ Amulet Titan board:
+║   Creatures: Cultivator Colossus (9/9) [tapped]
+║   Other: Amulet of Vigor, Zuran Orb, Spelunking, Amulet of Vigor
+║   Lands: Gruul Turf [T], Gruul Turf [T], Simic Growth Chamber [T], Simic Growth Chamber, Crumbling Vestige, Boseiju, Who Endures [T], Otawara, Soaring City, Hanweir Battlements // Hanweir, the Writhing Township, Mirrorpool
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Curator of Mysteries
+  [Main 1]
+T15: Curator of Mysteries moved hand -> graveyard (cycling)
+T15 P1: Cycle Curator of Mysteries (pay 1 mana, draw: Living End)
+    [Mana] Tap Forest→G, Forest→G, Swamp→B, Watery Grave→B (paying for Living End, 9 mana remaining)
+T15 P1: Suspend Living End (3 time counters)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 16 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Living End 12
+║ Hand: 2 cards  |  Opp hand: 0 cards
+║ Lands: 9  |  Opp lands: 14
+║ Library: 38  |  Graveyard: 5
+║ Amulet Titan board:
+║   Creatures: Cultivator Colossus (9/9)
+║   Other: Amulet of Vigor, Zuran Orb, Spelunking, Amulet of Vigor
+║   Lands: Gruul Turf, Gruul Turf, Simic Growth Chamber, Simic Growth Chamber, Crumbling Vestige, Boseiju, Who Endures, Otawara, Soaring City, Hanweir Battlements // Hanweir, the Writhing Township, Mirrorpool
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Raugrin Triome [T], Zagoth Triome, Forest [T], Forest [T], Breeding Pool, Watery Grave [T], Overgrown Tomb, Island, Blood Crypt, Botanical Sanctum, Ketria Triome, Swamp [T], Blooming Marsh, Blooming Marsh
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Simic Growth Chamber
+  [Main 1]
+T16 P2: Play Simic Growth Chamber (enters tapped)
+T16 P2: Amulet of Vigor, Amulet of Vigor untaps Simic Growth Chamber (x2)
+T16: Boseiju, Who Endures moved battlefield -> hand (Simic Growth Chamber ETB returns Boseiju, Who Endures to hand)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Cultivator Colossus
+T16 P2: Attack with Cultivator Colossus
+  [Declare Blockers] P1 does not block
+T16 P2:   Cultivator Colossus (9/9) → 9 dmg to player
+  [Combat Damage] 9 damage dealt → P1 life: 12 → 3
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 16 — Living End (P1) ══════════════════════════
+║ Life: Living End 3  |  Amulet Titan 20
+║ Hand: 0 cards  |  Opp hand: 3 cards
+║ Lands: 14  |  Opp lands: 9
+║ Library: 26  |  Graveyard: 15
+║ Living End board:
+║   Creatures: (empty)
+║   Lands: Raugrin Triome, Zagoth Triome, Forest, Forest, Breeding Pool, Watery Grave, Overgrown Tomb, Island, Blood Crypt, Botanical Sanctum, Ketria Triome, Swamp, Blooming Marsh, Blooming Marsh
+║ Amulet Titan board:
+║   Creatures: Cultivator Colossus (9/9) [tapped]
+║   Other: Amulet of Vigor, Zuran Orb, Spelunking, Amulet of Vigor
+║   Lands: Gruul Turf, Gruul Turf, Simic Growth Chamber, Simic Growth Chamber, Crumbling Vestige, Otawara, Soaring City, Hanweir Battlements // Hanweir, the Writhing Township, Mirrorpool, Simic Growth Chamber
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Subtlety
+  [Main 1]
+    → Goal: push_damage
+    [Mana] Tap Forest→G, Forest→G, Island→U, Breeding Pool→U (paying for Subtlety, 10 mana remaining)
+T16 P1: Cast Subtlety (2UU)
+    [Priority] P2 passes (no response)
+T16: Resolve Subtlety
+T16 P1: Subtlety enters (no creature/PW spell on stack to target)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 17 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Living End 3
+║ Hand: 3 cards  |  Opp hand: 0 cards
+║ Lands: 9  |  Opp lands: 14
+║ Library: 37  |  Graveyard: 5
+║ Amulet Titan board:
+║   Creatures: Cultivator Colossus (9/9)
+║   Other: Amulet of Vigor, Zuran Orb, Spelunking, Amulet of Vigor
+║   Lands: Gruul Turf, Gruul Turf, Simic Growth Chamber, Simic Growth Chamber, Crumbling Vestige, Otawara, Soaring City, Hanweir Battlements // Hanweir, the Writhing Township, Mirrorpool, Simic Growth Chamber
+║ Living End board:
+║   Creatures: Subtlety (3/3)
+║   Lands: Raugrin Triome, Zagoth Triome, Forest [T], Forest [T], Breeding Pool [T], Watery Grave, Overgrown Tomb, Island [T], Blood Crypt, Botanical Sanctum, Ketria Triome, Swamp, Blooming Marsh, Blooming Marsh
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Forest
+  [Main 1]
+T17 P2: Play Forest
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Cultivator Colossus
+T17 P2: Attack with Cultivator Colossus
+T17 P1:   [BLOCK-EMERGENCY] Subtlety (3/3) blocks Cultivator Colossus (10/10) — lifespan_delta=-3.33
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T17 P2:   Cultivator Colossus (10/10) → 7 dmg to player (trample)
+P1 loses: life total -4
+  [Combat Damage] 7 damage dealt → P1 life: 3 → -4
+
+>>> Amulet Titan wins Game 2 on turn 17 via damage
+    Final life: Living End=-4  Amulet Titan=20
+
+======================================================================
+  MATCH RESULT: Amulet Titan wins 2-0
+======================================================================

@@ -1,0 +1,968 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+======================================================================
+  GAME 1: Broodscale Bloodchief (P1) vs Dimir Midrange (P2)  —  seed 56510
+  Series: Broodscale Bloodchief 0 - 0 Dimir Midrange
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Broodscale Bloodchief wins → chooses to play first
+║ P1 (on play): Broodscale Bloodchief
+║ P2 (on draw): Dimir Midrange
+╚═══════════════════════════════════════════════════════
+
+P1 (Broodscale Bloodchief) opening hand (3 lands, 4 spells):
+  • Misty Rainforest [Land, CMC 0]
+  • Unholy Heat [Spell, CMC 1]
+  • Boseiju, Who Endures [Land, CMC 0]
+  • Vexing Bauble [Spell, CMC 1]
+  • Verdant Catacombs [Land, CMC 0]
+  • Basking Broodscale [Creature, CMC 2]
+  • Delighted Halfling [Creature, CMC 1]
+→ P1 KEEPS 7 — has key card(s): Basking Broodscale, Delighted Halfling, 4 cheap spells
+
+P2 (Dimir Midrange) opening hand (0 lands, 7 spells):
+  • Consider [Spell, CMC 1]
+  • Thoughtseize [Spell, CMC 1]
+  • Thoughtseize [Spell, CMC 1]
+  • Counterspell [Spell, CMC 2]
+  • Murktide Regent [Creature, CMC 7]
+  • Subtlety [Creature, CMC 4]
+  • Counterspell [Spell, CMC 2]
+→ P2 MULLIGANS (0 lands — no mana-producing artifacts/spells in hand)
+  New hand (3 lands, 4 spells): ['Orcish Bowmasters', 'Subtlety', 'Psychic Frog', 'Darkslick Shores', 'Counterspell', 'Underground River', 'Scalding Tarn']
+→ P2 mulligans to 6, bottoms: ['Counterspell']
+  Keeps: ['Orcish Bowmasters', 'Subtlety', 'Psychic Frog', 'Darkslick Shores', 'Underground River', 'Scalding Tarn']
+
+
+╔══ TURN 1 — Broodscale Bloodchief (P1) ══════════════════════════
+║ Life: Broodscale Bloodchief 20  |  Dimir Midrange 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Broodscale Bloodchief board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Misty Rainforest
+T1: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Misty Rainforest (pay 1 life) -> Stomping Ground (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Broodscale Bloodchief 19
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Broodscale Bloodchief board:
+║   Creatures: (empty)
+║   Lands: Stomping Ground [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Polluted Delta
+  [Main 1]
+T1 P2: Play Underground River
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Broodscale Bloodchief (P1) ══════════════════════════
+║ Life: Broodscale Bloodchief 19  |  Dimir Midrange 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Broodscale Bloodchief board:
+║   Creatures: (empty)
+║   Lands: Stomping Ground
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Emrakul, the Promised End
+  [Main 1]
+T2 P1: Play Verdant Catacombs
+T2: Verdant Catacombs moved battlefield -> graveyard (fetchland sacrifice)
+T2 P1: Crack Verdant Catacombs -> Forest (untapped)
+    → Goal: grind_value
+    [Mana] Tap Forest→G (paying for Delighted Halfling, 1 mana remaining)
+T2 P1: Cast Delighted Halfling (G)
+    [Priority] P2 passes (no response)
+T2: Resolve Delighted Halfling
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Broodscale Bloodchief 18
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 53  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Underground River
+║ Broodscale Bloodchief board:
+║   Creatures: Delighted Halfling (1/2)
+║   Lands: Stomping Ground, Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Orcish Bowmasters
+  [Main 1]
+T2 P2: Play Scalding Tarn
+T2: Scalding Tarn moved battlefield -> graveyard (fetchland sacrifice)
+T2 P2: Crack Scalding Tarn (pay 1 life) -> Watery Grave (untapped, life: 17)
+    → Goal: grind_value
+    [Mana] Tap Watery Grave→B, Underground River→C (paying for Orcish Bowmasters, 0 mana remaining)
+T2 P2: Cast Orcish Bowmasters (1B)
+    [Priority] P1 passes (no response)
+T2: Resolve Orcish Bowmasters
+T2 P2: Bowmasters deals 1 damage to opponent (life: 17)
+T2 P2: amass Orcs 1 — creates a 1/1 Orc Army token
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Broodscale Bloodchief (P1) ══════════════════════════
+║ Life: Broodscale Bloodchief 17  |  Dimir Midrange 17
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Broodscale Bloodchief board:
+║   Creatures: Delighted Halfling (1/2)
+║   Lands: Stomping Ground, Forest
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Underground River [T], Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Basking Broodscale
+  [Main 1]
+    → Goal: grind_value
+    [Mana] Tap Forest→G, Stomping Ground→G (paying for Basking Broodscale, 1 mana remaining)
+T3 P1: Cast Basking Broodscale (1G)
+    [Priority] P2 passes (no response)
+T3: Resolve Basking Broodscale
+T3 P1: Play Boseiju, Who Endures
+    → Goal: grind_value
+    [Mana] Tap Boseiju, Who Endures→G (paying for Vexing Bauble, 1 mana remaining)
+T3 P1: Cast Vexing Bauble (1)
+    [Priority] P2 passes (no response)
+T3: Resolve Vexing Bauble
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Delighted Halfling
+T3 P1: Attack with Delighted Halfling
+T3 P2:   [BLOCK] Orcish Bowmasters (1/1) blocks Delighted Halfling (1/2) — lifespan_delta=+0.33
+T3 P2:   [BLOCK] Orc Army (1/1) blocks Delighted Halfling (1/2) — lifespan_delta=+0.33
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T3: Delighted Halfling dies
+T3: Orcish Bowmasters dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 17  |  Broodscale Bloodchief 17
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 2
+║ Dimir Midrange board:
+║   Creatures: Orc Army (1/1)
+║   Lands: Underground River, Watery Grave
+║ Broodscale Bloodchief board:
+║   Creatures: Basking Broodscale (2/2)
+║   Other: Vexing Bauble
+║   Lands: Stomping Ground [T], Forest [T], Boseiju, Who Endures [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Consider
+  [Main 1]
+    → Goal: grind_value
+    [Mana] Tap Watery Grave→B, Underground River→C (paying for Orcish Bowmasters, 0 mana remaining)
+T3 P2: Cast Orcish Bowmasters (1B)
+    [Priority] P1 passes (no response)
+T3: Resolve Orcish Bowmasters
+T3 P2: Bowmasters deals 1 damage to opponent (life: 16)
+T3 P2: amass Orcs 1 — Orc Army grows to 2/2
+T3 P2: Play Polluted Delta
+T3: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T3 P2: Crack Polluted Delta (pay 1 life) -> Watery Grave (tapped, life: 16)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Broodscale Bloodchief (P1) ══════════════════════════
+║ Life: Broodscale Bloodchief 16  |  Dimir Midrange 16
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 3
+║ Broodscale Bloodchief board:
+║   Creatures: Basking Broodscale (2/2)
+║   Other: Vexing Bauble
+║   Lands: Stomping Ground, Forest, Boseiju, Who Endures
+║ Dimir Midrange board:
+║   Creatures: Orc Army (2/2), Orcish Bowmasters (1/1)
+║   Lands: Underground River [T], Watery Grave [T], Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Forest
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Forest→G, Boseiju, Who Endures→G (paying for Basking Broodscale, 1 mana remaining)
+T4 P1: Cast Basking Broodscale (1G)
+    [Priority] P2 passes (no response)
+T4: Resolve Basking Broodscale
+    → Goal: close_game
+    [Target] → Orcish Bowmasters: marginal threat 17.67 (1/1 body) — better than 6 face dmg
+    [Mana] Tap Stomping Ground→R (paying for Unholy Heat, 0 mana remaining)
+T4 P1: Cast Unholy Heat (R)
+    [Priority] P2 passes (no response)
+T4: Resolve Unholy Heat
+T4 P1: Unholy Heat deals 2 to Orcish Bowmasters
+T4: Unholy Heat moved stack -> graveyard (resolution)
+T4: Orcish Bowmasters dies
+T4 P1: Play Forest
+T4: Vexing Bauble moved battlefield -> graveyard (activation cost (Vexing Bauble))
+T4 P1: activate Vexing Bauble — Draw a card.
+T4 P1: Vexing Bauble activated — draw 1 (The Mycosynth Gardens)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 16  |  Broodscale Bloodchief 16
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 4
+║ Dimir Midrange board:
+║   Creatures: Orc Army (2/2)
+║   Lands: Underground River, Watery Grave, Watery Grave
+║ Broodscale Bloodchief board:
+║   Creatures: Basking Broodscale (2/2), Basking Broodscale (2/2)
+║   Lands: Stomping Ground [T], Forest [T], Boseiju, Who Endures [T], Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Orcish Bowmasters
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Watery Grave→B, Watery Grave→B (paying for Orcish Bowmasters, 1 mana remaining)
+T4 P2: Cast Orcish Bowmasters (1B)
+    [Priority] P1 passes (no response)
+T4: Resolve Orcish Bowmasters
+T4 P2: Bowmasters deals 1 damage to opponent (life: 15)
+T4 P2: amass Orcs 1 — Orc Army grows to 3/3
+T4 P2: Play Darkslick Shores (tapped, 3 other lands)
+    → Goal: close_game
+    [Mana] Tap Underground River→U (paying for Consider, 0 mana remaining)
+T4 P2: Cast Consider (U)
+    [Priority] P1 passes (no response)
+T4: Resolve Consider
+T4 P2: surveil 1 → Consider to GY
+T4 P2: Consider → draw 1 (Darkslick Shores)
+T4: Consider moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orc Army
+T4 P2: Attack with Orc Army
+  [Declare Blockers] P1 does not block
+T4 P2:   Orc Army (3/3) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 15 → 12
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Broodscale Bloodchief (P1) ══════════════════════════
+║ Life: Broodscale Bloodchief 12  |  Dimir Midrange 15
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 5
+║ Broodscale Bloodchief board:
+║   Creatures: Basking Broodscale (2/2), Basking Broodscale (2/2)
+║   Lands: Stomping Ground, Forest, Boseiju, Who Endures, Forest
+║ Dimir Midrange board:
+║   Creatures: Orc Army (3/3) [tapped], Orcish Bowmasters (1/1)
+║   Lands: Underground River [T], Watery Grave [T], Watery Grave [T], Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ancient Stirrings
+  [Main 1]
+T5 P1: Play The Mycosynth Gardens
+    → Goal: close_game
+    [Mana] Tap Forest→G (paying for Ancient Stirrings, 4 mana remaining)
+T5 P1: Cast Ancient Stirrings (G)
+    [Priority] P2 passes (no response)
+T5: Resolve Ancient Stirrings
+T5: Ancient Stirrings moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Basking Broodscale, Basking Broodscale
+T5 P1: Attack with Basking Broodscale, Basking Broodscale
+  [Declare Blockers] P2 does not block
+T5 P1:   Basking Broodscale (2/2) → 2 dmg to player
+T5 P1:   Basking Broodscale (2/2) → 2 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 15 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 11  |  Broodscale Bloodchief 12
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 6
+║ Dimir Midrange board:
+║   Creatures: Orc Army (3/3), Orcish Bowmasters (1/1)
+║   Lands: Underground River, Watery Grave, Watery Grave, Darkslick Shores
+║ Broodscale Bloodchief board:
+║   Creatures: Basking Broodscale (2/2) [tapped], Basking Broodscale (2/2) [tapped]
+║   Lands: Stomping Ground, Forest [T], Boseiju, Who Endures, Forest, The Mycosynth Gardens
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Murktide Regent
+  [Main 1]
+    → Goal: close_game
+T5 P2: Delve 5 cards for Murktide Regent
+    [Mana] Tap Watery Grave→U, Watery Grave→U (paying for Murktide Regent, 2 mana remaining)
+T5 P2: Cast Murktide Regent (5UU)
+    [Priority] P1 passes (no response)
+T5: Resolve Murktide Regent
+T5 P2: Murktide Regent enters as 5/5 (2 +1/+1 counters from delved instants/sorceries)
+    → Goal: close_game
+    [Mana] Tap Darkslick Shores→U, Underground River→B (paying for Psychic Frog, 0 mana remaining)
+T5 P2: Cast Psychic Frog (UB)
+    [Priority] P1 passes (no response)
+T5: Resolve Psychic Frog
+T5 P2: Play Darkslick Shores (tapped, 4 other lands)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orc Army, Orcish Bowmasters
+T5 P2: Attack with Orc Army, Orcish Bowmasters
+  [Declare Blockers] P1 does not block
+T5 P2:   Orc Army (3/3) → 3 dmg to player
+T5 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 12 → 8
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Broodscale Bloodchief (P1) ══════════════════════════
+║ Life: Broodscale Bloodchief 8  |  Dimir Midrange 10
+║ Hand: 1 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 6
+║ Broodscale Bloodchief board:
+║   Creatures: Basking Broodscale (2/2), Basking Broodscale (2/2)
+║   Lands: Stomping Ground, Forest, Boseiju, Who Endures, Forest, The Mycosynth Gardens
+║ Dimir Midrange board:
+║   Creatures: Orc Army (3/3) [tapped], Orcish Bowmasters (1/1) [tapped], Murktide Regent (5/5), Psychic Frog (1/2)
+║   Lands: Underground River [T], Watery Grave [T], Watery Grave [T], Darkslick Shores [T], Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Basking Broodscale
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Forest→G, Boseiju, Who Endures→G (paying for Basking Broodscale, 3 mana remaining)
+T6 P1: Cast Basking Broodscale (1G)
+    [Priority] P2 passes (no response)
+T6: Resolve Basking Broodscale
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 10  |  Broodscale Bloodchief 8
+║ Hand: 1 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: Orc Army (3/3), Orcish Bowmasters (1/1), Murktide Regent (5/5), Psychic Frog (1/2)
+║   Lands: Underground River, Watery Grave, Watery Grave, Darkslick Shores, Darkslick Shores
+║ Broodscale Bloodchief board:
+║   Creatures: Basking Broodscale (2/2), Basking Broodscale (2/2), Basking Broodscale (2/2)
+║   Lands: Stomping Ground, Forest [T], Boseiju, Who Endures [T], Forest, The Mycosynth Gardens
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Island
+  [Main 1]
+T6 P2: Play Island
+    → Goal: close_game
+    [Mana] Tap Island→U, Watery Grave→U, Watery Grave→B, Darkslick Shores→U (paying for Subtlety, 2 mana remaining)
+T6 P2: Cast Subtlety (2UU)
+    [Priority] P1 passes (no response)
+T6: Resolve Subtlety
+T6 P2: Subtlety enters (no creature/PW spell on stack to target)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orc Army, Orcish Bowmasters, Murktide Regent, Psychic Frog
+T6 P2: Attack with Orc Army, Orcish Bowmasters, Murktide Regent, Psychic Frog
+T6 P1:   [BLOCK-EMERGENCY] Basking Broodscale (2/2) blocks Orc Army (3/3) — lifespan_delta=-0.60
+T6 P1:   [BLOCK-EMERGENCY] Basking Broodscale (2/2) blocks Orcish Bowmasters (1/1) — lifespan_delta=+0.13
+T6 P1:   [BLOCK-EMERGENCY] Basking Broodscale (2/2) blocks Psychic Frog (1/2) — lifespan_delta=+0.13
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T6 P2:   Murktide Regent (5/5) → 5 dmg to player
+T6: Basking Broodscale dies
+T6: Orcish Bowmasters dies
+T6: Psychic Frog dies
+  [Combat Damage] 5 damage dealt → P1 life: 8 → 3
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Broodscale Bloodchief (P1) ══════════════════════════
+║ Life: Broodscale Bloodchief 3  |  Dimir Midrange 10
+║ Hand: 1 cards  |  Opp hand: 0 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 45  |  Graveyard: 7
+║ Broodscale Bloodchief board:
+║   Creatures: Basking Broodscale (2/2), Basking Broodscale (2/2)
+║   Lands: Stomping Ground, Forest, Boseiju, Who Endures, Forest, The Mycosynth Gardens
+║ Dimir Midrange board:
+║   Creatures: Orc Army (3/3) [tapped], Murktide Regent (5/5) [tapped], Subtlety (3/3)
+║   Lands: Underground River, Watery Grave [T], Watery Grave [T], Darkslick Shores [T], Darkslick Shores, Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Soul-Guide Lantern
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Forest→G (paying for Soul-Guide Lantern, 4 mana remaining)
+T7 P1: Cast Soul-Guide Lantern (1)
+    [Priority] P2 passes (no response)
+T7: Resolve Soul-Guide Lantern
+T7: Soul-Guide Lantern moved battlefield -> graveyard (activation cost (Soul-Guide Lantern))
+T7 P1: activate Soul-Guide Lantern — Draw a card.
+T7 P1: Soul-Guide Lantern activated — draw 1 (Blade of the Bloodchief)
+    → Goal: close_game
+    [Mana] Tap Forest→G (paying for Blade of the Bloodchief, 2 mana remaining)
+T7 P1: Cast Blade of the Bloodchief (1)
+    [Priority] P2 passes (no response)
+T7: Resolve Blade of the Bloodchief
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Basking Broodscale, Basking Broodscale
+T7 P1: Attack with Basking Broodscale, Basking Broodscale
+  [Declare Blockers] P2 does not block
+T7 P1:   Basking Broodscale (2/2) → 2 dmg to player
+T7 P1:   Basking Broodscale (2/2) → 2 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 10 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 6  |  Broodscale Bloodchief 3
+║ Hand: 0 cards  |  Opp hand: 1 cards
+║ Lands: 6  |  Opp lands: 5
+║ Library: 44  |  Graveyard: 3
+║ Dimir Midrange board:
+║   Creatures: Orc Army (3/3), Murktide Regent (5/5), Subtlety (3/3)
+║   Lands: Underground River, Watery Grave, Watery Grave, Darkslick Shores, Darkslick Shores, Island
+║ Broodscale Bloodchief board:
+║   Creatures: Basking Broodscale (2/2) [tapped], Basking Broodscale (2/2) [tapped]
+║   Other: Blade of the Bloodchief
+║   Lands: Stomping Ground, Forest [T], Boseiju, Who Endures [T], Forest [T], The Mycosynth Gardens
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thoughtseize
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orc Army, Murktide Regent, Subtlety
+T7 P2: Attack with Orc Army, Murktide Regent, Subtlety
+  [Declare Blockers] P1 does not block
+T7 P2:   Orc Army (3/3) → 3 dmg to player
+T7 P2:   Murktide Regent (5/5) → 5 dmg to player
+T7 P2:   Subtlety (3/3) → 3 dmg to player
+P1 loses: life total -8
+  [Combat Damage] 11 damage dealt → P1 life: 3 → -8
+
+>>> Dimir Midrange wins Game 1 on turn 7 via damage
+    Final life: Broodscale Bloodchief=-8  Dimir Midrange=6
+
+======================================================================
+  GAME 2: Broodscale Bloodchief (P1) vs Dimir Midrange (P2)  —  seed 56511
+  Series: Broodscale Bloodchief 0 - 1 Dimir Midrange
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Dimir Midrange wins → chooses to play first
+║ P1 (on play): Dimir Midrange
+║ P2 (on draw): Broodscale Bloodchief
+╚═══════════════════════════════════════════════════════
+
+P1 (Broodscale Bloodchief) opening hand (0 lands, 7 spells):
+  • Springleaf Drum [Spell, CMC 1]
+  • Sowing Mycospawn [Creature, CMC 4]
+  • Unholy Heat [Spell, CMC 1]
+  • Sowing Mycospawn [Creature, CMC 4]
+  • Emrakul, the Promised End [Creature, CMC 13]
+  • Ancient Stirrings [Spell, CMC 1]
+  • Delighted Halfling [Creature, CMC 1]
+→ P1 MULLIGANS (too few lands (0 < 2))
+  New hand (1 lands, 6 spells): ['Malevolent Rumble', 'Misty Rainforest', 'Delighted Halfling', 'Blade of the Bloodchief', "Kozilek's Command", 'Unholy Heat', 'Soul-Guide Lantern']
+→ P1 MULLIGANS (too few lands (1 < 2))
+  New hand (2 lands, 5 spells): ['Malevolent Rumble', 'Emrakul, the Promised End', 'The Mycosynth Gardens', 'Malevolent Rumble', 'Basking Broodscale', 'Eldrazi Temple', 'Sowing Mycospawn']
+→ P1 mulligans to 5, bottoms: ['Malevolent Rumble', 'Malevolent Rumble']
+  Keeps: ['Emrakul, the Promised End', 'The Mycosynth Gardens', 'Basking Broodscale', 'Eldrazi Temple', 'Sowing Mycospawn']
+
+P2 (Dimir Midrange) opening hand (3 lands, 4 spells):
+  • Murktide Regent [Creature, CMC 7]
+  • Drown in the Loch [Spell, CMC 2]
+  • Scalding Tarn [Land, CMC 0]
+  • Fatal Push [Spell, CMC 1]
+  • Polluted Delta [Land, CMC 0]
+  • Orcish Bowmasters [Creature, CMC 2]
+  • Watery Grave [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Fatal Push, Orcish Bowmasters, 3 cheap spells
+
+
+╔══ TURN 1 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Broodscale Bloodchief 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Broodscale Bloodchief board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Polluted Delta
+T1: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Polluted Delta (pay 1 life) -> Watery Grave (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Broodscale Bloodchief (P1) ══════════════════════════
+║ Life: Broodscale Bloodchief 20  |  Dimir Midrange 19
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 55  |  Graveyard: 0
+║ Broodscale Bloodchief board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Basking Broodscale
+  [Main 1]
+T1 P1: Play The Mycosynth Gardens
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Broodscale Bloodchief 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave
+║ Broodscale Bloodchief board:
+║   Creatures: (empty)
+║   Lands: The Mycosynth Gardens
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Fatal Push
+  [Main 1]
+T2 P2: Play Scalding Tarn
+T2: Scalding Tarn moved battlefield -> graveyard (fetchland sacrifice)
+T2 P2: Crack Scalding Tarn -> Island (untapped)
+    → Goal: grind_value
+    [Mana] Tap Island→U, Watery Grave→B (paying for Orcish Bowmasters, 0 mana remaining)
+T2 P2: Cast Orcish Bowmasters (1B)
+    [Priority] P1 passes (no response)
+T2: Resolve Orcish Bowmasters
+T2 P2: Bowmasters deals 1 damage to opponent (life: 19)
+T2 P2: amass Orcs 1 — creates a 1/1 Orc Army token
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Broodscale Bloodchief (P1) ══════════════════════════
+║ Life: Broodscale Bloodchief 19  |  Dimir Midrange 18
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 54  |  Graveyard: 0
+║ Broodscale Bloodchief board:
+║   Creatures: (empty)
+║   Lands: The Mycosynth Gardens
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Vexing Bauble
+  [Main 1]
+T2 P1: Play Eldrazi Temple
+    → Goal: grind_value
+    [Mana] Tap Eldrazi Temple→CC (paying for Vexing Bauble, 2 mana remaining)
+T2 P1: Cast Vexing Bauble (1)
+    [Priority] P2 passes (no response)
+T2: Resolve Vexing Bauble
+T2: Vexing Bauble moved battlefield -> graveyard (activation cost (Vexing Bauble))
+T2 P1: activate Vexing Bauble — Draw a card.
+T2 P1: Vexing Bauble activated — draw 1 (Boseiju, Who Endures)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 18  |  Broodscale Bloodchief 18
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave, Island
+║ Broodscale Bloodchief board:
+║   Creatures: (empty)
+║   Lands: The Mycosynth Gardens, Eldrazi Temple [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Shelldock Isle
+  [Main 1]
+T3 P2: Play Watery Grave (tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army
+T3 P2: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P1 does not block
+T3 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T3 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 18 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Broodscale Bloodchief (P1) ══════════════════════════
+║ Life: Broodscale Bloodchief 16  |  Dimir Midrange 18
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 52  |  Graveyard: 1
+║ Broodscale Bloodchief board:
+║   Creatures: (empty)
+║   Lands: The Mycosynth Gardens, Eldrazi Temple
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped]
+║   Lands: Watery Grave, Island, Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ancient Stirrings
+  [Main 1]
+T3 P1: Play Boseiju, Who Endures
+    → Goal: grind_value
+    [Mana] Tap Eldrazi Temple→CC, Boseiju, Who Endures→G (paying for Basking Broodscale, 2 mana remaining)
+T3 P1: Cast Basking Broodscale (1G)
+    [Priority] P2 passes (no response)
+T3: Resolve Basking Broodscale
+  [Begin Combat]
+    [Mana] Tap Watery Grave→B (paying for Fatal Push, 1 mana remaining)
+T3 P2: Cast Fatal Push (B)
+T3: Resolve Fatal Push
+T3: Basking Broodscale dies
+T3 P2: Fatal Push destroys Basking Broodscale
+T3: Fatal Push moved stack -> graveyard (resolution)
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 18  |  Broodscale Bloodchief 16
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 3
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave, Island, Watery Grave
+║ Broodscale Bloodchief board:
+║   Creatures: (empty)
+║   Lands: The Mycosynth Gardens, Eldrazi Temple [T], Boseiju, Who Endures [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Murktide Regent
+  [Main 1]
+T4 P2: Play Shelldock Isle (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army
+T4 P2: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P1 does not block
+T4 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T4 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 16 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Broodscale Bloodchief (P1) ══════════════════════════
+║ Life: Broodscale Bloodchief 14  |  Dimir Midrange 18
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 51  |  Graveyard: 2
+║ Broodscale Bloodchief board:
+║   Creatures: (empty)
+║   Lands: The Mycosynth Gardens, Eldrazi Temple, Boseiju, Who Endures
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped]
+║   Lands: Watery Grave, Island, Watery Grave, Shelldock Isle [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Stomping Ground
+  [Main 1]
+T4 P1: Play Stomping Ground (untapped, life: 12)
+    → Goal: close_game
+    [Mana] Tap Boseiju, Who Endures→G (paying for Ancient Stirrings, 4 mana remaining)
+T4 P1: Cast Ancient Stirrings (G)
+    [Priority] P2 passes (no response)
+T4: Resolve Ancient Stirrings
+T4: Ancient Stirrings moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 18  |  Broodscale Bloodchief 12
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 3
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave, Island, Watery Grave, Shelldock Isle
+║ Broodscale Bloodchief board:
+║   Creatures: (empty)
+║   Lands: The Mycosynth Gardens, Eldrazi Temple, Boseiju, Who Endures [T], Stomping Ground
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Psychic Frog
+  [Main 1]
+    → Goal: close_game
+T5 P2: Delve 3 cards for Murktide Regent
+    [Mana] Tap Island→U, Shelldock Isle→U, Watery Grave→B, Watery Grave→B (paying for Murktide Regent, 0 mana remaining)
+T5 P2: Cast Murktide Regent (5UU)
+    [Priority] P1 passes (no response)
+T5: Resolve Murktide Regent
+T5 P2: Murktide Regent enters as 4/4 (1 +1/+1 counters from delved instants/sorceries)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army
+T5 P2: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P1 does not block
+T5 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T5 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 12 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Broodscale Bloodchief (P1) ══════════════════════════
+║ Life: Broodscale Bloodchief 10  |  Dimir Midrange 18
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 50  |  Graveyard: 3
+║ Broodscale Bloodchief board:
+║   Creatures: (empty)
+║   Lands: The Mycosynth Gardens, Eldrazi Temple, Boseiju, Who Endures, Stomping Ground
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped], Murktide Regent (4/4)
+║   Lands: Watery Grave [T], Island [T], Watery Grave [T], Shelldock Isle [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Eldrazi Temple
+  [Main 1]
+T5 P1: Play Eldrazi Temple
+    → Goal: close_game
+    [Mana] Tap Eldrazi Temple→CC, Boseiju, Who Endures→G (paying for Basking Broodscale, 5 mana remaining)
+T5 P1: Cast Basking Broodscale (1G)
+    [Priority] P2 passes (no response)
+T5: Resolve Basking Broodscale
+    → Goal: close_game
+    [Mana] Tap Eldrazi Temple→CC, Stomping Ground→G (paying for Sowing Mycospawn, 1 mana remaining)
+T5 P1: Cast Sowing Mycospawn (3G)
+T5: Eldrazi Temple moved library -> battlefield (Sowing Mycospawn cast: land search)
+T5 P1: Sowing Mycospawn cast — search land (Eldrazi Temple)
+    [Priority] P2 passes (no response)
+T5: Resolve Sowing Mycospawn
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 18  |  Broodscale Bloodchief 10
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 47  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1), Murktide Regent (4/4)
+║   Lands: Watery Grave, Island, Watery Grave, Shelldock Isle
+║ Broodscale Bloodchief board:
+║   Creatures: Basking Broodscale (2/2), Sowing Mycospawn (3/3)
+║   Lands: The Mycosynth Gardens, Eldrazi Temple [T], Boseiju, Who Endures [T], Stomping Ground [T], Eldrazi Temple [T], Eldrazi Temple
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Murktide Regent
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Island→U, Watery Grave→B (paying for Drown in the Loch, 2 mana remaining)
+T6 P2: Cast Drown in the Loch (UB)
+    [Priority] P1 passes (no response)
+T6: Resolve Drown in the Loch
+T6: Basking Broodscale dies
+T6: Drown in the Loch moved stack -> graveyard (resolution)
+    → Goal: close_game
+    [Mana] Tap Shelldock Isle→U, Watery Grave→B (paying for Psychic Frog, 0 mana remaining)
+T6 P2: Cast Psychic Frog (UB)
+    [Priority] P1 passes (no response)
+T6: Resolve Psychic Frog
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army, Murktide Regent
+T6 P2: Attack with Orcish Bowmasters, Orc Army, Murktide Regent
+T6 P1:   [BLOCK-EMERGENCY] Sowing Mycospawn (3/3) blocks Orcish Bowmasters (1/1) — lifespan_delta=+0.38
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T6 P2:   Orc Army (1/1) → 1 dmg to player
+T6 P2:   Murktide Regent (4/4) → 4 dmg to player
+T6: Orcish Bowmasters dies
+  [Combat Damage] 5 damage dealt → P1 life: 10 → 5
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Broodscale Bloodchief (P1) ══════════════════════════
+║ Life: Broodscale Bloodchief 5  |  Dimir Midrange 18
+║ Hand: 1 cards  |  Opp hand: 3 cards
+║ Lands: 6  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 4
+║ Broodscale Bloodchief board:
+║   Creatures: Sowing Mycospawn (3/3)
+║   Lands: The Mycosynth Gardens, Eldrazi Temple, Boseiju, Who Endures, Stomping Ground, Eldrazi Temple, Eldrazi Temple
+║ Dimir Midrange board:
+║   Creatures: Orc Army (1/1) [tapped], Murktide Regent (4/4) [tapped], Psychic Frog (1/2)
+║   Lands: Watery Grave [T], Island [T], Watery Grave [T], Shelldock Isle [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Haywire Mite
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Eldrazi Temple→CC (paying for Haywire Mite, 8 mana remaining)
+T6 P1: Cast Haywire Mite (1)
+    [Priority] P2 passes (no response)
+T6: Resolve Haywire Mite
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Sowing Mycospawn
+T6 P1: Attack with Sowing Mycospawn
+  [Declare Blockers] P2 does not block
+T6 P1:   Sowing Mycospawn (3/3) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 18 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 15  |  Broodscale Bloodchief 5
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 46  |  Graveyard: 2
+║ Dimir Midrange board:
+║   Creatures: Orc Army (1/1), Murktide Regent (4/4), Psychic Frog (1/2)
+║   Lands: Watery Grave, Island, Watery Grave, Shelldock Isle
+║ Broodscale Bloodchief board:
+║   Creatures: Sowing Mycospawn (3/3) [tapped], Haywire Mite (1/1)
+║   Lands: The Mycosynth Gardens, Eldrazi Temple [T], Boseiju, Who Endures, Stomping Ground, Eldrazi Temple, Eldrazi Temple
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Orcish Bowmasters
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Island→U, Watery Grave→B (paying for Orcish Bowmasters, 2 mana remaining)
+T7 P2: Cast Orcish Bowmasters (1B)
+    [Priority] P1 passes (no response)
+T7: Resolve Orcish Bowmasters
+T7 P2: Bowmasters deals 1 damage to Haywire Mite
+T7 P2: amass Orcs 1 — Orc Army grows to 2/2
+T7 P1: Haywire Mite dies: gain 2 life (now 7)
+T7: Haywire Mite dies
+    → Goal: close_game
+    [Mana] Tap Watery Grave→B (paying for Fatal Push, 1 mana remaining)
+T7 P2: Cast Fatal Push (B)
+    [Priority] P1 passes (no response)
+T7: Resolve Fatal Push
+T7: Fatal Push moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orc Army, Murktide Regent, Psychic Frog
+T7 P2: Attack with Orc Army, Murktide Regent, Psychic Frog
+  [Declare Blockers] P1 does not block
+T7 P2:   Orc Army (2/2) → 2 dmg to player
+T7 P2:   Murktide Regent (4/4) → 4 dmg to player
+T7 P2:   Psychic Frog (3/4) → 3 dmg to player
+T7 P2: Psychic Frog deals combat damage — draw a card
+P1 loses: life total -2
+  [Combat Damage] 9 damage dealt → P1 life: 7 → -2
+
+>>> Dimir Midrange wins Game 2 on turn 7 via damage
+    Final life: Broodscale Bloodchief=-2  Dimir Midrange=15
+
+======================================================================
+  MATCH RESULT: Dimir Midrange wins 2-0
+======================================================================

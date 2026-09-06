@@ -168,18 +168,63 @@ def merge(results_path='metagame_results.json',
 
     n_games = results['n_games']
     decks = D['decks']
-    idx = {name: i for i, name in enumerate(decks)}
 
     # Detect subset (--decks N) runs and refuse to merge — partial data would
     # zero out every matchup not in the subset and corrupt the dashboard.
+    # This must check coverage of the EXISTING deck set specifically, not
+    # merely "results has fewer names than decks" — a results file that
+    # covers every existing deck PLUS new ones is a superset, not a subset,
+    # and must not be refused just because it also adds names.
     results_names = set(results.get('names') or [])
-    if results_names and len(results_names) < len(decks):
+    if results_names:
         missing = [n for n in decks if n not in results_names]
-        print(f"merge: skipping — results only cover {len(results_names)}/{len(decks)} "
-              f"decks (missing {len(missing)}). Run the full matrix "
-              f"(drop --decks N) to update the dashboard.",
-              file=sys.stderr)
-        return
+        if missing:
+            print(f"merge: skipping — results are missing {len(missing)} of the "
+                  f"{len(decks)} decks already in the dashboard "
+                  f"({', '.join(missing[:5])}{'...' if len(missing) > 5 else ''}). "
+                  f"Run the full matrix (drop --decks N) to update the dashboard.",
+                  file=sys.stderr)
+            return
+
+        # Adopt any deck present in the results but not yet in the jsx.
+        # Regression (2026-08-31): `decks = D['decks']` was iterated as-is,
+        # so a matrix run covering new registrations (e.g. Creatures
+        # Toolbox) computed real results that were then silently discarded
+        # on merge — the dashboard under-represented the field with no
+        # error. New decks are appended in results['names'] order so their
+        # position is stable and reproducible across merges, not dependent
+        # on dict insertion order.
+        new_decks = [n for n in results['names'] if n not in decks]
+        if new_decks:
+            print(f"merge: adopting {len(new_decks)} new deck(s) not yet in "
+                  f"the dashboard: {', '.join(new_decks)}", file=sys.stderr)
+            decks = decks + new_decks
+            D['decks'] = decks
+
+            # meta_shares: pull the real registered share when available so
+            # a newly-adopted deck sorts/filters correctly; 0.0 (unranked)
+            # otherwise rather than fabricating a number.
+            meta_shares = D.setdefault('meta_shares', {})
+            try:
+                from decks.modern_meta import METAGAME_SHARES as _REAL_SHARES
+            except ImportError:
+                _REAL_SHARES = {}
+            for name in new_decks:
+                meta_shares.setdefault(name, _REAL_SHARES.get(name, 0.0))
+
+            # deck_cards: a minimal placeholder only — card-level narrative
+            # (MVP casts, finishers) comes from a separate verbose-log
+            # pipeline this function does not have access to. The frontend
+            # already renders a deck with no narrative as sparse rather
+            # than broken (`DC[idx] || {}` in showDeckProfile), so no
+            # placeholder text is invented here.
+            existing_dc_names = {e.get('deck') for e in D.get('deck_cards', [])}
+            for i, name in enumerate(decks):
+                if name in existing_dc_names:
+                    continue
+                D.setdefault('deck_cards', []).append({'deck': name, 'idx': i})
+
+    idx = {name: i for i, name in enumerate(decks)}
 
     D['matches_per_pair'] = n_games
 
@@ -200,6 +245,20 @@ def merge(results_path='metagame_results.json',
         i, j = idx[d1], idx[d2]
         new_wins[i][j] = round(pct / 100.0 * n_games)
     D['wins'] = new_wins
+
+    # A newly-adopted deck has no `overall` entry yet — the recompute loop
+    # below only walks entries that already exist. Seed a placeholder per
+    # new deck (values get overwritten by that same loop immediately
+    # after); without this the deck is IN the matrix and IN the deck list
+    # but invisible to every ranking/tier/filter view that reads `overall`.
+    existing_overall_idx = {e['idx'] for e in D.get('overall', [])}
+    for i, name in enumerate(decks):
+        if i in existing_overall_idx:
+            continue
+        D.setdefault('overall', []).append({
+            'deck': name, 'idx': i, 'win_rate': 0.0, 'weighted_wr': 0.0,
+            'total_wins': 0, 'total_matches': 0,
+        })
 
     # Recompute overall WR rollups
     meta_shares = D.get('meta_shares', {})

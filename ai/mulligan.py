@@ -367,13 +367,22 @@ class MulliganDecider:
                 best_covered = 0  # number of buckets covered in best path
                 best_total = 0    # number of non-empty buckets in best path
                 keep_ok = False
+                # A self-targetable hand attack that can bin a creature
+                # a payoff in hand can return IS a discard outlet the
+                # deck owns (ai.card_classes.self_discard_outlet_targets)
+                # — it covers the enabler bucket exactly as a declared
+                # enabler does.  Derived from oracle + the gameplan's
+                # graveyard resource goal; a hand with the outlet but
+                # nothing to bin gains nothing here.
+                has_self_outlet = self._has_self_discard_outlet(hand)
                 for path in paths:
                     enablers = set(path.get("enablers", []))
                     payoffs = set(path.get("payoffs", []))
                     # Bucket coverage flags.  Empty bucket = vacuously
                     # covered (don't constrain a path that doesn't
                     # declare it).
-                    enabler_ok = (not enablers) or bool(hand_names & enablers)
+                    enabler_ok = ((not enablers) or bool(hand_names & enablers)
+                                  or has_self_outlet)
                     payoff_ok = (not payoffs) or bool(hand_names & payoffs)
                     non_empty = sum(1 for b in (enablers, payoffs) if b)
                     covered = sum(
@@ -503,9 +512,22 @@ class MulliganDecider:
             # gate is now `policy.requires_combo_backup`, a per-deck
             # data flag.  Default for archetype="combo" is True; non-combo
             # decks default to False (the gate is skipped).
+            # The backup SHAPE (ritual + cantrip + finisher) is the storm
+            # chain: rituals make the mana, cantrips find the next spell,
+            # a finisher closes.  It is only meaningful for a gameplan
+            # whose declared combo resource zone is "storm"; a graveyard /
+            # mana / undeclared-zone combo deck has no chain to back up,
+            # and applying the rule there shipped good hands back
+            # (creature-combo 3-lander with dork + tutor mulled to 5).
+            # Zone read is the same gameplan primitive `assess_combo` uses.
+            from ai.combo_calc import _find_resource_zone
+            _chain_zone, _chain_target, _ = _find_resource_zone(self.goal_engine)
+            gameplan_has_storm_chain = (_chain_zone == "storm"
+                                        and _chain_target > 0)
             if (gp.always_early
                     and cards_in_hand >= MULLIGAN_STARTING_HAND_SIZE
-                    and self._policy().requires_combo_backup):
+                    and self._policy().requires_combo_backup
+                    and gameplan_has_storm_chain):
                 # Include only IMMEDIATE cost-reducers: the always_early
                 # list (curated per deck — e.g. Ruby Medallion) plus any
                 # non-creature cost_reducer-tagged card in hand.
@@ -728,6 +750,22 @@ class MulliganDecider:
             return []
         return self.goal_engine.gameplan.mulligan_combo_paths or []
 
+    def _has_self_discard_outlet(self, hand: List["CardInstance"]) -> bool:
+        """True when some card in hand is a "target player … discards"
+        spell that could bin a creature in this same hand which a payoff
+        in the hand can return — the self-discard-outlet line
+        (`ai.card_classes.self_discard_outlet_targets`).  Such a card
+        covers the enabler role the same way a declared outlet does."""
+        if not (self.goal_engine and self.goal_engine.gameplan):
+            return False
+        from ai.card_classes import self_discard_outlet_targets
+        gameplan = self.goal_engine.gameplan
+        return any(
+            self_discard_outlet_targets(c.template, hand, gameplan)
+            for c in hand
+            if getattr(c.template, 'hand_attack_data', None)
+        )
+
     def _conjunction_covered_buckets(self, hand_names: set) -> int:
         """Covered non-empty role buckets on the best declared path
         (0 when the deck declares no typed paths)."""
@@ -761,6 +799,12 @@ class MulliganDecider:
             return False
         hand_names = {c.name for c in hand}
         enabler_names: set = set()
+        # A self-targetable hand attack that can bin a returnable
+        # creature in this hand covers the enabler role (same rule as
+        # the 7/6-card gate) and is itself a dig path to the missing
+        # role — it puts the target where the payoff needs it.
+        if self._has_self_discard_outlet(hand):
+            return False
         for path in paths:
             buckets = [set(b) for b in path.values() if b]
             enabler_names |= set(path.get("enablers", []))

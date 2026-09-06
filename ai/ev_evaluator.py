@@ -959,6 +959,14 @@ def _is_immediate_interaction(oracle: str, tags, template) -> bool:
     # (oracle_parser.parse_has_discard_effect) — no runtime oracle scan.
     if template.can_target_player and getattr(template, 'has_discard_effect', False):
         return True
+    # Targeted hand attack (typed field, parse-once): the caster-chosen
+    # "you choose a nonland card from it. That player discards that
+    # card" shape says "discards THAT card", which the generic discard
+    # predicate did not read, so the whole Thoughtseize / Inquisition /
+    # Duress class carried no this-turn signal and was deferred forever
+    # (Goryo's Vengeance vs Domain Zoo s50000: Thoughtseize held T1–T5).
+    if getattr(template, 'hand_attack_data', None):
+        return True
     return False
 
 
@@ -1093,6 +1101,17 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
     tags = getattr(t, 'tags', set())
     signals = []
 
+    # 0. Turn-scoped OPPONENT restriction ("can't cast spells this turn",
+    #    "creatures can't attack this turn", fog): the effect expires
+    #    before the opponent acts when cast on the caster's own turn, so
+    #    it carries no this-turn value there (deferrable); on the
+    #    opponent's turn the restriction covers their whole turn.
+    #    Typed field (parse-once), 30 instants.
+    if getattr(t, 'turn_scoped_restriction', None):
+        if game is not None and getattr(game, 'active_player', player_idx) == player_idx:
+            return []
+        return ['opponent_turn_restriction']
+
     # 1. Self-ETB trigger with a material effect.
     if _has_self_etb_effect(oracle):
         signals.append('etb_trigger')
@@ -1128,6 +1147,16 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
     # sideboard" (oracle_parser.parse_is_tutor).
     if t.is_tutor:
         signals.append('tutor')
+
+    # 6b. Lock permanent (typed `stax_class`: forced land type, Chalice,
+    #     Canonist, Torpor Orb …): it restricts what the opponent can do
+    #     on THEIR next turn, so casting now and casting a turn later are
+    #     not the same state — the turn in between is the turn it would
+    #     have stopped.  Without this the pass-preference filter deferred
+    #     every lock forever whatever its EV said (Boros Ponza vs Domain
+    #     Zoo s50000: Blood Moon at +8.7, best play, passed on turn 7).
+    if getattr(t, 'stax_class', None):
+        signals.append('lock_before_opponent_turn')
 
     # 7. Creature body with power > 0 (future combat clock contribution).
     if t.is_creature and (t.power or 0) > 0:
@@ -2215,12 +2244,28 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
     if 'removal' in tags and not 'board_wipe' in tags:
         if snap.opp_creature_count > 0 and game:
             opp = game.players[1 - player_idx]
-            # Target the highest-THREAT creature (oracle-driven), not the
-            # highest-power one. This ensures battle-cry / scaling threats
-            # (e.g. Signal Pest, Ragavan) project correctly as removal-worthy
-            # even when their raw power is 0.
-            best_target = max(opp.creatures,
-                               key=lambda c: creature_threat_value(c, snap))
+            # Damage-based removal removes only what its damage KILLS
+            # (toughness ≤ amount — the same killability the target
+            # enumerator applies).  Projecting the biggest threat off the
+            # board for a one-damage spell credited a 5/5 kill to a spell
+            # that could not touch it (Izzet Prowess vs Domain Zoo s50000:
+            # the one-damage burn aimed at a 5/5 three times at +8.9).
+            from ai.card_classes import burn_damage
+            dmg_cap = burn_damage(t)
+            killable = [c for c in opp.creatures
+                        if dmg_cap <= 0 or (c.toughness or 0) <= dmg_cap]
+            if not killable:
+                best_target = None
+            else:
+                # Target the highest-THREAT creature (oracle-driven), not the
+                # highest-power one. This ensures battle-cry / scaling threats
+                # (e.g. Signal Pest, Ragavan) project correctly as removal-worthy
+                # even when their raw power is 0.
+                best_target = max(killable,
+                                  key=lambda c: creature_threat_value(c, snap))
+        else:
+            best_target = None
+        if best_target is not None:
             # Effective power removed includes a threat-equivalent bonus
             # for triggered abilities the raw P/T doesn't capture.
             eff_power = best_target.power or 0
@@ -2309,8 +2354,8 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
             # cannot be reduced to a literal numeral. The fallback
             # table is shrinking as oracle parsing improves; the
             # abstraction contract treats it as a TODO surface.
-            from decks.card_knowledge_loader import get_burn_damage
-            dmg = get_burn_damage(t.name)
+            from ai.card_classes import burn_damage
+            dmg = burn_damage(t)
         if dmg > 0:
             # Value of face damage depends on proximity to lethal: a point of
             # burn against a 20-life opp with no clock is a hope; the same

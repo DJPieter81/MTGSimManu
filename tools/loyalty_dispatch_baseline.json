@@ -1,0 +1,1 @@
+{"unclassified": 564, "description": "printed loyalty abilities whose effect the engine cannot execute (LoyaltyEffectKind.UNCLASSIFIED). Refused before any loyalty is paid. Must equal the actual count: growth (a mechanic stopped classifying) and a stale baseline (a family was implemented but not recorded) both fail CI. See tools/check_loyalty_dispatch.py."}

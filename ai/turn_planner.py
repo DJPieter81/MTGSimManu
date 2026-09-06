@@ -115,6 +115,9 @@ class VirtualCreature:
     # Typed field — replaces getattr(vc, 'oracle', None) oracle check in ev_player.py.
     # Populated by extract_virtual_board from card.template.has_combat_damage_player_trigger.
     has_combat_damage_player_trigger: bool = False
+    # Power from attached Equipment — the share that survives the creature
+    # (CR 301.5c). Populated from `CardInstance.equipment_power_bonus()`.
+    equipment_power: int = 0
 
     @property
     def is_dead(self) -> bool:
@@ -133,6 +136,7 @@ class VirtualCreature:
             cmc=self.cmc,
             damage_marked=self.damage_marked,
             has_etb=self.has_etb,
+            equipment_power=self.equipment_power,
             has_combat_damage_player_trigger=self.has_combat_damage_player_trigger,
         )
 
@@ -249,7 +253,18 @@ class CombatPlanner:
         # Quick lethal check: if total power >= opp life, attack with everything
         total_power = sum(c.power for c in valid_attackers)
         if total_power >= board.opp_life:
-            return valid_attackers, LETHAL_BONUS
+            # On-board lethal if unblocked: send everything that is NEEDED.
+            # A creature worth more than the damage it adds (`value` carries
+            # its non-combat worth in life-point units; power is the same
+            # units) stays home when the rest still reach lethal — an
+            # engine half is not thrown into blockers for two points.
+            committed = sorted(valid_attackers, key=lambda c: c.value)
+            kept = list(committed)
+            for c in sorted(valid_attackers, key=lambda c: -c.value):
+                if c.value > c.power and (
+                        sum(k.power for k in kept) - c.power >= board.opp_life):
+                    kept.remove(c)
+            return kept, LETHAL_BONUS
 
         opp_blockers = [c for c in board.opp_creatures
                         if not c.is_tapped]
@@ -738,8 +753,13 @@ class CombatPlanner:
 
         defender_life = board.opp_life
         my_life_after_block = defender_life - damage_through
-        opp_power_after_block = attacker_power_total - (a_pow if b_kills_attacker else 0)
-        my_power_after_block = defender_power_total - (b_pow if a_kills_blocker else 0)
+        # CR 301.5c: a dead creature's Equipment stays and re-attaches, so
+        # only the creature's OWN power leaves its side's board — the same
+        # split `EVPlayer._score_block_lifespan_delta` applies.
+        a_own = a_pow - attacker.equipment_power
+        b_own = b_pow - blocker.equipment_power
+        opp_power_after_block = attacker_power_total - (a_own if b_kills_attacker else 0)
+        my_power_after_block = defender_power_total - (b_own if a_kills_blocker else 0)
 
         my_life_after_no_block = defender_life - a_pow
 
@@ -1191,12 +1211,30 @@ def extract_virtual_board(game: "GameState", player_idx: int) -> VirtualBoard:
     me = game.players[player_idx]
     opp = game.players[1 - player_idx]
 
+    from ai.clock import noncombat_opportunity_cost
+    from ai.ev_evaluator import snapshot_from_game
+    _snaps = {}
+
+    def _snap_for(controller_idx):
+        if controller_idx not in _snaps:
+            _snaps[controller_idx] = snapshot_from_game(game, controller_idx)
+        return _snaps[controller_idx]
+
     def to_virtual_creature(card, controller_idx) -> VirtualCreature:
         controller = game.players[controller_idx]
         kw_set = set()
         for kw in card.keywords:
             kw_name = kw.name.lower() if hasattr(kw, 'name') else str(kw).lower()
             kw_set.add(kw_name)
+        # A creature's planning value is its combat heuristic PLUS what it
+        # gives up beyond combat when it dies — mana production, unbounded-
+        # engine membership, abilities, equipment ceiling — priced by the
+        # one owner of that question (`ai.clock.noncombat_opportunity_cost`,
+        # life-point units), so the planner's trade-down and board-presence
+        # terms see an engine half as the loss it is.
+        value = (_permanent_value(card, controller, game, controller_idx)
+                 + noncombat_opportunity_cost(card, controller,
+                                              _snap_for(controller_idx)))
         return VirtualCreature(
             instance_id=card.instance_id,
             name=card.name,
@@ -1205,11 +1243,12 @@ def extract_virtual_board(game: "GameState", player_idx: int) -> VirtualBoard:
             keywords=kw_set,
             is_tapped=card.tapped or card.summoning_sick,
             controller=controller_idx,
-            value=_permanent_value(card, controller, game, controller_idx),
+            value=value,
             cmc=card.template.cmc or 0,
             has_etb="etb_value" in card.template.tags,
             has_combat_damage_player_trigger=getattr(
                 card.template, 'has_combat_damage_player_trigger', False),
+            equipment_power=card.equipment_power_bonus(),
         )
 
     def to_virtual_spell(card) -> VirtualSpell:
@@ -1249,8 +1288,8 @@ def extract_virtual_board(game: "GameState", player_idx: int) -> VirtualBoard:
 
 def _spell_damage(card) -> int:
     """Extract damage amount from a spell (for burn/removal spells)."""
-    from decks.card_knowledge_loader import get_burn_damage
-    known = get_burn_damage(card.template.name)
+    from ai.card_classes import burn_damage
+    known = burn_damage(card.template)
     if known > 0:
         return known
     if "removal" in card.template.tags:

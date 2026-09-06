@@ -1,0 +1,845 @@
+Loaded 48 cards (0 errors)
+DB too small — auto-running merge_db.py and reloading...
+  ModernAtomic_part1.json: +2814 cards
+  ModernAtomic_part2.json: +2814 cards
+  ModernAtomic_part3.json: +2814 cards
+  ModernAtomic_part4.json: +2814 cards
+  ModernAtomic_part5.json: +2814 cards
+  ModernAtomic_part6.json: +2814 cards
+  ModernAtomic_part7.json: +2814 cards
+  ModernAtomic_part8.json: +2808 cards
+
+Merged: 0 → 22506 cards in ModernAtomic.json
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+Result: Domain Zoo wins T12 via damage
+Life: P1=-10 P2=24
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Azorius Control wins → chooses to play first
+║ P1 (on play): Azorius Control
+║ P2 (on draw): Domain Zoo
+╚═══════════════════════════════════════════════════════
+
+P1 (Azorius Control) opening hand (2 lands, 5 spells):
+  • Stock Up [Spell, CMC 3]
+  • Teferi, Time Raveler [Spell, CMC 3]
+  • Solitude [Creature, CMC 5]
+  • Plains [Land, CMC 0]
+  • Hall of Storm Giants [Land, CMC 0]
+  • Solitude [Creature, CMC 5]
+  • Wrath of the Skies [Spell, CMC 2]
+→ P1 KEEPS 7 — has key card(s): Solitude, Teferi, Time Raveler, 3 cheap spells
+
+P2 (Domain Zoo) opening hand (4 lands, 3 spells):
+  • Psychic Frog [Creature, CMC 2]
+  • Flooded Strand [Land, CMC 0]
+  • Polluted Delta [Land, CMC 0]
+  • Temple Garden [Land, CMC 0]
+  • Quantum Riddler [Creature, CMC 5]
+  • Practiced Offense [Spell, CMC 3]
+  • Polluted Delta [Land, CMC 0]
+→ P2 MULLIGANS (too many lands (4 > 3); first-turn value 2 < 5)
+  New hand (1 lands, 6 spells): ['Leyline Binding', 'Territorial Kavu', 'Psychic Frog', 'Quantum Riddler', 'Stubborn Denial', 'Scion of Draco', 'Hallowed Fountain']
+→ P2 mulligans to 6, bottoms: ['Quantum Riddler']
+  Keeps: ['Leyline Binding', 'Territorial Kavu', 'Psychic Frog', 'Stubborn Denial', 'Scion of Draco', 'Hallowed Fountain']
+
+
+╔══ TURN 1 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 20  |  Domain Zoo 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Plains
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 20  |  Azorius Control 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Temple Garden
+  [Main 1]
+T1 P2: Play Hallowed Fountain (untapped, life: 20)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 20  |  Domain Zoo 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Plains
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arid Mesa
+  [Main 1]
+T2 P1: Play Arid Mesa
+T2: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T2 P1: Crack Arid Mesa (pay 1 life) -> Hallowed Fountain (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 20  |  Azorius Control 19
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 53  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Plains, Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Fatal Push
+  [Main 1]
+T2 P2: Play Temple Garden (untapped, life: 20)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 19  |  Domain Zoo 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Plains, Hallowed Fountain
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Temple Garden
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Wrath of the Skies
+  [Main 1]
+T3 P1: Play Hall of Storm Giants (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 20  |  Azorius Control 19
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 52  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Temple Garden
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Plains, Hallowed Fountain, Hall of Storm Giants [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+T3 P2: Play Arid Mesa
+T3: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T3 P2: Crack Arid Mesa (pay 1 life) -> Blood Crypt (tapped, life: 19)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Hallowed Fountain→U, Temple Garden→G (paying for Scion of Draco, 0 mana remaining)
+T3 P2: Cast Scion of Draco (12)
+    [Priority] P1 passes (no response)
+T3: Resolve Scion of Draco
+T3 P2: Scion of Draco enters — creatures gain vigilance/hexproof/lifelink/first strike/trample if white/blue/black/red/green
+  [Begin Combat]
+T3 P1: Evoke Solitude (exile Wrath of the Skies)
+T3 P1: Cast Solitude (3WW)
+T3: Resolve Solitude
+T3: Scion of Draco moved battlefield -> exile (exiled)
+T3 P1: Solitude exiles Scion of Draco (opponent gains 4 life, now 23)
+T3: Solitude moved battlefield -> graveyard (evoke sacrifice)
+T3 P1: Solitude sacrificed (evoke)
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 19  |  Domain Zoo 23
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 2
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Lands: Plains, Hallowed Fountain, Hall of Storm Giants
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T], Temple Garden [T], Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Solitude
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Hall of Storm Giants→U, Hallowed Fountain→U (paying for Teferi, Time Raveler, 0 mana remaining)
+T4 P1: Cast Teferi, Time Raveler (1WU)
+    [Priority] P2 passes (no response)
+T4: Resolve Teferi, Time Raveler
+T4 P1: Teferi draws Mystic Gate
+T4 P1: Play Mystic Gate
+T4 P1: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 23  |  Azorius Control 19
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 50  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Temple Garden, Blood Crypt
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Plains [T], Hallowed Fountain [T], Hall of Storm Giants [T], Mystic Gate
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Quantum Riddler
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Hallowed Fountain→U, Blood Crypt→B (paying for Psychic Frog, 1 mana remaining)
+T4 P2: Cast Psychic Frog (UB)
+    [Priority] P1 passes (no response)
+T4: Resolve Psychic Frog
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 19  |  Domain Zoo 23
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 2
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Plains, Hallowed Fountain, Hall of Storm Giants, Mystic Gate
+║ Domain Zoo board:
+║   Creatures: Psychic Frog (1/2)
+║   Lands: Hallowed Fountain [T], Temple Garden, Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Orim's Chant
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Hall of Storm Giants→U, Mystic Gate→C (paying for Stock Up, 1 mana remaining)
+T5 P1: Cast Stock Up (2U)
+T5: Resolve Stock Up
+T5: Stock Up moved stack -> graveyard (resolution)
+T5 P1: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 23  |  Azorius Control 19
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: Psychic Frog (1/2)
+║   Lands: Hallowed Fountain, Temple Garden, Blood Crypt
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Plains [T], Hallowed Fountain, Hall of Storm Giants [T], Mystic Gate [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Quantum Riddler
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Temple Garden→G, Blood Crypt→R (paying for Territorial Kavu, 1 mana remaining)
+T5 P2: Cast Territorial Kavu (RG)
+    [Priority] P1 passes (no response)
+T5: Resolve Territorial Kavu
+T5 P2: Territorial Kavu enters as 5/5 (domain=5)
+  [Begin Combat]
+T5 P1: Evoke Solitude (exile Solitude)
+T5 P1: Cast Solitude (3WW)
+T5: Resolve Solitude
+T5: Territorial Kavu moved battlefield -> exile (exiled)
+T5 P1: Solitude exiles Territorial Kavu (opponent gains 5 life, now 28)
+T5: Solitude moved battlefield -> graveyard (evoke sacrifice)
+T5 P1: Solitude sacrificed (evoke)
+  [Declare Attackers] P2 attacks with: Psychic Frog
+T5 P2: Attack with Psychic Frog
+  [Declare Blockers] P1 does not block
+T5 P2:   Psychic Frog (1/2) → 1 dmg to player
+T5 P2: Psychic Frog deals combat damage — draw a card
+  [Combat Damage] 1 damage dealt → P1 life: 19 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 18  |  Domain Zoo 28
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 45  |  Graveyard: 4
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Plains, Hallowed Fountain, Hall of Storm Giants, Mystic Gate
+║ Domain Zoo board:
+║   Creatures: Psychic Frog (1/2) [tapped]
+║   Lands: Hallowed Fountain, Temple Garden [T], Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Meticulous Archive
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Hallowed Fountain→W (paying for Sanctifier en-Vec, 2 mana remaining)
+T6 P1: Cast Sanctifier en-Vec (WW)
+T6: Resolve Sanctifier en-Vec
+T6 P1: surveil 1 → Prismatic Ending to GY
+T6 P1: Play Meticulous Archive (enters tapped)
+T6 P1: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 28  |  Azorius Control 18
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: Psychic Frog (1/2)
+║   Lands: Hallowed Fountain, Temple Garden, Blood Crypt
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2)
+║   Other: Teferi, Time Raveler
+║   Lands: Plains [T], Hallowed Fountain [T], Hall of Storm Giants, Mystic Gate, Meticulous Archive [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Godless Shrine
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Hallowed Fountain→W (paying for Leyline Binding, 2 mana remaining)
+T6 P2: Cast Leyline Binding (5W)
+    [Priority] P1 passes (no response)
+T6: Resolve Leyline Binding
+T6: Sanctifier en-Vec moved battlefield -> exile (exiled)
+T6 P2: Leyline Binding exiles Sanctifier en-Vec
+T6 P2: Play Godless Shrine (untapped, life: 28)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Blood Crypt→R (paying for Ragavan, Nimble Pilferer, 2 mana remaining)
+T6 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T6: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Psychic Frog
+T6 P2: Attack with Psychic Frog
+  [Declare Blockers] P1 does not block
+T6 P2:   Psychic Frog (1/2) → 1 dmg to player
+T6 P2: Psychic Frog deals combat damage — draw a card
+  [Combat Damage] 1 damage dealt → P1 life: 18 → 17
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 17  |  Domain Zoo 28
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 43  |  Graveyard: 5
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Plains, Hallowed Fountain, Hall of Storm Giants, Mystic Gate, Meticulous Archive
+║ Domain Zoo board:
+║   Creatures: Psychic Frog (1/2) [tapped], Ragavan, Nimble Pilferer (2/1)
+║   Other: Leyline Binding
+║   Lands: Hallowed Fountain [T], Temple Garden, Blood Crypt [T], Godless Shrine
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Lórien Revealed
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Hallowed Fountain→W (paying for Wrath of the Skies, 3 mana remaining)
+T7 P1: Cast Wrath of the Skies (2WW) (X=2)
+T7: Resolve Wrath of the Skies
+T7: Psychic Frog dies
+T7: Ragavan, Nimble Pilferer dies
+T7 P1: Wrath of the Skies (X=2) sweeps the board, destroying 2 permanents
+T7: Wrath of the Skies moved stack -> graveyard (resolution)
+T7 P1: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 28  |  Azorius Control 17
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 3
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline Binding
+║   Lands: Hallowed Fountain, Temple Garden, Blood Crypt, Godless Shrine
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Plains [T], Hallowed Fountain [T], Hall of Storm Giants [T], Mystic Gate [T], Meticulous Archive
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Scion of Draco
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Hallowed Fountain→U, Temple Garden→G (paying for Scion of Draco, 2 mana remaining)
+T7 P2: Cast Scion of Draco (12)
+    [Priority] P1 passes (no response)
+T7: Resolve Scion of Draco
+T7 P2: Scion of Draco enters — creatures gain vigilance/hexproof/lifelink/first strike/trample if white/blue/black/red/green
+T7 P2: surveil 1 → Flooded Strand to GY
+T7 P2: Play Thundering Falls (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 17  |  Domain Zoo 28
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 42  |  Graveyard: 6
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Plains, Hallowed Fountain, Hall of Storm Giants, Mystic Gate, Meticulous Archive
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4)
+║   Other: Leyline Binding
+║   Lands: Hallowed Fountain [T], Temple Garden [T], Blood Crypt, Godless Shrine, Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Isochron Scepter
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Hall of Storm Giants→U, Hallowed Fountain→W, Mystic Gate→C (paying for Supreme Verdict, 1 mana remaining)
+T8 P1: Cast Supreme Verdict (1WWU)
+T8: Resolve Supreme Verdict
+T8: Scion of Draco dies
+T8 P1: Supreme Verdict destroys 1 creatures
+T8: Supreme Verdict moved stack -> graveyard (resolution)
+T8 P1: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 28  |  Azorius Control 17
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 43  |  Graveyard: 5
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline Binding
+║   Lands: Hallowed Fountain, Temple Garden, Blood Crypt, Godless Shrine, Thundering Falls
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Plains [T], Hallowed Fountain [T], Hall of Storm Giants [T], Mystic Gate [T], Meticulous Archive
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Hallowed Fountain→U, Temple Garden→G, Blood Crypt→B, Godless Shrine→B, Thundering Falls→U (paying for Quantum Riddler, 0 mana remaining)
+T8 P2: Cast Quantum Riddler (3UU)
+    [Priority] P1 passes (no response)
+T8: Resolve Quantum Riddler
+T8 P2: Quantum Riddler ETB: draw 1 (Leyline Binding)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 17  |  Domain Zoo 28
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 41  |  Graveyard: 7
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Plains, Hallowed Fountain, Hall of Storm Giants, Mystic Gate, Meticulous Archive
+║ Domain Zoo board:
+║   Creatures: Quantum Riddler (4/6)
+║   Other: Leyline Binding
+║   Lands: Hallowed Fountain [T], Temple Garden [T], Blood Crypt [T], Godless Shrine [T], Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Island
+  [Main 1]
+T9 P1: Play Island
+T9: Lórien Revealed moved hand -> graveyard (cycling)
+T9: Meticulous Archive moved library -> hand (cycling tutor)
+T9 P1: Cycle Lórien Revealed (pay 1 mana, tutor: Meticulous Archive)
+    → Goal: close_game
+    [Mana] Tap Hall of Storm Giants→U, Island→U (paying for Isochron Scepter, 3 mana remaining)
+T9 P1: Cast Isochron Scepter (2)
+T9: Resolve Isochron Scepter
+T9 P1: Isochron Scepter imprints Orim's Chant
+T9 P1: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+    [Mana] Tap Hallowed Fountain→U, Mystic Gate→C (paying for Isochron Scepter, 1 mana remaining)
+T9 P1: Cast Orim's Chant (W)
+T9 P1: Isochron Scepter copies Orim's Chant
+T9: Resolve Orim's Chant
+T9 P1: Orim's Chant silences P2 this turn
+  [End Step]
+
+╔══ TURN 9 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 28  |  Azorius Control 17
+║ Hand: 5 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 41  |  Graveyard: 5
+║ Domain Zoo board:
+║   Creatures: Quantum Riddler (4/6)
+║   Other: Leyline Binding
+║   Lands: Hallowed Fountain, Temple Garden, Blood Crypt, Godless Shrine, Thundering Falls
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler, Isochron Scepter
+║   Lands: Plains [T], Hallowed Fountain [T], Hall of Storm Giants [T], Mystic Gate [T], Meticulous Archive, Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Stubborn Denial
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Blood Crypt→R (paying for Ragavan, Nimble Pilferer, 4 mana remaining)
+T9 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T9: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Quantum Riddler
+T9 P2: Attack with Quantum Riddler
+  [Declare Blockers] P1 does not block
+T9 P2:   Quantum Riddler (4/6) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 17 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 13  |  Domain Zoo 28
+║ Hand: 1 cards  |  Opp hand: 5 cards
+║ Lands: 6  |  Opp lands: 5
+║ Library: 39  |  Graveyard: 8
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler, Isochron Scepter
+║   Lands: Plains, Hallowed Fountain, Hall of Storm Giants, Mystic Gate, Meticulous Archive, Island
+║ Domain Zoo board:
+║   Creatures: Quantum Riddler (4/6) [tapped], Ragavan, Nimble Pilferer (2/1)
+║   Other: Leyline Binding
+║   Lands: Hallowed Fountain, Temple Garden, Blood Crypt [T], Godless Shrine, Thundering Falls
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Teferi, Time Raveler
+  [Main 1]
+    [Mana] Tap Plains→W, Hall of Storm Giants→U (paying for Isochron Scepter, 4 mana remaining)
+T10 P1: Cast Orim's Chant (W)
+T10 P1: Isochron Scepter copies Orim's Chant
+T10: Resolve Orim's Chant
+T10 P1: Orim's Chant silences P2 this turn
+T10 P1: surveil 1 → Orim's Chant to GY
+T10 P1: Play Meticulous Archive (enters tapped)
+T10 P1: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 28  |  Azorius Control 13
+║ Hand: 5 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 7
+║ Library: 40  |  Graveyard: 5
+║ Domain Zoo board:
+║   Creatures: Quantum Riddler (4/6), Ragavan, Nimble Pilferer (2/1)
+║   Other: Leyline Binding
+║   Lands: Hallowed Fountain, Temple Garden, Blood Crypt, Godless Shrine, Thundering Falls
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler, Isochron Scepter
+║   Lands: Plains [T], Hallowed Fountain, Hall of Storm Giants [T], Mystic Gate, Meticulous Archive, Island, Meticulous Archive [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Leyline of the Guildpact
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Hallowed Fountain→U, Temple Garden→G, Blood Crypt→B, Godless Shrine→B, Thundering Falls→U (paying for Quantum Riddler, 0 mana remaining)
+T10 P2: Cast Quantum Riddler (3UU)
+    [Priority] P1 passes (no response)
+T10: Resolve Quantum Riddler
+T10 P2: Quantum Riddler ETB: draw 1 (Psychic Frog)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Quantum Riddler, Ragavan, Nimble Pilferer
+T10 P2: Attack with Quantum Riddler, Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T10 P2:   Quantum Riddler (4/6) → 4 dmg to player
+T10 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T10 P2: Create 1x Treasure token(s)
+T10 P2: Ragavan, Nimble Pilferer exiles Monumental Henge from top of P1's library
+T10 P2: Ragavan, Nimble Pilferer — may cast Monumental Henge this turn
+  [Combat Damage] 6 damage dealt → P1 life: 13 → 7
+  [End Combat]
+  [Main 2]
+T10 P2: Play Monumental Henge (enters tapped)
+  [End Step]
+
+╔══ TURN 11 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 7  |  Domain Zoo 28
+║ Hand: 1 cards  |  Opp hand: 6 cards
+║ Lands: 7  |  Opp lands: 6
+║ Library: 36  |  Graveyard: 9
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler, Isochron Scepter
+║   Lands: Plains, Hallowed Fountain, Hall of Storm Giants, Mystic Gate, Meticulous Archive, Island, Meticulous Archive
+║ Domain Zoo board:
+║   Creatures: Quantum Riddler (4/6) [tapped], Ragavan, Nimble Pilferer (2/1) [tapped], Quantum Riddler (4/6)
+║   Other: Leyline Binding, Treasure Token
+║   Lands: Hallowed Fountain [T], Temple Garden [T], Blood Crypt [T], Godless Shrine [T], Thundering Falls [T], Monumental Henge [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Teferi, Time Raveler
+  [Main 1]
+    [Mana] Tap Plains→W, Hall of Storm Giants→U (paying for Isochron Scepter, 5 mana remaining)
+T11 P1: Cast Orim's Chant (W)
+T11 P1: Isochron Scepter copies Orim's Chant
+T11: Resolve Orim's Chant
+T11 P1: Orim's Chant silences P2 this turn
+T11 P1: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
+T11: Teferi, Time Raveler moved battlefield -> graveyard (SBA 704.5p: zero loyalty)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+    → Goal: close_game
+    [Mana] Tap Island→U, Hallowed Fountain→W, Mystic Gate→C (paying for Teferi, Time Raveler, 2 mana remaining)
+T11 P1: Cast Teferi, Time Raveler (1WU)
+    [Priority] P2 passes (no response)
+T11: Resolve Teferi, Time Raveler
+T11 P1: Teferi bounces Quantum Riddler
+T11 P1: Teferi draws Hallowed Fountain
+T11 P1: Play Hallowed Fountain (untapped, life: 7)
+T11 P1: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
+  [End Step]
+
+╔══ TURN 11 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 28  |  Azorius Control 7
+║ Hand: 7 cards  |  Opp hand: 1 cards
+║ Lands: 6  |  Opp lands: 8
+║ Library: 38  |  Graveyard: 5
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Quantum Riddler (4/6)
+║   Other: Leyline Binding, Treasure Token
+║   Lands: Hallowed Fountain, Temple Garden, Blood Crypt, Godless Shrine, Thundering Falls, Monumental Henge
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Isochron Scepter, Teferi, Time Raveler
+║   Lands: Plains [T], Hallowed Fountain [T], Hall of Storm Giants [T], Mystic Gate [T], Meticulous Archive, Island [T], Meticulous Archive, Hallowed Fountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+T11 P2: Play Flooded Strand
+T11: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T11 P2: Crack Flooded Strand (pay 1 life) -> Steam Vents (untapped, life: 25)
+    → Goal: curve_out
+    [Mana] Tap Monumental Henge→W, Hallowed Fountain→U, Temple Garden→G, Blood Crypt→B, Thundering Falls→U (paying for Quantum Riddler, 2 mana remaining)
+T11 P2: Cast Quantum Riddler (3UU)
+    [Priority] P1 passes (no response)
+T11: Resolve Quantum Riddler
+T11 P2: Quantum Riddler ETB: draw 1 (Indatha Triome)
+    → Goal: curve_out
+    [Mana] Tap Godless Shrine→B, Steam Vents→U (paying for Psychic Frog, 0 mana remaining)
+T11 P2: Cast Psychic Frog (UB)
+    [Priority] P1 passes (no response)
+T11: Resolve Psychic Frog
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer, Quantum Riddler
+T11 P2: Attack with Ragavan, Nimble Pilferer, Quantum Riddler
+  [Declare Blockers] P1 does not block
+T11 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T11 P2: Create 1x Treasure token(s)
+T11 P2: Ragavan, Nimble Pilferer exiles Prismatic Ending from top of P1's library
+T11 P2: Ragavan, Nimble Pilferer — may cast Prismatic Ending this turn
+T11 P2:   Quantum Riddler (4/6) → 4 dmg to player
+  [Combat Damage] 6 damage dealt → P1 life: 7 → 1
+  [End Combat]
+  [Main 2]
+  [End Step]
+T11: Prismatic Ending returned to exile (uncast)
+
+╔══ TURN 12 — Azorius Control (P1) ══════════════════════════
+║ Life: Azorius Control 1  |  Domain Zoo 25
+║ Hand: 1 cards  |  Opp hand: 6 cards
+║ Lands: 8  |  Opp lands: 7
+║ Library: 33  |  Graveyard: 10
+║ Azorius Control board:
+║   Creatures: (empty)
+║   Other: Isochron Scepter, Teferi, Time Raveler
+║   Lands: Plains, Hallowed Fountain, Hall of Storm Giants, Mystic Gate, Meticulous Archive, Island, Meticulous Archive, Hallowed Fountain
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Quantum Riddler (4/6) [tapped], Quantum Riddler (4/6) [tapped], Psychic Frog (1/2)
+║   Other: Leyline Binding, Treasure Token, Treasure Token
+║   Lands: Hallowed Fountain [T], Temple Garden [T], Blood Crypt [T], Godless Shrine [T], Thundering Falls [T], Monumental Henge [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Sanctifier en-Vec
+  [Main 1]
+    [Mana] Tap Plains→W, Hall of Storm Giants→U (paying for Isochron Scepter, 6 mana remaining)
+T12 P1: Cast Orim's Chant (W)
+T12 P1: Isochron Scepter copies Orim's Chant
+T12: Resolve Orim's Chant
+T12 P1: Orim's Chant silences P2 this turn
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→W, Meticulous Archive→W (paying for Sanctifier en-Vec, 4 mana remaining)
+T12 P1: Cast Sanctifier en-Vec (WW)
+T12: Resolve Sanctifier en-Vec
+T12 P1: Sanctifier en-Vec exiles 2 black/red cards from graveyards
+T12 P1: Teferi, Time Raveler [+1] -> Until your next turn, you may cast sorcery spells as though they had flash
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 25  |  Azorius Control 1
+║ Hand: 6 cards  |  Opp hand: 1 cards
+║ Lands: 7  |  Opp lands: 8
+║ Library: 35  |  Graveyard: 4
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Quantum Riddler (4/6), Quantum Riddler (4/6), Psychic Frog (1/2)
+║   Other: Leyline Binding, Treasure Token, Treasure Token
+║   Lands: Hallowed Fountain, Temple Garden, Blood Crypt, Godless Shrine, Thundering Falls, Monumental Henge, Steam Vents
+║ Azorius Control board:
+║   Creatures: Sanctifier en-Vec (2/2)
+║   Other: Isochron Scepter, Teferi, Time Raveler
+║   Lands: Plains [T], Hallowed Fountain [T], Hall of Storm Giants [T], Mystic Gate, Meticulous Archive [T], Island, Meticulous Archive, Hallowed Fountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Monumental Henge→W (paying for Leyline Binding, 6 mana remaining)
+T12 P2: Cast Leyline Binding (5W)
+    [Priority] P1 passes (no response)
+T12: Resolve Leyline Binding
+T12: Isochron Scepter moved battlefield -> exile (exiled)
+T12 P2: Leyline Binding exiles Isochron Scepter
+T12: Indatha Triome moved hand -> graveyard (cycling)
+T12 P2: Cycle Indatha Triome (pay 3 mana, draw: Wrath of the Skies)
+T12 P2: Play Flooded Strand
+T12: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T12 P2: Crack Flooded Strand (pay 1 life) -> Breeding Pool (tapped, life: 24)
+    → Goal: curve_out
+    [Mana] Tap Godless Shrine→B (paying for Fatal Push, 2 mana remaining)
+T12 P2: Cast Fatal Push (B)
+    [Priority] P1 passes (no response)
+T12: Resolve Fatal Push
+T12: Sanctifier en-Vec dies
+T12 P2: Fatal Push destroys Sanctifier en-Vec
+T12: Fatal Push moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer, Quantum Riddler, Quantum Riddler, Psychic Frog
+T12 P2: Attack with Ragavan, Nimble Pilferer, Quantum Riddler, Quantum Riddler, Psychic Frog
+  [Declare Blockers] P1 does not block
+T12 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T12 P2: Create 1x Treasure token(s)
+T12 P2: Ragavan, Nimble Pilferer exiles Teferi, Time Raveler from top of P1's library
+T12 P2: Ragavan, Nimble Pilferer — may cast Teferi, Time Raveler this turn
+T12 P2:   Quantum Riddler (4/6) → 4 dmg to player
+T12 P2:   Quantum Riddler (4/6) → 4 dmg to player
+T12 P2:   Psychic Frog (1/2) → 1 dmg to player
+T12 P2: Psychic Frog deals combat damage — draw a card
+P1 loses: life total -10
+  [Combat Damage] 11 damage dealt → P1 life: 1 → -10

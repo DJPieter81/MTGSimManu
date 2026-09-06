@@ -30,6 +30,31 @@ class TriggerManager:
 
     @staticmethod
     def trigger_etb(game: "GameState", card: CardInstance, controller: int):
+        # CR 301.5c / 702.6 — an Equipment can become attached only via an
+        # effect that says so (normally its own equip ability), so every
+        # Equipment that enters the battlefield enters UNATTACHED. The
+        # simulator records that as the `equipment_unattached` instance tag,
+        # which is the sole gate on `ai/ev_player.py::_consider_equip`
+        # enumerating an equip play and on `ai/permanent_threat.py` valuing a
+        # stranded equipment. Without it an Equipment resolves and can never
+        # be equipped for the rest of the game — legal in the engine, absent
+        # from the AI's play space.
+        #
+        # Class: every Equipment printing (hundreds), keyed off the typed
+        # `equip_cost` field parsed once at DB load plus the Equipment
+        # subtype — no card name is consulted. The mirror-image half of this
+        # mechanic (re-marking an equipment unattached when its bearer leaves)
+        # already lives generically in engine/permanent_effects.py; this is
+        # the "enters" half, which used to be a card-name registry entry.
+        #
+        # Runs before the fan-out below and AFTER any card-specific ETB
+        # handler (spell_resolution calls the registry first), so an
+        # Equipment that attaches itself on entry keeps its attachment.
+        if (getattr(card.template, 'equip_cost', None) is not None
+                and "Equipment" in (card.template.subtypes or [])
+                and "equipment_attached" not in card.instance_tags):
+            card.instance_tags.add("equipment_unattached")
+
         # Elesh Norn / Panharmonicon family: detect any controller-side permanent
         # whose oracle says "triggers an additional time". Each such permanent
         # causes ETB-induced triggers to fire one extra time. Generic — no
@@ -136,7 +161,7 @@ class TriggerManager:
                     or required_type in entering_types):
                 continue
             for _ in range(trigger_multiplier):
-                watcher.plus_counters += spec['counter_power']
+                watcher.add_plus_counters(spec['counter_power'], game, source=card)
                 if spec.get('unblockable_this_turn'):
                     watcher.cannot_be_blocked_this_turn = True
             game.log.append(
@@ -208,6 +233,40 @@ class TriggerManager:
                 f"({card.name} entered as nontoken={not is_entering_token} "
                 f"{req_type})")
 
+
+    @staticmethod
+    def trigger_counter_placement(game: "GameState", card: CardInstance,
+                                  n: int, source=None):
+        """Resolve a "whenever one or more +1/+1 counters are put on this
+        <permanent>, <effect>" trigger (CR 122 / 603.2c).
+
+        Called ONLY from `CardInstance.add_plus_counters` — the single
+        counter funnel — once per placement event, after the funnel has
+        checked the card is on the battlefield and declares the trigger.
+        The rider is dispatched off the typed `CounterPlacementTrigger`
+        parsed at load; token creation goes through the one token factory
+        so the token's own granted ability ("Sacrifice this token: Add
+        {C}") is honoured. An unresolved rider still logs the trigger.
+        """
+        from .cards import (COUNTER_TRIGGER_EFFECT_TOKEN,
+                            COUNTER_TRIGGER_EFFECT_DRAW)
+        trig = card.template.counter_placement_trigger
+        controller = card.controller
+        via = f" via {source.name}" if source is not None else ""
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: {card.name} — "
+            f"{n} +1/+1 counter(s) put on it{via} → trigger "
+            f"({trig.effect})")
+        if trig.effect == COUNTER_TRIGGER_EFFECT_TOKEN:
+            from .permanent_effects import PermanentEffects
+            PermanentEffects.create_token(
+                game, controller, "counter_trigger_token",
+                count=trig.count, source_oracle=trig.effect_text)
+        elif trig.effect == COUNTER_TRIGGER_EFFECT_DRAW:
+            game.draw_cards(controller, trig.count)
+            game.log.append(
+                f"T{game.display_turn} P{controller+1}: "
+                f"{card.name} → draws {trig.count} card(s)")
 
     @staticmethod
     def trigger_attack(game: "GameState", attacker: CardInstance, controller: int):

@@ -95,11 +95,22 @@ def assess_combo(game: "GameState", player_idx: int,
 
 
 def _find_resource_zone(goal_engine):
-    """Find resource_zone, target, min_cmc from any goal in the gameplan."""
+    """Find resource_zone, target, min_cmc from any goal in the gameplan.
+
+    A gameplan that declares NO resource requirement (no goal with a
+    positive `resource_target`) has no zone to assess: "readiness" is
+    undefined, so there is nothing to hold a payoff for.  Return zone
+    None so `assess_combo` yields the null assessment and the per-card
+    modifier stays at 0 (projection scores the cards).  The previous
+    fabricated default ("graveyard", 0) reported a permanent
+    `is_ready=False` whenever the payoff was not in hand and charged
+    every payoff-role card the full non-ready hold penalty — every
+    combo-archetype deck without a FILL_RESOURCE goal was affected.
+    """
     for goal in goal_engine.gameplan.goals:
         if goal.resource_target > 0:
             return goal.resource_zone, goal.resource_target, goal.resource_min_cmc
-    return "graveyard", 0, 0
+    return None, 0, 0
 
 
 def _collect_payoff_names(goal_engine):
@@ -463,10 +474,15 @@ def card_combo_role(card, assessment):
     kws = getattr(card.template, 'keywords', set())
     if Keyword.STORM in kws or Keyword.CASCADE in kws:
         return 'payoff'
-    if 'tutor' in tags:
-        return 'payoff'
     if 'ritual' in tags:
         return 'fuel'
+    # A tutor is finisher ACCESS, not the finisher.  Tutors with a real
+    # payoff target are scored by the TUTOR-AS-FINISHER-ACCESS branch of
+    # `card_combo_modifier` before any role check; a tutor without one
+    # converts a card into another card — card selection, like a
+    # cantrip — and must not inherit the payoff hold-until-ready hold.
+    if 'tutor' in tags:
+        return 'dig'
     if 'cantrip' in tags or 'draw' in tags:
         return 'dig'
     if 'cost_reducer' in tags:

@@ -84,7 +84,8 @@ class ActivationManager:
         # life cost depletes the life total, a sacrifice-another cost
         # depletes the board and a discard cost depletes the hand — each
         # terminates the loop.
-        if not ActivationManager._cost_depletes_a_resource(perm, ability):
+        if not ActivationManager._cost_depletes_a_resource(perm, ability,
+                                                           game):
             return False
 
         # 9b. An effect kind the resolver cannot execute must be refused
@@ -99,8 +100,50 @@ class ActivationManager:
                 ActivationEffectKind.TUTOR_CREATURE_TO_BATTLEFIELD,
                 ActivationEffectKind.TUTOR_TO_HAND,
                 ActivationEffectKind.UNTAP_TARGET_PERMANENT,
-                ActivationEffectKind.EXILE_FROM_GRAVEYARD):
+                ActivationEffectKind.EXILE_FROM_GRAVEYARD,
+                ActivationEffectKind.PUT_COUNTER_SELF,
+                ActivationEffectKind.PUT_COUNTER_TARGET,
+                ActivationEffectKind.ADAPT):
             return False
+
+        # 9b-pc. A put-counter line whose shape did not parse is schema
+        # incoherence — the resolver reads `kind`/`amount` off
+        # `put_counter_data` and has nothing to dispatch on without it.
+        is_put_counter = ability.effect_kind in (
+            ActivationEffectKind.PUT_COUNTER_SELF,
+            ActivationEffectKind.PUT_COUNTER_TARGET)
+        if is_put_counter and ability.put_counter_data is None:
+            return False
+
+        # 9b-pc-loop. No-free-repeatable, EFFECT side. Rule 9 above asks
+        # only whether the COST depletes something, which is blind to an
+        # effect that hands the resource straight back: "Remove a +1/+1
+        # counter: Put a +1/+1 counter on this creature" pays with exactly
+        # what it produces and never terminates. Refuse when a counter item
+        # on the source is the ONLY thing the cost spends — anything else
+        # finite alongside it (mana, a tap, life, a sacrifice, a discard)
+        # still bounds the loop, so the guard stays off those.
+        #
+        # The TARGET scope is included deliberately: a creature is a legal
+        # target for its own ability, so a targeted put could always choose
+        # the source and close the same loop.
+        #
+        # Measured DB-wide when this landed: zero printed cards have the
+        # shape, so the guard refuses nothing real. It exists so a later DB
+        # refresh cannot introduce a free loop silently.
+        if is_put_counter and ActivationManager._refills_its_own_cost(ability):
+            return False
+
+        # 9b-delay. A delayed effect (CR 603.7) is legal only while the
+        # queue actually fires the timing it names — the same
+        # "refuse before charging a cost the resolver cannot honour"
+        # discipline as 9b itself. `TIMING_STEP` is the queue's own map, so
+        # a timing added to the parser without a drain point is refused
+        # here rather than paid for and silently never fired.
+        if ability.delayed_timing is not None:
+            from .delayed_triggers import TIMING_STEP
+            if ability.delayed_timing not in TIMING_STEP:
+                return False
 
         # 9b-gy. A graveyard-exile line whose shape did not parse is
         # schema incoherence — the resolver reads `scope` to decide whose
@@ -151,6 +194,15 @@ class ActivationManager:
         # 9e. CR 601.2h — a discard cost needs that many cards in hand.
         if (ability.cost.discard_cards > 0
                 and len(player.hand) < ability.cost.discard_cards):
+            return False
+
+        # 9e-gy. CR 601.2h — an exile-from-graveyard cost needs that many
+        # cards in the ACTIVATOR'S OWN graveyard. Same shape as 9e: the
+        # cost names a zone the payer must draw from, so an empty (or
+        # short) graveyard makes it unpayable, not merely unwise.
+        if (ability.cost.exile_from_graveyard_cards > 0
+                and len(player.graveyard)
+                < ability.cost.exile_from_graveyard_cards):
             return False
 
         # 9f. CR 118.x — a remove-counter cost is payable only while that
@@ -227,12 +279,17 @@ class ActivationManager:
 
     @staticmethod
     def _cost_depletes_a_resource(perm: "CardInstance",
-                                  ability: "ActivatedAbility") -> bool:
+                                  ability: "ActivatedAbility",
+                                  game: "GameState" = None) -> bool:
         """Rule 9's predicate: does paying this cost consume something
         finite, so that repeating the activation terminates?
 
         Mana, a tap, sacrifice (self or another), EXILE of the source,
-        life, and discard each deplete. Tranche 4 adds the two counter items:
+        life, and discard each deplete. Tranche 5 adds exile-from-your-own-
+        graveyard for the same reason a discard cost qualifies: the
+        graveyard is a finite pile that refills only through separate game
+        events, so each payment strictly shrinks it until rule 9e-gy
+        refuses. Tranche 4 adds the two counter items:
 
           * REMOVE always depletes — the counter supply on the permanent is
             finite and each payment strictly lowers it.
@@ -257,13 +314,169 @@ class ActivationManager:
                 or cost.life > 0
                 or cost.sacrifice_type is not None
                 or cost.discard_cards > 0
+                or cost.exile_from_graveyard_cards > 0
                 or cost.remove_counter_kind is not None):
             return True
         if (cost.put_counter_kind == COUNTER_KIND_MINUS
                 and cost.put_counter_amount > 0):
-            return bool(perm.effective_is_creature
-                        or getattr(perm, 'is_animated', False))
+            # The counter depletes only if it actually LANDS: a
+            # counter-placement replacement (CR 614.1c, "that many minus
+            # one … instead") can absorb the whole cost, and then nothing
+            # walks the toughness down. Read through the same funnel
+            # payment will use, so legality and payment agree.
+            amount = cost.put_counter_amount
+            if game is not None:
+                amount = perm.replaced_counter_amount(
+                    COUNTER_KIND_MINUS, amount, game)
+            return bool(amount > 0 and (perm.effective_is_creature
+                                        or getattr(perm, 'is_animated', False)))
         return False
+
+    @staticmethod
+    def free_self_untap_ability(game: "GameState", perm: "CardInstance"):
+        """The permanent's self-untap ability whose cost depletes nothing
+        (after counter-placement replacements), or None.
+
+        Rule 9 keeps such an ability OFF the stack (nothing would terminate
+        the loop). It is nonetheless a legal, repeatable loop in paper
+        Magic, so `unbounded_mana_engines` exposes it as a mana source the
+        payment path shortcuts (CR 726.4) instead.
+        """
+        for ability in (perm.template.activated_abilities or []):
+            if not ActivationManager._untaps_its_own_source(ability):
+                continue
+            if (not ability.from_battlefield or ability.cost.unpayable
+                    or ability.restrictions or ability.cost.x_count):
+                continue
+            if ActivationManager._cost_depletes_a_resource(perm, ability,
+                                                           game):
+                continue
+            return ability
+        return None
+
+    @staticmethod
+    def would_complete_unbounded_engine(game: "GameState", player_idx: int,
+                                        template) -> bool:
+        """Would putting a permanent of `template` onto this player's
+        battlefield create an unbounded mana engine that does not exist
+        yet? Pure rules query (no scoring): it asks whether the LOOP would
+        exist, ignoring the newcomer's summoning sickness — the loop is
+        live from the next untap step either way.
+
+        Both directions count: the candidate may be the replacement
+        source (the "minus one" shape) that frees an existing self-untapper,
+        or the self-untapping mana source that an existing replacement
+        frees. Used by the tutor delivery ranking and the AI's delivered-
+        value credit, so a toolbox finds its engine piece instead of the
+        biggest body.
+        """
+        from .cards import CardInstance
+        if template is None or not template.activated_abilities and \
+                template.counter_placement_replacement is None:
+            return False
+        player = game.players[player_idx]
+        before = {p.instance_id for p in
+                  ActivationManager.unbounded_mana_engines(
+                      game, player_idx, ignore_summoning_sickness=True)}
+        phantom = CardInstance(template=template, owner=player_idx,
+                               controller=player_idx, instance_id=-1,
+                               zone="battlefield")
+        phantom._game_state = game
+        player.battlefield.append(phantom)
+        try:
+            after = {p.instance_id for p in
+                     ActivationManager.unbounded_mana_engines(
+                         game, player_idx, ignore_summoning_sickness=True)}
+        finally:
+            player.battlefield.remove(phantom)
+        return bool(after - before)
+
+    @staticmethod
+    def engines_lost_if_removed(game: "GameState", player_idx: int,
+                                perm: "CardInstance") -> int:
+        """How many unbounded mana engines stop existing if `perm` leaves
+        the battlefield (summoning sickness ignored — the loop's
+        existence, not this turn's spin). Pure rules query: the
+        replacement source that frees three untappers loses three; one of
+        three untappers loses one; an unrelated permanent loses none."""
+        player = game.players[player_idx]
+        if perm not in player.battlefield:
+            return 0
+        before = len(ActivationManager.unbounded_mana_engines(
+            game, player_idx, ignore_summoning_sickness=True))
+        if before == 0:
+            return 0
+        idx = player.battlefield.index(perm)
+        player.battlefield.remove(perm)
+        try:
+            after = len(ActivationManager.unbounded_mana_engines(
+                game, player_idx, ignore_summoning_sickness=True))
+        finally:
+            player.battlefield.insert(idx, perm)
+        return max(0, before - after)
+
+    @staticmethod
+    def unbounded_mana_engines(game: "GameState", player_idx: int,
+                               ignore_summoning_sickness: bool = False
+                               ) -> List["CardInstance"]:
+        """Battlefield permanents that tap for mana AND untap themselves
+        for free: an unbounded mana loop (CR 726.4 shortcut material).
+
+        A creature's tap ability needs it free of summoning sickness
+        (CR 302.6); being currently tapped does not matter, since the
+        first iteration untaps it. Pure rules enumeration, zero scoring —
+        the AI decides whether the loop is worth spinning."""
+        out: List["CardInstance"] = []
+        for perm in game.players[player_idx].battlefield:
+            t = perm.template
+            if not (t.mana_units or t.produces_mana):
+                continue
+            if (CardType.CREATURE in t.card_types
+                    and perm.has_summoning_sickness
+                    and not ignore_summoning_sickness):
+                continue
+            if ActivationManager.free_self_untap_ability(game, perm) is None:
+                continue
+            out.append(perm)
+        return out
+
+    @staticmethod
+    def _refills_its_own_cost(ability: "ActivatedAbility") -> bool:
+        """Does this put-counter effect hand back the only resource its
+        cost spends?
+
+        Rule 9's cost-side predicate cannot answer this: it reads the cost
+        alone, so "Remove a +1/+1 counter: Put a +1/+1 counter on this
+        creature" looks depleting to it while the effect silently restores
+        the supply. The pair is a free loop.
+
+        True exactly when BOTH hold:
+          * a counter item on the source is the only thing the cost spends
+            (no mana, tap, life, sacrifice, exile or discard alongside), and
+          * the effect puts back at least as many counters as the cost took.
+
+        Kind-blind on purpose. A +1/+1 effect against a -1/-1 cost is not a
+        different case: CR 704.5q annihilates the pair, so the permanent
+        ends where it started and the loop is just as free.
+        """
+        cost = ability.cost
+        data = ability.put_counter_data or {}
+        other_finite = (cost.mana.cmc > 0 or cost.tap_self or cost.life > 0
+                        or cost.sacrifice_self or cost.exile_self
+                        or cost.sacrifice_type is not None
+                        or cost.discard_cards > 0)
+        if other_finite:
+            return False
+        paid = 0
+        if cost.remove_counter_kind is not None:
+            paid = cost.remove_counter_amount
+        elif cost.put_counter_kind is not None:
+            paid = cost.put_counter_amount
+        else:
+            # No counter item at all. A cost that spends NOTHING is already
+            # refused by rule 9 upstream; this predicate has nothing to say.
+            return False
+        return int(data.get('amount', 0)) >= paid
 
     @staticmethod
     def legal_sacrifice_victims(game: "GameState", player_idx: int,
@@ -295,6 +508,25 @@ class ActivationManager:
         return out
 
     @staticmethod
+    def graveyard_exile_payment(game: "GameState", player_idx: int,
+                                count: int) -> List["CardInstance"]:
+        """The cards an exile-from-your-graveyard cost takes (CR 601.2h).
+
+        Pure enumeration in ZONE ORDER, zero preference — the graveyard is
+        an ordered pile and the head of it is what the payer takes. This is
+        deliberately not a valuation: the cost names no type, so every card
+        in the pile pays it equally as far as the RULES are concerned, and
+        ranking them by what the controller would rather keep is a
+        strategic choice. Tranche 3 gave the sacrifice cost such a choice
+        (`callbacks.choose_sacrifice`) because its legal set is genuinely
+        heterogeneous; a seam here would be the same shape and can be added
+        the same way. Until it is, this is the single definition of WHICH
+        cards pay, so a future valuation layer reads it rather than
+        guessing and projection cannot disagree with payment.
+        """
+        return list(game.players[player_idx].graveyard)[:max(0, count)]
+
+    @staticmethod
     def activate(game: "GameState", player_idx: int, perm: "CardInstance",
                  ability: "ActivatedAbility",
                  targets: Optional[List[int]] = None) -> bool:
@@ -319,6 +551,10 @@ class ActivationManager:
             if (ability.cost.discard_cards > 0
                     and len(game.players[player_idx].hand)
                     < ability.cost.discard_cards):
+                return False
+            if (ability.cost.exile_from_graveyard_cards > 0
+                    and len(game.players[player_idx].graveyard)
+                    < ability.cost.exile_from_graveyard_cards):
                 return False
             # CR 118.x — the counters must be there BEFORE anything is
             # charged, so a short supply refuses the whole activation
@@ -419,6 +655,16 @@ class ActivationManager:
                 # ability was the player's own choice (CR 601.2h).
                 game._force_discard(player_idx, ability.cost.discard_cards,
                                     self_discard=True)
+            if ability.cost.exile_from_graveyard_cards > 0:
+                # CR 602.2b — the cards leave the graveyard at ACTIVATION
+                # time, through the zone funnel, so leaves-the-graveyard
+                # replacements and triggers see the move.
+                for gy_card in ActivationManager.graveyard_exile_payment(
+                        game, player_idx,
+                        ability.cost.exile_from_graveyard_cards):
+                    game.zone_mgr.move_card_to_exile(
+                        game, gy_card,
+                        cause=f"activation cost ({perm.name})")
             if victim is not None:
                 # CR 602.2b: the victim is sacrificed as part of the COST —
                 # it leaves at activation time, through the zone funnel.

@@ -35,6 +35,7 @@ ALTERNATIVE_COST_FIELDS = [
     "dash_cost",
     "warp_cost",
     "escape_cost",
+    "madness_cost",
 ]
 
 

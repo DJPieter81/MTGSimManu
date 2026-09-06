@@ -213,6 +213,22 @@ def _count_cost_reducers(
     return _engine_count(game, player_idx, template)
 
 
+def _self_cost_reduction(
+    game: "GameState", player_idx: int, template: "CardTemplate"
+) -> int:
+    """Live generic discount a spell grants ITSELF ("costs {N} less to
+    cast for each card you've cycled or discarded this turn" / "for
+    each card type among cards in your graveyard").  Routes through
+    `engine.oracle_resolver.self_cost_reduction`, which reads the typed
+    template fields and the live unit count — no oracle text, no card
+    names."""
+    if game is None:
+        return 0
+    from engine.oracle_resolver import self_cost_reduction as _engine_self
+
+    return _engine_self(game, player_idx, template)
+
+
 # ─── Public API ──────────────────────────────────────────────────────
 
 
@@ -312,6 +328,14 @@ def effective_cmc(
         # Cost reducers can drive a spell to {0} (Storm rituals
         # become free under enough medallions).  Clamp at 0.
         paid = max(0, paid - reducers)
+
+    # ── Step 3b: self-scaling own-cost reduction ────────────────────
+    # "This spell costs {N} less to cast for each <live unit>" — typed
+    # at DB load (`template.self_cost_reduction_*`), counted live by
+    # the engine helper, already capped at the printed generic portion.
+    own_reduction = _self_cost_reduction(game, player_idx, template)
+    if own_reduction > 0:
+        paid = max(0, paid - own_reduction)
 
     # Recompute the generic-portion-remaining after reducers ate
     # into it.  Delve/affinity/improvise can't drive paid below

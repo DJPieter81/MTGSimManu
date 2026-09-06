@@ -31,11 +31,32 @@ GRADE_NUM = {
 }
 
 # ── Expected WR ranges (from CLAUDE.md) ──────────────────────
-EXPECTED = {
-    'Boros Energy': (50, 70), 'Affinity': (45, 60), 'Eldrazi Tron': (50, 65),
-    'Jeskai Blink': (45, 60), 'Ruby Storm': (40, 55), 'Domain Zoo': (50, 65),
-    'Izzet Prowess': (45, 60), 'Dimir Midrange': (45, 60),
-}
+def _load_expected():
+    """Field WR bands from tools/calibration_bands.json (the one authoritative
+    source — the same file `tools/check_calibration.py` reads after every
+    `--matrix --save`), with the default band for every registered deck that
+    has no specific entry. The old 8-deck literal drifted from it."""
+    import json as _json
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                        'tools', 'calibration_bands.json')
+    try:
+        with open(path) as f:
+            bands = _json.load(f)
+    except (OSError, ValueError):
+        return {}
+    expected = {e['deck']: tuple(e['expected_wr']) for e in bands.get('field_bands', [])}
+    default = bands.get('default_field_band', {}).get('expected_wr')
+    if default:
+        try:
+            from decks.modern_meta import MODERN_DECKS
+            for name in MODERN_DECKS:
+                expected.setdefault(name, tuple(default))
+        except ImportError:
+            pass
+    return expected
+
+
+EXPECTED = _load_expected()
 
 # ── Archetype map ────────────────────────────────────────────
 ARCH = {
@@ -195,8 +216,28 @@ def build_wr_arrays(D):
     labels_js = ','.join(f"'{l}'" for l in labels)
     fulls_js = ','.join(f"'{f}'" if "'" not in f else f'"{f}"' for f in fulls)
     data_js = ','.join(str(d) for d in data)
-    
-    return f"const wrLabels=[{labels_js}];", f"const wrFull=[{fulls_js}];", f"const wrData=[{data_js}];"
+
+    # Per-bar colours, derived from the same sorted values the bars plot:
+    # the template's three tiers (teal / amber / red) by weighted WR.
+    def _tier(v):
+        if v >= WR_TIER_TEAL:
+            return '"#e6f5ee"', 'teal'
+        if v >= WR_TIER_AMBER:
+            return '"#fdf5e6"', 'amber'
+        return '"#fde8e8"', 'red'
+    bg_js = ','.join(_tier(d)[0] for d in data)
+    br_js = ','.join(_tier(d)[1] for d in data)
+
+    return (f"const wrLabels=[{labels_js}];", f"const wrFull=[{fulls_js}];",
+            f"const wrData=[{data_js}];",
+            f"const wrBgDef=[{bg_js}];", f"const wrBrDef=[{br_js}];")
+
+
+# WR bar-chart colour tiers (weighted field WR, percent): the template's
+# hand-authored scheme painted the top group teal, the middle amber and the
+# bottom red; these cut points reproduce it on the 09-04 data.
+WR_TIER_TEAL = 60.0
+WR_TIER_AMBER = 40.0
 
 
 def build_deck_res(D):
@@ -350,11 +391,15 @@ def patch(html, D, overall_grade, radar_data):
     )
     
     # 4. WR bar chart arrays
-    wr_labels, wr_full, wr_data = build_wr_arrays(D)
+    wr_labels, wr_full, wr_data, wr_bg, wr_br = build_wr_arrays(D)
     html = re.sub(r"const wrLabels=\[.*?\];", wr_labels, html)
     html = re.sub(r"const wrFull=\[.*?\];", wr_full, html)
-    # wrData is embedded differently — find and replace
-    html = re.sub(r"const wrData=\[[\d.,]+\];", wr_data, html)
+    # Whitespace-tolerant: a hand edit once left "[73.5, 68.5, …]" and the
+    # old no-space class silently never matched, so the bars stayed stale
+    # while the labels moved on (2026-09-06 refresh).
+    html = re.sub(r"const wrData=\[[\d.,\s]+\];", wr_data, html)
+    html = re.sub(r"const wrBgDef=\[.*?\];", wr_bg, html)
+    html = re.sub(r"const wrBrDef=\[.*?\];", wr_br, html)
     
     # 5. Cross-filter arrays + heatmap data (all parallel, must match)
     xf_full, xf_short, filtered, indices = build_xfilter_arrays(D)
@@ -445,8 +490,47 @@ def patch(html, D, overall_grade, radar_data):
         html,
         flags=re.DOTALL
     )
-    
+
+    _check_parallel_arrays(html, D)
     return html
+
+
+def _js_array_len(html, name):
+    """Top-level element count of `const <name>=[…];` in the patched HTML
+    (None when the array is absent). Counts commas at bracket depth 1 so
+    nested rows (`wins`, `avgTurns`) count as one element each."""
+    m = re.search(r"const %s\s*=\s*(\[.*?\]);" % re.escape(name), html, flags=re.DOTALL)
+    if not m:
+        return None
+    body, depth, count, seen = m.group(1)[1:-1], 0, 0, False
+    for ch in body:
+        if ch == '[':
+            depth += 1
+        elif ch == ']':
+            depth -= 1
+        elif ch == ',' and depth == 0:
+            count += 1
+        if not ch.isspace():
+            seen = True
+    return count + 1 if seen else 0
+
+
+def _check_parallel_arrays(html, D):
+    """Every regenerated array must be parallel to the deck list. A regex
+    that silently fails to match leaves the previous run's numbers under
+    fresh labels — the 2026-09-06 refresh shipped a 19-value WR chart under
+    25 labels that way. Fail loudly instead of writing the file."""
+    n = len(D['decks'])
+    expected = {'wrLabels': n, 'wrFull': n, 'wrData': n, 'wrBgDef': n, 'wrBrDef': n}
+    xf_full, _, _, _ = build_xfilter_arrays(D)
+    k = _js_array_len(xf_full, 'decksFull')
+    expected.update({'decksFull': k, 'decks': k, 'archetype': k, 'wins': k, 'avgTurns': k})
+    bad = {name: (_js_array_len(html, name), want) for name, want in expected.items()
+           if _js_array_len(html, name) != want}
+    if bad:
+        raise RuntimeError(
+            "showcase arrays are not parallel after patching (got, wanted): "
+            + ", ".join(f"{k}={v[0]}/{v[1]}" for k, v in bad.items()))
 
 
 def main():

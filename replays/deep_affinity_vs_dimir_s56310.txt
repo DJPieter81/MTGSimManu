@@ -1,0 +1,974 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+  Sideboard (Dimir Midrange vs Affinity): +1 Damnation, +1 Engineered Explosives, +2 Flusterstorm, +2 Sheoldred, the Apocalypse, -2 Archmage's Charm, -2 Consider, -2 Drown in the Loch
+======================================================================
+  GAME 1: Affinity (P1) vs Dimir Midrange (P2)  —  seed 56310
+  Series: Affinity 0 - 0 Dimir Midrange
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Dimir Midrange wins → chooses to play first
+║ P1 (on play): Dimir Midrange
+║ P2 (on draw): Affinity
+╚═══════════════════════════════════════════════════════
+
+P1 (Affinity) opening hand (0 lands, 7 spells):
+  • Mox Opal [Spell, CMC 0]
+  • Weapons Manufacturing [Spell, CMC 2]
+  • Metallic Rebuke [Spell, CMC 3]
+  • Mishra's Bauble [Spell, CMC 0]
+  • Mox Opal [Spell, CMC 0]
+  • Tormod's Crypt [Spell, CMC 0]
+  • Pinnacle Emissary [Creature, CMC 3]
+→ P1 MULLIGANS (too few lands (0 < 2))
+  New hand (1 lands, 6 spells): ["Mishra's Bauble", 'Weapons Manufacturing', 'Fiery Islet', 'Claws of Gix', 'Metallic Rebuke', 'Metallic Rebuke', 'Claws of Gix']
+→ P1 MULLIGANS (too few lands (1 < 2))
+  New hand (2 lands, 5 spells): ["Urza's Saga", 'Spirebluff Canal', 'Welding Jar', 'Engineered Explosives', 'Weapons Manufacturing', 'Preordain', "Tormod's Crypt"]
+→ P1 mulligans to 5, bottoms: ['Engineered Explosives', 'Weapons Manufacturing']
+  Keeps: ["Urza's Saga", 'Spirebluff Canal', 'Welding Jar', 'Preordain', "Tormod's Crypt"]
+
+P2 (Dimir Midrange) opening hand (3 lands, 4 spells):
+  • Fatal Push [Spell, CMC 1]
+  • Swamp [Land, CMC 0]
+  • Murktide Regent [Creature, CMC 7]
+  • Polluted Delta [Land, CMC 0]
+  • Fatal Push [Spell, CMC 1]
+  • Scalding Tarn [Land, CMC 0]
+  • Psychic Frog [Creature, CMC 2]
+→ P2 KEEPS 7 — has key card(s): Fatal Push, Psychic Frog, 3 cheap spells
+
+
+╔══ TURN 1 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Polluted Delta
+T1: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Polluted Delta (pay 1 life) -> Watery Grave (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Dimir Midrange 19
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 55  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Urza's Saga
+  [Main 1]
+T1 P1: Play Urza's Saga
+    → Goal: deploy_engine
+T1 P1: Cast Welding Jar (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Welding Jar
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Welding Jar
+║   Lands: Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Orcish Bowmasters
+  [Main 1]
+T2 P2: Play Scalding Tarn
+T2: Scalding Tarn moved battlefield -> graveyard (fetchland sacrifice)
+T2 P2: Crack Scalding Tarn (pay 1 life) -> Watery Grave (tapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Dimir Midrange 18
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 54  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Welding Jar
+║   Lands: Urza's Saga
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T2 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P1 draws: Mox Opal
+  [Main 1]
+T2 P1: Play Spirebluff Canal (untapped, 1 other lands)
+    → Goal: deploy_engine
+    [Mana] Tap Spirebluff Canal→U (paying for Preordain, 1 mana remaining)
+T2 P1: Cast Preordain (U)
+    [Priority] P2 passes (no response)
+T2: Resolve Preordain
+T2 P1: scry 2 (Pithing Needle, Mox Opal) → bottom: none
+T2 P1: Preordain → draw 1 (Pithing Needle)
+T2: Preordain moved stack -> graveyard (resolution)
+    → Goal: deploy_engine [engines]
+T2 P1: Cast Mox Opal (0)
+    [Priority] P2 passes (no response)
+T2: Resolve Mox Opal
+    → Goal: curve_out
+    [Mana] Tap Urza's Saga→C (paying for Pithing Needle, 0 mana remaining)
+T2 P1: Cast Pithing Needle (1)
+    [Priority] P2 passes (no response)
+T2: Resolve Pithing Needle
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 18  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Watery Grave
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Welding Jar, Mox Opal, Pithing Needle
+║   Lands: Urza's Saga [T], Spirebluff Canal [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Takenuma, Abandoned Mire
+  [Main 1]
+T3 P2: Play Swamp
+    → Goal: grind_value [payoffs]
+    [Mana] Tap Swamp→B, Watery Grave→U (paying for Psychic Frog, 1 mana remaining)
+T3 P2: Cast Psychic Frog (UB)
+    [Priority] P1 passes (no response)
+T3: Resolve Psychic Frog
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Dimir Midrange 18
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 52  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Welding Jar, Mox Opal, Pithing Needle
+║   Lands: Urza's Saga, Spirebluff Canal
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (1/2)
+║   Lands: Watery Grave [T], Watery Grave, Swamp [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T3 P1: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+  [Draw] P1 draws: Mox Opal
+  [Main 1]
+T3 P1: Play Urza's Saga
+    → Goal: curve_out
+T3 P1: Cast Tormod's Crypt (0)
+    [Priority] P2 passes (no response)
+T3: Resolve Tormod's Crypt
+T3 P1: Create 1x Construct token(s)
+T3 P1: Urza's Saga activates "{2}, {T}: Create a 0/0 colorless Constru..." (pays {2}, {T})
+  [Begin Combat]
+    [Mana] Tap Watery Grave→B (paying for Fatal Push, 0 mana remaining)
+T3 P2: Cast Fatal Push (B)
+T3: Resolve Fatal Push
+T3: Construct Token dies
+T3 P2: Fatal Push destroys Construct Token
+T3: Fatal Push moved stack -> graveyard (resolution)
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 18  |  Affinity 20
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 3
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (1/2)
+║   Lands: Watery Grave, Watery Grave, Swamp
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Welding Jar, Mox Opal, Pithing Needle, Tormod's Crypt
+║   Lands: Urza's Saga [T], Spirebluff Canal [T], Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Consider
+  [Main 1]
+T4 P2: Play Takenuma, Abandoned Mire
+    → Goal: close_game
+T4 P2: Delve 3 cards for Murktide Regent
+    [Mana] Tap Swamp→B, Takenuma, Abandoned Mire→B, Watery Grave→U, Watery Grave→U (paying for Murktide Regent, 0 mana remaining)
+T4 P2: Cast Murktide Regent (5UU)
+    [Priority] P1 passes (no response)
+T4: Resolve Murktide Regent
+T4 P2: Murktide Regent enters as 4/4 (1 +1/+1 counters from delved instants/sorceries)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Psychic Frog
+T4 P2: Attack with Psychic Frog
+  [Declare Blockers] P1 does not block
+T4 P2:   Psychic Frog (1/2) → 1 dmg to player
+T4 P2: Psychic Frog deals combat damage — draw a card
+  [Combat Damage] 1 damage dealt → P1 life: 20 → 19
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 19  |  Dimir Midrange 18
+║ Hand: 1 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 51  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Welding Jar, Mox Opal, Pithing Needle, Tormod's Crypt
+║   Lands: Urza's Saga, Spirebluff Canal, Urza's Saga
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (1/2) [tapped], Murktide Regent (4/4)
+║   Lands: Watery Grave [T], Watery Grave [T], Swamp [T], Takenuma, Abandoned Mire [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T4 P1: Urza's Saga tutors Shadowspear
+T4 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+T4 P1: Sacrifice Urza's Saga (final chapter)
+  [Draw] P1 draws: Urza's Saga
+  [Main 1]
+T4 P1: Play Urza's Saga
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 18  |  Affinity 19
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (1/2), Murktide Regent (4/4)
+║   Lands: Watery Grave, Watery Grave, Swamp, Takenuma, Abandoned Mire
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Welding Jar, Mox Opal, Pithing Needle, Tormod's Crypt, Shadowspear
+║   Lands: Spirebluff Canal, Urza's Saga, Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Underground River
+  [Main 1]
+T5 P2: Play Underground River
+    → Goal: close_game
+    [Mana] Tap Swamp→B, Takenuma, Abandoned Mire→B (paying for Orcish Bowmasters, 3 mana remaining)
+T5 P2: Cast Orcish Bowmasters (1B)
+    [Priority] P1 passes (no response)
+T5: Resolve Orcish Bowmasters
+T5 P2: Bowmasters deals 1 damage to opponent (life: 18)
+T5 P2: amass Orcs 1 — creates a 1/1 Orc Army token
+    → Goal: close_game
+    [Mana] Tap Watery Grave→U (paying for Consider, 2 mana remaining)
+T5 P2: Cast Consider (U)
+    [Priority] P1 passes (no response)
+T5: Resolve Consider
+T5 P2: surveil 1 → Psychic Frog to GY
+T5 P2: Consider → draw 1 (Fatal Push)
+T5: Consider moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Psychic Frog, Murktide Regent
+T5 P2: Attack with Psychic Frog, Murktide Regent
+  [Declare Blockers] P1 does not block
+T5 P2:   Psychic Frog (2/3) → 2 dmg to player
+T5 P2: Psychic Frog deals combat damage — draw a card
+T5 P2:   Murktide Regent (4/4) → 4 dmg to player
+  [Combat Damage] 6 damage dealt → P1 life: 18 → 12
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 12  |  Dimir Midrange 18
+║ Hand: 1 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 49  |  Graveyard: 2
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Welding Jar, Mox Opal, Pithing Needle, Tormod's Crypt, Shadowspear
+║   Lands: Spirebluff Canal, Urza's Saga, Urza's Saga
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (2/3) [tapped], Murktide Regent (4/4) [tapped], Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave [T], Watery Grave, Swamp [T], Takenuma, Abandoned Mire [T], Underground River
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T5 P1: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+T5 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P1 draws: Mishra's Bauble
+  [Main 1]
+T5 P1: Create 1x Construct token(s)
+T5 P1: Urza's Saga activates "{2}, {T}: Create a 0/0 colorless Constru..." (pays {2}, {T})
+  [Begin Combat]
+    [Mana] Tap Watery Grave→B (paying for Fatal Push, 1 mana remaining)
+T5 P2: Cast Fatal Push (B)
+T5: Resolve Fatal Push
+T5: Construct Token dies
+T5 P2: Fatal Push destroys Construct Token
+T5: Fatal Push moved stack -> graveyard (resolution)
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 18  |  Affinity 12
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 43  |  Graveyard: 4
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (2/3), Murktide Regent (4/4), Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave, Watery Grave, Swamp, Takenuma, Abandoned Mire, Underground River
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Welding Jar, Mox Opal, Pithing Needle, Tormod's Crypt, Shadowspear
+║   Lands: Spirebluff Canal [T], Urza's Saga [T], Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Polluted Delta
+  [Main 1]
+T6 P2: Play Polluted Delta
+T6: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T6 P2: Crack Polluted Delta -> Island (untapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Psychic Frog, Murktide Regent, Orcish Bowmasters, Orc Army
+T6 P2: Attack with Psychic Frog, Murktide Regent, Orcish Bowmasters, Orc Army
+  [Declare Blockers] P1 does not block
+T6 P2:   Psychic Frog (2/3) → 2 dmg to player
+T6 P2: Psychic Frog deals combat damage — draw a card
+T6 P2:   Murktide Regent (4/4) → 4 dmg to player
+T6 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T6 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 8 damage dealt → P1 life: 12 → 4
+  [End Combat]
+  [Main 2]
+    → Goal: close_game
+T6 P2: Delve 5 cards for Murktide Regent
+    [Mana] Tap Island→U, Watery Grave→U (paying for Murktide Regent, 4 mana remaining)
+T6 P2: Cast Murktide Regent (5UU)
+    [Priority] P1 passes (no response)
+T6: Resolve Murktide Regent
+T6 P2: Murktide Regent enters as 5/5 (2 +1/+1 counters from delved instants/sorceries)
+  [End Step]
+
+╔══ TURN 6 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 4  |  Dimir Midrange 17
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 6
+║ Library: 48  |  Graveyard: 2
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Welding Jar, Mox Opal, Pithing Needle, Tormod's Crypt, Shadowspear
+║   Lands: Spirebluff Canal, Urza's Saga, Urza's Saga
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (2/3) [tapped], Murktide Regent (4/4) [tapped], Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped], Murktide Regent (5/5)
+║   Lands: Watery Grave [T], Watery Grave, Swamp, Takenuma, Abandoned Mire, Underground River, Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T6 P1: Urza's Saga tutors Skateboard
+T6 P1: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+T6 P1: Sacrifice Urza's Saga (final chapter)
+  [Draw] P1 draws: Shivan Reef
+  [Main 1]
+T6 P1: Play Shivan Reef
+T6 P1: Create 1x Construct token(s)
+T6 P1: Urza's Saga activates "{2}, {T}: Create a 0/0 colorless Constru..." (pays {2}, {T})
+  [Begin Combat]
+    [Mana] Tap Swamp→B (paying for Fatal Push, 3 mana remaining)
+T6 P2: Cast Fatal Push (B)
+T6: Resolve Fatal Push
+T6: Construct Token dies
+T6 P2: Fatal Push destroys Construct Token
+T6: Fatal Push moved stack -> graveyard (resolution)
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 17  |  Affinity 4
+║ Hand: 1 cards  |  Opp hand: 2 cards
+║ Lands: 6  |  Opp lands: 3
+║ Library: 40  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: Psychic Frog (2/3), Murktide Regent (4/4), Orcish Bowmasters (1/1), Orc Army (1/1), Murktide Regent (5/5)
+║   Lands: Watery Grave, Watery Grave, Swamp, Takenuma, Abandoned Mire, Underground River, Island
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Welding Jar, Mox Opal, Pithing Needle, Tormod's Crypt, Shadowspear, Skateboard
+║   Lands: Spirebluff Canal [T], Urza's Saga [T], Shivan Reef [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Orcish Bowmasters
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Swamp→B, Takenuma, Abandoned Mire→B (paying for Orcish Bowmasters, 4 mana remaining)
+T7 P2: Cast Orcish Bowmasters (1B)
+    [Priority] P1 passes (no response)
+T7: Resolve Orcish Bowmasters
+T7 P2: Bowmasters deals 1 damage to opponent (life: 3)
+T7 P2: amass Orcs 1 — Orc Army grows to 2/2
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Psychic Frog, Murktide Regent, Orcish Bowmasters, Orc Army, Murktide Regent
+T7 P2: Attack with Psychic Frog, Murktide Regent, Orcish Bowmasters, Orc Army, Murktide Regent
+  [Declare Blockers] P1 does not block
+T7 P2:   Psychic Frog (2/3) → 2 dmg to player
+T7 P2: Psychic Frog deals combat damage — draw a card
+T7 P2:   Murktide Regent (4/4) → 4 dmg to player
+T7 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T7 P2:   Orc Army (2/2) → 2 dmg to player
+T7 P2:   Murktide Regent (5/5) → 5 dmg to player
+P1 loses: life total -11
+  [Combat Damage] 14 damage dealt → P1 life: 3 → -11
+
+>>> Dimir Midrange wins Game 1 on turn 7 via damage
+    Final life: Affinity=-11  Dimir Midrange=17
+
+======================================================================
+  GAME 2: Affinity (P1) vs Dimir Midrange (P2)  —  seed 56311
+  Series: Affinity 0 - 1 Dimir Midrange
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Affinity wins → chooses to play first
+║ P1 (on play): Affinity
+║ P2 (on draw): Dimir Midrange
+╚═══════════════════════════════════════════════════════
+
+P1 (Affinity) opening hand (3 lands, 4 spells):
+  • Metallic Rebuke [Spell, CMC 3]
+  • Urza's Saga [Land, CMC 0]
+  • Island [Land, CMC 0]
+  • Tormod's Crypt [Spell, CMC 0]
+  • Metallic Rebuke [Spell, CMC 3]
+  • Engineered Explosives [Spell, CMC 0]
+  • Spirebluff Canal [Land, CMC 0]
+→ P1 KEEPS 7 — 3 lands, 4 spells, score 37.0
+
+P2 (Dimir Midrange) opening hand (1 lands, 6 spells):
+  • Flusterstorm [Spell, CMC 1]
+  • Dauthi Voidwalker [Creature, CMC 2]
+  • Consider [Spell, CMC 1]
+  • Orcish Bowmasters [Creature, CMC 2]
+  • Thoughtseize [Spell, CMC 1]
+  • Orcish Bowmasters [Creature, CMC 2]
+  • Polluted Delta [Land, CMC 0]
+→ P2 MULLIGANS (too few lands (1 < 2))
+  New hand (3 lands, 4 spells): ['Polluted Delta', 'Dauthi Voidwalker', 'Thoughtseize', 'Darkslick Shores', 'Island', 'Orcish Bowmasters', 'Counterspell']
+→ P2 mulligans to 6, bottoms: ['Counterspell']
+  Keeps: ['Polluted Delta', 'Dauthi Voidwalker', 'Thoughtseize', 'Darkslick Shores', 'Island', 'Orcish Bowmasters']
+
+
+╔══ TURN 1 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Dimir Midrange 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Island
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Psychic Frog
+  [Main 1]
+T1 P2: Play Polluted Delta
+T1: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Polluted Delta (pay 1 life) -> Watery Grave (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  Dimir Midrange 19
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: Island
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Steam Vents
+  [Main 1]
+T2 P1: Play Urza's Saga
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: Island, Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Island
+  [Main 1]
+T2 P2: Play Island
+    → Goal: grind_value
+    [Mana] Tap Island→U, Watery Grave→B (paying for Orcish Bowmasters, 0 mana remaining)
+T2 P2: Cast Orcish Bowmasters (1B)
+    [Priority] P1 passes (no response)
+T2: Resolve Orcish Bowmasters
+T2 P2: Bowmasters deals 1 damage to opponent (life: 19)
+T2 P2: amass Orcs 1 — creates a 1/1 Orc Army token
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 19  |  Dimir Midrange 19
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: Island, Urza's Saga
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T3 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P1 draws: Engineered Explosives
+  [Main 1]
+T3 P1: Play Steam Vents (untapped, life: 17)
+    → Goal: curve_out
+T3 P1: Cast Tormod's Crypt (0)
+    [Priority] P2 passes (no response)
+T3: Resolve Tormod's Crypt
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Affinity 17
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave, Island
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Tormod's Crypt
+║   Lands: Island, Urza's Saga, Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Counterspell
+  [Main 1]
+T3 P2: Play Island
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army
+T3 P2: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P1 does not block
+T3 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T3 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 17 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 15  |  Dimir Midrange 19
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Tormod's Crypt
+║   Lands: Island, Urza's Saga, Steam Vents
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped]
+║   Lands: Watery Grave, Island, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T4 P1: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+  [Draw] P1 draws: Welding Jar
+  [Main 1]
+T4 P1: Play Spirebluff Canal (tapped, 3 other lands)
+    → Goal: curve_out
+T4 P1: Cast Welding Jar (0)
+    [Priority] P2 passes (no response)
+T4: Resolve Welding Jar
+T4 P1: Create 1x Construct token(s)
+T4 P1: Urza's Saga activates "{2}, {T}: Create a 0/0 colorless Constru..." (pays {2}, {T})
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Affinity 15
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 50  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave, Island, Island
+║ Affinity board:
+║   Creatures: Construct Token (3/3)
+║   Other: Tormod's Crypt, Welding Jar
+║   Lands: Island [T], Urza's Saga [T], Steam Vents [T], Spirebluff Canal [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Murktide Regent
+  [Main 1]
+T4 P2: Play Darkslick Shores (tapped, 3 other lands)
+    → Goal: close_game
+    [Mana] Tap Island→U, Watery Grave→B (paying for Psychic Frog, 1 mana remaining)
+T4 P2: Cast Psychic Frog (UB)
+    [Priority] P1 passes (no response)
+T4: Resolve Psychic Frog
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 15  |  Dimir Midrange 19
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 50  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: Construct Token (3/3)
+║   Other: Tormod's Crypt, Welding Jar
+║   Lands: Island, Urza's Saga, Steam Vents, Spirebluff Canal
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1), Psychic Frog (1/2)
+║   Lands: Watery Grave [T], Island [T], Island, Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T5 P1: Urza's Saga tutors Skateboard
+T5 P1: Sacrifice Urza's Saga (final chapter)
+  [Draw] P1 draws: Claws of Gix
+  [Main 1]
+T5 P1: Equip Skateboard to Construct Token (cost 1)
+    → Goal: curve_out
+T5 P1: Cast Claws of Gix (0)
+    [Priority] P2 passes (no response)
+T5: Resolve Claws of Gix
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Construct Token
+T5 P1: Attack with Construct Token
+  [Declare Blockers] P2 does not block
+T5 P1:   Construct Token (6/5) → 6 dmg to player
+  [Combat Damage] 6 damage dealt → P2 life: 19 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 13  |  Affinity 15
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1), Psychic Frog (1/2)
+║   Lands: Watery Grave, Island, Island, Darkslick Shores
+║ Affinity board:
+║   Creatures: Construct Token (6/5) [tapped]
+║   Other: Tormod's Crypt, Welding Jar, Skateboard, Claws of Gix
+║   Lands: Island [T], Steam Vents, Spirebluff Canal
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Subtlety
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Watery Grave→B, Darkslick Shores→B (paying for Dauthi Voidwalker, 2 mana remaining)
+T5 P2: Cast Dauthi Voidwalker (BB)
+    [Priority] P1 responds with Metallic Rebuke
+T5 P1: Improvise — tap 1 artifact(s) for Metallic Rebuke
+    [Mana] Tap Steam Vents→U, Spirebluff Canal→U (paying for Metallic Rebuke, 0 mana remaining)
+T5 P1: Cast Metallic Rebuke (2U)
+T5: Resolve Metallic Rebuke
+T5: Dauthi Voidwalker moved stack -> graveyard (resolution)
+T5: Dauthi Voidwalker is countered
+T5: Metallic Rebuke moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army, Psychic Frog
+T5 P2: Attack with Orcish Bowmasters, Orc Army, Psychic Frog
+  [Declare Blockers] P1 does not block
+T5 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T5 P2:   Orc Army (1/1) → 1 dmg to player
+T5 P2:   Psychic Frog (2/3) → 2 dmg to player
+T5 P2: Psychic Frog deals combat damage — draw a card
+  [Combat Damage] 4 damage dealt → P1 life: 15 → 11
+  [End Combat]
+  [Main 2]
+T5 P2: Play Polluted Delta
+T5: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T5 P2: Crack Polluted Delta (pay 1 life) -> Watery Grave (tapped, life: 12)
+  [End Step]
+
+╔══ TURN 6 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 11  |  Dimir Midrange 12
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 48  |  Graveyard: 2
+║ Affinity board:
+║   Creatures: Construct Token (6/5)
+║   Other: Tormod's Crypt, Welding Jar, Skateboard, Claws of Gix
+║   Lands: Island, Steam Vents, Spirebluff Canal
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped], Psychic Frog (2/3) [tapped]
+║   Lands: Watery Grave [T], Island, Island, Darkslick Shores [T], Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Claws of Gix
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Construct Token
+T6 P1: Attack with Construct Token
+  [Declare Blockers] P2 does not block
+T6 P1:   Construct Token (6/5) → 6 dmg to player
+  [Combat Damage] 6 damage dealt → P2 life: 12 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 6  |  Affinity 11
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 46  |  Graveyard: 4
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1), Psychic Frog (2/3)
+║   Lands: Watery Grave, Island, Island, Darkslick Shores, Watery Grave
+║ Affinity board:
+║   Creatures: Construct Token (6/5) [tapped]
+║   Other: Tormod's Crypt, Welding Jar, Skateboard, Claws of Gix
+║   Lands: Island, Steam Vents, Spirebluff Canal
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Fatal Push
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Watery Grave→B (paying for Fatal Push, 4 mana remaining)
+T6 P2: Cast Fatal Push (B)
+    [Priority] P1 passes (no response)
+T6: Resolve Fatal Push
+T6: Skateboard falls off Construct Token (unattached)
+T6: Construct Token dies
+T6 P2: Fatal Push destroys Construct Token
+T6: Fatal Push moved stack -> graveyard (resolution)
+    → Goal: close_game
+    [Mana] Tap Island→U, Island→U, Darkslick Shores→U, Watery Grave→B (paying for Subtlety, 0 mana remaining)
+T6 P2: Cast Subtlety (2UU)
+    [Priority] P1 passes (no response)
+T6: Resolve Subtlety
+T6 P2: Subtlety enters (no creature/PW spell on stack to target)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army, Psychic Frog
+T6 P2: Attack with Orcish Bowmasters, Orc Army, Psychic Frog
+  [Declare Blockers] P1 does not block
+T6 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T6 P2:   Orc Army (1/1) → 1 dmg to player
+T6 P2:   Psychic Frog (2/3) → 2 dmg to player
+T6 P2: Psychic Frog deals combat damage — draw a card
+  [Combat Damage] 4 damage dealt → P1 life: 11 → 7
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 7  |  Dimir Midrange 6
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 2
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Tormod's Crypt, Welding Jar, Skateboard, Claws of Gix
+║   Lands: Island, Steam Vents, Spirebluff Canal
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped], Psychic Frog (2/3) [tapped], Subtlety (3/3)
+║   Lands: Watery Grave [T], Island [T], Island [T], Darkslick Shores [T], Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Spirebluff Canal
+  [Main 1]
+T7 P1: Play Spirebluff Canal (tapped, 3 other lands)
+T7: Tormod's Crypt moved battlefield -> graveyard (activation cost (Tormod's Crypt))
+T7 P1: activate Tormod's Crypt — Exile target player's graveyard.
+T7: Polluted Delta moved graveyard -> exile (Tormod's Crypt graveyard exile)
+T7: Dauthi Voidwalker moved graveyard -> exile (Tormod's Crypt graveyard exile)
+T7: Murktide Regent moved graveyard -> exile (Tormod's Crypt graveyard exile)
+T7: Polluted Delta moved graveyard -> exile (Tormod's Crypt graveyard exile)
+T7: Fatal Push moved graveyard -> exile (Tormod's Crypt graveyard exile)
+T7 P1: Tormod's Crypt activated — exiles 5 card(s) from P2 graveyard(s)
+    → Goal: curve_out
+T7 P1: Cast Claws of Gix (0)
+    [Priority] P2 passes (no response)
+T7: Resolve Claws of Gix
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 6  |  Affinity 7
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 44  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1), Psychic Frog (2/3), Subtlety (3/3)
+║   Lands: Watery Grave, Island, Island, Darkslick Shores, Watery Grave
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Welding Jar, Skateboard, Claws of Gix, Claws of Gix
+║   Lands: Island, Steam Vents, Spirebluff Canal, Spirebluff Canal [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Consider
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Island→U (paying for Consider, 4 mana remaining)
+T7 P2: Cast Consider (U)
+    [Priority] P1 passes (no response)
+T7: Resolve Consider
+T7 P2: surveil 1 → Otawara, Soaring City to GY
+T7 P2: Consider → draw 1 (Consider)
+T7: Consider moved stack -> graveyard (resolution)
+    → Goal: close_game
+    [Mana] Tap Island→U (paying for Consider, 3 mana remaining)
+T7 P2: Cast Consider (U)
+    [Priority] P1 passes (no response)
+T7: Resolve Consider
+T7 P2: surveil 1 → Counterspell to GY
+T7 P2: Consider → draw 1 (Shelldock Isle)
+T7: Consider moved stack -> graveyard (resolution)
+T7 P2: Play Shelldock Isle (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army, Psychic Frog, Subtlety
+T7 P2: Attack with Orcish Bowmasters, Orc Army, Psychic Frog, Subtlety
+  [Declare Blockers] P1 does not block
+T7 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T7 P2:   Orc Army (1/1) → 1 dmg to player
+T7 P2:   Psychic Frog (2/3) → 2 dmg to player
+T7 P2: Psychic Frog deals combat damage — draw a card
+T7 P2:   Subtlety (3/3) → 3 dmg to player
+P1 loses: life total 0
+  [Combat Damage] 7 damage dealt → P1 life: 7 → 0
+
+>>> Dimir Midrange wins Game 2 on turn 7 via damage
+    Final life: Affinity=0  Dimir Midrange=6
+
+======================================================================
+  MATCH RESULT: Dimir Midrange wins 2-0
+======================================================================

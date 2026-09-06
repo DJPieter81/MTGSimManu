@@ -41,6 +41,10 @@ def _saga_iii_eligible_targets(
 
     Excludes legendary artifacts that would collide (legend rule)
     with one already on the controller's battlefield.
+
+    "With mana cost {0} or {1}" requires a PRINTED mana cost (CR
+    202.2): an artifact land has mana value 0 but no mana cost, so it
+    never satisfies the condition (`CardTemplate.has_mana_cost`).
     """
     player = game.players[player_idx]
     owned_legend_names = {
@@ -50,6 +54,7 @@ def _saga_iii_eligible_targets(
     eligible = []
     for c in player.library:
         if (CardType.ARTIFACT in c.template.card_types
+                and c.template.has_mana_cost
                 and (c.template.cmc or 0) <= 1):
             if (Supertype.LEGENDARY in c.template.supertypes
                     and c.name in owned_legend_names):
@@ -173,7 +178,66 @@ class AICallbacks(GameCallbacks):
             name=f"skip:{opt.name}", apply=_skip,
             source="optional_cost",
         )
-        return best_choice(game, player_idx, archetype, [pay, skip]) is pay
+        choices = [pay, skip]
+        # What an ETB-untapped payment BUYS is the spell it enables THIS
+        # turn. The bare snapshot delta (life down, one more untapped mana)
+        # cannot see that: `position_value`'s mana term is a surplus over
+        # the opponent's, not "can I cast my two-drop now", so once life is
+        # priced honestly the payment always looked like a loss and a
+        # turn-two sweeper went uncast behind a tapped shock. Offer one
+        # extra pay-variant per spell in hand that is castable only with
+        # the extra mana of this land's colours — the mana planner's own
+        # `spells_enabled_by_one_more` — projected through the same spell
+        # projection every cast is scored with. Generic: any "pay to enter
+        # untapped" land, any deck.
+        player = game.players[player_idx]
+        # Minimal test stubs carry no hand; the enablement branch needs a
+        # real player (same tolerance the stagger gate shows for
+        # `turn_number` above).
+        if (opt.cost.kind == "life" and opt.effect.kind == "etb_untapped"
+                and hasattr(player, "hand")
+                and hasattr(player, "effective_cmc_overrides")):
+            from ai.mana_planner import analyze_mana_needs
+            from ai.ev_evaluator import _project_spell
+            needs = analyze_mana_needs(
+                game, player_idx, player.effective_cmc_overrides)
+            land_colors = set(opt.effect.colors or ())
+            reachable = needs.existing_colors | land_colors
+            # The MARGINAL spell: what fits this turn with one more mana
+            # that did not fit without it. Cheapest-first packing over the
+            # hand's castable-colour spells — two one-drops on three mana
+            # are both castable, but the payment is what lets a third one
+            # be cast, so "castable without paying" is a property of the
+            # turn's budget, not of a single spell's cost.
+            candidates = sorted(
+                ((cmc, spell, spell_colors) for spell, spell_colors, _i, cmc
+                 in needs.spells_enabled_by_one_more),
+                key=lambda t: t[0])
+
+            def _fits(budget, colours):
+                out, spent = [], 0
+                for cmc, spell, spell_colors in candidates:
+                    if spell_colors <= colours and spent + cmc <= budget:
+                        out.append(spell)
+                        spent += cmc
+                return out
+
+            # Without the payment: this turn's untapped colours only.
+            without = {id(sp) for sp in _fits(needs.total_mana,
+                                              needs.existing_colors)}
+            for spell in _fits(needs.total_mana + 1, reachable):
+                if id(spell) in without:
+                    continue
+
+                def _pay_then_cast(s, _spell=spell, _apply=opt.apply_to_snap):
+                    s = _apply(s)
+                    return _project_spell(_spell, s, None, game, player_idx)
+
+                choices.append(Choice(
+                    name=f"{opt.name} -> cast {spell.name}",
+                    apply=_pay_then_cast, source="optional_cost"))
+        best = best_choice(game, player_idx, archetype, choices)
+        return best is not None and best is not skip
 
     def choose_fetch_target(self, game, player_idx, fetch_card, library, fetch_colors):
         player = game.players[player_idx]
@@ -196,6 +260,15 @@ class AICallbacks(GameCallbacks):
     def choose_discard(self, game, player_idx, hand, self_discard):
         from ai.discard_advisor import choose_discard as _choose
         return _choose(game, player_idx, hand, self_discard)
+
+    def decide_offered_cast(self, game, player_idx, card) -> bool:
+        """Castability-driven: the engine only offers a cast it has
+        verified as legal and payable, and the card is otherwise lost
+        (madness → graveyard), so an affordable offer is always taken.
+        Plan-aware refinement (e.g. a reanimation plan preferring the
+        creature in the graveyard) is a scoring concern for a later
+        EV projection through `best_choice`, not for this seam."""
+        return True
 
     def choose_sacrifice(self, game, player_idx, legal):
         from ai.activation_ev import choose_sacrifice_victim
@@ -255,6 +328,28 @@ class AICallbacks(GameCallbacks):
         return DefaultCallbacks.choose_artifact_tutor_target(
             self, game, player_idx, candidates,
         )
+
+
+def adjudicate_capped_game(life):
+    """Who wins a game that hit `MAX_TURNS`? Nobody (CR 104.4).
+
+    `MAX_TURNS` is a wall-clock safety valve so a pathological game cannot
+    run forever. It is NOT a tiebreak, and an unfinished game is a draw.
+
+    This used to compare LIFE TOTALS, which is not a neutral tiebreak: an
+    aggro deck spends the game reducing its opponent's total and typically
+    takes little back, so it wins that comparison close to automatically,
+    while a control deck that stabilised low but assembled an unbeatable
+    board loses it. Measured, the bias was large and archetype-shaped —
+    32% of Domain Zoo vs Azorius Control games were decided this way
+    (6% across a mixed field), and lifting the cap moved the CONTROL decks
+    (4/5c Control 34.4 -> 50.0, into band) while aggro decks stayed flat.
+    See docs/diagnostics/2026-08-30_turn_cap_deflates_control.md.
+
+    Takes the life totals purely so the signature documents what is being
+    deliberately IGNORED; returns None (no winner) regardless.
+    """
+    return None
 
 
 @dataclass
@@ -702,12 +797,25 @@ class GameRunner:
                     game.current_phase = Phase.UPKEEP
                     _vlog(f'  [Upkeep]')
                     _emit(KIND_PHASE, phase="Upkeep", pidx=active)
+                    # CR 603.7 — delayed triggers that named this step
+                    # ("at the beginning of the next turn's upkeep",
+                    # "at the beginning of your next upkeep"). Drained
+                    # FIRST, before rebound/saga/upkeep activations, so a
+                    # delayed draw is in hand for every decision this turn.
+                    from engine.delayed_triggers import DelayedTriggerStep
+                    game.fire_delayed_triggers(DelayedTriggerStep.UPKEEP)
                     # Rebound (CR 702.88b): offer the free recast
                     self._process_rebound_recasts(game, active, ai)
-                    # Urza's Saga chapter triggers
-                    self._process_saga_chapters(game, active)
                     # Activated abilities fired on our upkeep (Isochron Scepter, etc.)
                     self._process_upkeep_activations(game, active)
+                    # The NON-active player's imprinted turn-scoped
+                    # restrictions (silence / fog) fire now, in the active
+                    # player's upkeep — the only window where "this turn"
+                    # covers the opponent's whole turn.
+                    self._process_imprint_copy_activations(
+                        game, 1 - active, timing="opp_upkeep")
+                    if game.game_over:
+                        break
                     # LE-E2: decrement suspend time counters on active
                     # player's suspended cards; cast free when the last
                     # counter is removed. See
@@ -736,6 +844,12 @@ class GameRunner:
                     game.current_phase = Phase.MAIN1
                     _vlog(f'  [Main 1]')
                     _emit(KIND_PHASE, phase="Main1", pidx=active)
+                    # CR 714.2b: lore counters are added as the precombat
+                    # main phase begins (after the draw step), and the
+                    # chapter that number reaches triggers now.
+                    self._process_saga_chapters(game, active)
+                    if game.game_over:
+                        break
                     prev_lands = len(game.players[active].lands)
                     self._execute_main_phase(game, ai, opponent_ai)
                     if game.game_over:
@@ -881,18 +995,9 @@ class GameRunner:
                         break
                     # Activated artifacts: Expedition Map, Ratchet Bomb
                     self._activate_utility_artifacts(game, active)
-                    # Phelia blink returns: exiled permanents come back + trigger ETB
-                    if hasattr(game, '_phelia_returns') and game._phelia_returns:
-                        from engine.card_effects import EFFECT_REGISTRY, EffectTiming
-                        for perm in game.players[active].battlefield:
-                            # Generic: any creature with end-step return trigger
-                            p_oracle = (perm.template.oracle_text or '').lower()
-                            if ('end step' in p_oracle and 'return' in p_oracle
-                                    and 'exiled' in p_oracle):
-                                EFFECT_REGISTRY.execute(
-                                    perm.name, EffectTiming.END_STEP,
-                                    game, perm, active)
-                                break
+                    # Delayed "return at the next end step" blink triggers
+                    # (Phelia-style): resolve this player's scheduled returns.
+                    self._process_end_step_returns(game, active)
                     # End-step instant window: opponent can cast instants/flash
                     self._end_step_instant_window(game, opponent_ai, ai)
                     if game.game_over:
@@ -926,15 +1031,12 @@ class GameRunner:
                 else:
                     win_condition = "combo"
         elif game.turn_number >= game.max_turns:
-            if game.players[0].life > game.players[1].life:
-                winner = 0
-                loser = 1
-            elif game.players[1].life > game.players[0].life:
-                winner = 1
-                loser = 0
-            else:
-                winner = None
-                loser = None
+            # CR 104.4 — a game that does not end with a winner is a DRAW.
+            # `MAX_TURNS` is a wall-clock safety valve, not a tiebreak, so
+            # hitting it decides nothing about who was winning. See
+            # `adjudicate_capped_game` for why life total must not break it.
+            winner = loser = adjudicate_capped_game(
+                [game.players[0].life, game.players[1].life])
             win_condition = "timeout"
         else:
             winner = None
@@ -1255,6 +1357,10 @@ class GameRunner:
                 game.activate_cycling(ai.player_idx, card)
             elif action == "suspend":
                 game.suspend_card(ai.player_idx, card)
+            elif action == "plot":
+                game.plot_card(ai.player_idx, card)
+            elif action == "cast_plotted":
+                game.cast_plotted(ai.player_idx, card, targets)
             elif action == "equip":
                 # targets[0] = creature instance_id to equip to
                 if targets:
@@ -1400,11 +1506,31 @@ class GameRunner:
                 oracle = pw.template.back_face_oracle
                 loyalty = pw.template.back_face_loyalty
             pw_data = _parse_planeswalker_abilities(oracle, loyalty)
-            if not pw_data.get("plus") and not pw_data.get("minus"):
-                continue  # no parseable abilities
+            # Engine legality first, AI choice second: an ability whose
+            # printed effect the resolver cannot execute is refused
+            # before any loyalty is paid, so it must not be OFFERED
+            # either — otherwise the AI spends the walker's one
+            # activation per turn on a line that will be refused.
+            from .planeswalker_manager import PlaneswalkerManager
+            resolvable = PlaneswalkerManager.resolvable_ability_slots(pw)
+            pw_data = {k: v for k, v in pw_data.items()
+                       if k in resolvable or k == "starting_loyalty"}
+            if not any(k in pw_data
+                       for k in ("plus", "zero", "minus", "ult")):
+                continue  # nothing this engine can execute
             opp = game.players[opponent]
 
             ability_type = self._choose_pw_ability(pw, pw_name, pw_data, player, opp, game)
+
+            # The chooser falls back to a fixed slot name when nothing it
+            # was offered is currently AFFORDABLE (a minus below its
+            # loyalty cost). Validate its answer against the resolvable
+            # set rather than trusting it: an unexecutable line must
+            # never reach activation, and burning the walker's one
+            # activation per turn on a refusal is the same defect one
+            # step later.
+            if ability_type not in resolvable:
+                continue
 
             game.activate_planeswalker(active, pw, ability_type)
             ai._pw_activated_this_turn.add(pw.instance_id)
@@ -1578,10 +1704,13 @@ class GameRunner:
                             f"Rebound {rc.name}")
 
     def _process_saga_chapters(self, game: GameState, active: int):
-        """Process saga chapter triggers during upkeep.
+        """Add this turn's lore counters and fire the chapters they reach.
 
-        Each saga gains a lore counter per turn (starting the turn after
-        ETB). Chapter shapes (see engine/oracle_parser.py):
+        CR 714.2: the first counter (and chapter I) come with the entry
+        itself (`engine/saga.py::saga_enters`, reached from the ETB
+        fan-out); each later counter is added as the controller's
+        precombat main phase begins — the runner calls this at the start
+        of MAIN1.  Chapter shapes (see engine/oracle_parser.py):
 
         * Ability grants ('This Saga gains "<cost>: <effect>"') attach
           the quoted activated ability to the permanent — the effect is
@@ -1592,34 +1721,33 @@ class GameRunner:
         """
         from engine.oracle_parser import (
             parse_saga_chapters, extract_granted_ability)
+        from engine.saga import LORE_COUNTER, is_saga, saga_enters
         player = game.players[active]
         sagas_to_sacrifice = []
         sagas_to_transform = []
         for card in list(player.battlefield):
-            is_saga = 'Saga' in (card.template.subtypes or [])
-            if not is_saga:
+            if not is_saga(card):
                 continue
-            # Initialize lore counter on first upkeep
             if not hasattr(card, 'other_counters') or card.other_counters is None:
                 card.other_counters = {}
             chapters = parse_saga_chapters(card.template.oracle_text or '')
             final_chapter = max(chapters) if chapters else 3
-            lore = card.other_counters.get('lore', 0)
-            # Saga entered this turn — skip first upkeep (it gets chapter I on ETB)
+            lore = card.other_counters.get(LORE_COUNTER, 0)
             if lore == 0:
-                card.other_counters['lore'] = 1
-                # Chapter I fires as the saga enters; an ability-grant
-                # chapter I attaches its ability now. (Mana abilities
-                # granted this way are already reflected in the land's
-                # produces_mana parse; the stored text is inert for them.)
-                granted = extract_granted_ability(chapters.get(1))
-                if granted is not None:
-                    card.granted_abilities.append(granted)
-                    game.log.append(f"T{game.display_turn} P{active+1}: "
-                                    f"{card.name} Ch.I: gains \"{granted}\"")
+                # Reached the battlefield outside the ETB fan-out (a
+                # fixture append): give it the entry counter + chapter I
+                # now and let the next main phase advance it.
+                saga_enters(game, card, active)
                 continue
             lore += 1
-            card.other_counters['lore'] = lore
+            card.other_counters[LORE_COUNTER] = lore
+
+            if lore >= final_chapter and card.granted_abilities:
+                # CR 603.3 / 714.4: the final chapter's ability is on the
+                # stack and the Saga is still on the battlefield; its
+                # controller holds priority and may activate what the
+                # earlier chapters granted before the sacrifice.
+                self._activate_granted_token_ability(game, active, card)
 
             card_oracle = (card.template.oracle_text or '').lower()
 
@@ -1743,7 +1871,8 @@ class GameRunner:
         return
 
     def _process_imprint_copy_activations(self, game: GameState,
-                                          active: int):
+                                          active: int,
+                                          timing: str = "own_main"):
         """Fire 'imprint + you may copy' artifacts at a main phase.
 
         Generic mechanic (oracle-driven, no card names):
@@ -1784,6 +1913,15 @@ class GameRunner:
                 continue
 
             template = imp_inst.template
+            # Timing: a copy whose effect restricts the OPPONENT for "this
+            # turn" (typed `turn_scoped_restriction`: silence / no-attacks
+            # / fog) expires before the opponent acts if fired in its
+            # controller's main phase; it is fired in the opponent's
+            # upkeep instead (timing="opp_upkeep", `active` = the holder).
+            # Every other copy keeps the sorcery-speed main-phase firing.
+            wants_opp_turn = bool(getattr(template, 'turn_scoped_restriction', None))
+            if wants_opp_turn != (timing == "opp_upkeep"):
+                continue
             # CR 601.2c — every non-optional target requirement of the
             # copy must have a legal candidate NOW, or the ability is
             # not activated at all (no fizzle-casting).
@@ -1988,6 +2126,59 @@ class GameRunner:
                         f"Ratchet Bomb ({new_charges}) destroys "
                         f"{len(targets_at_cmc)} permanents")
 
+    def _activate_granted_token_ability(self, game: GameState, active: int,
+                                        perm: CardInstance) -> bool:
+        """Activate one granted "[{N},] {T}: Create ... token" ability on
+        `perm` if its printed cost is payable (pool first, then untapped
+        lands other than the source).  Instance-level: the grant lives on
+        `perm.granted_abilities`, not the template.  Returns True when an
+        activation fired (the tap state enforces one per turn).
+
+        Called from the main-phase dispatch and, per CR 714.4 / 603.3, in
+        response to the permanent's own final-chapter trigger — the Saga
+        is still on the battlefield while that ability is on the stack,
+        so its controller may activate before the sacrifice."""
+        import re
+        from engine.cards import CardType
+        from engine.mana import ManaCost as _ManaCost
+        if perm.tapped:
+            return False
+        player = game.players[active]
+        for granted in list(getattr(perm, 'granted_abilities', None) or ()):
+            g = granted.lower()
+            m_grant = re.match(
+                r'(?:\{(\d+)\}\s*,\s*)?\{t\}\s*:\s*create\b', g)
+            if not m_grant or 'token' not in g:
+                continue
+            cost_n = int(m_grant.group(1) or 0)
+            # {N} generic can be paid from mana pool OR untapped lands.
+            # Use pool first (Mox Opal, Springleaf Drum etc.), then tap lands.
+            pool_cover = min(player.mana_pool.total(), cost_n)
+            still_needed = cost_n - pool_cover
+            payers = [l for l in player.untapped_lands if l is not perm]
+            if len(payers) < still_needed:
+                continue
+            if pool_cover:
+                player.mana_pool.pay(_ManaCost(generic=pool_cover))
+            for land in payers[:still_needed]:
+                land.tapped = True
+            perm.tapped = True
+            tokens = game.create_token(
+                active, "construct" if "construct" in g else "creature",
+                count=1, source_oracle=granted,
+            )
+            for t in tokens:
+                if 'artifact' in g and CardType.ARTIFACT not in t.template.card_types:
+                    t.template.card_types.append(CardType.ARTIFACT)
+                if 'artifact' in g:
+                    t.template.tags.add("artifact")
+            game.log.append(
+                f"T{game.display_turn} P{active+1}: "
+                f"{perm.name} activates \"{granted[:40]}...\" "
+                f"(pays {{{cost_n}}}, {{T}})")
+            return True  # one activation per permanent per turn (tap-enforced)
+        return False
+
     def _activate_tap_abilities(self, game: GameState, active: int):
         """Generic {T}: ability dispatch for non-planeswalker permanents.
 
@@ -2008,49 +2199,8 @@ class GameRunner:
             if perm.template.is_creature and getattr(perm, 'summoning_sick', False):
                 continue
 
-            # ── Granted activated abilities (saga chapters etc.):
-            #    "[{N},] {T}: Create ... token" — pay the printed generic
-            #    cost by tapping N other untapped lands, tap the source,
-            #    create the token from the granted text's own token spec.
-            #    Instance-level: lives on perm.granted_abilities, not the
-            #    template, because the grant belongs to this permanent. ──
-            fired_granted = False
-            for granted in list(getattr(perm, 'granted_abilities', None) or ()):
-                g = granted.lower()
-                m_grant = re.match(
-                    r'(?:\{(\d+)\}\s*,\s*)?\{t\}\s*:\s*create\b', g)
-                if not m_grant or 'token' not in g:
-                    continue
-                cost_n = int(m_grant.group(1) or 0)
-                # {N} generic can be paid from mana pool OR untapped lands.
-                # Use pool first (Mox Opal, Springleaf Drum etc.), then tap lands.
-                from engine.mana import ManaCost as _ManaCost
-                pool_cover = min(player.mana_pool.total(), cost_n)
-                still_needed = cost_n - pool_cover
-                payers = [l for l in player.untapped_lands if l is not perm]
-                if len(payers) < still_needed:
-                    continue
-                if pool_cover:
-                    player.mana_pool.pay(_ManaCost(generic=pool_cover))
-                for land in payers[:still_needed]:
-                    land.tapped = True
-                perm.tapped = True
-                tokens = game.create_token(
-                    active, "construct" if "construct" in g else "creature",
-                    count=1, source_oracle=granted,
-                )
-                for t in tokens:
-                    if 'artifact' in g and CardType.ARTIFACT not in t.template.card_types:
-                        t.template.card_types.append(CardType.ARTIFACT)
-                    if 'artifact' in g:
-                        t.template.tags.add("artifact")
-                game.log.append(
-                    f"T{game.display_turn} P{active+1}: "
-                    f"{perm.name} activates \"{granted[:40]}...\" "
-                    f"(pays {{{cost_n}}}, {{T}})")
-                fired_granted = True
-                break  # one activation per permanent per turn (tap-enforced)
-            if fired_granted:
+            # ── Granted activated abilities (saga chapters etc.) ──
+            if self._activate_granted_token_ability(game, active, perm):
                 continue
 
             oracle = (perm.template.oracle_text or '').lower()
@@ -2232,6 +2382,21 @@ class GameRunner:
                 if game.game_over:
                     return
 
+    def _process_end_step_returns(self, game: GameState, active: int):
+        """Resolve delayed "return at the next end step" blink triggers
+        (Phelia-style) scheduled during ``active``'s turn.
+
+        The scheduled-returns queue (``game._phelia_returns``) is the
+        authoritative record of the delayed triggered ability, so this
+        drains it directly — no oracle-text scan for a matching
+        permanent (which previously demanded the literal word "exiled"
+        and so never fired for "return that card" wording, and was lost
+        entirely if the source left the battlefield first)."""
+        if not getattr(game, '_phelia_returns', None):
+            return
+        from engine.card_effects import phelia_end_step
+        phelia_end_step(game, None, active)
+
     def _resolve_sac_effect(self, game: GameState, controller: int, sacrificed, effect_text: str):
         """Execute sacrifice ability effect, parsed from oracle text."""
         import re
@@ -2302,20 +2467,20 @@ class GameRunner:
                 game.game_over = True
                 game.winner = controller
         elif 'return' in effect_text and 'land' in effect_text:
+            # No land-return effect in the current pool deals damage
+            # as part of returning the lands (Aftermath Analyst: "Return
+            # all land cards from your graveyard to the battlefield
+            # tapped." — no damage clause). A prior version of this
+            # branch fabricated 1 damage per land returned with no
+            # basis in any card's oracle text; see
+            # tests/test_sac_effect_land_return_no_damage.py.
             for c in list(player.graveyard):
                 if c.template.is_land:
                     player.graveyard.remove(c)
                     c.zone = "battlefield"
                     c.tapped = True
                     player.battlefield.append(c)
-                    opp.life -= 1
-                    player.damage_dealt_this_turn += 1
                     game.log.append(
                         f"T{game.display_turn} P{controller+1}: "
-                        f"Returned {c.name} to battlefield — 1 damage to P{opp_idx+1} "
-                        f"(life: {opp.life})"
+                        f"Returned {c.name} to battlefield"
                     )
-                    if opp.life <= 0:
-                        game.game_over = True
-                        game.winner = controller
-                        return

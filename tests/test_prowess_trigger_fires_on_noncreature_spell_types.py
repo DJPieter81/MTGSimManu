@@ -291,3 +291,104 @@ class TestProwessTriggerFiresOnNoncreatureSpellTypes:
         assert creature.temp_power_mod == 0, (
             "prowess on player 0's creature must not trigger when player 1 casts a spell"
         )
+
+
+def _unrelated_pump_creature_on_battlefield(
+    game: GameState, controller: int = 0
+) -> CardInstance:
+    """A creature shaped like Dragon's Rage Channeler: a real 'whenever you
+    cast a noncreature spell' trigger whose OWN effect has no +N/+M (it only
+    surveils), plus an unrelated static elsewhere in the oracle text that
+    happens to contain a '+N/+N' pattern (a delirium-style condition, here
+    literally modelled on DRC's own printed text)."""
+    tmpl = CardTemplate(
+        name="Test Delirium Surveiller",
+        card_types=[CardType.CREATURE],
+        mana_cost=ManaCost(generic=1),
+        supertypes=[], subtypes=[],
+        power=1, toughness=1, loyalty=None,
+        keywords=set(),
+        abilities=[],
+        color_identity=set(), produces_mana=[],
+        enters_tapped=False,
+        oracle_text=(
+            "Whenever you cast a noncreature spell, surveil 1. "
+            "Delirium — As long as there are four or more card types "
+            "among cards in your graveyard, this creature gets +2/+2, "
+            "has flying, and attacks each combat if able."
+        ),
+        tags=set(),
+    )
+    card = CardInstance(
+        template=tmpl, owner=controller, controller=controller,
+        instance_id=game.next_instance_id(), zone="battlefield",
+    )
+    card._game_state = game
+    card.enter_battlefield()
+    card.summoning_sick = False
+    game.players[controller].battlefield.append(card)
+    return card
+
+
+class TestProwessLikeDetectorAnchorsToTheCastTriggerClause:
+    """The generic 'prowess-like trigger' detector in CastManager.cast_spell
+    gates on the SUBSTRING 'noncreature spell' appearing anywhere in a
+    creature's oracle text, then searches the ENTIRE oracle text for a
+    '+N/+N' pattern to decide the pump amount. A creature whose real
+    'whenever you cast a noncreature spell' trigger has no P/T effect of its
+    own (e.g. it only surveils), but which separately prints an unrelated
+    '+N/+N' static (delirium, oil counters, an anthem) elsewhere in its
+    text, must NOT receive that unrelated bonus on every spell cast — the
+    pump has to be textually anchored to the actual cast-trigger clause, not
+    merely co-present anywhere in the oracle text blob.
+
+    Modern class: at least 11 real cards hit this exact shape, including
+    Dragon's Rage Channeler (Izzet Prowess) — see the 2026-08-31 replay
+    audit doc for the enumeration and the replay evidence.
+    """
+
+    def test_unrelated_pump_text_elsewhere_in_oracle_is_not_applied_per_cast(self):
+        """CR 702.107 does not apply here at all: this creature has no
+        printed Prowess keyword and no 'whenever you cast ... gets +N/+N'
+        clause. Its only cast-triggered effect is a surveil with no P/T
+        component, so temp_power_mod must stay at 0 after a noncreature
+        spell resolves — the delirium '+2/+2' text belongs to a static
+        condition, not a per-cast trigger, and (being false here — the
+        creature controls no graveyard cards of any type) is not even
+        active as a static.
+        """
+        game = _fresh_game()
+        creature = _unrelated_pump_creature_on_battlefield(game)
+        spell = _spell_in_hand(game, "Test Instant", [CardType.INSTANT])
+
+        game.cast_spell(0, spell, free_cast=True)
+
+        assert creature.temp_power_mod == 0, (
+            "an unrelated static '+N/+N' clause elsewhere in the oracle text "
+            "(e.g. a delirium condition) must not be re-applied as a "
+            "per-spell-cast pump just because the text also contains "
+            "'noncreature spell' from a DIFFERENT, unrelated trigger"
+        )
+        assert creature.temp_toughness_mod == 0
+
+    def test_unrelated_pump_text_does_not_stack_across_multiple_casts(self):
+        """Same shape as above, but casting THREE noncreature spells in one
+        turn must not accumulate +2/+2 x 3 = +6/+6 the way the un-anchored
+        regex does today (this is the exact mechanism that produced a 7/7
+        Dragon's Rage Channeler from a 1/1 base off of 3 unrelated spell
+        casts in a live Bo3 replay — see the audit doc)."""
+        game = _fresh_game()
+        creature = _unrelated_pump_creature_on_battlefield(game)
+        spell_a = _spell_in_hand(game, "Test Spell A", [CardType.INSTANT])
+        spell_b = _spell_in_hand(game, "Test Spell B", [CardType.SORCERY])
+        spell_c = _spell_in_hand(game, "Test Spell C", [CardType.ARTIFACT])
+
+        game.cast_spell(0, spell_a, free_cast=True)
+        game.cast_spell(0, spell_b, free_cast=True)
+        game.cast_spell(0, spell_c, free_cast=True)
+
+        assert creature.temp_power_mod == 0, (
+            "three unrelated-trigger casts must not accumulate the "
+            "delirium clause's +2/+2 into a +6/+6 temp bonus"
+        )
+        assert creature.temp_toughness_mod == 0

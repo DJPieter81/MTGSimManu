@@ -49,8 +49,11 @@ def test_failed_cast_excludes_card_and_replans():
     game.players[1].deck_name = "Dimir Midrange"
 
     # Untapped mana already in play; two distinct castable 1-drops in hand.
+    # Shock lands now enter tapped by default, so untap these to model
+    # the intended "untapped mana already on the battlefield" state.
     for _ in range(3):
-        _add(game, "Stomping Ground", 0, "battlefield")
+        _sg = _add(game, "Stomping Ground", 0, "battlefield")
+        _sg.tapped = False
     a = _add(game, "Wild Nacatl", 0, "hand")
     b = _add(game, "Ragavan, Nimble Pilferer", 0, "hand")
 

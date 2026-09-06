@@ -286,7 +286,7 @@ def murktike_etb(game, card, controller, targets=None, item=None):
     # These are PERMANENT +1/+1 counters, not temp mods that reset at cleanup.
     delved_spells = getattr(card, '_delved_spells', 0)
     if delved_spells > 0:
-        card.plus_counters += delved_spells
+        card.add_plus_counters(delved_spells, game)
     game.log.append(f"T{game.display_turn} P{controller+1}: "
                     f"Murktide Regent enters as {card.power}/{card.toughness}"
                     f" ({delved_spells} +1/+1 counters from delved instants/sorceries)")
@@ -327,30 +327,32 @@ def mox_opal_etb(game, card, controller, targets=None, item=None):
     return
 
 
-@EFFECT_REGISTRY.register("Cranial Plating", EffectTiming.ETB,
-                           description="Enters battlefield unattached. Equip {1}.")
-def cranial_plating_etb(game, card, controller, targets=None, item=None):
-    # In real MTG, equipment enters unattached.
-    # The AI must spend mana to equip via the "equip" action in main phase.
-    # Mark this card as equipment so the game knows it can be equipped.
-    card.instance_tags.add("equipment_unattached")
-    game.log.append(f"T{game.display_turn} P{controller+1}: "
-                    f"Cranial Plating enters the battlefield (unattached)")
+# NOTE: the card-name-keyed "Cranial Plating" ETB handler that used to sit
+# here was deleted. Its whole body was `card.instance_tags.add(
+# "equipment_unattached")` plus a log line — i.e. it encoded CR 301.5c ("an
+# Equipment enters the battlefield unattached") for exactly one printing,
+# leaving the rule silently false for every other Equipment in the format.
+# The rule now lives generically in `engine/triggers.py::trigger_etb`, keyed
+# off the typed `CardTemplate.equip_cost` field and the Equipment subtype.
+# See tests/test_equipment_enters_unattached.py. Registry count 96 -> 95.
 
 
 @EFFECT_REGISTRY.register("Nettlecyst", EffectTiming.ETB,
                            description="Create Germ token, equip it")
 def nettlecyst_etb(game, card, controller, targets=None, item=None):
-    game.create_token(
+    # create_token returns the CardInstance(s) it just put onto the
+    # battlefield — use that directly rather than re-finding the token by a
+    # `"Germ" in c.name` substring gate (a card-name check the abstraction
+    # contract forbids, and one that would also match any other creature
+    # whose name happens to contain "Germ").
+    tokens = game.create_token(
         controller, "germ", count=1,
         source_oracle=card.template.oracle_text,
     )
-    germs = [c for c in game.players[controller].creatures
-             if "Germ" in c.name]
-    if germs:
+    if tokens:
         # Use instance_id-based tag so the generic equipment scaling in _dynamic_base_power
         # and _dynamic_base_toughness picks it up correctly.
-        germs[-1].instance_tags.add(f"equipped_{card.instance_id}")
+        tokens[-1].instance_tags.add(f"equipped_{card.instance_id}")
 
 
 @EFFECT_REGISTRY.register("Springleaf Drum", EffectTiming.ETB,
@@ -389,29 +391,24 @@ def springleaf_drum_etb(game, card, controller, targets=None, item=None):
 # Spell Resolution Effects
 # ═══════════════════════════════════════════════════════════════════
 
-# The next three handlers (Lightning Bolt, Lava Dart, Unholy Heat) —
-# plus Grapeshot, registered further below — are all instances of one
-# mechanic shape: "deal N damage to any target". Each used to
-# re-implement its own copy of "walk the declared target list, apply
-# damage to the first eligible creature/planeswalker, else go face."
-# That inline duplication is now `engine.oracle_resolver.
-# resolve_damage_to_chosen_target`, the single shared owner (routes
-# through `engine.damage.deal_damage` so lifelink/deathtouch/SBA
-# scheduling are correct by construction). See
-# docs/design/rules-foundation-sweep-tracker.md (Phase 3) for the
-# full cluster research — which cards were included/excluded and why.
-@EFFECT_REGISTRY.register("Lightning Bolt", EffectTiming.SPELL_RESOLVE,
-                           description="Deal 3 damage to any target")
-def lightning_bolt_resolve(game, card, controller, targets=None, item=None):
-    from .oracle_resolver import resolve_damage_to_chosen_target
-    resolve_damage_to_chosen_target(game, card, controller, 3, targets)
-
-
-@EFFECT_REGISTRY.register("Lava Dart", EffectTiming.SPELL_RESOLVE,
-                           description="Deal 1 damage to any target")
-def lava_dart_resolve(game, card, controller, targets=None, item=None):
-    from .oracle_resolver import resolve_damage_to_chosen_target
-    resolve_damage_to_chosen_target(game, card, controller, 1, targets)
+# The "deal N damage to any target" mechanic shape used to need a per-card
+# EFFECT_REGISTRY handler (Lightning Bolt, Lava Dart, …), each a one-line
+# `resolve_damage_to_chosen_target(game, card, controller, N, targets)` call
+# differing only in the literal N. That whole shape is now classified once at
+# DB load into `CardTemplate.direct_damage_data` (oracle_parser.
+# parse_direct_damage_spell) and dispatched — with no oracle inspection at
+# resolve time — through the same shared owner in
+# `oracle_resolver.resolve_spell_from_oracle`'s typed-field branch, so the
+# fixed-amount face-legal burn spells (~79 in the DB) need no registration.
+#
+# Lightning Bolt (N=3) and Lava Dart (N=1) were the two registered pure
+# fixed-N handlers; both are DELETED here, verified redundant with the typed
+# path first (tests/test_direct_damage_shared_resolver.py::
+# TestRegisteredBurnHandlersRetired). Unholy Heat (delirium-scaled amount)
+# and Grapeshot (storm-copied) keep their handlers — a derived/conditional
+# amount is a different mechanic the typed field deliberately does not carry.
+# See docs/design/rules-foundation-sweep-tracker.md (Phase 3) for the full
+# cluster research — which cards were included/excluded and why.
 
 
 @EFFECT_REGISTRY.register("Unholy Heat", EffectTiming.SPELL_RESOLVE,
@@ -557,12 +554,13 @@ def galvanic_relay_resolve(game, card, controller, targets=None, item=None):
     game.draw_cards(controller, draw_count)
 
 
-@EFFECT_REGISTRY.register("Thoughtseize", EffectTiming.SPELL_RESOLVE,
-                           description="Opponent discards nonland, you lose 2 life")
-def thoughtseize_resolve(game, card, controller, targets=None, item=None):
-    opponent = 1 - controller
-    game.players[controller].life -= 2
-    game._force_discard(opponent, 1)
+# The Thoughtseize-shaped hand attack ("target player reveals their hand,
+# you choose a nonland card, that player discards it, you lose N life")
+# resolves through the generic reveal-choose branch in
+# engine/oracle_resolver.py (typed `hand_attack_data`), which honours
+# the TARGETED player — including the caster — and delegates the card
+# choice to the decision layer.  The per-card handler that hardcoded
+# the opponent as victim was retired with it.
 
 
 @EFFECT_REGISTRY.register("Faithful Mending", EffectTiming.SPELL_RESOLVE,
@@ -671,12 +669,13 @@ def _wrath_of_the_skies_mv_filter(x_val):
 
 def _all_is_dust_has_color(game, controller, permanent):
     # Oracle: "sacrifices all permanents ... that are one or more
-    # colors." Uses CardTemplate.colors (a permanent's actual color,
-    # CR 105.2a) rather than color_identity (a format-legality
+    # colors." Uses the permanent's CURRENT color (CardInstance.colors:
+    # printed color, or whatever a layer-5 color-setting effect set it
+    # to — CR 105.2) rather than color_identity (a format-legality
     # superset that can include colors not actually on the permanent,
     # e.g. a colored activated-ability cost) — the same distinction
     # Phase 0b's Scion of Draco fix established `colors` for.
-    return len(permanent.template.colors) > 0
+    return len(permanent.colors) > 0
 
 
 @EFFECT_REGISTRY.register("Wrath of the Skies", EffectTiming.SPELL_RESOLVE,
@@ -717,14 +716,18 @@ def prismatic_ending_resolve(game, card, controller, targets=None, item=None):
     )
 
 
-@EFFECT_REGISTRY.register("March of Otherworldly Light", EffectTiming.SPELL_RESOLVE,
-                           description="Exile target artifact, creature, or enchantment with MV <= X")
-def march_otherworldly_light_resolve(game, card, controller, targets=None, item=None):
-    _resolve_nonland_permanent_removal(
-        game, card, controller, targets, item,
-        zone_dest="exile", types=frozenset({"artifact", "creature", "enchantment"}),
-        mv_max_fn=_march_otherworldly_light_mv_max, log_verb="exiles",
-    )
+# "destroy/exile target <permanent> [with mana value N/X or less]" — the whole
+# targeted-removal shape (~100 Modern cards) is now classified once at DB load
+# into CardTemplate.targeted_removal_data (oracle_parser.parse_targeted_removal)
+# and dispatched — no oracle inspection at resolve time — through the same
+# shared _resolve_nonland_permanent_removal in
+# oracle_resolver.resolve_spell_from_oracle's typed-field branch. Abrupt Decay
+# (destroy nonland, MV<=3 literal) and March of Otherworldly Light (exile
+# artifact/creature/enchantment, MV<=X) are DELETED — verified redundant with
+# the typed path first (tests/test_targeted_removal_shared_resolver.py). The
+# non-generic conditions keep their handlers: Assassin's Trophy (basic-land
+# search rider), Fatal Push ("if it has" revolt), Prismatic Ending (Converge
+# colors-spent), Leyline Binding (ETB linked "until leaves" exile).
 
 
 @EFFECT_REGISTRY.register("Ephemerate", EffectTiming.SPELL_RESOLVE,
@@ -874,9 +877,8 @@ def seasoned_pyromancer_etb(game, card, controller, targets=None, item=None):
             ))
             if not worst.template.is_land:
                 discarded_nonland += 1
-            player.hand.remove(worst)
-            worst.zone = "graveyard"
-            player.graveyard.append(worst)
+            game.zone_mgr.move_card(game, worst, "hand", "graveyard",
+                                    cause="discard")
     _sp_drawn = game.draw_cards(controller, 2)
     _sp_names = ", ".join(c.name for c in _sp_drawn)
     # Create 1/1 Elemental tokens for each nonland discarded
@@ -997,7 +999,10 @@ def mutagenic_growth_resolve(game, card, controller, targets=None, item=None):
         best = max(my_creatures, key=lambda c: c.power or 0)
         best.temp_power_mod += 2
         best.temp_toughness_mod += 2
-    game.players[controller].life -= 2
+    # NOTE: no life deduction here. Mutagenic Growth's {G/P} pip is a CAST
+    # cost paid once by cast_manager (pay 2 life instead of {G}); a stray
+    # `life -= 2` here re-charged it, so the caster lost 2 extra life on
+    # every resolution — even when the pip was paid with real green mana.
 
 
 @EFFECT_REGISTRY.register("Violent Urge", EffectTiming.SPELL_RESOLVE,
@@ -1592,7 +1597,11 @@ def _resolve_nonland_permanent_removal(
 
 
 def _fatal_push_mv_max(game, card, controller, item):
-    has_revolt = game.players[controller].creatures_died_this_turn > 0
+    # CR 702.139 revolt: "a permanent left the battlefield under your control
+    # this turn". Read the broad per-turn funnel tally, not the narrower
+    # creature-death signal — a fetchland crack, a sacrifice, a bounce, or a
+    # blink turns revolt on just as a creature death does.
+    has_revolt = game.players[controller].permanents_left_battlefield_this_turn > 0
     return _FATAL_PUSH_REVOLT_MV if has_revolt else _FATAL_PUSH_BASE_MV
 
 
@@ -1612,6 +1621,36 @@ def _prismatic_ending_mv_max(game, card, controller, item):
     return max(1, min(len(colors), _CONVERGE_MAX_COLORS))
 
 
+def converge_reachable_max_mv(game, controller: int) -> int:
+    """The highest mana value a Converge-conditioned effect could reach
+    right now, computed from this player's CURRENTLY UNTAPPED mana
+    sources rather than a spell already on the stack.
+
+    Converge's real ceiling is the number of distinct colors of mana
+    spent (capped at `_CONVERGE_MAX_COLORS`, WUBRG) — not raw generic
+    mana. A manabase that can only ever produce 2 colors can never
+    satisfy "mana value <= colors spent" against a permanent above
+    mana value 2, no matter how much mana is poured in. Domain payoffs
+    (Scion of Draco et al.) carry a large PRINTED mana value even
+    though their discounted cast cost is small, so this ceiling is
+    frequently far below what a quick "how much mana do I have" read
+    would suggest.
+
+    Shared by the cast-time X picker
+    (`engine.cast_manager.pick_converge_x_value`) and the AI's
+    proactive-cast gate (`ai.ev_player.EVPlayer._has_high_threat_target`)
+    so both layers agree on what a Converge spell can and cannot reach —
+    the same "one picker, two consumers" pattern `pick_wipe_x_value` and
+    `pick_creature_tutor_x_value` already establish for their own
+    X-cost shapes.
+    """
+    colors = set()
+    for land in game.players[controller].untapped_lands:
+        colors |= set(game._effective_produces_mana(controller, land) or [])
+    colors.discard('C')
+    return min(len(colors), _CONVERGE_MAX_COLORS)
+
+
 def _march_otherworldly_light_mv_max(game, card, controller, item):
     # X = mana actually paid for {X} (stored on the stack item at cast
     # time). Reading from len(lands) would ignore the cast-time
@@ -1619,13 +1658,11 @@ def _march_otherworldly_light_mv_max(game, card, controller, item):
     return item.x_value if item and hasattr(item, 'x_value') else 0
 
 
-@EFFECT_REGISTRY.register("Abrupt Decay", EffectTiming.SPELL_RESOLVE,
-                           description="Destroy target nonland permanent with MV 3 or less")
-def abrupt_decay_resolve(game, card, controller, targets=None, item=None):
-    _resolve_nonland_permanent_removal(
-        game, card, controller, targets, item,
-        zone_dest="graveyard", mv_max_fn=lambda g, c, ctl, it: _ABRUPT_DECAY_MV,
-    )
+# Abrupt Decay ("destroy target nonland permanent with mana value 3 or less")
+# is handled by the typed targeted_removal_data path (see the note at the
+# top of the removal section); its handler is deleted. _ABRUPT_DECAY_MV and
+# _march_otherworldly_light_mv_max are retained as documented mv-threshold
+# fixtures for tests/test_nonland_permanent_removal_mv_threshold.py.
 
 
 @EFFECT_REGISTRY.register("Assassin's Trophy", EffectTiming.SPELL_RESOLVE,
@@ -1689,9 +1726,8 @@ def archon_of_cruelty_etb(game, card, controller, targets=None, item=None):
     if opp.hand:
         # Discard the worst card (lowest CMC non-land)
         discard = min(opp.hand, key=lambda c: c.template.cmc if not c.template.is_land else 99)
-        opp.hand.remove(discard)
-        discard.zone = "graveyard"
-        game.players[discard.owner].graveyard.append(discard)
+        game.zone_mgr.move_card(game, discard, "hand", "graveyard",
+                                cause="forced discard")
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Archon of Cruelty: P{opponent+1} discards {discard.name}")
 
@@ -1863,7 +1899,7 @@ def wan_shi_tong_etb(game, card, controller, targets=None, item=None):
     opponent = 1 - controller
     x = game.players[opponent].library_searches_this_game
     if x > 0:
-        card.plus_counters += x
+        card.add_plus_counters(x, game)
         draw_count = x // 2
         if draw_count > 0:
             game.draw_cards(controller, draw_count)
@@ -1977,26 +2013,42 @@ def orcish_bowmasters_etb(game, card, controller, targets=None, item=None):
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Bowmasters deals 1 damage to opponent (life: {opp.life})")
 
-    # Create a 1/1 Orc Army token (simplified — in real MTG it grows)
-    from .cards import CardTemplate, CardType, ManaCost
-    token_template = CardTemplate(
-        name="Orc Army",
-        card_types=[CardType.CREATURE],
-        mana_cost=ManaCost(0, 0, 0, 0, 0, 0),
-        power=1,
-        toughness=1,
-        tags={"creature", "token"},
-    )
-    from .cards import CardInstance
-    token = CardInstance(
-        template=token_template, owner=controller,
-        controller=controller, instance_id=game.next_instance_id(),
-    )
-    token._game_state = game
-    token.enter_battlefield()
-    game.players[controller].battlefield.append(token)
-    game.log.append(f"T{game.display_turn} P{controller+1}: "
-                    f"Bowmasters creates 1/1 Orc Army token")
+    # amass Orcs 1 (CR 701.44a): put a +1/+1 counter on an Army you
+    # control; create a new Orc Army token only if you control none.
+    # An existing Army is identified by its "Army" subtype (mechanic-
+    # based, no token-name check), so the Army grows 1/1 -> 2/2 -> 3/3
+    # across repeated amass rather than spawning parallel 1/1 bodies.
+    existing_army = next(
+        (c for c in game.players[controller].creatures
+         if "Army" in (c.template.subtypes or [])),
+        None)
+    if existing_army is not None:
+        existing_army.add_plus_counters(1, game)
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: amass Orcs 1 — "
+            f"Orc Army grows to {existing_army.power}/{existing_army.toughness}")
+    else:
+        from .cards import CardTemplate, CardType, ManaCost
+        token_template = CardTemplate(
+            name="Orc Army",
+            card_types=[CardType.CREATURE],
+            mana_cost=ManaCost(0, 0, 0, 0, 0, 0),
+            power=1,
+            toughness=1,
+            subtypes=["Army"],
+            tags={"creature", "token"},
+        )
+        from .cards import CardInstance
+        token = CardInstance(
+            template=token_template, owner=controller,
+            controller=controller, instance_id=game.next_instance_id(),
+        )
+        token.is_token = True
+        token._game_state = game
+        token.enter_battlefield()
+        game.players[controller].battlefield.append(token)
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
+                        f"amass Orcs 1 — creates a 1/1 Orc Army token")
 
 
 @EFFECT_REGISTRY.register("Psychic Frog", EffectTiming.ETB,
@@ -2006,18 +2058,18 @@ def psychic_frog_etb(game, card, controller, targets=None, item=None):
     card.instance_tags.add("psychic_frog")
 
 
-@EFFECT_REGISTRY.register("Damnation", EffectTiming.SPELL_RESOLVE,
-                           description="Destroy all creatures")
-def damnation_resolve(game, card, controller, targets=None, item=None):
-    """Damnation: destroy all creatures. They can't be regenerated
-    (no regeneration mechanic modeled in this engine, so no-op) —
-    still subject to CR 702.12b indestructible like any destroy
-    effect (bug fix: the pre-migration handler destroyed unconditionally,
-    with no indestructible check at all)."""
-    _resolve_board_sweep(
-        game, card, controller, targets, item,
-        action="destroy", types=frozenset({"creature"}),
-    )
+# The symmetric "destroy all creatures" sweep (Damnation, Supreme Verdict,
+# Wrath of God, …) is now classified once at DB load into
+# CardTemplate.board_sweep_data (oracle_parser.parse_board_sweep) and
+# dispatched — no oracle inspection at resolve time — through the same shared
+# _resolve_board_sweep in oracle_resolver.resolve_spell_from_oracle's
+# typed-field branch, so these wraths need no per-card registration. Damnation
+# and Supreme Verdict (both byte-identical destroy-all-creatures handlers) are
+# DELETED, verified redundant with the typed path first
+# (tests/test_board_sweep_shared_resolver.py). Conditional/asymmetric sweeps
+# (All Is Dust's color filter, Wrath of the Skies' MV-gated energy wipe) keep
+# their handlers — those carry resolution-time parameters the plain typed
+# field does not. See docs/design/rules-foundation-sweep-tracker.md (Phase 3).
 
 
 @EFFECT_REGISTRY.register("Sheoldred, the Apocalypse", EffectTiming.ETB,
@@ -2461,34 +2513,17 @@ def manamorphose_resolve(game, card, controller, targets=None, item=None):
 # Teferi, Time Raveler — bounce + shut off instant speed
 # ═══════════════════════════════════════════════════════════════════
 @EFFECT_REGISTRY.register("Teferi, Time Raveler", EffectTiming.ETB,
-                           description="Bounce target opponent permanent, draw a card")
+                           description="Apply the sorcery-speed static; the bounce is the -3 loyalty ability")
 def teferi_t3_etb(game, card, controller, targets=None, item=None):
-    """T3feri ETB: bounce opponent's best nonland permanent, draw a card."""
+    """T3feri ETB: apply ONLY the static "opponents cast at sorcery speed"
+    AI hint. The "return a permanent to hand, draw a card" effect is the
+    -3 LOYALTY ability (engine/planeswalker_manager.py), NOT an ETB —
+    performing it here made Teferi bounce twice the turn it landed (once
+    on ETB, once when the AI activated the real -3) and appended a bounced
+    token straight to hand where it wrongly persisted. This fake ETB had
+    been removed once for exactly that double-bounce and regressed."""
     opp_idx = 1 - controller
     opp = game.players[opp_idx]
-    player = game.players[controller]
-
-    # Bounce best opponent nonland permanent (by threat)
-    nonlands = [c for c in opp.battlefield if not c.template.is_land]
-    if nonlands:
-        target = max(nonlands, key=lambda c: _threat_score(c, game, opp))
-        opp.battlefield.remove(target)
-        if target in opp.creatures:
-            opp.creatures.remove(target)
-        target.zone = "hand"
-        opp.hand.append(target)
-        game.log.append(
-            f"T{game.display_turn} P{controller+1}: "
-            f"Teferi bounces {target.name}")
-
-    # Draw a card
-    if player.library:
-        drawn = player.library.pop(0)
-        drawn.zone = "hand"
-        player.hand.append(drawn)
-        game.log.append(
-            f"T{game.display_turn} P{controller+1}: "
-            f"Teferi draws {drawn.name}")
 
     # Static: opponents can only cast at sorcery speed.
     # Reducing counter_density is an AI hint; the hard engine restriction
@@ -2502,20 +2537,11 @@ def teferi_t3_etb(game, card, controller, targets=None, item=None):
 # ═══════════════════════════════════════════════════════════════════
 # Supreme Verdict — uncounterable board wipe
 # ═══════════════════════════════════════════════════════════════════
-@EFFECT_REGISTRY.register("Supreme Verdict", EffectTiming.SPELL_RESOLVE,
-                           description="Destroy all creatures (can't be countered)")
-def supreme_verdict_resolve(game, card, controller, targets=None, item=None):
-    """Supreme Verdict: destroy all creatures. "Can't be countered" is
-    a casting-time property, not a resolution-time board-sweep effect
-    — out of this cluster's scope. (Verified: no `is_uncounterable`/
-    "can't be countered" enforcement exists anywhere in engine/ today;
-    Supreme Verdict is castable-and-counterable like any other spell
-    in the current implementation. A real, separate gap — belongs
-    with 1a's counter-tax framework, not this sweep-resolver slice.)"""
-    _resolve_board_sweep(
-        game, card, controller, targets, item,
-        action="destroy", types=frozenset({"creature"}),
-    )
+# Supreme Verdict's "destroy all creatures" is handled by the typed
+# board_sweep_data path (see the Damnation note above); its handler is deleted.
+# "Can't be countered" is a casting-time property, unmodelled in engine/ today
+# either way — a separate gap that belongs with 1a's counter-tax framework,
+# not this sweep slice.
 
 
 # ═══════════════════════════════════════════════════════════════════
@@ -2533,46 +2559,12 @@ def goblin_bombardment_etb(game, card, controller, targets=None, item=None):
 
 
 # ═══════════════════════════════════════════════════════════════════
-# Blood Moon — nonbasic lands are Mountains
-# ═══════════════════════════════════════════════════════════════════
-@EFFECT_REGISTRY.register("Blood Moon", EffectTiming.ETB,
-                           description="Nonbasic lands are Mountains")
-def blood_moon_etb(game, card, controller, targets=None, item=None):
-    """Blood Moon enters: opponent's nonbasic lands become Mountains.
-
-    CRITICAL: Do NOT mutate `land.template.produces_mana` — templates are
-    shared across every CardInstance of that land in every game in the
-    matrix worker. The old implementation permanently corrupted the
-    CardDatabase for all subsequent games, which is the primary cause of
-    Boros's 94% WR (Blood Moon SB → opponent lands become Mountains in
-    game 1 → stay broken for games 2..N because mana-tap logic reads the
-    shared template).
-
-    Fix: give each affected land instance its own shallow-copied template
-    with produces_mana=['R']. Only the instance sees the change; the
-    shared CardDatabase template is untouched.
-    """
-    import copy
-    opp_idx = 1 - controller
-    opp = game.players[opp_idx]
-    affected = 0
-    for land in opp.lands:
-        supertypes = getattr(land.template, 'supertypes', [])
-        if 'Basic' in supertypes:
-            continue
-        old_colors = set(land.template.produces_mana)
-        if old_colors == {'R'} or old_colors == set():
-            continue
-        # Shallow-copy the template, then replace produces_mana in the copy.
-        # Assigning land.template rebinds only this instance's reference.
-        per_instance_tmpl = copy.copy(land.template)
-        per_instance_tmpl.produces_mana = ['R']
-        land.template = per_instance_tmpl
-        affected += 1
-    if affected > 0:
-        game.log.append(
-            f"T{game.display_turn} P{controller+1}: "
-            f"Blood Moon: {affected} opponent nonbasic lands become Mountains")
+# Blood Moon family — "Nonbasic lands are Mountains" is a LAYER-4
+# continuous effect derived from the typed `stax_forced_basic` field
+# (engine/continuous_effects.py::create_forced_land_type_effect):
+# symmetric, covers lands that enter later, strips the fetch ability,
+# and ends with its source.  The per-card ETB handler that swapped an
+# opponent-only template copy at entry time was retired with it.
 
 
 # ═══════════════════════════════════════════════════════════════════
@@ -2777,30 +2769,38 @@ def phelia_attack(game, card, controller, targets=None, item=None):
             f"T{game.display_turn} P{controller+1}: "
             f"Phelia exiles {target.name} (P{target_owner+1}'s)")
 
-        # Schedule return at end step
+        # Schedule return at the next end step. The +1/+1 counter is
+        # NOT applied here — the oracle grants it only when the card
+        # RETURNS under the controller's control (at the end step), so
+        # it lands in phelia_end_step, not on attack.
         if not hasattr(game, '_phelia_returns'):
             game._phelia_returns = []
-        game._phelia_returns.append((target, target_owner, controller))
-
-        # If it returns under controller's control, Phelia gets +1/+1
-        if target_owner == controller:
-            card.plus_counters += 1
-            game.log.append(
-                f"T{game.display_turn} P{controller+1}: "
-                f"Phelia gets +1/+1 counter ({card.power}/{card.toughness})")
+        # Carry the source instance so the delayed self-counter goes on
+        # the exact creature that attacked — no card-name lookup later.
+        game._phelia_returns.append((target, target_owner, controller, card))
 
 
 @EFFECT_REGISTRY.register("Phelia, Exuberant Shepherd", EffectTiming.END_STEP,
                            description="Return Phelia-exiled cards to battlefield")
 def phelia_end_step(game, card, controller, targets=None, item=None):
-    """Return all Phelia-exiled permanents to the battlefield."""
-    if not hasattr(game, '_phelia_returns') or not game._phelia_returns:
+    """Resolve the delayed "return at the next end step" trigger: return
+    each permanent scheduled by THIS player's Phelia attack, and — per
+    the oracle — put a +1/+1 counter on Phelia only for a card that
+    returns under her controller's control.
+
+    Processes only entries created by ``controller`` (the player whose
+    end step this is); other players' scheduled returns wait for their
+    own end step. Robust to ``card`` being None (the source may have
+    left the battlefield before the delayed trigger resolves — the
+    return still happens; the counter fizzles if Phelia is gone)."""
+    queue = getattr(game, '_phelia_returns', None)
+    if not queue:
         return
 
-    returns = list(game._phelia_returns)
-    game._phelia_returns.clear()
+    mine = [t for t in queue if t[2] == controller]
+    game._phelia_returns = [t for t in queue if t[2] != controller]
 
-    for exiled_card, owner_idx, phelia_controller in returns:
+    for exiled_card, owner_idx, phelia_controller, source in mine:
         owner = game.players[owner_idx]
         if exiled_card in owner.exile:
             owner.exile.remove(exiled_card)
@@ -2814,6 +2814,17 @@ def phelia_end_step(game, card, controller, targets=None, item=None):
                 f"{exiled_card.name} returns to battlefield (P{owner_idx+1})")
             # Trigger ETB on return
             game.trigger_etb(exiled_card, owner_idx)
+        # Oracle: "If it entered under your control, put a +1/+1 counter
+        # on [the source]." True exactly when the card returns under the
+        # source's controller's control — and only while the source is
+        # still on the battlefield (CR 603.10; else the counter fizzles).
+        if (owner_idx == phelia_controller
+                and source in game.players[phelia_controller].battlefield):
+            source.add_plus_counters(1, game)
+            game.log.append(
+                f"T{game.display_turn} P{phelia_controller+1}: "
+                f"{source.name} gets +1/+1 counter "
+                f"({source.power}/{source.toughness})")
 
 
 # ═══════════════════════════════════════════════════════════════════
@@ -2873,10 +2884,22 @@ def ratchet_bomb_etb(game, card, controller, targets=None, item=None):
 @EFFECT_REGISTRY.register("Leyline of the Guildpact", EffectTiming.ETB,
                            description="All lands are every basic type, all permanents are all colors")
 def leyline_guildpact_etb(game, card, controller, targets=None, item=None):
-    """Leyline of the Guildpact: enables full domain (5 basic land types).
+    """Leyline of the Guildpact — logging + legacy domain flag.
 
-    Static: all your lands are every basic land type → domain = 5.
-    Static: all nonland permanents you control are all colors.
+    Neither of the card's two statics is implemented here, and
+    deliberately so: both are continuous abilities that must hold for
+    as long as the enchantment is on the battlefield, whatever path
+    put it there (this handler does NOT run on the start-of-game
+    leyline placement in game_runner.py, which goes through
+    TriggerManager, not EFFECT_REGISTRY).
+
+      • "Lands you control are every basic land type" — derived from
+        CardTemplate.has_all_basic_land_types by the domain count in
+        cards.py.
+      • "Each nonland permanent you control is all colors" — a
+        layer-5 colour-setting static (CR 105.2b), derived from
+        CardTemplate.color_setting_scope by
+        ContinuousEffectsManager.recalculate.
     """
     player = game.players[controller]
     # Set a flag for domain calculation
@@ -2995,9 +3018,8 @@ def territorial_kavu_attack(game, card, controller, targets=None, item=None):
                 # still must discard if loot mode chosen.  Discard the
                 # extra land; cantrip value still net-zero.
                 worst = min(hand, key=lambda c: c.template.cmc or 0)
-        hand.remove(worst)
-        worst.zone = "graveyard"
-        me.graveyard.append(worst)
+        game.zone_mgr.move_card(game, worst, "hand", "graveyard",
+                                cause="discard")
         game.draw_cards(controller, 1)
         game.log.append(
             f"T{game.display_turn} P{controller+1}: "
@@ -3030,7 +3052,14 @@ def scion_of_draco_etb(game, card, controller, targets=None, item=None):
     automatically retracts if Scion leaves the battlefield (the
     manager's stale-source cleanup). Mechanic-class: "creatures you
     control have keyword K if they're color C" — this registration
-    shape generalizes to any future card with the same clause."""
+    shape generalizes to any future card with the same clause.
+
+    The colour it reads is the creature's CURRENT colour
+    (CardInstance.colors), not its printed colour: a layer-5
+    colour-setting static (CR 105.2b, e.g. "each nonland permanent you
+    control is all colors") is applied earlier in the same
+    recalculate() pass, so a creature made all colours picks up all
+    five keywords."""
     from .cards import Keyword
     from .mana import Color
     from .continuous_effects import ContinuousEffect, Layer, create_lord_effect
@@ -3046,7 +3075,7 @@ def scion_of_draco_etb(game, card, controller, targets=None, item=None):
         def affected(g, c, _color=color, _controller=controller):
             return (c.controller == _controller
                     and c.template.is_creature
-                    and _color in c.template.colors)
+                    and _color in c.colors)
         for effect in create_lord_effect(
                 source_id=card.instance_id, source_name=card.template.name,
                 affected_fn=affected, power_bonus=0, toughness_bonus=0,

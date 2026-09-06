@@ -1,0 +1,952 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+======================================================================
+  GAME 1: Creatures Toolbox (P1) vs Dimir Midrange (P2)  —  seed 58004
+  Series: Creatures Toolbox 0 - 0 Dimir Midrange
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Dimir Midrange wins → chooses to play first
+║ P1 (on play): Dimir Midrange
+║ P2 (on draw): Creatures Toolbox
+╚═══════════════════════════════════════════════════════
+
+P1 (Creatures Toolbox) opening hand (3 lands, 4 spells):
+  • Delighted Halfling [Creature, CMC 1]
+  • Wooded Foothills [Land, CMC 0]
+  • Verdant Catacombs [Land, CMC 0]
+  • Green Sun's Zenith [Spell, CMC 1]
+  • Craterhoof Behemoth [Creature, CMC 8]
+  • Badgermole Cub [Creature, CMC 2]
+  • Windswept Heath [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Badgermole Cub, Delighted Halfling, 3 cheap spells
+
+P2 (Dimir Midrange) opening hand (4 lands, 3 spells):
+  • Watery Grave [Land, CMC 0]
+  • Darkslick Shores [Land, CMC 0]
+  • Murktide Regent [Creature, CMC 7]
+  • Scalding Tarn [Land, CMC 0]
+  • Spell Pierce [Spell, CMC 1]
+  • Swamp [Land, CMC 0]
+  • Orcish Bowmasters [Creature, CMC 2]
+→ P2 KEEPS 7 — has key card(s): Orcish Bowmasters, 2 cheap spells
+
+
+╔══ TURN 1 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Creatures Toolbox 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Watery Grave (untapped, life: 20)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 20  |  Dimir Midrange 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Delighted Halfling
+  [Main 1]
+T1 P1: Play Wooded Foothills
+T1: Wooded Foothills moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Wooded Foothills (pay 1 life) -> Overgrown Tomb (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Creatures Toolbox 19
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Psychic Frog
+  [Main 1]
+T2 P2: Play Scalding Tarn
+T2: Scalding Tarn moved battlefield -> graveyard (fetchland sacrifice)
+T2 P2: Crack Scalding Tarn (pay 1 life) -> Watery Grave (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 19  |  Dimir Midrange 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Overgrown Tomb
+  [Main 1]
+T2 P1: Play Windswept Heath
+T2: Windswept Heath moved battlefield -> graveyard (fetchland sacrifice)
+T2 P1: Crack Windswept Heath (pay 1 life) -> Temple Garden (tapped, life: 18)
+    → Goal: deploy_engine
+    [Mana] Tap Overgrown Tomb→G (paying for Delighted Halfling, 0 mana remaining)
+T2 P1: Cast Delighted Halfling (G)
+    [Priority] P2 passes (no response)
+T2: Resolve Delighted Halfling
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Creatures Toolbox 18
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave, Watery Grave
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2)
+║   Lands: Overgrown Tomb [T], Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Consider
+  [Main 1]
+    → Goal: grind_value
+    [Mana] Tap Watery Grave→B, Watery Grave→B (paying for Orcish Bowmasters, 0 mana remaining)
+T3 P2: Cast Orcish Bowmasters (1B)
+    [Priority] P1 passes (no response)
+T3: Resolve Orcish Bowmasters
+T3 P2: Bowmasters deals 1 damage to opponent (life: 17)
+T3 P2: Bowmasters creates 1/1 Orc Army token
+T3 P2: Play Swamp
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 17  |  Dimir Midrange 19
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2)
+║   Lands: Overgrown Tomb, Temple Garden
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave [T], Watery Grave [T], Swamp
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Nature's Rhythm
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Overgrown Tomb→G, Temple Garden→G (paying for Badgermole Cub, 1 mana remaining)
+T3 P1: Cast Badgermole Cub (1G)
+    [Priority] P2 passes (no response)
+T3: Resolve Badgermole Cub
+    → Goal: execute_payoff
+    [Mana] Tap Delighted Halfling→BG (paying for Delighted Halfling, 1 mana remaining)
+T3 P1: Cast Delighted Halfling (G)
+    [Priority] P2 passes (no response)
+T3: Resolve Delighted Halfling
+T3 P1: Play Verdant Catacombs
+T3: Verdant Catacombs moved battlefield -> graveyard (fetchland sacrifice)
+T3 P1: Crack Verdant Catacombs -> Dryad Arbor (untapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 19  |  Creatures Toolbox 16
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave, Watery Grave, Swamp
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2) [tapped], Badgermole Cub (2/2), Delighted Halfling (1/2), Dryad Arbor (1/1)
+║   Lands: Overgrown Tomb [T], Temple Garden [T], Dryad Arbor
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Underground River
+  [Main 1]
+T4 P2: Play Underground River
+    → Goal: close_game
+    [Mana] Tap Watery Grave→U (paying for Consider, 3 mana remaining)
+T4 P2: Cast Consider (U)
+    [Priority] P1 passes (no response)
+T4: Resolve Consider
+T4 P2: surveil 1 → Consider to GY
+T4 P2: Consider → draw 1 (Counterspell)
+T4: Consider moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army
+T4 P2: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P1 does not block
+T4 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T4 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 16 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 14  |  Dimir Midrange 19
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 3
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2), Badgermole Cub (2/2), Delighted Halfling (1/2), Dryad Arbor (1/1)
+║   Lands: Overgrown Tomb, Temple Garden, Dryad Arbor
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped]
+║   Lands: Watery Grave [T], Watery Grave, Swamp, Underground River
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Leyline of Abundance
+  [Main 1]
+T4 P1: Play Overgrown Tomb (untapped, life: 14)
+    → Goal: execute_payoff
+    [Mana] Tap Dryad Arbor→GG (paying for Green Sun's Zenith, 8 mana remaining)
+T4 P1: Cast Green Sun's Zenith (4G) (X=4)
+    [Priority] P2 responds with Counterspell
+    [Mana] Tap Watery Grave→U, Underground River→U (paying for Counterspell, 1 mana remaining)
+T4 P2: Cast Counterspell (UU)
+T4: Resolve Counterspell
+T4: Green Sun's Zenith moved stack -> graveyard (resolution)
+T4: Green Sun's Zenith is countered
+T4: Counterspell moved stack -> graveyard (resolution)
+    → Goal: execute_payoff
+    [Mana] Tap Delighted Halfling→BG, Delighted Halfling→BG (paying for Leyline of Abundance, 0 mana remaining)
+T4 P1: Cast Leyline of Abundance (2GG)
+    [Priority] P2 passes (no response)
+T4: Resolve Leyline of Abundance
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Badgermole Cub
+T4 P1: Attack with Badgermole Cub
+  [Declare Blockers] P2 does not block
+T4 P1:   Badgermole Cub (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 18 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 16  |  Creatures Toolbox 14
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 4
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave, Watery Grave, Swamp, Underground River
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2) [tapped], Badgermole Cub (2/2) [tapped], Delighted Halfling (1/2) [tapped], Dryad Arbor (1/1) [tapped]
+║   Other: Leyline of Abundance
+║   Lands: Overgrown Tomb [T], Temple Garden [T], Dryad Arbor [T], Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Fatal Push
+  [Main 1]
+T5 P2: Play Darkslick Shores (tapped, 4 other lands)
+    → Goal: close_game
+T5 P2: Delve 4 cards for Murktide Regent
+    [Mana] Tap Swamp→B, Watery Grave→U, Watery Grave→U (paying for Murktide Regent, 1 mana remaining)
+T5 P2: Cast Murktide Regent (5UU)
+    [Priority] P1 passes (no response)
+T5: Resolve Murktide Regent
+T5 P2: Murktide Regent enters as 6/6 (3 +1/+1 counters from delved instants/sorceries)
+    → Goal: close_game
+    [Mana] Tap Underground River→B (paying for Fatal Push, 0 mana remaining)
+T5 P2: Cast Fatal Push (B)
+    [Priority] P1 passes (no response)
+T5: Resolve Fatal Push
+T5: Badgermole Cub dies
+T5 P2: Fatal Push destroys Badgermole Cub
+T5: Fatal Push moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army
+T5 P2: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P1 does not block
+T5 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T5 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 14 → 12
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 12  |  Dimir Midrange 15
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 5
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2), Delighted Halfling (1/2), Dryad Arbor (1/1)
+║   Other: Leyline of Abundance
+║   Lands: Overgrown Tomb, Temple Garden, Dryad Arbor, Overgrown Tomb
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped], Murktide Regent (6/6)
+║   Lands: Watery Grave [T], Watery Grave [T], Swamp [T], Underground River [T], Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Shang-Chi, Master of Kung Fu
+  [Main 1]
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Dryad Arbor→GG, Overgrown Tomb→B, Temple Garden→G, Overgrown Tomb→B, Delighted Halfling→BG, Delighted Halfling→BG (paying for Craterhoof Behemoth, 1 mana remaining)
+T5 P1: Cast Craterhoof Behemoth (5GGG)
+    [Priority] P2 passes (no response)
+T5: Resolve Craterhoof Behemoth
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 15  |  Creatures Toolbox 12
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 1
+║ Dimir Midrange board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1), Murktide Regent (6/6)
+║   Lands: Watery Grave, Watery Grave, Swamp, Underground River, Darkslick Shores
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2) [tapped], Delighted Halfling (1/2) [tapped], Dryad Arbor (1/1) [tapped], Craterhoof Behemoth (5/5)
+║   Other: Leyline of Abundance
+║   Lands: Overgrown Tomb [T], Temple Garden [T], Dryad Arbor [T], Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Psychic Frog
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Swamp→B, Watery Grave→U (paying for Psychic Frog, 3 mana remaining)
+T6 P2: Cast Psychic Frog (UB)
+    [Priority] P1 passes (no response)
+T6: Resolve Psychic Frog
+    → Goal: close_game
+    [Mana] Tap Watery Grave→U, Darkslick Shores→B (paying for Psychic Frog, 1 mana remaining)
+T6 P2: Cast Psychic Frog (UB)
+    [Priority] P1 passes (no response)
+T6: Resolve Psychic Frog
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orcish Bowmasters, Orc Army, Murktide Regent
+T6 P2: Attack with Orcish Bowmasters, Orc Army, Murktide Regent
+T6 P1:   [BLOCK-EMERGENCY] Craterhoof Behemoth (5/5) blocks Orcish Bowmasters (1/1) — lifespan_delta=+0.23
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T6 P2:   Orc Army (1/1) → 1 dmg to player
+T6 P2:   Murktide Regent (6/6) → 6 dmg to player
+T6: Orcish Bowmasters dies
+  [Combat Damage] 7 damage dealt → P1 life: 12 → 5
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 5  |  Dimir Midrange 15
+║ Hand: 2 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 5
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2), Delighted Halfling (1/2), Dryad Arbor (1/1), Craterhoof Behemoth (5/5)
+║   Other: Leyline of Abundance
+║   Lands: Overgrown Tomb, Temple Garden, Dryad Arbor, Overgrown Tomb
+║ Dimir Midrange board:
+║   Creatures: Orc Army (1/1) [tapped], Murktide Regent (6/6) [tapped], Psychic Frog (1/2), Psychic Frog (1/2)
+║   Lands: Watery Grave [T], Watery Grave [T], Swamp [T], Underground River, Darkslick Shores [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Badgermole Cub
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Dryad Arbor→GG (paying for Shang-Chi, Master of Kung Fu, 7 mana remaining)
+T6 P1: Cast Shang-Chi, Master of Kung Fu (1G)
+    [Priority] P2 passes (no response)
+T6: Resolve Shang-Chi, Master of Kung Fu
+    → Goal: execute_payoff
+    [Mana] Tap Delighted Halfling→BG (paying for Badgermole Cub, 5 mana remaining)
+T6 P1: Cast Badgermole Cub (1G)
+    [Priority] P2 passes (no response)
+T6: Resolve Badgermole Cub
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Delighted Halfling, Craterhoof Behemoth
+T6 P1: Attack with Delighted Halfling, Craterhoof Behemoth
+  [Declare Blockers] P2 does not block
+T6 P1:   Delighted Halfling (1/2) → 1 dmg to player
+T6 P1:   Craterhoof Behemoth (5/5) → 5 dmg to player
+  [Combat Damage] 6 damage dealt → P2 life: 15 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 9  |  Creatures Toolbox 5
+║ Hand: 1 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 2
+║ Dimir Midrange board:
+║   Creatures: Orc Army (1/1), Murktide Regent (6/6), Psychic Frog (1/2), Psychic Frog (1/2)
+║   Lands: Watery Grave, Watery Grave, Swamp, Underground River, Darkslick Shores
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2) [tapped], Delighted Halfling (1/2) [tapped], Dryad Arbor (1/1) [tapped], Craterhoof Behemoth (5/5) [tapped], Shang-Chi, Master of Kung Fu (2/2), Badgermole Cub (2/2)
+║   Other: Leyline of Abundance
+║   Lands: Overgrown Tomb, Temple Garden, Dryad Arbor [T], Overgrown Tomb
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Consider
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Watery Grave→U (paying for Consider, 4 mana remaining)
+T7 P2: Cast Consider (U)
+    [Priority] P1 passes (no response)
+T7: Resolve Consider
+T7 P2: surveil 1 → Drown in the Loch to GY
+T7 P2: Consider → draw 1 (Archmage's Charm)
+T7: Consider moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Orc Army, Murktide Regent, Psychic Frog, Psychic Frog
+T7 P2: Attack with Orc Army, Murktide Regent, Psychic Frog, Psychic Frog
+T7 P1:   [BLOCK-EMERGENCY] Badgermole Cub (2/2) blocks Orc Army (1/1) — lifespan_delta=+0.18
+T7 P1:   [BLOCK-EMERGENCY] Shang-Chi, Master of Kung Fu (2/2) blocks Psychic Frog (1/2) — lifespan_delta=+0.18
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T7 P2:   Murktide Regent (6/6) → 6 dmg to player
+T7 P2:   Psychic Frog (1/2) → 1 dmg to player
+T7 P2: Psychic Frog deals combat damage — draw a card
+P1 loses: life total -2
+  [Combat Damage] 7 damage dealt → P1 life: 5 → -2
+
+>>> Dimir Midrange wins Game 1 on turn 7 via damage
+    Final life: Creatures Toolbox=-2  Dimir Midrange=9
+
+======================================================================
+  GAME 2: Creatures Toolbox (P1) vs Dimir Midrange (P2)  —  seed 58005
+  Series: Creatures Toolbox 0 - 1 Dimir Midrange
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Creatures Toolbox wins → chooses to play first
+║ P1 (on play): Creatures Toolbox
+║ P2 (on draw): Dimir Midrange
+╚═══════════════════════════════════════════════════════
+
+P1 (Creatures Toolbox) opening hand (1 lands, 6 spells):
+  • Tyvar, Jubilant Brawler [Spell, CMC 3]
+  • Delighted Halfling [Creature, CMC 1]
+  • Badgermole Cub [Creature, CMC 2]
+  • Delighted Halfling [Creature, CMC 1]
+  • Birds of Paradise [Creature, CMC 1]
+  • Leyline of Abundance [Spell, CMC 4]
+  • Temple Garden [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Badgermole Cub, Birds of Paradise, Delighted Halfling, 5 cheap spells
+
+P2 (Dimir Midrange) opening hand (3 lands, 4 spells):
+  • Darkslick Shores [Land, CMC 0]
+  • Fatal Push [Spell, CMC 1]
+  • Thoughtseize [Spell, CMC 1]
+  • Shelldock Isle [Land, CMC 0]
+  • Dauthi Voidwalker [Creature, CMC 2]
+  • Polluted Delta [Land, CMC 0]
+  • Subtlety [Creature, CMC 4]
+→ P2 KEEPS 7 — has key card(s): Dauthi Voidwalker, Fatal Push, Thoughtseize, 3 cheap spells
+
+T0 P1: Leyline of Abundance begins the game on the battlefield (leyline)
+
+╔══ TURN 1 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 20  |  Dimir Midrange 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance
+║   Lands: (none)
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Temple Garden (untapped, life: 20)
+    → Goal: deploy_engine
+    [Mana] Tap Temple Garden→G (paying for Delighted Halfling, 0 mana remaining)
+T1 P1: Cast Delighted Halfling (G)
+    [Priority] P2 passes (no response)
+T1: Resolve Delighted Halfling
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 20  |  Creatures Toolbox 20
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2)
+║   Other: Leyline of Abundance
+║   Lands: Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Counterspell
+  [Main 1]
+T1 P2: Play Polluted Delta
+T1: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Polluted Delta (pay 1 life) -> Watery Grave (untapped, life: 17)
+    → Goal: disrupt [interaction]
+    [Mana] Tap Watery Grave→B (paying for Fatal Push, 0 mana remaining)
+T1 P2: Cast Fatal Push (B)
+    [Priority] P1 passes (no response)
+T1: Resolve Fatal Push
+T1: Delighted Halfling dies
+T1 P2: Fatal Push destroys Delighted Halfling
+T1: Fatal Push moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 20  |  Dimir Midrange 17
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 1
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance
+║   Lands: Temple Garden
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Misty Rainforest
+  [Main 1]
+T2 P1: Play Misty Rainforest
+T2: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T2 P1: Crack Misty Rainforest (pay 1 life) -> Overgrown Tomb (tapped, life: 19)
+    → Goal: deploy_engine
+    [Mana] Tap Temple Garden→G (paying for Delighted Halfling, 0 mana remaining)
+T2 P1: Cast Delighted Halfling (G)
+    [Priority] P2 passes (no response)
+T2: Resolve Delighted Halfling
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 17  |  Creatures Toolbox 19
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 2
+║ Dimir Midrange board:
+║   Creatures: (empty)
+║   Lands: Watery Grave
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2)
+║   Other: Leyline of Abundance
+║   Lands: Temple Garden [T], Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Polluted Delta
+  [Main 1]
+T2 P2: Play Polluted Delta
+T2: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T2 P2: Crack Polluted Delta (pay 1 life) -> Watery Grave (untapped, life: 14)
+    → Goal: grind_value
+    [Mana] Tap Watery Grave→B, Watery Grave→B (paying for Dauthi Voidwalker, 0 mana remaining)
+T2 P2: Cast Dauthi Voidwalker (BB)
+    [Priority] P1 passes (no response)
+T2: Resolve Dauthi Voidwalker
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 19  |  Dimir Midrange 14
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 2
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2)
+║   Other: Leyline of Abundance
+║   Lands: Temple Garden, Overgrown Tomb
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2)
+║   Lands: Watery Grave [T], Watery Grave [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Nature's Rhythm
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Overgrown Tomb→B, Delighted Halfling→BG (paying for Tyvar, Jubilant Brawler, 1 mana remaining)
+T3 P1: Cast Tyvar, Jubilant Brawler (1BG)
+    [Priority] P2 passes (no response)
+T3: Resolve Tyvar, Jubilant Brawler
+    → Goal: execute_payoff
+    [Mana] Tap Temple Garden→G (paying for Birds of Paradise, 0 mana remaining)
+T3 P1: Cast Birds of Paradise (G)
+    [Priority] P2 passes (no response)
+T3: Resolve Birds of Paradise
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 14  |  Creatures Toolbox 19
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 49  |  Graveyard: 3
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2)
+║   Lands: Watery Grave, Watery Grave
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2) [tapped], Birds of Paradise (0/1)
+║   Other: Leyline of Abundance, Tyvar, Jubilant Brawler
+║   Lands: Temple Garden [T], Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Orcish Bowmasters
+  [Main 1]
+T3 P2: Play Darkslick Shores (untapped, 2 other lands)
+    → Goal: grind_value
+    [Mana] Tap Watery Grave→B, Watery Grave→B (paying for Orcish Bowmasters, 1 mana remaining)
+T3 P2: Cast Orcish Bowmasters (1B)
+    [Priority] P1 passes (no response)
+T3: Resolve Orcish Bowmasters
+T3 P2: Bowmasters deals 1 damage to Birds of Paradise
+T3 P2: Bowmasters creates 1/1 Orc Army token
+T3: Birds of Paradise dies
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Dauthi Voidwalker
+T3 P2: Attack with Dauthi Voidwalker
+  [Declare Blockers] P1 does not block
+T3 P2:   Dauthi Voidwalker (3/2) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 19 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 16  |  Dimir Midrange 14
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 3
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2)
+║   Other: Leyline of Abundance, Tyvar, Jubilant Brawler
+║   Lands: Temple Garden, Overgrown Tomb
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2) [tapped], Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave [T], Watery Grave [T], Darkslick Shores
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Devoted Druid
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Delighted Halfling→BG (paying for Devoted Druid, 2 mana remaining)
+T4 P1: Cast Devoted Druid (1G)
+    [Priority] P2 passes (no response)
+T4: Resolve Devoted Druid
+    → Goal: execute_payoff
+    [Mana] Tap Temple Garden→G, Overgrown Tomb→B (paying for Badgermole Cub, 0 mana remaining)
+T4 P1: Cast Badgermole Cub (1G)
+    [Priority] P2 passes (no response)
+T4: Resolve Badgermole Cub
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 14  |  Creatures Toolbox 16
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 48  |  Graveyard: 3
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2), Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave, Watery Grave, Darkslick Shores
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2) [tapped], Devoted Druid (0/2), Badgermole Cub (2/2)
+║   Other: Leyline of Abundance, Tyvar, Jubilant Brawler
+║   Lands: Temple Garden [T], Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Drown in the Loch
+  [Main 1]
+T4 P2: Play Shelldock Isle (enters tapped)
+    → Goal: close_game
+    [Mana] Tap Watery Grave→U, Watery Grave→B (paying for Drown in the Loch, 1 mana remaining)
+T4 P2: Cast Drown in the Loch (UB)
+    [Priority] P1 passes (no response)
+T4: Resolve Drown in the Loch
+T4: Badgermole Cub dies
+T4: Drown in the Loch moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Dauthi Voidwalker, Orcish Bowmasters, Orc Army
+T4 P2: Attack with Dauthi Voidwalker, Orcish Bowmasters, Orc Army
+T4 P1:   [BLOCK] Devoted Druid (0/2) blocks Dauthi Voidwalker (3/2) — lifespan_delta=+0.60
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T4 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T4 P2:   Orc Army (1/1) → 1 dmg to player
+T4: Devoted Druid dies
+  [Combat Damage] 2 damage dealt → P1 life: 16 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 14  |  Dimir Midrange 14
+║ Hand: 1 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 5
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2)
+║   Other: Leyline of Abundance, Tyvar, Jubilant Brawler
+║   Lands: Temple Garden, Overgrown Tomb
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2) [tapped], Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped]
+║   Lands: Watery Grave [T], Watery Grave [T], Darkslick Shores, Shelldock Isle [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Leyline of Abundance
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Temple Garden→G, Overgrown Tomb→B, Delighted Halfling→BG (paying for Leyline of Abundance, 0 mana remaining)
+T5 P1: Cast Leyline of Abundance (2GG)
+    [Priority] P2 passes (no response)
+T5: Resolve Leyline of Abundance
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 14  |  Creatures Toolbox 14
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 2
+║ Library: 47  |  Graveyard: 4
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2), Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Lands: Watery Grave, Watery Grave, Darkslick Shores, Shelldock Isle
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2) [tapped]
+║   Other: Leyline of Abundance, Tyvar, Jubilant Brawler, Leyline of Abundance
+║   Lands: Temple Garden [T], Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Underground River
+  [Main 1]
+T5 P2: Play Underground River
+    → Goal: close_game
+    [Mana] Tap Shelldock Isle→U, Watery Grave→U, Watery Grave→B, Darkslick Shores→U (paying for Subtlety, 1 mana remaining)
+T5 P2: Cast Subtlety (2UU)
+    [Priority] P1 passes (no response)
+T5: Resolve Subtlety
+T5 P2: Subtlety enters (no creature/PW spell on stack to target)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Dauthi Voidwalker, Orcish Bowmasters, Orc Army
+T5 P2: Attack with Dauthi Voidwalker, Orcish Bowmasters, Orc Army
+  [Declare Blockers] P1 does not block
+T5 P2:   Dauthi Voidwalker (3/2) → 3 dmg to player
+T5 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T5 P2:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 5 damage dealt → P1 life: 14 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 9  |  Dimir Midrange 14
+║ Hand: 1 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 5
+║ Library: 48  |  Graveyard: 5
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2)
+║   Other: Leyline of Abundance, Tyvar, Jubilant Brawler, Leyline of Abundance
+║   Lands: Temple Garden, Overgrown Tomb
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2) [tapped], Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped], Subtlety (3/3)
+║   Lands: Watery Grave [T], Watery Grave [T], Darkslick Shores [T], Shelldock Isle [T], Underground River
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Agatha's Soul Cauldron
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Delighted Halfling→BGG (paying for Agatha's Soul Cauldron, 3 mana remaining)
+T6 P1: Cast Agatha's Soul Cauldron (2)
+    [Priority] P2 passes (no response)
+T6: Resolve Agatha's Soul Cauldron
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 14  |  Creatures Toolbox 9
+║ Hand: 2 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 2
+║ Library: 46  |  Graveyard: 4
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2), Orcish Bowmasters (1/1), Orc Army (1/1), Subtlety (3/3)
+║   Lands: Watery Grave, Watery Grave, Darkslick Shores, Shelldock Isle, Underground River
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2) [tapped]
+║   Other: Leyline of Abundance, Tyvar, Jubilant Brawler, Leyline of Abundance, Agatha's Soul Cauldron
+║   Lands: Temple Garden, Overgrown Tomb
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Island
+  [Main 1]
+T6 P2: Play Island
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Dauthi Voidwalker, Orcish Bowmasters, Orc Army, Subtlety
+T6 P2: Attack with Dauthi Voidwalker, Orcish Bowmasters, Orc Army, Subtlety
+  [Declare Blockers] P1 does not block
+T6 P2:   Dauthi Voidwalker (3/2) → 3 dmg to player
+T6 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T6 P2:   Orc Army (1/1) → 1 dmg to player
+T6 P2:   Subtlety (3/3) → 3 dmg to player
+  [Combat Damage] 8 damage dealt → P1 life: 9 → 1
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 1  |  Dimir Midrange 14
+║ Hand: 1 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 6
+║ Library: 47  |  Graveyard: 5
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2)
+║   Other: Leyline of Abundance, Tyvar, Jubilant Brawler, Leyline of Abundance, Agatha's Soul Cauldron
+║   Lands: Temple Garden, Overgrown Tomb
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2) [tapped], Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped], Subtlety (3/3) [tapped]
+║   Lands: Watery Grave, Watery Grave, Darkslick Shores, Shelldock Isle, Underground River, Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Green Sun's Zenith
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Delighted Halfling
+T7 P1: Attack with Delighted Halfling
+  [Declare Blockers] P2 does not block
+T7 P1:   Delighted Halfling (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P2 life: 14 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Dimir Midrange (P2) ══════════════════════════
+║ Life: Dimir Midrange 13  |  Creatures Toolbox 1
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 6  |  Opp lands: 2
+║ Library: 45  |  Graveyard: 4
+║ Dimir Midrange board:
+║   Creatures: Dauthi Voidwalker (3/2), Orcish Bowmasters (1/1), Orc Army (1/1), Subtlety (3/3)
+║   Lands: Watery Grave, Watery Grave, Darkslick Shores, Shelldock Isle, Underground River, Island
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2) [tapped]
+║   Other: Leyline of Abundance, Tyvar, Jubilant Brawler, Leyline of Abundance, Agatha's Soul Cauldron
+║   Lands: Temple Garden, Overgrown Tomb
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Fatal Push
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Dauthi Voidwalker, Orcish Bowmasters, Orc Army, Subtlety
+T7 P2: Attack with Dauthi Voidwalker, Orcish Bowmasters, Orc Army, Subtlety
+  [Declare Blockers] P1 does not block
+T7 P2:   Dauthi Voidwalker (3/2) → 3 dmg to player
+T7 P2:   Orcish Bowmasters (1/1) → 1 dmg to player
+T7 P2:   Orc Army (1/1) → 1 dmg to player
+T7 P2:   Subtlety (3/3) → 3 dmg to player
+P1 loses: life total -7
+  [Combat Damage] 8 damage dealt → P1 life: 1 → -7
+
+>>> Dimir Midrange wins Game 2 on turn 7 via damage
+    Final life: Creatures Toolbox=-7  Dimir Midrange=13
+
+======================================================================
+  MATCH RESULT: Dimir Midrange wins 2-0
+======================================================================

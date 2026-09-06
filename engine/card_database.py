@@ -44,6 +44,7 @@ KEYWORD_MAP = {
     "Vigilance": Keyword.VIGILANCE,
     "Reach": Keyword.REACH,
     "Menace": Keyword.MENACE,
+    "Shadow": Keyword.SHADOW,
     "Flash": Keyword.FLASH,
     "Hexproof": Keyword.HEXPROOF,
     "Indestructible": Keyword.INDESTRUCTIBLE,
@@ -102,46 +103,10 @@ BASIC_LAND_SUBTYPES = {
     "Forest": ["G"],
 }
 
-# Fetch land colors: derived from oracle text at module load time.
-# Pattern: "Sacrifice this land: Search your library for a [types] card"
-# Populated by _build_fetch_land_colors() after DB loads.
-FETCH_LAND_COLORS: Dict[str, List[str]] = {}
-
-# Basic land type → color mapping for fetch target resolution
-_BASIC_TYPE_TO_COLOR = {
-    "plains": "W", "island": "U", "swamp": "B",
-    "mountain": "R", "forest": "G",
-}
-
-
-def _parse_fetch_colors_from_oracle(oracle_text: str) -> Optional[List[str]]:
-    """Parse fetchable colors from oracle text.
-
-    Returns list of color codes, or None if not a fetch land.
-    """
-    if not oracle_text:
-        return None
-    ot = oracle_text.lower()
-    if 'sacrifice this land' not in ot or 'search your library' not in ot:
-        return None
-
-    # "search your library for a basic land card" → all colors
-    if 'basic land card' in ot:
-        return ["W", "U", "B", "R", "G"]
-
-    # "search your library for a Plains or Island card" → W, U
-    import re
-    m = re.search(r'search your library for (?:a|an) (.+?) card', ot)
-    if m:
-        type_text = m.group(1).lower()
-        colors = []
-        for basic_type, color in _BASIC_TYPE_TO_COLOR.items():
-            if basic_type in type_text:
-                colors.append(color)
-        if colors:
-            return colors
-
-    return None
+# Fetchlands carry no card-name table.  The self-sacrifice land search is
+# parsed off the printed text once per card by
+# `oracle_parser.parse_fetchland_profile` into `CardTemplate.fetchland`
+# (a `cards.FetchLandProfile`), and every consumer reads that typed field.
 
 # Hardcoded land sets removed — all land entry logic is now derived from
 # oracle text via template properties: enters_tapped, untap_life_cost,
@@ -445,19 +410,21 @@ class OracleTextParser:
         Lands with optional life payment (shock lands) or conditional untap
         (fast lands) are handled separately via untap_life_cost and
         untap_max_other_lands template properties.
-        Fetch lands don't enter tapped (they sacrifice immediately).
+        Fetch lands don't enter tapped (they sacrifice immediately) — no
+        fetchland in the pool prints an enters-tapped clause about ITSELF,
+        so the patterns below already exclude them without a name lookup.
         """
-        if card_name in FETCH_LAND_COLORS:
-            return False
-
         if not oracle_text:
             return False
         text_lower = oracle_text.lower()
 
-        # "you may pay N life. If you don't, it enters tapped" → not tapped
-        # (handled by untap_life_cost; the default is untapped)
+        # "you may pay N life. If you don't, it enters tapped" (shock
+        # lands) → the DEFAULT is TAPPED; the untap_life_cost machinery
+        # (land_manager offer_optional_costs) flips it untapped only when
+        # the life payment is actually made. Returning False here made
+        # every shock enter untapped for free.
         if 'you may pay' in text_lower and 'enters tapped' in text_lower:
-            return False
+            return True
 
         for pattern in cls.ENTERS_TAPPED_PATTERNS:
             if re.search(pattern, text_lower):
@@ -474,10 +441,6 @@ class OracleTextParser:
                          card_name: str = "") -> List[str]:
         """Detect what colors of mana a land can produce."""
         mana_colors = set()
-
-        # Check fetch lands first
-        if card_name in FETCH_LAND_COLORS:
-            return FETCH_LAND_COLORS[card_name]
 
         # Check subtypes first (e.g., Sacred Foundry is a Mountain Plains)
         for subtype, colors in BASIC_LAND_SUBTYPES.items():
@@ -587,6 +550,16 @@ class OracleTextParser:
                     units = [[sym] for sym in alt_syms[0]]
             if len(units) > len(best):
                 best = units
+            elif units and len(units) == len(best):
+                # Two SEPARATE plain tap lines of equal arity (e.g. a
+                # painland's free-colorless line and its paid-colored
+                # line) are alternative ways to use the SAME single
+                # tap, not independent production — the land's real
+                # output is the union of every equal-arity line's
+                # color options, not whichever line happened to be
+                # written first in the oracle text.
+                best = [list(dict.fromkeys(a + b))
+                        for a, b in zip(best, units)]
         return best
 
     @classmethod
@@ -1185,10 +1158,18 @@ def parse_mana_cost_mtgjson(mana_cost_str: str) -> ManaCost:
         elif "/" in sym:
             # e.g., W/U, 2/W, W/P
             parts = sym.split("/")
-            if parts[1] == "P":
-                # Phyrexian - treat as colored
+            if parts[1].upper() == "P":
+                # Phyrexian (CR 107.4f) — counts as a coloured pip AND
+                # records the "or 2 life" permission on the cost itself.
+                # Parsed from the MANA COST, never from the reminder text:
+                # the reminder names the symbol once no matter how many
+                # pips the cost has ({1}{B/P}{B/P} reads "({B/P} can be
+                # paid with either {B} or 2 life.)"), so counting the
+                # oracle undercounts every multi-pip card.
                 if parts[0] in COLOR_CHARS:
                     cost.add_color(parts[0])
+                    cost.phyrexian[parts[0]] = (
+                        cost.phyrexian.get(parts[0], 0) + 1)
             elif parts[0].isdigit():
                 # Generic/colored hybrid - treat as colored
                 if parts[1] in ("W", "U", "B", "R", "G"):
@@ -1295,6 +1276,13 @@ class CardDatabase:
                         back = card_entries[1]
                         template.back_face_oracle = back.get('text', '')
                         template.back_face_loyalty = int(back.get('loyalty', 0) or 0)
+                        # The back face's own printed loyalty lines — a
+                        # transformed DFC activates these, not the front's.
+                        from .oracle_parser import (
+                            parse_loyalty_abilities as _parse_loyalty)
+                        template.back_face_loyalty_abilities = _parse_loyalty(
+                            template.back_face_oracle,
+                            template.back_face_loyalty)
                         template.back_face_types = [
                             TYPE_MAP[t] for t in back.get('types', []) if t in TYPE_MAP
                         ]
@@ -1322,15 +1310,6 @@ class CardDatabase:
                             self._raw_data[front_face] = entry
             except Exception as e:
                 errors += 1
-
-        # Populate FETCH_LAND_COLORS from oracle text
-        global FETCH_LAND_COLORS
-        FETCH_LAND_COLORS.clear()
-        for cname, tmpl in self.cards.items():
-            if tmpl.is_land:
-                fetch_colors = _parse_fetch_colors_from_oracle(tmpl.oracle_text)
-                if fetch_colors:
-                    FETCH_LAND_COLORS[cname] = fetch_colors
 
         print(f"Loaded {count} cards ({errors} errors)")
 
@@ -1393,21 +1372,13 @@ class CardDatabase:
                     r"\b" + re.escape(st_name) + r"\b", head):
                     supertypes.append(st_enum)
 
-        # Fallback 2: direct corrections for cards whose MTGJSON entry is
-        # corrupt in BOTH the supertypes array AND the type-line string.
-        # Keep this list minimal — prefer fixing upstream data when possible.
-        # - Archon of Cruelty (MH2): printed as "Legendary Creature — Archon",
-        #   but the current ModernAtomic dump has type "Creature — Archon" and
-        #   supertypes []. Without this correction Goryo's Vengeance (legendary
-        #   reanimation, CR 608.2b + oracle "target legendary creature card")
-        #   can never hit Archon, silently removing it from the Goryo's kit.
-        SUPERTYPE_CORRECTIONS = {
-            "Archon of Cruelty": [Supertype.LEGENDARY],
-        }
-        if name in SUPERTYPE_CORRECTIONS:
-            for st_enum in SUPERTYPE_CORRECTIONS[name]:
-                if st_enum not in supertypes:
-                    supertypes.append(st_enum)
+        # Supertypes come from the printed type line only.  A former
+        # card-name "correction" table fabricated LEGENDARY on a card
+        # whose real type line is "Creature — Archon" so a legendary-only
+        # reanimation spell could hit it; that was a fidelity bug (the
+        # legend rule would kill a second copy, and the reanimation
+        # legality was wrong), not a data repair.  Bad upstream data is
+        # fixed in the MTGJSON export, never by name here.
 
         # Parse mana cost
         mana_cost = parse_mana_cost_mtgjson(data.get("manaCost", ""))
@@ -1522,7 +1493,11 @@ class CardDatabase:
                 life_match = _re.search(r'you may pay (\d+) life.*enters tapped', ot)
                 if life_match:
                     untap_life_cost = int(life_match.group(1))
-                    enters_tapped = False  # can enter untapped (default)
+                    # Shock lands enter TAPPED by default; paying the life
+                    # (untap_life_cost, via land_manager's optional cost)
+                    # is what flips them untapped. Leaving this True was
+                    # the fix — resetting to False made shocks free.
+                    enters_tapped = True
                 # Conditional on land count: "enters tapped unless you control N or fewer other lands"
                 lands_match = _re.search(r'enters tapped unless you control (\w+) or fewer other lands', ot)
                 if lands_match:
@@ -1604,6 +1579,7 @@ class CardDatabase:
             has_delve, parse_dash_cost, parse_extra_land_drops,
             parse_escape_cost, parse_equip_cost, derive_tags_from_oracle,
             parse_splice_cost, parse_warp_cost, parse_spectacle_cost,
+            parse_madness_cost,
             parse_flashback_mana_cost, parse_land_type_bonuses,
         )
         oracle_text = template.oracle_text or ''
@@ -1648,6 +1624,12 @@ class CardDatabase:
         if warp is not None:
             template.warp_cost = warp
 
+        # Plot cost (CR 702.170): pay + exile from hand, cast free on a later turn.
+        from .oracle_parser import parse_plot_cost
+        plot = parse_plot_cost(oracle_text)
+        if plot is not None:
+            template.plot_cost = plot
+
         # Modular N (CR 702.43): parse the counter count from "Modular N" in oracle text.
         # The KEYWORD_MAP / word-boundary scan already added Keyword.MODULAR to keywords;
         # this step extracts the integer N so ETB placement and death-trigger transfer
@@ -1663,10 +1645,17 @@ class CardDatabase:
         if spectacle is not None:
             template.spectacle_cost = spectacle
 
+        # Madness cost (CR 702.35): discard → exile, then castable for this cost
+        madness = parse_madness_cost(oracle_text)
+        if madness is not None:
+            template.madness_cost = madness
+
         # Flashback cost (CR 702.33): mana cost to cast from graveyard (exiles after)
         fb = parse_flashback_mana_cost(oracle_text)
         if fb is not None:
             template.flashback_cost = fb
+        from .oracle_parser import parse_flashback_sacrifice
+        template.flashback_sacrifice_subtype = parse_flashback_sacrifice(oracle_text)
 
         # Land-type conditional bonus (Wild Nacatl pattern): "gets +N/+N as long as
         # you control a [LandType]". Stored in template.land_type_bonuses dict.
@@ -1783,6 +1772,10 @@ class CardDatabase:
             parse_domain_reduction, detect_power_scaling, parse_splice_cost,
             parse_counter_tax, parse_protection_from, parse_ward_cost,
             parse_is_land_sacrifice_tutor, parse_x_creature_tutor,
+            parse_modal_spell,
+            parse_loyalty_abilities,
+            parse_team_pump,
+            parse_self_cost_reduction,
             parse_can_target_player, parse_can_target_planeswalker,
             grants_flashback_to_gy_spells, parse_deals_targeted_damage,
             parse_has_scaling_token_finisher,
@@ -1802,17 +1795,20 @@ class CardDatabase:
             parse_is_tutor, parse_has_noncreature_spell_cast_trigger,
             parse_has_artifact_synergy,
             parse_has_draw_effect, parse_can_exile_permanent,
-            parse_has_symmetric_reanimation, parse_phyrexian_pip_count,
+            parse_exile_hits_noncreature,
+            parse_has_symmetric_reanimation,
             parse_has_token_effect, parse_has_graveyard_recursion,
             parse_has_graveyard_hate, parse_has_spell_chain_hate,
             parse_stax_class, parse_stax_forced_basic,
             parse_has_cast_trigger, parse_has_recurring_trigger,
             parse_has_scaling_effect, parse_has_self_trigger,
             parse_has_recurring_draw_trigger, parse_has_each_opponent_effect,
-            parse_has_pump_grant, parse_has_x_counter_scaling,
+            parse_has_pump_grant, parse_pump_spell, parse_equip_pt_grant,
+            parse_has_x_counter_scaling,
             parse_has_lifegain_equal_power, parse_has_lifegain_effect,
             parse_has_exile_own_creature, parse_has_converge,
             parse_has_delirium, parse_has_all_basic_land_types,
+            parse_color_setting_scope,
             parse_has_destroy_or_exile,
             parse_has_artifact_count_scaling, parse_has_surveil,
             parse_has_scry,
@@ -1823,6 +1819,7 @@ class CardDatabase:
             parse_has_cast_spell_draw, parse_has_opponent_cast_damage,
             parse_has_mana_add_text,
             parse_has_bounce_land_oracle, parse_has_sacrifice_search_land,
+            parse_fetchland_profile,
             parse_has_emry_graveyard_cast, parse_has_cc_tap_draw,
             parse_has_stax_ability, parse_has_pithing_needle_lock,
             parse_has_another_creature_enters_trigger,
@@ -1844,6 +1841,7 @@ class CardDatabase:
             parse_has_discard_effect, parse_is_storm_spell,
             parse_has_charge_counter_ability,
             parse_cast_trigger_token, parse_enters_type_counter,
+            parse_ordinal_cast_trigger,
         )
         oracle = template.oracle_text or ''
         template.ritual_mana = parse_ritual_mana(oracle)
@@ -1853,8 +1851,13 @@ class CardDatabase:
         template.is_cascade = has_cascade(oracle)
         template.grants_flashback_to_gy_spells = grants_flashback_to_gy_spells(oracle)
         template.x_cost_data = parse_x_cost(oracle, name, data.get("manaCost", ""))
+        # CR 202.2 — the printed cost's PRESENCE, distinct from its value:
+        # "{0}" is a mana cost; an absent key (lands, Living End) is not.
+        template.has_mana_cost = bool(data.get("manaCost"))
         template.is_cost_reducer = 'cost_reducer' in template.tags
         template.domain_reduction = parse_domain_reduction(oracle) or 0
+        (template.self_cost_reduction_amount,
+         template.self_cost_reduction_unit) = parse_self_cost_reduction(oracle)
         template.splice_cost = parse_splice_cost(oracle)
         template.power_scales_with = detect_power_scaling(oracle)
 
@@ -1868,8 +1871,49 @@ class CardDatabase:
             template.is_counterspell = True
             template.counter_target_kind = counter_effect.target_type
         template.counter_tax_amount = parse_counter_tax(oracle)
+        # "Counter target ... colorless spell" (Consign to Memory): a
+        # colorless-only counter can never target a colored spell. Read
+        # once here from the oracle shape (the effect is registered, not
+        # parsed into counter_target_kind), so the AI response layer can
+        # reject a colored target.
+        _ol = (oracle or "").lower()
+        template.counters_colorless_only = (
+            "counter target" in _ol and "colorless spell" in _ol)
+        # An ETB reveal-hand-exile whose exiled card returns when this
+        # permanent leaves (Kitesail Freebooter, Tidehollow Sculler, Brain
+        # Maggot) vs a permanent exile (Thought-Knot Seer — its LTB lets
+        # the opponent draw instead). Parsed once here; resolve_dies_trigger
+        # reads the field rather than re-inspecting oracle text at runtime.
+        template.etb_exile_returns_on_leave = (
+            "reveals their hand" in _ol and "exile that card" in _ol
+            and ("until this creature leaves the battlefield" in _ol
+                 or "return the exiled card" in _ol))
         template.is_land_sacrifice_tutor = parse_is_land_sacrifice_tutor(oracle)
+        # Modal "Choose one/two —" spells: store the mode clauses and the
+        # choose-count so resolution picks the chosen mode(s) rather than
+        # running every mode. The per-mode synthesized ability
+        # description is lossy (drops a mode's mana-value cap), so the
+        # verbatim clause is kept for correct resolution.
+        _is_modal, _modal_count, _modes = parse_modal_spell(oracle)
+        if _is_modal:
+            template.is_modal = True
+            template.modal_choose_count = _modal_count
+            template.modes = [{"text": c} for c in _modes]
         template.x_creature_tutor_data = parse_x_creature_tutor(oracle)
+        # Printed loyalty abilities (CR 606), classified once here so
+        # `PlaneswalkerManager` can dispatch off a typed field and refuse
+        # what it cannot execute before charging loyalty.
+        template.loyalty_abilities = parse_loyalty_abilities(
+            oracle, template.loyalty)
+        # Overrun-shape team pump. The 'spell' form is an instant/sorcery's
+        # own resolution; on any other card type the same paragraph would
+        # be a static/other ability this resolver does not own.
+        team_pump = parse_team_pump(oracle)
+        if (team_pump is not None and team_pump['trigger'] == 'spell'
+                and not (CardType.INSTANT in template.card_types
+                         or CardType.SORCERY in template.card_types)):
+            team_pump = None
+        template.team_pump_data = team_pump
         template.protection_from_colors = parse_protection_from(oracle)
         template.ward_cost = parse_ward_cost(oracle)
         template.can_target_player = parse_can_target_player(oracle)
@@ -1923,8 +1967,12 @@ class CardDatabase:
         template.deals_targeted_damage = parse_deals_targeted_damage(oracle)
         template.has_scaling_token_finisher = parse_has_scaling_token_finisher(oracle)
         template.can_exile_permanent = parse_can_exile_permanent(oracle)
+        template.exile_hits_noncreature = parse_exile_hits_noncreature(oracle)
         template.has_symmetric_reanimation = parse_has_symmetric_reanimation(oracle)
-        template.phyrexian_pip_count = parse_phyrexian_pip_count(oracle)
+        # CR 107.4f — total Phyrexian pips, read off the parsed MANA COST
+        # (template.mana_cost.phyrexian), never off the reminder text.
+        template.phyrexian_pip_count = sum(
+            template.mana_cost.phyrexian.values())
         template.has_token_effect = parse_has_token_effect(oracle)
         template.has_graveyard_recursion = parse_has_graveyard_recursion(oracle)
         template.has_graveyard_hate = parse_has_graveyard_hate(oracle)
@@ -1938,6 +1986,17 @@ class CardDatabase:
         template.has_recurring_draw_trigger = parse_has_recurring_draw_trigger(oracle)
         template.has_each_opponent_effect = parse_has_each_opponent_effect(oracle)
         template.has_pump_grant = parse_has_pump_grant(oracle)
+        _pp, _pt, _pk = parse_pump_spell(oracle)
+        template.pump_spell_power = _pp
+        template.pump_spell_toughness = _pt
+        template.pump_spell_keyword = _pk
+        _eqp, _eqt = parse_equip_pt_grant(oracle)
+        template.equip_power_grant = _eqp
+        template.equip_toughness_grant = _eqt
+        from .oracle_parser import parse_equip_keyword_grant
+        template.equip_keyword_grant = parse_equip_keyword_grant(oracle)
+        from .oracle_parser import parse_team_keyword_grant
+        template.team_keyword_grant = parse_team_keyword_grant(oracle)
         template.has_x_counter_scaling = parse_has_x_counter_scaling(oracle)
         template.has_lifegain_equal_power = parse_has_lifegain_equal_power(oracle)
         template.has_lifegain_effect = parse_has_lifegain_effect(oracle)
@@ -1945,6 +2004,7 @@ class CardDatabase:
         template.has_converge = parse_has_converge(oracle)
         template.has_delirium = parse_has_delirium(oracle)
         template.has_all_basic_land_types = parse_has_all_basic_land_types(oracle)
+        template.color_setting_scope = parse_color_setting_scope(oracle)
         template.has_destroy_or_exile = parse_has_destroy_or_exile(oracle)
         template.has_artifact_count_scaling = parse_has_artifact_count_scaling(oracle)
         template.has_surveil = parse_has_surveil(oracle)
@@ -1963,6 +2023,9 @@ class CardDatabase:
         template.has_mana_add_text = parse_has_mana_add_text(oracle)
         template.has_bounce_land_oracle = parse_has_bounce_land_oracle(oracle)
         template.has_sacrifice_search_land = parse_has_sacrifice_search_land(oracle)
+        # Fetchland mechanic: the printed self-sacrifice land search.
+        # `None` for every card that is not a fetchland.
+        template.fetchland = parse_fetchland_profile(oracle)
         template.has_emry_graveyard_cast = parse_has_emry_graveyard_cast(oracle)
         template.has_cc_tap_draw = parse_has_cc_tap_draw(oracle)
         template.has_stax_ability = parse_has_stax_ability(oracle)
@@ -1992,11 +2055,53 @@ class CardDatabase:
         template.is_storm_spell = parse_is_storm_spell(oracle)
         template.has_charge_counter_ability = parse_has_charge_counter_ability(oracle)
         template.cast_trigger_token = parse_cast_trigger_token(oracle)
+        template.ordinal_cast_trigger = parse_ordinal_cast_trigger(oracle)
         template.enters_type_counter = parse_enters_type_counter(oracle)
+        # "Whenever one or more +1/+1 counters are put on this …" (CR 122,
+        # 16 cards). Fired by the CardInstance.add_plus_counters funnel.
+        from .oracle_parser import parse_counter_placement_trigger
+        template.counter_placement_trigger = parse_counter_placement_trigger(
+            oracle, name=template.name)
+        # "If one or more … counters would be put on …, <±1 | ×2> instead"
+        # (CR 614.1c, 14 cards). Applied inside the counter funnel.
+        from .oracle_parser import parse_counter_placement_replacement
+        template.counter_placement_replacement = (
+            parse_counter_placement_replacement(oracle, name=template.name))
+        # "When this ~ enters, destroy/exile target <type> …" (CR 603.3d,
+        # 141 cards). Dispatched by resolve_etb_from_oracle.
+        from .oracle_parser import parse_etb_targeted_removal
+        template.etb_targeted_removal_data = parse_etb_targeted_removal(
+            oracle, name=template.name)
+        # Turn-scoped opponent restriction (silence / no-attacks / fog).
+        from .oracle_parser import parse_turn_scoped_restriction
+        template.turn_scoped_restriction = parse_turn_scoped_restriction(oracle)
+        # Targeted forced discard, classified by who chooses the card
+        # (caster-chosen Thoughtseize shape vs victim-chosen / random).
+        from .oracle_parser import parse_hand_attack
+        template.hand_attack_data = parse_hand_attack(oracle)
+        # Untargeted mass graveyard→battlefield return (Living End shape).
+        from .oracle_parser import parse_mass_graveyard_return
+        template.mass_graveyard_return = parse_mass_graveyard_return(oracle)
         # Land destruction (spell tranche) — parse-once typed classification.
         from .oracle_parser import parse_land_destruction
         template.land_destruction_data = parse_land_destruction(oracle)
         template.destroys_target_land = template.land_destruction_data is not None
+        # Fixed-amount face-legal "deals N damage to any target" — parse-once
+        # typed classification, dispatched through the shared burn resolver.
+        from .oracle_parser import parse_direct_damage_spell
+        template.direct_damage_data = parse_direct_damage_spell(oracle)
+        # Symmetric "destroy all creatures" sweep — parse-once typed
+        # classification, dispatched through the shared board-sweep resolver.
+        from .oracle_parser import parse_board_sweep
+        template.board_sweep_data = parse_board_sweep(oracle)
+        # Targeted destroy/exile removal — parse-once typed classification,
+        # dispatched through the shared nonland-permanent-removal resolver.
+        from .oracle_parser import parse_targeted_removal
+        template.targeted_removal_data = parse_targeted_removal(oracle)
+        # Impulse / library-dig (CR 120 card selection) — parse-once typed
+        # classification consumed by oracle_resolver._resolve_library_dig.
+        from .oracle_parser import parse_library_dig
+        template.library_dig_data = parse_library_dig(oracle)
 
         return template
 

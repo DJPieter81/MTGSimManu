@@ -69,6 +69,21 @@ class GameCallbacks(Protocol):
         """
         ...
 
+    def decide_offered_cast(
+        self, game: GameState, player_idx: int, card: CardInstance
+    ) -> bool:
+        """Accept an engine-offered "you may cast this" opportunity?
+
+        Uniform per KIND: any resolving effect that lets a player cast a
+        specific card now (madness reflexive trigger, rebound, "you may
+        cast it without paying its mana cost", …) routes here. The
+        engine has already verified the cast is legal and payable
+        (`can_cast`); the callback only decides whether to take it.
+        Declining means the card goes wherever the effect says it goes
+        when not cast (madness: graveyard).
+        """
+        ...
+
     def choose_sacrifice(
         self, game: GameState, player_idx: int,
         legal: List[CardInstance],
@@ -167,6 +182,16 @@ class DefaultCallbacks:
         by CMC desc, take head). AI callback implementations should
         override this with a proper discard-scoring strategy."""
         return max(hand, key=lambda c: c.template.cmc or 0)
+
+    def decide_offered_cast(
+        self, game: GameState, player_idx: int, card: CardInstance
+    ) -> bool:
+        """Default: take every legal offered cast. The engine has
+        already checked payability; the alternative to casting is
+        losing the card (madness → graveyard), so accepting is the
+        rules-neutral choice. AI implementations may decline when a
+        plan wants the card elsewhere."""
+        return True
 
     def choose_sacrifice(
         self, game: GameState, player_idx: int,

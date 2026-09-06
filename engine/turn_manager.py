@@ -171,6 +171,14 @@ class TurnManager:
                     and "during each other player's untap step" in otext):
                 card.untap()
         player.reset_turn_tracking()
+        # CR "this turn" window is a single game-turn clock shared by both
+        # players: the non-active player's per-turn EVENT tallies must also
+        # reset at this boundary, or a value from their own prior turn (a
+        # fetchland crack granting Revolt, life gained, etc.) leaks through
+        # the active player's entire turn and is read at instant speed.
+        # The full reset (with the silence/flashback lifecycle) stays with
+        # the active player only.
+        game.players[1 - player_idx].reset_cross_turn_event_counters()
         # Recalculate extra land drops from permanents on battlefield
         # (Azusa gives +2, Dryad of the Ilysian Grove gives +1)
         extra = 0
@@ -254,6 +262,15 @@ class TurnManager:
                 )
         game._end_of_turn_sacrifices.clear()
 
+        # CR 603.7 — the general delayed-trigger queue. The two blocks
+        # above are the engine's pre-queue special cases (end-step only,
+        # effect hard-coded at the firing site); this drains everything
+        # that named "the next end step" / "your next end step" whatever
+        # subsystem created it. Placed LAST so those two keep their exact
+        # existing ordering relative to the Dash/Warp/Ragavan blocks.
+        from .delayed_triggers import DelayedTriggerStep
+        game.fire_delayed_triggers(DelayedTriggerStep.END_STEP)
+
     def cleanup_step(self, game: "GameState") -> None:
         """CR 514: Cleanup step — cleanup continuous effects, discard to
         max hand size, remove combat damage, empty mana pools.
@@ -273,10 +290,18 @@ class TurnManager:
             card = game.callbacks.choose_discard(
                 game, game.active_player, list(active.hand),
                 self_discard=True)
-            game.zone_mgr.move_card(
-                game, card, "hand", "graveyard",
-                cause="discard to hand size"
-            )
+            game.discard_card(
+                game.active_player, card, cause="discard to hand size")
+
+        # CR 514.3a: if the discard put anything on the stack (a madness
+        # cast made as the reflexive trigger resolved), it resolves now
+        # and the cleanup continues — the turn does not end with a
+        # spell still pending.
+        while not game.stack.is_empty:
+            game.resolve_stack()
+            game.check_state_based_actions()
+            if game.game_over:
+                return
 
         # Remove damage from creatures
         for player in game.players:

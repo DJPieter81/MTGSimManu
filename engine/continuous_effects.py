@@ -39,6 +39,13 @@ if TYPE_CHECKING:
     from .cards import CardInstance
 
 from .cards import Keyword, CardType
+from .mana import Color
+from .oracle_parser import COLOR_SET_SELF, COLOR_SET_YOUR_NONLAND
+
+# CR 105.1: the five colours. A "is all colors" static (CR 105.2b)
+# sets a permanent's colour to exactly this set.
+ALL_COLORS = frozenset({Color.WHITE, Color.BLUE, Color.BLACK,
+                        Color.RED, Color.GREEN})
 
 
 class Layer(Enum):
@@ -160,6 +167,20 @@ class ContinuousEffectsManager:
         # Remove effects whose source is no longer on the battlefield
         self._cleanup_stale_effects(game)
 
+        # Statics that a permanent simply HAS while it is on the
+        # battlefield are derived here rather than registered when it
+        # arrives: there is no single choke point every permanent
+        # passes through on its way to the battlefield (spell
+        # resolution, the zone_transfer ETB fan-out, token creation,
+        # reanimation, and the start-of-game leyline placement in
+        # game_runner.py are all separate paths, and the last of those
+        # never reaches EFFECT_REGISTRY at all). Deriving from the
+        # current battlefield makes the effect present exactly while
+        # its source is, whichever path put it there, and retracts it
+        # the moment the source leaves — no registration bookkeeping
+        # to get out of step.
+        derived = self._derive_static_effects(game)
+
         # Step 1: clear all cem_* fields before reapplying — apply
         # functions use += (an accumulator, so multiple effects on the
         # same card compose), which requires starting from a known
@@ -169,9 +190,13 @@ class ContinuousEffectsManager:
                 card.cem_power_mod = 0
                 card.cem_toughness_mod = 0
                 card.cem_keywords.clear()
+                # Layer-5 colour SET: None means "printed colour"
+                card.cem_colors_set = None
+                # Layer-4 land-type SET: None means "printed types"
+                card.cem_land_type_set = None
 
         # Sort effects by (layer, pt_sublayer, timestamp)
-        sorted_effects = sorted(self._effects, key=lambda e: (
+        sorted_effects = sorted(self._effects + derived, key=lambda e: (
             e.layer.value,
             e.pt_sublayer.value if e.pt_sublayer else 0,
             e.timestamp
@@ -184,6 +209,54 @@ class ContinuousEffectsManager:
                     for card in player.battlefield:
                         if effect.affected(game, card):
                             effect.apply(game, card)
+            elif effect.affected is not None and effect.apply is None:
+                # A continuous/static effect that SELECTS cards but carries no
+                # ``apply`` callable silently modifies nothing — the static-
+                # application path has exhausted its known handlers for this
+                # source and would otherwise no-op invisibly. Make it observable
+                # (parallel to the spell/etb/activated silent-miss sinks). Every
+                # factory-built effect pairs affected+apply, so a real card never
+                # reaches here; a future registration that forgets the executor
+                # turns the guardrail red instead of mis-playing in silence.
+                from .effect_diagnostics import record_unhandled_effect
+                record_unhandled_effect(effect.source_name, "static")
+
+    def _derive_static_effects(self, game: "GameState") -> List[ContinuousEffect]:
+        """Build the continuous effects that permanents currently on the
+        battlefield have simply by being there.
+
+        Returned fresh every `recalculate()` and never stored, so a
+        source leaving the battlefield retracts its effect with no
+        cleanup step. Timestamps come from the source's instance_id,
+        which increases with entry order — the CR 613.7 tiebreak
+        within a layer.
+
+        Covers layer 5 (colour-setting statics, CR 105.2b). Other
+        always-on statics can be added here as they are parsed into
+        typed CardTemplate fields.
+        """
+        derived: List[ContinuousEffect] = []
+        for controller, player in enumerate(game.players):
+            for source in player.battlefield:
+                scope = getattr(source.template, 'color_setting_scope', "")
+                if scope:
+                    derived.extend(create_color_setting_effect(
+                        source_id=source.instance_id,
+                        source_name=source.template.name,
+                        controller=controller,
+                        scope=scope,
+                        colors=ALL_COLORS,
+                        timestamp=source.instance_id,
+                    ))
+                forced = getattr(source.template, 'stax_forced_basic', None)
+                if forced:
+                    derived.extend(create_forced_land_type_effect(
+                        source_id=source.instance_id,
+                        source_name=source.template.name,
+                        basic_type=forced,
+                        timestamp=source.instance_id,
+                    ))
+        return derived
 
     def _cleanup_stale_effects(self, game: "GameState") -> None:
         """Remove effects whose source is no longer on the battlefield."""
@@ -212,6 +285,111 @@ class ContinuousEffectsManager:
 # Static Effect Factories
 # ═══════════════════════════════════════════════════════════════════
 # These create ContinuousEffect objects for common patterns.
+
+def create_color_setting_effect(source_id: int, source_name: str,
+                                 controller: int,
+                                 scope: str,
+                                 colors: frozenset,
+                                 timestamp: int = 0) -> List[ContinuousEffect]:
+    """Layer-5 colour-SETTING static (CR 105.2b, CR 613.1e).
+
+    `scope` is a parsed `CardTemplate.color_setting_scope` value:
+
+      COLOR_SET_YOUR_NONLAND — "each nonland permanent you control is
+        all colors": every nonland permanent under `controller`,
+        including the source itself. Lands and the opponent's
+        permanents are out of scope.
+      COLOR_SET_SELF — "<this permanent> is all colors": the source
+        only.
+
+    The effect SETS colour (writes `cem_colors_set`) rather than
+    adding to it, which is what CR 105.2b describes and what makes
+    it a layer-5 effect rather than a layer-6 grant. Because layer 5
+    is applied before layer 6 in `recalculate`, colour-CONDITIONAL
+    ability grants ("has hexproof if it's blue") read the colour this
+    effect produced. Nothing here touches `template.colors`: templates
+    are shared database objects.
+
+    Class size: 5 Modern-legal cards carry the clause today, but the
+    mechanic — "a continuous effect sets a permanent's colour" — is
+    the layer, not the card, and any future colour-setter reuses it.
+    """
+    def affects_your_nonland_permanents(game, card):
+        return (card.controller == controller
+                and CardType.LAND not in card.effective_card_types)
+
+    def is_source(game, card):
+        return card.instance_id == source_id
+
+    if scope not in (COLOR_SET_YOUR_NONLAND, COLOR_SET_SELF):
+        return []
+    affected = (affects_your_nonland_permanents
+                if scope == COLOR_SET_YOUR_NONLAND else is_source)
+
+    def apply_colors(game, card):
+        card.cem_colors_set = colors
+
+    return [ContinuousEffect(
+        source_id=source_id,
+        source_name=source_name,
+        layer=Layer.COLOR,
+        affected=affected,
+        apply=apply_colors,
+        description=f"{source_name}: {scope} is all colors",
+        timestamp=timestamp,
+    )]
+
+
+def create_forced_land_type_effect(source_id: int, source_name: str,
+                                   basic_type: str,
+                                   timestamp: int = 0) -> List[ContinuousEffect]:
+    """Layer-4 land-type SET ("Nonbasic lands are Mountains", CR 613.1d,
+    CR 305.7).
+
+    Every nonbasic land on EVERY battlefield — the source's controller's
+    included, and lands that enter while the source is out — loses its
+    printed land types and abilities and is the named basic type: it
+    produces that type's colour and nothing else, and has no other
+    activated ability (a fetchland cannot be cracked).  The effect is
+    re-derived each `recalculate()` from the source's presence, so it
+    ends the moment the source leaves (CR 611.2a).
+
+    `basic_type` is the parsed `CardTemplate.stax_forced_basic`
+    (oracle_parser.parse_stax_forced_basic) — Blood Moon, Magus of the
+    Moon, Harbinger of the Seas, … all reuse this one effect.
+    """
+    from .cards import Supertype
+
+    def affects_nonbasic_lands(game, card):
+        return (CardType.LAND in card.effective_card_types
+                and Supertype.BASIC not in (card.template.supertypes or []))
+
+    def apply_type(game, card):
+        card.cem_land_type_set = basic_type
+
+    return [ContinuousEffect(
+        source_id=source_id,
+        source_name=source_name,
+        layer=Layer.TYPE,
+        affected=affects_nonbasic_lands,
+        apply=apply_type,
+        description=f"{source_name}: nonbasic lands are {basic_type}s",
+        timestamp=timestamp,
+    )]
+
+
+def forced_land_type_in_play(game: "GameState") -> Optional[str]:
+    """The basic type every nonbasic land currently IS, or None.  Read
+    by paths that run before the next `recalculate()` (a fetchland
+    cracked as it enters) so a land never briefly keeps an ability the
+    effect has already removed."""
+    for player in game.players:
+        for source in player.battlefield:
+            forced = getattr(source.template, 'stax_forced_basic', None)
+            if forced:
+                return forced
+    return None
+
 
 def create_equipment_effect(source_id: int, source_name: str,
                              equipped_tag: str,

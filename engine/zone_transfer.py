@@ -59,8 +59,10 @@ class TransferKind(Enum):
 
     The set is intentionally minimal — exactly the categories the
     audit's findings identified as needing distinct fan-outs. New
-    kinds (Surveil, Madness, Adventure-into-exile, …) extend the
-    enum and register their fan-out in `_TRIGGER_FANOUT` below.
+    kinds (Surveil, Adventure-into-exile, …) extend the enum and
+    register their fan-out in `_TRIGGER_FANOUT` below. (Madness is a
+    *replacement* on the discard event rather than a transfer kind; it
+    lives in `engine/discard_manager.py`.)
     """
     DRAW = "draw"
     """Library top → hand. Fires 'whenever you draw' / 'whenever an
@@ -363,6 +365,11 @@ def _fire_etb_triggers(game: "GameState", card: "CardInstance",
     """
     from .card_effects import EFFECT_REGISTRY, EffectTiming
     from .oracle_resolver import resolve_etb_from_oracle
+    from .saga import saga_enters
+
+    # CR 714.2a: a Saga's first lore counter and chapter I come with the
+    # entry itself, before any other ETB handling.
+    saga_enters(game, card, controller)
 
     has_specific = card.name in EFFECT_REGISTRY._handlers and any(
         h.timing == EffectTiming.ETB

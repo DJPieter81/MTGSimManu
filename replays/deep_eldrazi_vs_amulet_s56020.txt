@@ -1,0 +1,1484 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+======================================================================
+  GAME 1: Eldrazi Tron (P1) vs Amulet Titan (P2)  —  seed 56020
+  Series: Eldrazi Tron 0 - 0 Amulet Titan
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Eldrazi Tron wins → chooses to play first
+║ P1 (on play): Eldrazi Tron
+║ P2 (on draw): Amulet Titan
+╚═══════════════════════════════════════════════════════
+
+P1 (Eldrazi Tron) opening hand (3 lands, 4 spells):
+  • Devourer of Destiny [Creature, CMC 7]
+  • Devourer of Destiny [Creature, CMC 7]
+  • Wastes [Land, CMC 0]
+  • Ugin's Labyrinth [Land, CMC 0]
+  • Urza's Mine [Land, CMC 0]
+  • Devourer of Destiny [Creature, CMC 7]
+  • Glaring Fleshraker [Creature, CMC 3]
+→ P1 KEEPS 7 — 3 lands, 4 spells, score 35.0
+
+P2 (Amulet Titan) opening hand (5 lands, 2 spells):
+  • Gruul Turf [Land, CMC 0]
+  • Scapeshift [Spell, CMC 4]
+  • Boseiju, Who Endures [Land, CMC 0]
+  • Green Sun's Zenith [Spell, CMC 1]
+  • Simic Growth Chamber [Land, CMC 0]
+  • Otawara, Soaring City [Land, CMC 0]
+  • Crumbling Vestige [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Green Sun's Zenith, 1 cheap spells
+
+
+╔══ TURN 1 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Urza's Mine
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Eldrazi Tron 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Mine
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Spelunking
+  [Main 1]
+T1 P2: Play Crumbling Vestige (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Mine
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Mind Stone
+  [Main 1]
+T2 P1: Play Wastes
+    → Goal: ramp
+    [Mana] Tap Urza's Mine→C, Wastes→C (paying for Mind Stone, 0 mana remaining)
+T2 P1: Cast Mind Stone (2)
+    [Priority] P2 passes (no response)
+T2: Resolve Mind Stone
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Eldrazi Tron 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Mind Stone
+║   Lands: Urza's Mine [T], Wastes [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Echoing Deeps
+  [Main 1]
+T2 P2: Play Boseiju, Who Endures
+    → Goal: deploy_engine [enablers]
+    [Mana] Tap Boseiju, Who Endures→G (paying for Green Sun's Zenith, 1 mana remaining)
+T2 P2: Cast Green Sun's Zenith (1G) (X=1)
+    [Priority] P1 passes (no response)
+T2: Resolve Green Sun's Zenith
+T2: Arboreal Grazer moved library -> battlefield (Green Sun's Zenith tutor)
+T2: Boseiju, Who Endures moved battlefield -> hand (Gruul Turf ETB returns Boseiju, Who Endures to hand)
+T2 P2: Arboreal Grazer puts Gruul Turf onto battlefield
+T2 P2: Green Sun's Zenith finds Arboreal Grazer
+T2: Green Sun's Zenith moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Mind Stone
+║   Lands: Urza's Mine, Wastes
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Lands: Crumbling Vestige [T], Gruul Turf [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Karn, the Great Creator
+  [Main 1]
+T3 P1: Play Ugin's Labyrinth
+    → Goal: ramp
+    [Mana] Tap Urza's Mine→C, Wastes→C, Ugin's Labyrinth→C, Mind Stone→C (paying for Karn, the Great Creator, 0 mana remaining)
+T3 P1: Cast Karn, the Great Creator (4)
+    [Priority] P2 passes (no response)
+T3: Resolve Karn, the Great Creator
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Eldrazi Tron 20
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Lands: Crumbling Vestige, Gruul Turf
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Mind Stone, Karn, the Great Creator
+║   Lands: Urza's Mine [T], Wastes [T], Ugin's Labyrinth [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Spelunking
+  [Main 1]
+T3 P2: Play Otawara, Soaring City
+    → Goal: ramp [enablers]
+    [Mana] Tap Otawara, Soaring City→U, Gruul Turf→RG (paying for Spelunking, 1 mana remaining)
+T3 P2: Cast Spelunking (2G)
+    [Priority] P1 passes (no response)
+T3: Resolve Spelunking
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Amulet Titan 20
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Mind Stone, Karn, the Great Creator
+║   Lands: Urza's Mine, Wastes, Ugin's Labyrinth
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Spelunking
+║   Lands: Crumbling Vestige, Gruul Turf [T], Otawara, Soaring City [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Thought-Knot Seer
+  [Main 1]
+    → Goal: ramp
+    [Mana] Tap Urza's Mine→C, Wastes→C, Ugin's Labyrinth→C, Mind Stone→C (paying for Thought-Knot Seer, 0 mana remaining)
+T4 P1: Cast Thought-Knot Seer (3)
+    [Priority] P2 passes (no response)
+T4: Resolve Thought-Knot Seer
+T4: Scapeshift moved hand -> exile (etb reveal-hand exile)
+T4 P1: Thought-Knot Seer ETB: exiles Scapeshift from opponent's hand
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Eldrazi Tron 20
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Spelunking
+║   Lands: Crumbling Vestige, Gruul Turf, Otawara, Soaring City
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4)
+║   Other: Mind Stone, Karn, the Great Creator
+║   Lands: Urza's Mine [T], Wastes [T], Ugin's Labyrinth [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: The Mycosynth Gardens
+  [Main 1]
+T4 P2: Play Echoing Deeps
+    → Goal: ramp [enablers]
+    [Mana] Tap Otawara, Soaring City→U, Gruul Turf→RG (paying for Spelunking, 2 mana remaining)
+T4 P2: Cast Spelunking (2G)
+    [Priority] P1 passes (no response)
+T4: Resolve Spelunking
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Amulet Titan 20
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 50  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4)
+║   Other: Mind Stone, Karn, the Great Creator
+║   Lands: Urza's Mine, Wastes, Ugin's Labyrinth
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Spelunking, Spelunking
+║   Lands: Crumbling Vestige, Gruul Turf [T], Otawara, Soaring City [T], Echoing Deeps
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Urza's Mine
+  [Main 1]
+T5 P1: Play Urza's Mine
+    → Goal: ramp
+    [Mana] Tap Urza's Mine→C, Wastes→C, Ugin's Labyrinth→C (paying for Glaring Fleshraker, 2 mana remaining)
+T5 P1: Cast Glaring Fleshraker (2)
+    [Priority] P2 passes (no response)
+T5: Resolve Glaring Fleshraker
+T5: Mind Stone moved battlefield -> graveyard (activation cost (Mind Stone))
+T5 P1: activate Mind Stone — Draw a card.
+T5 P1: Mind Stone activated — draw 1 (All Is Dust)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Thought-Knot Seer
+T5 P1: Attack with Thought-Knot Seer
+T5 P2:   [BLOCK] Arboreal Grazer (0/3) blocks Thought-Knot Seer (4/4) — lifespan_delta=+0.67
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T5: Arboreal Grazer dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Eldrazi Tron 20
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Spelunking, Spelunking
+║   Lands: Crumbling Vestige, Gruul Turf, Otawara, Soaring City, Echoing Deeps
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4) [tapped], Glaring Fleshraker (2/2)
+║   Other: Karn, the Great Creator
+║   Lands: Urza's Mine [T], Wastes [T], Ugin's Labyrinth [T], Urza's Mine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Green Sun's Zenith
+  [Main 1]
+T5 P2: Play Boseiju, Who Endures
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Amulet Titan 20
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 48  |  Graveyard: 1
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4), Glaring Fleshraker (2/2)
+║   Other: Karn, the Great Creator
+║   Lands: Urza's Mine, Wastes, Ugin's Labyrinth, Urza's Mine
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Spelunking, Spelunking
+║   Lands: Crumbling Vestige, Gruul Turf, Otawara, Soaring City, Echoing Deeps, Boseiju, Who Endures
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Urza's Power Plant
+  [Main 1]
+T6 P1: Play Urza's Power Plant
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Thought-Knot Seer, Glaring Fleshraker
+T6 P1: Attack with Thought-Knot Seer, Glaring Fleshraker
+  [Declare Blockers] P2 does not block
+T6 P1:   Thought-Knot Seer (4/4) → 4 dmg to player
+T6 P1:   Glaring Fleshraker (2/2) → 2 dmg to player
+  [Combat Damage] 6 damage dealt → P2 life: 20 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 14  |  Eldrazi Tron 20
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Spelunking, Spelunking
+║   Lands: Crumbling Vestige, Gruul Turf, Otawara, Soaring City, Echoing Deeps, Boseiju, Who Endures
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4) [tapped], Glaring Fleshraker (2/2) [tapped]
+║   Other: Karn, the Great Creator
+║   Lands: Urza's Mine, Wastes, Ugin's Labyrinth, Urza's Mine, Urza's Power Plant
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Vesuva
+  [Main 1]
+T6 P2: Play The Mycosynth Gardens
+    → Goal: ramp
+    [Mana] Tap Boseiju, Who Endures→G (paying for Green Sun's Zenith, 6 mana remaining)
+T6 P2: Cast Green Sun's Zenith (6G) (X=6)
+    [Priority] P1 passes (no response)
+T6: Resolve Green Sun's Zenith
+T6: Primeval Titan moved library -> battlefield (Green Sun's Zenith tutor)
+T6 P2: Spelunking — Tolaria West enters untapped
+T6 P2: Primeval Titan searches for Tolaria West
+T6 P2: Spelunking — Hanweir Battlements // Hanweir, the Writhing Township enters untapped
+T6 P2: Primeval Titan searches for Hanweir Battlements // Hanweir, the Writhing Township
+T6 P2: Green Sun's Zenith finds Primeval Titan
+T6: Green Sun's Zenith moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Amulet Titan 14
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 8
+║ Library: 47  |  Graveyard: 1
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4), Glaring Fleshraker (2/2)
+║   Other: Karn, the Great Creator
+║   Lands: Urza's Mine, Wastes, Ugin's Labyrinth, Urza's Mine, Urza's Power Plant
+║ Amulet Titan board:
+║   Creatures: Primeval Titan (6/6)
+║   Other: Spelunking, Spelunking
+║   Lands: Crumbling Vestige [T], Gruul Turf [T], Otawara, Soaring City [T], Echoing Deeps [T], Boseiju, Who Endures [T], The Mycosynth Gardens [T], Tolaria West, Hanweir Battlements // Hanweir, the Writhing Township
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ugin, Eye of the Storms
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Thought-Knot Seer, Glaring Fleshraker
+T7 P1: Attack with Thought-Knot Seer, Glaring Fleshraker
+T7 P2:   [BLOCK] Primeval Titan (6/6) blocks Thought-Knot Seer (4/4) — lifespan_delta=+5.33
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T7 P1:   Glaring Fleshraker (2/2) → 2 dmg to player
+T7: Thought-Knot Seer dies
+  [Combat Damage] 2 damage dealt → P2 life: 14 → 12
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 12  |  Eldrazi Tron 20
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 8  |  Opp lands: 5
+║ Library: 42  |  Graveyard: 3
+║ Amulet Titan board:
+║   Creatures: Primeval Titan (6/6)
+║   Other: Spelunking, Spelunking
+║   Lands: Crumbling Vestige, Gruul Turf, Otawara, Soaring City, Echoing Deeps, Boseiju, Who Endures, The Mycosynth Gardens, Tolaria West, Hanweir Battlements // Hanweir, the Writhing Township
+║ Eldrazi Tron board:
+║   Creatures: Glaring Fleshraker (2/2) [tapped]
+║   Other: Karn, the Great Creator
+║   Lands: Urza's Mine, Wastes, Ugin's Labyrinth, Urza's Mine, Urza's Power Plant
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Gruul Turf
+  [Main 1]
+T7 P2: Play Vesuva
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Primeval Titan
+T7 P2: Spelunking — Crumbling Vestige enters untapped
+T7 P2: Primeval Titan searches for Crumbling Vestige
+T7 P2: Spelunking — Crumbling Vestige enters untapped
+T7 P2: Primeval Titan searches for Crumbling Vestige
+T7 P2: Attack with Primeval Titan
+  [Declare Blockers] P1 does not block
+T7 P2:   Primeval Titan (6/6) → 6 dmg to player
+  [Combat Damage] 6 damage dealt → P1 life: 20 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 14  |  Amulet Titan 12
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 11
+║ Library: 46  |  Graveyard: 2
+║ Eldrazi Tron board:
+║   Creatures: Glaring Fleshraker (2/2)
+║   Other: Karn, the Great Creator
+║   Lands: Urza's Mine, Wastes, Ugin's Labyrinth, Urza's Mine, Urza's Power Plant
+║ Amulet Titan board:
+║   Creatures: Primeval Titan (6/6) [tapped]
+║   Other: Spelunking, Spelunking
+║   Lands: Crumbling Vestige, Gruul Turf, Otawara, Soaring City, Echoing Deeps, Boseiju, Who Endures, The Mycosynth Gardens, Tolaria West, Hanweir Battlements // Hanweir, the Writhing Township, Vesuva, Crumbling Vestige, Crumbling Vestige
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ugin's Labyrinth
+  [Main 1]
+T8 P1: Play Ugin's Labyrinth
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Glaring Fleshraker
+T8 P1: Attack with Glaring Fleshraker
+  [Declare Blockers] P2 does not block
+T8 P1:   Glaring Fleshraker (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 12 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 10  |  Eldrazi Tron 14
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 11  |  Opp lands: 6
+║ Library: 39  |  Graveyard: 3
+║ Amulet Titan board:
+║   Creatures: Primeval Titan (6/6)
+║   Other: Spelunking, Spelunking
+║   Lands: Crumbling Vestige, Gruul Turf, Otawara, Soaring City, Echoing Deeps, Boseiju, Who Endures, The Mycosynth Gardens, Tolaria West, Hanweir Battlements // Hanweir, the Writhing Township, Vesuva, Crumbling Vestige, Crumbling Vestige
+║ Eldrazi Tron board:
+║   Creatures: Glaring Fleshraker (2/2) [tapped]
+║   Other: Karn, the Great Creator
+║   Lands: Urza's Mine, Wastes, Ugin's Labyrinth, Urza's Mine, Urza's Power Plant, Ugin's Labyrinth
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Primeval Titan
+  [Main 1]
+T8 P2: Play Simic Growth Chamber (enters tapped)
+T8: Vesuva moved battlefield -> hand (Simic Growth Chamber ETB returns Vesuva to hand)
+T8 P2: Spelunking — Simic Growth Chamber enters untapped
+    → Goal: ramp [payoffs]
+    [Mana] Tap Otawara, Soaring City→U, Echoing Deeps→C, Boseiju, Who Endures→G, Tolaria West→U, Gruul Turf→RG (paying for Primeval Titan, 7 mana remaining)
+T8 P2: Cast Primeval Titan (4GG)
+    [Priority] P1 passes (no response)
+T8: Resolve Primeval Titan
+T8: Otawara, Soaring City moved battlefield -> hand (Simic Growth Chamber ETB returns Otawara, Soaring City to hand)
+T8 P2: Spelunking — Simic Growth Chamber enters untapped
+T8 P2: Primeval Titan searches for Simic Growth Chamber
+T8 P2: Spelunking — Mirrorpool enters untapped
+T8 P2: Primeval Titan searches for Mirrorpool
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Primeval Titan
+T8 P2: Spelunking — Shifting Woodland enters untapped
+T8 P2: Primeval Titan searches for Shifting Woodland
+T8: Echoing Deeps moved battlefield -> hand (Gruul Turf ETB returns Echoing Deeps to hand)
+T8 P2: Spelunking — Gruul Turf enters untapped
+T8 P2: Primeval Titan searches for Gruul Turf
+T8 P2: Attack with Primeval Titan
+  [Declare Blockers] P1 does not block
+T8 P2:   Primeval Titan (6/6) → 6 dmg to player
+  [Combat Damage] 6 damage dealt → P1 life: 14 → 8
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 8  |  Amulet Titan 10
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 6  |  Opp lands: 13
+║ Library: 45  |  Graveyard: 2
+║ Eldrazi Tron board:
+║   Creatures: Glaring Fleshraker (2/2)
+║   Other: Karn, the Great Creator
+║   Lands: Urza's Mine, Wastes, Ugin's Labyrinth, Urza's Mine, Urza's Power Plant, Ugin's Labyrinth
+║ Amulet Titan board:
+║   Creatures: Primeval Titan (6/6) [tapped], Primeval Titan (6/6)
+║   Other: Spelunking, Spelunking
+║   Lands: Crumbling Vestige, Gruul Turf [T], Boseiju, Who Endures [T], The Mycosynth Gardens, Tolaria West [T], Hanweir Battlements // Hanweir, the Writhing Township, Crumbling Vestige, Crumbling Vestige, Simic Growth Chamber, Simic Growth Chamber, Mirrorpool, Shifting Woodland, Gruul Turf
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Urza's Tower
+  [Main 1]
+T9 P1: Play Urza's Tower
+    → Goal: ramp
+    [Mana] Tap Urza's Mine→C, Wastes→C, Ugin's Labyrinth→C, Urza's Mine→C, Urza's Power Plant→C (paying for All Is Dust, 3 mana remaining)
+T9 P1: Cast All Is Dust (7)
+    [Priority] P2 passes (no response)
+T9: Resolve All Is Dust
+T9: Spelunking moved battlefield -> graveyard (destroyed)
+T9: Spelunking moved battlefield -> graveyard (destroyed)
+T9: Primeval Titan dies
+T9: Primeval Titan dies
+T9 P1: All Is Dust sacrifices 4 colored permanents
+T9: All Is Dust moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Glaring Fleshraker
+T9 P1: Attack with Glaring Fleshraker
+  [Declare Blockers] P2 does not block
+T9 P1:   Glaring Fleshraker (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 10 → 8
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 8  |  Eldrazi Tron 8
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 13  |  Opp lands: 7
+║ Library: 34  |  Graveyard: 7
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige, Gruul Turf, Boseiju, Who Endures, The Mycosynth Gardens, Tolaria West, Hanweir Battlements // Hanweir, the Writhing Township, Crumbling Vestige, Crumbling Vestige, Simic Growth Chamber, Simic Growth Chamber, Mirrorpool, Shifting Woodland, Gruul Turf
+║ Eldrazi Tron board:
+║   Creatures: Glaring Fleshraker (2/2) [tapped]
+║   Other: Karn, the Great Creator
+║   Lands: Urza's Mine [T], Wastes [T], Ugin's Labyrinth [T], Urza's Mine [T], Urza's Power Plant [T], Ugin's Labyrinth, Urza's Tower
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Urza's Saga
+  [Main 1]
+T9 P2: Play Urza's Saga
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 8  |  Amulet Titan 8
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 7  |  Opp lands: 14
+║ Library: 44  |  Graveyard: 3
+║ Eldrazi Tron board:
+║   Creatures: Glaring Fleshraker (2/2)
+║   Other: Karn, the Great Creator
+║   Lands: Urza's Mine, Wastes, Ugin's Labyrinth, Urza's Mine, Urza's Power Plant, Ugin's Labyrinth, Urza's Tower
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige, Gruul Turf, Boseiju, Who Endures, The Mycosynth Gardens, Tolaria West, Hanweir Battlements // Hanweir, the Writhing Township, Crumbling Vestige, Crumbling Vestige, Simic Growth Chamber, Simic Growth Chamber, Mirrorpool, Shifting Woodland, Gruul Turf, Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Dismember
+  [Main 1]
+    → Goal: ramp
+    [Mana] Tap Urza's Mine→C, Wastes→C, Ugin's Labyrinth→C, Urza's Mine→C, Urza's Power Plant→C (paying for Ugin, Eye of the Storms, 3 mana remaining)
+T10 P1: Cast Ugin, Eye of the Storms (7)
+    [Priority] P2 passes (no response)
+T10: Resolve Ugin, Eye of the Storms
+T10 P1: Ugin, Eye of the Storms [+2] -> You gain 3 life and draw a card
+T10 P1: Gain 3 life from Ugin, Eye of the Storms (life: 11)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Glaring Fleshraker
+T10 P1: Attack with Glaring Fleshraker
+  [Declare Blockers] P2 does not block
+T10 P1:   Glaring Fleshraker (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 8 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 6  |  Eldrazi Tron 11
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 14  |  Opp lands: 7
+║ Library: 33  |  Graveyard: 7
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige, Gruul Turf, Boseiju, Who Endures, The Mycosynth Gardens, Tolaria West, Hanweir Battlements // Hanweir, the Writhing Township, Crumbling Vestige, Crumbling Vestige, Simic Growth Chamber, Simic Growth Chamber, Mirrorpool, Shifting Woodland, Gruul Turf, Urza's Saga
+║ Eldrazi Tron board:
+║   Creatures: Glaring Fleshraker (2/2) [tapped]
+║   Other: Karn, the Great Creator, Ugin, Eye of the Storms
+║   Lands: Urza's Mine [T], Wastes [T], Ugin's Labyrinth [T], Urza's Mine [T], Urza's Power Plant [T], Ugin's Labyrinth, Urza's Tower
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T10 P2: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P2 draws: Simic Growth Chamber
+  [Main 1]
+T10 P2: Play Vesuva
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 11  |  Amulet Titan 6
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 7  |  Opp lands: 15
+║ Library: 43  |  Graveyard: 3
+║ Eldrazi Tron board:
+║   Creatures: Glaring Fleshraker (2/2)
+║   Other: Karn, the Great Creator, Ugin, Eye of the Storms
+║   Lands: Urza's Mine, Wastes, Ugin's Labyrinth, Urza's Mine, Urza's Power Plant, Ugin's Labyrinth, Urza's Tower
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige, Gruul Turf, Boseiju, Who Endures, The Mycosynth Gardens, Tolaria West, Hanweir Battlements // Hanweir, the Writhing Township, Crumbling Vestige, Crumbling Vestige, Simic Growth Chamber, Simic Growth Chamber, Mirrorpool, Shifting Woodland, Gruul Turf, Urza's Saga, Vesuva
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Kozilek's Command
+  [Main 1]
+    → Goal: ramp
+    [Mana] Tap Urza's Mine→C, Wastes→C, Ugin's Labyrinth→C, Urza's Mine→C, Urza's Power Plant→C (paying for Devourer of Destiny, 3 mana remaining)
+T11 P1: Cast Devourer of Destiny (5)
+    [Priority] P2 passes (no response)
+T11: Resolve Devourer of Destiny
+T11 P1: Ugin, Eye of the Storms [+2] -> You gain 3 life and draw a card
+T11 P1: Gain 3 life from Ugin, Eye of the Storms (life: 14)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Glaring Fleshraker
+T11 P1: Attack with Glaring Fleshraker
+  [Declare Blockers] P2 does not block
+T11 P1:   Glaring Fleshraker (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 6 → 4
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 4  |  Eldrazi Tron 14
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 15  |  Opp lands: 7
+║ Library: 32  |  Graveyard: 7
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige, Gruul Turf, Boseiju, Who Endures, The Mycosynth Gardens, Tolaria West, Hanweir Battlements // Hanweir, the Writhing Township, Crumbling Vestige, Crumbling Vestige, Simic Growth Chamber, Simic Growth Chamber, Mirrorpool, Shifting Woodland, Gruul Turf, Urza's Saga, Vesuva
+║ Eldrazi Tron board:
+║   Creatures: Glaring Fleshraker (2/2) [tapped], Devourer of Destiny (6/6)
+║   Other: Karn, the Great Creator, Ugin, Eye of the Storms
+║   Lands: Urza's Mine [T], Wastes [T], Ugin's Labyrinth [T], Urza's Mine [T], Urza's Power Plant [T], Ugin's Labyrinth, Urza's Tower
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T11 P2: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+  [Draw] P2 draws: Simic Growth Chamber
+  [Main 1]
+T11 P2: Play Otawara, Soaring City
+T11 P2: Create 1x Construct token(s)
+T11 P2: Urza's Saga activates "{2}, {T}: Create a 0/0 colorless Constru..." (pays {2}, {T})
+  [Begin Combat]
+    [Mana] Tap Ugin's Labyrinth→C, Urza's Tower→C (paying for Kozilek's Command, 2 mana remaining)
+T11 P1: Cast Kozilek's Command (2) (X=2)
+T11: Resolve Kozilek's Command
+T11: Construct Token moved battlefield -> exile (exiled)
+T11: Kozilek's Command moved stack -> graveyard (resolution)
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 14  |  Amulet Titan 4
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 7  |  Opp lands: 16
+║ Library: 42  |  Graveyard: 4
+║ Eldrazi Tron board:
+║   Creatures: Glaring Fleshraker (2/2), Devourer of Destiny (6/6)
+║   Other: Karn, the Great Creator, Ugin, Eye of the Storms
+║   Lands: Urza's Mine, Wastes, Ugin's Labyrinth, Urza's Mine, Urza's Power Plant, Ugin's Labyrinth, Urza's Tower
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige [T], Gruul Turf [T], Boseiju, Who Endures, The Mycosynth Gardens, Tolaria West, Hanweir Battlements // Hanweir, the Writhing Township, Crumbling Vestige, Crumbling Vestige, Simic Growth Chamber, Simic Growth Chamber, Mirrorpool, Shifting Woodland, Gruul Turf, Urza's Saga [T], Vesuva, Otawara, Soaring City
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Thought-Knot Seer
+  [Main 1]
+    → Goal: ramp
+    [Mana] Tap Urza's Mine→C, Wastes→C, Ugin's Labyrinth→C, Urza's Mine→C, Urza's Power Plant→C (paying for Devourer of Destiny, 3 mana remaining)
+T12 P1: Cast Devourer of Destiny (5)
+    [Priority] P2 passes (no response)
+T12: Resolve Devourer of Destiny
+T12 P1: Ugin, Eye of the Storms [+2] -> You gain 3 life and draw a card
+T12 P1: Gain 3 life from Ugin, Eye of the Storms (life: 17)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Glaring Fleshraker, Devourer of Destiny
+T12 P1: Attack with Glaring Fleshraker, Devourer of Destiny
+  [Declare Blockers] P2 does not block
+T12 P1:   Glaring Fleshraker (2/2) → 2 dmg to player
+T12 P1:   Devourer of Destiny (6/6) → 6 dmg to player
+P2 loses: life total -4
+  [Combat Damage] 8 damage dealt → P2 life: 4 → -4
+
+>>> Eldrazi Tron wins Game 1 on turn 12 via damage
+    Final life: Eldrazi Tron=17  Amulet Titan=-4
+
+======================================================================
+  GAME 2: Amulet Titan (P1) vs Eldrazi Tron (P2)  —  seed 56021
+  Series: Eldrazi Tron 1 - 0 Amulet Titan
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Amulet Titan wins → chooses to play first
+║ P1 (on play): Amulet Titan
+║ P2 (on draw): Eldrazi Tron
+╚═══════════════════════════════════════════════════════
+
+P1 (Amulet Titan) opening hand (4 lands, 3 spells):
+  • Malevolent Rumble [Spell, CMC 2]
+  • Simic Growth Chamber [Land, CMC 0]
+  • Spelunking [Spell, CMC 3]
+  • Arboreal Grazer [Creature, CMC 1]
+  • Simic Growth Chamber [Land, CMC 0]
+  • Vesuva [Land, CMC 0]
+  • Forest [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Arboreal Grazer, Spelunking, 3 cheap spells
+
+P2 (Eldrazi Tron) opening hand (3 lands, 4 spells):
+  • Devourer of Destiny [Creature, CMC 7]
+  • Chalice of the Void [Spell, CMC 0]
+  • Expedition Map [Spell, CMC 1]
+  • Eldrazi Temple [Land, CMC 0]
+  • Relic of Progenitus [Spell, CMC 1]
+  • Wastes [Land, CMC 0]
+  • Urza's Power Plant [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Chalice of the Void, Eldrazi Temple, Expedition Map, 3 cheap spells
+
+
+╔══ TURN 1 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Eldrazi Tron 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Forest
+    → Goal: deploy_engine [enablers]
+    [Mana] Tap Forest→G (paying for Arboreal Grazer, 0 mana remaining)
+T1 P1: Cast Arboreal Grazer (G)
+    [Priority] P2 passes (no response)
+T1: Resolve Arboreal Grazer
+T1: Forest moved battlefield -> hand (Simic Growth Chamber ETB returns Forest to hand)
+T1 P1: Arboreal Grazer puts Simic Growth Chamber onto battlefield
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Lands: Simic Growth Chamber [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mind Stone
+  [Main 1]
+T1 P2: Play Urza's Power Plant
+    → Goal: ramp [engines]
+    [Mana] Tap Urza's Power Plant→C (paying for Expedition Map, 0 mana remaining)
+T1 P2: Cast Expedition Map (1)
+    [Priority] P1 passes (no response)
+T1: Resolve Expedition Map
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Eldrazi Tron 20
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Lands: Simic Growth Chamber
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Expedition Map
+║   Lands: Urza's Power Plant [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Urza's Saga
+  [Main 1]
+T2 P1: Play Urza's Saga
+    → Goal: deploy_engine
+    [Mana] Tap Simic Growth Chamber→GU (paying for Malevolent Rumble, 1 mana remaining)
+T2 P1: Cast Malevolent Rumble (1G)
+    [Priority] P2 passes (no response)
+T2: Resolve Malevolent Rumble
+T2 P1: Create 1x spawn token(s)
+T2: Malevolent Rumble moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Expedition Map
+║   Lands: Urza's Power Plant
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), spawn Token (0/1)
+║   Lands: Simic Growth Chamber [T], Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Eldrazi Temple
+  [Main 1]
+T2 P2: Play Eldrazi Temple
+    → Goal: ramp [enablers]
+T2 P2: Cast Chalice of the Void (2) (X=1)
+    [Priority] P1 passes (no response)
+T2: Resolve Chalice of the Void
+T2 P2: Chalice of the Void enters with 1 charge counter(s)
+T2 P2: Activate Expedition Map (sacrifice)
+T2 P2:   finds Urza's Mine
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Eldrazi Tron 20
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), spawn Token (0/1)
+║   Lands: Simic Growth Chamber, Urza's Saga
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant [T], Eldrazi Temple [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T3 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+  [Draw] P1 draws: Green Sun's Zenith
+  [Main 1]
+T3 P1: Play Forest
+    → Goal: ramp [enablers]
+    [Mana] Tap Urza's Saga→C, Forest→G, Simic Growth Chamber→GU (paying for Spelunking, 1 mana remaining)
+T3 P1: Cast Spelunking (2G)
+    [Priority] P2 passes (no response)
+T3: Resolve Spelunking
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant, Eldrazi Temple
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), spawn Token (0/1)
+║   Other: Spelunking
+║   Lands: Simic Growth Chamber [T], Urza's Saga [T], Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ugin, Eye of the Storms
+  [Main 1]
+T3 P2: Play Urza's Mine
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C (paying for Relic of Progenitus, 3 mana remaining)
+T3 P2: Cast Relic of Progenitus (1)
+    [Priority] P1 passes (no response)
+T3: Resolve Relic of Progenitus
+T3 P2: Relic of Progenitus exiles 1 cards from P1's graveyard
+T3 P2: Relic of Progenitus: draw 1 card
+    → Goal: ramp
+    [Mana] Tap Eldrazi Temple→CC (paying for Mind Stone, 1 mana remaining)
+T3 P2: Cast Mind Stone (2)
+    [Priority] P1 passes (no response)
+T3: Resolve Mind Stone
+T3: Mind Stone moved battlefield -> graveyard (activation cost (Mind Stone))
+T3 P2: activate Mind Stone — Draw a card.
+T3 P2: Mind Stone activated — draw 1 (Dismember)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Eldrazi Tron 20
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), spawn Token (0/1)
+║   Other: Spelunking
+║   Lands: Simic Growth Chamber, Urza's Saga, Forest
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void, Relic of Progenitus
+║   Lands: Urza's Power Plant [T], Eldrazi Temple [T], Urza's Mine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T4 P1: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+  [Draw] P1 draws: Crumbling Vestige
+  [Main 1]
+T4 P1: Play Crumbling Vestige (enters tapped)
+T4 P1: Spelunking — Crumbling Vestige enters untapped
+T4 P1: Create 1x Construct token(s)
+T4 P1: Urza's Saga activates "{2}, {T}: Create a 0/0 colorless Constru..." (pays {2}, {T})
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 2
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void, Relic of Progenitus
+║   Lands: Urza's Power Plant, Eldrazi Temple, Urza's Mine
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), spawn Token (0/1), Construct Token (1/1)
+║   Other: Spelunking
+║   Lands: Simic Growth Chamber [T], Urza's Saga [T], Forest [T], Crumbling Vestige
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Eldrazi Temple
+  [Main 1]
+T4 P2: Play Eldrazi Temple
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C, Eldrazi Temple→CC (paying for Mind Stone, 4 mana remaining)
+T4 P2: Cast Mind Stone (2)
+    [Priority] P1 passes (no response)
+T4: Resolve Mind Stone
+T4: Mind Stone moved battlefield -> graveyard (activation cost (Mind Stone))
+T4 P2: activate Mind Stone — Draw a card.
+T4 P2: Mind Stone activated — draw 1 (Dismember)
+    → Goal: ramp
+    [Mana] Tap Urza's Mine→C (paying for Dismember, 2 mana remaining)
+T4 P2: Pay 4 life (Phyrexian mana) for Dismember
+T4 P2: Cast Dismember (1BB)
+    [Priority] P1 passes (no response)
+T4: Resolve Dismember
+T4: Arboreal Grazer dies
+T4: Dismember moved stack -> graveyard (resolution)
+    → Goal: ramp
+    [Mana] Tap Eldrazi Temple→CC (paying for Dismember, 1 mana remaining)
+T4 P2: Pay 4 life (Phyrexian mana) for Dismember
+T4 P2: Cast Dismember (1BB)
+    [Priority] P1 passes (no response)
+T4: Resolve Dismember
+T4: Construct Token dies
+T4: Dismember moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Eldrazi Tron 12
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 50  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: spawn Token (0/1)
+║   Other: Spelunking
+║   Lands: Simic Growth Chamber, Urza's Saga, Forest, Crumbling Vestige
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void, Relic of Progenitus
+║   Lands: Urza's Power Plant [T], Eldrazi Temple [T], Urza's Mine [T], Eldrazi Temple [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T5 P1: Urza's Saga tutors Amulet of Vigor
+T5 P1: Sacrifice Urza's Saga (final chapter)
+  [Draw] P1 draws: Spelunking
+  [Main 1]
+T5 P1: Play Simic Growth Chamber (enters tapped)
+T5 P1: Amulet of Vigor untaps Simic Growth Chamber
+T5: Forest moved battlefield -> hand (Simic Growth Chamber ETB returns Forest to hand)
+    → Goal: ramp [enablers]
+    [Mana] Tap Simic Growth Chamber→GU, Simic Growth Chamber→GU (paying for Spelunking, 2 mana remaining)
+T5 P1: Cast Spelunking (2G)
+    [Priority] P2 passes (no response)
+T5: Resolve Spelunking
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 12  |  Amulet Titan 20
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 45  |  Graveyard: 5
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void, Relic of Progenitus
+║   Lands: Urza's Power Plant, Eldrazi Temple, Urza's Mine, Eldrazi Temple
+║ Amulet Titan board:
+║   Creatures: spawn Token (0/1)
+║   Other: Spelunking, Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber [T], Crumbling Vestige, Simic Growth Chamber [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ugin's Labyrinth
+  [Main 1]
+T5 P2: Play Eldrazi Temple
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C, Eldrazi Temple→CC, Urza's Mine→C, Eldrazi Temple→CC, Eldrazi Temple→CC (paying for Ugin, Eye of the Storms, 1 mana remaining)
+T5 P2: Cast Ugin, Eye of the Storms (7)
+T5: Spelunking moved battlefield -> exile (Ugin, Eye of the Storms cast: exile)
+T5 P2: Ugin, Eye of the Storms cast — exile Spelunking
+    [Priority] P1 passes (no response)
+T5: Resolve Ugin, Eye of the Storms
+T5 P2: Ugin, Eye of the Storms [+2] -> You gain 3 life and draw a card
+T5 P2: Gain 3 life from Ugin, Eye of the Storms (life: 15)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Eldrazi Tron 15
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 48  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: spawn Token (0/1)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber, Crumbling Vestige, Simic Growth Chamber
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void, Relic of Progenitus, Ugin, Eye of the Storms
+║   Lands: Urza's Power Plant [T], Eldrazi Temple [T], Urza's Mine [T], Eldrazi Temple [T], Eldrazi Temple [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Primeval Titan
+  [Main 1]
+T6 P1: Play Forest
+    → Goal: ramp [payoffs]
+    [Mana] Tap Forest→G, Simic Growth Chamber→GU, Simic Growth Chamber→GU, Crumbling Vestige→C (paying for Primeval Titan, 0 mana remaining)
+T6 P1: Cast Primeval Titan (4GG)
+    [Priority] P2 passes (no response)
+T6: Resolve Primeval Titan
+T6 P1: Amulet of Vigor untaps Shifting Woodland
+T6 P1: Primeval Titan searches for Shifting Woodland
+T6 P1: Amulet of Vigor untaps Hanweir Battlements // Hanweir, the Writhing Township
+T6 P1: Primeval Titan searches for Hanweir Battlements // Hanweir, the Writhing Township
+    → Goal: ramp
+    [Mana] Tap Shifting Woodland→G (paying for Green Sun's Zenith, 1 mana remaining)
+T6 P2: Chalice of the Void (X=1) counters Green Sun's Zenith
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 15  |  Amulet Titan 20
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 44  |  Graveyard: 5
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void, Relic of Progenitus, Ugin, Eye of the Storms
+║   Lands: Urza's Power Plant, Eldrazi Temple, Urza's Mine, Eldrazi Temple, Eldrazi Temple
+║ Amulet Titan board:
+║   Creatures: spawn Token (0/1), Primeval Titan (6/6)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber [T], Crumbling Vestige [T], Simic Growth Chamber [T], Forest [T], Shifting Woodland [T], Hanweir Battlements // Hanweir, the Writhing Township [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mind Stone
+  [Main 1]
+T6 P2: Play Wastes
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C, Eldrazi Temple→CC, Urza's Mine→C, Eldrazi Temple→CC, Eldrazi Temple→CC (paying for Devourer of Destiny, 2 mana remaining)
+T6 P2: Cast Devourer of Destiny (5)
+T6: Primeval Titan moved battlefield -> exile (Devourer of Destiny cast: exile)
+T6 P2: Devourer of Destiny cast — exile Primeval Titan
+    [Priority] P1 passes (no response)
+T6: Resolve Devourer of Destiny
+    → Goal: ramp
+    [Mana] Tap Wastes→C (paying for Mind Stone, 0 mana remaining)
+T6 P2: Cast Mind Stone (2)
+    [Priority] P1 passes (no response)
+T6: Resolve Mind Stone
+T6 P2: Ugin, Eye of the Storms [+2] -> You gain 3 life and draw a card
+T6 P2: Gain 3 life from Ugin, Eye of the Storms (life: 18)
+T6 P2: Activate Mind Stone (sacrifice)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Eldrazi Tron 18
+║ Hand: 1 cards  |  Opp hand: 2 cards
+║ Lands: 6  |  Opp lands: 6
+║ Library: 45  |  Graveyard: 3
+║ Amulet Titan board:
+║   Creatures: spawn Token (0/1)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber, Crumbling Vestige, Simic Growth Chamber, Forest, Shifting Woodland, Hanweir Battlements // Hanweir, the Writhing Township
+║ Eldrazi Tron board:
+║   Creatures: Devourer of Destiny (6/6)
+║   Other: Chalice of the Void, Relic of Progenitus, Ugin, Eye of the Storms
+║   Lands: Urza's Power Plant [T], Eldrazi Temple [T], Urza's Mine [T], Eldrazi Temple [T], Eldrazi Temple [T], Wastes [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Crumbling Vestige
+  [Main 1]
+T7 P1: Play Crumbling Vestige (enters tapped)
+T7 P1: Amulet of Vigor untaps Crumbling Vestige
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 18  |  Amulet Titan 20
+║ Hand: 2 cards  |  Opp hand: 1 cards
+║ Lands: 6  |  Opp lands: 7
+║ Library: 42  |  Graveyard: 6
+║ Eldrazi Tron board:
+║   Creatures: Devourer of Destiny (6/6)
+║   Other: Chalice of the Void, Relic of Progenitus, Ugin, Eye of the Storms
+║   Lands: Urza's Power Plant, Eldrazi Temple, Urza's Mine, Eldrazi Temple, Eldrazi Temple, Wastes
+║ Amulet Titan board:
+║   Creatures: spawn Token (0/1)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber, Crumbling Vestige, Simic Growth Chamber, Forest, Shifting Woodland, Hanweir Battlements // Hanweir, the Writhing Township, Crumbling Vestige
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Swamp
+  [Main 1]
+T7 P2: Play Ugin's Labyrinth
+    → Goal: ramp [engines]
+    [Mana] Tap Urza's Power Plant→C (paying for Expedition Map, 9 mana remaining)
+T7 P2: Cast Expedition Map (1)
+    [Priority] P1 passes (no response)
+T7: Resolve Expedition Map
+T7: Expedition Map moved battlefield -> graveyard (activation cost (Expedition Map))
+T7 P2: activate Expedition Map — Search your library for a land card, reveal it, put it into your hand, then shuffle.
+T7: Ugin's Labyrinth moved library -> hand (Expedition Map tutor)
+T7 P2: Expedition Map activated — finds Ugin's Labyrinth (hand)
+T7 P2: Ugin, Eye of the Storms [+2] -> You gain 3 life and draw a card
+T7 P2: Gain 3 life from Ugin, Eye of the Storms (life: 21)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Devourer of Destiny
+T7 P2: Attack with Devourer of Destiny
+T7 P1:   [BLOCK] spawn Token (0/1) blocks Devourer of Destiny (6/6) — lifespan_delta=+1.00
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T7: spawn Token dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Eldrazi Tron 21
+║ Hand: 1 cards  |  Opp hand: 2 cards
+║ Lands: 7  |  Opp lands: 7
+║ Library: 44  |  Graveyard: 3
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber, Crumbling Vestige, Simic Growth Chamber, Forest, Shifting Woodland, Hanweir Battlements // Hanweir, the Writhing Township, Crumbling Vestige
+║ Eldrazi Tron board:
+║   Creatures: Devourer of Destiny (6/6) [tapped]
+║   Other: Chalice of the Void, Relic of Progenitus, Ugin, Eye of the Storms
+║   Lands: Urza's Power Plant [T], Eldrazi Temple [T], Urza's Mine, Eldrazi Temple, Eldrazi Temple, Wastes, Ugin's Labyrinth
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Summoner's Pact
+  [Main 1]
+T8 P1: Play Vesuva
+    → Goal: ramp
+T8 P1: Cast Summoner's Pact (0)
+    [Priority] P2 passes (no response)
+T8: Resolve Summoner's Pact
+T8 P1: Summoner's Pact finds Primeval Titan
+T8: Summoner's Pact moved stack -> graveyard (resolution)
+    → Goal: ramp [payoffs]
+    [Mana] Tap Forest→G, Shifting Woodland→G, Hanweir Battlements // Hanweir, the Writhing Township→C, Simic Growth Chamber→GU, Simic Growth Chamber→GU (paying for Primeval Titan, 3 mana remaining)
+T8 P1: Cast Primeval Titan (4GG)
+    [Priority] P2 passes (no response)
+T8: Resolve Primeval Titan
+T8 P1: Amulet of Vigor untaps Simic Growth Chamber
+T8: Forest moved battlefield -> hand (Simic Growth Chamber ETB returns Forest to hand)
+T8 P1: Primeval Titan searches for Simic Growth Chamber
+T8 P1: Amulet of Vigor untaps Gruul Turf
+T8: Shifting Woodland moved battlefield -> hand (Gruul Turf ETB returns Shifting Woodland to hand)
+T8 P1: Primeval Titan searches for Gruul Turf
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 21  |  Amulet Titan 20
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 7  |  Opp lands: 8
+║ Library: 40  |  Graveyard: 7
+║ Eldrazi Tron board:
+║   Creatures: Devourer of Destiny (6/6)
+║   Other: Chalice of the Void, Relic of Progenitus, Ugin, Eye of the Storms
+║   Lands: Urza's Power Plant, Eldrazi Temple, Urza's Mine, Eldrazi Temple, Eldrazi Temple, Wastes, Ugin's Labyrinth
+║ Amulet Titan board:
+║   Creatures: Primeval Titan (6/6)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber [T], Crumbling Vestige, Simic Growth Chamber [T], Hanweir Battlements // Hanweir, the Writhing Township [T], Crumbling Vestige, Vesuva, Simic Growth Chamber, Gruul Turf
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thought-Knot Seer
+  [Main 1]
+T8 P2: Play Swamp
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C, Eldrazi Temple→CC, Urza's Mine→C (paying for Thought-Knot Seer, 7 mana remaining)
+T8 P2: Cast Thought-Knot Seer (3)
+    [Priority] P1 passes (no response)
+T8: Resolve Thought-Knot Seer
+T8 P2: Ugin, Eye of the Storms [+2] -> You gain 3 life and draw a card
+T8 P2: Gain 3 life from Ugin, Eye of the Storms (life: 24)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Devourer of Destiny
+T8 P2: Attack with Devourer of Destiny
+  [Declare Blockers] P1 does not block
+T8 P2:   Devourer of Destiny (6/6) → 6 dmg to player
+  [Combat Damage] 6 damage dealt → P1 life: 20 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 14  |  Eldrazi Tron 24
+║ Hand: 2 cards  |  Opp hand: 1 cards
+║ Lands: 8  |  Opp lands: 8
+║ Library: 40  |  Graveyard: 4
+║ Amulet Titan board:
+║   Creatures: Primeval Titan (6/6)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber, Crumbling Vestige, Simic Growth Chamber, Hanweir Battlements // Hanweir, the Writhing Township, Crumbling Vestige, Vesuva, Simic Growth Chamber, Gruul Turf
+║ Eldrazi Tron board:
+║   Creatures: Devourer of Destiny (6/6) [tapped], Thought-Knot Seer (4/4)
+║   Other: Chalice of the Void, Relic of Progenitus, Ugin, Eye of the Storms
+║   Lands: Urza's Power Plant [T], Eldrazi Temple [T], Urza's Mine [T], Eldrazi Temple, Eldrazi Temple, Wastes, Ugin's Labyrinth, Swamp
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Echoing Deeps
+  [Main 1]
+T9 P1: Play Forest
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Primeval Titan
+T9 P1: Amulet of Vigor untaps Simic Growth Chamber
+T9: Vesuva moved battlefield -> hand (Simic Growth Chamber ETB returns Vesuva to hand)
+T9 P1: Primeval Titan searches for Simic Growth Chamber
+T9 P1: Amulet of Vigor untaps Tolaria West
+T9 P1: Primeval Titan searches for Tolaria West
+T9 P1: Attack with Primeval Titan
+  [Declare Blockers] P2 does not block
+T9 P1:   Primeval Titan (6/6) → 6 dmg to player
+  [Combat Damage] 6 damage dealt → P2 life: 24 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 18  |  Amulet Titan 14
+║ Hand: 1 cards  |  Opp hand: 3 cards
+║ Lands: 8  |  Opp lands: 10
+║ Library: 39  |  Graveyard: 7
+║ Eldrazi Tron board:
+║   Creatures: Devourer of Destiny (6/6), Thought-Knot Seer (4/4)
+║   Other: Chalice of the Void, Relic of Progenitus, Ugin, Eye of the Storms
+║   Lands: Urza's Power Plant, Eldrazi Temple, Urza's Mine, Eldrazi Temple, Eldrazi Temple, Wastes, Ugin's Labyrinth, Swamp
+║ Amulet Titan board:
+║   Creatures: Primeval Titan (6/6) [tapped]
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber, Crumbling Vestige, Simic Growth Chamber, Hanweir Battlements // Hanweir, the Writhing Township, Crumbling Vestige, Simic Growth Chamber, Gruul Turf, Forest, Simic Growth Chamber, Tolaria West
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Dismember
+  [Main 1]
+T9 P2: Play Ugin's Labyrinth
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C, Swamp→B (paying for Dismember, 10 mana remaining)
+T9 P2: Pay 2 life (Phyrexian mana) for Dismember
+T9 P2: Cast Dismember (1BB)
+    [Priority] P1 passes (no response)
+T9: Resolve Dismember
+T9: Primeval Titan dies
+T9: Dismember moved stack -> graveyard (resolution)
+T9 P2: Ugin, Eye of the Storms [+2] -> You gain 3 life and draw a card
+T9 P2: Gain 3 life from Ugin, Eye of the Storms (life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Devourer of Destiny, Thought-Knot Seer
+T9 P2: Attack with Devourer of Destiny, Thought-Knot Seer
+  [Declare Blockers] P1 does not block
+T9 P2:   Devourer of Destiny (6/6) → 6 dmg to player
+T9 P2:   Thought-Knot Seer (4/4) → 4 dmg to player
+  [Combat Damage] 10 damage dealt → P1 life: 14 → 4
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 4  |  Eldrazi Tron 19
+║ Hand: 3 cards  |  Opp hand: 0 cards
+║ Lands: 10  |  Opp lands: 9
+║ Library: 37  |  Graveyard: 5
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber, Crumbling Vestige, Simic Growth Chamber, Hanweir Battlements // Hanweir, the Writhing Township, Crumbling Vestige, Simic Growth Chamber, Gruul Turf, Forest, Simic Growth Chamber, Tolaria West
+║ Eldrazi Tron board:
+║   Creatures: Devourer of Destiny (6/6) [tapped], Thought-Knot Seer (4/4) [tapped]
+║   Other: Chalice of the Void, Relic of Progenitus, Ugin, Eye of the Storms
+║   Lands: Urza's Power Plant [T], Eldrazi Temple, Urza's Mine, Eldrazi Temple, Eldrazi Temple, Wastes, Ugin's Labyrinth, Swamp [T], Ugin's Labyrinth
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: The Mycosynth Gardens
+  [Main 1]
+T10 P1: Play Shifting Woodland (enters tapped)
+T10 P1: Amulet of Vigor untaps Shifting Woodland
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 19  |  Amulet Titan 4
+║ Hand: 0 cards  |  Opp hand: 3 cards
+║ Lands: 9  |  Opp lands: 11
+║ Library: 38  |  Graveyard: 8
+║ Eldrazi Tron board:
+║   Creatures: Devourer of Destiny (6/6), Thought-Knot Seer (4/4)
+║   Other: Chalice of the Void, Relic of Progenitus, Ugin, Eye of the Storms
+║   Lands: Urza's Power Plant, Eldrazi Temple, Urza's Mine, Eldrazi Temple, Eldrazi Temple, Wastes, Ugin's Labyrinth, Swamp, Ugin's Labyrinth
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber, Crumbling Vestige, Simic Growth Chamber, Hanweir Battlements // Hanweir, the Writhing Township, Crumbling Vestige, Simic Growth Chamber, Gruul Turf, Forest, Simic Growth Chamber, Tolaria West, Shifting Woodland
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Devourer of Destiny
+  [Main 1]
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C, Eldrazi Temple→CC, Urza's Mine→C, Eldrazi Temple→CC, Eldrazi Temple→CC (paying for Devourer of Destiny, 5 mana remaining)
+T10 P2: Cast Devourer of Destiny (5)
+T10: Spelunking moved battlefield -> exile (Devourer of Destiny cast: exile)
+T10 P2: Devourer of Destiny cast — exile Spelunking
+    [Priority] P1 passes (no response)
+T10: Resolve Devourer of Destiny
+T10 P2: Ugin, Eye of the Storms [+2] -> You gain 3 life and draw a card
+T10 P2: Gain 3 life from Ugin, Eye of the Storms (life: 22)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Devourer of Destiny, Thought-Knot Seer
+T10 P2: Attack with Devourer of Destiny, Thought-Knot Seer
+  [Declare Blockers] P1 does not block
+T10 P2:   Devourer of Destiny (6/6) → 6 dmg to player
+T10 P2:   Thought-Knot Seer (4/4) → 4 dmg to player
+P1 loses: life total -6
+  [Combat Damage] 10 damage dealt → P1 life: 4 → -6
+
+>>> Eldrazi Tron wins Game 2 on turn 10 via damage
+    Final life: Amulet Titan=-6  Eldrazi Tron=22
+
+======================================================================
+  MATCH RESULT: Eldrazi Tron wins 2-0
+======================================================================

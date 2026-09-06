@@ -1,0 +1,1497 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+======================================================================
+  GAME 1: Eldrazi Tron (P1) vs Ruby Storm (P2)  —  seed 55643
+  Series: Eldrazi Tron 0 - 0 Ruby Storm
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Ruby Storm wins → chooses to play first
+║ P1 (on play): Ruby Storm
+║ P2 (on draw): Eldrazi Tron
+╚═══════════════════════════════════════════════════════
+
+P1 (Eldrazi Tron) opening hand (2 lands, 5 spells):
+  • Ugin, Eye of the Storms [Spell, CMC 7]
+  • Karn, the Great Creator [Spell, CMC 4]
+  • Chalice of the Void [Spell, CMC 0]
+  • Eldrazi Temple [Land, CMC 0]
+  • Mind Stone [Spell, CMC 2]
+  • Devourer of Destiny [Creature, CMC 7]
+  • Ugin's Labyrinth [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Chalice of the Void, Eldrazi Temple, 3 cheap spells
+
+P2 (Ruby Storm) opening hand (3 lands, 4 spells):
+  • Desperate Ritual [Spell, CMC 2]
+  • Mountain [Land, CMC 0]
+  • Pyretic Ritual [Spell, CMC 2]
+  • Gemstone Caverns [Land, CMC 0]
+  • Ral, Monsoon Mage // Ral, Leyline Prodigy [Creature, CMC 2]
+  • Reckless Impulse [Spell, CMC 2]
+  • Bloodstained Mire [Land, CMC 0]
+→ P2 MULLIGANS (no cost reducer and no ritual+cantrip+finisher backup)
+  New hand (2 lands, 5 spells): ['Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Bloodstained Mire', 'Reckless Impulse', 'Elegant Parlor', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Reckless Impulse']
+→ P2 mulligans to 6, bottoms: ['Ral, Monsoon Mage // Ral, Leyline Prodigy']
+  Keeps: ['Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Bloodstained Mire', 'Reckless Impulse', 'Elegant Parlor', 'Ral, Monsoon Mage // Ral, Leyline Prodigy', 'Reckless Impulse']
+
+
+╔══ TURN 1 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 20  |  Eldrazi Tron 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 54  |  Graveyard: 0
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Bloodstained Mire
+T1: Bloodstained Mire moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Bloodstained Mire (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Ruby Storm 19
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ugin's Labyrinth
+  [Main 1]
+T1 P1: Play Eldrazi Temple
+    → Goal: ramp [enablers]
+T1 P1: Cast Chalice of the Void (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Chalice of the Void
+    → Goal: ramp
+    [Mana] Tap Eldrazi Temple→CC (paying for Mind Stone, 0 mana remaining)
+T1 P1: Cast Mind Stone (2)
+    [Priority] P2 passes (no response)
+T1: Resolve Mind Stone
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 19  |  Eldrazi Tron 20
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 1
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void, Mind Stone
+║   Lands: Eldrazi Temple [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Past in Flames
+  [Main 1]
+T2 P2: surveil 1 → Ruby Medallion to GY
+T2 P2: Play Elegant Parlor (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Ruby Storm 19
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void, Mind Stone
+║   Lands: Eldrazi Temple
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ugin's Labyrinth
+  [Main 1]
+T2 P1: Play Ugin's Labyrinth
+    → Goal: ramp
+    [Mana] Tap Eldrazi Temple→CC, Ugin's Labyrinth→C, Mind Stone→C (paying for Karn, the Great Creator, 0 mana remaining)
+T2 P1: Cast Karn, the Great Creator (4)
+    [Priority] P2 passes (no response)
+T2: Resolve Karn, the Great Creator
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 19  |  Eldrazi Tron 20
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 2
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Elegant Parlor
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void, Mind Stone, Karn, the Great Creator
+║   Lands: Eldrazi Temple [T], Ugin's Labyrinth [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+T3 P2: Play Arid Mesa
+T3: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T3 P2: Crack Arid Mesa -> Mountain (untapped)
+    → Goal: execute_payoff
+    [Mana] Tap Mountain→R, Sacred Foundry→R (paying for Ral, Monsoon Mage // Ral, Leyline Prodigy, 1 mana remaining)
+T3 P2: Cast Ral, Monsoon Mage // Ral, Leyline Prodigy (1R)
+    [Priority] P1 passes (no response)
+T3: Resolve Ral, Monsoon Mage // Ral, Leyline Prodigy
+T3 P2: Ral, Monsoon Mage enters — instants/sorceries cost {1} less
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Elegant Parlor→R (paying for Reckless Impulse, 0 mana remaining)
+T3 P2: Cast Reckless Impulse (1R)
+T3 P2: Ral, Monsoon Mage // Ral, Leyline Prodigy — won coin flip!
+T3 P2: Ral, Monsoon Mage // Ral, Leyline Prodigy transforms! (loyalty: 4) [+2 extra]
+    [Priority] P1 passes (no response)
+T3: Resolve Reckless Impulse
+T3 P2: Reckless Impulse → impulse-reveal 2 (Wrenn's Resolve, Pyretic Ritual)
+T3: Reckless Impulse moved stack -> graveyard (resolution)
+T3 P2: Ral, Monsoon Mage // Ral, Leyline Prodigy [-2] -> Ral deals 2 damage divided as you choose among one or two targets. Draw a card if you control a blue permanent other than Ral
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 18  |  Ruby Storm 18
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void, Mind Stone, Karn, the Great Creator
+║   Lands: Eldrazi Temple, Ugin's Labyrinth
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T], Elegant Parlor [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Urza's Mine
+  [Main 1]
+T3 P1: Play Urza's Mine
+T3: Mind Stone moved battlefield -> graveyard (activation cost (Mind Stone))
+T3 P1: activate Mind Stone — Draw a card.
+T3 P1: Mind Stone activated — draw 1 (Karn, the Great Creator)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 18  |  Eldrazi Tron 18
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 4
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Elegant Parlor, Mountain
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void, Karn, the Great Creator
+║   Lands: Eldrazi Temple [T], Ugin's Labyrinth, Urza's Mine
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mountain
+  [Main 1]
+T4 P2: Play Mountain
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Reckless Impulse, 3 mana remaining)
+T4 P2: Cast Reckless Impulse (1R)
+    [Priority] P1 passes (no response)
+T4: Resolve Reckless Impulse
+T4 P2: Reckless Impulse → impulse-reveal 2 (Wooded Foothills, Desperate Ritual)
+T4: Reckless Impulse moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Wrenn's Resolve, 2 mana remaining)
+T4 P2: Cast Wrenn's Resolve (1R)
+    [Priority] P1 passes (no response)
+T4: Resolve Wrenn's Resolve
+T4 P2: Wrenn's Resolve → impulse-reveal 2 (Arid Mesa, Glimpse the Impossible)
+T4: Wrenn's Resolve moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Sacred Foundry→R, Elegant Parlor→R (paying for Glimpse the Impossible, 0 mana remaining)
+T4 P2: Cast Glimpse the Impossible (2R)
+    [Priority] P1 passes (no response)
+T4: Resolve Glimpse the Impossible
+T4 P2: Glimpse the Impossible → impulse-reveal 3 (Grapeshot, Manamorphose, Desperate Ritual)
+T4: Glimpse the Impossible moved stack -> graveyard (resolution)
+T4 P2: Ral, Monsoon Mage // Ral, Leyline Prodigy [-2] -> Ral deals 2 damage divided as you choose among one or two targets. Draw a card if you control a blue permanent other than Ral
+T4: Ral, Monsoon Mage // Ral, Leyline Prodigy moved battlefield -> graveyard (SBA 704.5p: zero loyalty)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Wooded Foothills moved hand -> graveyard (discard to hand size)
+T4: Ral, Monsoon Mage // Ral, Leyline Prodigy moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 4 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 16  |  Ruby Storm 18
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 1
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void, Karn, the Great Creator
+║   Lands: Eldrazi Temple, Ugin's Labyrinth, Urza's Mine
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T], Elegant Parlor [T], Mountain [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Urza's Tower
+  [Main 1]
+T4 P1: Play Urza's Tower
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 18  |  Eldrazi Tron 16
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 39  |  Graveyard: 10
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Elegant Parlor, Mountain, Mountain
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void, Karn, the Great Creator
+║   Lands: Eldrazi Temple, Ugin's Labyrinth, Urza's Mine, Urza's Tower
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ral, Monsoon Mage // Ral, Leyline Prodigy
+  [Main 1]
+T5 P2: Play Arid Mesa
+T5: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T5 P2: Crack Arid Mesa -> Mountain (untapped)
+    → Goal: execute_payoff
+    [Mana] Tap Mountain→R, Mountain→R (paying for Ral, Monsoon Mage // Ral, Leyline Prodigy, 3 mana remaining)
+T5 P2: Cast Ral, Monsoon Mage // Ral, Leyline Prodigy (1R)
+    [Priority] P1 passes (no response)
+T5: Resolve Ral, Monsoon Mage // Ral, Leyline Prodigy
+T5 P2: Ral, Monsoon Mage enters — instants/sorceries cost {1} less
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Pyretic Ritual, 2 mana remaining)
+T5 P2: Cast Pyretic Ritual (1R)
+T5 P2: Ral, Monsoon Mage // Ral, Leyline Prodigy — lost coin flip, takes 1 damage
+    [Priority] P1 passes (no response)
+T5: Resolve Pyretic Ritual
+T5 P2: Pyretic Ritual adds 3 R mana
+T5: Pyretic Ritual moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T5 P2:   Splice Desperate Ritual onto Desperate Ritual
+T5 P2: Cast Desperate Ritual (1R)
+T5 P2: Ral, Monsoon Mage // Ral, Leyline Prodigy — won coin flip!
+T5 P2: Ral, Monsoon Mage // Ral, Leyline Prodigy transforms! (loyalty: 5) [+3 extra]
+    [Priority] P1 passes (no response)
+T5: Resolve Desperate Ritual
+T5 P2: Desperate Ritual adds 3 R mana
+T5 P2:   Spliced Desperate Ritual adds 3 R mana
+T5: Desperate Ritual moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T5 P2: Cast Desperate Ritual (1R)
+    [Priority] P1 passes (no response)
+T5: Resolve Desperate Ritual
+T5 P2: Desperate Ritual adds 3 R mana
+T5: Desperate Ritual moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T5 P2: Cast Manamorphose (2)
+    [Priority] P1 passes (no response)
+T5: Resolve Manamorphose
+T5 P2: Manamorphose adds 2 any mana
+T5: Manamorphose moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T5 P2: Cast Pyretic Ritual (1R)
+    [Priority] P1 passes (no response)
+T5: Resolve Pyretic Ritual
+T5 P2: Pyretic Ritual adds 3 R mana
+T5: Pyretic Ritual moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T5 P2: Cast Past in Flames (3R)
+    [Priority] P1 passes (no response)
+T5: Resolve Past in Flames
+T5 P2: Past in Flames grants flashback
+T5: Past in Flames moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [payoffs]
+T5 P2: Cast Grapeshot (1R)
+    [Priority] P1 passes (no response)
+T5: Resolve Grapeshot
+T5 P2: Grapeshot deals 1 to P1 (face)
+T5 P2: Grapeshot deals 1 damage (opponent life: 15)
+T5: Storm copies: 7
+T5 P2: Grapeshot deals 1 to P1 (face)
+T5 P2: Grapeshot deals 1 damage (opponent life: 14)
+T5 P2: Grapeshot deals 1 to P1 (face)
+T5 P2: Grapeshot deals 1 damage (opponent life: 13)
+T5 P2: Grapeshot deals 1 to P1 (face)
+T5 P2: Grapeshot deals 1 damage (opponent life: 12)
+T5 P2: Grapeshot deals 1 to P1 (face)
+T5 P2: Grapeshot deals 1 damage (opponent life: 11)
+T5 P2: Grapeshot deals 1 to P1 (face)
+T5 P2: Grapeshot deals 1 damage (opponent life: 10)
+T5 P2: Grapeshot deals 1 to P1 (face)
+T5 P2: Grapeshot deals 1 damage (opponent life: 9)
+T5 P2: Grapeshot deals 1 to P1 (face)
+T5 P2: Grapeshot deals 1 damage (opponent life: 8)
+T5: Grapeshot moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T5 P2: Cast Glimpse the Impossible (2R)
+    [Priority] P1 passes (no response)
+T5: Resolve Glimpse the Impossible
+T5 P2: Glimpse the Impossible → impulse-reveal 3 (Wooded Foothills, Wish, Grapeshot)
+T5: Glimpse the Impossible moved stack -> exile (flashback resolution (CR 702.33a))
+    → Goal: execute_payoff [payoffs]
+T5 P2: Cast Grapeshot (1R)
+    [Priority] P1 passes (no response)
+T5: Resolve Grapeshot
+T5 P2: Grapeshot deals 1 to P1 (face)
+T5 P2: Grapeshot deals 1 damage (opponent life: 7)
+T5: Storm copies: 9
+T5 P2: Grapeshot deals 1 to P1 (face)
+T5 P2: Grapeshot deals 1 damage (opponent life: 6)
+T5 P2: Grapeshot deals 1 to P1 (face)
+T5 P2: Grapeshot deals 1 damage (opponent life: 5)
+T5 P2: Grapeshot deals 1 to P1 (face)
+T5 P2: Grapeshot deals 1 damage (opponent life: 4)
+T5 P2: Grapeshot deals 1 to P1 (face)
+T5 P2: Grapeshot deals 1 damage (opponent life: 3)
+T5 P2: Grapeshot deals 1 to P1 (face)
+T5 P2: Grapeshot deals 1 damage (opponent life: 2)
+T5 P2: Grapeshot deals 1 to P1 (face)
+T5 P2: Grapeshot deals 1 damage (opponent life: 1)
+T5 P2: Grapeshot deals 1 to P1 (face)
+T5 P2: Grapeshot deals 1 damage (opponent life: 0)
+T5 P2: Grapeshot deals 1 to P1 (face)
+T5 P2: Grapeshot deals 1 damage (opponent life: -1)
+T5 P2: Grapeshot deals 1 to P1 (face)
+T5 P2: Grapeshot deals 1 damage (opponent life: -2)
+T5: Grapeshot moved stack -> graveyard (resolution)
+P1 loses: life total -2
+
+>>> Ruby Storm wins Game 1 on turn 5 via damage
+    Final life: Eldrazi Tron=-2  Ruby Storm=17
+
+======================================================================
+  GAME 2: Eldrazi Tron (P1) vs Ruby Storm (P2)  —  seed 55644
+  Series: Eldrazi Tron 0 - 1 Ruby Storm
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Ruby Storm wins → chooses to play first
+║ P1 (on play): Ruby Storm
+║ P2 (on draw): Eldrazi Tron
+╚═══════════════════════════════════════════════════════
+
+P1 (Eldrazi Tron) opening hand (3 lands, 4 spells):
+  • Urza's Tower [Land, CMC 0]
+  • Kozilek's Command [Spell, CMC 2]
+  • Urza's Tower [Land, CMC 0]
+  • Karn, the Great Creator [Spell, CMC 4]
+  • Thought-Knot Seer [Creature, CMC 4]
+  • Devourer of Destiny [Creature, CMC 7]
+  • Urza's Power Plant [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Thought-Knot Seer, 3 cheap spells
+
+P2 (Ruby Storm) opening hand (3 lands, 4 spells):
+  • Valakut Awakening // Valakut Stoneforge [Spell, CMC 3]
+  • Mountain [Land, CMC 0]
+  • Grapeshot [Spell, CMC 2]
+  • Desperate Ritual [Spell, CMC 2]
+  • Past in Flames [Spell, CMC 4]
+  • Arid Mesa [Land, CMC 0]
+  • Bloodstained Mire [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Desperate Ritual, Past in Flames, 3 cheap spells
+
+
+╔══ TURN 1 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 20  |  Eldrazi Tron 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Arid Mesa
+T1: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Ruby Storm 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Urza's Mine
+  [Main 1]
+T1 P1: Play Urza's Tower
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 19  |  Eldrazi Tron 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Tower
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Grapeshot
+  [Main 1]
+T2 P2: Play Bloodstained Mire
+T2: Bloodstained Mire moved battlefield -> graveyard (fetchland sacrifice)
+T2 P2: Crack Bloodstained Mire -> Mountain (untapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Ruby Storm 18
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Tower
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Chalice of the Void
+  [Main 1]
+T2 P1: Play Urza's Power Plant
+    → Goal: ramp [enablers]
+T2 P1: Cast Chalice of the Void (0)
+    [Priority] P2 passes (no response)
+T2: Resolve Chalice of the Void
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 18  |  Eldrazi Tron 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void
+║   Lands: Urza's Tower, Urza's Power Plant
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wrenn's Resolve
+  [Main 1]
+T3 P2: Play Mountain
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Ruby Storm 18
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void
+║   Lands: Urza's Tower, Urza's Power Plant
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Chalice of the Void
+  [Main 1]
+T3 P1: Play Urza's Mine
+    → Goal: ramp [enablers]
+T3 P1: Cast Chalice of the Void (4) (X=2)
+    [Priority] P2 passes (no response)
+T3: Resolve Chalice of the Void
+T3 P1: Chalice of the Void enters with 2 charge counter(s)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 18  |  Eldrazi Tron 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain, Mountain
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void, Chalice of the Void
+║   Lands: Urza's Tower [T], Urza's Power Plant [T], Urza's Mine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Glimpse the Impossible
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Ruby Storm 18
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void, Chalice of the Void
+║   Lands: Urza's Tower, Urza's Power Plant, Urza's Mine
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Eldrazi Temple
+  [Main 1]
+T4 P1: Play Eldrazi Temple
+    → Goal: ramp
+    [Mana] Tap Urza's Tower→C, Urza's Power Plant→C (paying for Karn, the Great Creator, 4 mana remaining)
+T4 P1: Cast Karn, the Great Creator (4)
+    [Priority] P2 passes (no response)
+T4: Resolve Karn, the Great Creator
+    → Goal: ramp
+    [Mana] Tap Urza's Mine→C (paying for Thought-Knot Seer, 5 mana remaining)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 18  |  Eldrazi Tron 20
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 2
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain, Mountain
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void, Chalice of the Void, Karn, the Great Creator
+║   Lands: Urza's Tower [T], Urza's Power Plant [T], Urza's Mine [T], Eldrazi Temple
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wrenn's Resolve
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T5: Valakut Awakening // Valakut Stoneforge moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 5 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Ruby Storm 18
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void, Chalice of the Void, Karn, the Great Creator
+║   Lands: Urza's Tower, Urza's Power Plant, Urza's Mine, Eldrazi Temple
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Urza's Power Plant
+  [Main 1]
+T5 P1: Play Urza's Tower
+    → Goal: ramp
+    [Mana] Tap Urza's Tower→C, Urza's Power Plant→C, Urza's Mine→C (paying for Thought-Knot Seer, 6 mana remaining)
+T5 P1: Cast Thought-Knot Seer (3)
+    [Priority] P2 passes (no response)
+T5: Resolve Thought-Knot Seer
+T5: Past in Flames moved hand -> exile (etb reveal-hand exile)
+T5 P1: Thought-Knot Seer ETB: exiles Past in Flames from opponent's hand
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 18  |  Eldrazi Tron 20
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 3
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain, Mountain
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4)
+║   Other: Chalice of the Void, Chalice of the Void, Karn, the Great Creator
+║   Lands: Urza's Tower [T], Urza's Power Plant [T], Urza's Mine [T], Eldrazi Temple, Urza's Tower
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wrenn's Resolve
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Ruby Storm 18
+║ Hand: 3 cards  |  Opp hand: 7 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4)
+║   Other: Chalice of the Void, Chalice of the Void, Karn, the Great Creator
+║   Lands: Urza's Tower, Urza's Power Plant, Urza's Mine, Eldrazi Temple, Urza's Tower
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Eldrazi Temple
+  [Main 1]
+T6 P1: Play Eldrazi Temple
+    → Goal: ramp
+    [Mana] Tap Urza's Tower→C, Urza's Power Plant→C, Urza's Mine→C, Eldrazi Temple→CC, Urza's Tower→C (paying for Devourer of Destiny, 7 mana remaining)
+T6 P1: Cast Devourer of Destiny (5)
+    [Priority] P2 passes (no response)
+T6: Resolve Devourer of Destiny
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Thought-Knot Seer
+T6 P1: Attack with Thought-Knot Seer
+  [Declare Blockers] P2 does not block
+T6 P1:   Thought-Knot Seer (4/4) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 18 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 14  |  Eldrazi Tron 20
+║ Hand: 7 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 6
+║ Library: 46  |  Graveyard: 3
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain, Mountain
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4) [tapped], Devourer of Destiny (6/6)
+║   Other: Chalice of the Void, Chalice of the Void, Karn, the Great Creator
+║   Lands: Urza's Tower [T], Urza's Power Plant [T], Urza's Mine [T], Eldrazi Temple [T], Urza's Tower [T], Eldrazi Temple
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Gemstone Caverns
+  [Main 1]
+T7 P2: Play Gemstone Caverns
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R, Mountain→R (paying for Desperate Ritual, 2 mana remaining)
+T7 P1: Chalice of the Void (X=2) counters Desperate Ritual
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Ruby Storm 14
+║ Hand: 2 cards  |  Opp hand: 6 cards
+║ Lands: 6  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4), Devourer of Destiny (6/6)
+║   Other: Chalice of the Void, Chalice of the Void, Karn, the Great Creator
+║   Lands: Urza's Tower, Urza's Power Plant, Urza's Mine, Eldrazi Temple, Urza's Tower, Eldrazi Temple
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain [T], Mountain [T], Gemstone Caverns
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Mind Stone
+  [Main 1]
+T7 P1: Play Urza's Power Plant
+    → Goal: ramp
+    [Mana] Tap Urza's Tower→C (paying for Mind Stone, 9 mana remaining)
+T7 P1: Cast Mind Stone (2)
+    [Priority] P2 passes (no response)
+T7: Resolve Mind Stone
+T7: Mind Stone moved battlefield -> graveyard (activation cost (Mind Stone))
+T7 P1: activate Mind Stone — Draw a card.
+T7 P1: Mind Stone activated — draw 1 (Karn, the Great Creator)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Thought-Knot Seer, Devourer of Destiny
+T7 P1: Attack with Thought-Knot Seer, Devourer of Destiny
+  [Declare Blockers] P2 does not block
+T7 P1:   Thought-Knot Seer (4/4) → 4 dmg to player
+T7 P1:   Devourer of Destiny (6/6) → 6 dmg to player
+  [Combat Damage] 10 damage dealt → P2 life: 14 → 4
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 4  |  Eldrazi Tron 20
+║ Hand: 6 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 7
+║ Library: 45  |  Graveyard: 4
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain, Mountain, Gemstone Caverns
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4) [tapped], Devourer of Destiny (6/6) [tapped]
+║   Other: Chalice of the Void, Chalice of the Void, Karn, the Great Creator
+║   Lands: Urza's Tower [T], Urza's Power Plant, Urza's Mine, Eldrazi Temple, Urza's Tower, Eldrazi Temple, Urza's Power Plant
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Manamorphose
+  [Main 1]
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R, Mountain→R (paying for Manamorphose, 2 mana remaining)
+T8 P1: Chalice of the Void (X=2) counters Manamorphose
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Eldrazi Tron (P1) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Ruby Storm 4
+║ Hand: 2 cards  |  Opp hand: 6 cards
+║ Lands: 7  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 1
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4), Devourer of Destiny (6/6)
+║   Other: Chalice of the Void, Chalice of the Void, Karn, the Great Creator
+║   Lands: Urza's Tower, Urza's Power Plant, Urza's Mine, Eldrazi Temple, Urza's Tower, Eldrazi Temple, Urza's Power Plant
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain [T], Mountain [T], Gemstone Caverns
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Glaring Fleshraker
+  [Main 1]
+    → Goal: ramp
+    [Mana] Tap Urza's Tower→C, Urza's Power Plant→C (paying for Glaring Fleshraker, 9 mana remaining)
+T8 P1: Cast Glaring Fleshraker (2)
+    [Priority] P2 passes (no response)
+T8: Resolve Glaring Fleshraker
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Thought-Knot Seer, Devourer of Destiny
+T8 P1: Attack with Thought-Knot Seer, Devourer of Destiny
+  [Declare Blockers] P2 does not block
+T8 P1:   Thought-Knot Seer (4/4) → 4 dmg to player
+T8 P1:   Devourer of Destiny (6/6) → 6 dmg to player
+P2 loses: life total -6
+  [Combat Damage] 10 damage dealt → P2 life: 4 → -6
+
+>>> Eldrazi Tron wins Game 2 on turn 8 via damage
+    Final life: Eldrazi Tron=20  Ruby Storm=-6
+
+======================================================================
+  GAME 3: Ruby Storm (P1) vs Eldrazi Tron (P2)  —  seed 55645
+  Series: Eldrazi Tron 1 - 1 Ruby Storm
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Ruby Storm wins → chooses to play first
+║ P1 (on play): Ruby Storm
+║ P2 (on draw): Eldrazi Tron
+╚═══════════════════════════════════════════════════════
+
+P1 (Ruby Storm) opening hand (3 lands, 4 spells):
+  • Wooded Foothills [Land, CMC 0]
+  • Desperate Ritual [Spell, CMC 2]
+  • Elegant Parlor [Land, CMC 0]
+  • Scalding Tarn [Land, CMC 0]
+  • Past in Flames [Spell, CMC 4]
+  • Reckless Impulse [Spell, CMC 2]
+  • Manamorphose [Spell, CMC 2]
+→ P1 KEEPS 7 — has key card(s): Desperate Ritual, Manamorphose, Past in Flames, Reckless Impulse, 3 cheap spells
+
+P2 (Eldrazi Tron) opening hand (5 lands, 2 spells):
+  • Eldrazi Temple [Land, CMC 0]
+  • Urza's Mine [Land, CMC 0]
+  • Devourer of Destiny [Creature, CMC 7]
+  • Urza's Tower [Land, CMC 0]
+  • Eldrazi Temple [Land, CMC 0]
+  • Relic of Progenitus [Spell, CMC 1]
+  • Ugin's Labyrinth [Land, CMC 0]
+→ P2 MULLIGANS (too many lands (5 > 4); first-turn value 2 < 5)
+  New hand (4 lands, 3 spells): ["Urza's Tower", "Urza's Mine", 'Glaring Fleshraker', "Kozilek's Command", "Urza's Tower", 'Ugin, Eye of the Storms', "Ugin's Labyrinth"]
+→ P2 mulligans to 6, bottoms: ['Ugin, Eye of the Storms']
+  Keeps: ["Urza's Tower", "Urza's Mine", 'Glaring Fleshraker', "Kozilek's Command", "Urza's Tower", "Ugin's Labyrinth"]
+
+
+╔══ TURN 1 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 20  |  Eldrazi Tron 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Scalding Tarn
+T1: Scalding Tarn moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Scalding Tarn (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Ruby Storm 19
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thought-Knot Seer
+  [Main 1]
+T1 P2: Play Urza's Tower
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 19  |  Eldrazi Tron 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Tower
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Reckless Impulse
+  [Main 1]
+T2 P1: Play Wooded Foothills
+T2: Wooded Foothills moved battlefield -> graveyard (fetchland sacrifice)
+T2 P1: Crack Wooded Foothills -> Mountain (untapped)
+    → Goal: deploy_engine [fillers]
+    [Mana] Tap Mountain→R, Sacred Foundry→R (paying for Reckless Impulse, 0 mana remaining)
+T2 P1: Cast Reckless Impulse (1R)
+    [Priority] P2 passes (no response)
+T2: Resolve Reckless Impulse
+T2 P1: Reckless Impulse → impulse-reveal 2 (Wish, March of Reckless Joy)
+T2: Reckless Impulse moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Ruby Storm 18
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 53  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Tower
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Chalice of the Void
+  [Main 1]
+T2 P2: Play Urza's Mine
+    → Goal: ramp [enablers]
+T2 P2: Cast Chalice of the Void (0)
+    [Priority] P1 passes (no response)
+T2: Resolve Chalice of the Void
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 18  |  Eldrazi Tron 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 48  |  Graveyard: 3
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void
+║   Lands: Urza's Tower, Urza's Mine
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Past in Flames
+  [Main 1]
+T3 P1: surveil 1 → Wish to GY
+T3 P1: Play Elegant Parlor (enters tapped)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for March of Reckless Joy, 1 mana remaining)
+T3 P1: Cast March of Reckless Joy (1R) (X=1)
+    [Priority] P2 passes (no response)
+T3: Resolve March of Reckless Joy
+T3 P1: March of Reckless Joy → impulse-reveal 2 (Mountain, Bloodstained Mire)
+T3: March of Reckless Joy moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T3: Mountain moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 3 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Ruby Storm 18
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 52  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Chalice of the Void
+║   Lands: Urza's Tower, Urza's Mine
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T], Mountain [T], Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Urza's Mine
+  [Main 1]
+T3 P2: Play Urza's Tower
+    → Goal: ramp
+    [Mana] Tap Urza's Tower→C, Urza's Mine→C, Urza's Tower→C (paying for Glaring Fleshraker, 0 mana remaining)
+T3 P2: Cast Glaring Fleshraker (2)
+    [Priority] P1 passes (no response)
+T3: Resolve Glaring Fleshraker
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 18  |  Eldrazi Tron 20
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 44  |  Graveyard: 6
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain, Elegant Parlor
+║ Eldrazi Tron board:
+║   Creatures: Glaring Fleshraker (2/2)
+║   Other: Chalice of the Void
+║   Lands: Urza's Tower [T], Urza's Mine [T], Urza's Tower [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Valakut Awakening // Valakut Stoneforge
+  [Main 1]
+T4 P1: Play Bloodstained Mire
+T4: Bloodstained Mire moved battlefield -> graveyard (fetchland sacrifice)
+T4 P1: Crack Bloodstained Mire -> Mountain (untapped)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R, Mountain→R (paying for Manamorphose, 2 mana remaining)
+T4 P1: Cast Manamorphose (2)
+    [Priority] P2 passes (no response)
+T4: Resolve Manamorphose
+T4 P1: Manamorphose adds 2 any mana
+T4: Manamorphose moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T4 P1: Cast Desperate Ritual (1R)
+    [Priority] P2 passes (no response)
+T4: Resolve Desperate Ritual
+T4 P1: Desperate Ritual adds 3 R mana
+T4: Desperate Ritual moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T4 P1: Cast Reckless Impulse (1R)
+    [Priority] P2 passes (no response)
+T4: Resolve Reckless Impulse
+T4 P1: Reckless Impulse → impulse-reveal 2 (Ral, Monsoon Mage // Ral, Leyline Prodigy, Grapeshot)
+T4: Reckless Impulse moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Ruby Storm 17
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 51  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: Glaring Fleshraker (2/2)
+║   Other: Chalice of the Void
+║   Lands: Urza's Tower, Urza's Mine, Urza's Tower
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain [T], Elegant Parlor, Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ugin, Eye of the Storms
+  [Main 1]
+T4 P2: Play Urza's Mine
+    → Goal: ramp
+    [Mana] Tap Urza's Tower→C, Urza's Mine→C, Urza's Tower→C, Urza's Mine→C (paying for Thought-Knot Seer, 0 mana remaining)
+T4 P2: Cast Thought-Knot Seer (3)
+    [Priority] P1 passes (no response)
+T4: Resolve Thought-Knot Seer
+T4: Past in Flames moved hand -> exile (etb reveal-hand exile)
+T4 P2: Thought-Knot Seer ETB: exiles Past in Flames from opponent's hand
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Glaring Fleshraker
+T4 P2: Attack with Glaring Fleshraker
+  [Declare Blockers] P1 does not block
+T4 P2:   Glaring Fleshraker (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 17 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 15  |  Eldrazi Tron 20
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 39  |  Graveyard: 10
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain, Elegant Parlor, Mountain
+║ Eldrazi Tron board:
+║   Creatures: Glaring Fleshraker (2/2) [tapped], Thought-Knot Seer (4/4)
+║   Other: Chalice of the Void
+║   Lands: Urza's Tower [T], Urza's Mine [T], Urza's Tower [T], Urza's Mine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Desperate Ritual
+  [Main 1]
+T5 P1: Play Sunbaked Canyon
+    → Goal: execute_payoff
+    [Mana] Tap Mountain→R, Mountain→R (paying for Ral, Monsoon Mage // Ral, Leyline Prodigy, 3 mana remaining)
+T5 P1: Cast Ral, Monsoon Mage // Ral, Leyline Prodigy (1R)
+    [Priority] P2 passes (no response)
+T5: Resolve Ral, Monsoon Mage // Ral, Leyline Prodigy
+T5 P1: Ral, Monsoon Mage enters — instants/sorceries cost {1} less
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Desperate Ritual, 2 mana remaining)
+T5 P1: Cast Desperate Ritual (1R)
+T5 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy — won coin flip!
+T5 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy transforms! (loyalty: 4) [+2 extra]
+    [Priority] P2 passes (no response)
+T5: Resolve Desperate Ritual
+T5 P1: Desperate Ritual adds 3 R mana
+T5: Desperate Ritual moved stack -> graveyard (resolution)
+T5: Sunbaked Canyon moved battlefield -> graveyard (activation cost (Sunbaked Canyon))
+T5 P1: activate Sunbaked Canyon — Draw a card.
+T5 P1: Sunbaked Canyon activated — draw 1 (Manamorphose)
+    → Goal: execute_payoff [enablers]
+T5 P1: Cast Manamorphose (2)
+    [Priority] P2 passes (no response)
+T5: Resolve Manamorphose
+T5 P1: Manamorphose adds 2 any mana
+T5: Manamorphose moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T5 P1: Cast Past in Flames (3R)
+    [Priority] P2 passes (no response)
+T5: Resolve Past in Flames
+T5 P1: Past in Flames grants flashback
+T5: Past in Flames moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Elegant Parlor→R (paying for Manamorphose, 0 mana remaining)
+T5 P1: Cast Manamorphose (2)
+    [Priority] P2 passes (no response)
+T5: Resolve Manamorphose
+T5 P1: Manamorphose adds 2 any mana
+T5: Manamorphose moved stack -> exile (flashback resolution (CR 702.33a))
+    → Goal: execute_payoff [enablers]
+T5 P1: Cast Manamorphose (2)
+    [Priority] P2 passes (no response)
+T5: Resolve Manamorphose
+T5 P1: Manamorphose adds 2 any mana
+T5: Manamorphose moved stack -> exile (flashback resolution (CR 702.33a))
+    → Goal: execute_payoff [enablers]
+T5 P1: Cast March of Reckless Joy (2R) (X=2)
+    [Priority] P2 passes (no response)
+T5: Resolve March of Reckless Joy
+T5 P1: March of Reckless Joy → impulse-reveal 2 (Manamorphose, Ruby Medallion)
+T5: March of Reckless Joy moved stack -> exile (flashback resolution (CR 702.33a))
+T5 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy [-2] -> Ral deals 2 damage divided as you choose among one or two targets. Draw a card if you control a blue permanent other than Ral
+T5 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy deals 2 to Glaring Fleshraker
+T5: Glaring Fleshraker dies
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T5: Valakut Awakening // Valakut Stoneforge moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 5 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Ruby Storm 15
+║ Hand: 3 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 50  |  Graveyard: 1
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4)
+║   Other: Chalice of the Void
+║   Lands: Urza's Tower, Urza's Mine, Urza's Tower, Urza's Mine
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T], Mountain [T], Elegant Parlor [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Urza's Power Plant
+  [Main 1]
+T5 P2: Play Urza's Power Plant
+    → Goal: ramp
+    [Mana] Tap Urza's Tower→C, Urza's Mine→C (paying for Kozilek's Command, 6 mana remaining)
+T5 P2: Cast Kozilek's Command (10) (X=10)
+    [Priority] P1 passes (no response)
+T5: Resolve Kozilek's Command
+T5: Ral, Monsoon Mage // Ral, Leyline Prodigy moved battlefield -> exile (exiled)
+T5: Kozilek's Command moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Thought-Knot Seer
+T5 P2: Attack with Thought-Knot Seer
+  [Declare Blockers] P1 does not block
+T5 P2:   Thought-Knot Seer (4/4) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 15 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 11  |  Eldrazi Tron 20
+║ Hand: 7 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 32  |  Graveyard: 12
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain, Elegant Parlor, Mountain
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4) [tapped]
+║   Other: Chalice of the Void
+║   Lands: Urza's Tower [T], Urza's Mine [T], Urza's Tower [T], Urza's Mine [T], Urza's Power Plant [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ral, Monsoon Mage // Ral, Leyline Prodigy
+  [Main 1]
+T6 P1: Play Arid Mesa
+T6: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T6 P1: Crack Arid Mesa -> Mountain (untapped)
+    → Goal: execute_payoff
+    [Mana] Tap Mountain→R, Mountain→R (paying for Ruby Medallion, 3 mana remaining)
+T6 P1: Cast Ruby Medallion (2)
+    [Priority] P2 passes (no response)
+T6: Resolve Ruby Medallion
+    → Goal: execute_payoff
+    [Mana] Tap Mountain→R (paying for Ral, Monsoon Mage // Ral, Leyline Prodigy, 2 mana remaining)
+T6 P1: Cast Ral, Monsoon Mage // Ral, Leyline Prodigy (1R)
+    [Priority] P2 passes (no response)
+T6: Resolve Ral, Monsoon Mage // Ral, Leyline Prodigy
+T6 P1: Ral, Monsoon Mage enters — instants/sorceries cost {1} less
+    → Goal: execute_payoff [enablers]
+T6 P1: Cast Manamorphose (2)
+T6 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy — lost coin flip, takes 1 damage
+    [Priority] P2 passes (no response)
+T6: Resolve Manamorphose
+T6 P1: Manamorphose adds 2 any mana
+T6: Manamorphose moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T6 P1: Cast Reckless Impulse (1R)
+T6 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy — lost coin flip, takes 1 damage
+    [Priority] P2 passes (no response)
+T6: Resolve Reckless Impulse
+T6 P1: Reckless Impulse → impulse-reveal 2 (Pyretic Ritual, Thundering Falls)
+T6: Reckless Impulse moved stack -> exile (flashback resolution (CR 702.33a))
+    → Goal: execute_payoff [enablers]
+T6 P1: Cast Reckless Impulse (1R)
+T6 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy — lost coin flip, takes 1 damage
+    [Priority] P2 passes (no response)
+T6: Resolve Reckless Impulse
+T6 P1: Reckless Impulse → impulse-reveal 2 (Wrenn's Resolve, Ruby Medallion)
+T6: Reckless Impulse moved stack -> exile (flashback resolution (CR 702.33a))
+T6: Ral, Monsoon Mage // Ral, Leyline Prodigy dies
+    → Goal: execute_payoff
+    [Mana] Tap Sacred Foundry→R (paying for Ral, Monsoon Mage // Ral, Leyline Prodigy, 1 mana remaining)
+T6 P1: Cast Ral, Monsoon Mage // Ral, Leyline Prodigy (1R)
+    [Priority] P2 passes (no response)
+T6: Resolve Ral, Monsoon Mage // Ral, Leyline Prodigy
+T6 P1: Ral, Monsoon Mage enters — instants/sorceries cost {1} less
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Elegant Parlor→R (paying for Desperate Ritual, 0 mana remaining)
+T6 P1: Cast Desperate Ritual (1R)
+T6 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy — won coin flip!
+T6 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy transforms! (loyalty: 9) [+7 extra]
+    [Priority] P2 passes (no response)
+T6: Resolve Desperate Ritual
+T6 P1: Desperate Ritual adds 3 R mana
+T6: Desperate Ritual moved stack -> graveyard (resolution)
+    → Goal: execute_payoff
+T6 P1: Cast Ruby Medallion (2)
+    [Priority] P2 passes (no response)
+T6: Resolve Ruby Medallion
+    → Goal: execute_payoff [enablers]
+T6 P1: Cast Pyretic Ritual (1R)
+    [Priority] P2 passes (no response)
+T6: Resolve Pyretic Ritual
+T6 P1: Pyretic Ritual adds 3 R mana
+T6: Pyretic Ritual moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T6 P1: Cast Wrenn's Resolve (1R)
+    [Priority] P2 passes (no response)
+T6: Resolve Wrenn's Resolve
+T6 P1: Wrenn's Resolve → impulse-reveal 2 (Wrenn's Resolve, Wrenn's Resolve)
+T6: Wrenn's Resolve moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T6 P1: Cast Desperate Ritual (1R)
+    [Priority] P2 passes (no response)
+T6: Resolve Desperate Ritual
+T6 P1: Desperate Ritual adds 3 R mana
+T6: Desperate Ritual moved stack -> exile (flashback resolution (CR 702.33a))
+    → Goal: execute_payoff [enablers]
+T6 P1: Cast Wrenn's Resolve (1R)
+    [Priority] P2 passes (no response)
+T6: Resolve Wrenn's Resolve
+T6 P1: Wrenn's Resolve → impulse-reveal 2 (Desperate Ritual, Gemstone Caverns)
+T6: Wrenn's Resolve moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T6 P1: Cast Wrenn's Resolve (1R)
+    [Priority] P2 passes (no response)
+T6: Resolve Wrenn's Resolve
+T6 P1: Wrenn's Resolve → impulse-reveal 2 (Pyretic Ritual, Scalding Tarn)
+T6: Wrenn's Resolve moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T6 P1: Cast Desperate Ritual (1R)
+    [Priority] P2 passes (no response)
+T6: Resolve Desperate Ritual
+T6 P1: Desperate Ritual adds 3 R mana
+T6: Desperate Ritual moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T6 P1: Cast Pyretic Ritual (1R)
+    [Priority] P2 passes (no response)
+T6: Resolve Pyretic Ritual
+T6 P1: Pyretic Ritual adds 3 R mana
+T6: Pyretic Ritual moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T6 P1: Cast Wish (2R)
+    [Priority] P2 passes (no response)
+T6: Resolve Wish
+T6 P1: Wish finds Grapeshot (from sideboard)
+T6: Wish moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [payoffs]
+T6 P1: Cast Grapeshot (1R)
+    [Priority] P2 passes (no response)
+T6: Resolve Grapeshot
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: 19)
+T6: Storm copies: 16
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: 18)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: 17)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: 16)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: 15)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: 14)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: 13)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: 12)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: 11)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: 10)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: 9)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: 8)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: 7)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: 6)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: 5)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: 4)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: 3)
+T6: Grapeshot moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [payoffs]
+T6 P1: Cast Grapeshot (1R)
+    [Priority] P2 passes (no response)
+T6: Resolve Grapeshot
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: 2)
+T6: Storm copies: 17
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: 1)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: 0)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: -1)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: -2)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: -3)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: -4)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: -5)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: -6)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: -7)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: -8)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: -9)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: -10)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: -11)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: -12)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: -13)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: -14)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: -15)
+T6: Grapeshot moved stack -> graveyard (resolution)
+P2 loses: life total -15
+
+>>> Ruby Storm wins Game 3 on turn 6 via damage
+    Final life: Ruby Storm=10  Eldrazi Tron=-15
+
+======================================================================
+  MATCH RESULT: Ruby Storm wins 2-1
+======================================================================

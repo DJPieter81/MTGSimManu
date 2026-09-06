@@ -60,7 +60,8 @@ def _setup(card_db, with_rider=True, spare_source=False):
 
     # One dual source covers either W (blink) or B (discard) — spending
     # it on the discard strands the blink.
-    _add(game, card_db, "Godless Shrine", controller=0, zone="battlefield")
+    _gs = _add(game, card_db, "Godless Shrine", controller=0, zone="battlefield")
+    _gs.tapped = False  # shocks enter tapped; model an untapped dual source
     if spare_source:
         _add(game, card_db, "Plains", controller=0, zone="battlefield")
 

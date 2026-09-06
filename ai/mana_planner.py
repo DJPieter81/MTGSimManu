@@ -61,6 +61,10 @@ class ManaNeeds:
     needed_colors: Dict[str, int] = field(default_factory=dict)
     # Colors already available on untapped lands
     existing_colors: Set[str] = field(default_factory=set)
+    # Colors the non-fetch lands still in HAND will provide once played —
+    # committed sources the player will have, counted toward the deficit
+    # basis (`missing_colors`) but never toward this turn's castability.
+    pending_colors: Set[str] = field(default_factory=set)
     # Colors we need but don't yet have
     missing_colors: Set[str] = field(default_factory=set)
     # Basic land types already on the battlefield (for domain)
@@ -271,6 +275,22 @@ def analyze_mana_needs(game: "GameState", player_idx: int,
                 if st in BASIC_LAND_TYPES:
                     needs.existing_subtypes.add(st)
 
+    # ── Lands still in hand are sources the player WILL have ──
+    # A non-fetch land in hand is a committed source: its colours arrive
+    # with the coming land drops, so a search / shock choice made now has
+    # its marginal value in the colours no held land produces. Counted on
+    # the same basis as battlefield lands for the deficit below, never for
+    # this turn's castability (`existing_colors`). A fetchland in hand
+    # commits to nothing until it is cracked and covers no colour.
+    for hand_card in player.hand:
+        tmpl = hand_card.template
+        if not tmpl.is_land or tmpl.fetchland is not None:
+            continue
+        for c in tmpl.produces_mana:
+            needs.pending_colors.add(c)
+            all_land_colors.add(c)
+            source_counts[c] = source_counts.get(c, 0) + 1
+
     # `untapped_land_count` counts LANDS, one mana each. That silently ignores
     # every source whose output is not one-mana-per-land: mana rocks and dorks,
     # multi-unit lands, Aura-granted units (CR 303.4), and tap-for-mana
@@ -423,8 +443,7 @@ def score_land(land, needs: ManaNeeds, is_fetchable: bool = False,
         score += LAND_SCORE_UNTAPPED_BONUS  # shock lands have option to enter untapped
 
     # ── (F) Fetchlands: flexibility to find what you need ──
-    from engine.card_database import FETCH_LAND_COLORS
-    if template.name in FETCH_LAND_COLORS and not is_fetchable:
+    if template.fetchland is not None and not is_fetchable:
         score += LAND_SCORE_FETCHLAND_FLEXIBILITY_BONUS
 
     # ── (G) Versatility: more colors = more flexible ──
@@ -486,8 +505,6 @@ def choose_best_land(lands: list, needs: ManaNeeds,
     if not lands:
         return None
 
-    from engine.card_database import FETCH_LAND_COLORS
-
     prios = gameplan_priorities or {}
     best = None
     best_score = LAND_SCORE_BEST_INIT_SENTINEL
@@ -497,8 +514,8 @@ def choose_best_land(lands: list, needs: ManaNeeds,
         gp = prios.get(template.name, 0.0)
 
         # ── Fetch-as-proxy: score fetchlands by their best target ──
-        if template.name in FETCH_LAND_COLORS and library:
-            fetch_colors = FETCH_LAND_COLORS[template.name]
+        if template.fetchland is not None and library:
+            fetch_colors = list(template.fetchland.colors)
             # Find the best target this fetch could get
             proxy_target = choose_fetch_target(
                 library, fetch_colors, needs,
@@ -582,8 +599,6 @@ def choose_fetch_target(library: list, fetch_colors: list,
     Filters to only lands that match the fetch's color identity,
     then scores using the unified scoring system.
     """
-    from engine.card_database import FETCH_LAND_COLORS
-
     prios = gameplan_priorities or {}
     best = None
     best_score = LAND_SCORE_BEST_INIT_SENTINEL
@@ -599,7 +614,7 @@ def choose_fetch_target(library: list, fetch_colors: list,
         if not lib_card.template.is_land:
             continue
         # Fetch lands cannot find other fetch lands
-        if lib_card.template.name in FETCH_LAND_COLORS:
+        if lib_card.template.fetchland is not None:
             continue
         # Must have a matching basic land subtype (not just produce the color)
         # e.g., Sacred Foundry has subtypes ['Mountain', 'Plains'], Mountain has ['Mountain']

@@ -172,9 +172,78 @@ def resolve_damage_to_chosen_target(
                 and (target.template.is_creature
                      or CardType.PLANESWALKER in target.template.card_types)):
             deal_damage(source, target, amount)
+            # Name the burn's target so a legal kill (e.g. "6 damage
+            # kills a 7/7") isn't invisible to a log-only reader.
+            game.log.append(
+                f"T{game.display_turn} P{controller+1}: "
+                f"{getattr(source, 'name', 'source')} deals {amount} to "
+                f"{target.name}")
             return target
     deal_damage(source, game.players[opponent], amount)
+    game.log.append(
+        f"T{game.display_turn} P{controller+1}: "
+        f"{getattr(source, 'name', 'source')} deals {amount} to "
+        f"P{opponent+1} (face)")
     return None
+
+
+# ---------------------------------------------------------------------------
+# Team pump until end of turn (Overrun shape) — typed-field-gated resolution.
+# ONE application for every carrier — a permanent's own ETB trigger
+# (Craterhoof Behemoth class), an instant/sorcery (Overrun class) and the
+# X-bound creature tutor's "+X/+X and haste" rider — driven by
+# CardTemplate.team_pump_data (oracle_parser.parse_team_pump). No oracle
+# text is inspected here.
+# ---------------------------------------------------------------------------
+
+
+def _apply_team_pump(game: "GameState", controller: int,
+                     source: "CardInstance", power: int, toughness: int,
+                     keywords, *, others_only: bool = False) -> None:
+    """"[Other] creatures you control get +P/+T [and gain <keywords>] until
+    end of turn": the until-EOT P/T and keyword channels (cleared at
+    cleanup, CR 514.2) — the same ones the activated pump/haste kinds
+    write to."""
+    player = game.players[controller]
+    granted = set(keywords)
+    for creature in player.creatures:
+        if others_only and creature is source:
+            continue
+        creature.temp_power_mod += power
+        creature.temp_toughness_mod += toughness
+        creature.temp_keywords |= granted
+    kw_note = (" and " + ", ".join(sorted(k.value for k in granted))
+               if granted else "")
+    game.log.append(f"T{game.display_turn} P{controller+1}: "
+                    f"{source.name} — {'other ' if others_only else ''}"
+                    f"creatures get +{power}/+{toughness}{kw_note}")
+
+
+def _resolve_team_pump(game: "GameState", card: "CardInstance",
+                       controller: int) -> bool:
+    """Resolve the parsed team-pump shape carried by ``card``.
+
+    "+X/+X, where X is the number of creatures you control" reads the
+    count at resolution (CR 608.2h) — the entering permanent is on the
+    battlefield by then, so it counts itself; "the greatest power among
+    creatures you control" likewise reads current power.
+    """
+    from .cards import Keyword
+
+    data = card.template.team_pump_data or {}
+    player = game.players[controller]
+    scaling = data.get('scaling') or ''
+    if scaling == 'creature_count':
+        power = toughness = len(player.creatures)
+    elif scaling == 'greatest_power':
+        power = toughness = max((c.power for c in player.creatures),
+                                default=0)
+    else:
+        power, toughness = int(data['power']), int(data['toughness'])
+    _apply_team_pump(game, controller, card, power, toughness,
+                     {Keyword(k) for k in data.get('keywords', ())},
+                     others_only=bool(data.get('others_only')))
+    return True
 
 
 def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
@@ -203,6 +272,38 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
     contract — they are the patchwork pattern Wave 2 will delete
     elsewhere; we don't ADD them here.
     """
+    # ── "When this ~ enters, [other] creatures you control get +N/+N
+    #     [and gain <kw>] until end of turn" (Overrun shape on a body) ──
+    # Typed-field gate, no oracle inspection at resolve time
+    # (classification: parse_team_pump). Class: ~30 Modern permanents
+    # (Craterhoof Behemoth, End-Raze Forerunners, Inspiring Captain, ...).
+    if (card.template.team_pump_data or {}).get('trigger') == 'etb':
+        return _resolve_team_pump(game, card, controller)
+
+    # ── "When this ~ enters, [you may] destroy/exile target <type> [an
+    #     opponent controls] [with mana value N or less]" (CR 603.3d) ──
+    # Typed-field gate (parse_etb_targeted_removal, 141 cards; the
+    # naturalize subclass ~24). Resolved through the SAME shared resolver
+    # the spell class uses, so target legality (CR 601.2c via
+    # target_solver), indestructible (CR 702.12b), the mana-value ceiling
+    # (CR 608.2c) and the zone funnels are all one code path. No
+    # pre-chosen target: the resolver auto-picks the highest-threat legal
+    # candidate; an optional trigger with no legal target simply does
+    # nothing (the controller declines).
+    _etr = card.template.etb_targeted_removal_data
+    if _etr:
+        from .card_effects import _resolve_nonland_permanent_removal
+        _mv = _etr.get('mv')
+        _resolve_nonland_permanent_removal(
+            game, card, controller, None, None,
+            zone_dest="exile" if _etr['action'] == 'exile' else "graveyard",
+            types=frozenset(_etr['types']),
+            owner_scope=_etr.get('owner_scope', 'opponent'),
+            mv_max_fn=(lambda g, c, ctl, it, _m=_mv: _m) if _mv is not None else None,
+            log_verb="exiles" if _etr['action'] == 'exile' else "destroys",
+        )
+        return True
+
     oracle = (card.template.oracle_text or '').lower()
     if not oracle:
         return False
@@ -339,6 +440,56 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
             game.log.append(
                 f"T{game.display_turn} P{controller+1}: "
                 f"{card.name} ETB: draw {draw_n} ({names})")
+        return True
+
+    # ── "When ~ enters, target opponent reveals their hand. You choose a
+    #     [restricted] card ... and exile that card [until this creature
+    #     leaves the battlefield]." — ETB hand-disruption on a body ──
+    # Class: Thought-Knot Seer, Kitesail Freebooter, Tidehollow Sculler,
+    # Brain Maggot, Mesmeric Fiend, ... (~10-15 Modern creatures). This is
+    # the same reveal / choose-under-restriction / remove mechanic the
+    # spell path already resolves for Thoughtseize & Inquisition
+    # (resolve_spell_from_oracle below) — it was simply unreachable from
+    # an ETB trigger, so these creatures' disruption was a silent no-op.
+    # The choose-clause restriction ("nonland", "noncreature, nonland",
+    # any mana-value cap) is honoured via the same
+    # _targeted_discard_candidates helper the spell path uses. The card is
+    # EXILED (not discarded); a linked "until ~ leaves" / "return the
+    # exiled card" LTB (Freebooter/Sculler) gives it back — see
+    # resolve_dies_trigger. Permanent-exile shapes (Thought-Knot Seer,
+    # whose LTB instead lets the opponent draw) carry no return clause.
+    _reveal_exile_ability = next(
+        (a for a in split_abilities(oracle)
+         if a.strip().startswith('when') and 'enters' in a
+         and 'reveals their hand' in a
+         and 'exile that card' in a),
+        None)
+    if _reveal_exile_ability is not None:
+        opponent = 1 - controller
+        opp = game.players[opponent]
+        if opp.hand:
+            # Restrict to the CHOOSE clause only — the ability paragraph
+            # also says "this creature enters/leaves", whose bare "creature"
+            # would otherwise pollute the type allow-list and contradict a
+            # "noncreature" restriction (Kitesail Freebooter). Same scoping
+            # the spell path applies for Thoughtseize/Inquisition.
+            choose_clause = next(
+                (c for c in split_clauses(_reveal_exile_ability)
+                 if 'choose' in c and 'card' in c), _reveal_exile_ability)
+            legal = _targeted_discard_candidates(opp.hand, choose_clause)
+            if legal:
+                best = max(legal, key=lambda c: (c.template.cmc or 0))
+                game.zone_mgr.move_card_to_exile(
+                    game, best, cause="etb reveal-hand exile")
+                # Linked exile (CR 603.6e): record on the source so a
+                # "return the exiled card"/"until this creature leaves"
+                # LTB can give it back.
+                if not hasattr(card, '_etb_exiled_cards'):
+                    card._etb_exiled_cards = []
+                card._etb_exiled_cards.append(best)
+                game.log.append(
+                    f"T{game.display_turn} P{controller+1}: {card.name} "
+                    f"ETB: exiles {best.name} from opponent's hand")
         return True
 
     # ── "When ~ enters, reveal the top N cards of your library. For each
@@ -517,16 +668,10 @@ def _resolve_x_creature_tutor(game: "GameState", card: "CardInstance",
     team_at = spec.get('team_pump_haste_at_x')
     if team_at is not None and x_value >= team_at:
         # "creatures you control get +X/+X and gain haste until end of
-        # turn" — the until-EOT P/T and keyword channels (cleared at
-        # cleanup, CR 514), the same ones the activated pump/haste kinds
-        # write to.
-        for creature in player.creatures:
-            creature.temp_power_mod += x_value
-            creature.temp_toughness_mod += x_value
-            creature.temp_keywords.add(Keyword.HASTE)
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"{card.name} — creatures get +{x_value}/+{x_value} "
-                        f"and haste")
+        # turn" — the Overrun-shape application shared with the ETB and
+        # spell carriers of the team-pump mechanic.
+        _apply_team_pump(game, controller, card, x_value, x_value,
+                         {Keyword.HASTE})
 
     finish_library_search(game, controller)
 
@@ -689,9 +834,245 @@ def _resolve_destroy_target_land(game: "GameState", card: "CardInstance",
     return True
 
 
+def _targeted_discard_candidates(hand, choose_restriction: str) -> list:
+    """Filter a revealed hand to the cards a "you choose a <restricted>
+    card from it" clause may LEGALLY take, per the restriction the
+    clause itself states.
+
+    The "target player reveals their hand, you choose a card, that
+    player discards it" class is large in Modern (Inquisition of
+    Kozilek, Despise, Divest, Duress, Distress, Harsh Scrutiny, ...)
+    and the restriction differs per card — a mana-value cap ("with
+    mana value N or less") and/or a card-type filter ("creature or
+    planeswalker", "artifact or creature", "noncreature, nonland").
+    The generic resolver previously took the highest-mana-value
+    nonland unconditionally, honoring neither — so Inquisition (cap 3)
+    could discard an above-cap bomb and Duress could take a creature.
+
+    ``choose_restriction`` is the choose clause (already lowercased by
+    the caller); this parses the cap and type predicate from it. No
+    card names — the restriction is read from the text.
+    """
+    from engine.cards import CardType
+    r = choose_restriction or ''
+    m = re.search(r'mana value (\d+) or less', r)
+    max_mv = int(m.group(1)) if m else None
+    type_words = {
+        'creature': CardType.CREATURE,
+        'planeswalker': CardType.PLANESWALKER,
+        'artifact': CardType.ARTIFACT,
+        'enchantment': CardType.ENCHANTMENT,
+        'instant': CardType.INSTANT,
+        'sorcery': CardType.SORCERY,
+        'land': CardType.LAND,
+    }
+    # A word preceded by "non" is a forbidden type ("noncreature",
+    # "nonland"); the same word standing alone is a member of the
+    # allow-list ("creature or planeswalker" → must be one of these).
+    forbidden = set()
+    allowed = set()
+    for word, ctype in type_words.items():
+        for occ in re.finditer(re.escape(word), r):
+            if r[max(0, occ.start() - 3):occ.start()] == 'non':
+                forbidden.add(ctype)
+            else:
+                allowed.add(ctype)
+    # Every card in this class is at minimum "nonland" — a plain
+    # "nonland card" clause, and even a positive-list clause like
+    # "creature or planeswalker card", never takes a land.
+    forbidden.add(CardType.LAND)
+
+    def _legal(card) -> bool:
+        types = set(card.template.card_types)
+        if types & forbidden:
+            return False
+        if allowed and not (types & allowed):
+            return False
+        if max_mv is not None and (card.template.cmc or 0) > max_mv:
+            return False
+        return True
+
+    return [c for c in hand if _legal(c)]
+
+
+def _mass_scope_players(game, controller: int, clause: str) -> list:
+    """Which players' permanents a mass effect touches, from its clause.
+    Default is symmetric (both) — "each creature", "all artifacts".
+    """
+    opp = 1 - controller
+    if 'you control' in clause and 'opponent' not in clause:
+        return [game.players[controller]]
+    if ('opponent' in clause or 'defending player' in clause
+            or 'that player' in clause):
+        return [game.players[opp]]
+    return [game.players[controller], game.players[opp]]
+
+
+def _resolve_mass_mode_clause(game, card, controller: int, clause: str) -> bool:
+    """Resolve a mass-sweep / typed mass-destroy clause off its REAL
+    text (so the permanent TYPE and any mana-value cap survive).
+
+    Handles two shapes the whole-card resolver never carried a branch
+    for, because non-modal mass wipes are EFFECT_REGISTRY-registered:
+      * "deals N damage to each creature [and each planeswalker]"
+      * "destroy/exile all <type> [with mana value M or less]"
+    Both honor the owner scope stated in the clause (default symmetric).
+    Returns True iff it resolved the clause.
+    """
+    from .cards import CardType, Keyword
+    from .damage import deal_damage
+
+    # ── mass damage sweep ──
+    m_dmg = re.search(r'deals?\s+(\d+)\s+damage\s+to\s+each\s+creature', clause)
+    if m_dmg:
+        amount = int(m_dmg.group(1))
+        also_pw = 'planeswalker' in clause
+        for pl in _mass_scope_players(game, controller, clause):
+            for perm in list(pl.battlefield):
+                is_creature = CardType.CREATURE in perm.template.card_types
+                is_pw = CardType.PLANESWALKER in perm.template.card_types
+                if is_creature or (also_pw and is_pw):
+                    deal_damage(card, perm, amount)
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: "
+            f"{card.name} deals {amount} to each creature"
+            f"{' and planeswalker' if also_pw else ''}")
+        return True
+
+    # ── typed mass destroy / exile ──
+    m_all = re.search(r'\b(destroy|exile)\s+all\s+'
+                      r'(artifacts?|creatures?|enchantments?|permanents?)', clause)
+    if m_all:
+        verb, noun = m_all.group(1), m_all.group(2)
+        type_map = {
+            'artifact': CardType.ARTIFACT, 'creature': CardType.CREATURE,
+            'enchantment': CardType.ENCHANTMENT,
+        }
+        want = type_map.get(noun.rstrip('s'))  # None ⇒ "permanents" (any nonland)
+        cap_m = re.search(r'mana value (\d+) or less', clause)
+        max_mv = int(cap_m.group(1)) if cap_m else None
+
+        def _matches(perm) -> bool:
+            if perm.template.is_land:
+                return False
+            if want is not None and want not in perm.template.card_types:
+                return False
+            if max_mv is not None and (perm.template.cmc or 0) > max_mv:
+                return False
+            return True
+
+        for pl in _mass_scope_players(game, controller, clause):
+            for perm in list(pl.battlefield):
+                if not _matches(perm):
+                    continue
+                if verb == 'exile':
+                    game._exile_permanent(perm)
+                elif Keyword.INDESTRUCTIBLE not in perm.keywords:
+                    game._permanent_destroyed(perm)
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: "
+            f"{card.name} {verb}s all {noun}"
+            f"{f' with mana value {max_mv} or less' if max_mv is not None else ''}")
+        return True
+
+    return False
+
+
+# Card-type values (CardType.value) that make a card a permanent.
+_DIG_PERMANENT_TYPE_VALUES = {
+    'creature', 'artifact', 'enchantment', 'land', 'planeswalker', 'battle',
+}
+
+
+def _dig_predicate_matches(template, kind: str, types: list) -> bool:
+    """True when a library card satisfies a library-dig take-predicate.
+
+    ``kind``/``types`` come verbatim from the parse-once
+    ``library_dig_data`` — no oracle inspection here.
+    """
+    if kind == 'any':
+        return True
+    if kind == 'colorless':
+        # MTGJSON `colors` empty ⇒ colorless (Eldrazi, artifacts, lands).
+        return not template.colors
+    if kind == 'permanent':
+        return any(ct.value in _DIG_PERMANENT_TYPE_VALUES
+                   for ct in template.card_types)
+    if kind == 'historic':
+        from .cards import Supertype
+        if any(ct.value == 'artifact' for ct in template.card_types):
+            return True
+        if Supertype.LEGENDARY in template.supertypes:
+            return True
+        return any(str(st).lower() == 'saga' for st in template.subtypes)
+    if kind == 'types':
+        return any(ct.value in types for ct in template.card_types)
+    return False
+
+
+def _resolve_library_dig(game: "GameState", card: "CardInstance",
+                         controller: int) -> bool:
+    """Resolve an impulse / library-dig spell (CR 120 card selection).
+
+    Looks at the top N cards, moves the best predicate-matching card(s) to
+    hand and the remaining looked-at cards to their declared destination
+    (bottom of library / graveyard).  All moves go through the zone funnel
+    (``game.zone_mgr.move_card``) — NEVER ``game.draw_cards`` — so on-draw
+    watchers (Orcish Bowmasters / Sheoldred) do not fire (CR 121.1c).
+
+    "Best" is a deterministic engine-rational pick (highest mana value among
+    the matches); the strategic choice of which card to keep is not modeled
+    beyond that, consistent with the other resolve-time selection branches.
+    """
+    data = card.template.library_dig_data
+    player = game.players[controller]
+
+    if data['n_dynamic'] == 'lands_controlled':
+        n = sum(1 for c in player.battlefield if c.template.is_land)
+    else:
+        n = data['n_seen']
+    if n <= 0:
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: "
+            f"{card.name} → library-dig sees 0 cards")
+        return True
+
+    seen = list(player.library[:n])  # index 0 == top of library
+    if not seen:
+        return True
+
+    kind = data['predicate_kind']
+    types = data['predicate_types']
+    matches = [c for c in seen
+               if _dig_predicate_matches(c.template, kind, types)]
+    # Highest mana value first — deterministic rational pick.
+    matches.sort(key=lambda c: (c.template.cmc or 0), reverse=True)
+    if data['take_all_matching']:
+        taken = matches
+    else:
+        taken = matches[:data['count_taken']]
+
+    for c in taken:
+        game.zone_mgr.move_card(game, c, "library", "hand",
+                                cause=f"{card.name} library-dig")
+    # The remaining looked-at cards go to the declared destination.
+    rest_dest = "graveyard" if data['rest_destination'] == 'graveyard' \
+        else "library"
+    for c in seen:
+        if c in taken:
+            continue
+        game.zone_mgr.move_card(game, c, "library", rest_dest,
+                                cause=f"{card.name} library-dig rest")
+
+    took = ", ".join(c.name for c in taken) if taken else "nothing"
+    game.log.append(
+        f"T{game.display_turn} P{controller+1}: {card.name} → "
+        f"library-dig {n} (took {took}; rest to {data['rest_destination']})")
+    return True
 def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
                                controller: int, targets: list = None,
-                               *, x_value: int = 0) -> bool:
+                               *, x_value: int = 0,
+                               oracle_override: str = None) -> bool:
     """Resolve instant/sorcery effects by parsing oracle text.
 
     Called when a spell resolves AND no EFFECT_REGISTRY handler took it.
@@ -700,18 +1081,78 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
 
     ``x_value`` is the X actually paid, carried on the stack item — the
     same value every other X-consuming resolver reads.
+
+    ``oracle_override`` lets a caller resolve ONE clause instead of the
+    card's whole oracle text — used by modal spell resolution to run
+    exactly the chosen mode's real clause (the synthesized per-mode
+    ability description is lossy). The X-tutor short-circuit is bypassed
+    when an override is supplied so it applies to the whole card only.
     """
     # ── X-bound creature tutor — typed-field gate, no oracle inspection
     #    at resolve time (classification: parse_x_creature_tutor).
-    if getattr(card.template, 'x_creature_tutor_data', None):
+    if oracle_override is None and getattr(card.template, 'x_creature_tutor_data', None):
         return _resolve_x_creature_tutor(game, card, controller, x_value)
 
-    oracle = (card.template.oracle_text or '').lower()
+    # ── "Creatures you control get +N/+N [and gain <kw>] until end of
+    #    turn" (Overrun class, ~100 Modern instants/sorceries) — the same
+    #    typed gate and application as the ETB form above.
+    if (card.template.team_pump_data or {}).get('trigger') == 'spell':
+        return _resolve_team_pump(game, card, controller)
+
+    oracle = (oracle_override
+              if oracle_override is not None
+              else (card.template.oracle_text or '')).lower()
     if not oracle:
         return False
 
     opponent = 1 - controller
     handled = False
+
+    # ── Modal mode: mass sweep / typed mass-destroy ─────────────────
+    # These shapes ("deals N damage to each creature ...", "destroy all
+    # <type> [with mana value M or less]") are the mode clauses of
+    # modal wipes that the whole-card resolver never needed a branch
+    # for (mass wipes are EFFECT_REGISTRY-registered or hit the legacy
+    # loop). Gated on oracle_override so ONLY a routed single mode
+    # clause reaches it — whole-card resolution is unchanged.
+    if oracle_override is not None and \
+            _resolve_mass_mode_clause(game, card, controller, oracle):
+        return True
+
+    # ── Generic combat trick: "target creature gets +N/+M until end of
+    #    turn [and gains <keyword>]" — typed fields (parse_pump_spell),
+    #    no oracle inspection here. Reached only when no EFFECT_REGISTRY
+    #    handler took the spell, so bespoke pumps (Mutagenic Growth,
+    #    Violent Urge) never double-apply. Applies to the chosen target,
+    #    else the controller's best creature.
+    _pp = getattr(card.template, 'pump_spell_power', 0)
+    _pt = getattr(card.template, 'pump_spell_toughness', 0)
+    if oracle_override is None and (_pp or _pt):
+        from engine.cards import Keyword as _KW
+        me = game.players[controller]
+        tgt = None
+        for tid in (targets or []):
+            if isinstance(tid, int) and tid > 0:
+                c = game.get_card_by_id(tid)
+                if (c is not None and c.zone == 'battlefield'
+                        and c.template.is_creature):
+                    tgt = c
+                    break
+        if tgt is None and me.creatures:
+            tgt = max(me.creatures, key=lambda c: c.power or 0)
+        if tgt is not None:
+            tgt.temp_power_mod += _pp
+            tgt.temp_toughness_mod += _pt
+            _kw = getattr(card.template, 'pump_spell_keyword', '')
+            if _kw:
+                _kwe = getattr(_KW, _kw.upper().replace(' ', '_'), None)
+                if _kwe is not None:
+                    tgt.temp_keywords.add(_kwe)
+            game.log.append(
+                f"T{game.display_turn} P{controller+1}: "
+                f"{card.name} gives {tgt.name} +{_pp}/+{_pt}"
+                f"{' and ' + _kw if _kw else ''}")
+            return True
 
     # Clause-scoped predicates (E5): a spell effect's verbs live in one
     # ability paragraph (a spell's resolution text; an added ability
@@ -815,25 +1256,110 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
     if getattr(card.template, 'destroys_target_land', False):
         return _resolve_destroy_target_land(game, card, controller, targets)
 
+    # ── Fixed-amount face-legal burn ("deals N damage to any target") —
+    #    typed-field gate, no oracle inspection at resolve time
+    #    (classification: parse_direct_damage_spell). Routes through the
+    #    single shared damage owner resolve_damage_to_chosen_target, exactly
+    #    as every per-card burn EFFECT_REGISTRY handler did by hand; the
+    #    typed field retires those handlers and covers unregistered burn too.
+    _dd = getattr(card.template, 'direct_damage_data', None)
+    if oracle_override is None and _dd:
+        resolve_damage_to_chosen_target(
+            game, card, controller, _dd['amount'], targets)
+        return True
+
+    # ── Symmetric board sweep ("destroy all creatures") — typed-field gate,
+    #    no oracle inspection at resolve time (classification:
+    #    parse_board_sweep). Routes through the shared board-sweep resolver,
+    #    exactly as the per-card wrath handlers did by hand.
+    _bs = getattr(card.template, 'board_sweep_data', None)
+    if oracle_override is None and _bs:
+        from engine.card_effects import _resolve_board_sweep
+        _resolve_board_sweep(
+            game, card, controller, targets, item=None,
+            action=_bs['action'], types=frozenset(_bs['types']))
+        return True
+
+    # ── Targeted removal ("destroy/exile target <permanent> [MV <= N|X]") —
+    #    typed-field gate, no oracle inspection at resolve time
+    #    (classification: parse_targeted_removal). Routes through the shared
+    #    _resolve_nonland_permanent_removal, exactly as the per-card removal
+    #    handlers did by hand; owner_scope is the opponent (the sim's removal
+    #    convention). A large correctness fix too — before this, the ~90
+    #    unregistered removal spells of this shape resolved to nothing.
+    _rm = getattr(card.template, 'targeted_removal_data', None)
+    if oracle_override is None and _rm:
+        from engine.card_effects import _resolve_nonland_permanent_removal
+        _mv = _rm.get('mv')
+        if _mv is None:
+            _mv_fn = None
+        elif _mv == 'x':
+            _mv_fn = lambda g, c, ctl, it, _x=x_value: _x
+        else:
+            _mv_fn = lambda g, c, ctl, it, _n=_mv: _n
+        _exile = _rm['action'] == 'exile'
+        _resolve_nonland_permanent_removal(
+            game, card, controller, targets, None,
+            zone_dest='exile' if _exile else 'graveyard',
+            types=frozenset(_rm['types']),
+            mv_max_fn=_mv_fn,
+            log_verb='exiles' if _exile else 'destroys')
+        return True
+
+    # ── Impulse / library-dig (CR 120 card selection) — typed-field gate,
+    #    no oracle inspection at resolve time.  Classification data comes
+    #    from oracle_parser.parse_library_dig at DB load.  Placed before the
+    #    card-draw branch so a dig routes through the zone funnel (no on-draw
+    #    watchers — CR 121.1c) instead of the has_look_hand_selection→draw
+    #    approximation.
+    if getattr(card.template, 'library_dig_data', None):
+        return _resolve_library_dig(game, card, controller)
+
     # ── "Target opponent reveals their hand. You choose a nonland card
     #     and that player discards it." (Thoughtseize, Inquisition) ──
     # The template spans several sentences of ONE paragraph (reveal /
     # choose / discard), so the co-occurrence scope is the ability
     # paragraph — local enough to reject a 'discard' verb from a
     # separate ability while keeping the multi-sentence template intact.
-    if any_ability_with(oracle, 'reveals', 'hand', 'discard'):
-        opp = game.players[opponent]
-        if opp.hand:
-            nonlands = [c for c in opp.hand if not c.template.is_land]
-            if nonlands:
-                # Choose highest-CMC nonland card
-                best = max(nonlands, key=lambda c: (c.template.cmc or 0))
-                opp.hand.remove(best)
-                best.zone = "graveyard"
-                game.players[opponent].graveyard.append(best)
-                game.log.append(
-                    f"T{game.display_turn} P{controller+1}: "
-                    f"{card.name} discards {best.name}")
+    hand_attack = (getattr(card.template, 'hand_attack_data', None) or {}
+                   if oracle_override is None else {})
+    if (hand_attack.get('chooser') == 'caster'
+            or any_ability_with(oracle, 'reveals', 'hand', 'discard')):
+        # The victim is the TARGETED player (CR 115.1): a "target
+        # player" hand attack may be aimed at its own caster — the
+        # self-discard outlet line of a graveyard deck.  "Target
+        # opponent" wording can only hit the opponent; with no player
+        # sentinel in the target list the opponent is assumed.
+        from .target_solver import targeted_player
+        if hand_attack.get('target') == 'opponent':
+            victim_idx = opponent
+        else:
+            victim_idx = targeted_player(game, controller, targets)
+        victim = game.players[victim_idx]
+        if victim.hand:
+            # Honor the choose-clause's stated restriction (mana-value
+            # cap and/or card-type filter) instead of taking the
+            # highest-mana-value nonland unconditionally. The choose
+            # clause is the sentence that names what may be chosen.
+            choose_clause = hand_attack.get('choose_clause') or next(
+                (c for c in split_clauses(oracle)
+                 if 'choose' in c and 'card' in c), '')
+            legal = _targeted_discard_candidates(victim.hand, choose_clause)
+            if legal:
+                # The engine names the legal set; WHICH card goes is the
+                # decision layer's (strip ranking against an opponent,
+                # reanimation fuel for oneself) through the one discard
+                # funnel every discard site uses.
+                before = list(victim.hand)
+                game._force_discard(
+                    victim_idx, 1, self_discard=(victim_idx == controller),
+                    candidates=legal)
+                gone = [c for c in before if c not in victim.hand]
+                for c in gone:
+                    game.log.append(
+                        f"T{game.display_turn} P{controller+1}: "
+                        f"{card.name} discards {c.name}"
+                        + (" (own hand)" if victim_idx == controller else ""))
                 handled = True
         # Life loss for Thoughtseize — the "You lose N life" rider is
         # its own sentence; parse the amount from that clause.
@@ -1028,9 +1554,25 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
             surveil_spell_pos = m_surv.start()
 
     # Parse draw count and oracle-text position
+    #
+    # Reminder text (anything in parentheses — CR glossary) is
+    # explanatory, never part of the resolving effect. Matching
+    # against the whole oracle string reads a keyword inside another
+    # ability's reminder text as this spell's own effect — Unearth's
+    # normal cast ("Return target creature card with mana value 3 or
+    # less...") has no draw clause, but its Cycling ability's reminder
+    # text ("({2}, Discard this card: Draw a card.)") does, so the
+    # unscoped search drew a phantom extra card on every normal cast.
+    # `oracle_parser.strip_reminder_text` removes the text outright,
+    # which would shift every other detector's `.start()` offset in
+    # this shared `oracle` string out of alignment — masking with
+    # spaces instead keeps positions comparable while making reminder
+    # text unmatchable.
     draw_n = 0
     draw_pos = len(oracle)  # sentinel
-    m_draw = re.search(r'draw\s+(\w+)\s+cards?', oracle)
+    oracle_no_reminder = re.sub(r'\([^()]*\)', lambda m: ' ' * len(m.group(0)),
+                                oracle)
+    m_draw = re.search(r'draw\s+(\w+)\s+cards?', oracle_no_reminder)
     if m_draw:
         tok = m_draw.group(1)
         try:
@@ -1268,7 +1810,7 @@ def resolve_dies_trigger(game: "GameState", card: "CardInstance",
             # Heuristic: transfer to the artifact creature with the highest
             # current power (maximises board presence).
             target = max(_artifact_creatures, key=lambda c: c.power)
-            target.plus_counters += card.plus_counters
+            target.add_plus_counters(card.plus_counters, game, source=card)
             game.log.append(
                 f"T{game.display_turn}: {card.name} modular — "
                 f"move {card.plus_counters} counter(s) to {target.name}"
@@ -1282,6 +1824,26 @@ def resolve_dies_trigger(game: "GameState", card: "CardInstance",
     # paragraph with its condition (CR 603.1); detail regexes run on
     # that paragraph.
     abilities = split_abilities(oracle)
+
+    # ── Linked-exile return (CR 603.6e): cards this permanent exiled on
+    #    ETB via "exile that card until this creature leaves the
+    #    battlefield" / a "return the exiled card to its owner's hand" LTB
+    #    (Kitesail Freebooter, Tidehollow Sculler, Brain Maggot) come back
+    #    to their owner's hand now. Permanent-exile shapes (Thought-Knot
+    #    Seer — "opponent draws a card" instead) carry no return clause and
+    #    fall through. Keyed on the source's own recorded linkage, not any
+    #    card name. ──
+    _exiled = getattr(card, '_etb_exiled_cards', None)
+    if _exiled and getattr(card.template, 'etb_exile_returns_on_leave', False):
+        for exiled_card in list(_exiled):
+            owner = game.players[exiled_card.owner]
+            if exiled_card in owner.exile:
+                game.zone_mgr.move_card_to_hand(
+                    game, exiled_card, cause="linked exile returns on leave")
+                game.log.append(
+                    f"T{game.display_turn}: {card.name} leaves — "
+                    f"{exiled_card.name} returns to its owner's hand")
+        card._etb_exiled_cards = []
 
     # ── "When this creature dies, draw a card" ──
     if any('dies' in a and 'draw' in a for a in abilities):
@@ -1449,10 +2011,14 @@ def _transform_permanent(game: "GameState", perm: "CardInstance",
 
 
 def _permanent_is_colored(perm: "CardInstance") -> bool:
-    """True when a permanent is one or more colors (CR 105.2)."""
-    colors = getattr(perm.template, 'colors', None) or \
-        getattr(perm.template, 'color_identity', None) or set()
-    return bool(colors)
+    """True when a permanent is one or more colors (CR 105.2a).
+
+    Uses the object's COLORS, never its color identity — a devoid
+    creature and a colorless land each have a non-empty color identity
+    but are colorless, so they are not legal targets for a "target
+    permanent that's one or more colors" effect.
+    """
+    return bool(getattr(perm.template, 'colors', None))
 
 
 def resolve_self_cast_trigger(game: "GameState", caster_idx: int,
@@ -1531,6 +2097,35 @@ def resolve_self_cast_trigger(game: "GameState", caster_idx: int,
     return handled
 
 
+def _ordinal_cast_trigger_fires(game: "GameState", permanent: "CardInstance",
+                                caster_idx: int) -> bool:
+    """Does an ORDINAL cast trigger (CR 603.2) meet its condition now?
+
+    "Whenever you cast your second spell each turn" is satisfied by exactly
+    one spell per turn: the one that brings the relevant player's per-turn
+    spell count to N.  `spells_cast_this_turn` is incremented by
+    `CastManager.cast_spell` BEFORE cast triggers run, so the spell now
+    being cast is already counted and the test is an equality — an
+    inequality would re-fire on every later spell of the turn.
+
+    The counter is per player and reset by `reset_turn_tracking`, so "each
+    turn" (CR 500.8) holds without any extra state here.  `caster_scope`
+    decides whose count is read: "you" (the permanent's controller must be
+    the caster), "an opponent" (must not be), or "a player" (either).
+
+    Permanents with no ordinal trigger are unaffected — the caller only
+    consults this when the typed field is present.
+    """
+    spec = permanent.template.ordinal_cast_trigger
+    scope = spec["caster_scope"]
+    if scope == "you" and permanent.controller != caster_idx:
+        return False
+    if scope == "opponent" and permanent.controller == caster_idx:
+        return False
+    return (game.players[caster_idx].spells_cast_this_turn
+            == spec["ordinal"])
+
+
 def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
                                 spell_cast: "CardInstance"):
     """Resolve "whenever you cast a spell" triggers for all permanents.
@@ -1544,6 +2139,19 @@ def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
     for permanent in list(player.battlefield):  # copy: battlefield may change (transform)
         oracle = (permanent.template.oracle_text or '').lower()
         if not oracle or 'whenever' not in oracle:
+            continue
+
+        # ── Ordinal cast triggers (CR 603.2) gate the WHOLE permanent ──
+        # "Whenever you cast your Nth spell each turn" is the trigger
+        # condition for every effect the ability grants — token, counter,
+        # damage, draw.  Checking it once here means no effect branch below
+        # can fire on a non-Nth spell.  Gating the permanent (rather than
+        # each branch) is safe because no card in the pool carries an
+        # ordinal cast trigger AND a plain "whenever you cast a <type>
+        # spell" trigger — measured 0 of 22,506.
+        if (permanent.template.ordinal_cast_trigger is not None
+                and not _ordinal_cast_trigger_fires(game, permanent,
+                                                     caster_idx)):
             continue
 
         # ── "Whenever you cast a noncreature spell, you get {E}" ──
@@ -1571,15 +2179,30 @@ def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
         cast_spec = permanent.template.cast_trigger_token
         if cast_spec and permanent.controller == caster_idx:
             spell_types = cast_spec['spell_types']
-            if 'noncreature' in spell_types:
+            if 'any' in spell_types:
+                # Ordinal trigger: the condition names no card type, so any
+                # spell type qualifies once the ordinal gate above passed.
+                qualifies = True
+            elif 'noncreature' in spell_types:
                 qualifies = not spell_cast.template.is_creature
             else:
                 cast_types = {t.value for t in spell_cast.template.card_types}
                 qualifies = bool(spell_types & cast_types)
             if qualifies:
-                game.create_token(
+                tokens = game.create_token(
                     caster_idx, "creature", count=cast_spec['count'],
-                    source_oracle=permanent.template.oracle_text)
+                    source_oracle=(cast_spec.get('clause')
+                                   or permanent.template.oracle_text))
+                # "… then attach this Equipment to it" — the attachment is
+                # part of the trigger's effect, so it costs nothing and needs
+                # no equip activation.  Attaching through the engine's one
+                # owner keeps the `equipment_unattached` flag (which the AI's
+                # equip planner reads) consistent with the equip path.
+                if cast_spec.get('attach_source') and tokens:
+                    if game.attach_equipment(caster_idx, permanent, tokens[-1]):
+                        game.log.append(
+                            f"T{game.display_turn} P{caster_idx+1}: "
+                            f"{permanent.name} attaches to {tokens[-1].name}")
 
         # ── "Whenever you cast a spell, draw a card" ──
         if getattr(permanent.template, 'has_cast_spell_draw', False):
@@ -1633,6 +2256,12 @@ def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
         if not oracle or 'whenever' not in oracle:
             continue
 
+        # Same ordinal gate as the controller loop above (CR 603.2).
+        if (permanent.template.ordinal_cast_trigger is not None
+                and not _ordinal_cast_trigger_fires(game, permanent,
+                                                     caster_idx)):
+            continue
+
         # ── "Whenever an opponent casts a spell, deal damage" ──
         if getattr(permanent.template, 'has_opponent_cast_damage', False):
             m = re.search(r'deals?\s+(\d+)\s+damage', oracle)
@@ -1650,6 +2279,41 @@ def check_static_ability(game: "GameState", card: "CardInstance",
     if not oracle:
         return False
     return False
+
+
+def count_graveyard_card_types(game, player_idx: int) -> int:
+    """Number of DISTINCT card types (CR 205.2a) among cards in the
+    player's graveyard — the live unit for the "for each card type among
+    cards in your graveyard" self-scaling reduction (and any other
+    "card types in your graveyard" count, e.g. delirium thresholds)."""
+    player = game.players[player_idx]
+    return len({t for c in player.graveyard for t in c.template.card_types})
+
+
+def self_cost_reduction(game, player_idx: int, card_template) -> int:
+    """Generic mana the SPELL ITSELF discounts via "This spell costs {N}
+    less to cast for each <unit>" (CR 601.2f).
+
+    Reads the typed `self_cost_reduction_amount` / `_unit` fields
+    (parsed once at DB load — no oracle inspection here) and multiplies
+    by the live unit count.  Capped at the printed generic portion:
+    cost reductions never touch coloured pips.  Returns 0 when the card
+    has no (modelled) self-scaling reduction.
+    """
+    from engine.oracle_parser import (SELF_COST_UNIT_DISCARDED_OR_CYCLED,
+                                      SELF_COST_UNIT_GRAVEYARD_CARD_TYPES)
+    template = card_template
+    amount = template.self_cost_reduction_amount
+    if amount <= 0:
+        return 0
+    unit = template.self_cost_reduction_unit
+    if unit == SELF_COST_UNIT_DISCARDED_OR_CYCLED:
+        count = game.players[player_idx].cards_discarded_or_cycled_this_turn
+    elif unit == SELF_COST_UNIT_GRAVEYARD_CARD_TYPES:
+        count = count_graveyard_card_types(game, player_idx)
+    else:
+        return 0  # unmodelled unit — refused outright at parse time too
+    return min(amount * count, max(0, template.mana_cost.generic))
 
 
 def count_cost_reducers(game, player_idx: int, card_template) -> int:

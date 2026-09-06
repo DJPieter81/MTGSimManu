@@ -550,13 +550,42 @@ class EVPlayer:
             candidates.append(Play("suspend", card, [], ev,
                                    f"Suspend: {card.name}"))
 
+        # Plot (CR 702.170) — a sorcery-speed special action generalizing the
+        # warp/suspend deferred-cast family. Typed-field driven
+        # (template.plot_cost), no card names. Two plays:
+        #   * cast_plotted: a card plotted on an EARLIER turn is cast for FREE
+        #     now — pure upside, scored as the card's normal cast EV.
+        #   * plot: pay the (usually cheaper) plot cost and bank the card for a
+        #     free cast later. Enumerated ONLY for cards NOT castable at full
+        #     cost this turn, so plotting never displaces simply casting now —
+        #     it converts a card you could not deploy into a free future play.
+        # This enumeration runs in the sorcery-speed main-phase context (same
+        # as suspend/cycling above), so no separate phase gate is needed.
+        for card in list(me.exile):
+            if game.can_cast_plotted(self.player_idx, card):
+                ev = self._score_spell(card, snap, game, me, opp)
+                candidates.append(Play("cast_plotted", card, [], ev,
+                                       f"Cast plotted: {card.name} (free)"))
+        for card in me.hand:
+            if (getattr(card.template, 'plot_cost', None) is not None
+                    and game.can_plot(self.player_idx, card)
+                    and not game.can_cast(self.player_idx, card)):
+                ev = self._score_spell(card, snap, game, me, opp)
+                candidates.append(Play("plot", card, [], ev,
+                                       f"Plot: {card.name}"))
+
         # Score land plays — lands compete with spells for priority
         if lands and me.lands_played_this_turn < (1 + me.extra_land_drops):
-            from engine.card_database import FETCH_LAND_COLORS
+            # A fetchland whose printed activation cost includes a life
+            # payment is unplayable at or below that life total — the
+            # crack would kill us.  Both the cost and its absence are on
+            # the card (`template.fetchland.life_cost`), so no name table
+            # and no life-free-fetch exception list.
             safe_lands = [
                 l for l in lands
-                if l.name not in FETCH_LAND_COLORS or me.life > 1
-                or 'basic land' in (l.template.oracle_text or '').lower()  # free fetches
+                if l.template.fetchland is None
+                or l.template.fetchland.life_cost == 0
+                or me.life > l.template.fetchland.life_cost
             ]
             for land in safe_lands:
                 ev = self._score_land(land, me, spells, game)
@@ -981,8 +1010,20 @@ class EVPlayer:
 
         delivered_cmc = target.template.cmc or 0
         per_mana = mana_clock_impact(snap) * CLOCK_IMPACT_LIFE_SCALING
-        ev += (creature_tutor_x_net_value(best_x, delivered_cmc)
-               * mult * per_mana)
+        # Delivered value in mana units: the body's mana value — or, when
+        # the delivered piece completes an unbounded mana engine with the
+        # board (engine-side rules query; CR 726.4 shortcut material),
+        # the engine's shortcut allowance, which is the mana the piece
+        # actually delivers. Same credit the activated-tutor branch of
+        # ai/activation_ev.py applies.
+        from engine.activation import ActivationManager
+        from engine.constants import LOOP_SHORTCUT_MANA
+        engine_bonus = 0
+        if ActivationManager.would_complete_unbounded_engine(
+                game, self.player_idx, target.template):
+            engine_bonus = LOOP_SHORTCUT_MANA - delivered_cmc
+        ev += ((creature_tutor_x_net_value(best_x, delivered_cmc)
+                + engine_bonus) * mult * per_mana)
 
         top_cmc = top.template.cmc or 0
         forfeited_gap = top_cmc - delivered_cmc
@@ -1007,7 +1048,8 @@ class EVPlayer:
                     return min(ev, PATIENCE_GATE_REJECT_SENTINEL)
         return ev
 
-    def _gate_x_cost_board_wipe(self, ev: float, t, tags, snap: EVSnapshot, opp):
+    def _gate_x_cost_board_wipe(self, ev: float, t, tags, snap: EVSnapshot, opp,
+                                game=None):
         """Hard gate: hold an X-cost board wipe when its X-budget can't
         meaningfully clear the board. Returns a clamped float to short-circuit
         scoring, or None to continue. Kill count is derived from the oracle's
@@ -1042,9 +1084,28 @@ class EVPlayer:
         destroyed_types = {ct for word, ct in type_words.items() if word in clause}
         if not destroyed_types:
             destroyed_types = {CardType.CREATURE}
+        # Judge the wipe at the X the AI will ACTUALLY pick at resolution
+        # (engine.cast_manager.pick_wipe_x_value), not the max-affordable
+        # `cap`. The gate and the resolution-time picker must agree:
+        # counting kills at `cap` let a single worthless in-budget target
+        # (a power-0 high-MV enchantment) pass the gate, after which the
+        # picker chose X=0 and the sweeper was thrown away. If the picker's
+        # value-maximizing X destroys nothing, hold the wipe regardless of
+        # desperation.
+        effective_x = cap
+        if game is not None:
+            try:
+                from engine.cast_manager import pick_wipe_x_value
+                best_x, _best_score, best_kill_count = pick_wipe_x_value(
+                    game, self.player_idx, cap)
+                effective_x = best_x
+                if best_kill_count == 0:
+                    return min(ev, X_BOARD_WIPE_WASTE_FLOOR)
+            except Exception:
+                effective_x = cap  # picker unavailable — fall back to cap
         killable = [c for c in opp_nonland
                     if (set(c.template.card_types) & destroyed_types)
-                    and (c.template.cmc or 0) <= cap]
+                    and (c.template.cmc or 0) <= effective_x]
         kill_count = len(killable)
         killable_power = sum((c.power or 0) for c in killable)
         from ai.clock import LifePhase, life_phase
@@ -1139,6 +1200,43 @@ class EVPlayer:
             from ai.land_denial import land_denial_value
             ev += land_denial_value(t, game, self.player_idx, snap)
 
+        # ── Flashback additional cost: the land it sacrifices ──
+        # A spell cast from the graveyard whose printed Flashback cost
+        # sacrifices a land (typed `flashback_sacrifice_subtype`) pays
+        # that land on top of the mana the effective cost already
+        # charges.  Its value to the caster is the own-side land-denial
+        # term (tempo below the curve top + stranded colour pips,
+        # ai/land_denial.own_land_loss_value).  Unpriced, a one-damage
+        # burn spell was flashed back on turn 2 by sacrificing the only
+        # untapped land for one face damage at 17 life (Izzet Prowess vs
+        # Dimir s50500 after the burn-branch fix).
+        if (getattr(card, 'zone', None) == 'graveyard'
+                and getattr(t, 'flashback_sacrifice_subtype', None)
+                and game is not None):
+            from ai.land_denial import (flashback_sacrifice_land,
+                                        own_land_loss_value)
+            sac = flashback_sacrifice_land(game, self.player_idx, t)
+            if sac is not None:
+                ev -= own_land_loss_value(game, self.player_idx, sac, snap)
+
+        # ── Hand-denial overlay (caster-chosen discard class) ──
+        # The projection books a forced discard as a card-neutral trade;
+        # a caster-chosen strip takes the BEST eligible card of the
+        # hidden hand.  ai/hand_denial.py derives that selection value
+        # from the opponent's observable pool (exact order statistic
+        # over the resolution's own ranking) and retracts the average-
+        # card credit.  Typed-field gate (parse-once); covers every
+        # "you choose … from it" hand attack.
+        if (game is not None
+                and (getattr(t, 'hand_attack_data', None) or {}).get('chooser')
+                == 'caster'):
+            from ai.hand_denial import hand_denial_value
+            # The spell goes where it is worth more: at the opponent's
+            # best card, or at the caster's own hand to bin the
+            # reanimation target (the self-discard-outlet line).
+            ev += max(hand_denial_value(t, game, self.player_idx, snap),
+                      self._self_fill_value(card, snap, me))
+
         # ── Evoke overlay: projection doesn't model 2-card cost ──
         if ('evoke' in tags or 'evoke_pitch' in tags) and snap.my_mana < (t.cmc or 0):
             # Evoking costs an extra card — subtract its future clock value
@@ -1226,13 +1324,7 @@ class EVPlayer:
         if is_reanimate_tagged or is_reanimate_oracle:
             fill_target = self._cascade_graveyard_target()
             if fill_target > 0 and snap.my_gy_creatures >= fill_target:
-                # Boost: opp life still to burn through, halved to
-                # reflect that reanimation covers ~half the damage
-                # gap in expectation (the rest comes from follow-up
-                # turns / burn / bonus triggers). Stays well below
-                # the +40 hard override in decide_main_phase — this
-                # is a soft nudge, not a force-cast.
-                ev += snap.opp_life / 2.0
+                ev += self._reanimation_readiness_boost(snap)
 
         # ── S-2: EXECUTE_PAYOFF finisher mana-sequencing gate ──
         # Observed in Storm vs Affinity T3 (game 1): Storm in
@@ -1504,7 +1596,7 @@ class EVPlayer:
                 ev -= waste_penalty
 
         # X-cost board-wipe waste gate (hold when X can't meaningfully clear).
-        x_gate = self._gate_x_cost_board_wipe(ev, t, tags, snap, opp)
+        x_gate = self._gate_x_cost_board_wipe(ev, t, tags, snap, opp, game)
         if x_gate is not None:
             return x_gate
 
@@ -1629,8 +1721,8 @@ class EVPlayer:
         # three decisions stay consistent.
         if ('removal' in tags and not 'board_wipe' in tags
                 and not t.is_creature and opp.creatures):
-            from decks.card_knowledge_loader import get_burn_damage
-            burn_dmg = get_burn_damage(t.name) if t.name else 0
+            from ai.card_classes import burn_damage
+            burn_dmg = burn_damage(t)
             reachable = []
             for c in opp.creatures:
                 if burn_dmg > 0:
@@ -1751,23 +1843,17 @@ class EVPlayer:
             ev += holdback
 
         # ── Stax lock-piece overlay (P1-1) ──
-        # `stax_lock_ev` returns a positive EV for stax permanents
-        # (Chalice, Blood Moon, Canonist, Torpor Orb) based on
-        # opponent deck composition. The bonus is GATED on
-        # `holdback >= 0`: if tapping out for this play would
-        # forfeit held instant-speed interaction, the overlay must
-        # not crowd out the concrete answer. Without this gate the
-        # AI casts T2 Chalice over a held Counterspell (the WST
-        # regression that caused the previous wiring to be reverted).
-        #
-        # M3 (signed holdback): `holdback >= 0.0` captures both the
-        # pre-M3 "no holdback" state (= 0.0) AND the new positive-
-        # bonus branch (no defensive use → proactive tap-out is
-        # actively rewarded).  Equivalent intent: the gate fires
-        # whenever the held-response penalty path is silent.
-        if holdback >= 0.0:
-            from ai.stax_ev import stax_lock_ev
-            ev += stax_lock_ev(t, me, opp, snap)
+        # `stax_lock_ev` returns the EV of a lock permanent (Chalice,
+        # the forced-land-type family, Canonist, Torpor Orb) from both
+        # players' deck composition.  The cost of tapping out for it —
+        # the held responses it forfeits — is the signed holdback
+        # penalty already added above; the overlay is not silenced on
+        # top of that (the former `holdback >= 0` gate charged the
+        # tap-out twice and hid a lock's value behind ANY held instant:
+        # Boros Ponza vs Domain Zoo s50000, Blood Moon at -0.2 against a
+        # five-colour deck while Bolt was in hand).
+        from ai.stax_ev import stax_lock_ev
+        ev += stax_lock_ev(t, me, opp, snap)
 
         phyrexian_count = getattr(t, 'phyrexian_pip_count', 0)
         if phyrexian_count > 0:
@@ -2237,7 +2323,15 @@ class EVPlayer:
             for c in me.battlefield
         )
 
-        effectively_tapped = land.template.enters_tapped and not has_untap_enabler
+        # A pay-to-untap land (shock: untap_life_cost > 0) can enter
+        # untapped for a small life cost, so for mana-availability it
+        # behaves as an untapped colour source — do not apply the
+        # tapped penalty to it. (The engine still enters it tapped
+        # unless the life is actually paid; this is the AI valuing it
+        # as the premium dual it is.)
+        effectively_tapped = (land.template.enters_tapped
+                              and not has_untap_enabler
+                              and land.template.untap_life_cost == 0)
         if not effectively_tapped:
             ev += LAND_UNTAPPED_USEFUL if has_castable_spells else LAND_UNTAPPED_IDLE
         else:
@@ -2279,11 +2373,13 @@ class EVPlayer:
         existing_colors = set()
         for l in me.lands:
             existing_colors.update(l.template.produces_mana)
-        from engine.card_database import FETCH_LAND_COLORS
-        is_fetch = land.name in FETCH_LAND_COLORS
-        # Use FETCH_LAND_COLORS for fetch lands — template.produces_mana is not
-        # reliably populated on CardInstances in game context for fetches
-        land_produces = set(FETCH_LAND_COLORS[land.name]) if is_fetch else set(land.template.produces_mana)
+        # A fetchland's colour contribution is the set of colours it can
+        # SEARCH FOR, not the mana it taps for (it taps for none, or for
+        # {C}).  Both come off the printed text via `template.fetchland`.
+        fetch_profile = land.template.fetchland
+        is_fetch = fetch_profile is not None
+        land_produces = (set(fetch_profile.colors) if is_fetch
+                         else set(land.template.produces_mana))
 
         new_colors = land_produces - existing_colors
         # Gate the anticipatory color-diversity bonus by whether the hand
@@ -2441,6 +2537,43 @@ class EVPlayer:
 
         return ev
 
+    def _reanimation_readiness_boost(self, snap: EVSnapshot) -> float:
+        """The GV-2 readiness nudge a reanimation spell earns once the
+        graveyard holds its target: the opponent's remaining life,
+        halved — reanimation covers roughly half the damage gap in
+        expectation (the rest comes from follow-up turns / burn /
+        bonus triggers).  Stays well below the +40 hard override in
+        decide_main_phase — a soft nudge, not a force-cast.  One
+        owner: the reanimation scorer and the self-discard-outlet
+        valuation (what putting the target INTO the graveyard is
+        worth) read the same quantity."""
+        return snap.opp_life / 2.0
+
+    def _self_fill_value(self, spell: "CardInstance", snap: EVSnapshot,
+                         me) -> float:
+        """Value of aiming a "target player … discards" spell at its
+        own caster: binning a creature a payoff in hand can return
+        completes the graveyard plan.  Zero unless the deck declares a
+        graveyard FILL_RESOURCE goal, the hand holds a card the spell
+        may legally bin that a payoff in hand can return
+        (`ai.card_classes.self_discard_outlet_targets`), and that bin
+        moves the graveyard from below the declared resource target
+        to at or above it — then it is worth exactly the readiness
+        boost the reanimation spell earns from the completed set-up."""
+        from ai.card_classes import self_discard_outlet_targets
+        gameplan = (self.goal_engine.gameplan
+                    if self.goal_engine is not None else None)
+        if not self_discard_outlet_targets(spell.template, me.hand, gameplan):
+            return 0.0
+        fill_target = self._cascade_graveyard_target()
+        if fill_target <= 0:
+            return 0.0
+        if snap.my_gy_creatures >= fill_target:
+            return 0.0  # already set up — the strip goes at the opponent
+        if snap.my_gy_creatures + 1 < fill_target:
+            return 0.0  # one bin does not complete the set-up
+        return self._reanimation_readiness_boost(snap)
+
     def _cascade_graveyard_target(self) -> int:
         """Return the FILL_RESOURCE goal's `resource_target` for GY creatures.
 
@@ -2460,6 +2593,22 @@ class EVPlayer:
                     and goal.resource_zone == "graveyard"):
                 return int(goal.resource_target or 0)
         return 0
+
+    def _deck_can_return_card(self, card, game, me) -> bool:
+        """Is THIS card reanimation equity in this deck: the gameplan
+        declares the cascade-reanimator signature (`prefer_cycling`), or
+        some returner among the visible pool (hand, battlefield, and the
+        library once DeckKnowledge is initialised) can take it —
+        `ai.card_classes.deck_can_return`."""
+        if self.goal_engine and self.goal_engine.gameplan:
+            if getattr(self.goal_engine.gameplan, 'prefer_cycling', False):
+                return True
+        from ai.card_classes import deck_can_return
+        zones = [me.hand, me.battlefield]
+        if self._dk is not None:
+            zones.append(me.library)
+        pool = [c for zone in zones for c in zone if c is not card]
+        return deck_can_return(card.template, pool)
 
     def _has_reanimation_path(self, game, me) -> bool:
         """True if the deck has an oracle-visible way to return
@@ -2552,12 +2701,42 @@ class EVPlayer:
         # Drawing a card: future clock change
         ev = card_clock_impact(snap) * CLOCK_IMPACT_LIFE_SCALING  # scale to match spell scores
 
+        # Cycling SPENDS the card: a creature cycled away is a body that
+        # never reaches the board.  Charge its clock value (the same
+        # `creature_clock_impact` the threat scorer uses) weighted by how
+        # castable it is at the current mana — the mana gating
+        # `card_clock_impact` applies to an average card, here applied
+        # to this card's effective cost (cost reducers included).  An
+        # uncastable body costs little to cycle; a payoff the deck could
+        # deploy is not free to throw away (Hollow One vs Domain Zoo
+        # s50000: the 4/4 payoff cycled on turns 3 and 5).
+        if card.template.is_creature:
+            from ai.clock import creature_clock_impact
+            from ai.effective_cmc import effective_cmc as _ecmc
+            from ai.scoring_constants import CREATURE_VALUE_OUTER_SCALE
+            cost = max(1, _ecmc(card, snap, game=game, player_idx=self.player_idx) or 0)
+            castable_fraction = min(1.0, snap.my_mana / cost)
+            kws = {kw.value if hasattr(kw, 'value') else str(kw).lower()
+                   for kw in (getattr(card.template, 'keywords', None) or set())}
+            ev -= (creature_clock_impact(card.template.power or 0,
+                                         card.template.toughness or 0, kws, snap)
+                   * CREATURE_VALUE_OUTER_SCALE * castable_fraction)
+
         # Cycling creatures into GY: Living End-style reanimation gameplan.
         # Design: docs/design/ev_correctness_overhaul.md §2.E — the
         # "creature in graveyard = future reanimation target" bonus fires
         # ONLY when the deck has a visible reanimation path.  A dead
         # creature in Boros Energy's graveyard is not equity.
-        if card.template.is_creature and self._has_reanimation_path(game, me):
+        # The credit is the value of a returner in the deck that can take
+        # THIS card (ai.card_classes.deck_can_return: a targeted returner
+        # by its parsed graveyard requirement, an untargeted mass return
+        # by its scope; a creature that only returns itself is no path
+        # for anything else).  A deck-wide "some reanimation text exists"
+        # scan credited a Vengevine-shaped deck for cycling its own
+        # payoff (Hollow One vs Domain Zoo s50000, "cycle: Hollow One"
+        # +7.8 on turn 5).  The gameplan's `prefer_cycling` (the cascade-
+        # reanimator signature) remains authoritative when declared.
+        if card.template.is_creature and self._deck_can_return_card(card, game, me):
             power = card.template.power or 0
             # Creature in GY = future reanimation target
             ev += (CYCLING_GY_REANIMATE_BASE + power * CYCLING_GY_REANIMATE_PER_POWER)
@@ -2784,9 +2963,19 @@ class EVPlayer:
         opp = game.players[1 - self.player_idx]
 
         # Pre-combat pump (Psychic Frog etc.)
+        from engine.oracle_clauses import any_ability_with
         for creature in valid:
             oracle = (creature.template.oracle_text or "").lower()
-            if getattr(creature.template, 'has_discard_effect', False) and "+1/+1" in oracle:
+            # Only fire when the discard cost's OWN ability pumps this
+            # creature — i.e. a single ability paragraph carries both
+            # "discard" and "+1/+1" ("Discard a card: put a +1/+1 counter
+            # on this creature"). A whole-oracle "+1/+1" substring test
+            # false-fires on a discard-cost creature whose +1/+1 lives in
+            # an unrelated ability (Hardened Academic's discard grants
+            # lifelink; its +1/+1 is a separate graveyard trigger),
+            # fabricating counters it can never actually make.
+            if (getattr(creature.template, 'has_discard_effect', False)
+                    and any_ability_with(oracle, 'discard', '+1/+1')):
                 prof = self.profile
                 # Smart discard: protect removal/counters, discard excess lands/dupes/uncastable
                 hand_lands = [c for c in me.hand if c.template.is_land]
@@ -2837,7 +3026,7 @@ class EVPlayer:
                         me.graveyard.append(card_to_discard)
                         # Permanent +1/+1 counters, not temp mods
                         if hasattr(creature, 'plus_counters'):
-                            creature.plus_counters += 1
+                            creature.add_plus_counters(1, game)
                         else:
                             creature.temp_power_mod += 1
                             creature.temp_toughness_mod += 1
@@ -2862,7 +3051,25 @@ class EVPlayer:
             return False
         total_power = sum(c.power for c in valid if (c.power or 0) > 0)
         if total_power >= opp.life:
-            return [c for c in valid if _has_combat_value(c)]
+            # On-board lethal if unblocked: send what is NEEDED. A creature
+            # whose non-combat worth (`ai.clock.noncombat_opportunity_cost`
+            # — mana production, unbounded-engine membership, abilities,
+            # equipment ceiling; life-point units) exceeds the damage it
+            # adds (its power, the same units) stays home when the rest
+            # still reach lethal — the same rule the combat planner's
+            # lethal shortcut applies, so both paths agree.
+            from ai.clock import noncombat_opportunity_cost
+            from ai.ev_evaluator import snapshot_from_game
+            _snap_lethal = snapshot_from_game(game, self.player_idx)
+            kept = [c for c in valid if _has_combat_value(c)]
+            worth = {c.instance_id: noncombat_opportunity_cost(c, me, _snap_lethal)
+                     for c in kept}
+            for c in sorted(kept, key=lambda c: -worth[c.instance_id]):
+                if worth[c.instance_id] > (c.power or 0) and (
+                        sum((k.power or 0) for k in kept) - (c.power or 0)
+                        >= opp.life):
+                    kept.remove(c)
+            return kept
 
         # No blockers = free damage. Always attack into an empty board.
         # Still exclude 0-power non-trigger creatures — tapping them is pure waste.
@@ -3055,7 +3262,19 @@ class EVPlayer:
         # If racing, desperate, or vs combo, send everything even if risky.
         # Still exclude 0-power non-trigger creatures — they add no damage.
         if (is_racing or is_desperate or opp_is_spell_deck) and valid:
-            return [c for c in valid if _has_combat_value(c)]
+            # "Everything" still prices what each body gives up: a creature
+            # whose NON-combat worth (`ai.clock.noncombat_opportunity_cost`
+            # — mana production, unbounded-engine membership, abilities,
+            # equipment ceiling; life-point units) exceeds the damage it
+            # would add (its power, the same units) stays home. A vanilla
+            # body has no such worth and is sent exactly as before.
+            from ai.clock import noncombat_opportunity_cost
+            from ai.ev_evaluator import snapshot_from_game
+            _snap_all_in = snapshot_from_game(game, self.player_idx)
+            return [c for c in valid
+                    if _has_combat_value(c)
+                    and (c.power or 0) >= noncombat_opportunity_cost(
+                        c, me, _snap_all_in)]
 
         return safe if safe else []
 
@@ -3270,8 +3489,24 @@ class EVPlayer:
         damage_through = max(0, a_pow - b_tou) if has_trample else 0
 
         my_life_after_block = my_life - damage_through
-        opp_power_after_block = opp_power - (a_pow if b_kills_attacker else 0)
-        my_power_after_block = my_power - (b_pow if a_kills_blocker else 0)
+        # CR 301.5c: a dead creature's Equipment stays and re-attaches, so
+        # only the creature's OWN power leaves its side's board.
+        a_own = a_pow - attacker.equipment_power_bonus()
+        b_own = b_pow - blocker.equipment_power_bonus()
+        opp_power_after_block = opp_power - (a_own if b_kills_attacker else 0)
+        my_power_after_block = my_power - (b_own if a_kills_blocker else 0)
+        if a_kills_blocker:
+            # What the dead blocker gives up BEYOND its power — mana
+            # production, unbounded-engine membership, activated
+            # abilities, equipment ceiling — priced by the one owner of
+            # that question (`ai.clock.noncombat_opportunity_cost`, value
+            # units at the life-point scale) and charged to the block
+            # post-state as virtual life, which `life_as_resource` already
+            # converts to survival turns. Its power is charged through
+            # `my_power_after_block` above; nothing is counted twice.
+            from ai.clock import noncombat_opportunity_cost
+            my_life_after_block -= noncombat_opportunity_cost(
+                blocker, game.players[self.player_idx], snap)
 
         my_life_after_no_block = my_life - a_pow
         opp_power_after_no_block = opp_power
@@ -3556,15 +3791,18 @@ class EVPlayer:
             a_tough = attacker.toughness or 0
             b_power = best_blocker.power or 0
             if b_power < a_tough and Keyword.DEATHTOUCH not in best_blocker.keywords:
-                for b2 in valid_blockers:
-                    if b2.instance_id in used_set:
-                        continue
-                    if not _flying_ok(attacker, b2):
-                        continue
-                    if b_power + (b2.power or 0) >= a_tough:
-                        blocker_ids.append(b2.instance_id)
-                        used_set.add(b2.instance_id)
-                        break
+                # Among the blockers that complete the kill, spend the one
+                # that gives up least (`ai.clock.opportunity_cost`, the same
+                # ranking coverage uses) — not the first in list order.
+                adequate = [
+                    b2 for b2 in valid_blockers
+                    if b2.instance_id not in used_set
+                    and _flying_ok(attacker, b2)
+                    and b_power + (b2.power or 0) >= a_tough]
+                if adequate:
+                    b2 = min(adequate, key=_cost_fn)
+                    blocker_ids.append(b2.instance_id)
+                    used_set.add(b2.instance_id)
 
         blocks, used = optimize_pass(
             sorted_attackers, valid_blockers, {}, set(),
@@ -3596,6 +3834,32 @@ class EVPlayer:
     # ═══════════════════════════════════════════════════════════
     # TARGETING — simple heuristic
     # ═══════════════════════════════════════════════════════════
+
+    def _burn_reach_this_turn(self, spell, snap, me, game) -> int:
+        """Damage this spell and the other face-legal burn in hand can
+        deal THIS turn: this spell's amount plus the others packed
+        cheapest-first into the mana left after it (the same packing
+        the holdback pricer uses for held responses).  Amounts come
+        from `ai.card_classes.burn_damage`; costs from `effective_cmc`."""
+        from ai.card_classes import burn_damage
+        from ai.effective_cmc import effective_cmc as _ecmc
+        total = burn_damage(spell.template)
+        mana = snap.my_mana - max(0, _ecmc(spell, snap, game=game,
+                                           player_idx=self.player_idx) or 0)
+        others = []
+        for c in me.hand:
+            if c is spell or not getattr(c.template, 'can_target_player', False):
+                continue
+            d = burn_damage(c.template)
+            if d <= 0:
+                continue
+            cost = max(0, _ecmc(c, snap, game=game, player_idx=self.player_idx) or 0)
+            others.append((cost, d))
+        for cost, d in sorted(others):
+            if cost <= mana:
+                mana -= cost
+                total += d
+        return total
 
     def _enumerate_burn_targets(
         self, game, spell, damage: int,
@@ -3716,6 +3980,21 @@ class EVPlayer:
         # board state, not a blank default board.
         snap = snapshot_from_game(game, self.player_idx)
 
+        # Targeted hand attack whose target may be its caster (typed
+        # field, parse-once): aim it at the caster's own hand when
+        # binning the reanimation target is worth more than the best
+        # card the opponent's hidden hand can hold; otherwise the
+        # opponent (the pre-sentinel default — an empty list).
+        if (getattr(t, 'hand_attack_data', None) or {}).get('target') == 'player':
+            from engine.constants import PLAYER_TARGET_SELF
+            from ai.hand_denial import hand_denial_value
+            me = game.players[self.player_idx]
+            self_value = self._self_fill_value(spell, snap, me)
+            if self_value > hand_denial_value(t, game, self.player_idx, snap):
+                self._last_target_reason = (
+                    "own hand — bin the reanimation target")
+                return [PLAYER_TARGET_SELF]
+
         # Land destruction (typed field, parse-once): the target is the
         # opponent's scarcest color source — denying the only source of
         # a demanded color maximizes their pip deficit (ai/land_denial).
@@ -3742,15 +4021,26 @@ class EVPlayer:
             return []
 
         # Burn spells FIRST — they can always target face as fallback
-        from decks.card_knowledge_loader import get_burn_damage
+        from ai.card_classes import burn_damage
         from engine.cards import Keyword as Kw2
-        dmg = get_burn_damage(t.name)
+        dmg = burn_damage(t)
         # Storm spells (Grapeshot) deal 1 damage × storm copies — always target face
         if Kw2.STORM in getattr(t, 'keywords', set()) and 'removal' in tags:
             return [-1]  # Grapeshot always goes face (storm copies auto-target)
         if dmg > 0:
             if dmg >= opp.life and t.can_target_player:
                 return [-1]  # face = lethal AND legal to target player
+            # Lethal is a property of the TURN: this spell plus the other
+            # burn in hand castable with the mana left after it (cheapest
+            # first, the same packing the holdback pricer uses) adding up
+            # to the opponent's life is lethal — every one of them goes
+            # face.  A one-damage spell was aimed at a 5/5 for six turns
+            # while the opponent sat at 1–3 life with lethal burn in hand
+            # (Izzet Prowess vs Domain Zoo s50000 G3).
+            if t.can_target_player and self._burn_reach_this_turn(
+                    spell, snap, game.players[self.player_idx], game) >= opp.life:
+                self._last_target_reason = "face — lethal with this turn's burn"
+                return [-1]
 
             # M10 (Aggro Pattern D / Fix 4): enumerate the FULL candidate
             # set — face (when legal), opp creatures, AND opp planeswalkers
@@ -3775,8 +4065,19 @@ class EVPlayer:
         if 'removal' in tags and 'board_wipe' not in tags:
             t = spell.template
             can_hit_noncreature = (t.can_destroy_nonland_permanent
-                                   or t.can_exile_permanent
+                                   or getattr(t, 'exile_hits_noncreature', False)
                                    or t.can_destroy_artifact)
+            # An X-bound target ("with mana value X or less") is legal
+            # only up to the X the caster can pay — the same engine formula
+            # cast-time legality uses (CR 601.2b/c). Candidates beyond it
+            # are not targets at all, whatever their threat.
+            _x_ceiling = None
+            if (getattr(t, 'targeted_removal_data', None) or {}).get('mv') == 'x':
+                from engine.cast_manager import CastManager
+                _x_ceiling = CastManager.affordable_x(game, self.player_idx, t)
+
+            def _reachable(c):
+                return _x_ceiling is None or (c.template.cmc or 0) <= _x_ceiling
 
             if can_hit_noncreature:
                 # Evaluate all nonland permanents via marginal threat
@@ -3790,7 +4091,8 @@ class EVPlayer:
                 # for the rule each constant encodes.
                 from ai.permanent_threat import permanent_threat
                 from ai.engine_disruption import engine_disruption_value
-                nonland = [c for c in opp.battlefield if not c.template.is_land]
+                nonland = [c for c in opp.battlefield
+                           if not c.template.is_land and _reachable(c)]
                 if nonland:
                     best = max(nonland,
                                key=lambda c: (permanent_threat(c, opp, game)
@@ -3822,8 +4124,9 @@ class EVPlayer:
                 # docs/diagnostics/2026-05-02_affinity_88pct_hypothesis_list.md
                 # and the regression test in
                 # tests/test_creature_removal_targets_threat_amplifiers.py.
-                if opp.creatures:
-                    best = max(opp.creatures,
+                _cands = [c for c in opp.creatures if _reachable(c)]
+                if _cands:
+                    best = max(_cands,
                                key=lambda c: creature_threat_value(c, snap))
                     return [best.instance_id]
                 return []
@@ -3836,6 +4139,17 @@ class EVPlayer:
         if spell.template.can_exile_permanent and 'blink' not in tags:
             from engine.cards import CardType
             nonland = [c for c in opp.battlefield if not c.template.is_land]
+            # An X-bound target ("with mana value X or less") is legal only
+            # up to the X the caster can pay — the same engine formula
+            # cast-time legality uses (CR 601.2b/c). Before this the pick
+            # was the HIGHEST mana value regardless of X, so the spell was
+            # cast at an unreachable target and resolved doing nothing.
+            if (getattr(t, 'targeted_removal_data', None) or {}).get('mv') == 'x':
+                from engine.cast_manager import CastManager
+                ceiling = CastManager.affordable_x(game, self.player_idx, t)
+                if ceiling is not None:
+                    nonland = [c for c in nonland
+                               if (c.template.cmc or 0) <= ceiling]
             if nonland:
                 best = max(nonland, key=lambda c: c.template.cmc)
                 return [best.instance_id]
@@ -3898,8 +4212,8 @@ class EVPlayer:
         snap = snapshot_from_game(game, player_idx)
         candidates = list(creatures)
         # For burn removal, filter out creatures this spell cannot kill.
-        from decks.card_knowledge_loader import get_burn_damage
-        dmg = get_burn_damage(card.template.name) if card.template else 0
+        from ai.card_classes import burn_damage
+        dmg = burn_damage(card.template) if card.template else 0
         if dmg > 0:
             killable = [c for c in candidates
                         if ((c.toughness or 0) - getattr(c, 'damage_marked', 0)) <= dmg]
@@ -4234,12 +4548,28 @@ class EVPlayer:
         if 'removal' not in tags:
             return False
 
-        from decks.card_knowledge_loader import get_burn_damage
-        dmg = get_burn_damage(spell.template.name) if spell.template else 0
+        from ai.card_classes import burn_damage
+        dmg = burn_damage(spell.template) if spell.template else 0
         prof = self.profile
         floor = float(prof.big_creature_power)  # e.g. 4.0 EV floor
 
+        t = spell.template
+        # Converge-conditioned removal (Prismatic Ending shape) can only
+        # ever reach a mana value <= this manabase's achievable colors-
+        # of-mana-spent ceiling — a huge, unreachable threat (Domain
+        # payoffs carry a large printed mana value despite a small
+        # discounted cast cost) is not justification to cast into a
+        # guaranteed whiff. Same picker `pick_converge_x_value` uses at
+        # cast time, consulted here so the decision to cast agrees with
+        # what casting will actually deliver.
+        converge_max_mv = None
+        if getattr(t, 'has_converge', False):
+            from engine.card_effects import converge_reachable_max_mv
+            converge_max_mv = converge_reachable_max_mv(game, self.player_idx)
+
         for c in opp.creatures:
+            if converge_max_mv is not None and (c.template.cmc or 0) > converge_max_mv:
+                continue
             if dmg > 0:
                 remaining = (c.toughness or 0) - getattr(c, 'damage_marked', 0)
                 if remaining > dmg:
@@ -4247,7 +4577,6 @@ class EVPlayer:
             if creature_threat_value(c, snap) >= floor:
                 return True
 
-        t = spell.template
         hits_noncreature = (t.can_destroy_nonland_permanent
                             or t.can_exile_permanent
                             or t.can_destroy_artifact
@@ -4256,6 +4585,8 @@ class EVPlayer:
             from ai.permanent_threat import permanent_threat
             for perm in opp.battlefield:
                 if perm.template.is_land or perm.template.is_creature:
+                    continue
+                if converge_max_mv is not None and (perm.template.cmc or 0) > converge_max_mv:
                     continue
                 if permanent_threat(perm, opp, game) >= floor:
                     return True

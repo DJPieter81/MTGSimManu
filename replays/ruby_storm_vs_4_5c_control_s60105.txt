@@ -1,0 +1,2002 @@
+Loaded 22470 cards (0 errors)
+Loaded 22470 cards (0 errors)
+  Sideboard (4/5c Control vs Ruby Storm): +1 Celestial Purge, +4 Mystical Dispute, -1 Wrath of the Skies, -2 Galvanic Discharge, -2 Prismatic Ending
+  Sideboard (4/5c Control vs Ruby Storm): +1 Celestial Purge, +4 Mystical Dispute, -1 Wrath of the Skies, -2 Galvanic Discharge, -2 Prismatic Ending
+======================================================================
+  GAME 1: Ruby Storm (P1) vs 4/5c Control (P2)  —  seed 60105
+  Series: Ruby Storm 0 - 0 4/5c Control
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Ruby Storm wins → chooses to play first
+║ P1 (on play): Ruby Storm
+║ P2 (on draw): 4/5c Control
+╚═══════════════════════════════════════════════════════
+
+P1 (Ruby Storm) opening hand (2 lands, 5 spells):
+  • Desperate Ritual [Spell, CMC 2]
+  • Ral, Monsoon Mage // Ral, Leyline Prodigy [Creature, CMC 2]
+  • Manamorphose [Spell, CMC 2]
+  • Desperate Ritual [Spell, CMC 2]
+  • Arid Mesa [Land, CMC 0]
+  • Mountain [Land, CMC 0]
+  • Grapeshot [Spell, CMC 2]
+→ P1 KEEPS 7 — has key card(s): Desperate Ritual, Manamorphose, 5 cheap spells
+
+P2 (4/5c Control) opening hand (2 lands, 5 spells):
+  • Prismatic Ending [Spell, CMC 1]
+  • Wrath of the Skies [Spell, CMC 2]
+  • Arena of Glory [Land, CMC 0]
+  • Ephemerate [Spell, CMC 1]
+  • Stock Up [Spell, CMC 3]
+  • Quantum Riddler [Creature, CMC 5]
+  • Sacred Foundry [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Prismatic Ending, Quantum Riddler, 4 cheap spells
+
+
+╔══ TURN 1 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 20  |  4/5c Control 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Arid Mesa
+T1: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 20  |  Ruby Storm 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Misty Rainforest
+  [Main 1]
+T1 P2: Play Sacred Foundry (tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 19  |  4/5c Control 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Pyretic Ritual
+  [Main 1]
+T2 P1: Play Mountain
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 20  |  Ruby Storm 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Solitude
+  [Main 1]
+T2 P2: Play Misty Rainforest
+T2: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T2 P2: Crack Misty Rainforest (pay 1 life) -> Hallowed Fountain (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 19  |  4/5c Control 19
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Reckless Impulse
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 19  |  Ruby Storm 19
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 1
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Hallowed Fountain
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+T3 P2: Play Flooded Strand
+T3: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T3 P2: Crack Flooded Strand (pay 1 life) -> Breeding Pool (tapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 19  |  4/5c Control 18
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Hallowed Fountain, Breeding Pool [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Manamorphose
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Desperate Ritual moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 4 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 18  |  Ruby Storm 19
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 48  |  Graveyard: 2
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Hallowed Fountain, Breeding Pool
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Plains
+  [Main 1]
+T4 P2: Play Plains
+    → Goal: close_game
+    [Mana] Tap Plains→W, Sacred Foundry→R, Hallowed Fountain→U (paying for Stock Up, 1 mana remaining)
+T4 P2: Cast Stock Up (2U)
+    [Priority] P1 passes (no response)
+T4: Resolve Stock Up
+T4: Stock Up moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Prismatic Ending moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 5 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 19  |  4/5c Control 18
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 2
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Mountain
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T], Hallowed Fountain [T], Breeding Pool, Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arid Mesa
+  [Main 1]
+T5 P1: Play Arid Mesa
+T5: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T5 P1: Crack Arid Mesa -> Mountain (untapped)
+    → Goal: execute_payoff
+    [Mana] Tap Mountain→R, Mountain→R (paying for Ral, Monsoon Mage // Ral, Leyline Prodigy, 1 mana remaining)
+T5 P1: Cast Ral, Monsoon Mage // Ral, Leyline Prodigy (1R)
+    [Priority] P2 passes (no response)
+T5: Resolve Ral, Monsoon Mage // Ral, Leyline Prodigy
+T5 P1: Ral, Monsoon Mage enters — instants/sorceries cost {1} less
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Manamorphose, 0 mana remaining)
+T5 P1: Cast Manamorphose (2)
+T5 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy — lost coin flip, takes 1 damage
+    [Priority] P2 passes (no response)
+T5: Resolve Manamorphose
+T5 P1: Manamorphose adds 2 any mana
+T5: Manamorphose moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T5 P1: Cast Reckless Impulse (1R)
+T5 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy — lost coin flip, takes 1 damage
+    [Priority] P2 passes (no response)
+T5: Resolve Reckless Impulse
+T5 P1: Reckless Impulse → impulse-reveal 2 (Past in Flames, Ruby Medallion)
+T5: Reckless Impulse moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T5 P1: Cast Manamorphose (2)
+T5 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy — lost coin flip, takes 1 damage
+    [Priority] P2 passes (no response)
+T5: Resolve Manamorphose
+T5 P1: Manamorphose adds 2 any mana
+T5: Manamorphose moved stack -> graveyard (resolution)
+T5: Ral, Monsoon Mage // Ral, Leyline Prodigy dies
+    → Goal: execute_payoff
+T5 P1: Cast Ruby Medallion (2)
+    [Priority] P2 passes (no response)
+T5: Resolve Ruby Medallion
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 18  |  Ruby Storm 18
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 45  |  Graveyard: 4
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Hallowed Fountain, Breeding Pool, Plains
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry [T], Mountain [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Prismatic Ending
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Sacred Foundry→R, Hallowed Fountain→U, Breeding Pool→G (paying for Omnath, Locus of Creation, 0 mana remaining)
+T5 P2: Cast Omnath, Locus of Creation (WURG)
+    [Priority] P1 passes (no response)
+T5: Resolve Omnath, Locus of Creation
+T5 P2: Omnath, Locus of Creation ETB: draw 1 (Solitude)
+T5 P2: Play Arena of Glory (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 18  |  4/5c Control 18
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 43  |  Graveyard: 7
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Sacred Foundry, Mountain, Mountain
+║ 4/5c Control board:
+║   Creatures: Omnath, Locus of Creation (4/4)
+║   Lands: Sacred Foundry [T], Hallowed Fountain [T], Breeding Pool [T], Plains [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Wooded Foothills
+  [Main 1]
+T6 P1: Play Scalding Tarn
+T6: Scalding Tarn moved battlefield -> graveyard (fetchland sacrifice)
+T6 P1: Crack Scalding Tarn -> Mountain (untapped)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R, Mountain→R (paying for Glimpse the Impossible, 2 mana remaining)
+T6 P1: Cast Glimpse the Impossible (2R)
+    [Priority] P2 passes (no response)
+T6: Resolve Glimpse the Impossible
+T6 P1: Glimpse the Impossible → impulse-reveal 3 (Wrenn's Resolve, Scalding Tarn, Glimpse the Impossible)
+T6: Glimpse the Impossible moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Desperate Ritual, 1 mana remaining)
+T6 P1: Cast Desperate Ritual (1R)
+    [Priority] P2 passes (no response)
+T6: Resolve Desperate Ritual
+T6 P1: Desperate Ritual adds 3 R mana
+T6: Desperate Ritual moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T6 P1: Cast Wrenn's Resolve (1R)
+    [Priority] P2 passes (no response)
+T6: Resolve Wrenn's Resolve
+T6 P1: Wrenn's Resolve → impulse-reveal 2 (Reckless Impulse, Sunbaked Canyon)
+T6: Wrenn's Resolve moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T6 P1: Cast Reckless Impulse (1R)
+    [Priority] P2 passes (no response)
+T6: Resolve Reckless Impulse
+T6 P1: Reckless Impulse → impulse-reveal 2 (Wrenn's Resolve, Pyretic Ritual)
+T6: Reckless Impulse moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T6 P1: Cast Pyretic Ritual (1R)
+    [Priority] P2 passes (no response)
+T6: Resolve Pyretic Ritual
+T6 P1: Pyretic Ritual adds 3 R mana
+T6: Pyretic Ritual moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T6 P1: Cast Wrenn's Resolve (1R)
+    [Priority] P2 passes (no response)
+T6: Resolve Wrenn's Resolve
+T6 P1: Wrenn's Resolve → impulse-reveal 2 (Desperate Ritual, Ruby Medallion)
+T6: Wrenn's Resolve moved stack -> graveyard (resolution)
+    → Goal: execute_payoff
+T6 P1: Cast Ruby Medallion (2)
+    [Priority] P2 passes (no response)
+T6: Resolve Ruby Medallion
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Pyretic Ritual, 0 mana remaining)
+T6 P1: Cast Pyretic Ritual (1R)
+    [Priority] P2 passes (no response)
+T6: Resolve Pyretic Ritual
+T6 P1: Pyretic Ritual adds 3 R mana
+T6: Pyretic Ritual moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T6 P1: Cast Glimpse the Impossible (2R)
+    [Priority] P2 passes (no response)
+T6: Resolve Glimpse the Impossible
+T6 P1: Glimpse the Impossible → impulse-reveal 3 (March of Reckless Joy, Wooded Foothills, Ruby Medallion)
+T6: Glimpse the Impossible moved stack -> graveyard (resolution)
+    → Goal: execute_payoff
+T6 P1: Cast Ruby Medallion (2)
+    [Priority] P2 passes (no response)
+T6: Resolve Ruby Medallion
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T6: Wooded Foothills moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 6 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 18  |  Ruby Storm 17
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 43  |  Graveyard: 4
+║ 4/5c Control board:
+║   Creatures: Omnath, Locus of Creation (4/4)
+║   Lands: Sacred Foundry, Hallowed Fountain, Breeding Pool, Plains, Arena of Glory
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion, Ruby Medallion, Ruby Medallion
+║   Lands: Sacred Foundry [T], Mountain [T], Mountain [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Quantum Riddler
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Arena of Glory→R, Sacred Foundry→W, Hallowed Fountain→U, Breeding Pool→G (paying for Solitude, 0 mana remaining)
+T6 P2: Cast Solitude (3WW)
+    [Priority] P1 passes (no response)
+T6: Resolve Solitude
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Omnath, Locus of Creation
+T6 P2: Attack with Omnath, Locus of Creation
+  [Declare Blockers] P1 does not block
+T6 P2:   Omnath, Locus of Creation (4/4) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 17 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 13  |  4/5c Control 18
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 29  |  Graveyard: 17
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion, Ruby Medallion, Ruby Medallion
+║   Lands: Sacred Foundry, Mountain, Mountain, Mountain
+║ 4/5c Control board:
+║   Creatures: Omnath, Locus of Creation (4/4) [tapped], Solitude (3/2)
+║   Lands: Sacred Foundry [T], Hallowed Fountain [T], Breeding Pool [T], Plains [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Pyretic Ritual
+  [Main 1]
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Desperate Ritual, 3 mana remaining)
+T7 P1: Cast Desperate Ritual (1R)
+    [Priority] P2 passes (no response)
+T7: Resolve Desperate Ritual
+T7 P1: Desperate Ritual adds 3 R mana
+T7: Desperate Ritual moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T7 P1: Cast Pyretic Ritual (1R)
+    [Priority] P2 passes (no response)
+T7: Resolve Pyretic Ritual
+T7 P1: Pyretic Ritual adds 3 R mana
+T7: Pyretic Ritual moved stack -> graveyard (resolution)
+T7 P1: Play Scalding Tarn
+T7: Scalding Tarn moved battlefield -> graveyard (fetchland sacrifice)
+T7 P1: Crack Scalding Tarn -> Mountain (untapped)
+    → Goal: execute_payoff [enablers]
+T7 P1: Cast March of Reckless Joy (8R) (X=8)
+    [Priority] P2 passes (no response)
+T7: Resolve March of Reckless Joy
+T7 P1: March of Reckless Joy → impulse-reveal 2 (Bloodstained Mire, Bloodstained Mire)
+T7: March of Reckless Joy moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 18  |  Ruby Storm 12
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 42  |  Graveyard: 4
+║ 4/5c Control board:
+║   Creatures: Omnath, Locus of Creation (4/4), Solitude (3/2)
+║   Lands: Sacred Foundry, Hallowed Fountain, Breeding Pool, Plains, Arena of Glory
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion, Ruby Medallion, Ruby Medallion
+║   Lands: Sacred Foundry [T], Mountain [T], Mountain [T], Mountain [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wrenn and Six
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Arena of Glory→R, Breeding Pool→G (paying for Wrenn and Six, 3 mana remaining)
+T7 P2: Cast Wrenn and Six (RG)
+    [Priority] P1 passes (no response)
+T7: Resolve Wrenn and Six
+    → Goal: close_game
+    [Mana] Tap Plains→W (paying for Ephemerate, 2 mana remaining)
+T7 P2: Cast Ephemerate (W)
+    [Priority] P1 passes (no response)
+T7: Resolve Ephemerate
+T7 P2: Omnath, Locus of Creation ETB: draw 1 (Solitude)
+T7: Blink Omnath, Locus of Creation
+T7: Ephemerate moved stack -> exile (rebound (CR 702.86))
+T7 P2: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+T7: Misty Rainforest moved graveyard -> hand (returned to hand)
+T7 P2:   returns Misty Rainforest from graveyard to hand
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Solitude
+T7 P2: Attack with Solitude
+  [Declare Blockers] P1 does not block
+T7 P2: Solitude lifelink — gain 3 (life: 21)
+T7 P2:   Solitude (3/2) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P1 life: 12 → 9
+  [End Combat]
+  [Main 2]
+T7 P2: Play Misty Rainforest
+T7: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T7 P2: Crack Misty Rainforest (pay 1 life) -> Temple Garden (tapped, life: 20)
+T7 P2: Omnath, Locus of Creation 2nd landfall: add mana
+    → Goal: close_game
+    [Mana] Tap Sacred Foundry→W (paying for Solitude, 1 mana remaining)
+T7 P2: Cast Solitude (3WW)
+    [Priority] P1 passes (no response)
+T7: Resolve Solitude
+  [End Step]
+
+╔══ TURN 8 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 9  |  4/5c Control 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 25  |  Graveyard: 21
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion, Ruby Medallion, Ruby Medallion
+║   Lands: Sacred Foundry, Mountain, Mountain, Mountain, Mountain
+║ 4/5c Control board:
+║   Creatures: Solitude (3/2) [tapped], Omnath, Locus of Creation (4/4), Solitude (3/2)
+║   Other: Wrenn and Six
+║   Lands: Sacred Foundry [T], Hallowed Fountain, Breeding Pool [T], Plains [T], Arena of Glory [T], Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Scalding Tarn
+  [Main 1]
+T8 P1: Play Scalding Tarn
+T8: Scalding Tarn moved battlefield -> graveyard (fetchland sacrifice)
+T8 P1: Crack Scalding Tarn -> Thundering Falls (tapped)
+T8 P1: surveil 1 → Arid Mesa to GY
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Past in Flames, 4 mana remaining)
+T8 P1: Cast Past in Flames (3R)
+    [Priority] P2 passes (no response)
+T8: Resolve Past in Flames
+T8 P1: Past in Flames grants flashback
+T8: Past in Flames moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Mountain→R (paying for Grapeshot, 3 mana remaining)
+T8 P1: Cast Grapeshot (1R)
+    [Priority] P2 passes (no response)
+T8: Resolve Grapeshot
+T8 P1: Grapeshot deals 1 to P2 (face)
+T8 P1: Grapeshot deals 1 damage (opponent life: 19)
+T8: Storm copies: 1
+T8 P1: Grapeshot deals 1 to P2 (face)
+T8 P1: Grapeshot deals 1 damage (opponent life: 18)
+T8: Grapeshot moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Glimpse the Impossible, 2 mana remaining)
+T8 P1: Cast Glimpse the Impossible (2R)
+    [Priority] P2 passes (no response)
+T8: Resolve Glimpse the Impossible
+T8 P1: Glimpse the Impossible → impulse-reveal 3 (Manamorphose, Reckless Impulse, Ral, Monsoon Mage // Ral, Leyline Prodigy)
+T8: Glimpse the Impossible moved stack -> exile (flashback resolution (CR 702.33a))
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Glimpse the Impossible, 1 mana remaining)
+T8 P1: Cast Glimpse the Impossible (2R)
+    [Priority] P2 passes (no response)
+T8: Resolve Glimpse the Impossible
+T8 P1: Glimpse the Impossible → impulse-reveal 3 (Ruby Medallion, Wish, Desperate Ritual)
+T8: Glimpse the Impossible moved stack -> exile (flashback resolution (CR 702.33a))
+    → Goal: execute_payoff [enablers]
+T8 P1: Cast Manamorphose (2)
+    [Priority] P2 passes (no response)
+T8: Resolve Manamorphose
+T8 P1: Manamorphose adds 2 any mana
+T8: Manamorphose moved stack -> graveyard (resolution)
+    → Goal: execute_payoff
+T8 P1: Cast Ruby Medallion (2)
+    [Priority] P2 passes (no response)
+T8: Resolve Ruby Medallion
+    → Goal: execute_payoff [enablers]
+T8 P1: Cast Manamorphose (2)
+    [Priority] P2 passes (no response)
+T8: Resolve Manamorphose
+T8 P1: Manamorphose adds 2 any mana
+T8: Manamorphose moved stack -> exile (flashback resolution (CR 702.33a))
+    → Goal: execute_payoff [enablers]
+T8 P1: Cast Reckless Impulse (1R)
+    [Priority] P2 passes (no response)
+T8: Resolve Reckless Impulse
+T8 P1: Reckless Impulse → impulse-reveal 2 (Ral, Monsoon Mage // Ral, Leyline Prodigy, Grapeshot)
+T8: Reckless Impulse moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T8 P1: Cast Desperate Ritual (1R)
+    [Priority] P2 passes (no response)
+T8: Resolve Desperate Ritual
+T8 P1: Desperate Ritual adds 3 R mana
+T8: Desperate Ritual moved stack -> graveyard (resolution)
+    → Goal: execute_payoff
+T8 P1: Cast Ral, Monsoon Mage // Ral, Leyline Prodigy (1R)
+    [Priority] P2 passes (no response)
+T8: Resolve Ral, Monsoon Mage // Ral, Leyline Prodigy
+T8 P1: Ral, Monsoon Mage enters — instants/sorceries cost {1} less
+    → Goal: execute_payoff [enablers]
+T8 P1: Cast Wrenn's Resolve (1R)
+T8 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy — won coin flip!
+T8 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy transforms! (loyalty: 13) [+11 extra]
+    [Priority] P2 passes (no response)
+T8: Resolve Wrenn's Resolve
+T8 P1: Wrenn's Resolve → impulse-reveal 2 (Wish, Pyretic Ritual)
+T8: Wrenn's Resolve moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T8 P1: Cast Pyretic Ritual (1R)
+    [Priority] P2 passes (no response)
+T8: Resolve Pyretic Ritual
+T8 P1: Pyretic Ritual adds 3 R mana
+T8: Pyretic Ritual moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T8 P1: Cast Valakut Awakening // Valakut Stoneforge (2R)
+    [Priority] P2 passes (no response)
+T8: Resolve Valakut Awakening // Valakut Stoneforge
+T8: Valakut Awakening // Valakut Stoneforge moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T8 P1: Cast Wish (2R)
+    [Priority] P2 passes (no response)
+T8: Resolve Wish
+T8 P1: Wish finds Grapeshot (from sideboard)
+T8: Wish moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T8 P1: Cast Wish (2R)
+    [Priority] P2 passes (no response)
+T8: Resolve Wish
+T8 P1: Wish finds Empty the Warrens (from sideboard)
+T8: Wish moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Sacred Foundry→R (paying for Grapeshot, 0 mana remaining)
+T8 P1: Cast Grapeshot (1R)
+    [Priority] P2 passes (no response)
+T8: Resolve Grapeshot
+T8 P1: Grapeshot deals 1 to P2 (face)
+T8 P1: Grapeshot deals 1 damage (opponent life: 17)
+T8: Storm copies: 15
+T8 P1: Grapeshot deals 1 to P2 (face)
+T8 P1: Grapeshot deals 1 damage (opponent life: 16)
+T8 P1: Grapeshot deals 1 to P2 (face)
+T8 P1: Grapeshot deals 1 damage (opponent life: 15)
+T8 P1: Grapeshot deals 1 to P2 (face)
+T8 P1: Grapeshot deals 1 damage (opponent life: 14)
+T8 P1: Grapeshot deals 1 to P2 (face)
+T8 P1: Grapeshot deals 1 damage (opponent life: 13)
+T8 P1: Grapeshot deals 1 to P2 (face)
+T8 P1: Grapeshot deals 1 damage (opponent life: 12)
+T8 P1: Grapeshot deals 1 to P2 (face)
+T8 P1: Grapeshot deals 1 damage (opponent life: 11)
+T8 P1: Grapeshot deals 1 to P2 (face)
+T8 P1: Grapeshot deals 1 damage (opponent life: 10)
+T8 P1: Grapeshot deals 1 to P2 (face)
+T8 P1: Grapeshot deals 1 damage (opponent life: 9)
+T8 P1: Grapeshot deals 1 to P2 (face)
+T8 P1: Grapeshot deals 1 damage (opponent life: 8)
+T8 P1: Grapeshot deals 1 to P2 (face)
+T8 P1: Grapeshot deals 1 damage (opponent life: 7)
+T8 P1: Grapeshot deals 1 to P2 (face)
+T8 P1: Grapeshot deals 1 damage (opponent life: 6)
+T8 P1: Grapeshot deals 1 to P2 (face)
+T8 P1: Grapeshot deals 1 damage (opponent life: 5)
+T8 P1: Grapeshot deals 1 to P2 (face)
+T8 P1: Grapeshot deals 1 damage (opponent life: 4)
+T8 P1: Grapeshot deals 1 to P2 (face)
+T8 P1: Grapeshot deals 1 damage (opponent life: 3)
+T8 P1: Grapeshot deals 1 to P2 (face)
+T8 P1: Grapeshot deals 1 damage (opponent life: 2)
+T8: Grapeshot moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T8 P1: Cast Manamorphose (2)
+    [Priority] P2 passes (no response)
+T8: Resolve Manamorphose
+T8 P1: Manamorphose adds 2 any mana
+T8: Manamorphose moved stack -> exile (flashback resolution (CR 702.33a))
+    → Goal: execute_payoff [payoffs]
+T8 P1: Cast Grapeshot (1R)
+    [Priority] P2 passes (no response)
+T8: Resolve Grapeshot
+T8 P1: Grapeshot deals 1 to P2 (face)
+T8 P1: Grapeshot deals 1 damage (opponent life: 1)
+T8: Storm copies: 17
+T8 P1: Grapeshot deals 1 to P2 (face)
+T8 P1: Grapeshot deals 1 damage (opponent life: 0)
+T8 P1: Grapeshot deals 1 to P2 (face)
+T8 P1: Grapeshot deals 1 damage (opponent life: -1)
+T8 P1: Grapeshot deals 1 to P2 (face)
+T8 P1: Grapeshot deals 1 damage (opponent life: -2)
+T8 P1: Grapeshot deals 1 to P2 (face)
+T8 P1: Grapeshot deals 1 damage (opponent life: -3)
+T8 P1: Grapeshot deals 1 to P2 (face)
+T8 P1: Grapeshot deals 1 damage (opponent life: -4)
+T8 P1: Grapeshot deals 1 to P2 (face)
+T8 P1: Grapeshot deals 1 damage (opponent life: -5)
+T8 P1: Grapeshot deals 1 to P2 (face)
+T8 P1: Grapeshot deals 1 damage (opponent life: -6)
+T8 P1: Grapeshot deals 1 to P2 (face)
+T8 P1: Grapeshot deals 1 damage (opponent life: -7)
+T8 P1: Grapeshot deals 1 to P2 (face)
+T8 P1: Grapeshot deals 1 damage (opponent life: -8)
+T8 P1: Grapeshot deals 1 to P2 (face)
+T8 P1: Grapeshot deals 1 damage (opponent life: -9)
+T8 P1: Grapeshot deals 1 to P2 (face)
+T8 P1: Grapeshot deals 1 damage (opponent life: -10)
+T8 P1: Grapeshot deals 1 to P2 (face)
+T8 P1: Grapeshot deals 1 damage (opponent life: -11)
+T8 P1: Grapeshot deals 1 to P2 (face)
+T8 P1: Grapeshot deals 1 damage (opponent life: -12)
+T8 P1: Grapeshot deals 1 to P2 (face)
+T8 P1: Grapeshot deals 1 damage (opponent life: -13)
+T8 P1: Grapeshot deals 1 to P2 (face)
+T8 P1: Grapeshot deals 1 damage (opponent life: -14)
+T8 P1: Grapeshot deals 1 to P2 (face)
+T8 P1: Grapeshot deals 1 damage (opponent life: -15)
+T8 P1: Grapeshot deals 1 to P2 (face)
+T8 P1: Grapeshot deals 1 damage (opponent life: -16)
+T8: Grapeshot moved stack -> graveyard (resolution)
+P2 loses: life total -16
+
+>>> Ruby Storm wins Game 1 on turn 8 via damage
+    Final life: Ruby Storm=8  4/5c Control=-16
+
+======================================================================
+  GAME 2: 4/5c Control (P1) vs Ruby Storm (P2)  —  seed 60106
+  Series: Ruby Storm 1 - 0 4/5c Control
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: 4/5c Control wins → chooses to play first
+║ P1 (on play): 4/5c Control
+║ P2 (on draw): Ruby Storm
+╚═══════════════════════════════════════════════════════
+
+P1 (4/5c Control) opening hand (4 lands, 3 spells):
+  • Breeding Pool [Land, CMC 0]
+  • Misty Rainforest [Land, CMC 0]
+  • Flooded Strand [Land, CMC 0]
+  • Wrenn and Six [Spell, CMC 2]
+  • Wrenn and Six [Spell, CMC 2]
+  • Temple Garden [Land, CMC 0]
+  • Teferi, Time Raveler [Spell, CMC 3]
+→ P1 KEEPS 7 — has key card(s): Teferi, Time Raveler, Wrenn and Six, 2 cheap spells
+
+P2 (Ruby Storm) opening hand (1 lands, 6 spells):
+  • Grapeshot [Spell, CMC 2]
+  • Grapeshot [Spell, CMC 2]
+  • Elegant Parlor [Land, CMC 0]
+  • Valakut Awakening // Valakut Stoneforge [Spell, CMC 3]
+  • Ruby Medallion [Spell, CMC 2]
+  • Wrenn's Resolve [Spell, CMC 2]
+  • Ral, Monsoon Mage // Ral, Leyline Prodigy [Creature, CMC 2]
+→ P2 KEEPS 7 — has key card(s): Ruby Medallion, Wrenn's Resolve, 6 cheap spells
+
+
+╔══ TURN 1 — 4/5c Control (P1) ══════════════════════════
+║ Life: 4/5c Control 20  |  Ruby Storm 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Misty Rainforest
+T1: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Misty Rainforest (pay 1 life) -> Stomping Ground (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 20  |  4/5c Control 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Stomping Ground [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wish
+  [Main 1]
+T1 P2: surveil 1 → Wrenn's Resolve to GY
+T1 P2: Play Elegant Parlor (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — 4/5c Control (P1) ══════════════════════════
+║ Life: 4/5c Control 19  |  Ruby Storm 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Stomping Ground
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Orim's Chant
+  [Main 1]
+T2 P1: Play Flooded Strand
+T2: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T2 P1: Crack Flooded Strand (pay 1 life) -> Sacred Foundry (tapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 20  |  4/5c Control 18
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Elegant Parlor
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Stomping Ground, Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Desperate Ritual
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T2: Valakut Awakening // Valakut Stoneforge moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 3 — 4/5c Control (P1) ══════════════════════════
+║ Life: 4/5c Control 18  |  Ruby Storm 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 1
+║ Library: 50  |  Graveyard: 2
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Stomping Ground, Sacred Foundry
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Elegant Parlor
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Flooded Strand
+  [Main 1]
+T3 P1: Play Flooded Strand
+T3: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T3 P1: Crack Flooded Strand (pay 1 life) -> Hallowed Fountain (untapped, life: 15)
+    → Goal: grind_value
+    [Mana] Tap Stomping Ground→G, Sacred Foundry→R (paying for Wrenn and Six, 1 mana remaining)
+T3 P1: Cast Wrenn and Six (RG)
+    [Priority] P2 passes (no response)
+T3: Resolve Wrenn and Six
+T3 P1: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+T3: Misty Rainforest moved graveyard -> hand (returned to hand)
+T3 P1:   returns Misty Rainforest from graveyard to hand
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 20  |  4/5c Control 15
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 2
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Elegant Parlor
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Wrenn and Six
+║   Lands: Stomping Ground [T], Sacred Foundry [T], Hallowed Fountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Reckless Impulse
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T3: Wrenn's Resolve moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 4 — 4/5c Control (P1) ══════════════════════════
+║ Life: 4/5c Control 15  |  Ruby Storm 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 1
+║ Library: 48  |  Graveyard: 2
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Wrenn and Six
+║   Lands: Stomping Ground, Sacred Foundry, Hallowed Fountain
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Elegant Parlor
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Stock Up
+  [Main 1]
+T4 P1: Play Misty Rainforest
+T4: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T4 P1: Crack Misty Rainforest (pay 1 life) -> Steam Vents (tapped, life: 14)
+    → Goal: close_game
+    [Mana] Tap Stomping Ground→G, Sacred Foundry→W, Hallowed Fountain→U (paying for Teferi, Time Raveler, 0 mana remaining)
+T4 P1: Cast Teferi, Time Raveler (1WU)
+    [Priority] P2 passes (no response)
+T4: Resolve Teferi, Time Raveler
+T4 P1: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+T4: Flooded Strand moved graveyard -> hand (returned to hand)
+T4 P1:   returns Flooded Strand from graveyard to hand
+T4 P1: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 20  |  4/5c Control 14
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 3
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Elegant Parlor
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Wrenn and Six, Teferi, Time Raveler
+║   Lands: Stomping Ground [T], Sacred Foundry [T], Hallowed Fountain [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Manamorphose
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Ral, Monsoon Mage // Ral, Leyline Prodigy moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 5 — 4/5c Control (P1) ══════════════════════════
+║ Life: 4/5c Control 14  |  Ruby Storm 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 1
+║ Library: 45  |  Graveyard: 2
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Wrenn and Six, Teferi, Time Raveler
+║   Lands: Stomping Ground, Sacred Foundry, Hallowed Fountain, Steam Vents
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Elegant Parlor
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Quantum Riddler
+  [Main 1]
+T5 P1: Play Flooded Strand
+T5: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T5 P1: Crack Flooded Strand -> Island (untapped)
+    → Goal: close_game
+    [Mana] Tap Island→U, Stomping Ground→G, Sacred Foundry→R, Hallowed Fountain→U, Steam Vents→R (paying for Quantum Riddler, 0 mana remaining)
+T5 P1: Cast Quantum Riddler (3UU)
+T5: Resolve Quantum Riddler
+T5 P1: Quantum Riddler ETB: draw 1 (Ephemerate)
+T5 P1: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+T5: Flooded Strand moved graveyard -> hand (returned to hand)
+T5 P1:   returns Flooded Strand from graveyard to hand
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T5: Wrenn and Six moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 5 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 20  |  4/5c Control 13
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 5
+║ Library: 48  |  Graveyard: 4
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Elegant Parlor
+║ 4/5c Control board:
+║   Creatures: Quantum Riddler (4/6)
+║   Other: Wrenn and Six, Teferi, Time Raveler
+║   Lands: Stomping Ground [T], Sacred Foundry [T], Hallowed Fountain [T], Steam Vents [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thundering Falls
+  [Main 1]
+T5 P2: surveil 1 → Manamorphose to GY
+T5 P2: Play Thundering Falls (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — 4/5c Control (P1) ══════════════════════════
+║ Life: 4/5c Control 13  |  Ruby Storm 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 5  |  Opp lands: 2
+║ Library: 42  |  Graveyard: 3
+║ 4/5c Control board:
+║   Creatures: Quantum Riddler (4/6)
+║   Other: Wrenn and Six, Teferi, Time Raveler
+║   Lands: Stomping Ground, Sacred Foundry, Hallowed Fountain, Steam Vents, Island
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Elegant Parlor, Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ephemerate
+  [Main 1]
+T6 P1: Play Flooded Strand
+T6: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T6 P1: Crack Flooded Strand -> Plains (untapped)
+    → Goal: close_game
+    [Mana] Tap Island→U, Plains→W, Stomping Ground→G (paying for Stock Up, 3 mana remaining)
+T6 P1: Cast Stock Up (2U)
+T6: Resolve Stock Up
+T6: Stock Up moved stack -> graveyard (resolution)
+    → Goal: close_game
+    [Mana] Tap Sacred Foundry→W (paying for Ephemerate, 2 mana remaining)
+T6 P1: Cast Ephemerate (W)
+T6: Resolve Ephemerate
+T6 P1: Quantum Riddler ETB: draw 1 (Elegant Parlor)
+T6: Blink Quantum Riddler
+T6: Ephemerate moved stack -> exile (rebound (CR 702.86))
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→W (paying for Ephemerate, 1 mana remaining)
+T6 P1: Cast Ephemerate (W)
+T6: Resolve Ephemerate
+T6 P1: Quantum Riddler ETB: draw 1 (Mystical Dispute)
+T6: Blink Quantum Riddler
+T6: Ephemerate moved stack -> exile (rebound (CR 702.86))
+T6 P1: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+T6: Misty Rainforest moved graveyard -> hand (returned to hand)
+T6 P1:   returns Misty Rainforest from graveyard to hand
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T6: Breeding Pool moved hand -> graveyard (discard to hand size)
+T6: Temple Garden moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 6 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 20  |  4/5c Control 12
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 6
+║ Library: 46  |  Graveyard: 5
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Elegant Parlor, Thundering Falls
+║ 4/5c Control board:
+║   Creatures: Quantum Riddler (4/6)
+║   Other: Wrenn and Six, Teferi, Time Raveler
+║   Lands: Stomping Ground [T], Sacred Foundry [T], Hallowed Fountain [T], Steam Vents, Island [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mountain
+  [Main 1]
+T6 P2: Play Mountain
+    → Goal: execute_payoff
+    [Mana] Tap Mountain→R, Elegant Parlor→R (paying for Ruby Medallion, 1 mana remaining)
+T6 P2: Cast Ruby Medallion (2)
+    [Priority] P1 passes (no response)
+T6: Resolve Ruby Medallion
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Thundering Falls→R (paying for Manamorphose, 0 mana remaining)
+T6 P2: Cast Manamorphose (2)
+    [Priority] P1 passes (no response)
+T6: Resolve Manamorphose
+T6 P2: Manamorphose adds 2 any mana
+T6: Manamorphose moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T6 P2: Cast Reckless Impulse (1R)
+    [Priority] P1 passes (no response)
+T6: Resolve Reckless Impulse
+T6 P2: Reckless Impulse → impulse-reveal 2 (Elegant Parlor, Desperate Ritual)
+T6: Reckless Impulse moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T6 P2: Cast Desperate Ritual (1R)
+    [Priority] P1 passes (no response)
+T6: Resolve Desperate Ritual
+T6 P2: Desperate Ritual adds 3 R mana
+T6: Desperate Ritual moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T6 P2: Cast Desperate Ritual (1R)
+    [Priority] P1 passes (no response)
+T6: Resolve Desperate Ritual
+T6 P2: Desperate Ritual adds 3 R mana
+T6: Desperate Ritual moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T6 P2: Cast Wish (2R)
+    [Priority] P1 passes (no response)
+T6: Resolve Wish
+T6 P2: Wish finds Past in Flames (from sideboard)
+T6: Wish moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — 4/5c Control (P1) ══════════════════════════
+║ Life: 4/5c Control 12  |  Ruby Storm 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 6  |  Opp lands: 3
+║ Library: 36  |  Graveyard: 6
+║ 4/5c Control board:
+║   Creatures: Quantum Riddler (4/6)
+║   Other: Wrenn and Six, Teferi, Time Raveler
+║   Lands: Stomping Ground, Sacred Foundry, Hallowed Fountain, Steam Vents, Island, Plains
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Elegant Parlor [T], Thundering Falls [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T7 P1: Rebound Ephemerate declined (CR 702.88b)
+T7 P1: Rebound Ephemerate declined (CR 702.88b)
+  [Draw] P1 draws: Galvanic Discharge
+  [Main 1]
+T7 P1: Play Misty Rainforest
+T7: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T7 P1: Crack Misty Rainforest -> Thundering Falls (tapped)
+T7 P1: surveil 1 → Flooded Strand to GY
+    → Goal: close_game
+    [Mana] Tap Island→U, Plains→W, Stomping Ground→G, Sacred Foundry→W, Hallowed Fountain→U (paying for Solitude, 1 mana remaining)
+T7 P1: Cast Solitude (3WW)
+T7: Resolve Solitude
+T7 P1: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+T7: Flooded Strand moved graveyard -> hand (returned to hand)
+T7 P1:   returns Flooded Strand from graveyard to hand
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Quantum Riddler
+T7 P1: Attack with Quantum Riddler
+  [Declare Blockers] P2 does not block
+T7 P1:   Quantum Riddler (4/6) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 20 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 16  |  4/5c Control 11
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 7
+║ Library: 42  |  Graveyard: 10
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Elegant Parlor, Thundering Falls, Mountain
+║ 4/5c Control board:
+║   Creatures: Quantum Riddler (4/6) [tapped], Solitude (3/2)
+║   Other: Wrenn and Six, Teferi, Time Raveler
+║   Lands: Stomping Ground [T], Sacred Foundry [T], Hallowed Fountain [T], Steam Vents, Island [T], Plains [T], Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mountain
+  [Main 1]
+T7 P2: Play Sunbaked Canyon
+T7: Sunbaked Canyon moved battlefield -> graveyard (activation cost (Sunbaked Canyon))
+T7 P2: activate Sunbaked Canyon — Draw a card.
+T7 P2: Sunbaked Canyon activated — draw 1 (Glimpse the Impossible)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — 4/5c Control (P1) ══════════════════════════
+║ Life: 4/5c Control 11  |  Ruby Storm 16
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 7  |  Opp lands: 3
+║ Library: 33  |  Graveyard: 7
+║ 4/5c Control board:
+║   Creatures: Quantum Riddler (4/6), Solitude (3/2)
+║   Other: Wrenn and Six, Teferi, Time Raveler
+║   Lands: Stomping Ground, Sacred Foundry, Hallowed Fountain, Steam Vents, Island, Plains, Thundering Falls
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Elegant Parlor, Thundering Falls, Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Hedge Maze
+  [Main 1]
+T8 P1: Play Flooded Strand
+T8: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T8 P1: Crack Flooded Strand -> Lush Portico (tapped)
+T8 P1: surveil 1 → Solitude to GY
+    → Goal: close_game
+    [Mana] Tap Island→U, Plains→W, Stomping Ground→G (paying for Stock Up, 4 mana remaining)
+T8 P1: Cast Stock Up (2U)
+T8: Resolve Stock Up
+T8: Stock Up moved stack -> graveyard (resolution)
+T8 P1: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+T8: Flooded Strand moved graveyard -> hand (returned to hand)
+T8 P1:   returns Flooded Strand from graveyard to hand
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Quantum Riddler, Solitude
+T8 P1: Attack with Quantum Riddler, Solitude
+  [Declare Blockers] P2 does not block
+T8 P1:   Quantum Riddler (4/6) → 4 dmg to player
+T8 P1: Solitude lifelink — gain 3 (life: 13)
+T8 P1:   Solitude (3/2) → 3 dmg to player
+  [Combat Damage] 7 damage dealt → P2 life: 16 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+T8: Elegant Parlor moved hand -> graveyard (discard to hand size)
+T8: Hedge Maze moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 8 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 9  |  4/5c Control 13
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 8
+║ Library: 40  |  Graveyard: 11
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Elegant Parlor, Thundering Falls, Mountain
+║ 4/5c Control board:
+║   Creatures: Quantum Riddler (4/6) [tapped], Solitude (3/2) [tapped]
+║   Other: Wrenn and Six, Teferi, Time Raveler
+║   Lands: Stomping Ground [T], Sacred Foundry, Hallowed Fountain, Steam Vents, Island [T], Plains [T], Thundering Falls, Lush Portico [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Pyretic Ritual
+  [Main 1]
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R, Elegant Parlor→R (paying for Glimpse the Impossible, 1 mana remaining)
+T8 P2: Cast Glimpse the Impossible (2R)
+    [Priority] P1 passes (no response)
+T8: Resolve Glimpse the Impossible
+T8 P2: Glimpse the Impossible → impulse-reveal 3 (Ral, Monsoon Mage // Ral, Leyline Prodigy, Reckless Impulse, Wish)
+T8: Glimpse the Impossible moved stack -> graveyard (resolution)
+    → Goal: execute_payoff
+    [Mana] Tap Thundering Falls→R (paying for Ral, Monsoon Mage // Ral, Leyline Prodigy, 0 mana remaining)
+T8 P2: Cast Ral, Monsoon Mage // Ral, Leyline Prodigy (1R)
+    [Priority] P1 passes (no response)
+T8: Resolve Ral, Monsoon Mage // Ral, Leyline Prodigy
+T8 P2: Ral, Monsoon Mage enters — instants/sorceries cost {1} less
+T8 P2: Play Mountain
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Reckless Impulse, 0 mana remaining)
+T8 P2: Cast Reckless Impulse (1R)
+T8 P2: Ral, Monsoon Mage // Ral, Leyline Prodigy — lost coin flip, takes 1 damage
+    [Priority] P1 responds with Orim's Chant
+    [Mana] Tap Sacred Foundry→W (paying for Orim's Chant, 3 mana remaining)
+T8 P1: Cast Orim's Chant (W)
+T8: Resolve Orim's Chant
+T8 P1: Orim's Chant silences P2 this turn
+T8: Orim's Chant moved stack -> graveyard (resolution)
+T8: Resolve Reckless Impulse
+T8 P2: Reckless Impulse → impulse-reveal 2 (Arid Mesa, Wooded Foothills)
+T8: Reckless Impulse moved stack -> graveyard (resolution)
+  [Begin Combat]
+    [Mana] Tap Steam Vents→R (paying for Galvanic Discharge, 2 mana remaining)
+T8 P1: Cast Galvanic Discharge (R)
+T8: Resolve Galvanic Discharge
+T8: Ral, Monsoon Mage // Ral, Leyline Prodigy dies
+T8 P1: Galvanic Discharge deals 2 to Ral, Monsoon Mage // Ral, Leyline Prodigy (base 0 + 2 energy)
+T8: Galvanic Discharge moved stack -> graveyard (resolution)
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T8: Elegant Parlor moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 9 — 4/5c Control (P1) ══════════════════════════
+║ Life: 4/5c Control 13  |  Ruby Storm 9
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 8  |  Opp lands: 4
+║ Library: 28  |  Graveyard: 13
+║ 4/5c Control board:
+║   Creatures: Quantum Riddler (4/6), Solitude (3/2)
+║   Other: Wrenn and Six, Teferi, Time Raveler
+║   Lands: Stomping Ground, Sacred Foundry, Hallowed Fountain, Steam Vents, Island, Plains, Thundering Falls, Lush Portico
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Elegant Parlor [T], Thundering Falls [T], Mountain [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Orim's Chant
+  [Main 1]
+T9 P1: Play Flooded Strand
+T9: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T9 P1: Crack Flooded Strand (no valid land found)
+    → Goal: close_game
+    [Mana] Tap Island→U, Plains→W, Stomping Ground→G, Sacred Foundry→W, Hallowed Fountain→U (paying for Solitude, 3 mana remaining)
+T9 P1: Cast Solitude (3WW)
+T9: Resolve Solitude
+T9 P1: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+T9: Breeding Pool moved graveyard -> hand (returned to hand)
+T9 P1:   returns Breeding Pool from graveyard to hand
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Quantum Riddler, Solitude
+T9 P1: Attack with Quantum Riddler, Solitude
+  [Declare Blockers] P2 does not block
+T9 P1:   Quantum Riddler (4/6) → 4 dmg to player
+T9 P1: Solitude lifelink — gain 3 (life: 15)
+T9 P1:   Solitude (3/2) → 3 dmg to player
+  [Combat Damage] 7 damage dealt → P2 life: 9 → 2
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Ruby Storm (P2) ══════════════════════════
+║ Life: Ruby Storm 2  |  4/5c Control 15
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 8
+║ Library: 34  |  Graveyard: 15
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Elegant Parlor, Thundering Falls, Mountain, Mountain
+║ 4/5c Control board:
+║   Creatures: Quantum Riddler (4/6) [tapped], Solitude (3/2) [tapped], Solitude (3/2)
+║   Other: Wrenn and Six, Teferi, Time Raveler
+║   Lands: Stomping Ground [T], Sacred Foundry [T], Hallowed Fountain [T], Steam Vents, Island [T], Plains [T], Thundering Falls, Lush Portico
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Pyretic Ritual
+  [Main 1]
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Pyretic Ritual, 3 mana remaining)
+T9 P2: Cast Pyretic Ritual (1R)
+    [Priority] P1 passes (no response)
+T9: Resolve Pyretic Ritual
+T9 P2: Pyretic Ritual adds 3 R mana
+T9: Pyretic Ritual moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T9 P2: Cast Pyretic Ritual (1R)
+    [Priority] P1 responds with Orim's Chant
+    [Mana] Tap Lush Portico→W (paying for Orim's Chant, 2 mana remaining)
+T9 P1: Cast Orim's Chant (W)
+T9: Resolve Orim's Chant
+T9 P1: Orim's Chant silences P2 this turn
+T9: Orim's Chant moved stack -> graveyard (resolution)
+T9: Resolve Pyretic Ritual
+T9 P2: Pyretic Ritual adds 3 R mana
+T9: Pyretic Ritual moved stack -> graveyard (resolution)
+T9 P2: Play Wooded Foothills
+T9: Wooded Foothills moved battlefield -> graveyard (fetchland sacrifice)
+T9 P2: Crack Wooded Foothills (pay 1 life) -> Sacred Foundry (tapped, life: 1)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — 4/5c Control (P1) ══════════════════════════
+║ Life: 4/5c Control 15  |  Ruby Storm 1
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 8  |  Opp lands: 5
+║ Library: 27  |  Graveyard: 14
+║ 4/5c Control board:
+║   Creatures: Quantum Riddler (4/6), Solitude (3/2), Solitude (3/2)
+║   Other: Wrenn and Six, Teferi, Time Raveler
+║   Lands: Stomping Ground, Sacred Foundry, Hallowed Fountain, Steam Vents, Island, Plains, Thundering Falls, Lush Portico
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Other: Ruby Medallion
+║   Lands: Elegant Parlor, Thundering Falls, Mountain [T], Mountain, Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Windswept Heath
+  [Main 1]
+T10 P1: Play Windswept Heath
+T10: Windswept Heath moved battlefield -> graveyard (fetchland sacrifice)
+T10 P1: Crack Windswept Heath (no valid land found)
+T10 P1: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+T10: Temple Garden moved graveyard -> hand (returned to hand)
+T10 P1:   returns Temple Garden from graveyard to hand
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Quantum Riddler, Solitude, Solitude
+T10 P1: Attack with Quantum Riddler, Solitude, Solitude
+  [Declare Blockers] P2 does not block
+T10 P1:   Quantum Riddler (4/6) → 4 dmg to player
+T10 P1: Solitude lifelink — gain 3 (life: 17)
+T10 P1:   Solitude (3/2) → 3 dmg to player
+T10 P1: Solitude lifelink — gain 3 (life: 20)
+T10 P1:   Solitude (3/2) → 3 dmg to player
+P2 loses: life total -9
+  [Combat Damage] 10 damage dealt → P2 life: 1 → -9
+
+>>> 4/5c Control wins Game 2 on turn 10 via damage
+    Final life: 4/5c Control=20  Ruby Storm=-9
+
+======================================================================
+  GAME 3: Ruby Storm (P1) vs 4/5c Control (P2)  —  seed 60107
+  Series: Ruby Storm 1 - 1 4/5c Control
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: 4/5c Control wins → chooses to play first
+║ P1 (on play): 4/5c Control
+║ P2 (on draw): Ruby Storm
+╚═══════════════════════════════════════════════════════
+
+P1 (Ruby Storm) opening hand (4 lands, 3 spells):
+  • Elegant Parlor [Land, CMC 0]
+  • Grapeshot [Spell, CMC 2]
+  • Pyretic Ritual [Spell, CMC 2]
+  • Bloodstained Mire [Land, CMC 0]
+  • Arid Mesa [Land, CMC 0]
+  • Desperate Ritual [Spell, CMC 2]
+  • Arid Mesa [Land, CMC 0]
+→ P1 MULLIGANS (too many lands (4 > 3); first-turn value 3 < 5)
+  New hand (3 lands, 4 spells): ['March of Reckless Joy', 'Gemstone Caverns', "Wrenn's Resolve", 'Grapeshot', 'Wooded Foothills', 'Manamorphose', 'Elegant Parlor']
+→ P1 mulligans to 6, bottoms: ['March of Reckless Joy']
+  Keeps: ['Gemstone Caverns', "Wrenn's Resolve", 'Grapeshot', 'Wooded Foothills', 'Manamorphose', 'Elegant Parlor']
+
+P2 (4/5c Control) opening hand (3 lands, 4 spells):
+  • Flooded Strand [Land, CMC 0]
+  • Arena of Glory [Land, CMC 0]
+  • Misty Rainforest [Land, CMC 0]
+  • Eternal Witness [Creature, CMC 3]
+  • Quantum Riddler [Creature, CMC 5]
+  • Stock Up [Spell, CMC 3]
+  • Eternal Witness [Creature, CMC 3]
+→ P2 KEEPS 7 — has key card(s): Quantum Riddler, 3 cheap spells
+
+
+╔══ TURN 1 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 20  |  Ruby Storm 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Misty Rainforest
+T1: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Misty Rainforest (pay 1 life) -> Breeding Pool (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 20  |  4/5c Control 19
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 0
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Bloodstained Mire
+  [Main 1]
+T1 P1: Play Gemstone Caverns
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 19  |  Ruby Storm 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Gemstone Caverns
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Elegant Parlor
+  [Main 1]
+T2 P2: Play Flooded Strand
+T2: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T2 P2: Crack Flooded Strand -> Hedge Maze (tapped)
+T2 P2: surveil 1 → Wrath of the Skies to GY
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 20  |  4/5c Control 18
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 53  |  Graveyard: 0
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Gemstone Caverns
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool, Hedge Maze [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Manamorphose
+  [Main 1]
+T2 P1: Play Wooded Foothills
+T2: Wooded Foothills moved battlefield -> graveyard (fetchland sacrifice)
+T2 P1: Crack Wooded Foothills (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 18  |  Ruby Storm 19
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 49  |  Graveyard: 3
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool, Hedge Maze
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Gemstone Caverns, Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Orim's Chant
+  [Main 1]
+T3 P2: surveil 1 → Hallowed Fountain to GY
+T3 P2: Play Elegant Parlor (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 19  |  4/5c Control 18
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 1
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Gemstone Caverns, Sacred Foundry
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool, Hedge Maze, Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arid Mesa
+  [Main 1]
+T3 P1: Play Arid Mesa
+T3: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T3 P1: Crack Arid Mesa -> Mountain (untapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 18  |  Ruby Storm 18
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 4
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool, Hedge Maze, Elegant Parlor
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Gemstone Caverns, Sacred Foundry, Mountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Plains
+  [Main 1]
+T4 P2: Play Plains
+    → Goal: close_game
+    [Mana] Tap Plains→W, Breeding Pool→G, Hedge Maze→G (paying for Eternal Witness, 1 mana remaining)
+T4 P2: Cast Eternal Witness (1GG)
+    [Priority] P1 passes (no response)
+T4: Resolve Eternal Witness
+T4 P2: Eternal Witness returns Wrath of the Skies from graveyard to hand
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 18  |  4/5c Control 18
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 2
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Gemstone Caverns, Sacred Foundry, Mountain
+║ 4/5c Control board:
+║   Creatures: Eternal Witness (2/1)
+║   Lands: Breeding Pool [T], Hedge Maze [T], Elegant Parlor, Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Scalding Tarn
+  [Main 1]
+T4 P1: Play Scalding Tarn
+T4: Scalding Tarn moved battlefield -> graveyard (fetchland sacrifice)
+T4 P1: Crack Scalding Tarn -> Mountain (untapped)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R, Mountain→R (paying for Manamorphose, 2 mana remaining)
+T4 P1: Cast Manamorphose (2)
+    [Priority] P2 passes (no response)
+T4: Resolve Manamorphose
+T4 P1: Manamorphose adds 2 any mana
+T4: Manamorphose moved stack -> graveyard (resolution)
+    → Goal: execute_payoff
+T4 P1: Cast Ral, Monsoon Mage // Ral, Leyline Prodigy (1R)
+    [Priority] P2 passes (no response)
+T4: Resolve Ral, Monsoon Mage // Ral, Leyline Prodigy
+T4 P1: Ral, Monsoon Mage enters — instants/sorceries cost {1} less
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Wrenn's Resolve, 1 mana remaining)
+T4 P1: Cast Wrenn's Resolve (1R)
+T4 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy — lost coin flip, takes 1 damage
+    [Priority] P2 responds with Orim's Chant
+    [Mana] Tap Elegant Parlor→W (paying for Orim's Chant, 0 mana remaining)
+T4 P2: Cast Orim's Chant (W)
+T4: Resolve Orim's Chant
+T4 P2: Orim's Chant silences P1 this turn
+T4: Orim's Chant moved stack -> graveyard (resolution)
+T4: Resolve Wrenn's Resolve
+T4 P1: Wrenn's Resolve → impulse-reveal 2 (Past in Flames, Desperate Ritual)
+T4: Wrenn's Resolve moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 18  |  Ruby Storm 17
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 4
+║ 4/5c Control board:
+║   Creatures: Eternal Witness (2/1)
+║   Lands: Breeding Pool, Hedge Maze, Elegant Parlor, Plains
+║ Ruby Storm board:
+║   Creatures: Ral, Monsoon Mage // Ral, Leyline Prodigy (1/3)
+║   Lands: Gemstone Caverns, Sacred Foundry [T], Mountain [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Quantum Riddler
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Breeding Pool→G, Hedge Maze→G (paying for Eternal Witness, 1 mana remaining)
+T5 P2: Cast Eternal Witness (1GG)
+    [Priority] P1 passes (no response)
+T5: Resolve Eternal Witness
+T5 P2: Eternal Witness returns Orim's Chant from graveyard to hand
+T5 P2: Play Arena of Glory (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Eternal Witness
+T5 P2: Attack with Eternal Witness
+T5 P1:   [BLOCK] Ral, Monsoon Mage // Ral, Leyline Prodigy (1/3) blocks Eternal Witness (2/1) — lifespan_delta=+4.75
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T5: Eternal Witness dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 17  |  4/5c Control 18
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 44  |  Graveyard: 5
+║ Ruby Storm board:
+║   Creatures: Ral, Monsoon Mage // Ral, Leyline Prodigy (1/3)
+║   Lands: Gemstone Caverns, Sacred Foundry, Mountain, Mountain
+║ 4/5c Control board:
+║   Creatures: Eternal Witness (2/1)
+║   Lands: Breeding Pool [T], Hedge Maze [T], Elegant Parlor, Plains [T], Arena of Glory [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Grapeshot
+  [Main 1]
+T5 P1: Play Bloodstained Mire
+T5: Bloodstained Mire moved battlefield -> graveyard (fetchland sacrifice)
+T5 P1: Crack Bloodstained Mire -> Mountain (untapped)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R, Mountain→R, Mountain→R (paying for Past in Flames, 2 mana remaining)
+T5 P1: Cast Past in Flames (3R)
+T5 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy — lost coin flip, takes 1 damage
+    [Priority] P2 passes (no response)
+T5: Resolve Past in Flames
+T5 P1: Past in Flames grants flashback
+T5: Past in Flames moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Gemstone Caverns→C (paying for Manamorphose, 1 mana remaining)
+T5 P1: Cast Manamorphose (2)
+T5 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy — won coin flip!
+T5 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy transforms! (loyalty: 4) [+2 extra]
+    [Priority] P2 responds with Orim's Chant
+    [Mana] Tap Elegant Parlor→W (paying for Orim's Chant, 0 mana remaining)
+T5 P2: Cast Orim's Chant (W)
+T5: Resolve Orim's Chant
+T5 P2: Orim's Chant silences P1 this turn
+T5: Orim's Chant moved stack -> graveyard (resolution)
+T5: Resolve Manamorphose
+T5 P1: Manamorphose adds 2 any mana
+T5: Manamorphose moved stack -> graveyard (resolution)
+T5 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy [-2] -> Ral deals 2 damage divided as you choose among one or two targets. Draw a card if you control a blue permanent other than Ral
+T5 P1: Ral, Monsoon Mage // Ral, Leyline Prodigy deals 2 to Eternal Witness
+T5: Eternal Witness dies
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 18  |  Ruby Storm 16
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 6
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Breeding Pool, Hedge Maze, Elegant Parlor, Plains, Arena of Glory
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Gemstone Caverns [T], Sacred Foundry, Mountain [T], Mountain [T], Mountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ephemerate
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Arena of Glory→R, Breeding Pool→U, Hedge Maze→U, Elegant Parlor→R (paying for Quantum Riddler, 0 mana remaining)
+T6 P2: Cast Quantum Riddler (3UU)
+    [Priority] P1 passes (no response)
+T6: Resolve Quantum Riddler
+T6 P2: Quantum Riddler ETB: draw 1 (Stomping Ground)
+T6 P2: Play Stomping Ground (tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Ruby Storm (P1) ══════════════════════════
+║ Life: Ruby Storm 16  |  4/5c Control 18
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 41  |  Graveyard: 8
+║ Ruby Storm board:
+║   Creatures: (empty)
+║   Lands: Gemstone Caverns, Sacred Foundry, Mountain, Mountain, Mountain
+║ 4/5c Control board:
+║   Creatures: Quantum Riddler (4/6)
+║   Lands: Breeding Pool [T], Hedge Maze [T], Elegant Parlor [T], Plains [T], Arena of Glory [T], Stomping Ground [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Reckless Impulse
+  [Main 1]
+T6 P1: surveil 1 → Desperate Ritual to GY
+T6 P1: Play Elegant Parlor (enters tapped)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Reckless Impulse, 4 mana remaining)
+T6 P1: Cast Reckless Impulse (1R)
+    [Priority] P2 passes (no response)
+T6: Resolve Reckless Impulse
+T6 P1: Reckless Impulse → impulse-reveal 2 (Reckless Impulse, Valakut Awakening // Valakut Stoneforge)
+T6: Reckless Impulse moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Reckless Impulse, 3 mana remaining)
+T6 P1: Cast Reckless Impulse (1R)
+    [Priority] P2 passes (no response)
+T6: Resolve Reckless Impulse
+T6 P1: Reckless Impulse → impulse-reveal 2 (Wrenn's Resolve, Desperate Ritual)
+T6: Reckless Impulse moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Mountain→R (paying for Manamorphose, 2 mana remaining)
+T6 P1: Cast Manamorphose (2)
+    [Priority] P2 passes (no response)
+T6: Resolve Manamorphose
+T6 P1: Manamorphose adds 2 any mana
+T6: Manamorphose moved stack -> exile (flashback resolution (CR 702.33a))
+    → Goal: execute_payoff [enablers]
+T6 P1: Cast Wrenn's Resolve (1R)
+    [Priority] P2 passes (no response)
+T6: Resolve Wrenn's Resolve
+T6 P1: Wrenn's Resolve → impulse-reveal 2 (Pyretic Ritual, Reckless Impulse)
+T6: Wrenn's Resolve moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+    [Mana] Tap Sacred Foundry→R (paying for Desperate Ritual, 1 mana remaining)
+T6 P1:   Splice Desperate Ritual onto Desperate Ritual
+T6 P1: Cast Desperate Ritual (1R)
+    [Priority] P2 passes (no response)
+T6: Resolve Desperate Ritual
+T6 P1: Desperate Ritual adds 3 R mana
+T6 P1:   Spliced Desperate Ritual adds 3 R mana
+T6: Desperate Ritual moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T6 P1: Cast Glimpse the Impossible (2R)
+    [Priority] P2 passes (no response)
+T6: Resolve Glimpse the Impossible
+T6 P1: Glimpse the Impossible → impulse-reveal 3 (Manamorphose, Ruby Medallion, Reckless Impulse)
+T6: Glimpse the Impossible moved stack -> graveyard (resolution)
+    → Goal: execute_payoff
+T6 P1: Cast Ruby Medallion (2)
+    [Priority] P2 passes (no response)
+T6: Resolve Ruby Medallion
+    → Goal: execute_payoff [enablers]
+T6 P1: Cast Reckless Impulse (1R)
+    [Priority] P2 passes (no response)
+T6: Resolve Reckless Impulse
+T6 P1: Reckless Impulse → impulse-reveal 2 (Pyretic Ritual, Pyretic Ritual)
+T6: Reckless Impulse moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T6 P1: Cast Manamorphose (2)
+    [Priority] P2 passes (no response)
+T6: Resolve Manamorphose
+T6 P1: Manamorphose adds 2 any mana
+T6: Manamorphose moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T6 P1: Cast Reckless Impulse (1R)
+    [Priority] P2 passes (no response)
+T6: Resolve Reckless Impulse
+T6 P1: Reckless Impulse → impulse-reveal 2 (Sunbaked Canyon, Glimpse the Impossible)
+T6: Reckless Impulse moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T6 P1: Cast Desperate Ritual (1R)
+    [Priority] P2 passes (no response)
+T6: Resolve Desperate Ritual
+T6 P1: Desperate Ritual adds 3 R mana
+T6: Desperate Ritual moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T6 P1: Cast Glimpse the Impossible (2R)
+    [Priority] P2 passes (no response)
+T6: Resolve Glimpse the Impossible
+T6 P1: Glimpse the Impossible → impulse-reveal 3 (Ral, Monsoon Mage // Ral, Leyline Prodigy, Pyretic Ritual, Ruby Medallion)
+T6: Glimpse the Impossible moved stack -> graveyard (resolution)
+    → Goal: execute_payoff
+T6 P1: Cast Ruby Medallion (2)
+    [Priority] P2 passes (no response)
+T6: Resolve Ruby Medallion
+    → Goal: execute_payoff [enablers]
+T6 P1: Cast Pyretic Ritual (1R)
+    [Priority] P2 passes (no response)
+T6: Resolve Pyretic Ritual
+T6 P1: Pyretic Ritual adds 3 R mana
+T6: Pyretic Ritual moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T6 P1: Cast Wrenn's Resolve (1R)
+    [Priority] P2 passes (no response)
+T6: Resolve Wrenn's Resolve
+T6 P1: Wrenn's Resolve → impulse-reveal 2 (Arid Mesa, Thundering Falls)
+T6: Wrenn's Resolve moved stack -> exile (flashback resolution (CR 702.33a))
+    → Goal: execute_payoff [enablers]
+T6 P1: Cast Pyretic Ritual (1R)
+    [Priority] P2 passes (no response)
+T6: Resolve Pyretic Ritual
+T6 P1: Pyretic Ritual adds 3 R mana
+T6: Pyretic Ritual moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [enablers]
+T6 P1: Cast Wish (2R)
+    [Priority] P2 passes (no response)
+T6: Resolve Wish
+T6 P1: Wish finds Grapeshot (from sideboard)
+T6: Wish moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [payoffs]
+T6 P1: Cast Grapeshot (1R)
+    [Priority] P2 passes (no response)
+T6: Resolve Grapeshot
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: 17)
+T6: Storm copies: 17
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: 16)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: 15)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: 14)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: 13)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: 12)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: 11)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: 10)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: 9)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: 8)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: 7)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: 6)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: 5)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: 4)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: 3)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: 2)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: 1)
+T6 P1: Grapeshot deals 1 to P2 (face)
+T6 P1: Grapeshot deals 1 damage (opponent life: 0)
+T6: Grapeshot moved stack -> graveyard (resolution)
+P2 loses: life total 0
+
+>>> Ruby Storm wins Game 3 on turn 6 via damage
+    Final life: Ruby Storm=16  4/5c Control=0
+
+======================================================================
+  MATCH RESULT: Ruby Storm wins 2-1
+======================================================================

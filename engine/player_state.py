@@ -43,10 +43,24 @@ class PlayerState:
     spells_cast_this_turn: int = 0
     nonartifact_spells_cast_this_turn: int = 0
     creatures_died_this_turn: int = 0
+    # CR 702.139 revolt: "a permanent left the battlefield under your control
+    # this turn". Broader than creatures_died_this_turn — a fetchland crack,
+    # a sacrifice, a bounce, an exile, a blink, or a creature death all
+    # satisfy it. Incremented exactly once at the zone funnel
+    # (ZoneManager.move_card) whenever a permanent leaves its controller's
+    # battlefield to any zone, so no caller counts per card.
+    permanents_left_battlefield_this_turn: int = 0
     life_gained_this_turn: int = 0
     life_lost_this_turn: int = 0   # CR 702.131 spectacle condition tracker
     damage_dealt_this_turn: int = 0
     cards_drawn_this_turn: int = 0
+    # Cards this player has discarded or cycled this turn (cycling IS a
+    # discard, CR 702.29a).  Incremented once at the zone funnel
+    # (ZoneManager.move_card, hand -> graveyard) so every discard route
+    # — forced, voluntary, hand-size, cycling — is counted exactly once.
+    # Unit for the self-scaling cost reduction "for each card you've
+    # cycled or discarded this turn".
+    cards_discarded_or_cycled_this_turn: int = 0
     # Diminishing-return budget for `_eval_evoke`: each successful
     # removal-class evoke this turn ramps the cost of the next one.
     # See `ai/board_eval.py::_eval_evoke` for consumption.
@@ -266,21 +280,36 @@ class PlayerState:
         # made this estimate disagree with what the engine could actually pay.
         sources = self.untapped_mana_sources
         # PlayerState holds no game back-reference, but every CardInstance
-        # does — derive it from the sources themselves.
-        game = next((getattr(s, '_game_state', None) for s in sources
+        # does — derive it from the battlefield (a tapped-out board with an
+        # unbounded engine still has a game to ask).
+        game = next((getattr(s, '_game_state', None) for s in self.battlefield
                      if getattr(s, '_game_state', None) is not None), None)
         if game is not None:
             from .mana_payment import ManaPayment
-            idx = sources[0].controller
-            return sum(len(ManaPayment.land_mana_units(game, idx, src))
-                       for src in sources)
+            from .activation import ActivationManager
+            from .constants import LOOP_SHORTCUT_MANA
+            idx = self.battlefield[0].controller
+            total = sum(len(ManaPayment.land_mana_units(game, idx, src))
+                        for src in sources)
+            # An unbounded mana engine (free self-untapping mana source) is
+            # credited the finite CR 726.4 shortcut allowance the payment
+            # path will actually execute, so estimate and payment agree.
+            total += LOOP_SHORTCUT_MANA * len(
+                ActivationManager.unbounded_mana_engines(game, idx))
+            return total
         return sum(src.template.mana_count for src in sources)
 
     def available_mana_colors(self) -> Dict[str, int]:
         """Get available mana by color from untapped lands."""
         colors: Dict[str, int] = {"W": 0, "U": 0, "B": 0, "R": 0, "G": 0, "C": 0}
+        from .constants import BASIC_LAND_TYPE_COLORS
         for land in self.untapped_lands:
-            for color in land.template.produces_mana:
+            # A land whose type is SET to a basic type (layer 4) produces
+            # that colour only — the same rule the payment path reads.
+            forced = getattr(land, 'cem_land_type_set', None)
+            produced = ([BASIC_LAND_TYPE_COLORS[forced]] if forced
+                        else land.template.produces_mana)
+            for color in produced:
                 colors[color] += 1
         return colors
 
@@ -303,10 +332,12 @@ class PlayerState:
         self.spells_cast_this_turn = 0
         self.nonartifact_spells_cast_this_turn = 0
         self.creatures_died_this_turn = 0
+        self.permanents_left_battlefield_this_turn = 0
         self.life_gained_this_turn = 0
         self.life_lost_this_turn = 0
         self.damage_dealt_this_turn = 0
         self.cards_drawn_this_turn = 0
+        self.cards_discarded_or_cycled_this_turn = 0
         self.removal_evokes_resolved_this_turn = 0
         self.flashback_granted_this_turn = False
         self.silenced_this_turn = False
@@ -316,6 +347,35 @@ class PlayerState:
             self.silenced_this_turn = True
             self.silenced_next_turn = False
         self.temp_cost_reduction = 0
+        self._landfall_count_this_turn = 0
+
+    def reset_cross_turn_event_counters(self):
+        """Reset only the "this turn" EVENT tallies — the counters that
+        record what happened during the current game turn and are read
+        at instant speed on the opponent's turn (revolt/morbid's
+        "a permanent left the battlefield this turn", spectacle's
+        "an opponent lost life this turn", "you gained/drew/dealt ...
+        this turn").
+
+        These share a single game-turn clock across both players, so they
+        must clear for the NON-active player at each turn boundary too —
+        otherwise a value from the player's own prior turn leaks through
+        the opponent's whole turn (e.g. a turn-old fetchland crack still
+        granting Revolt). This is deliberately a subset of
+        ``reset_turn_tracking``: it excludes the active-player resource
+        fields (land drops, cost reduction) and the special cross-turn
+        lifecycle state (the Orim's Chant silence hand-off,
+        ``flashback_granted_this_turn``), which belong solely to the
+        player whose turn is actually beginning.
+        """
+        self.creatures_died_this_turn = 0
+        self.life_gained_this_turn = 0
+        self.life_lost_this_turn = 0
+        self.damage_dealt_this_turn = 0
+        self.cards_drawn_this_turn = 0
+        self.spells_cast_this_turn = 0
+        self.nonartifact_spells_cast_this_turn = 0
+        self.removal_evokes_resolved_this_turn = 0
         self._landfall_count_this_turn = 0
 
 

@@ -1846,3 +1846,1681 @@ not the ~80 min CLAUDE.md describes from before the shared-DB-fixture consolidat
 `python tools/check_abstraction.py` + `python tools/check_magic_numbers.py` +
 `python tools/check_zone_mutation.py`, all at baseline or better. Targeted replay of the specific
 audit seed for bugs directly fixed by an item (table above).
+
+## Audit round 2026-09-01 — cascade / reanimation / control / big-mana (4 fresh Bo3 audits)
+
+Four parallel Bo3 audits on matchups the earlier arcs had not stressed. Two came back
+clean at the class level (Goryo's vs Amulet s55611 — reanimation timing, Amulet untap,
+bounce-lands, Cultivator Colossus live `*/*`; Azorius vs Boros s55612 — counters, Wrath
+of the Skies energy-MV threshold, planeswalker loyalty, mobilize end-step sacrifice). Two
+surfaced four genuine class-level bugs:
+
+| # | Bug | Matchup | Seed | Root cause | Status |
+|---|---|---|---|---|---|
+| A | ETB "reveal hand, exile a nonland card" never fires | Eldrazi Tron vs Izzet Prowess | 55613 | reveal-hand chooser lived only on the spell/cast path; unreachable from an ETB trigger | **FIXED** (`ad2077f`) |
+| C | Revolt/morbid "this turn" counter leaks into opponent's turn | Living End vs Dimir | 55610 | `untap_step` reset only the active player's per-turn tracking | **FIXED** (`e401e68`) |
+| D | Cascade **permanent** source enters before its cascade trigger resolves | Living End vs Dimir | 55610 | `resolve_stack` entered the permanent, then fired cascade → source swept by its own cascaded spell | **FIXED** (`cad4487`) |
+| B | Modal "Choose two —" resolves only one mode + drops the mode's target filter | Eldrazi Tron vs Izzet Prowess | 55613 | see below | **TRACKED FOLLOW-UP** (not a one-line fix) |
+
+Below-bar (recorded, not fixed): Living End's own "sacrifice all creatures" moves them to
+exile rather than graveyard — a real rules deviation but a ~2-card class (Living End,
+Living Death), under the 10-card abstraction bar.
+
+### Bug B — modal "Choose two —" (root cause, why it is a build not a patch)
+
+Kozilek's Command parses to `is_modal=True`, `modal_choose_count=2`, and a correct verbatim
+`modes` list (4 entries), but its synthesized `abilities` list collapses to a SINGLE
+`CAST "Exile creature"` ability with `target_filter=None`. The modal dispatch in
+`engine/spell_resolution.py` (`_execute_spell_effects`) gates interception on
+`_n_abilities > modal_choose_count` (1 > 2 → False), so the card falls to the single-ability
+path: only the exile mode resolves (should be two modes) and, with `target_filter=None`, it
+exiled an unattached Equipment under a "target creature" mode (illegal target type).
+
+The obvious one-line fix — broaden the gate to `len(modes) > modal_choose_count` — was
+**empirically rejected**: `resolve_spell_from_oracle(oracle_override=<mode clause>)` returns
+`fired=False` for ALL FOUR Kozilek's Command modes (X-scaled Eldrazi-Spawn tokens, "scry X
+then draw", "exile target creature with mana value X or less", "exile up to X cards from
+graveyards"). Broadening the gate would route the card to a per-mode resolver that no-ops
+every chosen mode — strictly WORSE than the status quo (which at least exiles one creature).
+The existing gate comment already documented this hazard.
+
+A correct fix is therefore a real build, not a gate flip:
+1. Extend the generic per-mode resolver (`resolve_spell_from_oracle`'s `oracle_override`
+   path) to cover the missing Command-cycle mode shapes: X-scaled token creation, "scry X
+   then draw a card", "exile target creature with mana value N or less" (with the creature
+   filter + MV cap enforced), "exile up to X target cards from graveyards", "tap all
+   creatures your opponents control". Several other modes (draw, bounce, destroy artifact,
+   deal N to any target, target-player-discards) already resolve.
+2. Extend `ai/modal._mode_value` beyond its current two shapes (mass-damage, mass-destroy)
+   so mode selection is value-driven across the new shapes rather than defaulting to the
+   first `k`.
+3. Thread `X` and per-mode targeting through the mode resolution.
+4. Only then broaden the `spell_resolution.py` gate to `len(modes) > modal_choose_count`,
+   with a per-mode-resolvable guard so no card is ever made worse, and regression-test the
+   whole Command/charm cycle (Kozilek's, Cryptic — counter-mode excluded, Kolaghan's, the
+   charms) plus the existing `test_modal_spell_resolves_one_chosen_mode` (Brotherhood's End).
+
+Class ≈ 15 Command-cycle spells. Real-world sim blast radius is currently narrow (Kozilek's
+Command in Eldrazi Tron is the main in-pool carrier), which is why this is scheduled as a
+tracked build rather than rushed into this audit round's lean-fix batch.
+
+## Audit round 2 2026-09-01 — artifact/blink, storm, energy/evoke, prowess/reanimation
+
+Four more parallel Bo3 audits. Storm mechanics and prowess/reanimation both verified
+clean (Ruby Storm vs Amulet s55621 — storm count, splice, cost-reducer pip floor, ritual
+mana, flashback all correct; Izzet Prowess vs Goryo's s55623 — prowess per-spell/wears-off,
+Cori-Steel Cutter Flurry, Goryo's haste + end-step exile + Ephemerate all correct). Five
+class bugs found and fixed, plus follow-ups.
+
+| Bug | Matchup | Seed | Root cause | Status |
+|---|---|---|---|---|
+| Ward on a trigger-bound target counters the whole permanent spell | Affinity vs Jeskai Blink | 55620 | ward branch lacked the CR 603.3 permanent-spell exemption its sibling fizzle branch has | **FIXED** |
+| Token entry fires no ETB / creature-enters watchers | Boros vs 4c Omnath | 55622 | create_token never called _handle_permanent_etb (undying/persist paths do) | **FIXED** |
+| Multi-blocked attacker only takes damage from blockers reached before its power ran out | Boros vs 4c Omnath | 55622 | deal-back lived inside the attacker damage-assignment loop that breaks at remaining<=0 | **FIXED** |
+| Flat "Equipped creature gets +N/+M" grants never applied | Izzet Prowess vs Goryo's | 55623 | P/T accessors only handled per-artifact SCALING equipment; no flat-grant branch | **FIXED (P/T)** |
+| Practiced Offense silent no-op (mass +1/+1-counter class) | (CI-surfaced) | — | no handler for "put a +1/+1 counter on each creature target player controls" | **ALLOWLISTED** |
+
+### Follow-ups (tracked, not yet built)
+- **Equipment keyword rider** — "Equipped creature ... and has trample/haste" (Cori-Steel
+  Cutter, Kaldra Compleat, the Sword cycle's protection/triggers). The flat P/T grant is
+  now applied; the granted KEYWORDS are still dropped. Same parse-once pattern
+  (equip_keyword_grants field) + union in CardInstance.keywords, but it modifies a hot
+  accessor and moves combat/haste math — deserves its own test + WR-anchor verification.
+- **Mass +1/+1-counter distribution** — "put a +1/+1 counter on each creature you
+  control / target player controls" (Practiced Offense, Inspiring Call, ...). Allowlisted
+  for now; a real one-shot mass-counter resolver would model it.
+- **Coin-flip "deals 1 damage to you" lose-branch** — routes damage to the source
+  permanent, not the controller. A single-card variant today (Ral, Monsoon Mage); the
+  shared handler is reached by ~29 coin-flip cards but only this one reads "to you", so it
+  is below the abstraction bar — recorded, not fixed.
+
+## Audit round 3 2026-09-01 — control mirror, ramp/aggro, artifact/equipment, tempo/energy
+
+Four more parallel Bo3 audits. Two clean (Pinnacle Affinity vs Eldrazi Tron s55632 —
+Cranial Plating live-recount, Kappa CDA, improvise, Chalice MV-match, Warp, ward on
+Kozilek's Command all correct; Amulet vs Domain Zoo s55631 — Scion of Draco per-creature-
+by-own-color keyword grant, Territorial Kavu domain CDA, Amulet ramp all correct). The
+token-ETB fix was confirmed clean in-game (Guide of Souls fires once per token, correct
+controller, no double-fire). Three class bugs found and fixed:
+
+| Bug | Matchup | Seed | Root cause | Status |
+|---|---|---|---|---|
+| Owner!=controller permanent never removed on leaving battlefield (near-infinite SBA loop) | Izzet Prowess vs Boros | 55633 | move_card/_find_card_zone resolved source from card.owner; a stolen/opponent-cast permanent sits on the controller's battlefield | **FIXED** (`cfb6730`) |
+| amass mints a new Army token instead of growing the existing one | Dimir vs Azorius | 55630 | handler always created a fresh 1/1 (its own comment admitted "simplified") | **FIXED** (`e2a567d`) |
+| Planeswalker ETB duplicates its -3 loyalty bounce (double-bounce + token persists in hand) | Dimir vs Azorius | 55630 | re-added Teferi ETB handler re-implemented the -3; a documented fix had regressed | **FIXED** (`6ec9265`) |
+
+### Deferred (AI heuristic / below bar, recorded not fixed)
+- **AI under-sizes X on an X-cost "destroy MV <= energy paid" board wipe** (Wrath of the
+  Skies cast for X=0 at lethal life). Borderline sub-10 class; there is already
+  tests/test_x_cost_board_wipe_gate.py. An AI-scoring lead.
+- **AI sweeper sequencing** — a control deck spent its white pips on low-value spells
+  (Orim's Chant via Isochron Scepter, Prismatic Ending) before a game-saving Supreme
+  Verdict, leaving WW unpayable; compounded by over-valuing "can't cast spells this turn"
+  cast on one's own main phase. turn_planner ordering + play-scorer valuation. Lower
+  confidence; a --trace would confirm enumerated-but-outscored vs sequenced-out.
+
+## Session tally (2026-09-01): 11 engine fixes across 3 audit rounds
+revolt-reset, cascade-permanent ordering, ETB reveal-hand exile, ward-on-trigger-target,
+token-entry ETB watchers, every-blocker-deals-damage-back, flat-equipment P/T grant,
+owner!=controller zone removal, amass-grows-Army, planeswalker-ETB-no-duplicate-bounce
+(+ Practiced Offense allowlist). Every fix failing-test-first, all 7 ratchets at baseline,
+WR anchor re-verified after each drift (all drifts confirmed correct). Tracked follow-ups:
+modal per-mode resolver, equipment keyword rider, mass +1/+1-counter distribution, coin-flip
+"to you", plus the two round-3 AI-heuristic leads above.
+
+## Audit round 4 2026-09-01 — blink/cascade, reanimation/aggro, control/tempo, prison/storm
+
+Four more parallel Bo3 audits. Regression checks all PASSED in-game: cascade-permanent
+survives its own Living End (Jeskai/LivingEnd), Thought-Knot Seer ETB strips a nonland card
+never a land (Eldrazi/Storm), Teferi phantom-ETB double-bounce absent (4-5c/Prowess),
+prowess/Chalice/storm-count all correct. Four class bugs found and fixed:
+
+| Bug | Matchup | Seed | Root cause | Status |
+|---|---|---|---|---|
+| Non-trample attacker discards damage over a blocker's lethal (lifelink under-gains) | Goryo's vs Zoo | 55641 | assignment capped at lethal; overflow consumed only by the trample branch | **FIXED** (`c4a247b`) |
+| Creature-only exile ("exile target creature") illegally targets a planeswalker | Eldrazi Tron vs Storm | 55643 | coarse can_exile_permanent flag; AI gate enumerated all nonland permanents | **FIXED** (`bc67892`) |
+| Resolve handler re-charges a Phyrexian-mana cast cost (double life loss) | 4/5c Control vs Prowess | 55642 | Mutagenic Growth resolve handler had a stray life -= 2 (cost is the cast path's) | **FIXED** (`ad368aa`) |
+| Mass return fires returned ETBs mid-resolution (before both boards settle) | Jeskai Blink vs Living End | 55640 | _resolve_living_end processed each player fully before the next, firing ETBs inline | **FIXED** (`91842e2`) |
+
+## Session tally (2026-09-01): 15 engine/AI fixes across 4 audit rounds
+Round 1: revolt-reset, cascade-permanent ordering, ETB reveal-hand exile.
+Round 2: ward-on-trigger-target, token-entry ETB watchers, every-blocker-deals-damage-back,
+flat-equipment P/T grant (+ Practiced Offense allowlist).
+Round 3: owner!=controller zone removal, amass-grows-Army, planeswalker-ETB-no-duplicate-bounce.
+Round 4: non-trample damage overflow, creature-only-exile target restriction, resolve-handler-
+no-recharge-cast-cost, mass-return-defers-ETBs.
+Every fix failing-test-first, all 7 ratchets at baseline (zone-mutation improved 75->73), WR
+anchor re-verified after each drift (all confirmed correct). Tracked follow-ups: modal per-mode
+resolver, equipment keyword rider, mass +1/+1-counter distribution, coin-flip "to you", plus the
+round-3 AI-heuristic leads (Wrath X-sizing, sweeper sequencing).
+
+## Disguised single-card patches — the narrow-typed-field ratchet (2026-09-02)
+
+The `name == "X"` ratchet is at 0, but card-specific knowledge can still be
+laundered past every source-grep guard: parse ONE card's exact oracle wording
+at load time into a typed `CardTemplate` mechanic field, and a
+`card.name == "Omnath"` conditional becomes a `template.landfall_third_damage`
+boolean that only Omnath populates — functionally identical, invisible to the
+regex ratchets, and reads as "abstracted" in review. This is the most dangerous
+abstraction leak precisely because it *looks* generic (handled via a variable,
+in a typed field) while being as narrow as a card name.
+
+**Guardrail:** `tools/check_narrow_typed_fields.py` measures, empirically over
+the whole 22.5k-card DB, how many cards actually populate each typed mechanic
+field, and flags any whose real class is `<= THRESHOLD` (2) cards — a
+single/near-single-card carrier. The logic holds NO card, field, or mechanic
+names; the grandfathered set lives in `tools/narrow_typed_fields_baseline.json`
+(data, like every ratchet's baseline). A NEW narrow field fails CI until the
+author either (a) generalises the parser so the field covers its real Modern
+class (>THRESHOLD), or (b) declares it in the baseline with a `reason`, turning
+a silent leak into a counted, deliberate exception. The baseline may only
+shrink — a field leaves it by ceasing to be narrow.
+
+Wired into `.github/workflows/abstraction-contract.yml` as a standalone step
+(after the DB is assembled) plus `tests/test_narrow_typed_fields.py` in the
+abstraction-contract pytest set. Grandfathered set at introduction — 17 fields,
+`reason` empty (the baseline entry is itself the declaration):
+
+| Field | Cards | Kind |
+|---|---|---|
+| `landfall_second_mana_colors`, `landfall_third_damage` | Omnath | genuinely unique CDA |
+| `has_cc_tap_draw` | Endbringer | genuinely unique |
+| `enters_type_counter` | Kappa Cannoneer | candidate for a counters-on-ETB class |
+| `has_energy_damage_target` | Galvanic Discharge | candidate for an energy-payoff class |
+| `has_mana_value_wipe` | Wrath of the Skies | candidate for the MV-sweep class |
+| `is_land_sacrifice_tutor` | Scapeshift | candidate for a land-tutor class |
+| `landfall_first_life_gain` | Whispering Snitch | candidate for a landfall class |
+| `cycling_watch_trigger_damage` | Drannith Stinger | candidate for a cycling-payoff class |
+| `library_search_trigger_draws_card`, `has_library_search_opponent_trigger` | Wan Shi Tong (+Ob Nixilis) | candidate for a search-watcher class |
+| `aura_mana_color_chosen` | Utopia Sprawl, Shimmerwilds Growth | 2-card mana-aura class |
+| `counters_colorless_only` | Ceremonious Rejection, Consign to Memory | 2-card soft-counter class |
+| `limits_opponent_spell_timing` | Teferi ×2 | 2-card static |
+| `prevents_graveyard_etb` | Grafdigger's Cage, Kunoros | 2-card static |
+| `self_cost_reduction_amount`, `self_cost_reduction_unit` | Emrakul, Hollow One | 2-card cost-reduction class |
+
+Per the standing directive these are **grandfathered, not hand-fixed** — the
+ratchet's job is to stop the *next* disguised patch and make the existing ones
+counted and visible. The "candidate for a class" rows are the natural Phase-3
+generalisation backlog: when a second card of that shape enters Modern, the
+parser generalises and the field drops out of the baseline automatically.
+
+## EFFECT_REGISTRY fixed-N burn consolidation — typed field (2026-09-02)
+
+Registry-consolidation arc (post max-effort abstraction audit, which graded
+the codebase C+ / not-maxed and flagged ~45-50 nominally-consolidatable
+EFFECT_REGISTRY handlers). A handler census corrected that estimate: the
+pure-redundancy deletions were already done by the earlier Phase-3 clusters
+(Omnath/Quantum Riddler/Thought Monitor draw-N, Preordain, etc.), and the
+generic spell-oracle fallback did NOT independently cover damage/removal — so
+the remaining thin wrappers were **load-bearing**, not redundant. Real
+consolidation therefore means building a guarded generic branch first, then
+deleting the handler.
+
+First cluster, done as the verified proof: **fixed-amount face-legal burn**.
+`parse_direct_damage_spell` classifies the whole-effect "deals N damage to
+<any target / target creature or player / target player / target creature,
+player, or planeswalker>" shape (N a printed LITERAL; rider verbs and
+keyword-ability cost lines handled — a burn+lifegain/draw or a delirium/
+domain/storm-scaled amount is refused, a flashback cost line is not) into the
+typed field `CardTemplate.direct_damage_data`. 79 DB cards populate it — a
+genuine class, well clear of the narrow-typed-field ratchet's threshold.
+`resolve_spell_from_oracle` dispatches off the typed field (no oracle
+inspection at resolve time) into the shared owner
+`resolve_damage_to_chosen_target`. `lightning_bolt_resolve` (N=3) and
+`lava_dart_resolve` (N=1) — the two registered pure fixed-N handlers — are
+DELETED, verified redundant with the typed path first
+(`tests/test_direct_damage_shared_resolver.py::TestRegisteredBurnHandlersRetired`).
+Card-name-registry baseline 95 → 93. Unholy Heat (delirium) and Grapeshot
+(storm) keep their handlers — a derived/conditional amount is a different
+mechanic the typed field deliberately does not carry. WR anchor unchanged (29
+pins hold — the path change is behaviour-identical), all 7 ratchets at
+baseline. A bonus: ~30 unregistered fixed-N burn spells that previously
+resolved to nothing now resolve through the typed path.
+
+**Remaining clean-deletion candidates** (thin wrappers around an existing
+shared resolver, each needs a guarded generic branch built the same way, not
+just a delete): nonland-permanent removal (~4 of 6 — Abrupt Decay/Assassin's
+Trophy/Leyline Binding/March; Prismatic Ending's colors-spent and Fatal Push's
+revolt cap stay bespoke), board-sweep (Damnation/Supreme Verdict/Wrath of the
+Skies/All Is Dust). Realistic remaining ceiling ~6-8, not the audit's 45-50.
+
+## EFFECT_REGISTRY board-sweep consolidation — typed field (2026-09-02)
+
+Second registry-consolidation cluster, same pattern as the fixed-N burn one.
+`parse_board_sweep` classifies the symmetric "destroy all creatures"
+instant/sorcery shape (optional "they can't be regenerated" no-op rider; a
+scope/condition — opponents-only, power-gated, nonland, or an extra
+resolution rider — is refused) into the typed field
+`CardTemplate.board_sweep_data`. 6 DB cards populate it (Damnation, Supreme
+Verdict, Wrath of God, Day of Judgment, Doomskar, Vanquish the Horde) — a
+genuine class. `resolve_spell_from_oracle` dispatches off the typed field (no
+oracle inspection at resolve time) into the shared owner
+`card_effects._resolve_board_sweep`. `damnation_resolve` and
+`supreme_verdict_resolve` — byte-identical `_resolve_board_sweep(destroy,
+{creature})` handlers — are DELETED, verified redundant first
+(`tests/test_board_sweep_shared_resolver.py`). Card-name-registry baseline
+93 → 91. All Is Dust (color filter), Wrath of the Skies (MV-gated energy
+wipe) keep their handlers — a resolution-time parameter the plain typed field
+does not carry. WR anchor unchanged (29 pins), all ratchets at baseline.
+
+**Registry surface after two clusters: 95 → 91.** The realistic remaining
+clean ceiling is small (~2-4): targeted MV-gated removal (Abrupt Decay,
+March of Otherworldly Light are cleanly generic; Assassin's Trophy has an
+unmodelled search rider, Leyline Binding is an ETB linked-exile, Prismatic
+Ending / Fatal Push are bespoke colors-spent / revolt conditionals). The bulk
+of the remaining 91 entries are genuinely card-specific effects, not
+duplicated shared-resolver delegations — the audit's "45-50 consolidatable"
+estimate did not survive a handler-body census.
+
+## EFFECT_REGISTRY targeted-removal consolidation — typed field (2026-09-02)
+
+Third registry cluster, and the highest-value one: it is a large correctness
+fix as well as a consolidation. `parse_targeted_removal` classifies the whole
+"destroy/exile target <permanent type> [with mana value N/X or less]" shape
+into `CardTemplate.targeted_removal_data` ({action, types, mv}); 102 DB cards
+populate it. `resolve_spell_from_oracle` dispatches off the typed field (no
+oracle inspection at resolve time) into the shared
+`card_effects._resolve_nonland_permanent_removal`, opponent-scoped.
+
+Before this, only ~6 removal spells of this shape had EFFECT_REGISTRY handlers;
+the other ~96 (Murder, Dreadbore, Hero's Downfall, Terminal Agony, …) resolved
+to NOTHING — a confirmed no-op (a synthetic cast left the target alive). They
+now destroy/exile correctly. Abrupt Decay (destroy nonland, MV<=3 literal) and
+March of Otherworldly Light (exile a/c/e, MV<=X) — the two cleanly-generic
+registered handlers — are DELETED, verified redundant with the typed path
+first (`tests/test_targeted_removal_shared_resolver.py`). Card-name-registry
+baseline 91 → 89. Non-generic conditions keep their handlers: Assassin's Trophy
+(basic-land search rider), Fatal Push ("if it has" revolt), Prismatic Ending
+(Converge colors-spent), Leyline Binding (ETB linked "until leaves" exile).
+
+Meta exposure is contained: of the ~96 newly-functional removal spells, only
+Shattering Spree (Affinity sideboard) is in a registered deck. WR baseline
+anchor unchanged (29 pins hold), all 7 ratchets at baseline. The parser refuses
+riders (search/draw/sacrifice/second effect), non-literal conditions, sweeps,
+bounce, and land destruction (its own typed path).
+
+**Registry surface across the three clusters: 95 → 89 (−6).** The realistic
+clean-consolidation ceiling is now essentially reached — the remaining 89
+entries are genuinely card-specific effects or non-generic conditionals, not
+duplicated shared-resolver delegations. The audit's "45-50 consolidatable"
+estimate did not survive a handler-body census; the real, durable win here was
+the ~96-card removal no-op correctness fix that the consolidation surfaced.
+
+## Card-name substring gates hidden from the ratchet (2026-09-02)
+
+`check_abstraction.py` matches `name == "X"` but not substring `"X" in …name`
+forms, so two real card-name gates were invisible. Audited both:
+
+- **FIXED** `card_effects.py` nettlecyst_etb: `"Germ" in c.name` searched the
+  battlefield for the token it had just created. `game.create_token` already
+  returns the created `CardInstance`s — use the return value. Behaviour-
+  identical (WR anchor's 29 pins hold), and the gate no longer exists.
+- **DEFERRED** `card_database.py:972` `"Living End" in name → tags.add("combo")`.
+  No clean typed predicate matches exactly Living End: `has_symmetric_reanimation`
+  is True for 32 cards (Liliana Vess, Rise of the Dark Realms, …), so tagging
+  "combo" off it would relabel 31 unrelated cards and shift AI scoring. The
+  distinguishing feature (a cascade/suspend-cast mass-reanimation payoff) needs
+  a purpose-built predicate + WR validation — a tracked follow-up, not a safe
+  drop-in. Left as-is rather than risk a reanimation-archetype WR regression.
+
+## Oracle-runtime-parse ratchet: false-negative confirmed, but 14× bigger than estimated (2026-09-02)
+
+The max-effort audit flagged `tools/check_oracle_runtime_parse.py` as a false
+negative: it reports total=0, but its detector is a regex keyed to 6 whitelisted
+variable-name prefixes, so any oracle-text variable under another name (e.g.
+`o = (card.template.oracle_text or '').lower()` in ai/ev_evaluator.py) evades it.
+The audit estimated ~17 evading sites (the ones duplicating typed fields).
+
+An AST data-flow detector (taint any local bound from `.oracle_text`/`.oracle`,
+then count membership / `.count/.find/index` / `re.*` on it, per function scope)
+was written and validated — it correctly finds the evading sites and skips the
+parse-once modules. It reveals the true count is **238** (180 excluding the
+sanctioned resolve-time oracle-fallback layer: oracle_resolver.py / triggers.py /
+spell_resolution.py). Concentrated in ai/ev_player.py (49), ai/ev_evaluator.py
+(33), engine/game_runner.py (21). The audit's "~17" was a 10-14× under-count.
+
+SHIPPED (2026-09-03): the AST detector replaced the regex one, baseline
+0 -> 180. Scope decision made: the RESOLUTION-fallback layer
+(oracle_resolver.py / triggers.py / spell_resolution.py) is the sanctioned
+resolve-time oracle-reading counterpart to the parse-once layer (oracle_parser /
+card_database / target_solver / ai/card_features), so those three are EXCLUDED
+alongside the parse-once modules. The ratchet now polices oracle inspection
+LEAKING into scoring / decision / bookkeeping code — the audit's real concern.
+The 180 remaining sites are concentrated in ai/ev_player.py (49) and
+ai/ev_evaluator.py (33). It is shrink-only: a new inspection fails CI (build a
+typed CardTemplate field), and a typed-field migration lowers the baseline via
+`--update` in the same commit — so the number tracks migration progress. Unit
+tests pin the new detection power (a non-whitelisted variable name and `not in`,
+which the old regex missed). The false-negative 0 is retired.
+
+Follow-up (tracked, not urgent): the 180 is a backlog to migrate to typed
+fields incrementally — each `parse_*` + typed-field cluster removes some. No
+single sweep; opportunistic as scoring code is touched.
+
+## Plot mechanic — deferred-cast-from-exile (CR 702.170) (2026-09-03)
+
+A silently-no-op mainboard mechanic (Slickshot Show-Off in Izzet Prowess; 31 DB
+cards) built as a GENERIC class, not a one-card patch — the "what really
+abstracts / makes the simulator more robust" direction: it expands the fraction
+of Modern the engine correctly models. Plot generalizes the warp/suspend
+deferred-cast family: pay the plot cost and exile from hand at sorcery speed,
+then cast for FREE as a sorcery on a LATER turn.
+
+- `oracle_parser.parse_plot_cost` → `CardTemplate.plot_cost` (ManaCost), parsed
+  once at load, mirroring parse_warp_cost. 31 cards — a genuine class (clears the
+  narrow-field threshold), no card names.
+- `CastManager.can_plot` / `plot_card` / `can_cast_plotted` / `cast_plotted`
+  (+ game_state wrappers, game_runner dispatch for the `plot` / `cast_plotted`
+  special actions). Zone moves go through the funnel (`zone_mgr.move_card`); the
+  later cast reuses the proven suspend/rebound free-cast path
+  (`cast_spell(free_cast=True)`), so no change to cast-cost logic and no new raw
+  zone mutations.
+- AI (ev_player): enumerates `cast_plotted` (free, scored as the card's cast EV)
+  and `plot` — the latter gated to cards NOT castable at full cost this turn, so
+  plotting never displaces simply casting now. No new magic numbers (reuses
+  `_score_spell`).
+
+Failing-test-first: `tests/test_plot_mechanic.py` (5) pins parse, exile+pay,
+not-castable-same-turn, and free-cast-on-a-later-turn. WR anchor 29/29 unchanged
+— correctly, since the one registered plot card (Slickshot Show-Off) has plot
+cost = mana cost, so casting now is strictly better and the AI never plots it.
+The value is the generalized engine mechanic + correct AI gating: any plot card,
+in any deck, now resolves correctly. All 7 ratchets at baseline.
+
+Deferred-cast family follow-ups (same primitive): hideaway, emerge, and bestow's
+graveyard cast; a full unification of warp/suspend/plot into one
+deferred-cast-from-exile primitive is the tracked next step.
+
+## Equipment keyword-grant rider (CR 301.5c / 613) (2026-09-03)
+
+Equipment could grant P/T but not KEYWORDS — "Equipped creature has trample and
+haste" was a silent no-op for ~172 DB Equipment (Shadowspear, Cori-Steel Cutter,
+Lavaspur Boots, Skateboard, the Sword cycle, …), so an equipped creature never
+gained trample/haste/lifelink/etc. Haste changes attack legality; lifelink/
+trample change combat maths — a real robustness gap in every equipment deck.
+
+Built as a generic class, mirroring the existing equip P/T-grant machinery:
+`oracle_parser.parse_equip_keyword_grant` → typed field
+`CardTemplate.equip_keyword_grant` (frozenset of Keyword.value strings; 172
+cards, no card names), applied in `CardInstance.keywords` via the same
+`equipped_{iid}` instance-tag scan the P/T grant uses (no oracle re-parse). Only
+unconditional grants match — a conditional ("as long as", "if") is skipped so the
+sim never grants a keyword it cannot gate. DamageSource hooks (has_lifelink,
+has_deathtouch) follow automatically since they read off `keywords`.
+
+Failing-test-first: `tests/test_equipment_keyword_grant.py` (8) — parse
+(multi-keyword, alongside-P/T, conditional-skip, no-clause), grant applied,
+haste/trample visible, pure-P/T grants nothing, grant removed on unequip. WR
+anchor drifted 2 pins, both traced by game log solely to keyword-granting
+equipment (opponents run none): Izzet Prowess (Cori-Steel Cutter trample+haste)
+closes a turn faster; Affinity vs Domain Zoo flips to Affinity as its
+Skateboard (haste) + Shadowspear (trample+lifelink), tutored via Urza's Saga,
+finally function. Anchor refreshed to the corrected outcomes. All 7 ratchets at
+baseline.
+
+## Static team keyword anthem (CR 611) (2026-09-03)
+
+"Creatures you control have trample/vigilance/…" statically granted no keyword —
+only Scion of Draco's colour-conditional grant had a bespoke handler; the
+unconditional class (~121 Modern permanents: Archetype of Aggression, Archetype
+of Imagination, the anthem cycle, …) was a silent no-op, so a creature next to
+such an anthem never gained the keyword.
+
+Built generically on the existing continuous-effects machinery (which already
+supports keyword lord effects — Scion proves it): `parse_team_keyword_grant` ->
+typed field `CardTemplate.team_keyword_grant` ({keywords, others_only} | None;
+121 cards, no card names), registered as a `create_lord_effect` on ETB in the
+generic `spell_resolution._handle_permanent_etb` hook (alongside modular /
+aura-attach). The manager re-derives it each recalculate() (later-entering
+creatures are covered) and retracts it when the source leaves. Unconditional
+grants only — a colour/type condition ("if it's green", "that's a Cat") or the
+one-shot "gain <kw> until end of turn" pump (Craterhoof, already handled via
+team_pump_data) is deliberately NOT matched here.
+
+Scope note: an initial keyword-word scan suggested 5 registered-deck hits, but
+they were false positives — Kaheera's grant is type-restricted, Momo's is a
+trigger, Shang-Chi/Tyvar's is "activate abilities as though they had haste"
+(not combat haste). The stricter parser correctly excludes all four, so this
+class has NO current registered-deck impact — it is pool-level correctness (a
+whole class the engine now models), like the equipment keyword grant's DB tail.
+WR anchor unchanged (29/29). Failing-test-first (tests/test_team_keyword_anthem.py,
+8), all 7 ratchets at baseline.
+
+## Combo hold applied to a resource nobody declared (2026-09-04)
+
+Root cause of the Creatures Toolbox 10.4% outlier (worst deck on the
+2026-09-04 matrix), found via `--bo3 "Creatures Toolbox" "Boros Energy" -s 50000`
++ `--trace`: the deck never cast any of its 8 tutors (Green Sun's Zenith,
+Nature's Rhythm) or Fiend Artisan — every one scored ≈ −46 while the
+projection said −0.1 … +3.9. `card_combo_modifier` was charging
+`−COMBO_NON_READY_POTENTIAL_FALLBACK × combo_value` (≈ −50) to each of them.
+
+Two generic defects, both in `ai/combo_calc.py`:
+
+1. `_find_resource_zone` fabricated `("graveyard", 0, 0)` for any gameplan with
+   no positive `resource_target`. The graveyard assessor then reported
+   `is_ready=False` whenever the payoff was not in hand — a permanent,
+   unsatisfiable "not ready" for a resource nobody declared — so every
+   payoff-role card in hand ate the full non-ready hold penalty. Three
+   registered combo-archetype decks have no FILL_RESOURCE goal and were all
+   in the trap: Creatures Toolbox (10.4%), Hollow One (25.4%; its 5-cmc
+   payoffs never "affordable" against printed cmc), Grixis Reanimator.
+   Fix: return zone `None` → `assess_combo` yields the null assessment →
+   modifier is 0 and the projection scores the cards.
+2. `card_combo_role`'s tag fallback mapped every `tutor`-tagged card to
+   `'payoff'`. A tutor is finisher ACCESS, not the finisher; the
+   TUTOR-AS-FINISHER-ACCESS branch already scores tutors with a real target
+   before any role check, and the module's own trailing comment says tutors
+   are projection-scored. Fallback is now `'dig'` (card selection). Decks
+   whose gameplans declare tutors in roles (Storm's Wish, Amulet's GSZ/Pact)
+   are unaffected — the role cache wins.
+
+Failing-test-first (`tests/test_combo_calc.py`): no-declared-resource → no
+zone; end-to-end null assessment with 0 modifier for a payoff-role card;
+tutor-tag fallback is not `'payoff'`. The old `test_default_when_no_target`
+pinned the fabricated default and was replaced. Replay after: 6 tutor casts
+in the match (0 before), Craterhoof line closes G2 on T6. WR anchor: one
+turn-only drift (Broodscale Bloodchief vs Creatures Toolbox s52500, 10 → 9,
+winner unchanged) refreshed. All 7 ratchets at baseline.
+
+## Storm-chain mulligan backup rule applied to every combo deck (2026-09-04)
+
+Second layer of the Creatures Toolbox outlier (after the combo-hold fix
+above, the field only moved 10.4% → 18.3%), found via
+`--bo3 "Creatures Toolbox" "Dimir Midrange" -s 50000`: G2 mulliganed a 3-land
+7 with Devoted Druid, Fiend Artisan, Green Sun's Zenith and Leyline down to 5
+with reason "no cost reducer and no ritual+cantrip+finisher backup".
+
+That keep rule in `ai/mulligan.py` fires whenever a combo-archetype gameplan
+declares `always_early` and none of those cards is in hand, and then demands
+the STORM chain shape (ritual + cantrip + finisher) as backup. The shape is
+storm's: rituals make the mana, cantrips find the next spell, a storm finisher
+closes. A graveyard / mana / undeclared-zone combo deck has no such chain, so
+the rule shipped good hands back. Blast radius — every non-storm combo
+gameplan with an `always_early` list: Amulet Titan (22.7%), Creatures Toolbox,
+Goryo's Vengeance, Hollow One (25.4%), Instant Reanimator.
+
+Fix: the gate now also requires the gameplan to declare a "storm" combo
+resource zone (`_find_resource_zone` — the same primitive `assess_combo`
+reads). `requires_combo_backup` (the per-deck policy flag) is unchanged;
+it still gates the rule, but the rule only has a shape to test against a
+storm chain. Failing-test-first
+(`tests/test_mulligan_chain_backup_shape_is_zone_derived.py`): the replay
+hand is kept under a non-storm combo gameplan; a Ruby Storm 7 with draw +
+two finishers and no ritual is still rejected with the same reason.
+Replay after: G2 keeps the 7 and survives to T11 (was T7). Field n=5:
+Creatures Toolbox 18.3% → 23.3%. WR anchor: three turn-only drifts (winners
+unchanged; Creatures Toolbox ×2, Hollow One) refreshed. All 7 ratchets at
+baseline.
+
+### Residual after both layers (tracked, not patched)
+
+Post-fix replay `--bo3 "Creatures Toolbox" "Dimir Midrange" -s 50000`: G1 is
+lost from 20 life on T6 with no decision error left to point at — the deck
+spends T3–T5 on Eternal Witness (only fetchlands in the yard), a second
+Leyline and Tyvar while Frog + Bowmasters + Subtlety race, and its only
+untapped blocker dies to Drown in the Loch. The deck's actual kill (Devoted
+Druid + Vizier of Remedies → unbounded mana → Walking Ballista) is not
+modelled: the engine has no counter-placement replacement class ("if a
+-1/-1 counter would be put on…, instead …"). That is a mechanic build
+(Vizier, Solemnity, Melira, Hex Parasite shells), not a Toolbox patch — it
+is the next root cause for this deck and is left here rather than opened
+as a third diagnostic. Amulet Titan (22.7% → 19.2% at n=5, within noise)
+shares the mulligan fix but not the residual; its own replay root cause is
+still owed.
+
+## Counter-placement replacements + unbounded untap-engine shortcut (2026-09-04)
+
+The Creatures Toolbox residual above, built as two mechanic classes.
+
+**Counter-placement replacement (CR 614.1c).** "If one or more <kind>
+counters would be put on <a creature/artifact/permanent you control | this>,
+<that many plus one | that many minus one | twice that many> are put on it
+instead." 14 Modern cards (Hardened Scales, Conclave Mentor, Winding
+Constrictor, Ozolith the Shattered Spire, Kami of Whispered Hopes, Mauhúr,
+Branching Evolution, Corpsejack Menace, The Earth Crystal, Loading Zone,
+Vizier of Remedies, Mowu, Caradora, Michelangelo) — none was modelled; every
+counter-doubling shell was under-counted and the "-1/-1 minus one" shape
+that frees a "put a -1/-1 counter: untap" mana engine never fired. Parsed
+once (`parse_counter_placement_replacement` → typed
+`CardTemplate.counter_placement_replacement`) and applied inside the ONE
+counter funnel (`CardInstance.add_plus_counters` / `adjust_counters` →
+`replaced_counter_amount`), so activation costs, put-counter effects,
+persist (now routed through the funnel too), modular and enters-with-N all
+see it. CR 614.5 each applies once; CR 616.1 additive before multiplicative
+(controller-optimal for the printed shapes). All 14 DB parses verified.
+
+**Unbounded untap-engine shortcut (CR 726.4).** Rule 9 refuses to stack a
+free repeatable ability (nothing depletes → nothing terminates the loop).
+That is a sim safety valve, not a rule of Magic: with the counter cost fully
+replaced away the loop is legal and a paper player shortcuts it. The engine
+now reads the REPLACED cost amount in rule 9 (`_cost_depletes_a_resource`),
+keeps the free untap off the stack (no spin), and exposes the loop as mana:
+`ActivationManager.unbounded_mana_engines` names free self-untapping mana
+sources; `untapped_mana_capacity` credits `LOOP_SHORTCUT_MANA`
+(= 4 × starting life, the finite iteration count the shortcut proposes) per
+engine; `ManaPayment._run_loop_shortcut` executes exactly the iterations a
+cost falls short by (untap paying the replaced-to-zero cost through the
+funnel, tap into the pool), logging one "CR 726 shortcut" line. Colours the
+engine cannot make still fail payment.
+
+**Toolbox awareness.** `would_complete_unbounded_engine(game, idx, template)`
+is a pure rules query (phantom permanent, engines before/after, both
+directions: replacement source freeing an existing untapper, or untapper
+freed by an existing replacement). `default_tutor_rank` — the engine's
+delivery ranking every tutor picker and resolver shares — leads with it, and
+both tutor valuations (`ai/activation_ev.py` activated X-tutor,
+`EVPlayer._gate_x_tutor_payoff` cast X-tutor) credit an engine-completing
+delivery at `LOOP_SHORTCUT_MANA` mana units instead of its printed mana
+value: what the piece actually delivers.
+
+**What it took for the AI to actually use it** (each step replay-diagnosed,
+`--bo3 "Creatures Toolbox" "Boros Energy" -s 50000` + `--trace`, and each a
+generic gap, not a Toolbox rule):
+
+1. *Zero-power creatures never cast.* `position_value`'s "I have no clock,
+   opponent does" branch scored `-opp_clock` — the inverse of its own
+   comment — so deploying a 0/2 that stretched the opposing clock from 17 to
+   51 turns projected at -34. docs/diagnostics/2026-08-30_clock_sign_inversion_fix_falsified.md
+   confirms the defect and falsifies only the prediction that repairing it
+   (with the sentinel cliff, together) lifts creature-light control. This
+   ships the SIGN HALF alone, as the mirror of the winning branch
+   (`-CLOCK_LETHAL_ADVANTAGE_CAP / opp_clock`), with no WR claim for control
+   attached. The panic-gearshift fixture that had frozen the inverted sign
+   as an invariant (named in that doc) drops the invariant; the rule it
+   tests (the multiplier never demotes) is unchanged.
+2. *Tutor delivery blind to the engine.* The engine's `default_tutor_rank`
+   leads with `would_complete_unbounded_engine`, but the AI callbacks that
+   actually decide (`choose_tutor_delivery`, `choose_sacrifice_victim` in
+   ai/activation_ev.py) ranked by `creature_threat_value` alone — so a
+   two-mana Vizier lost to any 2/2 and the Druid was the first creature fed
+   to Fiend Artisan. Delivery now credits an engine-completing candidate at
+   `LOOP_SHORTCUT_MANA`; sacrifice routes through `opportunity_cost`.
+3. *`opportunity_cost` ignored mana and engines.* The one primitive that
+   prices "what the board gives up" (chump, sacrifice, discard) gained a
+   mana-production term (`tap_mana_units × mana_clock_impact`) and an
+   engine term — `engines_lost_if_removed` × allowance, so the replacement
+   source that frees three untappers costs three engines and one of three
+   untappers costs one.
+4. *Blocks priced a dead blocker at its power.* The lifespan-delta block
+   scorer charged a killed blocker only through `my_power_after`, so a
+   0-power engine half chump-blocked a 2/1 at 16 life one turn after being
+   tutored. Its non-combat worth (`noncombat_opportunity_cost`) is now
+   charged to the block post-state as virtual life — the scale
+   `life_as_resource` already converts to survival turns — and the
+   double-block helper picks the cheapest adequate second blocker instead of
+   the first in list order.
+5. *Attacks spent the engine half for two points.* Both on-board-lethal
+   shortcuts (`decide_attackers`' early return and the combat planner's)
+   sent every creature with combat value; Vizier attacked into a 3/3 with
+   the opponent at 1 and the engine died with it. Each now sends what is
+   NEEDED: a creature whose non-combat worth exceeds its power stays home
+   when the rest still reach lethal, and the planner's per-creature
+   `value` carries `noncombat_opportunity_cost` so its trade-down and
+   board-presence terms see an engine half as the loss it is. The
+   racing/desperate "send everything" branch applies the same gate.
+6. *An untapped-land life payment must buy the spell it enables.* Once
+   life was priced honestly the bare pay/skip delta always read as a loss
+   (a turn-two sweeper went uncast behind a tapped shock — anchor pin
+   Pinnacle Affinity vs 4/5c Control s50000). `decide_optional_cost`
+   now offers a pay-variant per MARGINAL spell (cheapest-first packing
+   over `spells_enabled_by_one_more`, colours checked per scenario),
+   projected through the cast projection. The sentinel-CLIFF half of the
+   clock fix was also built, A/B-measured (Creatures Toolbox 17.5% ->
+   11.7%, Jeskai Blink 30.8% -> 27.5%, n=5 same seeds) and reverted;
+   recorded as an addendum on the 2026-08-30 falsified diagnostic.
+7. *Cast feasibility saw the engine's units but not its colours.* With the
+   loop live (`mana=85` in the trace) Craterhoof {5}{G}{G}{G} was not even
+   a candidate: `_mana_source_units` (the colour-pip feasibility builder)
+   lacked the engine. It now appends the engine's printed units per
+   iteration, so feasibility, estimate and payment agree on quantity AND
+   colour.
+
+Failing-test-first: `tests/test_counter_placement_replacement.py` (12),
+`tests/test_unbounded_untap_mana_engine_shortcut.py` (15),
+`tests/test_tutor_credit_for_engine_completing_piece.py` (4),
+`tests/test_position_value_no_clock_sign.py` (3),
+`tests/test_opportunity_cost_prices_mana_and_engines.py` (5),
+`tests/test_block_prices_blocker_noncombat_value.py` (5). All 7 ratchets at
+baseline (the new typed field populates 14 cards, well above the narrow
+threshold). Replay after: the CR 726 shortcut fires from T5 ("loops Devoted
+Druid ×8 — cast Craterhoof Behemoth"), Vizier is tutored on sight of a
+Druid, and the engine halves are neither chumped nor sacrificed while a
+fresh body is available; the seed-50000 match vs Boros goes 2-0 (was 0-2).
+
+WR anchor: 12 drifts, 5 winner flips, each replayed through the anchor's
+exact harness (`run_meta._run_game`, deadline neutralised, verbose) in the
+pre-change worktree and the final tree and diffed at the first divergence.
+All five stem from pricing life honestly (the sign half): 4/5c Control at 11
+life facing five power plays its shock tapped and survives at 1 instead of
+dying (s50500); Hollow One pays two life to deploy a two-drop and attacks
+(s53500); Boros Ponza keeps two life, dashes instead of hard-casting, and
+wins (s51000); Azorius bounces with Teferi instead of a four-mana Wrath in
+the mirror (s50000); 4/5c takes a five-permanent Wrath on T3 over a
+three-permanent one on T2 and loses that single game (s50000) — a
+defensible choice, not a defect. Refreshed.
+
+Field at n=5 (same seeds, quiet box): Creatures Toolbox 17.5% (matrix
+baseline 10.4%), Jeskai Blink 27.5% at the final code (30.8% before the
+untapped-payment change, 30.2% matrix baseline — inside n=5 noise, no
+regression signal). The deck is still
+out of band: with Vizier a one-of, the engine assembles in a minority of
+games; the next lever is a fair one (a second Druid untapper / the Soul
+Cauldron line), tracked, not patched.
+
+## Domain Zoo band loop (2026-09-05)
+
+Self-paced loop until Domain Zoo's flat field WR is inside [50, 65]. Stop
+gate (noise-aware): n=20 Bo3 on the 50000 matchup grid inside the band AND no
+single cell ≥85% AND reproduced on the 40000 matrix grid, on pushed CI-green
+code. Lanes closed before this loop and not reopened: the decklist swap
+(falsified), the clock sentinel-cliff (falsified twice), the "defensive fixes
+lift control" prediction (falsified), Zoo-vs-4/5c (structural for that list).
+
+### Iteration 0 — baseline on `0335e9e` (measurement only)
+
+`run_meta.py --field "Domain Zoo" -n 20 --parallel`, quiet box, offline
+scorer. **Flat 67.5%** (this is the loop's baseline; the 65.6% matrix
+headline is on the other seed grid and is not comparable). Cells ≥85%:
+Goryo's Vengeance 100, Creatures Toolbox 95, Affinity 90, Azorius Blink 90,
+Amulet Titan 85, Boros Ponza 85, Grixis Reanimator 85, Hollow One 85. At
+band or below: Ruby Storm 25, Eldrazi Tron 25, 4c Omnath 45, WST v2 /
+Broodscale 50, Boros Energy / Instant Reanimator 55, Jeskai Blink / Living
+End / 4/5c / WST 60, Pinnacle Affinity / Eldrazi Ramp 65. Stop gate: not
+met. Target for iteration 1: Azorius Blink (90%; registered list whose
+defensive plan exists but is switched off — `archetype: aggro` in its
+gameplan makes `holdback_applies` False).
+
+### Iteration 1 — Azorius Blink (90%): the holdback lead is falsified by the log
+
+`--bo3 "Azorius Blink" "Domain Zoo" -s 50000` (Zoo 2-0, T9/T8). Blink DOES
+deploy its instant-speed interaction on Zoo's turns — T3 both games it
+evokes Solitude on Scion of Draco at Zoo's begin-combat (G2 with Ephemerate
+in response, the intended line). The archetype-gated holdback hypothesis is
+not what this matchup shows; not pursued. What the log shows instead, both
+defending-side and class-sized:
+
+1. **March of Otherworldly Light cast into nothing.** G1 T3 (Zoo's turn):
+   "Cast March (1W) (X=1) → Resolve → graveyard", no exile line — Zoo's board
+   held Leyline Binding (MV 6) and Scion (MV 12), nothing of MV ≤ 1. G2 T6
+   and T7: "Cast March (W)" (X=0) the same way. An X-bound targeted removal
+   spell ("… with mana value X or less") is cast with an X that reaches no
+   target, burning the card and the mana. Class: every X-bound targeted
+   removal spell; the fix is the delivery-conditioned discipline the X
+   creature tutor already has (`pick_creature_tutor_x_value`): choose X to
+   reach the best legal target, and no candidate when none is reachable.
+2. **Witch Enchanter's enters-the-battlefield destroy never fires.** G1 T4:
+   "Cast Witch Enchanter → Resolve", no destroy line, while Leyline Binding
+   (an enchantment) held Ocelot Pride in exile. `CardTemplate` carries no
+   typed field for the "when this enters, destroy/exile target
+   <artifact/enchantment/…> an opponent controls" ETB shape
+   (`targeted_removal_data` is the SPELL class from the 2026-09-02
+   consolidation). A blink deck's whole plan is re-triggering exactly this
+   class with Ephemerate.
+
+Built (both failing-test-first, rule-phrased):
+
+- **ETB targeted removal class** (`tests/test_etb_targeted_removal_class.py`,
+  10): `parse_etb_targeted_removal` → typed
+  `CardTemplate.etb_targeted_removal_data` (same dict shape as the spell
+  class plus owner_scope/optional; 141 pool cards carry the shape, the
+  naturalize subclass ~24), dispatched from `resolve_etb_from_oracle`
+  through the shared `_resolve_nonland_permanent_removal` — so target
+  legality (CR 601.2c), indestructible (702.12b), the printed mana-value
+  ceiling (608.2c) and the zone funnels are one code path. The linked
+  "exile … until this leaves" shape stays on its own mechanic.
+- **X-bound target legality + X payment** (`tests/test_x_bound_target_legality.py`,
+  6; 19 pool cards bound a target by X): `target_solver` now attaches a
+  trailing "with mana value N/X or less" clause to the battlefield
+  requirement it follows (`max_mana_value_is_x`), `enumerate_legal_targets`
+  / `has_legal_target(_for_spell)` take an `x_ceiling`, `can_cast` supplies
+  it from the new `CastManager.affordable_x` (one formula: (capacity −
+  fixed cost) // X pips), the cast path pays X = the chosen target's mana
+  value (CR 601.2b), and both AI target branches filter candidates by the
+  same ceiling. A spell whose affordable X reaches no target is no longer
+  castable, and the AI no longer picks the highest-MV permanent regardless
+  of X.
+
+Neighbouring suites 362 green; all 7 ratchets at baseline (the new typed
+field populates 141 cards); WR anchor 29/29 unchanged.
+
+Replay after (`--bo3 "Azorius Blink" "Domain Zoo" -s 50000`): both fixes fire
+in-game — "T4 Witch Enchanter destroys Leyline Binding", "T5 Cast March
+(X=2) → exiles Territorial Kavu" (X paid for the target's mana value, not
+the whole pool). The match is still 0-2 (G1 lasts T11, was T9): one seed,
+not the measurement. Targeted n=20 follows.
+
+**Measurement (n=20, 50000 grid, quiet box):** Azorius Blink vs Domain Zoo
+5% / 95% (baseline cell 10 / 90) — no movement; code iteration 1 of the
+loop-break count. The deterministic sideboard plan for this pairing is
+"+2 Spell Pierce, −2 Witch Enchanter": the naturalize body that now works
+is boarded OUT against a deck running 4 Leyline Binding + 4 Leyline of the
+Guildpact, so games 2 and 3 never see the fix. That swap is the next
+defending-side lead (the solver's card valuation vs the opponent's
+permanent density), subject to the class-size check.
+Regression guard: Azorius Control vs Domain Zoo 20 / 80 at n=20 — identical
+to the baseline cell; no regression from iteration 1.
+
+Follow-up built (`tests/test_sideboard_values_permanent_type_removal.py`,
+2): the sideboard solver's removal clause was artifact-only and keyed to
+spell tags, so an ETB naturalize body was valued as a bare 2/2. It now
+prices removal by the opponent's density of the permanent TYPES it can hit
+(artifact / enchantment / planeswalker), read from the typed fields
+(`targeted_removal_data`, `etb_targeted_removal_data`), within the printed
+mana-value ceiling; creature removal keeps its threat-based clause (now
+also ceiling-aware). Whether Witch Enchanter should stay in against Zoo is
+a judgment the solver still makes on the numbers — not tuned. Ratchets at
+baseline; WR anchor 29/29 (Bo1 pins carry no sideboarding).
+
+### Iteration 2 — Azorius Control (80%): the lock is cast on the wrong turn
+
+`--bo3 "Azorius Control" "Domain Zoo" -s 50000` (Zoo 2-0, T11/T7). G1:
+control stabilises — two Solitudes (T3, T5), Teferi bounce (T4), Wrath X=2
+(T7), Supreme Verdict (T8) — and sits at 17 life on T9 with Zoo's board
+swept. It then casts Orim's Chant through Isochron Scepter on T9, T10 and
+T11 **on its own turn** ("silences P2 this turn" during P1's turn), which
+restricts nothing — Zoo casts Ragavan, Riddler and Frog on its own turns
+and attacks for 4/6/10 — while control holds 5–6 cards and never
+presents a clock (Hall of Storm Giants never animated). The Scepter-Chant
+lock, that list's actual win plan, only works cast in the opponent's
+upkeep. G2 is a mulligan-to-tempo loss to two Scions (T7), no decision
+error beyond a desperate-attack at 3 life facing 8 power.
+
+Built (failing-test-first, `tests/test_turn_scoped_opponent_restriction_timing.py`, 6):
+a typed `CardTemplate.turn_scoped_restriction` ('no_spells' | 'no_attacks' |
+'fog'; 30 instants, `parse_turn_scoped_restriction`). The AI's this-turn
+signal enumerator returns no signal for such a card on the caster's own turn
+(deferrable) and a signal on the opponent's turn; the runner's imprint hook
+(`_process_imprint_copy_activations`, an engine-side auto-fire that predates
+the AI activation seam) is timing-aware — a restriction copy fires in the
+OPPONENT's upkeep (new call for the non-active player) and never in its
+controller's main phase, every other copy keeps the sorcery-speed firing.
+Related suites 29 green; ratchets at baseline; anchor: two turn-only
+drifts (4/5c vs Pinnacle 21→18, Azorius vs WST 17→16, winners unchanged —
+both control decks, consistent with the lock now landing on the right
+turn) refreshed.
+
+**Measurement (n=20, 50000 grid, quiet box):** Azorius Control vs Domain Zoo
+25 / 75 (baseline cell 20 / 80) — +5pp toward band on the cell (cell noise
+~±10pp at n=20; the field re-read decides movement). Same log: the
+sideboard plan for this pairing is "+2 Mystical Dispute, −2 Orim's Chant" —
+the lock piece is boarded OUT against Zoo, so games 2 and 3 never see the
+fix. The solver has no clause for the turn-scoped-restriction class at all
+(it values such a card at its body, i.e. zero), so it is swapped out
+against every opponent: next lead, class-sized.
+
+**Field re-read (n=20, 50000 grid, quiet box, head `114d094`): flat
+67.3%** (baseline 67.5%). Cell-by-cell against iteration 0: Azorius Blink
+90 → 75 (the only cell that moved by more than one match; direction of the
+iteration-1 fix), Azorius Control 80 → 80, Instant Reanimator 55 → 60, WST
+v2 50 → 55, every other cell identical. Cells ≥85% now: Goryo's Vengeance
+100, Creatures Toolbox 95, Affinity 90, Amulet Titan 85, Boros Ponza 85,
+Grixis Reanimator 85, Hollow One 85. No field movement (<2.2pp): **code
+iteration 2 of the loop-break count (2 of 3)**. Stop gate: not met.
+
+Sideboard finding resolved: the "+2 Mystical Dispute, −2 Orim's Chant"
+plan is produced by the LEGACY path. `engine/sideboard_manager.py::sideboard`
+defaults to `SB_SOLVER=old`, a deck-name × card-name string table (Chant
+boards out against any opponent whose name contains "domain"/"control"/
+"tron"/"titan"…; Dispute boards in against "zoo"/"energy"/"prowess"/
+"affinity"). The oracle solver — the path both sideboard fixes in this
+loop improved — only runs opt-in (`SB_SOLVER=new`), held there by the
+recorded Phase 2/2.5/2.6 decisions in `docs/proposals/sideboard_solver.md`
+(Goryo's −4pp regression, ±25–35pp pairing volatility at n=20). So neither
+sideboard-solver change in this loop reached a live game. Flipping the
+default reopens a held decision with a matrix-wide blast radius and is not
+taken inside this loop; it is recorded here as the standing reason the
+defending side's post-board games do not see the loop's fixes.
+
+### Iteration 3 — Goryo's Vengeance (100%): the hand attack is never cast
+
+`--bo3 "Goryo's Vengeance" "Domain Zoo" -s 50000` (Zoo 2-1; `--trace`
+reproduces G1). G1: Goryo's keeps Thoughtseize and holds it through turns
+1–5 with black open while Zoo deploys Ragavan and Scion, casting it on
+turn 6 at five life ("−0.1 cast_spell: Thoughtseize" every main phase);
+G3 casts Inquisition + two Thoughtseize on turn 11. Two defects, both
+class-sized, both on the hand-attack class (150 pool cards carry the new
+typed field: 51 caster-chosen, 99 victim-chosen, 6 random):
+
+1. **The class carried no this-turn signal.** `_is_immediate_interaction`
+   gates forced discard on the typed `has_discard_effect`, whose parser
+   read "discards a card" but not "discards THAT card" — the caster-chosen
+   shape ("You choose a nonland card from it. That player discards that
+   card"). Every Thoughtseize / Inquisition / Duress was therefore scored
+   as deferrable (−exposure) and skipped by the pass-preference filter no
+   matter what its EV said. The RC-2 fix of 2026-07-05 (`docs/diagnostics/
+   2026-07-05_goryos_field_13pct_root_cause.md`) had corrected the
+   *phrasing* gate; the later typed-field migration re-broke it, and its
+   pinning test used a stub template with `has_discard_effect=True`.
+2. **A caster-chosen strip was priced as a card-neutral trade.** The
+   projection charges the caster's card, credits one average opponent
+   card and bills the life cost — net −0.1 — although the caster takes
+   the BEST eligible card of the hand.
+
+Built (failing-test-first, `tests/test_hand_attack_values_the_best_card_of_a_hidden_hand.py`,
+12): typed `CardTemplate.hand_attack_data` (chooser caster / victim /
+random, target, verbatim choose clause, count; `parse_hand_attack`);
+`_is_immediate_interaction` reads it (and `parse_has_discard_effect` now
+covers "discards that card"); `ai/hand_denial.py::hand_denial_value`, the
+mirror of `ai/land_denial.py`: eligible pool = opponent hand ∪ library
+(the BHI public-decklist premise) filtered through the engine's own
+revealed-hand restriction filter, ranked by the resolution's own strip
+scorer, exact hypergeometric order statistic for "rank-k card is the
+strip", denied value = `creature_threat_value` for a creature and
+`card_clock_impact` otherwise, minus the projection's average-card
+credit; zero into an empty hand. Overlay hooked in `_score_spell` beside
+the land-denial overlay, typed-field gated. No new literals; all 7
+ratchets at baseline.
+
+Replay after: G1 Thoughtseize on turn 1 (takes a Stubborn Denial), G3
+Thoughtseize turn 2 + Inquisition turn 6; the match is still 1-2 (one
+seed, not the measurement). Second finding recorded as a lead, not
+built: G1 T6 (and the anchor game below) Goryo's casts Undying Evil on an
+OPPONENT's creature to dodge the cleanup discard — a beneficial targeted
+effect aimed at the wrong side; `can_cast` correctly refuses it on an
+empty board (verified), so the defect is the AI's target choice for
+beneficial effects plus the cast-anything-rather-than-discard branch.
+Class: pump / protection / keyword-grant instants.
+
+WR anchor: two winner flips + one turn-only drift, both flips replayed
+through the anchor-exact harness before/after and accepted as the class
+firing on its intended turn: 4c Omnath vs Goryo's s50500 (Goryo's T9 →
+Omnath T6; first divergence T1 "Cast Thoughtseize" taking Ephemerate,
+then T4 Inquisition taking Solitude; the loss follows from Goryo's not
+casting Faithful Mending with WU open after the turn-4 Inquisition and
+the Undying Evil misfire on turn 5 — pre-existing sequencing, recorded
+above) and Creatures Toolbox vs Grixis Reanimator s52000 (Grixis T9 →
+Toolbox T9; first divergence T2 "Cast Thoughtseize" taking Tyvar, the
+deck's combo piece, then a second on T4; Grixis pays 4 life and is raced
+by the creature curve). Instant Reanimator vs Boros Ponza s51500 11 → 10
+turn-only. Fixture refreshed via `tools/refresh_wr_baseline.py`, 29/29.
+Both CI chunks green locally (a-g 2199 + the seeded magic-number baseline
+for the new file, h-z 2216); pushed as `6487ab6`.
+
+**Measurement (n=20, 50000 grid, quiet box):** Goryo's Vengeance vs Domain
+Zoo 0 / 100 (baseline cell 0 / 100) — no movement; Zoo's wins land on
+turns 5–7 (17 sweeps). Regression guard Azorius Control vs Domain Zoo
+25 / 75, identical to the iteration-2 cell. In the same replay Goryo's
+mulligans to 4, 5 and 5 in the three games ("combo path under-covered …
+need enabler+payoff" on 7 and 6, "goal conjunction unreachable" on 6):
+a reanimator keeping 4–5 cards every game cannot race a turn-5 kill
+whatever its hand attacks do. The keep/mull rule for combo paths
+(`ai/mulligan.py`) is the subsystem this cell now points at; not built
+inside this loop (third code iteration — the field re-read below decides
+the loop-break).
+
+**Field re-read (n=20, 50000 grid, quiet box, head `6487ab6`): flat
+65.8%** (baseline 67.5%, previous 67.3%). Cells that moved against
+iteration 2: Grixis Reanimator 85 → 65 and Dimir Midrange 70 → 50 (both
+hand-attack decks — the class fix landing where the class lives),
+Instant Reanimator 60 → 65; every other cell identical, including the six
+still ≥85% (Goryo's 100, Creatures Toolbox 95, Affinity 90, Amulet Titan
+85, Boros Ponza 85, Hollow One 85). 1.7pp over the loop is under the
+2.2pp movement rule: **third consecutive code iteration without field
+movement → loop-break.** Stop gate not met (65.8 is above the band edge
+and six cells ≥85%). The required primary doc is
+`docs/diagnostics/2026-09-05_zoo_band_loop_break.md`: it names the
+pre-turn-1 mulligan of the reanimator side (combo-path keep rule in
+`ai/mulligan.py`, class = every FILL_RESOURCE deck) as the residual
+subsystem, records the other five cells' owners, and states the restart
+condition. Loop ended.
+
+### Restart precondition — a "target player" discard can target its caster (2026-09-05)
+
+User decision after the loop-break: fix the keep/mull residual first,
+then restart. The residual is not a looser rule (RC-3's flat sets stay
+falsified and untouched); it is a line the sim could not play at all:
+**cast a "target player … discards" spell on yourself** to bin the
+reanimation target. Three coupled gaps, one class (75 pool cards can
+target their caster: 11 caster-chosen, 62 victim-chosen, 2 random):
+
+1. **Engine.** The Thoughtseize registry handler hardcoded the opponent
+   as victim and ignored the target list; the generic reveal-choose
+   resolver did the same and picked the discard by mana value inside the
+   engine. Built: named player-target sentinels in `engine/constants.py`
+   (`PLAYER_TARGET_OPPONENT = -1`, the historical face value;
+   `PLAYER_TARGET_SELF = -2`) resolved by
+   `target_solver.player_index_for_target` / `targeted_player` (the face-
+   burn path reads the same helper); the reveal-choose branch is gated on
+   the typed `hand_attack_data`, resolves the victim from the chosen
+   target (opponent when none is chosen — every existing caller
+   unchanged; "target opponent" wording can only hit the opponent),
+   applies the choose clause through the engine's restriction filter,
+   and delegates WHICH card goes through the one discard funnel
+   (`GameState._force_discard(..., candidates=)`: strip advisor against an
+   opponent, the self-discard advisor — the one that already targets
+   reanimation fuel — for one's own hand). The Thoughtseize registry
+   entry is retired (card-name registry 89 → 88, baseline lowered).
+2. **AI.** `ai/card_classes.py::self_discard_outlet_targets(template,
+   hand, gameplan)`: the cards in hand a self-targetable hand attack
+   could bin for the deck's own graveyard plan — the gameplan declares a
+   graveyard FILL_RESOURCE goal, the choose clause admits the card
+   (engine filter), and a payoff in hand can return it (the payoff's
+   parsed graveyard target requirement: legendary / any / mana-value
+   ceiling). `_choose_targets` aims the spell at the caster when the
+   self-fill value exceeds `hand_denial_value`; the self-fill value is
+   the reanimation readiness boost (`_reanimation_readiness_boost`, the
+   GV-2 quantity factored into one owner) when the bin moves the
+   graveyard from below the declared resource target to at or above it,
+   zero otherwise. `_score_spell` credits the larger of the two lines.
+3. **Mulligan.** The 7/6-card typed-path gate and `conjunction_unreachable`
+   count a self-targetable outlet that can bin a returnable creature in
+   the same hand as enabler coverage; a hand attack with nothing to bin
+   covers nothing (the tightness that keeps RC-3 closed).
+
+Fidelity fix found on the way: `engine/card_database.py` carried a
+card-name table stamping LEGENDARY on Archon of Cruelty (real type line
+"Creature — Archon") so a legendary-only reanimation could hit it — wrong
+reanimation legality and a wrong legend rule for that card, plus a test
+(`tests/test_archon_of_cruelty_is_legendary.py`, GV2-7) pinning the
+fabricated value on a false premise. Table and test removed; the rule
+"supertypes come from the printed type line" is pinned in the new file.
+The gameplan's `mulligan_combo_sets` still list [Mending, Goryo's,
+Archon] (rules-invalid; used only by the color check) — left as data,
+recorded here.
+
+Tests (failing-test-first, rule-phrased,
+`tests/test_target_player_discard_can_target_its_caster.py`, 15): the
+victim is the targeted player including the caster (life cost still
+paid); default opponent with no target; choose clause honoured on the
+caster; the choice is delegated to the callback (cheapest-card stub
+obeyed; self-discard flag set for one's own hand); no card-name handler;
+supertypes from the printed line; the graveyard-fill deck targets itself
+with a binnable target and a payoff, the opponent once the target is
+already in the graveyard, never without a graveyard plan; the self line
+scores positive; mulligan: outlet + returnable creature covers the
+enabler bucket, a capped outlet (IoK vs an 8-drop) does not, the payoff
+must be able to return the binned card (legendary-only vs any), no
+binnable target leaves the rule unchanged, and the outlet makes the
+conjunction reachable at the keep floor. One existing fixture
+(`test_goryos_mulls_payoff_only_at_6`) held Thoughtseize + a creature
+Unburial Rites could return — no longer "payoff-only" — and now carries a
+blink spell instead. Ratchets: registry 88 (lowered), others at baseline.
+
+Replay after (`--bo3 "Goryo's Vengeance" "Domain Zoo" -s 50000`, still
+1-2): the line exists now — G1 "[Target] own hand — bin the reanimation
+target … Thoughtseize discards Griselbrand (own hand)" on turn 2, G3 the
+same on turn 2 with Goryo's Vengeance turn 3 (countered by Stubborn
+Denial) and turn 4 (resolves). Kept hand sizes 4/5/5 → 5/5/5: the
+opening 7 with two Goryo's and no fatty is still shipped (nothing to
+bin), the 5 with Griselbrand + Thoughtseize + Rites is now reachable.
+
+WR anchor: one turn-only drift (Goryo's vs Izzet Prowess s50000, 6 → 7)
+and one winner flip, replayed through the anchor-exact harness: Instant
+Reanimator vs Boros Ponza s51500 (IR T10 → Ponza T6). First divergence
+is the mulligan: IR now KEEPS its 6 (Marsh Flats, Goryo's Vengeance,
+Polluted Delta, Atraxa, Thoughtseize, Ephemerate) — the exact self-
+outlet shape — where it previously mulled to 5; it self-Thoughtseizes
+Atraxa on turn 2 and reanimates it on turn 3 for 7, then loses a Bolt +
+Ragavan race at 3 life. The deck's real line, one seed's race — accepted;
+fixture refreshed, 29/29. Both CI chunks green (a-g 2196, h-z 2231);
+pushed as `94475d0`.
+
+**Measurement (n=20, 50000 grid, quiet box):** Goryo's Vengeance vs
+Domain Zoo 5 / 95 (was 0 / 100) — one match, direction only; Goryo's
+game wins now land on turns 5–8 (were 5–6), Zoo's on 4–8. Guards:
+Grixis Reanimator vs Domain Zoo 40 / 60 (the self-outlet class fires
+there too — Thoughtseize + Archon; no regression against the 35 / 65
+field cell), Dimir Midrange vs Domain Zoo 55 / 45 (no graveyard plan,
+still targets the opponent; field cell 50 / 50). The restart
+precondition is met on the mechanism (the line exists and is kept);
+the Goryo's cell itself is now a race the registered list mostly loses
+to a turn-5 kill. Full field re-read follows as the restarted loop's
+iteration-0 baseline.
+
+## Domain Zoo band loop — restart (2026-09-05)
+
+### Iteration 0 — baseline on `94475d0` (measurement only)
+
+`run_meta.py --field "Domain Zoo" -n 20 --parallel`, 50000 grid, quiet
+box, offline scorer. **Flat 65.0%** (pre-restart 65.8%; the original
+loop's baseline was 67.5%). Against the last row: Goryo's Vengeance
+100 → 85 (the self-discard-outlet line), Instant Reanimator 65 → 60,
+every other cell identical. Cells ≥85%: Creatures Toolbox 95, Affinity
+90, Amulet Titan 85, Goryo's Vengeance 85, Boros Ponza 85, Hollow One
+85. At band or below: Ruby Storm / Eldrazi Tron 25, 4c Omnath 45, Dimir /
+Broodscale 50, Boros Energy / WST v2 55, Jeskai Blink / Living End /
+4/5c / WST / Instant Reanimator 60, Pinnacle / Eldrazi Ramp / Grixis 65.
+Stop gate: the field average sits at the band edge but six cells are
+≥85% — not met. Loop-break counter reset (new loop).
+
+Target selection (rule: largest excess, no tracked root cause, no clean
+audit): Creatures Toolbox (Soul Cauldron line, tracked), Affinity (audited
+race), Amulet Titan (rediagnosis doc) and Goryo's (measured above as a
+race after the outlet fix) are skipped; **Boros Ponza 85 and Hollow One
+85** are the two registered lists with no replay audit at all. Iteration
+1 opens both with `--bo3 … -s 50000` replays and follows whichever shows a
+class-sized defending-side defect.
+
+### Iteration 1 — Boros Ponza (85%): the land-type lock is neither a continuous effect nor valued past turn 4
+
+`--bo3 "Boros Ponza" "Domain Zoo" -s 50000` (Ponza 2-1 on this seed). G1:
+Ponza casts Blood Moon on turn 10 — after the game — and G2 the same;
+`--trace` shows it drawn on turn 7 against a five-colour deck on duals and
+fetches and scored **−0.2** every turn until turn 11 (+1.3). Two class
+defects, engine and AI:
+
+1. **Engine.** "Nonbasic lands are Mountains" ran as a one-shot ETB handler
+   on the OPPONENT's lands then on the battlefield, swapping in a per-
+   instance template copy: lands played afterwards kept their colours,
+   the caster's own nonbasics were untouched (the real card is symmetric —
+   Ponza runs basics for that reason), and a fetchland under the effect
+   could still be cracked. Built: a **layer-4 land-type SET continuous
+   effect** derived every `recalculate()` from any permanent with the
+   typed `stax_forced_basic` (`create_forced_land_type_effect`; CR 613.1d,
+   305.7, 611.2a) — every nonbasic land on both battlefields, entering
+   later included, produces only that basic type's colour
+   (`ManaPayment.effective_produces_mana`, `available_mana_colors`) and
+   has no fetch ability (`crack_fetchland` refuses, reading the live layer
+   state and the source for a land cracked as it enters); the effect ends
+   with its source. `BASIC_LAND_TYPE_COLORS` (CR 305.6) in
+   `engine/constants.py` is the one type→colour map. The Blood Moon ETB
+   registry entry is retired (87, baseline lowered); Magus of the Moon and
+   Harbinger of the Seas get the effect for free.
+2. **AI.** `ai/stax_ev._blood_moon_lock_ev` was a coefficient × nonbasic
+   count with a cap, multiplied by a turn-decay table that reaches ZERO on
+   turn 5, and the whole stax overlay was silenced by `holdback >= 0` —
+   any instant in hand hid the lock's value. Built: the lock is worth the
+   cards it makes uncastable, for both players (symmetric): a card is dead
+   when its cost needs a colour the player can no longer make (basics of
+   that type on the battlefield, in hand or in the library keep it alive;
+   fetching is gone), each dead card is valued by `creature_clock_impact`
+   (creatures) or `card_clock_impact` in the family's life units, weighted
+   by the share of the pool the player will see before the game ends
+   (`_lock_horizon_draws` from the two combat clocks; the whole library
+   when neither side has a clock). No coefficient, cap or turn table; the
+   family bypasses `_turn_decay`. The overlay gate is removed — the tap-out
+   is priced once, by the signed holdback penalty already in the score
+   (the inverted "silenced" pin retired; the rule re-pinned).
+
+Tests (failing-test-first, rule-phrased,
+`tests/test_forced_land_type_is_a_continuous_effect.py`, 9): symmetric and
+retracting on both battlefields; a land entering later is affected (and
+the untapped colour census agrees); a fetchland has no fetch ability; no
+card-name handler and a second family member works; the value counts
+the opponent's dead cards and is zero for a one-colour opponent on
+basics; it does not expire on a turn number; a colour still reachable
+through basics is not dead; the caster pays for its own dead cards; the
+overlay is priced by holdback, not silenced. Existing pins
+(`tests/test_stax_ev.py` Blood Moon > 2.0 vs a UW nonbasic base, 0 vs
+mono-red on basics) hold on the derived formula. Ratchets: registry 87
+(lowered), others at baseline.
+
+Replay after the valuation alone: Blood Moon scored **+8.7** on turn 7,
+was the best candidate — and was still passed: a lock permanent carried
+no "this-turn signal", so the pass-preference filter deferred it forever
+whatever its EV (the same gate that hid the hand-attack class). Built:
+a typed-`stax_class` permanent carries the signal
+`lock_before_opponent_turn` (it restricts the opponent's NEXT turn, so
+cast-now and cast-later are different states); pinned. A second copy
+while the effect is in play (either side) is worth zero; pinned. Replay
+after both: Blood Moon on **turn 4** in G1 (Ponza wins T9) and turn 4 in
+G2; Ponza's own fetchlands lose their ability under it as the rules say
+("Marsh Flats has no fetch ability"); match 1-2 on this seed (one seed,
+not the measurement). Anchor: one turn-only drift (Boros Ponza vs Boros
+Energy s51000, 13 → 17) refreshed. Both CI chunks green on the commit
+state (a-g 2207, h-z 2230); pushed as `77f7527`.
+
+**Measurement (n=20, 50000 grid, quiet box):** Boros Ponza vs Domain Zoo
+**45 / 55** (baseline cell 15 / 85) — a 30pp cell move; Ponza's wins land
+on turns 7–13, Zoo's on 5–16 (11 of 20 matches to game 3). The cell-move
+rule (≥15pp) triggers the full field re-read below. Regression guard —
+Azorius Control (WST) vs Domain Zoo, the pairing the removed overlay gate
+was introduced for (T2 Chalice over a held Counterspell): 20 / 75 (one
+match unresolved) against a 40 / 60 field cell — a 15pp move the wrong
+way at n=20 (cell noise ±10pp); the field re-read decides whether the
+gate's removal re-opened that regression, and if it did the Chalice
+family's coefficient valuation is the next subsystem, not the gate.
+
+**Field re-read (n=20, 50000 grid, quiet box, head `77f7527`): flat
+63.8%** (restart baseline 65.0%). Cells: Boros Ponza 85 → 60, Boros
+Energy 55 → 50, Azorius Control (WST) 60 → 60 (the guard's 20 / 75 was
+noise in the other seat), every other cell identical. 1.2pp is under the
+2.2pp movement rule: **code iteration 1 of the loop-break count (1 of
+3)**, although the targeted cell moved 25pp. Stop gate: field inside the
+band but five cells ≥85% (Creatures Toolbox 95, Affinity 90, Amulet Titan
+85, Goryo's Vengeance 85, Hollow One 85) — not met. Iteration 2 target:
+Hollow One (recorded lead above).
+
+### Iteration 2 — Hollow One (85%): cycling credited as reanimation equity a self-returner cannot provide
+
+The +7.8 for "cycle: Hollow One" decomposes as draw value (~1.7) plus
+the "creature in graveyard = future reanimation target" credit
+(`CYCLING_GY_REANIMATE_BASE` + power × per-power ≈ 6). That credit was
+gated on `_has_reanimation_path`: any oracle text in the deck returning
+a creature from a graveyard to the battlefield. The Hollow One list's
+Vengevine ("you may return **this card** from your graveyard to the
+battlefield") satisfies that scan, so the deck credited cycling its own
+4/4 payoff — and every other creature — with equity only Vengevine gets.
+Class: every cycling creature in every deck with a self-returning
+creature (Vengevine, the Phoenixes, Arclight shapes).
+
+Built (failing-test-first,
+`tests/test_cycling_credits_a_graveyard_body_only_if_the_deck_can_return_it.py`,
+5): `ai/card_classes.py::deck_can_return(template, returners)` — the one
+owner of "is this card reanimation equity in this deck": a targeted
+returner counts by its parsed graveyard requirement (creature type,
+legendary / any, mana-value ceiling — `target_solver.parse`), an
+untargeted mass return by the new parse-once typed
+`CardTemplate.mass_graveyard_return` (Living End shape, 45 pool cards;
+self-returns excluded at parse), and a returner that only returns itself
+counts for nothing else. `_score_cycling` credits the graveyard body
+only when `deck_can_return` holds over the visible pool (or the gameplan
+declares `prefer_cycling`); the self-discard-outlet line now reads the
+same predicate. Runtime-parse ratchet held at 180 by moving the mass-
+return shape to load time; narrow-field ratchet unchanged.
+
+Replay after the credit fix alone: Hollow One still cycled on turns 3
+and 5 — the scorer never charged the cycled card's own value (a card
+draw ≈ an average body's clock impact, so cycling anything beat casting
+a one-drop). Built: cycling SPENDS the card — a creature's
+`creature_clock_impact` × outer scale, weighted by how castable it is at
+the current mana against its effective cost (the same mana gating
+`card_clock_impact` applies to an average card), is subtracted; an
+uncastable body costs little to cycle, a deployable payoff is not free
+to throw away. Pinned ("the same 4/4 costs more to cycle when the mana
+to deploy it is there").
+
+Replay after both: the credit was STILL applied (+6.2) — the predicate
+found a "returner" in the deck: a flashback pump spell ("Target creature
+gains … / Flashback {1}{W} (You may cast this card from your
+graveyard …)"). `target_solver.parse`'s loose graveyard fallback takes
+its zone hint from the whole text, and the flashback REMINDER supplied
+"from your graveyard", so a battlefield creature target parsed as a
+graveyard-creature target — every flashback / escape spell with a
+creature target was mis-zoned this way. Fixed at the solver: the zone
+hint is read from reminder-stripped text (CR 207.2;
+`oracle_parser.strip_reminder_text`), pinned ("reminder text never
+supplies a target zone"). Target-solver suites green; runtime-parse
+ratchet 180. Replay after all three: Hollow One kept on turn 3, match
+0-2 → 1-2 on this seed. Anchor 29/29 unchanged; both chunks green;
+pushed as `303e7de`.
+
+**Measurement (n=20, 50000 grid, quiet box):** Hollow One vs Domain Zoo
+5 / 95 (field cell 15 / 85 in the other seat) — no movement toward band;
+Zoo's wins land on turns 4–9, Hollow One's on 5–8. The three fixes are
+class-correct (a self-returner no longer credits cycling anything, a
+deployable body is not free to cycle, flashback reminders no longer
+mis-zone a target) but the cell is held by the list's speed against a
+turn-5 kill when the discard outlets are not drawn. Code iteration 2 of
+the restarted loop; the field re-read that decides the loop-break count
+for iterations 2–3 runs after iteration 3. Remaining ≥85% cells all
+carry a tracked or measured cause (Creatures Toolbox, Affinity, Amulet
+Titan, Goryo's, now Hollow One), so the target rule moves to the
+highest untracked cell: **Izzet Prowess 80**. Guard: Living End vs
+Domain Zoo 60 / 40 (field cell 40 / 60 in the other seat) — the
+cascade-reanimator's cycling credit survives the predicate (its
+returner is the typed mass return); no regression.
+
+### Iteration 3 — Izzet Prowess (80%): burn damage read from a card-name table; lethal not a property of the turn
+
+`--bo3 "Izzet Prowess" "Domain Zoo" -s 50000` (Zoo 2-1). G3: Prowess
+puts Zoo to 3 life on turn 3 (Swiftspear, Bolt, Bolt, Bolt); Zoo then
+sits at 3 → 2 → 1 life from turn 3 to turn 9 while Prowess casts its
+one-damage burn spell into a 4/4 (turn 5) and twice into a 5/5 (turn 9,
+with Zoo at 1) — and Zoo wins at 1 life. Two class defects:
+
+1. **Burn damage came from a card-name table**
+   (`decks/card_knowledge_loader.get_burn_damage`, eight decision-layer
+   readers). A "deals N damage to any target" spell the table never
+   listed read as 0, skipped the burn branch and was aimed like creature
+   removal; the face-lethal rule (`dmg >= opp.life`) could never fire
+   for it. Built: `ai/card_classes.py::burn_damage(template)` — the
+   parsed oracle amount (typed `direct_damage_data`, 79 pool cards) with
+   the table only as the fallback for modal / variable shapes; all eight
+   readers rewired.
+2. **Lethal was a single-spell property.** Built: a burn spell goes
+   face when this turn's castable burn is lethal together — its own
+   amount plus the other face-legal burn in hand packed cheapest-first
+   into the mana left after it (the holdback pricer's packing) —
+   `_burn_reach_this_turn`, derived from `burn_damage` and
+   `effective_cmc`. Guard pinned: out of lethal reach, burn still prefers
+   a killable creature over chip damage.
+
+Tests (failing-test-first,
+`tests/test_burn_damage_reads_the_typed_field_and_face_lethal_reach.py`,
+4). Burn, face and response suites green (112); all 7 ratchets at
+baseline. Replay after: the one-damage spell now goes face ("[Target] →
+face (1 dmg, life 2 → 1)"), G3 ends on turn 6 with Zoo at 0, match 1-2
+→ 2-1 on this seed.
+
+Anchor after the burn fix: one turn-only drift and one winner flip,
+Izzet Prowess vs Dimir Midrange s50500 (Prowess T10 → Dimir T12).
+Anchor-exact replay: with the one-damage spell now in the burn branch,
+Prowess **flashbacked it on turn 2 by sacrificing its only untapped
+land** for one face damage at 17 life ("face value 0.15") and stayed on
+one land — the fix had exposed two further class defects:
+
+3. **A Flashback additional cost was paid but never priced.** The engine
+   paid "Flashback—Sacrifice a Mountain" by a runtime regex at cast time;
+   the AI priced a graveyard cast at its mana only. Built: typed
+   `CardTemplate.flashback_sacrifice_subtype` (`parse_flashback_sacrifice`;
+   the cast path reads it instead of the regex) and
+   `ai/land_denial.py::own_land_loss_value` — the own-side land-denial
+   term: a mana short on every turn until a replacement is drawn (the
+   reciprocal of the library's land density, capped by the library) while
+   below the curve top, plus the colour pips stranded when the land was
+   the last source — subtracted by `_score_spell` for a graveyard cast
+   through `flashback_sacrifice_land` (the same land the cast path picks).
+   The field is declared narrow in `tools/narrow_typed_fields_baseline.json`
+   (one Modern card prints that rider); other Flashback riders (pay life,
+   sacrifice a creature) are a separate shape the engine does not yet pay.
+4. **Damage-based removal was projected as killing the biggest threat**
+   whatever its damage: `_project_spell`'s removal branch took the
+   highest-threat creature off the board for any removal-tagged spell, so
+   the one-damage spell scored +8.9 against a 5/5 (that is why it was
+   aimed there three times). Damage now removes only what it kills
+   (toughness ≤ amount, the enumerator's killability); pinned.
+
+Tests: `tests/test_flashback_sacrifice_cost_is_priced.py` (4 — parsed
+subtype; the cast path pays the typed cost; a graveyard cast is charged
+exactly the land it gives up; a flooded caster pays nothing) and the
+projection-killability pin in the burn file (5 total there). Burn,
+flashback, removal, projection and land-denial suites green (175).
+
+Anchor on the final state: the s50500 flip persists — the turn-2
+flashback for one face damage now scores **−0.34** (projection +0.03,
+land −0.37 on a synthetic replica of the state) and is still executed:
+`decide_main_phase` runs the best non-deferred candidate unless it is
+below `PLAY_VALUE_FLOOR` (−5.0, the M3 sentinel that tolerates the
+holdback penalty's scale), so a mildly negative real play with nothing
+better available is taken. That floor is the responsible subsystem for
+"negative-EV plays are executed"; it is a documented design decision
+(`docs/history/audits/2026-05-16_5panel_bo3_audit.md`, M3) and not
+reopened inside this loop. The flip is accepted as the burn deck's own
+plan (face damage every turn) priced correctly at the margin; fixture
+refreshed, 29/29. Prowess vs Zoo s50000 on the final state: 2-1 (G1 and
+G3 won on turn 6 with the burn going face). Both chunks green on the
+final state (a-g 2223, h-z 2228 + the two anchor pins refreshed);
+pushed as `d8cbd0f`.
+
+**Measurement (n=20, 50000 grid, quiet box):** Izzet Prowess vs Domain
+Zoo 25 / 75 (field cell 20 / 80 in the other seat) — noise-level;
+Prowess's wins land on turns 5–12, Zoo's on 5–11. Guard: Boros Energy vs
+Domain Zoo 30 / 70 against a 50 / 50 field cell in the other seat — the
+field re-read below decides whether the burn class change moved that
+cell or the seat did. Code iteration 3 of the restarted loop; the field
+re-read decides the loop-break count for iterations 2–3.
+
+**Field re-read (n=20, 50000 grid, quiet box, head `d8cbd0f`): flat
+64.0%** (previous 63.8%, restart baseline 65.0%). Cells against the
+previous row: Izzet Prowess 80 → 75, Boros Energy 50 → 45 (the guard's
+30 / 70 was the seat), Boros Ponza 60 → 55, 4c Omnath 45 → 50, Living End
+60 → 65, Ruby Storm / Eldrazi Tron 25 → 30; every other cell identical,
+including the five still ≥85% (Creatures Toolbox 95, Affinity 90, Amulet
+Titan 85, Goryo's Vengeance 85, Hollow One 85). Iterations 2–3 moved the
+field 0.2pp: with iteration 1's 1.2pp that is **three consecutive code
+iterations without ≥2.2pp field movement → loop-break**, the second for
+this lane. Stop gate: the field is inside the band; five cells ≥85% —
+not met. Record: `docs/diagnostics/2026-09-05_zoo_band_loop_break.md`
+(restart section). Loop ended.
+
+## Pinnacle Affinity band loop (2026-09-06)
+
+Plan: bring Pinnacle Affinity's flat field WR inside [50, 65] on the
+50000 matchup grid (n=20 Bo3), no cell ≥85%, reproduced on the matrix
+grid; same protocol as the Zoo loop (class-sized fixes only, failing-test-
+first, no list / gameplan tuning, loop-break after three code iterations
+without ≥2.2pp field movement). Last matrix (40000 grid): 67.1%.
+
+### Iteration 0 — baseline on `ff8176c` (measurement only)
+
+`run_meta.py --field "Pinnacle Affinity" -n 20 --parallel`, quiet box,
+offline scorer. **Flat 65.2%**. Cells ≥85%: Amulet Titan 100, Boros Ponza
+95, Creatures Toolbox 95, Hollow One 95. Then Goryo's / Azorius Control /
+Broodscale 80; Eldrazi Tron / Omnath / Instant Reanimator 70; Affinity /
+4/5c / Eldrazi Ramp / Grixis 65; Prowess 60; WST 55; Jeskai Blink / WST v2
+/ Azorius Blink 50; Boros Energy / Storm / Living End 45; Dimir 40; Zoo 30.
+Stop gate: not met. Target rule (skip victim decks whose outlier has a
+tracked cause — Amulet, Toolbox, Hollow One, Goryo's): **Boros Ponza 95**
+(Pillage ×3 and Wear // Tear are its plan against an artifact deck),
+with Broodscale Bloodchief 80 as the secondary replay per the plan.
+(A stale copy of the Zoo-loop Hollow One lead — built as restart
+iteration 2 — was removed from this section.)
+
+### Iteration 1 — Saga chapters follow the printed timing; "with mana cost" excludes lands
+
+**Replays (`-s 50000`).** Pinnacle vs Boros Ponza (Pinnacle 2-1): Urza's
+Saga's chapter III tutored **Darksteel Citadel** and **Silverbluff
+Bridge** — artifact LANDS. A land has no mana cost (CR 202.2), so "an
+artifact card with mana cost {0} or {1}" can never find one; the filter
+(`_saga_iii_eligible_targets`) tested mana VALUE ≤ 1 only. The chapters
+also ran a full turn cycle late: the first lore counter landed at the
+controller's next upkeep instead of on entry (CR 714.2a), and later
+counters were added in the upkeep instead of as the precombat main
+phase begins (CR 714.2b). Pinnacle vs Broodscale Bloodchief (Pinnacle
+2-0, G1 turn 5): victim-side only — Kozilek's Command resolves as
+nothing (the modal "choose two" no-op, task #40), kicker is unsupported,
+and Basking Broodscale's sacrifice line is never assembled; no
+Pinnacle-side over-credit beyond the Saga.
+
+**Build (this iteration, one commit).**
+- `CardTemplate.has_mana_cost` (typed, from MTGJSON `manaCost`
+  presence; synthetic templates derive "not a land"). The final-chapter
+  search requires it. Class: every "with mana cost {N}" / mana-value
+  condition evaluated over a library that holds lands.
+- `engine/saga.py::saga_enters` — lore 1 + chapter I attached from the
+  zone-transfer ETB fan-out (one path for every Saga); the runner's
+  lore-0 branch is now the fixture fallback calling the same function.
+- `_process_saga_chapters` moved from the UPKEEP block to the start of
+  MAIN1 (after the draw step). Net timing: Saga played on the
+  controller's turn N → chapter II on turn N+1 → chapter III (tutor +
+  sacrifice) on turn N+2, as printed. Before: I at N+1, II at N+2, III
+  at N+3.
+- **Response window before the final-chapter sacrifice** (CR 603.3 /
+  714.4). The anchor-exact replays of the two pins that flipped after
+  the timing change alone (Pinnacle vs 4/5c s50000, Affinity vs Zoo
+  s50500) both diverged at the same place: chapter III resolved and the
+  Saga was sacrificed with its controller never able to activate the
+  chapter-II Construct ability in response — the standard real-world
+  line, and with the printed timing the Saga now has ONE main phase
+  with chapter II active instead of two, so the miss cost a Construct
+  per Saga. The granted-token activation was lifted out of the
+  main-phase dispatch into `_activate_granted_token_ability` and is
+  offered once more when a Saga reaches its final chapter, before the
+  chapter effect and the sacrifice. Class: every permanent whose
+  earlier chapter grants an activated ability.
+- Tests: `tests/test_saga_chapters_follow_printed_timing.py` (8, incl.
+  a runner-level log-order check that chapter II fires after the draw
+  step, never in the upkeep, and the response-window pair). Existing
+  saga suites unchanged and green.
+
+**Anchor.** Timing + land exclusion alone: 2 winner flips + 2 turn
+drifts. With the response window: 0 flips, 6 turn-only drifts, every
+one in a pair with a four-Saga deck (Amulet, Broodscale, Affinity,
+Pinnacle); refreshed via `tools/refresh_wr_baseline.py`.
+
+Direction note: the timing fix and the response window make every Saga
+deck FASTER (Pinnacle, Affinity, Amulet, Broodscale); the land exclusion
+removes a free mana source from the same decks. All three are fidelity;
+the measurement decides the net. Recorded lead, not built: the granted
+activation is still runner-driven ("activate whenever payable"), a
+decision the AI layer should price like any other activation.
+
+**Verify → push.** Ratchets at baseline; both CI chunks green locally
+(2223 + 2238 passed); pushed as `c4f8ca5`.
+
+**Measure (n=20 Bo3, 50000 grid, quiet box).**
+
+| Cell | Iteration 0 | After c4f8ca5 |
+|---|---|---|
+| Pinnacle vs Boros Ponza (target) | 95 | **70** (11 sweeps, 9 deciders; Pinnacle avg T7.9) |
+| Affinity vs Pinnacle (guard, Pinnacle's side) | 65 | 45 (Affinity 55; both sides run four Sagas) |
+
+The target moved 25pp, past the 15pp rule, so the full field is
+re-read now rather than at the 2–3 iteration cadence.
+
+**Field after iteration 1 (`c4f8ca5`, n=20 Bo3, 50000 grid): 55.0%**
+(iteration 0: 65.2%; −10.2pp, loop-break counter 0 of 3). Row: Goryo's
+95, Amulet Titan 85, Hollow One 85, Creatures Toolbox 75, Boros Ponza
+70, Storm / Prowess 65, Eldrazi Tron / WST 60, Living End / Azorius
+Control / Eldrazi Ramp / Broodscale / Grixis / Azorius Blink 55, Omnath
+/ 4/5c 50, Affinity / Instant Reanimator 45, WST v2 35, Boros Energy /
+Jeskai Blink 30, Dimir 25, Zoo 20. Movers: Boros Ponza 95 → 70, Toolbox
+95 → 75, Broodscale 80 → 55, Azorius Control 80 → 55, Affinity 65 → 45,
+Zoo 30 → 20; Goryo's 80 → **95** (the faster Saga races a deck whose
+own keep rule is the tracked residual). Stop gate: band met, three cells
+≥85% remain (Goryo's, Amulet, Hollow One — every one a victim deck with
+its own tracked outlier). Next: iteration 2 replays Pinnacle vs Goryo's
+s50000 on both sides; the skip rule for victim decks still applies to
+what gets BUILT (class-sized only), but the gate needs those cells read.
+
+### Iteration 2 — a land decision counts the lands in hand as sources
+
+**Replays (`-s 50000`).** Pinnacle vs Goryo's (Pinnacle 2-0, G1 T5,
+G2 T8). G1: Goryo's kept Faithful Mending + Goryo's Vengeance +
+Griselbrand + two Unburial Rites with Flooded Strand and Concealed
+Courtyard — a strong keep — and did nothing on turns 2–3. The turn-1
+fetch took **Godless Shrine (W/B) while the hand held Concealed
+Courtyard (W/B)**; Mending (WU) stayed uncastable until a Watery Grave
+was drawn on turn 4, when the deck was at 4 life facing 9 power. G2:
+mulligan to 5 (the tracked keep-rule residual). Pinnacle's side: every
+Saga chapter, warp and Drone line as printed. Pinnacle vs Amulet Titan
+(Pinnacle 2-0, T5 / T6): Amulet kept a Grazer-only hand; its cell is
+held by the rediagnosis doc's causes — no Pinnacle-side over-credit.
+
+**Mechanic.** `ai/mana_planner.py::analyze_mana_needs` measured colour
+deficits against the battlefield only, so on turn 1 every colour the
+hand needs is "missing" and the fetch's choice among duals is a tie the
+redundancy weights break. A non-fetch land in hand is a committed
+source: its colours arrive with the coming drops, so the search's
+marginal value is in the colours no held land produces. Hand lands now
+join the deficit basis (`source_counts` / `all_land_colors`, recorded
+in a new `pending_colors`) — never this turn's castability
+(`existing_colors`); a fetchland in hand commits to nothing and covers
+no colour. One module; no constant. Class: every fetch, land-search
+and shock-colour decision in every multicolour deck.
+
+**Tests first (red → green):**
+`tests/test_land_choice_counts_lands_in_hand_as_sources.py` (5): a held
+land is a pending source, not a deficit; the fetch fills the colour no
+held land provides; a fetchland in hand covers nothing; without a held
+land every needed colour is a deficit (anchor); a battlefield source and
+a held source add up for a double pip. All mana / land / fetch / shock
+suites green (404), ratchets at baseline.
+
+**Anchor:** 2 winner flips, both replayed anchor-exact and both the
+same divergence — a better fetch: 4/5c (Hallowed Fountain in play,
+Arena of Glory in hand, Wrenn and Six + Teferi held) takes Temple
+Garden instead of a second R/W source; Living End (Breeding Pool +
+Indatha Triome in hand) takes Ketria Triome instead of a Watery Grave
+whose black the Triome already covers. Fixture refreshed.
+
+**Verify → push.** Both CI chunks green locally (2223 + 2243); pushed
+as `25ca7cb`.
+
+**Measure (n=20 Bo3, 50000 grid).**
+
+| Cell | Before | After 25ca7cb |
+|---|---|---|
+| Pinnacle vs Goryo's (target) | 95 | **85** (10 sweeps, 10 deciders; Goryo's wins avg T10.0, Pinnacle avg T6.2) |
+| Pinnacle vs 4/5c Control (guard, holdback-on) | 50 | 45 (8 sweeps, 12 deciders) |
+
+Goryo's wins arrive on turns 7–14 — a turn-3/4 combo deck closing on
+turn 10 on average is the tracked keep / assembly residual, not this
+lane. The cell moved 10pp (under the 15pp rule); the field is re-read
+after iteration 3.
+
+### Iteration 3 — killing an equipped creature removes only its own power
+
+**Replays (`-s 50000`).** Pinnacle vs Goryo's re-replayed on `25ca7cb`
+(Pinnacle 2-0, G1 T6): the fetch now takes Watery Grave, Mending
+resolves on turn 2, Goryo's Vengeance returns Griselbrand on turn 3
+(draw 7, swing for 7 lifelink, Ephemerate keeps it) — the printed
+line. Turn 4: **Griselbrand (7/7) blocks and trades with a 1/1 Drone
+carrying Cranial Plating + Lavaspur Boots (8/1)**; both Equipment stay,
+re-attach to Memnite, and Goryo's loses two turns later. Pinnacle vs
+Hollow One (Pinnacle 2-0): Hollow One mulligans a 4-land / 1-drop /
+2-drop / Vengevine seven under its gameplan's `mulligan_max_lands: 3`
+(deck config, not touched), then two land-less hands to four cards;
+victim-side and seed luck — no Pinnacle-side over-credit.
+
+**Mechanic.** `_score_block_lifespan_delta` (and the planner's
+`_predict_block_score`, the same formula on VirtualCreatures) credited
+a kill with the attacker's WHOLE power leaving the opponent's board.
+CR 301.5c: Equipment stays on the battlefield when the equipped
+creature dies and re-attaches for its equip cost, so only the
+creature's own power leaves — +1/+1 counters, Auras and the creature's
+own scaling die with it. Engine accessor
+`CardInstance.equipment_power_bonus()` (the Equipment loop lifted out
+of `_dynamic_base_power`, one owner of the number); both block scorers
+subtract it from the dead creature's power on either side (a blocker
+that dies wearing Equipment keeps the Equipment's power for its side);
+`VirtualCreature.equipment_power` carries it into the prediction. No
+constant. Class: every Equipment in every deck, both sides of every
+block decision and every predicted block. The RC-2 chump-futility
+gate (attacker survives, Equipment rebinds) is untouched — a different
+rule.
+
+**Tests first (red → green):**
+`tests/test_killing_an_equipped_attacker_removes_only_its_own_power.py`
+(5): the Equipment share is the Equipment's only; a trade into an
+equipped attacker scores below the same trade into a natural one; the
+replayed decision (7/7 lifelink engine vs a 1/1 carrying seven points
+of Equipment) scores below not blocking; a blocker that dies wearing
+Equipment keeps its share for its side; the predicted block uses the
+same split. Block / equipment / planner suites green (149 + 14),
+ratchets at baseline.
+
+**Verify → push.** Anchor 29/29 unchanged; both CI chunks green
+locally (2223 + 2248); pushed as `593901d`.
+
+**Field after iteration 3 (`593901d`, n=20 Bo3, 50000 grid): 54.8%**
+(after iteration 1: 55.0%; iteration 0: 65.2%). Row: Amulet Titan 90,
+Goryo's 85, Hollow One 85, Creatures Toolbox 80, Boros Ponza 70, Storm
+/ Prowess 65, Eldrazi Tron / Living End / WST / Grixis 60, Azorius
+Control / Eldrazi Ramp / Broodscale / Azorius Blink 55, Instant
+Reanimator 50, Affinity / Omnath / 4/5c 45, WST v2 35, Boros Energy 30,
+Jeskai Blink / Dimir 25, Zoo 15. Iterations 2 and 3 together moved the
+field 0.2pp — under the 2.2pp rule — so the loop-break counter stands
+at **2 of 3**. Stop gate: band met; three cells ≥85% remain (Amulet,
+Goryo's, Hollow One), every one a victim deck with its own tracked
+outlier. Goryo's held at 85 (the block fix changes the s50000 G1 line
+but the keep / assembly residual decides the cell).
+
+### Loop close (2026-09-06)
+
+Second Amulet seed (s50500, Pinnacle 2-0) confirms the victim side:
+Amulet's own engine (Grazer keep, turn-2 Zenith for Arbor with Amulet
+in play, Titan on turn 6) — and surfaces an engine gap: **Summoner's
+Pact resolved as a free tutor on turn 1 with one land; the "pay
+{2}{G}{G} at your next upkeep or lose" is never enforced** (five-card
+Pact family; recorded as a lead for the Amulet lane, not built here).
+Band met at 54.8%; the three ≥85% cells are held by Amulet / Goryo's /
+Hollow One's own tracked defects; a fourth iteration would reopen
+another deck's primary lane or build below class size. Halted one code
+iteration short of the formal loop-break with the record in
+`docs/diagnostics/2026-09-06_pinnacle_band_loop_close.md` (active /
+primary; restart condition stated there).
+
+## Meta refresh (2026-09-06)
+
+Full refresh on `b22f357` (both band loops merged; nothing pending):
+matrix → dashboard → card-level detail → showcase → outlier replays.
+Same geometry as the 2026-09-04 refresh (`run_meta.py --matrix -n 20
+--save`, matrix grid 40000 + 500·k, Bo3, 3 workers, offline scorer), so
+the two runs compare directly.
+
+### Phase A — matrix
+
+**Wall-clock: 28 min 25 s** (08:06:17 → 08:34:42 UTC) for 300 pairs ×
+20 Bo3 = 6000 matches on 3 workers — the first recorded timing for the
+25-deck grid; the "order of magnitude slower" fear from
+`docs/diagnostics/2026-08-30_post_cage_fix_perf_and_provisional_wr.md`
+does not hold on this head. Calibration (`tools/check_calibration.py`,
+auto-run by `--save`): **38 in band / 58 out** (09-04: 30 / 66). Field
+transition: **Domain Zoo OUT → IN**. Dashboard merged and rebuilt by
+`--save` (`modern_meta_matrix_full.html`, 401 KB; `matchup_cards` 300
+and `deck_cards` 25 preserved for Phase B).
+
+| Deck | 09-04 | 09-06 | Δ |
+|---|---|---|---|
+| Boros Energy | 59.2 | **68.8** | +9.6 |
+| Dimir Midrange | 67.5 | 68.5 | +1.0 |
+| Eldrazi Tron | 73.5 | 68.1 | −5.4 |
+| Broodscale Bloodchief | 64.8 | 64.8 | 0.0 |
+| Ruby Storm | 65.0 | 63.5 | −1.5 |
+| Eldrazi Ramp | 63.8 | 62.7 | −1.1 |
+| Pinnacle Affinity | 67.1 | 61.5 | −5.6 |
+| Domain Zoo | 65.6 | 60.2 | −5.4 |
+| 4c Omnath | 68.5 | 59.0 | −9.5 |
+| Azorius Control (WST v2) | 56.9 | 58.3 | +1.4 |
+| Grixis Reanimator | 43.8 | 53.1 | +9.3 |
+| Living End | 57.1 | 52.3 | −4.8 |
+| Izzet Prowess | 54.8 | 52.3 | −2.5 |
+| 4/5c Control | 54.0 | 50.8 | −3.2 |
+| Instant Reanimator | 46.0 | 47.7 | +1.7 |
+| Azorius Control (WST) | 46.7 | 47.5 | +0.8 |
+| Boros Ponza | 44.0 | 46.2 | +2.2 |
+| Affinity | 45.4 | 44.0 | −1.4 |
+| Azorius Control | 36.7 | 43.8 | +7.1 |
+| Goryo's Vengeance | 49.6 | 41.5 | −8.1 |
+| Azorius Blink | 31.5 | 31.2 | −0.3 |
+| Hollow One | 25.4 | 28.3 | +2.9 |
+| Amulet Titan | 22.7 | 27.9 | +5.2 |
+| Jeskai Blink | 30.2 | 26.0 | −4.2 |
+| Creatures Toolbox | 10.4 | 21.9 | +11.5 |
+
+Reading (matrix grid; the band loops measured on the 50000 grid, so
+the levels differ but the directions agree): Pinnacle 67.1 → 61.5 and
+Zoo 65.6 → 60.2 (both loops' fixes), Omnath −9.5 and Eldrazi Tron −5.4
+(the hand-lands and equipment rules on the defending side), Toolbox
++11.5 / Grixis +9.3 / Amulet +5.2 (the victims of the fixed
+over-credits recover), Boros Energy +9.6 (now above its [50,70] band
+at 68.8 — a new lead), Goryo's −8.1 (its keep residual is now the
+whole story). Still out of the field bands: Amulet 27.9 vs [45,60],
+Instant Reanimator 47.7 in [45,60] (now IN), Jeskai Blink 26.0 vs
+[45,60], Creatures Toolbox 21.9 and Hollow One 28.3 vs the [30,70]
+default.
+
+### Phase B — card-level detail
+
+`extract_card_data.py 10` on `30c0fa2`: 300 pairs × 10 verbose Bo3 =
+3000 matches, **37 min 39 s** single-threaded (08:36 → 09:13 UTC).
+Coverage: 300/300 insights, 93/300 sideboard entries (31 %, the
+sweep-bound ceiling), 25/25 summaries, 1180 finisher descriptions,
+25/25 damage data. Merged into `metagame_data.jsx` (compact JSON, the
+`const D = … ;\nconst N` sentinels kept) and the dashboard rebuilt
+(401 KB). Pushed as `8800041`.
+
+### Phase C — showcase
+
+`build_showcase.py mtgsimmanu_showcase.html` on the merged JSX:
+stats, validation bars, heatmap, archetype / turn arrays regenerated in
+`templates/reference_showcase.html` and the root copy (which had been a
+refresh behind since 08-27). Every deck now carries card detail, so the
+heatmap grew from 19 to 25 columns; a headless-Chromium render (with
+the CDN Chart.js stubbed — the sandbox blocks it) shows the 25-column
+grid inside its container with rotated labels. Hand-authored parts
+updated: run date, "38 of 96" calibration figure, the heatmap title
+(was still "19 × 19"), and one timeline entry for the two band loops.
+Pushed as `c31722d`.
+
+**Showcase defect found afterwards (fixed, same day).** The user saw a
+higher Zoo WR in the showcase: (1) GitHub Pages serves `main`, where the
+08-27 showcase still showed Zoo at 84.8 — the refresh reaches the site
+only when PR #569 merges; (2) `build_showcase.py`'s `wrData` regex had
+no whitespace in its character class, so a hand edit's `[73.5, 68.5,
+…]` never matched and the WR bar chart silently kept the 19 stale 09-04
+values (Zoo 65.6) under 25 fresh labels; the bar colour arrays were
+never regenerated at all. Fixed: whitespace-tolerant pattern, colour
+arrays derived from the same sorted values (`WR_TIER_TEAL` /
+`WR_TIER_AMBER`), the validation bands read from
+`tools/calibration_bands.json` (all 25 decks, not an 8-deck literal),
+and a post-patch self-check that refuses to write when any regenerated
+array is not parallel to the deck list. Chart now plots Zoo at 61.9
+weighted / valData 60 in band.
+
+Tooling notes for the next refresh: `build_dashboard.py` has no
+`--merge` flag (CLAUDE.md's text is stale — `--save` calls the
+`merge()` function directly); `weekly_refresh.sh` still runs `--decks
+16`, which the merge guard now refuses on a 25-deck dashboard; the
+`mtg-dashboard-refresh` skill's timings and counts describe the 16-deck
+field. The real 25-deck costs on this box: matrix 28 min, extraction 38
+min.
+
+### Phase D — post-sim outlier replays (the trigger the 09-04 refresh skipped)
+
+Targets picked from the fresh JSX against `tools/calibration_bands.json`
+(field bands + the [30,70] default): each outlier deck's worst and best
+cell, capped at eight pairs; seeds 60100–60107; logs in `replays/*.txt`,
+viewers in `replays/replay_*.html`.
+
+| Seed | Pair | Why | Result | One-line read |
+|---|---|---|---|---|
+| 60100 | Jeskai Blink vs 4c Omnath | Jeskai 26.0 vs [45,60], worst cell 0 | Omnath 2-0 (T13, T9) | Omnath mulligans twice in G1 and still wins a 13-turn grind — Jeskai's answer→close residual (`ai/gameplan.py`, task #19 lane), not a rules gap. |
+| 60101 | Jeskai Blink vs Pinnacle Affinity | best cell 65 | Jeskai 2-0 (T11, T11) | Solitude + Ephemerate value games; Pinnacle mulligans a 0-lander in G1. Legitimate. |
+| 60102 | Amulet Titan vs Boros Energy | Amulet 27.9 vs [45,60], worst cell 0 | Boros 2-1 | Boros mulligans a four-land seven **twice** in G2 ("too many lands 4 > 3") and loses that game; wins G1/G3 on turns 9/6 against Pact-only keeps. Amulet lane + the mulligan-cap lead below. |
+| 60103 | Amulet Titan vs Jeskai Blink | best cell 70 | Jeskai 2-0 (T11, T9) | Amulet keeps Zenith / Spelunking / Pact hands and never assembles by turn 9 — the Amulet primary doc. |
+| 60104 | Ruby Storm vs Pinnacle Affinity | Storm 63.5 vs [40,55], worst cell 30 | Pinnacle 2-0 (T8, T4) | A turn-4 kill through a ritual-heavy keep: race, no defect visible. |
+| 60105 | Ruby Storm vs 4/5c Control | best cell 95 | Storm 2-1 (T8 / T10 / T6) | Storm mulligans a four-land seven in G3 and still wins on turn 6; 4/5c's G2 win is a Teferi + Wrenn keep. The 95 cell is the deck-level Storm-vs-control residual (combo speed vs sparse counters). |
+| 60106 | Dimir Midrange vs Eldrazi Tron | Dimir 68.5 vs [45,60], worst cell 40 | Eldrazi Tron 2-0 (T8, T10) | Dimir mulligans a five-land seven ("5 > 4") in G2; Tron's Temple + Thought-Knot keeps. Legitimate. |
+| 60107 | Dimir Midrange vs Hollow One | best cell 100 | Dimir 2-0 (T7, T7) | Hollow One mulligans a 0-lander in G2; both games a Frog / Push curve. Legitimate. |
+
+**Lead surfaced (recurring, not built):** the per-deck flat
+`mulligan_max_lands` cap mulligans standard four-land sevens — Boros
+Energy (twice, s60102 G2), Ruby Storm (s60105 G3), Hollow One (Pinnacle
+loop), and Dimir's five-land seven; nine gameplans sit at 3. A
+derivation from the deck's curve (rather than a per-deck integer) is
+the class-sized shape; it is deck configuration today, so it stays out
+of every measurement task.

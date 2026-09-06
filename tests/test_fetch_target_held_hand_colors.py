@@ -152,8 +152,12 @@ class TestFetchPicksColorHeldSpellsNeed:
 
         game = GameState(rng=random.Random(0))
 
-        _add(game, card_db, "Watery Grave", controller=0,
-             zone="battlefield")
+        # An untapped Watery Grave already in play (shock lands now
+        # enter tapped by default, so untap it to model the intended
+        # "untapped colour source on the battlefield" state).
+        _wg = _add(game, card_db, "Watery Grave", controller=0,
+                   zone="battlefield")
+        _wg.tapped = False
         _add(game, card_db, "Counterspell", controller=0, zone="hand")
 
         hf = _add(game, card_db, "Hallowed Fountain", controller=0,

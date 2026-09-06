@@ -257,3 +257,32 @@ valued discard, conjunction-blind mulligan), every fix generic and reused
 by other decks, every step measured. The next full matrix should re-read
 both rows plus the decks the generic mechanisms touch (any deck holding
 blink effects, graveyard payoffs, or multi-role gameplans).
+
+## POST-CAGE-FIX RE-MEASUREMENT (2026-08-30) — provisional status LIFTED
+
+The numbers above were flagged provisional because they predated the
+phantom-Cage fix (#567), which found that 446 permanents were wrongly acting
+as symmetric Grafdigger's Cages and SUPPRESSING graveyard decks across most of
+the field. Re-measured on the corrected engine, n=20 Bo3, all 24 opponents,
+with `MTG_LLM_DECISION_SCORER_OFFLINE=1` (see the 2026-08-30 diagnostics doc —
+without it the decision loop makes live LLM calls and is non-deterministic):
+
+| Deck | Original | Post-levers | **Post-Cage-fix** | Band |
+|---|---|---|---|---|
+| Instant Reanimator | 35.4 | 47.9 | **56.7** | [45-60] — in band |
+| Goryo's Vengeance | 28.8 | 36.9 | **48.1** | [30-70] — in band |
+
+Both rose again (+8.8 and +11.2), which is the direction the Cage diagnosis
+predicted: these decks were being held down by phantom hate, not
+under-punished by absent hate. Cumulative across the arc: Instant Reanimator
+35.4 -> 56.7 (+21.3), Goryo's 28.8 -> 48.1 (+19.3).
+
+Comparability note: the post-levers figures were measured while `pydantic_ai`
+was absent from the container, so the live-LLM path was inert — behaviourally
+equivalent to running with the offline flag. The three columns are therefore
+comparable.
+
+Instant Reanimator's spread is now sensible for the archetype: 90% vs Living
+End and Azorius Control, 75% vs Hollow One and Amulet Titan, 35% vs Dimir
+Midrange, 5% vs Domain Zoo — it beats the slow decks and loses to the fastest
+aggro, which is what the deck does in paper.

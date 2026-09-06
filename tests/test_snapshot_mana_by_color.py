@@ -67,7 +67,8 @@ class TestSnapshotManaByColorA2:
 
         _add(game, card_db, "Island", controller=0, zone="battlefield")
         _add(game, card_db, "Island", controller=0, zone="battlefield")
-        _add(game, card_db, "Steam Vents", controller=0, zone="battlefield")
+        _sv = _add(game, card_db, "Steam Vents", controller=0, zone="battlefield")
+        _sv.tapped = False  # shocks enter tapped; model an untapped source
         _add(game, card_db, "Plains", controller=0, zone="battlefield")
 
         snap = snapshot_from_game(game, 0)

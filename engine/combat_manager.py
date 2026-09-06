@@ -159,11 +159,17 @@ class CombatManager:
                 and Keyword.FLYING not in blocker.keywords
                 and Keyword.REACH not in blocker.keywords):
             return False
+        # CR 702.28b — shadow is symmetric: a creature with shadow can
+        # block or be blocked by ONLY creatures with shadow. So a block
+        # is illegal whenever exactly one of the two has shadow.
+        if ((Keyword.SHADOW in attacker.keywords)
+                != (Keyword.SHADOW in blocker.keywords)):
+            return False
         # CR 702.16d — protection: can't be blocked by a creature of
         # the quality this attacker has protection from.
         protection = getattr(attacker.template, 'protection_from_colors',
                              frozenset())
-        if protection and (blocker.template.colors & protection):
+        if protection and (blocker.colors & protection):
             return False
         return True
 
@@ -284,7 +290,11 @@ class CombatManager:
             player_damage = 0
 
             if assignment.blocker_ids:
-                # CR 510.1a: Blocked creature assigns damage to blockers
+                # CR 510.1c: the attacker divides its power among its
+                # blockers, stopping when its power is spent. This pass
+                # ONLY assigns the attacker's own damage — a blocker
+                # dealing damage back is not gated by the attacker's
+                # assignment budget (see the separate pass below).
                 remaining_damage = attacker_power
 
                 for blocker_id in assignment.blocker_ids:
@@ -310,7 +320,38 @@ class CombatManager:
                                is_combat=True)
                     remaining_damage -= damage_to_blocker
 
-                    # Blocker deals damage back
+                # CR 510.1c: a blocked attacker WITHOUT trample cannot hold
+                # back damage — once every blocker has its lethal, the
+                # excess must still be assigned to a blocker (conventionally
+                # the last). Otherwise a big attacker into a small blocker
+                # under-reports the damage it deals, and lifelink (which
+                # gains life equal to damage dealt) under-gains. Trample
+                # instead sends the excess to the player (handled below), so
+                # this only fires for the non-trample case.
+                if remaining_damage > 0 and not has_trample:
+                    _dump_target = next(
+                        (b for b in (game.get_card_by_id(bid)
+                                     for bid in reversed(assignment.blocker_ids))
+                         if b is not None and b.zone == "battlefield"),
+                        None)
+                    if _dump_target is not None:
+                        deal_damage(attacker, _dump_target, remaining_damage,
+                                   is_combat=True)
+                        remaining_damage = 0
+
+                # CR 509.2: EVERY blocking creature deals its own combat
+                # damage back to the attacker, independent of whether — or
+                # in what order — the attacker assigned damage to it. This
+                # pass is separate from the assignment loop above so a
+                # blocker the attacker's exhausted power never reached
+                # (gang block wider than the attacker's power) still deals
+                # its damage: previously the deal-back lived inside the
+                # assignment loop and was skipped once `remaining_damage`
+                # hit 0, letting a small attacker survive a lethal gang.
+                for blocker_id in assignment.blocker_ids:
+                    blocker = game.get_card_by_id(blocker_id)
+                    if not blocker or blocker.zone != "battlefield":
+                        continue
                     blocker_has_fs = (Keyword.FIRST_STRIKE in blocker.keywords or
                                      Keyword.DOUBLE_STRIKE in blocker.keywords)
                     should_deal_back = (

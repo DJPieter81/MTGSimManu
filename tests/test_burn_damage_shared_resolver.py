@@ -44,18 +44,18 @@ handler, not the resolver):
   (a manual creature-target cast, or a test) that supplies a real
   target id.
 
-Lightning Bolt and Lava Dart have no such per-card quirk — both
-shrink to a one-line call into the shared resolver with a fixed
-amount. (A full deletion, relying on the generic per-ability-loop
-fallback in `spell_resolution.py::_execute_spell_effects`, was
-considered and rejected: `tests/test_burn_spell_damage_resolves_on_creature.py`
-already pins `EFFECT_REGISTRY.execute("Lightning Bolt", ...)`
-returning `True` directly — deleting the registration would silently
-fall through to a different, more fragile dispatch path (the
-ability-loop parses the damage amount by scanning the synthesized
-description for the first int-parseable word) for no reduction in
-duplicated logic, since the one-line shrink already eliminates the
-bespoke target-filter code.)
+Lightning Bolt and Lava Dart have no such per-card quirk — both are a
+whole-effect fixed-N burn. Their EFFECT_REGISTRY handlers have since
+been DELETED: the shape is now classified once at DB load into
+`CardTemplate.direct_damage_data` (oracle_parser.parse_direct_damage_spell)
+and dispatched — no oracle inspection at resolve time — through the
+typed-field branch of `oracle_resolver.resolve_spell_from_oracle` into
+the same shared resolver. So the fixed-N burn spells need no
+registration at all (~79 in the DB resolve via the typed path), which
+lowered the card-name-registry baseline by 2. See
+`tests/test_direct_damage_shared_resolver.py` for the typed-path pins
+and the redundancy proof, and this file's `TestLavaDartMigratedHandler`
+for the same behaviour asserted through `resolve_spell_from_oracle`.
 
 Card names appear only as fixture carriers (synthetic CardTemplates
 for the resolver-level tests; real DB cards for the handler-level
@@ -72,7 +72,8 @@ import pytest
 from engine.card_effects import EFFECT_REGISTRY, EffectTiming
 from engine.cards import CardInstance, CardTemplate, CardType, ManaCost
 from engine.game_state import GameState
-from engine.oracle_resolver import resolve_damage_to_chosen_target
+from engine.oracle_resolver import (resolve_damage_to_chosen_target,
+                                     resolve_spell_from_oracle)
 
 
 # ─── synthetic fixtures for resolver-unit tests ────────────────────
@@ -265,20 +266,22 @@ def _make_spell(game, card_db, name, controller):
 
 
 class TestLavaDartMigratedHandler:
-    """Lava Dart shrinks to a one-line call into the shared resolver
-    — same fixed-amount shape as Lightning Bolt, amount=1."""
+    """Lava Dart's fixed-amount (=1) burn now has NO EFFECT_REGISTRY handler
+    at all: the shape is classified once at load into
+    ``CardTemplate.direct_damage_data`` and dispatched through the typed-field
+    branch of ``resolve_spell_from_oracle`` into the same shared resolver.
+    These pin that the typed path applies the amount to a declared creature
+    and to the face sentinel — the behaviour the deleted handler owned."""
 
     def test_lava_dart_damages_declared_creature(self, card_db):
         game = GameState(rng=random.Random(0))
         target = _put_creature_in_play(game, card_db, "Tarmogoyf", 1)
         spell = _make_spell(game, card_db, "Lava Dart", 0)
 
-        fired = EFFECT_REGISTRY.execute(
-            "Lava Dart", EffectTiming.SPELL_RESOLVE,
-            game, spell, 0, targets=[target.instance_id],
-        )
+        handled = resolve_spell_from_oracle(
+            game, spell, 0, targets=[target.instance_id])
 
-        assert fired
+        assert handled
         assert target.damage_marked == 1
 
     def test_lava_dart_face_sentinel(self, card_db):
@@ -287,12 +290,9 @@ class TestLavaDartMigratedHandler:
         life_before = opp.life
         spell = _make_spell(game, card_db, "Lava Dart", 0)
 
-        fired = EFFECT_REGISTRY.execute(
-            "Lava Dart", EffectTiming.SPELL_RESOLVE,
-            game, spell, 0, targets=[-1],
-        )
+        handled = resolve_spell_from_oracle(game, spell, 0, targets=[-1])
 
-        assert fired
+        assert handled
         assert opp.life == life_before - 1
 
 

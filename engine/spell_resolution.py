@@ -136,7 +136,22 @@ class ResolutionManager:
         # unpaid counters the whole spell/ability immediately (CR
         # 702.21a counters the SPELL, not just that one target) and
         # stops further ward checks — there is nothing left to tax.
-        for _tid in list(item.targets):
+        # CR 603.3: a permanent spell (non-Aura creature/artifact/
+        # enchantment/planeswalker) does NOT target — its ETB/attack
+        # trigger does, on a separate stack object. Ward on such a
+        # trigger-bound target may counter the trigger when it resolves,
+        # but never the permanent spell, which still enters. Same
+        # exemption the CR 608.2b fizzle branch below already applies;
+        # abilities and genuinely-targeted instants/sorceries/Auras are
+        # unaffected.
+        _pt_ward = getattr(card.template, 'card_types', None) or []
+        _is_permanent_spell_ward = any(
+            t in _pt_ward for t in (CardType.CREATURE, CardType.ARTIFACT,
+                                    CardType.ENCHANTMENT, CardType.PLANESWALKER))
+        _is_aura_ward = getattr(card.template, 'aura_enchant_restriction', None) is not None
+        _ward_can_counter = not (item.item_type == StackItemType.SPELL
+                                 and _is_permanent_spell_ward and not _is_aura_ward)
+        for _tid in (list(item.targets) if _ward_can_counter else []):
             if not isinstance(_tid, int) or _tid < 0:
                 continue  # face/player target — permanents only have ward
             _target = game.get_card_by_id(_tid)
@@ -166,7 +181,22 @@ class ResolutionManager:
         # to the graveyard with no effect. Ported from the dead legacy
         # resolver (engine/stack.py, pre-unification); see
         # docs/proposals/resolver_sba_unification.md §5.1.
+        #
+        # Fizzling applies to the SPELL's own targets. A permanent spell
+        # (creature/artifact/enchantment/planeswalker) that is NOT an
+        # Aura enters the battlefield regardless of targets — a "when you
+        # cast this spell" trigger is a separate object (CR 603.3), and
+        # its target (recorded on this item and exiled by the trigger)
+        # must not fizzle the permanent. Only instants, sorceries, and
+        # Auras fizzle on all-illegal targets.
+        _pt = getattr(card.template, 'card_types', None) or []
+        _is_permanent_spell = any(
+            t in _pt for t in (CardType.CREATURE, CardType.ARTIFACT,
+                               CardType.ENCHANTMENT, CardType.PLANESWALKER))
+        _is_aura = getattr(card.template, 'aura_enchant_restriction', None) is not None
+        _fizzle_eligible = not (_is_permanent_spell and not _is_aura)
         if (item.item_type == StackItemType.SPELL and item.targets
+                and _fizzle_eligible
                 and ResolutionManager._spell_fizzles(game, item)):
             game.log.append(
                 f"T{game.display_turn}: {card.name} fizzles "
@@ -197,6 +227,17 @@ class ResolutionManager:
             else:
                 # Permanent enters battlefield
                 card.controller = item.controller
+                # Cascade is a cast trigger (CR 702.85a): the trigger and
+                # the free spell it casts resolve while the cascade SOURCE
+                # is still on the stack — so a cascaded mass-effect (board
+                # wipe, mass reanimation, mass bounce) must not see or
+                # affect the source. Resolve cascade BEFORE the source
+                # physically enters; the source enters last. Invisible for
+                # instant/sorcery sources (they hit the graveyard), so only
+                # a permanent source — entered first, then swept by its own
+                # cascaded spell — exposed the bug.
+                if Keyword.CASCADE in template.keywords:
+                    game._handle_cascade(item)
                 card.enter_battlefield()
                 game.players[item.controller].battlefield.append(card)
                 # Place counters for X-cost permanents — only if no dedicated
@@ -213,14 +254,11 @@ class ResolutionManager:
                             f"T{game.display_turn} P{item.controller+1}: "
                             f"{card.name} enters with {item.x_value} charge counter(s)")
                     elif effect == "plus1_counters":
-                        card.plus_counters += item.x_value
+                        card.add_plus_counters(item.x_value, game)
                         game.log.append(
                             f"T{game.display_turn} P{item.controller+1}: "
                             f"{card.name} enters with {item.x_value} +1/+1 counter(s)")
                 game._handle_permanent_etb(card, item.controller, item=item)
-                # Cascade on permanents too
-                if Keyword.CASCADE in template.keywords:
-                    game._handle_cascade(item)
                 # Evoke: sacrifice after ETB triggers
                 if getattr(card, '_evoked', False):
                     if card in game.players[item.controller].battlefield:
@@ -314,12 +352,44 @@ class ResolutionManager:
         # from "Modular N" in oracle text). Works for all modular cards — no card
         # names involved.  "Modular—Sunburst" has modular_n == 0 and is skipped.
         if Keyword.MODULAR in template.keywords and template.modular_n > 0:
-            card.plus_counters += template.modular_n
+            card.add_plus_counters(template.modular_n, game)
             game.log.append(
                 f"T{game.display_turn} P{controller+1}: "
                 f"{template.name} enters with {template.modular_n} "
                 f"+1/+1 counter(s) (modular)"
             )
+
+        # Static team keyword anthem ("Creatures you control have trample"):
+        # register a continuous lord effect granting the parsed keywords to the
+        # controller's creatures (CR 611). Typed-field gated
+        # (parse_team_keyword_grant), no card names. The continuous-effects
+        # manager re-derives it each recalculate() (so later-entering creatures
+        # are covered) and retracts it when the source leaves the battlefield.
+        # Colour-conditional anthems (Scion of Draco) parse to None and keep
+        # their bespoke handler.
+        _tkg = getattr(template, 'team_keyword_grant', None)
+        if _tkg and _tkg.get('keywords'):
+            from .cards import Keyword as _KW, _KEYWORD_BY_VALUE
+            from .continuous_effects import create_lord_effect
+            _kws = {_KEYWORD_BY_VALUE[v] for v in _tkg['keywords']
+                    if v in _KEYWORD_BY_VALUE}
+            _others = _tkg.get('others_only', False)
+            _src_id = card.instance_id
+
+            def _team_affected(g, c, _ctl=controller, _sid=_src_id,
+                               _oth=_others):
+                if not (c.controller == _ctl and c.template.is_creature):
+                    return False
+                return not (_oth and c.instance_id == _sid)
+
+            for effect in create_lord_effect(
+                    source_id=_src_id, source_name=template.name,
+                    affected_fn=_team_affected, power_bonus=0, toughness_bonus=0,
+                    keyword_grants=_kws,
+                    description="grants " + ", ".join(sorted(k.value for k in _kws))
+                                + " to your creatures"):
+                game.continuous_effects.register(effect)
+            game.continuous_effects.recalculate(game)
 
         # Energy production on ETB (from oracle-derived template property)
         if template.energy_production > 0:
@@ -448,48 +518,61 @@ class ResolutionManager:
         # same clause is handled without a name check.
         hate_card = game._gy_reanimation_hate_source()
 
-        # For each player: exile battlefield creatures, return graveyard creatures
+        # CR 608.2 / 614: Living End resolves as a SINGLE event. Exile ALL
+        # creatures from BOTH battlefields, then return ALL creatures from
+        # BOTH graveyards, and only THEN put the returned creatures' ETB
+        # triggers on the stack. A returned creature's ETB (Solitude, Grief,
+        # ...) must see the FINISHED board — every original already exiled,
+        # every graveyard creature already returned — not a half-resolved
+        # one where the other player's originals are still present and look
+        # like legal targets. The old per-player exile/return/fire-ETB loop
+        # fired P0's ETBs while P1's originals were still on the battlefield.
+
+        # Phase 1: exile every creature on both battlefields.
         for p_idx in range(2):
             player = game.players[p_idx]
-
-            # Collect creatures on battlefield to exile
-            bf_creatures = [c for c in player.battlefield if c.template.is_creature]
-            # Collect creatures in graveyard to return
-            gy_creatures = [c for c in player.graveyard if c.template.is_creature]
-
-            # Exile battlefield creatures (zone funnel handles removal,
-            # cleanup, and exile-list append).
-            for creature in bf_creatures:
+            for creature in [c for c in player.battlefield if c.template.is_creature]:
                 game.zone_mgr.move_card(
-                    game, creature, "battlefield", "exile",
-                    cause="living end"
-                )
+                    game, creature, "battlefield", "exile", cause="living end")
 
-            # Return graveyard creatures to battlefield (gated by Cage)
-            if hate_card is not None:
+        if hate_card is not None:
+            # Grafdigger's Cage: creatures can't enter from graveyards; the
+            # exile above still happened, but the return is prevented.
+            for p_idx in range(2):
+                gy_creatures = [c for c in game.players[p_idx].graveyard
+                                if c.template.is_creature]
                 if gy_creatures:
                     game.log.append(
                         f"T{game.display_turn}: {hate_card.name} prevents "
                         f"{len(gy_creatures)} creature(s) from returning "
                         f"to the battlefield for P{p_idx+1} "
-                        f"(cards stay in graveyard)."
-                    )
-                continue
+                        f"(cards stay in graveyard).")
+        else:
+            # Phase 2: return every graveyard creature to the battlefield
+            # (physical entry only — ETBs are deferred to phase 3). CR 614
+            # simultaneity: bulk-remove from each GY before entering, so an
+            # ETB that later mutates a graveyard can't desync a live list.
+            returned = []  # (creature, p_idx), in turn order
+            for p_idx in range(2):
+                player = game.players[p_idx]
+                gy_creatures = [c for c in player.graveyard
+                                if c.template.is_creature]
+                to_return = set(map(id, gy_creatures))
+                player.graveyard[:] = [c for c in player.graveyard
+                                       if id(c) not in to_return]
+                for creature in gy_creatures:
+                    creature.controller = p_idx
+                    creature.enter_battlefield()
+                    player.battlefield.append(creature)
+                    returned.append((creature, p_idx))
+                    game.log.append(f"T{game.display_turn}: Living End returns "
+                                    f"{creature.name} for P{p_idx+1}")
 
-            # CR 614 simultaneous return: bulk-remove from GY before
-            # firing any ETB. An ETB that mutates this same GY (e.g.,
-            # Endurance's clear) would otherwise desync the snapshot
-            # from the live list and raise on .remove().
-            to_return = set(map(id, gy_creatures))
-            player.graveyard[:] = [c for c in player.graveyard
-                                   if id(c) not in to_return]
-            for creature in gy_creatures:
-                creature.controller = p_idx
-                creature.enter_battlefield()
-                player.battlefield.append(creature)
-                game._handle_permanent_etb(creature, p_idx)
-                game.log.append(f"T{game.display_turn}: Living End returns "
-                                f"{creature.name} for P{p_idx+1}")
+            # Phase 3: now that every creature is exiled and every returnee
+            # is on the battlefield, fire the returned creatures' ETBs.
+            for creature, p_idx in returned:
+                if creature.zone == "battlefield":
+                    game._handle_permanent_etb(creature, p_idx)
 
         # Mark the controller's next combat as aggressive. Living End resets the
         # board in our favour; the AI should swing all-in even with blockers back
@@ -557,6 +640,41 @@ class ResolutionManager:
                         game.players[controller].mana_pool.add(sc, sa)
                     game.log.append(f"T{game.display_turn} P{controller+1}: "
                                     f"  Spliced {spliced_tmpl.name} adds {sa} {sc} mana")
+            return
+
+        # ── Modal "Choose one/two —" spells ──
+        # Resolve exactly the chosen mode(s), not every mode. Scope:
+        # multi-mode, non-counterspell instants/sorceries with no
+        # counter mode (the counterspell path and single-parsed-mode
+        # charms already resolve their one mode correctly and are left
+        # untouched). Each chosen mode resolves off its REAL clause via
+        # resolve_spell_from_oracle(oracle_override=...), so a mode's
+        # type / mana-value restriction survives (the synthesized
+        # per-mode ability description drops it).
+        tmpl = card.template
+        modes = getattr(tmpl, 'modes', None) or []
+        # Gate on the number of PARSED mode-abilities, not the number of
+        # printed modes: the bug is a modal card that synthesized MORE
+        # THAN ONE ability and runs them all (Brotherhood's End: 2). A
+        # modal card that parsed to a single ability (Kozilek's Command,
+        # the charms) already resolves its one mode and must be left on
+        # its existing path — intercepting it would route a mode clause
+        # this generic resolver cannot fully execute.
+        _n_abilities = len([a for a in tmpl.abilities if a.description])
+        if (getattr(tmpl, 'is_modal', False)
+                and _n_abilities > getattr(tmpl, 'modal_choose_count', 1)
+                and not getattr(tmpl, 'is_counterspell', False)
+                and (tmpl.is_instant or tmpl.is_sorcery)
+                and not any('counter target' in m.get('text', '').lower()
+                            for m in modes)):
+            from ai.modal import select_modal_modes
+            from .oracle_resolver import resolve_spell_from_oracle
+            chosen = select_modal_modes(game, card, controller, item.targets)
+            for idx in chosen:
+                clause = modes[idx].get('text', '')
+                resolve_spell_from_oracle(game, card, controller, item.targets,
+                                          x_value=item.x_value,
+                                          oracle_override=clause)
             return
 
         # Dispatch to card effect registry
@@ -659,16 +777,32 @@ class ResolutionManager:
                         continue
 
                 if item.targets:
+                    from .target_solver import player_index_for_target
                     for tid in item.targets:
-                        if tid == -1:
-                            # AI chose face — route to player damage.
-                            deal_damage(item.source, game.players[opponent], amount)
+                        _pidx = player_index_for_target(game, controller, tid)
+                        if _pidx is not None:
+                            # A player sentinel — route to player damage.
+                            deal_damage(item.source, game.players[_pidx], amount)
                             continue
                         target = game.get_card_by_id(tid)
                         if (target and target.zone == "battlefield"
                                 and (target.template.is_creature
                                      or CardType.PLANESWALKER in target.template.card_types)):
                             deal_damage(item.source, target, amount)
+                elif ("all_creatures" in desc or "each creature" in desc
+                      or "all creatures" in desc):
+                    # Symmetric damage sweep (Pyroclasm / Anger of the Gods /
+                    # Sweltering Suns / Kozilek's Return): N damage to every
+                    # creature on both battlefields — and planeswalkers too
+                    # when the clause names them. It deals nothing to players;
+                    # without this case it fell through to the face fallback.
+                    also_pw = "planeswalker" in desc
+                    for _pl in game.players:
+                        for _perm in list(_pl.battlefield):
+                            if (_perm.template.is_creature
+                                    or (also_pw and CardType.PLANESWALKER
+                                        in _perm.template.card_types)):
+                                deal_damage(item.source, _perm, amount)
                 elif "each opponent" in desc or "player" in desc:
                     deal_damage(item.source, game.players[opponent], amount)
                 elif amount > 0:
