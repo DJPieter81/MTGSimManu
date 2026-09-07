@@ -3524,3 +3524,119 @@ loop), and Dimir's five-land seven; nine gameplans sit at 3. A
 derivation from the deck's curve (rather than a per-deck integer) is
 the class-sized shape; it is deck configuration today, so it stays out
 of every measurement task.
+
+## Ruby Storm band loop (2026-09-06)
+
+### Context — the timeout fix that had to come first
+
+The 2026-09-06 outlier-decks phase (four decks flagged after the meta
+refresh: Ruby Storm, Affinity, Jeskai Blink, Amulet Titan) opened with a
+Ruby Storm `--field` run reporting **0.0%** and a `--bo3` reproduction
+showing all 5 games drawn at turn 6. Investigation found this was an
+**environment artifact, not a Storm bug**: `GAME_TIMEOUT_SECONDS` (8s) was
+armed as a WALL-CLOCK deadline, so a contended box cut off healthy games
+and every draw was then credited to the second-named deck by the matrix's
+`100 - pct` reverse-cell construction. Fixed in three commits (PR #570,
+merged into this branch): the safety valve is now a CPU budget
+(`engine/game_budget.py`, load-invariant), a game nobody won is counted
+and never credited (`run_meta._tally`, `WorkerResult`), and each process
+loads the card database once instead of twice. Full diagnosis and the
+load-invariance measurement:
+`docs/diagnostics/2026-09-06_wall_clock_deadline_load_invariance.md`.
+
+### Baseline (on the fixed code, quiet box, `MTG_LLM_DECISION_SCORER_OFFLINE=1`)
+
+`--field "Ruby Storm" -n 20 --parallel`, 50000 grid, 0 draws, 0 aborted:
+**64.6%** flat, vs the [40,55] band. Worst cells for Storm's opponents:
+Azorius Blink 95, 4/5c Control 90, Boros Ponza 90. This is the loop's
+iteration-0 baseline — it supersedes every pre-timeout-fix Storm number.
+
+### Iteration 1 — Azorius Blink (95): a spell's keep-score ignored whether the hand could ever pay for it
+
+**Replay** (`--bo3 "Ruby Storm" "Azorius Blink" -s 50000`, Storm 2-0):
+Blink Game 2 kept a 1-land 7 — Aang (CMC3), Quantum Riddler (CMC5), 2x
+Witch Enchanter (CMC4), Consign to Memory (CMC1) — at `_hand_ev_score`
+25.0 against the 24.0 floor (`mulligan_min_lands: 1` in Blink's own
+gameplan let a 1-land hand reach the scored gate at all). The game never
+drew a second land; four of five spells were dead the entire game; Storm
+killed on turn 4 uncontested.
+
+**Mechanic (class-sized, not Blink-specific):** `_card_keep_score`
+(`ai/mulligan.py`) values every spell by curve position
+(`KEEP_SCORE_CMC_INVERTED_CEIL - cmc`) and tags, with no term reading the
+hand's own land count. `_hand_ev_score` already discounts UNPRODUCTIVE
+lands beyond the optimal count (`MULLIGAN_EXCESS_LAND_PENALTY`) — nothing
+discounted UNCASTABLE spells on the mirror side of the same resource.
+Fix: `MULLIGAN_SPELL_MANA_GAP_PENALTY` (1.0, same rate as the excess-land
+penalty) subtracts `max(0, cmc - lands_in_hand)` per spell. Runs for every
+non-land card in every opening hand, all 25 decks — verified the two
+documented `MULLIGAN_MIN_HAND_SCORE_7` calibration examples (3 lands + 4
+CMC-4 counterspells; 5 lands + 2 CMC-2 spells) stay keeps.
+
+**Tests** (`tests/test_mulligan_discounts_spells_the_hand_cannot_pay_for.py`,
+red first): 1-land/high-CMC hand mulls; penalty scales with the gap, not
+flat; a spell within reach of the hand's own lands is unpenalized; one
+point of gap on one card doesn't crater a strong hand; both documented
+calibration examples still keep.
+
+**Verify → measure:**
+- WR anchor: one turns-only drift (Grixis Reanimator vs Azorius Blink,
+  seed 53000, winner unchanged, T8→T9), refreshed via
+  `tools/refresh_wr_baseline.py` on a quiet box; no winner flips across
+  27 entries.
+- All 7 ratchets at baseline; both CI chunks green locally (a-g 2257
+  passed, h-z 2253 passed — +6 for the new file); GitHub CI green on the
+  pushed head (`d72d563`).
+- **Reproduction seed re-replayed post-fix:** the exact hand now mulligans
+  ("hand score 9.0 below floor 24.0"); the Bo3 flips from Storm 2-0 to
+  **Azorius Blink 2-1**.
+- **Targeted cell**, n=20 Bo3, 50000 grid: Storm vs Azorius Blink
+  **95 → 90**. Real movement, one cell.
+- **Guard** (holdback-on control, unrelated to Storm), n=20 Bo3: Azorius
+  Control vs Domain Zoo **30% / 65% / 1 draw** — no over-mulligan
+  regression signal.
+- **Full field**, n=20 Bo3 `--parallel`: **64.6% → 64.2%**. 0.4pp — a real,
+  verified fix with a genuine but narrow effect radius; it is not the
+  primary driver of Storm's field number. Not a loop-break yet (1 of 3
+  code iterations without ≥2.2pp movement, per the standing loop
+  protocol) — this counts as the "no movement" case, one iteration in.
+
+### Iteration 2 — identified, not built: the flat `mulligan_max_lands` cap over-mulligans standard 4-land sevens
+
+**Already flagged as a lead** in the 2026-09-06 outlier-replay table
+above (Boros Energy s60102, Ruby Storm s60105, Hollow One, Dimir's 5-land
+7) and independently rediscovered here: `land_count > gp.mulligan_max_lands`
+(`ai/mulligan.py:309`) is a HARD reject, checked before the scored gate,
+distinct from the correct flood signal that already exists a few lines up
+(`MULLIGAN_FLOOD_LAND_COUNT=5` **and** `spells < MULLIGAN_MIN_SPELLS_BASIC`
+— a real "too many lands AND too few spells" test). Nine gameplans declare
+`mulligan_max_lands: 3`: **affinity, azorius_blink, boros_energy,
+creatures_toolbox, domain_zoo, grixis_reanimator, hollow_one,
+izzet_prowess, ruby_storm**. For all nine, a completely standard 4-land,
+3-spell 7 is auto-mulliganed unless it happens to carry an `always_early`
+card that clears `MULLIGAN_LAND_SLACK_FIRST_TURN_VALUE_FLOOR` — the one
+narrow escape hatch. There is direct precedent: Pinnacle Affinity hit
+this exact defect during its own band loop and was fixed by raising its
+`mulligan_max_lands` to ≥4, now pinned by
+`tests/test_saga_engine_land_gameplan_config.py`; it was never
+generalized to the other nine.
+
+**Not built this iteration, deliberately.** Two real risks make this a
+separate unit, not a same-breath follow-on to iteration 1: (a) blast
+radius is nine decks including **Domain Zoo**, whose [50,65] calibration
+took two full band loops and an explicit loop-break to reach — a blanket
+bump risks reopening a closed lane without a dedicated Zoo guard
+measurement; (b) "class-sized" here could mean either a data-only fix
+(bump all nine to `mulligan_max_lands: 4`, the Pinnacle precedent) or a
+mechanic-level fix (derive the ceiling from the deck's own curve instead
+of a flat per-deck integer, removing the tuning knob entirely) — which
+one is correct needs its own short diagnosis, not a default guess.
+
+**Next iteration's shape:** replay-diagnose whether the flood-vs-count
+distinction is real for a couple of the nine (does a kept 4-land Boros
+Energy 7 actually reflect what a Boros Energy pilot would keep?); pick
+data-bump vs mechanic-derivation; failing test first
+(`tests/test_saga_engine_land_gameplan_config.py`'s pin is the template);
+targeted cells for Storm's Boros Energy / 4/5c Control matchups plus a
+**mandatory Domain Zoo field guard** (n=20, must stay in [50,65]) before
+the full Storm field re-measure.
