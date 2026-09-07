@@ -3714,3 +3714,28 @@ counters to hand size; tapping out into a combo opponent's turn) are the
 next diagnosis, on the corrected engine. Full 25-deck matrix at n=20
 running to see every other deck's movement (hybrid cards sit in seven
 registered decks).
+
+**Full matrix on the corrected engine (2026-09-07, n=20 Bo3, 40000 grid, 3 workers,
+saved to scratch — the committed 09-06 results are untouched pending a canonical
+refresh decision).** `check_calibration.py --trend` vs 09-06:
+
+| deck | 09-06 | now | Δ |
+|---|---|---|---|
+| Ruby Storm | 63.5 | **48.8** | **−14.8** |
+| Pinnacle Affinity | 61.5 | 60.0 | −1.5 |
+| every other deck | | | within ±1.7 (n=20 noise) |
+
+Composition 38 in / 58 out → **40 in / 56 out**. Transitions: **Ruby Storm
+field OUT → IN**; Boros Energy field IN → OUT (68.8 → 70.2, +1.5pp across
+its band edge — noise-sized, not a Boros change); Storm cells Amulet /
+Azorius Control / Eldrazi Tron / Ponza / Living End OUT → IN, Storm vs
+Boros / Zoo / Prowess / Instant Reanimator IN → OUT (Storm now LOSES those
+by more than the band allows — the reverse residual). 39 draws recorded
+matrix-wide (control mirrors at the turn cap), 0 aborts, 0 draws on
+Storm's row.
+
+**Storm stop gate:** field 49.4% (matchup grid) / 48.8% (matrix grid), both
+inside [40, 55]; matrix-grid row max cell 80 (was four cells ≥85); the
+matchup-grid row has two cells sitting exactly at 85 (Boros Ponza, Azorius
+Blink). Lane closed as in band; the tap-out-into-a-combo-turn lead
+(`_holdback_penalty`) targets exactly those two cells and is the next unit.
