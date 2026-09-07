@@ -465,9 +465,12 @@ class CastManager:
             and card.has_flashback
             and template.flashback_cost is not None
         )
-        effective_cmc = (template.flashback_cost.cmc
+        # Quantity arithmetic starts from the LEAST mana that pays the
+        # cost (`min_mana`): identical to `cmc` except that a two-brid pip
+        # {2/W} counts 1 (a Plains pays it), not its mana value 2.
+        effective_cmc = (template.flashback_cost.min_mana
                          if _using_flashback_cost
-                         else template.mana_cost.cmc)
+                         else template.mana_cost.min_mana)
         # Domain cost reduction (oracle-derived template property)
         if template.domain_reduction > 0:
             domain = game._count_domain(player_idx)
@@ -493,13 +496,21 @@ class CastManager:
         # Delve
         if template.has_delve:
             gy_count = len(player.graveyard)
-            colored_cost = (template.mana_cost.white + template.mana_cost.blue
-                            + template.mana_cost.black
-                            + template.mana_cost.red
-                            + template.mana_cost.green)
+            colored_cost = template.mana_cost.non_generic_pips
             generic_portion = max(0, effective_cmc - colored_cost)
             delve_reduction = min(gy_count, generic_portion)
             effective_cmc = max(colored_cost, effective_cmc - delve_reduction)
+
+        # CR 601.2f — every reduction above (domain, "cost {N} less"
+        # permanents, self-scaling, affinity, delve) reaches the GENERIC
+        # component only.  Whatever they subtracted, the coloured,
+        # colourless and hybrid pips remain owed: floor the quantity here
+        # so no stack of reducers can quote a spell with pips as free.
+        # (Hybrid pips folded into `generic` upstream used to slip under
+        # this — the 2026-09-07 Manamorphose-for-nothing exploit.)
+        _pip_cost = (template.flashback_cost if _using_flashback_cost
+                     else template.mana_cost)
+        effective_cmc = max(effective_cmc, _pip_cost.non_generic_pips)
 
         # Phyrexian mana (CR 107.4f): each {C/P} pip in the cost may be paid
         # with 2 life INSTEAD of one mana of that pip's colour.  Waiving a pip
@@ -618,9 +629,7 @@ class CastManager:
                 and not getattr(c, 'tapped', False)
                 and c is not card
             )
-            colored_floor = (template.mana_cost.white + template.mana_cost.blue
-                             + template.mana_cost.black + template.mana_cost.red
-                             + template.mana_cost.green)
+            colored_floor = template.mana_cost.non_generic_pips
             improvise_cmc = max(colored_floor,
                                 effective_cmc - untapped_artifacts)
             if total_mana >= improvise_cmc:
@@ -777,7 +786,7 @@ class CastManager:
             k = sum(waived.values())
             needs = CastManager._without_waived_pips(color_needs, waived)
             if CastManager._color_assignment_feasible(sources, needs,
-                                                      max(0, cost.cmc - k)):
+                                                      max(0, cost.min_mana - k)):
                 return waived
             if (color_only_fallback is None
                     and CastManager._color_assignment_feasible(
@@ -807,16 +816,24 @@ class CastManager:
             left[color] = max(0, left.get(color, 0) - count)
         residual = ManaCost(**amounts)
         residual.phyrexian = {c: n for c, n in left.items() if n}
+        residual.hybrid = list(cost.hybrid)
         return residual
 
     @staticmethod
     def _color_pip_list(cost: "ManaCost") -> list:
-        """Flatten a cost's coloured pips into one entry per pip."""
+        """Flatten a cost's non-generic pips into one OPTION TUPLE per pip.
+
+        A fixed colour pip is ("R",); a hybrid pip (CR 107.4e) is its
+        colours, ("R", "G"); a two-brid pip {2/W} is ("W", "2") — the
+        digit option meaning "that much generic instead".  The MRV
+        solver treats all three uniformly.
+        """
         needs = []
         for color, needed in [("W", cost.white), ("U", cost.blue),
                               ("B", cost.black), ("R", cost.red),
                               ("G", cost.green), ("C", cost.colorless)]:
-            needs.extend([color] * needed)
+            needs.extend([(color,)] * needed)
+        needs.extend(tuple(p) for p in cost.hybrid)
         return needs
 
     @staticmethod
@@ -827,7 +844,7 @@ class CastManager:
         remaining = list(color_needs)
         for color, count in waived.items():
             for _ in range(count):
-                remaining.remove(color)
+                remaining.remove((color,))
         return remaining
 
     @staticmethod
@@ -861,34 +878,56 @@ class CastManager:
     @staticmethod
     def _color_assignment_feasible(sources: list, color_needs: list,
                                    total_needed: int) -> bool:
-        """MRV greedy: can each coloured pip claim its own source, with
-        enough sources left over for the generic remainder?"""
+        """MRV greedy: can each non-generic pip claim its own source, with
+        enough sources left over for the generic remainder?
+
+        `color_needs` holds option tuples (see `_color_pip_list`): a pip
+        is satisfied by a source producing ANY of its colour options.  A
+        two-brid pip that no source can colour falls back to its digit
+        alternative, which joins the generic remainder.
+        """
         used = [False] * len(sources)
         remaining_needs = list(color_needs)
+        # `total_needed` is in MINIMUM-payment units (`ManaCost.min_mana`):
+        # every pip counts 1.  A pip paid with a colour covers its 1; a
+        # two-brid pip paid with its digit instead needs `digit` sources,
+        # i.e. `digit - 1` more than the 1 already inside `total_needed`.
+        paid_pips = 0
+        extra_generic = 0
+
+        def _matches(pip, source):
+            return any(o in source for o in pip)
+
         while remaining_needs:
             # Re-sort by scarcity
             remaining_needs.sort(
-                key=lambda c: sum(
+                key=lambda p: sum(
                     1 for i, s in enumerate(sources)
-                    if c in s and not used[i])
+                    if _matches(p, s) and not used[i])
             )
-            c = remaining_needs.pop(0)
+            pip = remaining_needs.pop(0)
             # Find least-flexible unused source
             best_idx = -1
             best_flex = 999
             for i, s in enumerate(sources):
-                if not used[i] and c in s:
+                if not used[i] and _matches(pip, s):
                     flex = len(s)
                     if flex < best_flex:
                         best_flex = flex
                         best_idx = i
             if best_idx == -1:
-                return False
+                digits = [o for o in pip if o.isdigit()]
+                if not digits:
+                    return False
+                extra_generic += int(digits[0]) - 1
+                continue
             used[best_idx] = True
+            paid_pips += 1
 
-        # Check total mana (generic portion)
+        # Check total mana (generic portion): whatever the colour
+        # assignments did not cover must come from spare sources.
         remaining_sources = sum(1 for u in used if not u)
-        return remaining_sources >= total_needed - len(color_needs)
+        return remaining_sources >= total_needed + extra_generic - paid_pips
 
     # ─── Shared colour-verification helper ────────────────────────────
 
@@ -1574,7 +1613,9 @@ class CastManager:
                             black=template.mana_cost.black,
                             red=template.mana_cost.red,
                             green=template.mana_cost.green,
+                            colorless=template.mana_cost.colorless,
                             generic=reduced_generic,
+                            hybrid=list(template.mana_cost.hybrid),
                         )
                         if not game.tap_lands_for_mana(player_idx, delve_cost,
                                                          card_name=template.name):

@@ -108,9 +108,15 @@ def _generic_portion(template: "CardTemplate") -> int:
     formula mirrors `engine.cast_manager`'s line at the cost-
     calculation site (search for `colored_cost = ...`).
     """
+    # The printed generic component is exactly what these mechanics
+    # may reduce; coloured, colourless AND hybrid pips (CR 107.4e) are
+    # outside their reach.  Reading `mc.generic` directly keeps the AI's
+    # estimate identical to the engine's floor
+    # (`ManaCost.non_generic_pips`) — the estimate once derived this as
+    # `cmc - coloured`, which counted every hybrid pip as reducible and
+    # planned free casts the engine now refuses.
     mc = template.mana_cost
-    colored = mc.white + mc.blue + mc.black + mc.red + mc.green
-    return max(0, (mc.cmc or 0) - colored)
+    return max(0, mc.generic)
 
 
 def _count_delve_fuel(game: "GameState", player_idx: int) -> int:

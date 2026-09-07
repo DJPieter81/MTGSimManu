@@ -1154,11 +1154,22 @@ def parse_mana_cost_mtgjson(mana_cost_str: str) -> ManaCost:
             pass  # X costs handled separately
         elif sym.isdigit():
             cost.generic += int(sym)
-        # Hybrid mana, phyrexian, etc. - simplified
+        elif sym == "S":
+            # Snow mana {S} (CR 107.4h): one mana from a snow source.
+            # The snow restriction is not modelled; the mana IS — a
+            # dropped symbol would make the card cheaper than printed.
+            cost.generic += 1
         elif "/" in sym:
-            # e.g., W/U, 2/W, W/P
+            # e.g., W/U, 2/W, W/P, G/W/P
             parts = sym.split("/")
-            if parts[1].upper() == "P":
+            if len(parts) == 3 and parts[2].upper() == "P" \
+                    and all(p in COLOR_CHARS for p in parts[:2]):
+                # Hybrid Phyrexian {C/D/P} (CR 107.4f): C, D, or 2 life.
+                # Modelled as the hybrid pip (C, D); the life option is
+                # not offered for this pip.  Stricter than printed for
+                # the handful of cards that carry one, never cheaper.
+                cost.hybrid.append((parts[0], parts[1]))
+            elif parts[1].upper() == "P":
                 # Phyrexian (CR 107.4f) — counts as a coloured pip AND
                 # records the "or 2 life" permission on the cost itself.
                 # Parsed from the MANA COST, never from the reminder text:
@@ -1170,13 +1181,16 @@ def parse_mana_cost_mtgjson(mana_cost_str: str) -> ManaCost:
                     cost.add_color(parts[0])
                     cost.phyrexian[parts[0]] = (
                         cost.phyrexian.get(parts[0], 0) + 1)
-            elif parts[0].isdigit():
-                # Generic/colored hybrid - treat as colored
-                if parts[1] in ("W", "U", "B", "R", "G"):
-                    cost.generic += 1  # simplified
-            else:
-                # Color/color hybrid - pick first
-                cost.generic += 1  # simplified
+            elif parts[0].isdigit() and parts[1] in COLOR_CHARS:
+                # Two-brid {N/C} (CR 107.4e): pay N generic OR the colour.
+                # Recorded as a hybrid pip with the digit as one option;
+                # its mana value is N (CR 202.3e) — see ManaCost.cmc.
+                cost.hybrid.append((parts[1], parts[0]))
+            elif all(p in COLOR_CHARS for p in parts):
+                # Colour/colour hybrid {C/D}: one pip, either colour pays
+                # it (CR 107.4e).  NOT generic — it needs a source of one
+                # of its colours and no generic reduction touches it.
+                cost.hybrid.append(tuple(parts))
 
     return cost
 

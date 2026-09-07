@@ -309,12 +309,16 @@ class ManaPayment:
                     has_improvise = Keyword.IMPROVISE in c.template.keywords
                     break
         if reduction > 0:
+            # CR 601.2f: a reduction shrinks the GENERIC component only.
+            # Every other pip — coloured, colourless, hybrid — survives
+            # untouched (hybrid pips used to be folded into `generic`
+            # upstream, which is how two reducers made {1}{R/G} free).
             from .mana import ManaCost as MC
             new_generic = max(0, cost.generic - reduction)
             cost = MC(
                 white=cost.white, blue=cost.blue, black=cost.black,
                 red=cost.red, green=cost.green, colorless=cost.colorless,
-                generic=new_generic
+                generic=new_generic, hybrid=list(cost.hybrid),
             )
 
         # Improvise payment (Track H handoff): tap untapped non-land
@@ -495,22 +499,38 @@ class ManaPayment:
         #   Lands: Hallowed Fountain (W/U), Godless Shrine (W/B), Godless Shrine (W/B)
         #   Fixed order (W first): Fountain→W, then no U source → FAIL
         #   MRV order (U first, only 1 source): Fountain→U, then Shrine→W → SUCCESS
-
-        # First, use mana pool for colored costs
-        pool_used = {}
+        #
+        # Every pip is an OPTION TUPLE: a fixed colour pip is ("R",); a
+        # hybrid pip (CR 107.4e) is its colours, e.g. ("R", "G"); a
+        # two-brid pip {2/W} is ("W", "2"), the digit meaning "that much
+        # generic instead".  The same MRV walk serves all three.
+        pips = []
         for color in ["W", "U", "B", "R", "G", "C"]:
-            remaining = needed.get(color, 0)
-            if remaining > 0:
-                pool_avail = player.mana_pool.get(color)
-                use_pool = min(pool_avail, remaining)
-                pool_used[color] = use_pool
-                needed[color] = remaining - use_pool
+            pips.extend([(color,)] * needed.get(color, 0))
+        pips.extend(tuple(p) for p in cost.hybrid)
+        generic_needed = needed.get("generic", 0)
 
-        # Collect colors that still need land sources
+        def _digit_option(pip):
+            for o in pip:
+                if o.isdigit():
+                    return int(o)
+            return None
+
+        # First, use mana pool for pips (scarcest pip first)
+        pool_left = {c: player.mana_pool.get(c)
+                     for c in ["W", "U", "B", "R", "G", "C"]}
+
+        def _pool_choices(pip):
+            return [o for o in pip if pool_left.get(o, 0) > 0]
+
         colors_needed_list = []
-        for color in ["W", "U", "B", "R", "G", "C"]:
-            for _ in range(needed.get(color, 0)):
-                colors_needed_list.append(color)
+        for pip in sorted(pips, key=lambda p: len(_pool_choices(p))):
+            choices = _pool_choices(pip)
+            if choices:
+                colour = max(choices, key=lambda o: pool_left[o])
+                pool_left[colour] -= 1
+            else:
+                colors_needed_list.append(pip)
 
         # E1 (multi-mana lands): the assignable resource is a mana
         # UNIT, not a land — a karoo's single tap yields a {G} unit
@@ -522,51 +542,57 @@ class ManaPayment:
                     ManaPayment.land_mana_units(game, player_idx, land)):
                 unit_pool.append([land, ui, list(options), None])
 
-        # Assign with re-sorting: most constrained color first each step
+        def _unit_matches(pip, options):
+            return any(o in options for o in pip)
+
+        # Assign with re-sorting: most constrained pip first each step
         while colors_needed_list:
             # Re-sort by scarcity each step (fixes 4-color dual land issues)
             colors_needed_list.sort(
-                key=lambda c: sum(1 for u in unit_pool
-                                  if u[3] is None and c in u[2])
+                key=lambda p: sum(1 for u in unit_pool
+                                  if u[3] is None and _unit_matches(p, u[2]))
             )
-            color = colors_needed_list.pop(0)
-            # Find least-flexible unassigned unit for this color. Ties
+            pip = colors_needed_list.pop(0)
+            # Find least-flexible unassigned unit for this pip. Ties
             # broken by preserving held_instant_colors when supplied —
             # a unit on a land that produces a held color is less
             # preferred (we want to leave that land untapped for the
             # opponent's turn).
             best_unit = None
             best_key = (999, 999)
+            best_colour = None
             for unit in unit_pool:
                 land, _ui, options, assigned = unit
                 if assigned is not None:
                     continue
-                if color in options:
+                if _unit_matches(pip, options):
                     flex = len(options)
                     # Skip the held-preserve penalty if this land is the
                     # only source of the required color — correctness
                     # (must pay the cost) wins over preservation.
                     produces_held = 1 if any(
-                        c in _held and c != color
+                        c in _held and c not in pip
                         for c in _produces(land)) else 0
                     key = (flex, produces_held)
                     if key < best_key:
                         best_key = key
                         best_unit = unit
+                        best_colour = next(o for o in pip if o in options)
             if best_unit is None:
-                _refund_sacrifices()
-                return False
-            best_unit[3] = color
+                # A two-brid pip may still be paid with its generic
+                # alternative (CR 107.4e); a colour pip cannot.
+                digit = _digit_option(pip)
+                if digit is None:
+                    _refund_sacrifices()
+                    return False
+                generic_needed += digit
+                continue
+            best_unit[3] = best_colour
 
         # Pay generic
-        generic_remaining = needed.get("generic", 0)
-        # Use pool first
-        pool_total = player.mana_pool.total()
-        # Subtract what we already committed from pool for colored
-        for color in ["W", "U", "B", "R", "G", "C"]:
-            pool_avail = player.mana_pool.get(color)
-            use_pool = min(pool_avail, needed.get(color, 0))
-            pool_total -= use_pool
+        generic_remaining = generic_needed
+        # Use pool first — whatever the pip pass left in it
+        pool_total = sum(pool_left.values())
 
         use_pool_generic = min(pool_total, generic_remaining)
         generic_remaining -= use_pool_generic
