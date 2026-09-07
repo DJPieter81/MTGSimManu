@@ -3640,3 +3640,77 @@ data-bump vs mechanic-derivation; failing test first
 targeted cells for Storm's Boros Energy / 4/5c Control matchups plus a
 **mandatory Domain Zoo field guard** (n=20, must stay in [50,65]) before
 the full Storm field re-measure.
+
+### Iteration 2 — hybrid mana pips were modelled as generic (CR 107.4e / 601.2f)
+
+**Prompt:** the user expected Azorius Control to beat Ruby Storm. Measured
+(n=20 Bo3, 50000 grid): **Azorius Control 10 / Ruby Storm 90**.
+
+**Replay** (`--bo3 "Azorius Control" "Ruby Storm" -s 50000`, Storm 2-1).
+Game 3: Storm kills on turn 5 from ONE land — Mountain tapped for Ral (0
+mana left), then Manamorphose cast seven times with no mana available,
+each netting +2, into rituals, two Past in Flames, Wish, storm-19
+Grapeshot. No `[Mana]` line ever accompanied a Manamorphose cast.
+
+**Root cause (engine, one module):** `parse_mana_cost_mtgjson` folded every
+hybrid pip into GENERIC (`# simplified`); `ManaCost` had no hybrid field.
+So (a) a hybrid pip needed no coloured source — {R/W}{R/W}{R/W} castable
+off Islands — and (b) generic cost reductions (Ruby Medallion, Ral) ate the
+pip: {1}{R/G} became free, and a spell that adds two mana on resolution
+became an infinite-mana engine. Class: 545 colour-hybrid + 18 two-brid
+cards; registered carriers Ruby Storm (Manamorphose), Jeskai Blink / Domain
+Zoo / 4c Omnath (Ashiok), Amulet Titan (Firespout), Azorius Control
+(Kaheera), Creatures Toolbox (Fiend Artisan), Domain Zoo (Leyline of the
+Guildpact). Storm is the only registered deck that pairs a hybrid card with
+reducers, which is why the exploit surfaced there and nowhere else.
+
+**Fix (`a31c370`):** `ManaCost.hybrid` (option tuple per pip, two-brid as
+`("W","2")`), `cmc` (two-brid at mana value, CR 202.3e), `min_mana` (least
+payment), `non_generic_pips` (the CR 601.2f floor); parser records the
+pips; `ManaPool.can_pay/pay`, the land-payment MRV solver and `can_cast`'s
+feasibility solver treat every pip as an option tuple; `can_cast` floors
+the reduced quantity at `non_generic_pips`; `ai/effective_cmc` agrees with
+the engine. A pool-wide invariant test (parsed mana value == MTGJSON's
+per-face mana value, 22,312 cards) surfaced two more dropped symbol
+classes, fixed in the same commit: hybrid-Phyrexian {C/D/P} and snow {S}
+(none in a registered deck). The anchor replay diff also exposed a latent
+payment bug — the pool-first arithmetic over-credited the pool for generic
+after committing colours, so a payment could fail after `can_cast`
+approved it — fixed by the rewritten pip pass.
+
+**Verify:** ten rule-phrased tests red → green (`tests/test_hybrid_mana_
+cr107_4e.py`); Phyrexian / effective-CMC / mana-estimate / Storm-PiF
+suites green; ratchets at baseline; both chunks green (a–g 2257, h–z 2263);
+GitHub CI green on `a31c370`. Anchor: two winner flips, both replayed
+anchor-exact in a pre-change worktree and diffed at first divergence —
+Boros Energy vs Ruby Storm s50500 (the pre-fix line is a flashback
+Manamorphose cast with 0 mana after Past in Flames; post-fix Storm cannot,
+Boros wins T7) and Creatures Toolbox vs Grixis Reanimator s52000 (Toolbox
+now casts Leyline of Abundance from its Devoted Druid pool where the old
+pool arithmetic silently failed the payment). Both rules-correct; fixture
+refreshed. Post-fix replay of the reproduction: Storm 2-1 on turns 10 / 13
+/ 13 with storm counts 3–7; every Manamorphose cast now shows its payment.
+
+**Measure (n=20 Bo3, 50000 grid, 0 draws, 0 aborts throughout):**
+
+| cell | before | after |
+|---|---|---|
+| Azorius Control vs Ruby Storm | 10 / 90 | **30 / 70** |
+| Ruby Storm vs Azorius Blink | 90 | **85** (14 of 20 to game 3) |
+| guard: Jeskai Blink vs 4c Omnath (Ashiok both sides) | 0 / 100 (matrix) | 5 / 95 — no regression |
+| guard: Domain Zoo vs Boros Energy (Leyline of the Guildpact) | 50 / 50 (matrix) | 50 / 50 — identical |
+| **Ruby Storm field** | **64.2%** | **49.4%** — inside [40, 55] |
+
+Field row after: Ponza 85, Azorius Blink 85, Jeskai Blink 80, 4/5c 80,
+Omnath 70, Goryo's 65, Amulet / Azorius Control / Eldrazi Ramp 60,
+Broodscale / Hollow One 55, Living End / Grixis 50, WST 45, Tron 40,
+Dimir / Pinnacle 35, Affinity / Zoo / Prowess / Toolbox 30, Boros 25, WST
+v2 / Instant Reanimator 15. A combo deck's spread; 848 s wall.
+
+**Loop state:** Storm's stop gate needs the matrix-grid reproduction
+(`--probe`) and no cell ≥85 — Ponza and Azorius Blink sit at 85 on the
+matchup grid. The two AI leads from the same replay (Control discarding
+counters to hand size; tapping out into a combo opponent's turn) are the
+next diagnosis, on the corrected engine. Full 25-deck matrix at n=20
+running to see every other deck's movement (hybrid cards sit in seven
+registered decks).
