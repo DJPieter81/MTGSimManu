@@ -3867,6 +3867,37 @@ a defensive plan is a card-swap of value, not a primary lever.
 Used by `_card_keep_score` in `ai/mulligan.py`.
 """
 
+MULLIGAN_SPELL_MANA_GAP_PENALTY: float = 1.0
+"""Derived: per-point-of-gap penalty when a spell's CMC exceeds the
+LANDS ALREADY IN HAND (not future draws). `_card_keep_score` values
+every spell by curve position and tags regardless of whether the hand
+can ever cast it — a hand can only guarantee mana from lands it
+holds, so a spell whose CMC exceeds that count needs an unguaranteed
+land draw for every point of gap.
+
+Observed (2026-09-06): a Azorius Blink opening hand — 1 land, Aang
+(CMC3), Quantum Riddler (CMC5), 2× Witch Enchanter (CMC4), Consign to
+Memory (CMC1) — scored 25.0 against the MULLIGAN_MIN_HAND_SCORE_7
+floor of 24.0 and was KEPT: every high-CMC card banked full curve
+value on a single land, and the game never drew a second land, so
+four of the five spells were dead for the whole game. Same mechanic
+as the excess-land penalty's counterpart: `_hand_ev_score` already
+discounts UNPRODUCTIVE lands beyond the optimal count; nothing
+discounted UNCASTABLE spells beyond the hand's own land count.
+
+Weight matches `MULLIGAN_EXCESS_LAND_PENALTY` (1.0) — a single point
+of gap on one card should not crater an otherwise-strong hand (a
+3-land hand's CMC-4 bomb, gap=1, loses 1.0 of its ~5-7 base score);
+several unreachable spells compound, which is exactly the Blink
+case above (gap 2+3+3, ~9 points off a 5-point base).
+
+Sister constant: MULLIGAN_EXCESS_LAND_PENALTY (same rate, opposite
+resource — too much mana vs. too little).
+
+Used by `_card_keep_score` in `ai/mulligan.py` as
+`MULLIGAN_SPELL_MANA_GAP_PENALTY * max(0, cmc - lands_in_hand)`.
+"""
+
 
 # ─── Sideboard-solver constants (ai/sideboard_solver.py) ─────────────
 # Used by `plan_sideboard` and clause evaluators to gate swap decisions
