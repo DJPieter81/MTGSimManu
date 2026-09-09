@@ -4002,3 +4002,39 @@ Zoo 30 → 25; Dimir Midrange vs Boros Energy 50 → 50 (pre-change worktree
 at the same seeds: 50 — byte-identical). Rules-correctness unit: no cell
 moved beyond noise, none was expected to; the Prowess-side cost of E7
 (Cori-Steel Cutter equips for 2, not 1) is inside the same noise.
+
+### Unit E8 + E9 — built and measured (2026-09-09)
+
+**E8** `_activate_sacrifice_abilities` scanned oracle text for "Sacrifice
+this: <effect>" and fired on in-engine thresholds (hand ≤ 2, turn ≥ 8,
+graveyard ≥ 5, …) paying NOTHING — Mind Stone sacrificed for a card with
+no mana open. A census of the registered decks' self-sacrifice abilities
+against the generic activation path showed the draw (canopy lands, Mind
+Stone, Vexing Bauble), graveyard-exile (Tormod's Crypt, Nihil Spellbomb,
+Soul-Guide Lantern), land-tutor-to-hand (Expedition Map) and damage (High
+Noon) classes are already parsed, priced and charged there; the residual
+shapes (sweep-by-counters: Engineered Explosives / Filigree Sylex;
+land-to-battlefield: Urza's Cave; return lands: Aftermath Analyst; exile
+artifact/enchantment: Haywire Mite) are not. The heuristic now yields
+every ability in `ActivationManager.RESOLVABLE_EFFECT_KINDS` (one owner
+with `can_activate`) to the AI, and pays the parsed mana/tap/life cost for
+the residual shapes or does not activate (CR 601.2h); the sacrifice routes
+through the zone manager (baseline 17 → 16 for game_runner, and the
+earlier units' reductions captured: card_effects 29 → 27, cast_manager
+14 → 13) with the charge count captured as last-known information (CR
+608.2h). Left open: the four residual shapes are still decided by engine
+thresholds — lifting them needs four activated-effect kinds. **E9** the
+end-step window cast every castable flash creature; now
+`decide_flash_deploy` (legend rule + positive EV under `_score_spell`)
+chooses and the engine casts exactly that. Five tests red → green;
+activation/sacrifice/flash/response pins 456 green; ratchets at baseline;
+chunks 2286 / 2286. Anchor: WST v2 vs Boros s50000 flipped back (Boros
+T16 → WST v2) — first divergence is the second Wan Shi Tong cast into the
+legend rule at the opponent's end step pre-change; accepted.
+
+Measure (n=20 Bo3, s50000 grid; PRE = pre-change worktree, same seeds):
+Eldrazi Tron vs Boros 35 (PRE) → 30; Amulet Titan vs Boros 20 (PRE) → 10
+(its Analyst / Cave sacrifices now cost {3}{G} / {3}); Dimir Midrange vs
+Boros 50 → 50; Izzet Prowess vs Eldrazi Tron 35 → 40. All inside one SE;
+the direction (decks that were activating for free lose a little) is the
+rules-correct one.
