@@ -3791,3 +3791,34 @@ Build order (plan): T1 → C1+C2 → A1 → E2+E3 → A2 → E1 → A3+E4+E10 �
 - **C1 + C2** (`5bb5690`): counter triage accounts per unanswered board threat (each opposing creature worth a removal spell — `creature_threat_value ≥ PROACTIVE_REMOVAL_MIN_VALUE` — claims one reaching answer first; the counter is reserved only if an uncommitted answer that reaches the stack creature remains); one `_offer_response_window` owner serves the main phase and both instant-window cast sites, so begin-combat / end-step casts can be countered. Six rule-phrased tests red → green; all existing triage / chain-hold / evoke-window pins green; ratchets at baseline; chunks 2263 / 2265; anchor: one turns-only drift refreshed (Zoo vs Tron s50000, T14 → T15).
 - **Reproduction re-replayed** (Broodscale vs WST s50000): Control fires Counterspell twice, discards no counters to hand size (was one response and four discards) — and still loses 2-0 (T12, T8).
 - **Measure (n=20 Bo3, 50000 grid):** Azorius Control vs Ruby Storm **30/70 → 30/70**; Broodscale vs WST **90 → 90**; Broodscale vs Azorius Blink **90 → 95**; guard Azorius Control vs Domain Zoo 30/65 → 25/75 (within one SE). **No movement.** Control-lane iteration count without movement: 1 of 3. The corrected triage exposes the next layer rather than closing the cells: in the post-fix replay Control counters on turns 3–4 and is still dead on turn 8 to Mycospawn / Fleshraker beats — the holdback penalty (C3), the instant-window scoring literals in the engine (`_cast_instant_removal` threat thresholds), and Control's own clock (WST averaging T17 per win) are the remaining suspects, to be re-diagnosed on this head before the next control-side unit. A1 (Prowess lane) proceeds meanwhile.
+
+### Unit A1 — built and measured (2026-09-09, `1f16009`)
+
+`CastManager.lock_that_counters(game, player_idx, template)` is the one
+predicate (typed `stax_class`, chalice family: charge counters == mana
+value) that `cast_spell` applies AND the AI reads — the runtime oracle scan
+in `cast_spell` is gone (oracle-runtime-parse 180 → 179). At the single
+interaction call site a named lock is P(countered) = 1.0, no worthiness
+scaling, and the cast is priced as a PASS minus the card (the creature
+"resolves then maybe removed" model does not apply to a spell that never
+resolves). The same predicate filters candidates on all three cast paths —
+main phase (the play gate is a fixed floor, so pricing alone left Preordain
+castable as the last play), response enumeration (burn cast in response into
+a resolved Chalice), and the engine's instant window. Ten rule-phrased tests
+red → green; stax / EV / response pins green; anchor unchanged; chunks
+2263 / 2275.
+
+Reproduction (Prowess vs WST s50000, with T1's seating): casts into Chalice
+**14 → 4 (EV fold only) → 0** (with the filters). Prowess still loses 2-0
+(T7, T9) — the remaining Prowess defects (A2 land sacrifice, A3 pumps, A4
+clock cliff) decide those games.
+
+| cell (n=20 Bo3, 50000 grid) | before | EV fold only | with filters |
+|---|---|---|---|
+| Izzet Prowess vs Azorius Control (WST) | 5 | 10 | **20** |
+| Izzet Prowess vs Azorius Control (WST v2) | 10 | 15 | **20** |
+| Izzet Prowess vs Eldrazi Tron | 10 | 5 | 5 |
+
+Two of three cells moved by ≥ one SE (11 pp); the Tron cell is decided by
+Thought-Knot beats after self-inflicted land loss (A2) rather than by
+Chalice. Prowess lane: movement, 0 of 3 without.
