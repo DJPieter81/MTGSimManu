@@ -4199,3 +4199,32 @@ The lane therefore proceeds by replay of the extreme cells (Hollow One
 each of those opponents is itself an under-band deck (Amulet 28%, Hollow
 One / Toolbox / Goryo's in the low-20s to 30s on the committed matrix),
 and Zoo's flat field inherits their defects.
+
+**Replay diagnosis (loop protocol, Zoo lane).** `--bo3 "Domain Zoo"
+"Amulet Titan" -s 50000` (Zoo 2-0) and `--bo3 "Domain Zoo" "Hollow One"
+-s 50000` (Zoo 2-0), traced where needed. The extreme cells are the
+OPPONENTS' defects, and both are named subsystems:
+
+- **Hollow One (98):** the loot half of "draw N, then discard M" never
+  resolves. Fixture: Faithless Looting hand 4 → 5, graveyard +1 (the spell
+  itself), `cards_discarded_or_cycled_this_turn` 0; Burning Inquiry ("each
+  player draws three, then discards three at random") resolves to nothing
+  at all. In the replay Hollow One CYCLED a Hollow One for two mana on the
+  turn Inquiry should have made it free, and never once discarded a card
+  to any loot spell. The deck's entire engine (Hollow One's cost, Vengevine
+  and Phoenix recursion, Rootwalla madness, Ox escape) runs on discards
+  the engine does not perform; every other Looting deck gets a free
+  draw-two instead. **Subsystem: `engine/oracle_resolver.py` draw branch
+  (the loot shape is typed as a draw, `card_database.py:761/1101`, and the
+  discard clause is dropped).** Class: 36 instants/sorceries + the
+  permanent loot abilities; sized below before the unit is cut.
+- **Amulet Titan (93):** with eight lands and Scapeshift in hand for four
+  turns, every candidate list scored `cast_spell: Scapeshift` at exactly
+  `PATIENCE_GATE_REJECT_SENTINEL` (−10.0) — the "Scapeshift fizzle gate"
+  in `_score_spell`; Amulet then played a land a turn and died to a
+  Psychic Frog. **Subsystem: `ai/ev_player.py::_score_spell` land-tutor
+  finisher gate** (the outlier lane already recorded for Amulet at 28%).
+
+Order: the engine class first (rules before choice; it also corrects the
+over-credit every Looting deck enjoys), then the Amulet gate on the
+corrected engine. Zoo's own play in both replays was ordinary.
