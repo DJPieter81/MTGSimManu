@@ -4095,3 +4095,35 @@ next Broodscale-side unit is the token mana ability (a token created from
 a source oracle keeps its printed activated abilities — a token-factory
 class, every Spawn/Scion/Treasure shape), after which the loop can be
 evaluated by the unbounded-engine machinery.
+
+### Unit E11c — built and measured (2026-09-09)
+
+Two defects on the Spawn/Scion one-shot mana: (1) `parse_sacrifice_mana_units`
+read the ability inside the maker's quoted token text, so 21 makers
+(Basking Broodscale, Eldrazi Repurposer, Drowner of Truth, …) carried
+their TOKEN's `[['C']]` on their own template — the payment solver could
+sacrifice Broodscale itself for {C}; quoted spans are now excluded (the
+token factory parses the inner text for the token, unchanged). (2) the
+solver's sacrifice-for-mana commit used a bare zone move with no trigger
+dispatch, so a Spawn sacrificed for mana never counted as a creature
+dying; it now dies through `_creature_dies` (CR 700.4). Two tests red →
+green — the second pins the whole loop turning once in the engine: Blade
+on Broodscale + one Spawn, pay {1} with no lands → the Spawn is
+sacrificed, Blade puts the counter, the counters-placed trigger makes the
+next Spawn. Mana/token/sacrifice/ramp pins 261 green; ratchets at
+baseline; chunks 2291 / 2288; anchor unchanged.
+
+Measure (n=20 Bo3, s50000 grid): Broodscale vs WST 95 → 95; vs Azorius
+Blink 90 → 90; Eldrazi Tron vs Boros 50 → 50; Amulet Titan vs Boros 10 →
+10; Dimir vs Boros 50 → 50 — every cell byte-identical. The loop can now
+turn in the engine but never does in a game: the AI's equip planner
+values an equipment by its typed P/T grant (`equip_power_grant`, 0 for
+Blade) and never attaches Blade to anything, and the payment solver
+sacrifices a Spawn only to cover a shortfall (the loop is never iterated
+for value). The remaining legs are AI-side: (a) an equipment whose value
+is a death observer scores by the observer, (b) the unbounded-engine
+recogniser sees "sacrifice → counter → token" as a mana engine, (c)
+Fleshraker's "another colorless creature enters → 1 damage each opponent"
+(5-card class) turns the engine into damage. Broodscale's control cells
+stay where the C-lane left them until the control side can answer what
+Broodscale does.
