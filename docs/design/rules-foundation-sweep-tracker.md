@@ -4186,3 +4186,16 @@ not a matchup story. **The Zoo lane reopens** under the loop protocol:
 bisect the field across the intermediate commits (`a31c370` → `3d48edf`
 → `c6f0a73` → `e9ed0f7` → head), then replay the first mover Bo3 and name
 the subsystem in writing before any code. Task #22.
+
+**Bisection (Zoo field, n=20, one seed set, `--parallel`):** `a31c370`
+66.7 → `3d48edf` 65.6 → `c6f0a73` 67.9 → `e9ed0f7` 70.8 → head 71.0.
+No step exceeds 3pp (1.3 SE); the whole span is +4.3pp (1.9 SE). The
+09-06 "in band" verdict (60.2 / 60.6) and this sample's 66.7 are two
+n=20 measurements of the SAME code (`a31c370`) six points apart, so the
+band verdict was never better than ±6 at that n. Zoo was at the top of its
+band on that commit and the ten units added a slow, unattributable drift.
+The lane therefore proceeds by replay of the extreme cells (Hollow One
+98, Toolbox 95, Amulet 93, Goryo's 90 at n=60), not by reverting a unit:
+each of those opponents is itself an under-band deck (Amulet 28%, Hollow
+One / Toolbox / Goryo's in the low-20s to 30s on the committed matrix),
+and Zoo's flat field inherits their defects.
