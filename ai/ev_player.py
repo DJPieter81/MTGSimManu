@@ -3571,6 +3571,28 @@ class EVPlayer:
                         f"T{game.display_turn} P{self.player_idx+1}: "                        f"  [{tag}] {blk.name} ({b_pow}/{b_tou}) "                        f"blocks {atk.name} ({a_pow}/{a_tou}) — "                        f"lifespan_delta={delta:+.2f}"
                     )
 
+    def decide_flash_deploy(self, game, candidates) -> Optional["CardInstance"]:
+        """End-step flash deployment (the non-active player's window):
+        the castable flash creature whose projected EV is positive, the
+        legend rule respected — or None. The engine used to cast every
+        castable flash creature here, a second copy of a legendary one
+        into its own legend rule included (Broodscale vs Azorius Blink
+        s50000, twice). Same scorer as the main phase (`_score_spell`),
+        same legend filter (`_filter_legend_rule`)."""
+        self._init_deck_knowledge(game)
+        me = game.players[self.player_idx]
+        opp = game.players[1 - self.player_idx]
+        cands = [c for c in candidates
+                 if c.zone == "hand" and c.template.is_creature
+                 and game.can_cast(self.player_idx, c)]
+        cands = self._filter_legend_rule(me, cands)
+        if not cands:
+            return None
+        snap = snapshot_from_game(game, self.player_idx)
+        ev, best = max(((self._score_spell(c, snap, game, me, opp), c) for c in cands),
+                       key=lambda x: x[0])
+        return best if ev > 0 else None
+
     # ═══════════════════════════════════════════════════════════
     # COMBAT TRICKS — the post-block priority window (CR 509.4)
     # ═══════════════════════════════════════════════════════════

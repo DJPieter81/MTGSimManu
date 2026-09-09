@@ -20,14 +20,14 @@
       "deck2": "Eldrazi Tron",
       "seed": 50000,
       "winner": "Eldrazi Tron",
-      "turns": 15
+      "turns": 14
     },
     {
       "deck1": "Amulet Titan",
       "deck2": "Living End",
       "seed": 50000,
-      "winner": "Living End",
-      "turns": 6
+      "winner": "Amulet Titan",
+      "turns": 8
     },
     {
       "deck1": "Jeskai Blink",
@@ -48,7 +48,7 @@
       "deck2": "4/5c Control",
       "seed": 50000,
       "winner": "4/5c Control",
-      "turns": 11
+      "turns": 12
     },
     {
       "deck1": "Azorius Control",
@@ -61,8 +61,8 @@
       "deck1": "Azorius Control (WST v2)",
       "deck2": "Boros Energy",
       "seed": 50000,
-      "winner": "Boros Energy",
-      "turns": 16
+      "winner": "Azorius Control (WST v2)",
+      "turns": 9
     },
     {
       "deck1": "Boros Energy",
@@ -97,7 +97,7 @@
       "deck2": "Goryo's Vengeance",
       "seed": 50500,
       "winner": "4c Omnath",
-      "turns": 6
+      "turns": 7
     },
     {
       "deck1": "Izzet Prowess",
@@ -111,7 +111,7 @@
       "deck2": "Pinnacle Affinity",
       "seed": 50500,
       "winner": "4/5c Control",
-      "turns": 16
+      "turns": 18
     },
     {
       "deck1": "Azorius Control (WST)",
@@ -167,7 +167,7 @@
       "deck2": "Creatures Toolbox",
       "seed": 52500,
       "winner": "Broodscale Bloodchief",
-      "turns": 9
+      "turns": 7
     },
     {
       "deck1": "Grixis Reanimator",

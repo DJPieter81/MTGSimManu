@@ -37,6 +37,25 @@ class ActivationManager:
     """Stateless. Every method takes the GameState as its first argument,
     matching SBAManager / CombatManager / ManaPayment."""
 
+    # The effect kinds `activated_effects.resolve_activated_ability` can
+    # execute. One owner: `can_activate` refuses everything else before a
+    # cost is charged, and the engine's residual sacrifice heuristic
+    # (`GameRunner._activate_sacrifice_abilities`) yields every ability in
+    # this set to the activation path instead of double-firing it for free.
+    RESOLVABLE_EFFECT_KINDS = frozenset({
+        ActivationEffectKind.DAMAGE_ANY_TARGET,
+        ActivationEffectKind.DRAW_N,
+        ActivationEffectKind.PUMP_SELF_UEOT,
+        ActivationEffectKind.GRANT_HASTE_TARGET,
+        ActivationEffectKind.TUTOR_CREATURE_TO_BATTLEFIELD,
+        ActivationEffectKind.TUTOR_TO_HAND,
+        ActivationEffectKind.UNTAP_TARGET_PERMANENT,
+        ActivationEffectKind.EXILE_FROM_GRAVEYARD,
+        ActivationEffectKind.PUT_COUNTER_SELF,
+        ActivationEffectKind.PUT_COUNTER_TARGET,
+        ActivationEffectKind.ADAPT,
+    })
+
     @staticmethod
     def can_activate(game: "GameState", player_idx: int,
                      perm: "CardInstance",
@@ -91,18 +110,7 @@ class ActivationManager:
         # BEFORE any cost is charged — paying a cost for a recorded-unhandled
         # no-op is strictly worse than refusing. ANIMATE_SELF_UEOT is owned by
         # the land-animation path and must not be double-executed here.
-        if ability.effect_kind not in (
-                ActivationEffectKind.DAMAGE_ANY_TARGET,
-                ActivationEffectKind.DRAW_N,
-                ActivationEffectKind.PUMP_SELF_UEOT,
-                ActivationEffectKind.GRANT_HASTE_TARGET,
-                ActivationEffectKind.TUTOR_CREATURE_TO_BATTLEFIELD,
-                ActivationEffectKind.TUTOR_TO_HAND,
-                ActivationEffectKind.UNTAP_TARGET_PERMANENT,
-                ActivationEffectKind.EXILE_FROM_GRAVEYARD,
-                ActivationEffectKind.PUT_COUNTER_SELF,
-                ActivationEffectKind.PUT_COUNTER_TARGET,
-                ActivationEffectKind.ADAPT):
+        if ability.effect_kind not in ActivationManager.RESOLVABLE_EFFECT_KINDS:
             return False
 
         # 9b-pc. A put-counter line whose shape did not parse is schema

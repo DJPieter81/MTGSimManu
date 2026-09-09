@@ -1397,17 +1397,24 @@ class GameRunner:
                                 return
                         cast_count += 1
 
-        # End-step only: deploy flash creatures if we have unused mana
-        if context == "end_step" and flash_creatures and cast_count < max_instants:
-            for card in flash_creatures:
-                if cast_count >= max_instants:
+        # End-step only: flash creatures — WHICH one (if any) is the AI's
+        # decision (`decide_flash_deploy`: legend rule, positive EV). The
+        # engine used to cast every castable one, a second copy of a
+        # legendary creature into its own legend rule included.
+        decide = getattr(opponent_ai, 'decide_flash_deploy', None)
+        if (context == "end_step" and flash_creatures and cast_count < max_instants
+                and decide is not None):
+            while cast_count < max_instants:
+                candidates = [c for c in flash_creatures
+                              if c.zone == "hand" and game.can_cast(opponent_idx, c)]
+                if not candidates:
                     break
-                # Skip if already cast as removal above
-                if card.zone != "hand":
-                    continue
-                if not game.can_cast(opponent_idx, card):
-                    continue
+                card = decide(game, candidates)
+                if card is None or card not in candidates:
+                    break
                 success = game.cast_spell(opponent_idx, card, [])
+                if not success:
+                    break
                 if success:
                     self._offer_response_window(
                         game, caster_ai=opponent_ai, responder_ai=active_ai)
@@ -2405,6 +2412,7 @@ class GameRunner:
         'Sacrifice this: [effect]' patterns and activates when strategically sound.
         No card names — all logic derived from oracle text."""
         import re
+        from .activation import ActivationManager as _AM
         player = game.players[active]
         opponent_idx = 1 - active
         opponent = game.players[opponent_idx]
@@ -2412,6 +2420,16 @@ class GameRunner:
         for perm in list(player.battlefield):
             oracle = (perm.template.oracle_text or '').lower()
             if 'sacrifice' not in oracle:
+                continue
+            # A parsed self-sacrifice ability the activation path can run
+            # is the AI's decision (`ai/activation_ev`), with its cost
+            # charged there (CR 602.2b). This residual heuristic keeps only
+            # the shapes that path cannot execute yet — it used to fire
+            # the parsed ones too, on its own thresholds and for free.
+            sac_abilities = [a for a in (perm.template.activated_abilities or [])
+                             if getattr(a.cost, 'sacrifice_self', False)]
+            if any(a.effect_kind in _AM.RESOLVABLE_EFFECT_KINDS
+                   for a in sac_abilities):
                 continue
             # Must be "sacrifice this/~" pattern (self-sacrifice, not "sacrifice a creature")
             sac_match = re.search(
@@ -2470,14 +2488,48 @@ class GameRunner:
                     should_activate = True
 
             if should_activate and perm in player.battlefield:
-                player.battlefield.remove(perm)
-                perm.zone = "graveyard"
-                player.graveyard.append(perm)
+                # CR 602.2b / 601.2h: the parsed cost is paid first, or the
+                # ability is not activated at all.
+                if not self._pay_sacrifice_ability_cost(game, active, perm,
+                                                        sac_abilities):
+                    continue
+                # CR 608.2h: the effect reads the sacrificed permanent's
+                # counters as last-known information — captured before
+                # it leaves the battlefield (leaving clears them).
+                charge = perm.other_counters.get("charge", 0)
+                game.zone_mgr.move_card_to_graveyard(game, perm, cause="sacrifice")
                 game.log.append(f"T{game.display_turn} P{active+1}: "
                                 f"Activate {perm.name} (sacrifice)")
-                self._resolve_sac_effect(game, active, perm, effect_text)
+                self._resolve_sac_effect(game, active, perm, effect_text,
+                                         charge=charge)
                 if game.game_over:
                     return
+
+    @staticmethod
+    def _pay_sacrifice_ability_cost(game: GameState, active: int, perm,
+                                    sac_abilities) -> bool:
+        """Charge the mana, tap and life items of a self-sacrifice
+        ability's parsed cost (the sacrifice itself is paid by the caller).
+        A cost the parser could not read, or one carrying an item this
+        path cannot charge, is not paid — and an unpaid cost means no
+        activation (CR 601.2h), the same rule the activation path applies."""
+        ability = sac_abilities[0] if sac_abilities else None
+        if ability is None or ability.cost.unpayable:
+            return False
+        cost = ability.cost
+        if cost.sacrifice_type is not None or cost.discard_cards > 0 \
+                or cost.exile_from_graveyard_cards > 0:
+            return False
+        if cost.tap_self and perm.tapped:
+            return False
+        if cost.mana.cmc > 0 and not game.tap_lands_for_mana(
+                active, cost.mana, None, exclude_instance_id=perm.instance_id):
+            return False
+        if cost.life > 0:
+            game.players[active].life -= cost.life
+        if cost.tap_self:
+            perm.tap()
+        return True
 
     def _process_end_step_returns(self, game: GameState, active: int):
         """Resolve delayed "return at the next end step" blink triggers
@@ -2494,8 +2546,11 @@ class GameRunner:
         from engine.card_effects import phelia_end_step
         phelia_end_step(game, None, active)
 
-    def _resolve_sac_effect(self, game: GameState, controller: int, sacrificed, effect_text: str):
-        """Execute sacrifice ability effect, parsed from oracle text."""
+    def _resolve_sac_effect(self, game: GameState, controller: int, sacrificed,
+                            effect_text: str, charge: Optional[int] = None):
+        """Execute sacrifice ability effect, parsed from oracle text.
+        `charge` is the sacrificed permanent's charge count as last-known
+        information (CR 608.2h); when omitted it is read off the card."""
         import re
         player = game.players[controller]
         opp_idx = 1 - controller
@@ -2504,7 +2559,8 @@ class GameRunner:
         if 'draw a card' in effect_text:
             game.draw_cards(controller, 1)
         elif 'destroy' in effect_text and 'mana value' in effect_text:
-            charge = sacrificed.other_counters.get("charge", 0)
+            if charge is None:
+                charge = sacrificed.other_counters.get("charge", 0)
             # Only destroy OPPONENT's permanents (Blast Zone/EE target opponents)
             from engine.cards import Keyword
             for c in list(opp.battlefield):
