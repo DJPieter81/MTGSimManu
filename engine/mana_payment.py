@@ -370,13 +370,17 @@ class ManaPayment:
         def _commit_sacrifices():
             """Perform the deferred sacrifices — payment succeeded."""
             for _perm in pending_sacrifice:
-                # NOTE: ZoneManager.move_card does NOT currently dispatch
-                # dies/LTB triggers (zone_manager.py) — an earlier revision of
-                # this code claimed it did. It is still the sanctioned funnel
-                # (single owner of zone mutation), so route through it; when
-                # the funnel gains trigger dispatch this call inherits it.
-                game.zone_mgr.move_card_to_graveyard(
-                    game, _perm, cause=f"sacrificed for mana ({card_name})")
+                # A creature sacrificed for mana DIES (CR 700.4): it goes
+                # through the death funnel so its own dies clause and every
+                # observer ("whenever a creature dies") fire — the bare zone
+                # move dispatches no triggers, and a Spawn sacrificed for
+                # mana never counted as a creature dying. Non-creatures
+                # (Treasure) take the zone move.
+                if getattr(_perm, 'effective_is_creature', False):
+                    game._creature_dies(_perm)
+                else:
+                    game.zone_mgr.move_card_to_graveyard(
+                        game, _perm, cause=f"sacrificed for mana ({card_name})")
                 game.log.append(
                     f"T{game.display_turn} P{player_idx+1}: "
                     f"sacrifice {_perm.name} for mana ({card_name})")

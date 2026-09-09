@@ -2261,6 +2261,12 @@ def parse_sacrifice_mana_units(oracle: str) -> Optional[List[List[str]]]:
       * ``Sacrifice this creature: <non-mana effect>`` — no ``Add``.
     """
     low = (oracle or '').lower()
+    # A quoted span is an ability GRANTED to something else (a token
+    # "with 'Sacrifice this token: Add {C}'") — it belongs to that token,
+    # which the token factory parses from the inner text. Reading it here
+    # put the token's mana on 21 Spawn/Scion makers' own templates, so the
+    # payment solver could sacrifice the maker itself for {C}.
+    low = re.sub(r'"[^"]*"', '', low)
     # Anchor on "sacrifice this <noun>" so other-permanent sacrifice costs and
     # tap abilities cannot match. The effect must begin with "add".
     m = re.search(
