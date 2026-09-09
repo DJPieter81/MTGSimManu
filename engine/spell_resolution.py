@@ -653,28 +653,32 @@ class ResolutionManager:
         # per-mode ability description drops it).
         tmpl = card.template
         modes = getattr(tmpl, 'modes', None) or []
-        # Gate on the number of PARSED mode-abilities, not the number of
-        # printed modes: the bug is a modal card that synthesized MORE
-        # THAN ONE ability and runs them all (Brotherhood's End: 2). A
-        # modal card that parsed to a single ability (Kozilek's Command,
-        # the charms) already resolves its one mode and must be left on
-        # its existing path — intercepting it would route a mode clause
-        # this generic resolver cannot fully execute.
-        _n_abilities = len([a for a in tmpl.abilities if a.description])
+        # Gate on the PARSED MODES: a modal spell with more printed modes
+        # than it may choose resolves exactly the chosen ones, each off its
+        # own clause with its own typed removal bound (`mode['removal']`,
+        # parsed once at DB load).  This used to gate on the number of
+        # synthesized abilities instead, which excluded any modal card that
+        # synthesized a single ability (Kozilek's Command, the charms) —
+        # those then resolved ONE mode through the legacy path with the
+        # mode's "mana value X or less" bound dropped (Command at X=0 exiled
+        # a mana-value-1 creature) and the second chosen mode never
+        # resolved at all (2026-09-08).
         if (getattr(tmpl, 'is_modal', False)
-                and _n_abilities > getattr(tmpl, 'modal_choose_count', 1)
+                and len(modes) > getattr(tmpl, 'modal_choose_count', 1)
                 and not getattr(tmpl, 'is_counterspell', False)
                 and (tmpl.is_instant or tmpl.is_sorcery)
                 and not any('counter target' in m.get('text', '').lower()
                             for m in modes)):
             from ai.modal import select_modal_modes
             from .oracle_resolver import resolve_spell_from_oracle
-            chosen = select_modal_modes(game, card, controller, item.targets)
+            chosen = select_modal_modes(game, card, controller, item.targets,
+                                        x_value=item.x_value)
             for idx in chosen:
                 clause = modes[idx].get('text', '')
                 resolve_spell_from_oracle(game, card, controller, item.targets,
                                           x_value=item.x_value,
-                                          oracle_override=clause)
+                                          oracle_override=clause,
+                                          removal_data=modes[idx].get('removal'))
             return
 
         # Dispatch to card effect registry

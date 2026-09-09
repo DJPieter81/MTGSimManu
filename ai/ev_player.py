@@ -4082,9 +4082,23 @@ class EVPlayer:
             # cast-time legality uses (CR 601.2b/c). Candidates beyond it
             # are not targets at all, whatever their threat.
             _x_ceiling = None
-            if (getattr(t, 'targeted_removal_data', None) or {}).get('mv') == 'x':
+            _x_bound_mode = any(
+                ((m.get('removal') or {}).get('mv') == 'x')
+                for m in (getattr(t, 'modes', None) or []))
+            if ((getattr(t, 'targeted_removal_data', None) or {}).get('mv') == 'x'
+                    or _x_bound_mode):
+                # The plain shape and a modal MODE of the same shape share
+                # the ceiling: X is chosen before targets (CR 601.2b).
                 from engine.cast_manager import CastManager
                 _x_ceiling = CastManager.affordable_x(game, self.player_idx, t)
+            if getattr(t, 'has_converge', False):
+                # Converge reaches the colours this manabase can spend —
+                # the same picker cast-time X selection uses; aiming above
+                # it is a guaranteed whiff (two four-mana Endings resolved
+                # to nothing, Broodscale vs WST s50000).
+                from engine.card_effects import converge_reachable_max_mv
+                _cm = converge_reachable_max_mv(game, self.player_idx)
+                _x_ceiling = _cm if _x_ceiling is None else min(_x_ceiling, _cm)
 
             def _reachable(c):
                 return _x_ceiling is None or (c.template.cmc or 0) <= _x_ceiling

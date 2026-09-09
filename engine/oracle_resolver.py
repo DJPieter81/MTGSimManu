@@ -1072,7 +1072,8 @@ def _resolve_library_dig(game: "GameState", card: "CardInstance",
 def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
                                controller: int, targets: list = None,
                                *, x_value: int = 0,
-                               oracle_override: str = None) -> bool:
+                               oracle_override: str = None,
+                               removal_data: dict = None) -> bool:
     """Resolve instant/sorcery effects by parsing oracle text.
 
     Called when a spell resolves AND no EFFECT_REGISTRY handler took it.
@@ -1287,8 +1288,16 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
     #    handlers did by hand; owner_scope is the opponent (the sim's removal
     #    convention). A large correctness fix too — before this, the ~90
     #    unregistered removal spells of this shape resolved to nothing.
-    _rm = getattr(card.template, 'targeted_removal_data', None)
-    if oracle_override is None and _rm:
+    # A modal caller resolving ONE mode passes that mode's own typed
+    # classification (`removal_data`, parsed once at DB load); the plain
+    # spell shape reads the template's.  Either way the bound is typed —
+    # no clause is re-read here.
+    if removal_data is not None:
+        _rm = removal_data
+    else:
+        _rm = (getattr(card.template, 'targeted_removal_data', None)
+               if oracle_override is None else None)
+    if _rm:
         from engine.card_effects import _resolve_nonland_permanent_removal
         _mv = _rm.get('mv')
         if _mv is None:

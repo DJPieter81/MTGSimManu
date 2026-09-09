@@ -1817,6 +1817,7 @@ class CardDatabase:
             parse_counter_tax, parse_protection_from, parse_ward_cost,
             parse_is_land_sacrifice_tutor, parse_x_creature_tutor,
             parse_modal_spell,
+            parse_targeted_removal,
             parse_loyalty_abilities,
             parse_team_pump,
             parse_self_cost_reduction,
@@ -1942,7 +1943,14 @@ class CardDatabase:
         if _is_modal:
             template.is_modal = True
             template.modal_choose_count = _modal_count
-            template.modes = [{"text": c} for c in _modes]
+            # Each mode carries its own typed removal classification
+            # (`parse_targeted_removal` over the mode clause) so an
+            # X-bound "exile target creature with mana value X or less"
+            # MODE is bounded exactly like the plain spell shape — at
+            # resolution and in the AI's target ceiling.  Parsed once
+            # here; nothing re-reads the clause at resolve time.
+            template.modes = [{"text": c, "removal": parse_targeted_removal(c)}
+                              for c in _modes]
         template.x_creature_tutor_data = parse_x_creature_tutor(oracle)
         # Printed loyalty abilities (CR 606), classified once here so
         # `PlaneswalkerManager` can dispatch off a typed field and refuse
