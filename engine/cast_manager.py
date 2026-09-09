@@ -460,15 +460,17 @@ class CastManager:
         # equal to its mana cost").  Lava Dart's flashback cost is sacrifice-only
         # (flashback_cost=None); no mana is needed and the sacrifice is already
         # checked above in the GY-casting block.
-        _using_flashback_cost = (
-            card.zone == "graveyard"
-            and card.has_flashback
-            and template.flashback_cost is not None
-        )
+        _using_flashback_cost = CastManager._pays_printed_flashback_cost(card)
+        # The mana component of a printed flashback cost; a cost with no
+        # mana component ("Flashback—Sacrifice a Mountain") is an EMPTY
+        # ManaCost, not the printed mana cost.  Cards granted flashback by
+        # another effect (Past in Flames) are not on this path and pay
+        # their printed cost, as their oracle says.
+        _flashback_mana = CastManager._flashback_mana_cost(template)
         # Quantity arithmetic starts from the LEAST mana that pays the
         # cost (`min_mana`): identical to `cmc` except that a two-brid pip
         # {2/W} counts 1 (a Plains pays it), not its mana value 2.
-        effective_cmc = (template.flashback_cost.min_mana
+        effective_cmc = (_flashback_mana.min_mana
                          if _using_flashback_cost
                          else template.mana_cost.min_mana)
         # Domain cost reduction (oracle-derived template property)
@@ -508,7 +510,7 @@ class CastManager:
         # so no stack of reducers can quote a spell with pips as free.
         # (Hybrid pips folded into `generic` upstream used to slip under
         # this — the 2026-09-07 Manamorphose-for-nothing exploit.)
-        _pip_cost = (template.flashback_cost if _using_flashback_cost
+        _pip_cost = (_flashback_mana if _using_flashback_cost
                      else template.mana_cost)
         effective_cmc = max(effective_cmc, _pip_cost.non_generic_pips)
 
@@ -673,7 +675,7 @@ class CastManager:
 
         # Detailed color check using greedy constraint solving (MRV).
         # Use flashback cost when casting a native-flashback card from GY.
-        cost = (template.flashback_cost
+        cost = (_flashback_mana
                 if _using_flashback_cost
                 else template.mana_cost)
         color_needs = CastManager._color_pip_list(cost)
@@ -930,6 +932,31 @@ class CastManager:
         return remaining_sources >= total_needed + extra_generic - paid_pips
 
     # ─── Shared colour-verification helper ────────────────────────────
+
+    @staticmethod
+    def _pays_printed_flashback_cost(card: "CardInstance") -> bool:
+        """CR 702.33a: a card cast from the graveyard with its OWN printed
+        flashback pays the flashback cost rather than its mana cost.  A
+        card granted flashback by another effect (Past in Flames: "its
+        flashback cost is equal to its mana cost") is not on this path —
+        `has_flashback` is set for both, the printed keyword only for the
+        former (`'flashback' in template.tags`, as `setup_game` flags it).
+        """
+        template = card.template
+        return (card.zone == "graveyard"
+                and bool(getattr(card, 'has_flashback', False))
+                and 'flashback' in (template.tags or set()))
+
+    @staticmethod
+    def _flashback_mana_cost(template) -> "ManaCost":
+        """The mana component of a printed flashback cost.  None in the
+        parsed field means "no mana to pay" (a sacrifice-only cost such as
+        "Flashback—Sacrifice a Mountain"), which is an EMPTY cost — not the
+        printed mana cost.  The payment path used to fall back to the
+        printed cost here and tapped a land as well as sacrificing one
+        (2026-09-08)."""
+        from .mana import ManaCost
+        return template.flashback_cost if template.flashback_cost is not None else ManaCost()
 
     @staticmethod
     def lock_that_counters(game: "GameState", player_idx: int,
@@ -1645,6 +1672,18 @@ class CastManager:
                                                          card_name=template.name):
                             return False
                     else:
+                        # CR 702.33a: a printed flashback cast from the
+                        # graveyard pays the FLASHBACK cost — its mana
+                        # component, which is empty for a sacrifice-only
+                        # cost — never the printed mana cost.  The same
+                        # predicate `can_cast` gated on, so legality and
+                        # payment agree.  (Every graveyard cast used to
+                        # pay the printed cost: Flashback {G} paid {1}{R},
+                        # and a sacrifice-only flashback tapped a land on
+                        # top of the sacrifice.)
+                        _base_cost = (CastManager._flashback_mana_cost(template)
+                                      if CastManager._pays_printed_flashback_cost(card)
+                                      else template.mana_cost)
                         # Phyrexian mana (CR 107.4f): 2 life instead of one
                         # mana of the pip's colour.  Waive the FEWEST pips
                         # that make the rest payable — chosen by the same
@@ -1653,10 +1692,10 @@ class CastManager:
                         # keeping the non-Phyrexian coloured pips intact
                         # ({W}{U}{B/P}{R}{G} must still tap WURG).
                         waived = CastManager._choose_phyrexian_waiver(
-                            game, player_idx, template.mana_cost)
+                            game, player_idx, _base_cost)
                         life_cost = 2 * sum(waived.values()) if waived else 0
                         residual = CastManager._cost_without_pips(
-                            template.mana_cost, waived)
+                            _base_cost, waived)
                         if life_cost:
                             player.life -= life_cost
                         if not game.tap_lands_for_mana(
@@ -1954,9 +1993,15 @@ class CastManager:
         lock = CastManager.lock_that_counters(game, player_idx, template)
         if lock is not None:
             charge = lock.other_counters.get("charge", 0)
-            game.stack.pop()
-            card.zone = "graveyard"
-            player.graveyard.append(card)
+            item = game.stack.pop()
+            # A countered spell "would be put into a graveyard from the
+            # stack" — the one owner of that zone move applies the
+            # alternate-cast replacements (a flashbacked spell is exiled,
+            # CR 702.33a).  Appending straight to the graveyard let the
+            # same Lava Dart be flashed back three times into one Chalice
+            # (2026-09-08).
+            from .spell_resolution import ResolutionManager
+            ResolutionManager._move_countered_stack_item(game, item, card)
             game.log.append(
                 f"T{game.display_turn} P{opp_idx+1}: "
                 f"{lock.name} (X={charge}) counters {card.name}")
