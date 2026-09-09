@@ -3739,3 +3739,48 @@ inside [40, 55]; matrix-grid row max cell 80 (was four cells ≥85); the
 matchup-grid row has two cells sitting exactly at 85 (Boros Ponza, Azorius
 Blink). Lane closed as in band; the tap-out-into-a-combo-turn lead
 (`_holdback_penalty`) targets exactly those two cells and is the next unit.
+
+## Prowess control cells + Broodscale control cells — findings register (2026-09-08)
+
+User asked to diagnose Izzet Prowess's inverted control cells (WST 5, WST v2
+10, Eldrazi Tron 10, Domain Zoo 15) and Broodscale Bloodchief's 85–90 cells
+vs the control/blink decks. Seven `--bo3` replays at seed 50000 were read by
+five independent agents against the code; each finding below carries the log
+line numbers and file:line in the agent reports (scratchpad `p_*.txt`,
+`b_*.txt`). The ordered build plan lives in the session plan file; this
+register exists so no lead is re-derived.
+
+**Headline:** the control decks are not losing to over-credited combos.
+Broodscale's Blade loop never executes (parser gaps, all under-credit);
+Storm and Broodscale beat UW because Control's counter triage skips every
+creature spell while any flash removal is in hand, pays a holdback penalty
+every main phase to keep counters it never fires, and finally discards them
+to hand size. Prowess is beaten by its own AI: it feeds cards into a visible
+Chalice, sacrifices its own lands for one damage, never casts pump spells,
+and refuses to deploy a creature into any opposing creature (board-evaluator
+clock cliff).
+
+| id | layer | mechanic (class) | where |
+|---|---|---|---|
+| C1 | AI | counter triage is a boolean over the hand ("any flash removal in hand → skip the counter"), not per unanswered threat, not reach-checked; paired with `_holdback_penalty` reserving for counters never fired; counters discarded to hand size | `ai/response.py:362-369, 494-496, 940-985`; `ai/ev_player.py:1865` |
+| C2 | engine (orchestration) | instant-window casts (`_cast_instant_removal`) never receive `decide_response` — uncounterable | `engine/game_runner.py:1284-1288` |
+| C3 | AI | tap-out into a combo opponent's turn (hard-cast Solitude on own T9 vs Storm) — same holdback subsystem | `ai/ev_player.py::_holdback_penalty` |
+| A1 | AI | opponent's known lock permanents (`stax_class`: Chalice family, Counterbalance, Meddling Mage, Prelate, Canonist…) invisible to P(resolve); Bolt into Chalice@1 scores as with no Chalice | `ai/ev_evaluator.py:3213-3235` |
+| A2 | AI | own mana-source loss priced ≈0 (`own_land_loss_value` ≈0.16 vs 1.50 face damage; zero once `lands-1 ≥ curve_top`; `my_mana-1` clamped by mana-diff sign) — 142 self-sac lands, 40 sac-draw rocks, 51 sac-a-land spells | `ai/land_denial.py:229-266`, `ai/activation_ev.py:460-462`, `ai/clock.py:822` |
+| A3 | AI | pump instants unvalued (`pump_spell_*` read nowhere in `ai/`); lethal projection ignores EOT pumps/cast triggers; `turn_planner.plan_turn` never called from the main phase — 151 pump instants × every prowess-class creature | `ai/ev_evaluator.py:2593-2616`, `ai/turn_planner.py:1131-1158` |
+| A4 | AI | `position_value` clock term discontinuous at the no-clock sentinel (Swiftspear into a lone 2/2 → −48; no creature → −2). Prior art `docs/diagnostics/2026-08-30_clock_sign_inversion_fix_falsified.md` falsified an Azorius WR prediction, not the mechanism; reopen only against the Prowess cells | `ai/clock.py:787-815` |
+| A5/A6 | AI | block scorer treats a ≤2-power clock as no clock (free chump of the only attacker); `int(blend())` truncates a 1-power creature to 0 | `ai/clock.py:119-122`; `ai/ev_evaluator.py:2951-2972` |
+| A7 | data | Azorius Blink `mulligan_min_lands: 1` (kept a 1-lander, decisive); nine-deck `mulligan_max_lands: 3` lead | `decks/gameplans/azorius_blink.json:47` |
+| E1 | engine | X-bound removal legality skipped for modal/converge wrappers (`targeted_removal_data=None`): Kozilek's Command exiles any MV at X=0; Prismatic Ending cast at unreachable targets and whiffs — ~100 "MV ≤ X" removal | `engine/oracle_parser.parse_targeted_removal`, `engine/cast_manager.py:440, 1791-1802, 236-237` |
+| E2 | engine | countered spells appended straight to graveyard, bypassing `_move_countered_stack_item` — a flashbacked spell returns to the graveyard instead of exile (CR 702.33a); 156 flashback cards | `engine/cast_manager.py:1932-1941` |
+| E3 | engine | flashback with a non-mana printed cost also charges the printed mana cost | `engine/cast_manager.py:463-467, 676-678` |
+| E4 | engine | targeted pump instants castable with no legal target; handlers ignore `targets` (CR 601.2c) — 151 cards | `engine/card_effects.py:996-1018` |
+| E5 | engine | `target_solver` ignores protection from colours (Bolt kills pro-red) | `engine/target_solver.py` |
+| E6 | engine | X-counter ETB rider double-applied (no `has_dedicated_etb` guard) + registry handler uses search count as X — Wan Shi Tong one counter too big every time | `engine/spell_resolution.py:247-257`, `engine/card_effects.py:1895-1911` |
+| E7 | engine | equip cost parser matches `Equip {1}` inside `Equip {1}{R}` — every coloured equip cost | `engine/oracle_parser.py:2940-2942` |
+| E8 | engine | `_activate_sacrifice_abilities` is strategy inside the engine and pays no cost (Mind Stone sacrificed with 0 mana) — 40 rocks + 142 lands | `engine/game_runner.py:2330-2405` |
+| E9/E10 | engine | flash-creature deployment has no legend filter/EV (second Wan Shi Tong into its own legend rule); no post-block priority window (no combat tricks after blocks) | `engine/game_runner.py:1293-1308, 952-953` |
+| E11 | engine (parser classes, under-credit except Temple) | Blade of the Bloodchief dies-trigger absent (loop impossible); Glaring Fleshraker cast-colorless trigger absent; Kozilek's Command second mode dropped; Emrakul cast trigger absent + Kindred not a type; Malevolent Rumble dig refused (token rider); Mycospawn kicker; Eldrazi Temple restriction unenforced (over-credit) | `engine/oracle_parser.py`, `engine/card_database.py:1501-1509` |
+| T1 | tool | `run_bo3` relabels seats but never passes `forced_first_player`: the die is re-rolled and the previous game's WINNER keeps the play — every `--bo3` diagnostic read this session; the matrix path is correct | `run_meta.py:1035-1079` |
+
+Build order (plan): T1 → C1+C2 → A1 → E2+E3 → A2 → E1 → A3+E4+E10 → A4/A5/A6 → E5–E9 → E11 → A7.
