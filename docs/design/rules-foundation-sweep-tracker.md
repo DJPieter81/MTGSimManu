@@ -3822,3 +3822,38 @@ clock cliff) decide those games.
 Two of three cells moved by ≥ one SE (11 pp); the Tron cell is decided by
 Thought-Knot beats after self-inflicted land loss (A2) rather than by
 Chalice. Prowess lane: movement, 0 of 3 without.
+
+### Unit E2 + E3 — built and measured (2026-09-09, `3d48edf`)
+
+`cast_spell` paid the printed mana cost on EVERY graveyard cast — the
+printed flashback cost was never what was paid ("Flashback {G}" paid
+{1}{R}; a sacrifice-only cost tapped a land and sacrificed one), and
+`can_cast` refused a sacrifice-only flashback whenever the caster was tapped
+out. `_pays_printed_flashback_cost` / `_flashback_mana_cost` now drive both
+`can_cast` and payment (granted flashback — Past in Flames — still pays the
+printed cost, as its oracle says). The lock block routes a countered spell
+through `_move_countered_stack_item`, so a flashbacked spell is exiled (CR
+702.33a) instead of returning for a second and third flashback. Four tests
+red → green; flashback / PiF / mana pins green; ratchets at baseline;
+anchor: two turns-only drifts refreshed. Measure (n=20 Bo3): **Prowess vs
+Eldrazi Tron 5 → 15**; Prowess vs WST 20 → 15 (noise).
+
+### A2 — refined, not built as planned
+
+The planned change (price own land loss against the hand's total mana
+demand instead of `curve_top`; do not let the mana-diff clamp zero it)
+cannot move the reproduction: in every Lava Dart flashback in the replays
+the caster was ALREADY below `curve_top`, so `own_land_loss_value` was
+already charging its full tempo term — ≈0.16 (`mana_clock_impact` =
+1/opp_life × ~2.8 replacement turns at 17 life). It lost to a face value of
+**1.50 for one damage** (`damage × burn_face_mult`, `ai/ev_player.py:3924`;
+aggro profile 1.5). The defect is a **currency mismatch**, not a missing
+term: land denial (own and opponent-side, `ai/land_denial.py`) and the
+mana term of `position_value` are priced in clock units (1/opp_life per
+mana-turn), while face damage is priced in profile units 25× larger, and
+the pass penalty prices a wasted mana-turn at ≈0.28. Any of those three
+scales would make "sacrifice a land for one damage at 17 life" wrong; only
+the current pairing makes it right. This is the cross-cutting "play gate /
+currency reformulation" the Zoo loop already named; it is not a deck-loop
+unit. Recorded here so A2 is not rebuilt in its planned shape. Boros
+Ponza's opponent-side land denial (0.16 per land) sits on the same mismatch.
