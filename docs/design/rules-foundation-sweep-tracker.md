@@ -3892,3 +3892,55 @@ blind. **E11 lead sharpened:** Kozilek's Command's non-removal modes
 have no clause resolver at all — the mode selector can pick them, the
 resolver does nothing — so the generic clause resolver cannot execute a
 "target player creates X tokens" or "scry X then draw" mode yet.
+
+### Unit A3 + E4 + E10 — built and measured (2026-09-09, `c6f0a73`)
+
+Three defects, one class (~320 "target creature gets +N/+M until end of
+turn [and gains <keyword>]" instants and sorceries). **Parser:** the typed
+pump fields read only the bare "+N/+M until end of turn" shape, so "+1/+0
+and gains first strike until end of turn" typed as no pump at all — 137 of
+the 323 cards (Violent Urge, Blossoming Defense). **Targets:** the two
+bespoke pump handlers pumped the controller's biggest creature whatever
+the spell targeted (one added its keyword to a computed view — a silent
+no-op), and the AI chose no target for a beneficial pump, so it was cast
+blank and resolved doing nothing (a Phyrexian pip paid for nothing).
+`oracle_resolver.pump_target` is now the one owner (generic resolver and
+both handlers); `_choose_targets` aims a pump at its own creature (an
+attacker first) and `_spell_requires_targets` skips it with none.
+**Timing:** `AFTER_BLOCKERS_DECLARED` was `pass`. `GameRunner._combat_trick_window`
+offers the active player's `decide_combat_trick` the declared
+assignments, the defender a response (CR 117.3d), and resolves the stack
+before damage. The decision projects the declared combat as it stands and
+with the trick on one attacker (`_post_combat_snapshot`: 510.1b/c, 509.2,
+510.4, deathtouch, trample, prowess) and prices both with
+`position_value` — lethal is its terminal, a flipped trade is the power
+kept plus the power the blocker loses, the card is the hand-size term; a
+trick that changes no outcome is held. `decide_attackers`' on-board lethal
+rule adds `_pump_reach_this_turn` (castable pumps packed cheapest-first,
+the face-burn packing). Eight tests red → green; combat/attack/block/pump
+suites 285 green; ratchets at baseline; chunks 2281 / 2279; anchor:
+Goryo's vs Prowess s50000 turns-only (6 → 5) refreshed.
+
+Reproduction (`--bo3 "Izzet Prowess" "Domain Zoo" -s 50000`): 2-1 → 2-0;
+a post-block Mutagenic Growth on an unblocked attacker appears in G1 T3.
+**Measure (n=20 Bo3, matchup grid s50000):** Prowess vs WST **15 → 45**;
+vs Eldrazi Tron **15 → 35**; vs Domain Zoo 15 (matrix grid) → **30**; vs
+WST v2 20 → 10 (−10, inside 1 SE). Guard Boros Energy vs Domain Zoo
+replayed on a pre-change worktree at the same seeds: byte-identical
+(20/80, same win-turn lists) — only Prowess's three tricks carry typed
+pump fields among the registered decks, so nothing else can move.
+Prowess lane: 3 of 3 units moved (A1, E2+E3, this).
+
+Two observations, not built: (a) the trick decision casts a pump for two
+face damage at 20 life when an attacker is unblocked (G1 T3 above) — the
+same life-vs-card currency mismatch A2 recorded (a life point is priced in
+survival turns, a card in clock units); the rule is correct in its own
+currency and the mismatch is cross-cutting. (b) Boros Energy vs Domain Zoo
+reads 20/80 in this ordering on this grid against 50/50 in the reverse
+ordering on the hybrid tree (`g_zoo_boros.log`) — different trees, so not
+a claim; worth one same-tree ordering pair before the next Zoo reading.
+Left open in this unit: the defending player's own post-block window
+(removal on a blocked attacker, a pump on a blocker) — the active player's
+casts are answerable through `_offer_response_window`, but the defender
+initiates nothing after blocks; and the turn-level lethal search
+(`TurnPlanner.plan_turn` is still never called from the main phase).
