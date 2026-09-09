@@ -3353,6 +3353,93 @@ def parse_cast_trigger_token(oracle: str) -> Optional[Dict]:
     }
 
 
+_DIES_OBSERVER_RE = re.compile(
+    r"whenever (a|another) creature( you control| an opponent controls)? dies, "
+    r"([^.\n]*)\.?(?:\s*(if [^.\n]*instead)\.)?")
+_DIES_OBSERVER_COUNTER_RE = re.compile(
+    r"^put (a|an|one|two|three|\d+) \+1/\+1 counters? on "
+    r"(equipped creature|enchanted creature|this creature|this permanent|it)$")
+_DIES_OBSERVER_DRAIN_RE = re.compile(
+    r"^each opponent loses (\d+|one|two) life(?: and you gain (\d+|one|two) life)?$")
+_DIES_OBSERVER_GAIN_RE = re.compile(
+    r"^you gain (\d+|one|two) life(?: and draw a card)?$")
+_DIES_OBSERVER_DRAW_RE = re.compile(
+    r"^(?:you )?draw (a|one|two) cards?(?: and you lose (\d+|one) life)?$")
+
+
+def parse_creature_dies_observer(oracle: str) -> Optional[Dict]:
+    """Parse a permanent's "whenever a/another creature [you control | an
+    opponent controls] dies, <effect>" OBSERVER trigger (CR 603.2) — the
+    clause fires on OTHER creatures' deaths, unlike the dying creature's
+    own "when this creature dies" clause (`resolve_dies_trigger`).
+
+    Returns::
+
+        {"scope": "any" | "you" | "opponent", "another": bool,
+         "kind": "counter_attached" | "counter_self" | "drain" | "gain" | "draw",
+         "amount": int, "gain": int, "lose_life": int, "draw": int,
+         "subtype_bonus": Optional[(subtype, amount)]}
+
+    or None when there is no such clause OR its rider is a shape the
+    dispatcher does not execute (sacrifice, damage, counters elsewhere,
+    conditional forms) — refused whole rather than half-run. Class: 36
+    non-creature permanents in the pool plus the creature observers
+    (Blood Artist shape).
+    """
+    if not oracle:
+        return None
+    lo = strip_reminder_text(oracle).lower()
+    m = _DIES_OBSERVER_RE.search(lo)
+    if not m:
+        return None
+    scope = {" you control": "you", " an opponent controls": "opponent"}.get(
+        m.group(2) or "", "any")
+    another = m.group(1) == "another"
+    effect = m.group(3).strip()
+    rider = (m.group(4) or "").strip()
+    spec = {"scope": scope, "another": another, "amount": 0, "gain": 0,
+            "lose_life": 0, "draw": 0, "subtype_bonus": None}
+    cm = _DIES_OBSERVER_COUNTER_RE.match(effect)
+    if cm:
+        target = cm.group(2)
+        spec["kind"] = ("counter_attached"
+                        if target in ("equipped creature", "enchanted creature")
+                        else "counter_self")
+        spec["amount"] = _NUM_WORDS.get(cm.group(1), 1) if not cm.group(1).isdigit() else int(cm.group(1))
+        # "If equipped creature is a <subtype>, put two ... instead."
+        bm = re.match(r"if (?:equipped|enchanted|this) creature is an? (\w+), "
+                      r"put (a|two|three|\d+) \+1/\+1 counters? on it instead", rider)
+        if bm:
+            n = bm.group(2)
+            spec["subtype_bonus"] = (bm.group(1), int(n) if n.isdigit() else _NUM_WORDS.get(n, 1))
+        elif rider:
+            return None
+        return spec
+    if rider:
+        return None
+    dm = _DIES_OBSERVER_DRAIN_RE.match(effect)
+    if dm:
+        spec["kind"] = "drain"
+        spec["amount"] = int(dm.group(1)) if dm.group(1).isdigit() else _NUM_WORDS.get(dm.group(1), 1)
+        if dm.group(2):
+            spec["gain"] = int(dm.group(2)) if dm.group(2).isdigit() else _NUM_WORDS.get(dm.group(2), 1)
+        return spec
+    gm = _DIES_OBSERVER_GAIN_RE.match(effect)
+    if gm:
+        spec["kind"] = "gain"
+        spec["gain"] = int(gm.group(1)) if gm.group(1).isdigit() else _NUM_WORDS.get(gm.group(1), 1)
+        spec["draw"] = 1 if "draw a card" in effect else 0
+        return spec
+    wm = _DIES_OBSERVER_DRAW_RE.match(effect)
+    if wm:
+        spec["kind"] = "draw"
+        spec["draw"] = _NUM_WORDS.get(wm.group(1), 1)
+        if wm.group(2):
+            spec["lose_life"] = int(wm.group(2)) if wm.group(2).isdigit() else 1
+        return spec
+    return None
+
+
 def _parse_token_create_count(text: str) -> int:
     """How many tokens a "create <n> … token" clause makes (default 1)."""
     cm = re.search(r"create (a|an|one|two|three|four|\d+)\b", text)

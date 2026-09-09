@@ -547,7 +547,77 @@ class PermanentEffects:
             from .oracle_resolver import resolve_dies_trigger
             resolve_dies_trigger(game, creature, controller)
 
+        # Observers on either battlefield ("whenever a/another creature
+        # [you control] dies, …", CR 603.2) — dispatched after the zone
+        # move, so the dying creature itself is never an observer of its
+        # own death and the look-back (CR 603.10) needs no special case.
+        PermanentEffects._fire_creature_dies_observers(game, creature, controller)
+
         game.log.append(f"T{game.display_turn}: {creature.name} dies")
+
+    @staticmethod
+    def _fire_creature_dies_observers(game: "GameState", creature: CardInstance,
+                                      controller: int) -> None:
+        """Fan one creature's death out to every typed observer
+        (`CardTemplate.creature_dies_observer`) whose scope matches the
+        dying creature's controller. Effects: a +1/+1 counter on the
+        observer's attached creature or on itself (subtype bonus honoured),
+        drain, gain, draw — through the engine's own funnels (the counter
+        funnel fires counters-placed triggers; life loss reaches the SBA)."""
+        for p_idx, player in enumerate(game.players):
+            for perm in list(player.battlefield):
+                spec = perm.template.creature_dies_observer
+                if not spec or perm.zone != "battlefield":
+                    continue
+                if spec["scope"] == "you" and controller != p_idx:
+                    continue
+                if spec["scope"] == "opponent" and controller == p_idx:
+                    continue
+                kind = spec["kind"]
+                if kind in ("counter_attached", "counter_self"):
+                    target = perm
+                    if kind == "counter_attached":
+                        # The bearer is tagged `equipped_{equipment id}`
+                        # by `GameState.attach_equipment` (one owner);
+                        # Auras record `attached_to_id` instead.
+                        tag = f"equipped_{perm.instance_id}"
+                        target = next(
+                            (c for c in player.battlefield
+                             if tag in getattr(c, "instance_tags", ())), None)
+                        if target is None:
+                            target = game.get_card_by_id(
+                                getattr(perm, "attached_to_id", None) or -1)
+                    if target is None or target.zone != "battlefield":
+                        continue
+                    amount = spec["amount"]
+                    bonus = spec.get("subtype_bonus")
+                    if bonus and bonus[0] in {s.lower() for s in (target.template.subtypes or [])}:
+                        amount = bonus[1]
+                    target.add_plus_counters(amount, game, source=perm)
+                    game.log.append(
+                        f"T{game.display_turn} P{p_idx+1}: {perm.name} — "
+                        f"{creature.name} died → +{amount}/+{amount} counter(s) on {target.name}")
+                elif kind == "drain":
+                    for o_idx, opp in enumerate(game.players):
+                        if o_idx != p_idx:
+                            opp.life -= spec["amount"]
+                    if spec["gain"]:
+                        PermanentEffects.gain_life(game, p_idx, spec["gain"])
+                    game.log.append(
+                        f"T{game.display_turn} P{p_idx+1}: {perm.name} — "
+                        f"{creature.name} died → each opponent loses {spec['amount']} life")
+                    game.check_state_based_actions()
+                elif kind == "gain":
+                    PermanentEffects.gain_life(game, p_idx, spec["gain"])
+                    if spec["draw"]:
+                        game.draw_cards(p_idx, spec["draw"])
+                elif kind == "draw":
+                    game.draw_cards(p_idx, spec["draw"])
+                    if spec["lose_life"]:
+                        player.life -= spec["lose_life"]
+                        game.check_state_based_actions()
+                if game.game_over:
+                    return
 
 
     @staticmethod

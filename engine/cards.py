@@ -1105,6 +1105,12 @@ class CardTemplate:
     # by `CardInstance.add_plus_counters` — the single +1/+1 counter funnel —
     # so no placement path can put counters without the trigger seeing it.
     counter_placement_trigger: Optional["CounterPlacementTrigger"] = None
+    # "Whenever a/another creature [you control] dies, <effect>" — an
+    # OBSERVER of other creatures' deaths (CR 603.2; 36 non-creature
+    # permanents + the creature observers). Populated by
+    # oracle_parser.parse_creature_dies_observer; fanned out by
+    # PermanentEffects._creature_dies after the dying creature has left.
+    creature_dies_observer: Optional[dict] = None
     # "If one or more <kind> counters would be put on <scope> you control,
     # <that many ±1 | twice that many> are put on it instead" (CR 614.1c,
     # 14 Modern cards). Applied inside the ONE counter funnel

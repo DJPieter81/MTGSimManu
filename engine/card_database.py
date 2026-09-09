@@ -2109,6 +2109,10 @@ class CardDatabase:
         template.cast_trigger_token = parse_cast_trigger_token(oracle)
         template.ordinal_cast_trigger = parse_ordinal_cast_trigger(oracle)
         template.enters_type_counter = parse_enters_type_counter(oracle)
+        # "Whenever a/another creature [you control] dies, …" observers
+        # (CR 603.2). Fanned out by the death funnel.
+        from .oracle_parser import parse_creature_dies_observer
+        template.creature_dies_observer = parse_creature_dies_observer(oracle)
         # "Whenever one or more +1/+1 counters are put on this …" (CR 122,
         # 16 cards). Fired by the CardInstance.add_plus_counters funnel.
         from .oracle_parser import parse_counter_placement_trigger
