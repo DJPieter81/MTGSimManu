@@ -4173,3 +4173,16 @@ Grixis 140/145, Prowess 134/139, Toolbox 125/129, Storm 110/123, Zoo
 castable off one land; the `cheap_spells` count at `mulligan.py:618`
 exists but only inside the `mulligan_keys` branch — with a seven-deck
 blast radius including Zoo and Storm, each needing its own guard.
+
+**Zoo band verdict (n=60 Bo3, `--field`, 14 draws credited to nobody,
+0 aborted): Domain Zoo 70.7% — above [50,65].** Not this unit's doing
+(same seeds, pre-change 70.8 at n=20) and not one matchup: against the
+committed matrix Zoo's row is up on 20 of 24 opponents, mean +10pp (WST v2
+35 → 63, Eldrazi Ramp 55 → 77, Broodscale 50 → 72, Grixis 55 → 75, Hollow
+One 80 → 98, 4/5c Control 45 → 63, Pinnacle 55 → 72, Goryo's 75 → 90),
+down only on Prowess (85 → 77), Living End, Toolbox, Storm. A uniform lift
+is a Zoo-side mechanic change somewhere in the ten units since `a31c370`,
+not a matchup story. **The Zoo lane reopens** under the loop protocol:
+bisect the field across the intermediate commits (`a31c370` → `3d48edf`
+→ `c6f0a73` → `e9ed0f7` → head), then replay the first mover Bo3 and name
+the subsystem in writing before any code. Task #22.
