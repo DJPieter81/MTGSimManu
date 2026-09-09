@@ -4228,3 +4228,26 @@ OPPONENTS' defects, and both are named subsystems:
 Order: the engine class first (rules before choice; it also corrects the
 over-credit every Looting deck enjoys), then the Amulet gate on the
 corrected engine. Zoo's own play in both replays was ordinary.
+
+### Unit E12 — built and measured (2026-09-09, `9d5e40f`)
+
+The loot shape "[each player] draw N, then discard M [at random]" is typed
+once (`parse_loot_effect` → `loot_data`) and the resolver discards after
+drawing through `DiscardManager.discard_card` (the player's choice via
+`callbacks.choose_discard`, or the game RNG at random; "each player"
+loots every player, controller first), so the per-turn discard counter
+advances and a madness card gets its madness cast. Four tests red →
+green; discard / madness / cantrip / draw pins 210 green; ratchets at
+baseline; chunks 2291 / 2269; anchor: Hollow One vs Eldrazi Ramp s53500
+flipped (Inquiry's random discards cost Hollow One two lands — accepted),
+one turns-only drift refreshed.
+
+**Same-seed pre → post, n=20 Bo3:** Domain Zoo vs Hollow One **100 → 80**;
+**Hollow One field 27.7 → 35.8** (+8.1pp, ~3.5 SE; row: Toolbox 35 → 80,
+Azorius Blink 10 → 40, Jeskai Blink 35 → 60, Amulet 35 → 60, Ponza 40 →
+60; Grixis 40 → 20, Ramp 40 → 25 — random discards cut both ways); Domain
+Zoo field 71.0 → 70.0 (one cell of 24). Hollow One remains under band
+with its engine now turning; its own AI (a cycle-vs-cast choice on a
+cost that falls per discard, the madness offer taken by default) is the
+next Hollow One-side lead. Zoo lane: the second named subsystem (Amulet's
+Scapeshift patience gate) is next.
