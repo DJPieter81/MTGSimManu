@@ -1069,6 +1069,13 @@ def run_bo3(deck1: str, deck2: str, seed: int = 42000,
 
         runner.rng = random.Random(game_seed)
         random.seed(game_seed)
+        # CR 103.2: the loser of the previous game plays first. The seating
+        # above puts that loser in P1, so P1 is FORCED on the play — without
+        # this, `setup_game` rolls the opening die again and (with the
+        # per-game seed) the previous WINNER kept the play in every replay
+        # this tool produced. A drawn game has no loser: the die decides.
+        # `GameRunner.run_match` (the matrix path) has always forced it.
+        forced_first = 0 if (game_num >= 2 and last_winner in (deck1, deck2)) else None
         r = runner.run_game(
             p1_name, p1_main_sb, p2_name, p2_main_sb,
             deck1_sideboard=p1_data.get('sideboard', {}),
@@ -1076,6 +1083,7 @@ def run_bo3(deck1: str, deck2: str, seed: int = 42000,
             verbose=True,
             replay_log=replay_log,
             game_number=game_num,
+            forced_first_player=forced_first,
         )
 
         lines.extend(r.game_log)
