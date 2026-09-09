@@ -4251,3 +4251,20 @@ with its engine now turning; its own AI (a cycle-vs-cast choice on a
 cost that falls per discard, the madness offer taken by default) is the
 next Hollow One-side lead. Zoo lane: the second named subsystem (Amulet's
 Scapeshift patience gate) is next.
+
+**Amulet lead sharpened (traced, not built).** `_overlay_land_sacrifice_fizzle`
+(`ai/ev_player.py:896`) clamps Scapeshift to the patience sentinel unless a
+payoff-ROLE card in hand costs no more than the retained lands — the
+2026-08-26 payoff-reachability gate, which cut blind-ramp losses then. In
+this list (no Valakut) Scapeshift's payoff is the fetched lands themselves
+(four Urza's Sagas → Constructs and an Amulet tutor; Hanweir; Vesuva), and
+with no Titan or Colossus in hand the gate holds the card forever: traced
+T16, Amulet of Vigor on board, six mana, hand = Scapeshift + three lands,
+`cast_spell: Scapeshift −10.0` every main phase while a 5/6 Frog attacks.
+Next Amulet unit: the tutor's value counts the fetched lands' own
+abilities (ability-lands: Saga tokens, Field of the Dead, Valakut
+triggers, bounce-land mana under a watcher) as a reachable payoff when
+no hand payoff exists — class: every land-sacrifice tutor × every
+ability-land in the pool — measured against the 08-26 result so the
+blind-ramp losses it closed do not reopen. Zoo's Toolbox (95) and
+Goryo's (90) cells are not yet replayed.
