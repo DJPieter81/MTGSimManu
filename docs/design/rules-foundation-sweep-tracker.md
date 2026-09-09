@@ -4067,3 +4067,31 @@ Blink 95 → 90 (unmoved — the Blade loop still cannot execute, and the
 control side still cannot answer what Broodscale does); **Eldrazi Tron vs
 Boros Energy 30 → 50** (Tron runs Fleshraker too; against the pre-E8
 baseline 35 the net is +15).
+
+### Unit E11b — built and measured (2026-09-09)
+
+The death funnel resolved only the dying creature's own clause; no
+permanent was ever asked whether it watches creature deaths. Blade of the
+Bloodchief (the loop's first leg), every drain enchantment and every
+"another creature you control dies" body were inert. Typed once
+(`creature_dies_observer`: scope / another / effect — counter on the
+attached or own creature with subtype bonus, drain, gain, draw; other
+riders refused), fanned out from `_creature_dies` after the zone move.
+The bearer of an equipment is found by the `equipped_<id>` tag
+`attach_equipment` writes (there is no `attached_to_id` for equipment —
+recorded, since the AI's re-equip code may assume otherwise). Three
+tests red → green (the Blade test also pins the loop's second leg: the
+counters-placed trigger fires and makes the Spawn); dies/token/equipment
+/counter pins 782 green; ratchets at baseline; chunks 2291 / 2286; anchor
+unchanged.
+
+Measure (n=20 Bo3, s50000 grid): Broodscale vs WST 95 → 95; vs Azorius
+Blink 90 → 90; Dimir Midrange vs Boros 50 → 50. Unmoved, as expected:
+the loop's third leg is still missing — the created Eldrazi Spawn carries
+no mana ability, so the AI cannot sacrifice it for {C} and the Blade →
+counter → Spawn → sacrifice chain has no engine to turn; and the control
+side's counters still do not fire on Broodscale's creatures (C-lane). The
+next Broodscale-side unit is the token mana ability (a token created from
+a source oracle keeps its printed activated abilities — a token-factory
+class, every Spawn/Scion/Treasure shape), after which the loop can be
+evaluated by the unbounded-engine machinery.
