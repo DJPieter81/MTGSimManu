@@ -69,7 +69,7 @@
     "Ocelot Pride",
     "Ragavan, Nimble Pilferer"
   ],
-  "mulligan_max_lands": 3,
+  "mulligan_max_lands": 4,
   "mulligan_require_creature_cmc": 2,
   "always_early": [
     "Guide of Souls",
