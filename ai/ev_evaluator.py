@@ -3234,6 +3234,20 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
     else:
         p_interaction = 0.0
 
+    # A lock permanent on the opponent's BATTLEFIELD is not a belief: the
+    # engine's own predicate (`CastManager.lock_that_counters`, typed
+    # `stax_class`) says whether this cast is countered on cast.  When it
+    # is, P(countered) is 1 regardless of the hidden hand, the worthiness
+    # scaling below does not apply (the lock does not choose), and the
+    # cast loses its card for nothing.  Without this read the AI fed
+    # five and nine cards into a visible Chalice in two games (2026-09-08).
+    _known_lock = None
+    if game is not None and _can_counter:
+        from engine.cast_manager import CastManager
+        _known_lock = CastManager.lock_that_counters(game, player_idx, card.template)
+    if _known_lock is not None:
+        p_interaction = 1.0
+
     # Threat-worthiness scaling — opponents save their answers for
     # high-impact spells.  The broadened P(has-interaction) is the
     # upper bound; the realised P(spends it on THIS spell) is the
@@ -3257,7 +3271,7 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
     _raw_delta = abs(evaluate_board(projected, 'midrange')
                      - evaluate_board(snap, 'midrange'))
     _avg_card_value = card_clock_impact(snap)
-    if _avg_card_value > 0 and _raw_delta > 0:
+    if _known_lock is None and _avg_card_value > 0 and _raw_delta > 0:
         _worthiness = _raw_delta / (_raw_delta + _avg_card_value)
         p_interaction *= _worthiness
 
@@ -3269,6 +3283,16 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
     after_value = evaluate_board(post_response, archetype, dk)
 
     ev = after_value - current_value
+    if _known_lock is not None:
+        # Countered on cast by rule: the spell never resolves, so the
+        # removal model above (resolve, then maybe get answered) does not
+        # apply.  The turn ends exactly as a PASS would — the same mana
+        # wasted — minus the card spent for nothing, priced as one average
+        # card's clock impact (the currency the worthiness term and the
+        # hand-attack overlay already use).  Below the pass EV by
+        # construction, so a locked cast never outranks holding the card.
+        ev = estimate_pass_ev(snap, archetype, dk) - _avg_card_value
+        after_value = current_value + ev
 
     # Kill-clock urgency discount for deferred-value permanents. Cards
     # whose value only materialises through future turns (Goblin
@@ -3370,7 +3394,12 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
     # Creature spells surface the interaction as `removal_pct`;
     # non-creatures as `counter_pct` — single value, two views.
     t = card.template
-    if t.is_creature:
+    if _known_lock is not None:
+        # Countered on cast by a battlefield lock — a counter, whatever
+        # the card type.
+        counter_pct = 1.0
+        removal_pct = 0.0
+    elif t.is_creature:
         counter_pct = 0.0
         removal_pct = p_interaction
     else:

@@ -1269,8 +1269,13 @@ class GameRunner:
         instant_removal = []
         flash_creatures = []
         evoke_creatures = []
+        from .cast_manager import CastManager as _CM
         for card in list(opponent.hand):
             if not game.can_cast(opponent_idx, card):
+                continue
+            # A spell the active player's lock permanent counters on cast
+            # (the engine's own predicate) is not worth casting here either.
+            if _CM.lock_that_counters(game, opponent_idx, card.template) is not None:
                 continue
             if card.template.is_instant or card.template.has_flash:
                 if "removal" in card.template.tags:

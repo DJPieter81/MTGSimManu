@@ -533,6 +533,16 @@ class EVPlayer:
         # Filter legends we already control
         spells = self._filter_legend_rule(me, spells)
 
+        # A cast that a lock permanent on the opponent's battlefield
+        # counters on cast (`CastManager.lock_that_counters`, the engine's
+        # own predicate) is fixed by rule to be a no-op minus the card. It
+        # is never a candidate: the play gate is a fixed floor, so pricing
+        # it below passing is not enough on its own (Preordain into a
+        # Chalice on 1 as the last play of a turn, 2026-09-09).
+        from engine.cast_manager import CastManager as _CM
+        spells = [c for c in spells
+                  if _CM.lock_that_counters(game, self.player_idx, c.template) is None]
+
         candidates: List[Play] = []
 
         # Score cycling plays (Living End style — cycle creatures to GY, then cascade)

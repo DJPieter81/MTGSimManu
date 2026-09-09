@@ -932,6 +932,30 @@ class CastManager:
     # ─── Shared colour-verification helper ────────────────────────────
 
     @staticmethod
+    def lock_that_counters(game: "GameState", player_idx: int,
+                           template) -> "Optional[CardInstance]":
+        """The opposing lock permanent whose parsed rule counters a cast of
+        `template`, or None.
+
+        Rules primitive, typed-field driven (`CardTemplate.stax_class`,
+        parsed once at DB load — no oracle scan): the Chalice-of-the-Void
+        family counters a spell whose mana value equals the permanent's
+        charge counters.  `cast_spell` applies it; the AI's single
+        interaction-probability call site (`ai/ev_evaluator.compute_play_ev`)
+        reads it as P(countered) = 1 — a lock on the battlefield is a
+        certainty, not a hidden-hand belief.  Before that read existed the
+        AI fed card after card into a visible Chalice (2026-09-08).
+        """
+        opp = game.players[1 - player_idx]
+        cmc = template.cmc or 0
+        for perm in opp.battlefield:
+            if getattr(perm.template, 'stax_class', None) != 'chalice':
+                continue
+            if perm.other_counters.get("charge", 0) == cmc:
+                return perm
+        return None
+
+    @staticmethod
     def _can_pay_colored_pips(game: "GameState", player_idx: int,
                               untapped_lands, cost: "ManaCost") -> bool:
         """Return True iff lands + mana pool can satisfy cost's coloured pips.
@@ -1922,23 +1946,21 @@ class CastManager:
             player.nonartifact_spells_cast_this_turn += 1
         game._global_storm_count += 1
 
-        # ── Chalice of the Void check ──
-        # If opponent controls Chalice with charge counters == spell's CMC, counter it
+        # ── Lock permanents that counter on cast (Chalice family) ──
+        # One predicate, `lock_that_counters`, decides it here AND answers
+        # the AI's resolution-probability query, so the engine's ruling
+        # and the caster's valuation cannot disagree.
         opp_idx = 1 - player_idx
-        opp = game.players[opp_idx]
-        # Generic "counter spell with mana value equal to charge counters" check
-        for perm in opp.battlefield:
-            perm_oracle = (perm.template.oracle_text or '').lower()
-            if 'charge counter' in perm_oracle and 'mana value' in perm_oracle and 'counter' in perm_oracle:
-                charge = perm.other_counters.get("charge", 0)
-                if charge == template.cmc and template.cmc >= 0:
-                    game.stack.pop()
-                    card.zone = "graveyard"
-                    player.graveyard.append(card)
-                    game.log.append(
-                        f"T{game.display_turn} P{opp_idx+1}: "
-                        f"{perm.name} (X={charge}) counters {card.name}")
-                    return True
+        lock = CastManager.lock_that_counters(game, player_idx, template)
+        if lock is not None:
+            charge = lock.other_counters.get("charge", 0)
+            game.stack.pop()
+            card.zone = "graveyard"
+            player.graveyard.append(card)
+            game.log.append(
+                f"T{game.display_turn} P{opp_idx+1}: "
+                f"{lock.name} (X={charge}) counters {card.name}")
+            return True
 
         dash_label = " (Dash)" if dashed else ""
         x_label = f" (X={x_value})" if x_value > 0 else ""
