@@ -455,6 +455,12 @@ class CombatManager:
         return self._attackers
 
     @property
+    def assignments(self) -> List[CombatAssignment]:
+        """The declared combat assignments (attacker + its blockers) —
+        the state a post-block priority window decides on."""
+        return self._assignments
+
+    @property
     def blocks(self) -> Dict[int, List[int]]:
         """Get the blocking assignments as a dict."""
         return {a.attacker.instance_id: a.blocker_ids

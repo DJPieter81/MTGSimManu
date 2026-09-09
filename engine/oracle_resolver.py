@@ -188,6 +188,24 @@ def resolve_damage_to_chosen_target(
 
 
 # ---------------------------------------------------------------------------
+def pump_target(game: "GameState", controller: int, targets) -> Optional["CardInstance"]:
+    """The creature a targeted pump resolves on: the chosen target when it
+    is a creature on the battlefield (CR 608.2b — the target, not the
+    controller's biggest creature), else the controller's best creature
+    for the untargeted callers that still exist.  One owner for every pump
+    shape — the generic resolver and the bespoke handlers alike."""
+    for tid in (targets or []):
+        if isinstance(tid, int) and tid > 0:
+            c = game.get_card_by_id(tid)
+            if (c is not None and c.zone == 'battlefield'
+                    and c.template.is_creature):
+                return c
+    mine = game.players[controller].creatures
+    if mine:
+        return max(mine, key=lambda c: c.power or 0)
+    return None
+
+
 # Team pump until end of turn (Overrun shape) — typed-field-gated resolution.
 # ONE application for every carrier — a permanent's own ETB trigger
 # (Craterhoof Behemoth class), an instant/sorcery (Overrun class) and the
@@ -1130,17 +1148,7 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
     _pt = getattr(card.template, 'pump_spell_toughness', 0)
     if oracle_override is None and (_pp or _pt):
         from engine.cards import Keyword as _KW
-        me = game.players[controller]
-        tgt = None
-        for tid in (targets or []):
-            if isinstance(tid, int) and tid > 0:
-                c = game.get_card_by_id(tid)
-                if (c is not None and c.zone == 'battlefield'
-                        and c.template.is_creature):
-                    tgt = c
-                    break
-        if tgt is None and me.creatures:
-            tgt = max(me.creatures, key=lambda c: c.power or 0)
+        tgt = pump_target(game, controller, targets)
         if tgt is not None:
             tgt.temp_power_mod += _pp
             tgt.temp_toughness_mod += _pt

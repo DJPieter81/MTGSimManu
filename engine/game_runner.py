@@ -950,7 +950,13 @@ class GameRunner:
                         combat_mgr.declare_blockers(game, blocks)
 
                 elif step == TurnStep.AFTER_BLOCKERS_DECLARED:
-                    pass  # Future: priority window after blockers
+                    # CR 509.4: priority after blockers are declared —
+                    # the active player's combat-trick window.
+                    if combat_mgr.attackers:
+                        self._combat_trick_window(game, ai, opponent_ai,
+                                                  combat_mgr)
+                        if game.game_over:
+                            break
 
                 elif step == TurnStep.FIRST_STRIKE_DAMAGE:
                     pass  # First-strike and regular damage are both
@@ -1214,6 +1220,49 @@ class GameRunner:
                     spell_on_stack=True,
                     spell_is_creature=spell_template.is_creature if spell_template else False,
                     opp_mana_available=responder_mana)
+
+    def _combat_trick_window(self, game: GameState, active_ai: AIPlayer,
+                             opponent_ai: AIPlayer, combat_mgr,
+                             max_tricks: int = 3) -> None:
+        """CR 509.4: after blockers are declared the active player receives
+        priority.  Offer their `decide_combat_trick` the declared
+        assignments and cast what it returns; the defending player is
+        offered a response to each cast (CR 117.3d) and the stack resolves
+        before combat damage.
+
+        This step was `pass` — no player ever held priority after blocks,
+        so a pump could only be cast in a main phase, where it is worth
+        nothing (2026-09-08, Prowess replays).
+
+        Teferi gate: a "cast at sorcery speed only" effect on the DEFENDING
+        side denies the active player instant-speed casting in combat.
+        """
+        if game.game_over or not combat_mgr.attackers:
+            return
+        if _sorcery_speed_only_active(game.players[opponent_ai.player_idx]):
+            return
+        decide = getattr(active_ai, 'decide_combat_trick', None)
+        if decide is None:
+            return
+        for _ in range(max_tricks):
+            decision = decide(game, combat_mgr)
+            if not decision:
+                break
+            card, targets = decision
+            if getattr(game, 'verbose', False):
+                game.log.append(
+                    f'  [After Blockers] P{active_ai.player_idx+1} casts '
+                    f'{card.name}')
+            if not game.cast_spell(active_ai.player_idx, card, targets):
+                break
+            if hasattr(opponent_ai, 'bhi'):
+                opponent_ai.bhi.observe_spell_cast(
+                    game, getattr(card.template, 'tags', set()))
+            self._offer_response_window(game, caster_ai=active_ai,
+                                        responder_ai=opponent_ai)
+            self._resolve_stack_loop(game)
+            if game.game_over:
+                return
 
     def _opponent_instant_window(self, game: GameState, opponent_ai: AIPlayer,
                                    active_ai: AIPlayer):

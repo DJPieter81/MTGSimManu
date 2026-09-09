@@ -3060,7 +3060,17 @@ class EVPlayer:
                 return True
             return False
         total_power = sum(c.power for c in valid if (c.power or 0) > 0)
-        if total_power >= opp.life:
+        # Lethal if unblocked is a property of the TURN: the pump instants
+        # castable after blocks add their power to an attacker (CR 509.4
+        # window) — the same packing `_burn_reach_this_turn` applies to
+        # face burn. A 12-damage lethal package (two pumps on one
+        # attacker) was left in hand while the AI deployed a creature and
+        # lost the next turn (Prowess vs Domain Zoo s50000 G2).
+        from ai.ev_evaluator import snapshot_from_game
+        _snap_lethal = snapshot_from_game(game, self.player_idx)
+        pump_reach = (self._pump_reach_this_turn(game, me, _snap_lethal)
+                      if total_power > 0 else 0)
+        if total_power + pump_reach >= opp.life:
             # On-board lethal if unblocked: send what is NEEDED. A creature
             # whose non-combat worth (`ai.clock.noncombat_opportunity_cost`
             # — mana production, unbounded-engine membership, abilities,
@@ -3069,15 +3079,13 @@ class EVPlayer:
             # still reach lethal — the same rule the combat planner's
             # lethal shortcut applies, so both paths agree.
             from ai.clock import noncombat_opportunity_cost
-            from ai.ev_evaluator import snapshot_from_game
-            _snap_lethal = snapshot_from_game(game, self.player_idx)
             kept = [c for c in valid if _has_combat_value(c)]
             worth = {c.instance_id: noncombat_opportunity_cost(c, me, _snap_lethal)
                      for c in kept}
             for c in sorted(kept, key=lambda c: -worth[c.instance_id]):
                 if worth[c.instance_id] > (c.power or 0) and (
                         sum((k.power or 0) for k in kept) - (c.power or 0)
-                        >= opp.life):
+                        + pump_reach >= opp.life):
                     kept.remove(c)
             return kept
 
@@ -3563,6 +3571,181 @@ class EVPlayer:
                         f"T{game.display_turn} P{self.player_idx+1}: "                        f"  [{tag}] {blk.name} ({b_pow}/{b_tou}) "                        f"blocks {atk.name} ({a_pow}/{a_tou}) — "                        f"lifespan_delta={delta:+.2f}"
                     )
 
+    # ═══════════════════════════════════════════════════════════
+    # COMBAT TRICKS — the post-block priority window (CR 509.4)
+    # ═══════════════════════════════════════════════════════════
+
+    def _pump_reach_this_turn(self, game, me, snap: EVSnapshot) -> int:
+        """Power the castable pump instants in hand add to an attack THIS
+        turn: every typed "+N/+M until end of turn" instant, packed
+        cheapest-first into the mana available (the packing
+        `_burn_reach_this_turn` uses for face burn).  Read by the on-board
+        lethal rule in `decide_attackers`."""
+        from ai.effective_cmc import effective_cmc as _ecmc
+        pumps = []
+        for c in me.hand:
+            t = c.template
+            pp = getattr(t, 'pump_spell_power', 0) or 0
+            if pp <= 0 or not t.is_instant or 'removal' in getattr(t, 'tags', set()):
+                continue
+            if not game.can_cast(self.player_idx, c):
+                continue
+            cost = max(0, _ecmc(c, snap, game=game, player_idx=self.player_idx) or 0)
+            pumps.append((cost, pp))
+        mana = snap.my_mana
+        total = 0
+        for cost, pp in sorted(pumps):
+            if cost <= mana:
+                mana -= cost
+                total += pp
+        return total
+
+    def decide_combat_trick(self, game, combat
+                            ) -> Optional[Tuple["CardInstance", List[int]]]:
+        """After blockers are declared (CR 509.4), the pump instant and
+        attacker whose projected post-combat position beats holding the
+        card — or None.
+
+        The declared combat is projected twice — as it stands, and with
+        the trick on one attacker — and both boards are priced with
+        `position_value`, the currency every other play is scored in:
+        lethal is its terminal value, a flipped trade is the power the
+        attacker keeps plus the power the blocker loses, the card spent is
+        the hand-size term.  A trick that saves nothing and kills nothing
+        loses the card for nothing and is held.
+        """
+        from ai.clock import position_value
+        from ai.effective_cmc import effective_cmc as _ecmc
+        from ai.ev_evaluator import snapshot_from_game
+        from engine.cast_manager import CastManager as _CM
+        me = game.players[self.player_idx]
+        assignments = [a for a in getattr(combat, 'assignments', [])
+                       if a.attacker.zone == 'battlefield'
+                       and a.attacker.controller == self.player_idx]
+        if not assignments:
+            return None
+        tricks = []
+        for c in me.hand:
+            t = c.template
+            if not t.is_instant or 'removal' in getattr(t, 'tags', set()):
+                continue
+            if ((getattr(t, 'pump_spell_power', 0) or 0) <= 0
+                    and (getattr(t, 'pump_spell_toughness', 0) or 0) <= 0):
+                continue
+            if not game.can_cast(self.player_idx, c):
+                continue
+            if _CM.lock_that_counters(game, 1 - self.player_idx, t) is not None:
+                continue
+            tricks.append(c)
+        if not tricks:
+            return None
+        snap = snapshot_from_game(game, self.player_idx)
+        baseline = position_value(
+            self._post_combat_snapshot(game, snap, assignments, None, None))
+        best, best_gain = None, 0.0
+        for spell in tricks:
+            cost = max(0, _ecmc(spell, snap, game=game,
+                                player_idx=self.player_idx) or 0)
+            for a in assignments:
+                after = self._post_combat_snapshot(
+                    game, snap, assignments, spell, a.attacker)
+                after.my_hand_size -= 1
+                after.my_mana = max(0, after.my_mana - cost)
+                gain = position_value(after) - baseline
+                if gain > best_gain:
+                    best, best_gain = (spell, [a.attacker.instance_id]), gain
+        if best is not None:
+            self._last_target_reason = (
+                f"combat trick on {best[1] and game.get_card_by_id(best[1][0]).name}")
+        return best
+
+    def _post_combat_snapshot(self, game, snap: EVSnapshot, assignments,
+                              spell, pumped) -> EVSnapshot:
+        """Project the declared combat to its post-damage board (CR 510):
+        unblocked power to the defending player (510.1b), ordered lethal
+        assignment among blockers (510.1c; deathtouch 702.2c; trample
+        702.19c), every blocker's damage back (509.2), first strike
+        ordering (510.4).  `spell` (a pump) on `pumped` adds its
+        temporary bonus for this combat only — survivors keep their own
+        power afterwards; prowess (702.108) credits the noncreature cast
+        on every prowess attacker."""
+        from engine.cards import Keyword as _K
+        _EVASION = {_K.FLYING, _K.MENACE, _K.TRAMPLE}
+        _FIRST = {_K.FIRST_STRIKE, _K.DOUBLE_STRIKE}
+        after = snap.model_copy()
+        pp = pt = 0
+        grant = set()
+        if spell is not None:
+            pp = getattr(spell.template, 'pump_spell_power', 0) or 0
+            pt = getattr(spell.template, 'pump_spell_toughness', 0) or 0
+            kw = getattr(spell.template, 'pump_spell_keyword', '') or ''
+            kwe = getattr(_K, kw.upper().replace(' ', '_'), None) if kw else None
+            if kwe is not None:
+                grant.add(kwe)
+        for a in assignments:
+            atk = a.attacker
+            p = atk.power or 0
+            tough = (atk.toughness or 0) - (getattr(atk, 'damage_marked', 0) or 0)
+            kws = set(atk.keywords)
+            if spell is not None and _K.PROWESS in kws:
+                p += 1
+                tough += 1
+            if atk is pumped:
+                p += pp
+                tough += pt
+                kws |= grant
+            blockers = [b for b in (game.get_card_by_id(bid) for bid in a.blocker_ids)
+                        if b is not None and b.zone == 'battlefield']
+            if not blockers:
+                after.opp_life -= max(0, p)
+                continue
+
+            def _deadly(b) -> bool:
+                return (b.power or 0) > 0 and _K.DEATHTOUCH in b.keywords
+
+            atk_first = bool(kws & _FIRST)
+            fs_blockers = [b for b in blockers if set(b.keywords) & _FIRST]
+            back_first = sum((b.power or 0) for b in fs_blockers)
+            dead: list = []
+            if (not atk_first) and (back_first >= tough > 0
+                                    or any(_deadly(b) for b in fs_blockers)):
+                # Killed in the first-strike step: assigns no damage.
+                attacker_dies = True
+            else:
+                remaining = max(0, p)
+                for b in blockers:
+                    need = (1 if _K.DEATHTOUCH in kws else max(
+                        0, (b.toughness or 0) - (getattr(b, 'damage_marked', 0) or 0)))
+                    if remaining >= need:
+                        dead.append(b)
+                        remaining -= need
+                    else:
+                        break
+                if _K.TRAMPLE in kws and len(dead) == len(blockers) and remaining > 0:
+                    after.opp_life -= remaining
+                survivors = [b for b in blockers if b not in dead]
+                dealing = survivors if atk_first else blockers
+                back = sum((b.power or 0) for b in dealing)
+                attacker_dies = back >= tough or any(_deadly(b) for b in dealing)
+
+            for b in dead:
+                bp, bt = max(0, b.power or 0), max(0, b.toughness or 0)
+                after.opp_power = max(0, after.opp_power - bp)
+                after.opp_toughness = max(0, after.opp_toughness - bt)
+                after.opp_creature_count = max(0, after.opp_creature_count - 1)
+                if set(b.keywords) & _EVASION:
+                    after.opp_evasion_power = max(0, after.opp_evasion_power - bp)
+            if attacker_dies:
+                ap, at = max(0, atk.power or 0), max(0, atk.toughness or 0)
+                after.my_power = max(0, after.my_power - ap)
+                after.my_toughness = max(0, after.my_toughness - at)
+                after.my_creature_count = max(0, after.my_creature_count - 1)
+                if set(atk.keywords) & _EVASION:
+                    after.my_evasion_power = max(0, after.my_evasion_power - ap)
+                if _K.LIFELINK in atk.keywords:
+                    after.my_lifelink_power = max(0, after.my_lifelink_power - ap)
+        return after
+
     def decide_blockers(self, game, attackers) -> Dict[int, List[int]]:
         """Decide blocking assignments.
 
@@ -4029,6 +4212,21 @@ class EVPlayer:
                                key=lambda c: permanent_threat(c, opp, game))
                     return [best.instance_id]
             return []
+
+        # Beneficial pump (typed "+N/+M until end of turn"): the caster's
+        # own creature — an attacker first, else the most valuable body.
+        # "Target creature" is legal on the opponent's creature too, so
+        # cast-time legality never protects this choice; with no own
+        # creature there is no target and the spell is not cast.
+        if ((getattr(t, 'pump_spell_power', 0) or getattr(t, 'pump_spell_toughness', 0))
+                and 'removal' not in tags):
+            mine = list(game.players[self.player_idx].creatures)
+            if not mine:
+                return []
+            attacking = [c for c in mine if getattr(c, 'attacking', False)]
+            best = max(attacking or mine, key=lambda c: creature_value(c, snap))
+            self._last_target_reason = f"own creature ({best.name})"
+            return [best.instance_id]
 
         # Burn spells FIRST — they can always target face as fallback
         from ai.card_classes import burn_damage
@@ -4653,6 +4851,12 @@ class EVPlayer:
             return True
         # Reanimate spells need a creature in the graveyard
         if 'reanimate' in tags:
+            return True
+        # A targeted pump (typed "+N/+M until end of turn") needs the
+        # creature it is aimed at; cast with no chosen target it resolves
+        # doing nothing (a Phyrexian pip paid for nothing, 2026-09-08).
+        if ((getattr(t, 'pump_spell_power', 0) or getattr(t, 'pump_spell_toughness', 0))
+                and 'removal' not in tags):
             return True
         for ability in t.abilities:
             if ability.targets_required > 0:

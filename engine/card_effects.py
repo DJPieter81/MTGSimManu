@@ -994,9 +994,10 @@ def orims_chant_resolve(game, card, controller, targets=None, item=None):
 @EFFECT_REGISTRY.register("Mutagenic Growth", EffectTiming.SPELL_RESOLVE,
                            description="Target creature gets +2/+2, pay 2 life")
 def mutagenic_growth_resolve(game, card, controller, targets=None, item=None):
-    my_creatures = game.players[controller].creatures
-    if my_creatures:
-        best = max(my_creatures, key=lambda c: c.power or 0)
+    # The creature it TARGETS (CR 608.2b), not the controller's biggest.
+    from .oracle_resolver import pump_target
+    best = pump_target(game, controller, targets)
+    if best is not None:
         best.temp_power_mod += 2
         best.temp_toughness_mod += 2
     # NOTE: no life deduction here. Mutagenic Growth's {G/P} pip is a CAST
@@ -1012,9 +1013,9 @@ def violent_urge_resolve(game, card, controller, targets=None, item=None):
     # Delirium — If 4+ card types in graveyard, double strike instead."
     # NO draw effect in oracle.
     from .cards import Keyword
-    my_creatures = game.players[controller].creatures
-    if my_creatures:
-        best = max(my_creatures, key=lambda c: c.power or 0)
+    from .oracle_resolver import pump_target
+    best = pump_target(game, controller, targets)
+    if best is not None:
         best.temp_power_mod += 1
         # Check delirium: 4+ card types in graveyard
         player = game.players[controller]
@@ -1022,10 +1023,13 @@ def violent_urge_resolve(game, card, controller, targets=None, item=None):
         for c in player.graveyard:
             for ct in c.template.card_types:
                 gy_types.add(ct)
+        # `keywords` is a computed view — a keyword granted until end of
+        # turn lives in `temp_keywords` (the generic pump resolver's home
+        # for it); adding to the view was a silent no-op.
         if len(gy_types) >= 4:
-            best.keywords.add(Keyword.DOUBLE_STRIKE)
+            best.temp_keywords.add(Keyword.DOUBLE_STRIKE)
         else:
-            best.keywords.add(Keyword.FIRST_STRIKE)
+            best.temp_keywords.add(Keyword.FIRST_STRIKE)
 
 
 @EFFECT_REGISTRY.register("Expressive Iteration", EffectTiming.SPELL_RESOLVE,

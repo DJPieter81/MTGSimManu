@@ -4506,8 +4506,13 @@ def parse_pump_spell(oracle: str) -> "tuple[int, int, str]":
     if not oracle:
         return 0, 0, ""
     text = strip_reminder_text(oracle).lower()
+    # The bonus and a keyword grant share one clause: "+1/+0 and gains
+    # first strike until end of turn", "+2/+2 and gains hexproof until end
+    # of turn". Reading only the bare "+N/+M until end of turn" shape left
+    # 137 of the 323 Modern pump spells typed as no pump at all.
     m = re.search(
-        r'target creature[^.]*?gets \+(\d+)/\+(\d+) until end of turn', text)
+        r'target creature[^.]*?gets \+(\d+)/\+(\d+)'
+        r'(?: and (?:gains|has) [a-z ,]+?)? until end of turn', text)
     if not m:
         return 0, 0, ""
     power, tough = int(m.group(1)), int(m.group(2))
