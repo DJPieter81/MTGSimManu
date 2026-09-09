@@ -3857,3 +3857,38 @@ the current pairing makes it right. This is the cross-cutting "play gate /
 currency reformulation" the Zoo loop already named; it is not a deck-loop
 unit. Recorded here so A2 is not rebuilt in its planned shape. Boros
 Ponza's opponent-side land denial (0.16 per land) sits on the same mismatch.
+
+### Unit E1 — built and measured (2026-09-09, `f75e1dc`)
+
+`parse_targeted_removal` typed only the plain "exile target <type> with
+mana value X or less" shape; the two wrappers hid the bound from cast-time
+legality, the AI's target ceiling and the resolver alike. **Modal**: the
+modal resolver gated on synthesized abilities, not parsed modes, so a
+modal X-removal resolved with NO bound (Command at X=0 exiled a
+mana-value-2 creature on turn 2; at X=1 a mana-value-2 one) and its second
+chosen mode never resolved. **Converge**: the AI aimed Prismatic Ending
+above the reachable mana value and the spell whiffed (two Endings for four
+mana, no effect). Now each parsed mode carries its own `removal` shape,
+the resolver gates on `len(modes)`, `select_modal_modes` reads the X
+actually paid, `resolve_spell_from_oracle` takes the mode's `removal_data`,
+and `_choose_targets` caps at `affordable_x` (X-bound modal mode) or
+`converge_reachable_max_mv` (converge); nothing reachable → no target → not
+cast. Four tests red → green; modal/converge pins green; ratchets at
+baseline; chunks 2267 / 2279. Anchor: Living End vs Jeskai s50500 flipped
+(Living End → Jeskai, T15 → T12) — diffed at first divergence: pre-change
+Jeskai cast a one-colour Ending at an unreachable target and it resolved to
+nothing; post-change it holds the card and wins three turns sooner.
+Accepted as rules-correct play.
+
+Reproduction: Command now exiles Ocelot Pride (MV 1) only at X ≥ 1 and
+declines an unreachable target. Measure (n=20 Bo3): **Broodscale vs
+Azorius Blink 95 → 95; vs WST 90 → 90.** Unmoved. Control lane is now at
+**2 of 3 without movement** (C1+C2 and E1 both corrected behaviour without
+moving a cell): the next control-side unit must re-diagnose on the current
+engine (candidates: the holdback penalty C3, the engine's own threat
+literals in `_cast_instant_removal`, Control's own clock) rather than build
+blind. **E11 lead sharpened:** Kozilek's Command's non-removal modes
+("target player creates X Eldrazi Spawn tokens", "scries X, then draws")
+have no clause resolver at all — the mode selector can pick them, the
+resolver does nothing — so the generic clause resolver cannot execute a
+"target player creates X tokens" or "scry X then draw" mode yet.
