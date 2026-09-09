@@ -4038,3 +4038,32 @@ Eldrazi Tron vs Boros 35 (PRE) → 30; Amulet Titan vs Boros 20 (PRE) → 10
 Boros 50 → 50; Izzet Prowess vs Eldrazi Tron 35 → 40. All inside one SE;
 the direction (decks that were activating for free lose a little) is the
 rules-correct one.
+
+### Unit E11a — built and measured (2026-09-09)
+
+The Broodscale parser register (E11) split by class size on the current
+pool: cast-colorless trigger tokens **12** cards (built here);
+"whenever a/another creature dies" triggers on NON-creature permanents
+**36** (Blade of the Bloodchief's class — the loop's first leg, next);
+reveal-dig with a token rider **2** (Malevolent Rumble — below the class
+floor, recorded, not built); "another colorless creature enters → damage
+each opponent" **5** (Fleshraker's second ability, recorded); Emrakul's
+cast trigger and Mycospawn's kicker are whole mechanics (control of a
+turn; kicker is unmodelled pool-wide). Also found: the Eldrazi Spawn
+token created from a source oracle carries NO mana ability ("Sacrifice
+this token: Add {C}" is not parsed on the token) — the loop's third leg;
+the counters-placed trigger (second leg) already exists in
+`engine/triggers.py`.
+
+`parse_cast_trigger_token` accepted only card-type qualifiers, so
+"colorless spell" typed as no trigger and Glaring Fleshraker made zero
+Spawn in every replay. A colour-class sentinel (CR 105.2c, devoid
+included) in the parser and one dispatcher branch. Two tests red → green;
+cast-trigger pins green; ratchets at baseline; chunks 2288 / 2286; anchor
+unchanged (29 green, no drift).
+
+Measure (n=20 Bo3, s50000 grid): Broodscale vs WST 90 → 95; vs Azorius
+Blink 95 → 90 (unmoved — the Blade loop still cannot execute, and the
+control side still cannot answer what Broodscale does); **Eldrazi Tron vs
+Boros Energy 30 → 50** (Tron runs Fleshraker too; against the pre-E8
+baseline 35 the net is +15).
