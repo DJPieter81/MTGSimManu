@@ -3974,3 +3974,31 @@ it can ride along with a unit that has a benefit to measure. Prowess lane
 stands at 3 of 4 with movement (A1, E2+E3, A3+E4+E10 moved; A4/A6 did
 not) — not a loop-break, but the next Prowess-side unit should come from a
 fresh replay on the current tree, not from the 09-08 register alone.
+
+### Unit E5 + E6 + E7 — built and measured (2026-09-09)
+
+**E5** `target_solver` filtered hexproof but never read the typed
+`protection_from_colors` field (only `combat_manager._can_block` did):
+Bolt killed a pro-red Sanctifier en-Vec. `can_be_targeted(card, source,
+controller)` is now the one owner of a permanent's targeting restrictions
+(hexproof 702.11d, protection 702.16b), read by cast-time legality
+(`has_legal_target_for_spell(..., source=card)`), the AI's candidate
+enumeration (burn, creature and nonland removal, exile, the response
+picker) and the CR 608.2b re-check at resolution. Class: 75 pool cards.
+**E6** the generic X-counter branch placed +1/+1 X with no
+dedicated-handler guard (charge counters had one) and the dedicated
+handler placed its own again from an unrelated counter; now placed once,
+X = `item.x_value`. **E7** `parse_equip_cost` read "Equip {1}{R}" as 1;
+the quantity is the sum of every pip (24 pool equipments; the colour
+requirement is still untyped — a recorded gap). Seven tests red → green;
+targeting/equipment/X-cost/removal pins 1075 green; ratchets at baseline;
+chunks 2283 / 2284. Anchor: WST v2 vs Boros s50000 flipped — first
+divergence is Wan Shi Tong entering at X=3 as a 6/6 pre-change (3 + 2
+counters) against the correct 4/4; accepted.
+
+Measure (n=20 Bo3, s50000 grid, vs the combat-tricks tree): Prowess vs
+WST 45 → 50 (one turn-cap draw, credited to nobody); vs Tron 35 → 35; vs
+Zoo 30 → 25; Dimir Midrange vs Boros Energy 50 → 50 (pre-change worktree
+at the same seeds: 50 — byte-identical). Rules-correctness unit: no cell
+moved beyond noise, none was expected to; the Prowess-side cost of E7
+(Cori-Steel Cutter equips for 2, not 1) is inside the same noise.
