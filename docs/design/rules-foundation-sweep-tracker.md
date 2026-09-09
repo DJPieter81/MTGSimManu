@@ -3944,3 +3944,33 @@ Left open in this unit: the defending player's own post-block window
 casts are answerable through `_offer_response_window`, but the defender
 initiates nothing after blocks; and the turn-level lethal search
 (`TurnPlanner.plan_turn` is still never called from the main phase).
+
+### Unit A4 + A6 — built, measured, reverted (2026-09-09)
+
+**A4** was reopened as the plan required — a different measurement target
+(Prowess deploying into a single early blocker), the narrow clamp
+(`clock_diff` bounded by the two sentinel values, untouched inside them)
+rather than the reverted saturating reformulation, and the falsified doc
+cited. Reproduced first: a 1-power creature into a lone 2/2 flier scored
+−50.0 against −2.0 for no creature, and the mirror (their 1/1) scored +51
+for me. Measured with A6 (n=20 Bo3, s50000 grid, against the
+combat-tricks tree): Prowess vs WST 45 → 30, WST v2 10 → 10, Tron 35 →
+30, Zoo 30 → 40; guard **Creatures Toolbox vs Boros 35 → 15**, Jeskai
+Blink vs Boros 25 → 30. The target nets −10 and Toolbox pays 20pp — the
+same deck, direction and size as the 09-04 measurement. Reverted; the
+second addendum in
+`docs/diagnostics/2026-08-30_clock_sign_inversion_fix_falsified.md`
+records it and names the precondition for any fourth attempt (a Bo3
+replay naming the Toolbox decision the clamp changes).
+
+**A6** (`estimate_opponent_response` blends rounded to nearest instead of
+truncated — a 1-power creature under a 30% removal estimate projected
+0.7 → 0 power) was then measured alone: WST 45 → 40, WST v2 10 → 5, Tron
+35 → 35, Zoo 30 → 20; guards Toolbox 35 → 35, Blink 25 → 25. Every cell
+inside one SE, the target nets −15, three anchor winners flip. A
+behavioural change that buys nothing is not shipped (the 08-30 rule);
+reverted, not falsified — the estimator is still the less biased one, and
+it can ride along with a unit that has a benefit to measure. Prowess lane
+stands at 3 of 4 with movement (A1, E2+E3, A3+E4+E10 moved; A4/A6 did
+not) — not a loop-break, but the next Prowess-side unit should come from a
+fresh replay on the current tree, not from the 09-08 register alone.

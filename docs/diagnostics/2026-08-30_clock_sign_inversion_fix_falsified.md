@@ -165,3 +165,36 @@ seeds, on a quiet box:
 The cliff half repeats the combined fix's finding — a win-rate cost and no
 benefit — so it is reverted; the sign half stays. Do not re-run the cliff
 half as a standalone lever either.
+
+## Addendum (2026-09-09): the narrow clamp, measured on a different target
+
+Reopened against a different measurement target, as the 2026-09-08 plan
+required: not "does it lift creature-light control" but "does it let an
+aggro deck deploy into a single early blocker" (Izzet Prowess never
+deployed a creature in WST v2 s50000 G2; a 1-power creature into a lone
+2/2 flier scored -50.0 against -2.0 for no creature; the mirror scored the
+opponent's 1/1 at +51 for me). The formula built was the NARROW rule, not
+the reverted reformulation: both finite, `clock_diff` clamped to the two
+sentinel values (`max(-CAP/opp_clock, min(CAP/my_clock, opp - my))`),
+untouched inside the bounds. Measured jointly with the blend-rounding fix
+(A6), n=20 Bo3, matchup grid s50000, against the post-combat-tricks tree:
+
+| cell | before | with clamp + A6 | delta |
+|---|---|---|---|
+| Izzet Prowess vs Azorius Control (WST) | 45 | 30 | -15 |
+| Izzet Prowess vs Azorius Control (WST v2) | 10 | 10 | 0 |
+| Izzet Prowess vs Eldrazi Tron | 35 | 30 | -5 |
+| Izzet Prowess vs Domain Zoo | 30 | 40 | +10 |
+| Creatures Toolbox vs Boros Energy (guard) | 35 | 15 | **-20** |
+| Jeskai Blink vs Boros Energy (guard) | 25 | 30 | +5 |
+
+The target cells net -10 and the Creatures Toolbox guard pays 20pp — the
+same deck, the same direction, the same size as the 09-04 measurement. The
+clamp is reverted. Three formulations of "a real clock is never worse than
+none" have now cost win rate without lifting any target (combined
+saturating form, standalone saturating form, standalone clamp): whatever
+the decks that deploy small creatures into blockers are losing to, it is
+not this term's monotonicity, and the term's current shape is
+load-bearing for Creatures Toolbox in a way no diagnosis has yet named.
+Do not build a fourth form without first naming, from a Bo3 replay, the
+decision the clamp changes in a Toolbox game and why it loses.
