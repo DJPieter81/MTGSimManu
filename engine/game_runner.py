@@ -1166,6 +1166,55 @@ class GameRunner:
             if game.game_over:
                 return
 
+    def _offer_response_window(self, game: GameState, caster_ai: AIPlayer,
+                               responder_ai: AIPlayer) -> None:
+        """Offer the responder priority over the spell on top of the stack
+        (CR 117.3d) and cast whatever their `decide_response` returns.
+
+        One owner for every cast path — the main phase and the instant
+        windows (`_cast_instant_removal`) alike.  The instant windows used
+        to resolve their spells without this offer, so nothing cast at
+        begin-combat or end-step could ever be countered, however many
+        counters the active player held with mana open (2026-09-08).
+
+        Teferi gate: a "cast at sorcery speed only" effect controlled by
+        the CASTER's side denies the responder instant-speed casting.
+        """
+        caster_player = game.players[caster_ai.player_idx]
+        if _sorcery_speed_only_active(caster_player):
+            return
+        if game.stack.is_empty:
+            return
+        top = game.stack.top
+        if not top:
+            return
+        response = responder_ai.decide_response(game, top)
+        # Emit RESPONSE_DECISION onto the structured replay log (W0-H).
+        # The decider stores its decision context on `last_decision`; we
+        # read it here and emit so the engine remains the single owner
+        # of replay-event emission.
+        self._emit_response_decision_event(responder_ai, game, top, response)
+        if response:
+            resp_card, resp_targets = response
+            if getattr(game, 'verbose', False):
+                game.log.append(f'    [Priority] P{responder_ai.player_idx+1} responds with {resp_card.name}')
+            game.cast_spell(responder_ai.player_idx, resp_card, resp_targets)
+            if hasattr(caster_ai, 'bhi'):
+                caster_ai.bhi.observe_spell_cast(
+                    game, getattr(resp_card.template, 'tags', set()))
+        else:
+            if getattr(game, 'verbose', False):
+                game.log.append(f'    [Priority] P{responder_ai.player_idx+1} passes (no response)')
+            if hasattr(caster_ai, 'bhi'):
+                responder = game.players[responder_ai.player_idx]
+                responder_mana = len(responder.untapped_lands) + responder.mana_pool.total()
+                spell_template = top.source.template if top.source else None
+                caster_ai.bhi.observe_priority_pass(
+                    game,
+                    spell_on_stack=True,
+                    spell_is_creature=spell_template.is_creature if spell_template else False,
+                    opp_mana_available=responder_mana)
+
     def _opponent_instant_window(self, game: GameState, opponent_ai: AIPlayer,
                                    active_ai: AIPlayer):
         """Give the opponent a window to cast instant-speed spells before combat.
@@ -1283,6 +1332,10 @@ class GameRunner:
                 if targets:
                     success = game.cast_spell(opponent_idx, card, targets)
                     if success:
+                        # The active player gets priority over it
+                        # (CR 117.3d) — this window is not exempt.
+                        self._offer_response_window(
+                            game, caster_ai=opponent_ai, responder_ai=active_ai)
                         while not game.stack.is_empty:
                             game.resolve_stack()
                             game.check_state_based_actions()
@@ -1302,6 +1355,8 @@ class GameRunner:
                     continue
                 success = game.cast_spell(opponent_idx, card, [])
                 if success:
+                    self._offer_response_window(
+                        game, caster_ai=opponent_ai, responder_ai=active_ai)
                     while not game.stack.is_empty:
                         game.resolve_stack()
                         game.check_state_based_actions()
@@ -1459,45 +1514,9 @@ class GameRunner:
                     actions += 1
                     continue
                 if success:
-                    # Opponent gets priority to respond (CR 117.3d) — UNLESS
-                    # the active player controls a Teferi-style "cast at
-                    # sorcery speed only" effect. In that case, the opponent
-                    # literally cannot respond at instant speed.
-                    active_player = game.players[ai.player_idx]
-                    if _sorcery_speed_only_active(active_player):
-                        pass  # skip response window entirely
-                    elif not game.stack.is_empty:
-                        top = game.stack.top
-                        if top:
-                            response = opponent_ai.decide_response(game, top)
-                            # Emit RESPONSE_DECISION onto the structured
-                            # replay log (W0-H). The decider stores its
-                            # decision context on `last_decision`; we read
-                            # it here and emit so the engine remains the
-                            # single owner of replay-event emission.
-                            self._emit_response_decision_event(
-                                opponent_ai, game, top, response)
-                            if response:
-                                resp_card, resp_targets = response
-                                if getattr(game, 'verbose', False):
-                                    game.log.append(f'    [Priority] P{opponent_ai.player_idx+1} responds with {resp_card.name}')
-                                game.cast_spell(opponent_ai.player_idx,
-                                                resp_card, resp_targets)
-                                if hasattr(ai, 'bhi'):
-                                    ai.bhi.observe_spell_cast(
-                                        game, getattr(resp_card.template, 'tags', set()))
-                            else:
-                                if getattr(game, 'verbose', False):
-                                    game.log.append(f'    [Priority] P{opponent_ai.player_idx+1} passes (no response)')
-                                if hasattr(ai, 'bhi'):
-                                    opp = game.players[opponent_ai.player_idx]
-                                    opp_mana = len(opp.untapped_lands) + opp.mana_pool.total()
-                                    spell_template = top.source.template if top.source else None
-                                    ai.bhi.observe_priority_pass(
-                                        game,
-                                        spell_on_stack=True,
-                                        spell_is_creature=spell_template.is_creature if spell_template else False,
-                                        opp_mana_available=opp_mana)
+                    # Opponent gets priority to respond (CR 117.3d).
+                    self._offer_response_window(game, caster_ai=ai,
+                                                responder_ai=opponent_ai)
 
                     # Both passed — resolve stack (CR 117.4)
                     self._resolve_stack_loop(game)

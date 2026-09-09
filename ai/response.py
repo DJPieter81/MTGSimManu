@@ -968,19 +968,37 @@ class ResponseDecider:
         - Burn removal: damage must reach toughness.
         - Exile/destroy creature removal: any creature target works,
           modulo standard targeting restrictions.
+
+        Per-threat accounting (2026-09-08).  This used to be a boolean
+        over the hand — "any flash removal in hand → skip the counter" —
+        which never asked whether that removal was already owed to a
+        creature the opponent had resolved EARLIER.  A hand of
+        Counterspell + one Solitude then let a second, third and fourth
+        creature resolve through open mana, each time reserving the
+        counter for an answer that could only ever cover one of them
+        (Broodscale vs Azorius Control, seed 50001: four creatures
+        through two Counterspells in the opener).  Now each creature
+        already on the opponent's battlefield that is worth a removal
+        spell (`creature_threat_value` ≥ `PROACTIVE_REMOVAL_MIN_VALUE`,
+        the same floor the proactive-removal path uses) first claims one
+        answer that can reach it; the counter is reserved only when an
+        UNCOMMITTED answer that reaches the stack creature is left.
         """
         src = stack_item.source
         tmpl = src.template
         if not tmpl.is_creature:
             return False
 
-        from decks.card_knowledge_loader import get_burn_damage
         from ai.card_classes import burn_damage
+        from ai.ev_evaluator import creature_threat_value, snapshot_from_game
 
-        target_toughness = tmpl.toughness or 0
         # We use printed toughness as the resolved value — affinity /
         # cost-reduction effects don't change body stats, only mana cost.
+        target_toughness = tmpl.toughness or 0
 
+        # Every flash-speed answer in hand, with its reach: the largest
+        # toughness it can kill (None = any creature).
+        answers = []  # [(card, reach)]
         player = game.players[self.player_idx]
         for inst in player.hand:
             i_tmpl = inst.template
@@ -997,14 +1015,10 @@ class ResponseDecider:
             )
             if not is_flash_speed:
                 continue
-
-            # Burn removal: filter by lethality on the target's toughness.
             burn = burn_damage(i_tmpl)
             if burn > 0:
-                if burn < target_toughness:
-                    continue
-                return True
-
+                answers.append((inst, burn))
+                continue
             # Exile / destroy / bounce target creature: standard creature
             # removal — assume it can answer any creature target.  Tags
             # `destroy_target_creature` and `removal` (without `burn`) cover
@@ -1013,9 +1027,38 @@ class ResponseDecider:
             # Skip removal that targets only our own creatures.
             if 'target creature you control' in o and 'opponent' not in o:
                 continue
-            return True
+            answers.append((inst, None))
+        if not answers:
+            return False
 
-        return False
+        def _reaches(reach, toughness):
+            return reach is None or reach >= toughness
+
+        def _toughness(creature):
+            return getattr(creature, 'toughness', None) or creature.template.toughness or 0
+
+        # Creatures already resolved on the opponent's battlefield that
+        # are worth a removal spell claim an answer first — biggest
+        # first, each taking the least flexible answer that reaches it,
+        # so an unconditional exile is not spent where a burn spell
+        # would do.  A board creature nothing in hand can reach claims
+        # nothing (the hand cannot be owed what it cannot pay).
+        opp = game.players[1 - self.player_idx]
+        snap = snapshot_from_game(game, self.player_idx)
+        board_threats = [
+            c for c in opp.creatures
+            if creature_threat_value(c, snap) >= PROACTIVE_REMOVAL_MIN_VALUE
+        ]
+        board_threats.sort(key=_toughness, reverse=True)
+        free = list(answers)
+        for threat in board_threats:
+            able = [a for a in free if _reaches(a[1], _toughness(threat))]
+            if not able:
+                continue
+            able.sort(key=lambda a: (a[1] is None, a[1] or 0))
+            free.remove(able[0])
+
+        return any(_reaches(reach, target_toughness) for _card, reach in free)
 
     def evaluate_stack_threat(self, game: "GameState", stack_item: "StackItem") -> float:
         """Evaluate how threatening a stack item is using clock impact.
