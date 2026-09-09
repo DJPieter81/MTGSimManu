@@ -4127,3 +4127,49 @@ Fleshraker's "another colorless creature enters → 1 damage each opponent"
 (5-card class) turns the engine into damage. Broodscale's control cells
 stay where the C-lane left them until the control side can answer what
 Broodscale does.
+
+### Unit A7 — built and measured (2026-09-09, `1faae17`)
+
+`land_count > gp.mulligan_max_lands` (`ai/mulligan.py:310`) is a hard
+reject before the scored gate; nine gameplans declared a cap of 3. Sampled
+through the real decider on 600 natural sevens per deck, the cap alone
+threw back Boros Energy 14%, Creatures Toolbox 12%, Grixis Reanimator 12%,
+Domain Zoo 9%, Affinity / Azorius Blink / Hollow One / Ruby Storm 6%,
+Izzet Prowess 5% of ALL sevens, and every thrown-back hand is a standard
+keep (Ajani + two removal + four lands; Swiftspear + two Bolts + four
+lands; Medallion + ritual + Wish + four lands). All nine caps → 4 (the
+Pinnacle precedent); the new test derives the floor from each decklist
+(the cap admits one land above the deck's expected seven-card land count)
+so the knob cannot drift back. Azorius Blink's floor 1 → 2: it kept 131 of
+136 sampled one-land sevens with an 18-land three-drop curve. Four tests
+red → green; the per-card first-turn-value slack pin moved to one land
+over the cap (a four-land seven is a plain keep now); mulligan pins 94
+green; ratchets at baseline; chunks 2291 / 2265; anchor: two winner flips
+diffed at first divergence and accepted (Boros keeps a four-land seven it
+mulliganed to five; Blink mulligans a one-lander holding three
+five-drops), two turns-only drifts refreshed.
+
+**Same-seed pre → post, n=20 Bo3** (the pre-change tree measured on the
+identical seeds so the comparison is like-for-like): Ruby Storm vs Boros
+Energy **30 → 45**; Azorius Blink vs Broodscale 20 → 25; Creatures
+Toolbox vs Grixis 15 → 15; Hollow One vs Boros 0 → 5; Izzet Prowess vs
+WST 45 → 30 (one draw); Storm vs 4/5c Control 85 (prior 75); Domain Zoo
+field **70.8 → 71.0**; Boros Energy field **61.9 → 62.9**. One cell moved
+(Storm vs Boros, both decks' caps raised); the fields did not. The unit
+is a behavioural correction with a narrow win-rate radius.
+
+**Second finding, not caused by this unit:** Domain Zoo's field reads
+70.8 pre-change and 71.0 post-change on these seeds, against 60.6 on the
+seeds the committed matrix used. Two n=20 samples of the same deck
+disagree by ten points, which is what n=20 buys (±11pp per cell, ±2.2pp
+per field is the 1-SE budget, and per-deck seed draws compound it). The
+Zoo band verdict is therefore re-measured at n=60 below rather than
+argued from either sample.
+
+**Next lead (recorded, not built):** the eight `mulligan_min_lands: 1`
+gameplans keep 90–99% of their one-land sevens (Hollow One 151/152,
+Grixis 140/145, Prowess 134/139, Toolbox 125/129, Storm 110/123, Zoo
+76/92). The floor is a different mechanic — a one-land keep needs a hand
+castable off one land; the `cheap_spells` count at `mulligan.py:618`
+exists but only inside the `mulligan_keys` branch — with a seven-deck
+blast radius including Zoo and Storm, each needing its own guard.
