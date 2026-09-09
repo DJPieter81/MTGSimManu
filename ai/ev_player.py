@@ -4117,7 +4117,12 @@ class EVPlayer:
             ))
 
         # ── Opp creatures (only if killable by this damage) ──
+        from engine.target_solver import can_be_targeted
         for c in opp.creatures:
+            # Hexproof / protection from this spell's colour (CR
+            # 702.11d / 702.16b): not a target at all.
+            if not can_be_targeted(c, spell, self.player_idx):
+                continue
             remaining_toughness = (c.toughness or 0) - getattr(
                 c, "damage_marked", 0)
             if not (damage >= remaining_toughness > 0
@@ -4298,8 +4303,13 @@ class EVPlayer:
                 _cm = converge_reachable_max_mv(game, self.player_idx)
                 _x_ceiling = _cm if _x_ceiling is None else min(_x_ceiling, _cm)
 
+            from engine.target_solver import can_be_targeted as _targetable
+
             def _reachable(c):
-                return _x_ceiling is None or (c.template.cmc or 0) <= _x_ceiling
+                # The X bound AND the permanent's own targeting
+                # restrictions (hexproof / protection, CR 702.16b).
+                return ((_x_ceiling is None or (c.template.cmc or 0) <= _x_ceiling)
+                        and _targetable(c, spell, self.player_idx))
 
             if can_hit_noncreature:
                 # Evaluate all nonland permanents via marginal threat
@@ -4360,7 +4370,10 @@ class EVPlayer:
         # they fall through to the blink branch below.
         if spell.template.can_exile_permanent and 'blink' not in tags:
             from engine.cards import CardType
-            nonland = [c for c in opp.battlefield if not c.template.is_land]
+            from engine.target_solver import can_be_targeted as _targetable
+            nonland = [c for c in opp.battlefield
+                       if not c.template.is_land
+                       and _targetable(c, spell, self.player_idx)]
             # An X-bound target ("with mana value X or less") is legal only
             # up to the X the caster can pay — the same engine formula
             # cast-time legality uses (CR 601.2b/c). Before this the pick
@@ -4431,8 +4444,13 @@ class EVPlayer:
         if not creatures:
             return None
         from ai.ev_evaluator import snapshot_from_game
+        from engine.target_solver import can_be_targeted
         snap = snapshot_from_game(game, player_idx)
-        candidates = list(creatures)
+        # Hexproof / protection from this spell's colour: not targets.
+        candidates = [c for c in creatures
+                      if can_be_targeted(c, card, card.controller)]
+        if not candidates:
+            return None
         # For burn removal, filter out creatures this spell cannot kill.
         from ai.card_classes import burn_damage
         dmg = burn_damage(card.template) if card.template else 0

@@ -2935,12 +2935,14 @@ def parse_madness_cost(oracle: str) -> "Optional[ManaCost]":
 def parse_equip_cost(oracle: str) -> Optional[int]:
     """Parse Equip cost from oracle text.
 
-    "Equip {2}" → 2
+    "Equip {2}" → 2; "Equip {1}{R}" → 2; "Equip {B}{B}" → 2.
+
+    The quantity is the sum of EVERY printed symbol. A first pass that
+    matched only the leading generic symbol typed "Equip {1}{R}" as 1,
+    so every equipment with a coloured equip cost (24 print generic +
+    colour in the pool) equipped one mana cheap. The colour requirement
+    itself is still not typed — the field is a quantity.
     """
-    m = re.search(r'equip\s*\{(\d+)\}', oracle, re.IGNORECASE)
-    if m:
-        return int(m.group(1))
-    # Equip with colored mana: "Equip {B}{B}"
     m = re.search(r'equip\s*((?:\{[^}]+\})+)', oracle, re.IGNORECASE)
     if m:
         symbols = re.findall(r'\{([^}]+)\}', m.group(1))

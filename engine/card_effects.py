@@ -1899,9 +1899,11 @@ def _primeval_titan_search(game, controller):
 @EFFECT_REGISTRY.register("Wan Shi Tong, Librarian", EffectTiming.ETB,
                            description="Put X +1/+1 counters, draw half X cards (X = opponent's library searches)")
 def wan_shi_tong_etb(game, card, controller, targets=None, item=None):
-    """Wan Shi Tong enters with X +1/+1 counters where X = opponent searches."""
-    opponent = 1 - controller
-    x = game.players[opponent].library_searches_this_game
+    """Enters with X +1/+1 counters and draws half X — X is the X that
+    was PAID (CR 107.3), read off the resolving stack item. It used to
+    read the opponent's library-search count (an unrelated counter) on
+    top of the generic X-counter placement, entering one X too big."""
+    x = int(getattr(item, 'x_value', 0) or 0) if item is not None else 0
     if x > 0:
         card.add_plus_counters(x, game)
         draw_count = x // 2

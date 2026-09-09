@@ -253,7 +253,10 @@ class ResolutionManager:
                         game.log.append(
                             f"T{game.display_turn} P{item.controller+1}: "
                             f"{card.name} enters with {item.x_value} charge counter(s)")
-                    elif effect == "plus1_counters":
+                    elif effect == "plus1_counters" and not has_dedicated_etb:
+                        # Same guard as charge counters: a dedicated ETB
+                        # handler owns its X counters (they were placed
+                        # twice — here and again in the handler).
                         card.add_plus_counters(item.x_value, game)
                         game.log.append(
                             f"T{game.display_turn} P{item.controller+1}: "
@@ -318,6 +321,11 @@ class ResolutionManager:
                 return False  # no snapshot — can't prove illegal
             target = game.get_card_by_id(tid)
             if target is not None and target.zone == cast_zone:
+                # CR 702.16b: a target that is (or became) protected
+                # from the spell's colour is illegal on resolution too.
+                from .target_solver import _blocked_by_protection
+                if _blocked_by_protection(target, item.source):
+                    continue
                 return False  # still where it was targeted — valid
         return True  # every target verifiably left its cast-time zone
 

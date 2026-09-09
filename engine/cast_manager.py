@@ -300,7 +300,8 @@ class CastManager:
                                             parse as _parse_targets)
                 requirements = _parse_targets(template.oracle_text or "")
                 if not has_legal_target_for_spell(
-                        game, player_idx, requirements, exclude=card):
+                        game, player_idx, requirements, exclude=card,
+                        source=card):
                     return False
             total_mana = (player.untapped_mana_capacity()
                           + player.mana_pool.total()
@@ -437,7 +438,8 @@ class CastManager:
             requirements = _parse_targets(template.oracle_text or "")
             if not has_legal_target_for_spell(
                     game, player_idx, requirements, exclude=card,
-                    x_ceiling=CastManager.affordable_x(game, player_idx, template)):
+                    x_ceiling=CastManager.affordable_x(game, player_idx, template),
+                    source=card):
                 return False
 
         # Check mana (pool + untapped lands + non-land mana sources + Tron bonus)
