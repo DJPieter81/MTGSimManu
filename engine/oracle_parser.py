@@ -3333,6 +3333,12 @@ def parse_cast_trigger_token(oracle: str) -> Optional[Dict]:
     qualifier = m.group(1).strip()
     if "noncreature" in qualifier:
         spell_types = frozenset({"noncreature"})
+    elif "colorless" in qualifier:
+        # Colour-class condition (CR 105.2c): "a colorless spell" — read
+        # off the cast spell's colours (devoid included), the way the
+        # type qualifiers are read off its card types. 12 pool cards;
+        # every one typed as no trigger before this sentinel.
+        spell_types = frozenset({"colorless"})
     else:
         spell_types = frozenset(
             w for w in re.split(r"\s+or\s+|\s+and\s+|\s+", qualifier)

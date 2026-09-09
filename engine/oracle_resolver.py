@@ -2202,6 +2202,9 @@ def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
                 qualifies = True
             elif 'noncreature' in spell_types:
                 qualifies = not spell_cast.template.is_creature
+            elif 'colorless' in spell_types:
+                # CR 105.2c: a spell with no colour (devoid included).
+                qualifies = not spell_cast.colors
             else:
                 cast_types = {t.value for t in spell_cast.template.card_types}
                 qualifies = bool(spell_types & cast_types)
