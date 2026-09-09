@@ -930,6 +930,11 @@ class CardTemplate:
     pump_spell_power: int = 0
     pump_spell_toughness: int = 0
     pump_spell_keyword: str = ""
+    # "[each player] draw N, then discard M [at random]" loot shape —
+    # parsed once (parse_loot_effect): {"draw", "discard", "random",
+    # "each_player"} or None. The resolver discards through the discard
+    # funnel after drawing; was resolved as a plain draw (or nothing).
+    loot_data: Optional[dict] = None
     # X-counter scaling -- True when oracle grants 'X +1/+1 counter(s)' (Ballista pattern).
     # Populated by oracle_parser.parse_has_x_counter_scaling.
     has_x_counter_scaling: bool = False

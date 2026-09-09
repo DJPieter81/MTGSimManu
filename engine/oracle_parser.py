@@ -4631,6 +4631,43 @@ def parse_pump_spell(oracle: str) -> "tuple[int, int, str]":
     return power, tough, keyword
 
 
+_LOOT_RE = re.compile(
+    r'(?P<each>each player )?draws? (?P<draw>a|an|one|two|three|four|five|six|\d+) '
+    r'cards?, then discards? (?P<discard>a|an|one|two|three|four|five|six|\d+) '
+    r'cards?(?P<random> at random)?')
+
+
+def parse_loot_effect(oracle: str) -> "Optional[dict]":
+    """Parse the loot shape — "[each player] draw(s) N card(s), then
+    discard(s) M card(s) [at random]" — into
+    ``{"draw": N, "discard": M, "random": bool, "each_player": bool}``,
+    or None when the text has no such clause.
+
+    The discard half was dropped by the generic resolver, which typed
+    the clause as a plain draw (Faithless Looting kept both cards;
+    Burning Inquiry resolved to nothing). Typed once here so the
+    resolver, the AI's card-advantage reading and any cost-per-discard
+    consumer agree. Class: 36 Modern instants/sorceries, 4 "each player"
+    shapes, 145 permanents carrying the ability.
+    """
+    if not oracle:
+        return None
+    text = strip_reminder_text(oracle).lower()
+    m = _LOOT_RE.search(text)
+    if not m:
+        return None
+
+    def _n(tok: str) -> int:
+        if tok.isdigit():
+            return int(tok)
+        return {'a': 1, 'an': 1, 'one': 1, 'two': 2, 'three': 3, 'four': 4,
+                'five': 5, 'six': 6}.get(tok, 1)
+
+    return {"draw": _n(m.group('draw')), "discard": _n(m.group('discard')),
+            "random": m.group('random') is not None,
+            "each_player": m.group('each') is not None}
+
+
 def parse_equip_pt_grant(oracle: str) -> "tuple[int, int]":
     """Parse an equipment's flat "Equipped creature gets +N/+M" grant
     into (power, toughness).

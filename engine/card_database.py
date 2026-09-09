@@ -2042,6 +2042,8 @@ class CardDatabase:
         template.pump_spell_power = _pp
         template.pump_spell_toughness = _pt
         template.pump_spell_keyword = _pk
+        from .oracle_parser import parse_loot_effect
+        template.loot_data = parse_loot_effect(oracle)
         _eqp, _eqt = parse_equip_pt_grant(oracle)
         template.equip_power_grant = _eqp
         template.equip_toughness_grant = _eqt

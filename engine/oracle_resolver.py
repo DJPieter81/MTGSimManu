@@ -188,6 +188,42 @@ def resolve_damage_to_chosen_target(
 
 
 # ---------------------------------------------------------------------------
+def _resolve_loot(game: "GameState", card: "CardInstance", controller: int,
+                  loot: dict) -> None:
+    """Draw, then discard (CR 701.8) for the controller — or for every
+    player, controller first, when the shape says "each player". A chosen
+    discard is the player's own choice through `callbacks.choose_discard`;
+    "at random" draws from the game's RNG. Every discard goes through the
+    discard funnel, so the per-turn discard counter advances and a madness
+    card is offered its madness cast."""
+    from .discard_manager import DiscardManager
+    players = ([controller, 1 - controller] if loot.get('each_player')
+               else [controller])
+    for p_idx in players:
+        drawn = game.draw_cards(p_idx, int(loot.get('draw', 0)))
+        if drawn:
+            game.log.append(
+                f"T{game.display_turn} P{p_idx+1}: {card.name} → draw "
+                f"{len(drawn)} ({', '.join(c.name for c in drawn)})")
+    for p_idx in players:
+        player = game.players[p_idx]
+        for _ in range(int(loot.get('discard', 0))):
+            hand = list(player.hand)
+            if not hand:
+                break
+            if loot.get('random'):
+                chosen = game.rng.choice(hand)
+            else:
+                chosen = game.callbacks.choose_discard(
+                    game, p_idx, hand, self_discard=True)
+                if chosen is None or chosen not in hand:
+                    chosen = hand[0]
+            game.log.append(
+                f"T{game.display_turn} P{p_idx+1}: {card.name} → discard "
+                f"{chosen.name}{' (at random)' if loot.get('random') else ''}")
+            DiscardManager.discard_card(game, p_idx, chosen, cause="discard (loot)")
+
+
 def pump_target(game: "GameState", controller: int, targets) -> Optional["CardInstance"]:
     """The creature a targeted pump resolves on: the chosen target when it
     is a creature on the battlefield (CR 608.2b — the target, not the
@@ -1613,6 +1649,18 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
         effects.append((surveil_spell_pos, 'surveil', surveil_spell_n))
     if draw_n > 0:
         effects.append((draw_pos, 'draw', draw_n))
+    # ── Loot: "[each player] draw N, then discard M [at random]" (CR
+    #    701.8). Typed once (parse_loot_effect → template.loot_data; a
+    #    routed single mode clause parses its own text). The draw half
+    #    used to be all that resolved — the discard was dropped, so the
+    #    card-discarded-this-turn engines (cost reducers, madness,
+    #    recursion) never fired and every loot was a free draw.
+    from .oracle_parser import parse_loot_effect as _parse_loot
+    _loot = (card.template.loot_data if oracle_override is None
+             else _parse_loot(oracle))
+    if _loot:
+        effects = [e for e in effects if e[1] != 'draw']
+        effects.append((draw_pos, 'loot', _loot))
     effects.sort(key=lambda x: x[0])
 
     for _, effect_kind, count in effects:
@@ -1621,6 +1669,9 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
             handled = True
         elif effect_kind == 'surveil':
             game.surveil(controller, count)
+            handled = True
+        elif effect_kind == 'loot':
+            _resolve_loot(game, card, controller, count)
             handled = True
         elif effect_kind == 'draw':
             drawn = game.draw_cards(controller, count)

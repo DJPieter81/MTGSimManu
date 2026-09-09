@@ -180,15 +180,15 @@
       "deck1": "Hollow One",
       "deck2": "Eldrazi Ramp",
       "seed": 53500,
-      "winner": "Hollow One",
-      "turns": 8
+      "winner": "Eldrazi Ramp",
+      "turns": 9
     },
     {
       "deck1": "Broodscale Bloodchief",
       "deck2": "Hollow One",
       "seed": 53500,
       "winner": "Hollow One",
-      "turns": 7
+      "turns": 8
     }
   ]
 }
