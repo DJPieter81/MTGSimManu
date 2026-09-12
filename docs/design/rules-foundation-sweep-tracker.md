@@ -4879,3 +4879,49 @@ primitive (5). CI step, pytest bridge, CLAUDE.md prohibition, and the
 process rule: a rules gap found in a replay lands with its failing test,
 its fix and its auditor invariant in one commit; later units come from
 the audit ranking and the coverage census.
+
+### Unit Z3 — target legality is one rule at cast and on resolution (`afe7257` → branch)
+
+**Diagnosis** (three shapes from the 2026-09-12 replays). (1) Prismatic
+Ending cast with W+U+U up against an MV-2 creature resolved doing
+nothing (s60300 L468-474): the printed pips are paid before X is
+chosen, so at the picker's call the Fountain that paid {W} was tapped
+and `converge_reachable_max_mv` counted one colour fewer than the cast
+would spend — X=0 into a reachable target. (2) Solitude exiled a
+hexproof Scion of Draco (s60303 L360-366): ETB and resolve handlers
+chose their target straight from the opponent's creatures. (3) Two
+Fatal Pushes were aimed at an MV-7 Devourer and resolved doing nothing
+(s60206 L398-407): a mana-value bound that is a resolution condition
+parsed to no bound at all. Ending's shape is a resolution condition
+too ("if its mana value is ≤ colours spent"): casting it at an
+unreachable target is legal, so the fix is the picker's accounting and
+the AI's choice, not a cast gate — the engine keeps enforcing rules,
+the AI keeps choosing.
+
+**Rule** (CR 601.2c, 608.2b, 702.11d): the converge picker counts the
+colours already spent on this cast (`game._last_colors_spent`) plus
+what the untapped sources add; `card_effects.legal_targets` filters
+every handler's candidates through `target_solver.can_be_targeted`
+(Solitude, Bowmasters, Ballista, Dispatch, Thraben Charm; a structural
+test pins that no handler picks outside the solver, an opponent's own
+sacrifice choice excepted); `parse_conditional_mv_removal` types the
+resolution-condition bound with its revolt raise into
+`CardTemplate.removal_mv_condition` (declared in the narrow-typed-field
+baseline: two Modern cards, generic shape-driven mechanic) and the AI's
+target chooser honours a numeric bound. Tests:
+`tests/test_target_legality_is_one_rule_at_cast_and_on_resolution.py`
+(five rules). Related pins 842 green; ratchets at baseline; anchor: one
+turn-only drift (Domain Zoo vs Eldrazi Tron s50000, 14 → 22, same
+winner) refreshed; chunks a–g 2269 / h–z 2313.
+
+**Measurement** (same seeds, n=20 Bo3; pre = branch with Z1+Z2, post =
+Z3): Zoo vs Azorius Control **45 → 60**, vs WST v2 **45 → 60**, vs
+Boros Ponza 50 → 55, vs 4/5c 65 → 65; **Zoo field 68.3 → 71.0**;
+guards WST v2 field 46.5 → 45.8 (draws 22 → 23), Ruby Storm field 53.1
+→ 53.1. The direction is the rules': under Leyline of the Guildpact
+Scion of Draco is hexproof (Scion grants "hexproof if it's blue" to a
+team that is every colour), so the control decks' Solitude can no
+longer exile it — an under-credit of Zoo removed. Recorded as such; the
+lane's running total on the same seeds: 70.0 → 69.4 (Z1) → 68.3 (Z2)
+→ 71.0 (Z3). The band verdict is the n=60 field on the integrated
+head, below.
