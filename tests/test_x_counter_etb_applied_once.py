@@ -68,3 +68,36 @@ def test_an_x_counter_permanent_with_a_dedicated_handler_enters_with_x_counters_
         f"or X read from the wrong source")
     assert wst.power == base_p + x
     assert len(game.players[0].hand) == hand_before + x // 2, "draws half X, rounded down"
+
+
+def test_the_engine_places_x_counters_before_a_dedicated_handler_reads_them(card_db):
+    """"Enters with X +1/+1 counters" is the permanent's own entry effect
+    (CR 107.3, 614.1c); a dedicated ETB handler is what the card does
+    AFTER it has entered. The first fix of this file made the handler the
+    owner of the counters, so a handler that only READS them (the
+    Ballista shape: spend the counters as damage) found zero, the
+    creature entered as a 0/0 and died before its handler could act —
+    Creatures Toolbox's infinite-mana outlet cast for X=40 dealt nothing
+    (replays s60203 L424-427, s60205 L819-822, 2026-09-12).
+
+    Rule: the engine places X counters on entry for every X-counter
+    permanent; a handler may spend or read them, never place them again.
+    """
+    game = GameState(rng=random.Random(0))
+    game.current_phase = Phase.MAIN1
+    game.active_player = 0
+    for _ in range(4):
+        _add(game, card_db, "Island", 0, "battlefield")          # {X}{X} with X=2
+    ballista = _add(game, card_db, "Walking Ballista", 0, "hand")
+    opp_life = game.players[1].life
+    assert CastManager.cast_spell(game, 0, ballista, [])
+    x = game.stack.top.x_value
+    assert x == 2, f"fixture: four Islands pay X=2 (got X={x})"
+    _resolve_all(game)
+    assert any("Walking Ballista enters with 2 +1/+1 counter" in line
+               for line in game.log), "the engine did not place the X counters"
+    # The handler spends the counters as damage on an empty opposing
+    # board: exactly X reaches the opponent, none is lost.
+    assert game.players[1].life == opp_life - x, (
+        f"opponent at {game.players[1].life}: the handler saw "
+        f"{'no' if game.players[1].life == opp_life else 'the wrong'} counters")

@@ -240,9 +240,14 @@ class ResolutionManager:
                     game._handle_cascade(item)
                 card.enter_battlefield()
                 game.players[item.controller].battlefield.append(card)
-                # Place counters for X-cost permanents — only if no dedicated
-                # ETB handler exists (Engineered Explosives uses sunburst via its
-                # own handler, so don't double-set charge counters here)
+                # Place counters for X-cost permanents. "Enters with X
+                # counters" is the permanent's own entry effect (CR 107.3,
+                # 614.1c), so the engine places them here for every such
+                # permanent; a dedicated ETB handler runs afterwards and may
+                # READ or SPEND the counters but never places them again.
+                # The one exception is the charge-counter branch: a
+                # sunburst permanent's charge count is the colours spent,
+                # not X, and its handler computes that itself.
                 if item.x_value > 0 and template.x_cost_data:
                     has_dedicated_etb = EFFECT_REGISTRY.has_handler(
                         template.name, EffectTiming.ETB)
@@ -253,10 +258,7 @@ class ResolutionManager:
                         game.log.append(
                             f"T{game.display_turn} P{item.controller+1}: "
                             f"{card.name} enters with {item.x_value} charge counter(s)")
-                    elif effect == "plus1_counters" and not has_dedicated_etb:
-                        # Same guard as charge counters: a dedicated ETB
-                        # handler owns its X counters (they were placed
-                        # twice — here and again in the handler).
+                    elif effect == "plus1_counters":
                         card.add_plus_counters(item.x_value, game)
                         game.log.append(
                             f"T{game.display_turn} P{item.controller+1}: "

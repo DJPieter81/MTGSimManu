@@ -1899,13 +1899,15 @@ def _primeval_titan_search(game, controller):
 @EFFECT_REGISTRY.register("Wan Shi Tong, Librarian", EffectTiming.ETB,
                            description="Put X +1/+1 counters, draw half X cards (X = opponent's library searches)")
 def wan_shi_tong_etb(game, card, controller, targets=None, item=None):
-    """Enters with X +1/+1 counters and draws half X — X is the X that
-    was PAID (CR 107.3), read off the resolving stack item. It used to
-    read the opponent's library-search count (an unrelated counter) on
-    top of the generic X-counter placement, entering one X too big."""
+    """Draws half X — X is the X that was PAID (CR 107.3), read off the
+    resolving stack item. The X +1/+1 counters are placed by the engine
+    on entry (spell_resolution's X-counter branch, the same path as every
+    other "enters with X counters" permanent); this handler READS them.
+    It used to add them again on top of the engine's placement (one X
+    too big), and then owned them outright — which left every handler
+    that only reads its counters (the Ballista shape) with none."""
     x = int(getattr(item, 'x_value', 0) or 0) if item is not None else 0
     if x > 0:
-        card.add_plus_counters(x, game)
         draw_count = x // 2
         if draw_count > 0:
             game.draw_cards(controller, draw_count)
