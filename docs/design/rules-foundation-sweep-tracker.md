@@ -4796,3 +4796,86 @@ post Z2): Zoo vs Boros Energy 35 → 30, vs Broodscale 70 → 70, vs Prowess
 first-strike attackers are no longer immune to blockers); size small at
 n=20. Running total on the lane: Zoo field 70.0 → 69.4 (Z1) → 68.3
 (Z2), same seeds.
+
+## Rules enforcement as a system (2026-09-12, PR #571)
+
+Every replay read this week surfaced another rules gap the engine had
+been silently getting wrong across the whole matrix (E13, Z1, Z2, Z3 and
+the leads beside them). The pattern, not the instances, is the problem:
+the engine had no way of noticing when it broke a rule, so a defect lived
+until a human-read replay landed on it. Three units make violations
+observable everywhere and choose the next work from a census.
+
+### R1 — the rules auditor (`engine/rules_audit.py`)
+
+Opt-in (`MTG_RULES_AUDIT=1`, or `run_meta.py --rules-audit`, which sets
+it before workers spawn), never behaviour-changing: with the flag unset
+every hook is one early return and the WR anchor is byte-identical
+(29 passed with the flag unset after every hook landed). CR-phrased
+invariants at the existing seams, each restated independently of the
+engine's own predicate so the audit checks the implementation rather
+than agreeing with it:
+
+| rule id | where | sentence |
+|---|---|---|
+| `510.2/creature_dealt` | `CombatManager._audited_step` | every creature in combat, alive at the start of a damage step, with power, whose own keywords put it in that step, dealt damage in it (a blocked attacker whose blockers all left combat and lacks trample is exempt, CR 510.1c) |
+| `601.2c/cast_target` | `cast_spell` | every battlefield target chosen at cast passes `target_solver.can_be_targeted` |
+| `608.2b/resolve_target` | `resolve_stack` | every target still on the battlefield on resolution passes the solver |
+| `305.7/set_land_mana` | `effective_produces_mana` | a land whose type is SET with no later ADD produces exactly its one colour |
+| `107.3/x_counters` | X-counter entry | an X-cost permanent carries X +1/+1 counters on entry |
+| `704.5f/lethal_damage`, `704.5f/zero_toughness`, `704.5a/zero_life`, `704.3/fixpoint_cap` | after the outermost SBA fixpoint | no lethally damaged or non-positive-toughness creature on a battlefield, no player at ≤0 life still playing, the loop reached its fixpoint (skipped once the game is over — CR 104: SBAs stop) |
+| `keyword/unmodelled` (census) | game end, per template | a keyword word the engine has no enum member, typed field or handler for, once per word |
+
+Findings carry seed, deck pair and turn (`rules_audit.set_context` in
+`run_meta._run_pair`), ride on `GameResult.audit_findings`, are sunk by
+every aggregator (serial and Pool paths, `tools.parallel_matrix` cells)
+into one `audits/rules_audit_<stamp>.jsonl` per run, and are ranked by
+`tools/rules_audit_report.py` (violations and census separately: count,
+games, deck pairs, top detail). Tests (`tests/test_rules_audit.py`, nine):
+each invariant is fired by re-creating its defect — `_deals_in_step`
+patched to the pre-Z2 gate, the cast-time legality gate patched away and
+a hexproof target handed in, `current_basic_land_types` patched to two
+types under a SET, `add_plus_counters` patched to a no-op, the SBA pass
+patched to perform nothing — and is silent when the rule holds; the flag
+off records nothing.
+
+**Acceptance on a real field** (`--field "Domain Zoo" -n 20 --parallel
+--workers 2 --rules-audit`, ~1.1× the un-audited wall on this box):
+run 1 reported 176 `704.5f` findings and one `510.2`; both were the
+AUDITOR's errors, found and fixed in the same unit — a game that ends
+during combat damage returns from the SBA pass before creature deaths
+(CR 104: no SBAs once the game is over), and a blocked attacker whose
+blockers died in the first-strike step legitimately deals nothing. Run
+3: **0 violations, 16 census words** across the 25 decks (ferocious,
+metalcraft, ward and flashback on cards whose typed field is empty,
+kicker, devoid, harmonize, flurry, emerge, meld, amass, ascend,
+protection from a non-colour). The auditor's own findings on the
+fixed tree are therefore clean; the census is the backlog.
+
+### R2 — mechanic coverage census (`tools/keyword_coverage.py` → `docs/design/rules_coverage.md`)
+
+Generated from the code: for every keyword-ability word in the pool,
+the pool count, registered-deck usage (copies across the 25 lists'
+mainboards and sideboards), and the engine's status derived from the
+`Keyword` enum, the typed `CardTemplate` fields the loader populates and
+`EFFECT_REGISTRY`. First table: **101 words, 53 with no model**; on
+registered cards, ranked by copies: kicker 24 (Consult the Star Charts,
+Orim's Chant, Sowing Mycospawn), devoid 17, metalcraft 10 (a runtime
+predicate today, not a typed field), ferocious 4 (Stubborn Denial),
+harmonize 4 (Nature's Rhythm), flurry 4 (Cori-Steel Cutter), daybound,
+emerge, meld 1 each. `tests/test_keyword_coverage_census.py` pins the
+derivation and that the committed table equals the generator's output.
+
+### R3 — single-owner ratchet (`tools/check_single_owner.py`) and the process rule
+
+Pins (may only fall) the count of second paths that re-implement a
+rule's check: target picks outside `engine/target_solver` (12 — the
+remaining handlers pick from the opponent's board without the solver:
+Force of Vigor, Wear // Tear, Meltdown, Kolaghan's Command, Celestial
+Purge, Scapeshift, Grazer / Titan land searches, and three `game_runner`
+activation heuristics), direct damage / life writes outside
+`engine/damage.py` (42), direct counter writes outside the counter
+primitive (5). CI step, pytest bridge, CLAUDE.md prohibition, and the
+process rule: a rules gap found in a replay lands with its failing test,
+its fix and its auditor invariant in one commit; later units come from
+the audit ranking and the coverage census.
