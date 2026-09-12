@@ -118,3 +118,17 @@ that should benefit.
 - The loop continues past this document only with units named here or
   in the tracker's replay register; the 3-of-3 counter resets on the
   first unit that moves a cell.
+
+## Addendum (2026-09-12, later the same day)
+
+The Toolbox "unbounded mana with no outlet" residual named above was an
+engine regression, found by the post-refresh outlier replays and fixed
+as unit E13 (`ef67dc3`): Walking Ballista entered with no counters since
+09-09 (see the tracker's Phase D and E13 sections). Toolbox's field
+moved 18.3 → 21.2 same-seed; **Domain Zoo's field did not move (70.0,
+Zoo vs Toolbox 100)** — the outlet fires against slower decks, not
+against Zoo's clock. The verdict of this document is unchanged: the
+remaining Zoo residual is the opponents' AI (outlet selection under
+unbounded mana; the control C-lane), and the re-banding decision stays
+with the user.
+

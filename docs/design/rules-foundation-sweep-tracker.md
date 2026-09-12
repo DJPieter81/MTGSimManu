@@ -4670,3 +4670,42 @@ were written at 16:48 while the matrix ran until 17:02, so the last ~14
 minutes of the matrix scored with the file's values. Given the table
 above (no field moves), the matrix is read as the pre-weights baseline
 within noise.
+
+### Unit E13 — the engine places "enters with X counters" for every X-counter permanent (2026-09-12, `ef67dc3`)
+
+**Diagnosis** (Phase D above, replays s60203 / s60204 / s60205): unit
+E6 (`ed10ebf`) made a dedicated ETB handler the owner of an X-counter
+permanent's +1/+1 counters. Wan Shi Tong's handler adds them, so that
+fixed its double placement; Walking Ballista's handler only READS
+`card.plus_counters` (it spends them as damage), so from 09-09 on every
+Ballista entered as a 0/0 and died before its handler ran. Creatures
+Toolbox's unbounded-mana outlet (Druid + Vizier → Ballista for X=40)
+therefore dealt nothing — the "unbounded mana with no outlet" residual
+the Zoo loop-break doc named was this regression. Class: 69 X-counter
+permanents in the pool (three with a dedicated handler).
+
+**Rule** (CR 107.3 / 614.1c): `spell_resolution` places the parsed
+`plus1_counters` X on entry for every such permanent; a handler may
+read or spend them and never places them again (the Wan Shi Tong
+handler now only draws). The charge-counter branch keeps its handler
+guard because a sunburst count is not X. Failing test first:
+`test_the_engine_places_x_counters_before_a_dedicated_handler_reads_them`
+(Ballista X=2 → the engine's "enters with 2 +1/+1 counter(s)" line and
+exactly 2 damage to an empty opposing board); the E6 pin stays green.
+Anchor 31 passed, no flips; chunk A 2264 / chunk B 2302 (the
+numpy-only `test_llm_embeddings.py` excluded locally, it runs in CI);
+ratchets at baseline.
+
+**Measurement** (same seeds, n=20 Bo3, matchup grid, 2 workers each,
+pre = `773fabf`, post = the fix): **Creatures Toolbox field 18.3 →
+21.2 (+2.9pp)**, 13 cells moved, 10 up (Azorius Blink 25 → 45, Amulet
+60 → 70, Azorius Control 35 → 45, Eldrazi Ramp 20 → 30, Hollow One 15 →
+25, +5 on Omnath / Ponza / Tron / Dimir / Grixis; Boros, 4/5c and
+Broodscale −5), no draws, no aborts. Above the 2.2pp movement rule;
+still far below [30,70]. **Domain Zoo guard: 70.0 (post), unchanged
+from the 09-11 same-seed 70.0**, Zoo vs Toolbox 100 — the outlet fires
+against slower decks, not against Zoo's clock, so the Zoo lane's
+verdict stands. What is left on Toolbox's side is the AI: unbounded mana
+is generated (82 / 161 mana on the log) and Craterhoof / Ballista are
+not cast into it — the outlet-selection lead in the Phase D register
+(`ai/` combo evaluator reading the mana pool, not the engine).
