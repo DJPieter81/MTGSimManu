@@ -943,7 +943,20 @@ class EVPlayer:
                 and not getattr(c.template, 'is_land_sacrifice_tutor',
                                 False)
             ]
-            if not payoff_costs or min(payoff_costs) > retained:
+            # The fetched lands can BE the payoff: a land in the library
+            # whose own ability makes tokens or deals damage (typed) is a
+            # payoff the tutor reaches with no hand payoff at all. Without
+            # this the tutor sat in hand for four turns on eight lands with
+            # a watcher in play while four such lands waited in the library
+            # (Domain Zoo vs Amulet Titan s50000, 2026-09-11). A library of
+            # mana lands alone still clamps — the blind-ramp rule holds.
+            library_payoff_land = any(
+                c.template.is_land
+                and (getattr(c.template, 'has_token_effect', False)
+                     or getattr(c.template, 'deals_targeted_damage', False))
+                for c in me.library)
+            if (not payoff_costs or min(payoff_costs) > retained) \
+                    and not library_payoff_land:
                 return min(ev, PATIENCE_GATE_REJECT_SENTINEL)
         return ev
 

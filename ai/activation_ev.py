@@ -159,6 +159,8 @@ def choose_tutor_delivery(game, player_idx, eligible):
 
     if not eligible:
         return None
+    if all(c.template.is_land for c in eligible):
+        return _choose_land_delivery(game, player_idx, eligible)
     snap = snapshot_from_game(game, player_idx)
     # A candidate that completes an unbounded mana engine with the board
     # (engine-side rules query) is worth the engine's shortcut allowance —
@@ -175,6 +177,48 @@ def choose_tutor_delivery(game, player_idx, eligible):
         return float(c.template.cmc or 0)
 
     return max(eligible, key=_worth)
+
+
+def _choose_land_delivery(game, player_idx, lands):
+    """Which land a library land tutor delivers — ranked by the plan, not
+    by mana value (every land's is zero, so the generic ranking picked
+    whichever came first).
+
+    Order: a bounce land with no untapped-entry watcher ranks last — its
+    entry bounces a co-entrant, the retention rule
+    `conservative_land_retention` encodes (the engine's `LandManager`
+    answers the watcher query); then the AI's ONE land valuation, the
+    land-drop scorer `EVPlayer._score_land` (Tron-set completion, the
+    gameplan's declared `land_priorities`, colour needs, landfall — the
+    same question "which land do I most want next"). No card names, no
+    new weights, no second land valuation.
+    """
+    import random as _random
+    from engine.land_manager import LandManager
+    from ai.ev_player import EVPlayer
+    me = game.players[player_idx]
+    watcher = LandManager.player_has_untap_on_enter_watcher(game, player_idx)
+    ai = EVPlayer(player_idx=player_idx,
+                  deck_name=getattr(me, 'deck_name', None) or '',
+                  rng=_random.Random(0))
+    try:
+        ai._init_deck_knowledge(game)
+    except Exception:
+        pass
+    spells = [c for c in me.hand if not c.template.is_land]
+
+    def _drop_value(c) -> float:
+        try:
+            return float(ai._score_land(c, me, spells, game))
+        except Exception:
+            return 0.0
+
+    def _key(c):
+        bounce_penalised = (bool(getattr(c.template, 'etb_return_land', False))
+                            and not watcher)
+        return (not bounce_penalised, _drop_value(c))
+
+    return max(lands, key=_key)
 
 
 def counter_pt_delta(counter_kind: str, amount: int) -> int:

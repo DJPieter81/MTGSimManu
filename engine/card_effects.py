@@ -3190,12 +3190,28 @@ def scapeshift_resolve(game, card, controller, targets=None, item=None):
 
     library_lands.sort(key=land_priority, reverse=True)
 
+    # ── Which lands: the delivery seam, one pick at a time ───────────
+    # WHICH lands come is the caster's choice, not the engine's: every
+    # pick goes through `callbacks.choose_tutor_target` (the same seam
+    # every library tutor uses), with the engine order above as the
+    # rules-neutral default a first-of-eligible callback reproduces.
+    # The engine ranked the library by its own heuristic and never
+    # fetched an ability-land (Domain Zoo vs Amulet Titan, 2026-09-11).
+    chosen: list = []
+    pool = list(library_lands)
+    for _ in range(min(sac_count, len(pool))):
+        pick = game.callbacks.choose_tutor_target(game, controller, card, list(pool))
+        if pick is None or pick not in pool:
+            pick = pool[0]
+        pool.remove(pick)
+        chosen.append(pick)
+
     # ── Phase 1: enter all lands (no ETBs yet) ───────────────────────
     # All fetched lands enter simultaneously per MTG rules.  We stage
     # them all onto the battlefield before firing any triggers so that
     # each land's ETB (Phase 2) sees the complete set of co-entrants.
     lands_entered: list = []
-    for land in library_lands[:sac_count]:
+    for land in chosen:
         if land not in player.library:
             continue  # safety guard (shouldn't happen in Phase 1)
         player.library.remove(land)
