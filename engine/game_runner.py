@@ -277,7 +277,7 @@ class AICallbacks(GameCallbacks):
 
     def choose_tutor_target(self, game, player_idx, source, eligible):
         from ai.activation_ev import choose_tutor_delivery
-        return choose_tutor_delivery(game, player_idx, eligible)
+        return choose_tutor_delivery(game, player_idx, eligible, source=source)
 
     def choose_mana_color(self, game, player_idx, source, options):
         """Pick an entry-choice colour from the deck's actual mana needs.

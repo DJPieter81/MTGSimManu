@@ -3200,11 +3200,15 @@ def scapeshift_resolve(game, card, controller, targets=None, item=None):
     chosen: list = []
     pool = list(library_lands)
     for _ in range(min(sac_count, len(pool))):
+        # The picks already made ride on the source so the seam can see
+        # the batch (a second bounce land returns a co-entrant).
+        card._tutor_batch = list(chosen)
         pick = game.callbacks.choose_tutor_target(game, controller, card, list(pool))
         if pick is None or pick not in pool:
             pick = pool[0]
         pool.remove(pick)
         chosen.append(pick)
+    card._tutor_batch = None
 
     # ── Phase 1: enter all lands (no ETBs yet) ───────────────────────
     # All fetched lands enter simultaneously per MTG rules.  We stage
