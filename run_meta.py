@@ -689,6 +689,47 @@ def run_meta_matrix(top_tier: int = None, n_games: int = 20,
                               'step': SEED_STEP, 'n_games': n_games}}
 
 
+def _assemble_parallel_matrix(names: List[str], cells: Dict, n_games: int,
+                              bo1: bool = False) -> Dict:
+    """Shape `tools.parallel_matrix.run_matrix_parallel_cells` output like
+    `run_meta_matrix`'s result so print_matrix / save_results / the
+    dashboard merge read both paths identically.
+
+    Every ordered pair is its own run on the MATCHUP grid, so the cell is
+    that run's `pct1` and the games credited to nobody are per ordered
+    pair. Draws and aborts are carried through and announced — the
+    parallel path used to forward `pct1` alone, which left the saved
+    results without the counts `check_calibration` reads.
+    """
+    matrix = {pair: cell.wr for pair, cell in cells.items()}
+    cell_draws = {pair: int(cell.draws) for pair, cell in cells.items()}
+    cell_aborted = {pair: int(cell.aborted) for pair, cell in cells.items()}
+    total_draws = sum(cell_draws.values())
+    total_aborted = sum(cell_aborted.values())
+    # Simple flat rankings (no meta-weighted/T1+T2 here — the parallel
+    # path is for fast iteration; for full audit output, run without
+    # --parallel).
+    rankings = []
+    for d in names:
+        rates = [matrix.get((d, opp), 50) for opp in names if opp != d]
+        avg = sum(rates) / len(rates) if rates else 0.0
+        rankings.append((round(avg, 1), d, round(avg, 1)))
+    rankings.sort(key=lambda x: x[0], reverse=True)
+    _report_aborts(total_aborted)
+    return {'matrix': matrix, 'rankings': rankings,
+            'names': names, 'n_games': n_games,
+            'format': 'bo1' if bo1 else 'bo3',
+            'draws': total_draws, 'aborted': total_aborted,
+            'cell_draws': cell_draws, 'cell_aborted': cell_aborted,
+            # tools.parallel_matrix dispatches run_matchup per pair, so
+            # this path runs on the MATCHUP grid — stamped honestly
+            # (finding #5).
+            'seed_geometry': {'grid': 'parallel-matrix',
+                              'seed_start': MATCHUP_SEED_START,
+                              'step': SEED_STEP,
+                              'n_games': n_games}}
+
+
 def inspect_deck(deck_name: str) -> str:
     """Show full deck profile: decklist, gameplan, strategy profile, card tags.
 
@@ -1629,7 +1670,7 @@ if __name__ == '__main__':
             # We then assemble the same `result` shape as
             # run_meta_matrix so downstream code (print_matrix,
             # save_results, dashboard merge) is unchanged.
-            from tools.parallel_matrix import run_matrix_parallel
+            from tools.parallel_matrix import run_matrix_parallel_cells
             names = get_all_deck_names()
             if args.decks and args.decks < len(names):
                 names = sorted(names,
@@ -1638,30 +1679,11 @@ if __name__ == '__main__':
             workers = args.workers if args.workers is not None else _DEFAULT_WORKERS
             print(f'Parallel matrix: {len(names)} decks, n={args.games}, '
                   f'workers={workers}', file=sys.stderr)
-            wr_dict = run_matrix_parallel(names, n_games=args.games,
-                                          workers=workers)
-            # Convert (d1, d2) -> pct1 into the matrix shape used elsewhere.
-            matrix = {pair: wr for pair, wr in wr_dict.items()}
-            # Compute simple flat rankings (no meta-weighted/T1+T2 here —
-            # the parallel path is for fast iteration; for full audit
-            # output, run without --parallel).
-            rankings = []
-            for d in names:
-                rates = [matrix.get((d, opp), 50)
-                         for opp in names if opp != d]
-                avg = sum(rates) / len(rates) if rates else 0.0
-                rankings.append((round(avg, 1), d, round(avg, 1)))
-            rankings.sort(key=lambda x: x[0], reverse=True)
-            result = {'matrix': matrix, 'rankings': rankings,
-                      'names': names, 'n_games': args.games,
-                      'format': 'bo1' if args.bo1 else 'bo3',
-                      # tools.parallel_matrix dispatches run_matchup
-                      # per pair, so this path runs on the MATCHUP
-                      # grid — stamped honestly (finding #5).
-                      'seed_geometry': {'grid': 'parallel-matrix',
-                                        'seed_start': MATCHUP_SEED_START,
-                                        'step': SEED_STEP,
-                                        'n_games': args.games}}
+            cells = run_matrix_parallel_cells(names, n_games=args.games,
+                                              workers=workers)
+            result = _assemble_parallel_matrix(names, cells,
+                                               n_games=args.games,
+                                               bo1=args.bo1)
         else:
             result = run_meta_matrix(top_tier=args.decks, n_games=args.games, bo3=not args.bo1)
         print_matrix(result)

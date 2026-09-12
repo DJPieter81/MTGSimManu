@@ -114,6 +114,51 @@ def test_aborted_games_surface_in_every_aggregate_and_the_saved_results(
         "an aborted game must be announced loudly at the end of the run")
 
 
+def test_the_parallel_matrix_path_carries_draws_and_aborts_into_the_saved_results(
+        two_decks, tmp_path, capsys):
+    """`--matrix --parallel` (the only way a 25-deck n=60 matrix is ever
+    run) assembles its own result dict from `tools.parallel_matrix`, which
+    forwarded ONLY `pct1` per pair. Draws and aborts were counted inside
+    each worker and then dropped on the way out, so the saved
+    `metagame_results.json` had no `draws`/`aborted` keys and
+    `check_calibration` could never announce a non-calibration-grade run
+    (observed 2026-09-12 on the n=60 refresh). Same rule as the serial
+    path: every aggregate and the saved file carry the counts."""
+    from tools.parallel_matrix import run_matrix_parallel_cells
+
+    a, b = two_decks
+
+    def _stub_matchup(d1, d2, n_games):
+        # (a, b): 4-3 with 2 draws + 1 abort; (b, a): 5-5, clean.
+        if (d1, d2) == (a, b):
+            return {'pct1': 40, 'pct2': 30, 'draws': 2, 'aborted': 1}
+        return {'pct1': 50, 'pct2': 50, 'draws': 0, 'aborted': 0}
+
+    cells = run_matrix_parallel_cells([a, b], n_games=10, workers=1,
+                                      run_matchup_fn=_stub_matchup)
+    assert cells[(a, b)].wr == 40 and cells[(a, b)].draws == 2 \
+        and cells[(a, b)].aborted == 1
+    assert cells[(b, a)].wr == 50 and cells[(b, a)].aborted == 0
+
+    m = run_meta._assemble_parallel_matrix([a, b], cells, n_games=10,
+                                           bo1=False)
+    assert m["matrix"][(a, b)] == 40 and m["matrix"][(b, a)] == 50
+    assert m["draws"] == 2 and m["aborted"] == 1
+    assert m["cell_draws"][(a, b)] == 2 and m["cell_aborted"][(a, b)] == 1
+    assert m["cell_draws"][(b, a)] == 0
+
+    out = tmp_path / "results.json"
+    run_meta.save_results(m, path=str(out))
+    saved = json.loads(out.read_text())
+    assert saved["draws"] == 2 and saved["aborted"] == 1
+    assert saved["cell_draws"][f"{a}|{b}"] == 2
+    assert saved["cell_aborted"][f"{a}|{b}"] == 1
+
+    captured = capsys.readouterr()
+    assert "not calibration-grade" in (captured.err + captured.out).lower(), (
+        "an aborted game must be announced loudly at the end of the run")
+
+
 def test_check_calibration_announces_a_run_with_aborts(tmp_path, capsys):
     from tools import check_calibration as cc
 
