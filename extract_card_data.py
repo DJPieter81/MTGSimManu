@@ -11,7 +11,8 @@ from engine.card_database import CardDatabase
 from engine.game_runner import GameRunner
 from decks.modern_meta import MODERN_DECKS, get_all_deck_names
 
-N = int(sys.argv[1]) if len(sys.argv) > 1 else 10
+# Matches per pair from the CLI; importable (tests) without argv parsing.
+N = int(sys.argv[1]) if len(sys.argv) > 1 and sys.argv[1].isdigit() else 10
 
 # Archetype map for summaries
 ARCHETYPES = {
@@ -218,8 +219,10 @@ def extract_from_match(runner, d1, d2, seed, verbose=True):
         for d in [d1, d2]:
             damage[d].update(game_dmg[d])
 
-        # Track game winner's key card + kill turn
-        if game.winner_deck:
+        # Track game winner's key card + kill turn. A drawn game (CR 104.4
+        # turn cap, simultaneous loss) carries winner_deck == "draw" —
+        # nobody's kill, nobody's game-1 win, nobody's sweep.
+        if game.winner_deck in kill_turns:
             winner_casts = Counter()
             for line in game.game_log:
                 m = re.match(r'T\d+ P(\d+): Cast (.+?)(?:\s*\(|$)', line)
@@ -237,12 +240,16 @@ def extract_from_match(runner, d1, d2, seed, verbose=True):
     sb = parse_sideboard_from_stderr(sb_text, d1, d2)
 
     # Series stats
-    if len(g_winners) == 2 and g_winners[0] == g_winners[1]:
+    if len(g_winners) == 2 and g_winners[0] == g_winners[1] \
+            and g_winners[0] in (d1, d2):
         idx = 0 if g_winners[0] == d1 else 1
         sweeps[idx] += 1
     if len(g_winners) == 3:
         went_to_3 = 1
-        if g_winners[0] != g_winners[2]:
+        # A comeback is winning game 3 after LOSING game 1; a drawn
+        # game 1 is nobody's loss.
+        if g_winners[0] in (d1, d2) and g_winners[2] in (d1, d2) \
+                and g_winners[0] != g_winners[2]:
             idx = 0 if g_winners[2] == d1 else 1
             comebacks[idx] += 1
 
