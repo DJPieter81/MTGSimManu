@@ -1,0 +1,1275 @@
+Loaded 22470 cards (0 errors)
+  Sideboard (4/5c Control vs Affinity): +1 Boseiju, Who Endures, +1 Wear // Tear, -2 Orim's Chant
+======================================================================
+  GAME 1: Affinity (P1) vs 4/5c Control (P2)  —  seed 60207
+  Series: Affinity 0 - 0 4/5c Control
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: 4/5c Control wins → chooses to play first
+║ P1 (on play): 4/5c Control
+║ P2 (on draw): Affinity
+╚═══════════════════════════════════════════════════════
+
+P1 (Affinity) opening hand (3 lands, 4 spells):
+  • Fiery Islet [Land, CMC 0]
+  • Steam Vents [Land, CMC 0]
+  • Mox Opal [Spell, CMC 0]
+  • Urza's Saga [Land, CMC 0]
+  • Weapons Manufacturing [Spell, CMC 2]
+  • Tormod's Crypt [Spell, CMC 0]
+  • Mox Opal [Spell, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Mox Opal, Urza's Saga, Weapons Manufacturing, 3 cheap spells
+
+P2 (4/5c Control) opening hand (4 lands, 3 spells):
+  • Windswept Heath [Land, CMC 0]
+  • Misty Rainforest [Land, CMC 0]
+  • Arena of Glory [Land, CMC 0]
+  • Galvanic Discharge [Spell, CMC 1]
+  • Stock Up [Spell, CMC 3]
+  • Flooded Strand [Land, CMC 0]
+  • Wrenn and Six [Spell, CMC 2]
+→ P2 KEEPS 7 — has key card(s): Wrenn and Six, 3 cheap spells
+
+
+╔══ TURN 1 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Misty Rainforest
+T1: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Misty Rainforest (pay 1 life) -> Stomping Ground (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  4/5c Control 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Stomping Ground [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Claws of Gix
+  [Main 1]
+T1 P1: Play Fiery Islet
+    → Goal: deploy_engine [engines]
+T1 P1: Cast Mox Opal (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Mox Opal
+    → Goal: push_damage
+T1 P1: Cast Claws of Gix (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Claws of Gix
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 19  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Stomping Ground
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Claws of Gix
+║   Lands: Fiery Islet
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Solitude
+  [Main 1]
+T2 P2: Play Flooded Strand
+T2: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T2 P2: Crack Flooded Strand (pay 1 life) -> Hallowed Fountain (tapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  4/5c Control 18
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Claws of Gix
+║   Lands: Fiery Islet
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Stomping Ground, Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Urza's Saga
+  [Main 1]
+T2 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+T2 P1: Play Urza's Saga
+T2: Fiery Islet moved battlefield -> graveyard (activation cost (Fiery Islet))
+T2 P1: activate Fiery Islet — Draw a card.
+T2 P1: Fiery Islet activated — draw 1 (Metallic Rebuke)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 18  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 1
+║ Library: 50  |  Graveyard: 2
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Stomping Ground, Hallowed Fountain
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Claws of Gix
+║   Lands: Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Quantum Riddler
+  [Main 1]
+T3 P2: Play Windswept Heath
+T3: Windswept Heath moved battlefield -> graveyard (fetchland sacrifice)
+T3 P2: Crack Windswept Heath (pay 1 life) -> Breeding Pool (untapped, life: 15)
+    → Goal: grind_value
+    [Mana] Tap Stomping Ground→R, Breeding Pool→G (paying for Wrenn and Six, 1 mana remaining)
+T3 P2: Cast Wrenn and Six (RG)
+    [Priority] P1 passes (no response)
+T3: Resolve Wrenn and Six
+T3 P2: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+T3: Misty Rainforest moved graveyard -> hand (returned to hand)
+T3 P2:   returns Misty Rainforest from graveyard to hand
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  4/5c Control 15
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Claws of Gix
+║   Lands: Urza's Saga
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Wrenn and Six
+║   Lands: Stomping Ground [T], Hallowed Fountain, Breeding Pool [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Shivan Reef
+  [Main 1]
+T3 P1: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+T3 P1: Play Steam Vents (tapped)
+    → Goal: close_game
+T3 P1: Cast Tormod's Crypt (0)
+    [Priority] P2 passes (no response)
+T3: Resolve Tormod's Crypt
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 15  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 48  |  Graveyard: 2
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Wrenn and Six
+║   Lands: Stomping Ground, Hallowed Fountain, Breeding Pool
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Claws of Gix, Tormod's Crypt
+║   Lands: Urza's Saga, Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Galvanic Discharge
+  [Main 1]
+T4 P2: Play Misty Rainforest
+T4: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T4 P2: Crack Misty Rainforest (pay 1 life) -> Temple Garden (tapped, life: 14)
+T4 P2: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+T4: Flooded Strand moved graveyard -> hand (returned to hand)
+T4 P2:   returns Flooded Strand from graveyard to hand
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  4/5c Control 14
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 1
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Claws of Gix, Tormod's Crypt
+║   Lands: Urza's Saga, Steam Vents
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Wrenn and Six
+║   Lands: Stomping Ground, Hallowed Fountain, Breeding Pool, Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Pinnacle Emissary
+  [Main 1]
+T4 P1: Urza's Saga tutors Shadowspear
+T4 P1: Sacrifice Urza's Saga (final chapter)
+T4 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+T4 P1: Play Urza's Saga
+    → Goal: close_game
+    [Mana] Tap Urza's Saga→C (paying for Pinnacle Emissary, 1 mana remaining)
+T4 P1: Warp Pinnacle Emissary (pays 1)
+T4 P1: Cast Pinnacle Emissary (1UR)
+    [Priority] P2 passes (no response)
+T4: Resolve Pinnacle Emissary
+  [Begin Combat]
+    [Mana] Tap Stomping Ground→R (paying for Galvanic Discharge, 2 mana remaining)
+T4 P2: Cast Galvanic Discharge (R)
+    [Priority] P1 responds with Metallic Rebuke
+T4 P1: Improvise — tap 2 artifact(s) for Metallic Rebuke
+    [Mana] Tap Steam Vents→U (paying for Metallic Rebuke, 0 mana remaining)
+T4 P1: Cast Metallic Rebuke (2U)
+T4: Resolve Metallic Rebuke
+T4: Galvanic Discharge moved stack -> graveyard (resolution)
+T4: Galvanic Discharge is countered
+T4: Metallic Rebuke moved stack -> graveyard (resolution)
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Pinnacle Emissary moved battlefield -> exile (Warp exile)
+T4: Pinnacle Emissary exiled (Warp)
+
+╔══ TURN 5 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 14  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 2
+║ Library: 46  |  Graveyard: 3
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Wrenn and Six
+║   Lands: Stomping Ground, Hallowed Fountain, Breeding Pool, Temple Garden
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Claws of Gix, Tormod's Crypt, Shadowspear
+║   Lands: Steam Vents [T], Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thundering Falls
+  [Main 1]
+T5 P2: Play Flooded Strand
+T5: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T5 P2: Crack Flooded Strand (pay 1 life) -> Steam Vents (tapped, life: 13)
+    → Goal: close_game
+    [Mana] Tap Stomping Ground→G, Hallowed Fountain→U, Breeding Pool→G (paying for Stock Up, 1 mana remaining)
+T5 P2: Cast Stock Up (2U)
+    [Priority] P1 passes (no response)
+T5: Resolve Stock Up
+T5: Stock Up moved stack -> graveyard (resolution)
+T5 P2: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+T5: Windswept Heath moved graveyard -> hand (returned to hand)
+T5 P2:   returns Windswept Heath from graveyard to hand
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T5: Arena of Glory moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 5 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  4/5c Control 13
+║ Hand: 3 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 3
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Claws of Gix, Tormod's Crypt, Shadowspear
+║   Lands: Steam Vents, Urza's Saga
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Wrenn and Six
+║   Lands: Stomping Ground [T], Hallowed Fountain [T], Breeding Pool [T], Temple Garden, Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Welding Jar
+  [Main 1]
+T5 P1: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+T5 P1: Play Shivan Reef
+    → Goal: close_game
+T5 P1: Cast Welding Jar (0)
+    [Priority] P2 passes (no response)
+T5: Resolve Welding Jar
+    → Goal: close_game
+    [Mana] Tap Urza's Saga→C, Steam Vents→U, Shivan Reef→R (paying for Pinnacle Emissary, 0 mana remaining)
+T5 P1: Cast Pinnacle Emissary (1UR)
+    [Priority] P2 passes (no response)
+T5: Resolve Pinnacle Emissary
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 13  |  Affinity 19
+║ Hand: 7 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 42  |  Graveyard: 5
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Wrenn and Six
+║   Lands: Stomping Ground, Hallowed Fountain, Breeding Pool, Temple Garden, Steam Vents
+║ Affinity board:
+║   Creatures: Pinnacle Emissary (3/3)
+║   Other: Mox Opal, Claws of Gix, Tormod's Crypt, Shadowspear, Welding Jar
+║   Lands: Steam Vents [T], Urza's Saga [T], Shivan Reef [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Eternal Witness
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Stomping Ground→R, Hallowed Fountain→W, Breeding Pool→U, Temple Garden→G (paying for Omnath, Locus of Creation, 1 mana remaining)
+T6 P2: Cast Omnath, Locus of Creation (WURG)
+    [Priority] P1 passes (no response)
+T6: Resolve Omnath, Locus of Creation
+T6 P2: Omnath, Locus of Creation ETB: draw 1 (Ephemerate)
+T6 P2: Play Windswept Heath
+T6: Windswept Heath moved battlefield -> graveyard (fetchland sacrifice)
+T6 P2: Crack Windswept Heath (pay 1 life) -> Sacred Foundry (tapped, life: 12)
+T6 P2: Omnath, Locus of Creation 2nd landfall: add mana
+    → Goal: close_game
+    [Target] → Pinnacle Emissary: marginal threat 6.67 (3/3 body) — better than 3 face dmg
+T6 P2: Cast Galvanic Discharge (R)
+    [Priority] P1 passes (no response)
+T6: Resolve Galvanic Discharge
+T6: Pinnacle Emissary dies
+T6 P2: Galvanic Discharge deals 3 to Pinnacle Emissary (base 0 + 3 energy)
+T6: Galvanic Discharge moved stack -> graveyard (resolution)
+    → Goal: close_game
+T6 P2: Cast Ephemerate (W)
+    [Priority] P1 passes (no response)
+T6: Resolve Ephemerate
+T6 P2: Omnath, Locus of Creation ETB: draw 1 (Solitude)
+T6: Blink Omnath, Locus of Creation
+T6: Ephemerate moved stack -> exile (rebound (CR 702.86))
+T6 P2: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+T6: Misty Rainforest moved graveyard -> hand (returned to hand)
+T6 P2:   returns Misty Rainforest from graveyard to hand
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 19  |  4/5c Control 12
+║ Hand: 2 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 6
+║ Library: 46  |  Graveyard: 4
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Claws of Gix, Tormod's Crypt, Shadowspear, Welding Jar
+║   Lands: Steam Vents, Urza's Saga, Shivan Reef
+║ 4/5c Control board:
+║   Creatures: Omnath, Locus of Creation (4/4)
+║   Other: Wrenn and Six
+║   Lands: Stomping Ground [T], Hallowed Fountain [T], Breeding Pool [T], Temple Garden [T], Steam Vents, Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Shivan Reef
+  [Main 1]
+T6 P1: Create 1x Construct token(s)
+T6 P1: Urza's Saga activates "{2}, {T}: Create a 0/0 colorless Constru..." (pays {2}, {T})
+T6 P1: Urza's Saga tutors Skateboard
+T6 P1: Sacrifice Urza's Saga (final chapter)
+T6 P1: Play Shivan Reef
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 12  |  Affinity 19
+║ Hand: 7 cards  |  Opp hand: 2 cards
+║ Lands: 6  |  Opp lands: 3
+║ Library: 38  |  Graveyard: 6
+║ 4/5c Control board:
+║   Creatures: Omnath, Locus of Creation (4/4)
+║   Other: Wrenn and Six
+║   Lands: Stomping Ground, Hallowed Fountain, Breeding Pool, Temple Garden, Steam Vents, Sacred Foundry
+║ Affinity board:
+║   Creatures: Construct Token (7/7)
+║   Other: Mox Opal, Claws of Gix, Tormod's Crypt, Shadowspear, Welding Jar, Skateboard
+║   Lands: Steam Vents [T], Shivan Reef [T], Shivan Reef
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T7 P2: Rebound Ephemerate declined (CR 702.88b)
+  [Draw] P2 draws: Orim's Chant
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Stomping Ground→G, Hallowed Fountain→W, Breeding Pool→G, Temple Garden→W, Steam Vents→R (paying for Solitude, 1 mana remaining)
+T7 P2: Cast Solitude (3WW)
+    [Priority] P1 passes (no response)
+T7: Resolve Solitude
+T7: Construct Token moved battlefield -> exile (exiled)
+T7 P2: Solitude exiles Construct Token (opponent gains 7 life, now 26)
+T7 P2: Play Misty Rainforest
+T7: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T7 P2: Crack Misty Rainforest -> Island (untapped)
+T7 P2: Omnath, Locus of Creation 2nd landfall: add mana
+    → Goal: close_game
+    [Mana] Tap Island→U (paying for Quantum Riddler, 1 mana remaining)
+T7 P2: Cast Quantum Riddler (3UU)
+    [Priority] P1 passes (no response)
+T7: Resolve Quantum Riddler
+T7 P2: Quantum Riddler ETB: draw 1 (Plains)
+T7 P2: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+T7: Flooded Strand moved graveyard -> hand (returned to hand)
+T7 P2:   returns Flooded Strand from graveyard to hand
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Omnath, Locus of Creation
+T7 P2: Attack with Omnath, Locus of Creation
+  [Declare Blockers] P1 does not block
+T7 P2:   Omnath, Locus of Creation (4/4) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 26 → 22
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 22  |  4/5c Control 11
+║ Hand: 2 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 7
+║ Library: 44  |  Graveyard: 5
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Claws of Gix, Tormod's Crypt, Shadowspear, Welding Jar, Skateboard
+║   Lands: Steam Vents, Shivan Reef, Shivan Reef
+║ 4/5c Control board:
+║   Creatures: Omnath, Locus of Creation (4/4) [tapped], Solitude (3/2), Quantum Riddler (4/6)
+║   Other: Wrenn and Six
+║   Lands: Stomping Ground [T], Hallowed Fountain [T], Breeding Pool [T], Temple Garden [T], Steam Vents [T], Sacred Foundry, Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Spirebluff Canal
+  [Main 1]
+    → Goal: close_game [payoffs]
+    [Mana] Tap Steam Vents→R, Shivan Reef→C (paying for Weapons Manufacturing, 1 mana remaining)
+T7 P1: Cast Weapons Manufacturing (1R)
+    [Priority] P2 passes (no response)
+T7: Resolve Weapons Manufacturing
+T7 P1: Play Spirebluff Canal (tapped, 3 other lands)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 11  |  Affinity 22
+║ Hand: 7 cards  |  Opp hand: 1 cards
+║ Lands: 7  |  Opp lands: 4
+║ Library: 35  |  Graveyard: 6
+║ 4/5c Control board:
+║   Creatures: Omnath, Locus of Creation (4/4), Solitude (3/2), Quantum Riddler (4/6)
+║   Other: Wrenn and Six
+║   Lands: Stomping Ground, Hallowed Fountain, Breeding Pool, Temple Garden, Steam Vents, Sacred Foundry, Island
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Claws of Gix, Tormod's Crypt, Shadowspear, Welding Jar, Skateboard, Weapons Manufacturing
+║   Lands: Steam Vents [T], Shivan Reef [T], Shivan Reef, Spirebluff Canal [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wrenn and Six
+  [Main 1]
+T8 P2: Play Flooded Strand
+T8: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T8 P2: Crack Flooded Strand -> Lush Portico (tapped)
+T8 P2: surveil 1 → Flooded Strand to GY
+T8 P2: Omnath, Locus of Creation 2nd landfall: add mana
+    → Goal: close_game
+    [Mana] Tap Stomping Ground→G (paying for Eternal Witness, 8 mana remaining)
+T8 P2: Cast Eternal Witness (1GG)
+    [Priority] P1 passes (no response)
+T8: Resolve Eternal Witness
+T8 P2: Eternal Witness returns Stock Up from graveyard to hand
+    → Goal: close_game
+    [Mana] Tap Island→U (paying for Stock Up, 5 mana remaining)
+T8 P2: Cast Stock Up (2U)
+    [Priority] P1 passes (no response)
+T8: Resolve Stock Up
+T8: Stock Up moved stack -> graveyard (resolution)
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→U, Breeding Pool→U, Temple Garden→G, Steam Vents→R, Sacred Foundry→R (paying for Quantum Riddler, 0 mana remaining)
+T8 P2: Cast Quantum Riddler (3UU)
+    [Priority] P1 passes (no response)
+T8: Resolve Quantum Riddler
+T8 P2: Quantum Riddler ETB: draw 1 (Wrath of the Skies)
+T8 P2: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+T8: Arena of Glory moved graveyard -> hand (returned to hand)
+T8 P2:   returns Arena of Glory from graveyard to hand
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Omnath, Locus of Creation, Solitude, Quantum Riddler
+T8 P2: Attack with Omnath, Locus of Creation, Solitude, Quantum Riddler
+  [Declare Blockers] P1 does not block
+T8 P2:   Omnath, Locus of Creation (4/4) → 4 dmg to player
+T8 P2: Solitude lifelink — gain 3 (life: 13)
+T8 P2:   Solitude (3/2) → 3 dmg to player
+T8 P2:   Quantum Riddler (4/6) → 4 dmg to player
+  [Combat Damage] 11 damage dealt → P1 life: 22 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+T8: Wrenn and Six moved hand -> graveyard (discard to hand size)
+T8: Thundering Falls moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 8 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 11  |  4/5c Control 13
+║ Hand: 1 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 8
+║ Library: 43  |  Graveyard: 5
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Claws of Gix, Tormod's Crypt, Shadowspear, Welding Jar, Skateboard, Weapons Manufacturing
+║   Lands: Steam Vents, Shivan Reef, Shivan Reef, Spirebluff Canal
+║ 4/5c Control board:
+║   Creatures: Omnath, Locus of Creation (4/4) [tapped], Solitude (3/2) [tapped], Quantum Riddler (4/6) [tapped], Eternal Witness (2/1), Quantum Riddler (4/6)
+║   Other: Wrenn and Six
+║   Lands: Stomping Ground [T], Hallowed Fountain [T], Breeding Pool [T], Temple Garden [T], Steam Vents [T], Sacred Foundry [T], Island [T], Lush Portico [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Kappa Cannoneer
+  [Main 1]
+    → Goal: close_game [payoffs]
+T8 P1: Improvise — tap 2 artifact(s) for Kappa Cannoneer
+    [Mana] Tap Steam Vents→U, Spirebluff Canal→U, Shivan Reef→C, Shivan Reef→C (paying for Kappa Cannoneer, 0 mana remaining)
+T8 P1: Cast Kappa Cannoneer (5U)
+    [Priority] P2 passes (no response)
+T8: Resolve Kappa Cannoneer
+T8 P1: Kappa Cannoneer gets +1/+1 counter (Kappa Cannoneer entered) → 5/5
+T8 P1: Kappa Cannoneer gets +1/+1 counter (Munitions Token entered) → 6/6
+T8 P1: Create 1x Munitions token(s)
+T8 P1: Weapons Manufacturing trigger → create 1 token(s) (Kappa Cannoneer entered as nontoken=True artifact)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 13  |  Affinity 11
+║ Hand: 7 cards  |  Opp hand: 1 cards
+║ Lands: 8  |  Opp lands: 4
+║ Library: 29  |  Graveyard: 9
+║ 4/5c Control board:
+║   Creatures: Omnath, Locus of Creation (4/4), Solitude (3/2), Quantum Riddler (4/6), Eternal Witness (2/1), Quantum Riddler (4/6)
+║   Other: Wrenn and Six
+║   Lands: Stomping Ground, Hallowed Fountain, Breeding Pool, Temple Garden, Steam Vents, Sacred Foundry, Island, Lush Portico
+║ Affinity board:
+║   Creatures: Kappa Cannoneer (6/6)
+║   Other: Mox Opal, Claws of Gix, Tormod's Crypt, Shadowspear, Welding Jar, Skateboard, Weapons Manufacturing, Munitions Token
+║   Lands: Steam Vents [T], Shivan Reef [T], Shivan Reef [T], Spirebluff Canal [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Misty Rainforest
+  [Main 1]
+T9 P2: Play Misty Rainforest
+T9: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T9 P2: Crack Misty Rainforest -> Hedge Maze (tapped)
+T9 P2: surveil 1 → Orim's Chant to GY
+T9 P2: Omnath, Locus of Creation 2nd landfall: add mana
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→W (paying for Solitude, 7 mana remaining)
+T9 P2: Cast Solitude (3WW)
+    [Priority] P1 passes (no response)
+T9: Resolve Solitude
+T9: Kappa Cannoneer moved battlefield -> exile (exiled)
+T9 P2: Solitude exiles Kappa Cannoneer (opponent gains 6 life, now 17)
+    → Goal: close_game
+    [Mana] Tap Island→U, Stomping Ground→G, Breeding Pool→G, Temple Garden→W, Sacred Foundry→W (paying for Solitude, 2 mana remaining)
+T9 P2: Cast Solitude (3WW)
+    [Priority] P1 passes (no response)
+T9: Resolve Solitude
+T9 P2: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+T9: Windswept Heath moved graveyard -> hand (returned to hand)
+T9 P2:   returns Windswept Heath from graveyard to hand
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Omnath, Locus of Creation, Solitude, Quantum Riddler, Eternal Witness, Quantum Riddler
+T9 P2: Attack with Omnath, Locus of Creation, Solitude, Quantum Riddler, Eternal Witness, Quantum Riddler
+  [Declare Blockers] P1 does not block
+T9 P2:   Omnath, Locus of Creation (4/4) → 4 dmg to player
+T9 P2: Solitude lifelink — gain 3 (life: 15)
+T9 P2:   Solitude (3/2) → 3 dmg to player
+T9 P2:   Quantum Riddler (4/6) → 4 dmg to player
+T9 P2:   Eternal Witness (2/1) → 2 dmg to player
+T9 P2:   Quantum Riddler (4/6) → 4 dmg to player
+P1 loses: life total 0
+  [Combat Damage] 17 damage dealt → P1 life: 17 → 0
+
+>>> 4/5c Control wins Game 1 on turn 9 via damage
+    Final life: Affinity=0  4/5c Control=15
+
+======================================================================
+  GAME 2: Affinity (P1) vs 4/5c Control (P2)  —  seed 60208
+  Series: Affinity 0 - 1 4/5c Control
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Affinity wins → chooses to play first
+║ P1 (on play): Affinity
+║ P2 (on draw): 4/5c Control
+╚═══════════════════════════════════════════════════════
+
+P1 (Affinity) opening hand (1 lands, 6 spells):
+  • Urza's Saga [Land, CMC 0]
+  • Engineered Explosives [Spell, CMC 0]
+  • Mishra's Bauble [Spell, CMC 0]
+  • Pinnacle Emissary [Creature, CMC 3]
+  • Preordain [Spell, CMC 1]
+  • Engineered Explosives [Spell, CMC 0]
+  • Pinnacle Emissary [Creature, CMC 3]
+→ P1 MULLIGANS (too few lands (1 < 2))
+  New hand (3 lands, 4 spells): ['Fiery Islet', 'Engineered Explosives', 'Emry, Lurker of the Loch', 'Spirebluff Canal', 'Welding Jar', 'Fiery Islet', 'Mox Opal']
+→ P1 mulligans to 6, bottoms: ['Engineered Explosives']
+  Keeps: ['Fiery Islet', 'Emry, Lurker of the Loch', 'Spirebluff Canal', 'Welding Jar', 'Fiery Islet', 'Mox Opal']
+
+P2 (4/5c Control) opening hand (3 lands, 4 spells):
+  • Windswept Heath [Land, CMC 0]
+  • Stock Up [Spell, CMC 3]
+  • Temple Garden [Land, CMC 0]
+  • Quantum Riddler [Creature, CMC 5]
+  • Wrath of the Skies [Spell, CMC 2]
+  • Prismatic Ending [Spell, CMC 1]
+  • Sacred Foundry [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Prismatic Ending, Quantum Riddler, 3 cheap spells
+
+
+╔══ TURN 1 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  4/5c Control 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 54  |  Graveyard: 0
+║ Affinity board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Fiery Islet
+    → Goal: deploy_engine [enablers]
+T1 P1: Cast Welding Jar (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Welding Jar
+    → Goal: deploy_engine [engines]
+T1 P1: Cast Mox Opal (0)
+    [Priority] P2 passes (no response)
+T1: Resolve Mox Opal
+    → Goal: push_damage [engines]
+    [Mana] Tap Fiery Islet→U (paying for Emry, Lurker of the Loch, 0 mana remaining)
+T1 P1: Cast Emry, Lurker of the Loch (2U)
+    [Priority] P2 passes (no response)
+T1: Resolve Emry, Lurker of the Loch
+T1 P1: Emry mills 4: Kappa Cannoneer, Weapons Manufacturing, Island, Claws of Gix
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 20  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 2 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Affinity board:
+║   Creatures: Emry, Lurker of the Loch (1/2)
+║   Other: Welding Jar, Mox Opal
+║   Lands: Fiery Islet [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wrath of the Skies
+  [Main 1]
+T1 P2: Play Windswept Heath
+T1: Windswept Heath moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Windswept Heath (pay 1 life) -> Hallowed Fountain (untapped, life: 17)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  4/5c Control 17
+║ Hand: 2 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 50  |  Graveyard: 4
+║ Affinity board:
+║   Creatures: Emry, Lurker of the Loch (1/2)
+║   Other: Welding Jar, Mox Opal
+║   Lands: Fiery Islet
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Urza's Saga
+  [Main 1]
+T2 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+T2 P1: Play Urza's Saga
+T2: Fiery Islet moved battlefield -> graveyard (activation cost (Fiery Islet))
+T2 P1: activate Fiery Islet — Draw a card.
+T2 P1: Fiery Islet activated — draw 1 (Weapons Manufacturing)
+T2 P1: Emry, Lurker of the Loch {T} → cast Claws of Gix from GY
+T2 P1: Cast Claws of Gix (0)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T2: Resolve Claws of Gix
+
+╔══ TURN 2 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 17  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 3 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 51  |  Graveyard: 1
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain
+║ Affinity board:
+║   Creatures: Emry, Lurker of the Loch (1/2) [tapped]
+║   Other: Welding Jar, Mox Opal, Claws of Gix
+║   Lands: Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Teferi, Time Raveler
+  [Main 1]
+T2 P2: Play Temple Garden (tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  4/5c Control 17
+║ Hand: 3 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 48  |  Graveyard: 4
+║ Affinity board:
+║   Creatures: Emry, Lurker of the Loch (1/2)
+║   Other: Welding Jar, Mox Opal, Claws of Gix
+║   Lands: Urza's Saga
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Spirebluff Canal
+  [Main 1]
+T3 P1: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+T3 P1: Play Fiery Islet
+T3: Fiery Islet moved battlefield -> graveyard (activation cost (Fiery Islet))
+T3 P1: activate Fiery Islet — Draw a card.
+T3 P1: Fiery Islet activated — draw 1 (Tormod's Crypt)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Emry, Lurker of the Loch
+T3 P1: Attack with Emry, Lurker of the Loch
+  [Declare Blockers] P2 does not block
+T3 P1:   Emry, Lurker of the Loch (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P2 life: 17 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 16  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 1
+║ Library: 50  |  Graveyard: 1
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Temple Garden
+║ Affinity board:
+║   Creatures: Emry, Lurker of the Loch (1/2) [tapped]
+║   Other: Welding Jar, Mox Opal, Claws of Gix
+║   Lands: Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Stomping Ground
+  [Main 1]
+T3 P2: Play Sacred Foundry (untapped, life: 14)
+    → Goal: grind_value
+    [Mana] Tap Hallowed Fountain→U, Temple Garden→W, Sacred Foundry→R (paying for Teferi, Time Raveler, 0 mana remaining)
+T3 P2: Cast Teferi, Time Raveler (1WU)
+    [Priority] P1 passes (no response)
+T3: Resolve Teferi, Time Raveler
+T3 P2: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
+T3: Urza's Saga moved battlefield -> hand (bounced)
+T3 P2:   returns Urza's Saga to its owner's hand
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  4/5c Control 14
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 3
+║ Library: 46  |  Graveyard: 5
+║ Affinity board:
+║   Creatures: Emry, Lurker of the Loch (1/2)
+║   Other: Welding Jar, Mox Opal, Claws of Gix
+║   Lands: (none)
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain [T], Temple Garden [T], Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Tormod's Crypt
+  [Main 1]
+T4 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+T4 P1: Play Urza's Saga
+    → Goal: close_game
+T4 P1: Cast Tormod's Crypt (0)
+    [Priority] P2 passes (no response)
+T4: Resolve Tormod's Crypt
+    → Goal: close_game
+T4 P1: Cast Tormod's Crypt (0)
+    [Priority] P2 passes (no response)
+T4: Resolve Tormod's Crypt
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Emry, Lurker of the Loch
+T4 P1: Attack with Emry, Lurker of the Loch
+  [Declare Blockers] P2 does not block
+T4 P1:   Emry, Lurker of the Loch (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P2 life: 14 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 13  |  Affinity 20
+║ Hand: 7 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 1
+║ Library: 48  |  Graveyard: 1
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Temple Garden, Sacred Foundry
+║ Affinity board:
+║   Creatures: Emry, Lurker of the Loch (1/2) [tapped]
+║   Other: Welding Jar, Mox Opal, Claws of Gix, Tormod's Crypt, Tormod's Crypt
+║   Lands: Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Omnath, Locus of Creation
+  [Main 1]
+T4 P2: Play Stomping Ground (tapped)
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→W (paying for Prismatic Ending, 2 mana remaining)
+T4 P2: Cast Prismatic Ending (2W) (X=2)
+T4: Resolve Prismatic Ending
+T4: Welding Jar moved battlefield -> exile (exiled)
+T4 P2: Prismatic Ending exiles Welding Jar
+T4: Prismatic Ending moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 20  |  4/5c Control 13
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 5
+║ Affinity board:
+║   Creatures: Emry, Lurker of the Loch (1/2)
+║   Other: Mox Opal, Claws of Gix, Tormod's Crypt, Tormod's Crypt
+║   Lands: Urza's Saga
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain [T], Temple Garden [T], Sacred Foundry [T], Stomping Ground [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Pinnacle Emissary
+  [Main 1]
+T5 P1: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+T5 P1: Play Spirebluff Canal (untapped, 1 other lands)
+    → Goal: close_game
+    [Mana] Tap Urza's Saga→C (paying for Pinnacle Emissary, 1 mana remaining)
+T5 P1: Warp Pinnacle Emissary (pays 1)
+T5 P1: Cast Pinnacle Emissary (1UR)
+    [Priority] P2 passes (no response)
+T5: Resolve Pinnacle Emissary
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Emry, Lurker of the Loch
+T5 P1: Attack with Emry, Lurker of the Loch
+  [Declare Blockers] P2 does not block
+T5 P1:   Emry, Lurker of the Loch (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P2 life: 13 → 12
+  [End Combat]
+  [Main 2]
+  [End Step]
+T5: Pinnacle Emissary moved battlefield -> exile (Warp exile)
+T5: Pinnacle Emissary exiled (Warp)
+
+╔══ TURN 5 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 12  |  Affinity 20
+║ Hand: 6 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 2
+║ Library: 47  |  Graveyard: 2
+║ 4/5c Control board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Temple Garden, Sacred Foundry, Stomping Ground
+║ Affinity board:
+║   Creatures: Emry, Lurker of the Loch (1/2) [tapped]
+║   Other: Mox Opal, Claws of Gix, Tormod's Crypt, Tormod's Crypt
+║   Lands: Urza's Saga [T], Spirebluff Canal
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wrath of the Skies
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→U, Temple Garden→W, Sacred Foundry→R, Stomping Ground→G (paying for Omnath, Locus of Creation, 0 mana remaining)
+T5 P2: Cast Omnath, Locus of Creation (WURG)
+T5: Resolve Omnath, Locus of Creation
+T5 P2: Omnath, Locus of Creation ETB: draw 1 (Solitude)
+    → Goal: close_game
+T5 P2: Evoke Solitude (exile Wrath of the Skies)
+T5 P2: Cast Solitude (3WW)
+T5: Resolve Solitude
+T5: Emry, Lurker of the Loch moved battlefield -> exile (exiled)
+T5 P2: Solitude exiles Emry, Lurker of the Loch (opponent gains 1 life, now 21)
+T5: Solitude moved battlefield -> graveyard (evoke sacrifice)
+T5 P2: Solitude sacrificed (evoke)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 21  |  4/5c Control 12
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 44  |  Graveyard: 5
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Claws of Gix, Tormod's Crypt, Tormod's Crypt
+║   Lands: Urza's Saga, Spirebluff Canal
+║ 4/5c Control board:
+║   Creatures: Omnath, Locus of Creation (4/4)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain [T], Temple Garden [T], Sacred Foundry [T], Stomping Ground [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Mishra's Bauble
+  [Main 1]
+T6 P1: Urza's Saga tutors Pithing Needle
+T6 P1: Sacrifice Urza's Saga (final chapter)
+    → Goal: close_game
+T6 P1: Play Spirebluff Canal (untapped, 1 other lands)
+    → Goal: close_game [payoffs]
+    [Mana] Tap Spirebluff Canal→R, Spirebluff Canal→U (paying for Weapons Manufacturing, 0 mana remaining)
+T6 P1: Cast Weapons Manufacturing (1R)
+    [Priority] P2 passes (no response)
+T6: Resolve Weapons Manufacturing
+    → Goal: close_game
+T6 P1: Cast Mishra's Bauble (0)
+    [Priority] P2 passes (no response)
+T6: Resolve Mishra's Bauble
+T6 P1: Create 1x Munitions token(s)
+T6 P1: Weapons Manufacturing trigger → create 1 token(s) (Mishra's Bauble entered as nontoken=True artifact)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 12  |  Affinity 21
+║ Hand: 5 cards  |  Opp hand: 0 cards
+║ Lands: 4  |  Opp lands: 2
+║ Library: 45  |  Graveyard: 3
+║ 4/5c Control board:
+║   Creatures: Omnath, Locus of Creation (4/4)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Temple Garden, Sacred Foundry, Stomping Ground
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Claws of Gix, Tormod's Crypt, Tormod's Crypt, Pithing Needle, Weapons Manufacturing, Mishra's Bauble, Munitions Token
+║   Lands: Spirebluff Canal [T], Spirebluff Canal [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wrenn and Six
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Temple Garden→G, Sacred Foundry→R (paying for Wrenn and Six, 2 mana remaining)
+T6 P2: Cast Wrenn and Six (RG)
+T6: Resolve Wrenn and Six
+T6 P2: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+T6: Windswept Heath moved graveyard -> hand (returned to hand)
+T6 P2:   returns Windswept Heath from graveyard to hand
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Omnath, Locus of Creation
+T6 P2: Attack with Omnath, Locus of Creation
+  [Declare Blockers] P1 does not block
+T6 P2:   Omnath, Locus of Creation (4/4) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 21 → 17
+  [End Combat]
+  [Main 2]
+T6 P2: Play Windswept Heath
+T6: Windswept Heath moved battlefield -> graveyard (fetchland sacrifice)
+T6 P2: Crack Windswept Heath (pay 1 life) -> Breeding Pool (tapped, life: 11)
+T6 P2: Omnath, Locus of Creation 2nd landfall: add mana
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→U (paying for Quantum Riddler, 1 mana remaining)
+T6 P2: Cast Quantum Riddler (3UU)
+T6: Resolve Quantum Riddler
+T6 P2: Quantum Riddler ETB: draw 1 (Arena of Glory)
+  [End Step]
+
+╔══ TURN 7 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 17  |  4/5c Control 11
+║ Hand: 0 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 5
+║ Library: 42  |  Graveyard: 6
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Claws of Gix, Tormod's Crypt, Tormod's Crypt, Pithing Needle, Weapons Manufacturing, Mishra's Bauble, Munitions Token
+║   Lands: Spirebluff Canal, Spirebluff Canal
+║ 4/5c Control board:
+║   Creatures: Omnath, Locus of Creation (4/4) [tapped], Quantum Riddler (4/6)
+║   Other: Teferi, Time Raveler, Wrenn and Six
+║   Lands: Hallowed Fountain [T], Temple Garden [T], Sacred Foundry [T], Stomping Ground, Breeding Pool [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Mishra's Bauble
+  [Main 1]
+    → Goal: close_game
+T7 P1: Cast Mishra's Bauble (0)
+    [Priority] P2 passes (no response)
+T7: Resolve Mishra's Bauble
+T7 P1: Create 1x Munitions token(s)
+T7 P1: Weapons Manufacturing trigger → create 1 token(s) (Mishra's Bauble entered as nontoken=True artifact)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 11  |  Affinity 17
+║ Hand: 5 cards  |  Opp hand: 0 cards
+║ Lands: 5  |  Opp lands: 2
+║ Library: 42  |  Graveyard: 3
+║ 4/5c Control board:
+║   Creatures: Omnath, Locus of Creation (4/4), Quantum Riddler (4/6)
+║   Other: Teferi, Time Raveler, Wrenn and Six
+║   Lands: Hallowed Fountain, Temple Garden, Sacred Foundry, Stomping Ground, Breeding Pool
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Mox Opal, Claws of Gix, Tormod's Crypt, Tormod's Crypt, Pithing Needle, Weapons Manufacturing, Mishra's Bauble, Munitions Token, Mishra's Bauble, Munitions Token
+║   Lands: Spirebluff Canal, Spirebluff Canal
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wrenn and Six
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→U, Temple Garden→G, Sacred Foundry→R, Stomping Ground→G, Breeding Pool→U (paying for Quantum Riddler, 0 mana remaining)
+T7 P2: Cast Quantum Riddler (3UU)
+T7: Resolve Quantum Riddler
+T7 P2: Quantum Riddler ETB: draw 1 (Windswept Heath)
+T7 P2: Play Windswept Heath
+T7: Windswept Heath moved battlefield -> graveyard (fetchland sacrifice)
+T7 P2: Crack Windswept Heath -> Plains (untapped)
+T7 P2: Omnath, Locus of Creation 2nd landfall: add mana
+    → Goal: close_game
+T7 P2: Cast Stock Up (2U)
+T7: Resolve Stock Up
+T7: Stock Up moved stack -> graveyard (resolution)
+    → Goal: close_game
+    [Mana] Tap Plains→W (paying for Wrath of the Skies, 0 mana remaining)
+T7 P2: Cast Wrath of the Skies (WW)
+T7: Resolve Wrath of the Skies
+T7: Mox Opal moved battlefield -> graveyard (destroyed)
+T7: Claws of Gix moved battlefield -> graveyard (destroyed)
+T7: Tormod's Crypt moved battlefield -> graveyard (destroyed)
+T7: Tormod's Crypt moved battlefield -> graveyard (destroyed)
+T7: Mishra's Bauble moved battlefield -> graveyard (destroyed)
+T7: Munitions Token moved battlefield -> graveyard (destroyed)
+T7: Mishra's Bauble moved battlefield -> graveyard (destroyed)
+T7: Munitions Token moved battlefield -> graveyard (destroyed)
+T7 P2: Wrath of the Skies (X=0) sweeps the board, destroying 8 permanents
+T7: Wrath of the Skies moved stack -> graveyard (resolution)
+T7 P2: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+T7: Windswept Heath moved graveyard -> hand (returned to hand)
+T7 P2:   returns Windswept Heath from graveyard to hand
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Omnath, Locus of Creation, Quantum Riddler
+T7 P2: Attack with Omnath, Locus of Creation, Quantum Riddler
+  [Declare Blockers] P1 does not block
+T7 P2:   Omnath, Locus of Creation (4/4) → 4 dmg to player
+T7 P2:   Quantum Riddler (4/6) → 4 dmg to player
+  [Combat Damage] 8 damage dealt → P1 life: 17 → 9
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Affinity (P1) ══════════════════════════
+║ Life: Affinity 9  |  4/5c Control 10
+║ Hand: 0 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 6
+║ Library: 41  |  Graveyard: 12
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Pithing Needle, Weapons Manufacturing
+║   Lands: Spirebluff Canal, Spirebluff Canal
+║ 4/5c Control board:
+║   Creatures: Omnath, Locus of Creation (4/4) [tapped], Quantum Riddler (4/6) [tapped], Quantum Riddler (4/6)
+║   Other: Teferi, Time Raveler, Wrenn and Six
+║   Lands: Hallowed Fountain [T], Temple Garden [T], Sacred Foundry [T], Stomping Ground [T], Breeding Pool [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Mox Opal
+  [Main 1]
+    → Goal: close_game
+    → Goal: close_game
+T8 P1: Cast Mox Opal (0)
+    [Priority] P2 passes (no response)
+T8: Resolve Mox Opal
+T8 P1: Create 1x Munitions token(s)
+T8 P1: Weapons Manufacturing trigger → create 1 token(s) (Mox Opal entered as nontoken=True artifact)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+    → Goal: close_game
+  [End Step]
+
+╔══ TURN 8 — 4/5c Control (P2) ══════════════════════════
+║ Life: 4/5c Control 10  |  Affinity 9
+║ Hand: 6 cards  |  Opp hand: 0 cards
+║ Lands: 6  |  Opp lands: 2
+║ Library: 37  |  Graveyard: 5
+║ 4/5c Control board:
+║   Creatures: Omnath, Locus of Creation (4/4), Quantum Riddler (4/6), Quantum Riddler (4/6)
+║   Other: Teferi, Time Raveler, Wrenn and Six
+║   Lands: Hallowed Fountain, Temple Garden, Sacred Foundry, Stomping Ground, Breeding Pool, Plains
+║ Affinity board:
+║   Creatures: (empty)
+║   Other: Pithing Needle, Weapons Manufacturing, Mox Opal, Munitions Token
+║   Lands: Spirebluff Canal, Spirebluff Canal
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Solitude
+  [Main 1]
+T8 P2: Play Windswept Heath
+T8: Windswept Heath moved battlefield -> graveyard (fetchland sacrifice)
+T8 P2: Crack Windswept Heath -> Lush Portico (tapped)
+T8 P2: surveil 1 → Flooded Strand to GY
+T8 P2: Omnath, Locus of Creation 2nd landfall: add mana
+    → Goal: close_game
+    [Mana] Tap Plains→W (paying for Solitude, 5 mana remaining)
+T8 P2: Cast Solitude (3WW)
+T8: Resolve Solitude
+T8 P2: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+T8: Windswept Heath moved graveyard -> hand (returned to hand)
+T8 P2:   returns Windswept Heath from graveyard to hand
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Omnath, Locus of Creation, Quantum Riddler, Quantum Riddler
+T8 P2: Attack with Omnath, Locus of Creation, Quantum Riddler, Quantum Riddler
+  [Declare Blockers] P1 does not block
+T8 P2:   Omnath, Locus of Creation (4/4) → 4 dmg to player
+T8 P2:   Quantum Riddler (4/6) → 4 dmg to player
+T8 P2:   Quantum Riddler (4/6) → 4 dmg to player
+P1 loses: life total -3
+  [Combat Damage] 12 damage dealt → P1 life: 9 → -3
+
+>>> 4/5c Control wins Game 2 on turn 8 via damage
+    Final life: Affinity=-3  4/5c Control=9
+
+======================================================================
+  MATCH RESULT: 4/5c Control wins 2-0
+======================================================================

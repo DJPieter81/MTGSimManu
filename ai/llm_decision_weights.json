@@ -1,0 +1,510 @@
+{
+  "model": "anthropic:claude-sonnet-5",
+  "prompt_version": 2,
+  "rows": [
+    {
+      "archetype": "aggro",
+      "confidence": 0.9,
+      "context": "combo_force_payoff_storm_threshold",
+      "rationale": "Aggro decks lack a storm/force-payoff combo gameplan, so this context is not applicable.",
+      "weight": 0.0
+    },
+    {
+      "archetype": "aggro",
+      "confidence": 0.9,
+      "context": "tron_mana_advantage",
+      "rationale": "Aggro decks do not run Tron lands, so the Tron mana-advantage primitive is mechanically inapplicable.",
+      "weight": 0.0
+    },
+    {
+      "archetype": "aggro",
+      "confidence": 0.9,
+      "context": "amulet_titan_mana_bonus",
+      "rationale": "Aggro decks don't run the Amulet of Vigor + bounce land + Titan engine, so this mana-advantage primitive is not applicable.",
+      "weight": 0.0
+    },
+    {
+      "archetype": "aggro",
+      "confidence": 0.85,
+      "context": "cycling_cascade_boost",
+      "rationale": "Aggro decks lack the cascade/Living-End shell structure this context targets, so the boost does not apply.",
+      "weight": 0.0
+    },
+    {
+      "archetype": "aggro",
+      "confidence": 0.85,
+      "context": "cycling_gy_urgency",
+      "rationale": "Cycling GY urgency is a cascade/combo-specific reanimation-timing primitive; aggro's clock doesn't hinge on graveyard state, so this context is N/A.",
+      "weight": 0.0
+    },
+    {
+      "archetype": "aggro",
+      "confidence": 0.85,
+      "context": "cycling_gameplan_boost",
+      "rationale": "Living-End-shell gameplan boost is cascade/combo-specific and has no mechanical relevance to a pure aggro clock, so it stays at 0.0.",
+      "weight": 0.0
+    },
+    {
+      "archetype": "aggro",
+      "confidence": 0.6,
+      "context": "cycling_free_cost_bonus",
+      "rationale": "Free cycling (life-cost) preserves aggro's mana for pressure and enables an extra action per turn, slightly above the neutral default within the 1.5..2.5 band.",
+      "weight": 2.0
+    },
+    {
+      "archetype": "aggro",
+      "confidence": 0.6,
+      "context": "cascade_free_spell_value",
+      "rationale": "Aggro rarely runs cascade, so the free-spell clock contribution stays at the neutral baseline shared across archetypes.",
+      "weight": 2.5
+    },
+    {
+      "archetype": "combo",
+      "confidence": 0.6,
+      "context": "combo_force_payoff_storm_threshold",
+      "rationale": "Storm-count threshold for combo's force-payoff decision sits at the default 5.0, matching typical storm counts needed to justify going off.",
+      "weight": 5.0
+    },
+    {
+      "archetype": "combo",
+      "confidence": 0.9,
+      "context": "tron_mana_advantage",
+      "rationale": "Tron mana advantage is specific to Tron ramp decks; combo archetype has no mechanical tie to the Tron land package, so it is N/A.",
+      "weight": 0.0
+    },
+    {
+      "archetype": "combo",
+      "confidence": 0.7,
+      "context": "amulet_titan_mana_bonus",
+      "rationale": "Amulet+Titan bounce-land untap sequence generates roughly +4 mana, directly enabling combo-turn acceleration, matching the calibrated default.",
+      "weight": 4.0
+    },
+    {
+      "archetype": "combo",
+      "confidence": 0.7,
+      "context": "cycling_cascade_boost",
+      "rationale": "Cascade-triggered free-spell chains in a Living-End-style combo shell are core to the gameplan, so the default cascade-specific boost of 8.0 applies without further inflation.",
+      "weight": 8.0
+    },
+    {
+      "archetype": "combo",
+      "confidence": 0.6,
+      "context": "cycling_gy_urgency",
+      "rationale": "Combo (Living End-style) decks need low-GY urgency to enable early cascade/cycling reanimation, matching the default cascade/combo band.",
+      "weight": 6.0
+    },
+    {
+      "archetype": "combo",
+      "confidence": 0.7,
+      "context": "cycling_gameplan_boost",
+      "rationale": "Living-End-shell combo relies heavily on cycling-into-cascade reanimation as its core gameplan, warranting the upper-default boost.",
+      "weight": 10.0
+    },
+    {
+      "archetype": "combo",
+      "confidence": 0.55,
+      "context": "cycling_free_cost_bonus",
+      "rationale": "Free cycling (pay-life) grants combo an extra selection/enabler action per turn cycle, slightly above neutral default within the 1.5-2.5 band.",
+      "weight": 2.0
+    },
+    {
+      "archetype": "combo",
+      "confidence": 0.7,
+      "context": "cascade_free_spell_value",
+      "rationale": "Cascade's free-spell clock contribution is archetype-neutral (2.0-3.0); combo-specific cascade upside is already credited via cycling_cascade_boost/gameplan_boost, so no additional inflation here.",
+      "weight": 2.5
+    },
+    {
+      "archetype": "control",
+      "confidence": 0.9,
+      "context": "combo_force_payoff_storm_threshold",
+      "rationale": "Control decks lack a storm-count gameplan, so the force-payoff storm threshold is not applicable.",
+      "weight": 0.0
+    },
+    {
+      "archetype": "control",
+      "confidence": 0.9,
+      "context": "tron_mana_advantage",
+      "rationale": "Tron mana advantage is specific to the Tron ramp shell and has no mechanical relevance to a control archetype's decision-making.",
+      "weight": 0.0
+    },
+    {
+      "archetype": "control",
+      "confidence": 0.9,
+      "context": "amulet_titan_mana_bonus",
+      "rationale": "Control decks don't run the Amulet of Vigor + Bounce Land + Primeval Titan engine, so this untap-mana synergy is mechanically absent.",
+      "weight": 0.0
+    },
+    {
+      "archetype": "control",
+      "confidence": 0.9,
+      "context": "cycling_cascade_boost",
+      "rationale": "Cascade-specific cycling synergy has no mechanical relevance to a control archetype's gameplan, so this scaler is N/A.",
+      "weight": 0.0
+    },
+    {
+      "archetype": "control",
+      "confidence": 0.85,
+      "context": "cycling_gy_urgency",
+      "rationale": "Cycling-GY urgency is a cascade/combo-specific reanimation incentive; control decks lack the graveyard-payoff shell so this context is N/A.",
+      "weight": 0.0
+    },
+    {
+      "archetype": "control",
+      "confidence": 0.9,
+      "context": "cycling_gameplan_boost",
+      "rationale": "Living-End-shell gameplan boost is cascade/combo-specific; control lacks the cycling-into-cascade reanimation engine, so this context is N/A.",
+      "weight": 0.0
+    },
+    {
+      "archetype": "control",
+      "confidence": 0.6,
+      "context": "cycling_free_cost_bonus",
+      "rationale": "Free cycling (life-for-mana) gives control a tempo-neutral card-filtering action, consistent with the default range across archetypes.",
+      "weight": 2.0
+    },
+    {
+      "archetype": "control",
+      "confidence": 0.55,
+      "context": "cascade_free_spell_value",
+      "rationale": "Control rarely runs cascade but the free-spell clock contribution is archetype-agnostic, so stay within the mandated 2.0-3.0 band near the low end.",
+      "weight": 2.3
+    },
+    {
+      "archetype": "midrange",
+      "confidence": 0.85,
+      "context": "combo_force_payoff_storm_threshold",
+      "rationale": "Midrange lacks a storm-count gameplan, so the force-payoff storm threshold primitive doesn't apply.",
+      "weight": 0.0
+    },
+    {
+      "archetype": "midrange",
+      "confidence": 0.9,
+      "context": "tron_mana_advantage",
+      "rationale": "Tron mana advantage is specific to the Tron ramp package; midrange decks lack the land-assembly mechanic so this context is not applicable.",
+      "weight": 0.0
+    },
+    {
+      "archetype": "midrange",
+      "confidence": 0.85,
+      "context": "amulet_titan_mana_bonus",
+      "rationale": "Midrange decks lack the Amulet of Vigor + bounce-land engine, so this Amulet Titan-specific mana bonus does not apply.",
+      "weight": 0.0
+    },
+    {
+      "archetype": "midrange",
+      "confidence": 0.85,
+      "context": "cycling_cascade_boost",
+      "rationale": "Midrange lacks the cascade/Living-End shell that this boost targets, so it stays at 0.0 per the cascade-specific gating rule.",
+      "weight": 0.0
+    },
+    {
+      "archetype": "midrange",
+      "confidence": 0.85,
+      "context": "cycling_gy_urgency",
+      "rationale": "Cycling_gy_urgency is a cascade-specific low-GY-urgency primitive tied to Living-End-style shells; midrange has no such mechanical structure, so it stays at 0.",
+      "weight": 0.0
+    },
+    {
+      "archetype": "midrange",
+      "confidence": 0.8,
+      "context": "cycling_gameplan_boost",
+      "rationale": "Living-End-shell-specific boost is not applicable to midrange, which lacks the cascade/cycling reanimation shell to exploit this gameplan.",
+      "weight": 0.0
+    },
+    {
+      "archetype": "midrange",
+      "confidence": 0.55,
+      "context": "cycling_free_cost_bonus",
+      "rationale": "Free (life-paid) cycling gives midrange a tempo-neutral extra action/filtering without mana cost, valued near the default with a slight edge for card selection toward its plan.",
+      "weight": 2.0
+    },
+    {
+      "archetype": "midrange",
+      "confidence": 0.6,
+      "context": "cascade_free_spell_value",
+      "rationale": "Midrange cascade hits are a generic free-spell clock contribution, kept at the archetype-neutral default since cascade-specific incentives live in the dedicated cascade boost contexts.",
+      "weight": 2.5
+    },
+    {
+      "archetype": "ramp",
+      "confidence": 0.85,
+      "context": "combo_force_payoff_storm_threshold",
+      "rationale": "Ramp decks lack storm-count payoffs, so the storm-threshold force-payoff context doesn't apply.",
+      "weight": 0.0
+    },
+    {
+      "archetype": "ramp",
+      "confidence": 0.8,
+      "context": "tron_mana_advantage",
+      "rationale": "Tron assembled grants a flat +4 mana advantage, matching the default slope for ramp archetypes.",
+      "weight": 4.0
+    },
+    {
+      "archetype": "ramp",
+      "confidence": 0.7,
+      "context": "amulet_titan_mana_bonus",
+      "rationale": "Amulet+bounce-land untap effectively doubles land drops for +4 mana, matching ramp's default bonus for this combo-adjacent mana engine.",
+      "weight": 4.0
+    },
+    {
+      "archetype": "ramp",
+      "confidence": 0.85,
+      "context": "cycling_cascade_boost",
+      "rationale": "Ramp decks lack the cascade/impulse-cast shell this booster targets, so the cascade-specific synergy contributes nothing.",
+      "weight": 0.0
+    },
+    {
+      "archetype": "ramp",
+      "confidence": 0.85,
+      "context": "cycling_gy_urgency",
+      "rationale": "Ramp has no cascade/Living-End graveyard cycling shell, so this cascade-specific urgency scaler doesn't apply.",
+      "weight": 0.0
+    },
+    {
+      "archetype": "ramp",
+      "confidence": 0.85,
+      "context": "cycling_gameplan_boost",
+      "rationale": "Living-End-shell-specific boost applies to cascade/combo cycling gameplans, not ramp, which lacks the cascade-into-cycling engine this context represents.",
+      "weight": 0.0
+    },
+    {
+      "archetype": "ramp",
+      "confidence": 0.4,
+      "context": "cycling_free_cost_bonus",
+      "rationale": "Free cycling (pay life not mana) provides a modest tempo/card-selection edge for ramp, staying within the default 1.5-2.5 band since ramp's core gameplan is mana acceleration, not cycling synergy.",
+      "weight": 2.0
+    },
+    {
+      "archetype": "ramp",
+      "confidence": 0.5,
+      "context": "cascade_free_spell_value",
+      "rationale": "Ramp has no cascade-specific synergy beyond the generic free-spell clock contribution, so it stays at the archetype-neutral default within the 2.0-3.0 band.",
+      "weight": 2.5
+    },
+    {
+      "archetype": "tempo",
+      "confidence": 0.85,
+      "context": "combo_force_payoff_storm_threshold",
+      "rationale": "Tempo decks lack a storm/force-payoff engine, so this combo-specific threshold is not applicable.",
+      "weight": 0.0
+    },
+    {
+      "archetype": "tempo",
+      "confidence": 0.9,
+      "context": "tron_mana_advantage",
+      "rationale": "Tempo decks don't run Tron lands, so the +4 mana Tron primitive is mechanically absent and this context does not apply.",
+      "weight": 0.0
+    },
+    {
+      "archetype": "tempo",
+      "confidence": 0.85,
+      "context": "amulet_titan_mana_bonus",
+      "rationale": "Tempo decks lack the Amulet of Vigor + bounce-land/Titan engine, so this mana-bonus primitive doesn't apply.",
+      "weight": 0.0
+    },
+    {
+      "archetype": "tempo",
+      "confidence": 0.8,
+      "context": "cycling_cascade_boost",
+      "rationale": "Cycling_cascade_boost is cascade/combo-specific for Living-End-style shells; tempo lacks the cascade-into-free-spell engine, so this context is N/A.",
+      "weight": 0.0
+    },
+    {
+      "archetype": "tempo",
+      "confidence": 0.8,
+      "context": "cycling_gy_urgency",
+      "rationale": "Tempo lacks the cascade/Living-End GY-reanimation shell that generates low-GY urgency, so this context is not applicable.",
+      "weight": 0.0
+    },
+    {
+      "archetype": "tempo",
+      "confidence": 0.75,
+      "context": "cycling_gameplan_boost",
+      "rationale": "Cycling_gameplan_boost is the Living-End-shell-specific cascade/combo primitive and tempo lacks the cascade reanimation payoff structure to justify a nonzero value.",
+      "weight": 0.0
+    },
+    {
+      "archetype": "tempo",
+      "confidence": 0.5,
+      "context": "cycling_free_cost_bonus",
+      "rationale": "Free cycling (pay-life) fuels tempo's extra-action clock, near the default 2.0 but slightly favoring tempo's need for cheap sequencing.",
+      "weight": 2.0
+    },
+    {
+      "archetype": "tempo",
+      "confidence": 0.6,
+      "context": "cascade_free_spell_value",
+      "rationale": "Cascade's free-spell clock contribution is archetype-agnostic and stays at the default midpoint for tempo, which lacks dedicated cascade payoffs.",
+      "weight": 2.5
+    },
+    {
+      "archetype": "*",
+      "confidence": 0.6,
+      "context": "combo_force_payoff_storm_threshold",
+      "rationale": "Default storm threshold for force-payoff applies broadly since archetype is wildcarded; combo/storm decks hit this threshold meaningfully while others gate it to 0.",
+      "weight": 5.0
+    },
+    {
+      "archetype": "*",
+      "confidence": 0.4,
+      "context": "tron_mana_advantage",
+      "rationale": "Wildcard archetype input, so defaulting to the calibrated Tron value of +4 mana; should be 0.0 for non-ramp archetypes since Tron pieces are irrelevant outside that shell.",
+      "weight": 4.0
+    },
+    {
+      "archetype": "*",
+      "confidence": 0.6,
+      "context": "amulet_titan_mana_bonus",
+      "rationale": "Wildcard archetype has no Amulet+Titan bounce-land untap engine, so the mana bonus is inapplicable outside ramp/combo Amulet shells.",
+      "weight": 0.0
+    },
+    {
+      "archetype": "*",
+      "confidence": 0.4,
+      "context": "cycling_cascade_boost",
+      "rationale": "Wildcard archetype input defaults to the calibrated cascade-specific baseline since no single archetype's mechanical structure was specified.",
+      "weight": 8.0
+    },
+    {
+      "archetype": "*",
+      "confidence": 0.4,
+      "context": "cycling_gy_urgency",
+      "rationale": "Wildcard archetype defaults to the calibrated cascade/combo cycling_gy_urgency value since no specific archetype was given to justify deviation.",
+      "weight": 6.0
+    },
+    {
+      "archetype": "*",
+      "confidence": 0.3,
+      "context": "cycling_gameplan_boost",
+      "rationale": "Wildcard archetype defaults to the Living-End-shell midpoint since this context is only meaningful for combo/cascade decks; non-applicable archetypes should gate this to 0.0 at the call site.",
+      "weight": 10.0
+    },
+    {
+      "archetype": "*",
+      "confidence": 0.6,
+      "context": "cycling_free_cost_bonus",
+      "rationale": "Free cycling (pay life not mana) grants a universal tempo edge of roughly one extra action regardless of archetype, so the default 2.0 applies broadly.",
+      "weight": 2.0
+    },
+    {
+      "archetype": "*",
+      "confidence": 0.7,
+      "context": "cascade_free_spell_value",
+      "rationale": "Cascade's free-spell clock contribution is archetype-neutral at default since cascade-specific gains are already captured by the dedicated cycling_cascade/gameplan boosts.",
+      "weight": 2.5
+    },
+    {
+      "archetype": "storm",
+      "confidence": 0.7,
+      "context": "combo_force_payoff_storm_threshold",
+      "rationale": "Storm's win condition is directly gated by storm count, so the default threshold of 5.0 accurately reflects the force-payoff trigger point without inflation.",
+      "weight": 5.0
+    },
+    {
+      "archetype": "storm",
+      "confidence": 0.9,
+      "context": "tron_mana_advantage",
+      "rationale": "Storm does not run Tron lands, so this Tron-specific mana bonus does not apply.",
+      "weight": 0.0
+    },
+    {
+      "archetype": "storm",
+      "confidence": 0.9,
+      "context": "amulet_titan_mana_bonus",
+      "rationale": "Storm decks don't run the Amulet of Vigor + bounce-land Titan untap engine, so this mana-bonus primitive doesn't apply.",
+      "weight": 0.0
+    },
+    {
+      "archetype": "storm",
+      "confidence": 0.6,
+      "context": "cycling_cascade_boost",
+      "rationale": "Storm decks lack cycling/cascade mechanics as a gameplan, so this cascade-specific boost does not apply.",
+      "weight": 0.0
+    },
+    {
+      "archetype": "storm",
+      "confidence": 0.85,
+      "context": "cycling_gy_urgency",
+      "rationale": "Storm's clock runs on ritual/mana-generation into a single win-turn combo, not graveyard-cycling urgency, so this cascade-specific primitive doesn't apply.",
+      "weight": 0.0
+    },
+    {
+      "archetype": "storm",
+      "confidence": 0.6,
+      "context": "cycling_gameplan_boost",
+      "rationale": "Living-End-shell-specific cycling gameplan boost has no mechanical relevance to a pure storm archetype, which wins via spell-count copy chains rather than cycling/reanimation.",
+      "weight": 0.0
+    },
+    {
+      "archetype": "storm",
+      "confidence": 0.5,
+      "context": "cycling_free_cost_bonus",
+      "rationale": "Free cycling still adds a cheap storm-count trigger for storm decks, so keep near default within the 1.5-2.5 band.",
+      "weight": 2.0
+    },
+    {
+      "archetype": "storm",
+      "confidence": 0.55,
+      "context": "cascade_free_spell_value",
+      "rationale": "Free-spell clock contribution from cascade is archetype-agnostic and stays at the default since storm's real payoff is captured separately in the storm-count threshold context.",
+      "weight": 2.5
+    },
+    {
+      "archetype": "cascade",
+      "confidence": 0.6,
+      "context": "combo_force_payoff_storm_threshold",
+      "rationale": "Cascade's Living End-style shell can generate storm-like counts via free spells, keeping the threshold at the default 5.0 for combo/cascade archetypes.",
+      "weight": 5.0
+    },
+    {
+      "archetype": "cascade",
+      "confidence": 0.9,
+      "context": "tron_mana_advantage",
+      "rationale": "Tron mana-advantage is specific to the Tron land package which cascade decks do not run, so this context is not applicable.",
+      "weight": 0.0
+    },
+    {
+      "archetype": "cascade",
+      "confidence": 0.85,
+      "context": "amulet_titan_mana_bonus",
+      "rationale": "Cascade archetype lacks the Amulet of Vigor + Bounce Land/Titan untap engine, so this mana-bonus primitive is not applicable.",
+      "weight": 0.0
+    },
+    {
+      "archetype": "cascade",
+      "confidence": 0.8,
+      "context": "cycling_cascade_boost",
+      "rationale": "Cascade archetype's core free-spell chain (e.g., Living End loop) matches the default cascade-specific boost, no divergence in mechanical structure warrants deviation.",
+      "weight": 8.0
+    },
+    {
+      "archetype": "cascade",
+      "confidence": 0.7,
+      "context": "cycling_gy_urgency",
+      "rationale": "Cascade/Living-End shells value low-GY urgency for cycling into graveyard to fuel Living End reanimation, kept at default midpoint for this archetype-specific context.",
+      "weight": 6.0
+    },
+    {
+      "archetype": "cascade",
+      "confidence": 0.75,
+      "context": "cycling_gameplan_boost",
+      "rationale": "Living-End-shell cascade decks derive their core gameplan from cycling into GY then mass-reanimating via cascade trigger, warranting the upper-default boost.",
+      "weight": 10.0
+    },
+    {
+      "archetype": "cascade",
+      "confidence": 0.6,
+      "context": "cycling_free_cost_bonus",
+      "rationale": "Free (life-paid) cycling gives a tempo-neutral second action; cascade's extra payoff is already captured in the cascade-specific boosts, so this stays within the 1.5-2.5 default band.",
+      "weight": 2.0
+    },
+    {
+      "archetype": "cascade",
+      "confidence": 0.7,
+      "context": "cascade_free_spell_value",
+      "rationale": "Cascade's free-spell clock contribution stays at the default 2.5 since the archetype-specific cascade edge is already captured by cycling_cascade_boost and cycling_gameplan_boost, avoiding double-counting.",
+      "weight": 2.5
+    }
+  ]
+}

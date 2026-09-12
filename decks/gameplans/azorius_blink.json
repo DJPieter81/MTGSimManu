@@ -44,8 +44,8 @@
     "Ocelot Pride",
     "Phelia, Exuberant Shepherd"
   ],
-  "mulligan_min_lands": 1,
-  "mulligan_max_lands": 3,
+  "mulligan_min_lands": 2,
+  "mulligan_max_lands": 4,
   "reactive_only": [
     "Consign to Memory"
   ],

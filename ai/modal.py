@@ -71,7 +71,36 @@ def _mode_value(game, controller: int, mode_text: str) -> float:
     return 0.0
 
 
-def select_modal_modes(game, card, controller: int, targets=None) -> list:
+def _targeted_removal_mode_value(game, controller: int, removal: dict,
+                                 targets, x_value: int) -> float:
+    """Net value of a typed "destroy/exile target <type> [with mana value
+    N/X or less]" mode: the worth of the chosen target when the mode's
+    bound reaches it (an X bound reads the X actually paid), else the best
+    reachable opposing permanent, else zero — a mode whose bound reaches
+    nothing is worth nothing, however big the creature on the other side."""
+    if not removal:
+        return 0.0
+    opp = game.players[1 - controller]
+    mv = removal.get('mv')
+    ceiling = (x_value if mv == 'x' else mv)
+
+    def _reaches(perm) -> bool:
+        return ceiling is None or (perm.template.cmc or 0) <= ceiling
+
+    def _worth(perm) -> float:
+        return 1.0 + float(perm.template.cmc or 0)
+
+    chosen = [game.get_card_by_id(t) for t in (targets or [])]
+    chosen = [c for c in chosen if c is not None and c in opp.battlefield]
+    if chosen:
+        return sum(_worth(c) for c in chosen if _reaches(c))
+    reachable = [p for p in opp.battlefield
+                 if not p.template.is_land and _reaches(p)]
+    return max((_worth(p) for p in reachable), default=0.0)
+
+
+def select_modal_modes(game, card, controller: int, targets=None,
+                       x_value: int = 0) -> list:
     """Return the indices of the mode(s) to resolve — the highest-value
     ``modal_choose_count`` modes, ties broken toward the earlier mode."""
     modes = card.template.modes or []
@@ -79,9 +108,13 @@ def select_modal_modes(game, card, controller: int, targets=None) -> list:
         return []
     k = max(1, min(int(getattr(card.template, 'modal_choose_count', 1) or 1),
                    len(modes)))
-    scored = sorted(
-        range(len(modes)),
-        key=lambda i: (_mode_value(game, controller, modes[i].get('text', '')), -i),
-        reverse=True,
-    )
+
+    def _value(i: int) -> float:
+        mode = modes[i]
+        if mode.get('removal'):
+            return _targeted_removal_mode_value(
+                game, controller, mode['removal'], targets, x_value)
+        return _mode_value(game, controller, mode.get('text', ''))
+
+    scored = sorted(range(len(modes)), key=lambda i: (_value(i), -i), reverse=True)
     return sorted(scored[:k])

@@ -188,6 +188,60 @@ def resolve_damage_to_chosen_target(
 
 
 # ---------------------------------------------------------------------------
+def _resolve_loot(game: "GameState", card: "CardInstance", controller: int,
+                  loot: dict) -> None:
+    """Draw, then discard (CR 701.8) for the controller — or for every
+    player, controller first, when the shape says "each player". A chosen
+    discard is the player's own choice through `callbacks.choose_discard`;
+    "at random" draws from the game's RNG. Every discard goes through the
+    discard funnel, so the per-turn discard counter advances and a madness
+    card is offered its madness cast."""
+    from .discard_manager import DiscardManager
+    players = ([controller, 1 - controller] if loot.get('each_player')
+               else [controller])
+    for p_idx in players:
+        drawn = game.draw_cards(p_idx, int(loot.get('draw', 0)))
+        if drawn:
+            game.log.append(
+                f"T{game.display_turn} P{p_idx+1}: {card.name} → draw "
+                f"{len(drawn)} ({', '.join(c.name for c in drawn)})")
+    for p_idx in players:
+        player = game.players[p_idx]
+        for _ in range(int(loot.get('discard', 0))):
+            hand = list(player.hand)
+            if not hand:
+                break
+            if loot.get('random'):
+                chosen = game.rng.choice(hand)
+            else:
+                chosen = game.callbacks.choose_discard(
+                    game, p_idx, hand, self_discard=True)
+                if chosen is None or chosen not in hand:
+                    chosen = hand[0]
+            game.log.append(
+                f"T{game.display_turn} P{p_idx+1}: {card.name} → discard "
+                f"{chosen.name}{' (at random)' if loot.get('random') else ''}")
+            DiscardManager.discard_card(game, p_idx, chosen, cause="discard (loot)")
+
+
+def pump_target(game: "GameState", controller: int, targets) -> Optional["CardInstance"]:
+    """The creature a targeted pump resolves on: the chosen target when it
+    is a creature on the battlefield (CR 608.2b — the target, not the
+    controller's biggest creature), else the controller's best creature
+    for the untargeted callers that still exist.  One owner for every pump
+    shape — the generic resolver and the bespoke handlers alike."""
+    for tid in (targets or []):
+        if isinstance(tid, int) and tid > 0:
+            c = game.get_card_by_id(tid)
+            if (c is not None and c.zone == 'battlefield'
+                    and c.template.is_creature):
+                return c
+    mine = game.players[controller].creatures
+    if mine:
+        return max(mine, key=lambda c: c.power or 0)
+    return None
+
+
 # Team pump until end of turn (Overrun shape) — typed-field-gated resolution.
 # ONE application for every carrier — a permanent's own ETB trigger
 # (Craterhoof Behemoth class), an instant/sorcery (Overrun class) and the
@@ -1072,7 +1126,8 @@ def _resolve_library_dig(game: "GameState", card: "CardInstance",
 def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
                                controller: int, targets: list = None,
                                *, x_value: int = 0,
-                               oracle_override: str = None) -> bool:
+                               oracle_override: str = None,
+                               removal_data: dict = None) -> bool:
     """Resolve instant/sorcery effects by parsing oracle text.
 
     Called when a spell resolves AND no EFFECT_REGISTRY handler took it.
@@ -1129,17 +1184,7 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
     _pt = getattr(card.template, 'pump_spell_toughness', 0)
     if oracle_override is None and (_pp or _pt):
         from engine.cards import Keyword as _KW
-        me = game.players[controller]
-        tgt = None
-        for tid in (targets or []):
-            if isinstance(tid, int) and tid > 0:
-                c = game.get_card_by_id(tid)
-                if (c is not None and c.zone == 'battlefield'
-                        and c.template.is_creature):
-                    tgt = c
-                    break
-        if tgt is None and me.creatures:
-            tgt = max(me.creatures, key=lambda c: c.power or 0)
+        tgt = pump_target(game, controller, targets)
         if tgt is not None:
             tgt.temp_power_mod += _pp
             tgt.temp_toughness_mod += _pt
@@ -1287,8 +1332,16 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
     #    handlers did by hand; owner_scope is the opponent (the sim's removal
     #    convention). A large correctness fix too — before this, the ~90
     #    unregistered removal spells of this shape resolved to nothing.
-    _rm = getattr(card.template, 'targeted_removal_data', None)
-    if oracle_override is None and _rm:
+    # A modal caller resolving ONE mode passes that mode's own typed
+    # classification (`removal_data`, parsed once at DB load); the plain
+    # spell shape reads the template's.  Either way the bound is typed —
+    # no clause is re-read here.
+    if removal_data is not None:
+        _rm = removal_data
+    else:
+        _rm = (getattr(card.template, 'targeted_removal_data', None)
+               if oracle_override is None else None)
+    if _rm:
         from engine.card_effects import _resolve_nonland_permanent_removal
         _mv = _rm.get('mv')
         if _mv is None:
@@ -1596,6 +1649,18 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
         effects.append((surveil_spell_pos, 'surveil', surveil_spell_n))
     if draw_n > 0:
         effects.append((draw_pos, 'draw', draw_n))
+    # ── Loot: "[each player] draw N, then discard M [at random]" (CR
+    #    701.8). Typed once (parse_loot_effect → template.loot_data; a
+    #    routed single mode clause parses its own text). The draw half
+    #    used to be all that resolved — the discard was dropped, so the
+    #    card-discarded-this-turn engines (cost reducers, madness,
+    #    recursion) never fired and every loot was a free draw.
+    from .oracle_parser import parse_loot_effect as _parse_loot
+    _loot = (card.template.loot_data if oracle_override is None
+             else _parse_loot(oracle))
+    if _loot:
+        effects = [e for e in effects if e[1] != 'draw']
+        effects.append((draw_pos, 'loot', _loot))
     effects.sort(key=lambda x: x[0])
 
     for _, effect_kind, count in effects:
@@ -1604,6 +1669,9 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
             handled = True
         elif effect_kind == 'surveil':
             game.surveil(controller, count)
+            handled = True
+        elif effect_kind == 'loot':
+            _resolve_loot(game, card, controller, count)
             handled = True
         elif effect_kind == 'draw':
             drawn = game.draw_cards(controller, count)
@@ -2185,6 +2253,9 @@ def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
                 qualifies = True
             elif 'noncreature' in spell_types:
                 qualifies = not spell_cast.template.is_creature
+            elif 'colorless' in spell_types:
+                # CR 105.2c: a spell with no colour (devoid included).
+                qualifies = not spell_cast.colors
             else:
                 cast_types = {t.value for t in spell_cast.template.card_types}
                 qualifies = bool(spell_types & cast_types)

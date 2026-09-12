@@ -240,9 +240,14 @@ class ResolutionManager:
                     game._handle_cascade(item)
                 card.enter_battlefield()
                 game.players[item.controller].battlefield.append(card)
-                # Place counters for X-cost permanents — only if no dedicated
-                # ETB handler exists (Engineered Explosives uses sunburst via its
-                # own handler, so don't double-set charge counters here)
+                # Place counters for X-cost permanents. "Enters with X
+                # counters" is the permanent's own entry effect (CR 107.3,
+                # 614.1c), so the engine places them here for every such
+                # permanent; a dedicated ETB handler runs afterwards and may
+                # READ or SPEND the counters but never places them again.
+                # The one exception is the charge-counter branch: a
+                # sunburst permanent's charge count is the colours spent,
+                # not X, and its handler computes that itself.
                 if item.x_value > 0 and template.x_cost_data:
                     has_dedicated_etb = EFFECT_REGISTRY.has_handler(
                         template.name, EffectTiming.ETB)
@@ -318,6 +323,11 @@ class ResolutionManager:
                 return False  # no snapshot — can't prove illegal
             target = game.get_card_by_id(tid)
             if target is not None and target.zone == cast_zone:
+                # CR 702.16b: a target that is (or became) protected
+                # from the spell's colour is illegal on resolution too.
+                from .target_solver import _blocked_by_protection
+                if _blocked_by_protection(target, item.source):
+                    continue
                 return False  # still where it was targeted — valid
         return True  # every target verifiably left its cast-time zone
 
@@ -653,28 +663,32 @@ class ResolutionManager:
         # per-mode ability description drops it).
         tmpl = card.template
         modes = getattr(tmpl, 'modes', None) or []
-        # Gate on the number of PARSED mode-abilities, not the number of
-        # printed modes: the bug is a modal card that synthesized MORE
-        # THAN ONE ability and runs them all (Brotherhood's End: 2). A
-        # modal card that parsed to a single ability (Kozilek's Command,
-        # the charms) already resolves its one mode and must be left on
-        # its existing path — intercepting it would route a mode clause
-        # this generic resolver cannot fully execute.
-        _n_abilities = len([a for a in tmpl.abilities if a.description])
+        # Gate on the PARSED MODES: a modal spell with more printed modes
+        # than it may choose resolves exactly the chosen ones, each off its
+        # own clause with its own typed removal bound (`mode['removal']`,
+        # parsed once at DB load).  This used to gate on the number of
+        # synthesized abilities instead, which excluded any modal card that
+        # synthesized a single ability (Kozilek's Command, the charms) —
+        # those then resolved ONE mode through the legacy path with the
+        # mode's "mana value X or less" bound dropped (Command at X=0 exiled
+        # a mana-value-1 creature) and the second chosen mode never
+        # resolved at all (2026-09-08).
         if (getattr(tmpl, 'is_modal', False)
-                and _n_abilities > getattr(tmpl, 'modal_choose_count', 1)
+                and len(modes) > getattr(tmpl, 'modal_choose_count', 1)
                 and not getattr(tmpl, 'is_counterspell', False)
                 and (tmpl.is_instant or tmpl.is_sorcery)
                 and not any('counter target' in m.get('text', '').lower()
                             for m in modes)):
             from ai.modal import select_modal_modes
             from .oracle_resolver import resolve_spell_from_oracle
-            chosen = select_modal_modes(game, card, controller, item.targets)
+            chosen = select_modal_modes(game, card, controller, item.targets,
+                                        x_value=item.x_value)
             for idx in chosen:
                 clause = modes[idx].get('text', '')
                 resolve_spell_from_oracle(game, card, controller, item.targets,
                                           x_value=item.x_value,
-                                          oracle_override=clause)
+                                          oracle_override=clause,
+                                          removal_data=modes[idx].get('removal'))
             return
 
         # Dispatch to card effect registry

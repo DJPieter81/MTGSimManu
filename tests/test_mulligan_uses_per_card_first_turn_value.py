@@ -69,35 +69,38 @@ class TestPerCardFirstTurnValueDrivesLandSlack:
     mulligan when lands exceed the gameplan's ``mulligan_max_lands``;
     a hand with enough early impact across the curve still keeps."""
 
-    def test_aggro_4_land_no_one_drop_mulligans(self, card_db):
-        """Boros (max_lands=3) keeps a 4-land hand only when the
-        hand has real early-turn impact beyond the always_early
-        creature.  This hand has 4 lands + 1 always_early body
-        (Ragavan) + 2 spells that don't fire on T1-T2 (Goblin
-        Bombardment needs creatures + sac trigger; Seasoned
-        Pyromancer is a 3-drop with a discard cost).  Total
-        first_turn_value across spells is dominated by Ragavan
-        alone, which the previous flat slack treated as "carte
-        blanche for +2 extra lands" — wrong.  Audit F7 D2
-        confirms: Boros G2 P2 kept this shape and stalled.
+    def test_aggro_one_land_over_the_cap_with_no_one_drop_mulligans(self, card_db):
+        """Boros keeps a hand ONE land over its cap only when the hand
+        has real early-turn impact beyond the always_early creature.
+        This hand is one over the cap + 1 always_early body (Ragavan)
+        + 1 spell that doesn't fire on T1-T2 (Goblin Bombardment needs
+        creatures + sac trigger).  Total first_turn_value across spells
+        is dominated by Ragavan alone, which the previous flat slack
+        treated as "carte blanche for +2 extra lands" — wrong.  Audit
+        F7 D2 confirms the shape (Boros G2 P2 kept it and stalled).
+
+        The cap itself follows the manabase (one land above the
+        expected seven-card land count, 4 for a 22-land deck — see
+        tests/test_mulligan_land_bounds_follow_the_manabase.py), so
+        the slack case is the FIVE-land seven; a four-land seven is a
+        standard keep and never reaches the slack path.
         """
-        hand = [
-            _hand_card(card_db, "Arid Mesa", iid=1),
-            _hand_card(card_db, "Windswept Heath", iid=2),
-            _hand_card(card_db, "Sacred Foundry", iid=3),
-            _hand_card(card_db, "Plains", iid=4),
-            _hand_card(card_db, "Ragavan, Nimble Pilferer", iid=5),
-            _hand_card(card_db, "Goblin Bombardment", iid=6),
-            _hand_card(card_db, "Seasoned Pyromancer", iid=7),
-        ]
+        goal = create_goal_engine("Boros Energy")
+        over = goal.gameplan.mulligan_max_lands + 1
+        lands = ["Arid Mesa", "Windswept Heath", "Sacred Foundry",
+                 "Plains", "Mountain", "Elegant Parlor"][:over]
+        spells = ["Ragavan, Nimble Pilferer", "Goblin Bombardment",
+                  "Seasoned Pyromancer"][:7 - over]
+        hand = [_hand_card(card_db, n, iid=i + 1)
+                for i, n in enumerate(lands + spells)]
         decider = _decider("Boros Energy", ArchetypeStrategy.AGGRO)
         keep = decider.decide(hand, cards_in_hand=7)
         assert not keep, (
-            f"Boros kept 4-land hand with low cumulative first_turn_value. "
-            f"Reason: '{decider.last_reason}'.  This is the F7 D2 shape "
-            f"— Ragavan alone shouldn't license +2 land slack when the "
-            f"rest of the hand has no T1-T2 plays.  The slack must be "
-            f"derived from per-card first_turn_value sum, not a flat +2."
+            f"Boros kept a {over}-land hand with low cumulative "
+            f"first_turn_value. Reason: '{decider.last_reason}'.  This is "
+            f"the F7 D2 shape — Ragavan alone shouldn't license extra land "
+            f"slack when the rest of the hand has no T1-T2 plays.  The slack "
+            f"must be derived from per-card first_turn_value sum, not a flat +2."
         )
 
     def test_aggro_3_land_curve_keeps(self, card_db):

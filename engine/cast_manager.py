@@ -300,7 +300,8 @@ class CastManager:
                                             parse as _parse_targets)
                 requirements = _parse_targets(template.oracle_text or "")
                 if not has_legal_target_for_spell(
-                        game, player_idx, requirements, exclude=card):
+                        game, player_idx, requirements, exclude=card,
+                        source=card):
                     return False
             total_mana = (player.untapped_mana_capacity()
                           + player.mana_pool.total()
@@ -437,7 +438,8 @@ class CastManager:
             requirements = _parse_targets(template.oracle_text or "")
             if not has_legal_target_for_spell(
                     game, player_idx, requirements, exclude=card,
-                    x_ceiling=CastManager.affordable_x(game, player_idx, template)):
+                    x_ceiling=CastManager.affordable_x(game, player_idx, template),
+                    source=card):
                 return False
 
         # Check mana (pool + untapped lands + non-land mana sources + Tron bonus)
@@ -460,14 +462,19 @@ class CastManager:
         # equal to its mana cost").  Lava Dart's flashback cost is sacrifice-only
         # (flashback_cost=None); no mana is needed and the sacrifice is already
         # checked above in the GY-casting block.
-        _using_flashback_cost = (
-            card.zone == "graveyard"
-            and card.has_flashback
-            and template.flashback_cost is not None
-        )
-        effective_cmc = (template.flashback_cost.cmc
+        _using_flashback_cost = CastManager._pays_printed_flashback_cost(card)
+        # The mana component of a printed flashback cost; a cost with no
+        # mana component ("Flashback—Sacrifice a Mountain") is an EMPTY
+        # ManaCost, not the printed mana cost.  Cards granted flashback by
+        # another effect (Past in Flames) are not on this path and pay
+        # their printed cost, as their oracle says.
+        _flashback_mana = CastManager._flashback_mana_cost(template)
+        # Quantity arithmetic starts from the LEAST mana that pays the
+        # cost (`min_mana`): identical to `cmc` except that a two-brid pip
+        # {2/W} counts 1 (a Plains pays it), not its mana value 2.
+        effective_cmc = (_flashback_mana.min_mana
                          if _using_flashback_cost
-                         else template.mana_cost.cmc)
+                         else template.mana_cost.min_mana)
         # Domain cost reduction (oracle-derived template property)
         if template.domain_reduction > 0:
             domain = game._count_domain(player_idx)
@@ -493,13 +500,21 @@ class CastManager:
         # Delve
         if template.has_delve:
             gy_count = len(player.graveyard)
-            colored_cost = (template.mana_cost.white + template.mana_cost.blue
-                            + template.mana_cost.black
-                            + template.mana_cost.red
-                            + template.mana_cost.green)
+            colored_cost = template.mana_cost.non_generic_pips
             generic_portion = max(0, effective_cmc - colored_cost)
             delve_reduction = min(gy_count, generic_portion)
             effective_cmc = max(colored_cost, effective_cmc - delve_reduction)
+
+        # CR 601.2f — every reduction above (domain, "cost {N} less"
+        # permanents, self-scaling, affinity, delve) reaches the GENERIC
+        # component only.  Whatever they subtracted, the coloured,
+        # colourless and hybrid pips remain owed: floor the quantity here
+        # so no stack of reducers can quote a spell with pips as free.
+        # (Hybrid pips folded into `generic` upstream used to slip under
+        # this — the 2026-09-07 Manamorphose-for-nothing exploit.)
+        _pip_cost = (_flashback_mana if _using_flashback_cost
+                     else template.mana_cost)
+        effective_cmc = max(effective_cmc, _pip_cost.non_generic_pips)
 
         # Phyrexian mana (CR 107.4f): each {C/P} pip in the cost may be paid
         # with 2 life INSTEAD of one mana of that pip's colour.  Waiving a pip
@@ -618,9 +633,7 @@ class CastManager:
                 and not getattr(c, 'tapped', False)
                 and c is not card
             )
-            colored_floor = (template.mana_cost.white + template.mana_cost.blue
-                             + template.mana_cost.black + template.mana_cost.red
-                             + template.mana_cost.green)
+            colored_floor = template.mana_cost.non_generic_pips
             improvise_cmc = max(colored_floor,
                                 effective_cmc - untapped_artifacts)
             if total_mana >= improvise_cmc:
@@ -664,7 +677,7 @@ class CastManager:
 
         # Detailed color check using greedy constraint solving (MRV).
         # Use flashback cost when casting a native-flashback card from GY.
-        cost = (template.flashback_cost
+        cost = (_flashback_mana
                 if _using_flashback_cost
                 else template.mana_cost)
         color_needs = CastManager._color_pip_list(cost)
@@ -777,7 +790,7 @@ class CastManager:
             k = sum(waived.values())
             needs = CastManager._without_waived_pips(color_needs, waived)
             if CastManager._color_assignment_feasible(sources, needs,
-                                                      max(0, cost.cmc - k)):
+                                                      max(0, cost.min_mana - k)):
                 return waived
             if (color_only_fallback is None
                     and CastManager._color_assignment_feasible(
@@ -807,16 +820,24 @@ class CastManager:
             left[color] = max(0, left.get(color, 0) - count)
         residual = ManaCost(**amounts)
         residual.phyrexian = {c: n for c, n in left.items() if n}
+        residual.hybrid = list(cost.hybrid)
         return residual
 
     @staticmethod
     def _color_pip_list(cost: "ManaCost") -> list:
-        """Flatten a cost's coloured pips into one entry per pip."""
+        """Flatten a cost's non-generic pips into one OPTION TUPLE per pip.
+
+        A fixed colour pip is ("R",); a hybrid pip (CR 107.4e) is its
+        colours, ("R", "G"); a two-brid pip {2/W} is ("W", "2") — the
+        digit option meaning "that much generic instead".  The MRV
+        solver treats all three uniformly.
+        """
         needs = []
         for color, needed in [("W", cost.white), ("U", cost.blue),
                               ("B", cost.black), ("R", cost.red),
                               ("G", cost.green), ("C", cost.colorless)]:
-            needs.extend([color] * needed)
+            needs.extend([(color,)] * needed)
+        needs.extend(tuple(p) for p in cost.hybrid)
         return needs
 
     @staticmethod
@@ -827,7 +848,7 @@ class CastManager:
         remaining = list(color_needs)
         for color, count in waived.items():
             for _ in range(count):
-                remaining.remove(color)
+                remaining.remove((color,))
         return remaining
 
     @staticmethod
@@ -861,36 +882,107 @@ class CastManager:
     @staticmethod
     def _color_assignment_feasible(sources: list, color_needs: list,
                                    total_needed: int) -> bool:
-        """MRV greedy: can each coloured pip claim its own source, with
-        enough sources left over for the generic remainder?"""
+        """MRV greedy: can each non-generic pip claim its own source, with
+        enough sources left over for the generic remainder?
+
+        `color_needs` holds option tuples (see `_color_pip_list`): a pip
+        is satisfied by a source producing ANY of its colour options.  A
+        two-brid pip that no source can colour falls back to its digit
+        alternative, which joins the generic remainder.
+        """
         used = [False] * len(sources)
         remaining_needs = list(color_needs)
+        # `total_needed` is in MINIMUM-payment units (`ManaCost.min_mana`):
+        # every pip counts 1.  A pip paid with a colour covers its 1; a
+        # two-brid pip paid with its digit instead needs `digit` sources,
+        # i.e. `digit - 1` more than the 1 already inside `total_needed`.
+        paid_pips = 0
+        extra_generic = 0
+
+        def _matches(pip, source):
+            return any(o in source for o in pip)
+
         while remaining_needs:
             # Re-sort by scarcity
             remaining_needs.sort(
-                key=lambda c: sum(
+                key=lambda p: sum(
                     1 for i, s in enumerate(sources)
-                    if c in s and not used[i])
+                    if _matches(p, s) and not used[i])
             )
-            c = remaining_needs.pop(0)
+            pip = remaining_needs.pop(0)
             # Find least-flexible unused source
             best_idx = -1
             best_flex = 999
             for i, s in enumerate(sources):
-                if not used[i] and c in s:
+                if not used[i] and _matches(pip, s):
                     flex = len(s)
                     if flex < best_flex:
                         best_flex = flex
                         best_idx = i
             if best_idx == -1:
-                return False
+                digits = [o for o in pip if o.isdigit()]
+                if not digits:
+                    return False
+                extra_generic += int(digits[0]) - 1
+                continue
             used[best_idx] = True
+            paid_pips += 1
 
-        # Check total mana (generic portion)
+        # Check total mana (generic portion): whatever the colour
+        # assignments did not cover must come from spare sources.
         remaining_sources = sum(1 for u in used if not u)
-        return remaining_sources >= total_needed - len(color_needs)
+        return remaining_sources >= total_needed + extra_generic - paid_pips
 
     # ─── Shared colour-verification helper ────────────────────────────
+
+    @staticmethod
+    def _pays_printed_flashback_cost(card: "CardInstance") -> bool:
+        """CR 702.33a: a card cast from the graveyard with its OWN printed
+        flashback pays the flashback cost rather than its mana cost.  A
+        card granted flashback by another effect (Past in Flames: "its
+        flashback cost is equal to its mana cost") is not on this path —
+        `has_flashback` is set for both, the printed keyword only for the
+        former (`'flashback' in template.tags`, as `setup_game` flags it).
+        """
+        template = card.template
+        return (card.zone == "graveyard"
+                and bool(getattr(card, 'has_flashback', False))
+                and 'flashback' in (template.tags or set()))
+
+    @staticmethod
+    def _flashback_mana_cost(template) -> "ManaCost":
+        """The mana component of a printed flashback cost.  None in the
+        parsed field means "no mana to pay" (a sacrifice-only cost such as
+        "Flashback—Sacrifice a Mountain"), which is an EMPTY cost — not the
+        printed mana cost.  The payment path used to fall back to the
+        printed cost here and tapped a land as well as sacrificing one
+        (2026-09-08)."""
+        from .mana import ManaCost
+        return template.flashback_cost if template.flashback_cost is not None else ManaCost()
+
+    @staticmethod
+    def lock_that_counters(game: "GameState", player_idx: int,
+                           template) -> "Optional[CardInstance]":
+        """The opposing lock permanent whose parsed rule counters a cast of
+        `template`, or None.
+
+        Rules primitive, typed-field driven (`CardTemplate.stax_class`,
+        parsed once at DB load — no oracle scan): the Chalice-of-the-Void
+        family counters a spell whose mana value equals the permanent's
+        charge counters.  `cast_spell` applies it; the AI's single
+        interaction-probability call site (`ai/ev_evaluator.compute_play_ev`)
+        reads it as P(countered) = 1 — a lock on the battlefield is a
+        certainty, not a hidden-hand belief.  Before that read existed the
+        AI fed card after card into a visible Chalice (2026-09-08).
+        """
+        opp = game.players[1 - player_idx]
+        cmc = template.cmc or 0
+        for perm in opp.battlefield:
+            if getattr(perm.template, 'stax_class', None) != 'chalice':
+                continue
+            if perm.other_counters.get("charge", 0) == cmc:
+                return perm
+        return None
 
     @staticmethod
     def _can_pay_colored_pips(game: "GameState", player_idx: int,
@@ -1574,12 +1666,26 @@ class CastManager:
                             black=template.mana_cost.black,
                             red=template.mana_cost.red,
                             green=template.mana_cost.green,
+                            colorless=template.mana_cost.colorless,
                             generic=reduced_generic,
+                            hybrid=list(template.mana_cost.hybrid),
                         )
                         if not game.tap_lands_for_mana(player_idx, delve_cost,
                                                          card_name=template.name):
                             return False
                     else:
+                        # CR 702.33a: a printed flashback cast from the
+                        # graveyard pays the FLASHBACK cost — its mana
+                        # component, which is empty for a sacrifice-only
+                        # cost — never the printed mana cost.  The same
+                        # predicate `can_cast` gated on, so legality and
+                        # payment agree.  (Every graveyard cast used to
+                        # pay the printed cost: Flashback {G} paid {1}{R},
+                        # and a sacrifice-only flashback tapped a land on
+                        # top of the sacrifice.)
+                        _base_cost = (CastManager._flashback_mana_cost(template)
+                                      if CastManager._pays_printed_flashback_cost(card)
+                                      else template.mana_cost)
                         # Phyrexian mana (CR 107.4f): 2 life instead of one
                         # mana of the pip's colour.  Waive the FEWEST pips
                         # that make the rest payable — chosen by the same
@@ -1588,10 +1694,10 @@ class CastManager:
                         # keeping the non-Phyrexian coloured pips intact
                         # ({W}{U}{B/P}{R}{G} must still tap WURG).
                         waived = CastManager._choose_phyrexian_waiver(
-                            game, player_idx, template.mana_cost)
+                            game, player_idx, _base_cost)
                         life_cost = 2 * sum(waived.values()) if waived else 0
                         residual = CastManager._cost_without_pips(
-                            template.mana_cost, waived)
+                            _base_cost, waived)
                         if life_cost:
                             player.life -= life_cost
                         if not game.tap_lands_for_mana(
@@ -1881,23 +1987,27 @@ class CastManager:
             player.nonartifact_spells_cast_this_turn += 1
         game._global_storm_count += 1
 
-        # ── Chalice of the Void check ──
-        # If opponent controls Chalice with charge counters == spell's CMC, counter it
+        # ── Lock permanents that counter on cast (Chalice family) ──
+        # One predicate, `lock_that_counters`, decides it here AND answers
+        # the AI's resolution-probability query, so the engine's ruling
+        # and the caster's valuation cannot disagree.
         opp_idx = 1 - player_idx
-        opp = game.players[opp_idx]
-        # Generic "counter spell with mana value equal to charge counters" check
-        for perm in opp.battlefield:
-            perm_oracle = (perm.template.oracle_text or '').lower()
-            if 'charge counter' in perm_oracle and 'mana value' in perm_oracle and 'counter' in perm_oracle:
-                charge = perm.other_counters.get("charge", 0)
-                if charge == template.cmc and template.cmc >= 0:
-                    game.stack.pop()
-                    card.zone = "graveyard"
-                    player.graveyard.append(card)
-                    game.log.append(
-                        f"T{game.display_turn} P{opp_idx+1}: "
-                        f"{perm.name} (X={charge}) counters {card.name}")
-                    return True
+        lock = CastManager.lock_that_counters(game, player_idx, template)
+        if lock is not None:
+            charge = lock.other_counters.get("charge", 0)
+            item = game.stack.pop()
+            # A countered spell "would be put into a graveyard from the
+            # stack" — the one owner of that zone move applies the
+            # alternate-cast replacements (a flashbacked spell is exiled,
+            # CR 702.33a).  Appending straight to the graveyard let the
+            # same Lava Dart be flashed back three times into one Chalice
+            # (2026-09-08).
+            from .spell_resolution import ResolutionManager
+            ResolutionManager._move_countered_stack_item(game, item, card)
+            game.log.append(
+                f"T{game.display_turn} P{opp_idx+1}: "
+                f"{lock.name} (X={charge}) counters {card.name}")
+            return True
 
         dash_label = " (Dash)" if dashed else ""
         x_label = f" (X={x_value})" if x_value > 0 else ""

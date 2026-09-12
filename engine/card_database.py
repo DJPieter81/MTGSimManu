@@ -1154,11 +1154,22 @@ def parse_mana_cost_mtgjson(mana_cost_str: str) -> ManaCost:
             pass  # X costs handled separately
         elif sym.isdigit():
             cost.generic += int(sym)
-        # Hybrid mana, phyrexian, etc. - simplified
+        elif sym == "S":
+            # Snow mana {S} (CR 107.4h): one mana from a snow source.
+            # The snow restriction is not modelled; the mana IS — a
+            # dropped symbol would make the card cheaper than printed.
+            cost.generic += 1
         elif "/" in sym:
-            # e.g., W/U, 2/W, W/P
+            # e.g., W/U, 2/W, W/P, G/W/P
             parts = sym.split("/")
-            if parts[1].upper() == "P":
+            if len(parts) == 3 and parts[2].upper() == "P" \
+                    and all(p in COLOR_CHARS for p in parts[:2]):
+                # Hybrid Phyrexian {C/D/P} (CR 107.4f): C, D, or 2 life.
+                # Modelled as the hybrid pip (C, D); the life option is
+                # not offered for this pip.  Stricter than printed for
+                # the handful of cards that carry one, never cheaper.
+                cost.hybrid.append((parts[0], parts[1]))
+            elif parts[1].upper() == "P":
                 # Phyrexian (CR 107.4f) — counts as a coloured pip AND
                 # records the "or 2 life" permission on the cost itself.
                 # Parsed from the MANA COST, never from the reminder text:
@@ -1170,13 +1181,16 @@ def parse_mana_cost_mtgjson(mana_cost_str: str) -> ManaCost:
                     cost.add_color(parts[0])
                     cost.phyrexian[parts[0]] = (
                         cost.phyrexian.get(parts[0], 0) + 1)
-            elif parts[0].isdigit():
-                # Generic/colored hybrid - treat as colored
-                if parts[1] in ("W", "U", "B", "R", "G"):
-                    cost.generic += 1  # simplified
-            else:
-                # Color/color hybrid - pick first
-                cost.generic += 1  # simplified
+            elif parts[0].isdigit() and parts[1] in COLOR_CHARS:
+                # Two-brid {N/C} (CR 107.4e): pay N generic OR the colour.
+                # Recorded as a hybrid pip with the digit as one option;
+                # its mana value is N (CR 202.3e) — see ManaCost.cmc.
+                cost.hybrid.append((parts[1], parts[0]))
+            elif all(p in COLOR_CHARS for p in parts):
+                # Colour/colour hybrid {C/D}: one pip, either colour pays
+                # it (CR 107.4e).  NOT generic — it needs a source of one
+                # of its colours and no generic reduction touches it.
+                cost.hybrid.append(tuple(parts))
 
     return cost
 
@@ -1200,6 +1214,36 @@ class CardDatabase:
     # or partial file, so a load below this triggers the one-shot
     # merge_db.py recovery in load().
     _MIN_REAL_DB_CARDS = 1000
+
+    # The one process-wide instance of the REAL card pool. Loading it costs
+    # ~16 s and ~a GB; before this accessor existed, lazy consumers
+    # (`sideboard_manager._get_card_db`, reached from every gameplan lookup)
+    # built a second copy in every process that already held one — 2x the
+    # start-up of every parallel worker and 2x its memory. `GameRunner`
+    # registers the database it was built with; every lazy consumer resolves
+    # `shared()`; fixture-sized databases are never registered, so a test
+    # that builds a runner on a stub pool cannot poison the process pool.
+    _shared: "Optional[CardDatabase]" = None
+
+    @property
+    def is_real_pool(self) -> bool:
+        """A full ModernAtomic load, as opposed to a fixture or partial."""
+        return len(self.cards) >= self._MIN_REAL_DB_CARDS
+
+    @classmethod
+    def register_shared(cls, db: "CardDatabase") -> None:
+        """Make `db` the process-wide pool if it is a real one and none is
+        registered yet. Idempotent; silently ignores fixture pools."""
+        if cls._shared is None and db is not None and db.is_real_pool:
+            cls._shared = db
+
+    @classmethod
+    def shared(cls) -> "CardDatabase":
+        """The process-wide real card pool, loaded on first use if nothing
+        registered one first."""
+        if cls._shared is None:
+            cls._shared = cls()
+        return cls._shared
 
     def __init__(self, json_path: str = None):
         self.cards: Dict[str, CardTemplate] = {}
@@ -1773,6 +1817,7 @@ class CardDatabase:
             parse_counter_tax, parse_protection_from, parse_ward_cost,
             parse_is_land_sacrifice_tutor, parse_x_creature_tutor,
             parse_modal_spell,
+            parse_targeted_removal,
             parse_loyalty_abilities,
             parse_team_pump,
             parse_self_cost_reduction,
@@ -1898,7 +1943,14 @@ class CardDatabase:
         if _is_modal:
             template.is_modal = True
             template.modal_choose_count = _modal_count
-            template.modes = [{"text": c} for c in _modes]
+            # Each mode carries its own typed removal classification
+            # (`parse_targeted_removal` over the mode clause) so an
+            # X-bound "exile target creature with mana value X or less"
+            # MODE is bounded exactly like the plain spell shape — at
+            # resolution and in the AI's target ceiling.  Parsed once
+            # here; nothing re-reads the clause at resolve time.
+            template.modes = [{"text": c, "removal": parse_targeted_removal(c)}
+                              for c in _modes]
         template.x_creature_tutor_data = parse_x_creature_tutor(oracle)
         # Printed loyalty abilities (CR 606), classified once here so
         # `PlaneswalkerManager` can dispatch off a typed field and refuse
@@ -1990,6 +2042,8 @@ class CardDatabase:
         template.pump_spell_power = _pp
         template.pump_spell_toughness = _pt
         template.pump_spell_keyword = _pk
+        from .oracle_parser import parse_loot_effect
+        template.loot_data = parse_loot_effect(oracle)
         _eqp, _eqt = parse_equip_pt_grant(oracle)
         template.equip_power_grant = _eqp
         template.equip_toughness_grant = _eqt
@@ -2057,6 +2111,10 @@ class CardDatabase:
         template.cast_trigger_token = parse_cast_trigger_token(oracle)
         template.ordinal_cast_trigger = parse_ordinal_cast_trigger(oracle)
         template.enters_type_counter = parse_enters_type_counter(oracle)
+        # "Whenever a/another creature [you control] dies, …" observers
+        # (CR 603.2). Fanned out by the death funnel.
+        from .oracle_parser import parse_creature_dies_observer
+        template.creature_dies_observer = parse_creature_dies_observer(oracle)
         # "Whenever one or more +1/+1 counters are put on this …" (CR 122,
         # 16 cards). Fired by the CardInstance.add_plus_counters funnel.
         from .oracle_parser import parse_counter_placement_trigger

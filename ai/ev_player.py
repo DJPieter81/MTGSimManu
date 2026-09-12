@@ -533,6 +533,16 @@ class EVPlayer:
         # Filter legends we already control
         spells = self._filter_legend_rule(me, spells)
 
+        # A cast that a lock permanent on the opponent's battlefield
+        # counters on cast (`CastManager.lock_that_counters`, the engine's
+        # own predicate) is fixed by rule to be a no-op minus the card. It
+        # is never a candidate: the play gate is a fixed floor, so pricing
+        # it below passing is not enough on its own (Preordain into a
+        # Chalice on 1 as the last play of a turn, 2026-09-09).
+        from engine.cast_manager import CastManager as _CM
+        spells = [c for c in spells
+                  if _CM.lock_that_counters(game, self.player_idx, c.template) is None]
+
         candidates: List[Play] = []
 
         # Score cycling plays (Living End style — cycle creatures to GY, then cascade)
@@ -933,8 +943,54 @@ class EVPlayer:
                 and not getattr(c.template, 'is_land_sacrifice_tutor',
                                 False)
             ]
-            if not payoff_costs or min(payoff_costs) > retained:
+            # The fetched lands can BE the payoff: a land in the library
+            # whose own ability makes tokens or deals damage (typed) is a
+            # payoff the tutor reaches with no hand payoff at all. Without
+            # this the tutor sat in hand for four turns on eight lands with
+            # a watcher in play while four such lands waited in the library
+            # (Domain Zoo vs Amulet Titan s50000, 2026-09-11). A library of
+            # mana lands alone still clamps — the blind-ramp rule holds.
+            library_payoff_land = any(
+                c.template.is_land
+                and (getattr(c.template, 'has_token_effect', False)
+                     or getattr(c.template, 'deals_targeted_damage', False))
+                for c in me.library)
+            if (not payoff_costs or min(payoff_costs) > retained) \
+                    and not library_payoff_land:
                 return min(ev, PATIENCE_GATE_REJECT_SENTINEL)
+        return ev
+
+    def _gate_blockers_into_lethal(self, ev: float, card, t, snap: EVSnapshot,
+                                   me, game) -> float:
+        """While the opponent has on-board lethal (`am_dead_next`), a play
+        whose cost exceeds the caster's NON-creature mana capacity must tap
+        a mana creature or creature-land — a potential blocker — and is
+        clamped into the patience-reject band: the chump that body makes
+        is the turn, and no sorcery-speed play is worth it. The same play
+        with enough non-creature mana, or with no lethal on board, is
+        priced as usual.
+
+        Observed: Creatures Toolbox at 4 life into a 5/6 attacker cast a
+        four-mana enchantment with both Dryad Arbors and took lethal with
+        no untapped creature (Domain Zoo vs Toolbox s50000, 2026-09-12).
+        Shaped like the sibling gates; no card names, no new weights.
+        """
+        if game is None or t.is_land or not snap.am_dead_next:
+            return ev
+        from engine.cards import CardType as _CT
+        from engine.mana_payment import ManaPayment
+        from ai.effective_cmc import effective_cmc as _ecmc
+        non_creature = me.mana_pool.total() + sum(
+            len(ManaPayment.land_mana_units(game, self.player_idx, c))
+            for c in me.untapped_mana_sources
+            if _CT.CREATURE not in c.template.card_types)
+        creature_sources = any(_CT.CREATURE in c.template.card_types
+                               for c in me.untapped_mana_sources)
+        if not creature_sources:
+            return ev
+        cost = max(0, _ecmc(card, snap, game=game, player_idx=self.player_idx) or 0)
+        if cost > non_creature:
+            return min(ev, PATIENCE_GATE_REJECT_SENTINEL)
         return ev
 
     def _overlay_cascade_patience(self, ev: float, t, snap: EVSnapshot, me) -> float:
@@ -1284,6 +1340,9 @@ class EVPlayer:
         # X-cost creature tutor (GSZ shape): delivery-conditioned EV,
         # X-gap waste charge, and payoff hold (2026-08-26 re-diagnosis).
         ev = self._gate_x_tutor_payoff(ev, card, t, snap, me, game)
+
+        # A blocker is not tapped into on-board lethal.
+        ev = self._gate_blockers_into_lethal(ev, card, t, snap, me, game)
 
         # ── Reanimation readiness gate (GV-2) ──
         # Mirror shape of the cascade patience gate above, but in the
@@ -3050,7 +3109,17 @@ class EVPlayer:
                 return True
             return False
         total_power = sum(c.power for c in valid if (c.power or 0) > 0)
-        if total_power >= opp.life:
+        # Lethal if unblocked is a property of the TURN: the pump instants
+        # castable after blocks add their power to an attacker (CR 509.4
+        # window) — the same packing `_burn_reach_this_turn` applies to
+        # face burn. A 12-damage lethal package (two pumps on one
+        # attacker) was left in hand while the AI deployed a creature and
+        # lost the next turn (Prowess vs Domain Zoo s50000 G2).
+        from ai.ev_evaluator import snapshot_from_game
+        _snap_lethal = snapshot_from_game(game, self.player_idx)
+        pump_reach = (self._pump_reach_this_turn(game, me, _snap_lethal)
+                      if total_power > 0 else 0)
+        if total_power + pump_reach >= opp.life:
             # On-board lethal if unblocked: send what is NEEDED. A creature
             # whose non-combat worth (`ai.clock.noncombat_opportunity_cost`
             # — mana production, unbounded-engine membership, abilities,
@@ -3059,15 +3128,13 @@ class EVPlayer:
             # still reach lethal — the same rule the combat planner's
             # lethal shortcut applies, so both paths agree.
             from ai.clock import noncombat_opportunity_cost
-            from ai.ev_evaluator import snapshot_from_game
-            _snap_lethal = snapshot_from_game(game, self.player_idx)
             kept = [c for c in valid if _has_combat_value(c)]
             worth = {c.instance_id: noncombat_opportunity_cost(c, me, _snap_lethal)
                      for c in kept}
             for c in sorted(kept, key=lambda c: -worth[c.instance_id]):
                 if worth[c.instance_id] > (c.power or 0) and (
                         sum((k.power or 0) for k in kept) - (c.power or 0)
-                        >= opp.life):
+                        + pump_reach >= opp.life):
                     kept.remove(c)
             return kept
 
@@ -3229,6 +3296,23 @@ class EVPlayer:
                 for c in free_attackers:
                     if c.instance_id not in attack_ids:
                         planner_picks.append(c)
+                # The same keep-home rule the lethal path and the
+                # send-everything fallback apply: a creature whose
+                # NON-combat worth (`noncombat_opportunity_cost` — mana
+                # production, unbounded-engine membership, abilities;
+                # life-point units) exceeds the damage it adds stays home
+                # unless the plan is lethal. The planner's creature value
+                # is clock-based, so an infinite-mana enabler with two
+                # power was just a 2/1 to it and was sent alone into an
+                # untapped 4/4 (Domain Zoo vs Creatures Toolbox s50000 G2
+                # T4; docs/diagnostics/2026-09-12_zoo_lane_loop_break.md).
+                from ai.clock import noncombat_opportunity_cost
+                plan_power = sum((c.power or 0) for c in planner_picks)
+                if plan_power + pump_reach < opp.life:
+                    planner_picks = [
+                        c for c in planner_picks
+                        if (c.power or 0) >= noncombat_opportunity_cost(
+                            c, me, _snap_lethal)]
                 return planner_picks
         except Exception:
             pass
@@ -3552,6 +3636,203 @@ class EVPlayer:
                     game.log.append(
                         f"T{game.display_turn} P{self.player_idx+1}: "                        f"  [{tag}] {blk.name} ({b_pow}/{b_tou}) "                        f"blocks {atk.name} ({a_pow}/{a_tou}) — "                        f"lifespan_delta={delta:+.2f}"
                     )
+
+    def decide_flash_deploy(self, game, candidates) -> Optional["CardInstance"]:
+        """End-step flash deployment (the non-active player's window):
+        the castable flash creature whose projected EV is positive, the
+        legend rule respected — or None. The engine used to cast every
+        castable flash creature here, a second copy of a legendary one
+        into its own legend rule included (Broodscale vs Azorius Blink
+        s50000, twice). Same scorer as the main phase (`_score_spell`),
+        same legend filter (`_filter_legend_rule`)."""
+        self._init_deck_knowledge(game)
+        me = game.players[self.player_idx]
+        opp = game.players[1 - self.player_idx]
+        cands = [c for c in candidates
+                 if c.zone == "hand" and c.template.is_creature
+                 and game.can_cast(self.player_idx, c)]
+        cands = self._filter_legend_rule(me, cands)
+        if not cands:
+            return None
+        snap = snapshot_from_game(game, self.player_idx)
+        ev, best = max(((self._score_spell(c, snap, game, me, opp), c) for c in cands),
+                       key=lambda x: x[0])
+        return best if ev > 0 else None
+
+    # ═══════════════════════════════════════════════════════════
+    # COMBAT TRICKS — the post-block priority window (CR 509.4)
+    # ═══════════════════════════════════════════════════════════
+
+    def _pump_reach_this_turn(self, game, me, snap: EVSnapshot) -> int:
+        """Power the castable pump instants in hand add to an attack THIS
+        turn: every typed "+N/+M until end of turn" instant, packed
+        cheapest-first into the mana available (the packing
+        `_burn_reach_this_turn` uses for face burn).  Read by the on-board
+        lethal rule in `decide_attackers`."""
+        from ai.effective_cmc import effective_cmc as _ecmc
+        pumps = []
+        for c in me.hand:
+            t = c.template
+            pp = getattr(t, 'pump_spell_power', 0) or 0
+            if pp <= 0 or not t.is_instant or 'removal' in getattr(t, 'tags', set()):
+                continue
+            if not game.can_cast(self.player_idx, c):
+                continue
+            cost = max(0, _ecmc(c, snap, game=game, player_idx=self.player_idx) or 0)
+            pumps.append((cost, pp))
+        mana = snap.my_mana
+        total = 0
+        for cost, pp in sorted(pumps):
+            if cost <= mana:
+                mana -= cost
+                total += pp
+        return total
+
+    def decide_combat_trick(self, game, combat
+                            ) -> Optional[Tuple["CardInstance", List[int]]]:
+        """After blockers are declared (CR 509.4), the pump instant and
+        attacker whose projected post-combat position beats holding the
+        card — or None.
+
+        The declared combat is projected twice — as it stands, and with
+        the trick on one attacker — and both boards are priced with
+        `position_value`, the currency every other play is scored in:
+        lethal is its terminal value, a flipped trade is the power the
+        attacker keeps plus the power the blocker loses, the card spent is
+        the hand-size term.  A trick that saves nothing and kills nothing
+        loses the card for nothing and is held.
+        """
+        from ai.clock import position_value
+        from ai.effective_cmc import effective_cmc as _ecmc
+        from ai.ev_evaluator import snapshot_from_game
+        from engine.cast_manager import CastManager as _CM
+        me = game.players[self.player_idx]
+        assignments = [a for a in getattr(combat, 'assignments', [])
+                       if a.attacker.zone == 'battlefield'
+                       and a.attacker.controller == self.player_idx]
+        if not assignments:
+            return None
+        tricks = []
+        for c in me.hand:
+            t = c.template
+            if not t.is_instant or 'removal' in getattr(t, 'tags', set()):
+                continue
+            if ((getattr(t, 'pump_spell_power', 0) or 0) <= 0
+                    and (getattr(t, 'pump_spell_toughness', 0) or 0) <= 0):
+                continue
+            if not game.can_cast(self.player_idx, c):
+                continue
+            if _CM.lock_that_counters(game, 1 - self.player_idx, t) is not None:
+                continue
+            tricks.append(c)
+        if not tricks:
+            return None
+        snap = snapshot_from_game(game, self.player_idx)
+        baseline = position_value(
+            self._post_combat_snapshot(game, snap, assignments, None, None))
+        best, best_gain = None, 0.0
+        for spell in tricks:
+            cost = max(0, _ecmc(spell, snap, game=game,
+                                player_idx=self.player_idx) or 0)
+            for a in assignments:
+                after = self._post_combat_snapshot(
+                    game, snap, assignments, spell, a.attacker)
+                after.my_hand_size -= 1
+                after.my_mana = max(0, after.my_mana - cost)
+                gain = position_value(after) - baseline
+                if gain > best_gain:
+                    best, best_gain = (spell, [a.attacker.instance_id]), gain
+        if best is not None:
+            self._last_target_reason = (
+                f"combat trick on {best[1] and game.get_card_by_id(best[1][0]).name}")
+        return best
+
+    def _post_combat_snapshot(self, game, snap: EVSnapshot, assignments,
+                              spell, pumped) -> EVSnapshot:
+        """Project the declared combat to its post-damage board (CR 510):
+        unblocked power to the defending player (510.1b), ordered lethal
+        assignment among blockers (510.1c; deathtouch 702.2c; trample
+        702.19c), every blocker's damage back (509.2), first strike
+        ordering (510.4).  `spell` (a pump) on `pumped` adds its
+        temporary bonus for this combat only — survivors keep their own
+        power afterwards; prowess (702.108) credits the noncreature cast
+        on every prowess attacker."""
+        from engine.cards import Keyword as _K
+        _EVASION = {_K.FLYING, _K.MENACE, _K.TRAMPLE}
+        _FIRST = {_K.FIRST_STRIKE, _K.DOUBLE_STRIKE}
+        after = snap.model_copy()
+        pp = pt = 0
+        grant = set()
+        if spell is not None:
+            pp = getattr(spell.template, 'pump_spell_power', 0) or 0
+            pt = getattr(spell.template, 'pump_spell_toughness', 0) or 0
+            kw = getattr(spell.template, 'pump_spell_keyword', '') or ''
+            kwe = getattr(_K, kw.upper().replace(' ', '_'), None) if kw else None
+            if kwe is not None:
+                grant.add(kwe)
+        for a in assignments:
+            atk = a.attacker
+            p = atk.power or 0
+            tough = (atk.toughness or 0) - (getattr(atk, 'damage_marked', 0) or 0)
+            kws = set(atk.keywords)
+            if spell is not None and _K.PROWESS in kws:
+                p += 1
+                tough += 1
+            if atk is pumped:
+                p += pp
+                tough += pt
+                kws |= grant
+            blockers = [b for b in (game.get_card_by_id(bid) for bid in a.blocker_ids)
+                        if b is not None and b.zone == 'battlefield']
+            if not blockers:
+                after.opp_life -= max(0, p)
+                continue
+
+            def _deadly(b) -> bool:
+                return (b.power or 0) > 0 and _K.DEATHTOUCH in b.keywords
+
+            atk_first = bool(kws & _FIRST)
+            fs_blockers = [b for b in blockers if set(b.keywords) & _FIRST]
+            back_first = sum((b.power or 0) for b in fs_blockers)
+            dead: list = []
+            if (not atk_first) and (back_first >= tough > 0
+                                    or any(_deadly(b) for b in fs_blockers)):
+                # Killed in the first-strike step: assigns no damage.
+                attacker_dies = True
+            else:
+                remaining = max(0, p)
+                for b in blockers:
+                    need = (1 if _K.DEATHTOUCH in kws else max(
+                        0, (b.toughness or 0) - (getattr(b, 'damage_marked', 0) or 0)))
+                    if remaining >= need:
+                        dead.append(b)
+                        remaining -= need
+                    else:
+                        break
+                if _K.TRAMPLE in kws and len(dead) == len(blockers) and remaining > 0:
+                    after.opp_life -= remaining
+                survivors = [b for b in blockers if b not in dead]
+                dealing = survivors if atk_first else blockers
+                back = sum((b.power or 0) for b in dealing)
+                attacker_dies = back >= tough or any(_deadly(b) for b in dealing)
+
+            for b in dead:
+                bp, bt = max(0, b.power or 0), max(0, b.toughness or 0)
+                after.opp_power = max(0, after.opp_power - bp)
+                after.opp_toughness = max(0, after.opp_toughness - bt)
+                after.opp_creature_count = max(0, after.opp_creature_count - 1)
+                if set(b.keywords) & _EVASION:
+                    after.opp_evasion_power = max(0, after.opp_evasion_power - bp)
+            if attacker_dies:
+                ap, at = max(0, atk.power or 0), max(0, atk.toughness or 0)
+                after.my_power = max(0, after.my_power - ap)
+                after.my_toughness = max(0, after.my_toughness - at)
+                after.my_creature_count = max(0, after.my_creature_count - 1)
+                if set(atk.keywords) & _EVASION:
+                    after.my_evasion_power = max(0, after.my_evasion_power - ap)
+                if _K.LIFELINK in atk.keywords:
+                    after.my_lifelink_power = max(0, after.my_lifelink_power - ap)
+        return after
 
     def decide_blockers(self, game, attackers) -> Dict[int, List[int]]:
         """Decide blocking assignments.
@@ -3924,7 +4205,12 @@ class EVPlayer:
             ))
 
         # ── Opp creatures (only if killable by this damage) ──
+        from engine.target_solver import can_be_targeted
         for c in opp.creatures:
+            # Hexproof / protection from this spell's colour (CR
+            # 702.11d / 702.16b): not a target at all.
+            if not can_be_targeted(c, spell, self.player_idx):
+                continue
             remaining_toughness = (c.toughness or 0) - getattr(
                 c, "damage_marked", 0)
             if not (damage >= remaining_toughness > 0
@@ -4020,6 +4306,21 @@ class EVPlayer:
                     return [best.instance_id]
             return []
 
+        # Beneficial pump (typed "+N/+M until end of turn"): the caster's
+        # own creature — an attacker first, else the most valuable body.
+        # "Target creature" is legal on the opponent's creature too, so
+        # cast-time legality never protects this choice; with no own
+        # creature there is no target and the spell is not cast.
+        if ((getattr(t, 'pump_spell_power', 0) or getattr(t, 'pump_spell_toughness', 0))
+                and 'removal' not in tags):
+            mine = list(game.players[self.player_idx].creatures)
+            if not mine:
+                return []
+            attacking = [c for c in mine if getattr(c, 'attacking', False)]
+            best = max(attacking or mine, key=lambda c: creature_value(c, snap))
+            self._last_target_reason = f"own creature ({best.name})"
+            return [best.instance_id]
+
         # Burn spells FIRST — they can always target face as fallback
         from ai.card_classes import burn_damage
         from engine.cards import Keyword as Kw2
@@ -4072,12 +4373,31 @@ class EVPlayer:
             # cast-time legality uses (CR 601.2b/c). Candidates beyond it
             # are not targets at all, whatever their threat.
             _x_ceiling = None
-            if (getattr(t, 'targeted_removal_data', None) or {}).get('mv') == 'x':
+            _x_bound_mode = any(
+                ((m.get('removal') or {}).get('mv') == 'x')
+                for m in (getattr(t, 'modes', None) or []))
+            if ((getattr(t, 'targeted_removal_data', None) or {}).get('mv') == 'x'
+                    or _x_bound_mode):
+                # The plain shape and a modal MODE of the same shape share
+                # the ceiling: X is chosen before targets (CR 601.2b).
                 from engine.cast_manager import CastManager
                 _x_ceiling = CastManager.affordable_x(game, self.player_idx, t)
+            if getattr(t, 'has_converge', False):
+                # Converge reaches the colours this manabase can spend —
+                # the same picker cast-time X selection uses; aiming above
+                # it is a guaranteed whiff (two four-mana Endings resolved
+                # to nothing, Broodscale vs WST s50000).
+                from engine.card_effects import converge_reachable_max_mv
+                _cm = converge_reachable_max_mv(game, self.player_idx)
+                _x_ceiling = _cm if _x_ceiling is None else min(_x_ceiling, _cm)
+
+            from engine.target_solver import can_be_targeted as _targetable
 
             def _reachable(c):
-                return _x_ceiling is None or (c.template.cmc or 0) <= _x_ceiling
+                # The X bound AND the permanent's own targeting
+                # restrictions (hexproof / protection, CR 702.16b).
+                return ((_x_ceiling is None or (c.template.cmc or 0) <= _x_ceiling)
+                        and _targetable(c, spell, self.player_idx))
 
             if can_hit_noncreature:
                 # Evaluate all nonland permanents via marginal threat
@@ -4138,7 +4458,10 @@ class EVPlayer:
         # they fall through to the blink branch below.
         if spell.template.can_exile_permanent and 'blink' not in tags:
             from engine.cards import CardType
-            nonland = [c for c in opp.battlefield if not c.template.is_land]
+            from engine.target_solver import can_be_targeted as _targetable
+            nonland = [c for c in opp.battlefield
+                       if not c.template.is_land
+                       and _targetable(c, spell, self.player_idx)]
             # An X-bound target ("with mana value X or less") is legal only
             # up to the X the caster can pay — the same engine formula
             # cast-time legality uses (CR 601.2b/c). Before this the pick
@@ -4209,8 +4532,13 @@ class EVPlayer:
         if not creatures:
             return None
         from ai.ev_evaluator import snapshot_from_game
+        from engine.target_solver import can_be_targeted
         snap = snapshot_from_game(game, player_idx)
-        candidates = list(creatures)
+        # Hexproof / protection from this spell's colour: not targets.
+        candidates = [c for c in creatures
+                      if can_be_targeted(c, card, card.controller)]
+        if not candidates:
+            return None
         # For burn removal, filter out creatures this spell cannot kill.
         from ai.card_classes import burn_damage
         dmg = burn_damage(card.template) if card.template else 0
@@ -4629,6 +4957,12 @@ class EVPlayer:
             return True
         # Reanimate spells need a creature in the graveyard
         if 'reanimate' in tags:
+            return True
+        # A targeted pump (typed "+N/+M until end of turn") needs the
+        # creature it is aimed at; cast with no chosen target it resolves
+        # doing nothing (a Phyrexian pip paid for nothing, 2026-09-08).
+        if ((getattr(t, 'pump_spell_power', 0) or getattr(t, 'pump_spell_toughness', 0))
+                and 'removal' not in tags):
             return True
         for ability in t.abilities:
             if ability.targets_required > 0:

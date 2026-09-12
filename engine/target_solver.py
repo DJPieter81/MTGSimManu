@@ -606,6 +606,37 @@ def _blocked_by_hexproof(card: "CardInstance", controller: int) -> bool:
     return Keyword.HEXPROOF in card.keywords
 
 
+def _blocked_by_protection(card: "CardInstance", source) -> bool:
+    """CR 702.16b — a permanent with protection from a colour can't be
+    the target of a spell of that colour. `source` is the spell (a
+    CardInstance; a template is accepted too). Typed field
+    `protection_from_colors` (oracle_parser.parse_protection_from);
+    combat already read it (`combat_manager._can_block`), targeting
+    never did — a red burn spell killed a pro-red creature."""
+    if source is None:
+        return False
+    prot = getattr(card.template, 'protection_from_colors', None) or frozenset()
+    if not prot:
+        return False
+    src_colors = getattr(source, 'colors', None)
+    if src_colors is None:
+        src_colors = getattr(getattr(source, 'template', source), 'colors', None)
+    return bool(prot & set(src_colors or ()))
+
+
+def can_be_targeted(card: "CardInstance", source, controller: int) -> bool:
+    """May `source` (a spell or ability's card, controlled by
+    `controller`) target `card` on the battlefield? One owner for the
+    targeting restrictions a permanent carries — hexproof (702.11d) and
+    protection from a colour (702.16b) — read by cast-time legality,
+    the AI's candidate enumeration and the resolution re-check alike."""
+    if card.zone == "battlefield" and _blocked_by_hexproof(card, controller):
+        return False
+    if _blocked_by_protection(card, source):
+        return False
+    return True
+
+
 def _matches_supertype(card: "CardInstance",
                        supertype: Optional[str]) -> bool:
     """Filter by supertype. None = no filter. Mirrors the legendary /
@@ -740,7 +771,8 @@ def _spell_token_matches(item_source: "CardInstance",
 def has_legal_target(game: "GameState", controller: int,
                      req: TargetRequirement,
                      exclude: Optional["CardInstance"] = None,
-                     x_ceiling: Optional[int] = None) -> bool:
+                     x_ceiling: Optional[int] = None,
+                     source: Optional["CardInstance"] = None) -> bool:
     """CR 601.2c — does at least one legal target exist for this
     requirement in the current game state?
 
@@ -782,7 +814,7 @@ def has_legal_target(game: "GameState", controller: int,
             continue
         if not _matches_subtype(card, req.subtype):
             continue
-        if req.zone == "battlefield" and _blocked_by_hexproof(card, controller):
+        if req.zone == "battlefield" and not can_be_targeted(card, source, controller):
             continue
         # Owner already pre-filtered by _zone_cards.
         if req.max_mana_value_is_x and x_ceiling is not None and \
@@ -796,6 +828,7 @@ def enumerate_legal_targets(game: "GameState", controller: int,
                             req: TargetRequirement,
                             exclude: Optional["CardInstance"] = None,
                             x_ceiling: Optional[int] = None,
+                            source: Optional["CardInstance"] = None,
                             ) -> List["CardInstance"]:
     """Same predicate as ``has_legal_target`` but returns every
     candidate. Phase 6 will use this for AI scoring (best-target
@@ -832,7 +865,7 @@ def enumerate_legal_targets(game: "GameState", controller: int,
             continue
         if not _matches_subtype(card, req.subtype):
             continue
-        if req.zone == "battlefield" and _blocked_by_hexproof(card, controller):
+        if req.zone == "battlefield" and not can_be_targeted(card, source, controller):
             continue
         if req.max_mana_value is not None and \
                 (card.template.cmc or 0) > req.max_mana_value:
@@ -848,6 +881,7 @@ def has_legal_target_for_spell(game: "GameState", controller: int,
                                requirements: List[TargetRequirement],
                                exclude: Optional["CardInstance"] = None,
                                x_ceiling: Optional[int] = None,
+                               source: Optional["CardInstance"] = None,
                                ) -> bool:
     """Convenience wrapper used by Phase 3 cast_manager migration.
 
@@ -873,14 +907,16 @@ def has_legal_target_for_spell(game: "GameState", controller: int,
         if req.is_optional:
             continue
         if req.mode_group is None:
-            if not has_legal_target(game, controller, req, exclude=exclude, x_ceiling=x_ceiling):
+            if not has_legal_target(game, controller, req, exclude=exclude,
+                                    x_ceiling=x_ceiling, source=source):
                 return False
         else:
             modal_groups.setdefault(req.mode_group, []).append(req)
 
     # For each modal group, at least one requirement must be legal.
     for group_id, group_reqs in modal_groups.items():
-        if not any(has_legal_target(game, controller, r, exclude=exclude, x_ceiling=x_ceiling)
+        if not any(has_legal_target(game, controller, r, exclude=exclude,
+                                    x_ceiling=x_ceiling, source=source)
                    for r in group_reqs):
             return False
     return True

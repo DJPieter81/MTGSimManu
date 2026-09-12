@@ -2261,6 +2261,12 @@ def parse_sacrifice_mana_units(oracle: str) -> Optional[List[List[str]]]:
       * ``Sacrifice this creature: <non-mana effect>`` — no ``Add``.
     """
     low = (oracle or '').lower()
+    # A quoted span is an ability GRANTED to something else (a token
+    # "with 'Sacrifice this token: Add {C}'") — it belongs to that token,
+    # which the token factory parses from the inner text. Reading it here
+    # put the token's mana on 21 Spawn/Scion makers' own templates, so the
+    # payment solver could sacrifice the maker itself for {C}.
+    low = re.sub(r'"[^"]*"', '', low)
     # Anchor on "sacrifice this <noun>" so other-permanent sacrifice costs and
     # tap abilities cannot match. The effect must begin with "add".
     m = re.search(
@@ -2935,12 +2941,14 @@ def parse_madness_cost(oracle: str) -> "Optional[ManaCost]":
 def parse_equip_cost(oracle: str) -> Optional[int]:
     """Parse Equip cost from oracle text.
 
-    "Equip {2}" → 2
+    "Equip {2}" → 2; "Equip {1}{R}" → 2; "Equip {B}{B}" → 2.
+
+    The quantity is the sum of EVERY printed symbol. A first pass that
+    matched only the leading generic symbol typed "Equip {1}{R}" as 1,
+    so every equipment with a coloured equip cost (24 print generic +
+    colour in the pool) equipped one mana cheap. The colour requirement
+    itself is still not typed — the field is a quantity.
     """
-    m = re.search(r'equip\s*\{(\d+)\}', oracle, re.IGNORECASE)
-    if m:
-        return int(m.group(1))
-    # Equip with colored mana: "Equip {B}{B}"
     m = re.search(r'equip\s*((?:\{[^}]+\})+)', oracle, re.IGNORECASE)
     if m:
         symbols = re.findall(r'\{([^}]+)\}', m.group(1))
@@ -3331,6 +3339,12 @@ def parse_cast_trigger_token(oracle: str) -> Optional[Dict]:
     qualifier = m.group(1).strip()
     if "noncreature" in qualifier:
         spell_types = frozenset({"noncreature"})
+    elif "colorless" in qualifier:
+        # Colour-class condition (CR 105.2c): "a colorless spell" — read
+        # off the cast spell's colours (devoid included), the way the
+        # type qualifiers are read off its card types. 12 pool cards;
+        # every one typed as no trigger before this sentinel.
+        spell_types = frozenset({"colorless"})
     else:
         spell_types = frozenset(
             w for w in re.split(r"\s+or\s+|\s+and\s+|\s+", qualifier)
@@ -3343,6 +3357,93 @@ def parse_cast_trigger_token(oracle: str) -> Optional[Dict]:
         "attach_source": parse_token_attach_rider(lo),
         "clause": None,
     }
+
+
+_DIES_OBSERVER_RE = re.compile(
+    r"whenever (a|another) creature( you control| an opponent controls)? dies, "
+    r"([^.\n]*)\.?(?:\s*(if [^.\n]*instead)\.)?")
+_DIES_OBSERVER_COUNTER_RE = re.compile(
+    r"^put (a|an|one|two|three|\d+) \+1/\+1 counters? on "
+    r"(equipped creature|enchanted creature|this creature|this permanent|it)$")
+_DIES_OBSERVER_DRAIN_RE = re.compile(
+    r"^each opponent loses (\d+|one|two) life(?: and you gain (\d+|one|two) life)?$")
+_DIES_OBSERVER_GAIN_RE = re.compile(
+    r"^you gain (\d+|one|two) life(?: and draw a card)?$")
+_DIES_OBSERVER_DRAW_RE = re.compile(
+    r"^(?:you )?draw (a|one|two) cards?(?: and you lose (\d+|one) life)?$")
+
+
+def parse_creature_dies_observer(oracle: str) -> Optional[Dict]:
+    """Parse a permanent's "whenever a/another creature [you control | an
+    opponent controls] dies, <effect>" OBSERVER trigger (CR 603.2) — the
+    clause fires on OTHER creatures' deaths, unlike the dying creature's
+    own "when this creature dies" clause (`resolve_dies_trigger`).
+
+    Returns::
+
+        {"scope": "any" | "you" | "opponent", "another": bool,
+         "kind": "counter_attached" | "counter_self" | "drain" | "gain" | "draw",
+         "amount": int, "gain": int, "lose_life": int, "draw": int,
+         "subtype_bonus": Optional[(subtype, amount)]}
+
+    or None when there is no such clause OR its rider is a shape the
+    dispatcher does not execute (sacrifice, damage, counters elsewhere,
+    conditional forms) — refused whole rather than half-run. Class: 36
+    non-creature permanents in the pool plus the creature observers
+    (Blood Artist shape).
+    """
+    if not oracle:
+        return None
+    lo = strip_reminder_text(oracle).lower()
+    m = _DIES_OBSERVER_RE.search(lo)
+    if not m:
+        return None
+    scope = {" you control": "you", " an opponent controls": "opponent"}.get(
+        m.group(2) or "", "any")
+    another = m.group(1) == "another"
+    effect = m.group(3).strip()
+    rider = (m.group(4) or "").strip()
+    spec = {"scope": scope, "another": another, "amount": 0, "gain": 0,
+            "lose_life": 0, "draw": 0, "subtype_bonus": None}
+    cm = _DIES_OBSERVER_COUNTER_RE.match(effect)
+    if cm:
+        target = cm.group(2)
+        spec["kind"] = ("counter_attached"
+                        if target in ("equipped creature", "enchanted creature")
+                        else "counter_self")
+        spec["amount"] = _NUM_WORDS.get(cm.group(1), 1) if not cm.group(1).isdigit() else int(cm.group(1))
+        # "If equipped creature is a <subtype>, put two ... instead."
+        bm = re.match(r"if (?:equipped|enchanted|this) creature is an? (\w+), "
+                      r"put (a|two|three|\d+) \+1/\+1 counters? on it instead", rider)
+        if bm:
+            n = bm.group(2)
+            spec["subtype_bonus"] = (bm.group(1), int(n) if n.isdigit() else _NUM_WORDS.get(n, 1))
+        elif rider:
+            return None
+        return spec
+    if rider:
+        return None
+    dm = _DIES_OBSERVER_DRAIN_RE.match(effect)
+    if dm:
+        spec["kind"] = "drain"
+        spec["amount"] = int(dm.group(1)) if dm.group(1).isdigit() else _NUM_WORDS.get(dm.group(1), 1)
+        if dm.group(2):
+            spec["gain"] = int(dm.group(2)) if dm.group(2).isdigit() else _NUM_WORDS.get(dm.group(2), 1)
+        return spec
+    gm = _DIES_OBSERVER_GAIN_RE.match(effect)
+    if gm:
+        spec["kind"] = "gain"
+        spec["gain"] = int(gm.group(1)) if gm.group(1).isdigit() else _NUM_WORDS.get(gm.group(1), 1)
+        spec["draw"] = 1 if "draw a card" in effect else 0
+        return spec
+    wm = _DIES_OBSERVER_DRAW_RE.match(effect)
+    if wm:
+        spec["kind"] = "draw"
+        spec["draw"] = _NUM_WORDS.get(wm.group(1), 1)
+        if wm.group(2):
+            spec["lose_life"] = int(wm.group(2)) if wm.group(2).isdigit() else 1
+        return spec
+    return None
 
 
 def _parse_token_create_count(text: str) -> int:
@@ -4506,8 +4607,13 @@ def parse_pump_spell(oracle: str) -> "tuple[int, int, str]":
     if not oracle:
         return 0, 0, ""
     text = strip_reminder_text(oracle).lower()
+    # The bonus and a keyword grant share one clause: "+1/+0 and gains
+    # first strike until end of turn", "+2/+2 and gains hexproof until end
+    # of turn". Reading only the bare "+N/+M until end of turn" shape left
+    # 137 of the 323 Modern pump spells typed as no pump at all.
     m = re.search(
-        r'target creature[^.]*?gets \+(\d+)/\+(\d+) until end of turn', text)
+        r'target creature[^.]*?gets \+(\d+)/\+(\d+)'
+        r'(?: and (?:gains|has) [a-z ,]+?)? until end of turn', text)
     if not m:
         return 0, 0, ""
     power, tough = int(m.group(1)), int(m.group(2))
@@ -4523,6 +4629,43 @@ def parse_pump_spell(oracle: str) -> "tuple[int, int, str]":
                 keyword = word
                 break
     return power, tough, keyword
+
+
+_LOOT_RE = re.compile(
+    r'(?P<each>each player )?draws? (?P<draw>a|an|one|two|three|four|five|six|\d+) '
+    r'cards?, then discards? (?P<discard>a|an|one|two|three|four|five|six|\d+) '
+    r'cards?(?P<random> at random)?')
+
+
+def parse_loot_effect(oracle: str) -> "Optional[dict]":
+    """Parse the loot shape — "[each player] draw(s) N card(s), then
+    discard(s) M card(s) [at random]" — into
+    ``{"draw": N, "discard": M, "random": bool, "each_player": bool}``,
+    or None when the text has no such clause.
+
+    The discard half was dropped by the generic resolver, which typed
+    the clause as a plain draw (Faithless Looting kept both cards;
+    Burning Inquiry resolved to nothing). Typed once here so the
+    resolver, the AI's card-advantage reading and any cost-per-discard
+    consumer agree. Class: 36 Modern instants/sorceries, 4 "each player"
+    shapes, 145 permanents carrying the ability.
+    """
+    if not oracle:
+        return None
+    text = strip_reminder_text(oracle).lower()
+    m = _LOOT_RE.search(text)
+    if not m:
+        return None
+
+    def _n(tok: str) -> int:
+        if tok.isdigit():
+            return int(tok)
+        return {'a': 1, 'an': 1, 'one': 1, 'two': 2, 'three': 3, 'four': 4,
+                'five': 5, 'six': 6}.get(tok, 1)
+
+    return {"draw": _n(m.group('draw')), "discard": _n(m.group('discard')),
+            "random": m.group('random') is not None,
+            "each_player": m.group('each') is not None}
 
 
 def parse_equip_pt_grant(oracle: str) -> "tuple[int, int]":

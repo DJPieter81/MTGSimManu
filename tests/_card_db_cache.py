@@ -18,5 +18,7 @@ _DB = None
 def shared_card_database():
     global _DB
     if _DB is None:
-        _DB = CardDatabase()
+        # The engine's own process-wide accessor: whichever side loads
+        # first, the other reuses it, so the suite holds ONE real pool.
+        _DB = CardDatabase.shared()
     return _DB

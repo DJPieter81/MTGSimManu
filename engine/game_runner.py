@@ -17,6 +17,7 @@ from .turn_manager import TurnManager, TurnStep
 
 from .combat_manager import CombatManager
 from .callbacks import GameCallbacks
+from . import game_budget
 
 # MTG rule: "Urza's Tron" — three specific lands that produce 7 colorless
 # when all three are in play. Analogous to basic land type → color mapping.
@@ -276,7 +277,7 @@ class AICallbacks(GameCallbacks):
 
     def choose_tutor_target(self, game, player_idx, source, eligible):
         from ai.activation_ev import choose_tutor_delivery
-        return choose_tutor_delivery(game, player_idx, eligible)
+        return choose_tutor_delivery(game, player_idx, eligible, source=source)
 
     def choose_mana_color(self, game, player_idx, source, options):
         """Pick an entry-choice colour from the deck's actual mana needs.
@@ -361,7 +362,11 @@ class GameResult:
     turns: int
     winner_life: int
     loser_life: int
-    win_condition: str  # "damage", "mill", "combo", "concede", "timeout"
+    # "damage", "mill", "combo", "concede" — a winner; "timeout" — turn-cap
+    # draw (CR 104.4); "draw" — simultaneous loss; "aborted" — the CPU safety
+    # budget fired (engine.game_budget), NOT a game result: count it, never
+    # credit it.
+    win_condition: str
     deck1_name: str = ""
     deck2_name: str = ""
     deck1_lands_played: int = 0
@@ -389,6 +394,18 @@ class MatchResult:
     deck1_name: str = ""
     deck2_name: str = ""
 
+    @property
+    def aborted_games(self) -> int:
+        """Games in this match cut off by the CPU safety budget."""
+        return sum(1 for g in self.games if g.win_condition == "aborted")
+
+    @property
+    def drawn_games(self) -> int:
+        """Games in this match that ended without a winner for a RULES
+        reason (turn cap or simultaneous loss) — aborts excluded."""
+        return sum(1 for g in self.games
+                   if g.winner is None and g.win_condition != "aborted")
+
 
 class GameRunner:
     """Runs complete MTG games and matches between two AI players."""
@@ -396,6 +413,10 @@ class GameRunner:
     def __init__(self, card_db: CardDatabase, rng: random.Random = None):
         self.card_db = card_db
         self.rng = rng or random.Random()
+        # The pool this runner plays from is the process's pool: lazy
+        # consumers (sideboard solver, gameplan derivation) resolve
+        # `CardDatabase.shared()` instead of loading a second copy.
+        CardDatabase.register_shared(card_db)
 
     def build_deck(self, deck_list: Dict[str, int]) -> List[CardTemplate]:
         """Convert a deck list (name -> count) to a list of CardTemplates."""
@@ -708,14 +729,12 @@ class GameRunner:
         turn_mgr = game.turn_mgr
         turn_mgr.first_player = first_player
 
-        # Game loop — driven by TurnManager
-        import time as _time
-        _game_start = _time.monotonic()
-        from ai.constants import GAME_TIMEOUT_SECONDS
-        _max_game_time = GAME_TIMEOUT_SECONDS
-        game._game_deadline = _game_start + _max_game_time
+        # Game loop — driven by TurnManager. The safety valve is a CPU
+        # budget owned by engine.game_budget (see that module for why it
+        # is not a wall-clock deadline).
+        game_budget.arm(game)
         while not game.game_over and game.turn_number < game.max_turns:
-            if _time.monotonic() > game._game_deadline:
+            if game_budget.expired(game):
                 break
             active = game.active_player
             ai = ais[active]
@@ -732,8 +751,7 @@ class GameRunner:
             for step in turn_mgr.iterate_turn(game):
                 if game.game_over:
                     break
-                if _time.monotonic() > game._game_deadline:
-                    game.game_over = True
+                if game_budget.expired(game):
                     break
 
                 def _board_summary():
@@ -932,7 +950,13 @@ class GameRunner:
                         combat_mgr.declare_blockers(game, blocks)
 
                 elif step == TurnStep.AFTER_BLOCKERS_DECLARED:
-                    pass  # Future: priority window after blockers
+                    # CR 509.4: priority after blockers are declared —
+                    # the active player's combat-trick window.
+                    if combat_mgr.attackers:
+                        self._combat_trick_window(game, ai, opponent_ai,
+                                                  combat_mgr)
+                        if game.game_over:
+                            break
 
                 elif step == TurnStep.FIRST_STRIKE_DAMAGE:
                     pass  # First-strike and regular damage are both
@@ -1030,6 +1054,14 @@ class GameRunner:
                     win_condition = "mill"
                 else:
                     win_condition = "combo"
+        elif game_budget.exhausted(game):
+            # The CPU safety valve fired (engine.game_budget). This is not a
+            # game result at all — the game was cut off mid-play — so it is
+            # labelled distinctly from a CR 104.4 draw and aggregators count
+            # it instead of crediting it to either deck.
+            winner = None
+            loser = None
+            win_condition = "aborted"
         elif game.turn_number >= game.max_turns:
             # CR 104.4 — a game that does not end with a winner is a DRAW.
             # `MAX_TURNS` is a wall-clock safety valve, not a tiebreak, so
@@ -1128,16 +1160,107 @@ class GameRunner:
         is not empty, the top item resolves. Then SBAs are checked,
         triggers are put on the stack, and the active player gets priority.
         """
-        import time as _time
         _max_resolves = 100  # safety valve
         _resolves = 0
         while not game.stack.is_empty and _resolves < _max_resolves:
-            if hasattr(game, '_game_deadline') and _time.monotonic() > game._game_deadline:
+            if game_budget.expired(game):
                 game.stack.items.clear()
                 return
             game.resolve_stack()
             game.check_state_based_actions()
             _resolves += 1
+            if game.game_over:
+                return
+
+    def _offer_response_window(self, game: GameState, caster_ai: AIPlayer,
+                               responder_ai: AIPlayer) -> None:
+        """Offer the responder priority over the spell on top of the stack
+        (CR 117.3d) and cast whatever their `decide_response` returns.
+
+        One owner for every cast path — the main phase and the instant
+        windows (`_cast_instant_removal`) alike.  The instant windows used
+        to resolve their spells without this offer, so nothing cast at
+        begin-combat or end-step could ever be countered, however many
+        counters the active player held with mana open (2026-09-08).
+
+        Teferi gate: a "cast at sorcery speed only" effect controlled by
+        the CASTER's side denies the responder instant-speed casting.
+        """
+        caster_player = game.players[caster_ai.player_idx]
+        if _sorcery_speed_only_active(caster_player):
+            return
+        if game.stack.is_empty:
+            return
+        top = game.stack.top
+        if not top:
+            return
+        response = responder_ai.decide_response(game, top)
+        # Emit RESPONSE_DECISION onto the structured replay log (W0-H).
+        # The decider stores its decision context on `last_decision`; we
+        # read it here and emit so the engine remains the single owner
+        # of replay-event emission.
+        self._emit_response_decision_event(responder_ai, game, top, response)
+        if response:
+            resp_card, resp_targets = response
+            if getattr(game, 'verbose', False):
+                game.log.append(f'    [Priority] P{responder_ai.player_idx+1} responds with {resp_card.name}')
+            game.cast_spell(responder_ai.player_idx, resp_card, resp_targets)
+            if hasattr(caster_ai, 'bhi'):
+                caster_ai.bhi.observe_spell_cast(
+                    game, getattr(resp_card.template, 'tags', set()))
+        else:
+            if getattr(game, 'verbose', False):
+                game.log.append(f'    [Priority] P{responder_ai.player_idx+1} passes (no response)')
+            if hasattr(caster_ai, 'bhi'):
+                responder = game.players[responder_ai.player_idx]
+                responder_mana = len(responder.untapped_lands) + responder.mana_pool.total()
+                spell_template = top.source.template if top.source else None
+                caster_ai.bhi.observe_priority_pass(
+                    game,
+                    spell_on_stack=True,
+                    spell_is_creature=spell_template.is_creature if spell_template else False,
+                    opp_mana_available=responder_mana)
+
+    def _combat_trick_window(self, game: GameState, active_ai: AIPlayer,
+                             opponent_ai: AIPlayer, combat_mgr,
+                             max_tricks: int = 3) -> None:
+        """CR 509.4: after blockers are declared the active player receives
+        priority.  Offer their `decide_combat_trick` the declared
+        assignments and cast what it returns; the defending player is
+        offered a response to each cast (CR 117.3d) and the stack resolves
+        before combat damage.
+
+        This step was `pass` — no player ever held priority after blocks,
+        so a pump could only be cast in a main phase, where it is worth
+        nothing (2026-09-08, Prowess replays).
+
+        Teferi gate: a "cast at sorcery speed only" effect on the DEFENDING
+        side denies the active player instant-speed casting in combat.
+        """
+        if game.game_over or not combat_mgr.attackers:
+            return
+        if _sorcery_speed_only_active(game.players[opponent_ai.player_idx]):
+            return
+        decide = getattr(active_ai, 'decide_combat_trick', None)
+        if decide is None:
+            return
+        for _ in range(max_tricks):
+            decision = decide(game, combat_mgr)
+            if not decision:
+                break
+            card, targets = decision
+            if getattr(game, 'verbose', False):
+                game.log.append(
+                    f'  [After Blockers] P{active_ai.player_idx+1} casts '
+                    f'{card.name}')
+            if not game.cast_spell(active_ai.player_idx, card, targets):
+                break
+            if hasattr(opponent_ai, 'bhi'):
+                opponent_ai.bhi.observe_spell_cast(
+                    game, getattr(card.template, 'tags', set()))
+            self._offer_response_window(game, caster_ai=active_ai,
+                                        responder_ai=opponent_ai)
+            self._resolve_stack_loop(game)
             if game.game_over:
                 return
 
@@ -1195,8 +1318,13 @@ class GameRunner:
         instant_removal = []
         flash_creatures = []
         evoke_creatures = []
+        from .cast_manager import CastManager as _CM
         for card in list(opponent.hand):
             if not game.can_cast(opponent_idx, card):
+                continue
+            # A spell the active player's lock permanent counters on cast
+            # (the engine's own predicate) is not worth casting here either.
+            if _CM.lock_that_counters(game, opponent_idx, card.template) is not None:
                 continue
             if card.template.is_instant or card.template.has_flash:
                 if "removal" in card.template.tags:
@@ -1258,6 +1386,10 @@ class GameRunner:
                 if targets:
                     success = game.cast_spell(opponent_idx, card, targets)
                     if success:
+                        # The active player gets priority over it
+                        # (CR 117.3d) — this window is not exempt.
+                        self._offer_response_window(
+                            game, caster_ai=opponent_ai, responder_ai=active_ai)
                         while not game.stack.is_empty:
                             game.resolve_stack()
                             game.check_state_based_actions()
@@ -1265,18 +1397,27 @@ class GameRunner:
                                 return
                         cast_count += 1
 
-        # End-step only: deploy flash creatures if we have unused mana
-        if context == "end_step" and flash_creatures and cast_count < max_instants:
-            for card in flash_creatures:
-                if cast_count >= max_instants:
+        # End-step only: flash creatures — WHICH one (if any) is the AI's
+        # decision (`decide_flash_deploy`: legend rule, positive EV). The
+        # engine used to cast every castable one, a second copy of a
+        # legendary creature into its own legend rule included.
+        decide = getattr(opponent_ai, 'decide_flash_deploy', None)
+        if (context == "end_step" and flash_creatures and cast_count < max_instants
+                and decide is not None):
+            while cast_count < max_instants:
+                candidates = [c for c in flash_creatures
+                              if c.zone == "hand" and game.can_cast(opponent_idx, c)]
+                if not candidates:
                     break
-                # Skip if already cast as removal above
-                if card.zone != "hand":
-                    continue
-                if not game.can_cast(opponent_idx, card):
-                    continue
+                card = decide(game, candidates)
+                if card is None or card not in candidates:
+                    break
                 success = game.cast_spell(opponent_idx, card, [])
+                if not success:
+                    break
                 if success:
+                    self._offer_response_window(
+                        game, caster_ai=opponent_ai, responder_ai=active_ai)
                     while not game.stack.is_empty:
                         game.resolve_stack()
                         game.check_state_based_actions()
@@ -1288,8 +1429,7 @@ class GameRunner:
                              opponent_ai: AIPlayer):
         """Execute a main phase with priority-based stack interaction.
         """
-        import time as _time
-        if hasattr(game, '_game_deadline') and _time.monotonic() > game._game_deadline:
+        if game_budget.expired(game):
             return
         # Per CR 117.3a: Active player receives priority at the beginning
         # of the main phase. They can play lands, cast spells, or pass.
@@ -1321,7 +1461,7 @@ class GameRunner:
         _excluded_activations: set = set()
 
         while actions < max_actions and not game.game_over:
-            if hasattr(game, '_game_deadline') and _time.monotonic() > game._game_deadline:
+            if game_budget.expired(game):
                 return
             decision = ai.decide_main_phase(
                 game, excluded_cards=_excluded,
@@ -1435,45 +1575,9 @@ class GameRunner:
                     actions += 1
                     continue
                 if success:
-                    # Opponent gets priority to respond (CR 117.3d) — UNLESS
-                    # the active player controls a Teferi-style "cast at
-                    # sorcery speed only" effect. In that case, the opponent
-                    # literally cannot respond at instant speed.
-                    active_player = game.players[ai.player_idx]
-                    if _sorcery_speed_only_active(active_player):
-                        pass  # skip response window entirely
-                    elif not game.stack.is_empty:
-                        top = game.stack.top
-                        if top:
-                            response = opponent_ai.decide_response(game, top)
-                            # Emit RESPONSE_DECISION onto the structured
-                            # replay log (W0-H). The decider stores its
-                            # decision context on `last_decision`; we read
-                            # it here and emit so the engine remains the
-                            # single owner of replay-event emission.
-                            self._emit_response_decision_event(
-                                opponent_ai, game, top, response)
-                            if response:
-                                resp_card, resp_targets = response
-                                if getattr(game, 'verbose', False):
-                                    game.log.append(f'    [Priority] P{opponent_ai.player_idx+1} responds with {resp_card.name}')
-                                game.cast_spell(opponent_ai.player_idx,
-                                                resp_card, resp_targets)
-                                if hasattr(ai, 'bhi'):
-                                    ai.bhi.observe_spell_cast(
-                                        game, getattr(resp_card.template, 'tags', set()))
-                            else:
-                                if getattr(game, 'verbose', False):
-                                    game.log.append(f'    [Priority] P{opponent_ai.player_idx+1} passes (no response)')
-                                if hasattr(ai, 'bhi'):
-                                    opp = game.players[opponent_ai.player_idx]
-                                    opp_mana = len(opp.untapped_lands) + opp.mana_pool.total()
-                                    spell_template = top.source.template if top.source else None
-                                    ai.bhi.observe_priority_pass(
-                                        game,
-                                        spell_on_stack=True,
-                                        spell_is_creature=spell_template.is_creature if spell_template else False,
-                                        opp_mana_available=opp_mana)
+                    # Opponent gets priority to respond (CR 117.3d).
+                    self._offer_response_window(game, caster_ai=ai,
+                                                responder_ai=opponent_ai)
 
                     # Both passed — resolve stack (CR 117.4)
                     self._resolve_stack_loop(game)
@@ -2308,6 +2412,7 @@ class GameRunner:
         'Sacrifice this: [effect]' patterns and activates when strategically sound.
         No card names — all logic derived from oracle text."""
         import re
+        from .activation import ActivationManager as _AM
         player = game.players[active]
         opponent_idx = 1 - active
         opponent = game.players[opponent_idx]
@@ -2315,6 +2420,16 @@ class GameRunner:
         for perm in list(player.battlefield):
             oracle = (perm.template.oracle_text or '').lower()
             if 'sacrifice' not in oracle:
+                continue
+            # A parsed self-sacrifice ability the activation path can run
+            # is the AI's decision (`ai/activation_ev`), with its cost
+            # charged there (CR 602.2b). This residual heuristic keeps only
+            # the shapes that path cannot execute yet — it used to fire
+            # the parsed ones too, on its own thresholds and for free.
+            sac_abilities = [a for a in (perm.template.activated_abilities or [])
+                             if getattr(a.cost, 'sacrifice_self', False)]
+            if any(a.effect_kind in _AM.RESOLVABLE_EFFECT_KINDS
+                   for a in sac_abilities):
                 continue
             # Must be "sacrifice this/~" pattern (self-sacrifice, not "sacrifice a creature")
             sac_match = re.search(
@@ -2373,14 +2488,48 @@ class GameRunner:
                     should_activate = True
 
             if should_activate and perm in player.battlefield:
-                player.battlefield.remove(perm)
-                perm.zone = "graveyard"
-                player.graveyard.append(perm)
+                # CR 602.2b / 601.2h: the parsed cost is paid first, or the
+                # ability is not activated at all.
+                if not self._pay_sacrifice_ability_cost(game, active, perm,
+                                                        sac_abilities):
+                    continue
+                # CR 608.2h: the effect reads the sacrificed permanent's
+                # counters as last-known information — captured before
+                # it leaves the battlefield (leaving clears them).
+                charge = perm.other_counters.get("charge", 0)
+                game.zone_mgr.move_card_to_graveyard(game, perm, cause="sacrifice")
                 game.log.append(f"T{game.display_turn} P{active+1}: "
                                 f"Activate {perm.name} (sacrifice)")
-                self._resolve_sac_effect(game, active, perm, effect_text)
+                self._resolve_sac_effect(game, active, perm, effect_text,
+                                         charge=charge)
                 if game.game_over:
                     return
+
+    @staticmethod
+    def _pay_sacrifice_ability_cost(game: GameState, active: int, perm,
+                                    sac_abilities) -> bool:
+        """Charge the mana, tap and life items of a self-sacrifice
+        ability's parsed cost (the sacrifice itself is paid by the caller).
+        A cost the parser could not read, or one carrying an item this
+        path cannot charge, is not paid — and an unpaid cost means no
+        activation (CR 601.2h), the same rule the activation path applies."""
+        ability = sac_abilities[0] if sac_abilities else None
+        if ability is None or ability.cost.unpayable:
+            return False
+        cost = ability.cost
+        if cost.sacrifice_type is not None or cost.discard_cards > 0 \
+                or cost.exile_from_graveyard_cards > 0:
+            return False
+        if cost.tap_self and perm.tapped:
+            return False
+        if cost.mana.cmc > 0 and not game.tap_lands_for_mana(
+                active, cost.mana, None, exclude_instance_id=perm.instance_id):
+            return False
+        if cost.life > 0:
+            game.players[active].life -= cost.life
+        if cost.tap_self:
+            perm.tap()
+        return True
 
     def _process_end_step_returns(self, game: GameState, active: int):
         """Resolve delayed "return at the next end step" blink triggers
@@ -2397,8 +2546,11 @@ class GameRunner:
         from engine.card_effects import phelia_end_step
         phelia_end_step(game, None, active)
 
-    def _resolve_sac_effect(self, game: GameState, controller: int, sacrificed, effect_text: str):
-        """Execute sacrifice ability effect, parsed from oracle text."""
+    def _resolve_sac_effect(self, game: GameState, controller: int, sacrificed,
+                            effect_text: str, charge: Optional[int] = None):
+        """Execute sacrifice ability effect, parsed from oracle text.
+        `charge` is the sacrificed permanent's charge count as last-known
+        information (CR 608.2h); when omitted it is read off the card."""
         import re
         player = game.players[controller]
         opp_idx = 1 - controller
@@ -2407,7 +2559,8 @@ class GameRunner:
         if 'draw a card' in effect_text:
             game.draw_cards(controller, 1)
         elif 'destroy' in effect_text and 'mana value' in effect_text:
-            charge = sacrificed.other_counters.get("charge", 0)
+            if charge is None:
+                charge = sacrificed.other_counters.get("charge", 0)
             # Only destroy OPPONENT's permanents (Blast Zone/EE target opponents)
             from engine.cards import Keyword
             for c in list(opp.battlefield):

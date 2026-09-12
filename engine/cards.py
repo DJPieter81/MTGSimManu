@@ -930,6 +930,11 @@ class CardTemplate:
     pump_spell_power: int = 0
     pump_spell_toughness: int = 0
     pump_spell_keyword: str = ""
+    # "[each player] draw N, then discard M [at random]" loot shape —
+    # parsed once (parse_loot_effect): {"draw", "discard", "random",
+    # "each_player"} or None. The resolver discards through the discard
+    # funnel after drawing; was resolved as a plain draw (or nothing).
+    loot_data: Optional[dict] = None
     # X-counter scaling -- True when oracle grants 'X +1/+1 counter(s)' (Ballista pattern).
     # Populated by oracle_parser.parse_has_x_counter_scaling.
     has_x_counter_scaling: bool = False
@@ -1105,6 +1110,12 @@ class CardTemplate:
     # by `CardInstance.add_plus_counters` — the single +1/+1 counter funnel —
     # so no placement path can put counters without the trigger seeing it.
     counter_placement_trigger: Optional["CounterPlacementTrigger"] = None
+    # "Whenever a/another creature [you control] dies, <effect>" — an
+    # OBSERVER of other creatures' deaths (CR 603.2; 36 non-creature
+    # permanents + the creature observers). Populated by
+    # oracle_parser.parse_creature_dies_observer; fanned out by
+    # PermanentEffects._creature_dies after the dying creature has left.
+    creature_dies_observer: Optional[dict] = None
     # "If one or more <kind> counters would be put on <scope> you control,
     # <that many ±1 | twice that many> are put on it instead" (CR 614.1c,
     # 14 Modern cards). Applied inside the ONE counter funnel

@@ -140,7 +140,7 @@ def choose_sacrifice_victim(game, player_idx, legal):
     return min(legal, key=_loss)
 
 
-def choose_tutor_delivery(game, player_idx, eligible):
+def choose_tutor_delivery(game, player_idx, eligible, source=None):
     """Pick which card an activated library tutor delivers — the AI half
     of the `choose_tutor_target` callback seam (the engine default is the
     highest mana value satisfying the constraint).
@@ -159,6 +159,13 @@ def choose_tutor_delivery(game, player_idx, eligible):
 
     if not eligible:
         return None
+    if all(c.template.is_land for c in eligible):
+        # A mass land search picks one land at a time; the engine leaves
+        # the picks already made on the source (`_tutor_batch`) so a
+        # second bounce land can be declined (it would return a
+        # co-entrant).
+        batch = list(getattr(source, '_tutor_batch', None) or [])
+        return _choose_land_delivery(game, player_idx, eligible, batch)
     snap = snapshot_from_game(game, player_idx)
     # A candidate that completes an unbounded mana engine with the board
     # (engine-side rules query) is worth the engine's shortcut allowance —
@@ -175,6 +182,54 @@ def choose_tutor_delivery(game, player_idx, eligible):
         return float(c.template.cmc or 0)
 
     return max(eligible, key=_worth)
+
+
+def _choose_land_delivery(game, player_idx, lands, batch=()):
+    """Which land a library land tutor delivers — ranked by the plan, not
+    by mana value (every land's is zero, so the generic ranking picked
+    whichever came first).
+
+    Order: a bounce land ranks last when its entry would bounce a
+    co-entrant — with no untapped-entry watcher in play (the retention
+    rule `conservative_land_retention` encodes; the engine's
+    `LandManager` answers the watcher query), or once the batch already
+    holds a bounce land (every bounce trigger resolves, CR 603, so two
+    fetched together return each other: the base nets one land fewer per
+    extra bounce land, watcher or not); then the AI's ONE land valuation, the
+    land-drop scorer `EVPlayer._score_land` (Tron-set completion, the
+    gameplan's declared `land_priorities`, colour needs, landfall — the
+    same question "which land do I most want next"). No card names, no
+    new weights, no second land valuation.
+    """
+    import random as _random
+    from engine.land_manager import LandManager
+    from ai.ev_player import EVPlayer
+    me = game.players[player_idx]
+    watcher = LandManager.player_has_untap_on_enter_watcher(game, player_idx)
+    ai = EVPlayer(player_idx=player_idx,
+                  deck_name=getattr(me, 'deck_name', None) or '',
+                  rng=_random.Random(0))
+    try:
+        ai._init_deck_knowledge(game)
+    except Exception:
+        pass
+    spells = [c for c in me.hand if not c.template.is_land]
+
+    def _drop_value(c) -> float:
+        try:
+            return float(ai._score_land(c, me, spells, game))
+        except Exception:
+            return 0.0
+
+    batch_has_bounce = any(getattr(b.template, 'etb_return_land', False)
+                           for b in batch)
+
+    def _key(c):
+        is_bounce = bool(getattr(c.template, 'etb_return_land', False))
+        bounce_penalised = is_bounce and (not watcher or batch_has_bounce)
+        return (not bounce_penalised, _drop_value(c))
+
+    return max(lands, key=_key)
 
 
 def counter_pt_delta(counter_kind: str, amount: int) -> int:

@@ -199,8 +199,11 @@ def build_val_data(D):
         else:
             detail = f'In range ({lo}-{hi}%). Performing as expected at {wr}%.'
         
-        entries.append(f"  {{name:'{name}',wr:{wr},lo:{lo},hi:{hi},pass:{passed},"
-                       f"detail:'{detail}'}}")
+        # JSON-encoded literals: a deck name with an apostrophe (Goryo's
+        # Vengeance) pasted raw into a single-quoted JS string ended the
+        # literal early and aborted the whole inline script.
+        entries.append(f"  {{name:{json.dumps(name)},wr:{wr},lo:{lo},hi:{hi},pass:{passed},"
+                       f"detail:{json.dumps(detail)}}}")
     
     return 'const valData=[\n' + ',\n'.join(entries) + '\n];'
 
@@ -383,9 +386,11 @@ def patch(html, D, overall_grade, radar_data):
     
     # 3. Validation bars
     val_js = build_val_data(D)
+    # Function replacement: val_js holds JSON literals whose backslash
+    # escapes (— …) must land verbatim, not be parsed as a re template.
     html = re.sub(
         r'const valData=\[.*?\];',
-        val_js,
+        lambda m: val_js,
         html,
         flags=re.DOTALL
     )

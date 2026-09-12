@@ -3867,6 +3867,37 @@ a defensive plan is a card-swap of value, not a primary lever.
 Used by `_card_keep_score` in `ai/mulligan.py`.
 """
 
+MULLIGAN_SPELL_MANA_GAP_PENALTY: float = 1.0
+"""Derived: per-point-of-gap penalty when a spell's CMC exceeds the
+LANDS ALREADY IN HAND (not future draws). `_card_keep_score` values
+every spell by curve position and tags regardless of whether the hand
+can ever cast it — a hand can only guarantee mana from lands it
+holds, so a spell whose CMC exceeds that count needs an unguaranteed
+land draw for every point of gap.
+
+Observed (2026-09-06): a Azorius Blink opening hand — 1 land, Aang
+(CMC3), Quantum Riddler (CMC5), 2× Witch Enchanter (CMC4), Consign to
+Memory (CMC1) — scored 25.0 against the MULLIGAN_MIN_HAND_SCORE_7
+floor of 24.0 and was KEPT: every high-CMC card banked full curve
+value on a single land, and the game never drew a second land, so
+four of the five spells were dead for the whole game. Same mechanic
+as the excess-land penalty's counterpart: `_hand_ev_score` already
+discounts UNPRODUCTIVE lands beyond the optimal count; nothing
+discounted UNCASTABLE spells beyond the hand's own land count.
+
+Weight matches `MULLIGAN_EXCESS_LAND_PENALTY` (1.0) — a single point
+of gap on one card should not crater an otherwise-strong hand (a
+3-land hand's CMC-4 bomb, gap=1, loses 1.0 of its ~5-7 base score);
+several unreachable spells compound, which is exactly the Blink
+case above (gap 2+3+3, ~9 points off a 5-point base).
+
+Sister constant: MULLIGAN_EXCESS_LAND_PENALTY (same rate, opposite
+resource — too much mana vs. too little).
+
+Used by `_card_keep_score` in `ai/mulligan.py` as
+`MULLIGAN_SPELL_MANA_GAP_PENALTY * max(0, cmc - lands_in_hand)`.
+"""
+
 
 # ─── Sideboard-solver constants (ai/sideboard_solver.py) ─────────────
 # Used by `plan_sideboard` and clause evaluators to gate swap decisions
@@ -4743,13 +4774,27 @@ loops in non-combo archetypes where 40 actions would never occur.
 Used by `engine/game_runner.py` to gate the per-turn action budget.
 """
 
-GAME_TIMEOUT_SECONDS: float = 8.0
-"""Rules-constant: per-game wall-clock safety timeout. 8 seconds
-covers the slowest registered Modern matchup (Tron mirror) with
-~2× headroom. Beyond this, the game is aborted as a draw rather
-than risk a hung simulator.
+GAME_TIMEOUT_SECONDS: float = 30.0
+"""Rules-constant: per-game safety budget in CPU-SECONDS
+(`time.process_time`), armed by `engine/game_budget.py`. Not a
+wall-clock deadline any more — under load a starved process accrues
+no CPU, so contention cannot exhaust the budget, while a genuinely
+spinning loop still does. This is what makes a seeded outcome a
+function of the seed rather than of machine load.
 
-Used by `engine/game_runner.py` as the deadline anchor.
+Sizing (2026-09-06, idle 4-core box, 24-game probe over four
+matchups): the slowest legitimate game costs 3.9 CPU-s; most finish
+under 1 s; control mirrors reach the turn cap in ~0.9 s; the WR-anchor
+incident recorded ~4 s on a slow CI runner. 30 s is >7× the slowest
+legitimate game ever recorded, so it fires only on a runaway game.
+The previous 8 s wall-clock value fired on healthy games whenever the
+box was busy (`083393b`; the 2026-09-06 all-draws field run).
+
+A game that exhausts it is reported as `win_condition == "aborted"`
+and counted, never credited to either deck.
+
+The name is kept because `tests/test_wr_baseline_anchor.py` and
+`tools/refresh_wr_baseline.py` rebind it to neutralise the valve.
 """
 
 SHOCK_LETHAL_LIFE_THRESHOLD: int = 2

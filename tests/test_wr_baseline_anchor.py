@@ -108,11 +108,13 @@ def _replay(runner, deck1: str, deck2: str, seed: int) -> dict:
     """Re-run a Bo1 match at the given seed and return the
     deterministic outcome shape used in the fixture.
 
-    The engine arms a WALL-CLOCK deadline (`GAME_TIMEOUT_SECONDS`) and, when it
-    fires, breaks out of the turn loop, sets `game_over` and abandons stack
-    resolution. That is correct for production sims — it stops a runaway game —
-    but it makes a seeded outcome a function of MACHINE SPEED as well as of the
-    seed, which is incompatible with this file's whole purpose.
+    The engine arms a safety budget (`GAME_TIMEOUT_SECONDS`, read through
+    `engine.game_budget`) and, when it fires, breaks out of the turn loop, sets
+    `game_over` and abandons stack resolution. That is correct for production
+    sims — it stops a runaway game — but it makes a seeded outcome a function of
+    MACHINE SPEED as well as of the seed, which is incompatible with this file's
+    whole purpose. (It was a wall-clock deadline until 2026-09-06, which also
+    made the outcome a function of machine LOAD; it is CPU time now.)
 
     Observed: `Amulet Titan vs Living End @ 50000` passed locally at 29/29 and
     simultaneously failed in CI with the winner flipped, on the same commit. A

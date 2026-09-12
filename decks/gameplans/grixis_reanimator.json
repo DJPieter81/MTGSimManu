@@ -40,7 +40,7 @@
     "Psychic Frog"
   ],
   "mulligan_min_lands": 1,
-  "mulligan_max_lands": 3,
+  "mulligan_max_lands": 4,
   "reactive_only": [
     "Spell Pierce"
   ],

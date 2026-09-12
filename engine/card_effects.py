@@ -994,9 +994,10 @@ def orims_chant_resolve(game, card, controller, targets=None, item=None):
 @EFFECT_REGISTRY.register("Mutagenic Growth", EffectTiming.SPELL_RESOLVE,
                            description="Target creature gets +2/+2, pay 2 life")
 def mutagenic_growth_resolve(game, card, controller, targets=None, item=None):
-    my_creatures = game.players[controller].creatures
-    if my_creatures:
-        best = max(my_creatures, key=lambda c: c.power or 0)
+    # The creature it TARGETS (CR 608.2b), not the controller's biggest.
+    from .oracle_resolver import pump_target
+    best = pump_target(game, controller, targets)
+    if best is not None:
         best.temp_power_mod += 2
         best.temp_toughness_mod += 2
     # NOTE: no life deduction here. Mutagenic Growth's {G/P} pip is a CAST
@@ -1012,9 +1013,9 @@ def violent_urge_resolve(game, card, controller, targets=None, item=None):
     # Delirium — If 4+ card types in graveyard, double strike instead."
     # NO draw effect in oracle.
     from .cards import Keyword
-    my_creatures = game.players[controller].creatures
-    if my_creatures:
-        best = max(my_creatures, key=lambda c: c.power or 0)
+    from .oracle_resolver import pump_target
+    best = pump_target(game, controller, targets)
+    if best is not None:
         best.temp_power_mod += 1
         # Check delirium: 4+ card types in graveyard
         player = game.players[controller]
@@ -1022,10 +1023,13 @@ def violent_urge_resolve(game, card, controller, targets=None, item=None):
         for c in player.graveyard:
             for ct in c.template.card_types:
                 gy_types.add(ct)
+        # `keywords` is a computed view — a keyword granted until end of
+        # turn lives in `temp_keywords` (the generic pump resolver's home
+        # for it); adding to the view was a silent no-op.
         if len(gy_types) >= 4:
-            best.keywords.add(Keyword.DOUBLE_STRIKE)
+            best.temp_keywords.add(Keyword.DOUBLE_STRIKE)
         else:
-            best.keywords.add(Keyword.FIRST_STRIKE)
+            best.temp_keywords.add(Keyword.FIRST_STRIKE)
 
 
 @EFFECT_REGISTRY.register("Expressive Iteration", EffectTiming.SPELL_RESOLVE,
@@ -1895,11 +1899,15 @@ def _primeval_titan_search(game, controller):
 @EFFECT_REGISTRY.register("Wan Shi Tong, Librarian", EffectTiming.ETB,
                            description="Put X +1/+1 counters, draw half X cards (X = opponent's library searches)")
 def wan_shi_tong_etb(game, card, controller, targets=None, item=None):
-    """Wan Shi Tong enters with X +1/+1 counters where X = opponent searches."""
-    opponent = 1 - controller
-    x = game.players[opponent].library_searches_this_game
+    """Draws half X — X is the X that was PAID (CR 107.3), read off the
+    resolving stack item. The X +1/+1 counters are placed by the engine
+    on entry (spell_resolution's X-counter branch, the same path as every
+    other "enters with X counters" permanent); this handler READS them.
+    It used to add them again on top of the engine's placement (one X
+    too big), and then owned them outright — which left every handler
+    that only reads its counters (the Ballista shape) with none."""
+    x = int(getattr(item, 'x_value', 0) or 0) if item is not None else 0
     if x > 0:
-        card.add_plus_counters(x, game)
         draw_count = x // 2
         if draw_count > 0:
             game.draw_cards(controller, draw_count)
@@ -3184,12 +3192,32 @@ def scapeshift_resolve(game, card, controller, targets=None, item=None):
 
     library_lands.sort(key=land_priority, reverse=True)
 
+    # ── Which lands: the delivery seam, one pick at a time ───────────
+    # WHICH lands come is the caster's choice, not the engine's: every
+    # pick goes through `callbacks.choose_tutor_target` (the same seam
+    # every library tutor uses), with the engine order above as the
+    # rules-neutral default a first-of-eligible callback reproduces.
+    # The engine ranked the library by its own heuristic and never
+    # fetched an ability-land (Domain Zoo vs Amulet Titan, 2026-09-11).
+    chosen: list = []
+    pool = list(library_lands)
+    for _ in range(min(sac_count, len(pool))):
+        # The picks already made ride on the source so the seam can see
+        # the batch (a second bounce land returns a co-entrant).
+        card._tutor_batch = list(chosen)
+        pick = game.callbacks.choose_tutor_target(game, controller, card, list(pool))
+        if pick is None or pick not in pool:
+            pick = pool[0]
+        pool.remove(pick)
+        chosen.append(pick)
+    card._tutor_batch = None
+
     # ── Phase 1: enter all lands (no ETBs yet) ───────────────────────
     # All fetched lands enter simultaneously per MTG rules.  We stage
     # them all onto the battlefield before firing any triggers so that
     # each land's ETB (Phase 2) sees the complete set of co-entrants.
     lands_entered: list = []
-    for land in library_lands[:sac_count]:
+    for land in chosen:
         if land not in player.library:
             continue  # safety guard (shouldn't happen in Phase 1)
         player.library.remove(land)

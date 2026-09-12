@@ -43,6 +43,7 @@ from ai.scoring_constants import (
     MULLIGAN_HAND_LAND_FUNCTIONAL_VALUE,
     MULLIGAN_HAND_OPTIMAL_LAND_COUNT,
     MULLIGAN_EXCESS_LAND_PENALTY,
+    MULLIGAN_SPELL_MANA_GAP_PENALTY,
     MULLIGAN_MIN_HAND_SCORE_7,
     MULLIGAN_MIN_HAND_SCORE_6,
 )
@@ -1142,6 +1143,14 @@ class MulliganDecider:
                 score += len(t.produces_mana) * KEEP_SCORE_LAND_PRODUCES_BONUS
         else:
             score += max(0, KEEP_SCORE_CMC_INVERTED_CEIL - t.cmc)
+            # Mana-gap discount: a spell's CMC value above is earned
+            # regardless of whether the hand can ever pay for it. Lands
+            # ALREADY IN HAND are the only mana this hand can guarantee —
+            # every point of CMC beyond that count needs an undrawn land,
+            # and that need compounds across every high-CMC card in the
+            # hand (see MULLIGAN_SPELL_MANA_GAP_PENALTY).
+            score -= MULLIGAN_SPELL_MANA_GAP_PENALTY * max(
+                0, t.cmc - lands_in_hand)
             if "removal" in t.tags:
                 score += KEEP_SCORE_REMOVAL_TAG
             if "threat" in t.tags:

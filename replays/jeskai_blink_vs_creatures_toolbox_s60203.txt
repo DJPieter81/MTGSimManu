@@ -1,0 +1,1853 @@
+Loaded 22470 cards (0 errors)
+======================================================================
+  GAME 1: Jeskai Blink (P1) vs Creatures Toolbox (P2)  —  seed 60203
+  Series: Jeskai Blink 0 - 0 Creatures Toolbox
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Jeskai Blink wins → chooses to play first
+║ P1 (on play): Jeskai Blink
+║ P2 (on draw): Creatures Toolbox
+╚═══════════════════════════════════════════════════════
+
+P1 (Jeskai Blink) opening hand (2 lands, 5 spells):
+  • Scalding Tarn [Land, CMC 0]
+  • Prismatic Ending [Spell, CMC 1]
+  • Scalding Tarn [Land, CMC 0]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Quantum Riddler [Creature, CMC 5]
+  • Solitude [Creature, CMC 5]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+→ P1 KEEPS 7 — has key card(s): Quantum Riddler, Ragavan, Nimble Pilferer, Solitude, 2 cheap spells
+
+P2 (Creatures Toolbox) opening hand (2 lands, 5 spells):
+  • Boseiju, Who Endures [Land, CMC 0]
+  • Agatha's Soul Cauldron [Spell, CMC 2]
+  • Badgermole Cub [Creature, CMC 2]
+  • Nature's Rhythm [Spell, CMC 2]
+  • Green Sun's Zenith [Spell, CMC 1]
+  • Tyvar, Jubilant Brawler [Spell, CMC 3]
+  • Temple Garden [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Badgermole Cub, 5 cheap spells
+
+
+╔══ TURN 1 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 20  |  Creatures Toolbox 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Scalding Tarn
+T1: Scalding Tarn moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Scalding Tarn (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Creatures Toolbox (P2) ══════════════════════════
+║ Life: Creatures Toolbox 20  |  Jeskai Blink 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Tyvar, Jubilant Brawler
+  [Main 1]
+T1 P2: Play Temple Garden (tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 19  |  Creatures Toolbox 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Wrath of the Skies
+  [Main 1]
+T2 P1: Play Scalding Tarn
+T2: Scalding Tarn moved battlefield -> graveyard (fetchland sacrifice)
+T2 P1: Crack Scalding Tarn (pay 1 life) -> Hallowed Fountain (untapped, life: 16)
+    → Goal: grind_value
+    [Mana] Tap Sacred Foundry→R, Hallowed Fountain→U (paying for Ragavan, Nimble Pilferer, 0 mana remaining)
+T2 P1: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P2 passes (no response)
+T2: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ragavan, Nimble Pilferer
+T2 P1: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P2 does not block
+T2 P1:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T2 P1: Create 1x Treasure token(s)
+T2 P1: Ragavan, Nimble Pilferer exiles Fiend Artisan from top of P2's library
+T2 P1: Ragavan, Nimble Pilferer — may cast Fiend Artisan this turn
+  [Combat Damage] 2 damage dealt → P2 life: 20 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+T2: Fiend Artisan returned to exile (uncast)
+T2: Ragavan, Nimble Pilferer moved battlefield -> hand (Dash return)
+T2: Ragavan, Nimble Pilferer returned to hand (Dash)
+
+╔══ TURN 2 — Creatures Toolbox (P2) ══════════════════════════
+║ Life: Creatures Toolbox 18  |  Jeskai Blink 16
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 0
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: Temple Garden
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry [T], Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Walking Ballista
+  [Main 1]
+T2 P2: Play Boseiju, Who Endures
+    → Goal: deploy_engine
+    [Mana] Tap Boseiju, Who Endures→G, Temple Garden→G (paying for Badgermole Cub, 0 mana remaining)
+T2 P2: Cast Badgermole Cub (1G)
+    [Priority] P1 passes (no response)
+T2: Resolve Badgermole Cub
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 16  |  Creatures Toolbox 18
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Hallowed Fountain
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2)
+║   Lands: Temple Garden [T], Boseiju, Who Endures [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ephemerate
+  [Main 1]
+    → Goal: grind_value [payoffs]
+    [Mana] Tap Sacred Foundry→R, Hallowed Fountain→U (paying for Quantum Riddler, 0 mana remaining)
+T3 P1: Warp Quantum Riddler (pays 1U)
+T3 P1: Cast Quantum Riddler (3UU)
+    [Priority] P2 passes (no response)
+T3: Resolve Quantum Riddler
+T3 P1: Quantum Riddler ETB: draw 1 (Fable of the Mirror-Breaker // Reflection of Kiki-Jiki)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T3: Quantum Riddler moved battlefield -> exile (Warp exile)
+T3: Quantum Riddler exiled (Warp)
+
+╔══ TURN 3 — Creatures Toolbox (P2) ══════════════════════════
+║ Life: Creatures Toolbox 18  |  Jeskai Blink 16
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 0
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2)
+║   Lands: Temple Garden, Boseiju, Who Endures
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry [T], Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Tyvar, Jubilant Brawler
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Boseiju, Who Endures→G (paying for Green Sun's Zenith, 1 mana remaining)
+T3 P2: Cast Green Sun's Zenith (1G) (X=1)
+    [Priority] P1 passes (no response)
+T3: Resolve Green Sun's Zenith
+T3: Delighted Halfling moved library -> battlefield (Green Sun's Zenith tutor)
+T3 P2: Green Sun's Zenith finds Delighted Halfling
+T3: Green Sun's Zenith moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Badgermole Cub
+T3 P2: Attack with Badgermole Cub
+  [Declare Blockers] P1 does not block
+T3 P2:   Badgermole Cub (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 16 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 14  |  Creatures Toolbox 18
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 48  |  Graveyard: 2
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Hallowed Fountain
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2) [tapped], Delighted Halfling (1/2)
+║   Lands: Temple Garden [T], Boseiju, Who Endures [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arid Mesa
+  [Main 1]
+T4 P1: Play Arid Mesa
+T4: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T4 P1: Crack Arid Mesa -> Plains (untapped)
+    → Goal: close_game
+    → Goal: close_game
+    [Mana] Tap Plains→W (paying for Prismatic Ending, 2 mana remaining)
+T4 P1: Cast Prismatic Ending (2W) (X=2)
+    [Priority] P2 passes (no response)
+T4: Resolve Prismatic Ending
+T4: Badgermole Cub moved battlefield -> exile (exiled)
+T4 P1: Prismatic Ending exiles Badgermole Cub
+T4: Prismatic Ending moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Creatures Toolbox (P2) ══════════════════════════
+║ Life: Creatures Toolbox 18  |  Jeskai Blink 13
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 1
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2)
+║   Lands: Temple Garden, Boseiju, Who Endures
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry [T], Hallowed Fountain [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Devoted Druid
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Boseiju, Who Endures→G, Temple Garden→G, Delighted Halfling→B (paying for Tyvar, Jubilant Brawler, 0 mana remaining)
+T4 P2: Cast Tyvar, Jubilant Brawler (1BG)
+    [Priority] P1 passes (no response)
+T4: Resolve Tyvar, Jubilant Brawler
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 13  |  Creatures Toolbox 18
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 46  |  Graveyard: 4
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Hallowed Fountain, Plains
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2) [tapped]
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Temple Garden [T], Boseiju, Who Endures [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Phelia, Exuberant Shepherd
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T5 P1: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P2 passes (no response)
+T5: Resolve Ragavan, Nimble Pilferer
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→W (paying for Ephemerate, 0 mana remaining)
+T5 P1: Cast Ephemerate (W)
+    [Priority] P2 passes (no response)
+T5: Resolve Ephemerate
+T5: Blink Ragavan, Nimble Pilferer
+T5: Ephemerate moved stack -> exile (rebound (CR 702.86))
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Creatures Toolbox (P2) ══════════════════════════
+║ Life: Creatures Toolbox 18  |  Jeskai Blink 13
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 1
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Temple Garden, Boseiju, Who Endures
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry [T], Hallowed Fountain [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Underground Mortuary
+  [Main 1]
+T5 P2: surveil 1 → Overgrown Tomb to GY
+T5 P2: Play Underground Mortuary (enters tapped)
+    → Goal: execute_payoff
+    [Mana] Tap Boseiju, Who Endures→G, Temple Garden→G (paying for Devoted Druid, 1 mana remaining)
+T5 P2: Cast Devoted Druid (1G)
+    [Priority] P1 passes (no response)
+T5: Resolve Devoted Druid
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 13  |  Creatures Toolbox 18
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 45  |  Graveyard: 4
+║ Jeskai Blink board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Hallowed Fountain, Plains
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2), Devoted Druid (0/2)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Temple Garden [T], Boseiju, Who Endures [T], Underground Mortuary [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+T6 P1: Rebound Ephemerate declined (CR 702.88b)
+  [Draw] P1 draws: Witch Enchanter // Witch-Blessed Meadow
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Sacred Foundry→R (paying for Phelia, Exuberant Shepherd, 1 mana remaining)
+T6 P1: Cast Phelia, Exuberant Shepherd (1W)
+    [Priority] P2 passes (no response)
+T6: Resolve Phelia, Exuberant Shepherd
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ragavan, Nimble Pilferer
+T6 P1: Attack with Ragavan, Nimble Pilferer
+T6 P2:   [BLOCK] Delighted Halfling (1/2) blocks Ragavan, Nimble Pilferer (2/1) — lifespan_delta=+3.59
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T6: Ragavan, Nimble Pilferer dies
+T6: Delighted Halfling dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Creatures Toolbox (P2) ══════════════════════════
+║ Life: Creatures Toolbox 18  |  Jeskai Blink 13
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 45  |  Graveyard: 3
+║ Creatures Toolbox board:
+║   Creatures: Devoted Druid (0/2)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Temple Garden, Boseiju, Who Endures, Underground Mortuary
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry [T], Hallowed Fountain, Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Eternal Witness
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Boseiju, Who Endures→G, Devoted Druid→G (paying for Nature's Rhythm, 2 mana remaining)
+T6 P2: Cast Nature's Rhythm (2GG) (X=2)
+    [Priority] P1 passes (no response)
+T6: Resolve Nature's Rhythm
+T6: Vizier of Remedies moved library -> battlefield (Nature's Rhythm tutor)
+T6 P2: Nature's Rhythm finds Vizier of Remedies
+T6: Nature's Rhythm moved stack -> graveyard (resolution)
+    → Goal: execute_payoff
+T6 P2: loops Devoted Druid ×3 (CR 726 shortcut) — 3 mana
+T6 P2: Cast Eternal Witness (1GG)
+    [Priority] P1 passes (no response)
+T6: Resolve Eternal Witness
+T6 P2: Eternal Witness returns Nature's Rhythm from graveyard to hand
+    → Goal: execute_payoff
+T6 P2: loops Devoted Druid ×2 (CR 726 shortcut) — 2 mana
+T6 P2: Cast Nature's Rhythm (2GG) (X=2)
+    [Priority] P1 passes (no response)
+T6: Resolve Nature's Rhythm
+T6: Devoted Druid moved library -> battlefield (Nature's Rhythm tutor)
+T6 P2: Nature's Rhythm finds Devoted Druid
+T6: Nature's Rhythm moved stack -> graveyard (resolution)
+    → Goal: execute_payoff
+T6 P2: Cast Walking Ballista (80) (X=40)
+    [Priority] P1 passes (no response)
+T6: Resolve Walking Ballista
+T6: Walking Ballista dies
+    → Goal: execute_payoff
+T6 P2: loops Devoted Druid ×2 (CR 726 shortcut) — 2 mana
+T6 P2: Cast Agatha's Soul Cauldron (2)
+    [Priority] P1 passes (no response)
+T6: Resolve Agatha's Soul Cauldron
+  [Begin Combat]
+T6 P1: Evoke Solitude (exile Wrath of the Skies)
+T6 P1: Cast Solitude (3WW)
+    [Priority] P2 passes (no response)
+T6: Resolve Solitude
+T6: Vizier of Remedies moved battlefield -> exile (exiled)
+T6 P1: Solitude exiles Vizier of Remedies (opponent gains 2 life, now 20)
+T6: Solitude moved battlefield -> graveyard (evoke sacrifice)
+T6 P1: Solitude sacrificed (evoke)
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 13  |  Creatures Toolbox 20
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 44  |  Graveyard: 6
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Hallowed Fountain, Plains
+║ Creatures Toolbox board:
+║   Creatures: Devoted Druid (0/2) [tapped], Eternal Witness (2/1), Devoted Druid (0/2)
+║   Other: Tyvar, Jubilant Brawler, Agatha's Soul Cauldron
+║   Lands: Temple Garden [T], Boseiju, Who Endures [T], Underground Mortuary [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Phelia, Exuberant Shepherd
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T7 P1: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P2 passes (no response)
+T7: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Phelia, Exuberant Shepherd, Ragavan, Nimble Pilferer
+T7 P1: Phelia exiles Devoted Druid (P2's)
+T7 P1: Attack with Phelia, Exuberant Shepherd, Ragavan, Nimble Pilferer
+T7 P2:   [BLOCK] Eternal Witness (2/1) blocks Phelia, Exuberant Shepherd (2/2) — lifespan_delta=+5.50
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T7 P1:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T7 P1: Create 1x Treasure token(s)
+T7 P1: Ragavan, Nimble Pilferer exiles Leyline of Abundance from top of P2's library
+T7 P1: Ragavan, Nimble Pilferer — may cast Leyline of Abundance this turn
+T7: Phelia, Exuberant Shepherd dies
+T7: Eternal Witness dies
+  [Combat Damage] 2 damage dealt → P2 life: 20 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+T7: Devoted Druid returns to battlefield (P2)
+T7: Leyline of Abundance returned to exile (uncast)
+T7: Ragavan, Nimble Pilferer moved battlefield -> hand (Dash return)
+T7: Ragavan, Nimble Pilferer returned to hand (Dash)
+
+╔══ TURN 7 — Creatures Toolbox (P2) ══════════════════════════
+║ Life: Creatures Toolbox 18  |  Jeskai Blink 13
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 41  |  Graveyard: 6
+║ Creatures Toolbox board:
+║   Creatures: Devoted Druid (0/2), Devoted Druid (0/2)
+║   Other: Tyvar, Jubilant Brawler, Agatha's Soul Cauldron
+║   Lands: Temple Garden, Boseiju, Who Endures, Underground Mortuary
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Other: Treasure Token, Treasure Token
+║   Lands: Sacred Foundry [T], Hallowed Fountain, Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Birds of Paradise
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Boseiju, Who Endures→G (paying for Birds of Paradise, 4 mana remaining)
+T7 P2: Cast Birds of Paradise (G)
+    [Priority] P1 passes (no response)
+T7: Resolve Birds of Paradise
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 13  |  Creatures Toolbox 18
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 43  |  Graveyard: 7
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Other: Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Hallowed Fountain, Plains
+║ Creatures Toolbox board:
+║   Creatures: Devoted Druid (0/2), Devoted Druid (0/2), Birds of Paradise (0/1)
+║   Other: Tyvar, Jubilant Brawler, Agatha's Soul Cauldron
+║   Lands: Temple Garden, Boseiju, Who Endures [T], Underground Mortuary
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Prismatic Ending
+  [Main 1]
+    → Goal: close_game
+    → Goal: close_game
+    [Mana] Tap Plains→W, Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T8 P1: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P2 passes (no response)
+T8: Resolve Ragavan, Nimble Pilferer
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→W (paying for Prismatic Ending, 0 mana remaining)
+T8 P1: Cast Prismatic Ending (W)
+    [Priority] P2 passes (no response)
+T8: Resolve Prismatic Ending
+T8: Prismatic Ending moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ragavan, Nimble Pilferer
+T8 P1: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P2 does not block
+T8 P1:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T8 P1: Create 1x Treasure token(s)
+T8 P1: Ragavan, Nimble Pilferer exiles Wooded Foothills from top of P2's library
+T8 P1: Ragavan, Nimble Pilferer — may cast Wooded Foothills this turn
+  [Combat Damage] 2 damage dealt → P2 life: 18 → 16
+  [End Combat]
+  [Main 2]
+T8 P1: Play Wooded Foothills
+T8: Wooded Foothills moved battlefield -> graveyard (fetchland sacrifice)
+T8 P1: Crack Wooded Foothills (pay 1 life) -> Steam Vents (tapped, life: 12)
+  [End Step]
+T8: Ragavan, Nimble Pilferer moved battlefield -> hand (Dash return)
+T8: Ragavan, Nimble Pilferer returned to hand (Dash)
+
+╔══ TURN 8 — Creatures Toolbox (P2) ══════════════════════════
+║ Life: Creatures Toolbox 16  |  Jeskai Blink 12
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 39  |  Graveyard: 7
+║ Creatures Toolbox board:
+║   Creatures: Devoted Druid (0/2), Devoted Druid (0/2), Birds of Paradise (0/1)
+║   Other: Tyvar, Jubilant Brawler, Agatha's Soul Cauldron
+║   Lands: Temple Garden, Boseiju, Who Endures, Underground Mortuary
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Other: Treasure Token, Treasure Token, Treasure Token
+║   Lands: Sacred Foundry [T], Hallowed Fountain [T], Plains [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Badgermole Cub
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Boseiju, Who Endures→G, Temple Garden→G (paying for Badgermole Cub, 4 mana remaining)
+T8 P2: Cast Badgermole Cub (1G)
+    [Priority] P1 passes (no response)
+T8: Resolve Badgermole Cub
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 12  |  Creatures Toolbox 16
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 41  |  Graveyard: 8
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Other: Treasure Token, Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Hallowed Fountain, Plains, Steam Vents
+║ Creatures Toolbox board:
+║   Creatures: Devoted Druid (0/2), Devoted Druid (0/2), Birds of Paradise (0/1), Badgermole Cub (2/2)
+║   Other: Tyvar, Jubilant Brawler, Agatha's Soul Cauldron
+║   Lands: Temple Garden [T], Boseiju, Who Endures [T], Underground Mortuary
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Consign to Memory
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Sacred Foundry→R (paying for Phelia, Exuberant Shepherd, 2 mana remaining)
+T9 P1: Cast Phelia, Exuberant Shepherd (1W)
+    [Priority] P2 passes (no response)
+T9: Resolve Phelia, Exuberant Shepherd
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→U, Steam Vents→R (paying for Ragavan, Nimble Pilferer, 0 mana remaining)
+T9 P1: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P2 passes (no response)
+T9: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ragavan, Nimble Pilferer
+T9 P1: Attack with Ragavan, Nimble Pilferer
+T9 P2:   [BLOCK] Badgermole Cub (2/2) blocks Ragavan, Nimble Pilferer (2/1) — lifespan_delta=+4.50
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T9: Ragavan, Nimble Pilferer dies
+T9: Badgermole Cub dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Creatures Toolbox (P2) ══════════════════════════
+║ Life: Creatures Toolbox 16  |  Jeskai Blink 12
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 38  |  Graveyard: 8
+║ Creatures Toolbox board:
+║   Creatures: Devoted Druid (0/2), Devoted Druid (0/2), Birds of Paradise (0/1)
+║   Other: Tyvar, Jubilant Brawler, Agatha's Soul Cauldron
+║   Lands: Temple Garden, Boseiju, Who Endures, Underground Mortuary
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Other: Treasure Token, Treasure Token, Treasure Token
+║   Lands: Sacred Foundry [T], Hallowed Fountain [T], Plains [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wooded Foothills
+  [Main 1]
+T9 P2: Play Wooded Foothills
+T9: Wooded Foothills moved battlefield -> graveyard (fetchland sacrifice)
+T9 P2: Crack Wooded Foothills (pay 1 life) -> Overgrown Tomb (tapped, life: 15)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Birds of Paradise
+T9 P2: Attack with Birds of Paradise
+  [Declare Blockers] P1 does not block
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 12  |  Creatures Toolbox 15
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 40  |  Graveyard: 9
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Other: Treasure Token, Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Hallowed Fountain, Plains, Steam Vents
+║ Creatures Toolbox board:
+║   Creatures: Devoted Druid (0/2), Devoted Druid (0/2), Birds of Paradise (0/1) [tapped]
+║   Other: Tyvar, Jubilant Brawler, Agatha's Soul Cauldron
+║   Lands: Temple Garden, Boseiju, Who Endures, Underground Mortuary, Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Galvanic Discharge
+  [Main 1]
+    → Goal: close_game
+    → Goal: close_game
+    [Mana] Tap Plains→W, Sacred Foundry→R, Hallowed Fountain→U, Steam Vents→R (paying for Witch Enchanter // Witch-Blessed Meadow, 0 mana remaining)
+T10 P1: Cast Witch Enchanter // Witch-Blessed Meadow (3W)
+    [Priority] P2 passes (no response)
+T10: Resolve Witch Enchanter // Witch-Blessed Meadow
+T10: Agatha's Soul Cauldron moved battlefield -> graveyard (destroyed)
+T10 P1: Witch Enchanter // Witch-Blessed Meadow destroys Agatha's Soul Cauldron
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Phelia, Exuberant Shepherd
+T10 P1: Phelia exiles Witch Enchanter // Witch-Blessed Meadow (P1's)
+T10 P1: Attack with Phelia, Exuberant Shepherd
+  [Declare Blockers] P2 does not block
+T10 P1:   Phelia, Exuberant Shepherd (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 15 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+T10: Witch Enchanter // Witch-Blessed Meadow returns to battlefield (P1)
+T10 P1: Phelia, Exuberant Shepherd gets +1/+1 counter (3/3)
+
+╔══ TURN 10 — Creatures Toolbox (P2) ══════════════════════════
+║ Life: Creatures Toolbox 13  |  Jeskai Blink 12
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 36  |  Graveyard: 10
+║ Creatures Toolbox board:
+║   Creatures: Devoted Druid (0/2), Devoted Druid (0/2), Birds of Paradise (0/1)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Temple Garden, Boseiju, Who Endures, Underground Mortuary, Overgrown Tomb
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (3/3) [tapped], Witch Enchanter // Witch-Blessed Meadow (2/2)
+║   Other: Treasure Token, Treasure Token, Treasure Token
+║   Lands: Sacred Foundry [T], Hallowed Fountain [T], Plains [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Nurturing Peatland
+  [Main 1]
+T10 P2: Play Nurturing Peatland
+T10: Nurturing Peatland moved battlefield -> graveyard (activation cost (Nurturing Peatland))
+T10 P2: activate Nurturing Peatland — Draw a card.
+T10 P2: Nurturing Peatland activated — draw 1 (Leyline of Abundance)
+    → Goal: execute_payoff
+    [Mana] Tap Temple Garden→G, Underground Mortuary→B, Devoted Druid→G, Devoted Druid→G (paying for Leyline of Abundance, 2 mana remaining)
+T10 P2: Cast Leyline of Abundance (2GG)
+    [Priority] P1 passes (no response)
+T10: Resolve Leyline of Abundance
+T10 P2: puts 1 -1/-1 counter(s) on Devoted Druid (activation cost)
+T10 P2: activate Devoted Druid — Untap this creature.
+T10 P2: Devoted Druid activated — untaps itself
+T10 P2: puts 1 -1/-1 counter(s) on Devoted Druid (activation cost)
+T10 P2: activate Devoted Druid — Untap this creature.
+T10 P2: Devoted Druid activated — untaps itself
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Birds of Paradise
+T10 P2: Attack with Birds of Paradise
+  [Declare Blockers] P1 does not block
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 12  |  Creatures Toolbox 13
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 39  |  Graveyard: 9
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (3/3), Witch Enchanter // Witch-Blessed Meadow (2/2)
+║   Other: Treasure Token, Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Hallowed Fountain, Plains, Steam Vents
+║ Creatures Toolbox board:
+║   Creatures: Devoted Druid (-1/1), Devoted Druid (-1/1), Birds of Paradise (0/1) [tapped]
+║   Other: Tyvar, Jubilant Brawler, Leyline of Abundance
+║   Lands: Temple Garden [T], Boseiju, Who Endures [T], Underground Mortuary [T], Overgrown Tomb
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Phelia, Exuberant Shepherd
+  [Main 1]
+    → Goal: close_game
+    → Goal: close_game
+    [Target] → Tyvar, Jubilant Brawler: kill PW (loyalty 3 ≤ 3 dmg) — value 5.50
+    [Mana] Tap Sacred Foundry→R (paying for Galvanic Discharge, 3 mana remaining)
+T11 P1: Cast Galvanic Discharge (R)
+    [Priority] P2 passes (no response)
+T11: Resolve Galvanic Discharge
+T11: Tyvar, Jubilant Brawler moved battlefield -> graveyard (SBA 704.5p: zero loyalty)
+T11 P1: Galvanic Discharge deals 3 to Tyvar, Jubilant Brawler (base 0 + 3 energy)
+T11: Galvanic Discharge moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Phelia, Exuberant Shepherd, Witch Enchanter // Witch-Blessed Meadow
+T11 P1: Phelia exiles Witch Enchanter // Witch-Blessed Meadow (P1's)
+T11 P1: Attack with Phelia, Exuberant Shepherd, Witch Enchanter // Witch-Blessed Meadow
+  [Declare Blockers] P2 does not block
+T11 P1:   Phelia, Exuberant Shepherd (3/3) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 13 → 10
+  [End Combat]
+  [Main 2]
+    → Goal: close_game
+  [End Step]
+T11: Witch Enchanter // Witch-Blessed Meadow returns to battlefield (P1)
+T11 P1: Phelia, Exuberant Shepherd gets +1/+1 counter (4/4)
+
+╔══ TURN 11 — Creatures Toolbox (P2) ══════════════════════════
+║ Life: Creatures Toolbox 10  |  Jeskai Blink 12
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 34  |  Graveyard: 12
+║ Creatures Toolbox board:
+║   Creatures: Devoted Druid (-1/1), Devoted Druid (-1/1), Birds of Paradise (0/1)
+║   Other: Leyline of Abundance
+║   Lands: Temple Garden, Boseiju, Who Endures, Underground Mortuary, Overgrown Tomb
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (4/4) [tapped], Witch Enchanter // Witch-Blessed Meadow (2/2) [tapped]
+║   Other: Treasure Token, Treasure Token, Treasure Token
+║   Lands: Sacred Foundry [T], Hallowed Fountain, Plains, Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Agatha's Soul Cauldron
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Boseiju, Who Endures→G, Temple Garden→G, Underground Mortuary→B (paying for Tyvar, Jubilant Brawler, 7 mana remaining)
+T11 P2: Cast Tyvar, Jubilant Brawler (1BG)
+    [Priority] P1 passes (no response)
+T11: Resolve Tyvar, Jubilant Brawler
+    → Goal: execute_payoff
+    [Mana] Tap Overgrown Tomb→B, Devoted Druid→GG (paying for Agatha's Soul Cauldron, 5 mana remaining)
+T11 P2: Cast Agatha's Soul Cauldron (2)
+    [Priority] P1 passes (no response)
+T11: Resolve Agatha's Soul Cauldron
+T11 P2: puts 1 -1/-1 counter(s) on Devoted Druid (activation cost)
+T11 P2: activate Devoted Druid — Untap this creature.
+T11 P2: Devoted Druid activated — untaps itself
+T11: Devoted Druid dies
+  [Begin Combat]
+    [Mana] Tap Plains→W, Hallowed Fountain→U (paying for Phelia, Exuberant Shepherd, 1 mana remaining)
+T11 P1: Cast Phelia, Exuberant Shepherd (1W)
+    [Priority] P2 passes (no response)
+T11: Resolve Phelia, Exuberant Shepherd
+T11: Phelia, Exuberant Shepherd moved battlefield -> graveyard (SBA 704.5j: legend rule (Phelia, Exuberant Shepherd))
+  [Declare Attackers] P2 attacks with: Birds of Paradise
+T11 P2: Attack with Birds of Paradise
+  [Declare Blockers] P1 does not block
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 12  |  Creatures Toolbox 10
+║ Hand: 2 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 38  |  Graveyard: 11
+║ Jeskai Blink board:
+║   Creatures: Witch Enchanter // Witch-Blessed Meadow (2/2), Phelia, Exuberant Shepherd (2/2)
+║   Other: Treasure Token, Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Hallowed Fountain, Plains, Steam Vents
+║ Creatures Toolbox board:
+║   Creatures: Devoted Druid (-1/1), Birds of Paradise (0/1) [tapped]
+║   Other: Leyline of Abundance, Tyvar, Jubilant Brawler, Agatha's Soul Cauldron
+║   Lands: Temple Garden [T], Boseiju, Who Endures [T], Underground Mortuary [T], Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Solitude
+  [Main 1]
+    → Goal: close_game
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Witch Enchanter // Witch-Blessed Meadow, Phelia, Exuberant Shepherd
+T12 P1: Phelia exiles Witch Enchanter // Witch-Blessed Meadow (P1's)
+T12 P1: Attack with Witch Enchanter // Witch-Blessed Meadow, Phelia, Exuberant Shepherd
+  [Declare Blockers] P2 does not block
+T12 P1:   Phelia, Exuberant Shepherd (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 10 → 8
+  [End Combat]
+  [Main 2]
+    → Goal: close_game
+  [End Step]
+T12: Witch Enchanter // Witch-Blessed Meadow returns to battlefield (P1)
+T12 P1: Phelia, Exuberant Shepherd gets +1/+1 counter (3/3)
+
+╔══ TURN 12 — Creatures Toolbox (P2) ══════════════════════════
+║ Life: Creatures Toolbox 8  |  Jeskai Blink 12
+║ Hand: 1 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 33  |  Graveyard: 13
+║ Creatures Toolbox board:
+║   Creatures: Devoted Druid (-1/1), Birds of Paradise (0/1)
+║   Other: Leyline of Abundance, Tyvar, Jubilant Brawler, Agatha's Soul Cauldron
+║   Lands: Temple Garden, Boseiju, Who Endures, Underground Mortuary, Overgrown Tomb
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (3/3) [tapped], Witch Enchanter // Witch-Blessed Meadow (2/2) [tapped]
+║   Other: Treasure Token, Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Hallowed Fountain, Plains, Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Leyline of Abundance
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Boseiju, Who Endures→G, Temple Garden→G, Devoted Druid→GG (paying for Leyline of Abundance, 4 mana remaining)
+T12 P2: Cast Leyline of Abundance (2GG)
+    [Priority] P1 passes (no response)
+T12: Resolve Leyline of Abundance
+T12 P2: puts 1 -1/-1 counter(s) on Devoted Druid (activation cost)
+T12 P2: activate Devoted Druid — Untap this creature.
+T12 P2: Devoted Druid activated — untaps itself
+T12: Devoted Druid dies
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 13 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 12  |  Creatures Toolbox 8
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 37  |  Graveyard: 11
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (3/3), Witch Enchanter // Witch-Blessed Meadow (2/2)
+║   Other: Treasure Token, Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Hallowed Fountain, Plains, Steam Vents
+║ Creatures Toolbox board:
+║   Creatures: Birds of Paradise (0/1)
+║   Other: Leyline of Abundance, Tyvar, Jubilant Brawler, Agatha's Soul Cauldron, Leyline of Abundance
+║   Lands: Temple Garden [T], Boseiju, Who Endures [T], Underground Mortuary, Overgrown Tomb
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+    → Goal: close_game
+    → Goal: close_game
+    [Mana] Tap Plains→W, Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 2 mana remaining)
+T13 P1: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P2 passes (no response)
+T13: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Phelia, Exuberant Shepherd, Witch Enchanter // Witch-Blessed Meadow, Ragavan, Nimble Pilferer
+T13 P1: Phelia exiles Witch Enchanter // Witch-Blessed Meadow (P1's)
+T13 P1: Attack with Phelia, Exuberant Shepherd, Witch Enchanter // Witch-Blessed Meadow, Ragavan, Nimble Pilferer
+T13 P2:   [BLOCK-EMERGENCY] Birds of Paradise (0/1) blocks Phelia, Exuberant Shepherd (3/3) — lifespan_delta=-0.57
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T13 P1:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T13 P1: Create 1x Treasure token(s)
+T13 P1: Ragavan, Nimble Pilferer exiles Badgermole Cub from top of P2's library
+T13 P1: Ragavan, Nimble Pilferer — may cast Badgermole Cub this turn
+T13: Birds of Paradise dies
+  [Combat Damage] 2 damage dealt → P2 life: 8 → 6
+  [End Combat]
+  [Main 2]
+    → Goal: close_game
+  [End Step]
+T13: Witch Enchanter // Witch-Blessed Meadow returns to battlefield (P1)
+T13 P1: Phelia, Exuberant Shepherd gets +1/+1 counter (4/4)
+T13: Badgermole Cub returned to exile (uncast)
+T13: Ragavan, Nimble Pilferer moved battlefield -> hand (Dash return)
+T13: Ragavan, Nimble Pilferer returned to hand (Dash)
+
+╔══ TURN 13 — Creatures Toolbox (P2) ══════════════════════════
+║ Life: Creatures Toolbox 6  |  Jeskai Blink 12
+║ Hand: 1 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 31  |  Graveyard: 15
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance, Tyvar, Jubilant Brawler, Agatha's Soul Cauldron, Leyline of Abundance
+║   Lands: Temple Garden, Boseiju, Who Endures, Underground Mortuary, Overgrown Tomb
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (4/4) [tapped], Witch Enchanter // Witch-Blessed Meadow (2/2) [tapped]
+║   Other: Treasure Token, Treasure Token, Treasure Token, Treasure Token
+║   Lands: Sacred Foundry [T], Hallowed Fountain, Plains [T], Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Nature's Rhythm
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Boseiju, Who Endures→G, Temple Garden→G (paying for Nature's Rhythm, 2 mana remaining)
+T13 P2: Cast Nature's Rhythm (2GG) (X=2)
+    [Priority] P1 passes (no response)
+T13: Resolve Nature's Rhythm
+T13: Badgermole Cub moved library -> battlefield (Nature's Rhythm tutor)
+T13 P2: Nature's Rhythm finds Badgermole Cub
+T13: Nature's Rhythm moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 14 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 12  |  Creatures Toolbox 6
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 36  |  Graveyard: 11
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (4/4), Witch Enchanter // Witch-Blessed Meadow (2/2)
+║   Other: Treasure Token, Treasure Token, Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Hallowed Fountain, Plains, Steam Vents
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2)
+║   Other: Leyline of Abundance, Tyvar, Jubilant Brawler, Agatha's Soul Cauldron, Leyline of Abundance
+║   Lands: Temple Garden [T], Boseiju, Who Endures [T], Underground Mortuary [T], Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Prismatic Ending
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 2 mana remaining)
+T14 P1: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P2 passes (no response)
+T14: Resolve Ragavan, Nimble Pilferer
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→W (paying for Prismatic Ending, 1 mana remaining)
+T14 P1: Cast Prismatic Ending (1W) (X=1)
+    [Priority] P2 passes (no response)
+T14: Resolve Prismatic Ending
+T14: Prismatic Ending moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Phelia, Exuberant Shepherd, Witch Enchanter // Witch-Blessed Meadow, Ragavan, Nimble Pilferer
+T14 P1: Phelia exiles Witch Enchanter // Witch-Blessed Meadow (P1's)
+T14 P1: Attack with Phelia, Exuberant Shepherd, Witch Enchanter // Witch-Blessed Meadow, Ragavan, Nimble Pilferer
+T14 P2:   [BLOCK-EMERGENCY] Badgermole Cub (2/2) blocks Phelia, Exuberant Shepherd (4/4) — lifespan_delta=+0.67
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T14 P1:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T14 P1: Create 1x Treasure token(s)
+T14 P1: Ragavan, Nimble Pilferer exiles Misty Rainforest from top of P2's library
+T14 P1: Ragavan, Nimble Pilferer — may cast Misty Rainforest this turn
+T14: Badgermole Cub dies
+  [Combat Damage] 2 damage dealt → P2 life: 6 → 4
+  [End Combat]
+  [Main 2]
+T14 P1: Play Misty Rainforest
+T14: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T14 P1: Crack Misty Rainforest -> Island (untapped)
+  [End Step]
+T14: Witch Enchanter // Witch-Blessed Meadow returns to battlefield (P1)
+T14 P1: Phelia, Exuberant Shepherd gets +1/+1 counter (5/5)
+T14: Ragavan, Nimble Pilferer moved battlefield -> hand (Dash return)
+T14: Ragavan, Nimble Pilferer returned to hand (Dash)
+
+╔══ TURN 14 — Creatures Toolbox (P2) ══════════════════════════
+║ Life: Creatures Toolbox 4  |  Jeskai Blink 11
+║ Hand: 1 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 28  |  Graveyard: 18
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance, Tyvar, Jubilant Brawler, Agatha's Soul Cauldron, Leyline of Abundance
+║   Lands: Temple Garden, Boseiju, Who Endures, Underground Mortuary, Overgrown Tomb
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (5/5) [tapped], Witch Enchanter // Witch-Blessed Meadow (2/2) [tapped]
+║   Other: Treasure Token, Treasure Token, Treasure Token, Treasure Token, Treasure Token
+║   Lands: Sacred Foundry [T], Hallowed Fountain [T], Plains [T], Steam Vents [T], Island
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Devoted Druid
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Boseiju, Who Endures→G, Temple Garden→G (paying for Devoted Druid, 2 mana remaining)
+T14 P2: Cast Devoted Druid (1G)
+    [Priority] P1 passes (no response)
+T14: Resolve Devoted Druid
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 15 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 11  |  Creatures Toolbox 4
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 34  |  Graveyard: 12
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (5/5), Witch Enchanter // Witch-Blessed Meadow (2/2)
+║   Other: Treasure Token, Treasure Token, Treasure Token, Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Hallowed Fountain, Plains, Steam Vents, Island
+║ Creatures Toolbox board:
+║   Creatures: Devoted Druid (0/2)
+║   Other: Leyline of Abundance, Tyvar, Jubilant Brawler, Agatha's Soul Cauldron, Leyline of Abundance
+║   Lands: Temple Garden [T], Boseiju, Who Endures [T], Underground Mortuary, Overgrown Tomb
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Galvanic Discharge
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Island→U, Sacred Foundry→R, Hallowed Fountain→U, Steam Vents→R (paying for Quantum Riddler, 0 mana remaining)
+T15 P1: Cast Quantum Riddler (3UU)
+    [Priority] P2 passes (no response)
+T15: Resolve Quantum Riddler
+T15 P1: Quantum Riddler ETB: draw 1 (Phelia, Exuberant Shepherd)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Phelia, Exuberant Shepherd, Witch Enchanter // Witch-Blessed Meadow
+T15 P1: Phelia exiles Quantum Riddler (P1's)
+T15 P1: Attack with Phelia, Exuberant Shepherd, Witch Enchanter // Witch-Blessed Meadow
+T15 P2:   [BLOCK-EMERGENCY] Devoted Druid (0/2) blocks Phelia, Exuberant Shepherd (5/5) — lifespan_delta=+0.00
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T15 P1:   Witch Enchanter // Witch-Blessed Meadow (2/2) → 2 dmg to player
+T15: Devoted Druid dies
+  [Combat Damage] 2 damage dealt → P2 life: 4 → 2
+  [End Combat]
+  [Main 2]
+  [End Step]
+T15: Quantum Riddler returns to battlefield (P1)
+T15 P1: Phelia, Exuberant Shepherd gets +1/+1 counter (6/6)
+
+╔══ TURN 15 — Creatures Toolbox (P2) ══════════════════════════
+║ Life: Creatures Toolbox 2  |  Jeskai Blink 11
+║ Hand: 1 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 27  |  Graveyard: 19
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance, Tyvar, Jubilant Brawler, Agatha's Soul Cauldron, Leyline of Abundance
+║   Lands: Temple Garden, Boseiju, Who Endures, Underground Mortuary, Overgrown Tomb
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (6/6) [tapped], Witch Enchanter // Witch-Blessed Meadow (2/2) [tapped], Quantum Riddler (4/6)
+║   Other: Treasure Token, Treasure Token, Treasure Token, Treasure Token, Treasure Token
+║   Lands: Sacred Foundry [T], Hallowed Fountain [T], Plains [T], Steam Vents [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ouroboroid
+  [Main 1]
+    → Goal: execute_payoff [payoffs]
+    [Mana] Tap Boseiju, Who Endures→G, Temple Garden→G, Underground Mortuary→B, Overgrown Tomb→B (paying for Ouroboroid, 0 mana remaining)
+T15 P2: Cast Ouroboroid (2GG)
+    [Priority] P1 passes (no response)
+T15: Resolve Ouroboroid
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 16 — Jeskai Blink (P1) ══════════════════════════
+║ Life: Jeskai Blink 11  |  Creatures Toolbox 2
+║ Hand: 6 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 32  |  Graveyard: 12
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (6/6), Witch Enchanter // Witch-Blessed Meadow (2/2), Quantum Riddler (4/6)
+║   Other: Treasure Token, Treasure Token, Treasure Token, Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Hallowed Fountain, Plains, Steam Vents, Island
+║ Creatures Toolbox board:
+║   Creatures: Ouroboroid (1/3)
+║   Other: Leyline of Abundance, Tyvar, Jubilant Brawler, Agatha's Soul Cauldron, Leyline of Abundance
+║   Lands: Temple Garden [T], Boseiju, Who Endures [T], Underground Mortuary [T], Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ephemerate
+  [Main 1]
+    → Goal: close_game
+    [Target] → Tyvar, Jubilant Brawler: kill PW (loyalty 3 ≤ 3 dmg) — value 5.50
+    [Mana] Tap Sacred Foundry→R (paying for Galvanic Discharge, 4 mana remaining)
+T16 P1: Cast Galvanic Discharge (R)
+    [Priority] P2 passes (no response)
+T16: Resolve Galvanic Discharge
+T16: Tyvar, Jubilant Brawler moved battlefield -> graveyard (SBA 704.5p: zero loyalty)
+T16 P1: Galvanic Discharge deals 3 to Tyvar, Jubilant Brawler (base 0 + 3 energy)
+T16: Galvanic Discharge moved stack -> graveyard (resolution)
+    → Goal: close_game
+    [Mana] Tap Plains→W, Steam Vents→R (paying for Ragavan, Nimble Pilferer, 2 mana remaining)
+T16 P1: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P2 passes (no response)
+T16: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Phelia, Exuberant Shepherd, Witch Enchanter // Witch-Blessed Meadow, Quantum Riddler, Ragavan, Nimble Pilferer
+T16 P1: Phelia exiles Quantum Riddler (P1's)
+T16 P1: Attack with Phelia, Exuberant Shepherd, Witch Enchanter // Witch-Blessed Meadow, Quantum Riddler, Ragavan, Nimble Pilferer
+T16 P2:   [BLOCK-EMERGENCY] Ouroboroid (1/3) blocks Phelia, Exuberant Shepherd (6/6) — lifespan_delta=+100.20
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T16 P1:   Witch Enchanter // Witch-Blessed Meadow (2/2) → 2 dmg to player
+T16 P1:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T16 P1: Create 1x Treasure token(s)
+T16 P1: Ragavan, Nimble Pilferer exiles Birds of Paradise from top of P2's library
+T16 P1: Ragavan, Nimble Pilferer — may cast Birds of Paradise this turn
+P2 loses: life total -2
+  [Combat Damage] 4 damage dealt → P2 life: 2 → -2
+
+>>> Jeskai Blink wins Game 1 on turn 16 via damage
+    Final life: Jeskai Blink=11  Creatures Toolbox=-2
+
+======================================================================
+  GAME 2: Creatures Toolbox (P1) vs Jeskai Blink (P2)  —  seed 60204
+  Series: Jeskai Blink 1 - 0 Creatures Toolbox
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Creatures Toolbox wins → chooses to play first
+║ P1 (on play): Creatures Toolbox
+║ P2 (on draw): Jeskai Blink
+╚═══════════════════════════════════════════════════════
+
+P1 (Creatures Toolbox) opening hand (1 lands, 6 spells):
+  • Agatha's Soul Cauldron [Spell, CMC 2]
+  • Tyvar, Jubilant Brawler [Spell, CMC 3]
+  • Leyline of Abundance [Spell, CMC 4]
+  • Badgermole Cub [Creature, CMC 2]
+  • Verdant Catacombs [Land, CMC 0]
+  • Leyline of Abundance [Spell, CMC 4]
+  • Devoted Druid [Creature, CMC 2]
+→ P1 KEEPS 7 — has key card(s): Badgermole Cub, Devoted Druid, 4 cheap spells
+
+P2 (Jeskai Blink) opening hand (2 lands, 5 spells):
+  • Wrath of the Skies [Spell, CMC 2]
+  • Fable of the Mirror-Breaker // Reflection of Kiki-Jiki [Spell, CMC 3]
+  • Arid Mesa [Land, CMC 0]
+  • Phelia, Exuberant Shepherd [Creature, CMC 2]
+  • Fable of the Mirror-Breaker // Reflection of Kiki-Jiki [Spell, CMC 3]
+  • Elegant Parlor [Land, CMC 0]
+  • Solitude [Creature, CMC 5]
+→ P2 KEEPS 7 — has key card(s): Solitude, 4 cheap spells
+
+T0 P1: Leyline of Abundance begins the game on the battlefield (leyline)
+T0 P1: Leyline of Abundance begins the game on the battlefield (leyline)
+
+╔══ TURN 1 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 20  |  Jeskai Blink 20
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance, Leyline of Abundance
+║   Lands: (none)
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Verdant Catacombs
+T1: Verdant Catacombs moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Verdant Catacombs (pay 1 life) -> Overgrown Tomb (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 20  |  Creatures Toolbox 19
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance, Leyline of Abundance
+║   Lands: Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Galvanic Discharge
+  [Main 1]
+T1 P2: Play Arid Mesa
+T1: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Arid Mesa (pay 1 life) -> Sacred Foundry (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 19  |  Jeskai Blink 19
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance, Leyline of Abundance
+║   Lands: Overgrown Tomb
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Delighted Halfling
+  [Main 1]
+    → Goal: deploy_engine
+    [Mana] Tap Overgrown Tomb→G (paying for Delighted Halfling, 0 mana remaining)
+T2 P1: Cast Delighted Halfling (G)
+    [Priority] P2 passes (no response)
+T2: Resolve Delighted Halfling
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 19  |  Creatures Toolbox 19
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 51  |  Graveyard: 1
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2)
+║   Other: Leyline of Abundance, Leyline of Abundance
+║   Lands: Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Witch Enchanter // Witch-Blessed Meadow
+  [Main 1]
+T2 P2: surveil 1 → Prismatic Ending to GY
+T2 P2: Play Elegant Parlor (enters tapped)
+    → Goal: grind_value
+    [Target] → Delighted Halfling: marginal threat 1.05 (1/2 body) — better than 3 face dmg
+    [Mana] Tap Sacred Foundry→R (paying for Galvanic Discharge, 0 mana remaining)
+T2 P2: Cast Galvanic Discharge (R)
+    [Priority] P1 passes (no response)
+T2: Resolve Galvanic Discharge
+T2: Delighted Halfling dies
+T2 P2: Galvanic Discharge deals 2 to Delighted Halfling (base 0 + 2 energy)
+T2: Galvanic Discharge moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 19  |  Jeskai Blink 19
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 2
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance, Leyline of Abundance
+║   Lands: Overgrown Tomb
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry [T], Elegant Parlor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Leyline of Abundance
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 19  |  Creatures Toolbox 19
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 1
+║ Library: 49  |  Graveyard: 3
+║ Jeskai Blink board:
+║   Creatures: (empty)
+║   Lands: Sacred Foundry, Elegant Parlor
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance, Leyline of Abundance
+║   Lands: Overgrown Tomb
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+T3 P2: Play Flooded Strand
+T3: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T3 P2: Crack Flooded Strand (pay 1 life) -> Hallowed Fountain (tapped, life: 18)
+    → Goal: grind_value [enablers]
+    [Mana] Tap Sacred Foundry→W, Elegant Parlor→R (paying for Phelia, Exuberant Shepherd, 0 mana remaining)
+T3 P2: Cast Phelia, Exuberant Shepherd (1W)
+    [Priority] P1 passes (no response)
+T3: Resolve Phelia, Exuberant Shepherd
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 19  |  Jeskai Blink 18
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 2
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance, Leyline of Abundance
+║   Lands: Overgrown Tomb
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Lands: Sacred Foundry [T], Elegant Parlor [T], Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Fiend Artisan
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 18  |  Creatures Toolbox 19
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 1
+║ Library: 47  |  Graveyard: 4
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Lands: Sacred Foundry, Elegant Parlor, Hallowed Fountain
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance, Leyline of Abundance
+║   Lands: Overgrown Tomb
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Quantum Riddler
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Phelia, Exuberant Shepherd
+T4 P2: Phelia exiles Leyline of Abundance (P1's)
+T4 P2: Attack with Phelia, Exuberant Shepherd
+  [Declare Blockers] P1 does not block
+T4 P2:   Phelia, Exuberant Shepherd (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 19 → 17
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Leyline of Abundance returns to battlefield (P1)
+
+╔══ TURN 5 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 17  |  Jeskai Blink 18
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance, Leyline of Abundance
+║   Lands: Overgrown Tomb
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2) [tapped]
+║   Lands: Sacred Foundry, Elegant Parlor, Hallowed Fountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Devoted Druid
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 18  |  Creatures Toolbox 17
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 1
+║ Library: 46  |  Graveyard: 4
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Lands: Sacred Foundry, Elegant Parlor, Hallowed Fountain
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance, Leyline of Abundance
+║   Lands: Overgrown Tomb
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Scalding Tarn
+  [Main 1]
+T5 P2: Play Scalding Tarn
+T5: Scalding Tarn moved battlefield -> graveyard (fetchland sacrifice)
+T5 P2: Crack Scalding Tarn (pay 1 life) -> Steam Vents (tapped, life: 17)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Phelia, Exuberant Shepherd
+T5 P2: Phelia exiles Leyline of Abundance (P1's)
+T5 P2: Attack with Phelia, Exuberant Shepherd
+  [Declare Blockers] P1 does not block
+T5 P2:   Phelia, Exuberant Shepherd (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 17 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+T5: Leyline of Abundance returns to battlefield (P1)
+
+╔══ TURN 6 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 15  |  Jeskai Blink 17
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 2
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance, Leyline of Abundance
+║   Lands: Overgrown Tomb
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2) [tapped]
+║   Lands: Sacred Foundry, Elegant Parlor, Hallowed Fountain, Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Shang-Chi, Master of Kung Fu
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T6: Agatha's Soul Cauldron moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 6 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 17  |  Creatures Toolbox 15
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 1
+║ Library: 44  |  Graveyard: 5
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Lands: Sacred Foundry, Elegant Parlor, Hallowed Fountain, Steam Vents
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance, Leyline of Abundance
+║   Lands: Overgrown Tomb
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Sacred Foundry→R (paying for Ragavan, Nimble Pilferer, 3 mana remaining)
+T6 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T6: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Phelia, Exuberant Shepherd
+T6 P2: Phelia exiles Leyline of Abundance (P1's)
+T6 P2: Attack with Phelia, Exuberant Shepherd
+  [Declare Blockers] P1 does not block
+T6 P2:   Phelia, Exuberant Shepherd (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 15 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+T6: Leyline of Abundance returns to battlefield (P1)
+
+╔══ TURN 7 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 13  |  Jeskai Blink 17
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 3
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance, Leyline of Abundance
+║   Lands: Overgrown Tomb
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2) [tapped], Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry [T], Elegant Parlor, Hallowed Fountain, Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Badgermole Cub
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T7: Badgermole Cub moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 7 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 17  |  Creatures Toolbox 13
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 1
+║ Library: 43  |  Graveyard: 5
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2), Ragavan, Nimble Pilferer (2/1)
+║   Lands: Sacred Foundry, Elegant Parlor, Hallowed Fountain, Steam Vents
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance, Leyline of Abundance
+║   Lands: Overgrown Tomb
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ephemerate
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Sacred Foundry→W, Elegant Parlor→R, Hallowed Fountain→U, Steam Vents→R (paying for Witch Enchanter // Witch-Blessed Meadow, 0 mana remaining)
+T7 P2: Cast Witch Enchanter // Witch-Blessed Meadow (3W)
+    [Priority] P1 passes (no response)
+T7: Resolve Witch Enchanter // Witch-Blessed Meadow
+T7: Leyline of Abundance moved battlefield -> graveyard (destroyed)
+T7 P2: Witch Enchanter // Witch-Blessed Meadow destroys Leyline of Abundance
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Phelia, Exuberant Shepherd, Ragavan, Nimble Pilferer
+T7 P2: Phelia exiles Witch Enchanter // Witch-Blessed Meadow (P2's)
+T7 P2: Attack with Phelia, Exuberant Shepherd, Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T7 P2:   Phelia, Exuberant Shepherd (2/2) → 2 dmg to player
+T7 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T7 P2: Create 1x Treasure token(s)
+T7 P2: Ragavan, Nimble Pilferer exiles Misty Rainforest from top of P1's library
+T7 P2: Ragavan, Nimble Pilferer — may cast Misty Rainforest this turn
+  [Combat Damage] 4 damage dealt → P1 life: 13 → 9
+  [End Combat]
+  [Main 2]
+T7 P2: Play Misty Rainforest
+T7: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T7 P2: Crack Misty Rainforest -> Meticulous Archive (tapped)
+T7 P2: surveil 1 → Solitude to GY
+  [End Step]
+T7: Witch Enchanter // Witch-Blessed Meadow returns to battlefield (P2)
+T7 P2: Phelia, Exuberant Shepherd gets +1/+1 counter (3/3)
+
+╔══ TURN 8 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 9  |  Jeskai Blink 16
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 6
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance
+║   Lands: Overgrown Tomb
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (3/3) [tapped], Ragavan, Nimble Pilferer (2/1) [tapped], Witch Enchanter // Witch-Blessed Meadow (2/2)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry [T], Elegant Parlor [T], Hallowed Fountain [T], Steam Vents [T], Meticulous Archive [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Delighted Halfling
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Overgrown Tomb→G (paying for Delighted Halfling, 0 mana remaining)
+T8 P1: Cast Delighted Halfling (G)
+    [Priority] P2 passes (no response)
+T8: Resolve Delighted Halfling
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 16  |  Creatures Toolbox 9
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 5  |  Opp lands: 1
+║ Library: 40  |  Graveyard: 6
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (3/3), Ragavan, Nimble Pilferer (2/1), Witch Enchanter // Witch-Blessed Meadow (2/2)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Elegant Parlor, Hallowed Fountain, Steam Vents, Meticulous Archive
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2)
+║   Other: Leyline of Abundance
+║   Lands: Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+T8 P2: Play Arid Mesa
+T8: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T8 P2: Crack Arid Mesa -> Plains (untapped)
+    → Goal: close_game
+    [Mana] Tap Plains→W, Sacred Foundry→W, Elegant Parlor→R, Hallowed Fountain→U, Steam Vents→R (paying for Solitude, 1 mana remaining)
+T8 P2: Cast Solitude (3WW)
+    [Priority] P1 passes (no response)
+T8: Resolve Solitude
+T8: Delighted Halfling moved battlefield -> exile (exiled)
+T8 P2: Solitude exiles Delighted Halfling (opponent gains 1 life, now 10)
+    → Goal: close_game
+    [Mana] Tap Meticulous Archive→W (paying for Ephemerate, 0 mana remaining)
+T8 P2: Cast Ephemerate (W)
+    [Priority] P1 passes (no response)
+T8: Resolve Ephemerate
+T8: Blink Ragavan, Nimble Pilferer
+T8: Ephemerate moved stack -> exile (rebound (CR 702.86))
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Phelia, Exuberant Shepherd, Witch Enchanter // Witch-Blessed Meadow
+T8 P2: Phelia exiles Solitude (P2's)
+T8 P2: Attack with Phelia, Exuberant Shepherd, Witch Enchanter // Witch-Blessed Meadow
+  [Declare Blockers] P1 does not block
+T8 P2:   Phelia, Exuberant Shepherd (3/3) → 3 dmg to player
+T8 P2:   Witch Enchanter // Witch-Blessed Meadow (2/2) → 2 dmg to player
+  [Combat Damage] 5 damage dealt → P1 life: 10 → 5
+  [End Combat]
+  [Main 2]
+  [End Step]
+T8: Solitude returns to battlefield (P2)
+T8 P2: Phelia, Exuberant Shepherd gets +1/+1 counter (4/4)
+
+╔══ TURN 9 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 5  |  Jeskai Blink 15
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 6
+║ Library: 44  |  Graveyard: 6
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance
+║   Lands: Overgrown Tomb
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (4/4) [tapped], Witch Enchanter // Witch-Blessed Meadow (2/2) [tapped], Ragavan, Nimble Pilferer (2/1), Solitude (3/2)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry [T], Elegant Parlor [T], Hallowed Fountain [T], Steam Vents [T], Meticulous Archive [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Green Sun's Zenith
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Overgrown Tomb→G (paying for Green Sun's Zenith, 0 mana remaining)
+T9 P1: Cast Green Sun's Zenith (G)
+    [Priority] P2 passes (no response)
+T9: Resolve Green Sun's Zenith
+T9: Dryad Arbor moved library -> battlefield (Green Sun's Zenith tutor)
+T9 P1: Green Sun's Zenith finds Dryad Arbor
+T9: Green Sun's Zenith moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 15  |  Creatures Toolbox 5
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 6  |  Opp lands: 2
+║ Library: 38  |  Graveyard: 7
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (4/4), Witch Enchanter // Witch-Blessed Meadow (2/2), Ragavan, Nimble Pilferer (2/1), Solitude (3/2)
+║   Other: Treasure Token
+║   Lands: Sacred Foundry, Elegant Parlor, Hallowed Fountain, Steam Vents, Meticulous Archive, Plains
+║ Creatures Toolbox board:
+║   Creatures: Dryad Arbor (1/1)
+║   Other: Leyline of Abundance
+║   Lands: Overgrown Tomb [T], Dryad Arbor
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+T9 P2: Rebound Ephemerate declined (CR 702.88b)
+  [Draw] P2 draws: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Sacred Foundry→R, Elegant Parlor→R, Hallowed Fountain→U, Steam Vents→U (paying for Quantum Riddler, 1 mana remaining)
+T9 P2: Cast Quantum Riddler (3UU)
+    [Priority] P1 passes (no response)
+T9: Resolve Quantum Riddler
+T9 P2: Quantum Riddler ETB: draw 1 (Quantum Riddler)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Phelia, Exuberant Shepherd, Witch Enchanter // Witch-Blessed Meadow, Ragavan, Nimble Pilferer, Solitude
+T9 P2: Phelia exiles Solitude (P2's)
+T9 P2: Attack with Phelia, Exuberant Shepherd, Witch Enchanter // Witch-Blessed Meadow, Ragavan, Nimble Pilferer, Solitude
+T9 P1:   [BLOCK-EMERGENCY] Dryad Arbor (1/1) blocks Phelia, Exuberant Shepherd (4/4) — lifespan_delta=+0.22
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T9 P2:   Witch Enchanter // Witch-Blessed Meadow (2/2) → 2 dmg to player
+T9 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T9 P2: Create 1x Treasure token(s)
+T9 P2: Ragavan, Nimble Pilferer exiles Misty Rainforest from top of P1's library
+T9 P2: Ragavan, Nimble Pilferer — may cast Misty Rainforest this turn
+T9: Dryad Arbor dies
+  [Combat Damage] 4 damage dealt → P1 life: 5 → 1
+  [End Combat]
+  [Main 2]
+T9 P2: Play Misty Rainforest
+T9: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T9 P2: Crack Misty Rainforest -> Island (untapped)
+    → Goal: close_game
+    [Mana] Tap Island→U, Meticulous Archive→U (paying for Quantum Riddler, 0 mana remaining)
+T9 P2: Warp Quantum Riddler (pays 1U)
+T9 P2: Cast Quantum Riddler (3UU)
+    [Priority] P1 passes (no response)
+T9: Resolve Quantum Riddler
+T9 P2: Quantum Riddler ETB: draw 1 (Prismatic Ending)
+  [End Step]
+T9: Solitude returns to battlefield (P2)
+T9 P2: Phelia, Exuberant Shepherd gets +1/+1 counter (5/5)
+T9: Quantum Riddler moved battlefield -> exile (Warp exile)
+T9: Quantum Riddler exiled (Warp)
+
+╔══ TURN 10 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 1  |  Jeskai Blink 14
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 7
+║ Library: 41  |  Graveyard: 9
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance
+║   Lands: Overgrown Tomb
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (5/5) [tapped], Witch Enchanter // Witch-Blessed Meadow (2/2) [tapped], Ragavan, Nimble Pilferer (2/1) [tapped], Quantum Riddler (4/6), Solitude (3/2) [tapped]
+║   Other: Treasure Token, Treasure Token
+║   Lands: Sacred Foundry [T], Elegant Parlor [T], Hallowed Fountain [T], Steam Vents [T], Meticulous Archive [T], Plains [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Forest
+  [Main 1]
+T10 P1: Play Forest
+    → Goal: execute_payoff
+    [Mana] Tap Forest→G, Overgrown Tomb→B (paying for Devoted Druid, 0 mana remaining)
+T10 P1: Cast Devoted Druid (1G)
+    [Priority] P2 passes (no response)
+T10: Resolve Devoted Druid
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Jeskai Blink (P2) ══════════════════════════
+║ Life: Jeskai Blink 14  |  Creatures Toolbox 1
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 7  |  Opp lands: 2
+║ Library: 34  |  Graveyard: 7
+║ Jeskai Blink board:
+║   Creatures: Phelia, Exuberant Shepherd (5/5), Witch Enchanter // Witch-Blessed Meadow (2/2), Ragavan, Nimble Pilferer (2/1), Quantum Riddler (4/6), Solitude (3/2)
+║   Other: Treasure Token, Treasure Token
+║   Lands: Sacred Foundry, Elegant Parlor, Hallowed Fountain, Steam Vents, Meticulous Archive, Plains, Island
+║ Creatures Toolbox board:
+║   Creatures: Devoted Druid (0/2)
+║   Other: Leyline of Abundance
+║   Lands: Overgrown Tomb [T], Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Consign to Memory
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W, Island→U, Sacred Foundry→R, Elegant Parlor→R, Hallowed Fountain→U (paying for Quantum Riddler, 2 mana remaining)
+T10 P2: Cast Quantum Riddler (3UU)
+    [Priority] P1 passes (no response)
+T10: Resolve Quantum Riddler
+T10 P2: Quantum Riddler ETB: draw 1 (Arid Mesa)
+T10 P2: Play Arid Mesa
+T10: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T10 P2: Crack Arid Mesa -> Mountain (untapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Phelia, Exuberant Shepherd, Witch Enchanter // Witch-Blessed Meadow, Ragavan, Nimble Pilferer, Quantum Riddler, Solitude
+T10 P2: Phelia exiles Solitude (P2's)
+T10 P2: Attack with Phelia, Exuberant Shepherd, Witch Enchanter // Witch-Blessed Meadow, Ragavan, Nimble Pilferer, Quantum Riddler, Solitude
+T10 P1:   [BLOCK-EMERGENCY] Devoted Druid (0/2) blocks Phelia, Exuberant Shepherd (5/5) — lifespan_delta=+0.00
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T10 P2:   Witch Enchanter // Witch-Blessed Meadow (2/2) → 2 dmg to player
+T10 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T10 P2: Create 1x Treasure token(s)
+T10 P2: Ragavan, Nimble Pilferer exiles Tyvar, Jubilant Brawler from top of P1's library
+T10 P2: Ragavan, Nimble Pilferer — may cast Tyvar, Jubilant Brawler this turn
+T10 P2:   Quantum Riddler (4/6) → 4 dmg to player
+P1 loses: life total -7
+  [Combat Damage] 8 damage dealt → P1 life: 1 → -7
+
+>>> Jeskai Blink wins Game 2 on turn 10 via damage
+    Final life: Creatures Toolbox=-7  Jeskai Blink=13
+
+======================================================================
+  MATCH RESULT: Jeskai Blink wins 2-0
+======================================================================
