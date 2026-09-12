@@ -4268,3 +4268,37 @@ no hand payoff exists — class: every land-sacrifice tutor × every
 ability-land in the pool — measured against the 08-26 result so the
 blind-ramp losses it closed do not reopen. Zoo's Toolbox (95) and
 Goryo's (90) cells are not yet replayed.
+
+### Loop "50x with improving zoo" — iteration 1: land-sacrifice tutor payoff + delivery (2026-09-12, `3332b59`)
+
+Gate: a library land whose own ability makes tokens or deals damage
+(typed) is a reachable payoff, so the tutor is no longer clamped for want
+of a hand payoff (a library of mana lands alone still clamps — the 08-26
+pins stay green). Delivery: an all-land eligible set is ranked by the
+AI's ONE land valuation (`_score_land`: Tron-set completion, declared
+`land_priorities`, colour needs, landfall), bounce land last without a
+watcher; the engine's Scapeshift asks the seam per pick instead of ranking
+the library itself. A Tron Expedition Map now fetches the set-completing
+piece, not the land its drop data lists highest (the first cut ranked by
+declared priority alone and flipped an anchor game exactly that way —
+reworked before commit). Five tests red → green; 37 tutor/gate pins;
+ratchets; chunks 2291 / 2274; anchor: one turns-only drift refreshed.
+
+**Same-seed pre → post, n=20 Bo3:** Amulet Titan field **22.7 → 21.0**
+(noise; row: Azorius Control 15 → 45, Toolbox 40 → 55, Affinity 10 → 20;
+WST 45 → 20, Eldrazi Ramp 30 → 5, Azorius Blink 45 → 30); Domain Zoo vs
+Amulet **80 → 100**; Eldrazi Tron vs Boros 50 → 50. **No movement — 1 of 3
+on this lane.** Behaviour is corrected (the tutor fires; Tron's Map
+completes Tron), kept.
+
+**Why the cell got worse, from the post-change replay (s50000 G1):** T8
+Scapeshift with Amulet of Vigor in play sacrificed seven lands and fetched
+three Sagas + Simic Growth Chamber + Gruul Turf + …; the two bounce lands'
+ETBs each returned the OTHER bounce land (both triggers resolve — CR 603;
+the second still finds "a land you control"), so the base went 7 → 5 and
+Amulet, at 8 life into a 5/6 Frog with no blocker, died on schedule. The
+engine chooses WHICH land a bounce ETB returns (a co-entrant, by its own
+ordering); that choice is the caster's — return the least-valued land (a
+basic, or the bounce land itself), by the same land valuation the
+delivery now uses — and it is the next iteration: class = the ten bounce
+lands × every entry, every deck that fetches or plays them.
