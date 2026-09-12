@@ -132,3 +132,18 @@ remaining Zoo residual is the opponents' AI (outlet selection under
 unbounded mana; the control C-lane), and the re-banding decision stays
 with the user.
 
+## Addendum 2 (2026-09-12, PR #571)
+
+The "Zoo's own play was ordinary" reading above was wrong on two rules
+points, found by five fresh replays read against a checklist on BOTH
+sides and reproduced with engine fixtures: domain survived a resolved
+Blood Moon (Z1) and first-strike combat dealt no damage in either
+direction (Z2); a third class, targets chosen outside the solver (Z3),
+was opponent-side. All three landed with tests, measured same-seed
+(tracker: "Zoo lane, reopened on Zoo's own over-credits"). The n=60
+verdict on the integrated head is **69.5** against [50,65]: the Moon and
+Boros cells fell, the control cells rose because Scion of Draco is
+hexproof under Leyline of the Guildpact. The verdict of this document
+stands; the way forward is the rules auditor's ranking and the coverage
+census, not another replay-chosen unit.
+

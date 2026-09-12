@@ -4925,3 +4925,27 @@ longer exile it — an under-credit of Zoo removed. Recorded as such; the
 lane's running total on the same seeds: 70.0 → 69.4 (Z1) → 68.3 (Z2)
 → 71.0 (Z3). The band verdict is the n=60 field on the integrated
 head, below.
+
+### Zoo band verdict on the integrated head (`2efba3c`, n=60, 2026-09-12)
+
+`--field "Domain Zoo" -n 60 --parallel` on the matchup grid: **69.5**
+(16 draws credited to nobody, no aborts) against [50,65] — the 09-11
+reading was 70.7 and the 09-12 matrix row 69.4, so three rules units
+that each moved the cells they name left the flat field where it was.
+The row: Amulet 95, Toolbox 95, Goryo's 90, Affinity 83, Azorius Blink
+82, Hollow One 82, Ramp 80, Jeskai 78, Prowess 77, Pinnacle 75, Instant
+Reanimator 75, 4/5c 72, WST 72, Broodscale 70, Tron 68, Grixis 65, WST v2
+63, Boros 62, Azorius 58, Ponza 52, Storm 50, Omnath 45, Living End 42,
+Dimir 38. The cells that fell are the Moon decks (Ponza 60 → 52) and
+Boros (65 → 62); the cells that rose are the control decks whose
+Solitude can no longer exile a hexproof Scion. Zoo's flat field is the
+tail's defects plus a real strength against the sub-band control decks;
+the meta-weighted figure is the tournament-relevant one, and re-banding
+on it is the user's decision (unchanged from the loop-break doc).
+
+Loop-break status: Z1 and Z2 each moved a Zoo cell (the 3-of-3 counter
+reset); Z3 moved cells the other way, rules-correctly. The next units
+on any lane come from the audit ranking and the coverage census (kicker,
+devoid, metalcraft, ferocious, harmonize, flurry on registered cards;
+the twelve handlers still picking targets outside the solver), per the
+process rule.
