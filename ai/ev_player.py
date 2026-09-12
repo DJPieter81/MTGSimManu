@@ -3296,6 +3296,23 @@ class EVPlayer:
                 for c in free_attackers:
                     if c.instance_id not in attack_ids:
                         planner_picks.append(c)
+                # The same keep-home rule the lethal path and the
+                # send-everything fallback apply: a creature whose
+                # NON-combat worth (`noncombat_opportunity_cost` — mana
+                # production, unbounded-engine membership, abilities;
+                # life-point units) exceeds the damage it adds stays home
+                # unless the plan is lethal. The planner's creature value
+                # is clock-based, so an infinite-mana enabler with two
+                # power was just a 2/1 to it and was sent alone into an
+                # untapped 4/4 (Domain Zoo vs Creatures Toolbox s50000 G2
+                # T4; docs/diagnostics/2026-09-12_zoo_lane_loop_break.md).
+                from ai.clock import noncombat_opportunity_cost
+                plan_power = sum((c.power or 0) for c in planner_picks)
+                if plan_power + pump_reach < opp.life:
+                    planner_picks = [
+                        c for c in planner_picks
+                        if (c.power or 0) >= noncombat_opportunity_cost(
+                            c, me, _snap_lethal)]
                 return planner_picks
         except Exception:
             pass

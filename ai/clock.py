@@ -575,8 +575,18 @@ _ACTIVATED_ABILITY_RE = re.compile(
 
 def _has_activated_ability(card: "CardInstance") -> bool:
     """True iff ``card``'s oracle text contains a CR 602.1a-shaped
-    activated ability ("[Cost]: [Effect]")."""
-    oracle = getattr(card.template, 'oracle_text', '') or ''
+    activated ability ("[Cost]: [Effect]") usable from the battlefield.
+
+    Reminder text is stripped first (CR 207.2 — it has no rules meaning):
+    a cycling creature's "({2}, Discard this card: Draw a card.)" is the
+    colon shape, but cycling is activated from HAND, so on the battlefield
+    the creature has no ability to keep home for. Unstripped, every cycler
+    carried a card's worth of "engine" value that grew as the opponent's
+    life fell, and the attack keep-home rule held Living End's whole
+    board at seven life (Living End vs Jeskai Blink s50500, 2026-09-12).
+    """
+    from engine.oracle_parser import strip_reminder_text
+    oracle = strip_reminder_text(getattr(card.template, 'oracle_text', '') or '')
     return bool(_ACTIVATED_ABILITY_RE.search(oracle))
 
 
