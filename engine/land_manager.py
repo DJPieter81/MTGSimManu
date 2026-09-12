@@ -143,6 +143,23 @@ class LandManager:
         LandManager.trigger_landfall(game, player_idx)
 
     @staticmethod
+    def land_type_is_set(game: "GameState", land) -> bool:
+        """CR 305.7: a nonbasic land whose type is SET to a basic type
+        (Blood Moon family, layer 4) loses its printed abilities and has
+        only that type's mana ability — no fetch, no sacrifice-search, no
+        other activated ability.  The ONE predicate every activation path
+        asks (the fetch path and the engine's residual sacrifice
+        heuristic alike).  Reads the live layer state, and the source
+        directly for a land used as it enters (before the next
+        recalculate())."""
+        from .cards import Supertype
+        from .continuous_effects import forced_land_type_in_play
+        return bool(
+            getattr(land, 'cem_land_type_set', None)
+            or (forced_land_type_in_play(game)
+                and Supertype.BASIC not in (land.template.supertypes or [])))
+
+    @staticmethod
     def crack_fetchland(game: "GameState", player_idx: int,
                         fetch_card: "CardInstance") -> None:
         """Sacrifice a fetchland, pay its printed cost, search for a land.
@@ -159,13 +176,7 @@ class LandManager:
             return
         # A nonbasic land whose type is SET to a basic type (Blood Moon
         # family, CR 305.7) has only that type's mana ability — no fetch.
-        # Read the live layer state, and the source directly for a land
-        # cracked as it enters (before the next recalculate()).
-        from .cards import Supertype
-        from .continuous_effects import forced_land_type_in_play
-        if (getattr(fetch_card, 'cem_land_type_set', None)
-                or (forced_land_type_in_play(game)
-                    and Supertype.BASIC not in (fetch_card.template.supertypes or []))):
+        if LandManager.land_type_is_set(game, fetch_card):
             game.log.append(
                 f"T{game.display_turn} P{player_idx+1}: "
                 f"{fetch_name} has no fetch ability (its land type is set)")

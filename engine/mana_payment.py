@@ -77,13 +77,18 @@ class ManaPayment:
         # IS the named basic type and has only that type's mana ability.
         # Written by ContinuousEffectsManager.recalculate; checked first
         # because a set type replaces every printed and granted ability.
+        # Both layer-4 families (SET and "every basic land type" ADD)
+        # resolve through the land's current basic types (CR 305.6: each
+        # basic type is one intrinsic mana ability). A set land with no
+        # later ADD produces its one colour; a set land with a later ADD
+        # produces all five; an unset land with an ADD produces all five.
         forced = getattr(card, 'cem_land_type_set', None)
-        if forced:
+        added = getattr(card, 'cem_land_types_added', None)
+        if card.template.is_land and (forced or added):
             from .constants import BASIC_LAND_TYPE_COLORS
-            return [BASIC_LAND_TYPE_COLORS[forced]]
-        # Leyline of the Guildpact: only applies to lands.
-        if card.template.is_land and ManaPayment.has_leyline_of_guildpact(game, player_idx):
-            return ALL_COLORS
+            return sorted({BASIC_LAND_TYPE_COLORS[t.lower()]
+                           for t in card.current_basic_land_types},
+                          key=ALL_COLORS.index)
         # Metalcraft-gated any-color mana ability (Mox Opal today;
         # any future printing with the same oracle shape automatically).
         # Generic predicate at engine/oracle_parser.py replaces the
@@ -101,21 +106,14 @@ class ManaPayment:
 
     @staticmethod
     def count_domain(game: "GameState", player_idx: int) -> int:
-        """Count basic land types among lands controlled. Under a
-        Leyline-of-the-Guildpact-style effect, returns 5 as long as
-        the player controls at least one land."""
-        for c in game.players[player_idx].battlefield:
-            if ('lands you control are every basic land type'
-                    in (c.template.oracle_text or '').lower()):
-                if any(l.template.is_land
-                       for l in game.players[player_idx].battlefield):
-                    return 5
+        """Count basic land types among lands controlled — from each
+        land's CURRENT types (`CardInstance.current_basic_land_types`,
+        the continuous-effects layer in timestamp order), never from
+        printed subtypes or a flag for the "every basic land type"
+        family: a later Blood Moon leaves a Leyline deck at domain 1."""
         found = set()
         for land in game.players[player_idx].battlefield:
-            if land.template.is_land:
-                for st in land.template.subtypes:
-                    if st in BASIC_TYPES:
-                        found.add(st)
+            found |= land.current_basic_land_types
         return len(found)
 
     @staticmethod

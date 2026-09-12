@@ -304,11 +304,15 @@ class PlayerState:
         colors: Dict[str, int] = {"W": 0, "U": 0, "B": 0, "R": 0, "G": 0, "C": 0}
         from .constants import BASIC_LAND_TYPE_COLORS
         for land in self.untapped_lands:
-            # A land whose type is SET to a basic type (layer 4) produces
-            # that colour only — the same rule the payment path reads.
-            forced = getattr(land, 'cem_land_type_set', None)
-            produced = ([BASIC_LAND_TYPE_COLORS[forced]] if forced
-                        else land.template.produces_mana)
+            # A land under either layer-4 family (a SET type, or ADDed
+            # types) produces its CURRENT basic types' colours — the same
+            # rule the payment path reads (CR 305.6 / 305.7).
+            if (getattr(land, 'cem_land_type_set', None)
+                    or getattr(land, 'cem_land_types_added', None)):
+                produced = sorted({BASIC_LAND_TYPE_COLORS[t.lower()]
+                                   for t in land.current_basic_land_types})
+            else:
+                produced = land.template.produces_mana
             for color in produced:
                 colors[color] += 1
         return colors

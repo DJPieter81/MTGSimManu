@@ -1539,6 +1539,16 @@ class CardInstance:
     # read by the mana accessors (a set land produces that basic type's
     # colour and nothing else) and by the fetch path (no other abilities).
     cem_land_type_set: Optional[str] = None
+    # Layer-4 land-type ADD ("Lands you control are every basic land
+    # type in addition to their other types", CR 613.2b): basic types
+    # this land currently has on top of its printed ones.  Applied in
+    # timestamp order with the SET above (CR 613.7): a later SET clears
+    # this (the land is the one type and nothing else); a later ADD
+    # puts types back on a set land.  Written only by
+    # ContinuousEffectsManager.recalculate; read through
+    # `current_basic_land_types` — the ONE reader every domain / mana /
+    # ability consumer goes through.
+    cem_land_types_added: Set[str] = field(default_factory=set)
     # Land animation ("this land becomes an N/M creature until end of
     # turn") — Track H. While True the instance belongs to the combat
     # class (creatures property, can_attack/can_block, SBA death
@@ -1795,24 +1805,33 @@ class CardInstance:
             n = n + r.n if r.op == "add" else n * r.n
         return max(0, n)
 
+    @property
+    def current_basic_land_types(self) -> Set[str]:
+        """The basic land types this permanent has RIGHT NOW, after the
+        continuous-effects layer (CR 613.2b, timestamp order per 613.7):
+        a SET type replaces the printed types; ADDed types sit on top of
+        whatever is left.  Title-cased ("Mountain").  The one reader for
+        domain, land mana colours and land-ability existence — a
+        non-land has none."""
+        if CardType.LAND not in self.effective_card_types:
+            return set()
+        forced = getattr(self, 'cem_land_type_set', None)
+        if forced:
+            base = {forced.title()}
+        else:
+            base = {st for st in self.effective_subtypes if st in BASIC_LAND_TYPES}
+        return base | set(getattr(self, 'cem_land_types_added', ()) or ())
+
     def _get_domain_count(self) -> int:
-        """Count basic land types among lands controlled by this card's controller."""
+        """Count basic land types among lands controlled by this card's
+        controller — from the lands' CURRENT types (the layer), never
+        their printed ones or a flag for the ADD family."""
         if self._game_state is None:
             return 0
         player = self._game_state.players[self.controller]
-        # Oracle-driven detection of "lands you control are every basic
-        # land type" (Leyline of the Guildpact pattern). Same predicate
-        # as engine/mana_payment.py::ManaPayment.has_leyline_of_guildpact.
-        for c in player.battlefield:
-            if getattr(c.template, 'has_all_basic_land_types', False):
-                if any(l.template.is_land for l in player.battlefield):
-                    return 5
         found_types: set = set()
         for land in player.battlefield:
-            if land.template.is_land:
-                for st in land.template.subtypes:
-                    if st in BASIC_LAND_TYPES:
-                        found_types.add(st)
+            found_types |= land.current_basic_land_types
         return len(found_types)
 
     def _get_tarmogoyf_count(self) -> int:

@@ -2417,9 +2417,16 @@ class GameRunner:
         opponent_idx = 1 - active
         opponent = game.players[opponent_idx]
 
+        from .land_manager import LandManager
         for perm in list(player.battlefield):
             oracle = (perm.template.oracle_text or '').lower()
             if 'sacrifice' not in oracle:
+                continue
+            # CR 305.7: a land whose type is SET to a basic type has no
+            # activated ability but its mana ability — the same predicate
+            # the fetch path asks; this heuristic used to read the printed
+            # oracle text and sacrifice-search a Moon-locked fetchland.
+            if LandManager.land_type_is_set(game, perm):
                 continue
             # A parsed self-sacrifice ability the activation path can run
             # is the AI's decision (`ai/activation_ev`), with its cost
