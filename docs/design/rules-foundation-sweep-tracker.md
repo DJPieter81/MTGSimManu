@@ -4360,3 +4360,37 @@ its plan unfiltered while the lethal path and the send-everything fallback
 both keep home a creature whose `noncombat_opportunity_cost` exceeds its
 damage. Iteration 4 is that rule on the planner path. (Psychic Frog's
 permanent growth was checked and is rules-correct: "put a +1/+1 counter".)
+
+### Loop iteration 4: the planner attack path keeps engine pieces home; a hand-only ability is not battlefield worth (2026-09-12, `b81af88`)
+
+The keep-home rule the lethal path and the send-everything fallback apply
+(`noncombat_opportunity_cost` > power → stays home unless the plan is
+lethal) now applies on the CombatPlanner path too. The first cut flipped
+Living End vs Jeskai s50500: the worth primitive matched cycling's
+reminder text ("{2}, Discard this card: Draw a card") as a battlefield
+ability, and that worth grows as the opponent's life falls, so Living
+End held its whole board at seven life. `_has_activated_ability` now
+strips reminder text (CR 207.2); the flip resolved with no fixture change.
+Three tests red → green; 150 attack/block/opportunity-cost pins; chunks
+2291 / 2283; anchor unchanged.
+
+**Same-seed pre → post, n=20 Bo3:** Domain Zoo vs Creatures Toolbox **100
+→ 100**; Toolbox field 18.8 → 18.1; Broodscale vs WST 95 → 95, vs
+Azorius Blink 90 → 85; Living End vs Jeskai 75 → 75. **No movement — the
+fourth consecutive unit on the Zoo lane, and the one the loop-break doc
+named.** Kept as behaviour (Vizier no longer attacks into a 4/4).
+
+**Loop verdict — stopped.** Four class-sized corrections on the tail decks
+(Amulet ×2, Toolbox ×2) each fixed a replayed defect and none moved a Zoo
+cell, because each tail deck loses to its own engine-execution gap, not
+to one bad decision: Toolbox with Druid + Vizier assembled (80 mana
+credited) still cast Tyvar and a Leyline — nothing converts unbounded
+mana into the outlet (Duskwatch Recruiter digs → Walking Ballista cast
+for X); Amulet's Titan is exiled and it has no second threat; Hollow
+One's cycle-vs-cast; Goryo's tapped out into a counter. Those are the
+tail decks' own lanes (combo execution with unbounded resources is one
+mechanic across Toolbox and Broodscale) and each needs its own
+diagnosis budget. Zoo's own play was ordinary in every replay; its 70.7
+(n=60) is the tail's number. Two decisions are the user's: re-band Zoo on
+the weighted (meta-share) field rather than the flat one, and/or open the
+"unbounded mana → outlet" lane. The loop is not the tool for either.
