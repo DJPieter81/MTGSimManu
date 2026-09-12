@@ -4709,3 +4709,56 @@ verdict stands. What is left on Toolbox's side is the AI: unbounded mana
 is generated (82 / 161 mana on the log) and Craterhoof / Ballista are
 not cast into it — the outlet-selection lead in the Phase D register
 (`ai/` combo evaluator reading the mana pool, not the engine).
+
+## Zoo lane, reopened on Zoo's OWN over-credits (2026-09-12, PR #571)
+
+Domain Zoo reads 69.4 flat / 72.0 meta-weighted on the n=60 matrix
+against [50,65]; excluding the four sub-band opponents it is still 65.8,
+and the cells that carry the weight are mid/T1 decks (Ponza 60/60, Boros
+65, Pinnacle 72, Ramp 77, WST v2 63, 4/5c 63). Five fresh Bo3 replays
+(seeds 60300–60304: vs WST v2, Pinnacle, Eldrazi Ramp, Boros Ponza,
+Boros Energy) were read independently with a checklist on both sides;
+every claim was then reproduced against the engine with a fixture or
+quoted from the log. Zoo's list and gameplan are ordinary; Frog growth
+is rules-correct (the discard cost is paid silently — hand counts
+confirm it). Two engine defects credit Zoo directly (Z1, Z2 below); a
+third class is opponent-side (Z3). The earlier loop-break doc's "Zoo's
+own play was ordinary" was wrong on these two rules points.
+
+### Unit Z1 — a land's basic types are read from the continuous-effects layer (`697ad98`)
+
+**Diagnosis.** `ManaPayment.count_domain` returned 5 whenever a
+permanent with "lands you control are every basic land type" was on the
+battlefield and otherwise read `template.subtypes`; the
+CardInstance-side `_get_domain_count` did the same. Both ignore layer 4,
+so under a resolved Blood Moon a Leyline deck kept domain 5: Scion of
+Draco for {2} instead of {10}, Leyline Binding for {W}, a 5/5 Kavu
+(Ponza replay L1419-1450; Boros L1538-1573) while its lands correctly
+produced only red. The residual sacrifice heuristic also
+sacrifice-searched a fetchland the fetch path had just refused (Ponza
+L1571-1574). Six of Zoo's 24 opponents bring a Moon effect (Ponza MB 4 +
+Magus, Boros / Pinnacle / Hollow One SB 2, Storm SB 1, Grixis SB
+Harbinger 2). Class: every type-setting effect × every land-type reader.
+
+**Rule** (CR 305.7, 613.2b, 613.7): the ADD family is a layer-4
+`ContinuousEffect` derived from `has_all_basic_land_types`, ordered by
+timestamp with the SET family — a later SET clears added types, a later
+ADD puts them back; one reader `CardInstance.current_basic_land_types`
+feeds `count_domain`, `_get_domain_count`, `effective_produces_mana`,
+`available_mana_colors`; `LandManager.land_type_is_set` is the one
+predicate for "no activated ability but mana", asked by the fetch path
+and the sacrifice heuristic. A basic Plains under Leyline + Moon is all
+five types (the Moon does not touch basics) — real Magic, and the test
+says so. Oracle-runtime-parse baseline 179 → 178. Tests:
+`tests/test_land_types_are_read_from_the_continuous_effects_layer.py`
+(four rules). Every domain / Leyline / Moon / land-mana pin green (178);
+anchor 29 passed, no flips; chunks a–g 2264 / h–z 2308; ratchets at
+baseline.
+
+**Measurement** (same seeds, n=20 Bo3, matchup grid; pre `6b9d284`,
+post Z1): Zoo vs Boros Ponza **60 → 50**, Boros Ponza vs Zoo (Ponza's
+own row) 40 → 30 for Zoo, Zoo vs Boros Energy 40 → 35, Zoo vs Pinnacle
+80 → 80, Zoo vs Hollow One 80 → 80 (their Moons are sideboard cards and
+did not decide these twenty); **Zoo field 70.0 → 69.4**; Ponza field
+51.5 → 51.9 (guard). The cells move exactly where the rule bites; the
+field moves by their share of 24 opponents.
