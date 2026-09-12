@@ -4535,6 +4535,49 @@ on the matchup grid), not a verdict.
   credits nobody with a kill, a game-1 win, a sweep or a comeback. The
   extraction was restarted on the fixed code.
 
+### Phase B — card-level detail (`49cd2a7`)
+
+`extract_card_data.py 10` on `89fd8cc`: 300 pairs × 10 verbose Bo3 =
+3000 matches, **~55 min** single-threaded on a box shared with the A/B
+fields (the first attempt, on the pre-fix extractor, was stopped at pair
+38 after nine matches had been dropped for drawn games — see the Phase A
+tooling note). Coverage: 300/300 insights, 93/300 sideboard entries,
+25/25 summaries, 1198 finisher descriptions, 25/25 damage data, 0 errors.
+
+**Merge defect found and fixed in the merge itself (no code in the
+repo owned the merge).** The extractor keys `matchup_cards` by REGISTRY
+index; the dashboard's `D.decks` order differs from the registry at
+positions 14–16 (Azorius Control, WST v2, Pinnacle Affinity), and the
+09-06 merge copied the keys through, so those three decks' matchup cards
+and deck cards were shown under the wrong names on the live dashboard.
+The 09-12 merge re-keys by deck name to dashboard positions (`i<j`,
+sides flipped where the dashboard order reverses a pair — the same flip
+`getMC(i, j)` performs in `build_dashboard.ENGINE`) and self-checks every
+cell against `D.decks`. Dashboard rebuilt with
+`build_dashboard.py metagame_data.jsx modern_meta_matrix_full.html`
+(the bare form writes only to `/mnt/user-data/outputs`, another stale
+CLAUDE.md line); 600 cells render in headless Chromium and the
+Azorius Control vs WST v2 card opens under the right names.
+
+### Phase C — showcase (`c6a01ff`)
+
+`build_showcase.py mtgsimmanu_showcase.html` on the merged JSX; hand
+parts updated (n=60 run date and match count, "31 of 96", one timeline
+entry for the 09-06 → 09-12 sweep, the Zoo and Storm entries brought to
+the current numbers).
+
+**Showcase defect found by the render check (present since 09-06).**
+Headless Chromium with the CDN Chart.js stubbed and `window.onerror`
+trapped into the page title showed `Uncaught SyntaxError: Unexpected
+identifier 's'` — `build_val_data` pasted deck names raw into
+single-quoted JS strings, so `name:'Goryo's Vengeance'` ended the literal
+and the whole inline script aborted: the live 09-06 showcase rendered no
+heatmap, no deck profiles and no validation bars. Names and details are
+now JSON literals and the valData substitution is a function replacement
+(a template replacement re-parsed the `\u2014` escapes). Pinned by
+`tests/test_showcase_val_data_is_valid_js.py`. After the fix the
+25-column heatmap renders (600 cells) with no page error.
+
 ### Phase D — post-sim outlier replays (`3c22bdc`)
 
 Targets from the fresh results against `tools/calibration_bands.json`:
