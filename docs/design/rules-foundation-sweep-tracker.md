@@ -4534,3 +4534,55 @@ on the matchup grid), not a verdict.
   control deck). A drawn game now contributes turns and casts and
   credits nobody with a kill, a game-1 win, a sweep or a comeback. The
   extraction was restarted on the fixed code.
+
+### Phase D — post-sim outlier replays (`3c22bdc`)
+
+Targets from the fresh results against `tools/calibration_bands.json`:
+the five out-of-band decks with the largest shortfall, worst and best
+cell (the three ≥5pp-over decks Zoo / Tron / Storm are covered by
+their own lanes). Seeds 60200–60207; logs `replays/*.txt`, viewers
+`replays/replay_*.html`. Each log was read independently (one agent
+per replay, line numbers quoted) against the question "defect, and in
+which subsystem, or legitimate play?".
+
+| Seed | Pair | Why | Result | One-line read |
+|---|---|---|---|---|
+| 60200 | Amulet Titan vs Domain Zoo | Amulet 25.3 vs [45,60], worst cell 5 | Zoo 2-1 (T13 / T7 / T10) | **AI tutor choice.** Green Sun's Zenith is cast at X=1 for Arboreal Grazer every time (L272, 1016, 1580) and Scapeshift resolves under "Goal: ramp" with no payoff (L344, 612): Amulet reaches 14 lands in G1 and never tutors Primeval Titan. |
+| 60201 | Amulet Titan vs Creatures Toolbox | best cell 65 | Toolbox 2-1 (T9 / T10 / T8) | **Engine cost not paid + AI holdback.** Summoner's Pact resolves on turn 1 in G2 and G3 (L673-677, 1391-1395) with no upkeep {2}{G}{G} trigger anywhere; Saga tutors Zuran Orb over Amulet of Vigor (L1653); two Titans stranded in hand at 5+ lands. |
+| 60202 | Jeskai Blink vs 4/5c Control | Jeskai 29.0 vs [45,60], worst cell 3 | Control 2-1 (T11 / T13 / T14) | **C-lane (holdback + discard to hand size).** Wrath of the Skies is never cast in the match: discarded at 7 cards (L1882, 2014), pitched to evoke (L397, 2147); Ephemerate cast main-phase on Ragavan into open red (L217-231); two 2-drops walked into open Discharge mana. |
+| 60203 | Jeskai Blink vs Creatures Toolbox | best cell 72 | Jeskai 2-0 (T16 / T10) | **Engine rules gap (the Toolbox outlet).** T6 Druid + Vizier make unbounded mana; Walking Ballista cast for X=40 (L424) resolves and dies at once (L426-427) — it entered with NO counters. G2 Toolbox keeps a one-land seven (L1193) and is land-locked to T9. |
+| 60204 | Creatures Toolbox vs Eldrazi Tron | Toolbox 17.9 vs [30,70], worst cell 3 | Tron 2-0 (T8 / T11) | **Same gap from the other side + block scorer.** G2: 82 then 161 mana (L937-945, 1008), Craterhoof drawn T10 and never cast; G1 T5 Toolbox chump-blocks with Devoted Druid at 17 life (L303) — its only combo half, valued as a 0/2. |
+| 60205 | Creatures Toolbox vs Amulet Titan | best cell 42 | Amulet 2-1 (T8 / T9 / T7) | **Same gap, three casts.** Ballista X=1 (L819-822) and X=2 (L1541-1544) enter and die; 85 mana T5 (L940), 82 mana T7 (L1708) with nothing to spend it on. |
+| 60206 | Dimir Midrange vs Eldrazi Tron | Dimir 65.2 vs [45,60], worst cell 25 | Tron 2-1 (T9 / T7 / T8) | **Removal legality.** Both Fatal Pushes cast at a resolved Devourer of Destiny (MV 7, L398-407) and consumed doing nothing; the same no-op decides G3 (L1382-1390). `Fatal Push.targeted_removal_data` is None — the revolt-conditional MV bound is not parsed, so neither the engine bound (CR 601.2c) nor the AI reach check applies. |
+| 60207 | Affinity vs 4/5c Control | Affinity 44.8 vs [50,65], worst cell 17 | Control 2-0 (T9 / T8) | **Saga chapters + ward.** Chapter III sacrificed for Shadowspear without a Construct activation despite {2} available (L257-264); Affinity attacks zero times in G1; Kappa Cannoneer's ward {4} never triggers when Solitude exiles it with 7 mana up (L634-639, "ward" absent from the log). |
+
+**Root cause found for the Creatures Toolbox outlier (three of eight
+replays):** `ed10ebf` (unit E6, 2026-09-09) made a dedicated ETB
+handler the OWNER of an X-counter permanent's counters — correct for
+Wan Shi Tong, whose handler added them, but Walking Ballista's handler
+only READS `card.plus_counters` (it spends them as damage), so after
+E6 every Ballista entered as a 0/0 and died before its handler ran.
+The 09-12 matrix (17.9) and the Zoo loop-break doc's "unbounded mana
+with no outlet" both describe this regression. Class: 69 X-counter
+permanents in the pool; the rule (CR 107.3 / 614.1c) is that the
+engine places "enters with X counters" for every one of them and a
+handler never places them again. Built as unit E13 below.
+
+**Leads recorded, not built (each named by subsystem):**
+- Fatal Push (and every removal whose MV bound sits in a conditional
+  clause — revolt, "if …, instead") parses to `targeted_removal_data =
+  None`, so it is castable at any target and whiffs (E1 covered modal /
+  converge shapes only). Engine parser class.
+- Summoner's Pact: the "at the beginning of your next upkeep, pay …
+  or lose the game" delayed trigger is absent — the Pact cycle and every
+  "pay or lose" delayed trigger. Engine class.
+- Kappa Cannoneer's ward never triggers against a hard-cast Solitude
+  (evoke/ETB-exile path) — check which targeting path bypasses the CR
+  702.21a check in `resolve_stack`.
+- Urza's Saga chapter III sacrificed without spending the available
+  Construct activation (Affinity's own clock never starts).
+- Green Sun's Zenith always X=1 (Grazer) and Scapeshift under a ramp
+  goal with no payoff: Amulet's tutor targeting (the 09-06 Amulet
+  primary doc).
+- Block scorer values a combo half as its printed body (Druid chump at
+  17 life); Jeskai discards Wrath to hand size (C-lane, already open).
