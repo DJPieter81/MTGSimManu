@@ -4302,3 +4302,36 @@ ordering); that choice is the caster's — return the least-valued land (a
 basic, or the bounce land itself), by the same land valuation the
 delivery now uses — and it is the next iteration: class = the ten bounce
 lands × every entry, every deck that fetches or plays them.
+
+### Loop iteration 2: a mass land search takes at most one bounce land per batch (2026-09-12, `79aabff`)
+
+Every bounce land's entry trigger resolves even after its source has left
+(CR 603), so two fetched together return each other; the engine's
+Scapeshift now leaves the picks already made on the source for each seam
+call, and the AI's land delivery ranks a bounce land last once the batch
+holds one (watcher or not). Two tests red by construction → green; 45
+tutor/gate/land-entry pins; chunks 2291 / 2276; anchor unchanged.
+Primeval Titan's own two-land search still ranks its lands itself —
+follow-on.
+
+**Same-seed pre → post, n=20 Bo3:** Amulet Titan field 21.0 → **23.3**
+(22.7 before iteration 1 — flat); Domain Zoo vs Amulet **100 → 100**.
+**No movement — 2 of 3 on the Zoo lane.** Kept as behaviour (the base no
+longer shrinks by a land per extra bounce land).
+
+**Replays for the next targets.** Zoo vs Creatures Toolbox (95): Toolbox
+at 4 life into a 5/6 Frog cast Leyline of Abundance and paid with BOTH
+Dryad Arbors while two untapped duals could have paid the green — the
+payment solver's scarcity ordering taps a mono-colour creature-land
+before a dual, and nothing prices a tapped potential blocker while the
+opponent has on-board lethal; it took lethal with no untapped creature
+(`_holdback_penalty` prices open mana for instants, not open bodies for
+blocks). Zoo vs Goryo's (90): the combo line was played correctly
+(Vengeance → Griselbrand → Ephemerate → Thoughtseize); it lost to Leyline
+Binding on Griselbrand and a hard-cast Unburial Rites into an open
+Stubborn Denial — no single defect named; not next. **Iteration 3:** a
+creature that can produce mana is tapped for a spell only when no
+non-creature source can pay the pip (payment ordering), and while the
+opponent has on-board lethal a play that must tap a potential blocker is
+clamped (the chump it removes is the turn). Class: every mana creature
+and creature-land × every payment; every deck facing lethal.
