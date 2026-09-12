@@ -1,0 +1,1265 @@
+Loaded 22470 cards (0 errors)
+======================================================================
+  GAME 1: Creatures Toolbox (P1) vs Eldrazi Tron (P2)  —  seed 60204
+  Series: Creatures Toolbox 0 - 0 Eldrazi Tron
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Eldrazi Tron wins → chooses to play first
+║ P1 (on play): Eldrazi Tron
+║ P2 (on draw): Creatures Toolbox
+╚═══════════════════════════════════════════════════════
+
+P1 (Creatures Toolbox) opening hand (1 lands, 6 spells):
+  • Agatha's Soul Cauldron [Spell, CMC 2]
+  • Tyvar, Jubilant Brawler [Spell, CMC 3]
+  • Leyline of Abundance [Spell, CMC 4]
+  • Badgermole Cub [Creature, CMC 2]
+  • Verdant Catacombs [Land, CMC 0]
+  • Leyline of Abundance [Spell, CMC 4]
+  • Devoted Druid [Creature, CMC 2]
+→ P1 KEEPS 7 — has key card(s): Badgermole Cub, Devoted Druid, 4 cheap spells
+
+P2 (Eldrazi Tron) opening hand (2 lands, 5 spells):
+  • All Is Dust [Spell, CMC 7]
+  • Dismember [Spell, CMC 3]
+  • Chalice of the Void [Spell, CMC 0]
+  • Eldrazi Temple [Land, CMC 0]
+  • Kozilek's Command [Spell, CMC 2]
+  • Expedition Map [Spell, CMC 1]
+  • Urza's Power Plant [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Chalice of the Void, Eldrazi Temple, Expedition Map, 4 cheap spells
+
+T0 P1: Leyline of Abundance begins the game on the battlefield (leyline)
+T0 P1: Leyline of Abundance begins the game on the battlefield (leyline)
+
+╔══ TURN 1 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Creatures Toolbox 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance, Leyline of Abundance
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Urza's Power Plant
+    → Goal: ramp [engines]
+    [Mana] Tap Urza's Power Plant→C (paying for Expedition Map, 0 mana remaining)
+T1 P2: Cast Expedition Map (1)
+    [Priority] P1 passes (no response)
+T1: Resolve Expedition Map
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 20  |  Eldrazi Tron 20
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance, Leyline of Abundance
+║   Lands: (none)
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Expedition Map
+║   Lands: Urza's Power Plant [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Temple Garden
+  [Main 1]
+T1 P1: Play Verdant Catacombs
+T1: Verdant Catacombs moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Verdant Catacombs (pay 1 life) -> Overgrown Tomb (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Creatures Toolbox 19
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Expedition Map
+║   Lands: Urza's Power Plant
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance, Leyline of Abundance
+║   Lands: Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Glaring Fleshraker
+  [Main 1]
+T2 P2: Play Eldrazi Temple
+    → Goal: ramp [enablers]
+T2 P2: Cast Chalice of the Void (2) (X=1)
+    [Priority] P1 passes (no response)
+T2: Resolve Chalice of the Void
+T2 P2: Chalice of the Void enters with 1 charge counter(s)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 19  |  Eldrazi Tron 20
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance, Leyline of Abundance
+║   Lands: Overgrown Tomb
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Expedition Map, Chalice of the Void
+║   Lands: Urza's Power Plant [T], Eldrazi Temple [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Delighted Halfling
+  [Main 1]
+T2 P1: Play Temple Garden (tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Creatures Toolbox 19
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Expedition Map, Chalice of the Void
+║   Lands: Urza's Power Plant, Eldrazi Temple
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance, Leyline of Abundance
+║   Lands: Overgrown Tomb, Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Kozilek's Command
+  [Main 1]
+    → Goal: ramp [enablers]
+    [Mana] Tap Urza's Power Plant→C, Eldrazi Temple→CC (paying for Glaring Fleshraker, 0 mana remaining)
+T3 P2: Cast Glaring Fleshraker (2)
+    [Priority] P1 passes (no response)
+T3: Resolve Glaring Fleshraker
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 19  |  Eldrazi Tron 20
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 1
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance, Leyline of Abundance
+║   Lands: Overgrown Tomb, Temple Garden
+║ Eldrazi Tron board:
+║   Creatures: Glaring Fleshraker (2/2)
+║   Other: Expedition Map, Chalice of the Void
+║   Lands: Urza's Power Plant [T], Eldrazi Temple [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Green Sun's Zenith
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Overgrown Tomb→G, Temple Garden→G (paying for Badgermole Cub, 0 mana remaining)
+T3 P1: Cast Badgermole Cub (1G)
+    [Priority] P2 passes (no response)
+T3: Resolve Badgermole Cub
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Creatures Toolbox 19
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: Glaring Fleshraker (2/2)
+║   Other: Expedition Map, Chalice of the Void
+║   Lands: Urza's Power Plant, Eldrazi Temple
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2)
+║   Other: Leyline of Abundance, Leyline of Abundance
+║   Lands: Overgrown Tomb [T], Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thought-Knot Seer
+  [Main 1]
+T4: Expedition Map moved battlefield -> graveyard (activation cost (Expedition Map))
+T4 P2: activate Expedition Map — Search your library for a land card, reveal it, put it into your hand, then shuffle.
+T4: Urza's Tower moved library -> hand (Expedition Map tutor)
+T4 P2: Expedition Map activated — finds Urza's Tower (hand)
+T4 P2: Play Urza's Tower
+    → Goal: ramp
+T4 P2: Pay 4 life (Phyrexian mana) for Dismember
+T4 P2: Cast Dismember (1BB)
+    [Priority] P1 passes (no response)
+T4: Resolve Dismember
+T4: Badgermole Cub dies
+T4: Dismember moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Glaring Fleshraker
+T4 P2: Attack with Glaring Fleshraker
+  [Declare Blockers] P1 does not block
+T4 P2:   Glaring Fleshraker (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 19 → 17
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 17  |  Eldrazi Tron 16
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance, Leyline of Abundance
+║   Lands: Overgrown Tomb, Temple Garden
+║ Eldrazi Tron board:
+║   Creatures: Glaring Fleshraker (2/2) [tapped]
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant [T], Eldrazi Temple [T], Urza's Tower
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Delighted Halfling
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Overgrown Tomb→G, Temple Garden→G (paying for Devoted Druid, 0 mana remaining)
+T4 P1: Cast Devoted Druid (1G)
+    [Priority] P2 passes (no response)
+T4: Resolve Devoted Druid
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 16  |  Creatures Toolbox 17
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 49  |  Graveyard: 2
+║ Eldrazi Tron board:
+║   Creatures: Glaring Fleshraker (2/2)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant, Eldrazi Temple, Urza's Tower
+║ Creatures Toolbox board:
+║   Creatures: Devoted Druid (0/2)
+║   Other: Leyline of Abundance, Leyline of Abundance
+║   Lands: Overgrown Tomb [T], Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Devourer of Destiny
+  [Main 1]
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C, Eldrazi Temple→CC, Urza's Tower→C (paying for Thought-Knot Seer, 0 mana remaining)
+T5 P2: Cast Thought-Knot Seer (3)
+T5 P2: Create 1x Spawn token(s)
+    [Priority] P1 passes (no response)
+T5: Resolve Thought-Knot Seer
+T5: Tyvar, Jubilant Brawler moved hand -> exile (etb reveal-hand exile)
+T5 P2: Thought-Knot Seer ETB: exiles Tyvar, Jubilant Brawler from opponent's hand
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Glaring Fleshraker
+T5 P2: Attack with Glaring Fleshraker
+T5 P1:   [BLOCK] Devoted Druid (0/2) blocks Glaring Fleshraker (2/2) — lifespan_delta=+0.02
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T5: Devoted Druid dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 17  |  Eldrazi Tron 16
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 3
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance, Leyline of Abundance
+║   Lands: Overgrown Tomb, Temple Garden
+║ Eldrazi Tron board:
+║   Creatures: Glaring Fleshraker (2/2) [tapped], Spawn Token (0/1), Thought-Knot Seer (4/4)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant [T], Eldrazi Temple [T], Urza's Tower [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Nature's Rhythm
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Overgrown Tomb→B, Temple Garden→G (paying for Agatha's Soul Cauldron, 0 mana remaining)
+T5 P1: Cast Agatha's Soul Cauldron (2)
+    [Priority] P2 passes (no response)
+T5: Resolve Agatha's Soul Cauldron
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 16  |  Creatures Toolbox 17
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 48  |  Graveyard: 2
+║ Eldrazi Tron board:
+║   Creatures: Glaring Fleshraker (2/2), Spawn Token (0/1), Thought-Knot Seer (4/4)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant, Eldrazi Temple, Urza's Tower
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance, Leyline of Abundance, Agatha's Soul Cauldron
+║   Lands: Overgrown Tomb [T], Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Mind Stone
+  [Main 1]
+    → Goal: ramp [enablers]
+    [Mana] Tap Urza's Power Plant→C, Eldrazi Temple→CC (paying for Mind Stone, 2 mana remaining)
+T6 P2: Cast Mind Stone (2)
+T6 P2: Create 1x Spawn token(s)
+    [Priority] P1 passes (no response)
+T6: Resolve Mind Stone
+T6: Mind Stone moved battlefield -> graveyard (activation cost (Mind Stone))
+T6 P2: activate Mind Stone — Draw a card.
+T6 P2: Mind Stone activated — draw 1 (Urza's Power Plant)
+T6 P2: Play Urza's Power Plant
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Glaring Fleshraker, Thought-Knot Seer
+T6 P2: Attack with Glaring Fleshraker, Thought-Knot Seer
+  [Declare Blockers] P1 does not block
+T6 P2:   Glaring Fleshraker (2/2) → 2 dmg to player
+T6 P2:   Thought-Knot Seer (4/4) → 4 dmg to player
+  [Combat Damage] 6 damage dealt → P1 life: 17 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 11  |  Eldrazi Tron 16
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 3
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance, Leyline of Abundance, Agatha's Soul Cauldron
+║   Lands: Overgrown Tomb, Temple Garden
+║ Eldrazi Tron board:
+║   Creatures: Glaring Fleshraker (2/2) [tapped], Spawn Token (0/1), Thought-Knot Seer (4/4) [tapped], Spawn Token (0/1)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant [T], Eldrazi Temple [T], Urza's Tower, Urza's Power Plant
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Misty Rainforest
+  [Main 1]
+T6 P1: Play Misty Rainforest
+T6: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T6 P1: Crack Misty Rainforest (pay 1 life) -> Overgrown Tomb (tapped, life: 10)
+    → Goal: execute_payoff
+    [Mana] Tap Overgrown Tomb→G, Temple Garden→G (paying for Nature's Rhythm, 0 mana remaining)
+T6 P1: Cast Nature's Rhythm (GG)
+    [Priority] P2 passes (no response)
+T6: Resolve Nature's Rhythm
+T6: Dryad Arbor moved library -> battlefield (Nature's Rhythm tutor)
+T6 P1: Nature's Rhythm finds Dryad Arbor
+T6: Nature's Rhythm moved stack -> graveyard (resolution)
+  [Begin Combat]
+    [Mana] Tap Urza's Tower→C, Urza's Power Plant→C (paying for Kozilek's Command, 0 mana remaining)
+T6 P2: Cast Kozilek's Command (0)
+T6 P2: Create 1x Spawn token(s)
+    [Priority] P1 passes (no response)
+T6: Resolve Kozilek's Command
+T6: Dryad Arbor moved battlefield -> exile (exiled)
+T6 P2: Kozilek's Command exiles Dryad Arbor
+T6: Kozilek's Command moved stack -> graveyard (resolution)
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 16  |  Creatures Toolbox 10
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 46  |  Graveyard: 4
+║ Eldrazi Tron board:
+║   Creatures: Glaring Fleshraker (2/2), Spawn Token (0/1), Thought-Knot Seer (4/4), Spawn Token (0/1), Spawn Token (0/1)
+║   Other: Chalice of the Void
+║   Lands: Urza's Power Plant, Eldrazi Temple, Urza's Tower, Urza's Power Plant
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance, Leyline of Abundance, Agatha's Soul Cauldron
+║   Lands: Overgrown Tomb [T], Temple Garden [T], Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Karn, the Great Creator
+  [Main 1]
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C, Eldrazi Temple→CC, Urza's Tower→C (paying for Karn, the Great Creator, 1 mana remaining)
+T7 P2: Cast Karn, the Great Creator (4)
+T7 P2: Create 1x Spawn token(s)
+    [Priority] P1 passes (no response)
+T7: Resolve Karn, the Great Creator
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Glaring Fleshraker, Thought-Knot Seer
+T7 P2: Attack with Glaring Fleshraker, Thought-Knot Seer
+  [Declare Blockers] P1 does not block
+T7 P2:   Glaring Fleshraker (2/2) → 2 dmg to player
+T7 P2:   Thought-Knot Seer (4/4) → 4 dmg to player
+  [Combat Damage] 6 damage dealt → P1 life: 10 → 4
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 4  |  Eldrazi Tron 16
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 44  |  Graveyard: 5
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Leyline of Abundance, Leyline of Abundance, Agatha's Soul Cauldron
+║   Lands: Overgrown Tomb, Temple Garden, Overgrown Tomb
+║ Eldrazi Tron board:
+║   Creatures: Glaring Fleshraker (2/2) [tapped], Spawn Token (0/1), Thought-Knot Seer (4/4) [tapped], Spawn Token (0/1), Spawn Token (0/1), Spawn Token (0/1)
+║   Other: Chalice of the Void, Karn, the Great Creator
+║   Lands: Urza's Power Plant [T], Eldrazi Temple [T], Urza's Tower [T], Urza's Power Plant
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Fiend Artisan
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Overgrown Tomb→B, Temple Garden→G (paying for Fiend Artisan, 1 mana remaining)
+T7 P1: Cast Fiend Artisan (0)
+    [Priority] P2 passes (no response)
+T7: Resolve Fiend Artisan
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 16  |  Creatures Toolbox 4
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 45  |  Graveyard: 4
+║ Eldrazi Tron board:
+║   Creatures: Glaring Fleshraker (2/2), Spawn Token (0/1), Thought-Knot Seer (4/4), Spawn Token (0/1), Spawn Token (0/1), Spawn Token (0/1)
+║   Other: Chalice of the Void, Karn, the Great Creator
+║   Lands: Urza's Power Plant, Eldrazi Temple, Urza's Tower, Urza's Power Plant
+║ Creatures Toolbox board:
+║   Creatures: Fiend Artisan (1/1)
+║   Other: Leyline of Abundance, Leyline of Abundance, Agatha's Soul Cauldron
+║   Lands: Overgrown Tomb [T], Temple Garden [T], Overgrown Tomb
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Eldrazi Temple
+  [Main 1]
+T8 P2: Play Eldrazi Temple
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C, Eldrazi Temple→CC (paying for Kozilek's Command, 5 mana remaining)
+T8 P2: Cast Kozilek's Command (5) (X=5)
+T8 P2: Create 1x Spawn token(s)
+    [Priority] P1 passes (no response)
+T8: Resolve Kozilek's Command
+T8: Fiend Artisan moved battlefield -> exile (exiled)
+T8 P2: Kozilek's Command exiles Fiend Artisan
+T8: Kozilek's Command moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Thought-Knot Seer
+T8 P2: Attack with Thought-Knot Seer
+  [Declare Blockers] P1 does not block
+T8 P2:   Thought-Knot Seer (4/4) → 4 dmg to player
+P1 loses: life total 0
+  [Combat Damage] 4 damage dealt → P1 life: 4 → 0
+
+>>> Eldrazi Tron wins Game 1 on turn 8 via damage
+    Final life: Creatures Toolbox=0  Eldrazi Tron=16
+
+======================================================================
+  GAME 2: Creatures Toolbox (P1) vs Eldrazi Tron (P2)  —  seed 60205
+  Series: Creatures Toolbox 0 - 1 Eldrazi Tron
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Creatures Toolbox wins → chooses to play first
+║ P1 (on play): Creatures Toolbox
+║ P2 (on draw): Eldrazi Tron
+╚═══════════════════════════════════════════════════════
+
+P1 (Creatures Toolbox) opening hand (1 lands, 6 spells):
+  • Nature's Rhythm [Spell, CMC 2]
+  • Wooded Foothills [Land, CMC 0]
+  • Delighted Halfling [Creature, CMC 1]
+  • Nature's Rhythm [Spell, CMC 2]
+  • Duskwatch Recruiter // Krallenhorde Howler [Creature, CMC 2]
+  • Tyvar, Jubilant Brawler [Spell, CMC 3]
+  • Delighted Halfling [Creature, CMC 1]
+→ P1 KEEPS 7 — has key card(s): Delighted Halfling, 6 cheap spells
+
+P2 (Eldrazi Tron) opening hand (1 lands, 6 spells):
+  • Karn, the Great Creator [Spell, CMC 4]
+  • Glaring Fleshraker [Creature, CMC 3]
+  • Thought-Knot Seer [Creature, CMC 4]
+  • Thought-Knot Seer [Creature, CMC 4]
+  • Eldrazi Temple [Land, CMC 0]
+  • Glaring Fleshraker [Creature, CMC 3]
+  • Chalice of the Void [Spell, CMC 0]
+→ P2 MULLIGANS (too few lands (1 < 2))
+  New hand (2 lands, 5 spells): ["Urza's Power Plant", 'Expedition Map', 'Karn, the Great Creator', "Kozilek's Command", "Urza's Power Plant", 'Thought-Knot Seer', 'Devourer of Destiny']
+→ P2 mulligans to 6, bottoms: ["Kozilek's Command"]
+  Keeps: ["Urza's Power Plant", 'Expedition Map', 'Karn, the Great Creator', "Urza's Power Plant", 'Thought-Knot Seer', 'Devourer of Destiny']
+
+
+╔══ TURN 1 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 20  |  Eldrazi Tron 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Wooded Foothills
+T1: Wooded Foothills moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Wooded Foothills (pay 1 life) -> Overgrown Tomb (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Creatures Toolbox 19
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ugin, Eye of the Storms
+  [Main 1]
+T1 P2: Play Urza's Power Plant
+    → Goal: ramp [engines]
+    [Mana] Tap Urza's Power Plant→C (paying for Expedition Map, 0 mana remaining)
+T1 P2: Cast Expedition Map (1)
+    [Priority] P1 passes (no response)
+T1: Resolve Expedition Map
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 19  |  Eldrazi Tron 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Expedition Map
+║   Lands: Urza's Power Plant [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Green Sun's Zenith
+  [Main 1]
+    → Goal: deploy_engine
+    [Mana] Tap Overgrown Tomb→G (paying for Delighted Halfling, 0 mana remaining)
+T2 P1: Cast Delighted Halfling (G)
+    [Priority] P2 passes (no response)
+T2: Resolve Delighted Halfling
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Creatures Toolbox 19
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Other: Expedition Map
+║   Lands: Urza's Power Plant
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2)
+║   Lands: Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Devourer of Destiny
+  [Main 1]
+T2 P2: Play Urza's Power Plant
+T2: Expedition Map moved battlefield -> graveyard (activation cost (Expedition Map))
+T2 P2: activate Expedition Map — Search your library for a land card, reveal it, put it into your hand, then shuffle.
+T2: Urza's Mine moved library -> hand (Expedition Map tutor)
+T2 P2: Expedition Map activated — finds Urza's Mine (hand)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 19  |  Eldrazi Tron 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2)
+║   Lands: Overgrown Tomb
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Power Plant [T], Urza's Power Plant [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Devoted Druid
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Overgrown Tomb→G, Delighted Halfling→B (paying for Duskwatch Recruiter // Krallenhorde Howler, 0 mana remaining)
+T3 P1: Cast Duskwatch Recruiter // Krallenhorde Howler (1G)
+    [Priority] P2 passes (no response)
+T3: Resolve Duskwatch Recruiter // Krallenhorde Howler
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 20  |  Creatures Toolbox 19
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 1
+║ Library: 51  |  Graveyard: 1
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Power Plant, Urza's Power Plant
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2) [tapped], Duskwatch Recruiter // Krallenhorde Howler (2/2)
+║   Lands: Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Dismember
+  [Main 1]
+T3 P2: Play Urza's Mine
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C (paying for Dismember, 2 mana remaining)
+T3 P2: Pay 4 life (Phyrexian mana) for Dismember
+T3 P2: Cast Dismember (1BB)
+    [Priority] P1 passes (no response)
+T3: Resolve Dismember
+T3: Delighted Halfling dies
+T3: Dismember moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 19  |  Eldrazi Tron 16
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 2
+║ Creatures Toolbox board:
+║   Creatures: Duskwatch Recruiter // Krallenhorde Howler (2/2)
+║   Lands: Overgrown Tomb
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Power Plant [T], Urza's Power Plant, Urza's Mine
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Delighted Halfling
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Overgrown Tomb→G (paying for Delighted Halfling, 0 mana remaining)
+T4 P1: Cast Delighted Halfling (G)
+    [Priority] P2 passes (no response)
+T4: Resolve Delighted Halfling
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Duskwatch Recruiter // Krallenhorde Howler
+T4 P1: Attack with Duskwatch Recruiter // Krallenhorde Howler
+  [Declare Blockers] P2 does not block
+T4 P1:   Duskwatch Recruiter // Krallenhorde Howler (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 16 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 14  |  Creatures Toolbox 19
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 1
+║ Library: 50  |  Graveyard: 2
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Power Plant, Urza's Power Plant, Urza's Mine
+║ Creatures Toolbox board:
+║   Creatures: Duskwatch Recruiter // Krallenhorde Howler (2/2) [tapped], Delighted Halfling (1/2)
+║   Lands: Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: All Is Dust
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 19  |  Eldrazi Tron 14
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ Creatures Toolbox board:
+║   Creatures: Duskwatch Recruiter // Krallenhorde Howler (2/2), Delighted Halfling (1/2)
+║   Lands: Overgrown Tomb
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Power Plant, Urza's Power Plant, Urza's Mine
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Underground Mortuary
+  [Main 1]
+T5 P1: surveil 1 → Nature's Rhythm to GY
+T5 P1: Play Underground Mortuary (enters tapped)
+    → Goal: execute_payoff
+    [Mana] Tap Overgrown Tomb→G (paying for Green Sun's Zenith, 1 mana remaining)
+T5 P1: Cast Green Sun's Zenith (1G) (X=1)
+    [Priority] P2 passes (no response)
+T5: Resolve Green Sun's Zenith
+T5: Delighted Halfling moved library -> battlefield (Green Sun's Zenith tutor)
+T5 P1: Green Sun's Zenith finds Delighted Halfling
+T5: Green Sun's Zenith moved stack -> graveyard (resolution)
+    → Goal: execute_payoff
+    [Mana] Tap Delighted Halfling→G (paying for Delighted Halfling, 0 mana remaining)
+T5 P1: Cast Delighted Halfling (G)
+    [Priority] P2 passes (no response)
+T5: Resolve Delighted Halfling
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Duskwatch Recruiter // Krallenhorde Howler
+T5 P1: Attack with Duskwatch Recruiter // Krallenhorde Howler
+  [Declare Blockers] P2 does not block
+T5 P1:   Duskwatch Recruiter // Krallenhorde Howler (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 14 → 12
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 12  |  Creatures Toolbox 19
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 49  |  Graveyard: 2
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Power Plant, Urza's Power Plant, Urza's Mine
+║ Creatures Toolbox board:
+║   Creatures: Duskwatch Recruiter // Krallenhorde Howler (2/2) [tapped], Delighted Halfling (1/2) [tapped], Delighted Halfling (1/2), Delighted Halfling (1/2)
+║   Lands: Overgrown Tomb [T], Underground Mortuary [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Karn, the Great Creator
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 19  |  Eldrazi Tron 12
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 46  |  Graveyard: 4
+║ Creatures Toolbox board:
+║   Creatures: Duskwatch Recruiter // Krallenhorde Howler (2/2), Delighted Halfling (1/2), Delighted Halfling (1/2), Delighted Halfling (1/2)
+║   Lands: Overgrown Tomb, Underground Mortuary
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Power Plant, Urza's Power Plant, Urza's Mine
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Agatha's Soul Cauldron
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Overgrown Tomb→G, Underground Mortuary→G (paying for Nature's Rhythm, 3 mana remaining)
+T6 P1: Cast Nature's Rhythm (3GG) (X=3)
+    [Priority] P2 passes (no response)
+T6: Resolve Nature's Rhythm
+T6: Fiend Artisan moved library -> battlefield (Nature's Rhythm tutor)
+T6 P1: Nature's Rhythm finds Fiend Artisan
+T6: Nature's Rhythm moved stack -> graveyard (resolution)
+    → Goal: execute_payoff
+    [Mana] Tap Delighted Halfling→G, Delighted Halfling→G (paying for Nature's Rhythm, 1 mana remaining)
+T6 P1: Cast Nature's Rhythm (1GG) (X=1)
+    [Priority] P2 passes (no response)
+T6: Resolve Nature's Rhythm
+T6: Dryad Arbor moved library -> battlefield (Nature's Rhythm tutor)
+T6 P1: Nature's Rhythm finds Dryad Arbor
+T6: Nature's Rhythm moved stack -> graveyard (resolution)
+    → Goal: execute_payoff
+    [Mana] Tap Dryad Arbor→G, Delighted Halfling→B (paying for Devoted Druid, 0 mana remaining)
+T6 P1: Cast Devoted Druid (1G)
+    [Priority] P2 passes (no response)
+T6: Resolve Devoted Druid
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Duskwatch Recruiter // Krallenhorde Howler
+T6 P1: Attack with Duskwatch Recruiter // Krallenhorde Howler
+  [Declare Blockers] P2 does not block
+T6 P1:   Duskwatch Recruiter // Krallenhorde Howler (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 12 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 10  |  Creatures Toolbox 19
+║ Hand: 7 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 2
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Power Plant, Urza's Power Plant, Urza's Mine
+║ Creatures Toolbox board:
+║   Creatures: Duskwatch Recruiter // Krallenhorde Howler (2/2) [tapped], Delighted Halfling (1/2) [tapped], Delighted Halfling (1/2) [tapped], Delighted Halfling (1/2) [tapped], Fiend Artisan (1/1), Dryad Arbor (1/1) [tapped], Devoted Druid (0/2)
+║   Lands: Overgrown Tomb [T], Underground Mortuary [T], Dryad Arbor [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thought-Knot Seer
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+T6: Devourer of Destiny moved hand -> graveyard (discard to hand size)
+
+╔══ TURN 7 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 19  |  Eldrazi Tron 10
+║ Hand: 2 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 43  |  Graveyard: 6
+║ Creatures Toolbox board:
+║   Creatures: Duskwatch Recruiter // Krallenhorde Howler (2/2), Delighted Halfling (1/2), Delighted Halfling (1/2), Delighted Halfling (1/2), Fiend Artisan (1/1), Dryad Arbor (1/1), Devoted Druid (0/2)
+║   Lands: Overgrown Tomb, Underground Mortuary, Dryad Arbor
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Power Plant, Urza's Power Plant, Urza's Mine
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Devoted Druid
+  [Main 1]
+T7: Dryad Arbor moved battlefield -> graveyard (activation cost (Fiend Artisan))
+T7 P1: activate Fiend Artisan — Search your library for a creature card with mana value X or less, put it onto the battlefield, then shuffle.
+T7: Vizier of Remedies moved library -> battlefield (Fiend Artisan tutor)
+T7 P1: Fiend Artisan activated — finds Vizier of Remedies (battlefield)
+    → Goal: execute_payoff
+    [Mana] Tap Devoted Druid→G, Delighted Halfling→B (paying for Devoted Druid, 82 mana remaining)
+T7 P1: Cast Devoted Druid (1G)
+    [Priority] P2 passes (no response)
+T7: Resolve Devoted Druid
+    → Goal: execute_payoff
+T7 P1: loops Devoted Druid ×1 (CR 726 shortcut) — 1 mana
+    [Mana] Tap Delighted Halfling→B, Delighted Halfling→B (paying for Tyvar, Jubilant Brawler, 80 mana remaining)
+T7 P1: Cast Tyvar, Jubilant Brawler (1BG)
+    [Priority] P2 passes (no response)
+T7: Resolve Tyvar, Jubilant Brawler
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Duskwatch Recruiter // Krallenhorde Howler
+T7 P1: Attack with Duskwatch Recruiter // Krallenhorde Howler
+  [Declare Blockers] P2 does not block
+T7 P1:   Duskwatch Recruiter // Krallenhorde Howler (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 10 → 8
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 8  |  Creatures Toolbox 19
+║ Hand: 7 cards  |  Opp hand: 1 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 47  |  Graveyard: 3
+║ Eldrazi Tron board:
+║   Creatures: (empty)
+║   Lands: Urza's Power Plant, Urza's Power Plant, Urza's Mine
+║ Creatures Toolbox board:
+║   Creatures: Duskwatch Recruiter // Krallenhorde Howler (2/2) [tapped], Delighted Halfling (1/2) [tapped], Delighted Halfling (1/2) [tapped], Delighted Halfling (1/2) [tapped], Fiend Artisan (1/1) [tapped], Devoted Druid (0/2) [tapped], Vizier of Remedies (2/1), Devoted Druid (0/2)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Overgrown Tomb [T], Underground Mortuary [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Urza's Mine
+  [Main 1]
+T7 P2: Play Urza's Mine
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C, Urza's Power Plant→C, Urza's Mine→C, Urza's Mine→C (paying for Thought-Knot Seer, 0 mana remaining)
+T7 P2: Cast Thought-Knot Seer (3)
+    [Priority] P1 passes (no response)
+T7: Resolve Thought-Knot Seer
+T7: Agatha's Soul Cauldron moved hand -> exile (etb reveal-hand exile)
+T7 P2: Thought-Knot Seer ETB: exiles Agatha's Soul Cauldron from opponent's hand
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 19  |  Eldrazi Tron 8
+║ Hand: 0 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 41  |  Graveyard: 7
+║ Creatures Toolbox board:
+║   Creatures: Duskwatch Recruiter // Krallenhorde Howler (2/2), Delighted Halfling (1/2), Delighted Halfling (1/2), Delighted Halfling (1/2), Fiend Artisan (1/1), Devoted Druid (0/2), Vizier of Remedies (2/1), Devoted Druid (0/2)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Overgrown Tomb, Underground Mortuary
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4)
+║   Lands: Urza's Power Plant [T], Urza's Power Plant [T], Urza's Mine [T], Urza's Mine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Ouroboroid
+  [Main 1]
+T8: Duskwatch Recruiter // Krallenhorde Howler moved battlefield -> graveyard (activation cost (Fiend Artisan))
+T8 P1: activate Fiend Artisan — Search your library for a creature card with mana value X or less, put it onto the battlefield, then shuffle.
+T8: Devoted Druid moved library -> battlefield (Fiend Artisan tutor)
+T8 P1: Fiend Artisan activated — finds Devoted Druid (battlefield)
+    → Goal: execute_payoff [payoffs]
+T8 P1: loops Devoted Druid ×1 (CR 726 shortcut) — 1 mana
+    [Mana] Tap Devoted Druid→G, Delighted Halfling→B, Delighted Halfling→B (paying for Ouroboroid, 161 mana remaining)
+T8 P1: Cast Ouroboroid (2GG)
+    [Priority] P2 passes (no response)
+T8: Resolve Ouroboroid
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 8  |  Creatures Toolbox 19
+║ Hand: 6 cards  |  Opp hand: 0 cards
+║ Lands: 4  |  Opp lands: 2
+║ Library: 46  |  Graveyard: 3
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4)
+║   Lands: Urza's Power Plant, Urza's Power Plant, Urza's Mine, Urza's Mine
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2) [tapped], Delighted Halfling (1/2) [tapped], Delighted Halfling (1/2), Fiend Artisan (1/1) [tapped], Devoted Druid (0/2) [tapped], Vizier of Remedies (2/1), Devoted Druid (0/2) [tapped], Devoted Druid (0/2), Ouroboroid (1/3)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Overgrown Tomb [T], Underground Mortuary [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Urza's Mine
+  [Main 1]
+T8 P2: Play Urza's Mine
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C, Urza's Power Plant→C, Urza's Mine→C, Urza's Mine→C (paying for Thought-Knot Seer, 1 mana remaining)
+T8 P2: Cast Thought-Knot Seer (3)
+    [Priority] P1 passes (no response)
+T8: Resolve Thought-Knot Seer
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Thought-Knot Seer
+T8 P2: Attack with Thought-Knot Seer
+  [Declare Blockers] P1 does not block
+T8 P2:   Thought-Knot Seer (4/4) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 19 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 15  |  Eldrazi Tron 8
+║ Hand: 0 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 5
+║ Library: 39  |  Graveyard: 8
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2), Delighted Halfling (1/2), Delighted Halfling (1/2), Fiend Artisan (1/1), Devoted Druid (0/2), Vizier of Remedies (2/1), Devoted Druid (0/2), Devoted Druid (0/2), Ouroboroid (1/3)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Overgrown Tomb, Underground Mortuary
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4) [tapped], Thought-Knot Seer (4/4)
+║   Lands: Urza's Power Plant [T], Urza's Power Plant [T], Urza's Mine [T], Urza's Mine [T], Urza's Mine
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Verdant Catacombs
+  [Main 1]
+T9: Ouroboroid moved battlefield -> graveyard (activation cost (Fiend Artisan))
+T9 P1: activate Fiend Artisan — Search your library for a creature card with mana value X or less, put it onto the battlefield, then shuffle.
+T9: Devoted Druid moved library -> battlefield (Fiend Artisan tutor)
+T9 P1: Fiend Artisan activated — finds Devoted Druid (battlefield)
+T9 P1: Play Verdant Catacombs
+T9: Verdant Catacombs moved battlefield -> graveyard (fetchland sacrifice)
+T9 P1: Crack Verdant Catacombs (pay 1 life) -> Temple Garden (tapped, life: 14)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 8  |  Creatures Toolbox 14
+║ Hand: 5 cards  |  Opp hand: 0 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 45  |  Graveyard: 3
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4), Thought-Knot Seer (4/4)
+║   Lands: Urza's Power Plant, Urza's Power Plant, Urza's Mine, Urza's Mine, Urza's Mine
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2), Delighted Halfling (1/2), Delighted Halfling (1/2), Fiend Artisan (1/1) [tapped], Devoted Druid (0/2) [tapped], Vizier of Remedies (2/1), Devoted Druid (0/2), Devoted Druid (0/2), Devoted Druid (0/2)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Overgrown Tomb [T], Underground Mortuary [T], Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ugin's Labyrinth
+  [Main 1]
+T9 P2: Play Ugin's Labyrinth
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C, Urza's Power Plant→C, Urza's Mine→C, Urza's Mine→C (paying for Karn, the Great Creator, 2 mana remaining)
+T9 P2: Cast Karn, the Great Creator (4)
+    [Priority] P1 passes (no response)
+T9: Resolve Karn, the Great Creator
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Thought-Knot Seer, Thought-Knot Seer
+T9 P2: Attack with Thought-Knot Seer, Thought-Knot Seer
+  [Declare Blockers] P1 does not block
+T9 P2:   Thought-Knot Seer (4/4) → 4 dmg to player
+T9 P2:   Thought-Knot Seer (4/4) → 4 dmg to player
+  [Combat Damage] 8 damage dealt → P1 life: 14 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 6  |  Eldrazi Tron 8
+║ Hand: 0 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 6
+║ Library: 36  |  Graveyard: 10
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2), Delighted Halfling (1/2), Delighted Halfling (1/2), Fiend Artisan (1/1), Devoted Druid (0/2), Vizier of Remedies (2/1), Devoted Druid (0/2), Devoted Druid (0/2), Devoted Druid (0/2)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Overgrown Tomb, Underground Mortuary, Temple Garden
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4) [tapped], Thought-Knot Seer (4/4) [tapped]
+║   Other: Karn, the Great Creator
+║   Lands: Urza's Power Plant [T], Urza's Power Plant [T], Urza's Mine [T], Urza's Mine [T], Urza's Mine, Ugin's Labyrinth
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Craterhoof Behemoth
+  [Main 1]
+T10: Delighted Halfling moved battlefield -> graveyard (activation cost (Fiend Artisan))
+T10 P1: activate Fiend Artisan — Search your library for a creature card with mana value X or less, put it onto the battlefield, then shuffle.
+T10: Shang-Chi, Master of Kung Fu moved library -> battlefield (Fiend Artisan tutor)
+T10 P1: Fiend Artisan activated — finds Shang-Chi, Master of Kung Fu (battlefield)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Delighted Halfling, Delighted Halfling, Vizier of Remedies
+T10 P1: Attack with Delighted Halfling, Delighted Halfling, Vizier of Remedies
+  [Declare Blockers] P2 does not block
+T10 P1:   Delighted Halfling (1/2) → 1 dmg to player
+T10 P1:   Delighted Halfling (1/2) → 1 dmg to player
+T10 P1:   Vizier of Remedies (2/1) → 2 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 8 → 4
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 4  |  Creatures Toolbox 6
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 6  |  Opp lands: 3
+║ Library: 44  |  Graveyard: 3
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4), Thought-Knot Seer (4/4)
+║   Other: Karn, the Great Creator
+║   Lands: Urza's Power Plant, Urza's Power Plant, Urza's Mine, Urza's Mine, Urza's Mine, Ugin's Labyrinth
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2) [tapped], Delighted Halfling (1/2) [tapped], Fiend Artisan (1/1) [tapped], Devoted Druid (0/2) [tapped], Vizier of Remedies (2/1) [tapped], Devoted Druid (0/2), Devoted Druid (0/2), Devoted Druid (0/2), Shang-Chi, Master of Kung Fu (2/2)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Overgrown Tomb [T], Underground Mortuary [T], Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Urza's Power Plant
+  [Main 1]
+T10 P2: Play Urza's Power Plant
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C, Urza's Power Plant→C, Urza's Mine→C, Urza's Mine→C, Urza's Mine→C, Ugin's Labyrinth→C, Urza's Power Plant→C (paying for Devourer of Destiny, 0 mana remaining)
+T10 P2: Cast Devourer of Destiny (5)
+T10: Vizier of Remedies moved battlefield -> exile (Devourer of Destiny cast: exile)
+T10 P2: Devourer of Destiny cast — exile Vizier of Remedies
+    [Priority] P1 passes (no response)
+T10: Resolve Devourer of Destiny
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Thought-Knot Seer, Thought-Knot Seer
+T10 P2: Attack with Thought-Knot Seer, Thought-Knot Seer
+T10 P1:   [BLOCK-EMERGENCY] Devoted Druid (0/2) blocks Thought-Knot Seer (4/4) — lifespan_delta=-100.14
+T10 P1:   [BLOCK-EMERGENCY] Devoted Druid (0/2) blocks Thought-Knot Seer (4/4) — lifespan_delta=-100.14
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T10: Devoted Druid dies
+T10: Devoted Druid dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 6  |  Eldrazi Tron 4
+║ Hand: 1 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 7
+║ Library: 34  |  Graveyard: 13
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2), Delighted Halfling (1/2), Fiend Artisan (1/1), Devoted Druid (0/2), Devoted Druid (0/2), Shang-Chi, Master of Kung Fu (2/2)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Overgrown Tomb, Underground Mortuary, Temple Garden
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4) [tapped], Thought-Knot Seer (4/4) [tapped], Devourer of Destiny (6/6)
+║   Other: Karn, the Great Creator
+║   Lands: Urza's Power Plant [T], Urza's Power Plant [T], Urza's Mine [T], Urza's Mine [T], Urza's Mine [T], Ugin's Labyrinth [T], Urza's Power Plant [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Forest
+  [Main 1]
+T11 P1: Play Forest
+T11: Devoted Druid moved battlefield -> graveyard (activation cost (Fiend Artisan))
+T11 P1: activate Fiend Artisan — Search your library for a creature card with mana value X or less, put it onto the battlefield, then shuffle.
+T11: Badgermole Cub moved library -> battlefield (Fiend Artisan tutor)
+T11 P1: Fiend Artisan activated — finds Badgermole Cub (battlefield)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Delighted Halfling, Delighted Halfling, Shang-Chi, Master of Kung Fu
+T11 P1: Attack with Delighted Halfling, Delighted Halfling, Shang-Chi, Master of Kung Fu
+T11 P2:   [BLOCK-EMERGENCY] Devourer of Destiny (6/6) blocks Shang-Chi, Master of Kung Fu (2/2) — lifespan_delta=+0.51
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T11 P1:   Delighted Halfling (1/2) → 1 dmg to player
+T11 P1:   Delighted Halfling (1/2) → 1 dmg to player
+T11: Shang-Chi, Master of Kung Fu dies
+  [Combat Damage] 2 damage dealt → P2 life: 4 → 2
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Eldrazi Tron (P2) ══════════════════════════
+║ Life: Eldrazi Tron 2  |  Creatures Toolbox 6
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 7  |  Opp lands: 4
+║ Library: 43  |  Graveyard: 3
+║ Eldrazi Tron board:
+║   Creatures: Thought-Knot Seer (4/4), Thought-Knot Seer (4/4), Devourer of Destiny (6/6)
+║   Other: Karn, the Great Creator
+║   Lands: Urza's Power Plant, Urza's Power Plant, Urza's Mine, Urza's Mine, Urza's Mine, Ugin's Labyrinth, Urza's Power Plant
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2) [tapped], Delighted Halfling (1/2) [tapped], Fiend Artisan (1/1) [tapped], Devoted Druid (0/2), Badgermole Cub (2/2)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Overgrown Tomb [T], Underground Mortuary [T], Temple Garden [T], Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wastes
+  [Main 1]
+    → Goal: ramp
+    [Mana] Tap Urza's Power Plant→C, Urza's Power Plant→C, Urza's Mine→C, Urza's Mine→C, Urza's Mine→C, Ugin's Labyrinth→C, Urza's Power Plant→C (paying for Ugin, Eye of the Storms, 0 mana remaining)
+T11 P2: Cast Ugin, Eye of the Storms (7)
+T11: Badgermole Cub moved battlefield -> exile (Ugin, Eye of the Storms cast: exile)
+T11 P2: Ugin, Eye of the Storms cast — exile Badgermole Cub
+    [Priority] P1 passes (no response)
+T11: Resolve Ugin, Eye of the Storms
+T11 P2: Play Wastes
+T11 P2: Ugin, Eye of the Storms [+2] -> You gain 3 life and draw a card
+T11 P2: Gain 3 life from Ugin, Eye of the Storms (life: 5)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Thought-Knot Seer, Thought-Knot Seer, Devourer of Destiny
+T11 P2: Attack with Thought-Knot Seer, Thought-Knot Seer, Devourer of Destiny
+T11 P1:   [BLOCK-EMERGENCY] Devoted Druid (0/2) blocks Devourer of Destiny (6/6) — lifespan_delta=+0.00
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T11 P2:   Thought-Knot Seer (4/4) → 4 dmg to player
+T11 P2:   Thought-Knot Seer (4/4) → 4 dmg to player
+P1 loses: life total -2
+  [Combat Damage] 8 damage dealt → P1 life: 6 → -2
+
+>>> Eldrazi Tron wins Game 2 on turn 11 via damage
+    Final life: Creatures Toolbox=-2  Eldrazi Tron=5
+
+======================================================================
+  MATCH RESULT: Eldrazi Tron wins 2-0
+======================================================================

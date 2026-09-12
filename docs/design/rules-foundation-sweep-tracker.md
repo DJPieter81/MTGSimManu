@@ -4431,3 +4431,106 @@ the file's absence at its first call, so the 2026-09-12 refresh is the
 pre-weights baseline. **A/B pending** (same seeds, n=20 fields: Ruby
 Storm, Living End, Eldrazi Tron, Amulet Titan, Creatures Toolbox; Boros
 and Dimir as guards for the zeroed rows) once the matrix frees the box.
+
+## Meta refresh (2026-09-12)
+
+Full refresh on `989b7e7` (Zoo loop stopped, tree clean; nothing
+pending on the measured path): matrix → dashboard → card-level detail
+→ showcase → outlier replays. **Geometry differs from 09-06:** the
+user chose n=60 per pair (calibration-grade fields, ±1.3pp), which is
+only feasible with `--parallel`, and the parallel path dispatches
+`run_matchup` per ordered pair on the MATCHUP grid (50000 + 500·k),
+whereas the 09-06 run was `--matrix -n 20` on the matrix grid (40000).
+Both orderings of every pair are therefore independent n=60 samples.
+Field-level comparison with 09-06 is valid; cell-level comparison is
+not (09-06 cells are ±11pp).
+
+### Phase A — matrix (`21c0732`)
+
+`MTG_LLM_DECISION_SCORER_OFFLINE=1 python run_meta.py --matrix -n 60
+--save --parallel`, 3 workers: **4 h 26 min** (12:35:59 → 17:02:25 UTC)
+for 300 ordered pairs × 60 Bo3 = 18 000 matches. Calibration
+(`tools/check_calibration.py`, auto-run by `--save`): **31 in band /
+65 out** (09-06: 38 / 58). Dashboard merged and rebuilt by `--save`
+(`modern_meta_matrix_full.html`; `matchup_cards` 300 / `deck_cards` 25
+preserved for Phase B; `matches_per_pair` 60).
+
+| Deck | 09-06 (n20, matrix grid) | 09-12 (n60, matchup grid) | Δ |
+|---|---|---|---|
+| Domain Zoo | 60.2 | **69.4** | +9.2 |
+| Eldrazi Tron | 68.1 | 68.7 | +0.5 |
+| Dimir Midrange | 68.5 | 65.2 | −3.3 |
+| Boros Energy | 68.8 | 61.8 | −7.0 |
+| Izzet Prowess | 52.3 | 61.2 | +8.9 |
+| Broodscale Bloodchief | 64.8 | 60.7 | −4.1 |
+| 4c Omnath | 59.0 | 58.4 | −0.5 |
+| Living End | 52.3 | 56.8 | +4.5 |
+| Pinnacle Affinity | 61.5 | 55.6 | −5.9 |
+| Ruby Storm | 63.5 | 55.2 | −8.3 |
+| Eldrazi Ramp | 62.7 | 55.2 | −7.5 |
+| Grixis Reanimator | 53.1 | 53.8 | +0.7 |
+| 4/5c Control | 50.8 | 53.3 | +2.5 |
+| Boros Ponza | 46.2 | 51.3 | +5.1 |
+| Azorius Control (WST v2) | 58.3 | 49.8 | −8.5 |
+| Instant Reanimator | 47.7 | 49.6 | +1.9 |
+| Goryo's Vengeance | 41.5 | 47.2 | +5.7 |
+| Azorius Control | 43.8 | 45.0 | +1.2 |
+| Affinity | 44.0 | 44.8 | +0.8 |
+| Azorius Control (WST) | 47.5 | 40.3 | −7.2 |
+| Hollow One | 28.3 | 34.0 | +5.6 |
+| Azorius Blink | 31.2 | 31.6 | +0.4 |
+| Jeskai Blink | 26.0 | 29.0 | +3.0 |
+| Amulet Titan | 27.9 | 25.3 | −2.6 |
+| Creatures Toolbox | 21.9 | 17.9 | −4.0 |
+
+Reading: Ruby Storm 63.5 → 55.2 (the hybrid-mana fix; now at the top
+edge of [40,55] — the field rounds to 0.2 over), Boros −7.0 (the
+mulligan cap A7 and the counter triage on the defending side; now
+inside [50,70]), Prowess +8.9 (combat tricks, the lock-aware
+P(resolve)), Living End +4.5, Hollow One +5.6 (E12 loots), Goryo's
++5.7. Zoo 69.4 is the same reading the n=60 field gave (70.7 on the
+matchup grid, 09-11): the loop-break doc stands. Out of band (8):
+Amulet 25.3 vs [45,60], Jeskai Blink 29.0 vs [45,60], Creatures
+Toolbox 17.9 vs [30,70], Dimir 65.2 vs [45,60], Affinity 44.8 vs
+[50,65], Zoo 69.4 vs [50,65], Eldrazi Tron 68.7 vs [50,65], Storm 55.2
+vs [40,55].
+
+**Symmetry on the parallel path is a sample comparison, not an
+invariant.** The CLI's post-run check (`tools/symmetry_check`) reported
+66 pairs with `wr(A,B) + wr(B,A)` off by more than 10pp. Two causes,
+both verified with `--probe` at n=60 on the matrix grid: (1) draws —
+WST vs WST v2 reads 20 + 38 = 58 on the matrix and the probe gives 15
+with **10 draws in 60** (control mirrors reach the turn cap); WST v2 vs
+Azorius Blink 62 + 17 = 79, probe 58 with 1 draw; (2) two independent
+n=60 samples per pair (σ ≈ 6.4pp each), so a 10pp tolerance on their
+sum is exceeded by noise alone in a fair fraction of 300 pairs. One
+pair has neither explanation: Eldrazi Tron vs Dimir 47 + 25 = 72, probe
+53 with **0 draws** — the two orderings differ by ~28pp with no draws
+to account for it. Recorded as a lead (seat / first-player assignment
+on the matchup grid), not a verdict.
+
+**Two tooling defects found by this refresh, fixed the same day
+(failing test first):**
+
+- `1314a0b` — the `--parallel` matrix path assembled its own result
+  dict from `tools.parallel_matrix`, which forwarded only `pct1` per
+  pair, so the saved `metagame_results.json` had no `draws` / `aborted`
+  keys and `check_calibration` could never print the
+  NOT-CALIBRATION-GRADE line for a parallel run (Unit 2's contract held
+  only for the serial path). `run_matrix_parallel_cells` now returns a
+  `PairCell(wr, wr_reverse, draws, aborted)` per ordered pair and
+  `run_meta._assemble_parallel_matrix` stamps totals and per-cell
+  counts. **The committed 09-12 results file predates the fix and
+  carries no counts**; the probes above give the draw split for the
+  three largest pair-sum shortfalls, and the CPU budget
+  (`engine/game_budget.py`) is load-invariant, so a 3-worker run on a
+  4-core box does not abort games — but the file cannot prove it. The
+  next `--parallel --save` run will.
+- `89fd8cc` — `extract_card_data.py` indexed its kill tallies with
+  `game.winner_deck`, which is the string `"draw"` for a turn-cap draw;
+  the KeyError was swallowed per match, so every Bo3 match containing a
+  drawn game vanished from the pair's card detail (nine matches in the
+  first 38 pairs of the first Phase B attempt, all Jeskai Blink vs a
+  control deck). A drawn game now contributes turns and casts and
+  credits nobody with a kill, a game-1 win, a sweep or a comeback. The
+  extraction was restarted on the fixed code.
