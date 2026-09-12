@@ -249,6 +249,37 @@ def warm_decision_scorer(deck_names: Optional[Iterable[str]] = None) -> dict:
     return counts
 
 
+def export_decision_scorer_weights(path, deck_names: Optional[Iterable[str]] = None) -> dict:
+    """Write the cached decision_scorer rows to ``path`` in the shape
+    ``ai/llm_decision_scorer._load_weights_file`` reads:
+    ``{"model", "prompt_version", "rows": [{"archetype", "context",
+    "weight", "confidence", "rationale"}]}``.  Only cache HITS are
+    written — a pair the model never answered keeps the offline default.
+    Keys are archetype + context (never a deck name), the same contract
+    the cache key carries.
+    """
+    from ai import llm_decision_scorer
+    from ai.llm_models import select_model
+    from ai.llm_prompts import latest_version
+    model = select_model("decision_scorer")
+    version = latest_version("decision_scorer")
+    rows = []
+    for arch, ctx in _iter_decision_scorer_contexts(deck_names):
+        hit = llm_decision_scorer._try_cache_row(arch, ctx)
+        if hit is None:
+            continue
+        rows.append({
+            "archetype": arch,
+            "context": ctx,
+            "weight": float(hit.weight),
+            "confidence": float(getattr(hit, "confidence", 0.0) or 0.0),
+            "rationale": str(getattr(hit, "rationale", "") or ""),
+        })
+    payload = {"model": model, "prompt_version": version, "rows": rows}
+    Path(path).write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
+    return {"rows": len(rows), "model": model, "prompt_version": version}
+
+
 # ─── CLI ────────────────────────────────────────────────────────────
 
 
@@ -284,6 +315,17 @@ def main(argv=None) -> int:
         help="Use the StubBackend (no model required) — useful for "
              "verifying the iteration shape without burning model time.",
     )
+    parser.add_argument(
+        "--export",
+        default=None,
+        metavar="PATH",
+        help="After warming the decision_scorer, write every cached "
+             "(archetype, context) row — weight, confidence, rationale, "
+             "with the model id and prompt version — to PATH as the "
+             "committed weights file `ai/llm_decision_weights.json` reads. "
+             "Rows with no cache hit are omitted (they keep the offline "
+             "defaults).",
+    )
     args = parser.parse_args(argv)
 
     overall = {"warmed": 0, "skipped": 0, "errors": 0, "total": 0}
@@ -305,6 +347,11 @@ def main(argv=None) -> int:
               f"skipped={counts['skipped']} "
               f"errors={counts['errors']} "
               f"total={counts['total']}")
+        if args.export:
+            written = export_decision_scorer_weights(args.export, deck_names)
+            print(f"  exported {written['rows']} row(s) for model "
+                  f"{written['model']} (prompt {written['prompt_version']}) "
+                  f"→ {args.export}")
         elapsed = time.time() - started
         print(f"\nDone in {elapsed:.1f}s. {overall}")
         return 0 if overall["errors"] == 0 else 1

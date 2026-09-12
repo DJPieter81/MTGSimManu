@@ -46,14 +46,60 @@ warmed cache row — never a Python branch.
 """
 from __future__ import annotations
 
+import json
 import math
 import os
+from pathlib import Path
 from typing import Optional
 
 from ai.llm_schemas import DecisionScoringWeights
 
 
 NEUTRAL_WEIGHT: float = 1.0  # magic-allow: neutral fallback when cache miss + budget exhausted
+
+
+# ─── Committed weights file ─────────────────────────────────────────
+#
+# The SQLite cache is gitignored and the live call is disabled in every
+# sim (``MTG_LLM_DECISION_SCORER_OFFLINE=1``), so a model's weights used
+# to live only on the box that warmed them.  ``tools/llm_cache_warm.py
+# --export`` writes the warmed rows here — ``{"model", "prompt_version",
+# "rows": [{"archetype", "context", "weight", "confidence",
+# "rationale"}]}`` — and every clone and CI run then scores with the SAME
+# model-derived weights, no key or cache needed.  Consulted after the
+# cache and before ``DEFAULT_WEIGHTS``; a pair absent from the file
+# falls back to the table.  Keys are archetype + context only — the same
+# contract the cache key carries (no deck or card names).
+_WEIGHTS_FILE: Path = Path(__file__).with_name("llm_decision_weights.json")
+_WEIGHTS_FILE_UNLOADED = object()
+_WEIGHTS_FILE_CACHE = _WEIGHTS_FILE_UNLOADED
+
+
+def _reset_weights_file_cache() -> None:
+    """Forget the loaded file (tests point ``_WEIGHTS_FILE`` elsewhere)."""
+    global _WEIGHTS_FILE_CACHE
+    _WEIGHTS_FILE_CACHE = _WEIGHTS_FILE_UNLOADED
+
+
+def _load_weights_file() -> dict[tuple[str, str], float]:
+    """``{(archetype, context): weight}`` from the committed file, or an
+    empty dict when the file is absent or unreadable.  Loaded once."""
+    global _WEIGHTS_FILE_CACHE
+    if _WEIGHTS_FILE_CACHE is not _WEIGHTS_FILE_UNLOADED:
+        return _WEIGHTS_FILE_CACHE
+    rows: dict[tuple[str, str], float] = {}
+    try:
+        path = Path(_WEIGHTS_FILE)
+        if path.exists():
+            data = json.loads(path.read_text())
+            for row in data.get("rows", []):
+                w = float(row["weight"])
+                if math.isfinite(w):
+                    rows[(str(row["archetype"]), str(row["context"]))] = w
+    except Exception:
+        rows = {}
+    _WEIGHTS_FILE_CACHE = rows
+    return rows
 
 
 # ─── Default weights table ──────────────────────────────────────────
@@ -151,15 +197,34 @@ DEFAULT_WEIGHTS: dict[tuple[str, str], float] = {
 }
 
 
+DEFAULT_WEIGHTS_CONTEXTS: tuple[str, ...] = (
+    CTX_COMBO_FORCE_PAYOFF_STORM_THRESHOLD,
+    CTX_TRON_MANA_ADVANTAGE,
+    CTX_AMULET_TITAN_MANA_BONUS,
+    CTX_CYCLING_CASCADE_BOOST,
+    CTX_CYCLING_GY_URGENCY,
+    CTX_CYCLING_GAMEPLAN_BOOST,
+    CTX_CYCLING_FREE_COST_BONUS,
+    CTX_CASCADE_FREE_SPELL_VALUE,
+)
+"""Every registered decision context — the warm tool's iteration set and
+the committed file's vocabulary."""
+
+
 def _lookup_default(archetype: str, context: str) -> float:
-    """Return ``DEFAULT_WEIGHTS[(archetype, context)]`` if present,
-    else ``DEFAULT_WEIGHTS[("*", context)]`` (the "any archetype"
-    fallback), else :data:`NEUTRAL_WEIGHT`.
+    """Return the committed file's row for ``(archetype, context)`` if
+    present (``_load_weights_file``), else
+    ``DEFAULT_WEIGHTS[(archetype, context)]``, else
+    ``DEFAULT_WEIGHTS[("*", context)]`` (the "any archetype" fallback),
+    else :data:`NEUTRAL_WEIGHT`.
 
     Keeping a single "any archetype" wildcard row lets keyword-driven
     contexts (cascade, evolve, suspend) share one default across all
     archetypes without duplicating the same float in every row.
     """
+    from_file = _load_weights_file()
+    if (archetype, context) in from_file:
+        return from_file[(archetype, context)]
     if (archetype, context) in DEFAULT_WEIGHTS:
         return DEFAULT_WEIGHTS[(archetype, context)]
     if ("*", context) in DEFAULT_WEIGHTS:
@@ -215,12 +280,12 @@ def _get_agent():
         return None
 
 
-def _try_cache_only(archetype: str, context: str) -> Optional[float]:
-    """Look in the SQLite cache for a matching ``DecisionScoringWeights``
-    row.  Returns the ``weight`` field on hit, ``None`` on miss.
-
-    Used as the fast path: cache hits should be free + sub-millisecond.
-    """
+def _try_cache_row(archetype: str, context: str) -> Optional[DecisionScoringWeights]:
+    """The cached ``DecisionScoringWeights`` row for ``(archetype,
+    context)`` under the current model + prompt version, or ``None``.
+    The export in ``tools/llm_cache_warm.py`` reads the whole row
+    (weight, confidence, rationale); ``_try_cache_only`` reads the
+    weight."""
     try:
         from ai import llm_cache
         from ai.llm_models import select_model
@@ -231,13 +296,25 @@ def _try_cache_only(archetype: str, context: str) -> Optional[float]:
             "decision_scorer", model, version,
             _cache_input(archetype, context),
         )
-        hit = llm_cache.get_cached(key, DecisionScoringWeights)
-        if hit is not None:
-            return float(hit.weight)
+        return llm_cache.get_cached(key, DecisionScoringWeights)
     except Exception:
         # Cache failures fall through to the LLM-call / fallback path.
         # We do not crash the sim on a cache I/O error.
         return None
+
+
+def _try_cache_only(archetype: str, context: str) -> Optional[float]:
+    """Look in the SQLite cache for a matching ``DecisionScoringWeights``
+    row.  Returns the ``weight`` field on hit, ``None`` on miss.
+
+    Used as the fast path: cache hits should be free + sub-millisecond.
+    """
+    hit = _try_cache_row(archetype, context)
+    if hit is not None:
+        try:
+            return float(hit.weight)
+        except Exception:
+            return None
     return None
 
 
@@ -333,6 +410,7 @@ def weight(
 __all__ = [
     "NEUTRAL_WEIGHT",
     "DEFAULT_WEIGHTS",
+    "DEFAULT_WEIGHTS_CONTEXTS",
     "CTX_COMBO_FORCE_PAYOFF_STORM_THRESHOLD",
     "CTX_TRON_MANA_ADVANTAGE",
     "CTX_AMULET_TITAN_MANA_BONUS",
