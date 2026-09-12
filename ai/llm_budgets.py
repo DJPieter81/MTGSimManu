@@ -86,10 +86,14 @@ DEFAULT_TOKEN_CAPS: dict[LLMTask, int] = {
     # prompt-header plus a tiny per-card payload.  4000 is generous.
     "classify_oracle":     4000,
     # Phase 1 refactor: archetype + short context label as user input,
-    # but the system prompt at ai/llm_prompts/decision_scorer_v1.md is
-    # ~1700 tokens — the contract documentation is the bulk of the input.
-    # 2500 gives ~50% headroom while still failing loud on a runaway prompt.
-    "decision_scorer":     2500,
+    # but the system prompt is the bulk of the input — v1 was ~1700
+    # tokens (cap 2500); v2 (decision_scorer_v2.md, the calibration
+    # discipline + per-context priors + few-shot) measured 2951 input
+    # tokens on the first live warm (2026-09-12, anthropic:claude-sonnet-5),
+    # so 2500 rejected every call with UsageLimitExceeded and the warm
+    # silently skipped all 72 pairs. 4000 gives ~35% headroom over v2
+    # while still failing loud on a runaway prompt.
+    "decision_scorer":     4000,
 }
 
 # Fallback budget when a caller passes an unknown task literal.

@@ -103,6 +103,18 @@ def test_the_export_writes_cached_rows_that_the_loader_reads_back(tmp_path, monk
         scorer._reset_weights_file_cache()
 
 
+def test_the_decision_scorer_token_cap_covers_its_current_prompt():
+    """The per-call input-token cap must exceed what the scorer's live
+    prompt actually costs, or every warm call is refused and the warm
+    silently skips (observed 2026-09-12: prompt v2 = 2951 input tokens
+    against a 2500 cap sized for v1; 72 of 72 pairs skipped). The pin
+    uses the measured figure; a prompt bump that crosses it must raise
+    the cap in the same change."""
+    from ai.llm_budgets import DEFAULT_TOKEN_CAPS
+    MEASURED_PROMPT_V2_INPUT_TOKENS = 2951
+    assert DEFAULT_TOKEN_CAPS["decision_scorer"] > MEASURED_PROMPT_V2_INPUT_TOKENS
+
+
 def test_the_shipped_file_if_present_keys_by_archetype_and_context_only_and_is_finite():
     import math
     from decks.modern_meta import MODERN_DECKS
