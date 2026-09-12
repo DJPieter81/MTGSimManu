@@ -4376,12 +4376,25 @@ class EVPlayer:
             _x_bound_mode = any(
                 ((m.get('removal') or {}).get('mv') == 'x')
                 for m in (getattr(t, 'modes', None) or []))
-            if ((getattr(t, 'targeted_removal_data', None) or {}).get('mv') == 'x'
-                    or _x_bound_mode):
+            _removal = (getattr(t, 'targeted_removal_data', None)
+                        or getattr(t, 'removal_mv_condition', None) or {})
+            if (_removal.get('mv') == 'x' or _x_bound_mode):
                 # The plain shape and a modal MODE of the same shape share
                 # the ceiling: X is chosen before targets (CR 601.2b).
                 from engine.cast_manager import CastManager
                 _x_ceiling = CastManager.affordable_x(game, self.player_idx, t)
+            elif isinstance(_removal.get('mv'), int):
+                # A numeric mana-value bound — printed on the target
+                # ("with mana value 3 or less") or checked on resolution
+                # ("destroy target creature if it has mana value 2 or
+                # less", raised when a permanent left the battlefield this
+                # turn). Aiming above it is legal but resolves to nothing:
+                # a wasted card, never a play.
+                _x_ceiling = _removal['mv']
+                _raised = _removal.get('mv_if_permanent_left')
+                if (_raised is not None and
+                        game.players[self.player_idx].permanents_left_battlefield_this_turn > 0):
+                    _x_ceiling = _raised
             if getattr(t, 'has_converge', False):
                 # Converge reaches the colours this manabase can spend —
                 # the same picker cast-time X selection uses; aiming above

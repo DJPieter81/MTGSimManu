@@ -6046,6 +6046,43 @@ def parse_targeted_removal(oracle: str):
     }
 
 
+_CONDITIONAL_MV_REMOVAL_RE = re.compile(
+    r'^(destroy|exile) target (' + _REMOVAL_TYPESPEC_ALT + r')'
+    r' if it has mana value (\d+) or less\.?$')
+_REVOLT_MV_RAISE_RE = re.compile(
+    r'(?:destroy|exile) that (?:creature|permanent|artifact|enchantment) '
+    r'if it has mana value (\d+) or less instead')
+
+
+def parse_conditional_mv_removal(oracle: str):
+    """A removal spell whose mana-value bound is a RESOLUTION condition,
+    not a targeting restriction: "Destroy target creature if it has mana
+    value 2 or less" (+ "Revolt — … if it has mana value 4 or less
+    instead"). Any creature is a legal target (CR 601.2c); a target above
+    the bound resolves to nothing. Returns ``{'mv': N,
+    'mv_if_permanent_left': M | None}`` or ``None``. Parsed once into
+    ``CardTemplate.removal_mv_condition`` so the AI's target chooser never
+    aims such a spell where its condition fails (a 7-drop took two Fatal
+    Pushes doing nothing, 2026-09-12 replay s60206). Resolution stays
+    with the card's handler."""
+    if not oracle or ' if it has mana value ' not in oracle.lower():
+        return None
+    text = strip_reminder_text(oracle).strip().lower()
+    mv = None
+    raised = None
+    for ln in (l.strip() for l in text.split('\n') if l.strip()):
+        m = _CONDITIONAL_MV_REMOVAL_RE.match(ln)
+        if m:
+            mv = int(m.group(3))
+            continue
+        r = _REVOLT_MV_RAISE_RE.search(ln)
+        if r and 'left the battlefield' in ln:
+            raised = int(r.group(1))
+    if mv is None:
+        return None
+    return {'mv': mv, 'mv_if_permanent_left': raised}
+
+
 # ═══════════════════════════════════════════════════════════════════
 # Planeswalker loyalty abilities (CR 606)
 # ═══════════════════════════════════════════════════════════════════

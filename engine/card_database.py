@@ -2154,8 +2154,13 @@ class CardDatabase:
         template.board_sweep_data = parse_board_sweep(oracle)
         # Targeted destroy/exile removal — parse-once typed classification,
         # dispatched through the shared nonland-permanent-removal resolver.
-        from .oracle_parser import parse_targeted_removal
+        from .oracle_parser import (parse_targeted_removal,
+                                    parse_conditional_mv_removal)
         template.targeted_removal_data = parse_targeted_removal(oracle)
+        # The resolution-condition sibling ("… if it has mana value N or
+        # less"): the AI's target chooser reads the bound; the card keeps
+        # its own resolver.
+        template.removal_mv_condition = parse_conditional_mv_removal(oracle)
         # Impulse / library-dig (CR 120 card selection) — parse-once typed
         # classification consumed by oracle_resolver._resolve_library_dig.
         from .oracle_parser import parse_library_dig

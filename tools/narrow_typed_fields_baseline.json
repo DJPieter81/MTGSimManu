@@ -32,7 +32,7 @@
       "cards": [
         "Lava Dart"
       ],
-      "reason": "Only one Modern-legal card prints a Flashback cost that sacrifices a land (Lava Dart, 'Flashback\u2014Sacrifice a Mountain.'); the field carries the parsed subtype so the cast path and the AI's land-loss pricing share one owner instead of a runtime regex. Other Flashback riders (pay life, sacrifice a creature) are a separate shape and are not yet paid by the engine."
+      "reason": ""
     },
     "has_cc_tap_draw": {
       "cards": [
@@ -102,6 +102,13 @@
         "Kunoros, Hound of Athreos"
       ],
       "reason": ""
+    },
+    "removal_mv_condition": {
+      "cards": [
+        "Anoint with Affliction",
+        "Fatal Push"
+      ],
+      "reason": "Removal whose mana-value bound is a RESOLUTION condition ('destroy target creature if it has mana value N or less', optional revolt raise). Two Modern cards carry the exact shape today; the mechanic the AI reads (a condition the spell checks on resolution, so aiming above it is legal but wasted) is generic and the parser is shape-driven, not name-driven. Resolution stays with each card's handler."
     },
     "self_cost_reduction_amount": {
       "cards": [

@@ -1184,6 +1184,14 @@ class CardTemplate:
     # through card_effects._resolve_nonland_permanent_removal. Populated by
     # oracle_parser.parse_targeted_removal.
     targeted_removal_data: Optional[dict] = None
+    # Removal whose mana-value bound is a RESOLUTION condition ("destroy
+    # target creature if it has mana value 2 or less", with an optional
+    # revolt raise): {'mv': N, 'mv_if_permanent_left': M | None}. Any
+    # creature is a legal target; above the bound the spell does nothing,
+    # so the AI's target chooser reads this and never aims there. Populated
+    # by oracle_parser.parse_conditional_mv_removal; resolution stays with
+    # the card's handler.
+    removal_mv_condition: Optional[dict] = None
     # Printed `[±N]: effect` loyalty abilities (CR 606), classified once at
     # DB load by oracle_parser.parse_loyalty_abilities into
     # {slot: LoyaltyAbility}.  `PlaneswalkerManager` dispatches off

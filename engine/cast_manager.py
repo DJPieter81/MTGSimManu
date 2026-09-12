@@ -229,7 +229,13 @@ def pick_converge_x_value(
     """
     from .card_effects import _removal_legal_pool, converge_reachable_max_mv
 
-    max_mv = converge_reachable_max_mv(game, player_idx)
+    # The printed pips are paid before X is chosen: the colours already
+    # spent on this cast (`game._last_colors_spent`) count toward the
+    # reach, or the picker undercounts by every colour a now-tapped
+    # source just paid.
+    max_mv = converge_reachable_max_mv(
+        game, player_idx,
+        already_spent=set(getattr(game, '_last_colors_spent', set())))
     legal = _removal_legal_pool(game, player_idx, "opponent",
                                 frozenset({"permanent_nonland"}))
     reachable = [c for c in legal.values() if (c.template.cmc or 0) <= max_mv]
