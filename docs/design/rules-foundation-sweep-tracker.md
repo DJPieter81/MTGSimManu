@@ -4394,3 +4394,40 @@ diagnosis budget. Zoo's own play was ordinary in every replay; its 70.7
 (n=60) is the tail's number. Two decisions are the user's: re-band Zoo on
 the weighted (meta-share) field rather than the flat one, and/or open the
 "unbounded mana → outlet" lane. The loop is not the tool for either.
+
+## LLM decision scorer — model-derived weights committed as data (2026-09-12)
+
+The scorer hook (`ai/llm_decision_scorer.weight`, eight `(archetype,
+context)` multipliers at eight call sites) resolved cache → live call →
+defaults table; the cache is gitignored and every sim runs offline, so a
+model's weights lived only on the box that warmed them. Four commits:
+
+- `22adcae` — committed weights file `ai/llm_decision_weights.json`
+  read between the cache and the defaults (loader, export flag, five
+  tests).
+- `4fe6cd9` — the per-call token cap (2500, sized for prompt v1) refused
+  prompt v2 (2951 input tokens measured): every warm call raised
+  UsageLimitExceeded, `weight()` swallowed it, and the warm recorded 72 of
+  72 pairs as skipped. Cap 4000 with a pin against the measurement.
+- `f157a27` — the cache wrapper keyed a live call by its prompt STRING
+  while the scorer looked the row up by the archetype/context dict, so a
+  live result was never found again (72 successful Sonnet calls, zero
+  cached rows). One key now: the scorer passes the dict, the wrapper keys
+  by it and renders it to JSON for the model. The "cached for
+  determinism" contract had never held for live results.
+- `ff481a8` — `anthropic:claude-sonnet-5`, prompt v2, 72 rows, 45
+  differing from the table: nearly all are 0.0 where the table returned a
+  neutral 1.0 for a context that does not apply to the archetype; the
+  rows the sim actually uses (ramp / combo / cascade) keep their
+  calibrated values. Anchor: Broodscale vs Hollow One s53500 flipped —
+  turn 3, Boseiju played instead of Urza's Saga, because the land-drop
+  scorer's Tron term keys on the "Urza's" SUBTYPE, which Saga carries,
+  and the model's 0.0 outside ramp removed that phantom credit. Accepted.
+  **Lead:** Tron pieces are Tower / Mine / Power Plant; the subtype test
+  also catches Urza's Saga and Urza's Cave (every deck with either).
+
+The n=60 matrix started before the file existed and each worker caches
+the file's absence at its first call, so the 2026-09-12 refresh is the
+pre-weights baseline. **A/B pending** (same seeds, n=20 fields: Ruby
+Storm, Living End, Eldrazi Tron, Amulet Titan, Creatures Toolbox; Boros
+and Dimir as guards for the zeroed rows) once the matrix frees the box.
