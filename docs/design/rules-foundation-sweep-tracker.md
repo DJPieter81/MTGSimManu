@@ -4629,3 +4629,44 @@ handler never places them again. Built as unit E13 below.
   primary doc).
 - Block scorer values a combo half as its printed body (Druid chump at
   17 life); Jeskai discards Wrath to hand size (C-lane, already open).
+
+### LLM decision-scorer A/B — the committed Sonnet weights vs the defaults table (2026-09-12)
+
+Same seeds (matchup grid 50000 + 500·k), n=20 Bo3 fields, `--parallel
+--workers 2`, offline flag on both sides. **Pre** = worktree at
+`f157a27` (no weights file, empty cache → `DEFAULT_WEIGHTS`); **post** =
+`3c22bdc` with `ai/llm_decision_weights.json` (the engine is identical
+on both sides: no engine or AI commit lies between them). No aborts on
+either side.
+
+| Deck | pre (defaults) | post (Sonnet file) | Δ | draws pre/post | cells moved |
+|---|---|---|---|---|---|
+| Ruby Storm | 54.0 | 53.5 | −0.5 | 0/0 | 3 (3 vs a Saga deck) |
+| Living End | 58.8 | 58.8 | +0.0 | 0/0 | 2 (2 vs a Saga deck) |
+| Eldrazi Tron | 69.0 | 69.6 | +0.6 | 6/6 | 3 (3 vs a Saga deck) |
+| Amulet Titan | 22.5 | 21.5 | −1.0 | 1/0 | 17 (3 vs a Saga deck) |
+| Creatures Toolbox | 18.1 | 18.3 | +0.2 | 0/0 | 1 (1 vs a Saga deck) |
+| Boros Energy | 61.5 | 61.5 | +0.0 | 0/0 | 3 (3 vs a Saga deck) |
+| Dimir Midrange | 63.5 | 63.8 | +0.3 | 0/0 | 2 (2 vs a Saga deck) |
+
+Verdict: **no field moves** (largest |Δ| 1.0pp, all inside the n=20
+noise; the movement rule is 2.2pp). The moved cells are almost all
+against the four Urza's Saga decks (Broodscale, Amulet, Affinity,
+Pinnacle) — the one behavioural change the file carries is the one the
+anchor flip showed: the model's 0.0 for the Tron-mana context outside
+ramp removes the phantom Tron credit the land-drop scorer's `"Urza's"`
+subtype test gives Urza's Saga. Amulet Titan's 17 moved cells are its
+own Saga drops on the play side (Amulet's archetype row also lost the
+credit). The rows the sim reads on the touched decks (ramp / combo /
+cascade contexts) kept their calibrated values, so the eight multipliers
+are unchanged where they matter; the file is committed data and stays.
+Task #29 closed. The "Urza's"-subtype Tron-piece test remains the lead
+(`ai/ev_player.py::_score_land`): Tron pieces are Tower / Mine / Power
+Plant, and the subtype test also catches Saga and Urza's Cave.
+
+**Caveat on the 09-12 matrix as "pre-weights":** the SQLite cache is
+consulted before the offline flag on every call, and the Sonnet rows
+were written at 16:48 while the matrix ran until 17:02, so the last ~14
+minutes of the matrix scored with the file's values. Given the table
+above (no field moves), the matrix is read as the pre-weights baseline
+within noise.
