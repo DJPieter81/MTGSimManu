@@ -381,12 +381,14 @@ def weight(
         if agent is not None:
             try:
                 payload = _cache_input(deck_archetype, decision_context)
-                # The agent's ``run_sync`` accepts a dict or a string.
-                # Render as a short structured prompt; the agent's
-                # system prompt explains the contract.
-                result = agent.run_sync(
-                    f"archetype={deck_archetype}; context={decision_context}"
-                )
+                # Pass the SAME dict the cache lookup is keyed by: the
+                # cache wrapper keys the call by it and renders it to
+                # text for the model, so the live result is found by
+                # `_try_cache_only` on the next call (and by the warm's
+                # export). A string prompt was keyed as a raw string and
+                # never matched — every call went live, and the warm
+                # recorded 72 of 72 pairs as skipped (2026-09-12).
+                result = agent.run_sync(payload)
                 w = float(result.output.weight)
                 if _is_finite_float(w):
                     return w

@@ -239,7 +239,18 @@ class CachedAgent:
         if cached is not None:
             return _CachedResult(cached)
 
-        result = self._agent.run_sync(user_prompt, **kwargs)
+        # A structured prompt (dict / BaseModel) is the cache key's
+        # material; the model receives it rendered as text. Callers that
+        # key their own lookups by the same structure (the decision
+        # scorer) then find the live result — a string prompt was keyed
+        # as `{"_raw_string_input": ...}` and never matched a dict lookup.
+        if isinstance(user_prompt, BaseModel):
+            raw_prompt: Any = json.dumps(user_prompt.model_dump(), sort_keys=True)
+        elif isinstance(user_prompt, dict):
+            raw_prompt = json.dumps(user_prompt, sort_keys=True)
+        else:
+            raw_prompt = user_prompt
+        result = self._agent.run_sync(raw_prompt, **kwargs)
 
         if isinstance(result.output, BaseModel):
             # Re-derive the input_hash without `task/model/version` so

@@ -103,6 +103,40 @@ def test_the_export_writes_cached_rows_that_the_loader_reads_back(tmp_path, monk
         scorer._reset_weights_file_cache()
 
 
+def test_a_live_result_is_found_by_the_scorers_own_cache_lookup(tmp_path, monkeypatch):
+    """The cache wrapper keyed a live call by its rendered prompt string
+    while the scorer looked the row up by the archetype/context dict, so
+    a live result was never found again: `weight()` re-called the model
+    every time, the warm counted every pair as skipped, and the export
+    found nothing (observed 2026-09-12: 72 of 72 skipped after 148 s of
+    successful calls). One key: the scorer passes the dict, the wrapper
+    keys by it and renders it to text for the model."""
+    from pydantic_ai.models.test import TestModel
+    from ai import llm_cache
+    from ai.llm_agents import build_agent
+    cache_dir = tmp_path / "cache_llm"
+    monkeypatch.setattr(llm_cache, "CACHE_DIR", cache_dir)
+    monkeypatch.setattr(llm_cache, "CACHE_DB", cache_dir / "responses.sqlite")
+    monkeypatch.delenv("MTG_LLM_DECISION_SCORER_OFFLINE", raising=False)
+    monkeypatch.setattr(scorer, "_WEIGHTS_FILE", tmp_path / "absent.json")
+    scorer._reset_weights_file_cache()
+    agent = build_agent("decision_scorer")
+    fake = TestModel(custom_output_args={"weight": 6.0, "confidence": 0.5,
+                                         "rationale": "test model"})
+    monkeypatch.setattr(scorer, "_AGENT", None)
+    monkeypatch.setattr(scorer, "_AGENT_BUILD_FAILED", False)
+    monkeypatch.setattr(scorer, "_get_agent", lambda: agent)
+    try:
+        with agent.override(model=fake):
+            assert scorer.weight("ramp", scorer.CTX_TRON_MANA_ADVANTAGE) == 6.0
+        assert scorer._try_cache_only("ramp", scorer.CTX_TRON_MANA_ADVANTAGE) == 6.0, (
+            "the live result is not under the key the scorer reads back")
+        row = scorer._try_cache_row("ramp", scorer.CTX_TRON_MANA_ADVANTAGE)
+        assert row is not None and row.rationale == "test model"
+    finally:
+        scorer._reset_weights_file_cache()
+
+
 def test_the_decision_scorer_token_cap_covers_its_current_prompt():
     """The per-call input-token cap must exceed what the scorer's live
     prompt actually costs, or every warm call is refused and the warm
