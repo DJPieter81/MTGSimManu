@@ -196,9 +196,25 @@ def _run_match(runner, d1_name, d2_name, seed, verbose=False):
 
 def _run_pair(runner, d1_name, d2_name, seed, bo1=False, verbose=False):
     """Dispatch to Bo3 match (default) or Bo1 game (bo1=True)."""
+    # Rules audit (engine/rules_audit): stamp this pair's findings with the
+    # seed and decks; a no-op unless MTG_RULES_AUDIT is set.
+    from engine.rules_audit import enabled as _audit_on, set_context as _audit_ctx
+    if _audit_on():
+        _audit_ctx(seed=seed, deck1=d1_name, deck2=d2_name)
     if bo1:
         return _run_game(runner, d1_name, d2_name, seed)
     return _run_match(runner, d1_name, d2_name, seed, verbose=verbose)
+
+
+def _audit_findings_of(result) -> list:
+    """Every rules-audit finding a GameResult or MatchResult carries."""
+    games = getattr(result, 'games', None)
+    if games is None:
+        return list(getattr(result, 'audit_findings', []) or [])
+    out = []
+    for g in games:
+        out.extend(getattr(g, 'audit_findings', []) or [])
+    return out
 
 
 _worker_runner = None  # Per-process cached runner
@@ -267,6 +283,34 @@ class WorkerResult(NamedTuple):
     pct_reverse: int = 0
     draws: int = 0
     aborted: int = 0
+    # Rules-audit findings of every game in this pair (engine/rules_audit);
+    # empty unless MTG_RULES_AUDIT was set for the run.
+    audit: tuple = ()
+
+
+# Process-level sink every aggregator feeds; the CLI writes it out as one
+# JSONL per run when --audit is on (`tools/rules_audit_report.py` ranks it).
+_AUDIT_SINK: list = []
+
+
+def _sink_audit(rows) -> None:
+    if rows:
+        _AUDIT_SINK.extend(rows)
+
+
+def _write_audit_report(out_dir: str = 'audits') -> Optional[str]:
+    """Write this run's rules-audit findings as one JSONL and print the
+    ranked summary. Returns the path (None when nothing was recorded)."""
+    import datetime
+    from engine.rules_audit import write_jsonl
+    from tools.rules_audit_report import summarize, format_summary
+    rows = list(_AUDIT_SINK)
+    stamp = datetime.datetime.utcnow().strftime('%Y%m%dT%H%M%SZ')
+    path = f'{out_dir}/rules_audit_{stamp}.jsonl'
+    n = write_jsonl(rows, path)
+    print(f'\nRules audit: {n} finding(s) written to {path}', file=sys.stderr)
+    print(format_summary(summarize(rows)), file=sys.stderr)
+    return path
 
 
 def _worker_matchup(args):
@@ -282,16 +326,18 @@ def _worker_matchup(args):
     runner = _worker_runner
     d1w = d2w = draws = aborted = 0
     errors = []
+    audit_rows = []
     for seed in seed_grid(n_games, seed_start):
         try:
             r = _run_pair(runner, d1_name, d2_name, seed, bo1=bo1)
             a, b, d, ab = _tally(r, d1_name, d2_name)
             d1w += a; d2w += b; draws += d; aborted += ab
+            audit_rows.extend(_audit_findings_of(r))
         except Exception:
             errors.append((seed, traceback.format_exc()))
     n = max(n_games, 1)
     return WorkerResult(d1_name, d2_name, round(d1w / n * 100), errors,
-                        round(d2w / n * 100), draws, aborted)
+                        round(d2w / n * 100), draws, aborted, tuple(audit_rows))
 
 
 def _run_game_no_runner(d1_name, d2_name, seed):
@@ -370,6 +416,7 @@ def run_matchup(deck1: str, deck2: str, n_games: int = 50,
         r = _run_pair(runner, deck1, deck2, seed, bo1=bo1, verbose=verbose)
         a, b, d, ab = _tally(r, deck1, deck2)
         wins[deck1] += a; wins[deck2] += b; wins['draw'] += d; aborted += ab
+        _sink_audit(_audit_findings_of(r))
         if bo1:
             if r.winner_deck in turn_wins:
                 turn_wins[r.winner_deck].append(r.turns)
@@ -427,13 +474,18 @@ def run_field(deck: str, n_games: int = 30, opponents: List[str] = None,
         worker_results = []
         for opp in opponents:
             d1w = draws = aborted = 0
+            audit_rows = []
             for seed in seed_grid(n_games, MATCHUP_SEED_START):
                 r = _run_pair(runner, deck, opp, seed, bo1=bo1)
                 a, _b, d, ab = _tally(r, deck, opp)
                 d1w += a; draws += d; aborted += ab
+                audit_rows.extend(_audit_findings_of(r))
             worker_results.append(WorkerResult(
-                deck, opp, round(d1w / n_games * 100), [], 0, draws, aborted))
+                deck, opp, round(d1w / n_games * 100), [], 0, draws, aborted,
+                tuple(audit_rows)))
 
+    for w in worker_results:
+        _sink_audit(w.audit)
     results = {w.d2: w.pct for w in worker_results}
     draws = sum(w.draws for w in worker_results)
     aborted = sum(w.aborted for w in worker_results)
@@ -574,6 +626,7 @@ def run_meta_matrix(top_tier: int = None, n_games: int = 20,
         matrix[(w.d2, w.d1)] = w.pct_reverse
         cell_draws[(w.d1, w.d2)] = w.draws
         cell_aborted[(w.d1, w.d2)] = w.aborted
+        _sink_audit(w.audit)
 
     def _cell_line(i, w):
         err_tag = f' [{len(w.errors)} ERR]' if w.errors else ''
@@ -599,15 +652,18 @@ def run_meta_matrix(top_tier: int = None, n_games: int = 20,
         runner = _get_runner()
         for idx, (d1_name, d2_name, ng, ss, _bo1) in enumerate(pairs):
             d1w = d2w = draws = aborted = 0
+            audit_rows = []
             for seed in seed_grid(ng, ss):
                 try:
                     r = _run_pair(runner, d1_name, d2_name, seed, bo1=_bo1)
                     a, b, d, ab = _tally(r, d1_name, d2_name)
                     d1w += a; d2w += b; draws += d; aborted += ab
+                    audit_rows.extend(_audit_findings_of(r))
                 except Exception:
                     pass
             w = WorkerResult(d1_name, d2_name, round(d1w / ng * 100), [],
-                             round(d2w / ng * 100), draws, aborted)
+                             round(d2w / ng * 100), draws, aborted,
+                             tuple(audit_rows))
             _record(w)
             print(_cell_line(idx, w), file=sys.stderr)
 
@@ -704,6 +760,8 @@ def _assemble_parallel_matrix(names: List[str], cells: Dict, n_games: int,
     matrix = {pair: cell.wr for pair, cell in cells.items()}
     cell_draws = {pair: int(cell.draws) for pair, cell in cells.items()}
     cell_aborted = {pair: int(cell.aborted) for pair, cell in cells.items()}
+    for cell in cells.values():
+        _sink_audit(getattr(cell, 'audit', ()))
     total_draws = sum(cell_draws.values())
     total_aborted = sum(cell_aborted.values())
     # Simple flat rankings (no meta-weighted/T1+T2 here — the parallel
@@ -1572,7 +1630,20 @@ if __name__ == '__main__':
                              'fixture validation, NOT matrix sims. '
                              'Reads MTGSIM_MCTS_ROLLOUTS env var to override '
                              'the default 1000-rollout budget.')
+    parser.add_argument('--rules-audit', action='store_true',
+                        help='Rules audit (engine/rules_audit): record every '
+                             'CR-invariant violation the engine notices during '
+                             'this run and write them to audits/rules_audit_'
+                             '<timestamp>.jsonl; rank with '
+                             'tools/rules_audit_report.py. Never changes play. '
+                             '(Distinct from --audit, the deck audit.)')
     args = parser.parse_args()
+
+    # Rules audit: the flag must be in the environment BEFORE any worker
+    # process is spawned (workers inherit it; the engine reads it per call).
+    if getattr(args, 'rules_audit', False):
+        import os as _os
+        _os.environ['MTG_RULES_AUDIT'] = '1'
 
     # Apply --workers override before any parallel run. Rebinds the
     # module-level name because run_meta_matrix reads it at call time.
@@ -1724,3 +1795,7 @@ if __name__ == '__main__':
                 merge()
             except Exception as e:
                 print(f'Dashboard merge skipped: {e}', file=sys.stderr)
+
+    # Rules audit: every path above feeds _AUDIT_SINK; write and rank it.
+    if getattr(args, 'rules_audit', False):
+        _write_audit_report()

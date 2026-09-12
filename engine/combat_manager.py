@@ -193,7 +193,7 @@ class CombatManager:
             b for a in live for b in (game.get_card_by_id(bid) for bid in a.blocker_ids)
             if b is not None and b.zone == "battlefield"]
         if any(self._strikes_first(c) for c in creatures_in_combat):
-            dmg = self._deal_combat_damage(game, live, first_strike_step=True)
+            dmg = self._audited_step(game, live, first_strike_step=True)
             total_player_damage += dmg
             # CR 510.4: SBAs checked after first-strike damage
             game.check_state_based_actions()
@@ -202,8 +202,8 @@ class CombatManager:
 
         # CR 510.2: Regular damage step — everyone still in combat whose
         # keywords put it here (no first strike, or double strike).
-        dmg = self._deal_combat_damage(game, self._assignments,
-                                        first_strike_step=False)
+        dmg = self._audited_step(game, self._assignments,
+                                 first_strike_step=False)
         total_player_damage += dmg
 
         # Mark all attackers as having attacked
@@ -257,6 +257,50 @@ class CombatManager:
         if first_strike_step:
             return first or double
         return double or not first
+
+    def _audited_step(self, game: "GameState",
+                      assignments: List[CombatAssignment],
+                      first_strike_step: bool) -> int:
+        """Run one combat damage step and audit CR 510.2 / 510.4: every
+        creature in combat, alive at the start of the step, with power,
+        whose own keywords put it in this step, dealt combat damage in it.
+        The deal sites record who dealt (`_dealt_ids`); the auditor
+        compares. Behaviour-neutral: with the audit off this is the step
+        plus one set."""
+        from .rules_audit import check as _audit_check, enabled as _audit_on
+        expected = []
+        if _audit_on():
+            def _rule_says_deals(c):
+                # The CR sentence, restated independently of the engine's
+                # own `_deals_in_step` so the audit checks the
+                # implementation rather than agreeing with it.
+                first = Keyword.FIRST_STRIKE in c.keywords
+                double = Keyword.DOUBLE_STRIKE in c.keywords
+                return (first or double) if first_strike_step else (double or not first)
+            for a in assignments:
+                if a.attacker.zone != "battlefield":
+                    continue
+                live_blockers = [b for b in (game.get_card_by_id(bid) for bid in a.blocker_ids)
+                                 if b is not None and b.zone == "battlefield"]
+                # CR 510.1c: a blocked creature whose blockers have all left
+                # combat assigns no damage unless it has trample — that is
+                # the rule, not a miss.
+                blocked_and_alone = bool(a.blocker_ids) and not live_blockers \
+                    and Keyword.TRAMPLE not in a.attacker.keywords
+                if (a.attacker.power > 0 and _rule_says_deals(a.attacker)
+                        and not blocked_and_alone):
+                    expected.append(a.attacker)
+                for b in live_blockers:
+                    if b.power > 0 and _rule_says_deals(b):
+                        expected.append(b)
+        self._dealt_ids = set()
+        dmg = self._deal_combat_damage(game, assignments, first_strike_step)
+        for c in expected:
+            _audit_check("510.2/creature_dealt", c.instance_id in self._dealt_ids,
+                         f"{c.name} ({c.power}/{c.toughness}) dealt no combat damage in the "
+                         f"{'first-strike' if first_strike_step else 'regular'} step",
+                         game=game)
+        return dmg
 
     def _deal_combat_damage(self, game: "GameState",
                              assignments: List[CombatAssignment],
@@ -335,6 +379,7 @@ class CombatManager:
 
                     deal_damage(attacker, blocker, damage_to_blocker,
                                is_combat=True)
+                    self._dealt_ids.add(attacker.instance_id)
                     remaining_damage -= damage_to_blocker
 
                 # CR 510.1c: a blocked attacker WITHOUT trample cannot hold
@@ -354,6 +399,7 @@ class CombatManager:
                     if _dump_target is not None:
                         deal_damage(attacker, _dump_target, remaining_damage,
                                    is_combat=True)
+                        self._dealt_ids.add(attacker.instance_id)
                         remaining_damage = 0
 
                 # CR 509.2: EVERY blocking creature deals its own combat
@@ -379,12 +425,14 @@ class CombatManager:
                             and blocker.power > 0):
                         deal_damage(blocker, attacker, blocker.power,
                                    is_combat=True)
+                        self._dealt_ids.add(blocker.instance_id)
 
                 # CR 702.19c: Trample — excess damage to defending player
                 if has_trample and remaining_damage > 0:
                     deal_damage(attacker,
                                game.players[self._defending_player],
                                remaining_damage, is_combat=True)
+                    self._dealt_ids.add(attacker.instance_id)
                     game.players[self._active_player].damage_dealt_this_turn += remaining_damage
                     player_damage = remaining_damage
                     game.log.append(
@@ -397,6 +445,7 @@ class CombatManager:
                 # CR 510.1b: Unblocked creature assigns damage to defending player
                 deal_damage(attacker, game.players[self._defending_player],
                            attacker_power, is_combat=True)
+                self._dealt_ids.add(attacker.instance_id)
                 game.players[self._active_player].damage_dealt_this_turn += attacker_power
                 player_damage = attacker_power
                 game.log.append(

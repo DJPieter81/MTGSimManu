@@ -86,9 +86,18 @@ class ManaPayment:
         added = getattr(card, 'cem_land_types_added', None)
         if card.template.is_land and (forced or added):
             from .constants import BASIC_LAND_TYPE_COLORS
-            return sorted({BASIC_LAND_TYPE_COLORS[t.lower()]
-                           for t in card.current_basic_land_types},
-                          key=ALL_COLORS.index)
+            produced = sorted({BASIC_LAND_TYPE_COLORS[t.lower()]
+                               for t in card.current_basic_land_types},
+                              key=ALL_COLORS.index)
+            if forced and not added:
+                # Rules audit (CR 305.7): a set land with no later ADD
+                # produces exactly its one colour.
+                from .rules_audit import check as _audit_check
+                _audit_check("305.7/set_land_mana",
+                             produced == [BASIC_LAND_TYPE_COLORS[forced]],
+                             f"{card.name} is a {forced.title()} and produces {produced}",
+                             game=game)
+            return produced
         # Metalcraft-gated any-color mana ability (Mox Opal today;
         # any future printing with the same oracle shape automatically).
         # Generic predicate at engine/oracle_parser.py replaces the

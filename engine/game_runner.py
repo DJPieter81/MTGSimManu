@@ -381,6 +381,9 @@ class GameResult:
     mulligan_count: List[int] = field(default_factory=lambda: [0, 0])
     game_log: List[str] = field(default_factory=list)
     game_number: int = 1  # 1, 2, or 3 in a match
+    # Rules-audit findings drained at the end of this game (engine/rules_audit);
+    # empty unless MTG_RULES_AUDIT was set for the run.
+    audit_findings: List[dict] = field(default_factory=list)
 
 
 @dataclass
@@ -1097,6 +1100,17 @@ class GameRunner:
             mulligan_count=mulligan_counts,
             game_log=game.log if verbose else [],
         )
+        # Rules audit: this game's findings ride on its result (empty
+        # unless MTG_RULES_AUDIT is set; the census of the two decks'
+        # unmodelled keywords is recorded once per process).
+        from .rules_audit import enabled as _audit_on, drain as _audit_drain
+        if _audit_on():
+            from .rules_audit_census import census_template_keywords
+            for p in game.players:
+                for zone in (p.library, p.hand, p.battlefield, p.graveyard, p.exile):
+                    for c in zone:
+                        census_template_keywords(c.template, game=game)
+            result.audit_findings = _audit_drain()
 
         # Structured GAME_END — terminator for the replayer's
         # event consumer.  Includes final state so the HTML can render

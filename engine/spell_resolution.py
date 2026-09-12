@@ -111,6 +111,27 @@ class ResolutionManager:
             pass
 
     @staticmethod
+    def _audit_resolution_targets(game: "GameState", item: "StackItem",
+                                  card: "CardInstance") -> None:
+        """Rules audit (CR 608.2b): every chosen target still on the
+        battlefield is one this source may target (hexproof 702.11d,
+        protection 702.16b). Observes only; a no-op with the audit off."""
+        from .rules_audit import enabled as _audit_on, check as _audit_check
+        if not _audit_on() or not getattr(item, 'targets', None):
+            return
+        from .target_solver import can_be_targeted
+        for tid in item.targets:
+            if not isinstance(tid, int):
+                continue
+            tgt = game.get_card_by_id(tid)
+            if tgt is None or tgt.zone != "battlefield":
+                continue
+            _audit_check("608.2b/resolve_target",
+                         can_be_targeted(tgt, card, item.controller),
+                         f"{card.name} resolves against {tgt.name}, which it may not target",
+                         game=game)
+
+    @staticmethod
     def resolve_stack(game: "GameState"):
         """Resolve the top item on the stack."""
         if game.stack.is_empty:
@@ -189,6 +210,11 @@ class ResolutionManager:
         # its target (recorded on this item and exiled by the trigger)
         # must not fizzle the permanent. Only instants, sorceries, and
         # Auras fizzle on all-illegal targets.
+        # Rules audit (CR 608.2b / 702.11d / 702.16b): a target still on
+        # the battlefield must be one this source may target. A target
+        # that left the battlefield is a legitimate fizzle; a hexproof or
+        # protected one still sitting there was chosen illegally.
+        ResolutionManager._audit_resolution_targets(game, item, card)
         _pt = getattr(card.template, 'card_types', None) or []
         _is_permanent_spell = any(
             t in _pt for t in (CardType.CREATURE, CardType.ARTIFACT,
@@ -263,6 +289,13 @@ class ResolutionManager:
                         game.log.append(
                             f"T{game.display_turn} P{item.controller+1}: "
                             f"{card.name} enters with {item.x_value} +1/+1 counter(s)")
+                        # Rules audit (CR 107.3 / 614.1c): it carries them.
+                        from .rules_audit import check as _audit_check
+                        _audit_check("107.3/x_counters",
+                                     card.plus_counters >= item.x_value,
+                                     f"{card.name} cast for X={item.x_value} carries "
+                                     f"{card.plus_counters} +1/+1 counter(s) on entry",
+                                     game=game)
                 game._handle_permanent_etb(card, item.controller, item=item)
                 # Evoke: sacrifice after ETB triggers
                 if getattr(card, '_evoked', False):

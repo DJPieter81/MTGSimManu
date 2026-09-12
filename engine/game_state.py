@@ -774,13 +774,68 @@ class GameState:
         """
         actions_taken = False
         iterations = 0
-        while iterations < SBA_MAX_ITERATIONS:
-            performed = self._check_sba_once()
-            if not performed:
-                break
-            actions_taken = True
-            iterations += 1
+        # Re-entrancy depth: a death funnel or trigger inside a pass may call
+        # back into this method; only the OUTERMOST call has reached the
+        # fixpoint the audit asserts (an inner call sees creatures the outer
+        # pass is about to destroy).
+        self._sba_depth = getattr(self, '_sba_depth', 0) + 1
+        try:
+            while iterations < SBA_MAX_ITERATIONS:
+                performed = self._check_sba_once()
+                if not performed:
+                    break
+                actions_taken = True
+                iterations += 1
+            if self._sba_depth == 1:
+                self._audit_sba_fixpoint(hit_cap=iterations >= SBA_MAX_ITERATIONS)
+        finally:
+            self._sba_depth -= 1
         return actions_taken
+
+    def _audit_sba_fixpoint(self, hit_cap: bool = False) -> None:
+        """Rules audit (CR 704): after the fixpoint no creature with lethal
+        damage or non-positive toughness is on a battlefield, and no player
+        at 0 or less life is still in the game. Observes only; a no-op
+        with the audit off."""
+        from .rules_audit import enabled as _audit_on, check as _audit_check
+        if not _audit_on():
+            return
+        _audit_check("704.3/fixpoint_cap", not hit_cap,
+                     "SBA loop stopped at its iteration cap before reaching a fixpoint",
+                     game=self)
+        if self.game_over:
+            # CR 104: once a player has lost the game is over and no further
+            # state-based actions are performed; the pass returns early by
+            # design, so a lethally damaged creature left on the board here
+            # is not a violation.
+            return
+        from .cards import Keyword as _Kw
+        for p in self.players:
+            for c in p.battlefield:
+                if not getattr(c, 'effective_is_creature', False):
+                    continue
+                if getattr(c, 'zone', 'battlefield') != 'battlefield':
+                    # Listed but already moved (its zone says so): the
+                    # zone funnel's list bookkeeping lags the move — not a
+                    # rules violation, a data-model observation recorded
+                    # under its own id so it can be counted.
+                    _audit_check("zone/list_lag", False,
+                                 f"{c.name} listed on the battlefield with zone={c.zone}",
+                                 game=self)
+                    continue
+                tough = c.toughness if c.toughness is not None else 0
+                _audit_check("704.5f/zero_toughness", tough > 0,
+                             f"{c.name} on the battlefield at toughness {tough}", game=self)
+                if _Kw.INDESTRUCTIBLE in c.keywords:
+                    continue
+                _audit_check("704.5f/lethal_damage",
+                             not (tough > 0 and c.damage_marked >= tough),
+                             f"{c.name} survives {c.damage_marked} damage at toughness {tough}",
+                             game=self)
+        if not self.game_over:
+            for i, p in enumerate(self.players):
+                _audit_check("704.5a/zero_life", p.life > 0,
+                             f"P{i+1} at {p.life} life with the game still on", game=self)
 
     def _check_sba_once(self) -> bool:
         """Single CR 704.3 pass. Rules with a single shared

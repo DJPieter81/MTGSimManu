@@ -62,6 +62,11 @@ _EXCLUDED = {
     "engine/oracle_resolver.py",
     "engine/triggers.py",
     "engine/spell_resolution.py",
+    # Rules-audit census: a DIAGNOSTIC that looks for keyword WORDS in
+    # oracle text to report mechanics the engine has no model for. It
+    # reads the text by definition and never drives play (opt-in,
+    # behaviour-neutral — see engine/rules_audit.py).
+    "engine/rules_audit_census.py",
 }
 
 _ORACLE_ATTRS = {"oracle_text", "oracle"}

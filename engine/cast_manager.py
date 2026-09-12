@@ -1957,6 +1957,18 @@ class CastManager:
             # most recent tap_lands_for_mana() call; empty for free casts.
             colors_spent=set(getattr(game, '_last_colors_spent', set())),
         )
+        # Rules audit (CR 601.2c / 702.11d / 702.16b): every battlefield
+        # target chosen at cast is one this spell may target. Observes only.
+        from .rules_audit import enabled as _audit_on
+        if _audit_on() and targets:
+            from .rules_audit import check as _audit_check
+            from .target_solver import can_be_targeted as _cbt
+            for _tid in targets:
+                _tgt = game.get_card_by_id(_tid) if isinstance(_tid, int) else None
+                if _tgt is not None and _tgt.zone == "battlefield":
+                    _audit_check("601.2c/cast_target", _cbt(_tgt, card, player_idx),
+                                 f"{card.name} cast at {_tgt.name}, which it may not target",
+                                 game=game)
 
         # ── Splice onto Arcane: when casting an Arcane spell, splice cards
         # from hand that have splice_cost. Pay splice cost, add their effects,
