@@ -25,6 +25,24 @@ The slogan "no patches, solve holistically" does not bind. These rules do. They 
   deleted `green_suns_zenith_resolve`, taking the count 97 → 96.
 - **No new numeric threshold without a test that names the rule it encodes.** A literal `0.7` with no comment, no constant name, and no test is a magic number; it gets reverted on review.
 - **No fix without a failing test in the same diff.** Test goes red first, then the fix lands and turns it green. Both in the same commit.
+- **One code path owns each rule.** CI ratchet (`tools/check_single_owner.py`)
+  pins — may only fall — the count of second paths that re-implement a
+  rule's check: target picks outside `engine/target_solver`
+  (`can_be_targeted` / `card_effects.legal_targets`), damage or life
+  writes outside `engine/damage.py`, counter writes outside
+  `CardInstance.add_plus_counters`. The 2026-09 rules defects (an ETB
+  handler exiling a hexproof creature, a handler placing X counters the
+  engine had already placed) lived in exactly such paths. True exceptions
+  get `# single-owner-allow: <reason>` on the line.
+- **A rules gap found in a replay lands with three things in one commit:
+  the failing test, the fix, and its rules-audit invariant.** The auditor
+  (`engine/rules_audit.py`, opt-in via `run_meta.py --rules-audit`,
+  ranked by `tools/rules_audit_report.py`) records CR-phrased violations
+  across whole matrix runs; units after it are chosen from that ranking
+  and from the generated coverage census (`tools/keyword_coverage.py` →
+  `docs/design/rules_coverage.md`), not from the next replay a reader
+  happens to open. Replays remain the tool for naming a subsystem once
+  the census points at a cell.
 - **No second diagnostic phase on an outlier without a Bo3 replay-based root cause first.** Documentation is not progress.
 - **No plan-file proliferation at root.** Root-level `.md` is restricted to: `README.md`, `CLAUDE.md`, `PROJECT_STATUS.md`, `MODERN_PROPOSAL.md`, `CROSS_PROJECT_SYNC.md`. New design/plan docs go in `docs/design/` or `docs/proposals/` with frontmatter (`status`/`priority`/`summary`). Single-shot task files (`OVERNIGHT_*.md`, `*_FIX_PLAN.md`) belong in `docs/history/plans/` once finished.
 - **No `_V2`/`_V3` filename versioning anywhere.** Supersession is recorded via frontmatter `superseded_by` on the original doc, never by spawning a sibling. `tools/check_doc_hygiene.py` enforces both this and the root allowlist.
