@@ -485,10 +485,21 @@ class ManaPayment:
         # sort LATER — so the MRV walk taps them last, preserving the
         # held-interaction color for the opponent's turn.
         _held = held_instant_colors or set()
+
+        # A creature that produces mana (a mana dork, a creature-land) is a
+        # blocker first and a mana source second: among sources that can
+        # pay, a non-creature source is tapped first, so the body stays
+        # untapped for the opponent's attack. Rules-neutral ordering — it
+        # never changes WHETHER a cost is payable, only which source pays.
+        from .cards import CardType as _CT
+
+        def _is_creature_source(l) -> int:
+            return 1 if _CT.CREATURE in l.template.card_types else 0
+
         def _sort_key(l):
             lp = _produces(l)
             produces_held = 1 if any(c in _held for c in lp) else 0
-            return (produces_held, len(lp))
+            return (produces_held, _is_creature_source(l), len(lp))
         untapped.sort(key=_sort_key)
 
         needed = cost.to_dict()
@@ -577,7 +588,7 @@ class ManaPayment:
                     produces_held = 1 if any(
                         c in _held and c not in pip
                         for c in _produces(land)) else 0
-                    key = (flex, produces_held)
+                    key = (flex, produces_held, _is_creature_source(land))
                     if key < best_key:
                         best_key = key
                         best_unit = unit
@@ -617,7 +628,7 @@ class ManaPayment:
 
         def _generic_order(unit):
             on_committed = 0 if id(unit[0]) in committed_lands else 1
-            return (on_committed, len(unit[2]))
+            return (on_committed, _is_creature_source(unit[0]), len(unit[2]))
 
         for unit in sorted((u for u in unit_pool if u[3] is None),
                            key=_generic_order):

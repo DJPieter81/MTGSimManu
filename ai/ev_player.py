@@ -960,6 +960,39 @@ class EVPlayer:
                 return min(ev, PATIENCE_GATE_REJECT_SENTINEL)
         return ev
 
+    def _gate_blockers_into_lethal(self, ev: float, card, t, snap: EVSnapshot,
+                                   me, game) -> float:
+        """While the opponent has on-board lethal (`am_dead_next`), a play
+        whose cost exceeds the caster's NON-creature mana capacity must tap
+        a mana creature or creature-land — a potential blocker — and is
+        clamped into the patience-reject band: the chump that body makes
+        is the turn, and no sorcery-speed play is worth it. The same play
+        with enough non-creature mana, or with no lethal on board, is
+        priced as usual.
+
+        Observed: Creatures Toolbox at 4 life into a 5/6 attacker cast a
+        four-mana enchantment with both Dryad Arbors and took lethal with
+        no untapped creature (Domain Zoo vs Toolbox s50000, 2026-09-12).
+        Shaped like the sibling gates; no card names, no new weights.
+        """
+        if game is None or t.is_land or not snap.am_dead_next:
+            return ev
+        from engine.cards import CardType as _CT
+        from engine.mana_payment import ManaPayment
+        from ai.effective_cmc import effective_cmc as _ecmc
+        non_creature = me.mana_pool.total() + sum(
+            len(ManaPayment.land_mana_units(game, self.player_idx, c))
+            for c in me.untapped_mana_sources
+            if _CT.CREATURE not in c.template.card_types)
+        creature_sources = any(_CT.CREATURE in c.template.card_types
+                               for c in me.untapped_mana_sources)
+        if not creature_sources:
+            return ev
+        cost = max(0, _ecmc(card, snap, game=game, player_idx=self.player_idx) or 0)
+        if cost > non_creature:
+            return min(ev, PATIENCE_GATE_REJECT_SENTINEL)
+        return ev
+
     def _overlay_cascade_patience(self, ev: float, t, snap: EVSnapshot, me) -> float:
         """Clamp a cascade enabler when the graveyard is too thin AND no
         reanimate payoff remains reachable in the library — the cascade would
@@ -1307,6 +1340,9 @@ class EVPlayer:
         # X-cost creature tutor (GSZ shape): delivery-conditioned EV,
         # X-gap waste charge, and payoff hold (2026-08-26 re-diagnosis).
         ev = self._gate_x_tutor_payoff(ev, card, t, snap, me, game)
+
+        # A blocker is not tapped into on-board lethal.
+        ev = self._gate_blockers_into_lethal(ev, card, t, snap, me, game)
 
         # ── Reanimation readiness gate (GV-2) ──
         # Mirror shape of the cascade patience gate above, but in the
