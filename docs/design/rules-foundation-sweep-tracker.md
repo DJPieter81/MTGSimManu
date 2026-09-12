@@ -4335,3 +4335,28 @@ non-creature source can pay the pip (payment ordering), and while the
 opponent has on-board lethal a play that must tap a potential blocker is
 clamped (the chump it removes is the turn). Class: every mana creature
 and creature-land × every payment; every deck facing lethal.
+
+### Loop iteration 3: mana creatures tapped last; no blocker tapped into lethal (2026-09-12, `426b088`)
+
+Payment ordering taps a non-creature source before a mana creature or
+creature-land when either can pay; `_gate_blockers_into_lethal` clamps a
+play whose cost exceeds the caster's non-creature capacity while the
+opponent has on-board lethal. Four tests red → green; 220 mana/payment
+pins; chunks 2291 / 2280; anchor: one turns-only drift refreshed.
+
+**Same-seed pre → post, n=20 Bo3:** Domain Zoo vs Creatures Toolbox **100
+→ 100**; Creatures Toolbox field 20.2 → 18.8 (noise; Jeskai 25 → 45,
+Ponza 35 → 15). **No movement — 3 of 3 on the Zoo lane. Loop-break:**
+halt code, replay-based root cause, doc in `docs/diagnostics/` with
+`status: active`, `priority: primary`. Written as
+`2026-09-12_zoo_lane_loop_break.md` (next entry).
+
+**Loop-break doc written:** `docs/diagnostics/2026-09-12_zoo_lane_loop_break.md`
+(`status: active`, `priority: primary`). Divergent turn: Zoo vs Toolbox
+s50000 G2 T4 — Druid + Vizier assembled (engine credits 80 mana), the
+CombatPlanner attack path sends Vizier alone into an untapped 4/4, it dies,
+the engine is gone. Subsystem: `decide_attackers` planner branch returns
+its plan unfiltered while the lethal path and the send-everything fallback
+both keep home a creature whose `noncombat_opportunity_cost` exceeds its
+damage. Iteration 4 is that rule on the planner path. (Psychic Frog's
+permanent growth was checked and is rules-correct: "put a +1/+1 counter".)
