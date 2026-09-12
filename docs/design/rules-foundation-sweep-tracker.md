@@ -4762,3 +4762,37 @@ own row) 40 → 30 for Zoo, Zoo vs Boros Energy 40 → 35, Zoo vs Pinnacle
 did not decide these twenty); **Zoo field 70.0 → 69.4**; Ponza field
 51.5 → 51.9 (guard). The cells move exactly where the rule bites; the
 field moves by their share of 24 opponents.
+
+### Unit Z2 — combat damage steps are decided per creature, not per attacker (`8284e1b` → branch)
+
+**Diagnosis.** `resolve_combat_damage` split ATTACKERS into a first-strike
+step and a regular step, and the blockers' damage back lived inside each
+attacker's assignment loop gated by `blocker_has_fs == first_strike_step`.
+So a first-strike blocker of a vanilla attacker and a vanilla blocker of
+a first-strike attacker never dealt damage at all. Fixture: vanilla 1/2
+into first-strike 4/4 survived with 0 damage; first-strike 2/3 into a 3/3
+took 0. In the replays every Zoo creature has first strike under Scion
+of Draco + Leyline of the Guildpact: Scion blocked Ajani and nothing
+happened (s60304 L1042-1060); Scion and Kavu blocked two Emissaries with
+no damage step (s60301 L578-585); a first-strike Frog attacked into a
+3/3 and survived (s60304 L1253-1272). Class: every first / double strike
+creature and every team-keyword grant.
+
+**Rule** (CR 510.2, 510.4, 702.7b): the first-strike step exists iff any
+creature in combat has first or double strike; every assignment is
+visited in both steps; each creature deals damage only in the step(s)
+its own keywords name (`_deals_in_step`), double strikers in both; a
+creature removed in step one deals nothing in step two. Assignment
+order, deathtouch and trample unchanged. Tests:
+`tests/test_combat_damage_steps_are_per_creature.py` (five rules);
+combat pins 148 green; anchor: one turn-only drift (Boros Ponza vs Boros
+Energy s51000, 17 → 16, same winner) refreshed; chunks a–g 2264 / h–z
+2308; ratchets at baseline.
+
+**Measurement** (same seeds, n=20 Bo3, matchup grid; pre `697ad98`,
+post Z2): Zoo vs Boros Energy 35 → 30, vs Broodscale 70 → 70, vs Prowess
+85 → 85; **Zoo field 69.4 → 68.3**; guards Boros Energy field 60.8 →
+61.0, Izzet Prowess field 59.6 → 59.4. Direction as expected (Zoo's
+first-strike attackers are no longer immune to blockers); size small at
+n=20. Running total on the lane: Zoo field 70.0 → 69.4 (Z1) → 68.3
+(Z2), same seeds.
