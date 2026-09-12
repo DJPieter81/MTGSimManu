@@ -181,37 +181,30 @@ class CombatManager:
         """
         total_player_damage = 0
 
-        # Separate attackers by damage step
-        first_strikers = [a for a in self._assignments
-                          if a.attacker.zone == "battlefield" and
-                          (Keyword.FIRST_STRIKE in a.attacker.keywords or
-                           Keyword.DOUBLE_STRIKE in a.attacker.keywords)]
-
-        regular_strikers = [a for a in self._assignments
-                            if a.attacker.zone == "battlefield" and
-                            Keyword.FIRST_STRIKE not in a.attacker.keywords and
-                            Keyword.DOUBLE_STRIKE not in a.attacker.keywords]
-
-        double_strikers = [a for a in self._assignments
-                           if a.attacker.zone == "battlefield" and
-                           Keyword.DOUBLE_STRIKE in a.attacker.keywords]
-
-        # CR 510.4: First-strike damage step
-        if first_strikers:
-            dmg = self._deal_combat_damage(game, first_strikers,
-                                            first_strike_step=True)
+        # CR 510.4: there is a first-strike damage step iff ANY creature in
+        # combat — attacker or blocker — has first or double strike. The
+        # steps are decided per CREATURE (`_deals_in_step`), not per
+        # attacker: a first-strike blocker of a vanilla attacker deals in
+        # step one, a vanilla blocker of a first-strike attacker deals in
+        # step two. Every assignment is visited in both steps; each
+        # creature deals damage only in the step(s) its own keywords name.
+        live = [a for a in self._assignments if a.attacker.zone == "battlefield"]
+        creatures_in_combat = [a.attacker for a in live] + [
+            b for a in live for b in (game.get_card_by_id(bid) for bid in a.blocker_ids)
+            if b is not None and b.zone == "battlefield"]
+        if any(self._strikes_first(c) for c in creatures_in_combat):
+            dmg = self._deal_combat_damage(game, live, first_strike_step=True)
             total_player_damage += dmg
             # CR 510.4: SBAs checked after first-strike damage
             game.check_state_based_actions()
             if game.game_over:
                 return total_player_damage
 
-        # CR 510.2: Regular damage step
-        regular_plus_double = regular_strikers + double_strikers
-        if regular_plus_double:
-            dmg = self._deal_combat_damage(game, regular_plus_double,
-                                            first_strike_step=False)
-            total_player_damage += dmg
+        # CR 510.2: Regular damage step — everyone still in combat whose
+        # keywords put it here (no first strike, or double strike).
+        dmg = self._deal_combat_damage(game, self._assignments,
+                                        first_strike_step=False)
+        total_player_damage += dmg
 
         # Mark all attackers as having attacked
         for assignment in self._assignments:
@@ -245,6 +238,25 @@ class CombatManager:
 
         self._assignments = []
         self._attackers = []
+
+    @staticmethod
+    def _strikes_first(creature) -> bool:
+        """CR 702.7b: first strike and double strike put a creature in
+        the first-strike damage step."""
+        return (Keyword.FIRST_STRIKE in creature.keywords
+                or Keyword.DOUBLE_STRIKE in creature.keywords)
+
+    @staticmethod
+    def _deals_in_step(creature, first_strike_step: bool) -> bool:
+        """Whether THIS creature deals combat damage in the named step —
+        its own keywords decide, never its opponent's in the block
+        (CR 510.2 / 510.4 / 702.4b): first strike → step one only;
+        double strike → both; neither → step two only."""
+        double = Keyword.DOUBLE_STRIKE in creature.keywords
+        first = Keyword.FIRST_STRIKE in creature.keywords
+        if first_strike_step:
+            return first or double
+        return double or not first
 
     def _deal_combat_damage(self, game: "GameState",
                              assignments: List[CombatAssignment],
@@ -282,7 +294,12 @@ class CombatManager:
                 continue  # Died in first-strike step
 
             attacker_power = attacker.power
-            if attacker_power <= 0:
+            # The attacker deals damage in this step iff its OWN keywords
+            # put it here (and it has power); its blockers are visited
+            # below either way — their own keywords decide their step.
+            attacker_deals = (attacker_power > 0
+                              and self._deals_in_step(attacker, first_strike_step))
+            if attacker_power <= 0 and not assignment.blocker_ids:
                 continue
 
             has_deathtouch = Keyword.DEATHTOUCH in attacker.keywords
@@ -295,7 +312,7 @@ class CombatManager:
                 # ONLY assigns the attacker's own damage — a blocker
                 # dealing damage back is not gated by the attacker's
                 # assignment budget (see the separate pass below).
-                remaining_damage = attacker_power
+                remaining_damage = attacker_power if attacker_deals else 0
 
                 for blocker_id in assignment.blocker_ids:
                     if remaining_damage <= 0:
@@ -348,19 +365,18 @@ class CombatManager:
                 # its damage: previously the deal-back lived inside the
                 # assignment loop and was skipped once `remaining_damage`
                 # hit 0, letting a small attacker survive a lethal gang.
+                # Each blocker deals in the step ITS OWN keywords name
+                # (CR 510.2 / 510.4 / 702.7b) — whether its attacker deals
+                # in this step is irrelevant. This pass runs in both steps
+                # for every assignment, so a first-strike blocker of a
+                # vanilla attacker (step one) and a vanilla blocker of a
+                # first-strike attacker (step two) both deal their damage.
                 for blocker_id in assignment.blocker_ids:
                     blocker = game.get_card_by_id(blocker_id)
                     if not blocker or blocker.zone != "battlefield":
                         continue
-                    blocker_has_fs = (Keyword.FIRST_STRIKE in blocker.keywords or
-                                     Keyword.DOUBLE_STRIKE in blocker.keywords)
-                    should_deal_back = (
-                        (first_strike_step and blocker_has_fs) or
-                        (not first_strike_step and not blocker_has_fs) or
-                        (not first_strike_step and
-                         Keyword.DOUBLE_STRIKE in blocker.keywords)
-                    )
-                    if should_deal_back and blocker.power > 0:
+                    if (self._deals_in_step(blocker, first_strike_step)
+                            and blocker.power > 0):
                         deal_damage(blocker, attacker, blocker.power,
                                    is_combat=True)
 
@@ -377,7 +393,7 @@ class CombatManager:
                         f" → {remaining_damage} dmg to player (trample)"
                     )
 
-            else:
+            elif attacker_deals:
                 # CR 510.1b: Unblocked creature assigns damage to defending player
                 deal_damage(attacker, game.players[self._defending_player],
                            attacker_power, is_combat=True)
