@@ -5129,3 +5129,54 @@ Jeskai Blink, Hollow One remain the known sub-band lane, unchanged in
 character by this refresh. The dashboard/showcase now describe the
 `02e173c` engine; the out-of-band cells stay ground-truth divergence
 probes for the next census-chosen units, not refresh work.
+
+### Phase B — card-level detail (`8a47c8f`)
+
+`extract_card_data.py 10` (300 pairs × 10 verbose Bo3) on `02e173c`,
+merged into `metagame_data.jsx` BY DECK NAME (the scratch
+`merge_card_data.py` — dashboard order, 3 reordered decks flipped
+side-for-side), dashboard rebuilt. Self-checks: no misplaced deck_card,
+no mislabeled matchup_cell (all 300 keyed i<j and naming their decks);
+matchup_cards 300 / deck_cards 25. Card detail reflects the fixed
+engine (e.g. the Zoo/Amulet card cell reads Zoo 100-0, matching its
+98% matrix cell).
+
+### Phase C — showcase (`d472974`)
+
+`build_showcase.py` on the 09-13 JSX (WR data, colour arrays, bands
+from `tools/calibration_bands.json`, Bo3 count auto-patched;
+parallel-array self-check passed). Hand-authored: run date 2026-09-13,
+calibration "31 of 96 in band", the valData comment, and one new
+timeline entry for the 09-12 → 09-13 rules-enforcement sweep (auditor +
+census + single-owner ratchet; Z1–Z3, R1–R3, K3, KD). Verified without
+a browser (none installed): `node --check` on the single inline block
+(no parse error — the Goryo's-apostrophe bug class the 09-06 refresh
+hit), a DOM-stub execution (no runtime error, DOMContentLoaded fires
+clean), the data arrays parallel at 25 (`wrData`/`wrBgDef`/`wrBrDef`/
+`wrLabels`) with a 25×25 `wins` matrix (600 off-diagonal heatmap
+cells), and `tests/test_showcase_val_data_is_valid_js` green. Root copy
+`mtgsimmanu_showcase.html` synced identical.
+
+### Phase D — post-sim outlier replays (`<this commit>`)
+
+Each out-of-band deck's worst + best cell (from the fresh JSX vs
+`tools/calibration_bands.json`), capped at 8 pairs, seeds 60400–60407,
+`--bo3` logs in `replays/*.txt` + `build_replay.py` viewers. Every
+single-seed Bo3 confirms its matrix-cell direction:
+
+| Seed | Pair | Cell | Bo3 result |
+|---|---|---|---|
+| 60400 | Amulet Titan vs Domain Zoo | Amulet worst (5%) | Zoo 2-0 |
+| 60401 | Amulet Titan vs Creatures Toolbox | Amulet best (58%) | Amulet 2-0 |
+| 60402 | Jeskai Blink vs 4c Omnath | Jeskai worst (5%) | 4c Omnath 2-1 |
+| 60403 | Jeskai Blink vs Amulet Titan | Jeskai best (72%) | Jeskai 2-0 |
+| 60404 | Creatures Toolbox vs Domain Zoo | Toolbox worst (3%) | Zoo 2-0 |
+| 60405 | Creatures Toolbox vs Amulet Titan | Toolbox best (55%) | Toolbox 2-1 |
+| 60406 | Domain Zoo vs 4c Omnath | Zoo worst (42%) | Zoo 2-1 |
+| 60407 | Domain Zoo vs Amulet Titan | Zoo best (98%) | Zoo 2-0 |
+
+The four out-of-band decks are Amulet Titan (23.3, far below), Jeskai
+Blink (28.8, below), Creatures Toolbox (20.8, below), Domain Zoo (71.7,
+above) — the known open lanes, unchanged in character by the refresh.
+These replays are the diagnostic starting points for the next
+census/audit-chosen units, not refresh work.
