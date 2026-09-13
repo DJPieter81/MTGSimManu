@@ -1309,8 +1309,18 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
     #    typed field retires those handlers and covers unregistered burn too.
     _dd = getattr(card.template, 'direct_damage_data', None)
     if oracle_override is None and _dd:
+        _amt = effective_direct_damage(game, controller, card.template)
+        # Rules audit (CR 608.2), restated independently: with the upgrade
+        # condition met the resolved amount is the upgrade, not the base.
+        from .rules_audit import check as _audit_check
+        _up = _dd.get('upgrade_amount')
+        if _up and _direct_damage_condition_met(game, controller,
+                                                _dd.get('upgrade_condition')):
+            _audit_check("608.2/damage_upgrade", _amt == _up,
+                         f"{card.name}: {_dd.get('upgrade_condition')} met but "
+                         f"dealt {_amt}, not {_up}", game=game)
         resolve_damage_to_chosen_target(
-            game, card, controller, _dd['amount'], targets)
+            game, card, controller, _amt, targets)
         return True
 
     # ── Symmetric board sweep ("destroy all creatures") — typed-field gate,
@@ -2359,6 +2369,37 @@ def count_graveyard_card_types(game, player_idx: int) -> int:
     "card types in your graveyard" count, e.g. delirium thresholds)."""
     player = game.players[player_idx]
     return len({t for c in player.graveyard for t in c.template.card_types})
+
+
+_DELIRIUM_CARD_TYPES = 4   # CR: delirium = four or more card types in your graveyard
+_METALCRAFT_ARTIFACTS = 3  # CR 702.98: metalcraft = three or more artifacts
+
+
+def _direct_damage_condition_met(game, controller: int, condition) -> bool:
+    """Whether a burn spell's printed upgrade condition holds for its
+    caster right now — delirium (4+ card types in the graveyard) or
+    metalcraft (3+ artifacts controlled)."""
+    if condition == 'delirium':
+        return count_graveyard_card_types(game, controller) >= _DELIRIUM_CARD_TYPES
+    if condition == 'metalcraft':
+        from .cards import CardType
+        return sum(1 for c in game.players[controller].battlefield
+                   if CardType.ARTIFACT in c.template.card_types) >= _METALCRAFT_ARTIFACTS
+    return False
+
+
+def effective_direct_damage(game, controller: int, template) -> int:
+    """The damage a conditional burn spell deals RIGHT NOW: the printed
+    upgrade amount when its board condition holds (CR 608.2), else the
+    base amount. The one evaluator the resolution dispatch and the AI's
+    `burn_damage` accessor share, so the engine and the AI agree on how
+    much a delirium Unholy Heat / metalcraft Galvanic Blast deals."""
+    dd = getattr(template, 'direct_damage_data', None) or {}
+    base = dd.get('amount', 0) or 0
+    up = dd.get('upgrade_amount')
+    if up and _direct_damage_condition_met(game, controller, dd.get('upgrade_condition')):
+        return int(up)
+    return int(base)
 
 
 def self_cost_reduction(game, player_idx: int, card_template) -> int:

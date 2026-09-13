@@ -249,3 +249,40 @@ def test_counter_upgrade_audit_sees_a_ferocious_counter_left_soft(audit, card_db
                         lambda g, c, t: getattr(t, "counter_tax_amount", 0) or 0)
     ResolutionManager.resolve_stack(game)
     assert "601.2b/counter_upgrade" in _rules(rules_audit.drain())
+
+
+def test_damage_upgrade_audit_sees_a_metalcraft_burn_left_at_base(audit, card_db, monkeypatch):
+    """CR 608.2: a metalcraft Galvanic Blast deals 4, not 2. Re-create the
+    pre-fix engine (the resolved amount stays base despite metalcraft) and
+    the auditor must record it."""
+    from engine import oracle_resolver
+    from engine.oracle_resolver import resolve_spell_from_oracle
+    from engine.cards import CardTemplate, CardType, ManaCost
+    game = GameState(rng=random.Random(0))
+    game.current_phase = Phase.MAIN1
+    game.active_player = 0
+    for _ in range(3):
+        t = CardTemplate(name="Mox", card_types=[CardType.ARTIFACT], mana_cost=ManaCost(),
+                         supertypes=[], subtypes=[], power=None, toughness=None, loyalty=None,
+                         keywords=set(), abilities=[], color_identity=set(), produces_mana=[],
+                         enters_tapped=False, oracle_text="", tags=set())
+        c = CardInstance(template=t, owner=0, controller=0,
+                         instance_id=game.next_instance_id(), zone="battlefield")
+        c._game_state = game; c.enter_battlefield()
+        game.players[0].battlefield.append(c)
+    vt = CardTemplate(name="Bear4", card_types=[CardType.CREATURE], mana_cost=ManaCost(generic=4),
+                      supertypes=[], subtypes=[], power=1, toughness=4, loyalty=None, keywords=set(),
+                      abilities=[], color_identity=set(), produces_mana=[], enters_tapped=False,
+                      oracle_text="", tags=set())
+    v = CardInstance(template=vt, owner=1, controller=1,
+                     instance_id=game.next_instance_id(), zone="battlefield")
+    v._game_state = game; v.enter_battlefield(); v.summoning_sick = False
+    game.players[1].battlefield.append(v)
+    gb = CardInstance(template=card_db.get_card("Galvanic Blast"), owner=0, controller=0,
+                      instance_id=game.next_instance_id(), zone="stack")
+    gb._game_state = game
+    # Break the rule: keep the base amount despite metalcraft.
+    monkeypatch.setattr(oracle_resolver, "effective_direct_damage",
+                        lambda g, c, t: (getattr(t, "direct_damage_data", None) or {}).get("amount", 0))
+    resolve_spell_from_oracle(game, gb, 0, [v.instance_id])
+    assert "608.2/damage_upgrade" in _rules(rules_audit.drain())

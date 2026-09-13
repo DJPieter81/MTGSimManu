@@ -5815,6 +5815,13 @@ _DIRECT_DMG_RIDER_TOKENS = (
     'discard', 'destroy', '+1/+1', '-1/-1', 'sacrific', 'instead',
     'divided', ' each ', 'loses', 'lochoose',
 )
+# A printed conditional DAMAGE upgrade: "<source> deals M damage instead
+# if <condition>" (Delirium — Unholy Heat; Metalcraft — Galvanic Blast).
+# Same spell, more damage when its board condition holds — typed rather
+# than refused. The condition word (delirium / metalcraft) is read from
+# the line by parse_direct_damage_spell.
+_DIRECT_DMG_UPGRADE_RE = re.compile(
+    r'deals?\s+(\d+)\s+damage\s+instead\s+if\b')
 # A line whose FIRST word is one of these is a keyword-ability cost/rider
 # line (its cost is paid on cast/re-cast, not part of resolving the spell),
 # so it never disqualifies a fixed-N burn — e.g. Lava Dart's
@@ -5851,14 +5858,31 @@ def parse_direct_damage_spell(oracle: str):
     m = _DIRECT_DMG_RE.match(lines[0].lower())
     if not m:
         return None
+    upgrade = None
     for extra in lines[1:]:
         low = extra.lower()
         lead = re.split(r"[ —–\-{:]", low, 1)[0]
         if lead in _KEYWORD_ABILITY_LEADS:
             continue  # keyword-ability cost line — not a resolution rider
+        # A printed conditional DAMAGE upgrade ("Delirium/Metalcraft —
+        # <source> deals M damage instead if <condition>") is the same
+        # burn spell, dealing more when its board condition holds — NOT
+        # a real extra effect. Type it; only OTHER riders refuse the card.
+        um = _DIRECT_DMG_UPGRADE_RE.search(low)
+        if um and upgrade is None:
+            cond = ('delirium' if 'delirium' in low or 'card types' in low
+                    else 'metalcraft' if 'metalcraft' in low or 'artifact' in low
+                    else None)
+            if cond is not None:
+                upgrade = {'upgrade_amount': int(um.group(1)),
+                           'upgrade_condition': cond}
+                continue
         if any(tok in low for tok in _DIRECT_DMG_RIDER_TOKENS):
             return None  # a real resolution rider — refuse, don't half-execute
-    return {'amount': int(m.group(1))}
+    data = {'amount': int(m.group(1))}
+    if upgrade:
+        data.update(upgrade)
+    return data
 
 
 # ── Board sweep ("destroy all creatures") ──────────────────────────────
