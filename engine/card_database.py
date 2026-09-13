@@ -1916,6 +1916,8 @@ class CardDatabase:
             template.is_counterspell = True
             template.counter_target_kind = counter_effect.target_type
         template.counter_tax_amount = parse_counter_tax(oracle)
+        from .oracle_parser import parse_counter_upgrade_condition
+        template.counter_upgrade_condition = parse_counter_upgrade_condition(oracle)
         # "Counter target ... colorless spell" (Consign to Memory): a
         # colorless-only counter can never target a colored spell. Read
         # once here from the oracle shape (the effect is registered, not

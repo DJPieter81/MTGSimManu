@@ -2018,7 +2018,12 @@ class EVPlayer:
             # docs/diagnostics/2026-08-26_decider_loss_root_cause.md
             # (secondary root cause: the stranded-finisher decider loss).
             weight = 1.0
-            tax = getattr(tmpl, 'counter_tax_amount', 0) or 0
+            # A Ferocious counter held while a 4-power creature is on the
+            # board is a HARD counter (tax 0, weight 1) — the shared
+            # predicate, so the held-value weighting agrees with what the
+            # counter will actually do (engine.optional_costs).
+            from engine.optional_costs import effective_counter_tax
+            tax = effective_counter_tax(game, self.player_idx, tmpl)
             if tax > 0 and 'counterspell' in tmpl.tags:
                 weight = self._held_tax_counter_liveness(game, opp, tax)
                 if weight <= 0.0:

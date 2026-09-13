@@ -9,6 +9,12 @@
       ],
       "reason": ""
     },
+    "counter_upgrade_condition": {
+      "cards": [
+        "Stubborn Denial"
+      ],
+      "reason": "A soft counter's printed board condition that upgrades it to a HARD counter, typed by a SHAPE regex on the 'counter that spell instead' clause (not a card name): 'if you control a creature with power N or greater'. One registered carrier today (Stubborn Denial); the two other pool carriers use genuinely different, non-generic conditions (reveal/control a Dragon; an opponent's poison counters) and stay flagged. Any future printing of the creature-power clause gets it automatically. Read through engine.optional_costs.effective_counter_tax."
+    },
     "counters_colorless_only": {
       "cards": [
         "Ceremonious Rejection",

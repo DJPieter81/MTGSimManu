@@ -211,3 +211,41 @@ def test_findings_carry_the_runner_context_and_the_turn(audit):
     (f,) = rules_audit.drain()
     assert (f["seed"], f["deck1"], f["deck2"], f["detail"]) == (1, "A", "B", "detail")
     assert f["turn"] is not None
+
+
+def test_counter_upgrade_audit_sees_a_ferocious_counter_left_soft(audit, card_db, monkeypatch):
+    """CR 601.2b: a Ferocious counter with a 4-power creature controlled
+    is a HARD counter. Re-create the pre-fix engine (the tax stays the
+    printed {1} despite the condition) and the auditor must record it;
+    with the rule honoured it is silent."""
+    from engine.spell_resolution import ResolutionManager
+    from engine.stack import StackItem, StackItemType
+    game = GameState(rng=random.Random(0))
+    game.current_phase = Phase.MAIN1
+    game.active_player = 0
+
+    def _add(name, controller, zone):
+        t = card_db.get_card(name)
+        c = CardInstance(template=t, owner=controller, controller=controller,
+                         instance_id=game.next_instance_id(), zone=zone)
+        c._game_state = game
+        return c
+
+    # Denial's controller (P1) has a 4-power creature → ferocious active.
+    kavu = _add("Territorial Kavu", 1, "battlefield")
+    kavu.enter_battlefield(); kavu.summoning_sick = False
+    kavu.temp_power_mod = 4  # force power 4 regardless of domain
+    game.players[1].battlefield.append(kavu)
+    taxed = _add("Pyretic Ritual", 0, "stack")
+    denial = _add("Stubborn Denial", 1, "stack")
+    game.stack.push(StackItem(item_type=StackItemType.SPELL, source=taxed,
+                              controller=0, targets=[], description=""))
+    game.stack.push(StackItem(item_type=StackItemType.SPELL, source=denial,
+                              controller=1, targets=[taxed.instance_id],
+                              description="Counter target noncreature spell."))
+    # Break the rule: the engine keeps the soft {1} tax despite ferocious.
+    from engine import optional_costs
+    monkeypatch.setattr(optional_costs, "effective_counter_tax",
+                        lambda g, c, t: getattr(t, "counter_tax_amount", 0) or 0)
+    ResolutionManager.resolve_stack(game)
+    assert "601.2b/counter_upgrade" in _rules(rules_audit.drain())

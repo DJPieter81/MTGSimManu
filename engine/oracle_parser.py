@@ -819,6 +819,33 @@ def parse_counter_tax(oracle: str) -> int:
     return 0
 
 
+def parse_counter_upgrade_condition(oracle: str):
+    """A soft counter whose printed board condition upgrades it to a HARD
+    counter: "… counter that spell instead" after a "counter target …
+    unless its controller pays {N}" clause (CR 601.2b — the printed
+    condition, not just the base tax, determines the effect).
+
+    Types the one board condition that is a generic, checkable board
+    state: "If you control a creature with power N or greater" (the
+    Ferocious shape). Returns ``{'creature_power_at_least': N}`` or
+    ``None``. Other upgrade conditions (reveal/control a Dragon, an
+    opponent's poison counters) are genuinely different reads and are
+    left ``None`` — the coverage census keeps their carriers flagged.
+    Shape-driven; no card names. The one registered carrier is Stubborn
+    Denial, but the parser matches the clause, not the name.
+    """
+    if not oracle or 'counter that spell instead' not in oracle.lower():
+        return None
+    low = oracle.lower()
+    m = re.search(
+        r"if you control a creature with power (\d+) or greater,\s*"
+        r"counter that spell instead",
+        low)
+    if m:
+        return {'creature_power_at_least': int(m.group(1))}
+    return None
+
+
 def parse_ward_cost(oracle: str) -> int:
     """Parse a Ward {N} mana-cost tax from oracle text (CR 702.21a).
 

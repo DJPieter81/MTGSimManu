@@ -677,6 +677,13 @@ class CardTemplate:
     is_counterspell: bool = False              # has a "counter target ..." effect
     counter_target_kind: str = ""              # "spell"/"creature_spell"/"noncreature_spell"/"instant_or_sorcery_spell"
     counter_tax_amount: int = 0                # {N} from "unless its controller pays {N}"; 0 = hard counter
+    # "… counter that spell instead" upgrade: the printed board condition
+    # that makes a soft counter HARD (CR 601.2b). {'creature_power_at_least': N}
+    # for the Ferocious shape, else None. Read through
+    # engine.optional_costs.effective_counter_tax — the one predicate the
+    # resolution branch and the AI's tax reads share. Populated by
+    # oracle_parser.parse_counter_upgrade_condition.
+    counter_upgrade_condition: Optional[dict] = None
     counters_colorless_only: bool = False      # "counter target ... colorless spell" (Consign to Memory)
     etb_exile_returns_on_leave: bool = False   # ETB-exiled card comes back when this leaves (Freebooter/Sculler); False = permanent exile (Thought-Knot Seer)
     is_land_sacrifice_tutor: bool = False      # Scapeshift shape: sac any number of lands + search (typed, parse-once)

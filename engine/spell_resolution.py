@@ -927,10 +927,32 @@ class ResolutionManager:
                 elif target_stack_index is not None:
                     stack_item = game.stack.items[target_stack_index]
                     countered_card = stack_item.source
-                    tax_amount = getattr(card.template, 'counter_tax_amount', 0) or 0
+                    # CR 601.2b: the tax is 0 (a HARD counter) when the
+                    # counter's printed upgrade condition holds for its
+                    # controller — Stubborn Denial's Ferocious clause makes
+                    # it unconditional with a 4-power creature. One shared
+                    # predicate so the engine and the AI agree.
+                    from .optional_costs import (offer_counter_tax,
+                                                 effective_counter_tax)
+                    tax_amount = effective_counter_tax(game, controller,
+                                                       card.template)
+                    # Rules audit (CR 601.2b), restated independently of
+                    # the helper: a printed creature-power upgrade whose
+                    # condition holds makes the tax 0 (a hard counter).
+                    from .rules_audit import check as _audit_check
+                    _cond = getattr(card.template, 'counter_upgrade_condition', None)
+                    if _cond and 'creature_power_at_least' in _cond:
+                        _n = _cond['creature_power_at_least']
+                        _met = any((c.power or 0) >= _n
+                                   for c in game.players[controller].creatures)
+                        _audit_check(
+                            "601.2b/counter_upgrade",
+                            (not _met) or tax_amount == 0,
+                            f"{card.name}: a {_n}-power creature is controlled "
+                            f"but the tax is {tax_amount}, not a hard counter",
+                            game=game)
                     paid = False
                     if tax_amount > 0:
-                        from .optional_costs import offer_counter_tax
                         paid = offer_counter_tax(game, card, countered_card)
                     if paid:
                         game.log.append(
