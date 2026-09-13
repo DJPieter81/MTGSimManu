@@ -4949,3 +4949,63 @@ on any lane come from the audit ranking and the coverage census (kicker,
 devoid, metalcraft, ferocious, harmonize, flurry on registered cards;
 the twelve handlers still picking targets outside the solver), per the
 process rule.
+
+## Census-chosen units (2026-09-13)
+
+The process rule now in force: units come from the coverage census
+(`docs/design/rules_coverage.md`) and the auditor's ranking, not from the
+next replay. Triage of the census's top rows first:
+
+- **devoid (17 copies, top of the census)** — already correct. MTGJSON
+  bakes the colour-defining ability into the `colors` field, so every
+  registered devoid card (Sowing Mycospawn, Kozilek's Return, Basking
+  Broodscale, Thief of Existence) already has `colors == []` and its
+  "cast a colorless spell" triggers already fire. The census flags it
+  only because there is no `Keyword.DEVOID` / typed field, not because
+  behaviour is wrong. No unit; a note so the next session does not chase it.
+- **metalcraft (10)** — splits into two mechanics under one word: Mox
+  Opal's any-colour mana ability is modelled (a runtime predicate,
+  `is_metalcraft_mana_any_color`), while Galvanic Blast's "deals 4
+  instead if you control three or more artifacts" damage upgrade is NOT
+  (`direct_damage_data=None`, always 2). The damage upgrade is a real gap
+  (a conditional-damage-upgrade class), recorded as the next lead.
+- **kicker (24)** — genuinely unmodelled (every cast resolves unkicked),
+  but the fix spans the payment path AND per-card kicked clauses
+  (Mycospawn's exile-land, Orim's Chant's no-attacks, Consult's dig
+  count) across cast_manager + oracle_resolver + card_effects + ai — a
+  multi-subsystem unit, deferred with its own diagnosis.
+- **ferocious (Stubborn Denial ×4)** — a real single-subsystem
+  behavioural bug; built as K3.
+
+### Unit K3 — a soft counter is a hard counter when its printed board condition holds (`2fbd78c`)
+
+**Diagnosis.** Stubborn Denial parsed to `counter_tax_amount=1` with no
+model of "Ferocious — If you control a creature with power 4 or greater,
+counter that spell instead". So it was ALWAYS a soft {1} tax: a Domain
+Zoo deck (4 copies) holding a 4-power Territorial Kavu or Scion of Draco
+(both reach power 4+ under domain) still let the opponent pay {1}
+through, when the counter should be unconditional. Class: the "counter
+that spell instead if <board condition>" family (3 pool cards; the
+creature-power form is the one registered carrier, the parser is
+shape-driven).
+
+**Rule** (CR 601.2b): `oracle_parser.parse_counter_upgrade_condition`
+types the creature-power upgrade into
+`CardTemplate.counter_upgrade_condition`;
+`engine.optional_costs.effective_counter_tax` is the one predicate the
+resolution branch and the AI's two tax reads (`ai/response.py`,
+`ai/ev_player.py`) share — 0 (hard counter) when the condition holds,
+the printed tax otherwise. Auditor invariant `601.2b/counter_upgrade`,
+restated independently. Narrow-typed-field baseline declares the field.
+Tests: `tests/test_soft_counter_upgraded_by_printed_condition.py` (4) +
+the auditor test; counter/holdback pins 246 green; ratchets at baseline;
+anchor 29 passed, no flips; CI green on `2fbd78c`.
+
+**Measurement** (same seeds, n=20 Bo3; pre = parent, post = K3):
+**Domain Zoo field 71.0 → 73.8 (+2.8pp)** — only the deck that runs the
+ferocious counter moves, and it rises because its Denials now hard-counter
+correctly (rules-correct, the same "up but correct" direction as Z3; it
+pushes Zoo further above band, which is the truth of the rules, not a
+tuning target). Guards flat: 4/5c Control 54.8 → 54.8 (no ferocious
+counter), Azorius Control (WST v2) 45.8 → 45.6 (noise). Next lead:
+Galvanic Blast's metalcraft damage upgrade (the conditional-damage class).
