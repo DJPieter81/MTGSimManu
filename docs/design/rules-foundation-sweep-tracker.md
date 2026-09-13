@@ -5048,3 +5048,84 @@ rules-correct fix with no measurable field impact on a situational SB
 piece; its value is correctness (and a metalcraft Blast that now kills
 what it should), and the auditor will read 0 for this gap on the next
 run.
+
+## Meta refresh (2026-09-13)
+
+Full refresh on `02e173c` (PR #571 head; Zoo lane + R1–R3 + K3 + KD
+landed since the 09-12 refresh, tree clean, nothing pending on the
+measured path). Same geometry as 09-12: n=60 per pair, `--parallel`,
+`run_matchup` per pair on the MATCHUP grid (50000 + 500·k), so this run
+is comparable to the 09-12 refresh at BOTH field and cell level (both
+n=60, same grid, same seeds). **Caveat:** GitHub Pages serves `main`;
+PR #571 is unmerged, so these refreshed pages reach the live site only
+when #571 merges — the refresh is committed to the branch either way.
+
+### Phase A — matrix (`02e173c`)
+
+`MTG_LLM_DECISION_SCORER_OFFLINE=1 python run_meta.py --matrix -n 60
+--save --parallel --rules-audit`, 3 workers: **≈4 h 48 min** (16:26 →
+21:14 UTC) for 300 pairs × 60 Bo3 = 18 000 matches. Calibration
+(`tools/check_calibration.py`, auto-run by `--save`): **31 in band /
+65 out / 0 skipped** (unchanged from 09-12's 31 / 65 — the movements
+below are all sub-3pp and cross no band edges). **`aborted == 0`**
+(calibration-grade — safe to read), `draws == 247` (~0.7% of games,
+legitimate turn-cap / simultaneous-loss draws, credited to nobody per
+Unit 2). Dashboard merged and rebuilt by `--save`
+(`modern_meta_matrix_full.html`; `matchup_cards` 300 / `deck_cards` 25
+preserved for Phase B; `matches_per_pair` 60).
+
+**Rules audit (`--rules-audit`):** 39 findings written to
+`audits/rules_audit_20260913T211440Z.jsonl` — **all 39 are
+`keyword/unmodelled` census entries; ZERO rule violations.** This is
+the auditor's designed 0-violations reading on the fixed engine (R1),
+plus the keyword-coverage census recorded for free across the whole
+matrix. No CR-invariant fired anywhere in 18 000 matches, which is the
+end state the whole Z1–Z3 / E-series sweep was aimed at.
+
+| Deck | 09-12 (n60) | 09-13 (n60) | Δ |
+|---|---|---|---|
+| Domain Zoo | 69.4 | **71.6** | +2.2 |
+| Eldrazi Tron | 68.7 | 68.3 | −0.4 |
+| Dimir Midrange | 65.2 | 64.1 | −1.1 |
+| Broodscale Bloodchief | 60.7 | 62.5 | +1.8 |
+| Boros Energy | 61.8 | 61.1 | −0.7 |
+| Izzet Prowess | 61.2 | 60.3 | −0.9 |
+| 4c Omnath | 58.4 | 57.8 | −0.6 |
+| Living End | 56.8 | 56.2 | −0.6 |
+| Pinnacle Affinity | 55.6 | 56.2 | +0.6 |
+| Eldrazi Ramp | 55.2 | 56.0 | +0.8 |
+| Grixis Reanimator | 53.8 | 55.7 | +1.9 |
+| Ruby Storm | 55.2 | 55.0 | −0.2 |
+| 4/5c Control | 53.3 | 53.2 | −0.1 |
+| Azorius Control (WST v2) | 49.8 | 49.7 | −0.1 |
+| Boros Ponza | 51.3 | 49.2 | −2.1 |
+| Instant Reanimator | 49.6 | 47.9 | −1.7 |
+| Goryo's Vengeance | 47.2 | 46.6 | −0.6 |
+| Azorius Control | 45.0 | 45.2 | +0.2 |
+| Affinity | 44.8 | 44.5 | −0.3 |
+| Azorius Control (WST) | 40.3 | 40.7 | +0.4 |
+| Hollow One | 34.0 | 33.6 | −0.4 |
+| Azorius Blink | 31.6 | 29.9 | −1.7 |
+| Jeskai Blink | 29.0 | 28.8 | −0.2 |
+| Amulet Titan | 25.3 | 23.3 | −2.0 |
+| Creatures Toolbox | 17.9 | 20.8 | +2.9 |
+
+Reading: every movement is sub-3pp — the net of the five
+behaviour-changing units since 09-12 (Z1 land-types-from-the-layer,
+Z2 per-creature combat-damage steps, Z3 target legality, K3 ferocious
+hard-counter, KD metalcraft burn; R1–R3 are behaviour-neutral). The
+signed ones land where the rule predicts: **Zoo +2.2** (K3 makes its
+four Stubborn Denials hard counters behind a 4-power creature — a
+rules-correct RISE, recorded as such in K3's entry; the rules sweep
+does not pull flat Zoo into [50,65], which the 09-12 loop-break doc
+already established and which the weighted-field re-band decision still
+owns); **Boros Ponza −2.1** (Z1 — Ponza is the deck that resolves its
+own Blood Moon, so correcting domain/fetch reads under a type-setting
+effect costs it the phantom fixing it used to keep); **Creatures
+Toolbox +2.9 / Broodscale +1.8** (Z2 — first-strike blockers and
+blockers of first-strikers now deal their damage, and both decks field
+first-strikers); **Grixis +1.9**. Amulet (−2.0), Azorius Blink (−1.7),
+Jeskai Blink, Hollow One remain the known sub-band lane, unchanged in
+character by this refresh. The dashboard/showcase now describe the
+`02e173c` engine; the out-of-band cells stay ground-truth divergence
+probes for the next census-chosen units, not refresh work.
