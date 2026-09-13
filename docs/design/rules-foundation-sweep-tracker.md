@@ -5009,3 +5009,42 @@ pushes Zoo further above band, which is the truth of the rules, not a
 tuning target). Guards flat: 4/5c Control 54.8 → 54.8 (no ferocious
 counter), Azorius Control (WST v2) 45.8 → 45.6 (noise). Next lead:
 Galvanic Blast's metalcraft damage upgrade (the conditional-damage class).
+
+### Unit KD — an any-target burn applies its printed conditional damage upgrade (`f0885ab`)
+
+From the census's metalcraft row (triaged in K3's entry as "Mox mana
+modelled, Galvanic Blast damage not"). Galvanic Blast ("deals 2 to any
+target; Metalcraft — deals 4 instead if you control three or more
+artifacts") had `direct_damage_data=None` (the parser refused the
+"instead" rider) and no handler, so it always dealt 2.
+
+**Verify-before-build note:** the sibling card Unholy Heat (×11, the
+higher-usage delirium burn) was checked first and is ALREADY correct —
+it has a per-card `unholy_heat_resolve` handler that deals 6 with
+delirium. So KD's real in-scope target is Galvanic Blast alone
+(any-target conditional burn); Unholy Heat is creature-targeted, out of
+the any-target parser's scope, and stays on its handler. Lead recorded:
+generalize that handler into this typed field to shrink the card-name
+registry.
+
+**Rule** (CR 608.2): `parse_direct_damage_spell` types the upgrade
+(amount / upgrade_amount / condition) as a sub-key of `direct_damage_data`
+via a shape regex on "deals M damage instead if";
+`oracle_resolver.effective_direct_damage` is the one evaluator the
+resolution dispatch and the AI's `burn_damage` accessor share (upgrade
+when delirium/metalcraft holds for the caster, else base;
+`burn_damage(template, game, controller)` is now game-aware). Auditor
+invariant `608.2/damage_upgrade`. Tests:
+`tests/test_conditional_damage_upgrade.py` (5) + the auditor test;
+direct-damage/burn pins 41 green; ratchets at baseline; anchor 29
+passed, no flips; only Galvanic Blast gets the upgrade (no false
+positives). CI green on `f0885ab`.
+
+**Measurement** (same seeds, n=20 Bo3; pre = parent, post = KD):
+**Affinity field 47.1 → 47.1** — flat, as expected: Galvanic Blast is a
+sideboard card (2 copies), in only the post-board games of certain
+matchups, and the extra 2 damage did not swing these 20 seeds. A
+rules-correct fix with no measurable field impact on a situational SB
+piece; its value is correctness (and a metalcraft Blast that now kills
+what it should), and the auditor will read 0 for this gap on the next
+run.
