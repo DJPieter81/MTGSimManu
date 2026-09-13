@@ -2,7 +2,7 @@
 title: Mechanic coverage census — keyword words in the pool vs the engine's model
 status: active
 priority: secondary
-session: 2026-09-12
+session: 2026-09-13
 tags:
   - rules-audit
   - coverage
@@ -16,7 +16,7 @@ summary: >
 
 # Mechanic coverage census
 
-Generated 2026-09-12 by `python tools/keyword_coverage.py` over the card DB and
+Generated 2026-09-13 by `python tools/keyword_coverage.py` over the card DB and
 the 25 registered lists (MB + SB). Regenerate after a DB refresh or a
 new mechanic lands; do not edit by hand.
 
@@ -34,7 +34,6 @@ exists to drive.
 | metalcraft | none | 10 | 2 | 32 | Galvanic Blast, Mox Opal |
 | ferocious | none | 4 | 1 | 26 | Stubborn Denial |
 | harmonize | none | 4 | 1 | 11 | Nature's Rhythm |
-| flurry | none | 4 | 1 | 10 | Cori-Steel Cutter |
 | daybound | none | 1 | 1 | 70 | Outland Liberator |
 | emerge | none | 1 | 1 | 14 | Herigast, Erupting Nullkite |
 | meld | none | 1 | 1 | 14 | Hanweir Battlements // Hanweir, the Writhing Township |
@@ -119,6 +118,7 @@ exists to drive.
 | madness | typed field (madness_cost) | 4 | 1 | 50 | Blazing Rootwalla |
 | plot | typed field (plot_cost) | 4 | 1 | 32 | Slickshot Show-Off |
 | delve | typed field (has_delve) | 4 | 1 | 23 | Murktide Regent |
+| flurry | typed field (ordinal_cast_trigger) | 4 | 1 | 10 | Cori-Steel Cutter |
 | menace | enum | 3 | 1 | 434 | Sire of Seven Deaths |
 | escape | typed field (escape_cost) | 3 | 2 | 24 | Cling to Dust, Ox of Agonas |
 | mobilize | typed field (has_mobilize) | 3 | 1 | 12 | Voice of Victory |
@@ -131,4 +131,4 @@ exists to drive.
 | spectacle | typed field (spectacle_cost) | 0 | 0 | 20 |  |
 | annihilator | enum | 0 | 0 | 15 |  |
 
-**53 words with no model**, ranked by registered-deck usage: kicker (24), devoid (17), metalcraft (10), ferocious (4), harmonize (4), flurry (4), daybound (1), emerge (1), meld (1), crew (0), changeling (0), shroud (0), infect (0), disturb (0), toxic (0).
+**52 words with no model**, ranked by registered-deck usage: kicker (24), devoid (17), metalcraft (10), ferocious (4), harmonize (4), daybound (1), emerge (1), meld (1), crew (0), changeling (0), shroud (0), infect (0), disturb (0), toxic (0), max speed (0).

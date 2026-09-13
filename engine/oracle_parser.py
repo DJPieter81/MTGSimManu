@@ -3270,7 +3270,68 @@ def parse_ordinal_cast_trigger(oracle: str) -> Optional[Dict]:
             # CR 500.8: "each turn" resets the count at every turn boundary.
             "reset": "turn",
             "clause": clause,
+            # The NON-token effect, typed once so the resolver dispatches it
+            # through the rule owners. None for a token clause (owned by
+            # `cast_trigger_token`) or a shape the executor cannot run whole.
+            "effect": parse_ordinal_effect(clause),
         }
+    return None
+
+
+# Damage shape unique to ordinal cast triggers ("this creature deals N
+# damage to each/target opponent"); the counter/gain/draw shapes reuse the
+# dies-observer clause regexes below, since the wording is identical.
+_ORDINAL_DAMAGE_RE = re.compile(
+    r"^(?:this creature |it )?deals? (\d+) damage to (each opponent|target opponent)"
+    r"(?: and you gain (\d+) life)?$")
+
+
+def parse_ordinal_effect(clause: Optional[str]) -> Optional[Dict]:
+    """Type the NON-token effect of an ordinal cast trigger's clause so
+    `resolve_spell_cast_trigger` can dispatch it through the rule owners
+    (`add_plus_counters`, `engine.damage.deal_damage`, `gain_life`,
+    `draw_cards`).
+
+    Returns one of::
+
+        {"kind": "counter", "amount": int}                    # +1/+1 on source
+        {"kind": "damage", "amount": int, "scope": "each"|"target", "gain": int}
+        {"kind": "gain", "gain": int}
+        {"kind": "draw", "draw": int}
+
+    or None.  A TOKEN clause returns None — the token effect is owned by
+    `cast_trigger_token`.  Shapes a simple executor cannot run whole
+    (proliferate, modal "choose one", coin-flip, copy, or a trailing
+    SECOND sentence) return None and are refused, never half-run — the
+    anchored `$` in each shape regex rejects the extra text.  36 non-token
+    ordinal cards; this reaches the counter/damage/draw/gain shapes.
+    """
+    if not clause:
+        return None
+    # Drop the leading ", " the trigger split left and one trailing period.
+    eff = clause.strip().lstrip(",").strip().rstrip(".").strip().lower()
+    if not eff:
+        return None
+    cm = _DIES_OBSERVER_COUNTER_RE.match(eff)
+    if cm and cm.group(2) in ("this creature", "this permanent", "it"):
+        n = cm.group(1)
+        return {"kind": "counter",
+                "amount": int(n) if n.isdigit() else _NUM_WORDS.get(n, 1)}
+    dm = _ORDINAL_DAMAGE_RE.match(eff)
+    if dm:
+        return {"kind": "damage", "amount": int(dm.group(1)),
+                "scope": "each" if dm.group(2) == "each opponent" else "target",
+                "gain": int(dm.group(3)) if dm.group(3) else 0}
+    gm = _DIES_OBSERVER_GAIN_RE.match(eff)
+    if gm and "draw" not in eff:
+        n = gm.group(1)
+        return {"kind": "gain",
+                "gain": int(n) if n.isdigit() else _NUM_WORDS.get(n, 1)}
+    wm = _DIES_OBSERVER_DRAW_RE.match(eff)
+    if wm and "lose" not in eff:
+        n = wm.group(1)
+        return {"kind": "draw",
+                "draw": int(n) if n.isdigit() else _NUM_WORDS.get(n, 1)}
     return None
 
 

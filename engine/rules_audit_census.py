@@ -68,6 +68,11 @@ _FIELD_FOR_WORD = {
     "metalcraft": "has_artifact_count_scaling",
     "affinity for": "has_artifact_synergy",
     "revolt": "removal_mv_condition",
+    # Flurry (Bloomburrow) is the ordinal-cast-trigger mechanic: "whenever
+    # you cast your second spell each turn" is typed into
+    # ordinal_cast_trigger (parse_ordinal_cast_trigger), so a flurry card
+    # is modelled iff that field is populated.
+    "flurry": "ordinal_cast_trigger",
 }
 
 _ENUM_NAMES = {k.name.lower().replace("_", " ") for k in Keyword}

@@ -286,3 +286,33 @@ def test_damage_upgrade_audit_sees_a_metalcraft_burn_left_at_base(audit, card_db
                         lambda g, c, t: (getattr(t, "direct_damage_data", None) or {}).get("amount", 0))
     resolve_spell_from_oracle(game, gb, 0, [v.instance_id])
     assert "608.2/damage_upgrade" in _rules(rules_audit.drain())
+
+
+def test_ordinal_cast_audit_sees_an_over_triggered_ordinal(audit, card_db, monkeypatch):
+    """CR 603.2: an ordinal cast trigger fires only on the Nth spell of the
+    turn. Re-create an over-trigger (the gate fires regardless of the
+    per-turn count) and the auditor must record it on the FIRST spell,
+    when the count (1) does not equal the ordinal (2)."""
+    from engine import oracle_resolver
+    game = GameState(rng=random.Random(0))
+    game.current_phase = Phase.MAIN1
+    game.active_player = 0
+    monk = CardInstance(template=card_db.get_card("Monk of the Open Hand"),
+                        owner=0, controller=0,
+                        instance_id=game.next_instance_id(), zone="battlefield")
+    monk._game_state = game; monk.enter_battlefield(); monk.summoning_sick = False
+    game.players[0].battlefield.append(monk)
+    # Break the rule: the ordinal gate fires on every cast, not just the Nth.
+    monkeypatch.setattr(oracle_resolver, "_ordinal_cast_trigger_fires",
+                        lambda g, p, c: True)
+    spell = CardInstance(
+        template=CardTemplate(
+            name="S1", card_types=[CardType.INSTANT], mana_cost=ManaCost(generic=0),
+            supertypes=[], subtypes=[], power=None, toughness=None, loyalty=None,
+            keywords=set(), abilities=[], color_identity=set(), produces_mana=[],
+            enters_tapped=False, oracle_text="", tags=set()),
+        owner=0, controller=0, instance_id=game.next_instance_id(), zone="hand")
+    spell._game_state = game
+    game.players[0].hand.append(spell)
+    game.cast_spell(0, spell, free_cast=True)  # first spell: count 1 vs ordinal 2
+    assert "603.2/ordinal_cast" in _rules(rules_audit.drain())

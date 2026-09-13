@@ -5180,3 +5180,90 @@ Blink (28.8, below), Creatures Toolbox (20.8, below), Domain Zoo (71.7,
 above) — the known open lanes, unchanged in character by the refresh.
 These replays are the diagnostic starting points for the next
 census/audit-chosen units, not refresh work.
+
+---
+
+## Unit KF — Flurry is the ordinal-cast-trigger class; recognise it, audit it, and fire its non-token effects (CR 603.2, 2026-09-13)
+
+Census-chosen unit (the `flurry` row, 4 registered copies, was among the
+"53 words with no model"). **Verify-before-build finding (KD form):**
+Flurry is ALREADY modelled via the typed field
+`CardTemplate.ordinal_cast_trigger` — parser
+`oracle_parser.parse_ordinal_cast_trigger` matches "whenever you cast your
+(first…fifth) spell each turn", gate `oracle_resolver._ordinal_cast_trigger_fires`
+is an equality against `PlayerState.spells_cast_this_turn` (correct
+because the counter is bumped before triggers run), and
+`tests/test_ordinal_cast_trigger.py` (17 tests, green) already covers
+Cori-Steel Cutter end-to-end (token on the 2nd spell, per-turn reset,
+controller-only count, equip auto-attach). Cori-Steel Cutter ×4 in Izzet
+Prowess is the ONLY registered flurry card and its effect is a token —
+so there is no behavioural gap for any registered deck and **no win-rate
+movement** in this unit. Three real gaps remained:
+
+1. **Census mis-report.** `engine/rules_audit_census.py::_FIELD_FOR_WORD`
+   had no `flurry` key, so the census read "none" for a fully-typed
+   mechanic. Added `"flurry": "ordinal_cast_trigger"`; regenerating
+   `docs/design/rules_coverage.md` flips the row `none → typed field
+   (ordinal_cast_trigger)` (52 words with no model, was 53). Single-row
+   diff — the doc was not stale beyond flurry.
+
+2. **No auditor invariant for the 45-card ordinal class** (K3/KD each
+   shipped one; the ordinal class predates R1). Added
+   `603.2/ordinal_cast` at both gate seams
+   (`resolve_spell_cast_trigger`, controller + opponent loops), restated
+   independently of the helper: the gate fires iff the caster's per-turn
+   count equals the ordinal for the trigger's scope. Observation only,
+   gated by `rules_audit.enabled()`. Auditor test in
+   `tests/test_rules_audit.py::test_ordinal_cast_audit_sees_an_over_triggered_ordinal`
+   (monkeypatch the gate to always-fire → the invariant records the
+   over-trigger on the 1st spell).
+
+3. **Behavioural leg (user-approved): non-token ordinal effects did
+   nothing.** The gate dispatched only the shared token branch
+   (`cast_trigger_token`); a non-token ordinal card (`cast_trigger_token
+   is None`) passed the gate and fell through every branch. Class: 45
+   ordinal cards, 9 make a token; of the 36 non-token, a generic
+   dispatch reaches the counter (11), damage (5), draw (2) and gain-life
+   (1) shapes — **≈19 cards, ≥10, class-sized.** Fix (mirroring the
+   `_fire_creature_dies_observers` dispatcher): `parse_ordinal_effect`
+   types the clause once into `ordinal_cast_trigger["effect"]` (reusing
+   the dies-observer counter/gain/draw regexes + one ordinal damage
+   regex), and `_apply_ordinal_nontoken_effect` dispatches it through the
+   rule owners — `CardInstance.add_plus_counters` (counters),
+   `engine.damage.deal_damage` (opponent damage, never a raw `.life -=`),
+   `game.gain_life`, `game.draw_cards`. Relative to the ability's
+   CONTROLLER, so "you"/"any"/"opponent" scopes are all correct. Shapes
+   the executor cannot run whole (proliferate, modal "choose one",
+   coin-flip, copy, a trailing second sentence — e.g. Bloodsky
+   Berserker's "…It gains menace") parse to None and are refused, never
+   half-run (the anchored `$` rejects the extra text).
+
+**Tests:** `tests/test_ordinal_cast_trigger_nontoken_effects.py` (parse
+layer: counter/damage/damage+gain/gain/draw typed, token clause and
+refused shapes → None; dispatch layer: Monk of the Open Hand counter on
+the 2nd spell only, Devoted Duelist damage to each opponent, Cori
+Mountain Stalwart damage+gain, Doomskar Oracle gain, Jori En draw, a
+token card unchanged, a refused shape a no-op) + the auditor test. Red
+first (ImportError on `parse_ordinal_effect`; no `603.2/ordinal_cast`),
+green after.
+
+**Ratchets:** single-owner unchanged `{target_pick:12, damage_write:42,
+counter_write:5}` (the dispatch reuses the counter/damage/life owners —
+no category grows); abstraction, magic-numbers (13/13), narrow-typed-field
+(reusing the 45-card `ordinal_cast_trigger`, no new field), doc-hygiene
+all at baseline.
+
+**Measurement:** no registered deck carries a non-token ordinal card, so
+the engine is byte-identical on every registered matchup — anchor stays
+green with no flips, Izzet Prowess field unchanged by construction (the
+only registered flurry card, Cori-Steel Cutter, is a token, guarded by
+`cast_trigger_token is None`). The value is rules-correctness (36
+non-token ordinal cards now fire their printed effect) + observability
+(the ordinal class is now audited on every matrix run) + census accuracy.
+
+**Leads recorded, not built:** the ~14 refused ordinal shapes
+(proliferate / other-counter / modal / coin-flip / copy / add-mana); the
+census `flurry` pool count of 10 includes one false positive (Monk of
+the Open Hand's distinct "Flurry of Blows" ability word); a compound
+"token + non-token effect" ordinal card would stay token-only (none
+known in the pool).

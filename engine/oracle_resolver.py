@@ -2204,6 +2204,60 @@ def _ordinal_cast_trigger_fires(game: "GameState", permanent: "CardInstance",
             == spec["ordinal"])
 
 
+def _audit_ordinal_gate(game: "GameState", permanent: "CardInstance",
+                        caster_idx: int, fired: bool) -> None:
+    """CR 603.2, restated independently of `_ordinal_cast_trigger_fires`:
+    an ordinal cast trigger fires iff the caster's per-turn spell count
+    equals the ordinal for the trigger's scope. Records a violation when
+    the engine's gate decision disagrees (over- or under-trigger)."""
+    from .rules_audit import enabled as _audit_on, check as _audit_check
+    if not _audit_on():
+        return
+    spec = permanent.template.ordinal_cast_trigger
+    sc = spec["caster_scope"]
+    scope_ok = (sc == "any"
+                or (sc == "you" and permanent.controller == caster_idx)
+                or (sc == "opponent" and permanent.controller != caster_idx))
+    count = game.players[caster_idx].spells_cast_this_turn
+    cond = scope_ok and count == spec["ordinal"]
+    _audit_check("603.2/ordinal_cast", fired == cond,
+                 f"{permanent.name}: ordinal gate fired={fired} but count "
+                 f"{count} vs ordinal {spec['ordinal']} (scope {sc})", game=game)
+
+
+def _apply_ordinal_nontoken_effect(game: "GameState",
+                                   permanent: "CardInstance") -> None:
+    """Dispatch a firing ordinal cast trigger's NON-token effect through the
+    rule owners. The token effect is owned by `cast_trigger_token`; this
+    handles the counter / opponent-damage / draw / gain shapes typed once at
+    DB load into `ordinal_cast_trigger['effect']`. Effects apply relative to
+    the ability's CONTROLLER (who benefits/acts), which is correct for
+    "you", "any" and "opponent" scopes alike. Shapes the parser refuses
+    (proliferate, modal, coin-flip, copy) carry no effect and are skipped."""
+    if permanent.template.cast_trigger_token is not None:
+        return  # a token clause: owned by the cast_trigger_token branch
+    spec = permanent.template.ordinal_cast_trigger
+    effect = spec.get("effect") if spec else None
+    if not effect:
+        return
+    owner = permanent.controller
+    kind = effect["kind"]
+    if kind == "counter":
+        # CR 122: the +1/+1 counter funnel (fires counter-placement triggers).
+        permanent.add_plus_counters(effect["amount"], game, source=permanent)
+    elif kind == "damage":
+        from .damage import deal_damage
+        for opp_idx, opp in enumerate(game.players):
+            if opp_idx != owner:
+                deal_damage(permanent, opp, effect["amount"])
+        if effect.get("gain"):
+            game.gain_life(owner, effect["gain"], permanent.name)
+    elif kind == "gain":
+        game.gain_life(owner, effect["gain"], permanent.name)
+    elif kind == "draw":
+        game.draw_cards(owner, effect["draw"])
+
+
 def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
                                 spell_cast: "CardInstance"):
     """Resolve "whenever you cast a spell" triggers for all permanents.
@@ -2227,10 +2281,11 @@ def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
         # each branch) is safe because no card in the pool carries an
         # ordinal cast trigger AND a plain "whenever you cast a <type>
         # spell" trigger — measured 0 of 22,506.
-        if (permanent.template.ordinal_cast_trigger is not None
-                and not _ordinal_cast_trigger_fires(game, permanent,
-                                                     caster_idx)):
-            continue
+        if permanent.template.ordinal_cast_trigger is not None:
+            _fires = _ordinal_cast_trigger_fires(game, permanent, caster_idx)
+            _audit_ordinal_gate(game, permanent, caster_idx, _fires)
+            if not _fires:
+                continue
 
         # ── "Whenever you cast a noncreature spell, you get {E}" ──
         # Matches Ocelot Pride and any future card with this exact trigger.
@@ -2285,6 +2340,13 @@ def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
                             f"T{game.display_turn} P{caster_idx+1}: "
                             f"{permanent.name} attaches to {tokens[-1].name}")
 
+        # ── Non-token ordinal effect (counter / damage / draw / gain) ──
+        # The ordinal gate above confirmed the Nth spell; the token effect
+        # (if any) was owned by the cast_trigger_token branch. Every OTHER
+        # ordinal effect shape dispatches here through the rule owners.
+        if permanent.template.ordinal_cast_trigger is not None:
+            _apply_ordinal_nontoken_effect(game, permanent)
+
         # ── "Whenever you cast a spell, draw a card" ──
         if getattr(permanent.template, 'has_cast_spell_draw', False):
             game.draw_cards(caster_idx, 1)
@@ -2338,16 +2400,22 @@ def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
             continue
 
         # Same ordinal gate as the controller loop above (CR 603.2).
-        if (permanent.template.ordinal_cast_trigger is not None
-                and not _ordinal_cast_trigger_fires(game, permanent,
-                                                     caster_idx)):
-            continue
+        if permanent.template.ordinal_cast_trigger is not None:
+            _fires = _ordinal_cast_trigger_fires(game, permanent, caster_idx)
+            _audit_ordinal_gate(game, permanent, caster_idx, _fires)
+            if not _fires:
+                continue
 
         # ── "Whenever an opponent casts a spell, deal damage" ──
         if getattr(permanent.template, 'has_opponent_cast_damage', False):
             m = re.search(r'deals?\s+(\d+)\s+damage', oracle)
             if m:
                 game.players[caster_idx].life -= int(m.group(1))
+
+        # ── Non-token ordinal effect on an opponent's permanent (an
+        # "an opponent casts their Nth spell" / "a player casts" trigger) ──
+        if permanent.template.ordinal_cast_trigger is not None:
+            _apply_ordinal_nontoken_effect(game, permanent)
 
 
 def check_static_ability(game: "GameState", card: "CardInstance",
