@@ -512,6 +512,21 @@ def activation_candidates(game, player_idx, snap, excluded=None):
                                                 ability.cost))
                 if sacrificed is None:
                     continue  # can_activate should have refused; defensive
+            # A sacrifice (or exile) cost whose victim is a member of a LIVE
+            # unbounded mana engine is not activated: feeding an assembled
+            # loop (CR 726.4 shortcut material) to a mid-game ability is a
+            # strictly worse board than keeping the loop live, and
+            # `position_value` under-prices the loss (a 0-power mana-creature
+            # like Devoted Druid reads as ~free to sacrifice, so a valuable
+            # fetch swamps the projected cost). The rule is the engine-side
+            # membership query — the same one `ai.clock._creature_static_value`
+            # prices — applied once here for every sacrifice-a-creature
+            # ability × every unbounded engine, no card names.
+            if sacrificed is not None:
+                from engine.activation import ActivationManager as _AM
+                if _AM.engines_lost_if_removed(
+                        game, player_idx, sacrificed) > 0:
+                    continue
             if sacrificed is not None:
                 if sacrificed.template.is_land:
                     cost_updates["my_mana"] = max(0, snap.my_mana - 1)
