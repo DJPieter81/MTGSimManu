@@ -5897,6 +5897,55 @@ _KEYWORD_ABILITY_LEADS = frozenset({
 })
 
 
+# ── Kicker (CR 702.33) — an optional ADDITIONAL cost paid as the spell
+# is cast, plus the "if it was kicked" payoff clause. Single-cost kicker
+# and single-cost multikicker are typed; "and/or"/multi-colour kicker
+# (Archangel of Wrath, Ana Battlemage) is refused (returns None) for v1.
+_KICKER_LINE_RE = re.compile(
+    r"(?:^|\n)\s*(multikicker|kicker)\s*[—\-:]?\s*([^\n(]+)", re.I)
+_KICKED_CLAUSE_RE = re.compile(
+    r"(?:when you cast this spell, )?if (?:this spell|it|[a-z0-9' ,]+?) was kicked,?\s+"
+    r"([^.\n]+)", re.I)
+
+
+def parse_kicker(oracle: str) -> "dict | None":
+    """Parse a single-cost kicker/multikicker (CR 702.33).
+
+    Returns ``{"cost": "<mana string>", "multikicker": bool}`` or None.
+    "and/or"/multi-instance kicker lines (two costs) are refused — v1
+    handles one kicker cost paid once (kicker) or repeatedly (multikicker).
+    The caller turns ``cost`` into a ``ManaCost`` via `parse_mana_cost_mtgjson`.
+    """
+    if not oracle:
+        return None
+    m = _KICKER_LINE_RE.search(oracle)
+    if not m:
+        return None
+    cost = m.group(2).strip()
+    # Refuse "and/or" and comma-separated multi-cost kickers (Archangel/Ana).
+    if 'and/or' in cost.lower() or ' and ' in cost.lower():
+        return None
+    # Keep only the leading mana-symbol run ("{1}{C}" from "{1}{C} ...").
+    mm = re.match(r"((?:\{[^}]+\})+)", cost)
+    if not mm:
+        return None
+    return {"cost": mm.group(1), "multikicker": m.group(1).lower() == "multikicker"}
+
+
+def parse_kicked_clause(oracle: str) -> "str | None":
+    """The "if (this spell/it) was kicked, <clause>" payoff sentence — the
+    effect that resolves only when the spell was kicked (CR 702.33e),
+    routed through the generic resolver via `oracle_override`. Covers both
+    the resolve-rider and the "when you cast this spell, if it was kicked"
+    trigger shapes. Returns the clause text or None."""
+    if not oracle:
+        return None
+    m = _KICKED_CLAUSE_RE.search(strip_reminder_text(oracle))
+    if not m:
+        return None
+    return m.group(1).strip()
+
+
 def parse_direct_damage_spell(oracle: str):
     """Classify a fixed-amount, face-legal "deals N damage to any target"
     instant/sorcery. Returns ``{'amount': N}`` or ``None``.

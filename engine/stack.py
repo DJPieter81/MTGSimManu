@@ -39,6 +39,10 @@ class StackItem:
     x_value: int = 0
     # Whether this was evoked
     evoked: bool = False
+    # How many times this spell was kicked (CR 702.33): 0 = unkicked,
+    # 1 = kicked, N = multikicked. The kicked payoff clause resolves only
+    # when kick_count > 0.
+    kick_count: int = 0
     # Spliced card templates (splice onto Arcane)
     spliced: List = field(default_factory=list)
     # Colors of mana actually spent to cast this spell, per the Converge

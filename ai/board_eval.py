@@ -171,6 +171,7 @@ class ActionType(Enum):
     EVOKE = auto()           # Sacrifice for ETB vs wait for hard-cast
     DASH = auto()            # Haste+bounce vs permanent body
     COMBO_NOW = auto()       # Fire win condition vs keep building
+    KICK = auto()            # Pay kicker (CR 702.33) — returns the kick count
 
 
 @dataclass
@@ -200,6 +201,10 @@ def evaluate_action(game: "GameState", player_idx: int, action: Action) -> float
         return _eval_evoke(game, me, assessment, action.context,
                             player_idx=player_idx)
 
+    elif action.action_type == ActionType.KICK:
+        return _eval_kick(game, me, assessment, action.context,
+                          player_idx=player_idx)
+
     elif action.action_type == ActionType.DASH:
         return _eval_dash(game, me, assessment, action.context,
                           player_idx=player_idx)
@@ -215,6 +220,17 @@ def evaluate_action(game: "GameState", player_idx: int, action: Action) -> float
 # 4. Evaluation implementations (private, all use same pattern)
 #    Each returns: benefit - cost
 # ─────────────────────────────────────────────────────────────
+
+
+def _eval_kick(game, me, a: BoardAssessment, ctx: dict,
+               *, player_idx: int) -> float:
+    """How many times to kick a spell (CR 702.33). Returns the kick count
+    (0 = don't kick). K1 commit 2 ships the payment machinery with this
+    conservative stub returning 0 (no kicked payoff is dispatched yet, so
+    paying the kicker would buy nothing); commit 3 dispatches the kicked
+    clauses and this returns the count when the payoff beats the kicker's
+    mana opportunity cost."""
+    return 0.0
 
 
 def _eval_evoke(game, me, a: BoardAssessment, ctx: dict,

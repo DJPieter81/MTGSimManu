@@ -2112,6 +2112,13 @@ class CardDatabase:
         template.has_charge_counter_ability = parse_has_charge_counter_ability(oracle)
         template.cast_trigger_token = parse_cast_trigger_token(oracle)
         template.ordinal_cast_trigger = parse_ordinal_cast_trigger(oracle)
+        # Kicker (CR 702.33): optional additional cost + payoff clause.
+        from .oracle_parser import parse_kicker, parse_kicked_clause
+        _kick = parse_kicker(oracle)
+        if _kick:
+            template.kicker_cost = parse_mana_cost_mtgjson(_kick["cost"])
+            template.multikicker = _kick["multikicker"]
+            template.kicked_clause = parse_kicked_clause(oracle)
         template.enters_type_counter = parse_enters_type_counter(oracle)
         # "Whenever a/another creature [you control] dies, …" observers
         # (CR 603.2). Fanned out by the death funnel.

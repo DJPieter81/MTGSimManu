@@ -1098,6 +1098,13 @@ class CardTemplate:
     # gate for every effect on such a card, not just token creation.
     # Populated by oracle_parser.parse_ordinal_cast_trigger.
     ordinal_cast_trigger: Optional[dict] = None
+    # Kicker (CR 702.33): an optional ADDITIONAL mana cost paid as the
+    # spell is cast, and the "if it was kicked" payoff clause. `multikicker`
+    # allows paying it more than once. Populated by oracle_parser.parse_kicker
+    # / parse_kicked_clause; None when the card has no (single-cost) kicker.
+    kicker_cost: Optional["ManaCost"] = None
+    multikicker: bool = False
+    kicked_clause: Optional[str] = None
     # Permanent-enters counter by card TYPE (CR 603) -- dict
     # {"permanent_type": str, "counter_power": int,
     #  "counter_toughness": int, "unblockable_this_turn": bool} for

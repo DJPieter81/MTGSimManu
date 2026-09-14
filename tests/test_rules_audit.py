@@ -332,3 +332,34 @@ def test_combat_prevention_audit_sees_an_attack_under_a_lock(audit):
     cm.declare_blockers(game, {})
     cm.resolve_combat_damage(game)
     assert "509/no_attacks" in _rules(rules_audit.drain())
+
+
+def test_kicked_cost_paid_audit_sees_a_kicker_not_added(audit, card_db, monkeypatch):
+    """CR 702.33: a kicked spell pays base + kicker. Re-create the pre-fix
+    behaviour (the kicker is not added to the paid cost) and the auditor
+    must record it."""
+    from engine.cast_manager import CastManager
+    game = GameState(rng=random.Random(0))
+    game.current_phase = Phase.MAIN1
+    game.active_player = 0
+    for _ in range(2):
+        f = CardInstance(template=card_db.get_card("Forest"), owner=0, controller=0,
+                         instance_id=game.next_instance_id(), zone="battlefield")
+        f._game_state = game; f.tapped = False
+        game.players[0].battlefield.append(f)
+    t = CardTemplate(name="Kick Probe", card_types=[CardType.INSTANT],
+                     mana_cost=ManaCost(green=1), supertypes=[], subtypes=[],
+                     power=None, toughness=None, loyalty=None, keywords=set(),
+                     abilities=[], color_identity=set(), produces_mana=[],
+                     enters_tapped=False, oracle_text="Kicker {G}\nDraw a card.", tags=set())
+    t.kicker_cost = ManaCost(green=1); t.multikicker = False; t.kicked_clause = "draw a card"
+    spell = CardInstance(template=t, owner=0, controller=0,
+                         instance_id=game.next_instance_id(), zone="hand")
+    spell._game_state = game
+    game.players[0].hand.append(spell)
+    game.callbacks.should_kick = lambda g, p, c: 1
+    # Break the rule: the "combined" cost is the base — the kicker vanished.
+    monkeypatch.setattr(CastManager, "_add_kicker",
+                        staticmethod(lambda base, kicker, times: base))
+    game.cast_spell(0, spell)
+    assert "702.33/kicked_cost_paid" in _rules(rules_audit.drain())

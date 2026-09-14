@@ -252,6 +252,14 @@ class AICallbacks(GameCallbacks):
             game, player_idx, Action(ActionType.EVOKE, {'card': card})
         ) > 0
 
+    def should_kick(self, game, player_idx, card):
+        # CR 702.33: how many times to kick. v1 policy in ai/board_eval
+        # (_eval_kick) returns the kick count (0 unless the kicked payoff
+        # is worth its mana); multikicker may return > 1.
+        return int(evaluate_action(
+            game, player_idx, Action(ActionType.KICK, {'card': card})
+        ))
+
     def should_dash(self, game, player_idx, card, can_normal, can_dash):
         return evaluate_action(
             game, player_idx,
