@@ -6070,6 +6070,44 @@ def parse_turn_scoped_restriction(oracle: str) -> "str | None":
     return None
 
 
+# Combat prevention as a CLASS (CR 509.4 attack restrictions + CR 615
+# damage prevention), typed structured so the resolver sets one flag per
+# shape rather than one card at a time.
+_COMBAT_PREVENT_ATTACK_YOU_RE = re.compile(
+    r"creatures can't attack you(?: or planeswalkers you control)?(?: or your planeswalkers)? this turn")
+_COMBAT_PREVENT_ATTACK_ALL_RE = re.compile(r"creatures can't attack this turn")
+_COMBAT_PREVENT_DAMAGE_RE = re.compile(
+    r"prevent all combat damage that would be dealt this turn"
+    r"|prevent all combat damage this turn")
+
+
+def parse_combat_prevention(oracle: str) -> "dict | None":
+    """Classify a turn-scoped COMBAT-PREVENTION effect (CR 509.4 / 615).
+
+    Returns ``{"no_attack": "all"|"you"|None, "prevent_combat_damage":
+    bool}`` or None.  Unlike `parse_turn_scoped_restriction` (first-match,
+    single string), this is a precise structured recogniser that
+    distinguishes the symmetric attack lock, the directional
+    ("… attack you …") lock, and Fog-style damage prevention — the three
+    shapes the resolver enforces in one place each.  It reads only the
+    combat clauses, so a card whose FIRST turn-scoped clause is unrelated
+    (Orim's Chant's "can't cast spells") is still classified by its combat
+    clause here.
+    """
+    if not oracle or 'this turn' not in oracle.lower():
+        return None
+    low = strip_reminder_text(oracle).lower()
+    no_attack = None
+    if _COMBAT_PREVENT_ATTACK_YOU_RE.search(low):
+        no_attack = "you"
+    elif _COMBAT_PREVENT_ATTACK_ALL_RE.search(low):
+        no_attack = "all"
+    prevent_damage = bool(_COMBAT_PREVENT_DAMAGE_RE.search(low))
+    if no_attack is None and not prevent_damage:
+        return None
+    return {"no_attack": no_attack, "prevent_combat_damage": prevent_damage}
+
+
 def parse_etb_targeted_removal(oracle: str, name: str = ""):
     """Classify "When this ~ enters, [you may] destroy/exile target
     <permanent type> [an opponent controls] [with mana value N or less]"

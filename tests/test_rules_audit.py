@@ -316,3 +316,19 @@ def test_ordinal_cast_audit_sees_an_over_triggered_ordinal(audit, card_db, monke
     game.players[0].hand.append(spell)
     game.cast_spell(0, spell, free_cast=True)  # first spell: count 1 vs ordinal 2
     assert "603.2/ordinal_cast" in _rules(rules_audit.drain())
+
+
+def test_combat_prevention_audit_sees_an_attack_under_a_lock(audit):
+    """CR 509.4: no creature attacks while a "creatures can't attack this
+    turn" lock is set. Force an attacker in past the enumeration gate and
+    the auditor must record the illegal attack."""
+    game = GameState(rng=random.Random(0))
+    a = _creature(game, "Attacker", 1, power=2, toughness=2)
+    _creature(game, "Blocker", 0, power=1, toughness=1)
+    # Lock set on the attacker's controller, but an attacker slips through.
+    game.players[1].cannot_attack_this_turn = True
+    cm = CombatManager()
+    cm.declare_attackers(game, [a], active_player=1)
+    cm.declare_blockers(game, {})
+    cm.resolve_combat_damage(game)
+    assert "509/no_attacks" in _rules(rules_audit.drain())

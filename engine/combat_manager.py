@@ -181,6 +181,30 @@ class CombatManager:
         """
         total_player_damage = 0
 
+        # Combat prevention as a class (CR 509.4 / 615). Audit both shapes
+        # independently of the enforcement above, then honour Fog: if any
+        # player is under "prevent all combat damage this turn", no combat
+        # damage is dealt this step.
+        from .rules_audit import enabled as _audit_on, check as _audit_check
+        if _audit_on():
+            for a in self._assignments:
+                atk = a.attacker
+                ctrl = getattr(atk, 'controller', None)
+                if ctrl is None:
+                    continue
+                opp = game.players[1 - ctrl]
+                locked = (game.players[ctrl].cannot_attack_this_turn
+                          or getattr(opp, 'cannot_be_attacked_this_turn', False))
+                _audit_check("509/no_attacks", not locked,
+                             f"{atk.name} is attacking while an attack lock is set",
+                             game=game)
+        if any(getattr(p, 'combat_damage_prevented_this_turn', False)
+               for p in game.players):
+            for assignment in self._assignments:
+                assignment.attacker.attacked_this_turn = True
+            game.log.append(f"T{game.display_turn}: all combat damage prevented (CR 615)")
+            return 0
+
         # CR 510.4: there is a first-strike damage step iff ANY creature in
         # combat — attacker or blocker — has first or double strike. The
         # steps are decided per CREATURE (`_deals_in_step`), not per
@@ -535,7 +559,17 @@ class CombatManager:
     def valid_attackers(game: "GameState",
                         player_idx: int) -> List["CardInstance"]:
         """Creatures controlled by player_idx that are currently legal
-        attackers (not summoning-sick, untapped, not already attacking)."""
+        attackers (not summoning-sick, untapped, not already attacking).
+
+        Combat prevention (CR 509.4) is enforced here — the single
+        enumeration seam `game.get_valid_attackers` and the engine share:
+        no creature may attack while this player is under a "creatures
+        can't attack this turn" lock, or while the defending opponent is
+        under a "creatures can't attack you this turn" lock."""
+        opp = game.players[1 - player_idx]
+        if (game.players[player_idx].cannot_attack_this_turn
+                or getattr(opp, 'cannot_be_attacked_this_turn', False)):
+            return []
         return [c for c in game.players[player_idx].creatures if c.can_attack]
 
     @staticmethod

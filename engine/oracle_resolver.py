@@ -1163,6 +1163,27 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
     opponent = 1 - controller
     handled = False
 
+    # ── Combat prevention as a class (CR 509.4 / 615) ──
+    # "creatures can't attack [you] this turn" / "prevent all combat
+    # damage this turn" — one turn-scoped flag per shape, set here whether
+    # this is a whole-card Fog or a routed kicked clause. Not an early
+    # return: a compound card ("you gain N life. Prevent all combat
+    # damage this turn.") keeps resolving its other clauses below.
+    from engine.oracle_parser import parse_combat_prevention as _parse_cp
+    _cp = _parse_cp(oracle)
+    if _cp is not None:
+        if _cp["no_attack"] == "all":
+            for _p in game.players:
+                _p.cannot_attack_this_turn = True
+        elif _cp["no_attack"] == "you":
+            game.players[controller].cannot_be_attacked_this_turn = True
+        if _cp["prevent_combat_damage"]:
+            for _p in game.players:
+                _p.combat_damage_prevented_this_turn = True
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: {card.name} — combat prevention")
+        handled = True
+
     # ── Modal mode: mass sweep / typed mass-destroy ─────────────────
     # These shapes ("deals N damage to each creature ...", "destroy all
     # <type> [with mana value M or less]") are the mode clauses of

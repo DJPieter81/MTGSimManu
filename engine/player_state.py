@@ -83,6 +83,10 @@ class PlayerState:
     library_searches_this_game: int = 0
     silenced_this_turn: bool = False
     silenced_next_turn: bool = False  # Orim's Chant + Scepter lock
+    # Combat prevention as a class (CR 509.4 / 615), turn-scoped:
+    cannot_attack_this_turn: bool = False       # this player's creatures can't attack
+    cannot_be_attacked_this_turn: bool = False  # creatures can't attack this player
+    combat_damage_prevented_this_turn: bool = False  # Fog (all combat damage prevented)
     temp_cost_reduction: int = 0  # temporary "spells cost N less" (Ral PW +1), cleared end of turn
     deck_name: str = ""
     # Effective CMC overrides from gameplan (e.g. domain cost reduction)
@@ -350,6 +354,10 @@ class PlayerState:
         if getattr(self, 'silenced_next_turn', False):
             self.silenced_this_turn = True
             self.silenced_next_turn = False
+        # Combat prevention is turn-scoped (CR 509.4 / 615): clear each turn.
+        self.cannot_attack_this_turn = False
+        self.cannot_be_attacked_this_turn = False
+        self.combat_damage_prevented_this_turn = False
         self.temp_cost_reduction = 0
         self._landfall_count_this_turn = 0
 
