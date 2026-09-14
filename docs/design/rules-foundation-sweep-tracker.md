@@ -5285,3 +5285,15 @@ Tests: `test_combat_prevention_class.py`, `test_kicker_optional_additional_cost.
 **Measurement (same-seed n=20 field, commit 2 → commit 3):** Azorius Control **48.1 → 48.3** (+0.2pp, flat) — but drawn games fell 10 → 4: the kicked Fog/Consult fire and make games more decisive, net-neutral on WR. A rules-correctness + observability unit (kicker now works for 167 cards; Orim's Chant Fogs, Consult draws two), not a WR mover at n=20 — the KF/KD pattern.
 
 **Leads recorded:** Sowing's "exile target land" (needs targeted land-exile in the generic resolver); the ~130 other "if kicked" resolve-riders beyond combat-prevention (the additive dispatch is gated to the idempotent Fog class for safety); multikicker scaling clauses ("for each time it was kicked").
+
+---
+
+## Structural outliers program — Lane T diagnosis (Creatures Toolbox, 2026-09-14, replay on tip `def8d46`)
+
+Replay `replays/zoo_vs_toolbox_tip.txt` (Domain Zoo vs Creatures Toolbox s50000, Zoo 2-0). **The engine is NOT the problem on the current tip** — Craterhoof's ETB mass pump fires (`… creatures get +3/+3 and trample`, log L953; `team_pump_data` modelled), the Devoted Druid `-1/-1`→untap loop fires and generates ~82 mana (L744/955-957, `engine/activation.py:306` bound), E13 counters work. The keep-home gate (`b81af88`) and the Toolbox engine classes are already in.
+
+**Confirmed live divergence — AI payoff sequencing under an assembled combo (ai/, not a rules gap):**
+1. The AI reactivates **Fiend Artisan every turn (T3-T7), sacrificing its OWN engine** — Dryad Arbor → Devoted Druid → Vizier of Remedies (L674/739/806/871/950) — grinding its board and delaying the payoff to T7.
+2. By the time Craterhoof lands, the support creatures are **tapped by those activations** (Fiend Artisan tapped, Druid tapped/looping), so only Craterhoof (haste) attacks for **8** (L967-970) instead of a pumped-team alpha strike; Zoo (23 life) survives and exiles Craterhoof with Leyline Binding next turn (L999-1000).
+
+**Subsystem / class:** the "unbounded-mana → outlet / payoff sequencing" AI lane — (a) a sacrifice-tutor (Fiend Artisan, Birthing Pod, Neoform class) must not sacrifice its own assembled engine/payoff pieces and must stop re-activating once the payoff is found; (b) once a lethal mass-pump payoff (Craterhoof / `team_pump_data`) is reachable, the AI must sequence to the alpha strike (deploy + swing the whole pumped team) rather than tapping the board out on the tutor first. `ai/ev_player.py` activation/attacker sequencing + Fiend Artisan sac-target selection; `ActivationManager.would_complete_unbounded_engine`. Class-sized (sac-tutors × mass-pump payoffs × unbounded engines); lifts Toolbox and deflates its Zoo/Dimir/Tron 95/92 donations. FIX = next unit (failing test first); this entry is the required pre-code subsystem naming.
