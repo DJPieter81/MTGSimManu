@@ -194,6 +194,8 @@ class ContinuousEffectsManager:
                 card.cem_colors_set = None
                 # Layer-4 land-type SET: None means "printed types"
                 card.cem_land_type_set = None
+                # Layer-4 land-type ADD: types on top of the printed ones
+                card.cem_land_types_added = set()
 
         # Sort effects by (layer, pt_sublayer, timestamp)
         sorted_effects = sorted(self._effects + derived, key=lambda e: (
@@ -254,6 +256,13 @@ class ContinuousEffectsManager:
                         source_id=source.instance_id,
                         source_name=source.template.name,
                         basic_type=forced,
+                        timestamp=source.instance_id,
+                    ))
+                if getattr(source.template, 'has_all_basic_land_types', False):
+                    derived.extend(create_all_basic_land_types_effect(
+                        source_id=source.instance_id,
+                        source_name=source.template.name,
+                        controller=controller,
                         timestamp=source.instance_id,
                     ))
         return derived
@@ -366,6 +375,11 @@ def create_forced_land_type_effect(source_id: int, source_name: str,
 
     def apply_type(game, card):
         card.cem_land_type_set = basic_type
+        # CR 613.7: a SET applied after an ADD leaves the land with the
+        # one set type and nothing else — earlier additions are gone.
+        # (An ADD with a later timestamp is applied after this and puts
+        # its types back; the sort above orders them.)
+        card.cem_land_types_added = set()
 
     return [ContinuousEffect(
         source_id=source_id,
@@ -374,6 +388,37 @@ def create_forced_land_type_effect(source_id: int, source_name: str,
         affected=affects_nonbasic_lands,
         apply=apply_type,
         description=f"{source_name}: nonbasic lands are {basic_type}s",
+        timestamp=timestamp,
+    )]
+
+
+def create_all_basic_land_types_effect(source_id: int, source_name: str,
+                                       controller: int,
+                                       timestamp: int) -> List[ContinuousEffect]:
+    """Layer-4 land-type ADD (CR 613.2b): "Lands you control are every
+    basic land type in addition to their other types" — Leyline of the
+    Guildpact, Prismatic Omen, Dryad of the Ilysian Grove, … all reuse
+    this one effect.  Affects the controller's lands only.  Ordered by
+    timestamp against the SET family above: applied after a Blood Moon
+    it adds the five types back to the Mountain; applied before, the
+    Moon's SET removes them (CR 613.7).  Re-derived each recalculate()
+    from the source's presence, so it ends when the source leaves."""
+    from .constants import BASIC_LAND_TYPES
+
+    def affects_controllers_lands(game, card):
+        return (card.controller == controller
+                and CardType.LAND in card.effective_card_types)
+
+    def apply_add(game, card):
+        card.cem_land_types_added = set(card.cem_land_types_added) | set(BASIC_LAND_TYPES)
+
+    return [ContinuousEffect(
+        source_id=source_id,
+        source_name=source_name,
+        layer=Layer.TYPE,
+        affected=affects_controllers_lands,
+        apply=apply_add,
+        description=f"{source_name}: lands are every basic land type in addition",
         timestamp=timestamp,
     )]
 

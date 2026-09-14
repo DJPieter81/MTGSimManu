@@ -1,0 +1,1517 @@
+Loaded 22470 cards (0 errors)
+======================================================================
+  GAME 1: Creatures Toolbox (P1) vs Domain Zoo (P2)  —  seed 60404
+  Series: Creatures Toolbox 0 - 0 Domain Zoo
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Domain Zoo wins → chooses to play first
+║ P1 (on play): Domain Zoo
+║ P2 (on draw): Creatures Toolbox
+╚═══════════════════════════════════════════════════════
+
+P1 (Creatures Toolbox) opening hand (2 lands, 5 spells):
+  • Eternal Witness [Creature, CMC 3]
+  • Green Sun's Zenith [Spell, CMC 1]
+  • Agatha's Soul Cauldron [Spell, CMC 2]
+  • Green Sun's Zenith [Spell, CMC 1]
+  • Leyline of Abundance [Spell, CMC 4]
+  • Forest [Land, CMC 0]
+  • Windswept Heath [Land, CMC 0]
+→ P1 MULLIGANS (hand score 23.0 below floor 24.0)
+  New hand (3 lands, 4 spells): ["Nature's Rhythm", 'Wooded Foothills', 'Devoted Druid', 'Underground Mortuary', "Green Sun's Zenith", 'Devoted Druid', 'Misty Rainforest']
+→ P1 mulligans to 6, bottoms: ["Nature's Rhythm"]
+  Keeps: ['Wooded Foothills', 'Devoted Druid', 'Underground Mortuary', "Green Sun's Zenith", 'Devoted Druid', 'Misty Rainforest']
+
+P2 (Domain Zoo) opening hand (3 lands, 4 spells):
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Psychic Frog [Creature, CMC 2]
+  • Leyline Binding [Spell, CMC 6]
+  • Leyline Binding [Spell, CMC 6]
+  • Polluted Delta [Land, CMC 0]
+  • Godless Shrine [Land, CMC 0]
+  • Polluted Delta [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Leyline Binding, Ragavan, Nimble Pilferer, 2 cheap spells
+
+
+╔══ TURN 1 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 20  |  Creatures Toolbox 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Godless Shrine (tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 20  |  Domain Zoo 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 0
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Tyvar, Jubilant Brawler
+  [Main 1]
+T1 P1: Play Wooded Foothills
+T1: Wooded Foothills moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Wooded Foothills (pay 1 life) -> Overgrown Tomb (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 20  |  Creatures Toolbox 19
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Stubborn Denial
+  [Main 1]
+T2 P2: Play Polluted Delta
+T2: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T2 P2: Crack Polluted Delta (pay 1 life) -> Steam Vents (untapped, life: 17)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Godless Shrine→B, Steam Vents→R (paying for Ragavan, Nimble Pilferer, 0 mana remaining)
+T2 P2: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P1 passes (no response)
+T2: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T2 P2: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T2 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T2 P2: Create 1x Treasure token(s)
+T2 P2: Ragavan, Nimble Pilferer exiles Nature's Rhythm from top of P1's library
+T2 P2: Ragavan, Nimble Pilferer — may cast Nature's Rhythm this turn
+  [Combat Damage] 2 damage dealt → P1 life: 19 → 17
+  [End Combat]
+  [Main 2]
+  [End Step]
+T2: Nature's Rhythm returned to exile (uncast)
+T2: Ragavan, Nimble Pilferer moved battlefield -> hand (Dash return)
+T2: Ragavan, Nimble Pilferer returned to hand (Dash)
+
+╔══ TURN 2 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 17  |  Domain Zoo 17
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Treasure Token
+║   Lands: Godless Shrine [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Tyvar, Jubilant Brawler
+  [Main 1]
+T2 P1: Play Misty Rainforest
+T2: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T2 P1: Crack Misty Rainforest (pay 1 life) -> Overgrown Tomb (tapped, life: 16)
+    → Goal: deploy_engine
+    [Mana] Tap Overgrown Tomb→G (paying for Green Sun's Zenith, 0 mana remaining)
+T2 P1: Cast Green Sun's Zenith (G)
+    [Priority] P2 passes (no response)
+T2: Resolve Green Sun's Zenith
+T2: Dryad Arbor moved library -> battlefield (Green Sun's Zenith tutor)
+T2 P1: Green Sun's Zenith finds Dryad Arbor
+T2: Green Sun's Zenith moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 17  |  Creatures Toolbox 16
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Treasure Token
+║   Lands: Godless Shrine, Steam Vents
+║ Creatures Toolbox board:
+║   Creatures: Dryad Arbor (1/1)
+║   Lands: Overgrown Tomb [T], Overgrown Tomb [T], Dryad Arbor
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Leyline of the Guildpact
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Godless Shrine→B, Steam Vents→U (paying for Psychic Frog, 0 mana remaining)
+T3 P2: Cast Psychic Frog (UB)
+    [Priority] P1 passes (no response)
+T3: Resolve Psychic Frog
+T3 P2: Play Polluted Delta
+T3: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T3 P2: Crack Polluted Delta (pay 1 life) -> Breeding Pool (tapped, life: 16)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 16  |  Domain Zoo 16
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 3
+║ Creatures Toolbox board:
+║   Creatures: Dryad Arbor (1/1)
+║   Lands: Overgrown Tomb, Overgrown Tomb, Dryad Arbor
+║ Domain Zoo board:
+║   Creatures: Psychic Frog (1/2)
+║   Other: Treasure Token
+║   Lands: Godless Shrine [T], Steam Vents [T], Breeding Pool [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Green Sun's Zenith
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Overgrown Tomb→B, Dryad Arbor→G (paying for Devoted Druid, 1 mana remaining)
+T3 P1: Cast Devoted Druid (1G)
+    [Priority] P2 passes (no response)
+T3: Resolve Devoted Druid
+T3 P1: surveil 1 → Eternal Witness to GY
+T3 P1: Play Underground Mortuary (enters tapped)
+    → Goal: execute_payoff
+    [Mana] Tap Overgrown Tomb→G (paying for Green Sun's Zenith, 0 mana remaining)
+T3 P1: Cast Green Sun's Zenith (G)
+    [Priority] P2 passes (no response)
+T3: Resolve Green Sun's Zenith
+T3: Dryad Arbor moved library -> battlefield (Green Sun's Zenith tutor)
+T3 P1: Green Sun's Zenith finds Dryad Arbor
+T3: Green Sun's Zenith moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 16  |  Creatures Toolbox 16
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 49  |  Graveyard: 2
+║ Domain Zoo board:
+║   Creatures: Psychic Frog (1/2)
+║   Other: Treasure Token
+║   Lands: Godless Shrine, Steam Vents, Breeding Pool
+║ Creatures Toolbox board:
+║   Creatures: Dryad Arbor (1/1) [tapped], Devoted Druid (0/2), Dryad Arbor (1/1)
+║   Lands: Overgrown Tomb [T], Overgrown Tomb [T], Dryad Arbor [T], Underground Mortuary [T], Dryad Arbor
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thundering Falls
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Godless Shrine→W (paying for Leyline Binding, 2 mana remaining)
+T4 P2: Cast Leyline Binding (5W)
+    [Priority] P1 passes (no response)
+T4: Resolve Leyline Binding
+T4: Devoted Druid moved battlefield -> exile (exiled)
+T4 P2: Leyline Binding exiles Devoted Druid
+    → Goal: curve_out [enablers]
+    [Mana] Tap Steam Vents→R, Breeding Pool→G (paying for Ragavan, Nimble Pilferer, 0 mana remaining)
+T4 P2: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P1 passes (no response)
+T4: Resolve Ragavan, Nimble Pilferer
+T4 P2: surveil 1 → Leyline of the Guildpact to GY
+T4 P2: Play Thundering Falls (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Psychic Frog, Ragavan, Nimble Pilferer
+T4 P2: Attack with Psychic Frog, Ragavan, Nimble Pilferer
+T4 P1:   [BLOCK] Dryad Arbor (1/1) blocks Ragavan, Nimble Pilferer (2/1) — lifespan_delta=+2.71
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T4 P2:   Psychic Frog (1/2) → 1 dmg to player
+T4 P2: Psychic Frog deals combat damage — draw a card
+T4: Dryad Arbor dies
+T4: Ragavan, Nimble Pilferer dies
+  [Combat Damage] 1 damage dealt → P1 life: 16 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 15  |  Domain Zoo 16
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 6
+║ Creatures Toolbox board:
+║   Creatures: Dryad Arbor (1/1)
+║   Lands: Overgrown Tomb, Overgrown Tomb, Dryad Arbor, Underground Mortuary
+║ Domain Zoo board:
+║   Creatures: Psychic Frog (1/2) [tapped]
+║   Other: Treasure Token, Leyline Binding
+║   Lands: Godless Shrine [T], Steam Vents [T], Breeding Pool [T], Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Temple Garden
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Overgrown Tomb→B, Overgrown Tomb→B, Dryad Arbor→G (paying for Tyvar, Jubilant Brawler, 1 mana remaining)
+T4 P1: Cast Tyvar, Jubilant Brawler (1BG)
+    [Priority] P2 passes (no response)
+T4: Resolve Tyvar, Jubilant Brawler
+T4 P1: Play Temple Garden (untapped, life: 13)
+    → Goal: execute_payoff
+    [Mana] Tap Underground Mortuary→G, Temple Garden→G (paying for Devoted Druid, 0 mana remaining)
+T4 P1: Cast Devoted Druid (1G)
+    [Priority] P2 passes (no response)
+T4: Resolve Devoted Druid
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 16  |  Creatures Toolbox 13
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 4
+║ Domain Zoo board:
+║   Creatures: Psychic Frog (1/2)
+║   Other: Treasure Token, Leyline Binding
+║   Lands: Godless Shrine, Steam Vents, Breeding Pool, Thundering Falls
+║ Creatures Toolbox board:
+║   Creatures: Dryad Arbor (1/1) [tapped], Devoted Druid (0/2)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Overgrown Tomb [T], Overgrown Tomb [T], Dryad Arbor [T], Underground Mortuary [T], Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Leyline of the Guildpact
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Godless Shrine→W (paying for Leyline Binding, 3 mana remaining)
+T5 P2: Cast Leyline Binding (5W)
+    [Priority] P1 passes (no response)
+T5: Resolve Leyline Binding
+T5: Devoted Druid moved battlefield -> exile (exiled)
+T5 P2: Leyline Binding exiles Devoted Druid
+T5 P2: Play Blood Crypt (tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Psychic Frog
+T5 P2: Attack with Psychic Frog
+  [Declare Blockers] P1 does not block
+T5 P2:   Psychic Frog (1/2) → 1 dmg to player
+T5 P2: Psychic Frog deals combat damage — draw a card
+  [Combat Damage] 1 damage dealt → P1 life: 13 → 12
+  [End Combat]
+  [Main 2]
+T5: Indatha Triome moved hand -> graveyard (cycling)
+T5 P2: Cycle Indatha Triome (pay 3 mana, draw: Arid Mesa)
+  [End Step]
+
+╔══ TURN 5 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 12  |  Domain Zoo 16
+║ Hand: 1 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 44  |  Graveyard: 6
+║ Creatures Toolbox board:
+║   Creatures: Dryad Arbor (1/1)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Overgrown Tomb, Overgrown Tomb, Dryad Arbor, Underground Mortuary, Temple Garden
+║ Domain Zoo board:
+║   Creatures: Psychic Frog (1/2) [tapped]
+║   Other: Treasure Token, Leyline Binding, Leyline Binding
+║   Lands: Godless Shrine [T], Steam Vents [T], Breeding Pool [T], Thundering Falls [T], Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Delighted Halfling
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Dryad Arbor→G (paying for Delighted Halfling, 4 mana remaining)
+T5 P1: Cast Delighted Halfling (G)
+    [Priority] P2 passes (no response)
+T5: Resolve Delighted Halfling
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 16  |  Creatures Toolbox 12
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 43  |  Graveyard: 5
+║ Domain Zoo board:
+║   Creatures: Psychic Frog (1/2)
+║   Other: Treasure Token, Leyline Binding, Leyline Binding
+║   Lands: Godless Shrine, Steam Vents, Breeding Pool, Thundering Falls, Blood Crypt
+║ Creatures Toolbox board:
+║   Creatures: Dryad Arbor (1/1) [tapped], Delighted Halfling (1/2)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Overgrown Tomb, Overgrown Tomb, Dryad Arbor [T], Underground Mortuary, Temple Garden
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+T6 P2: Play Arid Mesa
+T6: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T6 P2: Crack Arid Mesa (pay 1 life) -> Hallowed Fountain (tapped, life: 15)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Psychic Frog
+T6 P2: Attack with Psychic Frog
+  [Declare Blockers] P1 does not block
+T6 P2:   Psychic Frog (2/3) → 2 dmg to player
+T6 P2: Psychic Frog deals combat damage — draw a card
+  [Combat Damage] 2 damage dealt → P1 life: 12 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 10  |  Domain Zoo 15
+║ Hand: 1 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 43  |  Graveyard: 6
+║ Creatures Toolbox board:
+║   Creatures: Dryad Arbor (1/1), Delighted Halfling (1/2)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Overgrown Tomb, Overgrown Tomb, Dryad Arbor, Underground Mortuary, Temple Garden
+║ Domain Zoo board:
+║   Creatures: Psychic Frog (2/3) [tapped]
+║   Other: Treasure Token, Leyline Binding, Leyline Binding
+║   Lands: Godless Shrine, Steam Vents, Breeding Pool, Thundering Falls, Blood Crypt, Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Leyline of Abundance
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Overgrown Tomb→G, Overgrown Tomb→B, Underground Mortuary→B, Dryad Arbor→G (paying for Leyline of Abundance, 2 mana remaining)
+T6 P1: Cast Leyline of Abundance (2GG)
+    [Priority] P2 passes (no response)
+T6: Resolve Leyline of Abundance
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Delighted Halfling
+T6 P1: Attack with Delighted Halfling
+  [Declare Blockers] P2 does not block
+T6 P1:   Delighted Halfling (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P2 life: 15 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 14  |  Creatures Toolbox 10
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 6  |  Opp lands: 5
+║ Library: 40  |  Graveyard: 7
+║ Domain Zoo board:
+║   Creatures: Psychic Frog (2/3)
+║   Other: Treasure Token, Leyline Binding, Leyline Binding
+║   Lands: Godless Shrine, Steam Vents, Breeding Pool, Thundering Falls, Blood Crypt, Hallowed Fountain
+║ Creatures Toolbox board:
+║   Creatures: Dryad Arbor (1/1) [tapped], Delighted Halfling (1/2) [tapped]
+║   Other: Tyvar, Jubilant Brawler, Leyline of Abundance
+║   Lands: Overgrown Tomb [T], Overgrown Tomb [T], Dryad Arbor [T], Underground Mortuary [T], Temple Garden
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wrath of the Skies
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Psychic Frog
+T7 P2: Attack with Psychic Frog
+  [Declare Blockers] P1 does not block
+T7 P2:   Psychic Frog (2/3) → 2 dmg to player
+T7 P2: Psychic Frog deals combat damage — draw a card
+  [Combat Damage] 2 damage dealt → P1 life: 10 → 8
+  [End Combat]
+  [Main 2]
+T7 P2: Play Flooded Strand
+T7: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T7 P2: Crack Flooded Strand (pay 1 life) -> Temple Garden (tapped, life: 13)
+  [End Step]
+
+╔══ TURN 7 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 8  |  Domain Zoo 13
+║ Hand: 1 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 7
+║ Library: 42  |  Graveyard: 6
+║ Creatures Toolbox board:
+║   Creatures: Dryad Arbor (1/1), Delighted Halfling (1/2)
+║   Other: Tyvar, Jubilant Brawler, Leyline of Abundance
+║   Lands: Overgrown Tomb, Overgrown Tomb, Dryad Arbor, Underground Mortuary, Temple Garden
+║ Domain Zoo board:
+║   Creatures: Psychic Frog (2/3) [tapped]
+║   Other: Treasure Token, Leyline Binding, Leyline Binding
+║   Lands: Godless Shrine, Steam Vents, Breeding Pool, Thundering Falls, Blood Crypt, Hallowed Fountain, Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Nature's Rhythm
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Dryad Arbor→GG (paying for Nature's Rhythm, 6 mana remaining)
+T7 P1: Cast Nature's Rhythm (4GG) (X=4)
+    [Priority] P2 passes (no response)
+T7: Resolve Nature's Rhythm
+T7: Fiend Artisan moved library -> battlefield (Nature's Rhythm tutor)
+T7 P1: Nature's Rhythm finds Fiend Artisan
+T7: Nature's Rhythm moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Delighted Halfling
+T7 P1: Attack with Delighted Halfling
+  [Declare Blockers] P2 does not block
+T7 P1:   Delighted Halfling (1/2) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P2 life: 13 → 12
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 12  |  Creatures Toolbox 8
+║ Hand: 5 cards  |  Opp hand: 1 cards
+║ Lands: 7  |  Opp lands: 5
+║ Library: 37  |  Graveyard: 8
+║ Domain Zoo board:
+║   Creatures: Psychic Frog (2/3)
+║   Other: Treasure Token, Leyline Binding, Leyline Binding
+║   Lands: Godless Shrine, Steam Vents, Breeding Pool, Thundering Falls, Blood Crypt, Hallowed Fountain, Temple Garden
+║ Creatures Toolbox board:
+║   Creatures: Dryad Arbor (1/1) [tapped], Delighted Halfling (1/2) [tapped], Fiend Artisan (1/1)
+║   Other: Tyvar, Jubilant Brawler, Leyline of Abundance
+║   Lands: Overgrown Tomb [T], Overgrown Tomb [T], Dryad Arbor [T], Underground Mortuary [T], Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+T8 P2: Play Flooded Strand
+T8: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T8 P2: Crack Flooded Strand -> Plains (untapped)
+    → Goal: curve_out
+    [Mana] Tap Plains→W, Godless Shrine→W (paying for Wrath of the Skies, 6 mana remaining)
+T8 P2: Cast Wrath of the Skies (2WW) (X=2)
+    [Priority] P1 passes (no response)
+T8: Resolve Wrath of the Skies
+T8: Dryad Arbor dies
+T8: Delighted Halfling dies
+T8: Fiend Artisan dies
+T8: Treasure Token moved battlefield -> graveyard (destroyed)
+T8: Psychic Frog dies
+T8 P2: Wrath of the Skies (X=2) sweeps the board, destroying 5 permanents
+T8: Wrath of the Skies moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 8  |  Domain Zoo 11
+║ Hand: 1 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 8
+║ Library: 40  |  Graveyard: 10
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Tyvar, Jubilant Brawler, Leyline of Abundance
+║   Lands: Overgrown Tomb, Overgrown Tomb, Underground Mortuary, Temple Garden
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline Binding, Leyline Binding
+║   Lands: Godless Shrine [T], Steam Vents [T], Breeding Pool [T], Thundering Falls, Blood Crypt, Hallowed Fountain, Temple Garden, Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Birds of Paradise
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Overgrown Tomb→G (paying for Birds of Paradise, 3 mana remaining)
+T8 P1: Cast Birds of Paradise (G)
+    [Priority] P2 passes (no response)
+T8: Resolve Birds of Paradise
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 11  |  Creatures Toolbox 8
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 8  |  Opp lands: 4
+║ Library: 35  |  Graveyard: 11
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline Binding, Leyline Binding
+║   Lands: Godless Shrine, Steam Vents, Breeding Pool, Thundering Falls, Blood Crypt, Hallowed Fountain, Temple Garden, Plains
+║ Creatures Toolbox board:
+║   Creatures: Birds of Paradise (0/1)
+║   Other: Tyvar, Jubilant Brawler, Leyline of Abundance
+║   Lands: Overgrown Tomb [T], Overgrown Tomb, Underground Mortuary, Temple Garden
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Stubborn Denial
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 8  |  Domain Zoo 11
+║ Hand: 1 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 8
+║ Library: 39  |  Graveyard: 10
+║ Creatures Toolbox board:
+║   Creatures: Birds of Paradise (0/1)
+║   Other: Tyvar, Jubilant Brawler, Leyline of Abundance
+║   Lands: Overgrown Tomb, Overgrown Tomb, Underground Mortuary, Temple Garden
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline Binding, Leyline Binding
+║   Lands: Godless Shrine, Steam Vents, Breeding Pool, Thundering Falls, Blood Crypt, Hallowed Fountain, Temple Garden, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Windswept Heath
+  [Main 1]
+T9 P1: Play Windswept Heath
+T9: Windswept Heath moved battlefield -> graveyard (fetchland sacrifice)
+T9 P1: Crack Windswept Heath -> Forest (untapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 11  |  Creatures Toolbox 7
+║ Hand: 5 cards  |  Opp hand: 1 cards
+║ Lands: 8  |  Opp lands: 5
+║ Library: 34  |  Graveyard: 11
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline Binding, Leyline Binding
+║   Lands: Godless Shrine, Steam Vents, Breeding Pool, Thundering Falls, Blood Crypt, Hallowed Fountain, Temple Garden, Plains
+║ Creatures Toolbox board:
+║   Creatures: Birds of Paradise (0/1)
+║   Other: Tyvar, Jubilant Brawler, Leyline of Abundance
+║   Lands: Overgrown Tomb, Overgrown Tomb, Underground Mortuary, Temple Garden, Forest
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+T10 P2: Play Arid Mesa
+T10: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T10 P2: Crack Arid Mesa -> Meticulous Archive (tapped)
+T10 P2: surveil 1 → Wrath of the Skies to GY
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 7  |  Domain Zoo 10
+║ Hand: 1 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 9
+║ Library: 37  |  Graveyard: 11
+║ Creatures Toolbox board:
+║   Creatures: Birds of Paradise (0/1)
+║   Other: Tyvar, Jubilant Brawler, Leyline of Abundance
+║   Lands: Overgrown Tomb, Overgrown Tomb, Underground Mortuary, Temple Garden, Forest
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline Binding, Leyline Binding
+║   Lands: Godless Shrine, Steam Vents, Breeding Pool, Thundering Falls, Blood Crypt, Hallowed Fountain, Temple Garden, Plains, Meticulous Archive [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Nature's Rhythm
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Forest→G, Birds of Paradise→BG (paying for Nature's Rhythm, 5 mana remaining)
+T10 P1: Cast Nature's Rhythm (4GG) (X=4)
+    [Priority] P2 passes (no response)
+T10: Resolve Nature's Rhythm
+T10: Badgermole Cub moved library -> battlefield (Nature's Rhythm tutor)
+T10 P1: Nature's Rhythm finds Badgermole Cub
+T10: Nature's Rhythm moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 10  |  Creatures Toolbox 7
+║ Hand: 5 cards  |  Opp hand: 1 cards
+║ Lands: 9  |  Opp lands: 5
+║ Library: 31  |  Graveyard: 13
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline Binding, Leyline Binding
+║   Lands: Godless Shrine, Steam Vents, Breeding Pool, Thundering Falls, Blood Crypt, Hallowed Fountain, Temple Garden, Plains, Meticulous Archive
+║ Creatures Toolbox board:
+║   Creatures: Birds of Paradise (0/1) [tapped], Badgermole Cub (2/2)
+║   Other: Tyvar, Jubilant Brawler, Leyline of Abundance
+║   Lands: Overgrown Tomb [T], Overgrown Tomb [T], Underground Mortuary [T], Temple Garden, Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+T11 P2: Play Flooded Strand
+T11: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T11 P2: Crack Flooded Strand (no valid land found)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 7  |  Domain Zoo 9
+║ Hand: 1 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 9
+║ Library: 35  |  Graveyard: 12
+║ Creatures Toolbox board:
+║   Creatures: Birds of Paradise (0/1), Badgermole Cub (2/2)
+║   Other: Tyvar, Jubilant Brawler, Leyline of Abundance
+║   Lands: Overgrown Tomb, Overgrown Tomb, Underground Mortuary, Temple Garden, Forest
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline Binding, Leyline Binding
+║   Lands: Godless Shrine, Steam Vents, Breeding Pool, Thundering Falls, Blood Crypt, Hallowed Fountain, Temple Garden, Plains, Meticulous Archive
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Walking Ballista
+  [Main 1]
+    → Goal: execute_payoff
+T11 P1: Cast Walking Ballista (8) (X=4)
+    [Priority] P2 passes (no response)
+T11: Resolve Walking Ballista
+T11 P1: Walking Ballista enters with 4 +1/+1 counter(s)
+T11 P1: Walking Ballista deals 4 to opponent (life: 5)
+T11: Walking Ballista dies
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Badgermole Cub
+T11 P1: Attack with Badgermole Cub
+  [Declare Blockers] P2 does not block
+T11 P1:   Badgermole Cub (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 5 → 3
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 3  |  Creatures Toolbox 7
+║ Hand: 5 cards  |  Opp hand: 1 cards
+║ Lands: 9  |  Opp lands: 5
+║ Library: 30  |  Graveyard: 14
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline Binding, Leyline Binding
+║   Lands: Godless Shrine, Steam Vents, Breeding Pool, Thundering Falls, Blood Crypt, Hallowed Fountain, Temple Garden, Plains, Meticulous Archive
+║ Creatures Toolbox board:
+║   Creatures: Birds of Paradise (0/1), Badgermole Cub (2/2) [tapped]
+║   Other: Tyvar, Jubilant Brawler, Leyline of Abundance
+║   Lands: Overgrown Tomb [T], Overgrown Tomb [T], Underground Mortuary [T], Temple Garden [T], Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Territorial Kavu
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Steam Vents→R, Breeding Pool→G (paying for Territorial Kavu, 7 mana remaining)
+T12 P2: Cast Territorial Kavu (RG)
+    [Priority] P1 passes (no response)
+T12: Resolve Territorial Kavu
+T12 P2: Territorial Kavu enters as 5/5 (domain=5)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 7  |  Domain Zoo 3
+║ Hand: 1 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 9
+║ Library: 34  |  Graveyard: 13
+║ Creatures Toolbox board:
+║   Creatures: Birds of Paradise (0/1), Badgermole Cub (2/2)
+║   Other: Tyvar, Jubilant Brawler, Leyline of Abundance
+║   Lands: Overgrown Tomb, Overgrown Tomb, Underground Mortuary, Temple Garden, Forest
+║ Domain Zoo board:
+║   Creatures: Territorial Kavu (5/5)
+║   Other: Leyline Binding, Leyline Binding
+║   Lands: Godless Shrine, Steam Vents [T], Breeding Pool [T], Thundering Falls, Blood Crypt, Hallowed Fountain, Temple Garden, Plains, Meticulous Archive
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Agatha's Soul Cauldron
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Forest→G, Overgrown Tomb→B (paying for Agatha's Soul Cauldron, 6 mana remaining)
+T12 P1: Cast Agatha's Soul Cauldron (2)
+    [Priority] P2 passes (no response)
+T12: Resolve Agatha's Soul Cauldron
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Badgermole Cub
+T12 P1: Attack with Badgermole Cub
+T12 P2:   [BLOCK] Territorial Kavu (5/5) blocks Badgermole Cub (2/2) — lifespan_delta=+1.00
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T12: Badgermole Cub dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 13 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 3  |  Creatures Toolbox 7
+║ Hand: 5 cards  |  Opp hand: 1 cards
+║ Lands: 9  |  Opp lands: 5
+║ Library: 29  |  Graveyard: 14
+║ Domain Zoo board:
+║   Creatures: Territorial Kavu (5/5)
+║   Other: Leyline Binding, Leyline Binding
+║   Lands: Godless Shrine, Steam Vents, Breeding Pool, Thundering Falls, Blood Crypt, Hallowed Fountain, Temple Garden, Plains, Meticulous Archive
+║ Creatures Toolbox board:
+║   Creatures: Birds of Paradise (0/1)
+║   Other: Tyvar, Jubilant Brawler, Leyline of Abundance, Agatha's Soul Cauldron
+║   Lands: Overgrown Tomb [T], Overgrown Tomb, Underground Mortuary, Temple Garden, Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Stubborn Denial
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Territorial Kavu
+T13 P2: Territorial Kavu exiles Eternal Witness from opponent GY
+T13 P2: Attack with Territorial Kavu
+T13 P1:   [BLOCK-EMERGENCY] Birds of Paradise (0/1) blocks Territorial Kavu (5/5) — lifespan_delta=-100.40
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T13: Birds of Paradise dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 13 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 7  |  Domain Zoo 3
+║ Hand: 1 cards  |  Opp hand: 6 cards
+║ Lands: 5  |  Opp lands: 9
+║ Library: 33  |  Graveyard: 14
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Tyvar, Jubilant Brawler, Leyline of Abundance, Agatha's Soul Cauldron
+║   Lands: Overgrown Tomb, Overgrown Tomb, Underground Mortuary, Temple Garden, Forest
+║ Domain Zoo board:
+║   Creatures: Territorial Kavu (5/5) [tapped]
+║   Other: Leyline Binding, Leyline Binding
+║   Lands: Godless Shrine, Steam Vents, Breeding Pool, Thundering Falls, Blood Crypt, Hallowed Fountain, Temple Garden, Plains, Meticulous Archive
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Vizier of Remedies
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Forest→G, Temple Garden→W (paying for Vizier of Remedies, 3 mana remaining)
+T13 P1: Cast Vizier of Remedies (1W)
+    [Priority] P2 passes (no response)
+T13: Resolve Vizier of Remedies
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 14 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 3  |  Creatures Toolbox 7
+║ Hand: 6 cards  |  Opp hand: 1 cards
+║ Lands: 9  |  Opp lands: 5
+║ Library: 28  |  Graveyard: 14
+║ Domain Zoo board:
+║   Creatures: Territorial Kavu (5/5)
+║   Other: Leyline Binding, Leyline Binding
+║   Lands: Godless Shrine, Steam Vents, Breeding Pool, Thundering Falls, Blood Crypt, Hallowed Fountain, Temple Garden, Plains, Meticulous Archive
+║ Creatures Toolbox board:
+║   Creatures: Vizier of Remedies (2/1)
+║   Other: Tyvar, Jubilant Brawler, Leyline of Abundance, Agatha's Soul Cauldron
+║   Lands: Overgrown Tomb, Overgrown Tomb, Underground Mortuary, Temple Garden [T], Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Fatal Push
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Godless Shrine→B (paying for Fatal Push, 8 mana remaining)
+T14 P2: Cast Fatal Push (B)
+    [Priority] P1 passes (no response)
+T14: Resolve Fatal Push
+T14: Vizier of Remedies dies
+T14 P2: Fatal Push destroys Vizier of Remedies
+T14: Fatal Push moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Territorial Kavu
+T14: Stubborn Denial moved hand -> graveyard (discard)
+T14 P2: Territorial Kavu loots — discard Stubborn Denial, draw 1
+T14 P2: Attack with Territorial Kavu
+  [Declare Blockers] P1 does not block
+T14 P2:   Territorial Kavu (5/5) → 5 dmg to player
+  [Combat Damage] 5 damage dealt → P1 life: 7 → 2
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 14 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 2  |  Domain Zoo 3
+║ Hand: 1 cards  |  Opp hand: 6 cards
+║ Lands: 5  |  Opp lands: 9
+║ Library: 32  |  Graveyard: 15
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Tyvar, Jubilant Brawler, Leyline of Abundance, Agatha's Soul Cauldron
+║   Lands: Overgrown Tomb, Overgrown Tomb, Underground Mortuary, Temple Garden, Forest
+║ Domain Zoo board:
+║   Creatures: Territorial Kavu (5/5) [tapped]
+║   Other: Leyline Binding, Leyline Binding
+║   Lands: Godless Shrine [T], Steam Vents, Breeding Pool, Thundering Falls, Blood Crypt, Hallowed Fountain, Temple Garden, Plains, Meticulous Archive
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Delighted Halfling
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Forest→G (paying for Delighted Halfling, 4 mana remaining)
+T14 P1: Cast Delighted Halfling (G)
+    [Priority] P2 passes (no response)
+T14: Resolve Delighted Halfling
+  [Begin Combat]
+    [Mana] Tap Blood Crypt→B (paying for Fatal Push, 7 mana remaining)
+T14 P2: Cast Fatal Push (B)
+    [Priority] P1 passes (no response)
+T14: Resolve Fatal Push
+T14: Delighted Halfling dies
+T14 P2: Fatal Push destroys Delighted Halfling
+T14: Fatal Push moved stack -> graveyard (resolution)
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 15 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 3  |  Creatures Toolbox 2
+║ Hand: 5 cards  |  Opp hand: 1 cards
+║ Lands: 9  |  Opp lands: 5
+║ Library: 26  |  Graveyard: 17
+║ Domain Zoo board:
+║   Creatures: Territorial Kavu (5/5)
+║   Other: Leyline Binding, Leyline Binding
+║   Lands: Godless Shrine, Steam Vents, Breeding Pool, Thundering Falls, Blood Crypt, Hallowed Fountain, Temple Garden, Plains, Meticulous Archive
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Tyvar, Jubilant Brawler, Leyline of Abundance, Agatha's Soul Cauldron
+║   Lands: Overgrown Tomb, Overgrown Tomb, Underground Mortuary, Temple Garden, Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Leyline Binding
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Territorial Kavu
+T15: Stubborn Denial moved hand -> graveyard (discard)
+T15 P2: Territorial Kavu loots — discard Stubborn Denial, draw 1
+T15 P2: Attack with Territorial Kavu
+  [Declare Blockers] P1 does not block
+T15 P2:   Territorial Kavu (5/5) → 5 dmg to player
+P1 loses: life total -3
+  [Combat Damage] 5 damage dealt → P1 life: 2 → -3
+
+>>> Domain Zoo wins Game 1 on turn 15 via damage
+    Final life: Creatures Toolbox=-3  Domain Zoo=3
+
+======================================================================
+  GAME 2: Creatures Toolbox (P1) vs Domain Zoo (P2)  —  seed 60405
+  Series: Creatures Toolbox 0 - 1 Domain Zoo
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Creatures Toolbox wins → chooses to play first
+║ P1 (on play): Creatures Toolbox
+║ P2 (on draw): Domain Zoo
+╚═══════════════════════════════════════════════════════
+
+P1 (Creatures Toolbox) opening hand (3 lands, 4 spells):
+  • Verdant Catacombs [Land, CMC 0]
+  • Tyvar, Jubilant Brawler [Spell, CMC 3]
+  • Boseiju, Who Endures [Land, CMC 0]
+  • Underground Mortuary [Land, CMC 0]
+  • Devoted Druid [Creature, CMC 2]
+  • Tyvar, Jubilant Brawler [Spell, CMC 3]
+  • Vizier of Remedies [Creature, CMC 2]
+→ P1 KEEPS 7 — has key card(s): Devoted Druid, 3 cheap spells
+
+P2 (Domain Zoo) opening hand (3 lands, 4 spells):
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Scion of Draco [Creature, CMC 12]
+  • Flooded Strand [Land, CMC 0]
+  • Thundering Falls [Land, CMC 0]
+  • Leyline Binding [Spell, CMC 6]
+  • Quantum Riddler [Creature, CMC 5]
+  • Breeding Pool [Land, CMC 0]
+→ P2 MULLIGANS (hand score 19.0 below floor 24.0)
+  New hand (2 lands, 5 spells): ['Blood Crypt', 'Fatal Push', 'Territorial Kavu', 'Leyline of the Guildpact', 'Ragavan, Nimble Pilferer', 'Psychic Frog', 'Hallowed Fountain']
+→ P2 mulligans to 6, bottoms: ['Psychic Frog']
+  Keeps: ['Blood Crypt', 'Fatal Push', 'Territorial Kavu', 'Leyline of the Guildpact', 'Ragavan, Nimble Pilferer', 'Hallowed Fountain']
+
+T0 P2: Leyline of the Guildpact begins the game on the battlefield (leyline)
+
+╔══ TURN 1 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 20  |  Domain Zoo 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Verdant Catacombs
+T1: Verdant Catacombs moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Verdant Catacombs (pay 1 life) -> Temple Garden (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 20  |  Creatures Toolbox 19
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: (none)
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Psychic Frog
+  [Main 1]
+T1 P2: Play Blood Crypt (tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 19  |  Domain Zoo 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: Temple Garden
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Verdant Catacombs
+  [Main 1]
+T2 P1: Play Verdant Catacombs
+T2: Verdant Catacombs moved battlefield -> graveyard (fetchland sacrifice)
+T2 P1: Crack Verdant Catacombs (pay 1 life) -> Overgrown Tomb (tapped, life: 18)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 20  |  Creatures Toolbox 18
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 53  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: Blood Crypt
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: Temple Garden, Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Wrath of the Skies
+  [Main 1]
+T2 P2: Play Hallowed Fountain (untapped, life: 18)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Blood Crypt→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T2 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T2: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 18  |  Domain Zoo 18
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: Temple Garden, Overgrown Tomb
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Other: Leyline of the Guildpact
+║   Lands: Blood Crypt [T], Hallowed Fountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Shang-Chi, Master of Kung Fu
+  [Main 1]
+T3 P1: Play Boseiju, Who Endures
+    → Goal: execute_payoff
+    [Mana] Tap Boseiju, Who Endures→G, Temple Garden→G, Overgrown Tomb→B (paying for Tyvar, Jubilant Brawler, 0 mana remaining)
+T3 P1: Cast Tyvar, Jubilant Brawler (1BG)
+    [Priority] P2 passes (no response)
+T3: Resolve Tyvar, Jubilant Brawler
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 18  |  Creatures Toolbox 18
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 52  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Other: Leyline of the Guildpact
+║   Lands: Blood Crypt, Hallowed Fountain
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Temple Garden [T], Overgrown Tomb [T], Boseiju, Who Endures [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Flooded Strand
+  [Main 1]
+T3 P2: Play Flooded Strand
+T3: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T3 P2: Crack Flooded Strand (pay 1 life) -> Temple Garden (tapped, life: 17)
+    → Goal: curve_out
+    [Mana] Tap Blood Crypt→U, Hallowed Fountain→B (paying for Psychic Frog, 0 mana remaining)
+T3 P2: Cast Psychic Frog (UB)
+    [Priority] P1 passes (no response)
+T3: Resolve Psychic Frog
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T3 P2: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T3 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T3 P2: Create 1x Treasure token(s)
+T3 P2: Ragavan, Nimble Pilferer exiles Windswept Heath from top of P1's library
+T3 P2: Ragavan, Nimble Pilferer — may cast Windswept Heath this turn
+  [Combat Damage] 2 damage dealt → P1 life: 18 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+T3: Windswept Heath returned to exile (uncast)
+
+╔══ TURN 4 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 16  |  Domain Zoo 17
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 2
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Temple Garden, Overgrown Tomb, Boseiju, Who Endures
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Psychic Frog (1/2)
+║   Other: Leyline of the Guildpact, Treasure Token
+║   Lands: Blood Crypt [T], Hallowed Fountain [T], Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Badgermole Cub
+  [Main 1]
+T4 P1: surveil 1 → Green Sun's Zenith to GY
+T4 P1: Play Underground Mortuary (enters tapped)
+    → Goal: execute_payoff
+    [Mana] Tap Boseiju, Who Endures→G, Temple Garden→G (paying for Devoted Druid, 1 mana remaining)
+T4 P1: Cast Devoted Druid (1G)
+    [Priority] P2 passes (no response)
+T4: Resolve Devoted Druid
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 17  |  Creatures Toolbox 16
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 50  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Psychic Frog (1/2)
+║   Other: Leyline of the Guildpact, Treasure Token
+║   Lands: Blood Crypt, Hallowed Fountain, Temple Garden
+║ Creatures Toolbox board:
+║   Creatures: Devoted Druid (0/2)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Temple Garden [T], Overgrown Tomb, Boseiju, Who Endures [T], Underground Mortuary [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Blood Crypt→R, Hallowed Fountain→G (paying for Territorial Kavu, 1 mana remaining)
+T4 P2: Cast Territorial Kavu (RG)
+    [Priority] P1 passes (no response)
+T4: Resolve Territorial Kavu
+T4 P2: Territorial Kavu enters as 5/5 (domain=5)
+    → Goal: curve_out
+    [Mana] Tap Temple Garden→B (paying for Fatal Push, 0 mana remaining)
+T4 P2: Cast Fatal Push (B)
+    [Priority] P1 passes (no response)
+T4: Resolve Fatal Push
+T4: Devoted Druid dies
+T4 P2: Fatal Push destroys Devoted Druid
+T4: Fatal Push moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer, Psychic Frog
+T4 P2: Attack with Ragavan, Nimble Pilferer, Psychic Frog
+  [Declare Blockers] P1 does not block
+T4 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T4 P2: Create 1x Treasure token(s)
+T4 P2: Ragavan, Nimble Pilferer exiles Forest from top of P1's library
+T4 P2: Ragavan, Nimble Pilferer — may cast Forest this turn
+T4 P2:   Psychic Frog (2/3) → 2 dmg to player
+T4 P2: Psychic Frog deals combat damage — draw a card
+  [Combat Damage] 4 damage dealt → P1 life: 16 → 12
+  [End Combat]
+  [Main 2]
+T4 P2: Play Forest
+  [End Step]
+
+╔══ TURN 5 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 12  |  Domain Zoo 17
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 4
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Temple Garden, Overgrown Tomb, Boseiju, Who Endures, Underground Mortuary
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Psychic Frog (2/3) [tapped], Territorial Kavu (5/5)
+║   Other: Leyline of the Guildpact, Treasure Token, Treasure Token
+║   Lands: Blood Crypt [T], Hallowed Fountain [T], Temple Garden [T], Forest
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Leyline of Abundance
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Boseiju, Who Endures→G, Temple Garden→W (paying for Vizier of Remedies, 2 mana remaining)
+T5 P1: Cast Vizier of Remedies (1W)
+    [Priority] P2 passes (no response)
+T5: Resolve Vizier of Remedies
+    → Goal: execute_payoff
+    [Mana] Tap Overgrown Tomb→G, Underground Mortuary→B (paying for Shang-Chi, Master of Kung Fu, 0 mana remaining)
+T5 P1: Cast Shang-Chi, Master of Kung Fu (1G)
+    [Priority] P2 passes (no response)
+T5: Resolve Shang-Chi, Master of Kung Fu
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 17  |  Creatures Toolbox 12
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 3
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Psychic Frog (2/3), Territorial Kavu (5/5)
+║   Other: Leyline of the Guildpact, Treasure Token, Treasure Token
+║   Lands: Blood Crypt, Hallowed Fountain, Temple Garden, Forest
+║ Creatures Toolbox board:
+║   Creatures: Vizier of Remedies (2/1), Shang-Chi, Master of Kung Fu (2/2)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Temple Garden [T], Overgrown Tomb [T], Boseiju, Who Endures [T], Underground Mortuary [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Quantum Riddler
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Blood Crypt→U, Hallowed Fountain→W (paying for Quantum Riddler, 2 mana remaining)
+T5 P2: Warp Quantum Riddler (pays 1U)
+T5 P2: Cast Quantum Riddler (3UU)
+    [Priority] P1 passes (no response)
+T5: Resolve Quantum Riddler
+T5 P2: Quantum Riddler ETB: draw 1 (Flooded Strand)
+T5 P2: Play Flooded Strand
+T5: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T5 P2: Crack Flooded Strand (pay 1 life) -> Steam Vents (tapped, life: 16)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Temple Garden→R, Forest→G (paying for Territorial Kavu, 0 mana remaining)
+T5 P2: Cast Territorial Kavu (RG)
+    [Priority] P1 passes (no response)
+T5: Resolve Territorial Kavu
+T5 P2: Territorial Kavu enters as 5/5 (domain=5)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer, Psychic Frog, Territorial Kavu
+T5: Wrath of the Skies moved hand -> graveyard (discard)
+T5 P2: Territorial Kavu loots — discard Wrath of the Skies, draw 1
+T5 P2: Attack with Ragavan, Nimble Pilferer, Psychic Frog, Territorial Kavu
+T5 P1:   [BLOCK-EMERGENCY] Vizier of Remedies (2/1) blocks Territorial Kavu (5/5) — lifespan_delta=-3.72
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T5 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T5 P2: Create 1x Treasure token(s)
+T5 P2: Ragavan, Nimble Pilferer exiles Wooded Foothills from top of P1's library
+T5 P2: Ragavan, Nimble Pilferer — may cast Wooded Foothills this turn
+T5 P2:   Psychic Frog (2/3) → 2 dmg to player
+T5 P2: Psychic Frog deals combat damage — draw a card
+T5: Vizier of Remedies dies
+  [Combat Damage] 4 damage dealt → P1 life: 12 → 8
+  [End Combat]
+  [Main 2]
+  [End Step]
+T5: Wooded Foothills returned to exile (uncast)
+T5: Quantum Riddler moved battlefield -> exile (Warp exile)
+T5: Quantum Riddler exiled (Warp)
+
+╔══ TURN 6 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 8  |  Domain Zoo 16
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 43  |  Graveyard: 5
+║ Creatures Toolbox board:
+║   Creatures: Shang-Chi, Master of Kung Fu (2/2)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Temple Garden, Overgrown Tomb, Boseiju, Who Endures, Underground Mortuary
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Psychic Frog (2/3) [tapped], Territorial Kavu (5/5) [tapped], Territorial Kavu (5/5)
+║   Other: Leyline of the Guildpact, Treasure Token, Treasure Token, Treasure Token
+║   Lands: Blood Crypt [T], Hallowed Fountain [T], Temple Garden [T], Forest [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Delighted Halfling
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Boseiju, Who Endures→G, Temple Garden→G (paying for Badgermole Cub, 2 mana remaining)
+T6 P1: Cast Badgermole Cub (1G)
+    [Priority] P2 passes (no response)
+T6: Resolve Badgermole Cub
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 16  |  Creatures Toolbox 8
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 43  |  Graveyard: 5
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Psychic Frog (2/3), Territorial Kavu (5/5), Territorial Kavu (5/5)
+║   Other: Leyline of the Guildpact, Treasure Token, Treasure Token, Treasure Token
+║   Lands: Blood Crypt, Hallowed Fountain, Temple Garden, Forest, Steam Vents
+║ Creatures Toolbox board:
+║   Creatures: Shang-Chi, Master of Kung Fu (2/2), Badgermole Cub (2/2)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Temple Garden [T], Overgrown Tomb, Boseiju, Who Endures [T], Underground Mortuary
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Leyline of the Guildpact
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Blood Crypt→W (paying for Leyline Binding, 4 mana remaining)
+T6 P2: Cast Leyline Binding (5W)
+    [Priority] P1 passes (no response)
+T6: Resolve Leyline Binding
+T6: Shang-Chi, Master of Kung Fu moved battlefield -> exile (exiled)
+T6 P2: Leyline Binding exiles Shang-Chi, Master of Kung Fu
+    → Goal: curve_out
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer, Territorial Kavu, Territorial Kavu
+T6: Practiced Offense moved hand -> graveyard (discard)
+T6 P2: Territorial Kavu loots — discard Practiced Offense, draw 1
+T6: Psychic Frog moved hand -> graveyard (discard)
+T6 P2: Territorial Kavu loots — discard Psychic Frog, draw 1
+T6 P2: Attack with Ragavan, Nimble Pilferer, Territorial Kavu, Territorial Kavu
+T6 P1:   [BLOCK-EMERGENCY] Badgermole Cub (2/2) blocks Territorial Kavu (5/5) — lifespan_delta=+0.33
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T6 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T6 P2: Create 1x Treasure token(s)
+T6 P2: Ragavan, Nimble Pilferer exiles Delighted Halfling from top of P1's library
+T6 P2: Ragavan, Nimble Pilferer — may cast Delighted Halfling this turn
+T6 P2:   Territorial Kavu (5/5) → 5 dmg to player
+T6: Badgermole Cub dies
+  [Combat Damage] 7 damage dealt → P1 life: 8 → 1
+  [End Combat]
+  [Main 2]
+    → Goal: curve_out
+    [Mana] Tap Hallowed Fountain→G (paying for Delighted Halfling, 3 mana remaining)
+T6 P2: Cast Delighted Halfling (G)
+    [Priority] P1 passes (no response)
+T6: Resolve Delighted Halfling
+    → Goal: curve_out
+  [End Step]
+
+╔══ TURN 7 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 1  |  Domain Zoo 16
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 41  |  Graveyard: 6
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Temple Garden, Overgrown Tomb, Boseiju, Who Endures, Underground Mortuary
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Psychic Frog (3/4), Territorial Kavu (5/5) [tapped], Territorial Kavu (5/5) [tapped], Delighted Halfling (1/2)
+║   Other: Leyline of the Guildpact, Treasure Token, Treasure Token, Treasure Token, Leyline Binding, Treasure Token
+║   Lands: Blood Crypt [T], Hallowed Fountain [T], Temple Garden, Forest, Steam Vents
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Agatha's Soul Cauldron
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Boseiju, Who Endures→G (paying for Delighted Halfling, 3 mana remaining)
+T7 P1: Cast Delighted Halfling (G)
+    [Priority] P2 passes (no response)
+T7: Resolve Delighted Halfling
+    → Goal: execute_payoff
+    [Mana] Tap Temple Garden→G, Overgrown Tomb→B (paying for Agatha's Soul Cauldron, 1 mana remaining)
+T7 P1: Cast Agatha's Soul Cauldron (2)
+    [Priority] P2 passes (no response)
+T7: Resolve Agatha's Soul Cauldron
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 16  |  Creatures Toolbox 1
+║ Hand: 1 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 40  |  Graveyard: 8
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Psychic Frog (3/4), Territorial Kavu (5/5), Territorial Kavu (5/5), Delighted Halfling (1/2)
+║   Other: Leyline of the Guildpact, Treasure Token, Treasure Token, Treasure Token, Leyline Binding, Treasure Token
+║   Lands: Blood Crypt, Hallowed Fountain, Temple Garden, Forest, Steam Vents
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2)
+║   Other: Tyvar, Jubilant Brawler, Agatha's Soul Cauldron
+║   Lands: Temple Garden [T], Overgrown Tomb [T], Boseiju, Who Endures [T], Underground Mortuary
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Thundering Falls
+  [Main 1]
+T7 P2: surveil 1 → Arid Mesa to GY
+T7 P2: Play Thundering Falls (enters tapped)
+    → Goal: curve_out
+    [Mana] Tap Blood Crypt→U, Hallowed Fountain→U, Temple Garden→W, Forest→W, Steam Vents→W (paying for Quantum Riddler, 1 mana remaining)
+T7 P2: Cast Quantum Riddler (3UU)
+    [Priority] P1 passes (no response)
+T7: Resolve Quantum Riddler
+T7 P2: Quantum Riddler ETB: draw 1 (Plains)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer, Territorial Kavu, Territorial Kavu
+T7: Wrath of the Skies moved hand -> graveyard (discard)
+T7 P2: Territorial Kavu loots — discard Wrath of the Skies, draw 1
+T7: Quantum Riddler moved hand -> graveyard (discard)
+T7 P2: Territorial Kavu loots — discard Quantum Riddler, draw 1
+T7 P2: Attack with Ragavan, Nimble Pilferer, Territorial Kavu, Territorial Kavu
+T7 P1:   [BLOCK-EMERGENCY] Delighted Halfling (1/2) blocks Territorial Kavu (5/5) — lifespan_delta=+0.00
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T7 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T7 P2: Create 1x Treasure token(s)
+T7 P2: Ragavan, Nimble Pilferer exiles Eternal Witness from top of P1's library
+T7 P2: Ragavan, Nimble Pilferer — may cast Eternal Witness this turn
+T7 P2:   Territorial Kavu (5/5) → 5 dmg to player
+P1 loses: life total -6
+  [Combat Damage] 7 damage dealt → P1 life: 1 → -6
+
+>>> Domain Zoo wins Game 2 on turn 7 via damage
+    Final life: Creatures Toolbox=-6  Domain Zoo=16
+
+======================================================================
+  MATCH RESULT: Domain Zoo wins 2-0
+======================================================================

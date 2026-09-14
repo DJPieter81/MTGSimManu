@@ -159,6 +159,34 @@ def offer_optional_costs(game: "GameState", player_idx: int,
 # `OptionalCost` schema and the same `decide_optional_cost` callback,
 # not a new mechanic-named decision channel.
 
+def counter_upgrade_condition_met(game: "GameState", controller: int,
+                                  template) -> bool:
+    """True when a soft counter's printed upgrade condition holds for its
+    controller right now — the "Ferocious — … counter that spell instead"
+    shape. Reads the CURRENT power (continuous effects included, so a
+    domain-pumped 0/0 that is a 5/5 counts). None condition → False."""
+    cond = getattr(template, 'counter_upgrade_condition', None)
+    if not cond:
+        return False
+    n = cond.get('creature_power_at_least')
+    if n is not None:
+        return any((c.power or 0) >= n
+                   for c in game.players[controller].creatures)
+    return False
+
+
+def effective_counter_tax(game: "GameState", controller: int,
+                          template) -> int:
+    """The counter's tax RIGHT NOW: 0 (a hard counter) when its printed
+    upgrade condition holds, else the printed `counter_tax_amount`
+    (CR 601.2b). The ONE predicate the resolution branch and the AI's
+    tax-payability reads share, so the engine and the AI never disagree
+    on whether a Ferocious counter is soft or hard."""
+    if counter_upgrade_condition_met(game, controller, template):
+        return 0
+    return getattr(template, 'counter_tax_amount', 0) or 0
+
+
 def parse_counter_tax_cost(source_card: "CardInstance",
                             targeted_card: "CardInstance"
                             ) -> Optional[OptionalCost]:

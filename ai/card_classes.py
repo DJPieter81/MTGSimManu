@@ -156,7 +156,7 @@ def deck_can_return(template: "CardTemplate", returners) -> bool:
     return False
 
 
-def burn_damage(template: "CardTemplate") -> int:
+def burn_damage(template: "CardTemplate", game=None, controller=None) -> int:
     """Damage a direct-damage spell deals to a single target.
 
     The parsed oracle amount (`CardTemplate.direct_damage_data`,
@@ -166,10 +166,19 @@ def burn_damage(template: "CardTemplate") -> int:
     fallback for modal / variable shapes the parser does not type.  One
     accessor for every decision-layer reader: a burn spell the table
     never listed read as 0 and was aimed like creature removal.
+
+    When ``game`` and ``controller`` are given, a printed conditional
+    upgrade (Delirium — Unholy Heat, Metalcraft — Galvanic Blast) is
+    applied via the shared engine evaluator, so the AI aims the spell at
+    what it can actually kill right now; without them the base amount is
+    returned (a safe under-estimate for context-free reads).
     """
     data = getattr(template, 'direct_damage_data', None) or {}
     amount = data.get('amount')
     if amount:
+        if game is not None and controller is not None:
+            from engine.oracle_resolver import effective_direct_damage
+            return effective_direct_damage(game, controller, template)
         return int(amount)
     from decks.card_knowledge_loader import get_burn_damage
     return get_burn_damage(getattr(template, 'name', '') or '')

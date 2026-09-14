@@ -20,6 +20,10 @@ class PairCell(NamedTuple):
     wr_reverse: float
     draws: int
     aborted: int
+    # Rules-audit findings of this pair's games (engine/rules_audit), drained
+    # from the worker's sink so they reach the parent; empty unless
+    # MTG_RULES_AUDIT is set for the run.
+    audit: tuple = ()
 
 
 def _run_pair(args: Tuple[str, str], n_games: int,
@@ -33,13 +37,20 @@ def _run_pair(args: Tuple[str, str], n_games: int,
     else:
         _rm = run_matchup_fn
     result = _rm(d1, d2, n_games=n_games)
+    audit_rows: tuple = ()
+    try:
+        from run_meta import _AUDIT_SINK
+        audit_rows = tuple(_AUDIT_SINK)
+        _AUDIT_SINK.clear()
+    except ImportError:
+        pass
     # run_matchup returns a dict; pct1 is d1's win percent (0..100).
     if isinstance(result, dict):
         cell = PairCell(result.get('pct1', 0.0), result.get('pct2', 0.0),
                         int(result.get('draws', 0) or 0),
-                        int(result.get('aborted', 0) or 0))
+                        int(result.get('aborted', 0) or 0), audit_rows)
     else:
-        cell = PairCell(float(result), 0.0, 0, 0)
+        cell = PairCell(float(result), 0.0, 0, 0, audit_rows)
     return d1, d2, cell
 
 

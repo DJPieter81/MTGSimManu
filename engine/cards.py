@@ -677,6 +677,13 @@ class CardTemplate:
     is_counterspell: bool = False              # has a "counter target ..." effect
     counter_target_kind: str = ""              # "spell"/"creature_spell"/"noncreature_spell"/"instant_or_sorcery_spell"
     counter_tax_amount: int = 0                # {N} from "unless its controller pays {N}"; 0 = hard counter
+    # "… counter that spell instead" upgrade: the printed board condition
+    # that makes a soft counter HARD (CR 601.2b). {'creature_power_at_least': N}
+    # for the Ferocious shape, else None. Read through
+    # engine.optional_costs.effective_counter_tax — the one predicate the
+    # resolution branch and the AI's tax reads share. Populated by
+    # oracle_parser.parse_counter_upgrade_condition.
+    counter_upgrade_condition: Optional[dict] = None
     counters_colorless_only: bool = False      # "counter target ... colorless spell" (Consign to Memory)
     etb_exile_returns_on_leave: bool = False   # ETB-exiled card comes back when this leaves (Freebooter/Sculler); False = permanent exile (Thought-Knot Seer)
     is_land_sacrifice_tutor: bool = False      # Scapeshift shape: sac any number of lands + search (typed, parse-once)
@@ -1091,6 +1098,13 @@ class CardTemplate:
     # gate for every effect on such a card, not just token creation.
     # Populated by oracle_parser.parse_ordinal_cast_trigger.
     ordinal_cast_trigger: Optional[dict] = None
+    # Kicker (CR 702.33): an optional ADDITIONAL mana cost paid as the
+    # spell is cast, and the "if it was kicked" payoff clause. `multikicker`
+    # allows paying it more than once. Populated by oracle_parser.parse_kicker
+    # / parse_kicked_clause; None when the card has no (single-cost) kicker.
+    kicker_cost: Optional["ManaCost"] = None
+    multikicker: bool = False
+    kicked_clause: Optional[str] = None
     # Permanent-enters counter by card TYPE (CR 603) -- dict
     # {"permanent_type": str, "counter_power": int,
     #  "counter_toughness": int, "unblockable_this_turn": bool} for
@@ -1184,6 +1198,14 @@ class CardTemplate:
     # through card_effects._resolve_nonland_permanent_removal. Populated by
     # oracle_parser.parse_targeted_removal.
     targeted_removal_data: Optional[dict] = None
+    # Removal whose mana-value bound is a RESOLUTION condition ("destroy
+    # target creature if it has mana value 2 or less", with an optional
+    # revolt raise): {'mv': N, 'mv_if_permanent_left': M | None}. Any
+    # creature is a legal target; above the bound the spell does nothing,
+    # so the AI's target chooser reads this and never aims there. Populated
+    # by oracle_parser.parse_conditional_mv_removal; resolution stays with
+    # the card's handler.
+    removal_mv_condition: Optional[dict] = None
     # Printed `[±N]: effect` loyalty abilities (CR 606), classified once at
     # DB load by oracle_parser.parse_loyalty_abilities into
     # {slot: LoyaltyAbility}.  `PlaneswalkerManager` dispatches off
@@ -1539,6 +1561,16 @@ class CardInstance:
     # read by the mana accessors (a set land produces that basic type's
     # colour and nothing else) and by the fetch path (no other abilities).
     cem_land_type_set: Optional[str] = None
+    # Layer-4 land-type ADD ("Lands you control are every basic land
+    # type in addition to their other types", CR 613.2b): basic types
+    # this land currently has on top of its printed ones.  Applied in
+    # timestamp order with the SET above (CR 613.7): a later SET clears
+    # this (the land is the one type and nothing else); a later ADD
+    # puts types back on a set land.  Written only by
+    # ContinuousEffectsManager.recalculate; read through
+    # `current_basic_land_types` — the ONE reader every domain / mana /
+    # ability consumer goes through.
+    cem_land_types_added: Set[str] = field(default_factory=set)
     # Land animation ("this land becomes an N/M creature until end of
     # turn") — Track H. While True the instance belongs to the combat
     # class (creatures property, can_attack/can_block, SBA death
@@ -1795,24 +1827,33 @@ class CardInstance:
             n = n + r.n if r.op == "add" else n * r.n
         return max(0, n)
 
+    @property
+    def current_basic_land_types(self) -> Set[str]:
+        """The basic land types this permanent has RIGHT NOW, after the
+        continuous-effects layer (CR 613.2b, timestamp order per 613.7):
+        a SET type replaces the printed types; ADDed types sit on top of
+        whatever is left.  Title-cased ("Mountain").  The one reader for
+        domain, land mana colours and land-ability existence — a
+        non-land has none."""
+        if CardType.LAND not in self.effective_card_types:
+            return set()
+        forced = getattr(self, 'cem_land_type_set', None)
+        if forced:
+            base = {forced.title()}
+        else:
+            base = {st for st in self.effective_subtypes if st in BASIC_LAND_TYPES}
+        return base | set(getattr(self, 'cem_land_types_added', ()) or ())
+
     def _get_domain_count(self) -> int:
-        """Count basic land types among lands controlled by this card's controller."""
+        """Count basic land types among lands controlled by this card's
+        controller — from the lands' CURRENT types (the layer), never
+        their printed ones or a flag for the ADD family."""
         if self._game_state is None:
             return 0
         player = self._game_state.players[self.controller]
-        # Oracle-driven detection of "lands you control are every basic
-        # land type" (Leyline of the Guildpact pattern). Same predicate
-        # as engine/mana_payment.py::ManaPayment.has_leyline_of_guildpact.
-        for c in player.battlefield:
-            if getattr(c.template, 'has_all_basic_land_types', False):
-                if any(l.template.is_land for l in player.battlefield):
-                    return 5
         found_types: set = set()
         for land in player.battlefield:
-            if land.template.is_land:
-                for st in land.template.subtypes:
-                    if st in BASIC_LAND_TYPES:
-                        found_types.add(st)
+            found_types |= land.current_basic_land_types
         return len(found_types)
 
     def _get_tarmogoyf_count(self) -> int:

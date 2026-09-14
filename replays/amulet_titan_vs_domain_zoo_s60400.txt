@@ -1,0 +1,1190 @@
+Loaded 22470 cards (0 errors)
+======================================================================
+  GAME 1: Amulet Titan (P1) vs Domain Zoo (P2)  —  seed 60400
+  Series: Amulet Titan 0 - 0 Domain Zoo
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Amulet Titan wins → chooses to play first
+║ P1 (on play): Amulet Titan
+║ P2 (on draw): Domain Zoo
+╚═══════════════════════════════════════════════════════
+
+P1 (Amulet Titan) opening hand (2 lands, 5 spells):
+  • Crumbling Vestige [Land, CMC 0]
+  • Primeval Titan [Creature, CMC 6]
+  • Primeval Titan [Creature, CMC 6]
+  • Urza's Cave [Land, CMC 0]
+  • Primeval Titan [Creature, CMC 6]
+  • Spelunking [Spell, CMC 3]
+  • Green Sun's Zenith [Spell, CMC 1]
+→ P1 KEEPS 7 — has key card(s): Green Sun's Zenith, Spelunking, 2 cheap spells
+
+P2 (Domain Zoo) opening hand (2 lands, 5 spells):
+  • Quantum Riddler [Creature, CMC 5]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Leyline Binding [Spell, CMC 6]
+  • Godless Shrine [Land, CMC 0]
+  • Territorial Kavu [Creature, CMC 2]
+  • Thundering Falls [Land, CMC 0]
+  • Leyline Binding [Spell, CMC 6]
+→ P2 KEEPS 7 — has key card(s): Leyline Binding, Ragavan, Nimble Pilferer, Territorial Kavu, 2 cheap spells
+
+
+╔══ TURN 1 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Domain Zoo 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Crumbling Vestige (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 20  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Scion of Draco
+  [Main 1]
+T1 P2: Play Godless Shrine (tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Domain Zoo 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Boseiju, Who Endures
+  [Main 1]
+T2 P1: Play Urza's Cave
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 20  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Leyline Binding
+  [Main 1]
+T2 P2: surveil 1 → Territorial Kavu to GY
+T2 P2: Play Thundering Falls (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Domain Zoo 20
+║ Hand: 6 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 52  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arboreal Grazer
+  [Main 1]
+T3 P1: Play Boseiju, Who Endures
+    → Goal: ramp [enablers]
+    [Mana] Tap Boseiju, Who Endures→G (paying for Arboreal Grazer, 1 mana remaining)
+T3 P1: Cast Arboreal Grazer (G)
+    [Priority] P2 passes (no response)
+T3: Resolve Arboreal Grazer
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 20  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: Godless Shrine, Thundering Falls
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Lands: Crumbling Vestige, Boseiju, Who Endures [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Polluted Delta
+  [Main 1]
+T3 P2: Play Polluted Delta
+T3: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T3 P2: Crack Polluted Delta (pay 1 life) -> Breeding Pool (tapped, life: 19)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Godless Shrine→B, Thundering Falls→R (paying for Scion of Draco, 0 mana remaining)
+T3 P2: Cast Scion of Draco (12)
+    [Priority] P1 passes (no response)
+T3: Resolve Scion of Draco
+T3 P2: Scion of Draco enters — creatures gain vigilance/hexproof/lifelink/first strike/trample if white/blue/black/red/green
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Domain Zoo 19
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Lands: Crumbling Vestige, Boseiju, Who Endures
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4)
+║   Lands: Godless Shrine [T], Thundering Falls [T], Breeding Pool [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Green Sun's Zenith
+  [Main 1]
+    → Goal: ramp
+    [Mana] Tap Boseiju, Who Endures→G (paying for Green Sun's Zenith, 1 mana remaining)
+T4 P1: Cast Green Sun's Zenith (1G) (X=1)
+    [Priority] P2 passes (no response)
+T4: Resolve Green Sun's Zenith
+T4: Arboreal Grazer moved library -> battlefield (Green Sun's Zenith tutor)
+T4 P1: Green Sun's Zenith finds Arboreal Grazer
+T4: Green Sun's Zenith moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 19  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 48  |  Graveyard: 2
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4)
+║   Lands: Godless Shrine, Thundering Falls, Breeding Pool
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Arboreal Grazer (0/3)
+║   Lands: Crumbling Vestige [T], Boseiju, Who Endures [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Practiced Offense
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Godless Shrine→B, Thundering Falls→U (paying for Quantum Riddler, 1 mana remaining)
+T4 P2: Warp Quantum Riddler (pays 1U)
+T4 P2: Cast Quantum Riddler (3UU)
+    [Priority] P1 passes (no response)
+T4: Resolve Quantum Riddler
+T4 P2: Quantum Riddler ETB: draw 1 (Hallowed Fountain)
+T4 P2: Play Hallowed Fountain (tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Scion of Draco
+T4 P2: Attack with Scion of Draco
+T4 P1:   [BLOCK] Arboreal Grazer (0/3) blocks Scion of Draco (4/4) — lifespan_delta=+0.50
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T4: Arboreal Grazer dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Quantum Riddler moved battlefield -> exile (Warp exile)
+T4: Quantum Riddler exiled (Warp)
+
+╔══ TURN 5 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Domain Zoo 19
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 49  |  Graveyard: 3
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Lands: Crumbling Vestige, Boseiju, Who Endures
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4) [tapped]
+║   Lands: Godless Shrine [T], Thundering Falls [T], Breeding Pool, Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Cultivator Colossus
+  [Main 1]
+    → Goal: ramp
+    [Mana] Tap Boseiju, Who Endures→G (paying for Green Sun's Zenith, 1 mana remaining)
+T5 P1: Cast Green Sun's Zenith (1G) (X=1)
+    [Priority] P2 passes (no response)
+T5: Resolve Green Sun's Zenith
+T5: Arboreal Grazer moved library -> battlefield (Green Sun's Zenith tutor)
+T5 P1: Green Sun's Zenith finds Arboreal Grazer
+T5: Green Sun's Zenith moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 19  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 2
+║ Library: 46  |  Graveyard: 2
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4)
+║   Lands: Godless Shrine, Thundering Falls, Breeding Pool, Hallowed Fountain
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Arboreal Grazer (0/3)
+║   Lands: Crumbling Vestige [T], Boseiju, Who Endures [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Polluted Delta
+  [Main 1]
+T5 P2: Play Polluted Delta
+T5: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T5 P2: Crack Polluted Delta (pay 1 life) -> Blood Crypt (tapped, life: 18)
+    → Goal: curve_out
+    → Goal: curve_out [enablers]
+    [Mana] Tap Godless Shrine→B, Thundering Falls→R (paying for Ragavan, Nimble Pilferer, 2 mana remaining)
+T5 P2: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P1 passes (no response)
+T5: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Scion of Draco, Ragavan, Nimble Pilferer
+T5 P2: Attack with Scion of Draco, Ragavan, Nimble Pilferer
+T5 P1:   [BLOCK] Arboreal Grazer (0/3) blocks Scion of Draco (4/4) — lifespan_delta=+0.67
+T5 P1:   [BLOCK] Arboreal Grazer (0/3) blocks Ragavan, Nimble Pilferer (2/1) — lifespan_delta=+0.33
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T5: Arboreal Grazer dies
+  [End Combat]
+  [Main 2]
+    → Goal: curve_out
+  [End Step]
+T5: Ragavan, Nimble Pilferer moved battlefield -> hand (Dash return)
+T5: Ragavan, Nimble Pilferer returned to hand (Dash)
+
+╔══ TURN 6 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Domain Zoo 18
+║ Hand: 5 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 5
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Lands: Crumbling Vestige, Boseiju, Who Endures
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4) [tapped]
+║   Lands: Godless Shrine [T], Thundering Falls [T], Breeding Pool, Hallowed Fountain, Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Urza's Saga
+  [Main 1]
+T6 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+T6 P1: Play Urza's Saga
+    → Goal: ramp [enablers]
+    [Mana] Tap Boseiju, Who Endures→G, Urza's Saga→C, Crumbling Vestige→C (paying for Spelunking, 0 mana remaining)
+T6 P1: Cast Spelunking (2G)
+    [Priority] P2 passes (no response)
+T6: Resolve Spelunking
+  [Begin Combat]
+    [Mana] Tap Hallowed Fountain→W (paying for Leyline Binding, 1 mana remaining)
+T6 P2: Cast Leyline Binding (5W)
+    [Priority] P1 passes (no response)
+T6: Resolve Leyline Binding
+T6: Spelunking moved battlefield -> exile (exiled)
+T6 P2: Leyline Binding exiles Spelunking
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 18  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 44  |  Graveyard: 3
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4)
+║   Other: Leyline Binding
+║   Lands: Godless Shrine, Thundering Falls, Breeding Pool, Hallowed Fountain, Blood Crypt
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Lands: Crumbling Vestige [T], Boseiju, Who Endures [T], Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Fatal Push
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Godless Shrine→B, Thundering Falls→U, Breeding Pool→U, Hallowed Fountain→U, Blood Crypt→B (paying for Quantum Riddler, 0 mana remaining)
+T6 P2: Cast Quantum Riddler (3UU)
+    [Priority] P1 passes (no response)
+T6: Resolve Quantum Riddler
+T6 P2: Quantum Riddler ETB: draw 1 (Fatal Push)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Scion of Draco
+T6 P2: Attack with Scion of Draco
+T6 P1:   [BLOCK] Arboreal Grazer (0/3) blocks Scion of Draco (4/4) — lifespan_delta=+0.50
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T6: Arboreal Grazer dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Domain Zoo 18
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 6
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige, Boseiju, Who Endures, Urza's Saga
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4) [tapped], Quantum Riddler (4/6)
+║   Other: Leyline Binding
+║   Lands: Godless Shrine [T], Thundering Falls [T], Breeding Pool [T], Hallowed Fountain [T], Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Urza's Saga
+  [Main 1]
+T7 P1: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+T7 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+T7 P1: Play Urza's Saga
+T7 P1: Create 1x Construct token(s)
+T7 P1: Urza's Saga activates "{2}, {T}: Create a 0/0 colorless Constru..." (pays {2}, {T})
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 18  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 42  |  Graveyard: 3
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4), Quantum Riddler (4/6)
+║   Other: Leyline Binding
+║   Lands: Godless Shrine, Thundering Falls, Breeding Pool, Hallowed Fountain, Blood Crypt
+║ Amulet Titan board:
+║   Creatures: Construct Token (1/1)
+║   Lands: Crumbling Vestige [T], Boseiju, Who Endures [T], Urza's Saga [T], Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Psychic Frog
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Godless Shrine→B, Thundering Falls→R (paying for Ragavan, Nimble Pilferer, 3 mana remaining)
+T7 P2: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P1 passes (no response)
+T7: Resolve Ragavan, Nimble Pilferer
+    → Goal: curve_out
+    [Mana] Tap Breeding Pool→U, Blood Crypt→B (paying for Psychic Frog, 1 mana remaining)
+T7 P2: Cast Psychic Frog (UB)
+    [Priority] P1 passes (no response)
+T7: Resolve Psychic Frog
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Scion of Draco, Quantum Riddler, Ragavan, Nimble Pilferer
+T7 P2: Attack with Scion of Draco, Quantum Riddler, Ragavan, Nimble Pilferer
+T7 P1:   [BLOCK] Construct Token (1/1) blocks Ragavan, Nimble Pilferer (2/1) — lifespan_delta=+0.59
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T7: Construct Token dies
+T7 P2:   Scion of Draco (4/4) → 4 dmg to player
+T7 P2:   Quantum Riddler (4/6) → 4 dmg to player
+  [Combat Damage] 8 damage dealt → P1 life: 20 → 12
+  [End Combat]
+  [Main 2]
+  [End Step]
+T7: Ragavan, Nimble Pilferer moved battlefield -> hand (Dash return)
+T7: Ragavan, Nimble Pilferer returned to hand (Dash)
+
+╔══ TURN 8 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 12  |  Domain Zoo 18
+║ Hand: 4 cards  |  Opp hand: 7 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 6
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige, Boseiju, Who Endures, Urza's Saga, Urza's Saga
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4) [tapped], Quantum Riddler (4/6) [tapped], Psychic Frog (1/2)
+║   Other: Leyline Binding
+║   Lands: Godless Shrine [T], Thundering Falls [T], Breeding Pool [T], Hallowed Fountain, Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Malevolent Rumble
+  [Main 1]
+T8 P1: Create 1x Construct token(s)
+T8 P1: Urza's Saga activates "{2}, {T}: Create a 0/0 colorless Constru..." (pays {2}, {T})
+T8 P1: Urza's Saga tutors Amulet of Vigor
+T8 P1: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+T8 P1: Sacrifice Urza's Saga (final chapter)
+  [Begin Combat]
+    [Mana] Tap Hallowed Fountain→W (paying for Leyline Binding, 0 mana remaining)
+T8 P2: Cast Leyline Binding (5W)
+    [Priority] P1 passes (no response)
+T8: Resolve Leyline Binding
+T8: Amulet of Vigor moved battlefield -> exile (exiled)
+T8 P2: Leyline Binding exiles Amulet of Vigor
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 18  |  Amulet Titan 12
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 41  |  Graveyard: 3
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4), Quantum Riddler (4/6), Psychic Frog (1/2)
+║   Other: Leyline Binding, Leyline Binding
+║   Lands: Godless Shrine, Thundering Falls, Breeding Pool, Hallowed Fountain, Blood Crypt
+║ Amulet Titan board:
+║   Creatures: Construct Token (1/1)
+║   Lands: Crumbling Vestige [T], Boseiju, Who Endures [T], Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Polluted Delta
+  [Main 1]
+T8 P2: Play Polluted Delta
+T8: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T8 P2: Crack Polluted Delta (pay 1 life) -> Steam Vents (tapped, life: 17)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Godless Shrine→B, Thundering Falls→R (paying for Ragavan, Nimble Pilferer, 3 mana remaining)
+T8 P2: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P1 passes (no response)
+T8: Resolve Ragavan, Nimble Pilferer
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Breeding Pool→G, Blood Crypt→R (paying for Territorial Kavu, 1 mana remaining)
+T8 P2: Cast Territorial Kavu (RG)
+    [Priority] P1 passes (no response)
+T8: Resolve Territorial Kavu
+T8 P2: Territorial Kavu enters as 5/5 (domain=5)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Scion of Draco, Quantum Riddler, Ragavan, Nimble Pilferer
+T8 P2: Attack with Scion of Draco, Quantum Riddler, Ragavan, Nimble Pilferer
+T8 P1:   [BLOCK-EMERGENCY] Construct Token (1/1) blocks Ragavan, Nimble Pilferer (2/1) — lifespan_delta=+0.23
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T8: Construct Token dies
+T8 P2:   Scion of Draco (4/4) → 4 dmg to player
+T8 P2:   Quantum Riddler (4/6) → 4 dmg to player
+  [Combat Damage] 8 damage dealt → P1 life: 12 → 4
+  [End Combat]
+  [Main 2]
+  [End Step]
+T8: Ragavan, Nimble Pilferer moved battlefield -> hand (Dash return)
+T8: Ragavan, Nimble Pilferer returned to hand (Dash)
+
+╔══ TURN 9 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 4  |  Domain Zoo 17
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 6
+║ Library: 43  |  Graveyard: 7
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Crumbling Vestige, Boseiju, Who Endures, Urza's Saga
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4) [tapped], Quantum Riddler (4/6) [tapped], Psychic Frog (1/2), Territorial Kavu (5/5)
+║   Other: Leyline Binding, Leyline Binding
+║   Lands: Godless Shrine [T], Thundering Falls [T], Breeding Pool [T], Hallowed Fountain, Blood Crypt [T], Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Green Sun's Zenith
+  [Main 1]
+T9 P1: Create 1x Construct token(s)
+T9 P1: Urza's Saga activates "{2}, {T}: Create a 0/0 colorless Constru..." (pays {2}, {T})
+T9 P1: Urza's Saga tutors Amulet of Vigor
+T9 P1: Sacrifice Urza's Saga (final chapter)
+  [Begin Combat]
+    [Mana] Tap Hallowed Fountain→W (paying for Leyline Binding, 0 mana remaining)
+T9 P2: Cast Leyline Binding (5W)
+    [Priority] P1 passes (no response)
+T9: Resolve Leyline Binding
+T9: Amulet of Vigor moved battlefield -> exile (exiled)
+T9 P2: Leyline Binding exiles Amulet of Vigor
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 17  |  Amulet Titan 4
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 6  |  Opp lands: 2
+║ Library: 39  |  Graveyard: 4
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4), Quantum Riddler (4/6), Psychic Frog (1/2), Territorial Kavu (5/5)
+║   Other: Leyline Binding, Leyline Binding, Leyline Binding
+║   Lands: Godless Shrine, Thundering Falls, Breeding Pool, Hallowed Fountain, Blood Crypt, Steam Vents
+║ Amulet Titan board:
+║   Creatures: Construct Token (1/1)
+║   Lands: Crumbling Vestige [T], Boseiju, Who Endures [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Leyline of the Guildpact
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Godless Shrine→B, Thundering Falls→R (paying for Ragavan, Nimble Pilferer, 4 mana remaining)
+T9 P2: Cast Ragavan, Nimble Pilferer (R) (Dash)
+    [Priority] P1 passes (no response)
+T9: Resolve Ragavan, Nimble Pilferer
+    → Goal: curve_out
+    [Mana] Tap Blood Crypt→B (paying for Fatal Push, 3 mana remaining)
+T9 P2: Cast Fatal Push (B)
+    [Priority] P1 passes (no response)
+T9: Resolve Fatal Push
+T9: Construct Token dies
+T9 P2: Fatal Push destroys Construct Token
+T9: Fatal Push moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Scion of Draco, Quantum Riddler, Territorial Kavu, Ragavan, Nimble Pilferer
+T9: Fatal Push moved hand -> graveyard (discard)
+T9 P2: Territorial Kavu loots — discard Fatal Push, draw 1
+T9 P2: Attack with Scion of Draco, Quantum Riddler, Territorial Kavu, Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T9 P2:   Territorial Kavu (5/5) → 5 dmg to player
+T9 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T9 P2: Create 1x Treasure token(s)
+T9 P2: Ragavan, Nimble Pilferer exiles Arboreal Grazer from top of P1's library
+T9 P2: Ragavan, Nimble Pilferer — may cast Arboreal Grazer this turn
+P1 loses: life total -3
+  [Combat Damage] 7 damage dealt → P1 life: 4 → -3
+
+>>> Domain Zoo wins Game 1 on turn 9 via damage
+    Final life: Amulet Titan=-3  Domain Zoo=17
+
+======================================================================
+  GAME 2: Amulet Titan (P1) vs Domain Zoo (P2)  —  seed 60401
+  Series: Amulet Titan 0 - 1 Domain Zoo
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Amulet Titan wins → chooses to play first
+║ P1 (on play): Amulet Titan
+║ P2 (on draw): Domain Zoo
+╚═══════════════════════════════════════════════════════
+
+P1 (Amulet Titan) opening hand (4 lands, 3 spells):
+  • Arboreal Grazer [Creature, CMC 1]
+  • Spelunking [Spell, CMC 3]
+  • Green Sun's Zenith [Spell, CMC 1]
+  • Gruul Turf [Land, CMC 0]
+  • Simic Growth Chamber [Land, CMC 0]
+  • Echoing Deeps [Land, CMC 0]
+  • Urza's Saga [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Arboreal Grazer, Green Sun's Zenith, Spelunking, 3 cheap spells
+
+P2 (Domain Zoo) opening hand (2 lands, 5 spells):
+  • Blood Crypt [Land, CMC 0]
+  • Psychic Frog [Creature, CMC 2]
+  • Fatal Push [Spell, CMC 1]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Stubborn Denial [Spell, CMC 1]
+  • Leyline of the Guildpact [Spell, CMC 4]
+  • Plains [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Ragavan, Nimble Pilferer, 4 cheap spells
+
+T0 P2: Leyline of the Guildpact begins the game on the battlefield (leyline)
+
+╔══ TURN 1 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Domain Zoo 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+T1 P1: Play Urza's Saga
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 20  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: (none)
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Meticulous Archive
+  [Main 1]
+T1 P2: Play Blood Crypt (tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Domain Zoo 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Urza's Saga
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Forest
+  [Main 1]
+T2 P1: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+T2 P1: Play Forest
+    → Goal: deploy_engine [enablers]
+    [Mana] Tap Forest→G (paying for Green Sun's Zenith, 1 mana remaining)
+T2 P1: Cast Green Sun's Zenith (1G) (X=1)
+    [Priority] P2 passes (no response)
+T2: Resolve Green Sun's Zenith
+T2: Dryad Arbor moved library -> battlefield (Green Sun's Zenith tutor)
+T2 P1: Green Sun's Zenith finds Dryad Arbor
+T2: Green Sun's Zenith moved stack -> graveyard (resolution)
+    → Goal: deploy_engine [enablers]
+    [Mana] Tap Dryad Arbor→G (paying for Arboreal Grazer, 0 mana remaining)
+T2 P1: Cast Arboreal Grazer (G)
+    [Priority] P2 passes (no response)
+T2: Resolve Arboreal Grazer
+T2: Urza's Saga moved battlefield -> hand (Gruul Turf ETB returns Urza's Saga to hand)
+T2 P1: Arboreal Grazer puts Gruul Turf onto battlefield
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 20  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 3
+║ Library: 52  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact
+║   Lands: Blood Crypt
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1) [tapped], Arboreal Grazer (0/3)
+║   Lands: Forest [T], Dryad Arbor [T], Gruul Turf [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Practiced Offense
+  [Main 1]
+T2 P2: surveil 1 → Indatha Triome to GY
+T2 P2: Play Meticulous Archive (enters tapped)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Blood Crypt→R (paying for Ragavan, Nimble Pilferer, 0 mana remaining)
+T2 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T2: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Domain Zoo 20
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1), Arboreal Grazer (0/3)
+║   Lands: Forest, Dryad Arbor, Gruul Turf
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Other: Leyline of the Guildpact
+║   Lands: Blood Crypt [T], Meticulous Archive [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Amulet of Vigor
+  [Main 1]
+T3 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+T3 P1: Play Urza's Saga
+    → Goal: ramp [enablers]
+    [Mana] Tap Forest→G, Urza's Saga→C, Gruul Turf→RG (paying for Spelunking, 2 mana remaining)
+T3 P1: Cast Spelunking (2G)
+    [Priority] P2 passes (no response)
+T3: Resolve Spelunking
+    → Goal: ramp
+T3 P1: Cast Amulet of Vigor (1)
+    [Priority] P2 passes (no response)
+T3: Resolve Amulet of Vigor
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Dryad Arbor
+T3 P1: Attack with Dryad Arbor
+  [Declare Blockers] P2 does not block
+T3 P1:   Dryad Arbor (1/1) → 1 dmg to player
+  [Combat Damage] 1 damage dealt → P2 life: 20 → 19
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 19  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 50  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Other: Leyline of the Guildpact
+║   Lands: Blood Crypt, Meticulous Archive
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1) [tapped], Arboreal Grazer (0/3)
+║   Other: Spelunking, Amulet of Vigor
+║   Lands: Forest [T], Dryad Arbor [T], Gruul Turf [T], Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Leyline of the Guildpact
+  [Main 1]
+T3 P2: Play Plains
+    → Goal: curve_out
+    [Mana] Tap Blood Crypt→U, Meticulous Archive→B (paying for Psychic Frog, 1 mana remaining)
+T3 P2: Cast Psychic Frog (UB)
+    [Priority] P1 passes (no response)
+T3: Resolve Psychic Frog
+    → Goal: curve_out
+    [Mana] Tap Plains→B (paying for Fatal Push, 0 mana remaining)
+T3 P2: Cast Fatal Push (B)
+    [Priority] P1 passes (no response)
+T3: Resolve Fatal Push
+T3: Dryad Arbor dies
+T3 P2: Fatal Push destroys Dryad Arbor
+T3: Fatal Push moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T3 P2: Attack with Ragavan, Nimble Pilferer
+T3 P1:   [BLOCK] Arboreal Grazer (0/3) blocks Ragavan, Nimble Pilferer (2/1) — lifespan_delta=+0.67
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Domain Zoo 19
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Spelunking, Amulet of Vigor
+║   Lands: Forest, Gruul Turf, Urza's Saga
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Psychic Frog (1/2)
+║   Other: Leyline of the Guildpact
+║   Lands: Blood Crypt [T], Meticulous Archive [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Simic Growth Chamber
+  [Main 1]
+T4 P1: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+T4 P1: Play Simic Growth Chamber (enters tapped)
+T4 P1: Amulet of Vigor untaps Simic Growth Chamber
+T4: Forest moved battlefield -> hand (Simic Growth Chamber ETB returns Forest to hand)
+T4 P1: Create 1x Construct token(s)
+T4 P1: Urza's Saga activates "{2}, {T}: Create a 0/0 colorless Constru..." (pays {2}, {T})
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 19  |  Amulet Titan 20
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Psychic Frog (1/2)
+║   Other: Leyline of the Guildpact
+║   Lands: Blood Crypt, Meticulous Archive, Plains
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Construct Token (2/2)
+║   Other: Spelunking, Amulet of Vigor
+║   Lands: Gruul Turf [T], Urza's Saga [T], Simic Growth Chamber [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Territorial Kavu
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Blood Crypt→R, Meticulous Archive→G (paying for Territorial Kavu, 1 mana remaining)
+T4 P2: Cast Territorial Kavu (RG)
+    [Priority] P1 passes (no response)
+T4: Resolve Territorial Kavu
+T4 P2: Territorial Kavu enters as 5/5 (domain=5)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer, Psychic Frog
+T4 P2: Attack with Ragavan, Nimble Pilferer, Psychic Frog
+T4 P1:   [BLOCK] Construct Token (2/2) blocks Ragavan, Nimble Pilferer (2/1) — lifespan_delta=+0.86
+T4 P1:   [BLOCK] Arboreal Grazer (0/3) blocks Psychic Frog (2/3) — lifespan_delta=+0.22
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T4: Construct Token dies
+T4: Ragavan, Nimble Pilferer dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Domain Zoo 19
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Spelunking, Amulet of Vigor
+║   Lands: Gruul Turf, Urza's Saga, Simic Growth Chamber
+║ Domain Zoo board:
+║   Creatures: Psychic Frog (2/3) [tapped], Territorial Kavu (5/5)
+║   Other: Leyline of the Guildpact
+║   Lands: Blood Crypt [T], Meticulous Archive [T], Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Crumbling Vestige
+  [Main 1]
+T5 P1: Create 1x Construct token(s)
+T5 P1: Urza's Saga activates "{2}, {T}: Create a 0/0 colorless Constru..." (pays {2}, {T})
+T5 P1: Urza's Saga tutors Zuran Orb
+T5 P1: Sacrifice Urza's Saga (final chapter)
+T5 P1: Play Simic Growth Chamber (enters tapped)
+T5 P1: Amulet of Vigor untaps Simic Growth Chamber
+T5: Gruul Turf moved battlefield -> hand (Simic Growth Chamber ETB returns Gruul Turf to hand)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 19  |  Amulet Titan 20
+║ Hand: 2 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 48  |  Graveyard: 4
+║ Domain Zoo board:
+║   Creatures: Psychic Frog (2/3), Territorial Kavu (5/5)
+║   Other: Leyline of the Guildpact
+║   Lands: Blood Crypt, Meticulous Archive, Plains
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Construct Token (3/3)
+║   Other: Spelunking, Amulet of Vigor, Zuran Orb
+║   Lands: Simic Growth Chamber [T], Simic Growth Chamber
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Leyline Binding
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Territorial Kavu
+T5: Stubborn Denial moved hand -> graveyard (discard)
+T5 P2: Territorial Kavu loots — discard Stubborn Denial, draw 1
+T5 P2: Attack with Territorial Kavu
+T5 P1:   [BLOCK] Arboreal Grazer (0/3) blocks Territorial Kavu (5/5) — lifespan_delta=+0.71
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T5: Arboreal Grazer dies
+  [End Combat]
+  [Main 2]
+T5 P2: Play Polluted Delta
+T5: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T5 P2: Crack Polluted Delta (pay 1 life) -> Godless Shrine (tapped, life: 18)
+  [End Step]
+
+╔══ TURN 6 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Domain Zoo 18
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 4
+║ Amulet Titan board:
+║   Creatures: Construct Token (3/3)
+║   Other: Spelunking, Amulet of Vigor, Zuran Orb
+║   Lands: Simic Growth Chamber, Simic Growth Chamber
+║ Domain Zoo board:
+║   Creatures: Psychic Frog (2/3), Territorial Kavu (5/5) [tapped]
+║   Other: Leyline of the Guildpact
+║   Lands: Blood Crypt, Meticulous Archive, Plains, Godless Shrine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Primeval Titan
+  [Main 1]
+T6 P1: Play Crumbling Vestige (enters tapped)
+T6 P1: Amulet of Vigor untaps Crumbling Vestige
+  [Begin Combat]
+    [Mana] Tap Blood Crypt→W (paying for Leyline Binding, 2 mana remaining)
+T6 P2: Cast Leyline Binding (5W)
+    [Priority] P1 passes (no response)
+T6: Resolve Leyline Binding
+T6: Spelunking moved battlefield -> exile (exiled)
+T6 P2: Leyline Binding exiles Spelunking
+  [Declare Attackers] P1 attacks with: Construct Token
+T6 P1: Attack with Construct Token
+  [Declare Blockers] P2 does not block
+T6 P1:   Construct Token (3/3) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 18 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 15  |  Amulet Titan 20
+║ Hand: 1 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 45  |  Graveyard: 6
+║ Domain Zoo board:
+║   Creatures: Psychic Frog (2/3), Territorial Kavu (5/5)
+║   Other: Leyline of the Guildpact, Leyline Binding
+║   Lands: Blood Crypt, Meticulous Archive, Plains, Godless Shrine
+║ Amulet Titan board:
+║   Creatures: Construct Token (3/3) [tapped]
+║   Other: Amulet of Vigor, Zuran Orb
+║   Lands: Simic Growth Chamber, Simic Growth Chamber, Crumbling Vestige
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Leyline Binding
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Psychic Frog, Territorial Kavu
+T6: Practiced Offense moved hand -> graveyard (discard)
+T6 P2: Territorial Kavu loots — discard Practiced Offense, draw 1
+T6 P2: Attack with Psychic Frog, Territorial Kavu
+  [Declare Blockers] P1 does not block
+T6 P2:   Psychic Frog (2/3) → 2 dmg to player
+T6 P2: Psychic Frog deals combat damage — draw a card
+T6 P2:   Territorial Kavu (5/5) → 5 dmg to player
+  [Combat Damage] 7 damage dealt → P1 life: 20 → 13
+  [End Combat]
+  [Main 2]
+T6 P2: surveil 1 → Arid Mesa to GY
+T6 P2: Play Thundering Falls (enters tapped)
+  [End Step]
+
+╔══ TURN 7 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 13  |  Domain Zoo 15
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 4
+║ Amulet Titan board:
+║   Creatures: Construct Token (3/3)
+║   Other: Amulet of Vigor, Zuran Orb
+║   Lands: Simic Growth Chamber, Simic Growth Chamber, Crumbling Vestige
+║ Domain Zoo board:
+║   Creatures: Psychic Frog (2/3) [tapped], Territorial Kavu (5/5) [tapped]
+║   Other: Leyline of the Guildpact, Leyline Binding
+║   Lands: Blood Crypt, Meticulous Archive, Plains, Godless Shrine, Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Crumbling Vestige
+  [Main 1]
+T7 P1: Play Gruul Turf (enters tapped)
+T7 P1: Amulet of Vigor untaps Gruul Turf
+T7: Crumbling Vestige moved battlefield -> hand (Gruul Turf ETB returns Crumbling Vestige to hand)
+    → Goal: ramp [payoffs]
+    [Mana] Tap Simic Growth Chamber→GU, Simic Growth Chamber→GU, Gruul Turf→RG (paying for Primeval Titan, 0 mana remaining)
+T7 P1: Cast Primeval Titan (4GG)
+    [Priority] P2 responds with Mystical Dispute
+    [Mana] Tap Blood Crypt→U, Meticulous Archive→W, Plains→W (paying for Mystical Dispute, 1 mana remaining)
+T7 P2: Cast Mystical Dispute (2U)
+T7: Resolve Mystical Dispute
+T7: Primeval Titan moved stack -> graveyard (resolution)
+T7: Primeval Titan is countered
+T7: Mystical Dispute moved stack -> graveyard (resolution)
+  [Begin Combat]
+    [Mana] Tap Godless Shrine→W (paying for Leyline Binding, 0 mana remaining)
+T7 P2: Cast Leyline Binding (5W)
+    [Priority] P1 passes (no response)
+T7: Resolve Leyline Binding
+T7: Construct Token moved battlefield -> exile (exiled)
+T7 P2: Leyline Binding exiles Construct Token
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 15  |  Amulet Titan 13
+║ Hand: 0 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 3
+║ Library: 41  |  Graveyard: 9
+║ Domain Zoo board:
+║   Creatures: Psychic Frog (2/3), Territorial Kavu (5/5)
+║   Other: Leyline of the Guildpact, Leyline Binding, Leyline Binding
+║   Lands: Blood Crypt, Meticulous Archive, Plains, Godless Shrine, Thundering Falls
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Zuran Orb
+║   Lands: Simic Growth Chamber [T], Simic Growth Chamber [T], Gruul Turf [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Psychic Frog
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Blood Crypt→U, Meticulous Archive→B (paying for Psychic Frog, 3 mana remaining)
+T7 P2: Cast Psychic Frog (UB)
+    [Priority] P1 passes (no response)
+T7: Resolve Psychic Frog
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Psychic Frog, Territorial Kavu
+T7 P2: Territorial Kavu exiles Primeval Titan from opponent GY
+T7 P2: Attack with Psychic Frog, Territorial Kavu
+  [Declare Blockers] P1 does not block
+T7 P2:   Psychic Frog (2/3) → 2 dmg to player
+T7 P2: Psychic Frog deals combat damage — draw a card
+T7 P2:   Territorial Kavu (5/5) → 5 dmg to player
+  [Combat Damage] 7 damage dealt → P1 life: 13 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 6  |  Domain Zoo 15
+║ Hand: 4 cards  |  Opp hand: 1 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 4
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Zuran Orb
+║   Lands: Simic Growth Chamber, Simic Growth Chamber, Gruul Turf
+║ Domain Zoo board:
+║   Creatures: Psychic Frog (2/3) [tapped], Territorial Kavu (5/5) [tapped], Psychic Frog (1/2)
+║   Other: Leyline of the Guildpact, Leyline Binding, Leyline Binding
+║   Lands: Blood Crypt [T], Meticulous Archive [T], Plains, Godless Shrine, Thundering Falls
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Boseiju, Who Endures
+  [Main 1]
+T8 P1: Play Crumbling Vestige (enters tapped)
+T8 P1: Amulet of Vigor untaps Crumbling Vestige
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 15  |  Amulet Titan 6
+║ Hand: 1 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 39  |  Graveyard: 9
+║ Domain Zoo board:
+║   Creatures: Psychic Frog (2/3), Territorial Kavu (5/5), Psychic Frog (1/2)
+║   Other: Leyline of the Guildpact, Leyline Binding, Leyline Binding
+║   Lands: Blood Crypt, Meticulous Archive, Plains, Godless Shrine, Thundering Falls
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Other: Amulet of Vigor, Zuran Orb
+║   Lands: Simic Growth Chamber, Simic Growth Chamber, Gruul Turf, Crumbling Vestige
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Stubborn Denial
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Territorial Kavu, Psychic Frog
+T8: Stubborn Denial moved hand -> graveyard (discard)
+T8 P2: Territorial Kavu loots — discard Stubborn Denial, draw 1
+T8 P2: Attack with Territorial Kavu, Psychic Frog
+  [Declare Blockers] P1 does not block
+T8 P2:   Territorial Kavu (5/5) → 5 dmg to player
+T8 P2:   Psychic Frog (1/2) → 1 dmg to player
+T8 P2: Psychic Frog deals combat damage — draw a card
+P1 loses: life total 0
+  [Combat Damage] 6 damage dealt → P1 life: 6 → 0
+
+>>> Domain Zoo wins Game 2 on turn 8 via damage
+    Final life: Amulet Titan=0  Domain Zoo=15
+
+======================================================================
+  MATCH RESULT: Domain Zoo wins 2-0
+======================================================================

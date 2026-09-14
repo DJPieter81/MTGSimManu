@@ -1,0 +1,6 @@
+{
+  "_comment": "Single-owner ratchet baseline (tools/check_single_owner.py). Each count may only fall; lower it in the same commit that routes a path through the rule's owner.",
+  "target_pick": 12,
+  "damage_write": 42,
+  "counter_write": 5
+}

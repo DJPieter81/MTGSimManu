@@ -1104,7 +1104,17 @@ def _resolve_library_dig(game: "GameState", card: "CardInstance",
     if data['take_all_matching']:
         taken = matches
     else:
-        taken = matches[:data['count_taken']]
+        # Kicker (CR 702.33) count-modifier: "if it was kicked, put N of
+        # those cards into your hand instead" raises the base count.
+        _count = data['count_taken']
+        if getattr(card, '_kick_count', 0) and card.template.kicked_clause:
+            _m = re.search(r'put (\w+) of those cards into your hand instead',
+                           card.template.kicked_clause.lower())
+            if _m:
+                from engine.oracle_parser import _NUM_WORDS
+                _w = _m.group(1)
+                _count = int(_w) if _w.isdigit() else _NUM_WORDS.get(_w, _count)
+        taken = matches[:_count]
 
     for c in taken:
         game.zone_mgr.move_card(game, c, "library", "hand",
@@ -1162,6 +1172,27 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
 
     opponent = 1 - controller
     handled = False
+
+    # ── Combat prevention as a class (CR 509.4 / 615) ──
+    # "creatures can't attack [you] this turn" / "prevent all combat
+    # damage this turn" — one turn-scoped flag per shape, set here whether
+    # this is a whole-card Fog or a routed kicked clause. Not an early
+    # return: a compound card ("you gain N life. Prevent all combat
+    # damage this turn.") keeps resolving its other clauses below.
+    from engine.oracle_parser import parse_combat_prevention as _parse_cp
+    _cp = _parse_cp(oracle)
+    if _cp is not None:
+        if _cp["no_attack"] == "all":
+            for _p in game.players:
+                _p.cannot_attack_this_turn = True
+        elif _cp["no_attack"] == "you":
+            game.players[controller].cannot_be_attacked_this_turn = True
+        if _cp["prevent_combat_damage"]:
+            for _p in game.players:
+                _p.combat_damage_prevented_this_turn = True
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: {card.name} — combat prevention")
+        handled = True
 
     # ── Modal mode: mass sweep / typed mass-destroy ─────────────────
     # These shapes ("deals N damage to each creature ...", "destroy all
@@ -1309,8 +1340,18 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
     #    typed field retires those handlers and covers unregistered burn too.
     _dd = getattr(card.template, 'direct_damage_data', None)
     if oracle_override is None and _dd:
+        _amt = effective_direct_damage(game, controller, card.template)
+        # Rules audit (CR 608.2), restated independently: with the upgrade
+        # condition met the resolved amount is the upgrade, not the base.
+        from .rules_audit import check as _audit_check
+        _up = _dd.get('upgrade_amount')
+        if _up and _direct_damage_condition_met(game, controller,
+                                                _dd.get('upgrade_condition')):
+            _audit_check("608.2/damage_upgrade", _amt == _up,
+                         f"{card.name}: {_dd.get('upgrade_condition')} met but "
+                         f"dealt {_amt}, not {_up}", game=game)
         resolve_damage_to_chosen_target(
-            game, card, controller, _dd['amount'], targets)
+            game, card, controller, _amt, targets)
         return True
 
     # ── Symmetric board sweep ("destroy all creatures") — typed-field gate,
@@ -2117,9 +2158,20 @@ def resolve_self_cast_trigger(game: "GameState", caster_idx: int,
         clause = clause.strip()
         if not clause.startswith('when you cast this spell'):
             continue
-        # Conditional riders we don't model (kicker/other cast conditions):
-        # skip the effect but the clause is still "recognised".
+        # Kicker (CR 702.33) when-cast payoff: "when you cast this spell,
+        # if it was kicked, <effect>" resolves only when the spell was
+        # kicked (card._kick_count) AND the payoff is a shape the generic
+        # resolver runs. "exile target land" (Sowing Mycospawn) needs
+        # targeted land-exile plumbing the generic resolver lacks — it is a
+        # recorded lead, so the clause stays recognised-but-skipped and the
+        # AI is not offered the kick (ai/board_eval._eval_kick).
         if 'if it was kicked' in clause or 'if this spell was kicked' in clause:
+            if getattr(spell_cast, '_kick_count', 0):
+                from engine.oracle_parser import parse_kicked_clause
+                payoff = parse_kicked_clause(clause)
+                if payoff:
+                    resolve_spell_from_oracle(game, spell_cast, caster_idx,
+                                              [], oracle_override=payoff)
             handled = True
             continue
 
@@ -2194,6 +2246,60 @@ def _ordinal_cast_trigger_fires(game: "GameState", permanent: "CardInstance",
             == spec["ordinal"])
 
 
+def _audit_ordinal_gate(game: "GameState", permanent: "CardInstance",
+                        caster_idx: int, fired: bool) -> None:
+    """CR 603.2, restated independently of `_ordinal_cast_trigger_fires`:
+    an ordinal cast trigger fires iff the caster's per-turn spell count
+    equals the ordinal for the trigger's scope. Records a violation when
+    the engine's gate decision disagrees (over- or under-trigger)."""
+    from .rules_audit import enabled as _audit_on, check as _audit_check
+    if not _audit_on():
+        return
+    spec = permanent.template.ordinal_cast_trigger
+    sc = spec["caster_scope"]
+    scope_ok = (sc == "any"
+                or (sc == "you" and permanent.controller == caster_idx)
+                or (sc == "opponent" and permanent.controller != caster_idx))
+    count = game.players[caster_idx].spells_cast_this_turn
+    cond = scope_ok and count == spec["ordinal"]
+    _audit_check("603.2/ordinal_cast", fired == cond,
+                 f"{permanent.name}: ordinal gate fired={fired} but count "
+                 f"{count} vs ordinal {spec['ordinal']} (scope {sc})", game=game)
+
+
+def _apply_ordinal_nontoken_effect(game: "GameState",
+                                   permanent: "CardInstance") -> None:
+    """Dispatch a firing ordinal cast trigger's NON-token effect through the
+    rule owners. The token effect is owned by `cast_trigger_token`; this
+    handles the counter / opponent-damage / draw / gain shapes typed once at
+    DB load into `ordinal_cast_trigger['effect']`. Effects apply relative to
+    the ability's CONTROLLER (who benefits/acts), which is correct for
+    "you", "any" and "opponent" scopes alike. Shapes the parser refuses
+    (proliferate, modal, coin-flip, copy) carry no effect and are skipped."""
+    if permanent.template.cast_trigger_token is not None:
+        return  # a token clause: owned by the cast_trigger_token branch
+    spec = permanent.template.ordinal_cast_trigger
+    effect = spec.get("effect") if spec else None
+    if not effect:
+        return
+    owner = permanent.controller
+    kind = effect["kind"]
+    if kind == "counter":
+        # CR 122: the +1/+1 counter funnel (fires counter-placement triggers).
+        permanent.add_plus_counters(effect["amount"], game, source=permanent)
+    elif kind == "damage":
+        from .damage import deal_damage
+        for opp_idx, opp in enumerate(game.players):
+            if opp_idx != owner:
+                deal_damage(permanent, opp, effect["amount"])
+        if effect.get("gain"):
+            game.gain_life(owner, effect["gain"], permanent.name)
+    elif kind == "gain":
+        game.gain_life(owner, effect["gain"], permanent.name)
+    elif kind == "draw":
+        game.draw_cards(owner, effect["draw"])
+
+
 def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
                                 spell_cast: "CardInstance"):
     """Resolve "whenever you cast a spell" triggers for all permanents.
@@ -2217,10 +2323,11 @@ def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
         # each branch) is safe because no card in the pool carries an
         # ordinal cast trigger AND a plain "whenever you cast a <type>
         # spell" trigger — measured 0 of 22,506.
-        if (permanent.template.ordinal_cast_trigger is not None
-                and not _ordinal_cast_trigger_fires(game, permanent,
-                                                     caster_idx)):
-            continue
+        if permanent.template.ordinal_cast_trigger is not None:
+            _fires = _ordinal_cast_trigger_fires(game, permanent, caster_idx)
+            _audit_ordinal_gate(game, permanent, caster_idx, _fires)
+            if not _fires:
+                continue
 
         # ── "Whenever you cast a noncreature spell, you get {E}" ──
         # Matches Ocelot Pride and any future card with this exact trigger.
@@ -2275,6 +2382,13 @@ def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
                             f"T{game.display_turn} P{caster_idx+1}: "
                             f"{permanent.name} attaches to {tokens[-1].name}")
 
+        # ── Non-token ordinal effect (counter / damage / draw / gain) ──
+        # The ordinal gate above confirmed the Nth spell; the token effect
+        # (if any) was owned by the cast_trigger_token branch. Every OTHER
+        # ordinal effect shape dispatches here through the rule owners.
+        if permanent.template.ordinal_cast_trigger is not None:
+            _apply_ordinal_nontoken_effect(game, permanent)
+
         # ── "Whenever you cast a spell, draw a card" ──
         if getattr(permanent.template, 'has_cast_spell_draw', False):
             game.draw_cards(caster_idx, 1)
@@ -2328,16 +2442,22 @@ def resolve_spell_cast_trigger(game: "GameState", caster_idx: int,
             continue
 
         # Same ordinal gate as the controller loop above (CR 603.2).
-        if (permanent.template.ordinal_cast_trigger is not None
-                and not _ordinal_cast_trigger_fires(game, permanent,
-                                                     caster_idx)):
-            continue
+        if permanent.template.ordinal_cast_trigger is not None:
+            _fires = _ordinal_cast_trigger_fires(game, permanent, caster_idx)
+            _audit_ordinal_gate(game, permanent, caster_idx, _fires)
+            if not _fires:
+                continue
 
         # ── "Whenever an opponent casts a spell, deal damage" ──
         if getattr(permanent.template, 'has_opponent_cast_damage', False):
             m = re.search(r'deals?\s+(\d+)\s+damage', oracle)
             if m:
                 game.players[caster_idx].life -= int(m.group(1))
+
+        # ── Non-token ordinal effect on an opponent's permanent (an
+        # "an opponent casts their Nth spell" / "a player casts" trigger) ──
+        if permanent.template.ordinal_cast_trigger is not None:
+            _apply_ordinal_nontoken_effect(game, permanent)
 
 
 def check_static_ability(game: "GameState", card: "CardInstance",
@@ -2359,6 +2479,37 @@ def count_graveyard_card_types(game, player_idx: int) -> int:
     "card types in your graveyard" count, e.g. delirium thresholds)."""
     player = game.players[player_idx]
     return len({t for c in player.graveyard for t in c.template.card_types})
+
+
+_DELIRIUM_CARD_TYPES = 4   # CR: delirium = four or more card types in your graveyard
+_METALCRAFT_ARTIFACTS = 3  # CR 702.98: metalcraft = three or more artifacts
+
+
+def _direct_damage_condition_met(game, controller: int, condition) -> bool:
+    """Whether a burn spell's printed upgrade condition holds for its
+    caster right now — delirium (4+ card types in the graveyard) or
+    metalcraft (3+ artifacts controlled)."""
+    if condition == 'delirium':
+        return count_graveyard_card_types(game, controller) >= _DELIRIUM_CARD_TYPES
+    if condition == 'metalcraft':
+        from .cards import CardType
+        return sum(1 for c in game.players[controller].battlefield
+                   if CardType.ARTIFACT in c.template.card_types) >= _METALCRAFT_ARTIFACTS
+    return False
+
+
+def effective_direct_damage(game, controller: int, template) -> int:
+    """The damage a conditional burn spell deals RIGHT NOW: the printed
+    upgrade amount when its board condition holds (CR 608.2), else the
+    base amount. The one evaluator the resolution dispatch and the AI's
+    `burn_damage` accessor share, so the engine and the AI agree on how
+    much a delirium Unholy Heat / metalcraft Galvanic Blast deals."""
+    dd = getattr(template, 'direct_damage_data', None) or {}
+    base = dd.get('amount', 0) or 0
+    up = dd.get('upgrade_amount')
+    if up and _direct_damage_condition_met(game, controller, dd.get('upgrade_condition')):
+        return int(up)
+    return int(base)
 
 
 def self_cost_reduction(game, player_idx: int, card_template) -> int:

@@ -51,6 +51,14 @@ class GameCallbacks(Protocol):
         """Should this creature be evoked instead of hardcast?"""
         ...
 
+    def should_kick(
+        self, game: GameState, player_idx: int, card: CardInstance
+    ) -> int:
+        """How many times to kick this spell as it is cast (CR 702.33):
+        0 = don't kick, 1 = kicker, N = multikicker. The engine clamps to
+        the mana available after the base cost."""
+        ...
+
     def should_dash(
         self, game: GameState, player_idx: int, card: CardInstance,
         can_normal: bool, can_dash: bool
@@ -165,6 +173,11 @@ class DefaultCallbacks:
         self, game: GameState, player_idx: int, card: CardInstance
     ) -> bool:
         return False
+
+    def should_kick(
+        self, game: GameState, player_idx: int, card: CardInstance
+    ) -> int:
+        return 0
 
     def should_dash(
         self, game: GameState, player_idx: int, card: CardInstance,

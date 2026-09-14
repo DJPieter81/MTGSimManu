@@ -229,7 +229,13 @@ def pick_converge_x_value(
     """
     from .card_effects import _removal_legal_pool, converge_reachable_max_mv
 
-    max_mv = converge_reachable_max_mv(game, player_idx)
+    # The printed pips are paid before X is chosen: the colours already
+    # spent on this cast (`game._last_colors_spent`) count toward the
+    # reach, or the picker undercounts by every colour a now-tapped
+    # source just paid.
+    max_mv = converge_reachable_max_mv(
+        game, player_idx,
+        already_spent=set(getattr(game, '_last_colors_spent', set())))
     legal = _removal_legal_pool(game, player_idx, "opponent",
                                 frozenset({"permanent_nonland"}))
     reachable = [c for c in legal.values() if (c.template.cmc or 0) <= max_mv]
@@ -961,6 +967,23 @@ class CastManager:
         return template.flashback_cost if template.flashback_cost is not None else ManaCost()
 
     @staticmethod
+    def _add_kicker(base: "ManaCost", kicker: "ManaCost", times: int) -> "ManaCost":
+        """base + `times` × kicker, per-pip (CR 702.33: kicker is an
+        ADDITIONAL cost). Colour, colourless and generic pips add; hybrid
+        pip lists concatenate. No card names — mana arithmetic only."""
+        from .mana import ManaCost
+        return ManaCost(
+            white=base.white + times * kicker.white,
+            blue=base.blue + times * kicker.blue,
+            black=base.black + times * kicker.black,
+            red=base.red + times * kicker.red,
+            green=base.green + times * kicker.green,
+            colorless=base.colorless + times * kicker.colorless,
+            generic=base.generic + times * kicker.generic,
+            hybrid=list(base.hybrid) + list(kicker.hybrid) * times,
+        )
+
+    @staticmethod
     def lock_that_counters(game: "GameState", player_idx: int,
                            template) -> "Optional[CardInstance]":
         """The opposing lock permanent whose parsed rule counters a cast of
@@ -1486,6 +1509,26 @@ class CastManager:
                     opp_idx = 1 - player_idx
                     if not game.players[opp_idx].creatures:
                         should_evoke = False  # No targets, skip evoke
+
+            # Kicker (CR 702.33): an optional ADDITIONAL cost on a normal
+            # cast — never on an alternative-cost cast (dash/escape/evoke/
+            # madness/spectacle). The AI returns how many times to kick
+            # (1 for kicker, up to affordability for multikicker); the
+            # engine clamps to the mana actually available after the base.
+            kick_count = 0
+            if (template.kicker_cost is not None and not should_evoke
+                    and not dashed and not escaped and not spectacled
+                    and not madnessed):
+                _sk = getattr(game.callbacks, 'should_kick', None)
+                want = _sk(game, player_idx, card) if _sk else 0
+                kc = template.kicker_cost.cmc
+                if want > 0 and kc > 0 and untapped >= template.mana_cost.cmc:
+                    affordable = int((untapped - template.mana_cost.cmc) // kc)
+                    kick_count = min(want, affordable)
+                    if not template.multikicker:
+                        kick_count = min(kick_count, 1)
+                    kick_count = max(0, kick_count)
+            card._kick_count = kick_count
             if should_evoke:
                 # Evoke: exile a card from hand that shares a color
                 exile_candidates = [
@@ -1686,6 +1729,22 @@ class CastManager:
                         _base_cost = (CastManager._flashback_mana_cost(template)
                                       if CastManager._pays_printed_flashback_cost(card)
                                       else template.mana_cost)
+                        # Kicker (CR 702.33) is an ADDITIONAL cost: the base
+                        # PLUS the kicker cost, once (kicker) or kick_count
+                        # times (multikicker). The AI already checked
+                        # affordability; the combined cost is paid here.
+                        if kick_count > 0 and template.kicker_cost is not None:
+                            _pre_kick_cmc = _base_cost.cmc
+                            _base_cost = CastManager._add_kicker(
+                                _base_cost, template.kicker_cost, kick_count)
+                            from .rules_audit import enabled as _ao, check as _ac
+                            if _ao():
+                                _ac("702.33/kicked_cost_paid",
+                                    _base_cost.cmc == _pre_kick_cmc
+                                    + kick_count * template.kicker_cost.cmc,
+                                    f"{template.name}: kicked x{kick_count} but the "
+                                    f"paid cost is {_base_cost.cmc}, not base+kicker",
+                                    game=game)
                         # Phyrexian mana (CR 107.4f): 2 life instead of one
                         # mana of the pip's colour.  Waive the FEWEST pips
                         # that make the rest payable — chosen by the same
@@ -1946,11 +2005,26 @@ class CastManager:
             # reads item.evoked (e.g. triggered-ability dispatch) sees
             # True when the spell was cast for its evoke cost.
             evoked=evoked,
+            # How many times the spell was kicked (CR 702.33); the kicked
+            # payoff clause resolves only when > 0.
+            kick_count=locals().get('kick_count', 0) or 0,
             # Snapshot the colors actually spent for Converge ("number of
             # colors of mana spent to cast this spell"). Populated by the
             # most recent tap_lands_for_mana() call; empty for free casts.
             colors_spent=set(getattr(game, '_last_colors_spent', set())),
         )
+        # Rules audit (CR 601.2c / 702.11d / 702.16b): every battlefield
+        # target chosen at cast is one this spell may target. Observes only.
+        from .rules_audit import enabled as _audit_on
+        if _audit_on() and targets:
+            from .rules_audit import check as _audit_check
+            from .target_solver import can_be_targeted as _cbt
+            for _tid in targets:
+                _tgt = game.get_card_by_id(_tid) if isinstance(_tid, int) else None
+                if _tgt is not None and _tgt.zone == "battlefield":
+                    _audit_check("601.2c/cast_target", _cbt(_tgt, card, player_idx),
+                                 f"{card.name} cast at {_tgt.name}, which it may not target",
+                                 game=game)
 
         # ── Splice onto Arcane: when casting an Arcane spell, splice cards
         # from hand that have splice_cost. Pay splice cost, add their effects,

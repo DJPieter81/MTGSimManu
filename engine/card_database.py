@@ -1916,6 +1916,8 @@ class CardDatabase:
             template.is_counterspell = True
             template.counter_target_kind = counter_effect.target_type
         template.counter_tax_amount = parse_counter_tax(oracle)
+        from .oracle_parser import parse_counter_upgrade_condition
+        template.counter_upgrade_condition = parse_counter_upgrade_condition(oracle)
         # "Counter target ... colorless spell" (Consign to Memory): a
         # colorless-only counter can never target a colored spell. Read
         # once here from the oracle shape (the effect is registered, not
@@ -2110,6 +2112,13 @@ class CardDatabase:
         template.has_charge_counter_ability = parse_has_charge_counter_ability(oracle)
         template.cast_trigger_token = parse_cast_trigger_token(oracle)
         template.ordinal_cast_trigger = parse_ordinal_cast_trigger(oracle)
+        # Kicker (CR 702.33): optional additional cost + payoff clause.
+        from .oracle_parser import parse_kicker, parse_kicked_clause
+        _kick = parse_kicker(oracle)
+        if _kick:
+            template.kicker_cost = parse_mana_cost_mtgjson(_kick["cost"])
+            template.multikicker = _kick["multikicker"]
+            template.kicked_clause = parse_kicked_clause(oracle)
         template.enters_type_counter = parse_enters_type_counter(oracle)
         # "Whenever a/another creature [you control] dies, …" observers
         # (CR 603.2). Fanned out by the death funnel.
@@ -2154,8 +2163,13 @@ class CardDatabase:
         template.board_sweep_data = parse_board_sweep(oracle)
         # Targeted destroy/exile removal — parse-once typed classification,
         # dispatched through the shared nonland-permanent-removal resolver.
-        from .oracle_parser import parse_targeted_removal
+        from .oracle_parser import (parse_targeted_removal,
+                                    parse_conditional_mv_removal)
         template.targeted_removal_data = parse_targeted_removal(oracle)
+        # The resolution-condition sibling ("… if it has mana value N or
+        # less"): the AI's target chooser reads the bound; the card keeps
+        # its own resolver.
+        template.removal_mv_condition = parse_conditional_mv_removal(oracle)
         # Impulse / library-dig (CR 120 card selection) — parse-once typed
         # classification consumed by oracle_resolver._resolve_library_dig.
         from .oracle_parser import parse_library_dig

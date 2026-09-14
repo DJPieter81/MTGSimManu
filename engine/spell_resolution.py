@@ -111,6 +111,27 @@ class ResolutionManager:
             pass
 
     @staticmethod
+    def _audit_resolution_targets(game: "GameState", item: "StackItem",
+                                  card: "CardInstance") -> None:
+        """Rules audit (CR 608.2b): every chosen target still on the
+        battlefield is one this source may target (hexproof 702.11d,
+        protection 702.16b). Observes only; a no-op with the audit off."""
+        from .rules_audit import enabled as _audit_on, check as _audit_check
+        if not _audit_on() or not getattr(item, 'targets', None):
+            return
+        from .target_solver import can_be_targeted
+        for tid in item.targets:
+            if not isinstance(tid, int):
+                continue
+            tgt = game.get_card_by_id(tid)
+            if tgt is None or tgt.zone != "battlefield":
+                continue
+            _audit_check("608.2b/resolve_target",
+                         can_be_targeted(tgt, card, item.controller),
+                         f"{card.name} resolves against {tgt.name}, which it may not target",
+                         game=game)
+
+    @staticmethod
     def resolve_stack(game: "GameState"):
         """Resolve the top item on the stack."""
         if game.stack.is_empty:
@@ -189,6 +210,11 @@ class ResolutionManager:
         # its target (recorded on this item and exiled by the trigger)
         # must not fizzle the permanent. Only instants, sorceries, and
         # Auras fizzle on all-illegal targets.
+        # Rules audit (CR 608.2b / 702.11d / 702.16b): a target still on
+        # the battlefield must be one this source may target. A target
+        # that left the battlefield is a legitimate fizzle; a hexproof or
+        # protected one still sitting there was chosen illegally.
+        ResolutionManager._audit_resolution_targets(game, item, card)
         _pt = getattr(card.template, 'card_types', None) or []
         _is_permanent_spell = any(
             t in _pt for t in (CardType.CREATURE, CardType.ARTIFACT,
@@ -217,6 +243,19 @@ class ResolutionManager:
         if item.item_type == StackItemType.SPELL:
             if CardType.INSTANT in template.card_types or CardType.SORCERY in template.card_types:
                 game._execute_spell_effects(item)
+                # Kicker (CR 702.33) additive payoff: a kicked spell whose
+                # "if it was kicked, <clause>" rider is a standalone effect
+                # resolves that clause after its base. Gated to the
+                # combat-prevention class (idempotent turn flags) — the
+                # count-modifier (Consult) and when-cast (Sowing) shapes
+                # resolve at their own seams, so this never double-fires.
+                if getattr(item, 'kick_count', 0) and template.kicked_clause:
+                    from .oracle_parser import parse_combat_prevention
+                    if parse_combat_prevention(template.kicked_clause):
+                        from .oracle_resolver import resolve_spell_from_oracle
+                        resolve_spell_from_oracle(
+                            game, card, item.controller, item.targets,
+                            oracle_override=template.kicked_clause)
                 # Storm: copy the spell for each prior spell this turn
                 if Keyword.STORM in template.keywords:
                     game._handle_storm(item)
@@ -263,6 +302,13 @@ class ResolutionManager:
                         game.log.append(
                             f"T{game.display_turn} P{item.controller+1}: "
                             f"{card.name} enters with {item.x_value} +1/+1 counter(s)")
+                        # Rules audit (CR 107.3 / 614.1c): it carries them.
+                        from .rules_audit import check as _audit_check
+                        _audit_check("107.3/x_counters",
+                                     card.plus_counters >= item.x_value,
+                                     f"{card.name} cast for X={item.x_value} carries "
+                                     f"{card.plus_counters} +1/+1 counter(s) on entry",
+                                     game=game)
                 game._handle_permanent_etb(card, item.controller, item=item)
                 # Evoke: sacrifice after ETB triggers
                 if getattr(card, '_evoked', False):
@@ -894,10 +940,32 @@ class ResolutionManager:
                 elif target_stack_index is not None:
                     stack_item = game.stack.items[target_stack_index]
                     countered_card = stack_item.source
-                    tax_amount = getattr(card.template, 'counter_tax_amount', 0) or 0
+                    # CR 601.2b: the tax is 0 (a HARD counter) when the
+                    # counter's printed upgrade condition holds for its
+                    # controller — Stubborn Denial's Ferocious clause makes
+                    # it unconditional with a 4-power creature. One shared
+                    # predicate so the engine and the AI agree.
+                    from .optional_costs import (offer_counter_tax,
+                                                 effective_counter_tax)
+                    tax_amount = effective_counter_tax(game, controller,
+                                                       card.template)
+                    # Rules audit (CR 601.2b), restated independently of
+                    # the helper: a printed creature-power upgrade whose
+                    # condition holds makes the tax 0 (a hard counter).
+                    from .rules_audit import check as _audit_check
+                    _cond = getattr(card.template, 'counter_upgrade_condition', None)
+                    if _cond and 'creature_power_at_least' in _cond:
+                        _n = _cond['creature_power_at_least']
+                        _met = any((c.power or 0) >= _n
+                                   for c in game.players[controller].creatures)
+                        _audit_check(
+                            "601.2b/counter_upgrade",
+                            (not _met) or tax_amount == 0,
+                            f"{card.name}: a {_n}-power creature is controlled "
+                            f"but the tax is {tax_amount}, not a hard counter",
+                            game=game)
                     paid = False
                     if tax_amount > 0:
-                        from .optional_costs import offer_counter_tax
                         paid = offer_counter_tax(game, card, countered_card)
                     if paid:
                         game.log.append(

@@ -4709,3 +4709,591 @@ verdict stands. What is left on Toolbox's side is the AI: unbounded mana
 is generated (82 / 161 mana on the log) and Craterhoof / Ballista are
 not cast into it — the outlet-selection lead in the Phase D register
 (`ai/` combo evaluator reading the mana pool, not the engine).
+
+## Zoo lane, reopened on Zoo's OWN over-credits (2026-09-12, PR #571)
+
+Domain Zoo reads 69.4 flat / 72.0 meta-weighted on the n=60 matrix
+against [50,65]; excluding the four sub-band opponents it is still 65.8,
+and the cells that carry the weight are mid/T1 decks (Ponza 60/60, Boros
+65, Pinnacle 72, Ramp 77, WST v2 63, 4/5c 63). Five fresh Bo3 replays
+(seeds 60300–60304: vs WST v2, Pinnacle, Eldrazi Ramp, Boros Ponza,
+Boros Energy) were read independently with a checklist on both sides;
+every claim was then reproduced against the engine with a fixture or
+quoted from the log. Zoo's list and gameplan are ordinary; Frog growth
+is rules-correct (the discard cost is paid silently — hand counts
+confirm it). Two engine defects credit Zoo directly (Z1, Z2 below); a
+third class is opponent-side (Z3). The earlier loop-break doc's "Zoo's
+own play was ordinary" was wrong on these two rules points.
+
+### Unit Z1 — a land's basic types are read from the continuous-effects layer (`697ad98`)
+
+**Diagnosis.** `ManaPayment.count_domain` returned 5 whenever a
+permanent with "lands you control are every basic land type" was on the
+battlefield and otherwise read `template.subtypes`; the
+CardInstance-side `_get_domain_count` did the same. Both ignore layer 4,
+so under a resolved Blood Moon a Leyline deck kept domain 5: Scion of
+Draco for {2} instead of {10}, Leyline Binding for {W}, a 5/5 Kavu
+(Ponza replay L1419-1450; Boros L1538-1573) while its lands correctly
+produced only red. The residual sacrifice heuristic also
+sacrifice-searched a fetchland the fetch path had just refused (Ponza
+L1571-1574). Six of Zoo's 24 opponents bring a Moon effect (Ponza MB 4 +
+Magus, Boros / Pinnacle / Hollow One SB 2, Storm SB 1, Grixis SB
+Harbinger 2). Class: every type-setting effect × every land-type reader.
+
+**Rule** (CR 305.7, 613.2b, 613.7): the ADD family is a layer-4
+`ContinuousEffect` derived from `has_all_basic_land_types`, ordered by
+timestamp with the SET family — a later SET clears added types, a later
+ADD puts them back; one reader `CardInstance.current_basic_land_types`
+feeds `count_domain`, `_get_domain_count`, `effective_produces_mana`,
+`available_mana_colors`; `LandManager.land_type_is_set` is the one
+predicate for "no activated ability but mana", asked by the fetch path
+and the sacrifice heuristic. A basic Plains under Leyline + Moon is all
+five types (the Moon does not touch basics) — real Magic, and the test
+says so. Oracle-runtime-parse baseline 179 → 178. Tests:
+`tests/test_land_types_are_read_from_the_continuous_effects_layer.py`
+(four rules). Every domain / Leyline / Moon / land-mana pin green (178);
+anchor 29 passed, no flips; chunks a–g 2264 / h–z 2308; ratchets at
+baseline.
+
+**Measurement** (same seeds, n=20 Bo3, matchup grid; pre `6b9d284`,
+post Z1): Zoo vs Boros Ponza **60 → 50**, Boros Ponza vs Zoo (Ponza's
+own row) 40 → 30 for Zoo, Zoo vs Boros Energy 40 → 35, Zoo vs Pinnacle
+80 → 80, Zoo vs Hollow One 80 → 80 (their Moons are sideboard cards and
+did not decide these twenty); **Zoo field 70.0 → 69.4**; Ponza field
+51.5 → 51.9 (guard). The cells move exactly where the rule bites; the
+field moves by their share of 24 opponents.
+
+### Unit Z2 — combat damage steps are decided per creature, not per attacker (`8284e1b` → branch)
+
+**Diagnosis.** `resolve_combat_damage` split ATTACKERS into a first-strike
+step and a regular step, and the blockers' damage back lived inside each
+attacker's assignment loop gated by `blocker_has_fs == first_strike_step`.
+So a first-strike blocker of a vanilla attacker and a vanilla blocker of
+a first-strike attacker never dealt damage at all. Fixture: vanilla 1/2
+into first-strike 4/4 survived with 0 damage; first-strike 2/3 into a 3/3
+took 0. In the replays every Zoo creature has first strike under Scion
+of Draco + Leyline of the Guildpact: Scion blocked Ajani and nothing
+happened (s60304 L1042-1060); Scion and Kavu blocked two Emissaries with
+no damage step (s60301 L578-585); a first-strike Frog attacked into a
+3/3 and survived (s60304 L1253-1272). Class: every first / double strike
+creature and every team-keyword grant.
+
+**Rule** (CR 510.2, 510.4, 702.7b): the first-strike step exists iff any
+creature in combat has first or double strike; every assignment is
+visited in both steps; each creature deals damage only in the step(s)
+its own keywords name (`_deals_in_step`), double strikers in both; a
+creature removed in step one deals nothing in step two. Assignment
+order, deathtouch and trample unchanged. Tests:
+`tests/test_combat_damage_steps_are_per_creature.py` (five rules);
+combat pins 148 green; anchor: one turn-only drift (Boros Ponza vs Boros
+Energy s51000, 17 → 16, same winner) refreshed; chunks a–g 2264 / h–z
+2308; ratchets at baseline.
+
+**Measurement** (same seeds, n=20 Bo3, matchup grid; pre `697ad98`,
+post Z2): Zoo vs Boros Energy 35 → 30, vs Broodscale 70 → 70, vs Prowess
+85 → 85; **Zoo field 69.4 → 68.3**; guards Boros Energy field 60.8 →
+61.0, Izzet Prowess field 59.6 → 59.4. Direction as expected (Zoo's
+first-strike attackers are no longer immune to blockers); size small at
+n=20. Running total on the lane: Zoo field 70.0 → 69.4 (Z1) → 68.3
+(Z2), same seeds.
+
+## Rules enforcement as a system (2026-09-12, PR #571)
+
+Every replay read this week surfaced another rules gap the engine had
+been silently getting wrong across the whole matrix (E13, Z1, Z2, Z3 and
+the leads beside them). The pattern, not the instances, is the problem:
+the engine had no way of noticing when it broke a rule, so a defect lived
+until a human-read replay landed on it. Three units make violations
+observable everywhere and choose the next work from a census.
+
+### R1 — the rules auditor (`engine/rules_audit.py`)
+
+Opt-in (`MTG_RULES_AUDIT=1`, or `run_meta.py --rules-audit`, which sets
+it before workers spawn), never behaviour-changing: with the flag unset
+every hook is one early return and the WR anchor is byte-identical
+(29 passed with the flag unset after every hook landed). CR-phrased
+invariants at the existing seams, each restated independently of the
+engine's own predicate so the audit checks the implementation rather
+than agreeing with it:
+
+| rule id | where | sentence |
+|---|---|---|
+| `510.2/creature_dealt` | `CombatManager._audited_step` | every creature in combat, alive at the start of a damage step, with power, whose own keywords put it in that step, dealt damage in it (a blocked attacker whose blockers all left combat and lacks trample is exempt, CR 510.1c) |
+| `601.2c/cast_target` | `cast_spell` | every battlefield target chosen at cast passes `target_solver.can_be_targeted` |
+| `608.2b/resolve_target` | `resolve_stack` | every target still on the battlefield on resolution passes the solver |
+| `305.7/set_land_mana` | `effective_produces_mana` | a land whose type is SET with no later ADD produces exactly its one colour |
+| `107.3/x_counters` | X-counter entry | an X-cost permanent carries X +1/+1 counters on entry |
+| `704.5f/lethal_damage`, `704.5f/zero_toughness`, `704.5a/zero_life`, `704.3/fixpoint_cap` | after the outermost SBA fixpoint | no lethally damaged or non-positive-toughness creature on a battlefield, no player at ≤0 life still playing, the loop reached its fixpoint (skipped once the game is over — CR 104: SBAs stop) |
+| `keyword/unmodelled` (census) | game end, per template | a keyword word the engine has no enum member, typed field or handler for, once per word |
+
+Findings carry seed, deck pair and turn (`rules_audit.set_context` in
+`run_meta._run_pair`), ride on `GameResult.audit_findings`, are sunk by
+every aggregator (serial and Pool paths, `tools.parallel_matrix` cells)
+into one `audits/rules_audit_<stamp>.jsonl` per run, and are ranked by
+`tools/rules_audit_report.py` (violations and census separately: count,
+games, deck pairs, top detail). Tests (`tests/test_rules_audit.py`, nine):
+each invariant is fired by re-creating its defect — `_deals_in_step`
+patched to the pre-Z2 gate, the cast-time legality gate patched away and
+a hexproof target handed in, `current_basic_land_types` patched to two
+types under a SET, `add_plus_counters` patched to a no-op, the SBA pass
+patched to perform nothing — and is silent when the rule holds; the flag
+off records nothing.
+
+**Acceptance on a real field** (`--field "Domain Zoo" -n 20 --parallel
+--workers 2 --rules-audit`, ~1.1× the un-audited wall on this box):
+run 1 reported 176 `704.5f` findings and one `510.2`; both were the
+AUDITOR's errors, found and fixed in the same unit — a game that ends
+during combat damage returns from the SBA pass before creature deaths
+(CR 104: no SBAs once the game is over), and a blocked attacker whose
+blockers died in the first-strike step legitimately deals nothing. Run
+3: **0 violations, 16 census words** across the 25 decks (ferocious,
+metalcraft, ward and flashback on cards whose typed field is empty,
+kicker, devoid, harmonize, flurry, emerge, meld, amass, ascend,
+protection from a non-colour). The auditor's own findings on the
+fixed tree are therefore clean; the census is the backlog.
+
+### R2 — mechanic coverage census (`tools/keyword_coverage.py` → `docs/design/rules_coverage.md`)
+
+Generated from the code: for every keyword-ability word in the pool,
+the pool count, registered-deck usage (copies across the 25 lists'
+mainboards and sideboards), and the engine's status derived from the
+`Keyword` enum, the typed `CardTemplate` fields the loader populates and
+`EFFECT_REGISTRY`. First table: **101 words, 53 with no model**; on
+registered cards, ranked by copies: kicker 24 (Consult the Star Charts,
+Orim's Chant, Sowing Mycospawn), devoid 17, metalcraft 10 (a runtime
+predicate today, not a typed field), ferocious 4 (Stubborn Denial),
+harmonize 4 (Nature's Rhythm), flurry 4 (Cori-Steel Cutter), daybound,
+emerge, meld 1 each. `tests/test_keyword_coverage_census.py` pins the
+derivation and that the committed table equals the generator's output.
+
+### R3 — single-owner ratchet (`tools/check_single_owner.py`) and the process rule
+
+Pins (may only fall) the count of second paths that re-implement a
+rule's check: target picks outside `engine/target_solver` (12 — the
+remaining handlers pick from the opponent's board without the solver:
+Force of Vigor, Wear // Tear, Meltdown, Kolaghan's Command, Celestial
+Purge, Scapeshift, Grazer / Titan land searches, and three `game_runner`
+activation heuristics), direct damage / life writes outside
+`engine/damage.py` (42), direct counter writes outside the counter
+primitive (5). CI step, pytest bridge, CLAUDE.md prohibition, and the
+process rule: a rules gap found in a replay lands with its failing test,
+its fix and its auditor invariant in one commit; later units come from
+the audit ranking and the coverage census.
+
+### Unit Z3 — target legality is one rule at cast and on resolution (`afe7257` → branch)
+
+**Diagnosis** (three shapes from the 2026-09-12 replays). (1) Prismatic
+Ending cast with W+U+U up against an MV-2 creature resolved doing
+nothing (s60300 L468-474): the printed pips are paid before X is
+chosen, so at the picker's call the Fountain that paid {W} was tapped
+and `converge_reachable_max_mv` counted one colour fewer than the cast
+would spend — X=0 into a reachable target. (2) Solitude exiled a
+hexproof Scion of Draco (s60303 L360-366): ETB and resolve handlers
+chose their target straight from the opponent's creatures. (3) Two
+Fatal Pushes were aimed at an MV-7 Devourer and resolved doing nothing
+(s60206 L398-407): a mana-value bound that is a resolution condition
+parsed to no bound at all. Ending's shape is a resolution condition
+too ("if its mana value is ≤ colours spent"): casting it at an
+unreachable target is legal, so the fix is the picker's accounting and
+the AI's choice, not a cast gate — the engine keeps enforcing rules,
+the AI keeps choosing.
+
+**Rule** (CR 601.2c, 608.2b, 702.11d): the converge picker counts the
+colours already spent on this cast (`game._last_colors_spent`) plus
+what the untapped sources add; `card_effects.legal_targets` filters
+every handler's candidates through `target_solver.can_be_targeted`
+(Solitude, Bowmasters, Ballista, Dispatch, Thraben Charm; a structural
+test pins that no handler picks outside the solver, an opponent's own
+sacrifice choice excepted); `parse_conditional_mv_removal` types the
+resolution-condition bound with its revolt raise into
+`CardTemplate.removal_mv_condition` (declared in the narrow-typed-field
+baseline: two Modern cards, generic shape-driven mechanic) and the AI's
+target chooser honours a numeric bound. Tests:
+`tests/test_target_legality_is_one_rule_at_cast_and_on_resolution.py`
+(five rules). Related pins 842 green; ratchets at baseline; anchor: one
+turn-only drift (Domain Zoo vs Eldrazi Tron s50000, 14 → 22, same
+winner) refreshed; chunks a–g 2269 / h–z 2313.
+
+**Measurement** (same seeds, n=20 Bo3; pre = branch with Z1+Z2, post =
+Z3): Zoo vs Azorius Control **45 → 60**, vs WST v2 **45 → 60**, vs
+Boros Ponza 50 → 55, vs 4/5c 65 → 65; **Zoo field 68.3 → 71.0**;
+guards WST v2 field 46.5 → 45.8 (draws 22 → 23), Ruby Storm field 53.1
+→ 53.1. The direction is the rules': under Leyline of the Guildpact
+Scion of Draco is hexproof (Scion grants "hexproof if it's blue" to a
+team that is every colour), so the control decks' Solitude can no
+longer exile it — an under-credit of Zoo removed. Recorded as such; the
+lane's running total on the same seeds: 70.0 → 69.4 (Z1) → 68.3 (Z2)
+→ 71.0 (Z3). The band verdict is the n=60 field on the integrated
+head, below.
+
+### Zoo band verdict on the integrated head (`2efba3c`, n=60, 2026-09-12)
+
+`--field "Domain Zoo" -n 60 --parallel` on the matchup grid: **69.5**
+(16 draws credited to nobody, no aborts) against [50,65] — the 09-11
+reading was 70.7 and the 09-12 matrix row 69.4, so three rules units
+that each moved the cells they name left the flat field where it was.
+The row: Amulet 95, Toolbox 95, Goryo's 90, Affinity 83, Azorius Blink
+82, Hollow One 82, Ramp 80, Jeskai 78, Prowess 77, Pinnacle 75, Instant
+Reanimator 75, 4/5c 72, WST 72, Broodscale 70, Tron 68, Grixis 65, WST v2
+63, Boros 62, Azorius 58, Ponza 52, Storm 50, Omnath 45, Living End 42,
+Dimir 38. The cells that fell are the Moon decks (Ponza 60 → 52) and
+Boros (65 → 62); the cells that rose are the control decks whose
+Solitude can no longer exile a hexproof Scion. Zoo's flat field is the
+tail's defects plus a real strength against the sub-band control decks;
+the meta-weighted figure is the tournament-relevant one, and re-banding
+on it is the user's decision (unchanged from the loop-break doc).
+
+Loop-break status: Z1 and Z2 each moved a Zoo cell (the 3-of-3 counter
+reset); Z3 moved cells the other way, rules-correctly. The next units
+on any lane come from the audit ranking and the coverage census (kicker,
+devoid, metalcraft, ferocious, harmonize, flurry on registered cards;
+the twelve handlers still picking targets outside the solver), per the
+process rule.
+
+## Census-chosen units (2026-09-13)
+
+The process rule now in force: units come from the coverage census
+(`docs/design/rules_coverage.md`) and the auditor's ranking, not from the
+next replay. Triage of the census's top rows first:
+
+- **devoid (17 copies, top of the census)** — already correct. MTGJSON
+  bakes the colour-defining ability into the `colors` field, so every
+  registered devoid card (Sowing Mycospawn, Kozilek's Return, Basking
+  Broodscale, Thief of Existence) already has `colors == []` and its
+  "cast a colorless spell" triggers already fire. The census flags it
+  only because there is no `Keyword.DEVOID` / typed field, not because
+  behaviour is wrong. No unit; a note so the next session does not chase it.
+- **metalcraft (10)** — splits into two mechanics under one word: Mox
+  Opal's any-colour mana ability is modelled (a runtime predicate,
+  `is_metalcraft_mana_any_color`), while Galvanic Blast's "deals 4
+  instead if you control three or more artifacts" damage upgrade is NOT
+  (`direct_damage_data=None`, always 2). The damage upgrade is a real gap
+  (a conditional-damage-upgrade class), recorded as the next lead.
+- **kicker (24)** — genuinely unmodelled (every cast resolves unkicked),
+  but the fix spans the payment path AND per-card kicked clauses
+  (Mycospawn's exile-land, Orim's Chant's no-attacks, Consult's dig
+  count) across cast_manager + oracle_resolver + card_effects + ai — a
+  multi-subsystem unit, deferred with its own diagnosis.
+- **ferocious (Stubborn Denial ×4)** — a real single-subsystem
+  behavioural bug; built as K3.
+
+### Unit K3 — a soft counter is a hard counter when its printed board condition holds (`2fbd78c`)
+
+**Diagnosis.** Stubborn Denial parsed to `counter_tax_amount=1` with no
+model of "Ferocious — If you control a creature with power 4 or greater,
+counter that spell instead". So it was ALWAYS a soft {1} tax: a Domain
+Zoo deck (4 copies) holding a 4-power Territorial Kavu or Scion of Draco
+(both reach power 4+ under domain) still let the opponent pay {1}
+through, when the counter should be unconditional. Class: the "counter
+that spell instead if <board condition>" family (3 pool cards; the
+creature-power form is the one registered carrier, the parser is
+shape-driven).
+
+**Rule** (CR 601.2b): `oracle_parser.parse_counter_upgrade_condition`
+types the creature-power upgrade into
+`CardTemplate.counter_upgrade_condition`;
+`engine.optional_costs.effective_counter_tax` is the one predicate the
+resolution branch and the AI's two tax reads (`ai/response.py`,
+`ai/ev_player.py`) share — 0 (hard counter) when the condition holds,
+the printed tax otherwise. Auditor invariant `601.2b/counter_upgrade`,
+restated independently. Narrow-typed-field baseline declares the field.
+Tests: `tests/test_soft_counter_upgraded_by_printed_condition.py` (4) +
+the auditor test; counter/holdback pins 246 green; ratchets at baseline;
+anchor 29 passed, no flips; CI green on `2fbd78c`.
+
+**Measurement** (same seeds, n=20 Bo3; pre = parent, post = K3):
+**Domain Zoo field 71.0 → 73.8 (+2.8pp)** — only the deck that runs the
+ferocious counter moves, and it rises because its Denials now hard-counter
+correctly (rules-correct, the same "up but correct" direction as Z3; it
+pushes Zoo further above band, which is the truth of the rules, not a
+tuning target). Guards flat: 4/5c Control 54.8 → 54.8 (no ferocious
+counter), Azorius Control (WST v2) 45.8 → 45.6 (noise). Next lead:
+Galvanic Blast's metalcraft damage upgrade (the conditional-damage class).
+
+### Unit KD — an any-target burn applies its printed conditional damage upgrade (`f0885ab`)
+
+From the census's metalcraft row (triaged in K3's entry as "Mox mana
+modelled, Galvanic Blast damage not"). Galvanic Blast ("deals 2 to any
+target; Metalcraft — deals 4 instead if you control three or more
+artifacts") had `direct_damage_data=None` (the parser refused the
+"instead" rider) and no handler, so it always dealt 2.
+
+**Verify-before-build note:** the sibling card Unholy Heat (×11, the
+higher-usage delirium burn) was checked first and is ALREADY correct —
+it has a per-card `unholy_heat_resolve` handler that deals 6 with
+delirium. So KD's real in-scope target is Galvanic Blast alone
+(any-target conditional burn); Unholy Heat is creature-targeted, out of
+the any-target parser's scope, and stays on its handler. Lead recorded:
+generalize that handler into this typed field to shrink the card-name
+registry.
+
+**Rule** (CR 608.2): `parse_direct_damage_spell` types the upgrade
+(amount / upgrade_amount / condition) as a sub-key of `direct_damage_data`
+via a shape regex on "deals M damage instead if";
+`oracle_resolver.effective_direct_damage` is the one evaluator the
+resolution dispatch and the AI's `burn_damage` accessor share (upgrade
+when delirium/metalcraft holds for the caster, else base;
+`burn_damage(template, game, controller)` is now game-aware). Auditor
+invariant `608.2/damage_upgrade`. Tests:
+`tests/test_conditional_damage_upgrade.py` (5) + the auditor test;
+direct-damage/burn pins 41 green; ratchets at baseline; anchor 29
+passed, no flips; only Galvanic Blast gets the upgrade (no false
+positives). CI green on `f0885ab`.
+
+**Measurement** (same seeds, n=20 Bo3; pre = parent, post = KD):
+**Affinity field 47.1 → 47.1** — flat, as expected: Galvanic Blast is a
+sideboard card (2 copies), in only the post-board games of certain
+matchups, and the extra 2 damage did not swing these 20 seeds. A
+rules-correct fix with no measurable field impact on a situational SB
+piece; its value is correctness (and a metalcraft Blast that now kills
+what it should), and the auditor will read 0 for this gap on the next
+run.
+
+## Meta refresh (2026-09-13)
+
+Full refresh on `02e173c` (PR #571 head; Zoo lane + R1–R3 + K3 + KD
+landed since the 09-12 refresh, tree clean, nothing pending on the
+measured path). Same geometry as 09-12: n=60 per pair, `--parallel`,
+`run_matchup` per pair on the MATCHUP grid (50000 + 500·k), so this run
+is comparable to the 09-12 refresh at BOTH field and cell level (both
+n=60, same grid, same seeds). **Caveat:** GitHub Pages serves `main`;
+PR #571 is unmerged, so these refreshed pages reach the live site only
+when #571 merges — the refresh is committed to the branch either way.
+
+### Phase A — matrix (`02e173c`)
+
+`MTG_LLM_DECISION_SCORER_OFFLINE=1 python run_meta.py --matrix -n 60
+--save --parallel --rules-audit`, 3 workers: **≈4 h 48 min** (16:26 →
+21:14 UTC) for 300 pairs × 60 Bo3 = 18 000 matches. Calibration
+(`tools/check_calibration.py`, auto-run by `--save`): **31 in band /
+65 out / 0 skipped** (unchanged from 09-12's 31 / 65 — the movements
+below are all sub-3pp and cross no band edges). **`aborted == 0`**
+(calibration-grade — safe to read), `draws == 247` (~0.7% of games,
+legitimate turn-cap / simultaneous-loss draws, credited to nobody per
+Unit 2). Dashboard merged and rebuilt by `--save`
+(`modern_meta_matrix_full.html`; `matchup_cards` 300 / `deck_cards` 25
+preserved for Phase B; `matches_per_pair` 60).
+
+**Rules audit (`--rules-audit`):** 39 findings written to
+`audits/rules_audit_20260913T211440Z.jsonl` — **all 39 are
+`keyword/unmodelled` census entries; ZERO rule violations.** This is
+the auditor's designed 0-violations reading on the fixed engine (R1),
+plus the keyword-coverage census recorded for free across the whole
+matrix. No CR-invariant fired anywhere in 18 000 matches, which is the
+end state the whole Z1–Z3 / E-series sweep was aimed at.
+
+| Deck | 09-12 (n60) | 09-13 (n60) | Δ |
+|---|---|---|---|
+| Domain Zoo | 69.4 | **71.6** | +2.2 |
+| Eldrazi Tron | 68.7 | 68.3 | −0.4 |
+| Dimir Midrange | 65.2 | 64.1 | −1.1 |
+| Broodscale Bloodchief | 60.7 | 62.5 | +1.8 |
+| Boros Energy | 61.8 | 61.1 | −0.7 |
+| Izzet Prowess | 61.2 | 60.3 | −0.9 |
+| 4c Omnath | 58.4 | 57.8 | −0.6 |
+| Living End | 56.8 | 56.2 | −0.6 |
+| Pinnacle Affinity | 55.6 | 56.2 | +0.6 |
+| Eldrazi Ramp | 55.2 | 56.0 | +0.8 |
+| Grixis Reanimator | 53.8 | 55.7 | +1.9 |
+| Ruby Storm | 55.2 | 55.0 | −0.2 |
+| 4/5c Control | 53.3 | 53.2 | −0.1 |
+| Azorius Control (WST v2) | 49.8 | 49.7 | −0.1 |
+| Boros Ponza | 51.3 | 49.2 | −2.1 |
+| Instant Reanimator | 49.6 | 47.9 | −1.7 |
+| Goryo's Vengeance | 47.2 | 46.6 | −0.6 |
+| Azorius Control | 45.0 | 45.2 | +0.2 |
+| Affinity | 44.8 | 44.5 | −0.3 |
+| Azorius Control (WST) | 40.3 | 40.7 | +0.4 |
+| Hollow One | 34.0 | 33.6 | −0.4 |
+| Azorius Blink | 31.6 | 29.9 | −1.7 |
+| Jeskai Blink | 29.0 | 28.8 | −0.2 |
+| Amulet Titan | 25.3 | 23.3 | −2.0 |
+| Creatures Toolbox | 17.9 | 20.8 | +2.9 |
+
+Reading: every movement is sub-3pp — the net of the five
+behaviour-changing units since 09-12 (Z1 land-types-from-the-layer,
+Z2 per-creature combat-damage steps, Z3 target legality, K3 ferocious
+hard-counter, KD metalcraft burn; R1–R3 are behaviour-neutral). The
+signed ones land where the rule predicts: **Zoo +2.2** (K3 makes its
+four Stubborn Denials hard counters behind a 4-power creature — a
+rules-correct RISE, recorded as such in K3's entry; the rules sweep
+does not pull flat Zoo into [50,65], which the 09-12 loop-break doc
+already established and which the weighted-field re-band decision still
+owns); **Boros Ponza −2.1** (Z1 — Ponza is the deck that resolves its
+own Blood Moon, so correcting domain/fetch reads under a type-setting
+effect costs it the phantom fixing it used to keep); **Creatures
+Toolbox +2.9 / Broodscale +1.8** (Z2 — first-strike blockers and
+blockers of first-strikers now deal their damage, and both decks field
+first-strikers); **Grixis +1.9**. Amulet (−2.0), Azorius Blink (−1.7),
+Jeskai Blink, Hollow One remain the known sub-band lane, unchanged in
+character by this refresh. The dashboard/showcase now describe the
+`02e173c` engine; the out-of-band cells stay ground-truth divergence
+probes for the next census-chosen units, not refresh work.
+
+### Phase B — card-level detail (`8a47c8f`)
+
+`extract_card_data.py 10` (300 pairs × 10 verbose Bo3) on `02e173c`,
+merged into `metagame_data.jsx` BY DECK NAME (the scratch
+`merge_card_data.py` — dashboard order, 3 reordered decks flipped
+side-for-side), dashboard rebuilt. Self-checks: no misplaced deck_card,
+no mislabeled matchup_cell (all 300 keyed i<j and naming their decks);
+matchup_cards 300 / deck_cards 25. Card detail reflects the fixed
+engine (e.g. the Zoo/Amulet card cell reads Zoo 100-0, matching its
+98% matrix cell).
+
+### Phase C — showcase (`d472974`)
+
+`build_showcase.py` on the 09-13 JSX (WR data, colour arrays, bands
+from `tools/calibration_bands.json`, Bo3 count auto-patched;
+parallel-array self-check passed). Hand-authored: run date 2026-09-13,
+calibration "31 of 96 in band", the valData comment, and one new
+timeline entry for the 09-12 → 09-13 rules-enforcement sweep (auditor +
+census + single-owner ratchet; Z1–Z3, R1–R3, K3, KD). Verified without
+a browser (none installed): `node --check` on the single inline block
+(no parse error — the Goryo's-apostrophe bug class the 09-06 refresh
+hit), a DOM-stub execution (no runtime error, DOMContentLoaded fires
+clean), the data arrays parallel at 25 (`wrData`/`wrBgDef`/`wrBrDef`/
+`wrLabels`) with a 25×25 `wins` matrix (600 off-diagonal heatmap
+cells), and `tests/test_showcase_val_data_is_valid_js` green. Root copy
+`mtgsimmanu_showcase.html` synced identical.
+
+### Phase D — post-sim outlier replays (`<this commit>`)
+
+Each out-of-band deck's worst + best cell (from the fresh JSX vs
+`tools/calibration_bands.json`), capped at 8 pairs, seeds 60400–60407,
+`--bo3` logs in `replays/*.txt` + `build_replay.py` viewers. Every
+single-seed Bo3 confirms its matrix-cell direction:
+
+| Seed | Pair | Cell | Bo3 result |
+|---|---|---|---|
+| 60400 | Amulet Titan vs Domain Zoo | Amulet worst (5%) | Zoo 2-0 |
+| 60401 | Amulet Titan vs Creatures Toolbox | Amulet best (58%) | Amulet 2-0 |
+| 60402 | Jeskai Blink vs 4c Omnath | Jeskai worst (5%) | 4c Omnath 2-1 |
+| 60403 | Jeskai Blink vs Amulet Titan | Jeskai best (72%) | Jeskai 2-0 |
+| 60404 | Creatures Toolbox vs Domain Zoo | Toolbox worst (3%) | Zoo 2-0 |
+| 60405 | Creatures Toolbox vs Amulet Titan | Toolbox best (55%) | Toolbox 2-1 |
+| 60406 | Domain Zoo vs 4c Omnath | Zoo worst (42%) | Zoo 2-1 |
+| 60407 | Domain Zoo vs Amulet Titan | Zoo best (98%) | Zoo 2-0 |
+
+The four out-of-band decks are Amulet Titan (23.3, far below), Jeskai
+Blink (28.8, below), Creatures Toolbox (20.8, below), Domain Zoo (71.7,
+above) — the known open lanes, unchanged in character by the refresh.
+These replays are the diagnostic starting points for the next
+census/audit-chosen units, not refresh work.
+
+---
+
+## Unit KF — Flurry is the ordinal-cast-trigger class; recognise it, audit it, and fire its non-token effects (CR 603.2, 2026-09-13)
+
+Census-chosen unit (the `flurry` row, 4 registered copies, was among the
+"53 words with no model"). **Verify-before-build finding (KD form):**
+Flurry is ALREADY modelled via the typed field
+`CardTemplate.ordinal_cast_trigger` — parser
+`oracle_parser.parse_ordinal_cast_trigger` matches "whenever you cast your
+(first…fifth) spell each turn", gate `oracle_resolver._ordinal_cast_trigger_fires`
+is an equality against `PlayerState.spells_cast_this_turn` (correct
+because the counter is bumped before triggers run), and
+`tests/test_ordinal_cast_trigger.py` (17 tests, green) already covers
+Cori-Steel Cutter end-to-end (token on the 2nd spell, per-turn reset,
+controller-only count, equip auto-attach). Cori-Steel Cutter ×4 in Izzet
+Prowess is the ONLY registered flurry card and its effect is a token —
+so there is no behavioural gap for any registered deck and **no win-rate
+movement** in this unit. Three real gaps remained:
+
+1. **Census mis-report.** `engine/rules_audit_census.py::_FIELD_FOR_WORD`
+   had no `flurry` key, so the census read "none" for a fully-typed
+   mechanic. Added `"flurry": "ordinal_cast_trigger"`; regenerating
+   `docs/design/rules_coverage.md` flips the row `none → typed field
+   (ordinal_cast_trigger)` (52 words with no model, was 53). Single-row
+   diff — the doc was not stale beyond flurry.
+
+2. **No auditor invariant for the 45-card ordinal class** (K3/KD each
+   shipped one; the ordinal class predates R1). Added
+   `603.2/ordinal_cast` at both gate seams
+   (`resolve_spell_cast_trigger`, controller + opponent loops), restated
+   independently of the helper: the gate fires iff the caster's per-turn
+   count equals the ordinal for the trigger's scope. Observation only,
+   gated by `rules_audit.enabled()`. Auditor test in
+   `tests/test_rules_audit.py::test_ordinal_cast_audit_sees_an_over_triggered_ordinal`
+   (monkeypatch the gate to always-fire → the invariant records the
+   over-trigger on the 1st spell).
+
+3. **Behavioural leg (user-approved): non-token ordinal effects did
+   nothing.** The gate dispatched only the shared token branch
+   (`cast_trigger_token`); a non-token ordinal card (`cast_trigger_token
+   is None`) passed the gate and fell through every branch. Class: 45
+   ordinal cards, 9 make a token; of the 36 non-token, a generic
+   dispatch reaches the counter (11), damage (5), draw (2) and gain-life
+   (1) shapes — **≈19 cards, ≥10, class-sized.** Fix (mirroring the
+   `_fire_creature_dies_observers` dispatcher): `parse_ordinal_effect`
+   types the clause once into `ordinal_cast_trigger["effect"]` (reusing
+   the dies-observer counter/gain/draw regexes + one ordinal damage
+   regex), and `_apply_ordinal_nontoken_effect` dispatches it through the
+   rule owners — `CardInstance.add_plus_counters` (counters),
+   `engine.damage.deal_damage` (opponent damage, never a raw `.life -=`),
+   `game.gain_life`, `game.draw_cards`. Relative to the ability's
+   CONTROLLER, so "you"/"any"/"opponent" scopes are all correct. Shapes
+   the executor cannot run whole (proliferate, modal "choose one",
+   coin-flip, copy, a trailing second sentence — e.g. Bloodsky
+   Berserker's "…It gains menace") parse to None and are refused, never
+   half-run (the anchored `$` rejects the extra text).
+
+**Tests:** `tests/test_ordinal_cast_trigger_nontoken_effects.py` (parse
+layer: counter/damage/damage+gain/gain/draw typed, token clause and
+refused shapes → None; dispatch layer: Monk of the Open Hand counter on
+the 2nd spell only, Devoted Duelist damage to each opponent, Cori
+Mountain Stalwart damage+gain, Doomskar Oracle gain, Jori En draw, a
+token card unchanged, a refused shape a no-op) + the auditor test. Red
+first (ImportError on `parse_ordinal_effect`; no `603.2/ordinal_cast`),
+green after.
+
+**Ratchets:** single-owner unchanged `{target_pick:12, damage_write:42,
+counter_write:5}` (the dispatch reuses the counter/damage/life owners —
+no category grows); abstraction, magic-numbers (13/13), narrow-typed-field
+(reusing the 45-card `ordinal_cast_trigger`, no new field), doc-hygiene
+all at baseline.
+
+**Measurement:** no registered deck carries a non-token ordinal card, so
+the engine is byte-identical on every registered matchup — anchor stays
+green with no flips, Izzet Prowess field unchanged by construction (the
+only registered flurry card, Cori-Steel Cutter, is a token, guarded by
+`cast_trigger_token is None`). The value is rules-correctness (36
+non-token ordinal cards now fire their printed effect) + observability
+(the ordinal class is now audited on every matrix run) + census accuracy.
+
+**Leads recorded, not built:** the ~14 refused ordinal shapes
+(proliferate / other-counter / modal / coin-flip / copy / add-mana); the
+census `flurry` pool count of 10 includes one false positive (Monk of
+the Open Hand's distinct "Flurry of Blows" ability word); a compound
+"token + non-token effect" ordinal card would stay token-only (none
+known in the pool).
+
+---
+
+## Unit K1 — Kicker/Multikicker (CR 702.33) + combat prevention (CR 509/615), as classes (2026-09-14)
+
+Census-chosen (kicker was the #1 unmodelled row: 167 pool / 24 registered / 3 cards). Per the "rules as a whole" directive, modelled as three CR CLASSES, not the three registered cards, over three commits.
+
+**Commit 1 (`86a4388`) — combat prevention as a class.** No combat-prevention primitive existed anywhere; Orim's Chant's kicked Fog forced it. `parse_combat_prevention` (structured: symmetric / directional attack lock, prevent-all-combat-damage — sidesteps the `parse_turn_scoped_restriction` first-match bug); three turn-scoped `PlayerState` flags reset by `reset_turn_tracking`; enforced once each in `CombatManager.valid_attackers` (attack locks) and `resolve_combat_damage` (Fog, CR 615); resolver sets them from the resolving text. Auditor `509/no_attacks`. 11 tests + anchor 29 no flips; inert when unset.
+
+**Commit 2 (`38b6d7a`) — kicker/multikicker payment mechanism (mirror evoke).** `parse_kicker`/`parse_kicked_clause` → `kicker_cost` / `multikicker` / `kicked_clause` (and/or-kicker refused); `StackItem.kick_count`; `cast_spell` pays base PLUS `kick_count*kicker` (additive, clamped to affordable mana) when the `should_kick` callback returns a count; `ai/board_eval.ActionType.KICK` + `_eval_kick`; auditor `702.33/kicked_cost_paid`. Byte-identical (AI returns 0 until the payoffs are dispatched); anchor 29 no flips.
+
+**Commit 3 (`<this>`) — kicked-effect dispatch + AI kick policy.** The kicked payoff resolves only when `kick_count>0`, at the shape's own seam: **Orim's Chant** Fog via the combat-prevention branch (idempotent additive dispatch at the resolve seam); **Consult the Star Charts** "put two instead" via the library-dig branch reading the kicked "put N instead" count; **Sowing Mycospawn** "exile target land" is a when-cast payoff the generic resolver has no targeted-land-exile branch for — **recorded lead, not built**, and `_eval_kick` does not offer that kick. `_eval_kick` kicks only when the payoff is dispatched (Fog / dig-bonus) and affordable — a Fog only when the opponent has a board.
+
+Tests: `test_combat_prevention_class.py`, `test_kicker_optional_additional_cost.py` (parse + payment + affordability clamp), `test_kicker_kicked_effects.py` (Orim's Chant Fog, Consult put-two, the AI kick gate), + `test_rules_audit.py` (509 / 702.33). Ratchets at baseline (single-owner 12/42/5, magic 13/13, card-name-registry 87, narrow-field — kicker_cost on 167 cards). Census `kicker` row flipped none → typed field (51 unmodelled).
+
+**Measurement (same-seed n=20 field, commit 2 → commit 3):** Azorius Control **48.1 → 48.3** (+0.2pp, flat) — but drawn games fell 10 → 4: the kicked Fog/Consult fire and make games more decisive, net-neutral on WR. A rules-correctness + observability unit (kicker now works for 167 cards; Orim's Chant Fogs, Consult draws two), not a WR mover at n=20 — the KF/KD pattern.
+
+**Leads recorded:** Sowing's "exile target land" (needs targeted land-exile in the generic resolver); the ~130 other "if kicked" resolve-riders beyond combat-prevention (the additive dispatch is gated to the idempotent Fog class for safety); multikicker scaling clauses ("for each time it was kicked").
+
+---
+
+## Structural outliers program — Lane T diagnosis (Creatures Toolbox, 2026-09-14, replay on tip `def8d46`)
+
+Replay `replays/zoo_vs_toolbox_tip.txt` (Domain Zoo vs Creatures Toolbox s50000, Zoo 2-0). **The engine is NOT the problem on the current tip** — Craterhoof's ETB mass pump fires (`… creatures get +3/+3 and trample`, log L953; `team_pump_data` modelled), the Devoted Druid `-1/-1`→untap loop fires and generates ~82 mana (L744/955-957, `engine/activation.py:306` bound), E13 counters work. The keep-home gate (`b81af88`) and the Toolbox engine classes are already in.
+
+**Confirmed live divergence — AI payoff sequencing under an assembled combo (ai/, not a rules gap):**
+1. The AI reactivates **Fiend Artisan every turn (T3-T7), sacrificing its OWN engine** — Dryad Arbor → Devoted Druid → Vizier of Remedies (L674/739/806/871/950) — grinding its board and delaying the payoff to T7.
+2. By the time Craterhoof lands, the support creatures are **tapped by those activations** (Fiend Artisan tapped, Druid tapped/looping), so only Craterhoof (haste) attacks for **8** (L967-970) instead of a pumped-team alpha strike; Zoo (23 life) survives and exiles Craterhoof with Leyline Binding next turn (L999-1000).
+
+**Subsystem / class:** the "unbounded-mana → outlet / payoff sequencing" AI lane — (a) a sacrifice-tutor (Fiend Artisan, Birthing Pod, Neoform class) must not sacrifice its own assembled engine/payoff pieces and must stop re-activating once the payoff is found; (b) once a lethal mass-pump payoff (Craterhoof / `team_pump_data`) is reachable, the AI must sequence to the alpha strike (deploy + swing the whole pumped team) rather than tapping the board out on the tutor first. `ai/ev_player.py` activation/attacker sequencing + Fiend Artisan sac-target selection; `ActivationManager.would_complete_unbounded_engine`. Class-sized (sac-tutors × mass-pump payoffs × unbounded engines); lifts Toolbox and deflates its Zoo/Dimir/Tron 95/92 donations. FIX = next unit (failing test first); this entry is the required pre-code subsystem naming.

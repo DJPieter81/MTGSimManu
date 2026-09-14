@@ -1,0 +1,1190 @@
+Loaded 22470 cards (0 errors)
+======================================================================
+  GAME 1: Amulet Titan (P1) vs Creatures Toolbox (P2)  —  seed 60401
+  Series: Amulet Titan 0 - 0 Creatures Toolbox
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Amulet Titan wins → chooses to play first
+║ P1 (on play): Amulet Titan
+║ P2 (on draw): Creatures Toolbox
+╚═══════════════════════════════════════════════════════
+
+P1 (Amulet Titan) opening hand (4 lands, 3 spells):
+  • Arboreal Grazer [Creature, CMC 1]
+  • Spelunking [Spell, CMC 3]
+  • Green Sun's Zenith [Spell, CMC 1]
+  • Gruul Turf [Land, CMC 0]
+  • Simic Growth Chamber [Land, CMC 0]
+  • Echoing Deeps [Land, CMC 0]
+  • Urza's Saga [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Arboreal Grazer, Green Sun's Zenith, Spelunking, 3 cheap spells
+
+P2 (Creatures Toolbox) opening hand (5 lands, 2 spells):
+  • Nurturing Peatland [Land, CMC 0]
+  • Badgermole Cub [Creature, CMC 2]
+  • Dryad Arbor [Land, CMC 0]
+  • Boseiju, Who Endures [Land, CMC 0]
+  • Fiend Artisan [Creature, CMC 2]
+  • Misty Rainforest [Land, CMC 0]
+  • Underground Mortuary [Land, CMC 0]
+→ P2 MULLIGANS (too many lands (5 > 4); first-turn value 2 < 5)
+  New hand (2 lands, 5 spells): ['Overgrown Tomb', 'Underground Mortuary', 'Craterhoof Behemoth', "Agatha's Soul Cauldron", 'Delighted Halfling', "Green Sun's Zenith", 'Devoted Druid']
+→ P2 mulligans to 6, bottoms: ["Green Sun's Zenith"]
+  Keeps: ['Overgrown Tomb', 'Underground Mortuary', 'Craterhoof Behemoth', "Agatha's Soul Cauldron", 'Delighted Halfling', 'Devoted Druid']
+
+
+╔══ TURN 1 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Creatures Toolbox 20
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+T1 P1: Play Urza's Saga
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Creatures Toolbox (P2) ══════════════════════════
+║ Life: Creatures Toolbox 20  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 54  |  Graveyard: 0
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Badgermole Cub
+  [Main 1]
+T1 P2: Play Overgrown Tomb (tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Creatures Toolbox 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: Urza's Saga
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Forest
+  [Main 1]
+T2 P1: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+T2 P1: Play Forest
+    → Goal: deploy_engine [enablers]
+    [Mana] Tap Forest→G (paying for Green Sun's Zenith, 1 mana remaining)
+T2 P1: Cast Green Sun's Zenith (1G) (X=1)
+    [Priority] P2 passes (no response)
+T2: Resolve Green Sun's Zenith
+T2: Dryad Arbor moved library -> battlefield (Green Sun's Zenith tutor)
+T2 P1: Green Sun's Zenith finds Dryad Arbor
+T2: Green Sun's Zenith moved stack -> graveyard (resolution)
+    → Goal: deploy_engine [enablers]
+    [Mana] Tap Dryad Arbor→G (paying for Arboreal Grazer, 0 mana remaining)
+T2 P1: Cast Arboreal Grazer (G)
+    [Priority] P2 passes (no response)
+T2: Resolve Arboreal Grazer
+T2: Urza's Saga moved battlefield -> hand (Gruul Turf ETB returns Urza's Saga to hand)
+T2 P1: Arboreal Grazer puts Gruul Turf onto battlefield
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Creatures Toolbox (P2) ══════════════════════════
+║ Life: Creatures Toolbox 20  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 3
+║ Library: 53  |  Graveyard: 0
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1) [tapped], Arboreal Grazer (0/3)
+║   Lands: Forest [T], Dryad Arbor [T], Gruul Turf [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Tyvar, Jubilant Brawler
+  [Main 1]
+T2 P2: surveil 1 → Badgermole Cub to GY
+T2 P2: Play Underground Mortuary (enters tapped)
+    → Goal: deploy_engine
+    [Mana] Tap Overgrown Tomb→G (paying for Delighted Halfling, 0 mana remaining)
+T2 P2: Cast Delighted Halfling (G)
+    [Priority] P1 passes (no response)
+T2: Resolve Delighted Halfling
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Creatures Toolbox 20
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: Dryad Arbor (1/1), Arboreal Grazer (0/3)
+║   Lands: Forest, Dryad Arbor, Gruul Turf
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2)
+║   Lands: Overgrown Tomb [T], Underground Mortuary [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Shifting Woodland
+  [Main 1]
+T3 P1: Urza's Saga Ch.I: gains "{T}: Add {C}."
+T3 P1: Play Urza's Saga
+    → Goal: ramp [enablers]
+    [Mana] Tap Forest→G, Urza's Saga→C, Gruul Turf→RG (paying for Spelunking, 2 mana remaining)
+T3 P1: Cast Spelunking (2G)
+    [Priority] P2 passes (no response)
+T3: Resolve Spelunking
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Dryad Arbor
+T3 P1: Attack with Dryad Arbor
+T3 P2:   [BLOCK] Delighted Halfling (1/2) blocks Dryad Arbor (1/1) — lifespan_delta=+0.50
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T3: Dryad Arbor dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Creatures Toolbox (P2) ══════════════════════════
+║ Life: Creatures Toolbox 20  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 51  |  Graveyard: 1
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2)
+║   Lands: Overgrown Tomb, Underground Mortuary
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Spelunking
+║   Lands: Forest [T], Gruul Turf [T], Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Birds of Paradise
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Overgrown Tomb→B, Underground Mortuary→G, Delighted Halfling→B (paying for Tyvar, Jubilant Brawler, 0 mana remaining)
+T3 P2: Cast Tyvar, Jubilant Brawler (1BG)
+    [Priority] P1 passes (no response)
+T3: Resolve Tyvar, Jubilant Brawler
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Creatures Toolbox 20
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Spelunking
+║   Lands: Forest, Gruul Turf, Urza's Saga
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2) [tapped]
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Overgrown Tomb [T], Underground Mortuary [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Green Sun's Zenith
+  [Main 1]
+T4 P1: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+T4 P1: Play Echoing Deeps
+T4 P1: Create 1x Construct token(s)
+T4 P1: Urza's Saga activates "{2}, {T}: Create a 0/0 colorless Constru..." (pays {2}, {T})
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Creatures Toolbox (P2) ══════════════════════════
+║ Life: Creatures Toolbox 20  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 50  |  Graveyard: 1
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Overgrown Tomb, Underground Mortuary
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Construct Token (1/1)
+║   Other: Spelunking
+║   Lands: Forest [T], Gruul Turf [T], Urza's Saga [T], Echoing Deeps
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Agatha's Soul Cauldron
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Overgrown Tomb→G, Underground Mortuary→B (paying for Badgermole Cub, 1 mana remaining)
+T4 P2: Cast Badgermole Cub (1G)
+    [Priority] P1 passes (no response)
+T4: Resolve Badgermole Cub
+    → Goal: execute_payoff
+    [Mana] Tap Delighted Halfling→BG (paying for Birds of Paradise, 1 mana remaining)
+T4 P2: Cast Birds of Paradise (G)
+    [Priority] P1 passes (no response)
+T4: Resolve Birds of Paradise
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 20  |  Creatures Toolbox 20
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 2
+║ Library: 49  |  Graveyard: 2
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Construct Token (1/1)
+║   Other: Spelunking
+║   Lands: Forest, Gruul Turf, Urza's Saga, Echoing Deeps
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2) [tapped], Badgermole Cub (2/2), Birds of Paradise (0/1)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Overgrown Tomb [T], Underground Mortuary [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Malevolent Rumble
+  [Main 1]
+T5 P1: Create 1x Construct token(s)
+T5 P1: Urza's Saga activates "{2}, {T}: Create a 0/0 colorless Constru..." (pays {2}, {T})
+T5 P1: Urza's Saga tutors Amulet of Vigor
+T5 P1: Sacrifice Urza's Saga (final chapter)
+T5 P1: Play Simic Growth Chamber (enters tapped)
+T5 P1: Amulet of Vigor untaps Simic Growth Chamber
+T5: Forest moved battlefield -> hand (Simic Growth Chamber ETB returns Forest to hand)
+    → Goal: ramp
+    [Mana] Tap Simic Growth Chamber→GU (paying for Malevolent Rumble, 1 mana remaining)
+T5 P1: Cast Malevolent Rumble (1G)
+    [Priority] P2 passes (no response)
+T5: Resolve Malevolent Rumble
+T5 P1: Create 1x spawn token(s)
+T5: Malevolent Rumble moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Construct Token
+T5 P1: Attack with Construct Token
+T5 P2:   [BLOCK] Birds of Paradise (0/1) blocks Construct Token (3/3) — lifespan_delta=+0.25
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T5: Birds of Paradise dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Creatures Toolbox (P2) ══════════════════════════
+║ Life: Creatures Toolbox 20  |  Amulet Titan 20
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2), Badgermole Cub (2/2)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Overgrown Tomb, Underground Mortuary
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Construct Token (3/3) [tapped], Construct Token (3/3), spawn Token (0/1)
+║   Other: Spelunking, Amulet of Vigor
+║   Lands: Gruul Turf [T], Echoing Deeps, Simic Growth Chamber [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Devoted Druid
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Overgrown Tomb→B, Underground Mortuary→B (paying for Agatha's Soul Cauldron, 2 mana remaining)
+T5 P2: Cast Agatha's Soul Cauldron (2)
+    [Priority] P1 passes (no response)
+T5: Resolve Agatha's Soul Cauldron
+    → Goal: execute_payoff
+    [Mana] Tap Delighted Halfling→BG (paying for Devoted Druid, 0 mana remaining)
+T5 P2: Cast Devoted Druid (1G)
+    [Priority] P1 passes (no response)
+T5: Resolve Devoted Druid
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Badgermole Cub
+T5 P2: Attack with Badgermole Cub
+  [Declare Blockers] P1 does not block
+T5 P2:   Badgermole Cub (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 20 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 18  |  Creatures Toolbox 20
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 47  |  Graveyard: 4
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Construct Token (3/3), Construct Token (3/3), spawn Token (0/1)
+║   Other: Spelunking, Amulet of Vigor
+║   Lands: Gruul Turf, Echoing Deeps, Simic Growth Chamber
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2) [tapped], Badgermole Cub (2/2) [tapped], Devoted Druid (0/2)
+║   Other: Tyvar, Jubilant Brawler, Agatha's Soul Cauldron
+║   Lands: Overgrown Tomb [T], Underground Mortuary [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Forest
+  [Main 1]
+T6 P1: Play Forest
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Construct Token, Construct Token
+T6 P1: Attack with Construct Token, Construct Token
+T6 P2:   [BLOCK] Devoted Druid (0/2) blocks Construct Token (3/3) — lifespan_delta=+0.22
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T6 P1:   Construct Token (3/3) → 3 dmg to player
+T6: Devoted Druid dies
+  [Combat Damage] 3 damage dealt → P2 life: 20 → 17
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Creatures Toolbox (P2) ══════════════════════════
+║ Life: Creatures Toolbox 17  |  Amulet Titan 18
+║ Hand: 3 cards  |  Opp hand: 3 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 48  |  Graveyard: 3
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2), Badgermole Cub (2/2)
+║   Other: Tyvar, Jubilant Brawler, Agatha's Soul Cauldron
+║   Lands: Overgrown Tomb, Underground Mortuary
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Construct Token (3/3) [tapped], Construct Token (3/3) [tapped], spawn Token (0/1)
+║   Other: Spelunking, Amulet of Vigor
+║   Lands: Gruul Turf, Echoing Deeps, Simic Growth Chamber, Forest
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Verdant Catacombs
+  [Main 1]
+T6 P2: Play Verdant Catacombs
+T6: Verdant Catacombs moved battlefield -> graveyard (fetchland sacrifice)
+T6 P2: Crack Verdant Catacombs (pay 1 life) -> Temple Garden (tapped, life: 16)
+    → Goal: execute_payoff
+    [Mana] Tap Delighted Halfling→BG (paying for Devoted Druid, 2 mana remaining)
+T6 P2: Cast Devoted Druid (1G)
+    [Priority] P1 passes (no response)
+T6: Resolve Devoted Druid
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Badgermole Cub
+T6 P2: Attack with Badgermole Cub
+  [Declare Blockers] P1 does not block
+T6 P2:   Badgermole Cub (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 18 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 16  |  Creatures Toolbox 16
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 46  |  Graveyard: 4
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Construct Token (3/3), Construct Token (3/3), spawn Token (0/1)
+║   Other: Spelunking, Amulet of Vigor
+║   Lands: Gruul Turf, Echoing Deeps, Simic Growth Chamber, Forest
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2) [tapped], Badgermole Cub (2/2) [tapped], Devoted Druid (0/2)
+║   Other: Tyvar, Jubilant Brawler, Agatha's Soul Cauldron
+║   Lands: Overgrown Tomb, Underground Mortuary, Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Primeval Titan
+  [Main 1]
+T7 P1: Play Forest
+    → Goal: ramp [payoffs]
+    [Mana] Tap Echoing Deeps→C, Forest→G, Forest→G, Gruul Turf→RG, Simic Growth Chamber→GU (paying for Primeval Titan, 1 mana remaining)
+T7 P1: Cast Primeval Titan (4GG)
+    [Priority] P2 passes (no response)
+T7: Resolve Primeval Titan
+T7 P1: Amulet of Vigor untaps Crumbling Vestige
+T7 P1: Primeval Titan searches for Crumbling Vestige
+T7 P1: Amulet of Vigor untaps Hanweir Battlements // Hanweir, the Writhing Township
+T7 P1: Primeval Titan searches for Hanweir Battlements // Hanweir, the Writhing Township
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Construct Token, Construct Token
+T7 P1: Attack with Construct Token, Construct Token
+  [Declare Blockers] P2 does not block
+T7 P1:   Construct Token (3/3) → 3 dmg to player
+T7 P1:   Construct Token (3/3) → 3 dmg to player
+  [Combat Damage] 6 damage dealt → P2 life: 16 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Creatures Toolbox (P2) ══════════════════════════
+║ Life: Creatures Toolbox 10  |  Amulet Titan 16
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 7
+║ Library: 46  |  Graveyard: 4
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2), Badgermole Cub (2/2), Devoted Druid (0/2)
+║   Other: Tyvar, Jubilant Brawler, Agatha's Soul Cauldron
+║   Lands: Overgrown Tomb, Underground Mortuary, Temple Garden
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Construct Token (3/3) [tapped], Construct Token (3/3) [tapped], spawn Token (0/1), Primeval Titan (6/6)
+║   Other: Spelunking, Amulet of Vigor
+║   Lands: Gruul Turf [T], Echoing Deeps [T], Simic Growth Chamber [T], Forest [T], Forest [T], Crumbling Vestige, Hanweir Battlements // Hanweir, the Writhing Township
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Green Sun's Zenith
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Devoted Druid→GG (paying for Green Sun's Zenith, 6 mana remaining)
+T7 P2: Cast Green Sun's Zenith (4G) (X=4)
+    [Priority] P1 passes (no response)
+T7: Resolve Green Sun's Zenith
+T7: Fiend Artisan moved library -> battlefield (Green Sun's Zenith tutor)
+T7 P2: Green Sun's Zenith finds Fiend Artisan
+T7: Green Sun's Zenith moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Badgermole Cub
+T7 P2: Attack with Badgermole Cub
+  [Declare Blockers] P1 does not block
+T7 P2:   Badgermole Cub (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P1 life: 16 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 14  |  Creatures Toolbox 10
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 7  |  Opp lands: 3
+║ Library: 43  |  Graveyard: 4
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Construct Token (3/3), Construct Token (3/3), spawn Token (0/1), Primeval Titan (6/6)
+║   Other: Spelunking, Amulet of Vigor
+║   Lands: Gruul Turf, Echoing Deeps, Simic Growth Chamber, Forest, Forest, Crumbling Vestige, Hanweir Battlements // Hanweir, the Writhing Township
+║ Creatures Toolbox board:
+║   Creatures: Delighted Halfling (1/2), Badgermole Cub (2/2) [tapped], Devoted Druid (0/2) [tapped], Fiend Artisan (1/1)
+║   Other: Tyvar, Jubilant Brawler, Agatha's Soul Cauldron
+║   Lands: Overgrown Tomb [T], Underground Mortuary [T], Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Summoner's Pact
+  [Main 1]
+T8 P1: Play Shifting Woodland (enters tapped)
+T8 P1: Amulet of Vigor untaps Shifting Woodland
+    → Goal: ramp
+    [Mana] Tap Forest→G (paying for Green Sun's Zenith, 9 mana remaining)
+T8 P1: Cast Green Sun's Zenith (7G) (X=7)
+    [Priority] P2 passes (no response)
+T8: Resolve Green Sun's Zenith
+T8: Primeval Titan moved library -> battlefield (Green Sun's Zenith tutor)
+T8 P1: Amulet of Vigor untaps Tolaria West
+T8 P1: Primeval Titan searches for Tolaria West
+T8 P1: Amulet of Vigor untaps Mirrorpool
+T8 P1: Primeval Titan searches for Mirrorpool
+T8 P1: Green Sun's Zenith finds Primeval Titan
+T8: Green Sun's Zenith moved stack -> graveyard (resolution)
+    → Goal: ramp
+T8 P1: Cast Summoner's Pact (0)
+    [Priority] P2 passes (no response)
+T8: Resolve Summoner's Pact
+T8 P1: Summoner's Pact finds Primeval Titan
+T8: Summoner's Pact moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Construct Token, Construct Token, Primeval Titan
+T8 P1: Amulet of Vigor untaps Crumbling Vestige
+T8 P1: Primeval Titan searches for Crumbling Vestige
+T8 P1: Amulet of Vigor untaps Simic Growth Chamber
+T8: Echoing Deeps moved battlefield -> hand (Simic Growth Chamber ETB returns Echoing Deeps to hand)
+T8 P1: Primeval Titan searches for Simic Growth Chamber
+T8 P1: Attack with Construct Token, Construct Token, Primeval Titan
+T8 P2:   [BLOCK-EMERGENCY] Fiend Artisan (1/1) blocks Primeval Titan (6/6) — lifespan_delta=-1.24
+T8 P2:   [BLOCK-EMERGENCY] Delighted Halfling (1/2) blocks Construct Token (3/3) — lifespan_delta=-1.21
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T8 P1:   Construct Token (3/3) → 3 dmg to player
+T8 P1:   Primeval Titan (6/6) → 5 dmg to player (trample)
+T8: Delighted Halfling dies
+T8: Fiend Artisan dies
+  [Combat Damage] 8 damage dealt → P2 life: 10 → 2
+  [End Combat]
+  [Main 2]
+    → Goal: ramp [payoffs]
+    [Mana] Tap Hanweir Battlements // Hanweir, the Writhing Township→C, Shifting Woodland→G, Tolaria West→U, Mirrorpool→C, Simic Growth Chamber→GU (paying for Primeval Titan, 1 mana remaining)
+T8 P1: Cast Primeval Titan (4GG)
+    [Priority] P2 passes (no response)
+T8: Resolve Primeval Titan
+T8 P1: Amulet of Vigor untaps Simic Growth Chamber
+T8: Forest moved battlefield -> hand (Simic Growth Chamber ETB returns Forest to hand)
+T8 P1: Primeval Titan searches for Simic Growth Chamber
+T8 P1: Amulet of Vigor untaps Gruul Turf
+T8: Forest moved battlefield -> hand (Gruul Turf ETB returns Forest to hand)
+T8 P1: Primeval Titan searches for Gruul Turf
+  [End Step]
+
+╔══ TURN 8 — Creatures Toolbox (P2) ══════════════════════════
+║ Life: Creatures Toolbox 2  |  Amulet Titan 14
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 11
+║ Library: 44  |  Graveyard: 7
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2), Devoted Druid (0/2)
+║   Other: Tyvar, Jubilant Brawler, Agatha's Soul Cauldron
+║   Lands: Overgrown Tomb, Underground Mortuary, Temple Garden
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Construct Token (3/3) [tapped], Construct Token (3/3) [tapped], spawn Token (0/1), Primeval Titan (6/6) [tapped], Primeval Titan (6/6), Primeval Titan (6/6)
+║   Other: Spelunking, Amulet of Vigor
+║   Lands: Gruul Turf [T], Simic Growth Chamber [T], Crumbling Vestige [T], Hanweir Battlements // Hanweir, the Writhing Township [T], Shifting Woodland [T], Tolaria West [T], Mirrorpool [T], Crumbling Vestige, Simic Growth Chamber [T], Simic Growth Chamber, Gruul Turf
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Nature's Rhythm
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Devoted Druid→GG (paying for Nature's Rhythm, 3 mana remaining)
+T8 P2: Cast Nature's Rhythm (2GG) (X=2)
+    [Priority] P1 passes (no response)
+T8: Resolve Nature's Rhythm
+T8: Vizier of Remedies moved library -> battlefield (Nature's Rhythm tutor)
+T8 P2: Nature's Rhythm finds Vizier of Remedies
+T8: Nature's Rhythm moved stack -> graveyard (resolution)
+    → Goal: execute_payoff [payoffs]
+T8 P2: loops Devoted Druid ×4 (CR 726 shortcut) — 8 mana
+T8 P2: Cast Craterhoof Behemoth (5GGG)
+    [Priority] P1 passes (no response)
+T8: Resolve Craterhoof Behemoth
+T8 P2: Craterhoof Behemoth — creatures get +4/+4 and trample
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Badgermole Cub, Craterhoof Behemoth
+T8 P2: Attack with Badgermole Cub, Craterhoof Behemoth
+T8 P1:   [BLOCK-EMERGENCY] spawn Token (0/1) blocks Craterhoof Behemoth (9/9) — lifespan_delta=+0.04
+T8 P1:   [BLOCK-EMERGENCY] Arboreal Grazer (0/3) blocks Badgermole Cub (6/6) — lifespan_delta=+0.12
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T8 P2:   Badgermole Cub (6/6) → 3 dmg to player (trample)
+T8 P2:   Craterhoof Behemoth (9/9) → 8 dmg to player (trample)
+T8: Arboreal Grazer dies
+T8: spawn Token dies
+  [Combat Damage] 11 damage dealt → P1 life: 14 → 3
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Amulet Titan (P1) ══════════════════════════
+║ Life: Amulet Titan 3  |  Creatures Toolbox 2
+║ Hand: 3 cards  |  Opp hand: 1 cards
+║ Lands: 11  |  Opp lands: 3
+║ Library: 34  |  Graveyard: 7
+║ Amulet Titan board:
+║   Creatures: Construct Token (3/3), Construct Token (3/3), Primeval Titan (6/6), Primeval Titan (6/6), Primeval Titan (6/6)
+║   Other: Spelunking, Amulet of Vigor
+║   Lands: Gruul Turf, Simic Growth Chamber, Crumbling Vestige, Hanweir Battlements // Hanweir, the Writhing Township, Shifting Woodland, Tolaria West, Mirrorpool, Crumbling Vestige, Simic Growth Chamber, Simic Growth Chamber, Gruul Turf
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2) [tapped], Devoted Druid (0/2) [tapped], Vizier of Remedies (2/1), Craterhoof Behemoth (5/5) [tapped]
+║   Other: Tyvar, Jubilant Brawler, Agatha's Soul Cauldron
+║   Lands: Overgrown Tomb [T], Underground Mortuary [T], Temple Garden
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Aftermath Analyst
+  [Main 1]
+    → Goal: ramp
+    [Mana] Tap Hanweir Battlements // Hanweir, the Writhing Township→C, Shifting Woodland→G (paying for Aftermath Analyst, 14 mana remaining)
+T9 P1: Cast Aftermath Analyst (1G)
+    [Priority] P2 passes (no response)
+T9: Resolve Aftermath Analyst
+T9: Scapeshift moved library -> graveyard (Aftermath Analyst mill)
+T9: Urza's Saga moved library -> graveyard (Aftermath Analyst mill)
+T9: Crumbling Vestige moved library -> graveyard (Aftermath Analyst mill)
+T9 P1: Aftermath Analyst ETB: mill 3
+T9 P1: Play Forest
+T9: Aftermath Analyst moved battlefield -> graveyard (sacrifice)
+T9 P1: Activate Aftermath Analyst (sacrifice)
+T9 P1: Returned Dryad Arbor to battlefield
+T9 P1: Returned Urza's Saga to battlefield
+T9 P1: Returned Urza's Saga to battlefield
+T9 P1: Returned Crumbling Vestige to battlefield
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Construct Token, Construct Token, Primeval Titan, Primeval Titan, Primeval Titan
+T9 P1: Amulet of Vigor untaps Gruul Turf
+T9: Hanweir Battlements // Hanweir, the Writhing Township moved battlefield -> hand (Gruul Turf ETB returns Hanweir Battlements // Hanweir, the Writhing Township to hand)
+T9 P1: Primeval Titan searches for Gruul Turf
+T9 P1: Amulet of Vigor untaps Simic Growth Chamber
+T9: Shifting Woodland moved battlefield -> hand (Simic Growth Chamber ETB returns Shifting Woodland to hand)
+T9 P1: Primeval Titan searches for Simic Growth Chamber
+T9 P1: Amulet of Vigor untaps Crumbling Vestige
+T9 P1: Primeval Titan searches for Crumbling Vestige
+T9 P1: Amulet of Vigor untaps Boseiju, Who Endures
+T9 P1: Primeval Titan searches for Boseiju, Who Endures
+T9 P1: Amulet of Vigor untaps Otawara, Soaring City
+T9 P1: Primeval Titan searches for Otawara, Soaring City
+T9 P1: Amulet of Vigor untaps Boseiju, Who Endures
+T9 P1: Primeval Titan searches for Boseiju, Who Endures
+T9 P1: Attack with Construct Token, Construct Token, Primeval Titan, Primeval Titan, Primeval Titan
+T9: Boseiju, Who Endures moved battlefield -> graveyard (SBA 704.5j: legend rule (Boseiju, Who Endures))
+T9 P2:   [BLOCK-EMERGENCY] Vizier of Remedies (2/1) blocks Primeval Titan (6/6) — lifespan_delta=-0.10
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T9 P1:   Construct Token (3/3) → 3 dmg to player
+T9 P1:   Construct Token (3/3) → 3 dmg to player
+T9 P1:   Primeval Titan (6/6) → 5 dmg to player (trample)
+T9 P1:   Primeval Titan (6/6) → 6 dmg to player
+T9 P1:   Primeval Titan (6/6) → 6 dmg to player
+P2 loses: life total -21
+  [Combat Damage] 23 damage dealt → P2 life: 2 → -21
+
+>>> Amulet Titan wins Game 1 on turn 9 via damage
+    Final life: Amulet Titan=3  Creatures Toolbox=-21
+
+======================================================================
+  GAME 2: Creatures Toolbox (P1) vs Amulet Titan (P2)  —  seed 60402
+  Series: Amulet Titan 1 - 0 Creatures Toolbox
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Creatures Toolbox wins → chooses to play first
+║ P1 (on play): Creatures Toolbox
+║ P2 (on draw): Amulet Titan
+╚═══════════════════════════════════════════════════════
+
+P1 (Creatures Toolbox) opening hand (3 lands, 4 spells):
+  • Windswept Heath [Land, CMC 0]
+  • Green Sun's Zenith [Spell, CMC 1]
+  • Nurturing Peatland [Land, CMC 0]
+  • Badgermole Cub [Creature, CMC 2]
+  • Nature's Rhythm [Spell, CMC 2]
+  • Temple Garden [Land, CMC 0]
+  • Tyvar, Jubilant Brawler [Spell, CMC 3]
+→ P1 KEEPS 7 — has key card(s): Badgermole Cub, 4 cheap spells
+
+P2 (Amulet Titan) opening hand (5 lands, 2 spells):
+  • Arboreal Grazer [Creature, CMC 1]
+  • Simic Growth Chamber [Land, CMC 0]
+  • Urza's Saga [Land, CMC 0]
+  • Forest [Land, CMC 0]
+  • Amulet of Vigor [Spell, CMC 1]
+  • Boseiju, Who Endures [Land, CMC 0]
+  • Echoing Deeps [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Amulet of Vigor, Arboreal Grazer, 2 cheap spells
+
+
+╔══ TURN 1 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 20  |  Amulet Titan 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Windswept Heath
+T1: Windswept Heath moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Windswept Heath (pay 1 life) -> Overgrown Tomb (tapped, life: 19)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Creatures Toolbox 19
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Spelunking
+  [Main 1]
+T1 P2: Play Forest
+    → Goal: deploy_engine [enablers]
+    [Mana] Tap Forest→G (paying for Arboreal Grazer, 0 mana remaining)
+T1 P2: Cast Arboreal Grazer (G)
+    [Priority] P1 passes (no response)
+T1: Resolve Arboreal Grazer
+T1: Forest moved battlefield -> hand (Simic Growth Chamber ETB returns Forest to hand)
+T1 P2: Arboreal Grazer puts Simic Growth Chamber onto battlefield
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 19  |  Amulet Titan 20
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Creatures Toolbox board:
+║   Creatures: (empty)
+║   Lands: Overgrown Tomb
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Lands: Simic Growth Chamber [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Craterhoof Behemoth
+  [Main 1]
+T2 P1: Play Temple Garden (tapped)
+    → Goal: deploy_engine
+    [Mana] Tap Overgrown Tomb→G (paying for Green Sun's Zenith, 0 mana remaining)
+T2 P1: Cast Green Sun's Zenith (G)
+    [Priority] P2 passes (no response)
+T2: Resolve Green Sun's Zenith
+T2: Dryad Arbor moved library -> battlefield (Green Sun's Zenith tutor)
+T2 P1: Green Sun's Zenith finds Dryad Arbor
+T2: Green Sun's Zenith moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Creatures Toolbox 19
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 3
+║ Library: 52  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Lands: Simic Growth Chamber
+║ Creatures Toolbox board:
+║   Creatures: Dryad Arbor (1/1)
+║   Lands: Overgrown Tomb [T], Temple Garden [T], Dryad Arbor
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Primeval Titan
+  [Main 1]
+T2 P2: Urza's Saga Ch.I: gains "{T}: Add {C}."
+T2 P2: Play Urza's Saga
+    → Goal: deploy_engine [engines]
+    [Mana] Tap Urza's Saga→C (paying for Amulet of Vigor, 2 mana remaining)
+T2 P2: Cast Amulet of Vigor (1)
+    [Priority] P1 passes (no response)
+T2: Resolve Amulet of Vigor
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 19  |  Amulet Titan 20
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 2
+║ Creatures Toolbox board:
+║   Creatures: Dryad Arbor (1/1)
+║   Lands: Overgrown Tomb, Temple Garden, Dryad Arbor
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor
+║   Lands: Simic Growth Chamber, Urza's Saga [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Nature's Rhythm
+  [Main 1]
+T3 P1: Play Nurturing Peatland
+    → Goal: execute_payoff
+    [Mana] Tap Overgrown Tomb→B, Temple Garden→G, Dryad Arbor→G (paying for Tyvar, Jubilant Brawler, 1 mana remaining)
+T3 P1: Cast Tyvar, Jubilant Brawler (1BG)
+    [Priority] P2 passes (no response)
+T3: Resolve Tyvar, Jubilant Brawler
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Creatures Toolbox 19
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 4
+║ Library: 51  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor
+║   Lands: Simic Growth Chamber, Urza's Saga
+║ Creatures Toolbox board:
+║   Creatures: Dryad Arbor (1/1) [tapped]
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Overgrown Tomb [T], Temple Garden [T], Dryad Arbor [T], Nurturing Peatland
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Urza's Cave
+  [Main 1]
+T3 P2: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+T3 P2: Play Forest
+    → Goal: ramp [enablers]
+    [Mana] Tap Urza's Saga→C, Forest→G, Simic Growth Chamber→GU (paying for Spelunking, 1 mana remaining)
+T3 P2: Cast Spelunking (2G)
+    [Priority] P1 passes (no response)
+T3: Resolve Spelunking
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 19  |  Amulet Titan 20
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 2
+║ Creatures Toolbox board:
+║   Creatures: Dryad Arbor (1/1)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Overgrown Tomb, Temple Garden, Dryad Arbor, Nurturing Peatland
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber [T], Urza's Saga [T], Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Wooded Foothills
+  [Main 1]
+T4 P1: Play Wooded Foothills
+T4: Wooded Foothills moved battlefield -> graveyard (fetchland sacrifice)
+T4 P1: Crack Wooded Foothills (pay 1 life) -> Overgrown Tomb (tapped, life: 18)
+    → Goal: execute_payoff
+    [Mana] Tap Overgrown Tomb→B, Dryad Arbor→G (paying for Badgermole Cub, 2 mana remaining)
+T4 P1: Cast Badgermole Cub (1G)
+    [Priority] P2 passes (no response)
+T4: Resolve Badgermole Cub
+T4: Nurturing Peatland moved battlefield -> graveyard (activation cost (Nurturing Peatland))
+T4 P1: activate Nurturing Peatland — Draw a card.
+T4 P1: Nurturing Peatland activated — draw 1 (Badgermole Cub)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Creatures Toolbox 18
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 50  |  Graveyard: 0
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3)
+║   Other: Amulet of Vigor, Spelunking
+║   Lands: Simic Growth Chamber, Urza's Saga, Forest
+║ Creatures Toolbox board:
+║   Creatures: Dryad Arbor (1/1) [tapped], Badgermole Cub (2/2)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Overgrown Tomb [T], Temple Garden [T], Dryad Arbor [T], Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Urza's Saga
+  [Main 1]
+T4 P2: Create 1x Construct token(s)
+T4 P2: Urza's Saga activates "{2}, {T}: Create a 0/0 colorless Constru..." (pays {2}, {T})
+T4 P2: Urza's Saga tutors Zuran Orb
+T4 P2: Sacrifice Urza's Saga (final chapter)
+T4 P2: Urza's Saga Ch.I: gains "{T}: Add {C}."
+T4 P2: Play Urza's Saga
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 18  |  Amulet Titan 20
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 46  |  Graveyard: 4
+║ Creatures Toolbox board:
+║   Creatures: Dryad Arbor (1/1), Badgermole Cub (2/2)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Overgrown Tomb, Temple Garden, Dryad Arbor, Overgrown Tomb
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Construct Token (3/3)
+║   Other: Amulet of Vigor, Spelunking, Zuran Orb
+║   Lands: Simic Growth Chamber [T], Forest [T], Urza's Saga
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Forest
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Dryad Arbor→GG (paying for Badgermole Cub, 3 mana remaining)
+T5 P1: Cast Badgermole Cub (1G)
+    [Priority] P2 passes (no response)
+T5: Resolve Badgermole Cub
+T5 P1: Play Forest
+    → Goal: execute_payoff
+    [Mana] Tap Forest→G, Overgrown Tomb→G (paying for Nature's Rhythm, 2 mana remaining)
+T5 P1: Cast Nature's Rhythm (2GG) (X=2)
+    [Priority] P2 passes (no response)
+T5: Resolve Nature's Rhythm
+T5: Fiend Artisan moved library -> battlefield (Nature's Rhythm tutor)
+T5 P1: Nature's Rhythm finds Fiend Artisan
+T5: Nature's Rhythm moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Badgermole Cub
+T5 P1: Attack with Badgermole Cub
+T5 P2:   [BLOCK] Construct Token (3/3) blocks Badgermole Cub (2/2) — lifespan_delta=+2.00
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T5: Badgermole Cub dies
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 20  |  Creatures Toolbox 18
+║ Hand: 4 cards  |  Opp hand: 2 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 48  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Construct Token (3/3)
+║   Other: Amulet of Vigor, Spelunking, Zuran Orb
+║   Lands: Simic Growth Chamber, Forest, Urza's Saga
+║ Creatures Toolbox board:
+║   Creatures: Dryad Arbor (1/1) [tapped], Badgermole Cub (2/2), Fiend Artisan (1/1)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Overgrown Tomb [T], Temple Garden [T], Dryad Arbor [T], Overgrown Tomb [T], Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Amulet of Vigor
+  [Main 1]
+T5 P2: Urza's Saga Ch.2: gains "{2}, {T}: Create a 0/0 colorless Construct artifact creature token with 'This token gets +1/+1 for each artifact you control.'"
+T5 P2: Play Boseiju, Who Endures
+    → Goal: ramp
+    [Mana] Tap Forest→G (paying for Amulet of Vigor, 4 mana remaining)
+T5 P2: Cast Amulet of Vigor (1)
+    [Priority] P1 passes (no response)
+T5: Resolve Amulet of Vigor
+T5 P2: Create 1x Construct token(s)
+T5 P2: Urza's Saga activates "{2}, {T}: Create a 0/0 colorless Constru..." (pays {2}, {T})
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Construct Token
+T5 P2: Attack with Construct Token
+  [Declare Blockers] P1 does not block
+T5 P2:   Construct Token (5/5) → 5 dmg to player
+  [Combat Damage] 5 damage dealt → P1 life: 18 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 13  |  Amulet Titan 20
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 44  |  Graveyard: 6
+║ Creatures Toolbox board:
+║   Creatures: Dryad Arbor (1/1), Badgermole Cub (2/2), Fiend Artisan (1/1)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Overgrown Tomb, Temple Garden, Dryad Arbor, Overgrown Tomb, Forest
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Construct Token (5/5) [tapped], Construct Token (5/5)
+║   Other: Amulet of Vigor, Spelunking, Zuran Orb, Amulet of Vigor
+║   Lands: Simic Growth Chamber [T], Forest [T], Urza's Saga [T], Boseiju, Who Endures [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Birds of Paradise
+  [Main 1]
+    → Goal: execute_payoff
+    [Mana] Tap Forest→G, Dryad Arbor→GG (paying for Nature's Rhythm, 4 mana remaining)
+T6 P1: Cast Nature's Rhythm (4GG) (X=4)
+    [Priority] P2 passes (no response)
+T6: Resolve Nature's Rhythm
+T6: Badgermole Cub moved library -> battlefield (Nature's Rhythm tutor)
+T6 P1: Nature's Rhythm finds Badgermole Cub
+T6: Nature's Rhythm moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Badgermole Cub, Fiend Artisan
+T6 P1: Attack with Badgermole Cub, Fiend Artisan
+  [Declare Blockers] P2 does not block
+T6 P1:   Badgermole Cub (2/2) → 2 dmg to player
+T6 P1:   Fiend Artisan (1/1) → 1 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 20 → 17
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 17  |  Creatures Toolbox 13
+║ Hand: 3 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 47  |  Graveyard: 1
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Construct Token (5/5), Construct Token (5/5)
+║   Other: Amulet of Vigor, Spelunking, Zuran Orb, Amulet of Vigor
+║   Lands: Simic Growth Chamber, Forest, Urza's Saga, Boseiju, Who Endures
+║ Creatures Toolbox board:
+║   Creatures: Dryad Arbor (1/1) [tapped], Badgermole Cub (2/2) [tapped], Fiend Artisan (1/1) [tapped], Badgermole Cub (2/2)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Overgrown Tomb [T], Temple Garden [T], Dryad Arbor [T], Overgrown Tomb [T], Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Malevolent Rumble
+  [Main 1]
+T6 P2: Create 1x Construct token(s)
+T6 P2: Urza's Saga activates "{2}, {T}: Create a 0/0 colorless Constru..." (pays {2}, {T})
+T6 P2: Urza's Saga tutors Amulet of Vigor
+T6 P2: Sacrifice Urza's Saga (final chapter)
+T6 P2: Play Echoing Deeps
+    → Goal: ramp
+    [Mana] Tap Boseiju, Who Endures→G, Echoing Deeps→C (paying for Malevolent Rumble, 0 mana remaining)
+T6 P2: Cast Malevolent Rumble (1G)
+    [Priority] P1 passes (no response)
+T6: Resolve Malevolent Rumble
+T6 P2: Create 1x spawn token(s)
+T6: Malevolent Rumble moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Construct Token, Construct Token
+T6 P2: Attack with Construct Token, Construct Token
+T6 P1:   [BLOCK-EMERGENCY] Badgermole Cub (2/2) blocks Construct Token (7/7) — lifespan_delta=-1.08
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T6 P2:   Construct Token (7/7) → 7 dmg to player
+T6: Badgermole Cub dies
+  [Combat Damage] 7 damage dealt → P1 life: 13 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Creatures Toolbox (P1) ══════════════════════════
+║ Life: Creatures Toolbox 6  |  Amulet Titan 17
+║ Hand: 2 cards  |  Opp hand: 2 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 42  |  Graveyard: 8
+║ Creatures Toolbox board:
+║   Creatures: Dryad Arbor (1/1), Badgermole Cub (2/2), Fiend Artisan (1/1)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Overgrown Tomb, Temple Garden, Dryad Arbor, Overgrown Tomb, Forest
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Construct Token (7/7) [tapped], Construct Token (7/7) [tapped], Construct Token (7/7), spawn Token (0/1)
+║   Other: Amulet of Vigor, Spelunking, Zuran Orb, Amulet of Vigor, Amulet of Vigor
+║   Lands: Simic Growth Chamber [T], Forest [T], Boseiju, Who Endures [T], Echoing Deeps [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Green Sun's Zenith
+  [Main 1]
+T7: Dryad Arbor moved battlefield -> graveyard (activation cost (Fiend Artisan))
+T7 P1: activate Fiend Artisan — Search your library for a creature card with mana value X or less, put it onto the battlefield, then shuffle.
+T7: Badgermole Cub moved library -> battlefield (Fiend Artisan tutor)
+T7 P1: Fiend Artisan activated — finds Badgermole Cub (battlefield)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Badgermole Cub
+T7 P1: Attack with Badgermole Cub
+  [Declare Blockers] P2 does not block
+T7 P1:   Badgermole Cub (2/2) → 2 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 17 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Amulet Titan (P2) ══════════════════════════
+║ Life: Amulet Titan 15  |  Creatures Toolbox 6
+║ Hand: 2 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 3
+║ Amulet Titan board:
+║   Creatures: Arboreal Grazer (0/3), Construct Token (7/7), Construct Token (7/7), Construct Token (7/7), spawn Token (0/1)
+║   Other: Amulet of Vigor, Spelunking, Zuran Orb, Amulet of Vigor, Amulet of Vigor
+║   Lands: Simic Growth Chamber, Forest, Boseiju, Who Endures, Echoing Deeps
+║ Creatures Toolbox board:
+║   Creatures: Badgermole Cub (2/2) [tapped], Fiend Artisan (1/1) [tapped], Badgermole Cub (2/2)
+║   Other: Tyvar, Jubilant Brawler
+║   Lands: Overgrown Tomb [T], Temple Garden [T], Overgrown Tomb [T], Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Summoner's Pact
+  [Main 1]
+T7 P2: Play Urza's Cave
+    → Goal: ramp [payoffs]
+    [Mana] Tap Forest→G, Boseiju, Who Endures→G, Echoing Deeps→C, Urza's Cave→C, Simic Growth Chamber→GU (paying for Primeval Titan, 0 mana remaining)
+T7 P2: Cast Primeval Titan (4GG)
+    [Priority] P1 passes (no response)
+T7: Resolve Primeval Titan
+T7 P2: Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Gruul Turf (x3)
+T7: Forest moved battlefield -> hand (Gruul Turf ETB returns Forest to hand)
+T7 P2: Primeval Titan searches for Gruul Turf
+T7 P2: Amulet of Vigor, Amulet of Vigor, Amulet of Vigor untaps Hanweir Battlements // Hanweir, the Writhing Township (x3)
+T7 P2: Primeval Titan searches for Hanweir Battlements // Hanweir, the Writhing Township
+    → Goal: ramp
+T7 P2: Cast Summoner's Pact (0)
+    [Priority] P1 passes (no response)
+T7: Resolve Summoner's Pact
+T7 P2: Summoner's Pact finds Primeval Titan
+T7: Summoner's Pact moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Construct Token, Construct Token, Construct Token
+T7 P2: Attack with Construct Token, Construct Token, Construct Token
+T7 P1:   [BLOCK-EMERGENCY] Badgermole Cub (2/2) blocks Construct Token (7/7) — lifespan_delta=+98.22
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T7 P2:   Construct Token (7/7) → 7 dmg to player
+T7 P2:   Construct Token (7/7) → 7 dmg to player
+P1 loses: life total -8
+  [Combat Damage] 14 damage dealt → P1 life: 6 → -8
+
+>>> Amulet Titan wins Game 2 on turn 7 via damage
+    Final life: Creatures Toolbox=-8  Amulet Titan=15
+
+======================================================================
+  MATCH RESULT: Amulet Titan wins 2-0
+======================================================================

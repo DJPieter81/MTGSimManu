@@ -195,6 +195,18 @@ def _threat_score(card, game=None, owner=None) -> float:
 # ETB Effects
 # ═══════════════════════════════════════════════════════════════════
 
+def legal_targets(game, controller, source, cards):
+    """The cards among `cards` that `source` (a spell or ability's card
+    controlled by `controller`) may TARGET right now — one rule, owned by
+    `engine/target_solver.can_be_targeted` (hexproof CR 702.11d,
+    protection CR 702.16b). Every handler that chooses its own target on
+    resolution filters its candidates through this; a handler that picks
+    straight from the opponent's creatures ignores hexproof (Solitude
+    exiled a hexproof Scion of Draco, 2026-09-12 replay s60303)."""
+    from .target_solver import can_be_targeted
+    return [c for c in cards if can_be_targeted(c, source, controller)]
+
+
 @EFFECT_REGISTRY.register("Solitude", EffectTiming.ETB,
                            description="Exile target creature, its controller gains life equal to its power")
 def solitude_etb(game, card, controller, targets=None, item=None):
@@ -202,9 +214,10 @@ def solitude_etb(game, card, controller, targets=None, item=None):
     # target creature. That creature's controller gains life equal to its power."
     # Key rules: targets opponent's creature, gives THEM life equal to power.
     opponent = 1 - controller
-    opp_creatures = game.players[opponent].creatures
+    opp_creatures = legal_targets(game, controller, card,
+                                  game.players[opponent].creatures)
     if not opp_creatures:
-        return  # No valid targets — ETB fizzles
+        return  # No legal targets — the ETB does nothing
     # Pick the most threatening creature (highest power, then CMC)
     target = max(opp_creatures, key=_threat_score)
     life_gain = target.power or 0
@@ -1358,6 +1371,8 @@ def pick_your_poison_resolve(game, card, controller, targets=None, item=None):
     from .cards import CardType, Keyword
     opponent = 1 - controller
     opp = game.players[opponent]
+    # Not targeting (CR 701.17): the OPPONENT chooses what to sacrifice, so
+    # hexproof / protection do not apply — this pick models their choice.
     # Choose mode: destroy artifact/enchantment if they have one, else creature with flying
     artifacts_enchantments = [c for c in opp.battlefield
                               if not c.template.is_land and
@@ -1625,7 +1640,8 @@ def _prismatic_ending_mv_max(game, card, controller, item):
     return max(1, min(len(colors), _CONVERGE_MAX_COLORS))
 
 
-def converge_reachable_max_mv(game, controller: int) -> int:
+def converge_reachable_max_mv(game, controller: int,
+                              already_spent=None) -> int:
     """The highest mana value a Converge-conditioned effect could reach
     right now, computed from this player's CURRENTLY UNTAPPED mana
     sources rather than a spell already on the stack.
@@ -1648,7 +1664,13 @@ def converge_reachable_max_mv(game, controller: int) -> int:
     `pick_creature_tutor_x_value` already establish for their own
     X-cost shapes.
     """
-    colors = set()
+    # Colours already spent on this very cast count too: the printed pips
+    # are paid before X is chosen, so at the picker's call the source that
+    # paid {W} is tapped and no longer "untapped" — without this the
+    # picker saw one colour fewer than the cast will actually spend and
+    # chose X=0 into a reachable target (Prismatic Ending resolved empty
+    # against an MV-2 Frog with W+U+U up, 2026-09-12 replay s60300).
+    colors = set(already_spent or ())
     for land in game.players[controller].untapped_lands:
         colors |= set(game._effective_produces_mana(controller, land) or [])
     colors.discard('C')
@@ -2001,10 +2023,12 @@ def orcish_bowmasters_etb(game, card, controller, targets=None, item=None):
     opponent = 1 - controller
     opp = game.players[opponent]
 
-    # Deal 1 damage to best target (creature or player)
-    if opp.creatures:
+    # Deal 1 damage to best target (creature or player) — a creature is a
+    # candidate only if this source may target it (hexproof / protection).
+    targetable = legal_targets(game, controller, card, opp.creatures)
+    if targetable:
         # Target the weakest creature we can kill, or the strongest threat
-        one_toughness = [c for c in opp.creatures if c.toughness <= 1]
+        one_toughness = [c for c in targetable if c.toughness <= 1]
         if one_toughness:
             target = max(one_toughness, key=lambda c: c.power)
             target.damage_marked += 1
@@ -2103,8 +2127,9 @@ def walking_ballista_etb(game, card, controller, targets=None, item=None):
     opponent = 1 - controller
     opp = game.players[opponent]
     
-    # Find best creature target that can be killed
-    killable = [c for c in opp.creatures 
+    # Find best creature target that can be killed — among the creatures
+    # this source may target at all (hexproof / protection).
+    killable = [c for c in legal_targets(game, controller, card, opp.creatures)
                 if (c.toughness or 0) <= counters and c.toughness and c.toughness > 0]
     
     if killable:
@@ -2296,10 +2321,12 @@ def dispatch_resolve(game, card, controller, targets=None, item=None):
                          if CardType.ARTIFACT in c.template.card_types)
     has_metalcraft = artifact_count >= 3
 
+    from .target_solver import can_be_targeted
     if targets:
         for tid in targets:
             target = game.get_card_by_id(tid)
-            if target and target.zone == "battlefield" and target.template.is_creature:
+            if (target and target.zone == "battlefield" and target.template.is_creature
+                    and can_be_targeted(target, card, controller)):
                 if has_metalcraft:
                     game._exile_permanent(target)
                     game.log.append(f"T{game.display_turn} P{controller+1}: "
@@ -2309,8 +2336,8 @@ def dispatch_resolve(game, card, controller, targets=None, item=None):
                     game.log.append(f"T{game.display_turn} P{controller+1}: "
                                     f"Dispatch taps {target.name}")
                 return
-    # Auto-target: pick best opponent creature
-    valid = [c for c in opp.creatures]
+    # Auto-target: pick the best opponent creature this spell may target
+    valid = legal_targets(game, controller, card, opp.creatures)
     if valid:
         target = max(valid, key=lambda c: (c.power or 0) + (c.toughness or 0))
         if has_metalcraft:
@@ -2681,7 +2708,7 @@ def thraben_charm_resolve(game, card, controller, targets=None, item=None):
     best_creature_value = 0.0
     if damage > 0:
         _tc_snap = snapshot_from_game(game, controller)
-        for c in opp.creatures:
+        for c in legal_targets(game, controller, card, opp.creatures):
             tough = c.toughness if c.toughness is not None else (c.template.toughness or 0)
             if damage >= tough > 0:  # 2N kills it
                 v = creature_threat_value(c, _tc_snap)
@@ -2689,8 +2716,9 @@ def thraben_charm_resolve(game, card, controller, targets=None, item=None):
                     best_creature_value = v
                     best_creature = c
 
-    enchantments = [c for c in opp.battlefield
-                    if CardType.ENCHANTMENT in c.template.card_types]
+    enchantments = legal_targets(game, controller, card,
+                                 [c for c in opp.battlefield
+                                  if CardType.ENCHANTMENT in c.template.card_types])
     best_enchantment = None
     best_enchantment_value = 0.0
     if enchantments:

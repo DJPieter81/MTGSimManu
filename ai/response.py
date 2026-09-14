@@ -526,7 +526,11 @@ class ResponseDecider:
             # deliberately unmodelled — refusing the dead counter strictly
             # dominates the pre-fix behaviour of firing it.
             # docs/diagnostics/2026-08-26_decider_loss_root_cause.md.
-            tax = getattr(instant.template, 'counter_tax_amount', 0)
+            # A Ferocious counter with the board condition met is a HARD
+            # counter (tax 0), not a dead soft counter — the same predicate
+            # the resolution branch reads (engine.optional_costs).
+            from engine.optional_costs import effective_counter_tax
+            tax = effective_counter_tax(game, self.player_idx, instant.template)
             if tax > 0:
                 payer = game.players[stack_item.controller]
                 payer_capacity = (payer.untapped_mana_capacity()

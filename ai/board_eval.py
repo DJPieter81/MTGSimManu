@@ -171,6 +171,7 @@ class ActionType(Enum):
     EVOKE = auto()           # Sacrifice for ETB vs wait for hard-cast
     DASH = auto()            # Haste+bounce vs permanent body
     COMBO_NOW = auto()       # Fire win condition vs keep building
+    KICK = auto()            # Pay kicker (CR 702.33) — returns the kick count
 
 
 @dataclass
@@ -200,6 +201,10 @@ def evaluate_action(game: "GameState", player_idx: int, action: Action) -> float
         return _eval_evoke(game, me, assessment, action.context,
                             player_idx=player_idx)
 
+    elif action.action_type == ActionType.KICK:
+        return _eval_kick(game, me, assessment, action.context,
+                          player_idx=player_idx)
+
     elif action.action_type == ActionType.DASH:
         return _eval_dash(game, me, assessment, action.context,
                           player_idx=player_idx)
@@ -215,6 +220,35 @@ def evaluate_action(game: "GameState", player_idx: int, action: Action) -> float
 # 4. Evaluation implementations (private, all use same pattern)
 #    Each returns: benefit - cost
 # ─────────────────────────────────────────────────────────────
+
+
+def _eval_kick(game, me, a: BoardAssessment, ctx: dict,
+               *, player_idx: int) -> float:
+    """How many times to kick a spell (CR 702.33). Returns the kick count
+    (0 = don't kick). v1 kicks only when the kicked payoff is a shape the
+    engine actually dispatches (combat-prevention Fog, or a library-dig
+    "put N of those cards into your hand instead") AND the kicker is
+    affordable on top of the base. A Fog is worth its kicker only when the
+    opponent has a board to stop; the extra dig card is cheap value."""
+    card = ctx.get('card')
+    if card is None:
+        return 0.0
+    t = card.template
+    if getattr(t, 'kicker_cost', None) is None or not getattr(t, 'kicked_clause', None):
+        return 0.0
+    from engine.oracle_parser import parse_combat_prevention
+    is_fog = parse_combat_prevention(t.kicked_clause) is not None
+    is_dig_bonus = 'of those cards into your hand instead' in t.kicked_clause.lower()
+    if not (is_fog or is_dig_bonus):
+        return 0.0  # payoff not dispatched → paying the kicker buys nothing
+    leftover = (me.untapped_mana_capacity() + me.mana_pool.total()
+                + me._tron_mana_bonus())
+    if leftover < t.mana_cost.cmc + t.kicker_cost.cmc:
+        return 0.0
+    if is_fog:
+        opp = game.players[1 - player_idx]
+        return 1.0 if any(c.can_attack for c in opp.creatures) else 0.0
+    return 1.0  # dig count-bump: cheap card advantage
 
 
 def _eval_evoke(game, me, a: BoardAssessment, ctx: dict,

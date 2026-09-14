@@ -2018,7 +2018,12 @@ class EVPlayer:
             # docs/diagnostics/2026-08-26_decider_loss_root_cause.md
             # (secondary root cause: the stranded-finisher decider loss).
             weight = 1.0
-            tax = getattr(tmpl, 'counter_tax_amount', 0) or 0
+            # A Ferocious counter held while a 4-power creature is on the
+            # board is a HARD counter (tax 0, weight 1) — the shared
+            # predicate, so the held-value weighting agrees with what the
+            # counter will actually do (engine.optional_costs).
+            from engine.optional_costs import effective_counter_tax
+            tax = effective_counter_tax(game, self.player_idx, tmpl)
             if tax > 0 and 'counterspell' in tmpl.tags:
                 weight = self._held_tax_counter_liveness(game, opp, tax)
                 if weight <= 0.0:
@@ -4376,12 +4381,25 @@ class EVPlayer:
             _x_bound_mode = any(
                 ((m.get('removal') or {}).get('mv') == 'x')
                 for m in (getattr(t, 'modes', None) or []))
-            if ((getattr(t, 'targeted_removal_data', None) or {}).get('mv') == 'x'
-                    or _x_bound_mode):
+            _removal = (getattr(t, 'targeted_removal_data', None)
+                        or getattr(t, 'removal_mv_condition', None) or {})
+            if (_removal.get('mv') == 'x' or _x_bound_mode):
                 # The plain shape and a modal MODE of the same shape share
                 # the ceiling: X is chosen before targets (CR 601.2b).
                 from engine.cast_manager import CastManager
                 _x_ceiling = CastManager.affordable_x(game, self.player_idx, t)
+            elif isinstance(_removal.get('mv'), int):
+                # A numeric mana-value bound — printed on the target
+                # ("with mana value 3 or less") or checked on resolution
+                # ("destroy target creature if it has mana value 2 or
+                # less", raised when a permanent left the battlefield this
+                # turn). Aiming above it is legal but resolves to nothing:
+                # a wasted card, never a play.
+                _x_ceiling = _removal['mv']
+                _raised = _removal.get('mv_if_permanent_left')
+                if (_raised is not None and
+                        game.players[self.player_idx].permanents_left_battlefield_this_turn > 0):
+                    _x_ceiling = _raised
             if getattr(t, 'has_converge', False):
                 # Converge reaches the colours this manabase can spend —
                 # the same picker cast-time X selection uses; aiming above

@@ -1,0 +1,1850 @@
+Loaded 22470 cards (0 errors)
+======================================================================
+  GAME 1: Domain Zoo (P1) vs 4c Omnath (P2)  —  seed 60406
+  Series: Domain Zoo 0 - 0 4c Omnath
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: 4c Omnath wins → chooses to play first
+║ P1 (on play): 4c Omnath
+║ P2 (on draw): Domain Zoo
+╚═══════════════════════════════════════════════════════
+
+P1 (Domain Zoo) opening hand (2 lands, 5 spells):
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Stubborn Denial [Spell, CMC 1]
+  • Polluted Delta [Land, CMC 0]
+  • Stubborn Denial [Spell, CMC 1]
+  • Leyline of the Guildpact [Spell, CMC 4]
+  • Leyline of the Guildpact [Spell, CMC 4]
+  • Hallowed Fountain [Land, CMC 0]
+→ P1 KEEPS 7 — has key card(s): Ragavan, Nimble Pilferer, 3 cheap spells
+
+P2 (4c Omnath) opening hand (5 lands, 2 spells):
+  • Hedge Maze [Land, CMC 0]
+  • Misty Rainforest [Land, CMC 0]
+  • Misty Rainforest [Land, CMC 0]
+  • Hallowed Fountain [Land, CMC 0]
+  • Undercity Sewers [Land, CMC 0]
+  • Leyline Binding [Spell, CMC 6]
+  • Quantum Riddler [Creature, CMC 5]
+→ P2 MULLIGANS (too many lands (5 > 4); first-turn value 2 < 5)
+  New hand (2 lands, 5 spells): ['Lightning Bolt', 'Supreme Verdict', 'Quantum Riddler', 'Undercity Sewers', 'Wrenn and Six', 'Misty Rainforest', 'Ephemerate']
+→ P2 mulligans to 6, bottoms: ['Quantum Riddler']
+  Keeps: ['Lightning Bolt', 'Supreme Verdict', 'Undercity Sewers', 'Wrenn and Six', 'Misty Rainforest', 'Ephemerate']
+
+T0 P1: Leyline of the Guildpact begins the game on the battlefield (leyline)
+T0 P1: Leyline of the Guildpact begins the game on the battlefield (leyline)
+
+╔══ TURN 1 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 20  |  Domain Zoo 20
+║ Hand: 6 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 54  |  Graveyard: 0
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact, Leyline of the Guildpact
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P2: Play Misty Rainforest
+T1: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Misty Rainforest (pay 1 life) -> Temple Garden (untapped, life: 17)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 20  |  4c Omnath 17
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact, Leyline of the Guildpact
+║   Lands: (none)
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Temple Garden
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Stubborn Denial
+  [Main 1]
+T1 P1: Play Polluted Delta
+T1: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Polluted Delta (pay 1 life) -> Steam Vents (untapped, life: 17)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Steam Vents→R (paying for Ragavan, Nimble Pilferer, 0 mana remaining)
+T1 P1: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P2 passes (no response)
+T1: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 17  |  Domain Zoo 17
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 1
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Temple Garden
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Other: Leyline of the Guildpact, Leyline of the Guildpact
+║   Lands: Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Hallowed Fountain
+  [Main 1]
+T2 P2: Play Hallowed Fountain (untapped, life: 15)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 17  |  4c Omnath 15
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Other: Leyline of the Guildpact, Leyline of the Guildpact
+║   Lands: Steam Vents
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Temple Garden, Hallowed Fountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Practiced Offense
+  [Main 1]
+T2 P1: Play Hallowed Fountain (tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ragavan, Nimble Pilferer
+T2 P1: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P2 does not block
+T2 P1:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T2 P1: Create 1x Treasure token(s)
+T2 P1: Ragavan, Nimble Pilferer exiles Boseiju, Who Endures from top of P2's library
+T2 P1: Ragavan, Nimble Pilferer — may cast Boseiju, Who Endures this turn
+  [Combat Damage] 2 damage dealt → P2 life: 15 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+T2: Boseiju, Who Endures returned to exile (uncast)
+
+╔══ TURN 3 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 13  |  Domain Zoo 17
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Temple Garden, Hallowed Fountain
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped]
+║   Other: Leyline of the Guildpact, Leyline of the Guildpact, Treasure Token
+║   Lands: Steam Vents, Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Lightning Bolt
+  [Main 1]
+T3 P2: surveil 1 → Leyline Binding to GY
+T3 P2: Play Undercity Sewers (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 17  |  4c Omnath 13
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Other: Leyline of the Guildpact, Leyline of the Guildpact, Treasure Token
+║   Lands: Steam Vents, Hallowed Fountain
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Temple Garden, Hallowed Fountain, Undercity Sewers [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Plains
+  [Main 1]
+T3 P1: Play Plains
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ragavan, Nimble Pilferer
+T3 P1: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P2 does not block
+T3 P1:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T3 P1: Create 1x Treasure token(s)
+T3 P1: Ragavan, Nimble Pilferer exiles Solitude from top of P2's library
+T3 P1: Ragavan, Nimble Pilferer — may cast Solitude this turn
+  [Combat Damage] 2 damage dealt → P2 life: 13 → 11
+  [End Combat]
+  [Main 2]
+  [End Step]
+T3: Solitude returned to exile (uncast)
+
+╔══ TURN 4 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 11  |  Domain Zoo 17
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 2
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Temple Garden, Hallowed Fountain, Undercity Sewers
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped]
+║   Other: Leyline of the Guildpact, Leyline of the Guildpact, Treasure Token, Treasure Token
+║   Lands: Steam Vents, Hallowed Fountain, Plains
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Omnath, Locus of Creation
+  [Main 1]
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 17  |  4c Omnath 11
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Other: Leyline of the Guildpact, Leyline of the Guildpact, Treasure Token, Treasure Token
+║   Lands: Steam Vents, Hallowed Fountain, Plains
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Temple Garden, Hallowed Fountain, Undercity Sewers
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Flooded Strand
+  [Main 1]
+T4 P1: Play Flooded Strand
+T4: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T4 P1: Crack Flooded Strand (pay 1 life) -> Breeding Pool (tapped, life: 16)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ragavan, Nimble Pilferer
+T4 P1: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P2 does not block
+T4 P1:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T4 P1: Create 1x Treasure token(s)
+T4 P1: Ragavan, Nimble Pilferer exiles Orcish Bowmasters from top of P2's library
+T4 P1: Ragavan, Nimble Pilferer — may cast Orcish Bowmasters this turn
+  [Combat Damage] 2 damage dealt → P2 life: 11 → 9
+  [End Combat]
+  [Main 2]
+    → Goal: curve_out
+    [Mana] Tap Steam Vents→B, Hallowed Fountain→W (paying for Orcish Bowmasters, 1 mana remaining)
+T4 P1: Cast Orcish Bowmasters (1B)
+    [Priority] P2 passes (no response)
+T4: Resolve Orcish Bowmasters
+T4 P1: Bowmasters deals 1 damage to opponent (life: 8)
+T4 P1: amass Orcs 1 — creates a 1/1 Orc Army token
+  [End Step]
+
+╔══ TURN 5 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 8  |  Domain Zoo 16
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 2
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Temple Garden, Hallowed Fountain, Undercity Sewers
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Other: Leyline of the Guildpact, Leyline of the Guildpact, Treasure Token, Treasure Token, Treasure Token
+║   Lands: Steam Vents [T], Hallowed Fountain [T], Plains, Breeding Pool [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Phelia, Exuberant Shepherd
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Temple Garden→W, Hallowed Fountain→U (paying for Phelia, Exuberant Shepherd, 1 mana remaining)
+T5 P2: Cast Phelia, Exuberant Shepherd (1W)
+    [Priority] P1 passes (no response)
+T5: Resolve Phelia, Exuberant Shepherd
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 16  |  4c Omnath 8
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 4  |  Opp lands: 3
+║ Library: 47  |  Graveyard: 2
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1), Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Other: Leyline of the Guildpact, Leyline of the Guildpact, Treasure Token, Treasure Token, Treasure Token
+║   Lands: Steam Vents, Hallowed Fountain, Plains, Breeding Pool
+║ 4c Omnath board:
+║   Creatures: Phelia, Exuberant Shepherd (2/2)
+║   Lands: Temple Garden [T], Hallowed Fountain [T], Undercity Sewers
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Blood Crypt
+  [Main 1]
+T5 P1: Play Blood Crypt (tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ragavan, Nimble Pilferer, Orcish Bowmasters, Orc Army
+T5 P1: Attack with Ragavan, Nimble Pilferer, Orcish Bowmasters, Orc Army
+T5 P2:   [BLOCK-EMERGENCY] Phelia, Exuberant Shepherd (2/2) blocks Ragavan, Nimble Pilferer (2/1) — lifespan_delta=+2.50
+  [Declare Blockers] P2 blocks: (see BLOCK lines below)
+T5 P1:   Orcish Bowmasters (1/1) → 1 dmg to player
+T5 P1:   Orc Army (1/1) → 1 dmg to player
+T5: Ragavan, Nimble Pilferer dies
+T5: Phelia, Exuberant Shepherd dies
+  [Combat Damage] 2 damage dealt → P2 life: 8 → 6
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 6  |  Domain Zoo 16
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 3  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 3
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Temple Garden, Hallowed Fountain, Undercity Sewers
+║ Domain Zoo board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped]
+║   Other: Leyline of the Guildpact, Leyline of the Guildpact, Treasure Token, Treasure Token, Treasure Token
+║   Lands: Steam Vents, Hallowed Fountain, Plains, Breeding Pool, Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Raugrin Triome
+  [Main 1]
+T6 P2: Play Raugrin Triome (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 16  |  4c Omnath 6
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 3
+║ Domain Zoo board:
+║   Creatures: Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Other: Leyline of the Guildpact, Leyline of the Guildpact, Treasure Token, Treasure Token, Treasure Token
+║   Lands: Steam Vents, Hallowed Fountain, Plains, Breeding Pool, Blood Crypt
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Temple Garden, Hallowed Fountain, Undercity Sewers, Raugrin Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Temple Garden
+  [Main 1]
+T6 P1: Play Temple Garden (tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Orcish Bowmasters, Orc Army
+T6 P1: Attack with Orcish Bowmasters, Orc Army
+  [Declare Blockers] P2 does not block
+T6 P1:   Orcish Bowmasters (1/1) → 1 dmg to player
+T6 P1:   Orc Army (1/1) → 1 dmg to player
+  [Combat Damage] 2 damage dealt → P2 life: 6 → 4
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 4  |  Domain Zoo 16
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 44  |  Graveyard: 3
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Temple Garden, Hallowed Fountain, Undercity Sewers, Raugrin Triome
+║ Domain Zoo board:
+║   Creatures: Orcish Bowmasters (1/1) [tapped], Orc Army (1/1) [tapped]
+║   Other: Leyline of the Guildpact, Leyline of the Guildpact, Treasure Token, Treasure Token, Treasure Token
+║   Lands: Steam Vents, Hallowed Fountain, Plains, Breeding Pool, Blood Crypt, Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Omnath, Locus of Creation
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Temple Garden→W, Hallowed Fountain→W, Undercity Sewers→U, Raugrin Triome→R (paying for Supreme Verdict, 0 mana remaining)
+T7 P2: Cast Supreme Verdict (1WWU)
+    [Priority] P1 passes (no response)
+T7: Resolve Supreme Verdict
+T7: Orcish Bowmasters dies
+T7: Orc Army dies
+T7 P2: Supreme Verdict destroys 2 creatures
+T7: Supreme Verdict moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 16  |  4c Omnath 4
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 6  |  Opp lands: 4
+║ Library: 45  |  Graveyard: 3
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline of the Guildpact, Leyline of the Guildpact, Treasure Token, Treasure Token, Treasure Token
+║   Lands: Steam Vents, Hallowed Fountain, Plains, Breeding Pool, Blood Crypt, Temple Garden
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Temple Garden [T], Hallowed Fountain [T], Undercity Sewers [T], Raugrin Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Territorial Kavu
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Steam Vents→R, Hallowed Fountain→G (paying for Territorial Kavu, 4 mana remaining)
+T7 P1: Cast Territorial Kavu (RG)
+    [Priority] P2 passes (no response)
+T7: Resolve Territorial Kavu
+T7 P1: Territorial Kavu enters as 5/5 (domain=5)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 4  |  Domain Zoo 16
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 43  |  Graveyard: 5
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Temple Garden, Hallowed Fountain, Undercity Sewers, Raugrin Triome
+║ Domain Zoo board:
+║   Creatures: Territorial Kavu (5/5)
+║   Other: Leyline of the Guildpact, Leyline of the Guildpact, Treasure Token, Treasure Token, Treasure Token
+║   Lands: Steam Vents [T], Hallowed Fountain [T], Plains, Breeding Pool, Blood Crypt, Temple Garden
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ephemerate
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Temple Garden→G, Raugrin Triome→R (paying for Wrenn and Six, 2 mana remaining)
+T8 P2: Cast Wrenn and Six (RG)
+    [Priority] P1 responds with Stubborn Denial
+    [Mana] Tap Plains→U (paying for Stubborn Denial, 3 mana remaining)
+T8 P1: Cast Stubborn Denial (U)
+T8: Resolve Stubborn Denial
+T8: Wrenn and Six moved stack -> graveyard (resolution)
+T8: Wrenn and Six is countered
+T8: Stubborn Denial moved stack -> graveyard (resolution)
+    → Goal: close_game
+T8 P2: Cast Wrenn and Six (RG)
+    [Priority] P1 responds with Stubborn Denial
+    [Mana] Tap Breeding Pool→U (paying for Stubborn Denial, 2 mana remaining)
+T8 P1: Cast Stubborn Denial (U)
+T8: Resolve Stubborn Denial
+T8: Wrenn and Six moved stack -> exile (flashback resolution (CR 702.33a))
+T8: Wrenn and Six is countered
+T8: Stubborn Denial moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 16  |  4c Omnath 4
+║ Hand: 2 cards  |  Opp hand: 6 cards
+║ Lands: 6  |  Opp lands: 4
+║ Library: 44  |  Graveyard: 5
+║ Domain Zoo board:
+║   Creatures: Territorial Kavu (5/5)
+║   Other: Leyline of the Guildpact, Leyline of the Guildpact, Treasure Token, Treasure Token, Treasure Token
+║   Lands: Steam Vents, Hallowed Fountain, Plains, Breeding Pool, Blood Crypt, Temple Garden
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Temple Garden [T], Hallowed Fountain, Undercity Sewers, Raugrin Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Territorial Kavu
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Steam Vents→R, Hallowed Fountain→G (paying for Territorial Kavu, 4 mana remaining)
+T8 P1: Cast Territorial Kavu (RG)
+    [Priority] P2 passes (no response)
+T8: Resolve Territorial Kavu
+T8 P1: Territorial Kavu enters as 5/5 (domain=5)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Territorial Kavu
+T8 P1: Territorial Kavu exiles Leyline Binding from opponent GY
+T8 P1: Attack with Territorial Kavu
+  [Declare Blockers] P2 does not block
+T8 P1:   Territorial Kavu (5/5) → 5 dmg to player
+P2 loses: life total -1
+  [Combat Damage] 5 damage dealt → P2 life: 4 → -1
+
+>>> Domain Zoo wins Game 1 on turn 8 via damage
+    Final life: Domain Zoo=16  4c Omnath=-1
+
+======================================================================
+  GAME 2: 4c Omnath (P1) vs Domain Zoo (P2)  —  seed 60407
+  Series: Domain Zoo 1 - 0 4c Omnath
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: 4c Omnath wins → chooses to play first
+║ P1 (on play): 4c Omnath
+║ P2 (on draw): Domain Zoo
+╚═══════════════════════════════════════════════════════
+
+P1 (4c Omnath) opening hand (3 lands, 4 spells):
+  • Solitude [Creature, CMC 5]
+  • Indatha Triome [Land, CMC 0]
+  • Wrenn and Six [Spell, CMC 2]
+  • Windswept Heath [Land, CMC 0]
+  • Teferi, Time Raveler [Spell, CMC 3]
+  • Boseiju, Who Endures [Land, CMC 0]
+  • Ephemerate [Spell, CMC 1]
+→ P1 KEEPS 7 — has key card(s): Ephemerate, Solitude, Teferi, Time Raveler, Wrenn and Six, 3 cheap spells
+
+P2 (Domain Zoo) opening hand (2 lands, 5 spells):
+  • Flooded Strand [Land, CMC 0]
+  • Territorial Kavu [Creature, CMC 2]
+  • Breeding Pool [Land, CMC 0]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Stubborn Denial [Spell, CMC 1]
+  • Wrath of the Skies [Spell, CMC 2]
+→ P2 KEEPS 7 — has key card(s): Ragavan, Nimble Pilferer, Territorial Kavu, 4 cheap spells
+
+
+╔══ TURN 1 — 4c Omnath (P1) ══════════════════════════
+║ Life: 4c Omnath 20  |  Domain Zoo 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Windswept Heath
+T1: Windswept Heath moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Windswept Heath (pay 1 life) -> Hallowed Fountain (untapped, life: 17)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 20  |  4c Omnath 17
+║ Hand: 7 cards  |  Opp hand: 6 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Scion of Draco
+  [Main 1]
+T1 P2: Play Flooded Strand
+T1: Flooded Strand moved battlefield -> graveyard (fetchland sacrifice)
+T1 P2: Crack Flooded Strand (pay 1 life) -> Steam Vents (untapped, life: 17)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Steam Vents→R (paying for Ragavan, Nimble Pilferer, 0 mana remaining)
+T1 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T1: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — 4c Omnath (P1) ══════════════════════════
+║ Life: 4c Omnath 17  |  Domain Zoo 17
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Steam Vents [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Wrenn and Six
+  [Main 1]
+T2 P1: Play Boseiju, Who Endures
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 17  |  4c Omnath 17
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Steam Vents
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Boseiju, Who Endures
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Quantum Riddler
+  [Main 1]
+T2 P2: Play Breeding Pool (tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T2 P2: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T2 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T2 P2: Create 1x Treasure token(s)
+T2 P2: Ragavan, Nimble Pilferer exiles Ephemerate from top of P1's library
+T2 P2: Ragavan, Nimble Pilferer — may cast Ephemerate this turn
+  [Combat Damage] 2 damage dealt → P1 life: 17 → 15
+  [End Combat]
+  [Main 2]
+  [End Step]
+T2: Ephemerate returned to exile (uncast)
+
+╔══ TURN 3 — 4c Omnath (P1) ══════════════════════════
+║ Life: 4c Omnath 15  |  Domain Zoo 17
+║ Hand: 6 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 1
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Boseiju, Who Endures
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped]
+║   Other: Treasure Token
+║   Lands: Steam Vents, Breeding Pool [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Leyline Binding
+  [Main 1]
+T3 P1: Play Indatha Triome (enters tapped)
+    → Goal: grind_value
+    [Mana] Tap Boseiju, Who Endures→G, Hallowed Fountain→W (paying for Leyline Binding, 0 mana remaining)
+T3 P1: Cast Leyline Binding (5W)
+    [Priority] P2 responds with Stubborn Denial
+    [Mana] Tap Steam Vents→U (paying for Stubborn Denial, 0 mana remaining)
+T3 P2: Cast Stubborn Denial (U)
+T3: Resolve Stubborn Denial
+T3: Leyline Binding moved stack -> graveyard (resolution)
+T3: Leyline Binding is countered
+T3: Stubborn Denial moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 17  |  4c Omnath 15
+║ Hand: 5 cards  |  Opp hand: 5 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 50  |  Graveyard: 2
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Other: Treasure Token
+║   Lands: Steam Vents, Breeding Pool
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain [T], Boseiju, Who Endures [T], Indatha Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Practiced Offense
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Steam Vents→U, Breeding Pool→G (paying for Quantum Riddler, 0 mana remaining)
+T3 P2: Warp Quantum Riddler (pays 1U)
+T3 P2: Cast Quantum Riddler (3UU)
+    [Priority] P1 passes (no response)
+T3: Resolve Quantum Riddler
+T3 P2: Quantum Riddler ETB: draw 1 (Territorial Kavu)
+  [Begin Combat]
+T3 P1: Evoke Solitude (exile Ephemerate)
+T3 P1: Cast Solitude (3WW)
+    [Priority] P2 passes (no response)
+T3: Resolve Solitude
+T3: Quantum Riddler moved battlefield -> exile (exiled)
+T3 P1: Solitude exiles Quantum Riddler (opponent gains 4 life, now 21)
+T3: Solitude moved battlefield -> graveyard (evoke sacrifice)
+T3 P1: Solitude sacrificed (evoke)
+  [Declare Attackers] P2 attacks with: Ragavan, Nimble Pilferer
+T3 P2: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P1 does not block
+T3 P2:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T3 P2: Create 1x Treasure token(s)
+T3 P2: Ragavan, Nimble Pilferer exiles Lightning Bolt from top of P1's library
+T3 P2: Ragavan, Nimble Pilferer — may cast Lightning Bolt this turn
+  [Combat Damage] 2 damage dealt → P1 life: 15 → 13
+  [End Combat]
+  [Main 2]
+  [End Step]
+T3: Lightning Bolt returned to exile (uncast)
+
+╔══ TURN 4 — 4c Omnath (P1) ══════════════════════════
+║ Life: 4c Omnath 13  |  Domain Zoo 21
+║ Hand: 3 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 2
+║ Library: 48  |  Graveyard: 3
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Hallowed Fountain, Boseiju, Who Endures, Indatha Triome
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped]
+║   Other: Treasure Token, Treasure Token
+║   Lands: Steam Vents [T], Breeding Pool [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Prismatic Ending
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Boseiju, Who Endures→G, Hallowed Fountain→U, Indatha Triome→W (paying for Teferi, Time Raveler, 0 mana remaining)
+T4 P1: Cast Teferi, Time Raveler (1WU)
+    [Priority] P2 passes (no response)
+T4: Resolve Teferi, Time Raveler
+T4 P1: Teferi, Time Raveler [-3] -> Return up to one target artifact, creature, or enchantment to its owner's hand. Draw a card
+T4: Ragavan, Nimble Pilferer moved battlefield -> hand (bounced)
+T4 P1:   returns Ragavan, Nimble Pilferer to its owner's hand
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 21  |  4c Omnath 13
+║ Hand: 7 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 2
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Treasure Token, Treasure Token
+║   Lands: Steam Vents, Breeding Pool
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain [T], Boseiju, Who Endures [T], Indatha Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Hallowed Fountain
+  [Main 1]
+T4 P2: Play Hallowed Fountain (tapped)
+    → Goal: curve_out
+    → Goal: curve_out [enablers]
+    [Mana] Tap Steam Vents→R (paying for Ragavan, Nimble Pilferer, 1 mana remaining)
+T4 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T4: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — 4c Omnath (P1) ══════════════════════════
+║ Life: 4c Omnath 13  |  Domain Zoo 21
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 46  |  Graveyard: 3
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler
+║   Lands: Hallowed Fountain, Boseiju, Who Endures, Indatha Triome
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Other: Treasure Token, Treasure Token
+║   Lands: Steam Vents [T], Breeding Pool, Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Windswept Heath
+  [Main 1]
+T5 P1: Play Windswept Heath
+T5: Windswept Heath moved battlefield -> graveyard (fetchland sacrifice)
+T5 P1: Crack Windswept Heath (pay 1 life) -> Stomping Ground (untapped, life: 10)
+    → Goal: close_game
+    [Mana] Tap Boseiju, Who Endures→G, Stomping Ground→R (paying for Wrenn and Six, 2 mana remaining)
+T5 P1: Cast Wrenn and Six (RG)
+T5: Resolve Wrenn and Six
+    → Goal: close_game
+    [Mana] Tap Hallowed Fountain→W (paying for Prismatic Ending, 1 mana remaining)
+T5 P1: Cast Prismatic Ending (1W) (X=1)
+T5: Resolve Prismatic Ending
+T5: Ragavan, Nimble Pilferer moved battlefield -> exile (exiled)
+T5 P1: Prismatic Ending exiles Ragavan, Nimble Pilferer
+T5: Prismatic Ending moved stack -> graveyard (resolution)
+T5 P1: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+T5: Windswept Heath moved graveyard -> hand (returned to hand)
+T5 P1:   returns Windswept Heath from graveyard to hand
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 21  |  4c Omnath 10
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 2
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Treasure Token, Treasure Token
+║   Lands: Steam Vents, Breeding Pool, Hallowed Fountain
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler, Wrenn and Six
+║   Lands: Hallowed Fountain [T], Boseiju, Who Endures [T], Indatha Triome [T], Stomping Ground [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Arid Mesa
+  [Main 1]
+T5 P2: Play Arid Mesa
+T5: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T5 P2: Crack Arid Mesa (pay 1 life) -> Godless Shrine (tapped, life: 20)
+    → Goal: curve_out
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Steam Vents→R, Breeding Pool→G (paying for Scion of Draco, 1 mana remaining)
+T5 P2: Cast Scion of Draco (12)
+    [Priority] P1 passes (no response)
+T5: Resolve Scion of Draco
+T5 P2: Scion of Draco enters — creatures gain vigilance/hexproof/lifelink/first strike/trample if white/blue/black/red/green
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — 4c Omnath (P1) ══════════════════════════
+║ Life: 4c Omnath 10  |  Domain Zoo 20
+║ Hand: 3 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 44  |  Graveyard: 4
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler, Wrenn and Six
+║   Lands: Hallowed Fountain, Boseiju, Who Endures, Indatha Triome, Stomping Ground
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4)
+║   Other: Treasure Token, Treasure Token
+║   Lands: Steam Vents [T], Breeding Pool [T], Hallowed Fountain, Godless Shrine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Omnath, Locus of Creation
+  [Main 1]
+T6 P1: Play Windswept Heath
+T6: Windswept Heath moved battlefield -> graveyard (fetchland sacrifice)
+T6 P1: Crack Windswept Heath (pay 1 life) -> Temple Garden (tapped, life: 9)
+T6 P1: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+T6: Windswept Heath moved graveyard -> hand (returned to hand)
+T6 P1:   returns Windswept Heath from graveyard to hand
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 20  |  4c Omnath 9
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 45  |  Graveyard: 3
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4)
+║   Other: Treasure Token, Treasure Token
+║   Lands: Steam Vents, Breeding Pool, Hallowed Fountain, Godless Shrine
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler, Wrenn and Six
+║   Lands: Hallowed Fountain, Boseiju, Who Endures, Indatha Triome, Stomping Ground, Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Leyline Binding
+  [Main 1]
+    → Goal: curve_out [enablers]
+    [Mana] Tap Steam Vents→R (paying for Ragavan, Nimble Pilferer, 3 mana remaining)
+T6 P2: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P1 passes (no response)
+T6: Resolve Ragavan, Nimble Pilferer
+    → Goal: curve_out
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Scion of Draco
+T6 P2: Attack with Scion of Draco
+  [Declare Blockers] P1 does not block
+T6 P2:   Scion of Draco (4/4) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 9 → 5
+  [End Combat]
+  [Main 2]
+    → Goal: curve_out
+  [End Step]
+
+╔══ TURN 7 — 4c Omnath (P1) ══════════════════════════
+║ Life: 4c Omnath 5  |  Domain Zoo 20
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 4
+║ Library: 42  |  Graveyard: 4
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler, Wrenn and Six
+║   Lands: Hallowed Fountain, Boseiju, Who Endures, Indatha Triome, Stomping Ground, Temple Garden
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4) [tapped], Ragavan, Nimble Pilferer (2/1)
+║   Other: Treasure Token, Treasure Token
+║   Lands: Steam Vents [T], Breeding Pool, Hallowed Fountain, Godless Shrine
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Solitude
+  [Main 1]
+T7 P1: Play Windswept Heath
+T7: Windswept Heath moved battlefield -> graveyard (fetchland sacrifice)
+T7 P1: Crack Windswept Heath -> Plains (untapped)
+T7 P1: Wrenn and Six [-1] -> Wrenn and Six deals 1 damage to any target
+T7 P1: Wrenn and Six deals 1 to Ragavan, Nimble Pilferer
+T7: Ragavan, Nimble Pilferer dies
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+    → Goal: close_game
+    [Mana] Tap Boseiju, Who Endures→G, Plains→W, Hallowed Fountain→W, Stomping Ground→G, Temple Garden→G (paying for Solitude, 1 mana remaining)
+T7 P1: Cast Solitude (3WW)
+T7: Resolve Solitude
+T7: Scion of Draco moved battlefield -> exile (exiled)
+T7 P1: Solitude exiles Scion of Draco (opponent gains 4 life, now 24)
+  [End Step]
+
+╔══ TURN 7 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 24  |  4c Omnath 4
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 6
+║ Library: 44  |  Graveyard: 4
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Treasure Token, Treasure Token
+║   Lands: Steam Vents, Breeding Pool, Hallowed Fountain, Godless Shrine
+║ 4c Omnath board:
+║   Creatures: Solitude (3/2)
+║   Other: Teferi, Time Raveler, Wrenn and Six
+║   Lands: Hallowed Fountain [T], Boseiju, Who Endures [T], Indatha Triome, Stomping Ground [T], Temple Garden [T], Plains [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Leyline of the Guildpact
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Hallowed Fountain→W (paying for Leyline Binding, 3 mana remaining)
+T7 P2: Cast Leyline Binding (5W)
+    [Priority] P1 passes (no response)
+T7: Resolve Leyline Binding
+T7: Solitude moved battlefield -> exile (exiled)
+T7 P2: Leyline Binding exiles Solitude
+    → Goal: curve_out
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Steam Vents→R, Breeding Pool→G (paying for Territorial Kavu, 1 mana remaining)
+T7 P2: Cast Territorial Kavu (RG)
+    [Priority] P1 passes (no response)
+T7: Resolve Territorial Kavu
+T7 P2: Territorial Kavu enters as 5/5 (domain=5)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 8 — 4c Omnath (P1) ══════════════════════════
+║ Life: 4c Omnath 4  |  Domain Zoo 24
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 6  |  Opp lands: 4
+║ Library: 40  |  Graveyard: 5
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Other: Teferi, Time Raveler, Wrenn and Six
+║   Lands: Hallowed Fountain, Boseiju, Who Endures, Indatha Triome, Stomping Ground, Temple Garden, Plains
+║ Domain Zoo board:
+║   Creatures: Territorial Kavu (5/5)
+║   Other: Treasure Token, Treasure Token, Leyline Binding
+║   Lands: Steam Vents [T], Breeding Pool [T], Hallowed Fountain [T], Godless Shrine
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Solitude
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Boseiju, Who Endures→G, Plains→W, Hallowed Fountain→W, Stomping Ground→G, Temple Garden→G (paying for Solitude, 1 mana remaining)
+T8 P1: Cast Solitude (3WW)
+T8: Resolve Solitude
+T8: Territorial Kavu moved battlefield -> exile (exiled)
+T8 P1: Solitude exiles Territorial Kavu (opponent gains 5 life, now 29)
+T8 P1: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+T8: Windswept Heath moved graveyard -> hand (returned to hand)
+T8 P1:   returns Windswept Heath from graveyard to hand
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+T8 P1: Play Windswept Heath
+T8: Windswept Heath moved battlefield -> graveyard (fetchland sacrifice)
+T8 P1: Crack Windswept Heath -> Raugrin Triome (tapped)
+  [End Step]
+
+╔══ TURN 8 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 29  |  4c Omnath 3
+║ Hand: 4 cards  |  Opp hand: 3 cards
+║ Lands: 4  |  Opp lands: 7
+║ Library: 43  |  Graveyard: 4
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Treasure Token, Treasure Token, Leyline Binding
+║   Lands: Steam Vents, Breeding Pool, Hallowed Fountain, Godless Shrine
+║ 4c Omnath board:
+║   Creatures: Solitude (3/2)
+║   Other: Teferi, Time Raveler, Wrenn and Six
+║   Lands: Hallowed Fountain [T], Boseiju, Who Endures [T], Indatha Triome, Stomping Ground [T], Temple Garden [T], Plains [T], Raugrin Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Leyline of the Guildpact
+  [Main 1]
+    → Goal: curve_out
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Steam Vents→R, Breeding Pool→G (paying for Territorial Kavu, 2 mana remaining)
+T8 P2: Cast Territorial Kavu (RG)
+    [Priority] P1 passes (no response)
+T8: Resolve Territorial Kavu
+T8 P2: Territorial Kavu enters as 5/5 (domain=5)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+    → Goal: curve_out
+  [End Step]
+
+╔══ TURN 9 — 4c Omnath (P1) ══════════════════════════
+║ Life: 4c Omnath 3  |  Domain Zoo 29
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 7  |  Opp lands: 4
+║ Library: 38  |  Graveyard: 5
+║ 4c Omnath board:
+║   Creatures: Solitude (3/2)
+║   Other: Teferi, Time Raveler, Wrenn and Six
+║   Lands: Hallowed Fountain, Boseiju, Who Endures, Indatha Triome, Stomping Ground, Temple Garden, Plains, Raugrin Triome
+║ Domain Zoo board:
+║   Creatures: Territorial Kavu (5/5)
+║   Other: Treasure Token, Treasure Token, Leyline Binding
+║   Lands: Steam Vents [T], Breeding Pool [T], Hallowed Fountain, Godless Shrine
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Omnath, Locus of Creation
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Boseiju, Who Endures→G, Plains→W, Hallowed Fountain→U, Stomping Ground→R (paying for Omnath, Locus of Creation, 3 mana remaining)
+T9 P1: Cast Omnath, Locus of Creation (WURG)
+T9: Resolve Omnath, Locus of Creation
+T9 P1: Omnath, Locus of Creation ETB: draw 1 (Hedge Maze)
+T9 P1: surveil 1 → Supreme Verdict to GY
+T9 P1: Play Hedge Maze (enters tapped)
+T9 P1: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+T9: Windswept Heath moved graveyard -> hand (returned to hand)
+T9 P1:   returns Windswept Heath from graveyard to hand
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Solitude
+T9 P1: Attack with Solitude
+  [Declare Blockers] P2 does not block
+T9 P1: Solitude lifelink — gain 3 (life: 6)
+T9 P1:   Solitude (3/2) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 29 → 26
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 9 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 26  |  4c Omnath 6
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 8
+║ Library: 42  |  Graveyard: 4
+║ Domain Zoo board:
+║   Creatures: Territorial Kavu (5/5)
+║   Other: Treasure Token, Treasure Token, Leyline Binding
+║   Lands: Steam Vents, Breeding Pool, Hallowed Fountain, Godless Shrine
+║ 4c Omnath board:
+║   Creatures: Solitude (3/2) [tapped], Omnath, Locus of Creation (4/4)
+║   Other: Teferi, Time Raveler, Wrenn and Six
+║   Lands: Hallowed Fountain [T], Boseiju, Who Endures [T], Indatha Triome, Stomping Ground [T], Temple Garden, Plains [T], Raugrin Triome, Hedge Maze [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Scion of Draco
+  [Main 1]
+    → Goal: curve_out
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Steam Vents→R, Breeding Pool→G (paying for Scion of Draco, 2 mana remaining)
+T9 P2: Cast Scion of Draco (12)
+    [Priority] P1 passes (no response)
+T9: Resolve Scion of Draco
+T9 P2: Scion of Draco enters — creatures gain vigilance/hexproof/lifelink/first strike/trample if white/blue/black/red/green
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Territorial Kavu
+T9 P2: Territorial Kavu exiles Leyline Binding from opponent GY
+T9 P2: Attack with Territorial Kavu
+T9 P1:   [BLOCK-EMERGENCY] Omnath, Locus of Creation (4/4) blocks Territorial Kavu (5/5) — lifespan_delta=-4.51
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T9 P2:   Territorial Kavu (5/5) → 1 dmg to player (trample)
+T9: Omnath, Locus of Creation dies
+  [Combat Damage] 1 damage dealt → P1 life: 6 → 5
+  [End Combat]
+  [Main 2]
+    → Goal: curve_out
+  [End Step]
+
+╔══ TURN 10 — 4c Omnath (P1) ══════════════════════════
+║ Life: 4c Omnath 5  |  Domain Zoo 26
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 8  |  Opp lands: 4
+║ Library: 35  |  Graveyard: 5
+║ 4c Omnath board:
+║   Creatures: Solitude (3/2)
+║   Other: Teferi, Time Raveler, Wrenn and Six
+║   Lands: Hallowed Fountain, Boseiju, Who Endures, Indatha Triome, Stomping Ground, Temple Garden, Plains, Raugrin Triome, Hedge Maze
+║ Domain Zoo board:
+║   Creatures: Territorial Kavu (5/5) [tapped], Scion of Draco (4/4)
+║   Other: Treasure Token, Treasure Token, Leyline Binding
+║   Lands: Steam Vents [T], Breeding Pool [T], Hallowed Fountain, Godless Shrine
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Omnath, Locus of Creation
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Boseiju, Who Endures→G, Plains→W, Hallowed Fountain→U, Stomping Ground→R (paying for Omnath, Locus of Creation, 4 mana remaining)
+T10 P1: Cast Omnath, Locus of Creation (WURG)
+T10: Resolve Omnath, Locus of Creation
+T10 P1: Omnath, Locus of Creation ETB: draw 1 (Overgrown Tomb)
+T10 P1: Play Windswept Heath
+T10: Windswept Heath moved battlefield -> graveyard (fetchland sacrifice)
+T10 P1: Crack Windswept Heath -> Forest (untapped)
+T10 P1: Omnath, Locus of Creation 2nd landfall: add mana
+    → Goal: close_game
+    [Mana] Tap Hedge Maze→U (paying for Quantum Riddler, 4 mana remaining)
+T10 P1: Cast Quantum Riddler (3UU)
+T10: Resolve Quantum Riddler
+T10 P1: Quantum Riddler ETB: draw 1 (Orcish Bowmasters)
+    → Goal: close_game
+    [Mana] Tap Forest→G, Indatha Triome→B (paying for Orcish Bowmasters, 2 mana remaining)
+T10 P1: Cast Orcish Bowmasters (1B)
+T10: Resolve Orcish Bowmasters
+T10 P1: Bowmasters deals 1 damage to opponent (life: 25)
+T10 P1: amass Orcs 1 — creates a 1/1 Orc Army token
+T10 P1: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+T10: Windswept Heath moved graveyard -> hand (returned to hand)
+T10 P1:   returns Windswept Heath from graveyard to hand
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Solitude
+T10 P1: Attack with Solitude
+  [Declare Blockers] P2 does not block
+T10 P1: Solitude lifelink — gain 3 (life: 7)
+T10 P1:   Solitude (3/2) → 3 dmg to player
+  [Combat Damage] 3 damage dealt → P2 life: 25 → 22
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 10 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 22  |  4c Omnath 7
+║ Hand: 4 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 9
+║ Library: 41  |  Graveyard: 4
+║ Domain Zoo board:
+║   Creatures: Territorial Kavu (5/5), Scion of Draco (4/4)
+║   Other: Treasure Token, Treasure Token, Leyline Binding
+║   Lands: Steam Vents, Breeding Pool, Hallowed Fountain, Godless Shrine
+║ 4c Omnath board:
+║   Creatures: Solitude (3/2) [tapped], Omnath, Locus of Creation (4/4), Quantum Riddler (4/6), Orcish Bowmasters (1/1), Orc Army (1/1)
+║   Other: Teferi, Time Raveler, Wrenn and Six
+║   Lands: Hallowed Fountain [T], Boseiju, Who Endures [T], Indatha Triome [T], Stomping Ground [T], Temple Garden, Plains [T], Raugrin Triome, Hedge Maze [T], Forest [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Stubborn Denial
+  [Main 1]
+    → Goal: curve_out
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Territorial Kavu, Scion of Draco
+T10 P2: Territorial Kavu exiles Solitude from opponent GY
+T10 P2: Attack with Territorial Kavu, Scion of Draco
+T10 P1:   [BLOCK-EMERGENCY] Orc Army (1/1) blocks Territorial Kavu (5/5) — lifespan_delta=-0.03
+T10 P1:   [BLOCK-EMERGENCY] Quantum Riddler (4/6) blocks Scion of Draco (4/4) — lifespan_delta=+1.07
+  [Declare Blockers] P1 blocks: (see BLOCK lines below)
+T10 P2:   Territorial Kavu (5/5) → 4 dmg to player (trample)
+T10: Orc Army dies
+T10: Scion of Draco dies
+  [Combat Damage] 4 damage dealt → P1 life: 7 → 3
+  [End Combat]
+  [Main 2]
+    → Goal: curve_out
+  [End Step]
+
+╔══ TURN 11 — 4c Omnath (P1) ══════════════════════════
+║ Life: 4c Omnath 3  |  Domain Zoo 22
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 9  |  Opp lands: 4
+║ Library: 31  |  Graveyard: 4
+║ 4c Omnath board:
+║   Creatures: Solitude (3/2), Omnath, Locus of Creation (4/4), Quantum Riddler (4/6), Orcish Bowmasters (1/1)
+║   Other: Teferi, Time Raveler, Wrenn and Six
+║   Lands: Hallowed Fountain, Boseiju, Who Endures, Indatha Triome, Stomping Ground, Temple Garden, Plains, Raugrin Triome, Hedge Maze, Forest
+║ Domain Zoo board:
+║   Creatures: Territorial Kavu (5/5) [tapped]
+║   Other: Treasure Token, Treasure Token, Leyline Binding
+║   Lands: Steam Vents, Breeding Pool, Hallowed Fountain, Godless Shrine
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Leyline Binding
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Plains→W (paying for Leyline Binding, 8 mana remaining)
+T11 P1: Cast Leyline Binding (5W)
+T11: Resolve Leyline Binding
+T11: Territorial Kavu moved battlefield -> exile (exiled)
+T11 P1: Leyline Binding exiles Territorial Kavu
+T11 P1: Play Windswept Heath
+T11: Windswept Heath moved battlefield -> graveyard (fetchland sacrifice)
+T11 P1: Crack Windswept Heath -> Lush Portico (tapped)
+T11 P1: surveil 1 → Quantum Riddler to GY
+T11 P1: Omnath, Locus of Creation 2nd landfall: add mana
+T11 P1: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+T11: Windswept Heath moved graveyard -> hand (returned to hand)
+T11 P1:   returns Windswept Heath from graveyard to hand
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Solitude, Omnath, Locus of Creation, Quantum Riddler, Orcish Bowmasters
+T11 P1: Attack with Solitude, Omnath, Locus of Creation, Quantum Riddler, Orcish Bowmasters
+  [Declare Blockers] P2 does not block
+T11 P1: Solitude lifelink — gain 3 (life: 5)
+T11 P1:   Solitude (3/2) → 3 dmg to player
+T11 P1:   Omnath, Locus of Creation (4/4) → 4 dmg to player
+T11 P1:   Quantum Riddler (4/6) → 4 dmg to player
+T11 P1:   Orcish Bowmasters (1/1) → 1 dmg to player
+  [Combat Damage] 12 damage dealt → P2 life: 22 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 11 — Domain Zoo (P2) ══════════════════════════
+║ Life: Domain Zoo 10  |  4c Omnath 5
+║ Hand: 5 cards  |  Opp hand: 4 cards
+║ Lands: 4  |  Opp lands: 10
+║ Library: 40  |  Graveyard: 5
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Treasure Token, Treasure Token, Leyline Binding
+║   Lands: Steam Vents, Breeding Pool, Hallowed Fountain, Godless Shrine
+║ 4c Omnath board:
+║   Creatures: Solitude (3/2) [tapped], Omnath, Locus of Creation (4/4) [tapped], Quantum Riddler (4/6) [tapped], Orcish Bowmasters (1/1) [tapped]
+║   Other: Teferi, Time Raveler, Wrenn and Six, Leyline Binding
+║   Lands: Hallowed Fountain, Boseiju, Who Endures, Indatha Triome, Stomping Ground, Temple Garden, Plains [T], Raugrin Triome, Hedge Maze, Forest, Lush Portico [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Ragavan, Nimble Pilferer
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Hallowed Fountain→W, Godless Shrine→W (paying for Wrath of the Skies, 2 mana remaining)
+T11 P2: Cast Wrath of the Skies (2WW) (X=2)
+    [Priority] P1 passes (no response)
+T11: Resolve Wrath of the Skies
+T11: Orcish Bowmasters dies
+T11: Treasure Token moved battlefield -> graveyard (destroyed)
+T11: Treasure Token moved battlefield -> graveyard (destroyed)
+T11 P2: Wrath of the Skies (X=2) sweeps the board, destroying 3 permanents
+T11: Wrath of the Skies moved stack -> graveyard (resolution)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 12 — 4c Omnath (P1) ══════════════════════════
+║ Life: 4c Omnath 5  |  Domain Zoo 10
+║ Hand: 4 cards  |  Opp hand: 5 cards
+║ Lands: 10  |  Opp lands: 4
+║ Library: 28  |  Graveyard: 6
+║ 4c Omnath board:
+║   Creatures: Solitude (3/2), Omnath, Locus of Creation (4/4), Quantum Riddler (4/6)
+║   Other: Teferi, Time Raveler, Wrenn and Six, Leyline Binding
+║   Lands: Hallowed Fountain, Boseiju, Who Endures, Indatha Triome, Stomping Ground, Temple Garden, Plains, Raugrin Triome, Hedge Maze, Forest, Lush Portico
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Other: Leyline Binding
+║   Lands: Steam Vents [T], Breeding Pool [T], Hallowed Fountain [T], Godless Shrine [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Orcish Bowmasters
+  [Main 1]
+T12 P1: Play Windswept Heath
+T12: Windswept Heath moved battlefield -> graveyard (fetchland sacrifice)
+T12 P1: Crack Windswept Heath (no valid land found)
+    → Goal: close_game
+    [Mana] Tap Boseiju, Who Endures→G, Indatha Triome→B (paying for Orcish Bowmasters, 8 mana remaining)
+T12 P1: Cast Orcish Bowmasters (1B)
+T12: Resolve Orcish Bowmasters
+T12 P1: Bowmasters deals 1 damage to opponent (life: 9)
+T12 P1: amass Orcs 1 — creates a 1/1 Orc Army token
+T12 P1: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+T12: Windswept Heath moved graveyard -> hand (returned to hand)
+T12 P1:   returns Windswept Heath from graveyard to hand
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Solitude, Omnath, Locus of Creation, Quantum Riddler
+T12 P1: Attack with Solitude, Omnath, Locus of Creation, Quantum Riddler
+  [Declare Blockers] P2 does not block
+T12 P1: Solitude lifelink — gain 3 (life: 7)
+T12 P1:   Solitude (3/2) → 3 dmg to player
+T12 P1:   Omnath, Locus of Creation (4/4) → 4 dmg to player
+T12 P1:   Quantum Riddler (4/6) → 4 dmg to player
+P2 loses: life total -2
+  [Combat Damage] 11 damage dealt → P2 life: 9 → -2
+
+>>> 4c Omnath wins Game 2 on turn 12 via damage
+    Final life: 4c Omnath=7  Domain Zoo=-2
+
+======================================================================
+  GAME 3: Domain Zoo (P1) vs 4c Omnath (P2)  —  seed 60408
+  Series: Domain Zoo 1 - 1 4c Omnath
+======================================================================
+
+╔══ PRE-GAME ══════════════════════════════════════════════
+║ Die Roll: Domain Zoo wins → chooses to play first
+║ P1 (on play): Domain Zoo
+║ P2 (on draw): 4c Omnath
+╚═══════════════════════════════════════════════════════
+
+P1 (Domain Zoo) opening hand (3 lands, 4 spells):
+  • Thundering Falls [Land, CMC 0]
+  • Ragavan, Nimble Pilferer [Creature, CMC 1]
+  • Scion of Draco [Creature, CMC 12]
+  • Arid Mesa [Land, CMC 0]
+  • Fatal Push [Spell, CMC 1]
+  • Meticulous Archive [Land, CMC 0]
+  • Stubborn Denial [Spell, CMC 1]
+→ P1 KEEPS 7 — has key card(s): Ragavan, Nimble Pilferer, 3 cheap spells
+
+P2 (4c Omnath) opening hand (4 lands, 3 spells):
+  • Indatha Triome [Land, CMC 0]
+  • Hedge Maze [Land, CMC 0]
+  • Omnath, Locus of Creation [Creature, CMC 4]
+  • Raugrin Triome [Land, CMC 0]
+  • Phelia, Exuberant Shepherd [Creature, CMC 2]
+  • Wrenn and Six [Spell, CMC 2]
+  • Island [Land, CMC 0]
+→ P2 KEEPS 7 — has key card(s): Omnath, Locus of Creation, Wrenn and Six, 2 cheap spells
+
+
+╔══ TURN 1 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 20  |  4c Omnath 20
+║ Hand: 7 cards  |  Opp hand: 7 cards
+║ Lands: 0  |  Opp lands: 0
+║ Library: 53  |  Graveyard: 0
+║ Domain Zoo board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: (none)
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] Skipped (first turn on play)
+  [Main 1]
+T1 P1: Play Arid Mesa
+T1: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T1 P1: Crack Arid Mesa (pay 1 life) -> Blood Crypt (untapped, life: 17)
+    → Goal: curve_out [enablers]
+    [Mana] Tap Blood Crypt→R (paying for Ragavan, Nimble Pilferer, 0 mana remaining)
+T1 P1: Cast Ragavan, Nimble Pilferer (R)
+    [Priority] P2 passes (no response)
+T1: Resolve Ragavan, Nimble Pilferer
+  [Begin Combat]
+  [Declare Attackers] P1 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 1 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 20  |  Domain Zoo 17
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 0  |  Opp lands: 1
+║ Library: 53  |  Graveyard: 0
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: (none)
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Blood Crypt [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Hallowed Fountain
+  [Main 1]
+T1 P2: Play Indatha Triome (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 2 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 17  |  4c Omnath 20
+║ Hand: 5 cards  |  Opp hand: 7 cards
+║ Lands: 1  |  Opp lands: 1
+║ Library: 52  |  Graveyard: 1
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Lands: Blood Crypt
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Indatha Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Arid Mesa
+  [Main 1]
+T2 P1: Play Arid Mesa
+T2: Arid Mesa moved battlefield -> graveyard (fetchland sacrifice)
+T2 P1: Crack Arid Mesa (pay 1 life) -> Hallowed Fountain (tapped, life: 16)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ragavan, Nimble Pilferer
+T2 P1: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P2 does not block
+T2 P1:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T2 P1: Create 1x Treasure token(s)
+T2 P1: Ragavan, Nimble Pilferer exiles Ephemerate from top of P2's library
+T2 P1: Ragavan, Nimble Pilferer — may cast Ephemerate this turn
+  [Combat Damage] 2 damage dealt → P2 life: 20 → 18
+  [End Combat]
+  [Main 2]
+  [End Step]
+T2: Ephemerate returned to exile (uncast)
+
+╔══ TURN 2 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 18  |  Domain Zoo 16
+║ Hand: 7 cards  |  Opp hand: 5 cards
+║ Lands: 1  |  Opp lands: 2
+║ Library: 51  |  Graveyard: 0
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Indatha Triome
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped]
+║   Other: Treasure Token
+║   Lands: Blood Crypt, Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Temple Garden
+  [Main 1]
+T2 P2: Play Island
+    → Goal: grind_value
+    [Mana] Tap Island→U, Indatha Triome→W (paying for Phelia, Exuberant Shepherd, 0 mana remaining)
+T2 P2: Cast Phelia, Exuberant Shepherd (1W)
+    [Priority] P1 passes (no response)
+T2: Resolve Phelia, Exuberant Shepherd
+  [Begin Combat]
+    [Mana] Tap Blood Crypt→B (paying for Fatal Push, 0 mana remaining)
+T2 P1: Cast Fatal Push (B)
+    [Priority] P2 passes (no response)
+T2: Resolve Fatal Push
+T2: Phelia, Exuberant Shepherd dies
+T2 P1: Fatal Push destroys Phelia, Exuberant Shepherd
+T2: Fatal Push moved stack -> graveyard (resolution)
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 3 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 16  |  4c Omnath 18
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 2  |  Opp lands: 2
+║ Library: 50  |  Graveyard: 3
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Other: Treasure Token
+║   Lands: Blood Crypt, Hallowed Fountain
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Indatha Triome [T], Island [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Leyline of the Guildpact
+  [Main 1]
+T3 P1: surveil 1 → Leyline Binding to GY
+T3 P1: Play Thundering Falls (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ragavan, Nimble Pilferer
+T3 P1: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P2 does not block
+T3 P1:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T3 P1: Create 1x Treasure token(s)
+T3 P1: Ragavan, Nimble Pilferer exiles Solitude from top of P2's library
+T3 P1: Ragavan, Nimble Pilferer — may cast Solitude this turn
+  [Combat Damage] 2 damage dealt → P2 life: 18 → 16
+  [End Combat]
+  [Main 2]
+  [End Step]
+T3: Solitude returned to exile (uncast)
+
+╔══ TURN 3 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 16  |  Domain Zoo 16
+║ Hand: 6 cards  |  Opp hand: 4 cards
+║ Lands: 2  |  Opp lands: 3
+║ Library: 49  |  Graveyard: 1
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Indatha Triome, Island
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped]
+║   Other: Treasure Token, Treasure Token
+║   Lands: Blood Crypt, Hallowed Fountain, Thundering Falls [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Elesh Norn, Mother of Machines
+  [Main 1]
+T3 P2: Play Raugrin Triome (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 4 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 16  |  4c Omnath 16
+║ Hand: 4 cards  |  Opp hand: 6 cards
+║ Lands: 3  |  Opp lands: 3
+║ Library: 48  |  Graveyard: 4
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1)
+║   Other: Treasure Token, Treasure Token
+║   Lands: Blood Crypt, Hallowed Fountain, Thundering Falls
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Indatha Triome, Island, Raugrin Triome [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Polluted Delta
+  [Main 1]
+T4 P1: Play Polluted Delta
+T4: Polluted Delta moved battlefield -> graveyard (fetchland sacrifice)
+T4 P1: Crack Polluted Delta (pay 1 life) -> Breeding Pool (tapped, life: 15)
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Blood Crypt→B, Hallowed Fountain→U (paying for Scion of Draco, 1 mana remaining)
+T4 P1: Cast Scion of Draco (12)
+    [Priority] P2 passes (no response)
+T4: Resolve Scion of Draco
+T4 P1: Scion of Draco enters — creatures gain vigilance/hexproof/lifelink/first strike/trample if white/blue/black/red/green
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Ragavan, Nimble Pilferer
+T4 P1: Attack with Ragavan, Nimble Pilferer
+  [Declare Blockers] P2 does not block
+T4 P1:   Ragavan, Nimble Pilferer (2/1) → 2 dmg to player
+T4 P1: Create 1x Treasure token(s)
+T4 P1: Ragavan, Nimble Pilferer exiles Stomping Ground from top of P2's library
+T4 P1: Ragavan, Nimble Pilferer — may cast Stomping Ground this turn
+  [Combat Damage] 2 damage dealt → P2 life: 16 → 14
+  [End Combat]
+  [Main 2]
+  [End Step]
+T4: Stomping Ground returned to exile (uncast)
+
+╔══ TURN 4 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 14  |  Domain Zoo 15
+║ Hand: 6 cards  |  Opp hand: 3 cards
+║ Lands: 3  |  Opp lands: 4
+║ Library: 47  |  Graveyard: 1
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Lands: Indatha Triome, Island, Raugrin Triome
+║ Domain Zoo board:
+║   Creatures: Ragavan, Nimble Pilferer (2/1) [tapped], Scion of Draco (4/4)
+║   Other: Treasure Token, Treasure Token, Treasure Token
+║   Lands: Blood Crypt [T], Hallowed Fountain [T], Thundering Falls, Breeding Pool [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Omnath, Locus of Creation
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Indatha Triome→G, Raugrin Triome→R (paying for Wrenn and Six, 1 mana remaining)
+T4 P2: Cast Wrenn and Six (RG)
+    [Priority] P1 responds with Stubborn Denial
+    [Mana] Tap Thundering Falls→U (paying for Stubborn Denial, 0 mana remaining)
+T4 P1: Cast Stubborn Denial (U)
+T4: Resolve Stubborn Denial
+T4: Wrenn and Six moved stack -> graveyard (resolution)
+T4: Wrenn and Six is countered
+T4: Stubborn Denial moved stack -> graveyard (resolution)
+    → Goal: close_game
+T4 P2: Cast Wrenn and Six (RG)
+    [Priority] P1 passes (no response)
+T4: Resolve Wrenn and Six
+T4 P2: Play Hallowed Fountain (tapped)
+T4 P2: Wrenn and Six [-1] -> Wrenn and Six deals 1 damage to any target
+T4 P2: Wrenn and Six deals 1 to Ragavan, Nimble Pilferer
+T4: Ragavan, Nimble Pilferer dies
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 15  |  4c Omnath 14
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 4  |  Opp lands: 4
+║ Library: 46  |  Graveyard: 7
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4)
+║   Other: Treasure Token, Treasure Token, Treasure Token
+║   Lands: Blood Crypt, Hallowed Fountain, Thundering Falls, Breeding Pool
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Other: Wrenn and Six
+║   Lands: Indatha Triome [T], Island, Raugrin Triome [T], Hallowed Fountain [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Stubborn Denial
+  [Main 1]
+T5 P1: surveil 1 → Flooded Strand to GY
+T5 P1: Play Meticulous Archive (enters tapped)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Scion of Draco
+T5 P1: Attack with Scion of Draco
+  [Declare Blockers] P2 does not block
+T5 P1:   Scion of Draco (4/4) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 14 → 10
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 5 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 10  |  Domain Zoo 15
+║ Hand: 5 cards  |  Opp hand: 2 cards
+║ Lands: 4  |  Opp lands: 5
+║ Library: 46  |  Graveyard: 1
+║ 4c Omnath board:
+║   Creatures: (empty)
+║   Other: Wrenn and Six
+║   Lands: Indatha Triome, Island, Raugrin Triome, Hallowed Fountain
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4) [tapped]
+║   Other: Treasure Token, Treasure Token, Treasure Token
+║   Lands: Blood Crypt, Hallowed Fountain, Thundering Falls, Breeding Pool, Meticulous Archive [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Lightning Bolt
+  [Main 1]
+T5 P2: Play Temple Garden (untapped, life: 8)
+    → Goal: close_game
+    [Mana] Tap Island→U, Hallowed Fountain→W, Temple Garden→G, Raugrin Triome→R (paying for Omnath, Locus of Creation, 1 mana remaining)
+T5 P2: Cast Omnath, Locus of Creation (WURG)
+    [Priority] P1 passes (no response)
+T5: Resolve Omnath, Locus of Creation
+T5 P2: Omnath, Locus of Creation ETB: draw 1 (Misty Rainforest)
+T5 P2: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+  [Begin Combat]
+  [Declare Attackers] P2 does not attack
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 15  |  4c Omnath 8
+║ Hand: 2 cards  |  Opp hand: 5 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 44  |  Graveyard: 8
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4)
+║   Other: Treasure Token, Treasure Token, Treasure Token
+║   Lands: Blood Crypt, Hallowed Fountain, Thundering Falls, Breeding Pool, Meticulous Archive
+║ 4c Omnath board:
+║   Creatures: Omnath, Locus of Creation (4/4)
+║   Other: Wrenn and Six
+║   Lands: Indatha Triome, Island [T], Raugrin Triome [T], Hallowed Fountain [T], Temple Garden [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Quantum Riddler
+  [Main 1]
+    → Goal: curve_out
+    [Mana] Tap Blood Crypt→B, Hallowed Fountain→U, Thundering Falls→U, Breeding Pool→G, Meticulous Archive→U (paying for Quantum Riddler, 0 mana remaining)
+T6 P1: Cast Quantum Riddler (3UU)
+    [Priority] P2 passes (no response)
+T6: Resolve Quantum Riddler
+T6 P1: Quantum Riddler ETB: draw 1 (Territorial Kavu)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Scion of Draco
+T6 P1: Attack with Scion of Draco
+  [Declare Blockers] P2 does not block
+T6 P1:   Scion of Draco (4/4) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P2 life: 8 → 4
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 6 — 4c Omnath (P2) ══════════════════════════
+║ Life: 4c Omnath 4  |  Domain Zoo 15
+║ Hand: 5 cards  |  Opp hand: 3 cards
+║ Lands: 5  |  Opp lands: 5
+║ Library: 44  |  Graveyard: 1
+║ 4c Omnath board:
+║   Creatures: Omnath, Locus of Creation (4/4)
+║   Other: Wrenn and Six
+║   Lands: Indatha Triome, Island, Raugrin Triome, Hallowed Fountain, Temple Garden
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4) [tapped], Quantum Riddler (4/6)
+║   Other: Treasure Token, Treasure Token, Treasure Token
+║   Lands: Blood Crypt [T], Hallowed Fountain [T], Thundering Falls [T], Breeding Pool [T], Meticulous Archive [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P2 untaps all permanents
+  [Upkeep]
+  [Draw] P2 draws: Steam Vents
+  [Main 1]
+    → Goal: close_game
+    [Mana] Tap Island→U, Hallowed Fountain→W, Temple Garden→G, Indatha Triome→B, Raugrin Triome→R (paying for Elesh Norn, Mother of Machines, 0 mana remaining)
+T6 P2: Cast Elesh Norn, Mother of Machines (4W)
+    [Priority] P1 passes (no response)
+T6: Resolve Elesh Norn, Mother of Machines
+T6 P2: Play Misty Rainforest
+T6: Misty Rainforest moved battlefield -> graveyard (fetchland sacrifice)
+T6 P2: Crack Misty Rainforest (pay 1 life) -> Overgrown Tomb (tapped, life: 3)
+T6 P2: Omnath, Locus of Creation 2nd landfall: add mana
+    → Goal: close_game
+    [Target] → face (3 dmg, life 15 → 12): face value 1.50
+T6 P2: Cast Lightning Bolt (R)
+    [Priority] P1 passes (no response)
+T6: Resolve Lightning Bolt
+T6 P2: Lightning Bolt deals 3 to P1 (face)
+T6: Lightning Bolt moved stack -> graveyard (resolution)
+T6 P2: Wrenn and Six [+1] -> Return up to one target land card from your graveyard to your hand
+T6: Misty Rainforest moved graveyard -> hand (returned to hand)
+T6 P2:   returns Misty Rainforest from graveyard to hand
+  [Begin Combat]
+  [Declare Attackers] P2 attacks with: Omnath, Locus of Creation
+T6 P2: Attack with Omnath, Locus of Creation
+  [Declare Blockers] P1 does not block
+T6 P2:   Omnath, Locus of Creation (4/4) → 4 dmg to player
+  [Combat Damage] 4 damage dealt → P1 life: 12 → 8
+  [End Combat]
+  [Main 2]
+  [End Step]
+
+╔══ TURN 7 — Domain Zoo (P1) ══════════════════════════
+║ Life: Domain Zoo 8  |  4c Omnath 3
+║ Hand: 3 cards  |  Opp hand: 4 cards
+║ Lands: 5  |  Opp lands: 6
+║ Library: 42  |  Graveyard: 8
+║ Domain Zoo board:
+║   Creatures: Scion of Draco (4/4), Quantum Riddler (4/6)
+║   Other: Treasure Token, Treasure Token, Treasure Token
+║   Lands: Blood Crypt, Hallowed Fountain, Thundering Falls, Breeding Pool, Meticulous Archive
+║ 4c Omnath board:
+║   Creatures: Omnath, Locus of Creation (4/4) [tapped], Elesh Norn, Mother of Machines (4/7)
+║   Other: Wrenn and Six
+║   Lands: Indatha Triome [T], Island [T], Raugrin Triome [T], Hallowed Fountain [T], Temple Garden [T], Overgrown Tomb [T]
+╚═══════════════════════════════════════════════════════
+  [Untap] P1 untaps all permanents
+  [Upkeep]
+  [Draw] P1 draws: Wrath of the Skies
+  [Main 1]
+    → Goal: curve_out [payoffs]
+    [Mana] Tap Blood Crypt→R, Breeding Pool→G (paying for Territorial Kavu, 3 mana remaining)
+T7 P1: Cast Territorial Kavu (RG)
+    [Priority] P2 passes (no response)
+T7: Resolve Territorial Kavu
+T7 P1: Territorial Kavu enters as 5/5 (domain=5)
+  [Begin Combat]
+  [Declare Attackers] P1 attacks with: Scion of Draco, Quantum Riddler
+T7 P1: Attack with Scion of Draco, Quantum Riddler
+  [Declare Blockers] P2 does not block
+T7 P1:   Scion of Draco (4/4) → 4 dmg to player
+T7 P1:   Quantum Riddler (4/6) → 4 dmg to player
+P2 loses: life total -5
+  [Combat Damage] 8 damage dealt → P2 life: 3 → -5
+
+>>> Domain Zoo wins Game 3 on turn 7 via damage
+    Final life: Domain Zoo=8  4c Omnath=-5
+
+======================================================================
+  MATCH RESULT: Domain Zoo wins 2-1
+======================================================================

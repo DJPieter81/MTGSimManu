@@ -83,6 +83,10 @@ class PlayerState:
     library_searches_this_game: int = 0
     silenced_this_turn: bool = False
     silenced_next_turn: bool = False  # Orim's Chant + Scepter lock
+    # Combat prevention as a class (CR 509.4 / 615), turn-scoped:
+    cannot_attack_this_turn: bool = False       # this player's creatures can't attack
+    cannot_be_attacked_this_turn: bool = False  # creatures can't attack this player
+    combat_damage_prevented_this_turn: bool = False  # Fog (all combat damage prevented)
     temp_cost_reduction: int = 0  # temporary "spells cost N less" (Ral PW +1), cleared end of turn
     deck_name: str = ""
     # Effective CMC overrides from gameplan (e.g. domain cost reduction)
@@ -304,11 +308,15 @@ class PlayerState:
         colors: Dict[str, int] = {"W": 0, "U": 0, "B": 0, "R": 0, "G": 0, "C": 0}
         from .constants import BASIC_LAND_TYPE_COLORS
         for land in self.untapped_lands:
-            # A land whose type is SET to a basic type (layer 4) produces
-            # that colour only — the same rule the payment path reads.
-            forced = getattr(land, 'cem_land_type_set', None)
-            produced = ([BASIC_LAND_TYPE_COLORS[forced]] if forced
-                        else land.template.produces_mana)
+            # A land under either layer-4 family (a SET type, or ADDed
+            # types) produces its CURRENT basic types' colours — the same
+            # rule the payment path reads (CR 305.6 / 305.7).
+            if (getattr(land, 'cem_land_type_set', None)
+                    or getattr(land, 'cem_land_types_added', None)):
+                produced = sorted({BASIC_LAND_TYPE_COLORS[t.lower()]
+                                   for t in land.current_basic_land_types})
+            else:
+                produced = land.template.produces_mana
             for color in produced:
                 colors[color] += 1
         return colors
@@ -346,6 +354,10 @@ class PlayerState:
         if getattr(self, 'silenced_next_turn', False):
             self.silenced_this_turn = True
             self.silenced_next_turn = False
+        # Combat prevention is turn-scoped (CR 509.4 / 615): clear each turn.
+        self.cannot_attack_this_turn = False
+        self.cannot_be_attacked_this_turn = False
+        self.combat_damage_prevented_this_turn = False
         self.temp_cost_reduction = 0
         self._landfall_count_this_turn = 0
 

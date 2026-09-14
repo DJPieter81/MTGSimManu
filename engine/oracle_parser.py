@@ -819,6 +819,33 @@ def parse_counter_tax(oracle: str) -> int:
     return 0
 
 
+def parse_counter_upgrade_condition(oracle: str):
+    """A soft counter whose printed board condition upgrades it to a HARD
+    counter: "… counter that spell instead" after a "counter target …
+    unless its controller pays {N}" clause (CR 601.2b — the printed
+    condition, not just the base tax, determines the effect).
+
+    Types the one board condition that is a generic, checkable board
+    state: "If you control a creature with power N or greater" (the
+    Ferocious shape). Returns ``{'creature_power_at_least': N}`` or
+    ``None``. Other upgrade conditions (reveal/control a Dragon, an
+    opponent's poison counters) are genuinely different reads and are
+    left ``None`` — the coverage census keeps their carriers flagged.
+    Shape-driven; no card names. The one registered carrier is Stubborn
+    Denial, but the parser matches the clause, not the name.
+    """
+    if not oracle or 'counter that spell instead' not in oracle.lower():
+        return None
+    low = oracle.lower()
+    m = re.search(
+        r"if you control a creature with power (\d+) or greater,\s*"
+        r"counter that spell instead",
+        low)
+    if m:
+        return {'creature_power_at_least': int(m.group(1))}
+    return None
+
+
 def parse_ward_cost(oracle: str) -> int:
     """Parse a Ward {N} mana-cost tax from oracle text (CR 702.21a).
 
@@ -3243,7 +3270,68 @@ def parse_ordinal_cast_trigger(oracle: str) -> Optional[Dict]:
             # CR 500.8: "each turn" resets the count at every turn boundary.
             "reset": "turn",
             "clause": clause,
+            # The NON-token effect, typed once so the resolver dispatches it
+            # through the rule owners. None for a token clause (owned by
+            # `cast_trigger_token`) or a shape the executor cannot run whole.
+            "effect": parse_ordinal_effect(clause),
         }
+    return None
+
+
+# Damage shape unique to ordinal cast triggers ("this creature deals N
+# damage to each/target opponent"); the counter/gain/draw shapes reuse the
+# dies-observer clause regexes below, since the wording is identical.
+_ORDINAL_DAMAGE_RE = re.compile(
+    r"^(?:this creature |it )?deals? (\d+) damage to (each opponent|target opponent)"
+    r"(?: and you gain (\d+) life)?$")
+
+
+def parse_ordinal_effect(clause: Optional[str]) -> Optional[Dict]:
+    """Type the NON-token effect of an ordinal cast trigger's clause so
+    `resolve_spell_cast_trigger` can dispatch it through the rule owners
+    (`add_plus_counters`, `engine.damage.deal_damage`, `gain_life`,
+    `draw_cards`).
+
+    Returns one of::
+
+        {"kind": "counter", "amount": int}                    # +1/+1 on source
+        {"kind": "damage", "amount": int, "scope": "each"|"target", "gain": int}
+        {"kind": "gain", "gain": int}
+        {"kind": "draw", "draw": int}
+
+    or None.  A TOKEN clause returns None — the token effect is owned by
+    `cast_trigger_token`.  Shapes a simple executor cannot run whole
+    (proliferate, modal "choose one", coin-flip, copy, or a trailing
+    SECOND sentence) return None and are refused, never half-run — the
+    anchored `$` in each shape regex rejects the extra text.  36 non-token
+    ordinal cards; this reaches the counter/damage/draw/gain shapes.
+    """
+    if not clause:
+        return None
+    # Drop the leading ", " the trigger split left and one trailing period.
+    eff = clause.strip().lstrip(",").strip().rstrip(".").strip().lower()
+    if not eff:
+        return None
+    cm = _DIES_OBSERVER_COUNTER_RE.match(eff)
+    if cm and cm.group(2) in ("this creature", "this permanent", "it"):
+        n = cm.group(1)
+        return {"kind": "counter",
+                "amount": int(n) if n.isdigit() else _NUM_WORDS.get(n, 1)}
+    dm = _ORDINAL_DAMAGE_RE.match(eff)
+    if dm:
+        return {"kind": "damage", "amount": int(dm.group(1)),
+                "scope": "each" if dm.group(2) == "each opponent" else "target",
+                "gain": int(dm.group(3)) if dm.group(3) else 0}
+    gm = _DIES_OBSERVER_GAIN_RE.match(eff)
+    if gm and "draw" not in eff:
+        n = gm.group(1)
+        return {"kind": "gain",
+                "gain": int(n) if n.isdigit() else _NUM_WORDS.get(n, 1)}
+    wm = _DIES_OBSERVER_DRAW_RE.match(eff)
+    if wm and "lose" not in eff:
+        n = wm.group(1)
+        return {"kind": "draw",
+                "draw": int(n) if n.isdigit() else _NUM_WORDS.get(n, 1)}
     return None
 
 
@@ -5788,6 +5876,13 @@ _DIRECT_DMG_RIDER_TOKENS = (
     'discard', 'destroy', '+1/+1', '-1/-1', 'sacrific', 'instead',
     'divided', ' each ', 'loses', 'lochoose',
 )
+# A printed conditional DAMAGE upgrade: "<source> deals M damage instead
+# if <condition>" (Delirium — Unholy Heat; Metalcraft — Galvanic Blast).
+# Same spell, more damage when its board condition holds — typed rather
+# than refused. The condition word (delirium / metalcraft) is read from
+# the line by parse_direct_damage_spell.
+_DIRECT_DMG_UPGRADE_RE = re.compile(
+    r'deals?\s+(\d+)\s+damage\s+instead\s+if\b')
 # A line whose FIRST word is one of these is a keyword-ability cost/rider
 # line (its cost is paid on cast/re-cast, not part of resolving the spell),
 # so it never disqualifies a fixed-N burn — e.g. Lava Dart's
@@ -5800,6 +5895,55 @@ _KEYWORD_ABILITY_LEADS = frozenset({
     'disturb', 'blitz', 'casualty', 'bargain', 'plot', 'gift', 'bloodrush',
     'rebound', 'flashbacks',
 })
+
+
+# ── Kicker (CR 702.33) — an optional ADDITIONAL cost paid as the spell
+# is cast, plus the "if it was kicked" payoff clause. Single-cost kicker
+# and single-cost multikicker are typed; "and/or"/multi-colour kicker
+# (Archangel of Wrath, Ana Battlemage) is refused (returns None) for v1.
+_KICKER_LINE_RE = re.compile(
+    r"(?:^|\n)\s*(multikicker|kicker)\s*[—\-:]?\s*([^\n(]+)", re.I)
+_KICKED_CLAUSE_RE = re.compile(
+    r"(?:when you cast this spell, )?if (?:this spell|it|[a-z0-9' ,]+?) was kicked,?\s+"
+    r"([^.\n]+)", re.I)
+
+
+def parse_kicker(oracle: str) -> "dict | None":
+    """Parse a single-cost kicker/multikicker (CR 702.33).
+
+    Returns ``{"cost": "<mana string>", "multikicker": bool}`` or None.
+    "and/or"/multi-instance kicker lines (two costs) are refused — v1
+    handles one kicker cost paid once (kicker) or repeatedly (multikicker).
+    The caller turns ``cost`` into a ``ManaCost`` via `parse_mana_cost_mtgjson`.
+    """
+    if not oracle:
+        return None
+    m = _KICKER_LINE_RE.search(oracle)
+    if not m:
+        return None
+    cost = m.group(2).strip()
+    # Refuse "and/or" and comma-separated multi-cost kickers (Archangel/Ana).
+    if 'and/or' in cost.lower() or ' and ' in cost.lower():
+        return None
+    # Keep only the leading mana-symbol run ("{1}{C}" from "{1}{C} ...").
+    mm = re.match(r"((?:\{[^}]+\})+)", cost)
+    if not mm:
+        return None
+    return {"cost": mm.group(1), "multikicker": m.group(1).lower() == "multikicker"}
+
+
+def parse_kicked_clause(oracle: str) -> "str | None":
+    """The "if (this spell/it) was kicked, <clause>" payoff sentence — the
+    effect that resolves only when the spell was kicked (CR 702.33e),
+    routed through the generic resolver via `oracle_override`. Covers both
+    the resolve-rider and the "when you cast this spell, if it was kicked"
+    trigger shapes. Returns the clause text or None."""
+    if not oracle:
+        return None
+    m = _KICKED_CLAUSE_RE.search(strip_reminder_text(oracle))
+    if not m:
+        return None
+    return m.group(1).strip()
 
 
 def parse_direct_damage_spell(oracle: str):
@@ -5824,14 +5968,31 @@ def parse_direct_damage_spell(oracle: str):
     m = _DIRECT_DMG_RE.match(lines[0].lower())
     if not m:
         return None
+    upgrade = None
     for extra in lines[1:]:
         low = extra.lower()
         lead = re.split(r"[ —–\-{:]", low, 1)[0]
         if lead in _KEYWORD_ABILITY_LEADS:
             continue  # keyword-ability cost line — not a resolution rider
+        # A printed conditional DAMAGE upgrade ("Delirium/Metalcraft —
+        # <source> deals M damage instead if <condition>") is the same
+        # burn spell, dealing more when its board condition holds — NOT
+        # a real extra effect. Type it; only OTHER riders refuse the card.
+        um = _DIRECT_DMG_UPGRADE_RE.search(low)
+        if um and upgrade is None:
+            cond = ('delirium' if 'delirium' in low or 'card types' in low
+                    else 'metalcraft' if 'metalcraft' in low or 'artifact' in low
+                    else None)
+            if cond is not None:
+                upgrade = {'upgrade_amount': int(um.group(1)),
+                           'upgrade_condition': cond}
+                continue
         if any(tok in low for tok in _DIRECT_DMG_RIDER_TOKENS):
             return None  # a real resolution rider — refuse, don't half-execute
-    return {'amount': int(m.group(1))}
+    data = {'amount': int(m.group(1))}
+    if upgrade:
+        data.update(upgrade)
+    return data
 
 
 # ── Board sweep ("destroy all creatures") ──────────────────────────────
@@ -5958,6 +6119,44 @@ def parse_turn_scoped_restriction(oracle: str) -> "str | None":
     return None
 
 
+# Combat prevention as a CLASS (CR 509.4 attack restrictions + CR 615
+# damage prevention), typed structured so the resolver sets one flag per
+# shape rather than one card at a time.
+_COMBAT_PREVENT_ATTACK_YOU_RE = re.compile(
+    r"creatures can't attack you(?: or planeswalkers you control)?(?: or your planeswalkers)? this turn")
+_COMBAT_PREVENT_ATTACK_ALL_RE = re.compile(r"creatures can't attack this turn")
+_COMBAT_PREVENT_DAMAGE_RE = re.compile(
+    r"prevent all combat damage that would be dealt this turn"
+    r"|prevent all combat damage this turn")
+
+
+def parse_combat_prevention(oracle: str) -> "dict | None":
+    """Classify a turn-scoped COMBAT-PREVENTION effect (CR 509.4 / 615).
+
+    Returns ``{"no_attack": "all"|"you"|None, "prevent_combat_damage":
+    bool}`` or None.  Unlike `parse_turn_scoped_restriction` (first-match,
+    single string), this is a precise structured recogniser that
+    distinguishes the symmetric attack lock, the directional
+    ("… attack you …") lock, and Fog-style damage prevention — the three
+    shapes the resolver enforces in one place each.  It reads only the
+    combat clauses, so a card whose FIRST turn-scoped clause is unrelated
+    (Orim's Chant's "can't cast spells") is still classified by its combat
+    clause here.
+    """
+    if not oracle or 'this turn' not in oracle.lower():
+        return None
+    low = strip_reminder_text(oracle).lower()
+    no_attack = None
+    if _COMBAT_PREVENT_ATTACK_YOU_RE.search(low):
+        no_attack = "you"
+    elif _COMBAT_PREVENT_ATTACK_ALL_RE.search(low):
+        no_attack = "all"
+    prevent_damage = bool(_COMBAT_PREVENT_DAMAGE_RE.search(low))
+    if no_attack is None and not prevent_damage:
+        return None
+    return {"no_attack": no_attack, "prevent_combat_damage": prevent_damage}
+
+
 def parse_etb_targeted_removal(oracle: str, name: str = ""):
     """Classify "When this ~ enters, [you may] destroy/exile target
     <permanent type> [an opponent controls] [with mana value N or less]"
@@ -6044,6 +6243,43 @@ def parse_targeted_removal(oracle: str):
         'types': list(_REMOVAL_TYPESPEC[hit.group(2)]),
         'mv': mv,
     }
+
+
+_CONDITIONAL_MV_REMOVAL_RE = re.compile(
+    r'^(destroy|exile) target (' + _REMOVAL_TYPESPEC_ALT + r')'
+    r' if it has mana value (\d+) or less\.?$')
+_REVOLT_MV_RAISE_RE = re.compile(
+    r'(?:destroy|exile) that (?:creature|permanent|artifact|enchantment) '
+    r'if it has mana value (\d+) or less instead')
+
+
+def parse_conditional_mv_removal(oracle: str):
+    """A removal spell whose mana-value bound is a RESOLUTION condition,
+    not a targeting restriction: "Destroy target creature if it has mana
+    value 2 or less" (+ "Revolt — … if it has mana value 4 or less
+    instead"). Any creature is a legal target (CR 601.2c); a target above
+    the bound resolves to nothing. Returns ``{'mv': N,
+    'mv_if_permanent_left': M | None}`` or ``None``. Parsed once into
+    ``CardTemplate.removal_mv_condition`` so the AI's target chooser never
+    aims such a spell where its condition fails (a 7-drop took two Fatal
+    Pushes doing nothing, 2026-09-12 replay s60206). Resolution stays
+    with the card's handler."""
+    if not oracle or ' if it has mana value ' not in oracle.lower():
+        return None
+    text = strip_reminder_text(oracle).strip().lower()
+    mv = None
+    raised = None
+    for ln in (l.strip() for l in text.split('\n') if l.strip()):
+        m = _CONDITIONAL_MV_REMOVAL_RE.match(ln)
+        if m:
+            mv = int(m.group(3))
+            continue
+        r = _REVOLT_MV_RAISE_RE.search(ln)
+        if r and 'left the battlefield' in ln:
+            raised = int(r.group(1))
+    if mv is None:
+        return None
+    return {'mv': mv, 'mv_if_permanent_left': raised}
 
 
 # ═══════════════════════════════════════════════════════════════════
