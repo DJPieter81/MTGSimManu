@@ -1104,7 +1104,17 @@ def _resolve_library_dig(game: "GameState", card: "CardInstance",
     if data['take_all_matching']:
         taken = matches
     else:
-        taken = matches[:data['count_taken']]
+        # Kicker (CR 702.33) count-modifier: "if it was kicked, put N of
+        # those cards into your hand instead" raises the base count.
+        _count = data['count_taken']
+        if getattr(card, '_kick_count', 0) and card.template.kicked_clause:
+            _m = re.search(r'put (\w+) of those cards into your hand instead',
+                           card.template.kicked_clause.lower())
+            if _m:
+                from engine.oracle_parser import _NUM_WORDS
+                _w = _m.group(1)
+                _count = int(_w) if _w.isdigit() else _NUM_WORDS.get(_w, _count)
+        taken = matches[:_count]
 
     for c in taken:
         game.zone_mgr.move_card(game, c, "library", "hand",
@@ -2148,9 +2158,20 @@ def resolve_self_cast_trigger(game: "GameState", caster_idx: int,
         clause = clause.strip()
         if not clause.startswith('when you cast this spell'):
             continue
-        # Conditional riders we don't model (kicker/other cast conditions):
-        # skip the effect but the clause is still "recognised".
+        # Kicker (CR 702.33) when-cast payoff: "when you cast this spell,
+        # if it was kicked, <effect>" resolves only when the spell was
+        # kicked (card._kick_count) AND the payoff is a shape the generic
+        # resolver runs. "exile target land" (Sowing Mycospawn) needs
+        # targeted land-exile plumbing the generic resolver lacks — it is a
+        # recorded lead, so the clause stays recognised-but-skipped and the
+        # AI is not offered the kick (ai/board_eval._eval_kick).
         if 'if it was kicked' in clause or 'if this spell was kicked' in clause:
+            if getattr(spell_cast, '_kick_count', 0):
+                from engine.oracle_parser import parse_kicked_clause
+                payoff = parse_kicked_clause(clause)
+                if payoff:
+                    resolve_spell_from_oracle(game, spell_cast, caster_idx,
+                                              [], oracle_override=payoff)
             handled = True
             continue
 

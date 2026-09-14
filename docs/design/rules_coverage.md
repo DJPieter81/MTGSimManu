@@ -2,7 +2,7 @@
 title: Mechanic coverage census — keyword words in the pool vs the engine's model
 status: active
 priority: secondary
-session: 2026-09-13
+session: 2026-09-14
 tags:
   - rules-audit
   - coverage
@@ -16,7 +16,7 @@ summary: >
 
 # Mechanic coverage census
 
-Generated 2026-09-13 by `python tools/keyword_coverage.py` over the card DB and
+Generated 2026-09-14 by `python tools/keyword_coverage.py` over the card DB and
 the 25 registered lists (MB + SB). Regenerate after a DB refresh or a
 new mechanic lands; do not edit by hand.
 
@@ -29,7 +29,6 @@ exists to drive.
 
 | word | status | registered-deck copies | registered cards | pool cards | examples |
 |---|---|---:|---:|---:|---|
-| kicker | none | 24 | 3 | 167 | Consult the Star Charts, Orim's Chant, Sowing Mycospawn |
 | devoid | none | 17 | 4 | 127 | Basking Broodscale, Kozilek's Return, Sowing Mycospawn |
 | metalcraft | none | 10 | 2 | 32 | Galvanic Blast, Mox Opal |
 | ferocious | none | 4 | 1 | 26 | Stubborn Denial |
@@ -92,6 +91,7 @@ exists to drive.
 | flashback | typed field (flashback_cost) | 31 | 6 | 157 | Faithful Mending, Faithless Looting, Lava Dart |
 | trample | enum | 29 | 12 | 1119 | Cityscape Leveler, Cori-Steel Cutter, Craterhoof Behemoth |
 | vigilance | enum | 25 | 6 | 825 | Atraxa, Grand Unifier, Elesh Norn, Mother of Machines, Kaheera, the Orphanguard |
+| kicker | typed field (kicker_cost) | 24 | 3 | 167 | Consult the Star Charts, Orim's Chant, Sowing Mycospawn |
 | first strike | enum | 23 | 5 | 527 | Ocelot Pride, Scion of Draco, Sire of Seven Deaths |
 | protection from | typed field (protection_from_colors) | 23 | 3 | 176 | Emrakul, the Promised End, Kor Firewalker, Sanctifier en-Vec |
 | delirium | typed field (has_delirium) | 20 | 4 | 73 | Dragon's Rage Channeler, Shifting Woodland, Unholy Heat |
@@ -131,4 +131,4 @@ exists to drive.
 | spectacle | typed field (spectacle_cost) | 0 | 0 | 20 |  |
 | annihilator | enum | 0 | 0 | 15 |  |
 
-**52 words with no model**, ranked by registered-deck usage: kicker (24), devoid (17), metalcraft (10), ferocious (4), harmonize (4), daybound (1), emerge (1), meld (1), crew (0), changeling (0), shroud (0), infect (0), disturb (0), toxic (0), max speed (0).
+**51 words with no model**, ranked by registered-deck usage: devoid (17), metalcraft (10), ferocious (4), harmonize (4), daybound (1), emerge (1), meld (1), crew (0), changeling (0), shroud (0), infect (0), disturb (0), toxic (0), max speed (0), start your engines (0).

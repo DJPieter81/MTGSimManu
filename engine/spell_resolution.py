@@ -243,6 +243,19 @@ class ResolutionManager:
         if item.item_type == StackItemType.SPELL:
             if CardType.INSTANT in template.card_types or CardType.SORCERY in template.card_types:
                 game._execute_spell_effects(item)
+                # Kicker (CR 702.33) additive payoff: a kicked spell whose
+                # "if it was kicked, <clause>" rider is a standalone effect
+                # resolves that clause after its base. Gated to the
+                # combat-prevention class (idempotent turn flags) — the
+                # count-modifier (Consult) and when-cast (Sowing) shapes
+                # resolve at their own seams, so this never double-fires.
+                if getattr(item, 'kick_count', 0) and template.kicked_clause:
+                    from .oracle_parser import parse_combat_prevention
+                    if parse_combat_prevention(template.kicked_clause):
+                        from .oracle_resolver import resolve_spell_from_oracle
+                        resolve_spell_from_oracle(
+                            game, card, item.controller, item.targets,
+                            oracle_override=template.kicked_clause)
                 # Storm: copy the spell for each prior spell this turn
                 if Keyword.STORM in template.keywords:
                     game._handle_storm(item)

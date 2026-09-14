@@ -5267,3 +5267,21 @@ census `flurry` pool count of 10 includes one false positive (Monk of
 the Open Hand's distinct "Flurry of Blows" ability word); a compound
 "token + non-token effect" ordinal card would stay token-only (none
 known in the pool).
+
+---
+
+## Unit K1 — Kicker/Multikicker (CR 702.33) + combat prevention (CR 509/615), as classes (2026-09-14)
+
+Census-chosen (kicker was the #1 unmodelled row: 167 pool / 24 registered / 3 cards). Per the "rules as a whole" directive, modelled as three CR CLASSES, not the three registered cards, over three commits.
+
+**Commit 1 (`86a4388`) — combat prevention as a class.** No combat-prevention primitive existed anywhere; Orim's Chant's kicked Fog forced it. `parse_combat_prevention` (structured: symmetric / directional attack lock, prevent-all-combat-damage — sidesteps the `parse_turn_scoped_restriction` first-match bug); three turn-scoped `PlayerState` flags reset by `reset_turn_tracking`; enforced once each in `CombatManager.valid_attackers` (attack locks) and `resolve_combat_damage` (Fog, CR 615); resolver sets them from the resolving text. Auditor `509/no_attacks`. 11 tests + anchor 29 no flips; inert when unset.
+
+**Commit 2 (`38b6d7a`) — kicker/multikicker payment mechanism (mirror evoke).** `parse_kicker`/`parse_kicked_clause` → `kicker_cost` / `multikicker` / `kicked_clause` (and/or-kicker refused); `StackItem.kick_count`; `cast_spell` pays base PLUS `kick_count*kicker` (additive, clamped to affordable mana) when the `should_kick` callback returns a count; `ai/board_eval.ActionType.KICK` + `_eval_kick`; auditor `702.33/kicked_cost_paid`. Byte-identical (AI returns 0 until the payoffs are dispatched); anchor 29 no flips.
+
+**Commit 3 (`<this>`) — kicked-effect dispatch + AI kick policy.** The kicked payoff resolves only when `kick_count>0`, at the shape's own seam: **Orim's Chant** Fog via the combat-prevention branch (idempotent additive dispatch at the resolve seam); **Consult the Star Charts** "put two instead" via the library-dig branch reading the kicked "put N instead" count; **Sowing Mycospawn** "exile target land" is a when-cast payoff the generic resolver has no targeted-land-exile branch for — **recorded lead, not built**, and `_eval_kick` does not offer that kick. `_eval_kick` kicks only when the payoff is dispatched (Fog / dig-bonus) and affordable — a Fog only when the opponent has a board.
+
+Tests: `test_combat_prevention_class.py`, `test_kicker_optional_additional_cost.py` (parse + payment + affordability clamp), `test_kicker_kicked_effects.py` (Orim's Chant Fog, Consult put-two, the AI kick gate), + `test_rules_audit.py` (509 / 702.33). Ratchets at baseline (single-owner 12/42/5, magic 13/13, card-name-registry 87, narrow-field — kicker_cost on 167 cards). Census `kicker` row flipped none → typed field (51 unmodelled).
+
+**Measurement (same-seed n=20 field, commit 2 → commit 3):** Azorius Control **48.1 → 48.3** (+0.2pp, flat) — but drawn games fell 10 → 4: the kicked Fog/Consult fire and make games more decisive, net-neutral on WR. A rules-correctness + observability unit (kicker now works for 167 cards; Orim's Chant Fogs, Consult draws two), not a WR mover at n=20 — the KF/KD pattern.
+
+**Leads recorded:** Sowing's "exile target land" (needs targeted land-exile in the generic resolver); the ~130 other "if kicked" resolve-riders beyond combat-prevention (the additive dispatch is gated to the idempotent Fog class for safety); multikicker scaling clauses ("for each time it was kicked").
