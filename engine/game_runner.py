@@ -1113,11 +1113,13 @@ class GameRunner:
         # unmodelled keywords is recorded once per process).
         from .rules_audit import enabled as _audit_on, drain as _audit_drain
         if _audit_on():
-            from .rules_audit_census import census_template_keywords
+            from .rules_audit_census import (census_template_keywords,
+                                             census_unhandled_effects)
             for p in game.players:
                 for zone in (p.library, p.hand, p.battlefield, p.graveyard, p.exile):
                     for c in zone:
                         census_template_keywords(c.template, game=game)
+            census_unhandled_effects(game=game)
             result.audit_findings = _audit_drain()
 
         # Structured GAME_END — terminator for the replayer's

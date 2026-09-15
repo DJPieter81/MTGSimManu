@@ -5297,3 +5297,59 @@ Replay `replays/zoo_vs_toolbox_tip.txt` (Domain Zoo vs Creatures Toolbox s50000,
 2. By the time Craterhoof lands, the support creatures are **tapped by those activations** (Fiend Artisan tapped, Druid tapped/looping), so only Craterhoof (haste) attacks for **8** (L967-970) instead of a pumped-team alpha strike; Zoo (23 life) survives and exiles Craterhoof with Leyline Binding next turn (L999-1000).
 
 **Subsystem / class:** the "unbounded-mana → outlet / payoff sequencing" AI lane — (a) a sacrifice-tutor (Fiend Artisan, Birthing Pod, Neoform class) must not sacrifice its own assembled engine/payoff pieces and must stop re-activating once the payoff is found; (b) once a lethal mass-pump payoff (Craterhoof / `team_pump_data`) is reachable, the AI must sequence to the alpha strike (deploy + swing the whole pumped team) rather than tapping the board out on the tutor first. `ai/ev_player.py` activation/attacker sequencing + Fiend Artisan sac-target selection; `ActivationManager.would_complete_unbounded_engine`. Class-sized (sac-tutors × mass-pump payoffs × unbounded engines); lifts Toolbox and deflates its Zoo/Dimir/Tron 95/92 donations. FIX = next unit (failing test first); this entry is the required pre-code subsystem naming.
+
+### Lane T fix — leg (a): a sac-cost activation must not cannibalise a live engine (2026-09-14, `ai/activation_ev.py`)
+
+Leg (a) of the subsystem above. In `activation_candidates`, at the point the
+sacrifice victim is chosen, the candidate is now suppressed when that victim is
+a member of a **live unbounded mana engine** —
+`ActivationManager.engines_lost_if_removed(game, idx, sacrificed) > 0` (the same
+predicate `ai/clock._creature_static_value` already prices). Class: every
+sacrifice-a-creature activation (Fiend Artisan, Birthing Pod, altars, Viscera
+Seer, …) × every unbounded engine. No card names, no new numeric literal
+(boolean guard), reuses an owned predicate — single-owner `{target_pick:12,
+damage_write:42, counter_write:5}` and magic-numbers baselines unchanged.
+
+Why the projection missed it (root cause): the sacrifice-cost term in
+`activation_candidates` charges a land's mana (`is_land`) and a creature's board
+power, but a 0-power mana-creature like Devoted Druid is neither a land nor
+carries power, so eating it read as ~free; a valuable fetch (Craterhoof, MV 8)
+then swamped the near-zero projected cost and the tutor fired, sacrificing the
+assembled loop. The gate keys on engine membership, not on power, so it is exact
+where `position_value` is blind.
+
+**Failing test first** `tests/test_sac_activation_does_not_eat_its_own_engine.py`:
+the tutor is not offered when its only fodder is a live engine member (RED
+today — fires at ev≈2.81 sacrificing Druid/Vizier to fetch Craterhoof); still
+offered when an expendable body exists (picks the expendable, no
+over-suppression); unaffected on a non-engine board. Pins kept green:
+`test_tutor_credit_for_engine_completing_piece`,
+`test_opportunity_cost_prices_mana_and_engines`,
+`test_unbounded_untap_mana_engine_shortcut`,
+`test_sacrifice_activation_pays_its_cost_cr602_2b` (26 passed). Anchor 29, **no
+flips**; chunk A 2285, chunk B 2370; all 8 ratchets at baseline.
+
+**Measurement — field flat (honest negative).** Same-seed n=20 Bo3 (50000 grid,
+`--parallel`, `MTG_LLM_DECISION_SCORER_OFFLINE=1`, quiet box), pre-fix worktree
+`98b1c0d` vs the fixed tree: Creatures Toolbox field **21.0% → 21.2%** (+0.2pp);
+Toolbox vs Domain Zoo **5% → 5%**; Toolbox vs Dimir Midrange **5% → 0%** (one
+game the other way). Below the ≥2.2pp field / ~11pp cell movement bar — **no
+material movement**. The gate is narrow by construction: it bites only once the
+deck's expendable fodder (spare Dryad Arbor) is exhausted and the sole remaining
+victim is an engine piece, and the replay shows Toolbox has already lost the
+game to Zoo's clock + removal on Fiend Artisan by then, so the late-game
+engine-eating is not the pivotal loss driver in these cells.
+
+**Shipped anyway (rules-quality, not a WR chase).** The fix is a genuine,
+tested AI-correctness improvement — the AI must not eat its own assembled combo
+engine for mid-game value — with a red→green pin, clean anchor/ratchets/chunks,
+and zero regression. Per CLAUDE.md it is not reverted to move a cell.
+
+**Lane-T re-prioritisation:** this is unit 1 of the Lane-T lane with no
+movement (loop-break at 3). The measurement discredits the "engine
+cannibalisation is Toolbox's pivotal loss" hypothesis: the real driver is
+earlier (Zoo's clock + Fatal Push on Fiend Artisan T5). Leg (b) — sequence to
+the pumped-team alpha strike once a lethal `team_pump_data` payoff is reachable —
+is the more promising lever, but the flat field says the outlier program should
+re-weight toward Lane C (control shells) / the earlier Toolbox loss, not a third
+swing at the sac-tutor. Recorded so the hypothesis is not re-run blind.
