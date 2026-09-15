@@ -15,6 +15,9 @@ Rules covered (CR section / slug):
   704.5f/lethal_damage   — no creature with lethal damage survives SBAs.
   704.5a/zero_life       — no player at 0 or less life is still playing.
   keyword/unmodelled     — census: a keyword word the engine has no model for.
+  unhandled/<timing>     — census: an effect that resolved through no handler.
+  606/loyalty_unexecutable_kind — census: a printed loyalty ability the
+                           engine refuses (visible-but-inert, never a no-op).
 """
 from __future__ import annotations
 
@@ -55,6 +58,11 @@ def _rules(findings):
     return sorted({f["rule"] for f in findings if f["kind"] == "violation"})
 
 
+def _census(findings):
+    return sorted({(f["rule"], f["key"]) for f in findings
+                   if f["kind"] == "census"})
+
+
 def _fight(game, attacker, blocker):
     cm = CombatManager()
     cm.declare_attackers(game, [attacker], active_player=1)
@@ -69,6 +77,66 @@ def test_with_the_flag_off_nothing_is_recorded(monkeypatch):
     rules_audit.check("x/y", False, "should not record")
     rules_audit.census("keyword/unmodelled", "ward")
     assert rules_audit.drain() == []
+
+
+def test_unhandled_effect_is_folded_into_the_audit_census(audit):
+    # An effect that resolved through no handler (recorded in the
+    # process-level effect_diagnostics sink) becomes an `unhandled/<timing>`
+    # census fact, so a full audited matrix ranks silent no-ops alongside the
+    # keyword census.
+    from engine import effect_diagnostics
+    from engine.rules_audit_census import census_unhandled_effects
+    effect_diagnostics.reset()
+    try:
+        effect_diagnostics.record_unhandled_effect("Foo", "spell")
+        census_unhandled_effects()
+        assert ("unhandled/spell", "Foo") in _census(audit.drain())
+        # dedup: the same (rule, key) is recorded once per process
+        census_unhandled_effects()
+        assert audit.drain() == []
+    finally:
+        effect_diagnostics.reset()
+
+
+def test_unhandled_fold_records_nothing_with_the_flag_off(monkeypatch):
+    monkeypatch.delenv("MTG_RULES_AUDIT", raising=False)
+    from engine import effect_diagnostics
+    from engine.rules_audit_census import census_unhandled_effects
+    rules_audit.reset()
+    effect_diagnostics.reset()
+    try:
+        effect_diagnostics.record_unhandled_effect("Foo", "etb")
+        census_unhandled_effects()
+        assert rules_audit.drain() == []
+    finally:
+        effect_diagnostics.reset()
+
+
+def test_loyalty_refusal_of_an_unexecutable_kind_is_censused(audit):
+    # CR 606: a printed loyalty ability whose effect the engine cannot
+    # execute is refused before the loyalty is paid; the auditor records the
+    # refused kind so a matrix ranks how many printed abilities are inert.
+    from engine.cards import (CardInstance, CardTemplate, CardType,
+                              LoyaltyAbility, LoyaltyEffectKind, ManaCost)
+    from engine.planeswalker_manager import PlaneswalkerManager
+    game = GameState(rng=random.Random(0))
+    tmpl = CardTemplate(
+        name="Test Walker", card_types=[CardType.PLANESWALKER],
+        mana_cost=ManaCost(generic=4), supertypes=[], subtypes=[],
+        power=None, toughness=None, loyalty=3, keywords=set(), abilities=[],
+        color_identity=set(), produces_mana=[], enters_tapped=False,
+        oracle_text="", tags=set(),
+        loyalty_abilities={"plus": LoyaltyAbility(
+            slot="plus", cost=1, text="[+1]: Do something unmodelled.",
+            effect_kind=LoyaltyEffectKind.UNCLASSIFIED)})
+    pw = CardInstance(template=tmpl, owner=0, controller=0,
+                      instance_id=game.next_instance_id(), zone="battlefield")
+    pw._game_state = game
+    game.players[0].battlefield.append(pw)
+    activated = PlaneswalkerManager.activate_planeswalker(game, 0, pw, "plus")
+    assert activated is False  # refused before loyalty is paid
+    assert ("606/loyalty_unexecutable_kind", "UNCLASSIFIED") in _census(
+        audit.drain())
 
 
 def test_combat_audit_sees_a_creature_that_dealt_no_damage_in_its_step(audit, monkeypatch):
