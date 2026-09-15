@@ -79,6 +79,23 @@ class CombatManager:
         self._defending_player = 1 - active_player
         self._assignments = []
 
+        # Audit (observation-only, CR 508.1a): a declared attacker was
+        # untapped, not summoning-sick (unless haste/dash), not a Defender,
+        # and no "can't attack" lock is set. Recomputed from the raw fields
+        # BEFORE the tap loop below, so a legally-declared non-vigilance
+        # attacker is not flagged for the tap this method is about to apply.
+        from .rules_audit import enabled as _audit_on, check as _audit_check
+        if _audit_on():
+            for atk in attackers:
+                legal = (not getattr(atk, 'tapped', False)
+                         and not (getattr(atk, 'summoning_sick', False)
+                                  and Keyword.HASTE not in atk.keywords
+                                  and not getattr(atk, '_dashed', False))
+                         and Keyword.DEFENDER not in atk.keywords
+                         and not game.players[active_player].cannot_attack_this_turn)
+                _audit_check("508.1a/attacker_legal", legal,
+                             f"{atk.name} declared as an attacker", game=game)
+
         for attacker in attackers:
             attacker.attacking = True
             # CR 508.1f: Tap attacking creatures (unless vigilance)
@@ -142,6 +159,44 @@ class CombatManager:
 
             assignment.blocker_ids = legal_blocker_ids
             assignment.is_blocked = len(legal_blocker_ids) > 0
+
+            # Audit (observation-only, CR 509.1b): every RECORDED blocker
+            # legally blocks. Recomputed independently of `_can_block` (the
+            # code being audited), plus the CR 509.1a untapped requirement.
+            from .rules_audit import enabled as _audit_on, check as _audit_check
+            if _audit_on():
+                for bid in legal_blocker_ids:
+                    blocker = game.get_card_by_id(bid)
+                    if blocker is None:
+                        continue
+                    _audit_check(
+                        "509.1a/blocker_legal",
+                        not CombatManager._blocker_illegal_recompute(
+                            attacker, blocker),
+                        f"{blocker.name} blocks {attacker.name}", game=game)
+
+    @staticmethod
+    def _blocker_illegal_recompute(attacker: "CardInstance",
+                                   blocker: "CardInstance") -> bool:
+        """Independent restatement of block legality (CR 509.1a/509.1b) for
+        the audit — deliberately NOT `_can_block`, the code it audits: a
+        tapped creature can't block, and evasion/shadow/protection/
+        can't-be-blocked all disqualify it."""
+        if getattr(blocker, 'tapped', False):
+            return True  # CR 509.1a
+        if getattr(attacker, 'cannot_be_blocked_this_turn', False):
+            return True
+        if (Keyword.FLYING in attacker.keywords
+                and Keyword.FLYING not in blocker.keywords
+                and Keyword.REACH not in blocker.keywords):
+            return True
+        if ((Keyword.SHADOW in attacker.keywords)
+                != (Keyword.SHADOW in blocker.keywords)):
+            return True
+        prot = getattr(attacker.template, 'protection_from_colors', frozenset())
+        if prot and (blocker.colors & prot):
+            return True
+        return False
 
     @staticmethod
     def _can_block(attacker: "CardInstance", blocker: "CardInstance") -> bool:

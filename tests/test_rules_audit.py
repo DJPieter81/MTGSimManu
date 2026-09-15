@@ -490,6 +490,60 @@ def test_combat_prevention_audit_sees_an_attack_under_a_lock(audit):
     assert "509/no_attacks" in _rules(rules_audit.drain())
 
 
+def test_attacker_legality_audit_sees_a_tapped_attacker(audit):
+    """CR 508.1a: a declared attacker was untapped and not summoning-sick.
+    Force a tapped creature in as an attacker; the auditor must record it."""
+    game = GameState(rng=random.Random(0))
+    a = _creature(game, "TappedAttacker", 1, power=2, toughness=2)
+    a.tapped = True
+    cm = CombatManager()
+    cm.declare_attackers(game, [a], active_player=1)
+    assert "508.1a/attacker_legal" in _rules(rules_audit.drain())
+
+
+def test_attacker_legality_audit_sees_a_summoning_sick_attacker(audit):
+    game = GameState(rng=random.Random(0))
+    a = _creature(game, "SickAttacker", 1, power=2, toughness=2)
+    a.summoning_sick = True  # no haste, not dashed
+    cm = CombatManager()
+    cm.declare_attackers(game, [a], active_player=1)
+    assert "508.1a/attacker_legal" in _rules(rules_audit.drain())
+
+
+def test_attacker_legality_is_silent_for_a_legal_attacker(audit):
+    game = GameState(rng=random.Random(0))
+    a = _creature(game, "GoodAttacker", 1, power=2, toughness=2)  # untapped, not sick
+    cm = CombatManager()
+    cm.declare_attackers(game, [a], active_player=1)
+    assert "508.1a/attacker_legal" not in _rules(rules_audit.drain())
+
+
+def test_blocker_legality_audit_sees_an_illegal_recorded_block(audit, monkeypatch):
+    """CR 509.1b: a recorded blocker legally blocks. Force an illegal block
+    (a non-flyer blocking a flyer) past _can_block and the auditor must
+    record it."""
+    game = GameState(rng=random.Random(0))
+    flyer = _creature(game, "Flyer", 1, power=2, toughness=2,
+                      keywords=(Keyword.FLYING,))
+    ground = _creature(game, "Grounded", 0, power=1, toughness=1)
+    monkeypatch.setattr(CombatManager, "_can_block",
+                        staticmethod(lambda a, b: True))
+    cm = CombatManager()
+    cm.declare_attackers(game, [flyer], active_player=1)
+    cm.declare_blockers(game, {flyer.instance_id: [ground.instance_id]})
+    assert "509.1a/blocker_legal" in _rules(rules_audit.drain())
+
+
+def test_blocker_legality_is_silent_for_a_legal_block(audit):
+    game = GameState(rng=random.Random(0))
+    a = _creature(game, "Attacker", 1, power=2, toughness=2)
+    b = _creature(game, "Blocker", 0, power=1, toughness=2)
+    cm = CombatManager()
+    cm.declare_attackers(game, [a], active_player=1)
+    cm.declare_blockers(game, {a.instance_id: [b.instance_id]})
+    assert "509.1a/blocker_legal" not in _rules(rules_audit.drain())
+
+
 def test_kicked_cost_paid_audit_sees_a_kicker_not_added(audit, card_db, monkeypatch):
     """CR 702.33: a kicked spell pays base + kicker. Re-create the pre-fix
     behaviour (the kicker is not added to the paid cost) and the auditor
