@@ -132,6 +132,40 @@ def test_empty_library_draw_is_silent_when_the_loss_is_flagged(audit):
     assert "104.3c/empty_library_loss" not in _rules(audit.drain())
 
 
+def test_reduction_pip_audit_sees_a_reducer_eat_a_hybrid_pip(audit, monkeypatch):
+    # CR 601.2f: a generic cost reduction shrinks the generic component only;
+    # every coloured/colourless/hybrid pip survives. Recreate the defect — the
+    # reducer folds a hybrid pip into generic (the old {1}{R/G}-for-free bug) —
+    # and the auditor must say so.
+    from engine.mana import ManaCost
+    from engine.mana_payment import ManaPayment
+
+    def _defective(cost, reduction):
+        merged = (cost.generic + cost.non_generic_pips)
+        return ManaCost(generic=max(0, merged - reduction))
+
+    monkeypatch.setattr(ManaPayment, "_apply_cost_reduction",
+                        staticmethod(_defective))
+    before = ManaCost(generic=1, hybrid=[("R", "G")])
+    after = ManaPayment._apply_cost_reduction(before, 2)
+    rules_audit.check("601.2f/reduction_pips_preserved",
+                      after.non_generic_pips == before.non_generic_pips,
+                      "hybrid pip folded into generic", game=None)
+    assert "601.2f/reduction_pips_preserved" in _rules(audit.drain())
+
+
+def test_reduction_pip_audit_is_silent_when_only_generic_shrinks(audit):
+    from engine.mana import ManaCost
+    from engine.mana_payment import ManaPayment
+    before = ManaCost(generic=3, red=1, hybrid=[("R", "G")])
+    after = ManaPayment._apply_cost_reduction(before, 2)
+    rules_audit.check("601.2f/reduction_pips_preserved",
+                      after.non_generic_pips == before.non_generic_pips,
+                      "", game=None)
+    assert "601.2f/reduction_pips_preserved" not in _rules(audit.drain())
+    assert after.generic == 1 and after.red == 1 and len(after.hybrid) == 1
+
+
 def test_loyalty_refusal_of_an_unexecutable_kind_is_censused(audit):
     # CR 606: a printed loyalty ability whose effect the engine cannot
     # execute is refused before the loyalty is paid; the auditor records the
