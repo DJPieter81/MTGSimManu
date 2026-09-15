@@ -306,6 +306,40 @@ def test_sba_audit_sees_a_lethally_damaged_creature_left_on_the_battlefield(audi
     assert "704.5f/lethal_damage" in _rules(rules_audit.drain())
 
 
+def test_sba_audit_sees_a_zero_toughness_creature_left_on_the_battlefield(audit, monkeypatch):
+    game = GameState(rng=random.Random(0))
+    _creature(game, "Shrunk", 0, power=1, toughness=0)
+    monkeypatch.setattr(GameState, "_check_sba_once", lambda self: False)
+    game.check_state_based_actions()
+    assert "704.5f/zero_toughness" in _rules(rules_audit.drain())
+
+
+def test_sba_audit_sees_a_player_at_zero_life_still_in_the_game(audit, monkeypatch):
+    game = GameState(rng=random.Random(0))
+    game.players[0].life = 0
+    monkeypatch.setattr(GameState, "_check_sba_once", lambda self: False)
+    game.check_state_based_actions()
+    assert "704.5a/zero_life" in _rules(rules_audit.drain())
+
+
+def test_sba_audit_sees_a_creature_listed_with_a_stale_zone(audit, monkeypatch):
+    game = GameState(rng=random.Random(0))
+    c = _creature(game, "Ghost", 0, power=2, toughness=2)
+    c.zone = "graveyard"  # moved, but still listed on the battlefield
+    monkeypatch.setattr(GameState, "_check_sba_once", lambda self: False)
+    game.check_state_based_actions()
+    assert "zone/list_lag" in _rules(rules_audit.drain())
+
+
+def test_sba_audit_sees_the_loop_stop_at_its_iteration_cap(audit, monkeypatch):
+    game = GameState(rng=random.Random(0))
+    # The loop never reaches a fixpoint: every pass reports work done, so it
+    # halts at SBA_MAX_ITERATIONS with hit_cap True.
+    monkeypatch.setattr(GameState, "_check_sba_once", lambda self: True)
+    game.check_state_based_actions()
+    assert "704.3/fixpoint_cap" in _rules(rules_audit.drain())
+
+
 def test_keyword_census_records_a_word_the_engine_does_not_model_once(audit, card_db):
     from engine.rules_audit_census import census_template_keywords
     denial = card_db.get_card("Stubborn Denial")   # "Ferocious — …": no enum, no field
