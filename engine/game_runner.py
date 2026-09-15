@@ -1650,6 +1650,14 @@ class GameRunner:
 
             ability_type = self._choose_pw_ability(pw, pw_name, pw_data, player, opp, game)
 
+            # CR 606.3 — activation is optional. The AI declines (holds the
+            # walker) rather than spend loyalty on a whiff by returning the
+            # PW_DECLINE sentinel; it is never a resolvable slot, so the guard
+            # below also catches it, but check it explicitly for clarity.
+            from ai.pw_ability import PW_DECLINE
+            if ability_type == PW_DECLINE:
+                continue
+
             # The chooser falls back to a fixed slot name when nothing it
             # was offered is currently AFFORDABLE (a minus below its
             # loyalty cost). Validate its answer against the resolvable
