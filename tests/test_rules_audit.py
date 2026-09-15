@@ -112,6 +112,26 @@ def test_unhandled_fold_records_nothing_with_the_flag_off(monkeypatch):
         effect_diagnostics.reset()
 
 
+def test_empty_library_draw_audit_sees_a_draw_that_did_not_flag_the_loss(audit, monkeypatch):
+    # CR 104.3c/704.5c: a draw attempted from an empty library must flag the
+    # drawing player to lose. Recreate the defect — the branch returns without
+    # flagging the loss — and the auditor must say so.
+    game = GameState(rng=random.Random(0))
+    game.players[0].library.clear()
+    monkeypatch.setattr(GameState, "_lose_from_empty_library",
+                        lambda self, idx: None)
+    game.draw_cards(0, 1)
+    assert "104.3c/empty_library_loss" in _rules(audit.drain())
+
+
+def test_empty_library_draw_is_silent_when_the_loss_is_flagged(audit):
+    game = GameState(rng=random.Random(0))
+    game.players[0].library.clear()
+    game.draw_cards(0, 1)
+    assert game.game_over and game.winner == 1
+    assert "104.3c/empty_library_loss" not in _rules(audit.drain())
+
+
 def test_loyalty_refusal_of_an_unexecutable_kind_is_censused(audit):
     # CR 606: a printed loyalty ability whose effect the engine cannot
     # execute is refused before the loyalty is paid; the auditor records the
