@@ -1074,9 +1074,15 @@ class EVPlayer:
         # ai/activation_ev.py applies.
         from engine.activation import ActivationManager
         from engine.constants import LOOP_SHORTCUT_MANA
+        from ai.combo_calc import unbounded_mana_sink_reachable
         engine_bonus = 0
-        if ActivationManager.would_complete_unbounded_engine(
-                game, self.player_idx, target.template):
+        if (ActivationManager.would_complete_unbounded_engine(
+                game, self.player_idx, target.template)
+                and unbounded_mana_sink_reachable(me)):
+            # Completing an unbounded mana loop is worth the shortcut mana only
+            # when a sink is reachable to convert it (ramp panel Finding 1);
+            # otherwise the infinite mana is dead and the fetch is worth just
+            # the delivered body.
             engine_bonus = LOOP_SHORTCUT_MANA - delivered_cmc
         ev += ((creature_tutor_x_net_value(best_x, delivered_cmc)
                 + engine_bonus) * mult * per_mana)

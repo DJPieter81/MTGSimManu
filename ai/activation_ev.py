@@ -874,9 +874,14 @@ def activation_candidates(game, player_idx, snap, excluded=None):
                     # the mana the piece actually delivers next turn.
                     from engine.activation import ActivationManager
                     from engine.constants import LOOP_SHORTCUT_MANA
+                    from ai.combo_calc import unbounded_mana_sink_reachable
                     delivered_value = delivered_cmc
-                    if ActivationManager.would_complete_unbounded_engine(
-                            game, player_idx, target.template):
+                    if (ActivationManager.would_complete_unbounded_engine(
+                            game, player_idx, target.template)
+                            and unbounded_mana_sink_reachable(me)):
+                        # Only credit the loop's shortcut mana when a sink is
+                        # reachable to convert it (ramp panel Finding 1); dead
+                        # mana otherwise.
                         delivered_value = LOOP_SHORTCUT_MANA
                     if (ability.tutor_data or {}).get('mv_bound_is_x'):
                         from engine.cast_manager import (

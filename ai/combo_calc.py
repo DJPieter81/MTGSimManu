@@ -791,6 +791,42 @@ def _tutor_has_payoff_access(card, me) -> bool:
     return False
 
 
+def unbounded_mana_sink_reachable(me) -> bool:
+    """True when the player can convert an unbounded / very large mana pool
+    into a win — a mana SINK is in hand, on the battlefield, or in the library
+    (reachable by a creature tutor at the engine's own mana).
+
+    A sink is a payoff whose output SCALES with the mana spent:
+      * an X-cost damage spell / permanent — `deals_targeted_damage` with
+        `x_cost_data` (Walking Ballista, Fireball, Comet Storm);
+      * a mass-pump overrun — `team_pump_data` (Craterhoof Behemoth);
+      * a scaling token finisher — `has_scaling_token_finisher`
+        (Empty-the-Warrens shape).
+
+    Fixed burn (Lightning Bolt: 3 damage no matter the mana) is NOT a sink —
+    completing an infinite-mana engine converts to nothing through it. Reads
+    typed CardTemplate fields only; no card names. Consumed by the tutor
+    engine-completion credit in `ai/activation_ev.py` and
+    `ai/ev_player._gate_x_tutor_payoff`: crediting `LOOP_SHORTCUT_MANA` for
+    completing an unbounded mana loop is dead value with no sink to spend it.
+    """
+    for zone in (getattr(me, 'hand', None) or (),
+                 getattr(me, 'battlefield', None) or (),
+                 getattr(me, 'library', None) or ()):
+        for c in zone:
+            t = getattr(c, 'template', None)
+            if t is None:
+                continue
+            if getattr(t, 'team_pump_data', None):
+                return True
+            if (getattr(t, 'deals_targeted_damage', False)
+                    and getattr(t, 'x_cost_data', None)):
+                return True
+            if getattr(t, 'has_scaling_token_finisher', False):
+                return True
+    return False
+
+
 def flashback_chain_viable(card, me, snap, after_cast_card_cmc=0,
                            after_cast_ritual_net=0) -> float:
     """Viability score (storm coverage) for a PiF-style flashback chain.
