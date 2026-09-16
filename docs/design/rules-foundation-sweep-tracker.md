@@ -5353,3 +5353,53 @@ the pumped-team alpha strike once a lethal `team_pump_data` payoff is reachable 
 is the more promising lever, but the flat field says the outlier program should
 re-weight toward Lane C (control shells) / the earlier Toolbox loss, not a third
 swing at the sac-tutor. Recorded so the hypothesis is not re-run blind.
+
+---
+
+# Deep audit (2026-09-15/16) — auditor expansion, 5-panel diagnosis, WR-resolution loop
+
+## Phase 1 — rules-auditor expansion (PR #572, CI green)
+The auditor's "0 violations" was a coverage illusion (15 invariants). Added 5
+classes (now 20): `unhandled/<timing>` + `606/loyalty_unexecutable_kind` census
+folds (c0), `104.3c/empty_library_loss` (c2), `601.2f/reduction_pips_preserved`
+(c3), `508.1a/attacker_legal` + `509.1a/blocker_legal` (c4); report census
+dedup (c5); pinned the 4 untested SBA sub-invariants (c6). The triggered-ability
+family (delayed-trigger absence, ward) was DEFERRED — no clean typed field / the
+CR 603.3 exemption makes a resolve_stack-seam ward check false-positive-prone.
+**Audited matrix (`--matrix -n 20 --rules-audit`, aborted=0): ZERO rule
+violations** — the engine is rules-correct on every audited class. Ranked
+backlog is all census: `keyword/unmodelled` + the new `unhandled/replacement`
+(graveyard-exile family: Dauthi Voidwalker, Rest in Peace, Sanctifier en-Vec)
+and `unhandled/spell` (Practiced Offense, Demonic Dread). Doc:
+`docs/diagnostics/2026-09-15_deep_audit_backlog.md`. So the WR outliers are
+decision-quality, not rules bugs.
+
+## Phase 2 — five-panel strategic audit
+`docs/history/audits/2026-09-15_5panel_deep_audit.md`. Ranked, class-sized,
+card-name-free findings for the below-band lanes. Loop order: U0 bo3_trace
+repair; U1 declinable loyalty (control + Phase-1 convergence); U2
+unbounded-mana-engine sink gate (Toolbox); U3 flicker floor (both blink);
+U4 holdback uncastable-color; U5 combo-enabler deploy priority; U6 X-wipe
+own-collateral; U7 Dash needs a combat projection. Hollow One / Amulet reported
+as hate-swing / construction, not engine units. Clock sign-inversion stays
+falsified.
+
+## WR-resolution loop (structural fixes only)
+- **U0 (`d30aa0d`)** — repaired `tools/bo3_trace.py` (excluded_activations kwarg
+  + deleted pass_threshold); tooling, unblocks reasoning-inlined tracing.
+- **U1 (`aa5fb9f`)** — an optional loyalty activation is declinable (CR 606.3):
+  `ai/pw_ability.choose_pw_ability` returns `PW_DECLINE` for a loyalty-negative
+  whiff (targeted primary effect has no legal target, race not failing) instead
+  of ticking the walker to death; `engine/game_runner._activate_planeswalkers`
+  honours it. Class-sized (564 unclassified loyalty abilities, 8 MB-PW decks),
+  no card names, no literal. Anchor: one turn-only drift (4c Omnath vs Goryo's
+  7→6, winner unchanged), refreshed. **Measured (same-seed n=20 field): Azorius
+  Control (WST) 41.5 → 45.2 (+3.7pp)**, key cells vs Domain Zoo 5→20, vs 4c
+  Omnath 5→10, vs Eldrazi Tron 5→10, vs Dimir 20→25 — a confirmed mover; lifts
+  the control shells toward band and tightens the over-performers' control
+  matchups. Loop counter: 1 unit, moved (>2.2pp) — reset.
+- **Next:** U2 (unbounded-mana-engine credit gated on sink reachability —
+  `ai/ev_player._gate_x_tutor_payoff` engine_bonus branch + the activated-tutor
+  credit; mirror `_overlay_land_sacrifice_fizzle`; reuse/extend
+  `ai/combo_calc._tutor_has_payoff_access` into a generic mana-sink predicate),
+  then U3 (flicker floor). Field/matrix measurement batched every 2-3 units.
