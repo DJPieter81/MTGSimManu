@@ -107,3 +107,20 @@ def census_template_keywords(template, game=None) -> list:
             census("keyword/unmodelled", w, f"first seen on {template.name}", game=game)
             out.append(w)
     return out
+
+
+def census_unhandled_effects(game=None) -> list:
+    """Fold the process-level unhandled-effect sink into the audit census.
+
+    Every effect that resolved through no handler — recorded in
+    `engine.effect_diagnostics` at its resolution seam — becomes an
+    `unhandled/<timing>` coverage fact (once per (timing, card) process-wide,
+    via `census`'s dedupe), so a full audited matrix ranks silent no-ops by
+    frequency alongside the keyword census. Pure observation; returns the
+    (timing, card) pairs recorded."""
+    from . import effect_diagnostics
+    out = []
+    for card_name, timing in effect_diagnostics.unhandled_effects():
+        census(f"unhandled/{timing}", card_name, game=game)
+        out.append((timing, card_name))
+    return out

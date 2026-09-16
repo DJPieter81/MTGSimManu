@@ -5297,3 +5297,124 @@ Replay `replays/zoo_vs_toolbox_tip.txt` (Domain Zoo vs Creatures Toolbox s50000,
 2. By the time Craterhoof lands, the support creatures are **tapped by those activations** (Fiend Artisan tapped, Druid tapped/looping), so only Craterhoof (haste) attacks for **8** (L967-970) instead of a pumped-team alpha strike; Zoo (23 life) survives and exiles Craterhoof with Leyline Binding next turn (L999-1000).
 
 **Subsystem / class:** the "unbounded-mana → outlet / payoff sequencing" AI lane — (a) a sacrifice-tutor (Fiend Artisan, Birthing Pod, Neoform class) must not sacrifice its own assembled engine/payoff pieces and must stop re-activating once the payoff is found; (b) once a lethal mass-pump payoff (Craterhoof / `team_pump_data`) is reachable, the AI must sequence to the alpha strike (deploy + swing the whole pumped team) rather than tapping the board out on the tutor first. `ai/ev_player.py` activation/attacker sequencing + Fiend Artisan sac-target selection; `ActivationManager.would_complete_unbounded_engine`. Class-sized (sac-tutors × mass-pump payoffs × unbounded engines); lifts Toolbox and deflates its Zoo/Dimir/Tron 95/92 donations. FIX = next unit (failing test first); this entry is the required pre-code subsystem naming.
+
+### Lane T fix — leg (a): a sac-cost activation must not cannibalise a live engine (2026-09-14, `ai/activation_ev.py`)
+
+Leg (a) of the subsystem above. In `activation_candidates`, at the point the
+sacrifice victim is chosen, the candidate is now suppressed when that victim is
+a member of a **live unbounded mana engine** —
+`ActivationManager.engines_lost_if_removed(game, idx, sacrificed) > 0` (the same
+predicate `ai/clock._creature_static_value` already prices). Class: every
+sacrifice-a-creature activation (Fiend Artisan, Birthing Pod, altars, Viscera
+Seer, …) × every unbounded engine. No card names, no new numeric literal
+(boolean guard), reuses an owned predicate — single-owner `{target_pick:12,
+damage_write:42, counter_write:5}` and magic-numbers baselines unchanged.
+
+Why the projection missed it (root cause): the sacrifice-cost term in
+`activation_candidates` charges a land's mana (`is_land`) and a creature's board
+power, but a 0-power mana-creature like Devoted Druid is neither a land nor
+carries power, so eating it read as ~free; a valuable fetch (Craterhoof, MV 8)
+then swamped the near-zero projected cost and the tutor fired, sacrificing the
+assembled loop. The gate keys on engine membership, not on power, so it is exact
+where `position_value` is blind.
+
+**Failing test first** `tests/test_sac_activation_does_not_eat_its_own_engine.py`:
+the tutor is not offered when its only fodder is a live engine member (RED
+today — fires at ev≈2.81 sacrificing Druid/Vizier to fetch Craterhoof); still
+offered when an expendable body exists (picks the expendable, no
+over-suppression); unaffected on a non-engine board. Pins kept green:
+`test_tutor_credit_for_engine_completing_piece`,
+`test_opportunity_cost_prices_mana_and_engines`,
+`test_unbounded_untap_mana_engine_shortcut`,
+`test_sacrifice_activation_pays_its_cost_cr602_2b` (26 passed). Anchor 29, **no
+flips**; chunk A 2285, chunk B 2370; all 8 ratchets at baseline.
+
+**Measurement — field flat (honest negative).** Same-seed n=20 Bo3 (50000 grid,
+`--parallel`, `MTG_LLM_DECISION_SCORER_OFFLINE=1`, quiet box), pre-fix worktree
+`98b1c0d` vs the fixed tree: Creatures Toolbox field **21.0% → 21.2%** (+0.2pp);
+Toolbox vs Domain Zoo **5% → 5%**; Toolbox vs Dimir Midrange **5% → 0%** (one
+game the other way). Below the ≥2.2pp field / ~11pp cell movement bar — **no
+material movement**. The gate is narrow by construction: it bites only once the
+deck's expendable fodder (spare Dryad Arbor) is exhausted and the sole remaining
+victim is an engine piece, and the replay shows Toolbox has already lost the
+game to Zoo's clock + removal on Fiend Artisan by then, so the late-game
+engine-eating is not the pivotal loss driver in these cells.
+
+**Shipped anyway (rules-quality, not a WR chase).** The fix is a genuine,
+tested AI-correctness improvement — the AI must not eat its own assembled combo
+engine for mid-game value — with a red→green pin, clean anchor/ratchets/chunks,
+and zero regression. Per CLAUDE.md it is not reverted to move a cell.
+
+**Lane-T re-prioritisation:** this is unit 1 of the Lane-T lane with no
+movement (loop-break at 3). The measurement discredits the "engine
+cannibalisation is Toolbox's pivotal loss" hypothesis: the real driver is
+earlier (Zoo's clock + Fatal Push on Fiend Artisan T5). Leg (b) — sequence to
+the pumped-team alpha strike once a lethal `team_pump_data` payoff is reachable —
+is the more promising lever, but the flat field says the outlier program should
+re-weight toward Lane C (control shells) / the earlier Toolbox loss, not a third
+swing at the sac-tutor. Recorded so the hypothesis is not re-run blind.
+
+---
+
+# Deep audit (2026-09-15/16) — auditor expansion, 5-panel diagnosis, WR-resolution loop
+
+## Phase 1 — rules-auditor expansion (PR #572, CI green)
+The auditor's "0 violations" was a coverage illusion (15 invariants). Added 5
+classes (now 20): `unhandled/<timing>` + `606/loyalty_unexecutable_kind` census
+folds (c0), `104.3c/empty_library_loss` (c2), `601.2f/reduction_pips_preserved`
+(c3), `508.1a/attacker_legal` + `509.1a/blocker_legal` (c4); report census
+dedup (c5); pinned the 4 untested SBA sub-invariants (c6). The triggered-ability
+family (delayed-trigger absence, ward) was DEFERRED — no clean typed field / the
+CR 603.3 exemption makes a resolve_stack-seam ward check false-positive-prone.
+**Audited matrix (`--matrix -n 20 --rules-audit`, aborted=0): ZERO rule
+violations** — the engine is rules-correct on every audited class. Ranked
+backlog is all census: `keyword/unmodelled` + the new `unhandled/replacement`
+(graveyard-exile family: Dauthi Voidwalker, Rest in Peace, Sanctifier en-Vec)
+and `unhandled/spell` (Practiced Offense, Demonic Dread). Doc:
+`docs/diagnostics/2026-09-15_deep_audit_backlog.md`. So the WR outliers are
+decision-quality, not rules bugs.
+
+## Phase 2 — five-panel strategic audit
+`docs/history/audits/2026-09-15_5panel_deep_audit.md`. Ranked, class-sized,
+card-name-free findings for the below-band lanes. Loop order: U0 bo3_trace
+repair; U1 declinable loyalty (control + Phase-1 convergence); U2
+unbounded-mana-engine sink gate (Toolbox); U3 flicker floor (both blink);
+U4 holdback uncastable-color; U5 combo-enabler deploy priority; U6 X-wipe
+own-collateral; U7 Dash needs a combat projection. Hollow One / Amulet reported
+as hate-swing / construction, not engine units. Clock sign-inversion stays
+falsified.
+
+## WR-resolution loop (structural fixes only)
+- **U0 (`d30aa0d`)** — repaired `tools/bo3_trace.py` (excluded_activations kwarg
+  + deleted pass_threshold); tooling, unblocks reasoning-inlined tracing.
+- **U1 (`aa5fb9f`)** — an optional loyalty activation is declinable (CR 606.3):
+  `ai/pw_ability.choose_pw_ability` returns `PW_DECLINE` for a loyalty-negative
+  whiff (targeted primary effect has no legal target, race not failing) instead
+  of ticking the walker to death; `engine/game_runner._activate_planeswalkers`
+  honours it. Class-sized (564 unclassified loyalty abilities, 8 MB-PW decks),
+  no card names, no literal. Anchor: one turn-only drift (4c Omnath vs Goryo's
+  7→6, winner unchanged), refreshed. **Measured (same-seed n=20 field): Azorius
+  Control (WST) 41.5 → 45.2 (+3.7pp)**, key cells vs Domain Zoo 5→20, vs 4c
+  Omnath 5→10, vs Eldrazi Tron 5→10, vs Dimir 20→25 — a confirmed mover; lifts
+  the control shells toward band and tightens the over-performers' control
+  matchups. Loop counter: 1 unit, moved (>2.2pp) — reset.
+- **Next:** U2 (unbounded-mana-engine credit gated on sink reachability —
+  `ai/ev_player._gate_x_tutor_payoff` engine_bonus branch + the activated-tutor
+  credit; mirror `_overlay_land_sacrifice_fizzle`; reuse/extend
+  `ai/combo_calc._tutor_has_payoff_access` into a generic mana-sink predicate),
+  then U3 (flicker floor). Field/matrix measurement batched every 2-3 units.
+
+- **U2 (`2bc0461`)** — unbounded-mana-engine completion credit gated on sink
+  reachability (`ai/combo_calc.unbounded_mana_sink_reachable`, both the cast
+  `_gate_x_tutor_payoff` and the activated `activation_candidates` seams).
+  Predicate tests + updated engine-credit pin; ratchets baseline; anchor 29 no
+  flips; both chunks green (A pass, B 2398). **Measured (same-seed n=20):
+  Creatures Toolbox 21.0 → 21.5 (flat, +0.5pp).** Root of the flatness: Toolbox
+  always carries a sink (Craterhoof + Walking Ballista in its 60), so the gate
+  is a no-op for it — the fix protects the *general* case (a deck completing an
+  unbounded loop with no sink), not Toolbox. A correct fix kept for correctness
+  (not reverted). The real Toolbox lever is payoff SEQUENCING (fetch/deploy the
+  sink and alpha-strike once the engine is up), the harder Lane-T leg (b).
+  **Unbounded-mana/Toolbox lane now has 2 flat structural fixes (Lane-T sac-gate
+  +0.2, U2 sink-gate +0.5) — a 3rd swing would hit loop-break; pivoting to a
+  fresh decisive lane (U3 flicker floor, both blink outliers) instead.**

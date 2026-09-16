@@ -512,6 +512,21 @@ def activation_candidates(game, player_idx, snap, excluded=None):
                                                 ability.cost))
                 if sacrificed is None:
                     continue  # can_activate should have refused; defensive
+            # A sacrifice (or exile) cost whose victim is a member of a LIVE
+            # unbounded mana engine is not activated: feeding an assembled
+            # loop (CR 726.4 shortcut material) to a mid-game ability is a
+            # strictly worse board than keeping the loop live, and
+            # `position_value` under-prices the loss (a 0-power mana-creature
+            # like Devoted Druid reads as ~free to sacrifice, so a valuable
+            # fetch swamps the projected cost). The rule is the engine-side
+            # membership query — the same one `ai.clock._creature_static_value`
+            # prices — applied once here for every sacrifice-a-creature
+            # ability × every unbounded engine, no card names.
+            if sacrificed is not None:
+                from engine.activation import ActivationManager as _AM
+                if _AM.engines_lost_if_removed(
+                        game, player_idx, sacrificed) > 0:
+                    continue
             if sacrificed is not None:
                 if sacrificed.template.is_land:
                     cost_updates["my_mana"] = max(0, snap.my_mana - 1)
@@ -859,9 +874,14 @@ def activation_candidates(game, player_idx, snap, excluded=None):
                     # the mana the piece actually delivers next turn.
                     from engine.activation import ActivationManager
                     from engine.constants import LOOP_SHORTCUT_MANA
+                    from ai.combo_calc import unbounded_mana_sink_reachable
                     delivered_value = delivered_cmc
-                    if ActivationManager.would_complete_unbounded_engine(
-                            game, player_idx, target.template):
+                    if (ActivationManager.would_complete_unbounded_engine(
+                            game, player_idx, target.template)
+                            and unbounded_mana_sink_reachable(me)):
+                        # Only credit the loop's shortcut mana when a sink is
+                        # reachable to convert it (ramp panel Finding 1); dead
+                        # mana otherwise.
                         delivered_value = LOOP_SHORTCUT_MANA
                     if (ability.tutor_data or {}).get('mv_bound_is_x'):
                         from engine.cast_manager import (

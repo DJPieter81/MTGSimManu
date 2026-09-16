@@ -64,6 +64,13 @@ PW_SCORE_UNKNOWN_PLUS = 1      # unparsed loyalty-positive ability
 PW_SCORE_UNKNOWN_MINUS = -1    # unparsed loyalty-negative ability
 PW_LOYALTY_BUILD_TIEBREAK = 0.5  # prefer building loyalty on near-ties
 
+# CR 606.3 — a loyalty activation is optional ("may"). This sentinel tells the
+# engine to activate NOTHING this turn (hold the walker) rather than spend it
+# on a whiff. It is never a resolvable slot, so the engine's
+# `ability_type not in resolvable` guard already skips it; the engine also
+# checks it explicitly.
+PW_DECLINE = "decline"
+
 # Loyalty the walker must keep after a face-ping / low-value line for
 # the line to be considered "safe" (survives a single small attack).
 PW_SAFE_LOYALTY_AFTER = 2
@@ -254,10 +261,18 @@ def choose_pw_ability(pw, pw_data, player, opp, game: "GameState",
     # ── Evaluate each ability by description patterns ──
     best_key = "plus"
     best_score = PW_SCORE_FLOOR
+    # Whether the CHOSEN line's targeted PRIMARY effect found real work this
+    # turn (a kill, a bounce target, a wipe target, or a genuinely reachable
+    # non-targeted effect) — as opposed to whiffing with only a rider left.
+    # A loyalty-negative whiff is declined below (CR 606.3).
+    realized_by_key = {}
 
     for key, cost, ability_desc in abilities:
         score = 0
         remaining_loyalty = loyalty_after(key)
+        # Default: the line does reachable work; the branches that can whiff
+        # on a missing target set this False.
+        realized_primary = True
         # Does this line answer an opposing creature (the attacker
         # class)?  Consumed by the failing-race bonus and the
         # suicide guard below.
@@ -287,8 +302,11 @@ def choose_pw_ability(pw, pw_data, player, opp, game: "GameState",
                         score = PW_SCORE_CHIP_BASE + dmg
                     else:
                         score = PW_SCORE_CHIP_RISKY  # too risky
+                        realized_primary = False  # no kill, unsafe to ping
             elif remaining_loyalty >= PW_SAFE_LOYALTY_AFTER:
                 score = PW_SCORE_CHIP_BASE  # ping face when no creatures
+            else:
+                realized_primary = False  # no target, unsafe to ping face
 
         # BOUNCE abilities: "return" + "to" + "hand" or "bounce"
         elif "bounce" in ability_desc or (
@@ -307,6 +325,8 @@ def choose_pw_ability(pw, pw_data, player, opp, game: "GameState",
                 # line can remove an attacker from the battlefield.
                 neutralizes_creature = any(
                     c.template.is_creature for c in nonlands)
+            else:
+                realized_primary = False  # nothing to bounce
             # Bonus if it also draws a card
             if "draw" in ability_desc:
                 score += PW_SCORE_BOUNCE_DRAW_BONUS
@@ -346,6 +366,7 @@ def choose_pw_ability(pw, pw_data, player, opp, game: "GameState",
                     c.template.is_creature for c in opp_permanents)
             else:
                 score = PW_SCORE_WIPE_EMPTY  # don't wipe an empty board
+                realized_primary = False  # nothing to wipe
 
         # FLASH / TIMING: "flash" or "as though" + "flash"
         elif "flash" in ability_desc or "any time" in ability_desc:
@@ -380,8 +401,21 @@ def choose_pw_ability(pw, pw_data, player, opp, game: "GameState",
         if cost > 0:
             score += PW_LOYALTY_BUILD_TIEBREAK  # slight bonus for building loyalty
 
+        realized_by_key[key] = realized_primary
         if score > best_score:
             best_score = score
             best_key = key
+
+    # ── CR 606.3: an optional activation is declined rather than wasted ──
+    # When the chosen line is loyalty-NEGATIVE and its targeted primary effect
+    # found no legal target this turn (only a rider remains) and the race is
+    # not failing, hold the walker — spending loyalty on a whiff ticks it to
+    # death and forfeits the answer it could make once a target appears. A
+    # loyalty-non-negative line always builds and is never declined; at
+    # PANIC/LETHAL the walker is spent freely (handled by not declining).
+    best_cost = pw_data[best_key][0] if best_key in pw_data else 0
+    if (best_cost < 0 and not race_failing
+            and not realized_by_key.get(best_key, True)):
+        return PW_DECLINE
 
     return best_key

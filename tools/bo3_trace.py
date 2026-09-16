@@ -21,9 +21,15 @@ from run_meta import run_bo3, resolve_deck_name
 
 
 def _make_traced_main(orig):
-    def traced_main(self, game, excluded_cards=None):
-        # Run the real decision first — no re-scoring, no RNG divergence
-        result = orig(self, game, excluded_cards)
+    def traced_main(self, game, excluded_cards=None,
+                    excluded_activations=None):
+        # Run the real decision first — no re-scoring, no RNG divergence.
+        # Signature MUST mirror EVPlayer.decide_main_phase — the engine calls
+        # this wrapper with keyword args (engine/game_runner.py::
+        # _execute_main_phase); a missing parameter kills every trace run with
+        # a TypeError (pinned by tests/test_bo3_trace_wrapper.py).
+        result = orig(self, game, excluded_cards,
+                      excluded_activations=excluded_activations)
 
         log = game.log  # inline into verbose game log
         phase_obj = getattr(game, 'current_phase', None)
@@ -74,7 +80,11 @@ def _make_traced_main(orig):
         if result:
             log.append(f'    >>> {result[0].upper()}: {result[1].name}')
         else:
-            log.append(f'    >>> PASS (threshold={self.profile.pass_threshold})')
+            # `pass_threshold` was removed from the profile; show it only if a
+            # profile still carries one, never assume it (pinned by
+            # tests/test_bo3_trace_wrapper.py).
+            thr = getattr(getattr(self, 'profile', None), 'pass_threshold', None)
+            log.append('    >>> PASS' + (f' (threshold={thr})' if thr is not None else ''))
         return result
     return traced_main
 

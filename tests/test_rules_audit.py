@@ -15,6 +15,9 @@ Rules covered (CR section / slug):
   704.5f/lethal_damage   — no creature with lethal damage survives SBAs.
   704.5a/zero_life       — no player at 0 or less life is still playing.
   keyword/unmodelled     — census: a keyword word the engine has no model for.
+  unhandled/<timing>     — census: an effect that resolved through no handler.
+  606/loyalty_unexecutable_kind — census: a printed loyalty ability the
+                           engine refuses (visible-but-inert, never a no-op).
 """
 from __future__ import annotations
 
@@ -55,6 +58,11 @@ def _rules(findings):
     return sorted({f["rule"] for f in findings if f["kind"] == "violation"})
 
 
+def _census(findings):
+    return sorted({(f["rule"], f["key"]) for f in findings
+                   if f["kind"] == "census"})
+
+
 def _fight(game, attacker, blocker):
     cm = CombatManager()
     cm.declare_attackers(game, [attacker], active_player=1)
@@ -69,6 +77,120 @@ def test_with_the_flag_off_nothing_is_recorded(monkeypatch):
     rules_audit.check("x/y", False, "should not record")
     rules_audit.census("keyword/unmodelled", "ward")
     assert rules_audit.drain() == []
+
+
+def test_unhandled_effect_is_folded_into_the_audit_census(audit):
+    # An effect that resolved through no handler (recorded in the
+    # process-level effect_diagnostics sink) becomes an `unhandled/<timing>`
+    # census fact, so a full audited matrix ranks silent no-ops alongside the
+    # keyword census.
+    from engine import effect_diagnostics
+    from engine.rules_audit_census import census_unhandled_effects
+    effect_diagnostics.reset()
+    try:
+        effect_diagnostics.record_unhandled_effect("Foo", "spell")
+        census_unhandled_effects()
+        assert ("unhandled/spell", "Foo") in _census(audit.drain())
+        # dedup: the same (rule, key) is recorded once per process
+        census_unhandled_effects()
+        assert audit.drain() == []
+    finally:
+        effect_diagnostics.reset()
+
+
+def test_unhandled_fold_records_nothing_with_the_flag_off(monkeypatch):
+    monkeypatch.delenv("MTG_RULES_AUDIT", raising=False)
+    from engine import effect_diagnostics
+    from engine.rules_audit_census import census_unhandled_effects
+    rules_audit.reset()
+    effect_diagnostics.reset()
+    try:
+        effect_diagnostics.record_unhandled_effect("Foo", "etb")
+        census_unhandled_effects()
+        assert rules_audit.drain() == []
+    finally:
+        effect_diagnostics.reset()
+
+
+def test_empty_library_draw_audit_sees_a_draw_that_did_not_flag_the_loss(audit, monkeypatch):
+    # CR 104.3c/704.5c: a draw attempted from an empty library must flag the
+    # drawing player to lose. Recreate the defect — the branch returns without
+    # flagging the loss — and the auditor must say so.
+    game = GameState(rng=random.Random(0))
+    game.players[0].library.clear()
+    monkeypatch.setattr(GameState, "_lose_from_empty_library",
+                        lambda self, idx: None)
+    game.draw_cards(0, 1)
+    assert "104.3c/empty_library_loss" in _rules(audit.drain())
+
+
+def test_empty_library_draw_is_silent_when_the_loss_is_flagged(audit):
+    game = GameState(rng=random.Random(0))
+    game.players[0].library.clear()
+    game.draw_cards(0, 1)
+    assert game.game_over and game.winner == 1
+    assert "104.3c/empty_library_loss" not in _rules(audit.drain())
+
+
+def test_reduction_pip_audit_sees_a_reducer_eat_a_hybrid_pip(audit, monkeypatch):
+    # CR 601.2f: a generic cost reduction shrinks the generic component only;
+    # every coloured/colourless/hybrid pip survives. Recreate the defect — the
+    # reducer folds a hybrid pip into generic (the old {1}{R/G}-for-free bug) —
+    # and the auditor must say so.
+    from engine.mana import ManaCost
+    from engine.mana_payment import ManaPayment
+
+    def _defective(cost, reduction):
+        merged = (cost.generic + cost.non_generic_pips)
+        return ManaCost(generic=max(0, merged - reduction))
+
+    monkeypatch.setattr(ManaPayment, "_apply_cost_reduction",
+                        staticmethod(_defective))
+    before = ManaCost(generic=1, hybrid=[("R", "G")])
+    after = ManaPayment._apply_cost_reduction(before, 2)
+    rules_audit.check("601.2f/reduction_pips_preserved",
+                      after.non_generic_pips == before.non_generic_pips,
+                      "hybrid pip folded into generic", game=None)
+    assert "601.2f/reduction_pips_preserved" in _rules(audit.drain())
+
+
+def test_reduction_pip_audit_is_silent_when_only_generic_shrinks(audit):
+    from engine.mana import ManaCost
+    from engine.mana_payment import ManaPayment
+    before = ManaCost(generic=3, red=1, hybrid=[("R", "G")])
+    after = ManaPayment._apply_cost_reduction(before, 2)
+    rules_audit.check("601.2f/reduction_pips_preserved",
+                      after.non_generic_pips == before.non_generic_pips,
+                      "", game=None)
+    assert "601.2f/reduction_pips_preserved" not in _rules(audit.drain())
+    assert after.generic == 1 and after.red == 1 and len(after.hybrid) == 1
+
+
+def test_loyalty_refusal_of_an_unexecutable_kind_is_censused(audit):
+    # CR 606: a printed loyalty ability whose effect the engine cannot
+    # execute is refused before the loyalty is paid; the auditor records the
+    # refused kind so a matrix ranks how many printed abilities are inert.
+    from engine.cards import (CardInstance, CardTemplate, CardType,
+                              LoyaltyAbility, LoyaltyEffectKind, ManaCost)
+    from engine.planeswalker_manager import PlaneswalkerManager
+    game = GameState(rng=random.Random(0))
+    tmpl = CardTemplate(
+        name="Test Walker", card_types=[CardType.PLANESWALKER],
+        mana_cost=ManaCost(generic=4), supertypes=[], subtypes=[],
+        power=None, toughness=None, loyalty=3, keywords=set(), abilities=[],
+        color_identity=set(), produces_mana=[], enters_tapped=False,
+        oracle_text="", tags=set(),
+        loyalty_abilities={"plus": LoyaltyAbility(
+            slot="plus", cost=1, text="[+1]: Do something unmodelled.",
+            effect_kind=LoyaltyEffectKind.UNCLASSIFIED)})
+    pw = CardInstance(template=tmpl, owner=0, controller=0,
+                      instance_id=game.next_instance_id(), zone="battlefield")
+    pw._game_state = game
+    game.players[0].battlefield.append(pw)
+    activated = PlaneswalkerManager.activate_planeswalker(game, 0, pw, "plus")
+    assert activated is False  # refused before loyalty is paid
+    assert ("606/loyalty_unexecutable_kind", "UNCLASSIFIED") in _census(
+        audit.drain())
 
 
 def test_combat_audit_sees_a_creature_that_dealt_no_damage_in_its_step(audit, monkeypatch):
@@ -182,6 +304,40 @@ def test_sba_audit_sees_a_lethally_damaged_creature_left_on_the_battlefield(audi
     game.check_state_based_actions()
     assert c.zone == "battlefield", "fixture: the broken SBA leaves it"
     assert "704.5f/lethal_damage" in _rules(rules_audit.drain())
+
+
+def test_sba_audit_sees_a_zero_toughness_creature_left_on_the_battlefield(audit, monkeypatch):
+    game = GameState(rng=random.Random(0))
+    _creature(game, "Shrunk", 0, power=1, toughness=0)
+    monkeypatch.setattr(GameState, "_check_sba_once", lambda self: False)
+    game.check_state_based_actions()
+    assert "704.5f/zero_toughness" in _rules(rules_audit.drain())
+
+
+def test_sba_audit_sees_a_player_at_zero_life_still_in_the_game(audit, monkeypatch):
+    game = GameState(rng=random.Random(0))
+    game.players[0].life = 0
+    monkeypatch.setattr(GameState, "_check_sba_once", lambda self: False)
+    game.check_state_based_actions()
+    assert "704.5a/zero_life" in _rules(rules_audit.drain())
+
+
+def test_sba_audit_sees_a_creature_listed_with_a_stale_zone(audit, monkeypatch):
+    game = GameState(rng=random.Random(0))
+    c = _creature(game, "Ghost", 0, power=2, toughness=2)
+    c.zone = "graveyard"  # moved, but still listed on the battlefield
+    monkeypatch.setattr(GameState, "_check_sba_once", lambda self: False)
+    game.check_state_based_actions()
+    assert "zone/list_lag" in _rules(rules_audit.drain())
+
+
+def test_sba_audit_sees_the_loop_stop_at_its_iteration_cap(audit, monkeypatch):
+    game = GameState(rng=random.Random(0))
+    # The loop never reaches a fixpoint: every pass reports work done, so it
+    # halts at SBA_MAX_ITERATIONS with hit_cap True.
+    monkeypatch.setattr(GameState, "_check_sba_once", lambda self: True)
+    game.check_state_based_actions()
+    assert "704.3/fixpoint_cap" in _rules(rules_audit.drain())
 
 
 def test_keyword_census_records_a_word_the_engine_does_not_model_once(audit, card_db):
@@ -332,6 +488,60 @@ def test_combat_prevention_audit_sees_an_attack_under_a_lock(audit):
     cm.declare_blockers(game, {})
     cm.resolve_combat_damage(game)
     assert "509/no_attacks" in _rules(rules_audit.drain())
+
+
+def test_attacker_legality_audit_sees_a_tapped_attacker(audit):
+    """CR 508.1a: a declared attacker was untapped and not summoning-sick.
+    Force a tapped creature in as an attacker; the auditor must record it."""
+    game = GameState(rng=random.Random(0))
+    a = _creature(game, "TappedAttacker", 1, power=2, toughness=2)
+    a.tapped = True
+    cm = CombatManager()
+    cm.declare_attackers(game, [a], active_player=1)
+    assert "508.1a/attacker_legal" in _rules(rules_audit.drain())
+
+
+def test_attacker_legality_audit_sees_a_summoning_sick_attacker(audit):
+    game = GameState(rng=random.Random(0))
+    a = _creature(game, "SickAttacker", 1, power=2, toughness=2)
+    a.summoning_sick = True  # no haste, not dashed
+    cm = CombatManager()
+    cm.declare_attackers(game, [a], active_player=1)
+    assert "508.1a/attacker_legal" in _rules(rules_audit.drain())
+
+
+def test_attacker_legality_is_silent_for_a_legal_attacker(audit):
+    game = GameState(rng=random.Random(0))
+    a = _creature(game, "GoodAttacker", 1, power=2, toughness=2)  # untapped, not sick
+    cm = CombatManager()
+    cm.declare_attackers(game, [a], active_player=1)
+    assert "508.1a/attacker_legal" not in _rules(rules_audit.drain())
+
+
+def test_blocker_legality_audit_sees_an_illegal_recorded_block(audit, monkeypatch):
+    """CR 509.1b: a recorded blocker legally blocks. Force an illegal block
+    (a non-flyer blocking a flyer) past _can_block and the auditor must
+    record it."""
+    game = GameState(rng=random.Random(0))
+    flyer = _creature(game, "Flyer", 1, power=2, toughness=2,
+                      keywords=(Keyword.FLYING,))
+    ground = _creature(game, "Grounded", 0, power=1, toughness=1)
+    monkeypatch.setattr(CombatManager, "_can_block",
+                        staticmethod(lambda a, b: True))
+    cm = CombatManager()
+    cm.declare_attackers(game, [flyer], active_player=1)
+    cm.declare_blockers(game, {flyer.instance_id: [ground.instance_id]})
+    assert "509.1a/blocker_legal" in _rules(rules_audit.drain())
+
+
+def test_blocker_legality_is_silent_for_a_legal_block(audit):
+    game = GameState(rng=random.Random(0))
+    a = _creature(game, "Attacker", 1, power=2, toughness=2)
+    b = _creature(game, "Blocker", 0, power=1, toughness=2)
+    cm = CombatManager()
+    cm.declare_attackers(game, [a], active_player=1)
+    cm.declare_blockers(game, {a.instance_id: [b.instance_id]})
+    assert "509.1a/blocker_legal" not in _rules(rules_audit.drain())
 
 
 def test_kicked_cost_paid_audit_sees_a_kicker_not_added(audit, card_db, monkeypatch):
