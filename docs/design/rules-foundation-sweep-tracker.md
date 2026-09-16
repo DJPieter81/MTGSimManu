@@ -5403,3 +5403,18 @@ falsified.
   credit; mirror `_overlay_land_sacrifice_fizzle`; reuse/extend
   `ai/combo_calc._tutor_has_payoff_access` into a generic mana-sink predicate),
   then U3 (flicker floor). Field/matrix measurement batched every 2-3 units.
+
+- **U2 (`2bc0461`)** — unbounded-mana-engine completion credit gated on sink
+  reachability (`ai/combo_calc.unbounded_mana_sink_reachable`, both the cast
+  `_gate_x_tutor_payoff` and the activated `activation_candidates` seams).
+  Predicate tests + updated engine-credit pin; ratchets baseline; anchor 29 no
+  flips; both chunks green (A pass, B 2398). **Measured (same-seed n=20):
+  Creatures Toolbox 21.0 → 21.5 (flat, +0.5pp).** Root of the flatness: Toolbox
+  always carries a sink (Craterhoof + Walking Ballista in its 60), so the gate
+  is a no-op for it — the fix protects the *general* case (a deck completing an
+  unbounded loop with no sink), not Toolbox. A correct fix kept for correctness
+  (not reverted). The real Toolbox lever is payoff SEQUENCING (fetch/deploy the
+  sink and alpha-strike once the engine is up), the harder Lane-T leg (b).
+  **Unbounded-mana/Toolbox lane now has 2 flat structural fixes (Lane-T sac-gate
+  +0.2, U2 sink-gate +0.5) — a 3rd swing would hit loop-break; pivoting to a
+  fresh decisive lane (U3 flicker floor, both blink outliers) instead.**
