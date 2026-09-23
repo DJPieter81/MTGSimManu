@@ -5418,3 +5418,24 @@ falsified.
   **Unbounded-mana/Toolbox lane now has 2 flat structural fixes (Lane-T sac-gate
   +0.2, U2 sink-gate +0.5) — a 3rd swing would hit loop-break; pivoting to a
   fresh decisive lane (U3 flicker floor, both blink outliers) instead.**
+
+## Payoff-sequencing design (2026-09-16, written 2026-09-23)
+`docs/design/2026-09-16_payoff_sequencing_design.md` — judge-panel winner
+(AssemblyState, 2/3 votes) with all three refuters' amendments applied. Two
+findings reshape the Toolbox lane: (1) the intended X=8 Craterhoof line is
+COUNTERED on the traced board (Stubborn Denial fires when the payer is
+tapped out; `ai/response.py:532-540`), and `toolbox_dimir.txt:809-827` shows
+the same into Counterspell — so every line carries a BHI `p_resolves` and
+the delivery order is resolution-weighted, not a boolean; (2) the sink that
+is actually on the battlefield in 6/6 loop-live turns is Leyline of
+Abundance's team-counter ACTIVATION, which the engine refuses
+(UNCLASSIFIED) — so U1 is a new `PUT_COUNTER_TEAM` activated-ability class
+(CR 122) before any AI change. X sizing gets one owner
+(`CastManager.affordable_x`; the inline `:1828` copy omits fixed pips —
+engine 10 vs AI 8). Single-deck lane stated honestly (only Toolbox holds a
+typed sink in its 60; E-Tron's Ballista is SB-only; Amulet has no sink).
+Units: U0 affordable_x owner → U1 PUT_COUNTER_TEAM → U2 assembly_state →
+U3 the four readers (U2+U3 one measured commit), gated by the s60500 replay
+showing an ability-line kill or a withheld tutor, never "X=8 + alpha".
+Architecture + EV-orchestration-audit workflows remain parked (account
+credit block); their cached prefixes are resumable.
