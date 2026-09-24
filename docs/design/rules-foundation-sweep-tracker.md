@@ -5531,5 +5531,12 @@ transition (deferred by design §7).
   reachability, X-tutor payoff selection, sac-activation gate). Anchor 29
   no flips. Chunks A 2325 / B 2430. Ratchets at baseline
   (`ai/assembly_state.py` pinned at 0 bare literals).
-- Guards: Domain Zoo field same-seed pre/post — recorded below when the
-  runs complete.
+- **Guard: Domain Zoo field same-seed pre/post 73.3 → 73.3, every cell
+  identical (6 draws credited to nobody on both).** The unit moves only a
+  deck whose line it models; no over-reach onto the aggro/midrange field.
+- Next on this lane: Toolbox is 1.7pp under its [30,70] floor — the two
+  deferred legs (the BHI tax branch of `p_resolves`; the picker rewrite
+  through `choose_tutor_delivery`) are the remaining Toolbox levers, and
+  the s60500 G2/G3 losses are Zoo's T6 clock (the band question). The
+  loop pivots to the next below-band deck with structural headroom
+  (Jeskai Blink −16.2, the flicker floor at `ai/ev_player.py:1672`).
