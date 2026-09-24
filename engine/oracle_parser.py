@@ -1500,6 +1500,8 @@ def classify_activation_effect(effect_text: str):
     if put_counter is not None:
         if put_counter['self']:
             return K.PUT_COUNTER_SELF, put_counter['amount'], 0, 0
+        if put_counter.get('scope') == 'team':
+            return K.PUT_COUNTER_TEAM, put_counter['amount'], 0, 0
         return K.PUT_COUNTER_TARGET, put_counter['amount'], 0, 0
 
     return K.UNCLASSIFIED, 0, 0, 0
@@ -1809,6 +1811,21 @@ _PUT_COUNTER_EFFECT_TARGET_RE = re.compile(
     r'target (?P<quals>(?:[a-z][a-z\-\']* )*?)'
     r'(?P<noun>' + _COUNTER_SELF_WORDS + r')'
     r'(?P<scope> you control)?')
+#   TEAM   "put a +1/+1 counter on each [other] [artifact] creature [you control]"
+#
+# The TEAM scope (CR 122.1 on every permanent the sentence names; 22 Modern
+# activated abilities — Gavony Township, Steel Overseer, Leyline of
+# Abundance, Shalai, Mikaeus, the Mentor cycle) is not targeted (CR 115.1):
+# its recipient set is computed at resolution from the card types it names,
+# under the named controller(s), optionally excluding the source. A
+# qualifier the CARD-TYPE vocabulary cannot hold (a subtype, a colour,
+# "attacking") is refused, never approximated — the same rule the TARGET
+# scope follows.
+_PUT_COUNTER_EFFECT_TEAM_RE = re.compile(
+    r'put (?P<n>a|an|one|two|three|\d+) (?P<kind>[^ ]+) counters? on each '
+    r'(?P<other>other )?(?P<quals>(?:[a-z][a-z\-\']* )*?)'
+    r'(?P<noun>' + _COUNTER_SELF_WORDS + r')'
+    r'(?P<scope> you control)?')
 # Card-type words a put-counter target requirement can express. A
 # qualifier outside this set (a subtype, "another", a colour) narrows the
 # target in a way `TargetRequirement` would have to approximate, so the
@@ -1816,6 +1833,13 @@ _PUT_COUNTER_EFFECT_TARGET_RE = re.compile(
 _PUT_COUNTER_TYPE_WORDS = frozenset({
     'creature', 'artifact', 'enchantment', 'land', 'permanent',
     'planeswalker', 'vehicle', 'token', 'battle', 'equipment'})
+# The TEAM scope's recipient predicate reads `CardInstance.effective_card_types`
+# (a CardType per word, or 'permanent' for any). Words that are subtypes or
+# instance flags rather than card types (vehicle, token, battle, equipment)
+# would need a second predicate, so a mass sentence naming one is refused.
+_PUT_COUNTER_TEAM_TYPE_WORDS = frozenset({
+    'creature', 'artifact', 'enchantment', 'land', 'permanent',
+    'planeswalker'})
 
 
 def parse_activation_put_counter(effect_text: str) -> Optional[Dict]:
@@ -1855,6 +1879,20 @@ def parse_activation_put_counter(effect_text: str) -> Optional[Dict]:
             return None
         return {'kind': kind, 'amount': n, 'self': True, 'types': [],
                 'owner': 'any'}
+
+    m = _PUT_COUNTER_EFFECT_TEAM_RE.fullmatch(low)
+    if m is not None:
+        kind = _canonical_counter_kind(m.group('kind'))
+        n = _count(m.group('n'))
+        if kind is None or n <= 0:
+            return None
+        words = (m.group('quals') or '').split() + [m.group('noun')]
+        if any(w not in _PUT_COUNTER_TEAM_TYPE_WORDS for w in words):
+            return None
+        return {'kind': kind, 'amount': n, 'self': False, 'scope': 'team',
+                'types': words,
+                'owner': 'you' if m.group('scope') else 'any',
+                'other': bool(m.group('other'))}
 
     m = _PUT_COUNTER_EFFECT_TARGET_RE.fullmatch(low)
     if m is None:
@@ -1978,7 +2016,8 @@ def parse_activated_abilities(oracle: str):
             graveyard_exile_data = parse_activation_graveyard_exile(body)
         # PUT_COUNTER_* kinds carry their structured shape the same way.
         put_counter_data = None
-        if kind in (K.PUT_COUNTER_SELF, K.PUT_COUNTER_TARGET):
+        if kind in (K.PUT_COUNTER_SELF, K.PUT_COUNTER_TARGET,
+                    K.PUT_COUNTER_TEAM):
             put_counter_data = parse_activation_put_counter(body)
         # Delayed timing (CR 603.7). Derived from the SAME helper
         # `classify_activation_effect` used to reach the inner kind, so the

@@ -5439,3 +5439,43 @@ U3 the four readers (U2+U3 one measured commit), gated by the s60500 replay
 showing an ability-line kill or a withheld tutor, never "X=8 + alpha".
 Architecture + EV-orchestration-audit workflows remain parked (account
 credit block); their cached prefixes are resumable.
+
+### Payoff-sequencing U0 — X sizing: verified-before-build, pinned (2026-09-24)
+The refuters' "inline copy omits fixed pips" reading was wrong in effect:
+`CastManager.cast_spell` pays the base cost (taps lands) BEFORE the X block
+reads `untapped_mana_capacity()`, so the budget at `:1828` is already net
+of the fixed pips (probe: 3 Forests + {X}{G} tutor with a 3-drop and a
+1-drop in the library → X=1, one land left; 4 Forests → X=3; never X=3 on
+three lands). It is also net of any cost REDUCTION actually applied, which
+`affordable_x`'s printed-cmc formula is not — swapping it in after payment
+would subtract the base twice. Not changed; pinned instead:
+`tests/test_x_cost_paid_never_exceeds_capacity_minus_pips.py` (CR 601.2h,
+2 tests, green on the unchanged engine). Design doc §5 U0 amended.
+
+### Payoff-sequencing U1 — `PUT_COUNTER_TEAM` is an executable activated-ability class (CR 122.1 / 115.1, 2026-09-24)
+The mass scope of the put-counter class ("[Cost]: Put N <kind> counters on
+each [other] [artifact] <type> [you control]") was UNCLASSIFIED, so rule 9b
+refused it before any cost was charged — the outlet on the battlefield in
+every loop-live Toolbox turn (Leyline of Abundance's `{6}{G}{G}`) was
+inert. Now: `parse_activation_put_counter` types it once at DB load with
+`scope='team'` (owner you/any, `other`, card-type words only — a subtype,
+colour, "attacking", "that entered this turn", "and/or Vehicle" or a
+trailing rider is refused whole); `classify_activation_effect` routes it to
+the new `ActivationEffectKind.PUT_COUNTER_TEAM` (`targets_required=0`);
+`ActivationManager.RESOLVABLE_EFFECT_KINDS` admits it (schema-incoherence
+and refill guards extended, "each other" never refills its own cost);
+`_resolve_put_counter` computes the recipient set from
+`effective_card_types` under the named controller(s) and writes each counter
+through `adjust_counters` (single-owner unchanged); auditor invariant
+`122/team_counter_placed` restates the set independently. AI enumeration
+stays WITHHELD alongside SELF/TARGET (pinned) — valuation is the design's
+U2. Class: 12 plain printed abilities (Gavony Township, Steel Overseer,
+Leyline of Abundance, Shalai, Mikaeus, Genku, Katilda, Aron, Durable
+Handicraft, Abandoned Air Temple, …); the restricted variants (the Mentor
+cycle "with <keyword>", Shaile/Novijen/Raucous Entertainer "that entered
+this turn", Sandstorm Salvager "creature token", Iron Spider "and/or
+Vehicle") stay refused and are recorded as the next parser lead.
+Tests: `tests/test_put_counter_team_activation.py` (15, red→green) + the
+mass-pin in `tests/test_put_counter_activation.py` updated. Ratchets all at
+baseline (single-owner 12/42/5, magic 13, registry 87). Behaviour flat by
+construction (AI withholds; no registered deck's engine heuristic fires it).

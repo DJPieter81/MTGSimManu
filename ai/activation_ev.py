@@ -700,7 +700,8 @@ def activation_candidates(game, player_idx, snap, excluded=None):
                              f"{my_clock_without:.0f}→{my_clock_with:.0f} "
                              f"vs opp {opp_clock:.0f})")))
                 continue
-            elif kind in (_K.PUT_COUNTER_SELF, _K.PUT_COUNTER_TARGET):
+            elif kind in (_K.PUT_COUNTER_SELF, _K.PUT_COUNTER_TARGET,
+                          _K.PUT_COUNTER_TEAM):
                 # WITHHELD DELIBERATELY — the engine class is complete and
                 # correct (148 abilities classify, resolve, and are legal);
                 # what is missing is a valuation honest enough to drive it.

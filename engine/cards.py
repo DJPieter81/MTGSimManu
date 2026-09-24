@@ -189,6 +189,15 @@ class ActivationEffectKind(Enum):
     # and toughness and, unlike PUMP_SELF_UEOT, does not expire.
     PUT_COUNTER_SELF = "put_counter_self"
     PUT_COUNTER_TARGET = "put_counter_target"
+    # "[Cost]: Put N <kind> counter(s) on each [other] [artifact]
+    # <permanent-type> [you control]" — the MASS scope of the same class
+    # (22 Modern activated abilities: Gavony Township, Steel Overseer,
+    # Leyline of Abundance, Shalai, Mikaeus, the Mentor cycle). Not
+    # targeted (CR 115.1): the recipient set is every permanent of the
+    # named card type(s) under the named controller(s) at resolution,
+    # minus the source for "each other". Its shape rides on
+    # `put_counter_data` with `scope='team'`.
+    PUT_COUNTER_TEAM = "put_counter_team"
     # "[Cost]: Adapt N." (CR 702.132) — if this creature has no +1/+1
     # counters on it, put N +1/+1 counters on it. 23 Modern cards carry
     # the activated form (Basking Broodscale, Growth-Chamber Guardian,

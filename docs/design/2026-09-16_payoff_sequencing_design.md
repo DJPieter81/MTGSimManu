@@ -320,10 +320,18 @@ commit on this lane (it would be the third no-movement commit and halt the
 lane before the movers ship). U0 and U1 are engine rules-correctness units
 that stand on their own; U2+U3 land as **one measured commit**.
 
-- **U0 — one owner of X sizing.** `engine/cast_manager.py` (`:1828` and
-  `ai/ev_player.py:1059` call `affordable_x`); test *the X paid for an
-  X-cost spell never exceeds capacity minus its fixed pips (CR 601.2h)* — red
-  today. Ratchets: single-owner falls or holds; no literal.
+- **U0 — one owner of X sizing.** *Verified-before-build, 2026-09-24: not a
+  defect.* The refuters read the inline budget in `CastManager.cast_spell`
+  (`:1828`) as dividing raw capacity; it does not over-budget in effect,
+  because the base cost is paid (lands tapped) BEFORE the X block reads
+  `untapped_mana_capacity()`, so the budget it sees is already net of the
+  fixed pips — and, unlike `affordable_x`'s printed-cmc formula, net of any
+  cost reduction actually applied. Replacing it with `affordable_x` after
+  payment would subtract the base twice. The rule is pinned instead:
+  `tests/test_x_cost_paid_never_exceeds_capacity_minus_pips.py` (CR 601.2h;
+  green on the unchanged engine — 3 lands, {X}{G}, X ≤ 2 with a 3-drop
+  reachable only at X=3). The AI-side copy (`ai/ev_player.py:1059`) is the
+  same formula as `affordable_x` (`snap.my_mana − cmc`).
 - **U1 — `PUT_COUNTER_TEAM` is an executable activated-ability class.**
   `engine/oracle_parser.py` (`put_counter_data` gains `scope='team'`),
   `engine/cards.py` (kind), `engine/activation.py` (`RESOLVABLE_EFFECT_KINDS`),
