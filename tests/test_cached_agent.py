@@ -168,15 +168,54 @@ def test_use_cache_false_bypasses() -> None:
     assert not isinstance(raw_agent, CachedAgent)
     _make_counted_run_sync(raw_agent, counter)
 
+    from ai.llm_agents import render_user_prompt
     payload = {"deck_name": "no-cache", "mainboard": {"Bolt": 4}}
     with raw_agent.override(model=counter.test_model):
-        raw_agent.run_sync(payload)
-        raw_agent.run_sync(payload)
+        # The raw pydantic-ai Agent accepts only text (pydantic-ai >= 2.48
+        # rejects a bare dict); a structured prompt crosses the ONE
+        # rendering boundary, `render_user_prompt`, before reaching it.
+        raw_agent.run_sync(render_user_prompt(payload))
+        raw_agent.run_sync(render_user_prompt(payload))
 
     # Both calls hit the underlying agent.
     assert counter.calls == 2
     # And nothing was written to the cache.
     assert llm_cache.cache_stats()["entries"] == 0
+
+
+def test_a_structured_prompt_is_rendered_to_text_once_at_the_raw_boundary() -> None:
+    """A dict / BaseModel prompt must reach the raw pydantic-ai Agent as
+    text — every wrapper shape renders exactly once, at the last wrapper
+    before the raw Agent (pydantic-ai >= 2.48 raises on a bare dict in
+    `UserPromptPart.content`; earlier versions were merely lenient, which
+    hid this until the CI runner upgraded)."""
+    from ai.llm_agents import render_user_prompt
+    counter = _CountingTestModel(_VALID_PAYLOAD)
+    seen: list = []
+    payload = {"deck_name": "boundary", "mainboard": {"Bolt": 4}}
+
+    for use_cache, instrument in ((True, True), (True, False), (False, True)):
+        agent = build_agent("synth_gameplan", use_cache=use_cache,
+                            instrument=instrument)
+        raw = agent
+        while hasattr(raw, "_agent"):
+            raw = raw._agent
+        original = raw.run_sync
+
+        def spying_run_sync(prompt, *a, _orig=original, **kw):
+            seen.append(prompt)
+            return _orig(prompt, *a, **kw)
+
+        raw.run_sync = spying_run_sync  # type: ignore[method-assign]
+        with agent.override(model=counter.test_model):
+            agent.run_sync(payload)
+
+    assert seen, "the raw agent was never reached"
+    assert all(isinstance(p, str) for p in seen), seen
+    assert all(p == render_user_prompt(payload) for p in seen), seen
+    # The rendering is byte-stable (sort_keys), so the cache key and the
+    # text the model sees agree across shapes.
+    assert len(set(seen)) == 1
 
 
 # ─── override() forwards to wrapped agent ───────────────────────────
