@@ -5479,3 +5479,57 @@ Tests: `tests/test_put_counter_team_activation.py` (15, red→green) + the
 mass-pin in `tests/test_put_counter_activation.py` updated. Ratchets all at
 baseline (single-owner 12/42/5, magic 13, registry 87). Behaviour flat by
 construction (AI withholds; no registered deck's engine heuristic fires it).
+Shipped `af51c42`, CI green.
+
+### Payoff-sequencing U2+U3 — `ai/assembly_state.py`, one owner of engine / sink / lethal-line facts (2026-09-24, `53c95a5`)
+**The first confirmed mover on the Toolbox lane.** `assemble()` runs once
+per main-phase iteration and every reader consumes the same object:
+`is_mana_sink` (exactly the mana-scaling shapes: X damage, Overrun mass
+pump, `PUT_COUNTER_TEAM` activation — a storm/discard-scaled token maker is
+NOT a sink, `combo_calc.unbounded_mana_sink_reachable` is now a wrapper),
+every access to a sink (cast / activate / X-tutor cast / activated tutor)
+with its damage projected THROUGH blocks after payment-tapping the team (a
+live loop covers the shortfall; an entering body attacks only with haste;
+an X sink delivered without entry counters is a 0/0, not an access), its
+`p_resolves` from the single BHI query, and `best_line` maximising
+`p_resolves × win_swing` (`win_swing` lifted into `ai/clock.py` beside
+`position_value`; the Storm chain credit calls it). `engine_completion_credit`
+replaces the boolean sink gate: 0 with the loop live, whole with a sink in
+hand / on the battlefield / behind another access, otherwise
+draw-discounted by the exact hypergeometric over the surviving horizon.
+Readers: `activation_candidates` enumerates a team-counter activation ONLY
+as the first step of the best line and credits the line (X-damage ping and
+activated-tutor first steps likewise); `compute_play_ev` credits the cast
+that starts the line outside the combo-chain gate; the tutor delivery
+choice orders `(delivers_lethal, completes_engine, value)` with the lethal
+verdict computed at cast-time truth; the X-tutor hold treats an engine
+completion as acceleration (Dimir T4 negative control: the enabler is
+still fetched at X=2); `decide_attackers` reads the same `attack_reach`
+fold as the projector. Once the board already reaches lethal the line's
+next step is combat (the first replay activated 40× past lethal; now 7).
+Not built here (recorded): the BHI tax-counter branch of `p_resolves`
+(no posterior API for soft-counter taxes exists yet — casts are weighted
+by `1 − p_interaction` only), the picker rewrite through
+`choose_tutor_delivery` (the pickers still size X by `default_tutor_rank`;
+the delivery callback applies the three-tier order among the eligible at
+that X), `tutor_to_hand` accesses, and `payoff_affordable` / the RAMP
+transition (deferred by design §7).
+- **Replay gate (design §8.1) PASSED:** `--bo3 "Creatures Toolbox" "Domain
+  Zoo" -s 60500` — pre: Zoo 2-0 (T9, T8); post: **Toolbox wins G1 on T4**
+  (Nature's Rhythm at X=2 fetches the enabler, loop live, 7 team-counter
+  activations, alpha for 81), then Zoo T6/T6 → 2-1. The line is the
+  uncounterable ability line, never "X=8 + alpha".
+- **Measured (same-seed n=20 Bo3, 50000 grid, `--parallel`, offline
+  scorer; pre = worktree `af51c42`): Creatures Toolbox field 21.2 → 28.3
+  (+7.1pp)** — vs Broodscale 5→35, Dimir 0→15, Eldrazi Ramp 30→45, Ruby
+  Storm 30→45, Azorius Blink 50→65, Goryo's 45→55, Amulet 75→85, Pinnacle
+  10→30; vs Domain Zoo 5→5, Prowess 5→5, Grixis 10→5. Toolbox band
+  [30,70]: now 1.7pp below the floor from 9.2 below. Lane counter RESET
+  (movement ≥ 2.2pp).
+- Tests `tests/test_assembly_state_lethal_line.py` (14, red→green); pins
+  green unedited (tutor engine-credit, unbounded shortcut, sink
+  reachability, X-tutor payoff selection, sac-activation gate). Anchor 29
+  no flips. Chunks A 2325 / B 2430. Ratchets at baseline
+  (`ai/assembly_state.py` pinned at 0 bare literals).
+- Guards: Domain Zoo field same-seed pre/post — recorded below when the
+  runs complete.

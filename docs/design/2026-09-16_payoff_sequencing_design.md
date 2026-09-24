@@ -377,6 +377,14 @@ that stand on their own; U2+U3 land as **one measured commit**.
   `tests/test_x_tutor_payoff_aware_selection.py` fixtures are updated the
   same way before any "stays green" claim).
 
+**Execution status (2026-09-24):** U0 verified-before-build (pinned), U1
+shipped `af51c42`, U2+U3 shipped as one commit `53c95a5` — replay gate
+passed (Toolbox wins s60500 G1 on T4 through the team-counter ability
+line), Creatures Toolbox field 21.2 → 28.3 same-seed. Deferred from U2+U3
+and recorded in the tracker: the BHI tax-counter branch of `p_resolves`
+(no soft-counter posterior API yet), the picker rewrite through
+`choose_tutor_delivery`, `tutor_to_hand` accesses, `payoff_affordable`.
+
 Anchor: U0/U1 expected no flips (rules units; any flip is replayed
 anchor-exact and accepted only as rules-correct). U2+U3: every
 `test_wr_baseline_anchor.py` flip must show a `lethal_line` decision event in
