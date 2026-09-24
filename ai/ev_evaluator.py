@@ -3140,8 +3140,13 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
                     detailed: bool = False,
                     bhi: "BayesianHandTracker" = None,
                     goal: Optional[str] = None,
-                    role_tags: frozenset = frozenset()):
+                    role_tags: frozenset = frozenset(),
+                    assembly=None):
     """Compute the expected value of casting a spell using 1-ply lookahead.
+
+    ``assembly`` is the main phase's `ai.assembly_state.AssemblyState`
+    (threaded like ``bhi``): when this card is the first step of its best
+    lethal line, the line's resolution-weighted win swing is credited.
 
     EV = E[V(state_after_play_and_response)] - V(current_state)
 
@@ -3334,8 +3339,8 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
             can_kill, storm_count, damage, chain = _estimate_combo_chain(
                 game, player_idx, first_card=card)
             p_resolves = 1.0 - p_interaction
-            from ai.clock import position_value
-            win_swing = max(0.0, 100.0 - position_value(snap))
+            from ai.clock import win_swing as _win_swing
+            win_swing = _win_swing(snap)
             if can_kill:
                 # Full lethal — entire win-swing is realized.
                 ev += p_resolves * win_swing
@@ -3352,6 +3357,18 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
                 # against aggro we can't survive.
                 progress = min(1.0, damage / max(1, snap.opp_life))
                 ev += p_resolves * progress * win_swing
+
+    # Lethal-line first step (payoff sequencing §2.8 reader 2). Tag-free
+    # and OUTSIDE the combo-chain gate above: an Overrun shell or a Tron
+    # X-sink line is not archetype `combo`. The line's projected kill is
+    # credited at the same resolution weight the chain credit uses, so
+    # the cast that starts the line is the best play once the line exists.
+    if assembly is not None and assembly.best_line is not None:
+        from ai.assembly_state import STEP_CAST
+        from ai.clock import win_swing as _win_swing
+        _step = assembly.best_line.first_step
+        if _step[0] == STEP_CAST and _step[1] == card.instance_id:
+            ev += (1.0 - p_interaction) * _win_swing(snap)
 
     # ── Life-phase + goal gear-shift (M4, A2) ──
     # Pure lookups over `strategy_profile.phase_weights` and

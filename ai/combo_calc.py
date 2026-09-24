@@ -796,33 +796,21 @@ def unbounded_mana_sink_reachable(me) -> bool:
     into a win — a mana SINK is in hand, on the battlefield, or in the library
     (reachable by a creature tutor at the engine's own mana).
 
-    A sink is a payoff whose output SCALES with the mana spent:
-      * an X-cost damage spell / permanent — `deals_targeted_damage` with
-        `x_cost_data` (Walking Ballista, Fireball, Comet Storm);
-      * a mass-pump overrun — `team_pump_data` (Craterhoof Behemoth);
-      * a scaling token finisher — `has_scaling_token_finisher`
-        (Empty-the-Warrens shape).
-
-    Fixed burn (Lightning Bolt: 3 damage no matter the mana) is NOT a sink —
-    completing an infinite-mana engine converts to nothing through it. Reads
-    typed CardTemplate fields only; no card names. Consumed by the tutor
-    engine-completion credit in `ai/activation_ev.py` and
-    `ai/ev_player._gate_x_tutor_payoff`: crediting `LOOP_SHORTCUT_MANA` for
-    completing an unbounded mana loop is dead value with no sink to spend it.
+    A sink is a payoff whose output SCALES with the MANA spent — the one
+    definition `ai.assembly_state.is_mana_sink` owns: an X-cost damage
+    spell / permanent, a mass-pump overrun, or a mana-costed team-counter
+    activation. A token finisher whose scaling variable is storm or discard
+    (`has_scaling_token_finisher`) is owned by the Storm chain and is NOT a
+    mana sink. Fixed burn is not a sink either — completing an
+    infinite-mana engine converts to nothing through it. Typed fields
+    only; no card names.
     """
+    from ai.assembly_state import is_mana_sink
     for zone in (getattr(me, 'hand', None) or (),
                  getattr(me, 'battlefield', None) or (),
                  getattr(me, 'library', None) or ()):
         for c in zone:
-            t = getattr(c, 'template', None)
-            if t is None:
-                continue
-            if getattr(t, 'team_pump_data', None):
-                return True
-            if (getattr(t, 'deals_targeted_damage', False)
-                    and getattr(t, 'x_cost_data', None)):
-                return True
-            if getattr(t, 'has_scaling_token_finisher', False):
+            if is_mana_sink(getattr(c, 'template', None)) is not None:
                 return True
     return False
 

@@ -197,13 +197,16 @@ is worth"; the existing bare `100.0` at `ai/ev_evaluator.py:3339` calls it).
 ### 2.6 X sizing — one owner (amendment: drop `x_value_for_capacity`)
 
 `CastManager.affordable_x` (`engine/cast_manager.py:255-270`) already
-documents itself as the one formula `(capacity − cmc) // mult`. The inline
-copy at `:1828-1829` (`available_for_x // multiplier`, **no fixed-pip
-subtraction** — engine budget 10 vs AI 8 on the traced board, verified) and
-the third copy at `ai/ev_player.py:1059` are made to call it; the AI budget
-and the cast-time budget become the same number. Red test, rule-phrased:
-*the X paid for an X-cost spell never exceeds capacity minus its fixed pips
-(CR 601.2h)* — red today because `:1828` omits the subtraction.
+documents itself as the one formula `(capacity − cmc) // mult`. *Verified
+2026-09-24 (§5 U0):* the inline copy at `:1828-1829` reads capacity AFTER
+the base cost has been paid, so it is already net of the fixed pips (the
+"engine 10 vs AI 8" reading compared a pre-payment number with a
+post-payment one) and additionally net of any applied cost reduction;
+replacing it after payment would subtract the base twice. The AI copy at
+`ai/ev_player.py:1059` is the same formula as `affordable_x`. The rule is
+pinned (`tests/test_x_cost_paid_never_exceeds_capacity_minus_pips.py`, CR
+601.2h) and `assembly_state` sizes X through `affordable_x` (pre-payment,
+the correct owner for a projection).
 
 ### 2.7 Engine-completion credit — `engine_completion_credit(candidate, spending)`
 

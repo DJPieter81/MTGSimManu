@@ -173,13 +173,29 @@ def choose_tutor_delivery(game, player_idx, eligible, source=None):
     # the X priced for it is the X that delivers it.
     per_mana = mana_clock_impact(snap) * CLOCK_IMPACT_LIFE_SCALING
 
+    # Three-tier delivery order (payoff sequencing §2.8 reader 1): a
+    # candidate that leaves a lethal line at the mana left after the
+    # tutor is paid, then one that makes the engine live, then plain value
+    # — the engine-completion credit (whole / draw-discounted / zero when
+    # the loop already exists) in clock units plus the body's own worth.
+    from ai.assembly_state import (assemble, delivered_line_is_lethal,
+                                   engine_completion_credit)
+    state = assemble(game, player_idx, snap)
+
     def _worth(c):
-        if ActivationManager.would_complete_unbounded_engine(
-                game, player_idx, c.template):
-            return LOOP_SHORTCUT_MANA * per_mana
+        lethal = delivered_line_is_lethal(game, player_idx, snap, source, c,
+                                          state)
+        completes = (not state.engine_live
+                     and ActivationManager.would_complete_unbounded_engine(
+                         game, player_idx, c.template))
+        value = engine_completion_credit(
+            game, player_idx, state, c.template, snap,
+            spending=source) * per_mana
         if c.template.is_creature:
-            return creature_threat_value(c, snap)
-        return float(c.template.cmc or 0)
+            value += creature_threat_value(c, snap)
+        else:
+            value += float(c.template.cmc or 0)
+        return (lethal, completes, value)
 
     return max(eligible, key=_worth)
 
@@ -442,7 +458,8 @@ def graveyard_hate_plan(game, player_idx, ability):
     return len(chosen), [c.instance_id for c in chosen]
 
 
-def activation_candidates(game, player_idx, snap, excluded=None):
+def activation_candidates(game, player_idx, snap, excluded=None,
+                          assembly=None):
     """Enumerate generic activated abilities worth activating right now.
 
     Returns ``[(permanent, ability_index, targets, ev, reason), ...]`` — a
@@ -472,6 +489,15 @@ def activation_candidates(game, player_idx, snap, excluded=None):
     me = game.players[player_idx]
     out = []
     base = position_value(snap)
+    # The main phase's assembly state (engine / sink / lethal-line facts),
+    # threaded in by the EV player; built on demand for direct callers.
+    from ai.assembly_state import STEP_ACTIVATE as _STEP_ACTIVATE, assemble
+    _state_box = [assembly]
+
+    def _state():
+        if _state_box[0] is None:
+            _state_box[0] = assemble(game, player_idx, snap)
+        return _state_box[0]
 
     for perm in list(me.battlefield):
         abilities = getattr(perm.template, 'activated_abilities', None) or []
@@ -605,6 +631,34 @@ def activation_candidates(game, player_idx, snap, excluded=None):
                 updates["opp_life"] = snap.opp_life - ability.amount
                 after = snap.fast_replace(**updates)
                 reason = f"activate: {ability.amount} damage"
+                _line = _state().best_line
+                if _line is not None and _line.first_step == (
+                        _STEP_ACTIVATE, perm.instance_id, ability.index):
+                    # The first ping of a lethal counter-stack line is
+                    # credited the line, not one point of damage.
+                    ev = (position_value(after) - base) + _line.swing
+                    out.append((perm, ability.index, [], ev,
+                                reason + " — first step of a lethal line"))
+                    continue
+            elif kind is _K.PUT_COUNTER_TEAM:
+                # A mana-scaled team-counter activation is enumerated ONLY
+                # as the first step of the assembly state's best lethal
+                # line (payoff sequencing §2.8 reader 2): scored as the
+                # line it starts, at the line's resolution weight. Any
+                # other team-counter activation stays withheld with the
+                # SELF/TARGET scopes below — the snapshot still has no
+                # honest price for one counter on each body.
+                _line = _state().best_line
+                if _line is None or _line.first_step != (
+                        _STEP_ACTIVATE, perm.instance_id, ability.index):
+                    continue
+                after = snap.fast_replace(**updates)
+                ev = (position_value(after) - base) + _line.swing
+                out.append((perm, ability.index, [], ev,
+                            f"activate: team counters — first step of a "
+                            f"lethal line ({_line.access.damage} projected "
+                            f"vs {snap.opp_life} life)"))
+                continue
             elif kind is _K.PUMP_SELF_UEOT:
                 # GATED, not merely scored. `position_value` has no
                 # until-end-of-turn term, so a temporary pump reads as a
@@ -873,17 +927,15 @@ def activation_candidates(game, player_idx, snap, excluded=None):
                     # (CR 726.4 shortcut material, an engine-side rules
                     # query), the engine's shortcut allowance: that is
                     # the mana the piece actually delivers next turn.
-                    from engine.activation import ActivationManager
-                    from engine.constants import LOOP_SHORTCUT_MANA
-                    from ai.combo_calc import unbounded_mana_sink_reachable
-                    delivered_value = delivered_cmc
-                    if (ActivationManager.would_complete_unbounded_engine(
-                            game, player_idx, target.template)
-                            and unbounded_mana_sink_reachable(me)):
-                        # Only credit the loop's shortcut mana when a sink is
-                        # reachable to convert it (ramp panel Finding 1); dead
-                        # mana otherwise.
-                        delivered_value = LOOP_SHORTCUT_MANA
+                    from ai.assembly_state import engine_completion_credit
+                    # The loop's shortcut mana is credited only as far as
+                    # a sink can convert it: whole with a sink in hand / on
+                    # the battlefield / behind another access, draw-
+                    # discounted when this tutor is the only access, zero
+                    # when the engine is already live (§2.7).
+                    delivered_value = delivered_cmc + engine_completion_credit(
+                        game, player_idx, _state(), target.template, snap,
+                        spending=perm)
                     if (ability.tutor_data or {}).get('mv_bound_is_x'):
                         from engine.cast_manager import (
                             creature_tutor_x_net_value)
@@ -899,6 +951,11 @@ def activation_candidates(game, player_idx, snap, excluded=None):
                     reason = (f"activate: tutor {target.name} to "
                               f"battlefield"
                               + (f" (X={best_x})" if best_x else ""))
+                    _line = _state().best_line
+                    if _line is not None and _line.first_step == (
+                            _STEP_ACTIVATE, perm.instance_id, ability.index):
+                        ev += _line.swing
+                        reason += " — first step of a lethal line"
                 if ev <= 0.0:
                     continue
                 out.append((perm, ability.index, [], ev, reason))

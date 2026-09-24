@@ -261,6 +261,10 @@ class EVPlayer:
         # a new id().
         self._assess_snap_id: int = 0
         self._assess_value = None
+        # The main phase's assembly state (engine / sink / lethal-line
+        # facts, `ai.assembly_state`) — built once per decide_main_phase
+        # iteration and threaded into every reader, like `bhi`.
+        self._assembly = None
 
         # Mulligan decider — reuse existing.
         #
@@ -453,6 +457,10 @@ class EVPlayer:
             self.goal_engine.check_transition(game, self.player_idx)
 
         snap = snapshot_from_game(game, self.player_idx)
+        # One owner of engine / sink / lethal-line facts for this iteration
+        # (payoff sequencing §2.1); every reader below consumes this object.
+        from ai.assembly_state import assemble
+        self._assembly = assemble(game, self.player_idx, snap, bhi=self.bhi)
 
         # ── ACTIVATION region — activated win-condition lines ──
         # Battlefield permanents' activated abilities that represent
@@ -479,7 +487,8 @@ class EVPlayer:
         # effect kind rather than applied wholesale.
         from ai.activation_ev import activation_candidates
         for _perm, _ab_idx, _tgts, _ev, _reason in activation_candidates(
-                game, self.player_idx, snap, excluded=excluded_activations):
+                game, self.player_idx, snap, excluded=excluded_activations,
+                assembly=self._assembly):
             # Holdback is the ONLY real mana-cost signal in this score:
             # position_value's mana term is clamped by max(0, mana_diff), so
             # spending mana contributes exactly 0.0 to the projection.
@@ -1073,17 +1082,15 @@ class EVPlayer:
         # actually delivers. Same credit the activated-tutor branch of
         # ai/activation_ev.py applies.
         from engine.activation import ActivationManager
-        from engine.constants import LOOP_SHORTCUT_MANA
-        from ai.combo_calc import unbounded_mana_sink_reachable
-        engine_bonus = 0
-        if (ActivationManager.would_complete_unbounded_engine(
-                game, self.player_idx, target.template)
-                and unbounded_mana_sink_reachable(me)):
-            # Completing an unbounded mana loop is worth the shortcut mana only
-            # when a sink is reachable to convert it (ramp panel Finding 1);
-            # otherwise the infinite mana is dead and the fetch is worth just
-            # the delivered body.
-            engine_bonus = LOOP_SHORTCUT_MANA - delivered_cmc
+        from ai.assembly_state import engine_completion_credit
+        # Completing an unbounded mana loop is worth the shortcut mana only
+        # when a sink is reachable to convert it — whole when the sink is
+        # in hand / on the battlefield / behind another access, draw-
+        # discounted when the only access is this very tutor, zero when
+        # the engine is already live (payoff sequencing §2.7).
+        engine_bonus = engine_completion_credit(
+            game, self.player_idx, self._assembly, target.template, snap,
+            spending=card)
         ev += ((creature_tutor_x_net_value(best_x, delivered_cmc)
                 + engine_bonus) * mult * per_mana)
 
@@ -1100,7 +1107,12 @@ class EVPlayer:
             accelerates = (
                 ('etb_land_from_hand' in target_tags and land_in_hand)
                 or bool(getattr(target.template, 'produces_mana', None))
-                or getattr(target.template, 'extra_land_drops', 0) > 0)
+                or getattr(target.template, 'extra_land_drops', 0) > 0
+                # An engine completion is acceleration — the loop's mana
+                # arrives next untap. Without this the hold withholds the
+                # enabler whenever the payoff ceiling is out of reach.
+                or ActivationManager.would_complete_unbounded_engine(
+                    game, self.player_idx, target.template))
             if not other_access_in_hand and not accelerates:
                 payoff_total_cost = (t.cmc or 0) + top_cmc * mult
                 # Mana trajectory: one land drop per turn (rules constant).
@@ -1239,7 +1251,7 @@ class EVPlayer:
                      if card.name in self._payoff_names else frozenset())
         ev = compute_play_ev(card, snap, self.archetype, game, self.player_idx,
                              bhi=self.bhi, goal=goal_value,
-                             role_tags=role_tags)
+                             role_tags=role_tags, assembly=self._assembly)
 
         # ── Free cast bonus (generic) ──
         # Any spell offered for 0 effective mana (Ragavan exile, cascade,
@@ -3119,7 +3131,11 @@ class EVPlayer:
             if getattr(c.template, 'has_attack_trigger', False):
                 return True
             return False
-        total_power = sum(c.power for c in valid if (c.power or 0) > 0)
+        # The unblocked reach — the same fold the assembly-state line
+        # projector uses (`attack_reach`, through_blocks=False), so the
+        # declarer and the projector cannot drift.
+        from ai.assembly_state import attack_reach
+        total_power = attack_reach([(c.power or 0, False) for c in valid])
         # Lethal if unblocked is a property of the TURN: the pump instants
         # castable after blocks add their power to an attacker (CR 509.4
         # window) — the same packing `_burn_reach_this_turn` applies to
