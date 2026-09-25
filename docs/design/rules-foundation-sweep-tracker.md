@@ -5578,3 +5578,29 @@ on entry, CR 714.3a / 714.2b).
 - Next: Jeskai Blink is 4.0pp under its floor. Re-replay its worst
   remaining cells (Broodscale 0, 4c Omnath 15, Eldrazi Tron 20) on the new
   head before choosing the next unit.
+
+### Jeskai Blink lane — a pre-combat blink is charged its actual target's attack (CR 400.7, 2026-09-25, `e839889`)
+Re-replays on `d1b47ef` (s50000 Bo3): Jeskai now beats 4c Omnath 2-0 (was
+0-2 before the Saga unit); loses to Eldrazi Tron 1-2 and Broodscale 0-2.
+Broodscale G2 T5: Dash Ragavan, then Ephemerate on it pre-combat (scored
+−0.03 and cast) — the new object lost Dash's haste, did not attack, then
+chump-blocked and died. Subsystem: `_score_spell`'s Main-1 forfeit charge
+priced only presumed targets (EOT riders, `etb_value` creatures), not the
+creature the engine's blink handler actually returns
+(`_presumed_reset_target`). Fix: include it. Tests
+`tests/test_blink_charges_the_attack_of_its_actual_target.py` (3; 2
+red→green); 51 blink/rebound/reanimation tests green; ratchets baseline.
+- **Measured (same-seed n=20, pre = `d1b47ef`): Jeskai Blink 41.0 → 40.4
+  (flat), Azorius Blink 27.9 → 29.2 (flat), Domain Zoo 72.5 → 72.5.**
+  Anchor 29 no flips; chunks A 2329 / B 2433; CI green on `e839889`.
+  A correct-play fix kept, not a mover: the dash-then-blink line is rare.
+  Lane counter: 1 flat unit after the Saga mover.
+- **Paused for the metagame refresh.** Search snippets (all metagame sites
+  are blocked by the session egress proxy, so no page could be read)
+  indicate the registered shares (mtgdecks 2026-07-05, lists mtgtop8
+  2026-08-08) are stale: Boros Energy weighted 15.9% vs ~4–6.6% now;
+  Domain Zoo 4.0% vs ~2.6% (not tier 1); Goryo's 1.5% vs ~10%; Mono-Green
+  Broodscale #1 after the Baltimore RC and Esper Blink ~6–8% are not
+  registered. No Modern B&R change on 2026-08-10. A refresh (lists +
+  shares + Marvel Super Heroes in the card DB) changes every measured
+  number, so the loop resumes on the refreshed matrix and bands.
