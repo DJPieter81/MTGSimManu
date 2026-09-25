@@ -124,6 +124,16 @@ class PlaneswalkerManager:
 
         # Rule 9b (activation parity): refuse BEFORE charging the cost.
         if ability.effect_kind not in EXECUTABLE_LOYALTY_KINDS:
+            # Audit (observation-only): record the refused kind so a matrix
+            # run ranks how many printed loyalty abilities are inert (the
+            # planeswalker-loyalty no-op class). Reads the enum name, not
+            # oracle text; no-op unless MTG_RULES_AUDIT is set.
+            from .rules_audit import enabled as _audit_on, census as _audit_census
+            if _audit_on():
+                _audit_census("606/loyalty_unexecutable_kind",
+                              getattr(ability.effect_kind, "name",
+                                      str(ability.effect_kind)),
+                              game=game)
             return False
 
         pw_card.loyalty_counters = new_loyalty

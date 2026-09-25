@@ -189,6 +189,15 @@ class ActivationEffectKind(Enum):
     # and toughness and, unlike PUMP_SELF_UEOT, does not expire.
     PUT_COUNTER_SELF = "put_counter_self"
     PUT_COUNTER_TARGET = "put_counter_target"
+    # "[Cost]: Put N <kind> counter(s) on each [other] [artifact]
+    # <permanent-type> [you control]" — the MASS scope of the same class
+    # (22 Modern activated abilities: Gavony Township, Steel Overseer,
+    # Leyline of Abundance, Shalai, Mikaeus, the Mentor cycle). Not
+    # targeted (CR 115.1): the recipient set is every permanent of the
+    # named card type(s) under the named controller(s) at resolution,
+    # minus the source for "each other". Its shape rides on
+    # `put_counter_data` with `scope='team'`.
+    PUT_COUNTER_TEAM = "put_counter_team"
     # "[Cost]: Adapt N." (CR 702.132) — if this creature has no +1/+1
     # counters on it, put N +1/+1 counters on it. 23 Modern cards carry
     # the activated form (Basking Broodscale, Growth-Chamber Guardian,
@@ -785,6 +794,11 @@ class CardTemplate:
     # Creates a storm-scaled token count ("create … tokens for each …").
     # Populated by oracle_parser.parse_has_scaling_token_finisher.
     has_scaling_token_finisher: bool = False
+    # A Saga whose chapter I has a material effect (CR 714.3a: chapter I
+    # triggers as the Saga enters). Populated by
+    # oracle_parser.parse_saga_chapter_one_material; read by the AI's
+    # same-turn-value signal so a Saga is never deferred as "no value now".
+    saga_chapter_one_material: bool = False
     # Exile permanent — True when oracle has 'exile target <permanent-type>'.
     # Covers instant/sorcery removal that exiles rather than destroys.
     # Populated by oracle_parser.parse_can_exile_permanent.

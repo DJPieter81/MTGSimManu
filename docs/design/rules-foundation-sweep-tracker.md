@@ -5297,3 +5297,310 @@ Replay `replays/zoo_vs_toolbox_tip.txt` (Domain Zoo vs Creatures Toolbox s50000,
 2. By the time Craterhoof lands, the support creatures are **tapped by those activations** (Fiend Artisan tapped, Druid tapped/looping), so only Craterhoof (haste) attacks for **8** (L967-970) instead of a pumped-team alpha strike; Zoo (23 life) survives and exiles Craterhoof with Leyline Binding next turn (L999-1000).
 
 **Subsystem / class:** the "unbounded-mana → outlet / payoff sequencing" AI lane — (a) a sacrifice-tutor (Fiend Artisan, Birthing Pod, Neoform class) must not sacrifice its own assembled engine/payoff pieces and must stop re-activating once the payoff is found; (b) once a lethal mass-pump payoff (Craterhoof / `team_pump_data`) is reachable, the AI must sequence to the alpha strike (deploy + swing the whole pumped team) rather than tapping the board out on the tutor first. `ai/ev_player.py` activation/attacker sequencing + Fiend Artisan sac-target selection; `ActivationManager.would_complete_unbounded_engine`. Class-sized (sac-tutors × mass-pump payoffs × unbounded engines); lifts Toolbox and deflates its Zoo/Dimir/Tron 95/92 donations. FIX = next unit (failing test first); this entry is the required pre-code subsystem naming.
+
+### Lane T fix — leg (a): a sac-cost activation must not cannibalise a live engine (2026-09-14, `ai/activation_ev.py`)
+
+Leg (a) of the subsystem above. In `activation_candidates`, at the point the
+sacrifice victim is chosen, the candidate is now suppressed when that victim is
+a member of a **live unbounded mana engine** —
+`ActivationManager.engines_lost_if_removed(game, idx, sacrificed) > 0` (the same
+predicate `ai/clock._creature_static_value` already prices). Class: every
+sacrifice-a-creature activation (Fiend Artisan, Birthing Pod, altars, Viscera
+Seer, …) × every unbounded engine. No card names, no new numeric literal
+(boolean guard), reuses an owned predicate — single-owner `{target_pick:12,
+damage_write:42, counter_write:5}` and magic-numbers baselines unchanged.
+
+Why the projection missed it (root cause): the sacrifice-cost term in
+`activation_candidates` charges a land's mana (`is_land`) and a creature's board
+power, but a 0-power mana-creature like Devoted Druid is neither a land nor
+carries power, so eating it read as ~free; a valuable fetch (Craterhoof, MV 8)
+then swamped the near-zero projected cost and the tutor fired, sacrificing the
+assembled loop. The gate keys on engine membership, not on power, so it is exact
+where `position_value` is blind.
+
+**Failing test first** `tests/test_sac_activation_does_not_eat_its_own_engine.py`:
+the tutor is not offered when its only fodder is a live engine member (RED
+today — fires at ev≈2.81 sacrificing Druid/Vizier to fetch Craterhoof); still
+offered when an expendable body exists (picks the expendable, no
+over-suppression); unaffected on a non-engine board. Pins kept green:
+`test_tutor_credit_for_engine_completing_piece`,
+`test_opportunity_cost_prices_mana_and_engines`,
+`test_unbounded_untap_mana_engine_shortcut`,
+`test_sacrifice_activation_pays_its_cost_cr602_2b` (26 passed). Anchor 29, **no
+flips**; chunk A 2285, chunk B 2370; all 8 ratchets at baseline.
+
+**Measurement — field flat (honest negative).** Same-seed n=20 Bo3 (50000 grid,
+`--parallel`, `MTG_LLM_DECISION_SCORER_OFFLINE=1`, quiet box), pre-fix worktree
+`98b1c0d` vs the fixed tree: Creatures Toolbox field **21.0% → 21.2%** (+0.2pp);
+Toolbox vs Domain Zoo **5% → 5%**; Toolbox vs Dimir Midrange **5% → 0%** (one
+game the other way). Below the ≥2.2pp field / ~11pp cell movement bar — **no
+material movement**. The gate is narrow by construction: it bites only once the
+deck's expendable fodder (spare Dryad Arbor) is exhausted and the sole remaining
+victim is an engine piece, and the replay shows Toolbox has already lost the
+game to Zoo's clock + removal on Fiend Artisan by then, so the late-game
+engine-eating is not the pivotal loss driver in these cells.
+
+**Shipped anyway (rules-quality, not a WR chase).** The fix is a genuine,
+tested AI-correctness improvement — the AI must not eat its own assembled combo
+engine for mid-game value — with a red→green pin, clean anchor/ratchets/chunks,
+and zero regression. Per CLAUDE.md it is not reverted to move a cell.
+
+**Lane-T re-prioritisation:** this is unit 1 of the Lane-T lane with no
+movement (loop-break at 3). The measurement discredits the "engine
+cannibalisation is Toolbox's pivotal loss" hypothesis: the real driver is
+earlier (Zoo's clock + Fatal Push on Fiend Artisan T5). Leg (b) — sequence to
+the pumped-team alpha strike once a lethal `team_pump_data` payoff is reachable —
+is the more promising lever, but the flat field says the outlier program should
+re-weight toward Lane C (control shells) / the earlier Toolbox loss, not a third
+swing at the sac-tutor. Recorded so the hypothesis is not re-run blind.
+
+---
+
+# Deep audit (2026-09-15/16) — auditor expansion, 5-panel diagnosis, WR-resolution loop
+
+## Phase 1 — rules-auditor expansion (PR #572, CI green)
+The auditor's "0 violations" was a coverage illusion (15 invariants). Added 5
+classes (now 20): `unhandled/<timing>` + `606/loyalty_unexecutable_kind` census
+folds (c0), `104.3c/empty_library_loss` (c2), `601.2f/reduction_pips_preserved`
+(c3), `508.1a/attacker_legal` + `509.1a/blocker_legal` (c4); report census
+dedup (c5); pinned the 4 untested SBA sub-invariants (c6). The triggered-ability
+family (delayed-trigger absence, ward) was DEFERRED — no clean typed field / the
+CR 603.3 exemption makes a resolve_stack-seam ward check false-positive-prone.
+**Audited matrix (`--matrix -n 20 --rules-audit`, aborted=0): ZERO rule
+violations** — the engine is rules-correct on every audited class. Ranked
+backlog is all census: `keyword/unmodelled` + the new `unhandled/replacement`
+(graveyard-exile family: Dauthi Voidwalker, Rest in Peace, Sanctifier en-Vec)
+and `unhandled/spell` (Practiced Offense, Demonic Dread). Doc:
+`docs/diagnostics/2026-09-15_deep_audit_backlog.md`. So the WR outliers are
+decision-quality, not rules bugs.
+
+## Phase 2 — five-panel strategic audit
+`docs/history/audits/2026-09-15_5panel_deep_audit.md`. Ranked, class-sized,
+card-name-free findings for the below-band lanes. Loop order: U0 bo3_trace
+repair; U1 declinable loyalty (control + Phase-1 convergence); U2
+unbounded-mana-engine sink gate (Toolbox); U3 flicker floor (both blink);
+U4 holdback uncastable-color; U5 combo-enabler deploy priority; U6 X-wipe
+own-collateral; U7 Dash needs a combat projection. Hollow One / Amulet reported
+as hate-swing / construction, not engine units. Clock sign-inversion stays
+falsified.
+
+## WR-resolution loop (structural fixes only)
+- **U0 (`d30aa0d`)** — repaired `tools/bo3_trace.py` (excluded_activations kwarg
+  + deleted pass_threshold); tooling, unblocks reasoning-inlined tracing.
+- **U1 (`aa5fb9f`)** — an optional loyalty activation is declinable (CR 606.3):
+  `ai/pw_ability.choose_pw_ability` returns `PW_DECLINE` for a loyalty-negative
+  whiff (targeted primary effect has no legal target, race not failing) instead
+  of ticking the walker to death; `engine/game_runner._activate_planeswalkers`
+  honours it. Class-sized (564 unclassified loyalty abilities, 8 MB-PW decks),
+  no card names, no literal. Anchor: one turn-only drift (4c Omnath vs Goryo's
+  7→6, winner unchanged), refreshed. **Measured (same-seed n=20 field): Azorius
+  Control (WST) 41.5 → 45.2 (+3.7pp)**, key cells vs Domain Zoo 5→20, vs 4c
+  Omnath 5→10, vs Eldrazi Tron 5→10, vs Dimir 20→25 — a confirmed mover; lifts
+  the control shells toward band and tightens the over-performers' control
+  matchups. Loop counter: 1 unit, moved (>2.2pp) — reset.
+- **Next:** U2 (unbounded-mana-engine credit gated on sink reachability —
+  `ai/ev_player._gate_x_tutor_payoff` engine_bonus branch + the activated-tutor
+  credit; mirror `_overlay_land_sacrifice_fizzle`; reuse/extend
+  `ai/combo_calc._tutor_has_payoff_access` into a generic mana-sink predicate),
+  then U3 (flicker floor). Field/matrix measurement batched every 2-3 units.
+
+- **U2 (`2bc0461`)** — unbounded-mana-engine completion credit gated on sink
+  reachability (`ai/combo_calc.unbounded_mana_sink_reachable`, both the cast
+  `_gate_x_tutor_payoff` and the activated `activation_candidates` seams).
+  Predicate tests + updated engine-credit pin; ratchets baseline; anchor 29 no
+  flips; both chunks green (A pass, B 2398). **Measured (same-seed n=20):
+  Creatures Toolbox 21.0 → 21.5 (flat, +0.5pp).** Root of the flatness: Toolbox
+  always carries a sink (Craterhoof + Walking Ballista in its 60), so the gate
+  is a no-op for it — the fix protects the *general* case (a deck completing an
+  unbounded loop with no sink), not Toolbox. A correct fix kept for correctness
+  (not reverted). The real Toolbox lever is payoff SEQUENCING (fetch/deploy the
+  sink and alpha-strike once the engine is up), the harder Lane-T leg (b).
+  **Unbounded-mana/Toolbox lane now has 2 flat structural fixes (Lane-T sac-gate
+  +0.2, U2 sink-gate +0.5) — a 3rd swing would hit loop-break; pivoting to a
+  fresh decisive lane (U3 flicker floor, both blink outliers) instead.**
+
+## Payoff-sequencing design (2026-09-16, written 2026-09-23)
+`docs/design/2026-09-16_payoff_sequencing_design.md` — judge-panel winner
+(AssemblyState, 2/3 votes) with all three refuters' amendments applied. Two
+findings reshape the Toolbox lane: (1) the intended X=8 Craterhoof line is
+COUNTERED on the traced board (Stubborn Denial fires when the payer is
+tapped out; `ai/response.py:532-540`), and `toolbox_dimir.txt:809-827` shows
+the same into Counterspell — so every line carries a BHI `p_resolves` and
+the delivery order is resolution-weighted, not a boolean; (2) the sink that
+is actually on the battlefield in 6/6 loop-live turns is Leyline of
+Abundance's team-counter ACTIVATION, which the engine refuses
+(UNCLASSIFIED) — so U1 is a new `PUT_COUNTER_TEAM` activated-ability class
+(CR 122) before any AI change. X sizing gets one owner
+(`CastManager.affordable_x`; the inline `:1828` copy omits fixed pips —
+engine 10 vs AI 8). Single-deck lane stated honestly (only Toolbox holds a
+typed sink in its 60; E-Tron's Ballista is SB-only; Amulet has no sink).
+Units: U0 affordable_x owner → U1 PUT_COUNTER_TEAM → U2 assembly_state →
+U3 the four readers (U2+U3 one measured commit), gated by the s60500 replay
+showing an ability-line kill or a withheld tutor, never "X=8 + alpha".
+Architecture + EV-orchestration-audit workflows remain parked (account
+credit block); their cached prefixes are resumable.
+
+### Payoff-sequencing U0 — X sizing: verified-before-build, pinned (2026-09-24)
+The refuters' "inline copy omits fixed pips" reading was wrong in effect:
+`CastManager.cast_spell` pays the base cost (taps lands) BEFORE the X block
+reads `untapped_mana_capacity()`, so the budget at `:1828` is already net
+of the fixed pips (probe: 3 Forests + {X}{G} tutor with a 3-drop and a
+1-drop in the library → X=1, one land left; 4 Forests → X=3; never X=3 on
+three lands). It is also net of any cost REDUCTION actually applied, which
+`affordable_x`'s printed-cmc formula is not — swapping it in after payment
+would subtract the base twice. Not changed; pinned instead:
+`tests/test_x_cost_paid_never_exceeds_capacity_minus_pips.py` (CR 601.2h,
+2 tests, green on the unchanged engine). Design doc §5 U0 amended.
+
+### Payoff-sequencing U1 — `PUT_COUNTER_TEAM` is an executable activated-ability class (CR 122.1 / 115.1, 2026-09-24)
+The mass scope of the put-counter class ("[Cost]: Put N <kind> counters on
+each [other] [artifact] <type> [you control]") was UNCLASSIFIED, so rule 9b
+refused it before any cost was charged — the outlet on the battlefield in
+every loop-live Toolbox turn (Leyline of Abundance's `{6}{G}{G}`) was
+inert. Now: `parse_activation_put_counter` types it once at DB load with
+`scope='team'` (owner you/any, `other`, card-type words only — a subtype,
+colour, "attacking", "that entered this turn", "and/or Vehicle" or a
+trailing rider is refused whole); `classify_activation_effect` routes it to
+the new `ActivationEffectKind.PUT_COUNTER_TEAM` (`targets_required=0`);
+`ActivationManager.RESOLVABLE_EFFECT_KINDS` admits it (schema-incoherence
+and refill guards extended, "each other" never refills its own cost);
+`_resolve_put_counter` computes the recipient set from
+`effective_card_types` under the named controller(s) and writes each counter
+through `adjust_counters` (single-owner unchanged); auditor invariant
+`122/team_counter_placed` restates the set independently. AI enumeration
+stays WITHHELD alongside SELF/TARGET (pinned) — valuation is the design's
+U2. Class: 12 plain printed abilities (Gavony Township, Steel Overseer,
+Leyline of Abundance, Shalai, Mikaeus, Genku, Katilda, Aron, Durable
+Handicraft, Abandoned Air Temple, …); the restricted variants (the Mentor
+cycle "with <keyword>", Shaile/Novijen/Raucous Entertainer "that entered
+this turn", Sandstorm Salvager "creature token", Iron Spider "and/or
+Vehicle") stay refused and are recorded as the next parser lead.
+Tests: `tests/test_put_counter_team_activation.py` (15, red→green) + the
+mass-pin in `tests/test_put_counter_activation.py` updated. Ratchets all at
+baseline (single-owner 12/42/5, magic 13, registry 87). Behaviour flat by
+construction (AI withholds; no registered deck's engine heuristic fires it).
+Shipped `af51c42`, CI green.
+
+### Payoff-sequencing U2+U3 — `ai/assembly_state.py`, one owner of engine / sink / lethal-line facts (2026-09-24, `53c95a5`)
+**The first confirmed mover on the Toolbox lane.** `assemble()` runs once
+per main-phase iteration and every reader consumes the same object:
+`is_mana_sink` (exactly the mana-scaling shapes: X damage, Overrun mass
+pump, `PUT_COUNTER_TEAM` activation — a storm/discard-scaled token maker is
+NOT a sink, `combo_calc.unbounded_mana_sink_reachable` is now a wrapper),
+every access to a sink (cast / activate / X-tutor cast / activated tutor)
+with its damage projected THROUGH blocks after payment-tapping the team (a
+live loop covers the shortfall; an entering body attacks only with haste;
+an X sink delivered without entry counters is a 0/0, not an access), its
+`p_resolves` from the single BHI query, and `best_line` maximising
+`p_resolves × win_swing` (`win_swing` lifted into `ai/clock.py` beside
+`position_value`; the Storm chain credit calls it). `engine_completion_credit`
+replaces the boolean sink gate: 0 with the loop live, whole with a sink in
+hand / on the battlefield / behind another access, otherwise
+draw-discounted by the exact hypergeometric over the surviving horizon.
+Readers: `activation_candidates` enumerates a team-counter activation ONLY
+as the first step of the best line and credits the line (X-damage ping and
+activated-tutor first steps likewise); `compute_play_ev` credits the cast
+that starts the line outside the combo-chain gate; the tutor delivery
+choice orders `(delivers_lethal, completes_engine, value)` with the lethal
+verdict computed at cast-time truth; the X-tutor hold treats an engine
+completion as acceleration (Dimir T4 negative control: the enabler is
+still fetched at X=2); `decide_attackers` reads the same `attack_reach`
+fold as the projector. Once the board already reaches lethal the line's
+next step is combat (the first replay activated 40× past lethal; now 7).
+Not built here (recorded): the BHI tax-counter branch of `p_resolves`
+(no posterior API for soft-counter taxes exists yet — casts are weighted
+by `1 − p_interaction` only), the picker rewrite through
+`choose_tutor_delivery` (the pickers still size X by `default_tutor_rank`;
+the delivery callback applies the three-tier order among the eligible at
+that X), `tutor_to_hand` accesses, and `payoff_affordable` / the RAMP
+transition (deferred by design §7).
+- **Replay gate (design §8.1) PASSED:** `--bo3 "Creatures Toolbox" "Domain
+  Zoo" -s 60500` — pre: Zoo 2-0 (T9, T8); post: **Toolbox wins G1 on T4**
+  (Nature's Rhythm at X=2 fetches the enabler, loop live, 7 team-counter
+  activations, alpha for 81), then Zoo T6/T6 → 2-1. The line is the
+  uncounterable ability line, never "X=8 + alpha".
+- **Measured (same-seed n=20 Bo3, 50000 grid, `--parallel`, offline
+  scorer; pre = worktree `af51c42`): Creatures Toolbox field 21.2 → 28.3
+  (+7.1pp)** — vs Broodscale 5→35, Dimir 0→15, Eldrazi Ramp 30→45, Ruby
+  Storm 30→45, Azorius Blink 50→65, Goryo's 45→55, Amulet 75→85, Pinnacle
+  10→30; vs Domain Zoo 5→5, Prowess 5→5, Grixis 10→5. Toolbox band
+  [30,70]: now 1.7pp below the floor from 9.2 below. Lane counter RESET
+  (movement ≥ 2.2pp).
+- Tests `tests/test_assembly_state_lethal_line.py` (14, red→green); pins
+  green unedited (tutor engine-credit, unbounded shortcut, sink
+  reachability, X-tutor payoff selection, sac-activation gate). Anchor 29
+  no flips. Chunks A 2325 / B 2430. Ratchets at baseline
+  (`ai/assembly_state.py` pinned at 0 bare literals).
+- **Guard: Domain Zoo field same-seed pre/post 73.3 → 73.3, every cell
+  identical (6 draws credited to nobody on both).** The unit moves only a
+  deck whose line it models; no over-reach onto the aggro/midrange field.
+- Next on this lane: Toolbox is 1.7pp under its [30,70] floor — the two
+  deferred legs (the BHI tax branch of `p_resolves`; the picker rewrite
+  through `choose_tutor_delivery`) are the remaining Toolbox levers, and
+  the s60500 G2/G3 losses are Zoo's T6 clock (the band question). The
+  loop pivots to the next below-band deck with structural headroom
+  (Jeskai Blink −16.2, the flicker floor at `ai/ev_player.py:1672`).
+
+### Jeskai Blink lane — a Saga's chapter I is same-turn value (CR 714.3a, 2026-09-25, `1b693bf`)
+**Replay-first diagnosis** (s50000 Bo3, Jeskai 0-2 vs 4c Omnath and vs
+Eldrazi Tron): Fable of the Mirror-Breaker sat in the opening hand on turns
+3–6 against Omnath (Phelia cast twice into removal instead) and until turn
+12 against Tron. The recorded flicker-floor lead was NOT the losing
+decision. Probe on a turn-3 board: Fable −0.15 with `deferral: True`,
+Phelia +1.98. Subsystem: `compute_play_ev`'s deferral gate
+(`_enumerate_this_turn_signals`) found no same-turn signal for a Saga —
+an enchantment with no "when … enters" clause — and returned the exposure
+cost before the projection ran, so the existing Saga chapter projection
+was never reached. A Saga's chapter I triggers as it enters (lore counter
+on entry, CR 714.3a / 714.2b).
+- Fix: typed `CardTemplate.saga_chapter_one_material` (parsed at DB load,
+  chapter I carries a material effect verb — the self-ETB verb list); the
+  signal enumerator reads it. 121 of 183 Sagas. Registered carriers: Fable
+  (Jeskai Blink, Boros Energy, Boros Ponza), The Legend of Roku (Boros
+  Energy). Tests `tests/test_saga_chapter_one_is_same_turn_value.py` (3,
+  red→green). Ratchets at baseline.
+- **Measured (same-seed n=20 Bo3, `--parallel`, pre = worktree
+  `4f34404`): Jeskai Blink field 28.3 → 41.0 (+12.7pp)** — vs Azorius
+  Control 10→55, WST 0→45, Izzet Prowess 20→45, Eldrazi Ramp 15→40, Boros
+  Energy 20→40, Boros Ponza 25→40, Eldrazi Tron 5→20, 4c Omnath 5→15; down
+  vs Affinity 65→55, Amulet 80→70, Broodscale 10→0. Band [45,60]: 4.0pp
+  below the floor from 16.7. Lane counter reset.
+- Anchor: two flips, both diverging at a Fable cast the pre-change tree
+  deferred — Jeskai Blink vs 4c Omnath s50000 (T5 Fable instead of
+  Prismatic Ending; Omnath → Jeskai, T9) and Boros Ponza vs Boros Energy
+  s51000 (T9 Fable instead of Seasoned Pyromancer; Ponza T16 → Energy
+  T12). Accepted as rules-correct and refreshed.
+- Guards (same seeds, n=20, pre → post): Boros Energy 60.0 → 61.0,
+  Boros Ponza 50.4 → 51.7, Domain Zoo 73.3 → 72.5 — all inside the 2.2pp
+  noise band; the two other Fable decks gain slightly, as the rule
+  predicts. Anchor 29 passed after refresh; chunks A 2326 / B 2433; CI
+  green on `f68b389`.
+- Next: Jeskai Blink is 4.0pp under its floor. Re-replay its worst
+  remaining cells (Broodscale 0, 4c Omnath 15, Eldrazi Tron 20) on the new
+  head before choosing the next unit.
+
+### Jeskai Blink lane — a pre-combat blink is charged its actual target's attack (CR 400.7, 2026-09-25, `e839889`)
+Re-replays on `d1b47ef` (s50000 Bo3): Jeskai now beats 4c Omnath 2-0 (was
+0-2 before the Saga unit); loses to Eldrazi Tron 1-2 and Broodscale 0-2.
+Broodscale G2 T5: Dash Ragavan, then Ephemerate on it pre-combat (scored
+−0.03 and cast) — the new object lost Dash's haste, did not attack, then
+chump-blocked and died. Subsystem: `_score_spell`'s Main-1 forfeit charge
+priced only presumed targets (EOT riders, `etb_value` creatures), not the
+creature the engine's blink handler actually returns
+(`_presumed_reset_target`). Fix: include it. Tests
+`tests/test_blink_charges_the_attack_of_its_actual_target.py` (3; 2
+red→green); 51 blink/rebound/reanimation tests green; ratchets baseline.
+- **Measured (same-seed n=20, pre = `d1b47ef`): Jeskai Blink 41.0 → 40.4
+  (flat), Azorius Blink 27.9 → 29.2 (flat), Domain Zoo 72.5 → 72.5.**
+  Anchor 29 no flips; chunks A 2329 / B 2433; CI green on `e839889`.
+  A correct-play fix kept, not a mover: the dash-then-blink line is rare.
+  Lane counter: 1 flat unit after the Saga mover.
+- **Paused for the metagame refresh.** Search snippets (all metagame sites
+  are blocked by the session egress proxy, so no page could be read)
+  indicate the registered shares (mtgdecks 2026-07-05, lists mtgtop8
+  2026-08-08) are stale: Boros Energy weighted 15.9% vs ~4–6.6% now;
+  Domain Zoo 4.0% vs ~2.6% (not tier 1); Goryo's 1.5% vs ~10%; Mono-Green
+  Broodscale #1 after the Baltimore RC and Esper Blink ~6–8% are not
+  registered. No Modern B&R change on 2026-08-10. A refresh (lists +
+  shares + Marvel Super Heroes in the card DB) changes every measured
+  number, so the loop resumes on the refreshed matrix and bands.

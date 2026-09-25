@@ -311,6 +311,14 @@ class GameState:
             self.active_player = self.rng.randint(0, 1)
         self.priority_player = self.active_player
 
+    def _lose_from_empty_library(self, player_idx: int) -> None:
+        """Flag the loss when a player must draw from an empty library
+        (CR 104.3c / 704.5c). Owns the mutation so the draw-audit invariant
+        can recompute the flag state independently."""
+        self.game_over = True
+        self.winner = 1 - player_idx
+        self.log.append(f"P{player_idx+1} loses: empty library")
+
     def draw_cards(self, player_idx: int, count: int) -> List[CardInstance]:
         """Draw cards from library to hand (CR 121.1).
 
@@ -327,9 +335,15 @@ class GameState:
         drawn: List[CardInstance] = []
         for _ in range(count):
             if not player.library:
-                self.game_over = True
-                self.winner = 1 - player_idx
-                self.log.append(f"P{player_idx+1} loses: empty library")
+                self._lose_from_empty_library(player_idx)
+                # Audit (observation-only, CR 104.3c/704.5c): a draw from an
+                # empty library must flag the drawing player to lose. Recompute
+                # the flag state independently of the helper above.
+                from .rules_audit import check as _audit_check
+                _audit_check(
+                    "104.3c/empty_library_loss",
+                    self.game_over and self.winner == 1 - player_idx,
+                    f"P{player_idx+1} drew from an empty library", game=self)
                 return drawn
             card = player.library.pop(0)
             player.cards_drawn_this_turn += 1

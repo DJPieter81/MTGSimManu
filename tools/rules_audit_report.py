@@ -32,18 +32,29 @@ def load(paths: Iterable[str]) -> List[dict]:
 
 def summarize(rows: List[dict]) -> Dict[str, dict]:
     """{rule_id: {kind, count, games, pairs, top_details}} — `games` counts
-    distinct (seed, deck1, deck2) keys, `pairs` distinct deck pairs."""
+    distinct (seed, deck1, deck2) keys, `pairs` distinct deck pairs.
+
+    A violation's `count` is every finding (each is a real per-game event). A
+    census row's `count` is DEDUPED to distinct (key, seed, deck pair): the
+    engine's `census` dedupes only per process, so N parallel workers each
+    re-emit the same (rule, key) once and the raw count inflates ~N×."""
     out: Dict[str, dict] = {}
     by_rule: Dict[str, List[dict]] = defaultdict(list)
     for r in rows:
         by_rule[r.get("rule", "?")].append(r)
     for rule, items in by_rule.items():
+        kind = items[0].get("kind", "violation")
         games = {(r.get("seed"), r.get("deck1"), r.get("deck2")) for r in items}
         pairs = {tuple(sorted((r.get("deck1") or "", r.get("deck2") or ""))) for r in items}
         details = Counter((r.get("detail") or r.get("key") or "") for r in items)
+        if kind == "census":
+            count = len({(r.get("key"), r.get("seed"),
+                          r.get("deck1"), r.get("deck2")) for r in items})
+        else:
+            count = len(items)
         out[rule] = {
-            "kind": items[0].get("kind", "violation"),
-            "count": len(items),
+            "kind": kind,
+            "count": count,
             "games": len(games),
             "pairs": len(pairs),
             "top_details": details.most_common(3),
@@ -60,7 +71,12 @@ def format_summary(summary: Dict[str, dict], top: int = 20) -> str:
         rows = [(rule, s) for rule, s in summary.items() if s["kind"] == kind]
         if not rows:
             continue
-        rows.sort(key=lambda rs: (-rs[1]["count"], rs[0]))
+        if kind == "census":
+            # Rank by breadth (distinct deck pairs, then games), not the
+            # per-process-inflated raw count.
+            rows.sort(key=lambda rs: (-rs[1]["pairs"], -rs[1]["games"], rs[0]))
+        else:
+            rows.sort(key=lambda rs: (-rs[1]["count"], rs[0]))
         lines.append(f"== {title} ==")
         lines.append(f"{'rule':34s} {'count':>6s} {'games':>6s} {'pairs':>6s}  top detail")
         for rule, s in rows[:top]:

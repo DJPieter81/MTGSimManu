@@ -53,6 +53,7 @@ class ActivationManager:
         ActivationEffectKind.EXILE_FROM_GRAVEYARD,
         ActivationEffectKind.PUT_COUNTER_SELF,
         ActivationEffectKind.PUT_COUNTER_TARGET,
+        ActivationEffectKind.PUT_COUNTER_TEAM,
         ActivationEffectKind.ADAPT,
     })
 
@@ -118,7 +119,8 @@ class ActivationManager:
         # `put_counter_data` and has nothing to dispatch on without it.
         is_put_counter = ability.effect_kind in (
             ActivationEffectKind.PUT_COUNTER_SELF,
-            ActivationEffectKind.PUT_COUNTER_TARGET)
+            ActivationEffectKind.PUT_COUNTER_TARGET,
+            ActivationEffectKind.PUT_COUNTER_TEAM)
         if is_put_counter and ability.put_counter_data is None:
             return False
 
@@ -468,6 +470,10 @@ class ActivationManager:
         """
         cost = ability.cost
         data = ability.put_counter_data or {}
+        if data.get('other'):
+            # "each OTHER creature": the source is excluded from its own
+            # effect, so the counter it spent is never handed back.
+            return False
         other_finite = (cost.mana.cmc > 0 or cost.tap_self or cost.life > 0
                         or cost.sacrifice_self or cost.exile_self
                         or cost.sacrifice_type is not None

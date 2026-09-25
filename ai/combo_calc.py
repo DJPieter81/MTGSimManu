@@ -791,6 +791,30 @@ def _tutor_has_payoff_access(card, me) -> bool:
     return False
 
 
+def unbounded_mana_sink_reachable(me) -> bool:
+    """True when the player can convert an unbounded / very large mana pool
+    into a win — a mana SINK is in hand, on the battlefield, or in the library
+    (reachable by a creature tutor at the engine's own mana).
+
+    A sink is a payoff whose output SCALES with the MANA spent — the one
+    definition `ai.assembly_state.is_mana_sink` owns: an X-cost damage
+    spell / permanent, a mass-pump overrun, or a mana-costed team-counter
+    activation. A token finisher whose scaling variable is storm or discard
+    (`has_scaling_token_finisher`) is owned by the Storm chain and is NOT a
+    mana sink. Fixed burn is not a sink either — completing an
+    infinite-mana engine converts to nothing through it. Typed fields
+    only; no card names.
+    """
+    from ai.assembly_state import is_mana_sink
+    for zone in (getattr(me, 'hand', None) or (),
+                 getattr(me, 'battlefield', None) or (),
+                 getattr(me, 'library', None) or ()):
+        for c in zone:
+            if is_mana_sink(getattr(c, 'template', None)) is not None:
+                return True
+    return False
+
+
 def flashback_chain_viable(card, me, snap, after_cast_card_cmc=0,
                            after_cast_ritual_net=0) -> float:
     """Viability score (storm coverage) for a PiF-style flashback chain.

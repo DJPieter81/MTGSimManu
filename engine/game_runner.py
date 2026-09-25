@@ -1113,11 +1113,13 @@ class GameRunner:
         # unmodelled keywords is recorded once per process).
         from .rules_audit import enabled as _audit_on, drain as _audit_drain
         if _audit_on():
-            from .rules_audit_census import census_template_keywords
+            from .rules_audit_census import (census_template_keywords,
+                                             census_unhandled_effects)
             for p in game.players:
                 for zone in (p.library, p.hand, p.battlefield, p.graveyard, p.exile):
                     for c in zone:
                         census_template_keywords(c.template, game=game)
+            census_unhandled_effects(game=game)
             result.audit_findings = _audit_drain()
 
         # Structured GAME_END — terminator for the replayer's
@@ -1647,6 +1649,14 @@ class GameRunner:
             opp = game.players[opponent]
 
             ability_type = self._choose_pw_ability(pw, pw_name, pw_data, player, opp, game)
+
+            # CR 606.3 — activation is optional. The AI declines (holds the
+            # walker) rather than spend loyalty on a whiff by returning the
+            # PW_DECLINE sentinel; it is never a resolvable slot, so the guard
+            # below also catches it, but check it explicitly for clarity.
+            from ai.pw_ability import PW_DECLINE
+            if ability_type == PW_DECLINE:
+                continue
 
             # The chooser falls back to a fixed slot name when nothing it
             # was offered is currently AFFORDABLE (a minus below its

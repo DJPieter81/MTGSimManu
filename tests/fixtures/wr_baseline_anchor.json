@@ -33,7 +33,7 @@
       "deck1": "Jeskai Blink",
       "deck2": "4c Omnath",
       "seed": 50000,
-      "winner": "4c Omnath",
+      "winner": "Jeskai Blink",
       "turns": 9
     },
     {
@@ -97,7 +97,7 @@
       "deck2": "Goryo's Vengeance",
       "seed": 50500,
       "winner": "4c Omnath",
-      "turns": 7
+      "turns": 6
     },
     {
       "deck1": "Izzet Prowess",
@@ -131,8 +131,8 @@
       "deck1": "Boros Ponza",
       "deck2": "Boros Energy",
       "seed": 51000,
-      "winner": "Boros Ponza",
-      "turns": 16
+      "winner": "Boros Energy",
+      "turns": 12
     },
     {
       "deck1": "Instant Reanimator",
