@@ -5540,3 +5540,35 @@ transition (deferred by design §7).
   the s60500 G2/G3 losses are Zoo's T6 clock (the band question). The
   loop pivots to the next below-band deck with structural headroom
   (Jeskai Blink −16.2, the flicker floor at `ai/ev_player.py:1672`).
+
+### Jeskai Blink lane — a Saga's chapter I is same-turn value (CR 714.3a, 2026-09-25, `1b693bf`)
+**Replay-first diagnosis** (s50000 Bo3, Jeskai 0-2 vs 4c Omnath and vs
+Eldrazi Tron): Fable of the Mirror-Breaker sat in the opening hand on turns
+3–6 against Omnath (Phelia cast twice into removal instead) and until turn
+12 against Tron. The recorded flicker-floor lead was NOT the losing
+decision. Probe on a turn-3 board: Fable −0.15 with `deferral: True`,
+Phelia +1.98. Subsystem: `compute_play_ev`'s deferral gate
+(`_enumerate_this_turn_signals`) found no same-turn signal for a Saga —
+an enchantment with no "when … enters" clause — and returned the exposure
+cost before the projection ran, so the existing Saga chapter projection
+was never reached. A Saga's chapter I triggers as it enters (lore counter
+on entry, CR 714.3a / 714.2b).
+- Fix: typed `CardTemplate.saga_chapter_one_material` (parsed at DB load,
+  chapter I carries a material effect verb — the self-ETB verb list); the
+  signal enumerator reads it. 121 of 183 Sagas. Registered carriers: Fable
+  (Jeskai Blink, Boros Energy, Boros Ponza), The Legend of Roku (Boros
+  Energy). Tests `tests/test_saga_chapter_one_is_same_turn_value.py` (3,
+  red→green). Ratchets at baseline.
+- **Measured (same-seed n=20 Bo3, `--parallel`, pre = worktree
+  `4f34404`): Jeskai Blink field 28.3 → 41.0 (+12.7pp)** — vs Azorius
+  Control 10→55, WST 0→45, Izzet Prowess 20→45, Eldrazi Ramp 15→40, Boros
+  Energy 20→40, Boros Ponza 25→40, Eldrazi Tron 5→20, 4c Omnath 5→15; down
+  vs Affinity 65→55, Amulet 80→70, Broodscale 10→0. Band [45,60]: 4.0pp
+  below the floor from 16.7. Lane counter reset.
+- Anchor: two flips, both diverging at a Fable cast the pre-change tree
+  deferred — Jeskai Blink vs 4c Omnath s50000 (T5 Fable instead of
+  Prismatic Ending; Omnath → Jeskai, T9) and Boros Ponza vs Boros Energy
+  s51000 (T9 Fable instead of Seasoned Pyromancer; Ponza T16 → Energy
+  T12). Accepted as rules-correct and refreshed.
+- Guards (Boros Energy, Boros Ponza, Domain Zoo fields, same seeds):
+  recorded below when the runs complete.
