@@ -5570,5 +5570,11 @@ on entry, CR 714.3a / 714.2b).
   Prismatic Ending; Omnath → Jeskai, T9) and Boros Ponza vs Boros Energy
   s51000 (T9 Fable instead of Seasoned Pyromancer; Ponza T16 → Energy
   T12). Accepted as rules-correct and refreshed.
-- Guards (Boros Energy, Boros Ponza, Domain Zoo fields, same seeds):
-  recorded below when the runs complete.
+- Guards (same seeds, n=20, pre → post): Boros Energy 60.0 → 61.0,
+  Boros Ponza 50.4 → 51.7, Domain Zoo 73.3 → 72.5 — all inside the 2.2pp
+  noise band; the two other Fable decks gain slightly, as the rule
+  predicts. Anchor 29 passed after refresh; chunks A 2326 / B 2433; CI
+  green on `f68b389`.
+- Next: Jeskai Blink is 4.0pp under its floor. Re-replay its worst
+  remaining cells (Broodscale 0, 4c Omnath 15, Eldrazi Tron 20) on the new
+  head before choosing the next unit.
