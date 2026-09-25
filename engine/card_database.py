@@ -1823,7 +1823,7 @@ class CardDatabase:
             parse_self_cost_reduction,
             parse_can_target_player, parse_can_target_planeswalker,
             grants_flashback_to_gy_spells, parse_deals_targeted_damage,
-            parse_has_scaling_token_finisher,
+            parse_has_scaling_token_finisher, parse_saga_chapter_one_material,
             parse_has_attack_trigger, parse_has_combat_damage_trigger,
             parse_sacrifice_mana_units,
             parse_aura_enchant_restriction, parse_aura_mana_units,
@@ -2020,6 +2020,8 @@ class CardDatabase:
         template.has_draw_effect = parse_has_draw_effect(oracle)
         template.deals_targeted_damage = parse_deals_targeted_damage(oracle)
         template.has_scaling_token_finisher = parse_has_scaling_token_finisher(oracle)
+        template.saga_chapter_one_material = parse_saga_chapter_one_material(
+            oracle, template.subtypes)
         template.can_exile_permanent = parse_can_exile_permanent(oracle)
         template.exile_hits_noncreature = parse_exile_hits_noncreature(oracle)
         template.has_symmetric_reanimation = parse_has_symmetric_reanimation(oracle)

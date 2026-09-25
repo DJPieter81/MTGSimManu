@@ -1116,6 +1116,13 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
     if _has_self_etb_effect(oracle):
         signals.append('etb_trigger')
 
+    # 1b. A Saga's chapter I (CR 714.3a: the lore counter is put on as the
+    #     Saga enters, triggering chapter I at once, CR 714.2b). The
+    #     chapter's effect is this turn's value exactly as a self-ETB is.
+    #     Typed at DB load (`saga_chapter_one_material`).
+    if getattr(t, 'saga_chapter_one_material', False):
+        signals.append('saga_chapter_one')
+
     # 2. Cast trigger or storm keyword (spell counts its chain).
     if 'storm' in keywords or getattr(t, 'has_cast_trigger', False):
         signals.append('cast_trigger')

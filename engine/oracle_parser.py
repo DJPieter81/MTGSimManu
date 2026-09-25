@@ -3903,6 +3903,32 @@ def parse_can_destroy_nonland_permanent(oracle: str) -> bool:
     return 'destroy target nonland permanent' in oracle.lower()
 
 
+# The effect verbs that make a triggered ability's effect material rather
+# than vanilla — the same list the AI's self-ETB same-turn signal reads.
+_MATERIAL_EFFECT_VERBS = (
+    'deal', 'draw', 'discard', 'destroy', 'exile', 'counter', 'return',
+    'gain', 'lose', 'create', 'search', 'put', 'add', 'scry', 'surveil',
+    'mill', 'amass', 'investigate', 'clue', 'sacrifice', 'choose',
+)
+_SAGA_CHAPTER_ONE_RE = re.compile(
+    r'(?:^|\n)\s*i\s+[—-]\s*(.*?)(?:\n\s*ii\s+[—-]|$)', re.S)
+
+
+def parse_saga_chapter_one_material(oracle: str, subtypes) -> bool:
+    """True when a Saga's chapter I has a material effect.
+
+    CR 714.3a: as a Saga enters, its controller puts a lore counter on it,
+    which triggers chapter I at once (CR 714.2b) — so the chapter's effect
+    is value on the turn the Saga is cast. The chapter is the text between
+    "I —" and "II —"; it is material when it carries an effect verb (the
+    same verb list a self-ETB's material test uses). Parsed once at DB load.
+    """
+    if not oracle or 'Saga' not in (subtypes or ()):
+        return False
+    m = _SAGA_CHAPTER_ONE_RE.search(oracle.lower())
+    return bool(m) and any(v in m.group(1) for v in _MATERIAL_EFFECT_VERBS)
+
+
 def parse_has_scaling_token_finisher(oracle: str) -> bool:
     """Return True if the card creates a storm-scaled number of tokens.
 

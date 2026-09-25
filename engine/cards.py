@@ -794,6 +794,11 @@ class CardTemplate:
     # Creates a storm-scaled token count ("create … tokens for each …").
     # Populated by oracle_parser.parse_has_scaling_token_finisher.
     has_scaling_token_finisher: bool = False
+    # A Saga whose chapter I has a material effect (CR 714.3a: chapter I
+    # triggers as the Saga enters). Populated by
+    # oracle_parser.parse_saga_chapter_one_material; read by the AI's
+    # same-turn-value signal so a Saga is never deferred as "no value now".
+    saga_chapter_one_material: bool = False
     # Exile permanent — True when oracle has 'exile target <permanent-type>'.
     # Covers instant/sorcery removal that exiles rather than destroys.
     # Populated by oracle_parser.parse_can_exile_permanent.
