@@ -1730,6 +1730,15 @@ class EVPlayer:
                 c for c in me.creatures
                 if c.instance_id not in _seen
                 and 'etb_value' in getattr(c.template, 'tags', set())]
+            # The creature the blink will actually return — the same
+            # choice the engine's blink handler makes — is charged too:
+            # a temporarily-hasty attacker (Dash, a haste grant) with no
+            # ETB and no rider loses its attack exactly as a presumed
+            # target does (CR 400.7).
+            _actual = self._presumed_reset_target(me, snap)
+            if _actual is not None and all(
+                    c.instance_id != _actual.instance_id for c in presumed):
+                presumed.append(_actual)
             charges = [self._forfeited_attack_charge(c, snap)
                        for c in presumed
                        if self._blink_would_forfeit_attack(c)]
