@@ -5773,3 +5773,45 @@ cap. Still below its band.
 while WH was being edited; it was discarded and re-run from pinned
 worktrees. Every later measurement runs from a worktree pinned at the
 commit under test.
+
+## Unit PW — creatures attack planeswalkers (`f3ae60f`) + loyalty-pool residency (`9bc1b59`) (2026-09-27)
+
+**PW (`f3ae60f`, CR 506.1 / 508.1b / 506.4).** Every attacker hit the
+defending player — no planeswalker was ever attackable. `CombatAssignment`
+carries a defender; `declare_attackers(…, attack_targets)`; unblocked damage
+and trample excess go to the planeswalker via `deal_damage`; none if it left
+(506.4). Auditor `508.1b/attack_target_legal`. AI `ai/attack_targets.py`
+compares `permanent_threat(pw)` with the same damage to face, both as
+position-value deltas in the owner's frame; lethal goes face. Generic fix on
+the way: `permanent_threat` read **0.0 for every planeswalker** (the snapshot
+carries no loyalty) — it now credits the remaining loyalty pool, which also
+corrects removal and burn targeting against planeswalkers.
+
+**Residency (`9bc1b59`).** `expected_future_value` capped every pool at
+current loyalty and ignored attackers. Residency = nearer game clock or
+loyalty / attacking power; a useful non-negative ability makes the pool last
+the whole residency.
+
+**Measurement** (same seeds, n=20, pinned worktrees `18c7e6d` → `f3ae60f`):
+
+| field | pre | post | draws pre → post |
+|---|---|---|---|
+| Azorius Control | 24.6 | 26.2 (+1.6) | 45 → 29 |
+| Eldrazi Tron | 47.1 | 51.2 (+4.1) | 22 → 20 |
+| Boros Energy (guard) | 66.2 | 67.3 (+1.1) | |
+| Domain Zoo (guard) | 75.8 | 72.9 (−2.9) | |
+
+Fewer turn-cap draws for Azorius Control; Tron rises (its attackers can now
+hit Teferi/Narset); Zoo falls toward its band.
+
+**Next unit, planned not built — loyalty lines that do nothing.** 23 of the 31
+printed loyalty lines in registered decks are `LoyaltyEffectKind.UNCLASSIFIED`
+and refused before activation (Grist's token, Narset's dig, Ashiok's mill,
+Kaito's stun, Tyvar's untap, Tamiyo's regrowth, Karn's wish, Teferi's +1…).
+Generic route: classify each line once at load against the shared oracle
+resolver's effect classes (the same typed parsers spells use — token,
+draw/dig, mill, tap/stun, return, counters, "until your next turn" statics)
+and dispatch through them, refusing only lines no class covers. Then value a
+loyalty tick by its typed effect with the clock primitives (life, cards,
+damage, removal via permanent_threat) instead of one generic "average card"
+— the calibration gap that keeps `ai/attack_targets.py` choosing face.
