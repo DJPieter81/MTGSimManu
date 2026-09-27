@@ -14,6 +14,10 @@ import pytest
 from pydantic import BaseModel, Field
 
 pydantic_ai = pytest.importorskip("pydantic_ai")
+# The provider module raises ImportError (not ModuleNotFoundError) when the
+# TypeSafe SDK is absent, so skip on the SDK itself first — CI installs its
+# own package list, which may not include it.
+pytest.importorskip("typesafe_sdk")
 typesafe = pytest.importorskip("pydantic_ai.models.typesafe")
 
 
