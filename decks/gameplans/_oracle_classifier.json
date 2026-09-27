@@ -238,6 +238,13 @@
       "tags": [
         "IMPULSE_DRAW"
       ]
+    },
+    "Cori Mountain Monastery": {
+      "_classification_source": "manual:sep-2026-refresh-new-deck-card-no-api-key",
+      "oracle_text_sha256": "2a8dda0694ca7a4413723f5163ac141eebcb8dbdaa0420f1ee997151580e7be4",
+      "tags": [
+        "IMPULSE_DRAW"
+      ]
     }
   },
   "schema_version": 1
