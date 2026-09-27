@@ -5815,3 +5815,45 @@ and dispatch through them, refusing only lines no class covers. Then value a
 loyalty tick by its typed effect with the clock primitives (life, cards,
 damage, removal via permanent_threat) instead of one generic "average card"
 — the calibration gap that keeps `ai/attack_targets.py` choosing face.
+
+## Unit CL — one clause resolver; loyalty lines as clauses; scaled draws (2026-09-27)
+
+User chose "full refactor first" after the probe showed the old resolver ran
+267 of 724 dead loyalty lines pool-wide but only 2 of 23 in registered decks.
+
+**S1 (`cfcae90`) — `engine/clause_resolver.py`, one owner of "resolve an
+effect clause".** The ~700-line inline branch sequence of
+`resolve_spell_from_oracle` moved, in order, into a registry of
+`ClauseHandler(gate, apply)`; gates are pure over the clause's static facts,
+so `clause_is_executable` is a static answer. **Behaviour-identical:** 24
+seeded verbose games (8 spell-heavy matchups × 3 seeds) byte-identical
+before/after; anchor 29 with no drift.
+
+**S2 (`d5ebee9`) — loyalty lines are clauses (CR 606.1).** Each unclassified
+line gets a template built from its own text by the DB pipeline and becomes
+`LoyaltyEffectKind.CLAUSE` when a gate accepts it; dispatched through the
+clause owner with the walker as source. 272 pool lines executable;
+unexecutable count 646 → 394. Auditor `606/loyalty_clause_resolved`.
+
+**Scaled draw (`88931ca`, CR 608.2).** S2's measurement moved Dimir Midrange
+41.7 → 52.7 in one step — flagged (>10pp) and traced: Kaito's "surveil 2,
+then draw a card for each opponent who lost life this turn" drew a flat card
+every turn, because the card-flow handler ignored "for each <X>". Class: 82
+pool cards (spells over-drew all along). Now N × count(scaler) for "<type>
+you control" / "opponent who lost life this turn"; other scalers are refused
+and recorded as census `608.2/uncountable_scaler`. One loyalty line (Tamiyo,
+the Moon Sage minus) withdrawn from mis-execution (baseline 394 → 395).
+
+**Measurement** (same seeds, n=20, pinned worktrees):
+
+| field | pre-S2 (`cfcae90`) | S2 (`d5ebee9`) | fixed (`88931ca`) |
+|---|---|---|---|
+| Dimir Midrange | 41.7 | 52.7 (flat-draw bug) | **45.6** (+3.9) |
+| Creatures Toolbox | 35.2 | 34.4 | — |
+
+**Leads, not built:** a clause handler runs the part of a compound line it
+recognises (Grist's token without its "then mill"); the one zone write in
+the nonland bounce handler still bypasses the zone funnel (moved verbatim in
+S1); S3 families next — "until your next turn" statics (30 pool / 6
+registered lines), counters/+N (68), mill/discard/life (80), emblems (54);
+then S4, pricing a loyalty tick by its typed clause.
