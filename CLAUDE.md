@@ -2,6 +2,8 @@
 
 ## ABSTRACTION CONTRACT (read before any engine/AI code change)
 
+**Workflow: invoke the `abstract-first` skill (`.claude/skills/abstract-first/SKILL.md`) before any `engine/` or `ai/` change.** It turns a card-level symptom into a sized, typed, single-owner mechanic fix; size the class first with `python tools/class_census.py "<oracle regex>" [--field <typed field>]`.
+
 The slogan "no patches, solve holistically" does not bind. These rules do. They apply to every change in `engine/` and `ai/`. Before writing the diff, answer all four:
 
 1. **Class size** — how many of Modern's 20k+ cards could legitimately hit this code path? If fewer than 10, you are patching. Stop. Find the mechanic.
