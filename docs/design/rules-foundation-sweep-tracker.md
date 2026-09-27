@@ -5685,3 +5685,39 @@ was the unsick Reflection — recorded so the number is not mistaken for a resul
 `GameRunner._process_saga_chapters` does not transform at all: it exiles the
 Saga and creates a hasty 4/4 token as a proxy (a separate code path; its own
 unit if the census or auditor ranks it).
+
+## Azorius Control / Ruby Storm collapse — diagnosis (2026-09-27, before any code)
+
+The 2026-09-27 matrix put Azorius Control at 8.8 (0–2% vs most of the field)
+and Ruby Storm at 24.2. Replays (`--bo3 "Azorius Control" "Eldrazi Tron"`
+and `--bo3 "Ruby Storm" "Pinnacle Affinity"`, s50000, on `8e56f39`) and the
+audited-matrix census agree: **the new lists carry cards the engine resolves
+as nothing.**
+
+- **Azorius Control** is now the Orim's Chant / Isochron Scepter / Narset /
+  Day's Undoing prison list (win condition: Solitude beats under the lock).
+  - Silence ×3 — `turn_scoped_restriction == 'no_spells'` is parsed, but only
+    Orim's Chant's registered handler ever sets `silenced_this_turn`; every
+    other member resolves blank (census `unhandled/spell Silence`).
+    Class: 10 pool cards "… can't cast [type] spells this turn" (who: target
+    player / your opponents / all players / its controller; filter: all /
+    noncreature / creature).
+  - Day's Undoing ×3 — no model (census). Class: 10 hand-refill wheels
+    ("shuffle hand [and graveyard] into library, then draw seven" ×6,
+    "discard hand, then draw seven" ×4).
+  - Narset's "each opponent can't draw more than one card each turn" — no
+    model; it is what makes Day's Undoing one-sided. Class: 2 statics
+    (Narset, Spirit of the Labyrinth) — folded into the wheel unit as a draw
+    rule, not its own unit.
+  - Replay G3: mana-screwed on two lands T2–T9; the mulligan also sent back a
+    5-land seven on hand score (21 < 24) and does not count an MDFC's land back
+    face as a land — recorded as a mulligan lead, not the collapse.
+- **Ruby Storm**: Hex Magic ×4 resolves blank (census). Shape "exile your
+  hand, then draw that many; you may play the exiled cards until end of your
+  next turn" — 2 pool cards; built only if it can reuse the impulse-play
+  permission already modelled for IMPULSE_DRAW.
+
+**Units, in order:** (1) turn-scoped cast prohibition as a class, deleting
+Orim's Chant's card-name handler (registry 87 → 86); (2) hand-refill wheel +
+draw-limit static; (3) Hex Magic shape if it fits the impulse permission.
+Each measured on the Azorius Control / Ruby Storm fields, same seeds.
