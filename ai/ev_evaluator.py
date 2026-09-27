@@ -1986,12 +1986,23 @@ def expected_future_value(card: "CardInstance",
     loyalty = t.loyalty or PLANESWALKER_DEFAULT_LOYALTY
     if on_board and (getattr(card, 'loyalty_counters', 0) or 0) > 0:
         loyalty = card.loyalty_counters
-    # opp_clock is a continuous float; treat NO_CLOCK as the loyalty
-    # budget — no opp pressure means we drain the pool fully.
+    # Residency: the walker stays until the game ends (the nearer of the
+    # two clocks) or until attacking power removes its loyalty (creatures
+    # can attack planeswalkers, CR 508.1b) — whichever comes first. An
+    # unknown horizon (no clock on either side, nothing attacking) falls
+    # back to the loyalty budget.
     from ai.clock import NO_CLOCK
-    survival_turns = (loyalty if snap.opp_clock >= NO_CLOCK
-                       else max(0.0, snap.opp_clock))
-    activations = min(float(loyalty), survival_turns)
+    attack_survival = (loyalty / snap.opp_power if snap.opp_power > 0
+                       else NO_CLOCK)
+    residency = min(snap.my_clock, snap.opp_clock, attack_survival)
+    if residency >= NO_CLOCK:
+        residency = float(loyalty)
+    residency = max(0.0, residency)
+    # A useful non-negative ability refills or holds loyalty each turn, so
+    # the pool lasts the whole residency; otherwise every activation spends
+    # loyalty and the pool is also capped by it.
+    activations = (residency if has_useful_plus
+                   else min(float(loyalty), residency))
     # Discount slightly when the immediate +1 isn't useful (we lose
     # the on-entry tick's value but the minus abilities still pay
     # off over residency). Use the loyalty pool as the natural
