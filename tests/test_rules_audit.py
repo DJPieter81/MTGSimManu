@@ -645,3 +645,19 @@ def test_turn_end_audit_is_silent_during_a_normal_turn(audit, card_db):
     game.active_player = 0
     _cast_bolt(game, card_db, 0)
     assert "723.1/cast_after_turn_end" not in _rules(rules_audit.drain())
+
+
+def test_attack_target_audit_sees_an_attack_assigned_to_a_non_planeswalker(audit):
+    game = GameState(rng=random.Random(0))
+    atk = _creature(game, "Attacker", 0, power=2, toughness=2)
+    not_a_pw = _creature(game, "Bystander", 1, power=1, toughness=1)
+    CombatManager().declare_attackers(game, [atk], active_player=0,
+                                      attack_targets={atk.instance_id: not_a_pw})
+    assert "508.1b/attack_target_legal" in _rules(rules_audit.drain())
+
+
+def test_attack_target_audit_is_silent_for_player_attacks(audit):
+    game = GameState(rng=random.Random(0))
+    atk = _creature(game, "Attacker", 0, power=2, toughness=2)
+    CombatManager().declare_attackers(game, [atk], active_player=0)
+    assert "508.1b/attack_target_legal" not in _rules(rules_audit.drain())

@@ -3041,6 +3041,12 @@ class EVPlayer:
     # COMBAT — reuse existing CombatPlanner
     # ═══════════════════════════════════════════════════════════
 
+    def decide_attack_targets(self, game, attackers) -> dict:
+        """CR 508.1b: which planeswalker (if any) each attacker attacks —
+        see ai/attack_targets.py."""
+        from ai.attack_targets import choose_attack_targets
+        return choose_attack_targets(game, self.player_idx, attackers)
+
     def decide_attackers(self, game) -> List["CardInstance"]:
         """Decide which creatures to attack with."""
         from ai.turn_planner import extract_virtual_board

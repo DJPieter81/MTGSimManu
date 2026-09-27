@@ -13,7 +13,7 @@
       "deck2": "Dimir Midrange",
       "seed": 50000,
       "winner": "Dimir Midrange",
-      "turns": 7
+      "turns": 8
     },
     {
       "deck1": "Domain Zoo",
@@ -34,7 +34,7 @@
       "deck2": "4c Omnath",
       "seed": 50000,
       "winner": "Jeskai Blink",
-      "turns": 9
+      "turns": 14
     },
     {
       "deck1": "Goryo's Vengeance",

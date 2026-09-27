@@ -1944,11 +1944,18 @@ def expected_future_value(card: "CardInstance",
     from ai.clock import loyalty_pool_value
     t = card.template
 
-    # Only planeswalkers carry an "activation pool" today.
-    if CardType.PLANESWALKER not in getattr(t, 'card_types', set()):
+    # Only planeswalkers carry an "activation pool" today. A permanent on
+    # the battlefield is read by its current face (a transformed DFC) and
+    # its current loyalty; a card being cast by its printed values.
+    on_board = getattr(card, 'zone', None) == 'battlefield'
+    if on_board:
+        if not getattr(card, 'effective_is_planeswalker', False):
+            return 0.0
+    elif CardType.PLANESWALKER not in getattr(t, 'card_types', set()):
         return 0.0
 
-    oracle = (t.oracle_text or '').lower()
+    oracle = ((card._effective_oracle_text() if on_board else t.oracle_text)
+              or '').lower()
     tags = getattr(t, 'tags', set())
 
     # Prefer the W0-A classifier tag when present; fall back to
@@ -1977,6 +1984,8 @@ def expected_future_value(card: "CardInstance",
     # (first +1 is sunk; ticks 2..loyalty count) when both terms
     # match, but composes generically via clock primitives.
     loyalty = t.loyalty or PLANESWALKER_DEFAULT_LOYALTY
+    if on_board and (getattr(card, 'loyalty_counters', 0) or 0) > 0:
+        loyalty = card.loyalty_counters
     # opp_clock is a continuous float; treat NO_CLOCK as the loyalty
     # budget — no opp pressure means we drain the pool fully.
     from ai.clock import NO_CLOCK

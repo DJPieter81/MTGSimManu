@@ -369,6 +369,15 @@ def permanent_threat(card: "CardInstance", owner: "PlayerState",
     owner_idx = owner.player_idx
 
     full_snap = snapshot_from_game(game, owner_idx)
+    # A planeswalker's worth is its remaining loyalty pool, which the
+    # battlefield snapshot does not carry (it counts creatures, artifacts
+    # and enchantments). Credit the pool — the same `expected_future_value`
+    # the cast projection uses — to the full board, so removing it shows.
+    if getattr(card, 'effective_is_planeswalker', False):
+        from ai.ev_evaluator import expected_future_value
+        full_snap = full_snap.model_copy(update={
+            'persistent_power': full_snap.persistent_power
+            + expected_future_value(card, full_snap)})
     v_full = position_value(full_snap)
 
     removed = bf.pop(idx)

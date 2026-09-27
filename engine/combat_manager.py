@@ -39,6 +39,9 @@ class CombatAssignment:
     is_blocked: bool = False
     damage_to_player: int = 0
     damage_to_blockers: Dict[int, int] = field(default_factory=dict)
+    # CR 508.1b: the planeswalker this creature attacks; None = the
+    # defending player.
+    defender: Optional["CardInstance"] = None
 
 
 class CombatManager:
@@ -68,12 +71,18 @@ class CombatManager:
 
     def declare_attackers(self, game: "GameState",
                           attackers: List["CardInstance"],
-                          active_player: int):
+                          active_player: int,
+                          attack_targets: Optional[Dict[int, "CardInstance"]] = None):
         """CR 508: Declare attackers step.
 
         Sets attacking state, taps non-vigilance creatures,
         fires attack triggers, and handles battle cry.
+
+        ``attack_targets`` maps an attacker's instance_id to the planeswalker
+        it attacks (CR 508.1b); every other attacker attacks the defending
+        player. The choice is the attacking player's (AI layer).
         """
+        attack_targets = attack_targets or {}
         self._attackers = attackers
         self._active_player = active_player
         self._defending_player = 1 - active_player
@@ -95,6 +104,16 @@ class CombatManager:
                          and not game.players[active_player].cannot_attack_this_turn)
                 _audit_check("508.1a/attacker_legal", legal,
                              f"{atk.name} declared as an attacker", game=game)
+            # CR 508.1b: an attacked planeswalker is one the defending
+            # player controls and that is on the battlefield.
+            for atk_id, pw in attack_targets.items():
+                ok = (pw is not None
+                      and getattr(pw, 'zone', None) == 'battlefield'
+                      and pw.controller == 1 - active_player
+                      and getattr(pw, 'effective_is_planeswalker', False))
+                _audit_check("508.1b/attack_target_legal", ok,
+                             f"attack assigned to {getattr(pw, 'name', pw)}",
+                             game=game)
 
         for attacker in attackers:
             attacker.attacking = True
@@ -102,7 +121,9 @@ class CombatManager:
             if Keyword.VIGILANCE not in attacker.keywords:
                 attacker.tap()
 
-            self._assignments.append(CombatAssignment(attacker=attacker))
+            self._assignments.append(CombatAssignment(
+                attacker=attacker,
+                defender=attack_targets.get(attacker.instance_id)))
 
             # Fire attack triggers via game_state
             game.trigger_attack(attacker, active_player)
@@ -227,6 +248,12 @@ class CombatManager:
         if protection and (blocker.colors & protection):
             return False
         return True
+
+    def _planeswalker_still_attackable(self, pw: "CardInstance") -> bool:
+        """CR 506.4: the attacked planeswalker is still on the battlefield
+        under the defending player's control."""
+        return (getattr(pw, 'zone', None) == 'battlefield'
+                and pw.controller == self._defending_player)
 
     def resolve_combat_damage(self, game: "GameState") -> int:
         """CR 510: Combat damage step.
@@ -506,7 +533,18 @@ class CombatManager:
                                    is_combat=True)
                         self._dealt_ids.add(blocker.instance_id)
 
-                # CR 702.19c: Trample — excess damage to defending player
+                # CR 702.19c: Trample — excess damage to the attacked
+                # planeswalker or the defending player.
+                _pw = assignment.defender
+                if has_trample and remaining_damage > 0 and _pw is not None:
+                    if self._planeswalker_still_attackable(_pw):
+                        deal_damage(attacker, _pw, remaining_damage, is_combat=True)
+                        self._dealt_ids.add(attacker.instance_id)
+                        game.log.append(
+                            f"T{game.display_turn} P{self._active_player+1}: "
+                            f"  {attacker.name} → {remaining_damage} dmg to "
+                            f"{_pw.name} (trample)")
+                    remaining_damage = 0
                 if has_trample and remaining_damage > 0:
                     deal_damage(attacker,
                                game.players[self._defending_player],
@@ -519,6 +557,18 @@ class CombatManager:
                         f"  {attacker.name} ({attacker.power}/{attacker.toughness})"
                         f" → {remaining_damage} dmg to player (trample)"
                     )
+
+            elif attacker_deals and assignment.defender is not None:
+                # CR 510.1b to the attacked planeswalker; CR 506.4: none if
+                # it has left the battlefield or its controller changed.
+                _pw = assignment.defender
+                if self._planeswalker_still_attackable(_pw):
+                    deal_damage(attacker, _pw, attacker_power, is_combat=True)
+                    self._dealt_ids.add(attacker.instance_id)
+                    game.log.append(
+                        f"T{game.display_turn} P{self._active_player+1}: "
+                        f"  {attacker.name} ({attacker.power}/{attacker.toughness})"
+                        f" → {attacker_power} dmg to {_pw.name}")
 
             elif attacker_deals:
                 # CR 510.1b: Unblocked creature assigns damage to defending player

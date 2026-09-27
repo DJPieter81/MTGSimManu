@@ -926,7 +926,15 @@ class GameRunner:
                               pidx=active,
                               actor=game.players[active].deck_name,
                               attackers=atk_details)
-                        combat_mgr.declare_attackers(game, attackers, active)
+                        # CR 508.1b: the attacking player (AI) chooses each
+                        # attacker's defender — the player or a planeswalker.
+                        _choose = getattr(ai, 'decide_attack_targets', None)
+                        attack_targets = _choose(game, attackers) if _choose else {}
+                        for _aid, _pw in attack_targets.items():
+                            _vlog(f'  [Attack Target] {game.get_card_by_id(_aid).name}'
+                                  f' attacks {_pw.name}')
+                        combat_mgr.declare_attackers(game, attackers, active,
+                                                     attack_targets)
                     else:
                         _vlog(f'  [Declare Attackers] P{active+1} does not attack')
                         _emit(KIND_COMBAT, sub="no_attack",
