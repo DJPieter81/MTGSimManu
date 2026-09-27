@@ -5634,3 +5634,54 @@ Rules audit: 1 violation class — `704.5f/lethal_damage`, 24 findings in
 face) survives lethal damage. Real engine bug (SBA on a transformed
 permanent); next rules unit. Census: Hex Magic, Sanctifier en-Vec
 replacement, unmodelled keywords (Ocelot Pride first).
+
+## Unit TF — a transformed permanent's creature gates read its current face (2026-09-27)
+
+**Found by the auditor, not a replay.** The 2026-09-27 audited matrix
+(`audits/rules_audit_20260927T051427Z.jsonl`) recorded the run's only real
+violation: 24 × `704.5f/lethal_damage`, all "Reflection of Kiki-Jiki survives
+2 damage at toughness 2" (Jeskai Blink vs Ruby Storm).
+
+**Root cause.** `CardInstance.has_summoning_sickness` / `can_attack` /
+`can_block` / `is_dead` (`engine/cards.py`) gated on `template.is_creature`
+(the printed front face) instead of `effective_is_creature` (the current face
+— the accessor `PlayerState.creatures` already uses). A Saga transformed into
+a creature was listed as a creature but never died to lethal damage and could
+neither attack nor block. Class: 153 pool DFCs whose creature-ness differs
+between faces.
+
+**Commits.**
+- `438463a` — the four gates read the current face (CR 711.8). Tests: dies to
+  lethal damage via the SBA; attacks and blocks; creature-front/planeswalker-back
+  has no creature gates once transformed; the existing `704.5f/lethal_damage`
+  invariant is silent on a transformed face (the unit's invariant).
+- `ddf93a3` — the first measurement moved Jeskai Blink +11.9pp in one step,
+  which exposed a second defect: `_transform_permanent` modelled every
+  transform as in-place. "Exile ~, then return it transformed" is a new object
+  (CR 400.7) — summoning-sick and untapped — so the returned Reflection had
+  been attacking/tapping the turn it came back. New `returns_as_new_object`
+  parameter; the Saga final-chapter and dies-observer exile-return callers pass
+  True, the coin-flip and spell-count in-place callers keep the default.
+  Tests: helper new-object path, in-place path, lore-counter path.
+
+**Checks.** Ratchets at baseline; chunks A 2308 / B 2418; anchor 29 green with
+no net fixture change (438463a's one turn drift, Jeskai Blink vs 4c Omnath
+s50000 9→8, reverted to 9 with ddf93a3); CI green on both heads. Audited
+`--matchup "Jeskai Blink" "Ruby Storm" -n 20 --rules-audit`: 0 violations
+(only the Hex Magic `unhandled/spell` census row).
+
+**Measurement** (same seeds, n=20 Bo3, `--parallel`, pre = worktree at e955ca9):
+
+| field | pre | 438463a only | final (ddf93a3) |
+|---|---|---|---|
+| Jeskai Blink | 49.6 | 61.5 | **51.9** (+2.3) |
+| Boros Energy | 67.1 | 66.7 | 66.5 (−0.6) |
+| Boros Ponza | 17.5 | 17.5 | 17.5 (0.0) |
+
+Jeskai Blink stays inside [45,60]; the guards are flat. The intermediate 61.5
+was the unsick Reflection — recorded so the number is not mistaken for a result.
+
+**Lead, not built.** The Legend-of-Roku-shaped Saga branch in
+`GameRunner._process_saga_chapters` does not transform at all: it exiles the
+Saga and creates a hasty 4/4 token as a proxy (a separate code path; its own
+unit if the census or auditor ranks it).
