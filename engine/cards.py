@@ -1162,6 +1162,11 @@ class CardTemplate:
     # | 'fog' | None. Read by the AI's this-turn-signal enumerator and the
     # runner's imprint-copy timing.
     turn_scoped_restriction: Optional[str] = None
+    # CR 101.2 "<who> can't cast [<type>] spells this turn", typed
+    # {'who': 'target'|'opponents'|'all', 'filter': 'all'|'noncreature'|
+    # 'creature'} (oracle_parser.parse_cast_prohibition). Applied by the
+    # generic resolver branch; enforced by CastManager.can_cast.
+    cast_prohibition: Optional[dict] = None
     # Targeted forced discard classified by who chooses the card:
     # {'chooser': 'caster'|'victim'|'random', 'target', 'choose_clause',
     # 'count'} (oracle_parser.parse_hand_attack). The caster-chosen
@@ -1416,6 +1421,9 @@ class CardTemplate:
                 from .oracle_parser import (
                     parse_turn_scoped_restriction as _ptsr)
                 self.turn_scoped_restriction = _ptsr(self.oracle_text)
+            if self.cast_prohibition is None:
+                from .oracle_parser import parse_cast_prohibition as _pcp
+                self.cast_prohibition = _pcp(self.oracle_text)
             if self.hand_attack_data is None:
                 from .oracle_parser import parse_hand_attack as _pha
                 self.hand_attack_data = _pha(self.oracle_text)

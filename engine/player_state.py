@@ -82,6 +82,9 @@ class PlayerState:
     energy_spent_this_game: int = 0
     library_searches_this_game: int = 0
     silenced_this_turn: bool = False
+    # CR 101.2 partial cast prohibitions this turn: a set of spell
+    # filters ('noncreature' / 'creature'); 'all' is silenced_this_turn.
+    spell_types_prohibited_this_turn: set = field(default_factory=set)
     silenced_next_turn: bool = False  # Orim's Chant + Scepter lock
     # Combat prevention as a class (CR 509.4 / 615), turn-scoped:
     cannot_attack_this_turn: bool = False       # this player's creatures can't attack
@@ -349,6 +352,7 @@ class PlayerState:
         self.removal_evokes_resolved_this_turn = 0
         self.flashback_granted_this_turn = False
         self.silenced_this_turn = False
+        self.spell_types_prohibited_this_turn = set()
         # Consume a pending silence from Orim's Chant cast on the previous
         # opponent turn (Isochron Scepter lock pattern).
         if getattr(self, 'silenced_next_turn', False):

@@ -1180,7 +1180,14 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
     # return: a compound card ("you gain N life. Prevent all combat
     # damage this turn.") keeps resolving its other clauses below.
     from engine.oracle_parser import parse_combat_prevention as _parse_cp
-    _cp = _parse_cp(oracle)
+    # CR 702.33: an unkicked resolution never applies the "if this spell
+    # was kicked" rider, so the whole-card parse excludes that clause (the
+    # kicked path resolves it separately through oracle_override).
+    _cp_text = oracle
+    _kc = getattr(card.template, 'kicked_clause', None)
+    if oracle_override is None and _kc:
+        _cp_text = oracle.replace(_kc.lower(), '')
+    _cp = _parse_cp(_cp_text)
     if _cp is not None:
         if _cp["no_attack"] == "all":
             for _p in game.players:
@@ -1192,6 +1199,28 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
                 _p.combat_damage_prevented_this_turn = True
         game.log.append(
             f"T{game.display_turn} P{controller+1}: {card.name} — combat prevention")
+        handled = True
+
+    # ── Turn-scoped cast prohibition as a class (CR 101.2) ──
+    # "<who> can't cast [<type>] spells this turn", typed at load. A
+    # player target is the controller's opponent (the only player a
+    # prohibition is cast against). Whole-card resolution only.
+    _cpro = (getattr(card.template, 'cast_prohibition', None)
+             if oracle_override is None else None)
+    if _cpro:
+        if _cpro['who'] == 'all':
+            _players = list(game.players)
+        else:
+            _players = [game.players[opponent]]
+        _kind = '' if _cpro['filter'] == 'all' else f"{_cpro['filter']} "
+        for _p in _players:
+            if _cpro['filter'] == 'all':
+                _p.silenced_this_turn = True
+            else:
+                _p.spell_types_prohibited_this_turn.add(_cpro['filter'])
+            game.log.append(
+                f"T{game.display_turn} P{controller+1}: {card.name} silences "
+                f"P{game.players.index(_p)+1} ({_kind}spells) this turn")
         handled = True
 
     # ── Modal mode: mass sweep / typed mass-destroy ─────────────────

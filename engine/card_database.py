@@ -2144,6 +2144,8 @@ class CardDatabase:
         # Turn-scoped opponent restriction (silence / no-attacks / fog).
         from .oracle_parser import parse_turn_scoped_restriction
         template.turn_scoped_restriction = parse_turn_scoped_restriction(oracle)
+        from .oracle_parser import parse_cast_prohibition
+        template.cast_prohibition = parse_cast_prohibition(oracle)
         # Targeted forced discard, classified by who chooses the card
         # (caster-chosen Thoughtseize shape vs victim-chosen / random).
         from .oracle_parser import parse_hand_attack

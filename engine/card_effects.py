@@ -988,22 +988,6 @@ def stock_up_resolve(game, card, controller, targets=None, item=None):
             player.library.append(c)
 
 
-@EFFECT_REGISTRY.register("Orim's Chant", EffectTiming.SPELL_RESOLVE,
-                           description="Target player can't cast spells this turn")
-def orims_chant_resolve(game, card, controller, targets=None, item=None):
-    # Oracle: "Kicker {W}. Target player can't cast spells this turn. If this
-    # spell was kicked, creatures can't attack this turn." The sim does not
-    # model kicker payments, so every cast resolves as the base (unkicked)
-    # variant — scope is "this turn", never a carryover to the opponent's
-    # next turn. Cast on own main phase → opp is silenced for the remainder
-    # of the current turn (narrow: blocks end-of-turn instants). Cast during
-    # opp's turn (flash/Scepter) → silences their ongoing turn.
-    opponent = 1 - controller
-    game.players[opponent].silenced_this_turn = True
-    game.log.append(f"T{game.display_turn} P{controller+1}: "
-                    f"Orim's Chant silences P{opponent+1} this turn")
-
-
 @EFFECT_REGISTRY.register("Mutagenic Growth", EffectTiming.SPELL_RESOLVE,
                            description="Target creature gets +2/+2, pay 2 life")
 def mutagenic_growth_resolve(game, card, controller, targets=None, item=None):

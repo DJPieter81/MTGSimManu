@@ -593,3 +593,39 @@ def test_sba_audit_is_silent_when_a_transformed_creature_face_dies_to_lethal_dam
     game.check_state_based_actions()
     assert "704.5f/lethal_damage" not in _rules(rules_audit.drain())
     assert c not in game.players[0].battlefield
+
+
+def _cast_bolt(game, card_db, player_idx, free_cast=False):
+    from engine.cast_manager import CastManager
+    for _ in range(2):
+        land = CardInstance(template=card_db.get_card("Mountain"), owner=player_idx,
+                            controller=player_idx, instance_id=game.next_instance_id(),
+                            zone="battlefield")
+        land._game_state = game
+        game.players[player_idx].battlefield.append(land)
+    bolt = CardInstance(template=card_db.get_card("Lightning Bolt"), owner=player_idx,
+                        controller=player_idx, instance_id=game.next_instance_id(),
+                        zone="hand")
+    bolt._game_state = game
+    game.players[player_idx].hand.append(bolt)
+    return CastManager.cast_spell(game, player_idx, bolt,
+                                  targets=[-1 - (1 - player_idx)], free_cast=free_cast)
+
+
+def test_cast_prohibition_audit_sees_a_spell_cast_through_the_prohibition(audit, card_db, monkeypatch):
+    # Break the rule: the shared prohibition predicate lets everything through.
+    from engine.cast_manager import CastManager
+    monkeypatch.setattr(CastManager, "cast_is_prohibited",
+                        staticmethod(lambda player, template: False))
+    game = GameState(rng=random.Random(0))
+    game.active_player = 0
+    game.players[0].spell_types_prohibited_this_turn.add("noncreature")
+    _cast_bolt(game, card_db, 0, free_cast=True)
+    assert "101.2/cast_prohibition" in _rules(rules_audit.drain())
+
+
+def test_cast_prohibition_audit_is_silent_without_a_prohibition(audit, card_db):
+    game = GameState(rng=random.Random(0))
+    game.active_player = 0
+    _cast_bolt(game, card_db, 0)
+    assert "101.2/cast_prohibition" not in _rules(rules_audit.drain())

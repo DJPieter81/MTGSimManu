@@ -6162,6 +6162,38 @@ _TURN_SCOPED_RESTRICTION_RES = (
 )
 
 
+# CR 101.2 turn-scoped cast prohibition, typed by scope and spell filter.
+# Conditional scopes ("players dealt damage this way", "its controller",
+# "if mana was spent") are deliberately absent — refused, not half-applied.
+_CAST_PROHIBITION_RE = re.compile(
+    r"(?<![a-z] )(target player|each opponent|your opponents|each player|all players|players)"
+    r" can't cast (noncreature |creature )?spells this turn")
+_CAST_PROHIBITION_WHO = {
+    'target player': 'target', 'each opponent': 'opponents',
+    'your opponents': 'opponents', 'each player': 'all',
+    'all players': 'all', 'players': 'all',
+}
+
+
+def parse_cast_prohibition(oracle: str) -> "dict | None":
+    """"<who> can't cast [noncreature|creature] spells this turn" (CR 101.2).
+
+    Returns ``{'who': 'target'|'opponents'|'all',
+    'filter': 'all'|'noncreature'|'creature'}`` or None. Parsed once at
+    load into `CardTemplate.cast_prohibition`; applied by the generic
+    resolver branch and enforced by the cast gate. The subject must start
+    the clause (a lookbehind rejects "players dealt damage this way can't").
+    """
+    if not oracle or "can't cast" not in oracle.lower():
+        return None
+    low = strip_reminder_text(oracle).lower()
+    m = _CAST_PROHIBITION_RE.search(low)
+    if not m:
+        return None
+    kind = (m.group(2) or '').strip() or 'all'
+    return {'who': _CAST_PROHIBITION_WHO[m.group(1)], 'filter': kind}
+
+
 def parse_turn_scoped_restriction(oracle: str) -> "str | None":
     """Classify an effect that restricts the OPPONENT for "this turn":
 
