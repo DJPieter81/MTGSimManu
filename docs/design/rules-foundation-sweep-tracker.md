@@ -5604,3 +5604,33 @@ red→green); 51 blink/rebound/reanimation tests green; ratchets baseline.
   registered. No Modern B&R change on 2026-08-10. A refresh (lists +
   shares + Marvel Super Heroes in the card DB) changes every measured
   number, so the loop resumes on the refreshed matrix and bands.
+
+## Meta refresh (2026-09-27) — current lists, shares and card DB; full matrix n=60
+
+Card DB MTGJSON 5.3.0+20260926 (adds Marvel Super Heroes, `215e674`);
+17 registered decks moved to current mtgtop8 lists and shares
+(`7a13373`, data/tier1_decklists/2026-09-27/); test/doc fallout `74dcb24`.
+Matrix: 25 decks, Bo3, n=60, `--parallel --rules-audit`, 300 pairs,
+~4h45m wall; **aborted 0**, draws 496 (credited to nobody). Calibration
+34 in band / 62 out.
+
+Field WR (flat), old lists (09-13) → new lists: Domain Zoo 71.6 → 78.0,
+Boros Energy 61.1 → 67.7, Broodscale 62.5 → 66.2, Izzet Prowess
+60.3 → 61.1, 4c Omnath 57.8 → 70.5, Living End 56.2 → 65.5, Jeskai
+Blink 28.8 → 52.2, Creatures Toolbox 20.8 → 36.2, Amulet 23.3 → 33.2;
+falls: Azorius Control 45.2 → 8.8, Boros Ponza 49.2 → 16.9, Ruby Storm
+55.0 → 24.2, Eldrazi Tron 68.3 → 49.1, Dimir 64.1 → 45.8.
+
+**Read with care — the biggest falls are on decks whose new lists carry
+unmodelled cards** (recorded in `74dcb24`): Azorius Control (Day's
+Undoing), Ruby Storm (Hex Magic ×4, a no-op), Boros Ponza (a new
+land-destruction control shell on a regenerated starter gameplan), and
+gameplans pruned of cut cards without their replacements named. These
+are sim-fidelity gaps to diagnose by replay before any band is set from
+them — not the decks' real strength.
+
+Rules audit: 1 violation class — `704.5f/lethal_damage`, 24 findings in
+16 games of ONE pair: Reflection of Kiki-Jiki (Fable's transformed back
+face) survives lethal damage. Real engine bug (SBA on a transformed
+permanent); next rules unit. Census: Hex Magic, Sanctifier en-Vec
+replacement, unmodelled keywords (Ocelot Pride first).
