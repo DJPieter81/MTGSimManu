@@ -549,6 +549,43 @@ def _a_impulse(ctx):
     return None
 
 
+
+# ─────────────────────────────────────────────────────────────────────
+# Scaled counts: "… for each <X>" (CR 608.2 — counted as the effect
+# resolves). A scaler shape is recognised statically (gates may use it);
+# its count is read from the game at apply time.
+# ─────────────────────────────────────────────────────────────────────
+
+_FOR_EACH_RE = re.compile(r'\s+for each ([^.,;]+)')
+_YOU_CONTROL_RE = re.compile(r'^(?:other )?([a-z]+) you control$')
+
+
+def _scaler_shape(phrase: str):
+    """('you_control', word) | ('opponents_lost_life',) | None."""
+    if phrase == 'opponent who lost life this turn':
+        return ('opponents_lost_life',)
+    m = _YOU_CONTROL_RE.match(phrase)
+    if m:
+        return ('you_control', m.group(1), phrase.startswith('other '))
+    return None
+
+
+def _scaler_count(game, controller: int, shape, source=None) -> int:
+    if shape[0] == 'opponents_lost_life':
+        return sum(1 for i, p in enumerate(game.players)
+                   if i != controller and p.life_lost_this_turn > 0)
+    _, word, other = shape
+    count = 0
+    for perm in game.players[controller].battlefield:
+        if other and source is not None and perm.instance_id == source.instance_id:
+            continue
+        types = {t.value for t in perm.effective_card_types}
+        subtypes = {s.lower() for s in perm.effective_subtypes}
+        if word in types or word == 'permanent' or word in subtypes:
+            count += 1
+    return count
+
+
 def _card_flow_effects(ctx):
     """Scry / surveil / draw / loot in oracle-text order (CR 601.2 / 608.2)."""
     oracle, tpl = ctx.oracle, ctx.template
@@ -565,11 +602,24 @@ def _card_flow_effects(ctx):
     # Reminder text is masked with spaces (positions stay comparable) so a
     # keyword's reminder ("({2}, Discard this card: Draw a card.)") is not
     # read as this spell's own draw.
-    draw_n, draw_pos = 0, len(oracle)
+    draw_n, draw_pos, draw_scaler = 0, len(oracle), None
     no_reminder = re.sub(r'\([^()]*\)', lambda m: ' ' * len(m.group(0)), oracle)
     m_draw = re.search(r'draw\s+(\w+)\s+cards?', no_reminder)
     if m_draw:
         draw_n, draw_pos = _num(m_draw.group(1)), m_draw.start()
+        # "draw N card(s) for each <X>" draws N × count(X) (CR 608.2); a
+        # scaler that cannot be counted draws nothing, never a flat N.
+        m_each = _FOR_EACH_RE.match(no_reminder, m_draw.end())
+        if m_each:
+            draw_scaler = _scaler_shape(m_each.group(1).strip())
+            if draw_scaler is None:
+                draw_n = 0
+                if ctx.game is not None:
+                    # Census: a scaler this engine cannot count yet (ranked
+                    # across audited runs; no-op with the audit off).
+                    from engine.rules_audit import census
+                    census("608.2/uncountable_scaler", m_each.group(1).strip()[:60],
+                           game=ctx.game)
     elif getattr(tpl, 'has_look_hand_selection', False):
         draw_n, draw_pos = 1, 0
     effects: list = []
@@ -578,7 +628,7 @@ def _card_flow_effects(ctx):
     if surv_n > 0:
         effects.append((surv_pos, 'surveil', surv_n))
     if draw_n > 0:
-        effects.append((draw_pos, 'draw', draw_n))
+        effects.append((draw_pos, 'draw', (draw_n, draw_scaler)))
     from engine.oracle_parser import parse_loot_effect
     loot = tpl.loot_data if ctx.oracle_override is None else parse_loot_effect(oracle)
     if loot:
@@ -602,6 +652,11 @@ def _a_card_flow(ctx):
         elif kind == 'loot':
             _or()._resolve_loot(game, card, controller, count)
         elif kind == 'draw':
+            per, scaler = count
+            count = (per * _scaler_count(game, controller, scaler, source=card)
+                     if scaler else per)
+            if count <= 0:
+                continue
             drawn = game.draw_cards(controller, count)
             if drawn:
                 names = ", ".join(c.name for c in drawn)
