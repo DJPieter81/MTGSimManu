@@ -114,10 +114,6 @@ ALLOWED_UNHANDLED: set[tuple[str, str]] = {
     # end of turn", more for other keywords) is not modelled for a bare
     # keyword grant with no P/T change. Queued as its own engine unit.
     ("Assault Strobe", "spell"),
-    # Timetwister-style "each player shuffles hand and graveyard into
-    # library, draws seven; if it's your turn, end the turn" — whole-game
-    # reset not modelled. Azorius Control list, Sep 2026.
-    ("Day's Undoing", "spell"),
     # ── Replacement path (newly observable as of the diagnostic's
     #    coverage of ZoneManager.move_card) ──────────────────────────
     # "If a card would be put into a(n opponent's) graveyard, exile it

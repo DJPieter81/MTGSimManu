@@ -1167,6 +1167,11 @@ class CardTemplate:
     # 'creature'} (oracle_parser.parse_cast_prohibition). Applied by the
     # generic resolver branch; enforced by CastManager.can_cast.
     cast_prohibition: Optional[dict] = None
+    # Hand-refill wheel {'mode','graveyard','count','ends_turn'}
+    # (oracle_parser.parse_hand_refill) and static draw limit
+    # {'who': 'opponents'|'all', 'max'} (oracle_parser.parse_draw_limit).
+    hand_refill: Optional[dict] = None
+    draw_limit: Optional[dict] = None
     # Targeted forced discard classified by who chooses the card:
     # {'chooser': 'caster'|'victim'|'random', 'target', 'choose_clause',
     # 'count'} (oracle_parser.parse_hand_attack). The caster-chosen
@@ -1424,6 +1429,12 @@ class CardTemplate:
             if self.cast_prohibition is None:
                 from .oracle_parser import parse_cast_prohibition as _pcp
                 self.cast_prohibition = _pcp(self.oracle_text)
+            if self.hand_refill is None:
+                from .oracle_parser import parse_hand_refill as _phr
+                self.hand_refill = _phr(self.oracle_text)
+            if self.draw_limit is None:
+                from .oracle_parser import parse_draw_limit as _pdl
+                self.draw_limit = _pdl(self.oracle_text)
             if self.hand_attack_data is None:
                 from .oracle_parser import parse_hand_attack as _pha
                 self.hand_attack_data = _pha(self.oracle_text)

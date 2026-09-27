@@ -629,3 +629,19 @@ def test_cast_prohibition_audit_is_silent_without_a_prohibition(audit, card_db):
     game.active_player = 0
     _cast_bolt(game, card_db, 0)
     assert "101.2/cast_prohibition" not in _rules(rules_audit.drain())
+
+
+def test_turn_end_audit_sees_a_spell_cast_after_the_turn_ended(audit, card_db):
+    # Break the rule: the turn has ended, but a cast still goes through.
+    game = GameState(rng=random.Random(0))
+    game.active_player = 0
+    game.end_turn_requested = True
+    _cast_bolt(game, card_db, 0, free_cast=True)
+    assert "723.1/cast_after_turn_end" in _rules(rules_audit.drain())
+
+
+def test_turn_end_audit_is_silent_during_a_normal_turn(audit, card_db):
+    game = GameState(rng=random.Random(0))
+    game.active_player = 0
+    _cast_bolt(game, card_db, 0)
+    assert "723.1/cast_after_turn_end" not in _rules(rules_audit.drain())

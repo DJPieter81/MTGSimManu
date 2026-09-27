@@ -2047,6 +2047,10 @@ class CastManager:
             _audit_check("101.2/cast_prohibition", not _covered,
                          f"{card.name} cast by P{player_idx+1} under a cast prohibition",
                          game=game)
+            # CR 723.1: once the turn has been ended nothing more is cast.
+            _audit_check("723.1/cast_after_turn_end",
+                         not getattr(game, 'end_turn_requested', False),
+                         f"{card.name} cast after the turn was ended", game=game)
         if _audit_on() and targets:
             from .rules_audit import check as _audit_check
             from .target_solver import can_be_targeted as _cbt

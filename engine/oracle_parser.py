@@ -6162,6 +6162,69 @@ _TURN_SCOPED_RESTRICTION_RES = (
 )
 
 
+# Hand-refill wheels: "each player shuffles their hand [and graveyard] into
+# their library, then draws seven cards" / "each player discards their hand,
+# then draws seven cards" (+ the optional "if it's your turn, end the turn").
+_WHEEL_SHUFFLE_RE = re.compile(
+    r"each player shuffles their hand( and graveyard)? into their library,"
+    r" then draws (\w+) cards")
+_WHEEL_DISCARD_RE = re.compile(
+    r"each player discards their hand, then draws (\w+) cards")
+_NUMBER_WORDS = {'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5,
+                 'six': 6, 'seven': 7, 'eight': 8}
+
+
+def parse_hand_refill(oracle: str) -> "dict | None":
+    """A hand-refill wheel. Returns ``{'mode': 'shuffle'|'discard',
+    'graveyard': bool, 'count': int, 'ends_turn': bool}`` or None.
+    Parsed once into `CardTemplate.hand_refill`; resolved by the generic
+    resolver branch. "End the turn" is CR 723 (GameState.end_the_turn)."""
+    if not oracle or 'each player' not in oracle.lower():
+        return None
+    low = strip_reminder_text(oracle).lower()
+    m = _WHEEL_SHUFFLE_RE.search(low)
+    if m:
+        mode, gy, word = 'shuffle', bool(m.group(1)), m.group(2)
+    else:
+        m = _WHEEL_DISCARD_RE.search(low)
+        if not m:
+            return None
+        mode, gy, word = 'discard', False, m.group(1)
+    count = _NUMBER_WORDS.get(word)
+    if count is None:
+        return None
+    return {'mode': mode, 'graveyard': gy, 'count': count,
+            'ends_turn': "if it's your turn, end the turn" in low}
+
+
+# Static draw restriction (CR 101.2): "each opponent / each player can't
+# draw more than N card(s) each turn" and "players can't draw cards" (cap 0).
+_DRAW_LIMIT_RE = re.compile(
+    r"(each opponent|each player) can't draw more than (\w+) cards? each turn")
+_DRAW_NONE_RE = re.compile(r"(players|each player|each opponent|your opponents) can't draw cards")
+
+
+def parse_draw_limit(oracle: str) -> "dict | None":
+    """A static draw limit (CR 101.2 applied to draws). Returns
+    ``{'who': 'opponents'|'all', 'max': int}`` or None. Parsed once into
+    `CardTemplate.draw_limit`; enforced by GameState.draw_cards."""
+    if not oracle or "can't draw" not in oracle.lower():
+        return None
+    low = strip_reminder_text(oracle).lower()
+    m0 = _DRAW_NONE_RE.search(low)
+    if m0:
+        return {'who': 'opponents' if m0.group(1) in ('each opponent', 'your opponents')
+                else 'all', 'max': 0}
+    m = _DRAW_LIMIT_RE.search(low)
+    if not m:
+        return None
+    cap = _NUMBER_WORDS.get(m.group(2))
+    if cap is None:
+        return None
+    return {'who': 'opponents' if m.group(1) == 'each opponent' else 'all',
+            'max': cap}
+
+
 # CR 101.2 turn-scoped cast prohibition, typed by scope and spell filter.
 # Conditional scopes ("players dealt damage this way", "its controller",
 # "if mana was spent") are deliberately absent — refused, not half-applied.

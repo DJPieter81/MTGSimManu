@@ -2146,6 +2146,9 @@ class CardDatabase:
         template.turn_scoped_restriction = parse_turn_scoped_restriction(oracle)
         from .oracle_parser import parse_cast_prohibition
         template.cast_prohibition = parse_cast_prohibition(oracle)
+        from .oracle_parser import parse_hand_refill, parse_draw_limit
+        template.hand_refill = parse_hand_refill(oracle)
+        template.draw_limit = parse_draw_limit(oracle)
         # Targeted forced discard, classified by who chooses the card
         # (caster-chosen Thoughtseize shape vs victim-chosen / random).
         from .oracle_parser import parse_hand_attack

@@ -96,6 +96,9 @@ class GameState:
         self.current_phase: Phase = Phase.UNTAP
         self.turn_number: int = 1  # internal half-turn counter (increments each player turn)
         self.game_over: bool = False
+        # CR 723: an "end the turn" effect resolved this turn — the runner
+        # skips every remaining step except cleanup, then clears it.
+        self.end_turn_requested: bool = False
         self.winner: Optional[int] = None
         self.rng = rng or random.Random()
         self._next_instance_id: int = 1
@@ -319,6 +322,35 @@ class GameState:
         self.winner = 1 - player_idx
         self.log.append(f"P{player_idx+1} loses: empty library")
 
+    def _draw_limit_for(self, player_idx: int) -> Optional[int]:
+        """The tightest static draw limit covering this player (typed
+        `CardTemplate.draw_limit`: "each opponent / each player can't draw
+        more than N cards each turn"), or None."""
+        cap = None
+        for owner_idx, p in enumerate(self.players):
+            for perm in p.battlefield:
+                lim = getattr(perm.template, 'draw_limit', None)
+                if not lim:
+                    continue
+                if lim['who'] == 'opponents' and owner_idx == player_idx:
+                    continue
+                cap = lim['max'] if cap is None else min(cap, lim['max'])
+        return cap
+
+    def end_the_turn(self, controller: int) -> None:
+        """CR 723.1: end the turn. Every object on the stack is exiled
+        (723.1b) and the runner skips to the cleanup step (723.1d).
+        Creatures leave combat because the combat steps are skipped."""
+        while not self.stack.is_empty:
+            item = self.stack.pop()
+            src = getattr(item, 'source', None)
+            if src is not None and getattr(src, 'zone', None) == 'stack' \
+                    and item.item_type == StackItemType.SPELL:
+                self.zone_mgr.move_card_from_stack(
+                    self, src, 'exile', cause="CR 723.1b: end the turn")
+        self.end_turn_requested = True
+        self.log.append(f"T{self.display_turn} P{controller+1}: the turn ends (CR 723)")
+
     def draw_cards(self, player_idx: int, count: int) -> List[CardInstance]:
         """Draw cards from library to hand (CR 121.1).
 
@@ -333,7 +365,12 @@ class GameState:
         from .zone_transfer import TransferKind, transfer
         player = self.players[player_idx]
         drawn: List[CardInstance] = []
+        draw_cap = self._draw_limit_for(player_idx)
         for _ in range(count):
+            if draw_cap is not None and player.cards_drawn_this_turn >= draw_cap:
+                # CR 101.2: a draw the player "can't" make does not happen
+                # (it is not a draw from an empty library).
+                return drawn
             if not player.library:
                 self._lose_from_empty_library(player_idx)
                 # Audit (observation-only, CR 104.3c/704.5c): a draw from an

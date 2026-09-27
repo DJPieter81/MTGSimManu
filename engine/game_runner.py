@@ -764,6 +764,10 @@ class GameRunner:
                     break
                 if game_budget.expired(game):
                     break
+                # CR 723.1d: after "end the turn" every remaining step is
+                # skipped except cleanup.
+                if game.end_turn_requested and step != TurnStep.CLEANUP:
+                    continue
 
                 def _board_summary():
                     """Emit full board state summary."""
@@ -885,6 +889,8 @@ class GameRunner:
                         break
                     new_lands = len(game.players[active].lands) - prev_lands
                     stats["lands_played"][active] += max(0, new_lands)
+                    if game.end_turn_requested:
+                        continue
                     self._activate_planeswalkers(game, ai)
                     if game.game_over:
                         break
@@ -1008,6 +1014,8 @@ class GameRunner:
                     self._execute_main_phase(game, ai, opponent_ai)
                     if game.game_over:
                         break
+                    if game.end_turn_requested:
+                        continue
                     self._activate_planeswalkers(game, ai)
                     if game.game_over:
                         break
@@ -1043,6 +1051,11 @@ class GameRunner:
 
                 elif step == TurnStep.CLEANUP:
                     game.current_phase = Phase.CLEANUP
+                    if game.end_turn_requested:
+                        # The end step (which runs the "until end of turn"
+                        # expiry) was skipped by CR 723; cleanup does it.
+                        game.end_of_turn_cleanup()
+                        game.end_turn_requested = False
                     game.cleanup_step()
                     # Discard to hand size
                     p = game.players[active]
@@ -1487,6 +1500,8 @@ class GameRunner:
         while actions < max_actions and not game.game_over:
             if game_budget.expired(game):
                 return
+            if game.end_turn_requested:
+                return  # CR 723: the turn has ended
             decision = ai.decide_main_phase(
                 game, excluded_cards=_excluded,
                 excluded_activations=_excluded_activations)

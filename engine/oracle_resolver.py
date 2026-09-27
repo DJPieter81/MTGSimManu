@@ -1201,6 +1201,34 @@ def resolve_spell_from_oracle(game: "GameState", card: "CardInstance",
             f"T{game.display_turn} P{controller+1}: {card.name} — combat prevention")
         handled = True
 
+    # ── Hand-refill wheel (typed `hand_refill`) ──
+    # Each player shuffles hand [+ graveyard] into library (or discards
+    # the hand through the discard funnel), then draws N — the draw passes
+    # through GameState.draw_cards, so static draw limits apply.
+    _wheel = (getattr(card.template, 'hand_refill', None)
+              if oracle_override is None else None)
+    if _wheel:
+        for _pidx, _p in enumerate(game.players):
+            if _wheel['mode'] == 'discard':
+                if _p.hand:
+                    game._force_discard(_pidx, len(_p.hand),
+                                        self_discard=(_pidx == controller))
+            else:
+                _back = list(_p.hand)
+                if _wheel['graveyard']:
+                    _back += list(_p.graveyard)
+                for _c in _back:
+                    game.zone_mgr.move_card(game, _c, _c.zone, 'library',
+                                            cause=f"{card.name}: shuffled in")
+                game.rng.shuffle(_p.library)
+        for _pidx in range(len(game.players)):
+            game.draw_cards(_pidx, _wheel['count'])
+        game.log.append(f"T{game.display_turn} P{controller+1}: {card.name} — "
+                        f"each player's hand refilled to {_wheel['count']}")
+        if _wheel['ends_turn'] and game.active_player == controller:
+            game.end_the_turn(controller)
+        handled = True
+
     # ── Turn-scoped cast prohibition as a class (CR 101.2) ──
     # "<who> can't cast [<type>] spells this turn", typed at load. A
     # player target is the controller's opponent (the only player a
