@@ -1,0 +1,710 @@
+"""The single owner of "resolve an effect clause" (CR 608.2).
+
+Every carrier of effect text resolves through one ordered registry of
+clause handlers:
+
+* a spell's resolution text — ``oracle_resolver.resolve_spell_from_oracle``;
+* a single routed clause — a modal mode or a kicked rider (``oracle_override``);
+* a planeswalker loyalty line — resolved on its own clause template (S2).
+
+Each ``ClauseHandler`` is a ``gate`` and an ``apply``. The gate is a pure
+function of the clause's static facts — its template, oracle text, routed
+override and removal data. It never reads the game, so "can this clause run
+at all?" has one static answer: ``clause_is_executable``. The apply is the
+handler's body. It returns ``None`` to fall through to the next handler, or
+a bool to end resolution with that result. Handlers that only contribute
+("this clause did something") set ``ctx.handled``.
+
+The registry is a behaviour-identical transcription of the branch sequence
+that lived inline in ``resolve_spell_from_oracle`` (same order, same early
+returns, same fall-throughs). Helpers are reached through the
+``oracle_resolver`` module object so they stay patchable there.
+
+This module is part of the resolution-fallback layer (it reads oracle text at
+resolve time for shapes that have no typed field yet), exactly as
+``oracle_resolver.py`` did; typed-field migrations keep moving shapes out.
+"""
+from __future__ import annotations
+
+import re
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING, Callable, List, Optional
+
+if TYPE_CHECKING:  # pragma: no cover
+    from engine.cards import CardInstance, CardTemplate
+    from engine.game_state import GameState
+
+
+@dataclass
+class ClauseContext:
+    """Everything one clause resolution reads. Static fields (template,
+    oracle, override, removal data, abilities) are what gates may use;
+    ``game`` / ``targets`` / ``x_value`` are for applies only."""
+    card: "CardInstance"
+    controller: int
+    game: Optional["GameState"] = None
+    targets: Optional[list] = None
+    x_value: int = 0
+    oracle_override: Optional[str] = None
+    removal_data: Optional[dict] = None
+    oracle: str = ""
+    abilities: List[str] = field(default_factory=list)
+    handled: bool = False
+
+    @property
+    def template(self) -> "CardTemplate":
+        return self.card.template
+
+    @property
+    def opponent(self) -> int:
+        return 1 - self.controller
+
+
+@dataclass(frozen=True)
+class ClauseHandler:
+    name: str
+    gate: Callable[[ClauseContext], bool]
+    apply: Callable[[ClauseContext], Optional[bool]]
+
+
+def _or():
+    from engine import oracle_resolver
+    return oracle_resolver
+
+
+def _num(tok: str) -> int:
+    try:
+        return int(tok)
+    except ValueError:
+        return _or()._WORD_TO_NUM.get(tok, 0)
+
+
+# ─────────────────────────────────────────────────────────────────────
+# Handlers that run before the oracle text is read
+# ─────────────────────────────────────────────────────────────────────
+
+def _g_x_tutor(ctx):
+    return ctx.oracle_override is None and bool(
+        getattr(ctx.template, 'x_creature_tutor_data', None))
+
+
+def _a_x_tutor(ctx):
+    return _or()._resolve_x_creature_tutor(ctx.game, ctx.card, ctx.controller,
+                                           ctx.x_value)
+
+
+def _g_team_pump(ctx):
+    return (ctx.template.team_pump_data or {}).get('trigger') == 'spell'
+
+
+def _a_team_pump(ctx):
+    return _or()._resolve_team_pump(ctx.game, ctx.card, ctx.controller)
+
+
+PRE_ORACLE_HANDLERS: List[ClauseHandler] = [
+    # X-bound creature tutor (parse_x_creature_tutor); whole card only.
+    ClauseHandler("x_creature_tutor", _g_x_tutor, _a_x_tutor),
+    # "Creatures you control get +N/+N [and gain <kw>] until end of turn".
+    ClauseHandler("team_pump", _g_team_pump, _a_team_pump),
+]
+
+
+# ─────────────────────────────────────────────────────────────────────
+# Handlers over the oracle text
+# ─────────────────────────────────────────────────────────────────────
+
+def _combat_prevention_shape(ctx):
+    from engine.oracle_parser import parse_combat_prevention
+    # CR 702.33: an unkicked resolution never applies the "if this spell was
+    # kicked" rider, so the whole-card parse excludes that clause (the
+    # kicked path resolves it separately through oracle_override).
+    text = ctx.oracle
+    kc = getattr(ctx.template, 'kicked_clause', None)
+    if ctx.oracle_override is None and kc:
+        text = text.replace(kc.lower(), '')
+    return parse_combat_prevention(text)
+
+
+def _g_combat_prevention(ctx):
+    return _combat_prevention_shape(ctx) is not None
+
+
+def _a_combat_prevention(ctx):
+    # CR 509.4 / 615 — one turn-scoped flag per shape; not an early return
+    # (a compound card keeps resolving its other clauses).
+    game, cp = ctx.game, _combat_prevention_shape(ctx)
+    if cp["no_attack"] == "all":
+        for p in game.players:
+            p.cannot_attack_this_turn = True
+    elif cp["no_attack"] == "you":
+        game.players[ctx.controller].cannot_be_attacked_this_turn = True
+    if cp["prevent_combat_damage"]:
+        for p in game.players:
+            p.combat_damage_prevented_this_turn = True
+    game.log.append(
+        f"T{game.display_turn} P{ctx.controller+1}: {ctx.card.name} — combat prevention")
+    ctx.handled = True
+    return None
+
+
+def _g_wheel(ctx):
+    return ctx.oracle_override is None and bool(
+        getattr(ctx.template, 'hand_refill', None))
+
+
+def _a_wheel(ctx):
+    # Each player shuffles hand [+ graveyard] into library (or discards the
+    # hand through the discard funnel), then draws N through draw_cards, so
+    # static draw limits apply; "if it's your turn, end the turn" (CR 723).
+    game, card, controller = ctx.game, ctx.card, ctx.controller
+    wheel = ctx.template.hand_refill
+    for pidx, p in enumerate(game.players):
+        if wheel['mode'] == 'discard':
+            if p.hand:
+                game._force_discard(pidx, len(p.hand),
+                                    self_discard=(pidx == controller))
+        else:
+            back = list(p.hand)
+            if wheel['graveyard']:
+                back += list(p.graveyard)
+            for c in back:
+                game.zone_mgr.move_card(game, c, c.zone, 'library',
+                                        cause=f"{card.name}: shuffled in")
+            game.rng.shuffle(p.library)
+    for pidx in range(len(game.players)):
+        game.draw_cards(pidx, wheel['count'])
+    game.log.append(f"T{game.display_turn} P{controller+1}: {card.name} — "
+                    f"each player's hand refilled to {wheel['count']}")
+    if wheel['ends_turn'] and game.active_player == controller:
+        game.end_the_turn(controller)
+    ctx.handled = True
+    return None
+
+
+def _g_cast_prohibition(ctx):
+    return ctx.oracle_override is None and bool(
+        getattr(ctx.template, 'cast_prohibition', None))
+
+
+def _a_cast_prohibition(ctx):
+    # CR 101.2 — "<who> can't cast [<type>] spells this turn".
+    game, card, controller = ctx.game, ctx.card, ctx.controller
+    cpro = ctx.template.cast_prohibition
+    players = (list(game.players) if cpro['who'] == 'all'
+               else [game.players[ctx.opponent]])
+    kind = '' if cpro['filter'] == 'all' else f"{cpro['filter']} "
+    for p in players:
+        if cpro['filter'] == 'all':
+            p.silenced_this_turn = True
+        else:
+            p.spell_types_prohibited_this_turn.add(cpro['filter'])
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: {card.name} silences "
+            f"P{game.players.index(p)+1} ({kind}spells) this turn")
+    ctx.handled = True
+    return None
+
+
+def _g_mass_mode(ctx):
+    return ctx.oracle_override is not None
+
+
+def _a_mass_mode(ctx):
+    # A routed single mode clause of a modal wipe ("deals N damage to each
+    # creature …", "destroy all <type> …").
+    if _or()._resolve_mass_mode_clause(ctx.game, ctx.card, ctx.controller,
+                                       ctx.oracle):
+        return True
+    return None
+
+
+def _g_pump(ctx):
+    return ctx.oracle_override is None and bool(
+        getattr(ctx.template, 'pump_spell_power', 0)
+        or getattr(ctx.template, 'pump_spell_toughness', 0))
+
+
+def _a_pump(ctx):
+    # "Target creature gets +N/+M until end of turn [and gains <kw>]".
+    from engine.cards import Keyword as KW
+    game, card, controller = ctx.game, ctx.card, ctx.controller
+    pp = getattr(card.template, 'pump_spell_power', 0)
+    pt = getattr(card.template, 'pump_spell_toughness', 0)
+    tgt = _or().pump_target(game, controller, ctx.targets)
+    if tgt is None:
+        return None
+    tgt.temp_power_mod += pp
+    tgt.temp_toughness_mod += pt
+    kw = getattr(card.template, 'pump_spell_keyword', '')
+    if kw:
+        kwe = getattr(KW, kw.upper().replace(' ', '_'), None)
+        if kwe is not None:
+            tgt.temp_keywords.add(kwe)
+    game.log.append(
+        f"T{game.display_turn} P{controller+1}: "
+        f"{card.name} gives {tgt.name} +{pp}/+{pt}"
+        f"{' and ' + kw if kw else ''}")
+    return True
+
+
+def _g_mass_reanimate(ctx):
+    return any('all creature cards' in a and 'graveyard' in a
+               and 'battlefield' in a for a in ctx.abilities)
+
+
+def _a_mass_reanimate(ctx):
+    # Living End shape — the same effect the cascade path runs.
+    ctx.game._resolve_living_end(ctx.controller)
+    return True
+
+
+def _g_energy_damage(ctx):
+    return bool(getattr(ctx.template, 'has_energy_damage_target', False))
+
+
+def _a_energy_damage(ctx):
+    # "Target creature or planeswalker. You get {E}^k, then you may pay any
+    # amount of {E}. ~ deals that much (additional) damage."
+    game, card, controller, oracle = ctx.game, ctx.card, ctx.controller, ctx.oracle
+    base_match = re.search(
+        r'deals?\s+(\d+)\s+damage\s+to\s+target\s+creature\s+or\s+planeswalker',
+        oracle)
+    base_damage = int(base_match.group(1)) if base_match else 0
+    gain_match = re.search(r'you get\s+((?:\{e\}\s*)+)', oracle)
+    self_gen_energy = gain_match.group(1).count('{e}') if gain_match else 0
+    chosen = None
+    for tid in (ctx.targets or []):
+        if tid == -1:
+            continue  # face-marker — illegal target for this spell
+        cand = game.get_card_by_id(tid)
+        if (cand is not None and cand.zone == "battlefield"
+                and (cand.template.is_creature
+                     or 'planeswalker' in [t.value for t in cand.template.card_types])):
+            chosen = cand
+            break
+    if chosen is None:
+        opp = game.players[1 - controller]
+        opp_pw = [c for c in opp.battlefield
+                  if 'planeswalker' in [t.value for t in c.template.card_types]]
+        candidates = list(opp.creatures) + opp_pw
+        if not candidates:
+            return True  # fizzle: no legal target
+        chosen = max(candidates,
+                     key=lambda c: (c.power or 0) + (c.toughness or 0)
+                     + getattr(c, 'loyalty_counters', 0))
+    player = game.players[controller]
+    player.add_energy(self_gen_energy)
+    if chosen.template.is_creature:
+        remaining = (chosen.toughness or 0) - getattr(chosen, 'damage_marked', 0)
+    else:
+        remaining = chosen.loyalty_counters  # CR 119.3
+    need_to_kill = max(0, remaining - base_damage)
+    spend = min(need_to_kill, player.energy_counters) if need_to_kill > 0 else 0
+    if spend > 0:
+        player.spend_energy(spend)
+    total = base_damage + spend
+    if total > 0:
+        if chosen.template.is_creature:
+            chosen.damage_marked = getattr(chosen, 'damage_marked', 0) + total
+            if chosen.is_dead:
+                game._creature_dies(chosen)
+        else:
+            chosen.loyalty_counters = max(0, chosen.loyalty_counters - total)
+            game.check_state_based_actions()
+    game.log.append(
+        f"T{game.display_turn} P{controller+1}: "
+        f"{card.name} deals {total} to {chosen.name} "
+        f"(base {base_damage} + {spend} energy)")
+    return True
+
+
+def _g_land_destruction(ctx):
+    return bool(getattr(ctx.template, 'destroys_target_land', False))
+
+
+def _a_land_destruction(ctx):
+    return _or()._resolve_destroy_target_land(ctx.game, ctx.card, ctx.controller,
+                                              ctx.targets)
+
+
+def _g_direct_damage(ctx):
+    return ctx.oracle_override is None and bool(
+        getattr(ctx.template, 'direct_damage_data', None))
+
+
+def _a_direct_damage(ctx):
+    # "Deals N damage to any target" through the shared damage owner; the
+    # CR 608.2 upgrade audit is restated independently.
+    orr = _or()
+    game, card, controller = ctx.game, ctx.card, ctx.controller
+    dd = card.template.direct_damage_data
+    amt = orr.effective_direct_damage(game, controller, card.template)
+    from engine.rules_audit import check as audit_check
+    up = dd.get('upgrade_amount')
+    if up and orr._direct_damage_condition_met(game, controller,
+                                               dd.get('upgrade_condition')):
+        audit_check("608.2/damage_upgrade", amt == up,
+                    f"{card.name}: {dd.get('upgrade_condition')} met but "
+                    f"dealt {amt}, not {up}", game=game)
+    orr.resolve_damage_to_chosen_target(game, card, controller, amt, ctx.targets)
+    return True
+
+
+def _g_board_sweep(ctx):
+    return ctx.oracle_override is None and bool(
+        getattr(ctx.template, 'board_sweep_data', None))
+
+
+def _a_board_sweep(ctx):
+    from engine.card_effects import _resolve_board_sweep
+    bs = ctx.template.board_sweep_data
+    _resolve_board_sweep(ctx.game, ctx.card, ctx.controller, ctx.targets,
+                         item=None, action=bs['action'],
+                         types=frozenset(bs['types']))
+    return True
+
+
+def _removal_shape(ctx):
+    if ctx.removal_data is not None:
+        return ctx.removal_data
+    return (getattr(ctx.template, 'targeted_removal_data', None)
+            if ctx.oracle_override is None else None)
+
+
+def _g_targeted_removal(ctx):
+    return bool(_removal_shape(ctx))
+
+
+def _a_targeted_removal(ctx):
+    # "Destroy/exile target <permanent> [MV <= N|X]"; a modal caller passes
+    # the mode's own typed classification.
+    from engine.card_effects import _resolve_nonland_permanent_removal
+    rm = _removal_shape(ctx)
+    mv = rm.get('mv')
+    if mv is None:
+        mv_fn = None
+    elif mv == 'x':
+        mv_fn = lambda g, c, ctl, it, _x=ctx.x_value: _x
+    else:
+        mv_fn = lambda g, c, ctl, it, _n=mv: _n
+    exile = rm['action'] == 'exile'
+    _resolve_nonland_permanent_removal(
+        ctx.game, ctx.card, ctx.controller, ctx.targets, None,
+        zone_dest='exile' if exile else 'graveyard',
+        types=frozenset(rm['types']), mv_max_fn=mv_fn,
+        log_verb='exiles' if exile else 'destroys')
+    return True
+
+
+def _g_library_dig(ctx):
+    return bool(getattr(ctx.template, 'library_dig_data', None))
+
+
+def _a_library_dig(ctx):
+    return _or()._resolve_library_dig(ctx.game, ctx.card, ctx.controller)
+
+
+def _hand_attack_shape(ctx):
+    return (getattr(ctx.template, 'hand_attack_data', None) or {}
+            if ctx.oracle_override is None else {})
+
+
+def _g_hand_attack(ctx):
+    return (_hand_attack_shape(ctx).get('chooser') == 'caster'
+            or _or().any_ability_with(ctx.oracle, 'reveals', 'hand', 'discard'))
+
+
+def _a_hand_attack(ctx):
+    # "Target opponent reveals their hand. You choose a nonland card and that
+    # player discards it." — through the one discard funnel.
+    orr = _or()
+    game, card, controller, oracle = ctx.game, ctx.card, ctx.controller, ctx.oracle
+    hand_attack = _hand_attack_shape(ctx)
+    from engine.target_solver import targeted_player
+    if hand_attack.get('target') == 'opponent':
+        victim_idx = ctx.opponent
+    else:
+        victim_idx = targeted_player(game, controller, ctx.targets)
+    victim = game.players[victim_idx]
+    if victim.hand:
+        choose_clause = hand_attack.get('choose_clause') or next(
+            (c for c in orr.split_clauses(oracle) if 'choose' in c and 'card' in c), '')
+        legal = orr._targeted_discard_candidates(victim.hand, choose_clause)
+        if legal:
+            before = list(victim.hand)
+            game._force_discard(victim_idx, 1, self_discard=(victim_idx == controller),
+                                candidates=legal)
+            gone = [c for c in before if c not in victim.hand]
+            for c in gone:
+                game.log.append(
+                    f"T{game.display_turn} P{controller+1}: "
+                    f"{card.name} discards {c.name}"
+                    + (" (own hand)" if victim_idx == controller else ""))
+            ctx.handled = True
+    loss_clause = next(
+        (c for c in orr.split_clauses(oracle) if 'you lose' in c and 'life' in c), None)
+    if loss_clause is not None:
+        m = re.search(r'lose\s+(\d+)\s+life', loss_clause)
+        if m:
+            game.players[controller].life -= int(m.group(1))
+            ctx.handled = True
+    return None
+
+
+def _g_bounce(ctx):
+    return any('return target' in a and 'nonland permanent' in a
+               and "owner's hand" in a for a in ctx.abilities)
+
+
+def _a_bounce(ctx):
+    # "Return target nonland permanent to its owner's hand".
+    game, card, controller = ctx.game, ctx.card, ctx.controller
+    opp = game.players[ctx.opponent]
+    from engine.card_effects import _nonland_permanent_threat
+    candidates = [c for c in opp.battlefield if not c.template.is_land]
+    if candidates:
+        best = max(candidates,
+                   key=lambda c: _nonland_permanent_threat(c, opp.battlefield))
+        opp.battlefield.remove(best)
+        best.zone = 'hand'
+        best.tapped = False
+        opp.hand.append(best)
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: {card.name} bounces {best.name}")
+        ctx.handled = True
+    return None
+
+
+def _reanimate_ability(ctx):
+    return next(
+        (a for a in ctx.abilities
+         if re.search(r'return target\s+(\w+\s+)?creature card', a)
+         and 'graveyard' in a and 'battlefield' in a
+         and not re.search(r'return target legendary creature', a)),
+        None)
+
+
+def _g_reanimate(ctx):
+    return _reanimate_ability(ctx) is not None
+
+
+def _a_reanimate(ctx):
+    # "Return target [nonlegendary] creature card from your graveyard to the
+    # battlefield" — targets through the unified target solver.
+    game, card, controller = ctx.game, ctx.card, ctx.controller
+    from engine.target_solver import enumerate_legal_targets, parse as parse_targets
+    requirements = parse_targets(card.template.oracle_text or "")
+    gy_reqs = [r for r in requirements if r.zone == "graveyard"]
+    creatures: list = []
+    for req in gy_reqs:
+        creatures.extend(enumerate_legal_targets(game, controller, req, exclude=card))
+    creatures = [c for c in creatures if c.template.is_creature]
+    if creatures:
+        best = max(creatures, key=lambda c: (c.template.power or 0)
+                   + (c.template.toughness or 0))
+        game.reanimate(controller, best)
+        game.log.append(
+            f"T{game.display_turn} P{controller+1}: {card.name} reanimates {best.name}")
+        ctx.handled = True
+    return None
+
+
+def _impulse_count(ctx):
+    oracle = ctx.oracle
+    m_exile = re.search(r'exile the top (\w+) cards? of your library', oracle)
+    m_cap = re.search(r'you may play up to (\w+)', oracle)
+    n = _num(m_exile.group(1)) if m_exile else 0
+    if n == 0 and m_cap:
+        n = _num(m_cap.group(1))
+    if ctx.template.x_cost_data and not m_cap:
+        n = 0
+    return n
+
+
+def _g_impulse(ctx):
+    from ai.oracle_classifier import Tag, tags_for
+    return Tag.IMPULSE_DRAW in tags_for(ctx.card.name)
+
+
+def _a_impulse(ctx):
+    # Impulse-reveal (CR 121.1c — not a draw): library → hand without the
+    # on-draw fan-out. Ends resolution (skips the real-draw branch).
+    from engine.zone_transfer import TransferKind, transfer
+    game, card, controller = ctx.game, ctx.card, ctx.controller
+    n = _impulse_count(ctx)
+    if n > 0:
+        revealed: list = []
+        player = game.players[controller]
+        for _ in range(min(n, len(player.library))):
+            top = player.library[0]
+            transfer(game, top, src_zone="library", dst_zone="hand",
+                     kind=TransferKind.IMPULSE_REVEAL, controller=controller)
+            revealed.append(top)
+        if revealed:
+            names = ", ".join(c.name for c in revealed)
+            game.log.append(
+                f"T{game.display_turn} P{controller+1}: "
+                f"{card.name} → impulse-reveal {n} ({names})")
+        return True
+    return None
+
+
+def _card_flow_effects(ctx):
+    """Scry / surveil / draw / loot in oracle-text order (CR 601.2 / 608.2)."""
+    oracle, tpl = ctx.oracle, ctx.template
+    scry_n, scry_pos = 0, len(oracle)
+    if getattr(tpl, 'has_scry', False):
+        m = re.search(r'\bscry\s+(\d+)', oracle)
+        if m:
+            scry_n, scry_pos = _num(m.group(1)), m.start()
+    surv_n, surv_pos = 0, len(oracle)
+    if getattr(tpl, 'has_surveil', False):
+        m = re.search(r'\bsurveil\s+(\d+)', oracle)
+        if m:
+            surv_n, surv_pos = _num(m.group(1)), m.start()
+    # Reminder text is masked with spaces (positions stay comparable) so a
+    # keyword's reminder ("({2}, Discard this card: Draw a card.)") is not
+    # read as this spell's own draw.
+    draw_n, draw_pos = 0, len(oracle)
+    no_reminder = re.sub(r'\([^()]*\)', lambda m: ' ' * len(m.group(0)), oracle)
+    m_draw = re.search(r'draw\s+(\w+)\s+cards?', no_reminder)
+    if m_draw:
+        draw_n, draw_pos = _num(m_draw.group(1)), m_draw.start()
+    elif getattr(tpl, 'has_look_hand_selection', False):
+        draw_n, draw_pos = 1, 0
+    effects: list = []
+    if scry_n > 0:
+        effects.append((scry_pos, 'scry', scry_n))
+    if surv_n > 0:
+        effects.append((surv_pos, 'surveil', surv_n))
+    if draw_n > 0:
+        effects.append((draw_pos, 'draw', draw_n))
+    from engine.oracle_parser import parse_loot_effect
+    loot = tpl.loot_data if ctx.oracle_override is None else parse_loot_effect(oracle)
+    if loot:
+        effects = [e for e in effects if e[1] != 'draw']
+        effects.append((draw_pos, 'loot', loot))
+    effects.sort(key=lambda x: x[0])
+    return effects
+
+
+def _g_card_flow(ctx):
+    return bool(_card_flow_effects(ctx))
+
+
+def _a_card_flow(ctx):
+    game, card, controller = ctx.game, ctx.card, ctx.controller
+    for _, kind, count in _card_flow_effects(ctx):
+        if kind == 'scry':
+            game.scry(controller, count)
+        elif kind == 'surveil':
+            game.surveil(controller, count)
+        elif kind == 'loot':
+            _or()._resolve_loot(game, card, controller, count)
+        elif kind == 'draw':
+            drawn = game.draw_cards(controller, count)
+            if drawn:
+                names = ", ".join(c.name for c in drawn)
+                game.log.append(
+                    f"T{game.display_turn} P{controller+1}: "
+                    f"{card.name} → draw {count} ({names})")
+        ctx.handled = True
+    return None
+
+
+_TOKEN_RE = re.compile(
+    r'\bcreate\s+(a|an|one|two|three|four|five|\d+)\s+(\d+)/(\d+)\b[^.]*?\btokens?\b')
+
+
+def _token_clause(ctx):
+    for clause in _or().split_abilities(ctx.oracle):
+        m = _TOKEN_RE.search(clause)
+        if m is None:
+            continue
+        tok = m.group(1)
+        count = 1 if tok in ('a', 'an', 'one') else _num(tok)
+        if count <= 0:
+            continue
+        return clause, m, count
+    return None
+
+
+def _g_token(ctx):
+    return ((ctx.template.is_instant or ctx.template.is_sorcery)
+            and _token_clause(ctx) is not None)
+
+
+def _a_token(ctx):
+    # CR 111: a spell whose own effect creates a creature token. Only when
+    # no earlier handler resolved the clause.
+    if ctx.handled:
+        return None
+    clause, m, count = _token_clause(ctx)
+    created = ctx.game.create_token(
+        ctx.controller, "creature", count=count,
+        power=int(m.group(2)), toughness=int(m.group(3)), source_oracle=clause)
+    if created:
+        ctx.handled = True
+    return None
+
+
+HANDLERS: List[ClauseHandler] = [
+    ClauseHandler("combat_prevention", _g_combat_prevention, _a_combat_prevention),
+    ClauseHandler("hand_refill_wheel", _g_wheel, _a_wheel),
+    ClauseHandler("cast_prohibition", _g_cast_prohibition, _a_cast_prohibition),
+    ClauseHandler("mass_mode_clause", _g_mass_mode, _a_mass_mode),
+    ClauseHandler("targeted_pump", _g_pump, _a_pump),
+    ClauseHandler("mass_reanimate", _g_mass_reanimate, _a_mass_reanimate),
+    ClauseHandler("energy_damage", _g_energy_damage, _a_energy_damage),
+    ClauseHandler("land_destruction", _g_land_destruction, _a_land_destruction),
+    ClauseHandler("direct_damage", _g_direct_damage, _a_direct_damage),
+    ClauseHandler("board_sweep", _g_board_sweep, _a_board_sweep),
+    ClauseHandler("targeted_removal", _g_targeted_removal, _a_targeted_removal),
+    ClauseHandler("library_dig", _g_library_dig, _a_library_dig),
+    ClauseHandler("hand_attack", _g_hand_attack, _a_hand_attack),
+    ClauseHandler("bounce_nonland", _g_bounce, _a_bounce),
+    ClauseHandler("reanimate_target", _g_reanimate, _a_reanimate),
+    ClauseHandler("impulse_reveal", _g_impulse, _a_impulse),
+    ClauseHandler("card_flow", _g_card_flow, _a_card_flow),
+    ClauseHandler("create_token", _g_token, _a_token),
+]
+
+
+def _static_context(card, controller, oracle_override, removal_data, game=None,
+                    targets=None, x_value=0) -> ClauseContext:
+    ctx = ClauseContext(card=card, controller=controller, game=game,
+                        targets=targets, x_value=x_value,
+                        oracle_override=oracle_override, removal_data=removal_data)
+    ctx.oracle = (oracle_override if oracle_override is not None
+                  else (card.template.oracle_text or '')).lower()
+    ctx.abilities = _or().split_abilities(ctx.oracle) if ctx.oracle else []
+    return ctx
+
+
+def resolve_clause(game, card, controller, targets=None, *, x_value=0,
+                   oracle_override=None, removal_data=None) -> bool:
+    """Resolve one clause through the registry. Returns True when an effect
+    was applied (the contract `resolve_spell_from_oracle` always had)."""
+    ctx = _static_context(card, controller, oracle_override, removal_data,
+                          game=game, targets=targets, x_value=x_value)
+    for h in PRE_ORACLE_HANDLERS:
+        if h.gate(ctx):
+            return h.apply(ctx)
+    if not ctx.oracle:
+        return False
+    for h in HANDLERS:
+        if h.gate(ctx):
+            result = h.apply(ctx)
+            if result is not None:
+                return result
+    return ctx.handled
+
+
+def clause_is_executable(card, controller=0, *, oracle_override=None,
+                         removal_data=None) -> bool:
+    """The one static answer to "can this clause run at all?" — some
+    handler's gate accepts it. Reads no game state."""
+    ctx = _static_context(card, controller, oracle_override, removal_data)
+    if any(h.gate(ctx) for h in PRE_ORACLE_HANDLERS):
+        return True
+    return bool(ctx.oracle) and any(h.gate(ctx) for h in HANDLERS)

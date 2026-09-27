@@ -60,6 +60,8 @@ _EXCLUDED = {
     # Resolution-fallback layer (read oracle at resolve time as the generic
     # fallback; being migrated to typed fields — see the module docstring).
     "engine/oracle_resolver.py",
+    # The clause owner the resolver's branches moved into (same layer).
+    "engine/clause_resolver.py",
     "engine/triggers.py",
     "engine/spell_resolution.py",
     # Rules-audit census: a DIAGNOSTIC that looks for keyword WORDS in
