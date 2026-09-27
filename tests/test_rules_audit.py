@@ -573,3 +573,23 @@ def test_kicked_cost_paid_audit_sees_a_kicker_not_added(audit, card_db, monkeypa
                         staticmethod(lambda base, kicker, times: base))
     game.cast_spell(0, spell)
     assert "702.33/kicked_cost_paid" in _rules(rules_audit.drain())
+
+
+def test_sba_audit_is_silent_when_a_transformed_creature_face_dies_to_lethal_damage(audit, card_db):
+    # CR 711.8: the transformed face's creature-ness is what the SBA reads.
+    # Before the fix the front-face gate left it alive and this recorded
+    # 704.5f/lethal_damage (24 findings in the 2026-09-27 audited matrix).
+    from engine.cards import CardInstance
+    from engine.oracle_resolver import _transform_permanent
+    game = GameState(rng=random.Random(0))
+    tmpl = card_db.get_card("Fable of the Mirror-Breaker // Reflection of Kiki-Jiki")
+    c = CardInstance(template=tmpl, owner=0, controller=0,
+                     instance_id=game.next_instance_id(), zone="battlefield")
+    c._game_state = game
+    c.enter_battlefield()
+    game.players[0].battlefield.append(c)
+    _transform_permanent(game, c, controller=0)
+    c.damage_marked = c.toughness
+    game.check_state_based_actions()
+    assert "704.5f/lethal_damage" not in _rules(rules_audit.drain())
+    assert c not in game.players[0].battlefield

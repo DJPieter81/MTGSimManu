@@ -151,3 +151,50 @@ def test_transform_to_planeswalker_back_face_is_still_a_planeswalker(card_db):
     assert ral.loyalty_counters > 0, (
         "transformed planeswalker's starting loyalty was not set"
     )
+
+
+# ---------------------------------------------------------------------------
+# CR 711.8 / 704.5f-g: a transformed permanent has only its current face's
+# characteristics, so the creature gates (summoning sickness, attack, block,
+# lethal damage) read the current face, never the printed front face.
+# Replay: the 2026-09-27 audited matrix recorded 24 `704.5f/lethal_damage`
+# violations — a transformed Saga's creature face survived lethal damage
+# because `is_dead` asked whether the FRONT face was a creature.
+# ---------------------------------------------------------------------------
+
+def _transformed_fable(card_db):
+    from engine.oracle_resolver import _transform_permanent
+    game = GameState(rng=random.Random(0))
+    fable = _put_on_battlefield(game, card_db, FABLE_NAME, controller=0)
+    _transform_permanent(game, fable, controller=0)
+    fable.summoning_sick = False
+    return game, fable
+
+
+def test_a_transformed_creature_face_dies_to_lethal_damage(card_db):
+    game, fable = _transformed_fable(card_db)
+    fable.damage_marked = fable.toughness
+    assert fable.is_dead
+    game.check_state_based_actions()
+    assert fable not in game.players[0].battlefield
+    assert fable in game.players[0].graveyard
+
+
+def test_a_transformed_creature_face_can_attack_and_block(card_db):
+    _, fable = _transformed_fable(card_db)
+    assert fable.can_attack
+    assert fable.can_block
+
+
+def test_a_front_creature_transformed_to_a_non_creature_has_no_creature_gates(card_db):
+    from engine.oracle_resolver import _transform_permanent
+    game = GameState(rng=random.Random(0))
+    ral = _put_on_battlefield(game, card_db, RAL_NAME, controller=0)
+    assert ral.template.is_creature  # printed front face is a creature
+    _transform_permanent(game, ral, controller=0)
+    ral.summoning_sick = False
+    assert not ral.effective_is_creature
+    assert not ral.can_attack
+    assert not ral.can_block
+    ral.damage_marked = 99
+    assert not ral.is_dead

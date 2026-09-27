@@ -2286,7 +2286,7 @@ class CardInstance:
     @property
     def has_summoning_sickness(self) -> bool:
         """A creature has summoning sickness if it entered this turn and doesn't have haste."""
-        if not (self.template.is_creature or self.is_animated):
+        if not (self.effective_is_creature or self.is_animated):
             return False
         if Keyword.HASTE in self.keywords:
             return False
@@ -2296,7 +2296,7 @@ class CardInstance:
 
     @property
     def can_attack(self) -> bool:
-        if not (self.template.is_creature or self.is_animated):
+        if not (self.effective_is_creature or self.is_animated):
             return False
         if self.tapped:
             return False
@@ -2308,7 +2308,7 @@ class CardInstance:
 
     @property
     def can_block(self) -> bool:
-        if not (self.template.is_creature or self.is_animated):
+        if not (self.effective_is_creature or self.is_animated):
             return False
         if self.tapped:
             return False
@@ -2316,7 +2316,9 @@ class CardInstance:
 
     @property
     def is_dead(self) -> bool:
-        if not (self.template.is_creature or self.is_animated):
+        # CR 711.8: a transformed permanent has only its current face's
+        # characteristics — the creature gates read the current face.
+        if not (self.effective_is_creature or self.is_animated):
             return False
         if self.toughness <= 0:
             # CR 704.5g: toughness 0 or less puts the creature into the
