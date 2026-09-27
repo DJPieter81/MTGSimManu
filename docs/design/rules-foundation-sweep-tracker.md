@@ -5721,3 +5721,55 @@ as nothing.**
 Orim's Chant's card-name handler (registry 87 → 86); (2) hand-refill wheel +
 draw-limit static; (3) Hex Magic shape if it fits the impulse permission.
 Each measured on the Azorius Control / Ruby Storm fields, same seeds.
+
+### Units from the Azorius Control / Ruby Storm diagnosis (2026-09-27)
+
+**Unit CP — turn-scoped cast prohibition as a class (`a5baa97`, CR 101.2).**
+`CardTemplate.cast_prohibition` ({who, filter}) + one generic resolver
+branch + one gate predicate `CastManager.cast_is_prohibited` for every cast
+route. Orim's Chant's name-keyed handler deleted (registry 87 → 86). A free
+cast (cascade, "without paying") was not gated before and now is. Auditor
+invariant `101.2/cast_prohibition`.
+
+**Unit WH — hand-refill wheels, static draw restrictions, "end the turn"
+(`7531146`, CR 101.2 / 723).** `CardTemplate.hand_refill` (10 pool cards),
+`CardTemplate.draw_limit` (5 pool cards, incl. "players can't draw cards" as
+a cap of 0) enforced in `GameState.draw_cards`, and
+`GameState.end_the_turn` (stack exiled; runner skips to cleanup, which runs
+the skipped end step's expiry). Auditor invariant
+`723.1/cast_after_turn_end`. Day's Undoing leaves the silent-unhandled
+allowlist. Smoke Bo3 vs Eldrazi Tron: Scepter-Silence locks in the
+opponent's upkeep; the wheel refills 7 vs 1 under Narset; the turn ends.
+
+**Hex Magic (Ruby Storm ×4) not built:** its shape ("exile your hand, then
+draw that many; play the exiled cards until end of your next turn") has one
+spell in the pool — below the class-size rule and the narrow-field ratchet.
+Stays allowlisted.
+
+**Measurement** (same seeds, n=20 Bo3, `--parallel`; each side a pinned
+worktree):
+
+| field | pre (`5666eb4`) | after CP (`a5baa97`) | after WH (`7531146`) |
+|---|---|---|---|
+| Azorius Control | 10.0 | 12.3 (+2.3) | **24.6** (+12.3) |
+| Ruby Storm | 26.2 | 26.5 | — (no wheel/prohibition cards) |
+
+Azorius Control draws 20 → 47: the lock now holds but games reach the turn
+cap. Still below its band.
+
+**Leads recorded, not built (AI layer):**
+- Under a full lock Azorius Control does not close: the opponent's
+  planeswalker (Ugin, +3 life a turn — legal under Silence) is never
+  attacked, so two Solitudes net 3 damage a turn and the game hits turn 30.
+  Attack-target selection vs planeswalkers.
+- Azorius casts Day's Undoing with a full hand of 7 and no draw limiter
+  (refilling the opponent) — the AI has no model of a symmetric wheel.
+- Ruby Storm fires Past in Flames on T4 with one flashback target vs a
+  turn-5 Pinnacle kill (sequencing).
+- The mulligan counts an MDFC's land back face as a spell, and sent back a
+  5-land seven with Solitude + Narset on hand score.
+
+**Measurement hygiene note:** the first CP post run read the working tree
+while WH was being edited; it was discarded and re-run from pinned
+worktrees. Every later measurement runs from a worktree pinned at the
+commit under test.
