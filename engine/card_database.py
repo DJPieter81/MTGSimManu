@@ -1324,9 +1324,11 @@ class CardDatabase:
                         # transformed DFC activates these, not the front's.
                         from .oracle_parser import (
                             parse_loyalty_abilities as _parse_loyalty)
-                        template.back_face_loyalty_abilities = _parse_loyalty(
-                            template.back_face_oracle,
-                            template.back_face_loyalty)
+                        template.back_face_loyalty_abilities = (
+                            self._type_loyalty_clauses(
+                                template.name, _parse_loyalty(
+                                    template.back_face_oracle,
+                                    template.back_face_loyalty)))
                         template.back_face_types = [
                             TYPE_MAP[t] for t in back.get('types', []) if t in TYPE_MAP
                         ]
@@ -1385,6 +1387,41 @@ class CardDatabase:
         import os
         project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         return os.path.join(project_root, 'ModernAtomic.json')
+
+    def _type_loyalty_clauses(self, walker_name: str, abilities: dict) -> dict:
+        """Type each UNCLASSIFIED loyalty line as a clause (CR 606.1).
+
+        The line's own text is built into a template by this same pipeline
+        (every typed-field parser runs on the clause), and the line becomes
+        `LoyaltyEffectKind.CLAUSE` when the shared clause owner can run it
+        (`clause_resolver.clause_is_executable`). Lines no handler accepts
+        stay UNCLASSIFIED and are refused before their loyalty is paid.
+        The clause template carries a name distinct from the card's, so the
+        whole card's classifier tags never leak into the clause.
+        """
+        if not abilities:
+            return abilities
+        import dataclasses
+        from .cards import CardInstance, LoyaltyEffectKind
+        from .clause_resolver import clause_is_executable
+        typed = dict(abilities)
+        for slot, ability in abilities.items():
+            if ability.effect_kind is not LoyaltyEffectKind.UNCLASSIFIED:
+                continue
+            clause_name = f"{walker_name} ({slot})"
+            clause = self._build_template(clause_name, {
+                'name': clause_name, 'text': ability.text,
+                'type': 'Sorcery', 'types': ['Sorcery'], 'supertypes': [],
+                'subtypes': [], 'manaCost': '', 'manaValue': 0, 'colors': [],
+                'colorIdentity': [], 'legalities': {'modern': 'Legal'}})
+            if clause is None:
+                continue
+            probe = CardInstance(template=clause, owner=0, controller=0,
+                                 instance_id=0, zone="stack")
+            if clause_is_executable(probe):
+                typed[slot] = dataclasses.replace(
+                    ability, effect_kind=LoyaltyEffectKind.CLAUSE, clause=clause)
+        return typed
 
     def _build_template(self, name: str, data: dict) -> Optional[CardTemplate]:
         """Build a CardTemplate from MTGJSON card data."""
@@ -1957,8 +1994,8 @@ class CardDatabase:
         # Printed loyalty abilities (CR 606), classified once here so
         # `PlaneswalkerManager` can dispatch off a typed field and refuse
         # what it cannot execute before charging loyalty.
-        template.loyalty_abilities = parse_loyalty_abilities(
-            oracle, template.loyalty)
+        template.loyalty_abilities = self._type_loyalty_clauses(
+            template.name, parse_loyalty_abilities(oracle, template.loyalty))
         # Overrun-shape team pump. The 'spell' form is an instant/sorcery's
         # own resolution; on any other card type the same paragraph would
         # be a static/other ability this resolver does not own.

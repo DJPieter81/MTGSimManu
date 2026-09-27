@@ -661,3 +661,36 @@ def test_attack_target_audit_is_silent_for_player_attacks(audit):
     atk = _creature(game, "Attacker", 0, power=2, toughness=2)
     CombatManager().declare_attackers(game, [atk], active_player=0)
     assert "508.1b/attack_target_legal" not in _rules(rules_audit.drain())
+
+
+def test_loyalty_clause_audit_sees_a_clause_line_that_resolved_nothing(audit, card_db, monkeypatch):
+    from engine import clause_resolver
+    from engine.planeswalker_manager import PlaneswalkerManager
+    from engine.cards import CardInstance
+    game = GameState(rng=random.Random(0))
+    game.active_player = 0
+    walker = CardInstance(template=card_db.get_card("Grist, the Hunger Tide"), owner=0,
+                          controller=0, instance_id=game.next_instance_id(), zone="battlefield")
+    walker._game_state = game
+    walker.enter_battlefield()
+    walker.loyalty_counters = 3
+    game.players[0].battlefield.append(walker)
+    # Break the rule: the clause owner applies nothing.
+    monkeypatch.setattr(clause_resolver, "resolve_clause", lambda *a, **k: False)
+    PlaneswalkerManager.activate_planeswalker(game, 0, walker, "plus")
+    assert "606/loyalty_clause_resolved" in _rules(rules_audit.drain())
+
+
+def test_loyalty_clause_audit_is_silent_when_the_clause_resolved(audit, card_db):
+    from engine.planeswalker_manager import PlaneswalkerManager
+    from engine.cards import CardInstance
+    game = GameState(rng=random.Random(0))
+    game.active_player = 0
+    walker = CardInstance(template=card_db.get_card("Grist, the Hunger Tide"), owner=0,
+                          controller=0, instance_id=game.next_instance_id(), zone="battlefield")
+    walker._game_state = game
+    walker.enter_battlefield()
+    walker.loyalty_counters = 3
+    game.players[0].battlefield.append(walker)
+    PlaneswalkerManager.activate_planeswalker(game, 0, walker, "plus")
+    assert "606/loyalty_clause_resolved" not in _rules(rules_audit.drain())

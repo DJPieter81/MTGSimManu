@@ -394,6 +394,11 @@ class LoyaltyEffectKind(Enum):
     TUCK_TARGET_INTO_LIBRARY = "tuck_target_into_library"
     # An emblem line whose executed part exiles an opposing permanent.
     EMBLEM_EXILE_PERMANENT = "emblem_exile_permanent"
+    # Any other line whose own text the shared clause owner
+    # (engine/clause_resolver.py) can run — CR 606.1: a loyalty ability is
+    # an activated ability, and its effect resolves like any effect text.
+    # Typed at load; `LoyaltyAbility.clause` carries the line's template.
+    CLAUSE = "clause"
     UNCLASSIFIED = "unclassified"
 
 
@@ -414,6 +419,9 @@ class LoyaltyAbility:
     target: Optional["TargetRequirement"] = None
     # Printed "Draw a card" / "Draw N cards" rider on the same ability.
     draws: int = 0
+    # For CLAUSE lines: the template the card database built from this
+    # line's own text (every typed-field parser applied to the clause).
+    clause: Optional["CardTemplate"] = None
 
 
 @dataclass(frozen=True)

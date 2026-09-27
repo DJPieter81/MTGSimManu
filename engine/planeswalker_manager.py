@@ -53,6 +53,7 @@ EXECUTABLE_LOYALTY_KINDS = frozenset({
     LoyaltyEffectKind.DRAW_AND_UNTAP_LANDS,
     LoyaltyEffectKind.TUCK_TARGET_INTO_LIBRARY,
     LoyaltyEffectKind.EMBLEM_EXILE_PERMANENT,
+    LoyaltyEffectKind.CLAUSE,
 })
 
 # CR 606: the tuck line puts the permanent into its owner's library
@@ -172,6 +173,28 @@ class PlaneswalkerManager:
             PlaneswalkerManager._resolve_tuck(game, controller)
         elif kind is LoyaltyEffectKind.EMBLEM_EXILE_PERMANENT:
             PlaneswalkerManager._resolve_emblem_exile(game, controller)
+        elif kind is LoyaltyEffectKind.CLAUSE:
+            PlaneswalkerManager._resolve_clause(game, controller, pw_card, ability)
+
+    @staticmethod
+    def _resolve_clause(game: "GameState", controller: int,
+                        pw_card: CardInstance, ability: LoyaltyAbility) -> None:
+        """A loyalty line typed as a clause resolves through the shared
+        clause owner, with the walker as its source (CR 606.1 / 608.2)."""
+        from .clause_resolver import resolve_clause
+        source = CardInstance(template=ability.clause, owner=pw_card.owner,
+                              controller=controller,
+                              instance_id=pw_card.instance_id,
+                              zone=pw_card.zone)
+        source._game_state = game
+        resolved = resolve_clause(game, source, controller, [])
+        # Rules audit (CR 606 / 608.2): an activated clause line did
+        # something — its loyalty was not paid for nothing.
+        from .rules_audit import enabled as _audit_on, check as _audit_check
+        if _audit_on():
+            _audit_check("606/loyalty_clause_resolved", bool(resolved),
+                         f"{pw_card.name} [{ability.cost:+d}] resolved no effect",
+                         game=game)
 
     @staticmethod
     def _resolve_return_to_hand(game: "GameState", controller: int,
