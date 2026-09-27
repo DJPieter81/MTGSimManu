@@ -1,0 +1,30 @@
+// Landless — mtgtop8 event=91142 deck=892241
+4 Hydroelectric Specimen
+4 Tameshi, Reality Architect
+2 Beyeen Veil
+3 Counterspell
+4 Disrupting Shoal
+3 Force of Negation
+2 Into the Flood Maw
+4 Jwari Disruption
+1 Preordain
+4 Sea Gate Restoration
+4 Sink into Stupor
+2 Spell Snare
+2 Stern Scolding
+2 Stock Up
+1 Strix Serenade
+4 Suppression Ray
+2 Waterlogged Teachings
+4 Whir of Invention
+4 Goblin Charbelcher
+4 Lotus Bloom
+
+Sideboard
+4 Consign to Memory
+2 Engineered Explosives
+2 Flusterstorm
+2 Grafdigger's Cage
+2 Harbinger of the Seas
+2 Mystical Dispute
+1 Tezzeret the Seeker

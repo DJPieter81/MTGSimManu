@@ -6,17 +6,14 @@
       "goal_type": "INTERACT",
       "description": "Deploy threats while interacting",
       "card_roles": {
-        "enablers": [
-          "Phelia, Exuberant Shepherd",
-          "Ragavan, Nimble Pilferer"
-        ],
+        "enablers": [],
         "payoffs": [
-          "Obsidian Charmaw",
           "Solitude"
         ],
         "interaction": [
-          "Lightning Bolt",
-          "Pillage"
+          "Avengers Disassembled",
+          "Erode",
+          "Galvanic Discharge"
         ]
       }
     },
@@ -25,13 +22,14 @@
       "description": "Grind value with threats and card advantage",
       "card_roles": {
         "payoffs": [
-          "Obsidian Charmaw",
           "Solitude"
         ],
         "enablers": [
           "Cleansing Wildfire",
-          "Cleansing Wildfire",
-          "Obsidian Charmaw"
+          "Price of Freedom",
+          "Relic of Progenitus",
+          "Avengers Disassembled",
+          "Cleansing Wildfire"
         ]
       }
     },
@@ -41,19 +39,15 @@
     }
   ],
   "mulligan_keys": [
+    "Avengers Disassembled",
     "Cleansing Wildfire",
-    "Lightning Bolt",
-    "Obsidian Charmaw",
-    "Phelia, Exuberant Shepherd",
-    "Pillage",
-    "Ragavan, Nimble Pilferer"
+    "Erode"
   ],
   "mulligan_min_lands": 2,
   "mulligan_max_lands": 4,
   "reactive_only": [],
   "always_early": [
-    "Cleansing Wildfire",
-    "Obsidian Charmaw",
-    "Ragavan, Nimble Pilferer"
+    "Avengers Disassembled",
+    "Cleansing Wildfire"
   ]
 }

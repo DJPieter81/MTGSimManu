@@ -1,0 +1,37 @@
+// 4/5c Aggro — mtgtop8 event=91253 deck=893051
+1 Arid Mesa
+1 Breeding Pool
+4 Flooded Strand
+1 Forest
+1 Hallowed Fountain
+1 Hedge Maze
+1 Indatha Triome
+1 Island
+1 Meticulous Archive
+4 Misty Rainforest
+1 Plains
+1 Sacred Foundry
+1 Steam Vents
+1 Stomping Ground
+1 Temple Garden
+1 Windswept Heath
+2 Aang, Swift Savior
+2 Acidic Slime
+1 Endurance
+4 Omnath, Locus of Creation
+4 Quantum Riddler
+4 Shardless Agent
+4 Solitude
+4 Subtlety
+2 Witch Enchanter
+3 Force of Negation
+4 Birthing Ritual
+4 Leyline Binding
+
+Sideboard
+1 Acidic Slime
+3 Endurance
+1 Force of Negation
+3 Foundation Breaker
+4 Obsidian Charmaw
+3 Rough / Tumble

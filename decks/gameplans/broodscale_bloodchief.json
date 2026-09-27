@@ -8,7 +8,6 @@
       "card_roles": {
         "enablers": [
           "Basking Broodscale",
-          "Delighted Halfling",
           "Haywire Mite"
         ],
         "payoffs": [
@@ -16,8 +15,7 @@
           "Sowing Mycospawn"
         ],
         "interaction": [
-          "Kozilek's Command",
-          "Unholy Heat"
+          "Kozilek's Command"
         ]
       }
     },
@@ -45,7 +43,6 @@
   ],
   "mulligan_keys": [
     "Basking Broodscale",
-    "Delighted Halfling",
     "Emrakul, the Promised End",
     "Haywire Mite",
     "Kozilek's Command",
@@ -55,7 +52,6 @@
   "mulligan_max_lands": 4,
   "reactive_only": [],
   "always_early": [
-    "Delighted Halfling",
     "Emrakul, the Promised End",
     "Haywire Mite",
     "Sowing Mycospawn"

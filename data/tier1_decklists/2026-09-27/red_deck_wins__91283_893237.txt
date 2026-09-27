@@ -1,0 +1,24 @@
+// Red Deck Wins — mtgtop8 event=91283 deck=893237
+4 Barbarian Ring
+2 Fiery Islet
+13 Mountain
+4 Goblin Guide
+4 Monastery Swiftspear
+4 Slickshot Show-Off
+4 Boltwave
+2 Flare of Duplication
+2 Heroes' Hangout
+4 Lava Spike
+4 Light Up the Stage
+4 Lightning Bolt
+1 Shard Volley
+4 Skewer the Critics
+4 Seal of Fire
+
+Sideboard
+1 Curse of Shaken Faith
+3 Ratchet Bomb
+3 Roiling Vortex
+3 Tormod's Crypt
+2 Unholy Heat
+3 Untimely Malfunction
