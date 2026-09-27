@@ -2024,7 +2024,8 @@ def resolve_dies_trigger(game: "GameState", card: "CardInstance",
         # Require the transform clause in the same oracle
         if 'transformed' not in p_oracle or 'exile' not in p_oracle:
             continue
-        _transform_permanent(game, perm, controller)
+        _transform_permanent(game, perm, controller,
+                             returns_as_new_object=True)
 
 
 def _parse_count_threshold(oracle: str) -> Optional[int]:
@@ -2083,9 +2084,16 @@ def _handle_coin_flip_transform(game: "GameState", controller: int,
 
 
 def _transform_permanent(game: "GameState", perm: "CardInstance",
-                          controller: int, extra_loyalty: int = 0) -> None:
+                          controller: int, extra_loyalty: int = 0,
+                          returns_as_new_object: bool = False) -> None:
     """Generic DFC transform: exile the permanent's front face and return
     it as its back face (marked `is_transformed = True`).
+
+    `returns_as_new_object`: the printed effect exiles the permanent and
+    returns it transformed ("exile ~, then return it to the battlefield
+    transformed") — CR 400.7 makes that a new object, which enters
+    summoning-sick and untapped. False for an in-place "transform ~",
+    which is the same object and keeps its status.
 
     Loyalty is set to `back_face_loyalty + extra_loyalty` when the back
     face is a planeswalker. Damage clears on transform. ETB triggers
@@ -2100,6 +2108,9 @@ def _transform_permanent(game: "GameState", perm: "CardInstance",
 
     perm.is_transformed = True
     perm.damage_marked = 0
+    if returns_as_new_object:
+        perm.tapped = False
+        perm.enter_battlefield()
 
     back_loyalty = getattr(perm.template, 'back_face_loyalty', 0) or 0
     if back_loyalty > 0:

@@ -1944,7 +1944,8 @@ class GameRunner:
                                     f"{card.name} Ch.III: transforming into "
                                     f"Reflection of Kiki-Jiki")
                     from engine.oracle_resolver import _transform_permanent
-                    _transform_permanent(game, card, active)
+                    _transform_permanent(game, card, active,
+                                         returns_as_new_object=True)
 
             # --- Transform sagas (Legend of Roku pattern) ---
             elif 'transform' in card_oracle or 'return it to the battlefield transformed' in card_oracle:
