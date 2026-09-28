@@ -5951,7 +5951,8 @@ derived from its source. Fixes the cast-side leak: a prohibition resolved
 on its target's own turn now ends with that turn (CR 611.2a). Auditor
 `611.2a/this_turn_effect_expired` at TURN_BEGINS. Same seeds, n=20, pinned
 worktrees `c4a47f2` → `b3cb74c`: Azorius Control field 34.0 → 32.3 (draws
-36 → 38) — flat, inside noise; Ruby Storm and Domain Zoo still running.
+36 → 38), Ruby Storm 23.8 → 23.8, Domain Zoo 74.0 → 74.0 — flat on all
+three (a rules-correctness unit; the leak rarely fires in these decks).
 
 **G2.2 (`ca1b87c`, test follow-up `c9fb3ff`) — cost deltas are Effects.** Static
 reducers are typed once at load (`CardTemplate.cost_reduction_rule`) and
