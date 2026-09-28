@@ -5857,3 +5857,42 @@ the nonland bounce handler still bypasses the zone funnel (moved verbatim in
 S1); S3 families next — "until your next turn" statics (30 pool / 6
 registered lines), counters/+N (68), mill/discard/life (80), emblems (54);
 then S4, pricing a loyalty tick by its typed clause.
+
+### S3a — "until your next turn" as a duration (`1cd59dd`, CR 611.2b)
+
+The duration is the mechanic; the wrapped effects are ones the engine owns.
+`parse_until_next_turn` removes the duration phrase and runs the existing
+owners on the inner text (full match only — compound effects refused):
+the shared signed P/T clause `_PT_MOD_CLAUSE` (now also backing
+`parse_pump_spell`, output identical on all 22,738 pool cards),
+`parse_team_pump`, `parse_cost_reduction`, and "cast <type> spells as though
+they had flash". Duration owners fire at the controller's own untap:
+`ContinuousEffect(duration="until_next_turn", controller)` +
+`cleanup_until_next_turn`, and player-scoped `temp_cost_rules` /
+`flash_permission_types` cleared by `reset_turn_tracking`. Generalised on
+the way: one cost matcher (`_cost_rule_applies`) inside
+`count_cost_reducers` for permanents and temporary rules (two special-case
+reads of a never-written field deleted); `pump_target` picks an opposing,
+legally targetable creature for a P/T reduction with no chosen target.
+Auditor `611.2b/until_next_turn_expired`. Loyalty unexecutable 395 → 389
+(Teferi, Time Raveler +1; Ral +1). One anchor flip replayed at the exact
+seed and accepted (WST vs WST v2 s50500: first divergence T4, Teferi +1).
+
+**Measurement** (same seeds, n=20, pinned worktrees `5d826a9` → `1cd59dd`):
+
+| field | pre | post |
+|---|---|---|
+| Azorius Control | 24.0 | **34.0** (+10.0; draws 42 → 36) |
+| Ruby Storm | 24.8 | 23.8 |
+| Jeskai Blink (guard) | 50.0 | 49.6 |
+| Domain Zoo (guard) | 74.0 | 72.3 |
+
+The +10.0 sits on the skill's "suspect a second defect" line; an audited
+Azorius Control vs Domain Zoo run (n=10) on `1cd59dd` shows **0 rule
+violations** (census only), and the gain matches Teferi now +1-ing every
+turn (sorcery-speed sweepers on the opponent's turn, loyalty that survives).
+Ral's +1 does not move Storm (its losses are sequencing, recorded earlier).
+
+**Next (S3b):** "whenever a creature attacks you … it gets −N/−0" duration
+triggers (Tamiyo ×2), animate-a-permanent (Karn), attack/block restrictions
+and keyword-only grants — then S4, pricing a loyalty tick by its clause.
