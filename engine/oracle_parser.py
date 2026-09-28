@@ -4773,7 +4773,12 @@ def _modelled_keywords(phrase: str) -> "tuple[str, ...]":
     from .cards import Keyword
     words = [k.name.lower().replace('_', ' ') for k in Keyword]
     found = [(phrase.find(w), w) for w in words if re.search(r'\b' + w + r'\b', phrase)]
-    return tuple(w for _, w in sorted(found))
+    ordered = tuple(w for _, w in sorted(found))
+    # "X or Y" is a choice (CR 608.2d): one keyword is granted — the
+    # first named, a legal choice for the controller.
+    if ' or ' in phrase and ordered:
+        return ordered[:1]
+    return ordered
 
 
 def parse_pump_spell_keywords(oracle: str) -> "tuple[str, ...]":

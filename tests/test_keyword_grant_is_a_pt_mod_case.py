@@ -80,3 +80,10 @@ def test_a_keyword_grant_resolves_on_the_chosen_creature(card_db):
     spell._game_state = game
     assert resolve_clause(game, spell, 0, [bear.instance_id])
     assert Keyword.DOUBLE_STRIKE in bear.keywords
+
+
+def test_a_choice_between_keywords_grants_exactly_one():
+    # "gains double strike or lifelink" is a choice (CR 608.2d), not both.
+    kws = parse_pump_spell_keywords(
+        "Target creature gains double strike or lifelink until end of turn.")
+    assert len(kws) == 1 and kws[0] in {"double strike", "lifelink"}
