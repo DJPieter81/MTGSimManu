@@ -4849,6 +4849,40 @@ _FLASH_PERMISSION_RE = re.compile(
     r'^you may cast (sorcery|creature) spells as though they had flash$')
 
 
+_ATTACK_OBSERVER_RE = re.compile(
+    r"(until your next turn, )?whenever a creature attacks you( or a planeswalker you control)?, "
+    r"(?:it gets ([+-]\d+)/([+-]\d+) until end of turn"
+    r"|(?:its|that creature's) controller loses (\w+) life(?: and you gain (\w+) life)?)(?:\.|$)",
+    re.M)
+
+
+def parse_attack_observer(oracle: str) -> "Optional[dict]":
+    """"[Until your next turn, ]whenever a creature attacks you [or a
+    planeswalker you control], <effect>" (CR 508.1 / 603.2). Effects typed:
+    the attacker gets ±N/±M until end of turn; its controller loses N life
+    [and you gain M life]. Returns ``{'scope': 'you'|'you_or_pw',
+    'duration': 'static'|'until_next_turn', 'effect': {...}}`` or None
+    (other effects — draw, investigate, counters, emblems — refused)."""
+    if not oracle or "attacks you" not in oracle:
+        return None
+    m = _ATTACK_OBSERVER_RE.search(strip_reminder_text(oracle).lower())
+    if not m:
+        return None
+    if m.group(3) is not None:
+        effect = {'kind': 'pt_mod', 'power': int(m.group(3)), 'toughness': int(m.group(4))}
+    else:
+        loss = _NUMBER_WORDS.get(m.group(5)) if not m.group(5).isdigit() else int(m.group(5))
+        gain_w = m.group(6)
+        gain = 0 if gain_w is None else (int(gain_w) if gain_w.isdigit()
+                                         else _NUMBER_WORDS.get(gain_w))
+        if loss is None or gain is None:
+            return None
+        effect = {'kind': 'drain', 'loss': loss, 'gain': gain}
+    return {'scope': 'you_or_pw' if m.group(2) else 'you',
+            'duration': 'until_next_turn' if m.group(1) else 'static',
+            'effect': effect}
+
+
 _OBJECT_RESTRICTION_RE = re.compile(
     r"(?:^|[.:—•]\s*|, )(up to (one|two|three) target creatures?|one or two target creatures"
     r"|target creature(?: an opponent controls)?) can't (attack or block|block|attack)"

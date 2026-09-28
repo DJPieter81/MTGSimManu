@@ -702,6 +702,13 @@ def _derive_static_rule_effects(game: "GameState") -> list:
                 out.append(cost_delta_effect(controller, rule, WHILE_SOURCE,
                                              source_id=perm.instance_id,
                                              origin=OriginKind.STATIC))
+            obs = getattr(perm.template, 'attack_observer', None)
+            if obs and obs['duration'] == 'static':
+                # CR 611.3a / 603.2: a permanent's printed attack observer.
+                from .effect_model import observe_attacks
+                out.append(observe_attacks(controller, obs, WHILE_SOURCE,
+                                           source_id=perm.instance_id,
+                                           origin=OriginKind.STATIC))
             lim = getattr(perm.template, 'draw_limit', None)
             if lim:
                 # CR 101.2: "<players> can't draw more than N cards each

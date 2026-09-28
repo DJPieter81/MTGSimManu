@@ -1275,7 +1275,8 @@ def resolve_attack_trigger(game: "GameState", attacker: "CardInstance",
         m = re.search(r'loses?\s+(\d+)\s+life', _drain_ability)
         n_life = int(m.group(1)) if m else 0
         if n_life > 0:
-            opp_player.life -= n_life
+            from .damage import lose_life
+            lose_life(game, opponent, n_life)
         if 'draw a card' in _drain_ability or 'draw' in _drain_ability:
             game.draw_cards(controller, 1)
         m_gain = re.search(r'gain\s+(\d+)\s+life', _drain_ability)

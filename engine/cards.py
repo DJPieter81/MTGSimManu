@@ -1188,6 +1188,9 @@ class CardTemplate:
     # "(Up to N) target creature(s) can't attack/block <duration>" — a
     # PROHIBIT effect on the chosen objects (oracle_parser.parse_object_restriction).
     object_restriction: Optional[dict] = None
+    # "Whenever a creature attacks you [or a planeswalker you control],
+    # <effect>" (oracle_parser.parse_attack_observer): an OBSERVE effect.
+    attack_observer: Optional[dict] = None
     # A permanent's static "<spells> cost {N} less" rule
     # (oracle_parser.parse_cost_reduction), derived as a COST_DELTA effect
     # while the permanent is on the battlefield.
@@ -1453,6 +1456,9 @@ class CardTemplate:
             if self.hand_refill is None:
                 from .oracle_parser import parse_hand_refill as _phr
                 self.hand_refill = _phr(self.oracle_text)
+            if self.attack_observer is None:
+                from .oracle_parser import parse_attack_observer as _pao
+                self.attack_observer = _pao(self.oracle_text)
             if self.object_restriction is None:
                 from .oracle_parser import parse_object_restriction as _por
                 self.object_restriction = _por(self.oracle_text)

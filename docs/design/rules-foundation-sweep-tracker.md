@@ -6007,3 +6007,19 @@ gate). The 508.1a / 509.1a auditors restate the restriction from the effect
 records. Group shapes ("creatures without flying can't block", 83 pool) are
 the FILTER selector — next. Chunks A 2331 / B 2513, anchor unchanged. No
 registered main-deck carrier: rules correctness, no measurement.
+
+**S3b-3 — "whenever a creature attacks you [or a planeswalker you control]"
+observers as OBSERVE effects (CR 603.2 / 611.2b / 611.3a).** Typed once as
+`CardTemplate.attack_observer` (scope, effect, duration): effects the
+attacker gets ±N/±M until end of turn, or its controller loses N life [and
+you gain M]; draw / investigate / counters / emblems refused. A permanent's
+printed observer is a static OBSERVE effect (WHILE_SOURCE); a resolved
+"until your next turn, whenever …" is stored until the controller's next
+turn. `CombatManager._fire_attack_observers` fires once per creature
+attacking the covered player (the wider scope also on attacks at their
+planeswalkers); auditor `603.2/attack_observer_fired` restates the count
+from the records. Registered carrier: Tamiyo, Seasoned Scholar's +2 (Dimir
+×3) — loyalty unclassified 383 → 382. New owner `engine/damage.lose_life`
+(CR 119.3: loss of life is not damage, but counts as life lost this turn);
+three direct `.life -=` loss writes moved onto it — single-owner
+damage_write 42 → 39.

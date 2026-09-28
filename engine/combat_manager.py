@@ -129,6 +129,23 @@ class CombatManager:
             # Fire attack triggers via game_state
             game.trigger_attack(attacker, active_player)
 
+        # CR 603.2: "whenever a creature attacks you …" observers.
+        fired = self._fire_attack_observers(game, attackers)
+        if _audit_on():
+            # Restated from the effect records: one firing per observer per
+            # creature attacking its player (or, wider scope, their planeswalker).
+            from .effect_model import ModKind
+            expected = 0
+            for e in game.continuous_effects.rule_effects(game):
+                if e.modification.kind is ModKind.OBSERVE and e.modification.action == "attacked":
+                    for a in self._assignments:
+                        at_pw = a.defender is not None
+                        if (e.selector.covers_player(self._defending_player)
+                                and (not at_pw or e.modification.get("scope") == "you_or_pw")):
+                            expected += 1
+            _audit_check("603.2/attack_observer_fired", fired == expected,
+                         f"{fired} attack observer firing(s), {expected} due", game=game)
+
         # Battle cry: Signal Pest and similar
         self._apply_battle_cry(game, attackers)
 
@@ -196,6 +213,40 @@ class CombatManager:
                         not CombatManager._blocker_illegal_recompute(
                             attacker, blocker, game),
                         f"{blocker.name} blocks {attacker.name}", game=game)
+
+    def _fire_attack_observers(self, game, attackers) -> int:
+        """Run every OBSERVE-attacked effect covering the defending player,
+        once per creature attacking that player (or, for the wider scope, a
+        planeswalker they control). Returns the number of firings."""
+        from .effect_model import ModKind
+        from .damage import lose_life
+        from .continuous_effects import create_pump_spell_effect
+        observers = [e for e in game.continuous_effects.rule_effects(game)
+                     if e.modification.kind is ModKind.OBSERVE
+                     and e.modification.action == "attacked"
+                     and e.selector.covers_player(self._defending_player)]
+        fired = 0
+        for e in observers:
+            eff = dict(e.modification.get("effect"))
+            for a in self._assignments:
+                if a.defender is not None and e.modification.get("scope") != "you_or_pw":
+                    continue
+                atk = a.attacker
+                fired += 1
+                if eff['kind'] == 'pt_mod':
+                    for ce in create_pump_spell_effect(
+                            e.source_id, "attack observer", atk.instance_id,
+                            eff['power'], eff['toughness'],
+                            target_seq=atk.battlefield_entry_seq):
+                        game.continuous_effects.register(ce)
+                    game.continuous_effects.recalculate(game)
+                else:
+                    lose_life(game, atk.controller, eff['loss'])
+                    if eff['gain']:
+                        game.gain_life(e.controller, eff['gain'], "attack observer")
+                game.log.append(f"T{game.display_turn}: {atk.name} attacks — "
+                                f"observer ({eff['kind']})")
+        return fired
 
     @staticmethod
     def _restricted_in_registry(game, card, action) -> bool:

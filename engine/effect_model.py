@@ -244,3 +244,17 @@ def prohibit_object(card, action: str, duration: Duration,
                   Modification(ModKind.PROHIBIT, action=action),
                   duration, OriginKind.RESOLVED, source_id=source_id,
                   controller=controller)
+
+
+def observe_attacks(player: int, observer: dict, duration: Duration,
+                    controller: Optional[int] = None, source_id: int = 0,
+                    origin: "OriginKind" = OriginKind.RESOLVED) -> Effect:
+    """"Whenever a creature attacks <player> [or a planeswalker they
+    control], <effect>" (CR 603.2) — the parse_attack_observer shape."""
+    eff = observer['effect']
+    return Effect(Selector(SelectorKind.PLAYER, player=player),
+                  Modification(ModKind.OBSERVE, action="attacked",
+                               data=(("scope", observer['scope']),
+                                     ("effect", tuple(sorted(eff.items()))))),
+                  duration, origin, source_id=source_id,
+                  controller=player if controller is None else controller)
