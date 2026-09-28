@@ -2196,6 +2196,8 @@ class CardDatabase:
         template.draw_limit = parse_draw_limit(oracle)
         from .oracle_parser import parse_until_next_turn
         template.next_turn_effect = parse_until_next_turn(oracle)
+        from .oracle_parser import parse_object_restriction
+        template.object_restriction = parse_object_restriction(oracle)
         from .oracle_parser import parse_static_cost_reduction
         template.cost_reduction_rule = parse_static_cost_reduction(oracle)
         # Targeted forced discard, classified by who chooses the card

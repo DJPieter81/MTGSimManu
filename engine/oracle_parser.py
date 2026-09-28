@@ -4849,6 +4849,39 @@ _FLASH_PERMISSION_RE = re.compile(
     r'^you may cast (sorcery|creature) spells as though they had flash$')
 
 
+_OBJECT_RESTRICTION_RE = re.compile(
+    r"(?:^|[.:—•]\s*|, )(up to (one|two|three) target creatures?|one or two target creatures"
+    r"|target creature(?: an opponent controls)?) can't (attack or block|block|attack)"
+    r" (this turn|until your next turn)", re.M)
+
+
+def parse_object_restriction(oracle: str) -> "Optional[dict]":
+    """A resolved restriction on chosen creatures (CR 508.1c / 509.1b):
+    "(up to N | one or two) target creature(s) can't (attack or block |
+    block | attack) (this turn | until your next turn)". Returns
+    ``{'actions': tuple, 'count': int, 'duration': 'this_turn' |
+    'until_next_turn'}`` or None. Group shapes ("creatures without flying
+    can't block"), filtered targets and statics ("enchanted creature can't
+    block") are refused — they are other selectors."""
+    if not oracle or "can't" not in oracle:
+        return None
+    low = strip_reminder_text(oracle).lower()
+    m = _OBJECT_RESTRICTION_RE.search(low)
+    if not m:
+        return None
+    subject = m.group(1)
+    if subject.startswith("up to"):
+        count = _NUMBER_WORDS[m.group(2)]
+    elif subject.startswith("one or two"):
+        count = 2
+    else:
+        count = 1
+    actions = {'attack or block': ('attack', 'block'), 'block': ('block',),
+               'attack': ('attack',)}[m.group(3)]
+    return {'actions': actions, 'count': count,
+            'duration': 'this_turn' if m.group(4) == 'this turn' else 'until_next_turn'}
+
+
 def parse_until_next_turn(oracle: str) -> "Optional[dict]":
     """Type an "until your next turn" effect by its wrapped shape.
 

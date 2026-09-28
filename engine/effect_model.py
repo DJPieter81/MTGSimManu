@@ -86,6 +86,12 @@ class Selector:
     # {'types': ('creature',), 'controller': 'you'}.
     filter: Optional[Tuple[Tuple[str, Any], ...]] = None
 
+    def covers_object(self, card) -> bool:
+        """An OBJECT selector covers the object it chose, not a later object
+        of the same card (CR 400.7)."""
+        return (self.kind is SelectorKind.OBJECT and self.obj is not None
+                and self.obj == (card.instance_id, card.battlefield_entry_seq))
+
     def covers_player(self, idx: int) -> bool:
         k = self.kind
         return (k is SelectorKind.ALL_PLAYERS
@@ -225,5 +231,16 @@ def prevent_combat_damage(duration: Duration, controller: Optional[int] = None,
     """"Prevent all combat damage that would be dealt" (CR 615)."""
     return Effect(Selector(SelectorKind.ALL_PLAYERS),
                   Modification(ModKind.PREVENT_DAMAGE, action="combat"),
+                  duration, OriginKind.RESOLVED, source_id=source_id,
+                  controller=controller)
+
+
+def prohibit_object(card, action: str, duration: Duration,
+                    controller: Optional[int] = None, source_id: int = 0) -> Effect:
+    """"<chosen creature> can't <attack|block>" (CR 508.1c / 509.1b) — on
+    the object as it is now (CR 611.2c)."""
+    return Effect(Selector(SelectorKind.OBJECT,
+                           obj=(card.instance_id, card.battlefield_entry_seq)),
+                  Modification(ModKind.PROHIBIT, action=action),
                   duration, OriginKind.RESOLVED, source_id=source_id,
                   controller=controller)

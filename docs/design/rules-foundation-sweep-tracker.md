@@ -5990,3 +5990,20 @@ effects is a refactor with 19 test fixtures of churn and no rules gain; it
 waits until a rule needs layer interaction for it. Lead recorded:
 `ai/ev_player.py` (~:3120) moves cards hand→graveyard and places counters
 directly — the AI mutating game state.
+
+**S3b-2 — per-creature "can't attack / block" as PROHIBIT effects on an
+OBJECT selector (CR 508.1c / 509.1b / 611.2c).** Class: 82 pool cards whose
+clause is "(up to N | one or two) target creature(s) can't (attack or block
+| block | attack) (this turn | until your next turn)"; typed once as
+`CardTemplate.object_restriction` (81 / 82 populated), registered carriers
+Untimely Malfunction's mode (Ruby Storm SB) and Kaito, Dancing Shadow's +1
+(loyalty unclassified 384 → 383). The clause registers `PROHIBIT
+attack|block` effects whose selector is the chosen object `(instance_id,
+battlefield_entry_seq)` — a blinked creature is free (400.7) — with THIS_TURN
+or UNTIL_YOUR_NEXT_TURN duration; `can_attack` / `can_block` ask
+`rules_query.object_prohibited`; `declare_blockers` now drops a block by a
+creature that can't block (it checked evasion only, never the blocker's own
+gate). The 508.1a / 509.1a auditors restate the restriction from the effect
+records. Group shapes ("creatures without flying can't block", 83 pool) are
+the FILTER selector — next. Chunks A 2331 / B 2513, anchor unchanged. No
+registered main-deck carrier: rules correctness, no measurement.

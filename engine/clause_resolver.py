@@ -777,10 +777,58 @@ def _a_token(ctx):
     return None
 
 
+def _object_restriction_shape(ctx):
+    # A modal mode resolves its own text; otherwise the typed field.
+    if ctx.oracle_override is not None:
+        from .oracle_parser import parse_object_restriction
+        return parse_object_restriction(ctx.oracle_override)
+    return getattr(ctx.template, 'object_restriction', None)
+
+
+def _g_object_restriction(ctx):
+    return _object_restriction_shape(ctx) is not None
+
+
+def _a_object_restriction(ctx):
+    # CR 508.1c / 509.1b / 611.2c: PROHIBIT effects on the chosen objects,
+    # for the printed duration. Not an early return — a compound card keeps
+    # resolving its other clauses.
+    from engine.target_solver import can_be_targeted
+    from .effect_model import THIS_TURN, prohibit_object, until_your_next_turn
+    game, card, controller = ctx.game, ctx.card, ctx.controller
+    shape = _object_restriction_shape(ctx)
+    chosen = []
+    for tid in (ctx.targets or []):
+        c = game.get_card_by_id(tid) if isinstance(tid, int) and tid > 0 else None
+        if (c is not None and c.zone == 'battlefield' and c.effective_is_creature
+                and can_be_targeted(c, card, controller) and c not in chosen):
+            chosen.append(c)
+    if not ctx.targets:
+        theirs = [c for c in game.players[1 - controller].creatures
+                  if can_be_targeted(c, card, controller)]
+        chosen = sorted(theirs, key=lambda c: c.power or 0, reverse=True)
+    chosen = chosen[:shape['count']]
+    if not chosen:
+        return None
+    duration = (THIS_TURN if shape['duration'] == 'this_turn'
+                else until_your_next_turn(controller))
+    for c in chosen:
+        for action in shape['actions']:
+            game.continuous_effects.register_effect(
+                prohibit_object(c, action, duration, controller, card.instance_id))
+    game.log.append(
+        f"T{game.display_turn} P{controller+1}: {card.name} — "
+        f"{', '.join(c.name for c in chosen)} can't {' or '.join(shape['actions'])} "
+        f"({shape['duration'].replace('_', ' ')})")
+    ctx.handled = True
+    return None
+
+
 HANDLERS: List[ClauseHandler] = [
     ClauseHandler("combat_prevention", _g_combat_prevention, _a_combat_prevention),
     ClauseHandler("hand_refill_wheel", _g_wheel, _a_wheel),
     ClauseHandler("cast_prohibition", _g_cast_prohibition, _a_cast_prohibition),
+    ClauseHandler("object_restriction", _g_object_restriction, _a_object_restriction),
     ClauseHandler("until_next_turn", _g_until_next_turn, _a_until_next_turn),
     ClauseHandler("mass_mode_clause", _g_mass_mode, _a_mass_mode),
     ClauseHandler("targeted_pump", _g_pump, _a_pump),

@@ -101,7 +101,8 @@ class CombatManager:
                                   and Keyword.HASTE not in atk.keywords
                                   and not getattr(atk, '_dashed', False))
                          and Keyword.DEFENDER not in atk.keywords
-                         and not game.players[active_player].cannot_attack_this_turn)
+                         and not game.players[active_player].cannot_attack_this_turn
+                         and not CombatManager._restricted_in_registry(game, atk, "attack"))
                 _audit_check("508.1a/attacker_legal", legal,
                              f"{atk.name} declared as an attacker", game=game)
             # CR 508.1b: an attacked planeswalker is one the defending
@@ -161,7 +162,7 @@ class CombatManager:
                 blocker = game.get_card_by_id(bid)
                 if blocker is None:
                     continue
-                if not self._can_block(attacker, blocker):
+                if not blocker.can_block or not self._can_block(attacker, blocker):
                     game.log.append(
                         f"T{game.display_turn}: illegal block dropped — "
                         f"{blocker.name} cannot legally block "
@@ -193,18 +194,31 @@ class CombatManager:
                     _audit_check(
                         "509.1a/blocker_legal",
                         not CombatManager._blocker_illegal_recompute(
-                            attacker, blocker),
+                            attacker, blocker, game),
                         f"{blocker.name} blocks {attacker.name}", game=game)
 
     @staticmethod
+    def _restricted_in_registry(game, card, action) -> bool:
+        """Audit restatement of an object restriction, read from the effect
+        records directly (not `rules_query`, the code it audits)."""
+        from .effect_model import ModKind
+        obj = (card.instance_id, card.battlefield_entry_seq)
+        return any(e.modification.kind is ModKind.PROHIBIT
+                   and e.modification.action == action
+                   and e.selector.obj == obj
+                   for e in game.continuous_effects._rule_effects)
+
+    @staticmethod
     def _blocker_illegal_recompute(attacker: "CardInstance",
-                                   blocker: "CardInstance") -> bool:
+                                   blocker: "CardInstance", game=None) -> bool:
         """Independent restatement of block legality (CR 509.1a/509.1b) for
         the audit — deliberately NOT `_can_block`, the code it audits: a
         tapped creature can't block, and evasion/shadow/protection/
         can't-be-blocked all disqualify it."""
         if getattr(blocker, 'tapped', False):
             return True  # CR 509.1a
+        if game is not None and CombatManager._restricted_in_registry(game, blocker, "block"):
+            return True  # CR 509.1a: a resolved "can't block" on this object
         if getattr(attacker, 'cannot_be_blocked_this_turn', False):
             return True
         if (Keyword.FLYING in attacker.keywords

@@ -1185,6 +1185,9 @@ class CardTemplate:
     # "Until your next turn, <owned effect>" (CR 611.2b), typed by the
     # wrapped shape (oracle_parser.parse_until_next_turn).
     next_turn_effect: Optional[dict] = None
+    # "(Up to N) target creature(s) can't attack/block <duration>" — a
+    # PROHIBIT effect on the chosen objects (oracle_parser.parse_object_restriction).
+    object_restriction: Optional[dict] = None
     # A permanent's static "<spells> cost {N} less" rule
     # (oracle_parser.parse_cost_reduction), derived as a COST_DELTA effect
     # while the permanent is on the battlefield.
@@ -1450,6 +1453,9 @@ class CardTemplate:
             if self.hand_refill is None:
                 from .oracle_parser import parse_hand_refill as _phr
                 self.hand_refill = _phr(self.oracle_text)
+            if self.object_restriction is None:
+                from .oracle_parser import parse_object_restriction as _por
+                self.object_restriction = _por(self.oracle_text)
             if self.next_turn_effect is None:
                 from .oracle_parser import parse_until_next_turn as _punt
                 self.next_turn_effect = _punt(self.oracle_text)
@@ -2354,7 +2360,7 @@ class CardInstance:
             return False
         if Keyword.DEFENDER in self.keywords:
             return False
-        return True
+        return not self._object_prohibited("attack")
 
     @property
     def can_block(self) -> bool:
@@ -2362,7 +2368,15 @@ class CardInstance:
             return False
         if self.tapped:
             return False
-        return True
+        return not self._object_prohibited("block")
+
+    def _object_prohibited(self, action: str) -> bool:
+        # CR 508.1c / 509.1b: a resolved "can't attack/block" on this object.
+        game = getattr(self, "_game_state", None)
+        if game is None:
+            return False
+        from . import rules_query
+        return rules_query.object_prohibited(game, self, action)
 
     @property
     def is_dead(self) -> bool:
