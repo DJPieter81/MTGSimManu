@@ -6023,3 +6023,16 @@ from the records. Registered carrier: Tamiyo, Seasoned Scholar's +2 (Dimir
 (CR 119.3: loss of life is not damage, but counts as life lost this turn);
 three direct `.life -=` loss writes moved onto it — single-owner
 damage_write 42 → 39.
+
+**S3b-2b — class restrictions ("creatures [your opponents control]
+[without flying] can't block / attack <duration>") as PROHIBIT effects with
+a FILTER selector (CR 508.1c / 509.1b).** A rule-modifying effect, so its
+class is re-evaluated for its whole duration (CR 611.2c's locked-in set
+covers only characteristic / control changes): a creature entering later,
+or losing flying, is covered. Typed as `CardTemplate.group_restriction`
+(12 / 13 pool; the 13th is Orim's Chant's unqualified "creatures can't
+attack", which stays with the combat-prevention class). `Selector.covers_object`
+evaluates FILTER against controller (relative to the effect's controller)
+and keyword; `rules_query.object_prohibited` reads OBJECT and FILTER alike;
+the 508.1a / 509.1a auditors restate the filter independently. Chunks A 2349
+/ B 2514. No registered carrier: rules correctness.

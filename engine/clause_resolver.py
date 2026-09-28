@@ -844,12 +844,33 @@ def _a_attack_observer(ctx):
     return None
 
 
+def _g_group_restriction(ctx):
+    return ctx.oracle_override is None and getattr(ctx.template, 'group_restriction', None)
+
+
+def _a_group_restriction(ctx):
+    # CR 508.1c / 509.1b: a class restriction, re-evaluated for its duration.
+    from .effect_model import THIS_TURN, prohibit_group, until_your_next_turn
+    game, card, controller = ctx.game, ctx.card, ctx.controller
+    shape = ctx.template.group_restriction
+    duration = (THIS_TURN if shape['duration'] == 'this_turn'
+                else until_your_next_turn(controller))
+    for action in shape['actions']:
+        game.continuous_effects.register_effect(
+            prohibit_group(controller, shape, action, duration, card.instance_id))
+    game.log.append(f"T{game.display_turn} P{controller+1}: {card.name} — creatures "
+                    f"({shape['controller']}) can't {' or '.join(shape['actions'])}")
+    ctx.handled = True
+    return None
+
+
 HANDLERS: List[ClauseHandler] = [
     ClauseHandler("combat_prevention", _g_combat_prevention, _a_combat_prevention),
     ClauseHandler("hand_refill_wheel", _g_wheel, _a_wheel),
     ClauseHandler("cast_prohibition", _g_cast_prohibition, _a_cast_prohibition),
     ClauseHandler("object_restriction", _g_object_restriction, _a_object_restriction),
     ClauseHandler("attack_observer", _g_attack_observer, _a_attack_observer),
+    ClauseHandler("group_restriction", _g_group_restriction, _a_group_restriction),
     ClauseHandler("until_next_turn", _g_until_next_turn, _a_until_next_turn),
     ClauseHandler("mass_mode_clause", _g_mass_mode, _a_mass_mode),
     ClauseHandler("targeted_pump", _g_pump, _a_pump),

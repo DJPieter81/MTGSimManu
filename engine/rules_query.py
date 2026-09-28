@@ -108,13 +108,13 @@ def combat_damage_prevented(game: "GameState") -> bool:
 
 
 def object_prohibited(game: "GameState", card, action: str) -> bool:
-    """A PROHIBIT effect on this object forbids `action` ('attack' /
+    """A PROHIBIT effect on this object (or on a class it is in) forbids `action` ('attack' /
     'block') (CR 508.1c / 509.1b). Object-scoped prohibitions come only
     from resolved effects, so only the stored ones are read (this gate runs
     in every attack/block enumeration)."""
     from engine.effect_model import ModKind, SelectorKind
     for e in game.continuous_effects._rule_effects:
-        if (e.selector.kind is SelectorKind.OBJECT
+        if (e.selector.kind in (SelectorKind.OBJECT, SelectorKind.FILTER)
                 and e.modification.kind is ModKind.PROHIBIT
                 and e.modification.action == action
                 and e.selector.covers_object(card)):

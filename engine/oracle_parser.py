@@ -4883,6 +4883,36 @@ def parse_attack_observer(oracle: str) -> "Optional[dict]":
             'effect': effect}
 
 
+_GROUP_RESTRICTION_RE = re.compile(
+    r"(?:^|[.:—•]\s*|, )creatures( your opponents control| target player controls)?"
+    r"( without flying)? can't (attack or block|block|attack) (this turn|until your next turn)",
+    re.M)
+
+
+def parse_group_restriction(oracle: str) -> "Optional[dict]":
+    """A resolved restriction on a class of creatures (CR 508.1c / 509.1b):
+    "creatures [your opponents control | target player controls] [without
+    flying] can't (attack or block | block | attack) <duration>". A
+    rule-modifying effect, so the class is re-evaluated for its whole
+    duration (CR 611.2c covers only characteristic/control changes).
+    Unqualified "creatures can't attack" is the combat-prevention class's
+    player-scoped lock and is left to it. Returns ``{'actions',
+    'controller': 'any'|'opponents', 'without_keyword', 'duration'}``."""
+    if not oracle or "can't" not in oracle:
+        return None
+    m = _GROUP_RESTRICTION_RE.search(strip_reminder_text(oracle).lower())
+    if not m:
+        return None
+    owner, without, verb, dur = m.groups()
+    if verb == 'attack' and not owner and not without:
+        return None
+    return {'actions': {'attack or block': ('attack', 'block'), 'block': ('block',),
+                        'attack': ('attack',)}[verb],
+            'controller': 'opponents' if owner else 'any',
+            'without_keyword': 'flying' if without else None,
+            'duration': 'this_turn' if dur == 'this turn' else 'until_next_turn'}
+
+
 _OBJECT_RESTRICTION_RE = re.compile(
     r"(?:^|[.:—•]\s*|, )(up to (one|two|three) target creatures?|one or two target creatures"
     r"|target creature(?: an opponent controls)?) can't (attack or block|block|attack)"

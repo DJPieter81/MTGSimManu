@@ -252,11 +252,21 @@ class CombatManager:
     def _restricted_in_registry(game, card, action) -> bool:
         """Audit restatement of an object restriction, read from the effect
         records directly (not `rules_query`, the code it audits)."""
-        from .effect_model import ModKind
+        from .effect_model import ModKind, SelectorKind
         obj = (card.instance_id, card.battlefield_entry_seq)
+        kws = {k.value for k in card.keywords}
+
+        def _covers(sel):
+            if sel.kind is SelectorKind.OBJECT:
+                return sel.obj == obj
+            if sel.kind is SelectorKind.FILTER:
+                f = dict(sel.filter or ())
+                return (not (f.get('controller') == 'opponents'
+                             and card.controller == sel.player)
+                        and f.get('without_keyword') not in kws)
+            return False
         return any(e.modification.kind is ModKind.PROHIBIT
-                   and e.modification.action == action
-                   and e.selector.obj == obj
+                   and e.modification.action == action and _covers(e.selector)
                    for e in game.continuous_effects._rule_effects)
 
     @staticmethod

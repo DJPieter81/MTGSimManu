@@ -1188,6 +1188,9 @@ class CardTemplate:
     # "(Up to N) target creature(s) can't attack/block <duration>" — a
     # PROHIBIT effect on the chosen objects (oracle_parser.parse_object_restriction).
     object_restriction: Optional[dict] = None
+    # "Creatures [your opponents control] [without flying] can't block …"
+    # (oracle_parser.parse_group_restriction): a PROHIBIT effect on a class.
+    group_restriction: Optional[dict] = None
     # "Whenever a creature attacks you [or a planeswalker you control],
     # <effect>" (oracle_parser.parse_attack_observer): an OBSERVE effect.
     attack_observer: Optional[dict] = None
@@ -1459,6 +1462,9 @@ class CardTemplate:
             if self.attack_observer is None:
                 from .oracle_parser import parse_attack_observer as _pao
                 self.attack_observer = _pao(self.oracle_text)
+            if self.group_restriction is None:
+                from .oracle_parser import parse_group_restriction as _pgr
+                self.group_restriction = _pgr(self.oracle_text)
             if self.object_restriction is None:
                 from .oracle_parser import parse_object_restriction as _por
                 self.object_restriction = _por(self.oracle_text)

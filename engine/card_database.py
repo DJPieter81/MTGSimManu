@@ -2198,6 +2198,8 @@ class CardDatabase:
         template.next_turn_effect = parse_until_next_turn(oracle)
         from .oracle_parser import parse_object_restriction
         template.object_restriction = parse_object_restriction(oracle)
+        from .oracle_parser import parse_group_restriction
+        template.group_restriction = parse_group_restriction(oracle)
         from .oracle_parser import parse_attack_observer
         template.attack_observer = parse_attack_observer(oracle)
         from .oracle_parser import parse_static_cost_reduction

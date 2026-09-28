@@ -88,9 +88,20 @@ class Selector:
 
     def covers_object(self, card) -> bool:
         """An OBJECT selector covers the object it chose, not a later object
-        of the same card (CR 400.7)."""
-        return (self.kind is SelectorKind.OBJECT and self.obj is not None
-                and self.obj == (card.instance_id, card.battlefield_entry_seq))
+        of the same card (CR 400.7); a FILTER selector covers whatever
+        matches its filter now (evaluated at each query, CR 611.3a-style)."""
+        if self.kind is SelectorKind.OBJECT:
+            return (self.obj is not None
+                    and self.obj == (card.instance_id, card.battlefield_entry_seq))
+        if self.kind is SelectorKind.FILTER:
+            f = dict(self.filter or ())
+            if f.get('controller') == 'opponents' and card.controller == self.player:
+                return False
+            kw = f.get('without_keyword')
+            if kw and any(k.value == kw for k in card.keywords):
+                return False
+            return True
+        return False
 
     def covers_player(self, idx: int) -> bool:
         k = self.kind
@@ -258,3 +269,15 @@ def observe_attacks(player: int, observer: dict, duration: Duration,
                                      ("effect", tuple(sorted(eff.items()))))),
                   duration, origin, source_id=source_id,
                   controller=player if controller is None else controller)
+
+
+def prohibit_group(controller: int, shape: dict, action: str, duration: Duration,
+                   source_id: int = 0) -> Effect:
+    """"Creatures [<controller filter>] [without <kw>] can't <action>" — a
+    FILTER selector relative to the effect's controller (CR 508.1c/509.1b)."""
+    return Effect(Selector(SelectorKind.FILTER, player=controller,
+                           filter=(("controller", shape['controller']),
+                                   ("without_keyword", shape['without_keyword']))),
+                  Modification(ModKind.PROHIBIT, action=action),
+                  duration, OriginKind.RESOLVED, source_id=source_id,
+                  controller=controller)
