@@ -126,6 +126,32 @@ class ContinuousEffectsManager:
     def __init__(self):
         self._effects: List[ContinuousEffect] = []
         self._timestamp_counter: int = 0
+        # Resolved rule-modifying effects (engine/effect_model.Effect),
+        # stored until their Duration is expired by a clock event.
+        self._rule_effects: list = []
+
+    # ── rule-modifying effects (CR 101.2 / 611) ─────────────────────
+
+    def register_effect(self, effect) -> None:
+        """Store a resolved rule effect (engine/effect_model.Effect)."""
+        import dataclasses
+        self._timestamp_counter += 1
+        self._rule_effects.append(
+            dataclasses.replace(effect, timestamp=self._timestamp_counter))
+
+    def expire_rule_effects(self, event) -> None:
+        """The one expiry path: drop every stored effect whose Duration
+        this clock event ends."""
+        self._rule_effects = [e for e in self._rule_effects
+                              if not e.duration.expired_by(event)]
+
+    def drop_rule_effects(self, predicate) -> None:
+        self._rule_effects = [e for e in self._rule_effects if not predicate(e)]
+
+    def rule_effects(self, game: "GameState") -> list:
+        """Stored resolved effects plus the static ones permanents have
+        right now (derived fresh, never stored — CR 611.3a)."""
+        return list(self._rule_effects) + _derive_static_rule_effects(game)
 
     def register(self, effect: ContinuousEffect) -> None:
         """Register a new continuous effect."""
@@ -633,3 +659,22 @@ def create_pump_spell_effect(source_id: int, source_name: str,
             ))
 
     return effects
+
+
+def _derive_static_rule_effects(game: "GameState") -> list:
+    """Rule-modifying effects that permanents have by being on the
+    battlefield (CR 611.3a): a sorcery-speed lockout static restricts the
+    source's opponents while the source is there."""
+    from ai.oracle_classifier import Tag, tags_for
+    from .effect_model import (Effect, Modification, ModKind, OriginKind,
+                               Selector, SelectorKind, WHILE_SOURCE)
+    out = []
+    for controller, player in enumerate(game.players):
+        for perm in player.battlefield:
+            if Tag.SORCERY_SPEED_LOCKOUT in tags_for(perm.name):
+                out.append(Effect(
+                    Selector(SelectorKind.OPPONENTS, player=controller),
+                    Modification(ModKind.PROHIBIT, action="cast_outside_sorcery_timing"),
+                    WHILE_SOURCE, OriginKind.STATIC, source_id=perm.instance_id,
+                    controller=controller, timestamp=perm.instance_id))
+    return out

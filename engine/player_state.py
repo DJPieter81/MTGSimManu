@@ -81,10 +81,10 @@ class PlayerState:
     energy_produced_this_game: int = 0
     energy_spent_this_game: int = 0
     library_searches_this_game: int = 0
-    silenced_this_turn: bool = False
-    # CR 101.2 partial cast prohibitions this turn: a set of spell
-    # filters ('noncreature' / 'creature'); 'all' is silenced_this_turn.
-    spell_types_prohibited_this_turn: set = field(default_factory=set)
+    # Cast prohibitions / permissions are Effects in the one registry
+    # (engine/effect_model.py, read via engine/rules_query.py); the
+    # `silenced_this_turn` / `spell_types_prohibited_this_turn` /
+    # `flash_permission_types` attributes below are views over it.
     silenced_next_turn: bool = False  # Orim's Chant + Scepter lock
     # Combat prevention as a class (CR 509.4 / 615), turn-scoped:
     cannot_attack_this_turn: bool = False       # this player's creatures can't attack
@@ -95,7 +95,6 @@ class PlayerState:
     # (parse_cost_reduction shape, counted by count_cost_reducers) and the
     # spell types this player may cast as though they had flash.
     temp_cost_rules: list = field(default_factory=list)
-    flash_permission_types: set = field(default_factory=set)
     deck_name: str = ""
     # Effective CMC overrides from gameplan (e.g. domain cost reduction)
     effective_cmc_overrides: Dict[str, int] = field(default_factory=dict)
@@ -342,6 +341,52 @@ class PlayerState:
             return True
         return False
 
+    # ── Views over the effect registry (fixtures and legacy readers) ──
+
+    def _registry(self):
+        game = getattr(self, "_game", None)
+        return game.continuous_effects if game is not None else None
+
+    def _cast_effects(self, action):
+        game = getattr(self, "_game", None)
+        if game is None:
+            return []
+        from .effect_model import ModKind
+        kind = ModKind.PROHIBIT if action == "cast" else ModKind.PERMIT
+        return [e for e in game.continuous_effects.rule_effects(game)
+                if e.modification.kind is kind and e.modification.action == action
+                and e.selector.covers_player(self.player_idx)]
+
+    @property
+    def silenced_this_turn(self) -> bool:
+        return any(e.modification.get("filter") == "all"
+                   for e in self._cast_effects("cast"))
+
+    @silenced_this_turn.setter
+    def silenced_this_turn(self, value: bool) -> None:
+        reg = self._registry()
+        if reg is None:
+            return
+        from .effect_model import THIS_TURN, DurationKind, ModKind, prohibit_cast
+        if value:
+            reg.register_effect(prohibit_cast(self.player_idx, "all", THIS_TURN))
+        else:
+            reg.drop_rule_effects(
+                lambda e: e.modification.kind is ModKind.PROHIBIT
+                and e.modification.action == "cast"
+                and e.duration.kind is DurationKind.THIS_TURN
+                and e.selector.covers_player(self.player_idx))
+
+    @property
+    def spell_types_prohibited_this_turn(self) -> frozenset:
+        return frozenset(e.modification.get("filter") for e in self._cast_effects("cast")
+                         if e.modification.get("filter") != "all")
+
+    @property
+    def flash_permission_types(self) -> frozenset:
+        return frozenset(t for e in self._cast_effects("cast_as_flash")
+                         for t in (e.modification.get("types") or ()))
+
     def reset_turn_tracking(self):
         self.lands_played_this_turn = 0
         self.extra_land_drops = 0
@@ -357,7 +402,6 @@ class PlayerState:
         self.removal_evokes_resolved_this_turn = 0
         self.flashback_granted_this_turn = False
         self.silenced_this_turn = False
-        self.spell_types_prohibited_this_turn = set()
         # Consume a pending silence from Orim's Chant cast on the previous
         # opponent turn (Isochron Scepter lock pattern).
         if getattr(self, 'silenced_next_turn', False):
@@ -368,7 +412,6 @@ class PlayerState:
         self.cannot_be_attacked_this_turn = False
         self.combat_damage_prevented_this_turn = False
         self.temp_cost_rules = []
-        self.flash_permission_types = set()
         self._landfall_count_this_turn = 0
 
     def reset_cross_turn_event_counters(self):

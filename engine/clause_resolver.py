@@ -193,11 +193,11 @@ def _a_cast_prohibition(ctx):
     players = (list(game.players) if cpro['who'] == 'all'
                else [game.players[ctx.opponent]])
     kind = '' if cpro['filter'] == 'all' else f"{cpro['filter']} "
+    from engine.effect_model import THIS_TURN, prohibit_cast
     for p in players:
-        if cpro['filter'] == 'all':
-            p.silenced_this_turn = True
-        else:
-            p.spell_types_prohibited_this_turn.add(cpro['filter'])
+        game.continuous_effects.register_effect(prohibit_cast(
+            p.player_idx, cpro['filter'], THIS_TURN, controller=controller,
+            source_id=card.instance_id))
         game.log.append(
             f"T{game.display_turn} P{controller+1}: {card.name} silences "
             f"P{game.players.index(p)+1} ({kind}spells) this turn")
@@ -224,7 +224,10 @@ def _a_until_next_turn(ctx):
         player.temp_cost_rules.append(dict(eff['rule']))
         desc = f"{eff['rule']['target']} spells cost {eff['rule']['amount']} less"
     elif kind == 'flash_permission':
-        player.flash_permission_types.update(eff['types'])
+        from engine.effect_model import permit_cast_as_flash, until_your_next_turn
+        game.continuous_effects.register_effect(permit_cast_as_flash(
+            controller, eff['types'], until_your_next_turn(controller),
+            source_id=card.instance_id))
         desc = f"{'/'.join(eff['types'])} spells as though they had flash"
     elif eff['scope'] == 'target':
         hostile = eff['power'] < 0 or eff['toughness'] < 0   # a grant (0/0 + kw) is friendly

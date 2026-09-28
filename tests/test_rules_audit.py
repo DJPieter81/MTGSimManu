@@ -613,13 +613,14 @@ def _cast_bolt(game, card_db, player_idx, free_cast=False):
 
 
 def test_cast_prohibition_audit_sees_a_spell_cast_through_the_prohibition(audit, card_db, monkeypatch):
-    # Break the rule: the shared prohibition predicate lets everything through.
-    from engine.cast_manager import CastManager
-    monkeypatch.setattr(CastManager, "cast_is_prohibited",
-                        staticmethod(lambda player, template: False))
+    # Break the rule: the one read path lets everything through.
+    from engine import rules_query
+    monkeypatch.setattr(rules_query, "cast_prohibited",
+                        lambda game, player_idx, template: False)
     game = GameState(rng=random.Random(0))
     game.active_player = 0
-    game.players[0].spell_types_prohibited_this_turn.add("noncreature")
+    from engine.effect_model import THIS_TURN, prohibit_cast
+    game.continuous_effects.register_effect(prohibit_cast(0, "noncreature", THIS_TURN))
     _cast_bolt(game, card_db, 0, free_cast=True)
     assert "101.2/cast_prohibition" in _rules(rules_audit.drain())
 
@@ -712,7 +713,9 @@ def test_next_turn_audit_sees_an_effect_that_survived_its_controllers_untap(audi
 def test_next_turn_audit_is_silent_when_the_effects_end(audit):
     game = GameState(rng=random.Random(0))
     game.players[0].temp_cost_rules.append({'target': 'all', 'amount': 1, 'color': None})
-    game.players[0].flash_permission_types.add('sorcery')
+    from engine.effect_model import permit_cast_as_flash, until_your_next_turn
+    game.continuous_effects.register_effect(
+        permit_cast_as_flash(0, ("sorcery",), until_your_next_turn(0)))
     game.active_player = 0
     game.untap_step(0)
     assert "611.2b/until_next_turn_expired" not in _rules(rules_audit.drain())

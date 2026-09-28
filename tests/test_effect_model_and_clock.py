@@ -23,9 +23,11 @@ from engine.turn_clock import Clock, ClockEvent, subscribers
 
 def test_turn_boundary_resets_are_clock_subscribers_in_order():
     assert subscribers(Clock.TURN_BEGINS) == [
+        "rule_effects_expiry", "this_turn_effects_audit",
         "player_turn_state_reset", "until_next_turn_expiry",
         "until_next_turn_audit", "cross_turn_event_counters_reset"]
-    assert subscribers(Clock.CLEANUP) == ["end_of_turn_effects_expiry"]
+    assert subscribers(Clock.CLEANUP) == ["rule_effects_expiry",
+                                          "end_of_turn_effects_expiry"]
     assert subscribers(Clock.UPKEEP) == ["delayed_triggers_upkeep"]
     assert subscribers(Clock.END_STEP) == ["delayed_triggers_end_step"]
 

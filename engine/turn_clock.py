@@ -58,6 +58,26 @@ def emit(game: "GameState", event: ClockEvent) -> None:
 # Subscribers — the temporal owners, in the order they ran inline.
 # ─────────────────────────────────────────────────────────────────────
 
+@subscribe(Clock.TURN_BEGINS, "rule_effects_expiry")
+def _expire_rule_effects_at_turn_begin(game, ev):
+    # CR 611.2: resolved rule effects end when their duration says so —
+    # "this turn" ends with the game turn, "until your next turn" as that
+    # player's turn begins. The one expiry path (effect_model.Duration).
+    game.continuous_effects.expire_rule_effects(ev)
+
+
+@subscribe(Clock.TURN_BEGINS, "this_turn_effects_audit")
+def _audit_this_turn_expired(game, ev):
+    from .rules_audit import enabled as _audit_on, check as _audit_check
+    if not _audit_on():
+        return
+    from .effect_model import DurationKind
+    _audit_check("611.2a/this_turn_effect_expired",
+                 not any(e.duration.kind is DurationKind.THIS_TURN
+                         for e in game.continuous_effects._rule_effects),
+                 "a 'this turn' effect outlived its turn", game=game)
+
+
 @subscribe(Clock.TURN_BEGINS, "player_turn_state_reset")
 def _reset_turn_tracking(game, ev):
     game.players[ev.player].reset_turn_tracking()
@@ -101,6 +121,11 @@ def _fire_upkeep_delayed(game, ev):
 def _fire_end_step_delayed(game, ev):
     from .delayed_triggers import DelayedTriggerStep
     game.fire_delayed_triggers(DelayedTriggerStep.END_STEP)
+
+
+@subscribe(Clock.CLEANUP, "rule_effects_expiry")
+def _expire_rule_effects_at_cleanup(game, ev):
+    game.continuous_effects.expire_rule_effects(ev)
 
 
 @subscribe(Clock.CLEANUP, "end_of_turn_effects_expiry")

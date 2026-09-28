@@ -154,3 +154,25 @@ class Effect:
     source_id: int = 0
     controller: Optional[int] = None
     timestamp: int = 0
+
+
+# ── Constructors for the rule families (one shape each) ───────────────
+
+def prohibit_cast(player: int, spell_filter: str, duration: Duration,
+                  controller: Optional[int] = None, source_id: int = 0) -> Effect:
+    """"<player> can't cast [<filter>] spells" (CR 101.2)."""
+    return Effect(Selector(SelectorKind.PLAYER, player=player),
+                  Modification(ModKind.PROHIBIT, action="cast",
+                               data=(("filter", spell_filter),)),
+                  duration, OriginKind.RESOLVED, source_id=source_id,
+                  controller=controller)
+
+
+def permit_cast_as_flash(player: int, types, duration: Duration,
+                         source_id: int = 0) -> Effect:
+    """"You may cast <types> spells as though they had flash" (CR 702.8d)."""
+    return Effect(Selector(SelectorKind.PLAYER, player=player),
+                  Modification(ModKind.PERMIT, action="cast_as_flash",
+                               data=(("types", tuple(types)),)),
+                  duration, OriginKind.RESOLVED, source_id=source_id,
+                  controller=player)

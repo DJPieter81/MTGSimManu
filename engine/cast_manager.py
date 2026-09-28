@@ -1387,18 +1387,14 @@ class CastManager:
 
     @staticmethod
     def cast_is_prohibited(player, template) -> bool:
-        """CR 101.2: a turn-scoped cast prohibition covers this spell —
-        "can't cast spells" (`silenced_this_turn`) or a typed partial one
-        ("can't cast noncreature/creature spells"). One predicate for every
-        cast route, paid or free: a free cast is still a cast."""
-        if getattr(player, 'silenced_this_turn', False):
-            return True
-        _prohibited = getattr(player, 'spell_types_prohibited_this_turn', ())
-        if not _prohibited:
+        """CR 101.2: a cast prohibition covers this spell — one predicate
+        for every cast route, paid or free (a free cast is still a cast).
+        Delegates to the one read path, engine/rules_query.py."""
+        from . import rules_query
+        game = getattr(player, "_game", None)
+        if game is None:
             return False
-        _is_creature = template.is_creature
-        return (('noncreature' in _prohibited and not _is_creature)
-                or ('creature' in _prohibited and _is_creature))
+        return rules_query.cast_prohibited(game, player.player_idx, template)
 
     @staticmethod
     def cast_spell(game: "GameState", player_idx: int, card: "CardInstance",

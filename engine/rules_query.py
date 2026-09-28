@@ -6,8 +6,10 @@ damage — instead of reading effect state itself. Answers are defined by the
 effect model (engine/effect_model.py); a family's internals move onto
 registered/derived `Effect` records without its gates changing.
 
-Current internals (stage G1): adapters over the pre-model state, so
-routing the gates here changed no behaviour.
+Internals move family by family onto the effect registry
+(`ContinuousEffectsManager.rule_effects`): the cast family (prohibitions,
+permissions, the sorcery-speed lockout static) reads it; the remaining
+families are adapters over the pre-model state until their stage.
 """
 from __future__ import annotations
 
@@ -19,20 +21,38 @@ if TYPE_CHECKING:  # pragma: no cover
 
 # ── Casting ──────────────────────────────────────────────────────────
 
+def _covering(game: "GameState", player_idx: int, kind, action: str):
+    """Rule effects of `kind`/`action` whose selector covers the player —
+    resolved (stored) and static (derived) alike."""
+    return [e for e in game.continuous_effects.rule_effects(game)
+            if e.modification.kind is kind and e.modification.action == action
+            and e.selector.covers_player(player_idx)]
+
+
 def cast_prohibited(game: "GameState", player_idx: int, template) -> bool:
-    """A turn-scoped or static cast prohibition covers this spell."""
-    from engine.cast_manager import CastManager
-    return CastManager.cast_is_prohibited(game.players[player_idx], template)
+    """A cast prohibition covers this spell (CR 101.2)."""
+    from engine.effect_model import ModKind
+    is_creature = template.is_creature
+    for e in _covering(game, player_idx, ModKind.PROHIBIT, "cast"):
+        f = e.modification.get("filter")
+        if (f == "all" or (f == "noncreature" and not is_creature)
+                or (f == "creature" and is_creature)):
+            return True
+    return False
 
 
 def sorcery_speed_only(game: "GameState", player_idx: int) -> bool:
-    """A static restricts this player to casting at sorcery speed."""
-    return player_idx in game._sorcery_speed_lockout_set()
+    """An effect restricts this player to casting at sorcery speed."""
+    from engine.effect_model import ModKind
+    return bool(_covering(game, player_idx, ModKind.PROHIBIT,
+                          "cast_outside_sorcery_timing"))
 
 
 def cast_as_though_flash(game: "GameState", player_idx: int, template) -> bool:
     """This player may cast this spell as though it had flash (CR 702.8d)."""
-    types = game.players[player_idx].flash_permission_types
+    from engine.effect_model import ModKind
+    types = {t for e in _covering(game, player_idx, ModKind.PERMIT, "cast_as_flash")
+             for t in (e.modification.get("types") or ())}
     return (('sorcery' in types and template.is_sorcery)
             or ('creature' in types and template.is_creature))
 
