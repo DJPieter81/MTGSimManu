@@ -5896,3 +5896,49 @@ Ral's +1 does not move Storm (its losses are sequencing, recorded earlier).
 **Next (S3b):** "whenever a creature attacks you … it gets −N/−0" duration
 triggers (Tamiyo ×2), animate-a-permanent (Karn), attack/block restrictions
 and keyword-only grants — then S4, pricing a loyalty tick by its clause.
+
+### S3b-1 — keyword-only grants (`596e4ee`, fix `955f465`, CR 613.1f)
+
+"Target creature gains <kw> until end of turn" is the zero-P/T case of the
+shared targeted-modifier clause (135 pool cards; the typed keyword was set
+on 1). Keywords come from the `Keyword` enum; instants/sorceries only; one
+predicate `CardTemplate.has_targeted_pump` for the resolver and two AI
+sites; "X or Y" grants one (CR 608.2d — caught as an over-credit on
+Practiced Offense before measuring). Auditor `613.1f/keyword_granted`.
+Loyalty unexecutable 389 → 384.
+
+| field (same seeds, n=20, `7d66cb1` → `955f465`) | pre | post |
+|---|---|---|
+| Izzet Prowess | 60.6 | 61.0 |
+| Hollow One | 33.8 | 34.8 |
+| Domain Zoo | 72.3 | 74.0 |
+| Boros Energy (guard) | 66.7 | 66.5 |
+
+Flat, as expected: the AI's combat-trick valuation (`ai/ev_player.py` ~3762)
+prices P/T only, so keyword-only tricks are cast rarely — an AI lead, not a
+rules gap. Practiced Offense's "+1/+1 counter on each creature target player
+controls" half still does not resolve (under-credit, recorded).
+
+## Temporal model (docs/design/2026-09-28_temporal_state_model.md)
+
+User directive: a broader mechanism for timing, duration and state, then
+"needs to be more generalized / abstracted". Model: every continuous effect
+is `Effect(Selector, Modification, Duration, Origin)` over one event clock;
+gates read only `rules_query`. Reproduced drift defect: a "this turn" effect
+flag on the active player survives the opponent's next turn.
+
+**G1 (`bbf1199`)** — `engine/turn_clock.py` (all turn-boundary resets and
+expiries as ordered subscribers), `engine/effect_model.py` (Duration /
+Selector / Modification / Origin / Effect), `engine/rules_query.py` (every
+gate — cast, lockout, flash permission, cost delta incl. AI, draw limit,
+attack / be-attacked, combat prevention — reads through it; G1 internals are
+adapters), ratchet `tools/check_temporal_state.py` (raw reads 16, clock
+bypass 0; CI step). **Behaviour-identical: 24 seeded verbose games
+byte-identical vs the previous head**; CI green (full suite).
+
+**Next — G2, one family per commit:** cast prohibitions + permissions (incl.
+the lockout static), cost deltas (removing the runtime oracle scan), draw
+limits, attack / be-attacked / damage prevention (fixes the leak, failing
+test + auditor `611.2a/this_turn_effect_expired`); then G3 (card `temp_*`
+onto object-scoped effects, CR 400.7), G4 (delayed triggers on the clock);
+then S3b-2/3, animation and S4 as instances of the model.
