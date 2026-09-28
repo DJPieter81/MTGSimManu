@@ -311,21 +311,6 @@ class GameState:
         self.winner = 1 - player_idx
         self.log.append(f"P{player_idx+1} loses: empty library")
 
-    def _draw_limit_for(self, player_idx: int) -> Optional[int]:
-        """The tightest static draw limit covering this player (typed
-        `CardTemplate.draw_limit`: "each opponent / each player can't draw
-        more than N cards each turn"), or None."""
-        cap = None
-        for owner_idx, p in enumerate(self.players):
-            for perm in p.battlefield:
-                lim = getattr(perm.template, 'draw_limit', None)
-                if not lim:
-                    continue
-                if lim['who'] == 'opponents' and owner_idx == player_idx:
-                    continue
-                cap = lim['max'] if cap is None else min(cap, lim['max'])
-        return cap
-
     def end_the_turn(self, controller: int) -> None:
         """CR 723.1: end the turn. Every object on the stack is exiled
         (723.1b) and the runner skips to the cleanup step (723.1d).

@@ -663,12 +663,12 @@ def create_pump_spell_effect(source_id: int, source_name: str,
 
 def _derive_static_rule_effects(game: "GameState") -> list:
     """Rule-modifying effects that permanents have by being on the
-    battlefield (CR 611.3a): a sorcery-speed lockout static restricts the
-    source's opponents while the source is there."""
+    battlefield (CR 611.3a): cost reducers, draw limits and the
+    sorcery-speed lockout apply while their source is there."""
     from ai.oracle_classifier import Tag, tags_for
     from .effect_model import (Effect, Modification, ModKind, OriginKind,
                                Selector, SelectorKind, WHILE_SOURCE)
-    from .effect_model import cost_delta_effect
+    from .effect_model import cost_delta_effect, draw_limit_effect
     out = []
     for controller, player in enumerate(game.players):
         for perm in player.battlefield:
@@ -678,6 +678,13 @@ def _derive_static_rule_effects(game: "GameState") -> list:
                 # spells while the permanent is on the battlefield.
                 out.append(cost_delta_effect(controller, rule, WHILE_SOURCE,
                                              source_id=perm.instance_id,
+                                             origin=OriginKind.STATIC))
+            lim = getattr(perm.template, 'draw_limit', None)
+            if lim:
+                # CR 101.2: "<players> can't draw more than N cards each
+                # turn" limits draws while the permanent is there.
+                out.append(draw_limit_effect(controller, lim['who'], lim['max'],
+                                             WHILE_SOURCE, source_id=perm.instance_id,
                                              origin=OriginKind.STATIC))
             if Tag.SORCERY_SPEED_LOCKOUT in tags_for(perm.name):
                 out.append(Effect(

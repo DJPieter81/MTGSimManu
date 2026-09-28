@@ -7,9 +7,9 @@ effect model (engine/effect_model.py); a family's internals move onto
 registered/derived `Effect` records without its gates changing.
 
 Internals move family by family onto the effect registry
-(`ContinuousEffectsManager.rule_effects`): the cast family (prohibitions,
-permissions, the sorcery-speed lockout static) reads it; the remaining
-families are adapters over the pre-model state until their stage.
+(`ContinuousEffectsManager.rule_effects`): the cast, cost and draw
+families read it; the combat family is an adapter over the pre-model
+state until its stage.
 """
 from __future__ import annotations
 
@@ -77,8 +77,13 @@ def cost_delta(game: "GameState", player_idx: int, template) -> int:
 # ── Drawing ──────────────────────────────────────────────────────────
 
 def draw_limit(game: "GameState", player_idx: int) -> Optional[int]:
-    """The most cards this player may draw this turn, or None."""
-    return game._draw_limit_for(player_idx)
+    """The most cards this player may draw this turn, or None: the
+    tightest LIMIT-draw effect covering the player (CR 101.2) — statics
+    and resolved effects alike."""
+    from engine.effect_model import ModKind
+    caps = [e.modification.get("max")
+            for e in _covering(game, player_idx, ModKind.LIMIT, "draw")]
+    return min(caps) if caps else None
 
 
 # ── Combat ───────────────────────────────────────────────────────────

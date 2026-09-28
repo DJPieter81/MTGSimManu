@@ -186,3 +186,17 @@ def cost_delta_effect(player: int, rule: dict, duration: Duration,
                   Modification(ModKind.COST_DELTA,
                                data=tuple(sorted(rule.items()))),
                   duration, origin, source_id=source_id, controller=player)
+
+
+def draw_limit_effect(controller: int, who: str, cap: int, duration: Duration,
+                      source_id: int = 0,
+                      origin: "OriginKind" = OriginKind.RESOLVED) -> Effect:
+    """"<each opponent | each player> can't draw more than N cards each
+    turn" — the parse_draw_limit shape (CR 101.2). `who` is 'opponents'
+    (the controller's opponents) or 'all'."""
+    selector = (Selector(SelectorKind.OPPONENTS, player=controller)
+                if who == 'opponents' else Selector(SelectorKind.ALL_PLAYERS))
+    return Effect(selector,
+                  Modification(ModKind.LIMIT, action="draw",
+                               data=(("max", cap),)),
+                  duration, origin, source_id=source_id, controller=controller)
