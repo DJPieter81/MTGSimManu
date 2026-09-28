@@ -5983,7 +5983,7 @@ not the card (CR 400.7 / 611.2c).** `create_pump_spell_effect` matched its
 target by `instance_id` alone, so a creature shrunk by an "until your next
 turn" −N/−0 (or pumped) and then blinked kept the modification on its new
 object. Effects now record `target_obj = (instance_id, battlefield_entry_seq)`;
-auditor `400.7/effect_follows_old_object`. **G3b deferred:** the card
+auditor `400.7/effect_follows_old_object`. Same seeds, n=20, pinned worktrees `c9fb3ff` → `07f4e4a` (G2.3 + G2.4 + G3a together): Azorius Control 32.7 → 32.7, Jeskai Blink 49.0 → 49.0, Azorius Blink 35.0 → 35.0 — identical; the leaks these close did not arise in these seeds. **G3b deferred:** the card
 `temp_*` channel already honours both rules (cleared at cleanup, CR 514.2,
 and on leaving the battlefield, `zone_manager`) — moving it onto layer
 effects is a refactor with 19 test fixtures of churn and no rules gain; it
