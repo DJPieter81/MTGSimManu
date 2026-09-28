@@ -175,8 +175,11 @@ def dimir_deck():
 
 
 def run_seeded_game(runner, deck1_name, deck2_name, seed=42):
-    """Helper: run a single game with a fixed seed."""
+    """Helper: run a single game with a fixed seed. The engine draws from
+    `runner.rng`, so that is the RNG seeded (as run_meta._run_game does);
+    the global module is seeded too for legacy callers."""
     random.seed(seed)
+    runner.rng.seed(seed)
     d1 = MODERN_DECKS[deck1_name]
     d2 = MODERN_DECKS[deck2_name]
     return runner.run_game(
