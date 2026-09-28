@@ -5942,3 +5942,50 @@ limits, attack / be-attacked / damage prevention (fixes the leak, failing
 test + auditor `611.2a/this_turn_effect_expired`); then G3 (card `temp_*`
 onto object-scoped effects, CR 400.7), G4 (delayed triggers on the clock);
 then S3b-2/3, animation and S4 as instances of the model.
+
+**G2.1 (`b3cb74c`) — cast prohibitions and permissions are Effects.**
+Resolved silences / cast prohibitions register `PROHIBIT cast` effects,
+flash permission a `PERMIT cast_as_flash` (UNTIL_YOUR_NEXT_TURN); the
+sorcery-speed lockout is a static `PROHIBIT cast_outside_sorcery_timing`
+derived from its source. Fixes the cast-side leak: a prohibition resolved
+on its target's own turn now ends with that turn (CR 611.2a). Auditor
+`611.2a/this_turn_effect_expired` at TURN_BEGINS. Same seeds, n=20, pinned
+worktrees `c4a47f2` → `b3cb74c`: Azorius Control field 34.0 → 32.3 (draws
+36 → 38) — flat, inside noise; Ruby Storm and Domain Zoo still running.
+
+**G2.2 (`ca1b87c`, test follow-up `c9fb3ff`) — cost deltas are Effects.** Static
+reducers are typed once at load (`CardTemplate.cost_reduction_rule`) and
+derived as `COST_DELTA` statics; resolved "until your next turn, … cost {N}
+less" rules are stored effects; `count_cost_reducers` delegates to
+`rules_query.cost_delta` (the runtime oracle scan is gone). **24 seeded
+verbose games byte-identical vs `b3cb74c`**; chunks A 2328 / B 2489.
+
+**G2.3 (`7466fd1`) — draw limits are LIMIT Effects.** A permanent's typed
+`draw_limit` is a static `LIMIT draw` effect while its source is there;
+`rules_query.draw_limit` takes the tightest covering LIMIT (statics and
+resolved alike); `GameState._draw_limit_for` (a second battlefield scan)
+deleted. Behaviour-identical by construction (same caps, same min).
+
+**G2.4 (`cb07b0e`) — attack prohibitions and combat-damage prevention are
+THIS_TURN Effects (the reproduced leak).** A Fog cast during the opponent's
+combat set both players' flags; the opponent's flag was cleared only at the
+opponent's next untap, so it prevented the caster's own attacks the turn
+after. Now `PROHIBIT attack` / `PROHIBIT be_attacked` / `PREVENT_DAMAGE
+combat` effects expire as the game turn ends. Every `rules_query` family
+reads the registry; `PlayerState` combat attributes are views. Temporal
+raw reads 8 → 5. Test `tests/test_rule_effects_combat_family.py` (red
+before).
+Verified on `cb07b0e`: chunk A 2328, chunk B 2503 (anchor unchanged).
+
+**G3a (`8ea4a83`) — a resolved effect on a chosen object follows the object,
+not the card (CR 400.7 / 611.2c).** `create_pump_spell_effect` matched its
+target by `instance_id` alone, so a creature shrunk by an "until your next
+turn" −N/−0 (or pumped) and then blinked kept the modification on its new
+object. Effects now record `target_obj = (instance_id, battlefield_entry_seq)`;
+auditor `400.7/effect_follows_old_object`. **G3b deferred:** the card
+`temp_*` channel already honours both rules (cleared at cleanup, CR 514.2,
+and on leaving the battlefield, `zone_manager`) — moving it onto layer
+effects is a refactor with 19 test fixtures of churn and no rules gain; it
+waits until a rule needs layer interaction for it. Lead recorded:
+`ai/ev_player.py` (~:3120) moves cards hand→graveyard and places counters
+directly — the AI mutating game state.
