@@ -904,8 +904,8 @@ class ResponseDecider:
                 0, effective - template.domain_reduction * domain)
 
         # Generic cost reducers (Medallions, Goblin Electromancer, etc.)
-        from engine.oracle_resolver import count_cost_reducers
-        generic_reduction = count_cost_reducers(game, controller, template)
+        from engine import rules_query
+        generic_reduction = rules_query.cost_delta(game, controller, template)
         if generic_reduction > 0:
             effective = max(0, effective - generic_reduction)
 

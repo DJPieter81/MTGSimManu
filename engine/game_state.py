@@ -365,7 +365,8 @@ class GameState:
         from .zone_transfer import TransferKind, transfer
         player = self.players[player_idx]
         drawn: List[CardInstance] = []
-        draw_cap = self._draw_limit_for(player_idx)
+        from . import rules_query
+        draw_cap = rules_query.draw_limit(self, player_idx)
         for _ in range(count):
             if draw_cap is not None and player.cards_drawn_this_turn >= draw_cap:
                 # CR 101.2: a draw the player "can't" make does not happen

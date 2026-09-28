@@ -307,7 +307,8 @@ class ManaPayment:
                     # Generic cost reduction from permanents
                     from .oracle_resolver import (count_cost_reducers,
                                                   self_cost_reduction)
-                    reduction += count_cost_reducers(game, player_idx, c.template)
+                    from . import rules_query
+                    reduction += rules_query.cost_delta(game, player_idx, c.template)
                     # Self-scaling own-cost reduction (per-turn discard/
                     # cycle count, graveyard card types, ...).
                     reduction += self_cost_reduction(game, player_idx, c.template)

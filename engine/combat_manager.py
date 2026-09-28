@@ -280,8 +280,8 @@ class CombatManager:
                 _audit_check("509/no_attacks", not locked,
                              f"{atk.name} is attacking while an attack lock is set",
                              game=game)
-        if any(getattr(p, 'combat_damage_prevented_this_turn', False)
-               for p in game.players):
+        from . import rules_query
+        if rules_query.combat_damage_prevented(game):
             for assignment in self._assignments:
                 assignment.attacker.attacked_this_turn = True
             game.log.append(f"T{game.display_turn}: all combat damage prevented (CR 615)")
@@ -671,9 +671,9 @@ class CombatManager:
         no creature may attack while this player is under a "creatures
         can't attack this turn" lock, or while the defending opponent is
         under a "creatures can't attack you this turn" lock."""
-        opp = game.players[1 - player_idx]
-        if (game.players[player_idx].cannot_attack_this_turn
-                or getattr(opp, 'cannot_be_attacked_this_turn', False)):
+        from . import rules_query
+        if (rules_query.attack_prohibited(game, player_idx)
+                or rules_query.attacking_player_prohibited(game, 1 - player_idx)):
             return []
         return [c for c in game.players[player_idx].creatures if c.can_attack]
 

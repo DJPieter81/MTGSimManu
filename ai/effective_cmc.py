@@ -214,9 +214,10 @@ def _count_cost_reducers(
         return 0
     # Local import to keep the AI/engine boundary explicit and avoid
     # a hard import-time dependency on engine internals.
-    from engine.oracle_resolver import count_cost_reducers as _engine_count
+    # The one read path for cost deltas (statics and temporary rules).
+    from engine import rules_query
 
-    return _engine_count(game, player_idx, template)
+    return rules_query.cost_delta(game, player_idx, template)
 
 
 def _self_cost_reduction(

@@ -1,0 +1,5 @@
+{
+  "_comment": "Temporal-state ratchet (tools/check_temporal_state.py). May only fall: gates read rule-effect state through engine/rules_query.py; resets run as engine/turn_clock.py subscribers.",
+  "raw_reads": 16,
+  "clock_bypass": 0
+}

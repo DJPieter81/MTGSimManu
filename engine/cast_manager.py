@@ -289,7 +289,8 @@ class CastManager:
         # `silenced_this_turn` from the oracle clause on resolution;
         # the cast gate enforces it here for the rest of the turn.
         # Applies to every cast route (hand, flashback, escape).
-        if CastManager.cast_is_prohibited(player, template):
+        from . import rules_query
+        if rules_query.cast_prohibited(game, player_idx, template):
             return False
 
         # Madness (CR 702.35b): a card just discarded into exile may be
@@ -414,13 +415,12 @@ class CastManager:
         # per-game lockout registry. Registry is rebuilt on demand
         # from ``Tag.SORCERY_SPEED_LOCKOUT``-tagged permanents — no
         # card-name branches, no oracle-text parse at runtime.
-        sorcery_locked = player_idx in game._sorcery_speed_lockout_set()
+        from . import rules_query
+        sorcery_locked = rules_query.sorcery_speed_only(game, player_idx)
 
         # "You may cast <type> spells as though they had flash" (CR 702.8d),
         # granted until the player's next turn (player.flash_permission_types).
-        flash_granted = (
-            ('sorcery' in player.flash_permission_types and template.is_sorcery)
-            or ('creature' in player.flash_permission_types and template.is_creature))
+        flash_granted = rules_query.cast_as_though_flash(game, player_idx, template)
         if (template.is_instant or template.has_flash or flash_granted) \
                 and not sorcery_locked:
             pass
@@ -494,7 +494,7 @@ class CastManager:
                 0, effective_cmc - template.domain_reduction * domain)
         # Generic cost reduction from permanents on battlefield
         from .oracle_resolver import count_cost_reducers, self_cost_reduction
-        generic_reduction = count_cost_reducers(game, player_idx, template)
+        generic_reduction = rules_query.cost_delta(game, player_idx, template)
         if generic_reduction > 0:
             effective_cmc = max(0, effective_cmc - generic_reduction)
         # Self-scaling reduction ("this spell costs {N} less for each
@@ -1413,9 +1413,10 @@ class CastManager:
 
         if not free_cast and not game.can_cast(player_idx, card):
             return False
-        if free_cast and CastManager.cast_is_prohibited(
-                game.players[player_idx], card.template):
-            return False
+        if free_cast:
+            from . import rules_query
+            if rules_query.cast_prohibited(game, player_idx, card.template):
+                return False
 
         # Pay mana cost (unless free cast)
         evoked = False
@@ -2071,7 +2072,6 @@ class CastManager:
         # from hand that have splice_cost. Pay splice cost, add their effects,
         # spliced card stays in hand. ──
         if 'Arcane' in template.subtypes and not free_cast:
-            from .oracle_resolver import count_cost_reducers
             for sc in list(player.hand):
                 if sc.instance_id == card.instance_id:
                     continue
@@ -2079,7 +2079,8 @@ class CastManager:
                 if not splice:
                     continue
                 # splice is a ManaCost — apply cost reduction to generic portion
-                reduction = count_cost_reducers(game, player_idx, sc.template)
+                from . import rules_query
+                reduction = rules_query.cost_delta(game, player_idx, sc.template)
                 from .mana import ManaCost as MC
                 effective_splice = MC(
                     generic=max(0, splice.generic - reduction),

@@ -835,8 +835,8 @@ class GameRunner:
                     # "at the beginning of your next upkeep"). Drained
                     # FIRST, before rebound/saga/upkeep activations, so a
                     # delayed draw is in hand for every decision this turn.
-                    from engine.delayed_triggers import DelayedTriggerStep
-                    game.fire_delayed_triggers(DelayedTriggerStep.UPKEEP)
+                    from engine.turn_clock import Clock, ClockEvent, emit
+                    emit(game, ClockEvent(Clock.UPKEEP, active))
                     # Rebound (CR 702.88b): offer the free recast
                     self._process_rebound_recasts(game, active, ai)
                     # Activated abilities fired on our upkeep (Isochron Scepter, etc.)
