@@ -176,3 +176,13 @@ def permit_cast_as_flash(player: int, types, duration: Duration,
                                data=(("types", tuple(types)),)),
                   duration, OriginKind.RESOLVED, source_id=source_id,
                   controller=player)
+
+
+def cost_delta_effect(player: int, rule: dict, duration: Duration,
+                      source_id: int = 0, origin: "OriginKind" = OriginKind.RESOLVED) -> Effect:
+    """"<spells> you cast cost {N} less" — the parse_cost_reduction rule shape
+    (target / amount / color) applied to `player`'s spells (CR 601.2f)."""
+    return Effect(Selector(SelectorKind.PLAYER, player=player),
+                  Modification(ModKind.COST_DELTA,
+                               data=tuple(sorted(rule.items()))),
+                  duration, origin, source_id=source_id, controller=player)

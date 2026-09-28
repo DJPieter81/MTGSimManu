@@ -94,7 +94,6 @@ class PlayerState:
     # reset_turn_tracking at this player's own untap: cost-reduction rules
     # (parse_cost_reduction shape, counted by count_cost_reducers) and the
     # spell types this player may cast as though they had flash.
-    temp_cost_rules: list = field(default_factory=list)
     deck_name: str = ""
     # Effective CMC overrides from gameplan (e.g. domain cost reduction)
     effective_cmc_overrides: Dict[str, int] = field(default_factory=dict)
@@ -383,6 +382,19 @@ class PlayerState:
                          if e.modification.get("filter") != "all")
 
     @property
+    def temp_cost_rules(self) -> list:
+        """Resolved (not static) cost-reduction rules covering this player."""
+        game = getattr(self, "_game", None)
+        if game is None:
+            return []
+        from .effect_model import ModKind, OriginKind
+        return [dict(e.modification.data)
+                for e in game.continuous_effects._rule_effects
+                if e.modification.kind is ModKind.COST_DELTA
+                and e.origin is OriginKind.RESOLVED
+                and e.selector.covers_player(self.player_idx)]
+
+    @property
     def flash_permission_types(self) -> frozenset:
         return frozenset(t for e in self._cast_effects("cast_as_flash")
                          for t in (e.modification.get("types") or ()))
@@ -411,7 +423,6 @@ class PlayerState:
         self.cannot_attack_this_turn = False
         self.cannot_be_attacked_this_turn = False
         self.combat_damage_prevented_this_turn = False
-        self.temp_cost_rules = []
         self._landfall_count_this_turn = 0
 
     def reset_cross_turn_event_counters(self):

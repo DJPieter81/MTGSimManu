@@ -668,9 +668,17 @@ def _derive_static_rule_effects(game: "GameState") -> list:
     from ai.oracle_classifier import Tag, tags_for
     from .effect_model import (Effect, Modification, ModKind, OriginKind,
                                Selector, SelectorKind, WHILE_SOURCE)
+    from .effect_model import cost_delta_effect
     out = []
     for controller, player in enumerate(game.players):
         for perm in player.battlefield:
+            rule = getattr(perm.template, 'cost_reduction_rule', None)
+            if rule:
+                # CR 601.2f: a reducer static applies to its controller's
+                # spells while the permanent is on the battlefield.
+                out.append(cost_delta_effect(controller, rule, WHILE_SOURCE,
+                                             source_id=perm.instance_id,
+                                             origin=OriginKind.STATIC))
             if Tag.SORCERY_SPEED_LOCKOUT in tags_for(perm.name):
                 out.append(Effect(
                     Selector(SelectorKind.OPPONENTS, player=controller),

@@ -339,6 +339,16 @@ def parse_splice_cost(oracle: str) -> "Optional[ManaCost]":
     return cost if cost.cmc > 0 else None
 
 
+def parse_static_cost_reduction(oracle: str):
+    """A permanent's static "<spells> cost {N} less" rule, typed once at
+    load (CardTemplate.cost_reduction_rule) — the parse_cost_reduction
+    shape, or None."""
+    low = (oracle or '').lower()
+    if 'cost' not in low or 'less' not in low:
+        return None
+    return parse_cost_reduction(low)
+
+
 def parse_cost_reduction(oracle: str) -> Optional[Dict]:
     """Parse cost reduction rules from oracle text.
 

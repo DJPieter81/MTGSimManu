@@ -58,10 +58,20 @@ def cast_as_though_flash(game: "GameState", player_idx: int, template) -> bool:
 
 
 def cost_delta(game: "GameState", player_idx: int, template) -> int:
-    """Total generic cost reduction for this spell, from statics and
-    temporary rules alike."""
-    from engine.oracle_resolver import count_cost_reducers
-    return count_cost_reducers(game, player_idx, template)
+    """Total generic cost reduction for this spell (CR 601.2f): every
+    COST_DELTA effect covering the player whose rule matches the spell —
+    permanents' statics and resolved "until your next turn" rules alike,
+    through the one matcher."""
+    from engine.effect_model import ModKind
+    from engine.oracle_resolver import _cost_rule_applies
+    total = 0
+    for e in game.continuous_effects.rule_effects(game):
+        if (e.modification.kind is ModKind.COST_DELTA
+                and e.selector.covers_player(player_idx)):
+            rule = dict(e.modification.data)
+            if _cost_rule_applies(rule, template):
+                total += rule['amount']
+    return total
 
 
 # ── Drawing ──────────────────────────────────────────────────────────

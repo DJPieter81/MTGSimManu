@@ -1185,6 +1185,10 @@ class CardTemplate:
     # "Until your next turn, <owned effect>" (CR 611.2b), typed by the
     # wrapped shape (oracle_parser.parse_until_next_turn).
     next_turn_effect: Optional[dict] = None
+    # A permanent's static "<spells> cost {N} less" rule
+    # (oracle_parser.parse_cost_reduction), derived as a COST_DELTA effect
+    # while the permanent is on the battlefield.
+    cost_reduction_rule: Optional[dict] = None
     draw_limit: Optional[dict] = None
     # Targeted forced discard classified by who chooses the card:
     # {'chooser': 'caster'|'victim'|'random', 'target', 'choose_clause',
@@ -1449,6 +1453,9 @@ class CardTemplate:
             if self.next_turn_effect is None:
                 from .oracle_parser import parse_until_next_turn as _punt
                 self.next_turn_effect = _punt(self.oracle_text)
+            if self.cost_reduction_rule is None:
+                from .oracle_parser import parse_static_cost_reduction as _pscr2
+                self.cost_reduction_rule = _pscr2(self.oracle_text)
             if self.draw_limit is None:
                 from .oracle_parser import parse_draw_limit as _pdl
                 self.draw_limit = _pdl(self.oracle_text)

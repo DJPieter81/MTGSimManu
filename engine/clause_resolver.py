@@ -221,7 +221,10 @@ def _a_until_next_turn(ctx):
     player = game.players[controller]
     kind = eff['kind']
     if kind == 'cost_reduction':
-        player.temp_cost_rules.append(dict(eff['rule']))
+        from engine.effect_model import cost_delta_effect, until_your_next_turn
+        game.continuous_effects.register_effect(cost_delta_effect(
+            controller, dict(eff['rule']), until_your_next_turn(controller),
+            source_id=card.instance_id))
         desc = f"{eff['rule']['target']} spells cost {eff['rule']['amount']} less"
     elif kind == 'flash_permission':
         from engine.effect_model import permit_cast_as_flash, until_your_next_turn

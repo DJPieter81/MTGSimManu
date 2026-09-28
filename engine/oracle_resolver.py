@@ -1982,24 +1982,8 @@ def _cost_rule_applies(rule: dict, template) -> bool:
 
 
 def count_cost_reducers(game, player_idx: int, card_template) -> int:
-    """Total generic reduction for a spell from every reduction source:
-    permanents' "cost {N} less" statics and the player's own
-    "until your next turn" rules — one matcher (`_cost_rule_applies`).
-
-    Generic replacement for hardcoded Ruby Medallion / Ral checks.
-    """
-    from engine.oracle_parser import parse_cost_reduction
-    template = card_template
-    player = game.players[player_idx]
-    reduction = 0
-    for perm in player.battlefield:
-        oracle = (perm.template.oracle_text or '').lower()
-        if 'cost' not in oracle or 'less' not in oracle:
-            continue
-        rule = parse_cost_reduction(oracle)
-        if rule and _cost_rule_applies(rule, template):
-            reduction += rule['amount']
-    for rule in getattr(player, 'temp_cost_rules', ()):
-        if _cost_rule_applies(rule, template):
-            reduction += rule['amount']
-    return reduction
+    """Total generic reduction for a spell — the cost-delta read path
+    (engine/rules_query.cost_delta over COST_DELTA effects). Kept as a name
+    for its callers."""
+    from engine import rules_query
+    return rules_query.cost_delta(game, player_idx, card_template)
