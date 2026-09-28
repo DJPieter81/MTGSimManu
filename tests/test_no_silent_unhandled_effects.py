@@ -109,11 +109,6 @@ ALLOWED_UNHANDLED: set[tuple[str, str]] = {
     # Ruby Storm (4 copies) is UNDER-credited until a hand-impulse class
     # is justified. Recorded in the tracker.
     ("Hex Magic", "spell"),
-    # "Target creature gains double strike until end of turn." — the
-    # keyword-grant pump class (74 pool cards "…gains double strike until
-    # end of turn", more for other keywords) is not modelled for a bare
-    # keyword grant with no P/T change. Queued as its own engine unit.
-    ("Assault Strobe", "spell"),
     # ── Replacement path (newly observable as of the diagnostic's
     #    coverage of ZoneManager.move_card) ──────────────────────────
     # "If a card would be put into a(n opponent's) graveyard, exile it

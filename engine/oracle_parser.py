@@ -4761,6 +4761,36 @@ def _pt_mod_keyword(phrase: str) -> str:
     return ""
 
 
+# A keyword-only grant — the zero-P/T case of the same targeted modifier
+# ("target creature gains double strike until end of turn").
+_KW_GRANT_CLAUSE = (
+    r'(?:up to one )?target creature[^.]*?(?:gains|has) ([a-z ,]+?) until end of turn')
+
+
+def _modelled_keywords(phrase: str) -> "tuple[str, ...]":
+    """Every keyword the phrase names that the engine models — the Keyword
+    enum is the vocabulary — in the order they appear."""
+    from .cards import Keyword
+    words = [k.name.lower().replace('_', ' ') for k in Keyword]
+    found = [(phrase.find(w), w) for w in words if re.search(r'\b' + w + r'\b', phrase)]
+    return tuple(w for _, w in sorted(found))
+
+
+def parse_pump_spell_keywords(oracle: str) -> "tuple[str, ...]":
+    """The keywords a targeted modifier grants until end of turn — with a
+    P/T change ("+2/+2 and gains flying") or alone ("gains double strike").
+    Only keywords the engine models are returned."""
+    if not oracle:
+        return ()
+    text = strip_reminder_text(oracle).lower()
+    p, t, _ = parse_pump_spell(oracle)
+    if p or t:
+        m = re.search(_PT_MOD_CLAUSE + r' until end of turn', text)
+        return _modelled_keywords(m.group(3) or "") if m else ()
+    m = re.search(_KW_GRANT_CLAUSE, text)
+    return _modelled_keywords(m.group(1)) if m else ()
+
+
 def parse_pump_spell(oracle: str) -> "tuple[int, int, str]":
     """Parse a "target creature gets +N/+M until end of turn [and
     gains/has <keyword>]" combat-trick spell into (power, toughness,
@@ -4783,7 +4813,10 @@ def parse_pump_spell(oracle: str) -> "tuple[int, int, str]":
               if not mm.group(1).startswith('-') and not mm.group(2).startswith('-')),
              None)
     if m is None:
-        return 0, 0, ""
+        # The zero-P/T case: a keyword-only grant.
+        g = re.search(_KW_GRANT_CLAUSE, text)
+        kws = _modelled_keywords(g.group(1)) if g else ()
+        return (0, 0, kws[0]) if kws else (0, 0, "")
     # A keyword granted in the same clause window ("and gains trample", or a
     # rider sentence right after) — the window the pump shape has always read.
     clause = text[m.start():m.start() + 120]
@@ -4823,9 +4856,20 @@ def parse_until_next_turn(oracle: str) -> "Optional[dict]":
         return None
     m = re.fullmatch(_PT_MOD_CLAUSE, inner)
     if m:
+        kws = _modelled_keywords(m.group(3) or "")
         return {'kind': 'pt_mod', 'scope': 'target',
                 'power': int(m.group(1)), 'toughness': int(m.group(2)),
-                'keyword': _pt_mod_keyword(m.group(3) or "")}
+                'keyword': kws[0] if kws else "", 'keywords': list(kws)}
+    # The zero-P/T case: a keyword-only grant on a target.
+    g = re.fullmatch(r'(?:up to one )?target creature (?:gains|has) ([a-z ,]+)', inner)
+    if g:
+        kws = _modelled_keywords(g.group(1))
+        # Every word must be a modelled keyword — a partial grant is refused.
+        named = [w.strip() for w in re.split(r',| and ', g.group(1)) if w.strip()]
+        if kws and len(kws) == len(named):
+            return {'kind': 'pt_mod', 'scope': 'target', 'power': 0,
+                    'toughness': 0, 'keyword': kws[0], 'keywords': list(kws)}
+        return None
     if inner.startswith('creatures you control get '):
         team = parse_team_pump(inner + ' until end of turn.')
         if team and not team.get('scaling') and not team.get('others_only'):

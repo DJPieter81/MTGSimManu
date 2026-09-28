@@ -4353,7 +4353,7 @@ class EVPlayer:
         # "Target creature" is legal on the opponent's creature too, so
         # cast-time legality never protects this choice; with no own
         # creature there is no target and the spell is not cast.
-        if ((getattr(t, 'pump_spell_power', 0) or getattr(t, 'pump_spell_toughness', 0))
+        if (getattr(t, 'has_targeted_pump', False)
                 and 'removal' not in tags):
             mine = list(game.players[self.player_idx].creatures)
             if not mine:
@@ -5016,7 +5016,7 @@ class EVPlayer:
         # A targeted pump (typed "+N/+M until end of turn") needs the
         # creature it is aimed at; cast with no chosen target it resolves
         # doing nothing (a Phyrexian pip paid for nothing, 2026-09-08).
-        if ((getattr(t, 'pump_spell_power', 0) or getattr(t, 'pump_spell_toughness', 0))
+        if (getattr(t, 'has_targeted_pump', False)
                 and 'removal' not in tags):
             return True
         for ability in t.abilities:

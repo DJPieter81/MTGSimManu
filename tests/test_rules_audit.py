@@ -716,3 +716,37 @@ def test_next_turn_audit_is_silent_when_the_effects_end(audit):
     game.active_player = 0
     game.untap_step(0)
     assert "611.2b/until_next_turn_expired" not in _rules(rules_audit.drain())
+
+
+def _grant_game(card_db):
+    from engine.cards import CardInstance
+    game = GameState(rng=random.Random(0))
+    game.active_player = 0
+    bear = CardInstance(template=card_db.get_card("Grizzly Bears"), owner=0, controller=0,
+                        instance_id=game.next_instance_id(), zone="battlefield")
+    bear._game_state = game
+    bear.enter_battlefield()
+    game.players[0].battlefield.append(bear)
+    spell = CardInstance(template=card_db.get_card("Assault Strobe"), owner=0, controller=0,
+                         instance_id=game.next_instance_id(), zone="stack")
+    spell._game_state = game
+    return game, bear, spell
+
+
+def test_keyword_grant_audit_sees_a_grant_that_did_not_land(audit, card_db, monkeypatch):
+    from engine.clause_resolver import resolve_clause
+    game, bear, spell = _grant_game(card_db)
+    # Break the rule: the temporary keyword set swallows additions.
+    class _Sink(set):
+        def add(self, _):
+            pass
+    bear.temp_keywords = _Sink()
+    resolve_clause(game, spell, 0, [bear.instance_id])
+    assert "613.1f/keyword_granted" in _rules(rules_audit.drain())
+
+
+def test_keyword_grant_audit_is_silent_when_the_grant_lands(audit, card_db):
+    from engine.clause_resolver import resolve_clause
+    game, bear, spell = _grant_game(card_db)
+    resolve_clause(game, spell, 0, [bear.instance_id])
+    assert "613.1f/keyword_granted" not in _rules(rules_audit.drain())

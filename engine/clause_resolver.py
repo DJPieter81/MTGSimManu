@@ -227,13 +227,14 @@ def _a_until_next_turn(ctx):
         player.flash_permission_types.update(eff['types'])
         desc = f"{'/'.join(eff['types'])} spells as though they had flash"
     elif eff['scope'] == 'target':
-        hostile = eff['power'] < 0 or eff['toughness'] < 0
+        hostile = eff['power'] < 0 or eff['toughness'] < 0   # a grant (0/0 + kw) is friendly
         tgt = _or().pump_target(game, controller, ctx.targets, hostile=hostile,
                                 source=card)
         if tgt is None:
             return None
-        kws = {getattr(KW, eff['keyword'].upper().replace(' ', '_'))} \
-            if eff.get('keyword') and hasattr(KW, eff['keyword'].upper().replace(' ', '_')) else None
+        kws = {getattr(KW, k.upper().replace(' ', '_'))
+               for k in (eff.get('keywords') or ([eff['keyword']] if eff.get('keyword') else []))
+               if hasattr(KW, k.upper().replace(' ', '_'))} or None
         for ce in create_pump_spell_effect(card.instance_id, card.name, tgt.instance_id,
                                            eff['power'], eff['toughness'], kws,
                                            duration="until_next_turn",
@@ -271,9 +272,7 @@ def _a_mass_mode(ctx):
 
 
 def _g_pump(ctx):
-    return ctx.oracle_override is None and bool(
-        getattr(ctx.template, 'pump_spell_power', 0)
-        or getattr(ctx.template, 'pump_spell_toughness', 0))
+    return ctx.oracle_override is None and ctx.template.has_targeted_pump
 
 
 def _a_pump(ctx):
@@ -287,15 +286,25 @@ def _a_pump(ctx):
         return None
     tgt.temp_power_mod += pp
     tgt.temp_toughness_mod += pt
-    kw = getattr(card.template, 'pump_spell_keyword', '')
-    if kw:
+    kws = (getattr(card.template, 'pump_spell_keywords', ()) or
+           ((getattr(card.template, 'pump_spell_keyword', '') or None),))
+    kws = tuple(k for k in kws if k)
+    for kw in kws:
         kwe = getattr(KW, kw.upper().replace(' ', '_'), None)
         if kwe is not None:
             tgt.temp_keywords.add(kwe)
+    # Rules audit (CR 613.1f): the target now has every granted keyword
+    # (read from the permanent's resulting keyword set).
+    from engine.rules_audit import enabled as audit_on, check as audit_check
+    if audit_on():
+        missing = [k for k in kws
+                   if getattr(KW, k.upper().replace(' ', '_'), None) not in tgt.keywords]
+        audit_check("613.1f/keyword_granted", not missing,
+                    f"{card.name}: {tgt.name} lacks granted {missing}", game=game)
     game.log.append(
         f"T{game.display_turn} P{controller+1}: "
         f"{card.name} gives {tgt.name} +{pp}/+{pt}"
-        f"{' and ' + kw if kw else ''}")
+        f"{' and ' + ', '.join(kws) if kws else ''}")
     return True
 
 

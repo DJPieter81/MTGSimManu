@@ -959,6 +959,9 @@ class CardTemplate:
     pump_spell_power: int = 0
     pump_spell_toughness: int = 0
     pump_spell_keyword: str = ""
+    # Every keyword the targeted modifier grants (parse_pump_spell_keywords);
+    # a keyword-only grant is typed on instants and sorceries only.
+    pump_spell_keywords: tuple = ()
     # "[each player] draw N, then discard M [at random]" loot shape —
     # parsed once (parse_loot_effect): {"draw", "discard", "random",
     # "each_player"} or None. The resolver discards through the discard
@@ -1512,6 +1515,13 @@ class CardTemplate:
     @property
     def is_sorcery(self) -> bool:
         return CardType.SORCERY in self.card_types
+
+    @property
+    def has_targeted_pump(self) -> bool:
+        """A targeted modifier: +N/+M and/or granted keywords until end of
+        turn (CR 613.1f / 613.4c). One predicate for the resolver and the AI."""
+        return bool(self.pump_spell_power or self.pump_spell_toughness
+                    or self.pump_spell_keywords)
 
     @property
     def is_spell(self) -> bool:

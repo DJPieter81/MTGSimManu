@@ -2080,9 +2080,17 @@ class CardDatabase:
         template.has_each_opponent_effect = parse_has_each_opponent_effect(oracle)
         template.has_pump_grant = parse_has_pump_grant(oracle)
         _pp, _pt, _pk = parse_pump_spell(oracle)
+        _is_spell = template.is_instant or template.is_sorcery
+        if not (_pp or _pt) and not _is_spell:
+            _pk = ""   # a keyword-only grant is a spell shape (see below)
         template.pump_spell_power = _pp
         template.pump_spell_toughness = _pt
         template.pump_spell_keyword = _pk
+        from .oracle_parser import parse_pump_spell_keywords
+        _kws = parse_pump_spell_keywords(oracle)
+        # A keyword-only grant is typed on instants/sorceries only: on a
+        # permanent that text is an activated ability (activation path).
+        template.pump_spell_keywords = _kws if (_pp or _pt or _is_spell) else ()
         from .oracle_parser import parse_loot_effect
         template.loot_data = parse_loot_effect(oracle)
         _eqp, _eqt = parse_equip_pt_grant(oracle)

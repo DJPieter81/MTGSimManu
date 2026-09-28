@@ -34,7 +34,7 @@ def test_the_wrapped_shapes_are_typed_with_the_duration_removed():
     assert parse_until_next_turn(
         "Until your next turn, up to one target creature gets -3/-0.") == {
         'kind': 'pt_mod', 'scope': 'target', 'power': -3, 'toughness': 0,
-        'keyword': ''}
+        'keyword': '', 'keywords': []}
     assert parse_until_next_turn(
         "Up to one target creature gets -2/-1 until your next turn.")['power'] == -2
     team = parse_until_next_turn(
@@ -170,3 +170,12 @@ def test_a_flash_permission_lets_a_sorcery_be_cast_on_the_opponents_turn(card_db
     _turn_passes_to(game, 0)
     game.active_player = 1
     assert not game.can_cast(0, sorcery)
+
+
+def test_a_keyword_only_grant_until_your_next_turn_is_typed():
+    eff = parse_until_next_turn(
+        "Until your next turn, up to one target creature gains reach and vigilance.")
+    assert eff['kind'] == 'pt_mod' and (eff['power'], eff['toughness']) == (0, 0)
+    assert set(eff['keywords']) == {'reach', 'vigilance'}
+    assert parse_until_next_turn(
+        "Until your next turn, up to one target creature gains reach and shroud.") is None
