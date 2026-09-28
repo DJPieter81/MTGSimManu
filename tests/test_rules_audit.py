@@ -699,10 +699,13 @@ def test_loyalty_clause_audit_is_silent_when_the_clause_resolved(audit, card_db)
 
 def test_next_turn_audit_sees_an_effect_that_survived_its_controllers_untap(audit, card_db, monkeypatch):
     from engine.continuous_effects import ContinuousEffectsManager
+    from engine.effect_model import cost_delta_effect, until_your_next_turn
     game = GameState(rng=random.Random(0))
-    game.players[0].temp_cost_rules.append({'target': 'all', 'amount': 1, 'color': None})
-    # Break the rule: the player-scoped reset leaves the rule in place.
-    monkeypatch.setattr(type(game.players[0]), "reset_turn_tracking", lambda self: None)
+    game.continuous_effects.register_effect(cost_delta_effect(
+        0, {'target': 'all', 'amount': 1, 'color': None}, until_your_next_turn(0)))
+    # Break the rule: the one expiry path lets the effect live on.
+    monkeypatch.setattr(ContinuousEffectsManager, "expire_rule_effects",
+                        lambda self, event: None)
     monkeypatch.setattr(ContinuousEffectsManager, "cleanup_until_next_turn",
                         lambda self, idx: None)
     game.active_player = 0
@@ -711,11 +714,14 @@ def test_next_turn_audit_sees_an_effect_that_survived_its_controllers_untap(audi
 
 
 def test_next_turn_audit_is_silent_when_the_effects_end(audit):
+    from engine.effect_model import (cost_delta_effect, permit_cast_as_flash,
+                                     until_your_next_turn)
     game = GameState(rng=random.Random(0))
-    game.players[0].temp_cost_rules.append({'target': 'all', 'amount': 1, 'color': None})
-    from engine.effect_model import permit_cast_as_flash, until_your_next_turn
+    game.continuous_effects.register_effect(cost_delta_effect(
+        0, {'target': 'all', 'amount': 1, 'color': None}, until_your_next_turn(0)))
     game.continuous_effects.register_effect(
         permit_cast_as_flash(0, ("sorcery",), until_your_next_turn(0)))
+    assert game.players[0].temp_cost_rules and game.players[0].flash_permission_types
     game.active_player = 0
     game.untap_step(0)
     assert "611.2b/until_next_turn_expired" not in _rules(rules_audit.drain())
