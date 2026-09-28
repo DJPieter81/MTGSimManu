@@ -311,9 +311,6 @@ class ManaPayment:
                     # Self-scaling own-cost reduction (per-turn discard/
                     # cycle count, graveyard card types, ...).
                     reduction += self_cost_reduction(game, player_idx, c.template)
-                    # Temporary cost reduction (Ral PW +1 "until your next turn")
-                    if c.template.is_instant or c.template.is_sorcery:
-                        reduction += player.temp_cost_reduction
                     # Affinity for artifacts
                     if Keyword.AFFINITY in c.template.keywords:
                         artifact_count = sum(

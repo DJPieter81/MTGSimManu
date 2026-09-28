@@ -90,7 +90,12 @@ class PlayerState:
     cannot_attack_this_turn: bool = False       # this player's creatures can't attack
     cannot_be_attacked_this_turn: bool = False  # creatures can't attack this player
     combat_damage_prevented_this_turn: bool = False  # Fog (all combat damage prevented)
-    temp_cost_reduction: int = 0  # temporary "spells cost N less" (Ral PW +1), cleared end of turn
+    # "Until your next turn" player effects (CR 611.2b), cleared by
+    # reset_turn_tracking at this player's own untap: cost-reduction rules
+    # (parse_cost_reduction shape, counted by count_cost_reducers) and the
+    # spell types this player may cast as though they had flash.
+    temp_cost_rules: list = field(default_factory=list)
+    flash_permission_types: set = field(default_factory=set)
     deck_name: str = ""
     # Effective CMC overrides from gameplan (e.g. domain cost reduction)
     effective_cmc_overrides: Dict[str, int] = field(default_factory=dict)
@@ -362,7 +367,8 @@ class PlayerState:
         self.cannot_attack_this_turn = False
         self.cannot_be_attacked_this_turn = False
         self.combat_damage_prevented_this_turn = False
-        self.temp_cost_reduction = 0
+        self.temp_cost_rules = []
+        self.flash_permission_types = set()
         self._landfall_count_this_turn = 0
 
     def reset_cross_turn_event_counters(self):

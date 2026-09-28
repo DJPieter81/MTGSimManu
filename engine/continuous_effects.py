@@ -91,7 +91,9 @@ class ContinuousEffect:
     apply: Optional[Callable] = None
     description: str = ""
     timestamp: int = 0
-    duration: str = "permanent"  # "permanent", "end_of_turn", "end_of_combat"
+    duration: str = "permanent"  # "permanent", "end_of_turn", "end_of_combat", "until_next_turn"
+    # For "until_next_turn" (CR 611.2b): the player whose next turn ends it.
+    controller: Optional[int] = None
 
 
 class ContinuousEffectsManager:
@@ -138,6 +140,13 @@ class ContinuousEffectsManager:
     def cleanup_end_of_turn(self) -> None:
         """Remove all end-of-turn effects."""
         self._effects = [e for e in self._effects if e.duration != "end_of_turn"]
+
+    def cleanup_until_next_turn(self, player_idx: int) -> None:
+        """CR 611.2b: effects that last "until your next turn" end as
+        their controller's next turn begins (called from that untap step)."""
+        self._effects = [e for e in self._effects
+                         if not (e.duration == "until_next_turn"
+                                 and e.controller == player_idx)]
 
     def cleanup_end_of_combat(self) -> None:
         """Remove all end-of-combat effects."""
@@ -557,7 +566,8 @@ def create_pump_spell_effect(source_id: int, source_name: str,
                               power_bonus: int = 0,
                               toughness_bonus: int = 0,
                               keyword_grants: Optional[Set[Keyword]] = None,
-                              duration: str = "end_of_turn") -> List[ContinuousEffect]:
+                              duration: str = "end_of_turn",
+                              controller: Optional[int] = None) -> List[ContinuousEffect]:
     """Create a pump spell effect (e.g., Giant Growth: +3/+3 until end of turn).
 
     Args:
@@ -587,6 +597,7 @@ def create_pump_spell_effect(source_id: int, source_name: str,
             apply=apply_power,
             description=f"{source_name}: +{power_bonus}/+0",
             duration=duration,
+            controller=controller,
         ))
 
     if toughness_bonus != 0:
@@ -602,6 +613,7 @@ def create_pump_spell_effect(source_id: int, source_name: str,
             apply=apply_toughness,
             description=f"{source_name}: +0/+{toughness_bonus}",
             duration=duration,
+            controller=controller,
         ))
 
     if keyword_grants:
@@ -617,6 +629,7 @@ def create_pump_spell_effect(source_id: int, source_name: str,
                 apply=apply_keyword,
                 description=f"{source_name}: grants {kw.name}",
                 duration=duration,
+                controller=controller,
             ))
 
     return effects

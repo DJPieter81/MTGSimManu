@@ -224,7 +224,8 @@ def _resolve_loot(game: "GameState", card: "CardInstance", controller: int,
             DiscardManager.discard_card(game, p_idx, chosen, cause="discard (loot)")
 
 
-def pump_target(game: "GameState", controller: int, targets) -> Optional["CardInstance"]:
+def pump_target(game: "GameState", controller: int, targets,
+                hostile: bool = False, source=None) -> Optional["CardInstance"]:
     """The creature a targeted pump resolves on: the chosen target when it
     is a creature on the battlefield (CR 608.2b — the target, not the
     controller's biggest creature), else the controller's best creature
@@ -236,6 +237,13 @@ def pump_target(game: "GameState", controller: int, targets) -> Optional["CardIn
             if (c is not None and c.zone == 'battlefield'
                     and c.template.is_creature):
                 return c
+    if hostile:
+        # A P/T reduction with no chosen target goes on the opponent's
+        # best creature it may legally target.
+        from engine.target_solver import can_be_targeted
+        theirs = [c for c in game.players[1 - controller].creatures
+                  if can_be_targeted(c, source, controller)]
+        return max(theirs, key=lambda c: c.power or 0) if theirs else None
     mine = game.players[controller].creatures
     if mine:
         return max(mine, key=lambda c: c.power or 0)
@@ -1949,47 +1957,49 @@ def self_cost_reduction(game, player_idx: int, card_template) -> int:
     return min(amount * count, max(0, template.mana_cost.generic))
 
 
+def _cost_rule_applies(rule: dict, template) -> bool:
+    """Does one parsed cost-reduction rule (parse_cost_reduction shape)
+    apply to this spell? The single matcher for every reduction source."""
+    from engine.cards import Color
+    target = rule['target']
+    if target == 'all':
+        matches = True
+    elif target == 'instant_sorcery':
+        matches = template.is_instant or template.is_sorcery
+    elif target == 'creature':
+        matches = template.is_creature
+    elif target == 'noncreature':
+        matches = not template.is_creature
+    else:
+        matches = False
+    if matches and rule.get('color'):
+        color_map = {'R': Color.RED, 'U': Color.BLUE, 'B': Color.BLACK,
+                     'W': Color.WHITE, 'G': Color.GREEN}
+        required = color_map.get(rule['color'])
+        if required and required not in template.color_identity:
+            matches = False
+    return matches
+
+
 def count_cost_reducers(game, player_idx: int, card_template) -> int:
-    """Count how many cost reducers on the battlefield apply to a given spell.
+    """Total generic reduction for a spell from every reduction source:
+    permanents' "cost {N} less" statics and the player's own
+    "until your next turn" rules — one matcher (`_cost_rule_applies`).
 
     Generic replacement for hardcoded Ruby Medallion / Ral checks.
-    Parses each permanent's oracle text for "cost {N} less" patterns
-    and checks if the spell being cast matches the reduction criteria.
     """
     from engine.oracle_parser import parse_cost_reduction
-    from engine.cards import CardType, Color
     template = card_template
     player = game.players[player_idx]
     reduction = 0
-
     for perm in player.battlefield:
         oracle = (perm.template.oracle_text or '').lower()
         if 'cost' not in oracle or 'less' not in oracle:
             continue
-
         rule = parse_cost_reduction(oracle)
-        if not rule:
-            continue
-
-        matches = False
-        if rule['target'] == 'all':
-            matches = True
-        elif rule['target'] == 'instant_sorcery':
-            matches = template.is_instant or template.is_sorcery
-        elif rule['target'] == 'creature':
-            matches = template.is_creature
-        elif rule['target'] == 'noncreature':
-            matches = not template.is_creature
-
-        # Check color restriction
-        if matches and rule.get('color'):
-            color_map = {'R': Color.RED, 'U': Color.BLUE, 'B': Color.BLACK,
-                         'W': Color.WHITE, 'G': Color.GREEN}
-            required = color_map.get(rule['color'])
-            if required and required not in template.color_identity:
-                matches = False
-
-        if matches:
+        if rule and _cost_rule_applies(rule, template):
             reduction += rule['amount']
-
+    for rule in getattr(player, 'temp_cost_rules', ()):
+        if _cost_rule_applies(rule, template):
+            reduction += rule['amount']
     return reduction

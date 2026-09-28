@@ -205,6 +205,58 @@ def _a_cast_prohibition(ctx):
     return None
 
 
+def _g_until_next_turn(ctx):
+    return ctx.oracle_override is None and bool(
+        getattr(ctx.template, 'next_turn_effect', None))
+
+
+def _a_until_next_turn(ctx):
+    # CR 611.2b — the wrapped effect lasts until the controller's next turn
+    # (continuous effects: cleanup_until_next_turn at that untap; player
+    # effects: reset_turn_tracking at that untap).
+    from engine.cards import Keyword as KW
+    from engine.continuous_effects import create_pump_spell_effect
+    game, card, controller = ctx.game, ctx.card, ctx.controller
+    eff = ctx.template.next_turn_effect
+    player = game.players[controller]
+    kind = eff['kind']
+    if kind == 'cost_reduction':
+        player.temp_cost_rules.append(dict(eff['rule']))
+        desc = f"{eff['rule']['target']} spells cost {eff['rule']['amount']} less"
+    elif kind == 'flash_permission':
+        player.flash_permission_types.update(eff['types'])
+        desc = f"{'/'.join(eff['types'])} spells as though they had flash"
+    elif eff['scope'] == 'target':
+        hostile = eff['power'] < 0 or eff['toughness'] < 0
+        tgt = _or().pump_target(game, controller, ctx.targets, hostile=hostile,
+                                source=card)
+        if tgt is None:
+            return None
+        kws = {getattr(KW, eff['keyword'].upper().replace(' ', '_'))} \
+            if eff.get('keyword') and hasattr(KW, eff['keyword'].upper().replace(' ', '_')) else None
+        for ce in create_pump_spell_effect(card.instance_id, card.name, tgt.instance_id,
+                                           eff['power'], eff['toughness'], kws,
+                                           duration="until_next_turn",
+                                           controller=controller):
+            game.continuous_effects.register(ce)
+        desc = f"{tgt.name} {eff['power']:+d}/{eff['toughness']:+d}"
+    else:  # scope 'yours'
+        kws = {getattr(KW, k.upper().replace(' ', '_')) for k in eff.get('keywords', ())
+               if hasattr(KW, k.upper().replace(' ', '_'))} or None
+        for c in list(player.creatures):
+            for ce in create_pump_spell_effect(card.instance_id, card.name, c.instance_id,
+                                               eff['power'], eff['toughness'], kws,
+                                               duration="until_next_turn",
+                                               controller=controller):
+                game.continuous_effects.register(ce)
+        desc = f"creatures you control {eff['power']:+d}/{eff['toughness']:+d}"
+    game.continuous_effects.recalculate(game)
+    game.log.append(f"T{game.display_turn} P{controller+1}: {card.name} — "
+                    f"until your next turn: {desc}")
+    ctx.handled = True
+    return True
+
+
 def _g_mass_mode(ctx):
     return ctx.oracle_override is not None
 
@@ -707,6 +759,7 @@ HANDLERS: List[ClauseHandler] = [
     ClauseHandler("combat_prevention", _g_combat_prevention, _a_combat_prevention),
     ClauseHandler("hand_refill_wheel", _g_wheel, _a_wheel),
     ClauseHandler("cast_prohibition", _g_cast_prohibition, _a_cast_prohibition),
+    ClauseHandler("until_next_turn", _g_until_next_turn, _a_until_next_turn),
     ClauseHandler("mass_mode_clause", _g_mass_mode, _a_mass_mode),
     ClauseHandler("targeted_pump", _g_pump, _a_pump),
     ClauseHandler("mass_reanimate", _g_mass_reanimate, _a_mass_reanimate),

@@ -416,7 +416,13 @@ class CastManager:
         # card-name branches, no oracle-text parse at runtime.
         sorcery_locked = player_idx in game._sorcery_speed_lockout_set()
 
-        if (template.is_instant or template.has_flash) and not sorcery_locked:
+        # "You may cast <type> spells as though they had flash" (CR 702.8d),
+        # granted until the player's next turn (player.flash_permission_types).
+        flash_granted = (
+            ('sorcery' in player.flash_permission_types and template.is_sorcery)
+            or ('creature' in player.flash_permission_types and template.is_creature))
+        if (template.is_instant or template.has_flash or flash_granted) \
+                and not sorcery_locked:
             pass
         elif template.is_creature or template.is_sorcery or \
                 CardType.ENCHANTMENT in template.card_types or \
@@ -2074,7 +2080,6 @@ class CastManager:
                     continue
                 # splice is a ManaCost — apply cost reduction to generic portion
                 reduction = count_cost_reducers(game, player_idx, sc.template)
-                reduction += player.temp_cost_reduction
                 from .mana import ManaCost as MC
                 effective_splice = MC(
                     generic=max(0, splice.generic - reduction),

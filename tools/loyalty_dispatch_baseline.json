@@ -1,5 +1,5 @@
 {
-  "unclassified": 395,
+  "unclassified": 389,
   "description": "printed loyalty abilities whose effect the engine cannot execute (LoyaltyEffectKind.UNCLASSIFIED). Refused before any loyalty is paid. Must equal the actual count: growth (a mechanic stopped classifying) and a stale baseline (a family was implemented but not recorded) both fail CI. See tools/check_loyalty_dispatch.py.",
   "pool_note": "2026-09-27: 564 -> 646 on the MTGJSON 5.3.0+20260926 card-pool refresh. The 564 unclassified abilities on cards present before the refresh are unchanged; all 82 new entries are on newly printed cards (new planeswalkers and the 'Way of the ...' cycle). Pool growth, not a classifier regression."
 }

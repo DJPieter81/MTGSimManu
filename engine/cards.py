@@ -1179,6 +1179,9 @@ class CardTemplate:
     # (oracle_parser.parse_hand_refill) and static draw limit
     # {'who': 'opponents'|'all', 'max'} (oracle_parser.parse_draw_limit).
     hand_refill: Optional[dict] = None
+    # "Until your next turn, <owned effect>" (CR 611.2b), typed by the
+    # wrapped shape (oracle_parser.parse_until_next_turn).
+    next_turn_effect: Optional[dict] = None
     draw_limit: Optional[dict] = None
     # Targeted forced discard classified by who chooses the card:
     # {'chooser': 'caster'|'victim'|'random', 'target', 'choose_clause',
@@ -1440,6 +1443,9 @@ class CardTemplate:
             if self.hand_refill is None:
                 from .oracle_parser import parse_hand_refill as _phr
                 self.hand_refill = _phr(self.oracle_text)
+            if self.next_turn_effect is None:
+                from .oracle_parser import parse_until_next_turn as _punt
+                self.next_turn_effect = _punt(self.oracle_text)
             if self.draw_limit is None:
                 from .oracle_parser import parse_draw_limit as _pdl
                 self.draw_limit = _pdl(self.oracle_text)

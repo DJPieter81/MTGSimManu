@@ -171,6 +171,17 @@ class TurnManager:
                     and "during each other player's untap step" in otext):
                 card.untap()
         player.reset_turn_tracking()
+        # CR 611.2b: "until your next turn" effects end as this turn begins.
+        game.continuous_effects.cleanup_until_next_turn(player_idx)
+        from .rules_audit import enabled as _audit_on, check as _audit_check
+        if _audit_on():
+            _audit_check(
+                "611.2b/until_next_turn_expired",
+                not any(e.duration == "until_next_turn" and e.controller == player_idx
+                        for e in game.continuous_effects._effects)
+                and not player.temp_cost_rules and not player.flash_permission_types,
+                f"P{player_idx+1}'s next turn began with an until-your-next-turn effect",
+                game=game)
         # CR "this turn" window is a single game-turn clock shared by both
         # players: the non-active player's per-turn EVENT tallies must also
         # reset at this boundary, or a value from their own prior turn (a

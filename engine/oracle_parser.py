@@ -4743,6 +4743,24 @@ def parse_has_pump_grant(oracle: str) -> bool:
     return 'gets +' in lo or 'additional +' in lo
 
 
+# "(up to one) target creature gets ±N/±M [and gains/has <keyword>]" — the
+# one P/T-modifier clause shape, signed, whatever its duration. Callers add
+# the duration they own ("until end of turn" for pump spells, "until your
+# next turn" for parse_until_next_turn).
+_PT_MOD_CLAUSE = (
+    r'(?:up to one )?target creature[^.]*?gets ([+-]\d+)/([+-]\d+)'
+    r'(?: and (?:gains|has) ([a-z ,]+?))?')
+
+
+def _pt_mod_keyword(phrase: str) -> str:
+    if not phrase:
+        return ""
+    for word in _KEYWORD_WORDS:
+        if word in phrase:
+            return word
+    return ""
+
+
 def parse_pump_spell(oracle: str) -> "tuple[int, int, str]":
     """Parse a "target creature gets +N/+M until end of turn [and
     gains/has <keyword>]" combat-trick spell into (power, toughness,
@@ -4755,33 +4773,74 @@ def parse_pump_spell(oracle: str) -> "tuple[int, int, str]":
     Class size: ~200 Modern-legal combat tricks (Giant Growth, Might of
     Old Krosa, Monstrous Rage's base bonus, Blossoming Defense, ...).
     The single generic resolver replaces the per-card EFFECT_REGISTRY
-    handlers this shape would otherwise need.
+    handlers this shape would otherwise need. The clause shape is the
+    shared `_PT_MOD_CLAUSE`; a pump is its non-negative end-of-turn case.
     """
     if not oracle:
         return 0, 0, ""
     text = strip_reminder_text(oracle).lower()
-    # The bonus and a keyword grant share one clause: "+1/+0 and gains
-    # first strike until end of turn", "+2/+2 and gains hexproof until end
-    # of turn". Reading only the bare "+N/+M until end of turn" shape left
-    # 137 of the 323 Modern pump spells typed as no pump at all.
-    m = re.search(
-        r'target creature[^.]*?gets \+(\d+)/\+(\d+)'
-        r'(?: and (?:gains|has) [a-z ,]+?)? until end of turn', text)
-    if not m:
+    m = next((mm for mm in re.finditer(_PT_MOD_CLAUSE + r' until end of turn', text)
+              if not mm.group(1).startswith('-') and not mm.group(2).startswith('-')),
+             None)
+    if m is None:
         return 0, 0, ""
-    power, tough = int(m.group(1)), int(m.group(2))
-    # A keyword granted in the same sentence ("and gains trample", "and
-    # has flying"). Scoped to the pump clause to avoid a later sentence.
+    # A keyword granted in the same clause window ("and gains trample", or a
+    # rider sentence right after) — the window the pump shape has always read.
     clause = text[m.start():m.start() + 120]
-    keyword = ""
     kw_m = re.search(r'(?:gains|has) ([a-z ]+?)(?: until end of turn|[.,]|$)',
                      clause)
-    if kw_m:
-        for word in _KEYWORD_WORDS:
-            if word in kw_m.group(1):
-                keyword = word
-                break
-    return power, tough, keyword
+    return int(m.group(1)), int(m.group(2)), _pt_mod_keyword(kw_m.group(1) if kw_m else "")
+
+
+# "Until your next turn" (CR 611.2b) — a duration wrapped around an effect
+# the engine already owns. The duration phrase is removed and the inner text
+# must be exactly one owned shape; anything else is refused.
+_NEXT_TURN_PREFIX = re.compile(r'^until your next turn, ')
+_NEXT_TURN_SUFFIX = re.compile(r' until your next turn$')
+_FLASH_PERMISSION_RE = re.compile(
+    r'^you may cast (sorcery|creature) spells as though they had flash$')
+
+
+def parse_until_next_turn(oracle: str) -> "Optional[dict]":
+    """Type an "until your next turn" effect by its wrapped shape.
+
+    Returns one of
+      {'kind': 'pt_mod', 'scope': 'target', 'power', 'toughness', 'keyword'}
+      {'kind': 'pt_mod', 'scope': 'yours', 'power', 'toughness', 'keywords'}
+      {'kind': 'cost_reduction', 'rule': <parse_cost_reduction rule>}
+      {'kind': 'flash_permission', 'types': [...]}
+    or None. The inner text is parsed by the owners of each shape
+    (`_PT_MOD_CLAUSE`, `parse_team_pump`, `parse_cost_reduction`) and must
+    be matched in full — a compound effect is never half-applied.
+    """
+    if not oracle:
+        return None
+    text = strip_reminder_text(oracle).lower().strip().rstrip('.')
+    if 'until your next turn' not in text or '\n' in text:
+        return None
+    inner = _NEXT_TURN_SUFFIX.sub('', _NEXT_TURN_PREFIX.sub('', text)).strip()
+    if 'until your next turn' in inner or not inner:
+        return None
+    m = re.fullmatch(_PT_MOD_CLAUSE, inner)
+    if m:
+        return {'kind': 'pt_mod', 'scope': 'target',
+                'power': int(m.group(1)), 'toughness': int(m.group(2)),
+                'keyword': _pt_mod_keyword(m.group(3) or "")}
+    if inner.startswith('creatures you control get '):
+        team = parse_team_pump(inner + ' until end of turn.')
+        if team and not team.get('scaling') and not team.get('others_only'):
+            return {'kind': 'pt_mod', 'scope': 'yours',
+                    'power': team['power'], 'toughness': team['toughness'],
+                    'keywords': list(team.get('keywords') or [])}
+        return None
+    fm = _FLASH_PERMISSION_RE.fullmatch(inner)
+    if fm:
+        return {'kind': 'flash_permission', 'types': [fm.group(1)]}
+    if re.fullmatch(r'[a-z ,]+ spells you cast cost \{\d+\} less to cast', inner):
+        rule = parse_cost_reduction(inner)
+        if rule:
+            return {'kind': 'cost_reduction', 'rule': rule}
+    return None
 
 
 _LOOT_RE = re.compile(
