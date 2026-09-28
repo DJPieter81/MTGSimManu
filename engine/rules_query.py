@@ -7,9 +7,8 @@ effect model (engine/effect_model.py); a family's internals move onto
 registered/derived `Effect` records without its gates changing.
 
 Internals move family by family onto the effect registry
-(`ContinuousEffectsManager.rule_effects`): the cast, cost and draw
-families read it; the combat family is an adapter over the pre-model
-state until its stage.
+(`ContinuousEffectsManager.rule_effects`): the cast, cost, draw and
+combat families all read it.
 """
 from __future__ import annotations
 
@@ -89,16 +88,20 @@ def draw_limit(game: "GameState", player_idx: int) -> Optional[int]:
 # ── Combat ───────────────────────────────────────────────────────────
 
 def attack_prohibited(game: "GameState", player_idx: int) -> bool:
-    """This player's creatures can't attack (a turn-scoped lock)."""
-    return bool(game.players[player_idx].cannot_attack_this_turn)
+    """This player's creatures can't attack (CR 508.1c)."""
+    from engine.effect_model import ModKind
+    return bool(_covering(game, player_idx, ModKind.PROHIBIT, "attack"))
 
 
 def attacking_player_prohibited(game: "GameState", defender_idx: int) -> bool:
-    """Creatures can't attack this player."""
-    return bool(getattr(game.players[defender_idx], 'cannot_be_attacked_this_turn', False))
+    """Creatures can't attack this player (CR 508.1c)."""
+    from engine.effect_model import ModKind
+    return bool(_covering(game, defender_idx, ModKind.PROHIBIT, "be_attacked"))
 
 
 def combat_damage_prevented(game: "GameState") -> bool:
-    """All combat damage is prevented (Fog-class effect)."""
-    return any(getattr(p, 'combat_damage_prevented_this_turn', False)
-               for p in game.players)
+    """All combat damage is prevented (CR 615, Fog class)."""
+    from engine.effect_model import ModKind
+    return any(e.modification.kind is ModKind.PREVENT_DAMAGE
+               and e.modification.action == "combat"
+               for e in game.continuous_effects.rule_effects(game))

@@ -125,7 +125,7 @@ _RULE_KINDS = frozenset({ModKind.PROHIBIT, ModKind.PERMIT, ModKind.LIMIT,
 @dataclass(frozen=True)
 class Modification:
     kind: ModKind
-    # PROHIBIT/PERMIT/LIMIT: the action; others: None.
+    # PROHIBIT/PERMIT/LIMIT/PREVENT_DAMAGE: the action; others: None.
     action: Optional[str] = None
     # A typed, closed payload (spell filter, amount, keywords, P/T …).
     data: Tuple[Tuple[str, Any], ...] = ()
@@ -200,3 +200,30 @@ def draw_limit_effect(controller: int, who: str, cap: int, duration: Duration,
                   Modification(ModKind.LIMIT, action="draw",
                                data=(("max", cap),)),
                   duration, origin, source_id=source_id, controller=controller)
+
+
+def prohibit_attack(player: int, duration: Duration,
+                    controller: Optional[int] = None, source_id: int = 0) -> Effect:
+    """"<player>'s creatures can't attack" (CR 508.1c / 509.4)."""
+    return Effect(Selector(SelectorKind.PLAYER, player=player),
+                  Modification(ModKind.PROHIBIT, action="attack"),
+                  duration, OriginKind.RESOLVED, source_id=source_id,
+                  controller=controller)
+
+
+def prohibit_be_attacked(player: int, duration: Duration,
+                         controller: Optional[int] = None, source_id: int = 0) -> Effect:
+    """"Creatures can't attack <player>" (CR 508.1c)."""
+    return Effect(Selector(SelectorKind.PLAYER, player=player),
+                  Modification(ModKind.PROHIBIT, action="be_attacked"),
+                  duration, OriginKind.RESOLVED, source_id=source_id,
+                  controller=controller)
+
+
+def prevent_combat_damage(duration: Duration, controller: Optional[int] = None,
+                          source_id: int = 0) -> Effect:
+    """"Prevent all combat damage that would be dealt" (CR 615)."""
+    return Effect(Selector(SelectorKind.ALL_PLAYERS),
+                  Modification(ModKind.PREVENT_DAMAGE, action="combat"),
+                  duration, OriginKind.RESOLVED, source_id=source_id,
+                  controller=controller)

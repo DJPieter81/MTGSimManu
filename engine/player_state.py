@@ -86,10 +86,9 @@ class PlayerState:
     # `silenced_this_turn` / `spell_types_prohibited_this_turn` /
     # `flash_permission_types` attributes below are views over it.
     silenced_next_turn: bool = False  # Orim's Chant + Scepter lock
-    # Combat prevention as a class (CR 509.4 / 615), turn-scoped:
-    cannot_attack_this_turn: bool = False       # this player's creatures can't attack
-    cannot_be_attacked_this_turn: bool = False  # creatures can't attack this player
-    combat_damage_prevented_this_turn: bool = False  # Fog (all combat damage prevented)
+    # Combat prevention (CR 509.4 / 615) is Effects in the same registry;
+    # `cannot_attack_this_turn` / `cannot_be_attacked_this_turn` /
+    # `combat_damage_prevented_this_turn` are views over it.
     # "Until your next turn" player effects (CR 611.2b), cleared by
     # reset_turn_tracking at this player's own untap: cost-reduction rules
     # (parse_cost_reduction shape, counted by count_cost_reducers) and the
@@ -399,6 +398,60 @@ class PlayerState:
         return frozenset(t for e in self._cast_effects("cast_as_flash")
                          for t in (e.modification.get("types") or ()))
 
+    def _rule_view(self, kind, action) -> list:
+        game = getattr(self, "_game", None)
+        if game is None:
+            return []
+        return [e for e in game.continuous_effects.rule_effects(game)
+                if e.modification.kind is kind and e.modification.action == action
+                and e.selector.covers_player(self.player_idx)]
+
+    def _set_rule_view(self, value, kind, action, make) -> None:
+        reg = self._registry()
+        if reg is None:
+            return
+        from .effect_model import THIS_TURN, DurationKind
+        if value:
+            reg.register_effect(make(THIS_TURN))
+        else:
+            reg.drop_rule_effects(
+                lambda e: e.modification.kind is kind and e.modification.action == action
+                and e.duration.kind is DurationKind.THIS_TURN
+                and e.selector.covers_player(self.player_idx))
+
+    @property
+    def cannot_attack_this_turn(self) -> bool:
+        from .effect_model import ModKind
+        return bool(self._rule_view(ModKind.PROHIBIT, "attack"))
+
+    @cannot_attack_this_turn.setter
+    def cannot_attack_this_turn(self, value: bool) -> None:
+        from .effect_model import ModKind, prohibit_attack
+        self._set_rule_view(value, ModKind.PROHIBIT, "attack",
+                            lambda d: prohibit_attack(self.player_idx, d))
+
+    @property
+    def cannot_be_attacked_this_turn(self) -> bool:
+        from .effect_model import ModKind
+        return bool(self._rule_view(ModKind.PROHIBIT, "be_attacked"))
+
+    @cannot_be_attacked_this_turn.setter
+    def cannot_be_attacked_this_turn(self, value: bool) -> None:
+        from .effect_model import ModKind, prohibit_be_attacked
+        self._set_rule_view(value, ModKind.PROHIBIT, "be_attacked",
+                            lambda d: prohibit_be_attacked(self.player_idx, d))
+
+    @property
+    def combat_damage_prevented_this_turn(self) -> bool:
+        from .effect_model import ModKind
+        return bool(self._rule_view(ModKind.PREVENT_DAMAGE, "combat"))
+
+    @combat_damage_prevented_this_turn.setter
+    def combat_damage_prevented_this_turn(self, value: bool) -> None:
+        from .effect_model import ModKind, prevent_combat_damage
+        self._set_rule_view(value, ModKind.PREVENT_DAMAGE, "combat",
+                            lambda d: prevent_combat_damage(d, self.player_idx))
+
     def reset_turn_tracking(self):
         self.lands_played_this_turn = 0
         self.extra_land_drops = 0
@@ -419,10 +472,6 @@ class PlayerState:
         if getattr(self, 'silenced_next_turn', False):
             self.silenced_this_turn = True
             self.silenced_next_turn = False
-        # Combat prevention is turn-scoped (CR 509.4 / 615): clear each turn.
-        self.cannot_attack_this_turn = False
-        self.cannot_be_attacked_this_turn = False
-        self.combat_damage_prevented_this_turn = False
         self._landfall_count_this_turn = 0
 
     def reset_cross_turn_event_counters(self):

@@ -132,15 +132,20 @@ def _g_combat_prevention(ctx):
 def _a_combat_prevention(ctx):
     # CR 509.4 / 615 — one turn-scoped flag per shape; not an early return
     # (a compound card keeps resolving its other clauses).
+    # Each shape is a THIS_TURN Effect (CR 611.2a): it ends as the game
+    # turn ends, whichever player's turn it was cast in.
+    from .effect_model import (THIS_TURN, prevent_combat_damage,
+                               prohibit_attack, prohibit_be_attacked)
     game, cp = ctx.game, _combat_prevention_shape(ctx)
+    reg, src = game.continuous_effects, ctx.card.instance_id
     if cp["no_attack"] == "all":
-        for p in game.players:
-            p.cannot_attack_this_turn = True
+        for idx in range(len(game.players)):
+            reg.register_effect(prohibit_attack(idx, THIS_TURN, ctx.controller, src))
     elif cp["no_attack"] == "you":
-        game.players[ctx.controller].cannot_be_attacked_this_turn = True
+        reg.register_effect(prohibit_be_attacked(ctx.controller, THIS_TURN,
+                                                 ctx.controller, src))
     if cp["prevent_combat_damage"]:
-        for p in game.players:
-            p.combat_damage_prevented_this_turn = True
+        reg.register_effect(prevent_combat_damage(THIS_TURN, ctx.controller, src))
     game.log.append(
         f"T{game.display_turn} P{ctx.controller+1}: {ctx.card.name} — combat prevention")
     ctx.handled = True
