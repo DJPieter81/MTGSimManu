@@ -94,6 +94,9 @@ class ContinuousEffect:
     duration: str = "permanent"  # "permanent", "end_of_turn", "end_of_combat", "until_next_turn"
     # For "until_next_turn" (CR 611.2b): the player whose next turn ends it.
     controller: Optional[int] = None
+    # A resolved effect on a chosen object (CR 611.2c): (instance_id,
+    # battlefield_entry_seq). The object, not the card — CR 400.7.
+    target_obj: Optional[tuple] = None
 
 
 class ContinuousEffectsManager:
@@ -240,11 +243,23 @@ class ContinuousEffectsManager:
         ))
 
         # Apply effects in order
+        from .rules_audit import enabled as _audit_on
+        _audit = _audit_on()
         for effect in sorted_effects:
             if effect.affected and effect.apply:
                 for player in game.players:
                     for card in player.battlefield:
                         if effect.affected(game, card):
+                            if _audit and effect.target_obj is not None:
+                                # CR 400.7: an effect on a chosen object does
+                                # not apply to the card's later object.
+                                from .rules_audit import check as _audit_check
+                                _audit_check(
+                                    "400.7/effect_follows_old_object",
+                                    (card.instance_id, card.battlefield_entry_seq)
+                                    == tuple(effect.target_obj),
+                                    f"{effect.description} applied to a new "
+                                    f"object of {card.name}", game=game)
                             effect.apply(game, card)
             elif effect.affected is not None and effect.apply is None:
                 # A continuous/static effect that SELECTS cards but carries no
@@ -593,7 +608,8 @@ def create_pump_spell_effect(source_id: int, source_name: str,
                               toughness_bonus: int = 0,
                               keyword_grants: Optional[Set[Keyword]] = None,
                               duration: str = "end_of_turn",
-                              controller: Optional[int] = None) -> List[ContinuousEffect]:
+                              controller: Optional[int] = None,
+                              target_seq: Optional[int] = None) -> List[ContinuousEffect]:
     """Create a pump spell effect (e.g., Giant Growth: +3/+3 until end of turn).
 
     Args:
@@ -606,9 +622,13 @@ def create_pump_spell_effect(source_id: int, source_name: str,
         duration: "end_of_turn" or "end_of_combat"
     """
     effects = []
+    target_obj = (target_id, target_seq) if target_seq is not None else None
 
     def is_target(game, card):
-        return card.instance_id == target_id
+        # CR 400.7 / 611.2c: the chosen object only — a card that left and
+        # returned is a new object (its battlefield_entry_seq moved on).
+        return (card.instance_id == target_id
+                and (target_seq is None or card.battlefield_entry_seq == target_seq))
 
     if power_bonus != 0:
         def apply_power(game, card):
@@ -624,6 +644,7 @@ def create_pump_spell_effect(source_id: int, source_name: str,
             description=f"{source_name}: +{power_bonus}/+0",
             duration=duration,
             controller=controller,
+            target_obj=target_obj,
         ))
 
     if toughness_bonus != 0:
@@ -640,6 +661,7 @@ def create_pump_spell_effect(source_id: int, source_name: str,
             description=f"{source_name}: +0/+{toughness_bonus}",
             duration=duration,
             controller=controller,
+            target_obj=target_obj,
         ))
 
     if keyword_grants:
@@ -656,6 +678,7 @@ def create_pump_spell_effect(source_id: int, source_name: str,
                 description=f"{source_name}: grants {kw.name}",
                 duration=duration,
                 controller=controller,
+                target_obj=target_obj,
             ))
 
     return effects

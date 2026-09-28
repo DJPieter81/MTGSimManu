@@ -249,7 +249,8 @@ def _a_until_next_turn(ctx):
         for ce in create_pump_spell_effect(card.instance_id, card.name, tgt.instance_id,
                                            eff['power'], eff['toughness'], kws,
                                            duration="until_next_turn",
-                                           controller=controller):
+                                           controller=controller,
+                                           target_seq=tgt.battlefield_entry_seq):
             game.continuous_effects.register(ce)
         desc = f"{tgt.name} {eff['power']:+d}/{eff['toughness']:+d}"
     else:  # scope 'yours'
@@ -259,7 +260,8 @@ def _a_until_next_turn(ctx):
             for ce in create_pump_spell_effect(card.instance_id, card.name, c.instance_id,
                                                eff['power'], eff['toughness'], kws,
                                                duration="until_next_turn",
-                                               controller=controller):
+                                               controller=controller,
+                                               target_seq=c.battlefield_entry_seq):
                 game.continuous_effects.register(ce)
         desc = f"creatures you control {eff['power']:+d}/{eff['toughness']:+d}"
     game.continuous_effects.recalculate(game)

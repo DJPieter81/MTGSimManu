@@ -759,3 +759,35 @@ def test_keyword_grant_audit_is_silent_when_the_grant_lands(audit, card_db):
     game, bear, spell = _grant_game(card_db)
     resolve_clause(game, spell, 0, [bear.instance_id])
     assert "613.1f/keyword_granted" not in _rules(rules_audit.drain())
+
+
+# ── CR 400.7: an effect on a chosen object does not follow the card ──
+
+def _pump_on(game, bear, match_card_only):
+    from engine.continuous_effects import create_pump_spell_effect
+    for ce in create_pump_spell_effect(0, "Pump", bear.instance_id, 3, 3,
+                                       target_seq=bear.battlefield_entry_seq):
+        if match_card_only:   # the defect: the card, not the object
+            ce.affected = lambda g, c, _id=bear.instance_id: c.instance_id == _id
+        game.continuous_effects.register(ce)
+
+
+def test_object_identity_audit_sees_an_effect_that_followed_a_blinked_card(audit):
+    game = GameState(rng=random.Random(0))
+    bear = _creature(game, "Bear", 0)
+    _pump_on(game, bear, match_card_only=True)
+    bear.battlefield_entry_seq += 1      # left and returned: a new object
+    game.continuous_effects.recalculate(game)
+    assert "400.7/effect_follows_old_object" in _rules(rules_audit.drain())
+
+
+def test_object_identity_audit_is_silent_when_the_effect_stays_with_its_object(audit):
+    game = GameState(rng=random.Random(0))
+    bear = _creature(game, "Bear", 0)
+    _pump_on(game, bear, match_card_only=False)
+    game.continuous_effects.recalculate(game)
+    assert bear.power == 5
+    bear.battlefield_entry_seq += 1
+    game.continuous_effects.recalculate(game)
+    assert bear.power == 2
+    assert "400.7/effect_follows_old_object" not in _rules(rules_audit.drain())
