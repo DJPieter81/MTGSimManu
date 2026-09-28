@@ -6022,7 +6022,9 @@ from the records. Registered carrier: Tamiyo, Seasoned Scholar's +2 (Dimir
 ×3) — loyalty unclassified 383 → 382. New owner `engine/damage.lose_life`
 (CR 119.3: loss of life is not damage, but counts as life lost this turn);
 three direct `.life -=` loss writes moved onto it — single-owner
-damage_write 42 → 39.
+damage_write 42 → 39. Same seeds, n=20, pinned worktrees `e227494` → `ac2d8d5`: Dimir Midrange
+field 45.4 → 45.4 (draws 4 → 4) — identical; Tamiyo flips only on a third
+draw in a turn, so the +2 rarely arises in these seeds.
 
 **S3b-2b — class restrictions ("creatures [your opponents control]
 [without flying] can't block / attack <duration>") as PROHIBIT effects with
