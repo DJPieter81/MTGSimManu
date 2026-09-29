@@ -215,23 +215,10 @@ class PlaneswalkerManager:
             game, controller, requirement, exclude=pw_card)
 
         if requirement.zone == "battlefield":
-            # A printed "its owner's hand" bounce can legally target any
-            # player's permanent; the controller's own board is never the
-            # play, so the engine offers only the opponent's permanents —
-            # the same restriction the spell-side bounce resolver applies.
-            candidates = [
-                c for c in candidates
-                if (c.controller if c.controller is not None else c.owner)
-                != controller]
-            if candidates:
-                from .card_effects import _nonland_permanent_threat
-                opp_battlefield = game.players[1 - controller].battlefield
-                best = max(candidates,
-                           key=lambda c: _nonland_permanent_threat(
-                               c, opp_battlefield))
-                game._bounce_permanent(best)
-                game.log.append(f"T{game.display_turn} P{controller+1}: "
-                                f"  returns {best.name} to its owner's hand")
+            # The one bounce owner (clause_resolver.resolve_bounce) — the
+            # same resolution spells and channel lines use.
+            from .clause_resolver import resolve_bounce
+            resolve_bounce(game, controller, pw_card, requirement)
         else:  # graveyard → your hand
             if candidates:
                 # Recoup the largest investment — the same convention the

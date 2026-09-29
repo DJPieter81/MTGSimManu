@@ -525,26 +525,60 @@ def _a_hand_attack(ctx):
     return None
 
 
+def resolve_bounce(game, controller, source, requirement, targets=None) -> list:
+    """Return chosen permanents to their OWNERS' hands (CR 608.2b / 400.3).
+    The one owner for every bounce carrier — spells, channel and loyalty
+    lines. Legal targets come from the target solver; a chosen legal target
+    is honoured; with none chosen, the opponent's most threatening legal
+    permanents are taken (a self-scoped bounce takes the controller's
+    costliest). Returns the bounced cards."""
+    from engine.target_solver import enumerate_legal_targets
+    candidates = enumerate_legal_targets(game, controller, requirement, exclude=source)
+    chosen = [c for tid in (targets or []) for c in candidates
+              if isinstance(tid, int) and c.instance_id == tid]
+    if not chosen:
+        def _ctrl(c):
+            return c.controller if c.controller is not None else c.owner
+        if requirement.owner_scope == "you":
+            pool = sorted(candidates, key=lambda c: c.template.cmc or 0, reverse=True)
+        else:
+            from engine.card_effects import _nonland_permanent_threat
+            opp_bf = game.players[1 - controller].battlefield
+            pool = sorted((c for c in candidates if _ctrl(c) != controller),
+                          key=lambda c: _nonland_permanent_threat(c, opp_bf), reverse=True)
+        chosen = pool
+    chosen = chosen[:max(1, requirement.count_max or 1)]
+    from .rules_audit import enabled as _audit_on, check as _audit_check
+    for c in chosen:
+        game._bounce_permanent(c)
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
+                        f"{getattr(source, 'name', 'effect')} returns {c.name} "
+                        f"to its owner's hand")
+        if _audit_on():
+            owner = c.owner if c.owner is not None else c.controller
+            _audit_check("400.3/bounced_to_owners_hand",
+                         c.zone == "hand" and c in game.players[owner].hand
+                         and all(c not in p.hand for i, p in enumerate(game.players)
+                                 if i != owner),
+                         f"{c.name} bounced", game=game)
+    return chosen
+
+
+def _bounce_shape(ctx):
+    # A modal mode resolves its own text; otherwise the typed requirement.
+    if ctx.oracle_override is not None:
+        from .oracle_parser import parse_bounce_target
+        return parse_bounce_target(ctx.oracle_override)
+    return getattr(ctx.template, 'bounce_target', None)
+
+
 def _g_bounce(ctx):
-    return any('return target' in a and 'nonland permanent' in a
-               and "owner's hand" in a for a in ctx.abilities)
+    return _bounce_shape(ctx) is not None
 
 
 def _a_bounce(ctx):
-    # "Return target nonland permanent to its owner's hand".
-    game, card, controller = ctx.game, ctx.card, ctx.controller
-    opp = game.players[ctx.opponent]
-    from engine.card_effects import _nonland_permanent_threat
-    candidates = [c for c in opp.battlefield if not c.template.is_land]
-    if candidates:
-        best = max(candidates,
-                   key=lambda c: _nonland_permanent_threat(c, opp.battlefield))
-        opp.battlefield.remove(best)
-        best.zone = 'hand'
-        best.tapped = False
-        opp.hand.append(best)
-        game.log.append(
-            f"T{game.display_turn} P{controller+1}: {card.name} bounces {best.name}")
+    # "Return [up to N] target <types> to its owner's hand".
+    if resolve_bounce(ctx.game, ctx.controller, ctx.card, _bounce_shape(ctx), ctx.targets):
         ctx.handled = True
     return None
 
@@ -882,7 +916,7 @@ HANDLERS: List[ClauseHandler] = [
     ClauseHandler("targeted_removal", _g_targeted_removal, _a_targeted_removal),
     ClauseHandler("library_dig", _g_library_dig, _a_library_dig),
     ClauseHandler("hand_attack", _g_hand_attack, _a_hand_attack),
-    ClauseHandler("bounce_nonland", _g_bounce, _a_bounce),
+    ClauseHandler("bounce", _g_bounce, _a_bounce),
     ClauseHandler("reanimate_target", _g_reanimate, _a_reanimate),
     ClauseHandler("impulse_reveal", _g_impulse, _a_impulse),
     ClauseHandler("card_flow", _g_card_flow, _a_card_flow),

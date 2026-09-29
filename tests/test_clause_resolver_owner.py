@@ -40,7 +40,7 @@ def test_handler_order_is_the_inline_branch_order():
         "combat_prevention", "hand_refill_wheel", "cast_prohibition",
         "object_restriction", "attack_observer", "group_restriction", "until_next_turn", "mass_mode_clause", "targeted_pump", "mass_reanimate", "energy_damage",
         "land_destruction", "direct_damage", "board_sweep", "targeted_removal",
-        "library_dig", "hand_attack", "bounce_nonland", "reanimate_target",
+        "library_dig", "hand_attack", "bounce", "reanimate_target",
         "impulse_reveal", "card_flow", "create_token",
     ]
 

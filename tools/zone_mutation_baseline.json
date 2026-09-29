@@ -8,7 +8,7 @@
   "engine/card_effects.py": 27,
   "engine/cards.py": 1,
   "engine/cast_manager.py": 13,
-  "engine/clause_resolver.py": 1,
+  "engine/clause_resolver.py": 0,
   "engine/combat_manager.py": 2,
   "engine/constants.py": 0,
   "engine/continuous_effects.py": 0,

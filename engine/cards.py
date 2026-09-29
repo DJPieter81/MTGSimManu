@@ -1194,6 +1194,9 @@ class CardTemplate:
     # "Whenever a creature attacks you [or a planeswalker you control],
     # <effect>" (oracle_parser.parse_attack_observer): an OBSERVE effect.
     attack_observer: Optional[dict] = None
+    # "Return [up to N] target <types> to its owner's hand": the target
+    # requirement (target_solver.TargetRequirement) of the bounce clause.
+    bounce_target: Optional[object] = None
     # A permanent's static "<spells> cost {N} less" rule
     # (oracle_parser.parse_cost_reduction), derived as a COST_DELTA effect
     # while the permanent is on the battlefield.
@@ -1459,6 +1462,9 @@ class CardTemplate:
             if self.hand_refill is None:
                 from .oracle_parser import parse_hand_refill as _phr
                 self.hand_refill = _phr(self.oracle_text)
+            if self.bounce_target is None:
+                from .oracle_parser import parse_bounce_target as _pbt
+                self.bounce_target = _pbt(self.oracle_text)
             if self.attack_observer is None:
                 from .oracle_parser import parse_attack_observer as _pao
                 self.attack_observer = _pao(self.oracle_text)

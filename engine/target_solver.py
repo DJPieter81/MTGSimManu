@@ -167,23 +167,25 @@ _GRAVEYARD_ZONE_HINTS = (
     "in your graveyard",
 )
 
-# Battlefield compound patterns — same dispatch order as the existing
-# _battlefield_legal_targets() helper.
-_BATTLEFIELD_COMPOUND = [
-    # Three-type compound (Teferi Time Raveler's -3, March of Otherworldly
-    # Light, Angelic Purge, Banishing Stroke, … — 13 cards in the pool).
-    # Listed FIRST so the two-type and single-type patterns below cannot
-    # capture just "artifact" and silently narrow a three-type target set
-    # down to artifacts only.
-    ("target artifact, creature, or enchantment",
-     frozenset({"artifact", "creature", "enchantment"})),
-    ("target artifact or creature",     frozenset({"artifact", "creature"})),
-    ("target artifact or enchantment",  frozenset({"artifact", "enchantment"})),
-    ("target creature or planeswalker", frozenset({"creature", "planeswalker"})),
-    # Land-destruction compound form (Pillage class): castable off either
-    # permanent type — CR 601.2c needs only one legal target among the union.
-    ("target artifact or land",         frozenset({"artifact", "land"})),
-]
+# Battlefield compound targets: a list of two or more permanent types
+# joined by commas and a final "or" ("target artifact or creature",
+# "target artifact, creature, enchantment, or planeswalker") is the union
+# of its types — one grammar for every length, with the optional
+# controller scope that may follow it.
+_TYPE_WORD = r"(?:artifact|creature|enchantment|planeswalker|land|battle)"
+_COMPOUND_RE = re.compile(
+    rf"\btarget\s+({_TYPE_WORD}(?:\s*,\s*(?:or\s+)?{_TYPE_WORD})*\s*,?\s+or\s+{_TYPE_WORD})"
+    r"(\s+(?:an\s+opponent|that\s+player)\s+controls?|\s+you\s+control)?\b")
+
+
+def _compound_matches(oracle_l: str):
+    for m in _COMPOUND_RE.finditer(oracle_l):
+        types = frozenset(re.findall(_TYPE_WORD, m.group(1)))
+        scope_phrase = (m.group(2) or "").strip()
+        scope = ("you" if scope_phrase.startswith("you")
+                 else "opponent" if scope_phrase else "any")
+        yield m, types, scope
+
 
 # "target [non]land permanent" / "target permanent" — supertype-aware.
 _PERMANENT_PATTERN = re.compile(
@@ -358,17 +360,22 @@ def parse(oracle_text: str) -> List[TargetRequirement]:
         # (rare). Keep scanning so modal patterns are not lost.
 
     # ── 3. Battlefield compound targets ─────────────────────────────
-    for phrase, types in _BATTLEFIELD_COMPOUND:
-        idx = oracle_l.find(phrase)
-        if idx >= 0:
-            out.append(TargetRequirement(
-                zone="battlefield",
-                types=types,
-                owner_scope="any",
-                is_optional=_is_optional_at(oracle_l, idx),
-                mode_group=_detect_mode_group(oracle_l, idx, modal_start),
-                raw_phrase=phrase,
-            ))
+    for m, types, scope in _compound_matches(oracle_l):
+        # An "instead" alternative (a kicked / conditional replacement)
+        # re-states the same target rather than adding a second one.
+        sentence_start = oracle_l.rfind(".", 0, m.start()) + 1
+        sentence = oracle_l[sentence_start:oracle_l.find(".", m.end()) % (len(oracle_l) + 1)]
+        if "instead" in sentence and any(
+                r.types == types and r.owner_scope == scope for r in out):
+            continue
+        out.append(TargetRequirement(
+            zone="battlefield",
+            types=types,
+            owner_scope=scope,
+            is_optional=_is_optional_at(oracle_l, m.start()),
+            mode_group=_detect_mode_group(oracle_l, m.start(), modal_start),
+            raw_phrase=m.group(0),
+        ))
 
     # ── 4. "target permanent" / "target nonland permanent" ──────────
     perm_match = _PERMANENT_PATTERN.search(oracle_l)
@@ -518,13 +525,8 @@ def _is_inside_compound(oracle_l: str, idx: int) -> bool:
     phrase like "target artifact or creature" or "target creature or
     planeswalker"? Avoids double-counting bare creature when the
     compound already fired."""
-    for compound, _ in _BATTLEFIELD_COMPOUND:
-        if "creature" not in compound:
-            continue
-        c_idx = oracle_l.find(compound)
-        if c_idx < 0:
-            continue
-        if c_idx <= idx <= c_idx + len(compound):
+    for m, types, _scope in _compound_matches(oracle_l):
+        if "creature" in types and m.start() <= idx <= m.end():
             return True
     return False
 

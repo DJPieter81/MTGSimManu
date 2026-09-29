@@ -6038,3 +6038,32 @@ evaluates FILTER against controller (relative to the effect's controller)
 and keyword; `rules_query.object_prohibited` reads OBJECT and FILTER alike;
 the 508.1a / 509.1a auditors restate the filter independently. Chunks A 2349
 / B 2514. No registered carrier: rules correctness.
+
+## S4 — loyalty valuation on the spell-EV scale (2026-09-29)
+
+Plan: value a loyalty line by the board change its clause projects, through
+the spell projector. **Cheap evidence falsified the direct version first:**
+through `_project_spell`, a creature bounce projected 0.0 and a dig 0.025
+against 2.15 for a kill — the projector has no bounce term, and a bounce
+spell (not only a loyalty line) was invisible to it. User chose to extend
+the shared projector. That exposed a rules gap underneath, fixed first:
+
+**S4a — bounce is one typed class (CR 608.2b / 400.3).** "Return target
+creature to its owner's hand" (Unsummon shape) resolved as nothing: the only
+gate was a runtime string test for "nonland permanent", which also ignored
+the chosen target and hexproof and edited zone lists directly.
+- `target_solver`: the three-entry compound phrase table becomes one grammar
+  — a type list of any length ("artifact, creature, enchantment, or
+  planeswalker") with its controller scope; an "instead" alternative re-states
+  a target rather than adding one. Pool diff of `parse()`: 167 cards change,
+  all widenings / added scopes / genuinely second targets (Relic Crush).
+- `CardTemplate.bounce_target` (typed requirement, 197 / 268 of the class;
+  the rest are plural "up to N target creatures" — `target_solver` parses no
+  plural target anywhere: the next rules gap — and stack-only "target spell").
+- `clause_resolver.resolve_bounce` — the one owner (spells, channel, loyalty
+  lines): legal targets from the solver, the chosen target honoured, the
+  owner's hand; auditor `400.3/bounced_to_owners_hand`. Zone-mutation
+  baseline for clause_resolver 1 → 0.
+Registered carriers: Otawara (Dimir), Colossal Skyturtle and Sink into
+Stupor (Living End), Into the Flood Maw (Prowess SB), Teferi (Blink SB).
+Chunks A 2360 / B 2514, anchor unchanged.

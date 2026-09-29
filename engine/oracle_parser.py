@@ -4849,6 +4849,29 @@ _FLASH_PERMISSION_RE = re.compile(
     r'^you may cast (sorcery|creature) spells as though they had flash$')
 
 
+_BOUNCE_SENTENCE_RE = re.compile(
+    r"return (?:up to (?:one|two|three) |(?:one|two|three) )?target [^.]*? to "
+    r"(?:its|their) owner(?:'s|s'|s) hands?")
+
+
+def parse_bounce_target(oracle: str):
+    """The target requirement of "return [up to N] target <types> [scope]
+    to its owner's hand" (CR 608.2b) — the battlefield requirement the
+    target solver parses from that sentence, or None."""
+    if not oracle or "owner" not in oracle:
+        return None
+    low = strip_reminder_text(oracle).lower()
+    m = _BOUNCE_SENTENCE_RE.search(low)
+    if not m:
+        return None
+    from .target_solver import parse as _parse_targets
+    # "target spell or <permanents>": the permanent half is the bounce on
+    # the battlefield (the stack half is a separate target shape).
+    sentence = re.sub(r"target spell or ", "target ", m.group(0))
+    reqs = [r for r in _parse_targets(sentence) if r.zone == "battlefield"]
+    return reqs[0] if reqs else None
+
+
 _ATTACK_OBSERVER_RE = re.compile(
     r"(until your next turn, )?whenever a creature attacks you( or a planeswalker you control)?, "
     r"(?:it gets ([+-]\d+)/([+-]\d+) until end of turn"

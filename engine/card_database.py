@@ -2202,6 +2202,8 @@ class CardDatabase:
         template.group_restriction = parse_group_restriction(oracle)
         from .oracle_parser import parse_attack_observer
         template.attack_observer = parse_attack_observer(oracle)
+        from .oracle_parser import parse_bounce_target
+        template.bounce_target = parse_bounce_target(oracle)
         from .oracle_parser import parse_static_cost_reduction
         template.cost_reduction_rule = parse_static_cost_reduction(oracle)
         # Targeted forced discard, classified by who chooses the card
