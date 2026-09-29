@@ -6067,3 +6067,37 @@ the chosen target and hexproof and edited zone lists directly.
 Registered carriers: Otawara (Dimir), Colossal Skyturtle and Sink into
 Stupor (Living End), Into the Flood Maw (Prowess SB), Teferi (Blink SB).
 Chunks A 2360 / B 2514, anchor unchanged.
+S4a measured (same seeds, n=20, `56e7442` → `2f1d6f7`): Dimir Midrange 45.4
+→ 45.4, Living End 57.3 → 57.3 — identical.
+
+**S4b (`9b1abd4`) — the spell projector credits a creature bounce.** Reads the
+typed `bounce_target` of an instant / sorcery (or a sorcery-typed ability
+clause): the most threatening legal opposing creature leaves the board and
+the card returns to the opponent's hand, so `position_value` prices the swing
+on its own card term (worth less than destroying it). A permanent whose
+*ability* bounces (a walker's line) projects no bounce when cast — caught by
+`test_planeswalker_loyalty_pool_decays_with_opp_clock` before push.
+
+**S4c (`eee5c54`) — a loyalty line is valued by its projected clause.** Every
+line carries its typed clause; `loyalty_line_value` = board delta of the
+clause projected as an ability (`_project_spell(as_ability=True)`) + the
+walker's pool at its new loyalty (`expected_future_value(loyalty=)`, through
+`persistent_power`) + a noncreature bounce priced by `permanent_threat` ×
+replay tempo + `ultimate_win_line_value` for win/lock lines; highest value is
+activated, all below holding → decline. The integer table, always-ult and
+the panic / suicide / whiff special rules are deleted (they fall out of the
+value). The engine passes the typed resolvable lines (runtime re-parse gone,
+oracle-runtime-parse 178 → 177).
+
+Measured on the fixtures before choosing the units: a drawn card is worth
+0.025 in `position_value`, one loyalty activation ≈ 0.5, a creature kill
+≈ 2–5.6. The card term is the outlier (a spell-wide calibration lead, not
+changed here). Pinned-test restatements (explicit): the suicide fixture gets
+a turn-6 opponent's lands; the "real bounce target" is a 5/5 threat, and a
+new test pins that a bare replayable two-drop does not pay for three loyalty
+(the old table activated on any legal target).
+
+Leads recorded: `position_value`'s card term (a card ≈ 1% of a kill);
+"deals N damage to target creature" projected as face damage when no
+creature is present (burn branch); `target_solver` parses no plural target;
+activation ordered against spells inside the main-phase planner.
