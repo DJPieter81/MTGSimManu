@@ -1295,6 +1295,12 @@ class CardTemplate:
             if self.loyalty_abilities is None:
                 from .oracle_parser import parse_loyalty_abilities as _pl
                 self.loyalty_abilities = _pl(self.oracle_text, self.loyalty)
+                # Type each line's clause exactly as a loaded card's are, so
+                # a directly built walker dispatches and is valued the same.
+                from .card_database import CardDatabase as _CDB
+                if _CDB._shared is not None and self.loyalty_abilities:
+                    self.loyalty_abilities = _CDB._shared._type_loyalty_clauses(
+                        self.name, self.loyalty_abilities)
             from .oracle_parser import parse_self_cost_reduction as _pscr
             if not self.self_cost_reduction_unit:
                 (self.self_cost_reduction_amount,
