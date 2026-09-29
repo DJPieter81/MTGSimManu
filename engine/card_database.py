@@ -1409,8 +1409,12 @@ class CardDatabase:
             # Every line carries its typed clause (the AI values a line by
             # it); only UNCLASSIFIED lines change their dispatch kind.
             clause_name = f"{walker_name} ({slot})"
+            # A quoted ability is one the line GRANTS (to an emblem, a
+            # token, a permanent), never the line's own effect (CR 113.1a,
+            # 114.4): the clause is typed from the line without it.
+            clause_text = re.sub(r'"[^"]*"', '', ability.text or '')
             clause = self._build_template(clause_name, {
-                'name': clause_name, 'text': ability.text,
+                'name': clause_name, 'text': clause_text,
                 'type': 'Sorcery', 'types': ['Sorcery'], 'supertypes': [],
                 'subtypes': [], 'manaCost': '', 'manaValue': 0, 'colors': [],
                 'colorIdentity': [], 'legalities': {'modern': 'Legal'}})
