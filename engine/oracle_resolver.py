@@ -1634,6 +1634,20 @@ def resolve_self_cast_trigger(game: "GameState", caster_idx: int,
             handled = True
             continue
 
+        # ── any other typed removal: "exile two target permanents" ──
+        # The cast trigger's effect is an ordinary targeted-removal clause;
+        # it resolves through the clause resolver's one removal path with
+        # the clause's own typed shape (count included, CR 115.1).
+        effect = clause.split(',', 1)[1].strip() if ',' in clause else ''
+        from engine.oracle_parser import parse_targeted_removal
+        removal = parse_targeted_removal(effect)
+        if removal:
+            from engine.clause_resolver import resolve_clause
+            resolve_clause(game, spell_cast, caster_idx, [],
+                           oracle_override=effect, removal_data=removal)
+            handled = True
+            continue
+
     return handled
 
 

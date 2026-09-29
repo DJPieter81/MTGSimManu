@@ -6377,6 +6377,9 @@ _TARGETED_REMOVAL_RE = re.compile(
     r'^(destroy|exile) target (' + _REMOVAL_TYPESPEC_ALT + r')'
     r'(?: an opponent controls)?'
     r'(?: with mana value (\d+|x) or less)?\.?$')
+_COUNTED_REMOVAL_RE = re.compile(
+    r"^(destroy|exile) (?:up to (?:one|two|three|four|five)|one or two|"
+    r"two|three|four|five|any number of) target [^.]*\.?$")
 _REMOVAL_RIDER_TOKENS = (
     'search', 'draw', 'gain', 'you may', 'create', ' then ', 'sacrific',
     'loses', 'counter', 'put ', 'shuffle', 'instead', ' if ', 'scry',
@@ -6610,7 +6613,7 @@ def parse_targeted_removal(oracle: str):
     if not oracle:
         return None
     low0 = oracle.lower()
-    if 'destroy target' not in low0 and 'exile target' not in low0:
+    if (('destroy' not in low0 and 'exile' not in low0) or 'target' not in low0):
         return None
     text = strip_reminder_text(oracle).strip()
     lines = [ln.strip() for ln in text.split('\n') if ln.strip()]
@@ -6620,20 +6623,37 @@ def parse_targeted_removal(oracle: str):
         if m:
             hit = m
             break
+    counted = None
     if hit is None:
-        return None
+        # A counted target ("destroy up to two target artifacts and/or
+        # enchantments"): the target solver owns the grammar and the count.
+        for ln in lines:
+            low = ln.lower()
+            cm = _COUNTED_REMOVAL_RE.match(low)
+            if cm:
+                from .target_solver import parse as _parse_targets
+                reqs = [r for r in _parse_targets(low) if r.zone == "battlefield"]
+                if len(reqs) == 1 and reqs[0].count_max > 1:
+                    counted = (cm.group(1), reqs[0], ln)
+                    break
+        if counted is None:
+            return None
     for ln in lines:
         low = ln.lower()
-        if _TARGETED_REMOVAL_RE.match(low):
+        if _TARGETED_REMOVAL_RE.match(low) or (counted and ln == counted[2]):
             continue
         lead = re.split(r"[ —–\-{:]", low, 1)[0]
         if lead in _KEYWORD_ABILITY_LEADS:
             continue
         if "can't be countered" in low or 'less to cast' in low \
-                or 'additional cost' in low:
-            continue
+                or 'additional cost' in low or 'rather than pay' in low:
+            continue  # a cost / uncounterable line, not a resolution effect
         if any(tok in low for tok in _REMOVAL_RIDER_TOKENS):
             return None  # a real extra resolution effect — refuse
+    if counted is not None:
+        action, req, _ln = counted
+        return {'action': action, 'types': sorted(req.types), 'mv': None,
+                'count': req.count_max}
     mv_raw = hit.group(3)
     mv = None if mv_raw is None else ('x' if mv_raw == 'x' else int(mv_raw))
     return {

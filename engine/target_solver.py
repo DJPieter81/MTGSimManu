@@ -249,7 +249,85 @@ def _detect_mode_group(oracle_l: str, hit_idx: int,
     return 1
 
 
+# "Any number of target …" (CR 115.1): no upper bound on the count.
+ANY_NUMBER = 1 << 30
+
+_NUMBER_WORDS = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5,
+                 "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10}
+_PLURAL_TARGET_NOUNS = re.compile(
+    r"\b(creatures|permanents|artifacts|enchantments|lands|planeswalkers|cards"
+    r"|spells|players|opponents|battles)\b")
+_TARGET_SPAN = re.compile(r"\btarget\b[^.;•\n]*")
+_COUNT_BEFORE = re.compile(
+    r"(?:(up to) (\w+)|(one) or (two|three)|(any number) of|(\w+))\s+$")
+
+
+def _singularize_targets(oracle_l: str) -> str:
+    """Rewrite plural target nouns to singular (and "and/or" to "or") inside
+    each target phrase, keeping every index in place (a plural noun loses
+    its "s" to a space), so one singular grammar parses both."""
+    def _span(m):
+        t = _PLURAL_TARGET_NOUNS.sub(lambda n: n.group(1)[:-1] + " ", m.group(0))
+        return t.replace("and/or", "    or")
+    return _TARGET_SPAN.sub(_span, oracle_l)
+
+
+def _count_before(text: str, idx: int):
+    """(count_min, count_max) from the words just before a target phrase:
+    "up to N" → (0, N), "one or two" → (1, 2), "any number of" → (0, ∞),
+    "N" → (N, N); None when no count word precedes it."""
+    m = _COUNT_BEFORE.search(text[max(0, idx - 24):idx])
+    if m is None:
+        return None
+    if m.group(1):
+        n = _NUMBER_WORDS.get(m.group(2)) or (int(m.group(2)) if m.group(2).isdigit() else None)
+        return None if n is None else (0, n)
+    if m.group(3):
+        return (1, _NUMBER_WORDS[m.group(4)])
+    if m.group(5):
+        return (0, ANY_NUMBER)
+    w = m.group(6)
+    n = _NUMBER_WORDS.get(w) or (int(w) if w.isdigit() else None)
+    return None if n is None or n == 1 else (n, n)
+
+
 def parse(oracle_text: str) -> List[TargetRequirement]:
+    """Parse all target requirements from an oracle text, each with its
+    count (CR 115.1 / 601.2c): plural and counted target phrases are the
+    same requirement as their singular form with count_min / count_max."""
+    if not oracle_text:
+        return []
+    norm = _singularize_targets(oracle_text.lower())
+    reqs = _parse_singular(norm)
+    import dataclasses as _dc
+    # Each requirement reads the count before ITS occurrence of its phrase:
+    # longer phrases claim their text first, and an occurrence inside an
+    # already-claimed phrase is not this requirement's.
+    claimed: list = []
+    where = {}
+    for i in sorted(range(len(reqs)), key=lambda i: -len(reqs[i].raw_phrase or "")):
+        phrase = reqs[i].raw_phrase
+        start = norm.find(phrase) if phrase else -1
+        while start >= 0 and any(a <= start < b for a, b in claimed):
+            start = norm.find(phrase, start + 1)
+        if start >= 0:
+            claimed.append((start, start + len(phrase)))
+        where[i] = start
+    out: List[TargetRequirement] = []
+    for i, r in enumerate(reqs):
+        idx = where[i]
+        counts = _count_before(norm, idx) if idx >= 0 else None
+        if counts is not None:
+            r = _dc.replace(r, count_min=counts[0], count_max=counts[1],
+                            is_optional=r.is_optional or counts[0] == 0)
+        elif r.is_optional and r.count_min == 1:
+            # "up to one target X": zero or one (CR 115.1).
+            r = _dc.replace(r, count_min=0)
+        out.append(r)
+    return out
+
+
+def _parse_singular(oracle_text: str) -> List[TargetRequirement]:
     """Parse all target requirements from an oracle text.
 
     Returns an empty list when no targets are required (draw, mill,
@@ -391,33 +469,32 @@ def parse(oracle_text: str) -> List[TargetRequirement]:
             raw_phrase=perm_match.group(0),
         ))
 
-    # ── 5. Creature with owner scope ────────────────────────────────
-    you_ctrl = _CREATURE_YOU_CONTROL.search(oracle_l)
-    opp_ctrl = _CREATURE_OPP_CONTROL.search(oracle_l)
-    bare_creature = _CREATURE_BARE.search(oracle_l)
-    if you_ctrl is not None:
-        out.append(TargetRequirement(
-            zone="battlefield",
-            types=frozenset({"creature"}),
-            owner_scope="you",
-            is_optional=_is_optional_at(oracle_l, you_ctrl.start()),
-            mode_group=_detect_mode_group(oracle_l, you_ctrl.start(),
-                                          modal_start),
-            raw_phrase=you_ctrl.group(0),
-        ))
-    elif opp_ctrl is not None:
-        out.append(TargetRequirement(
-            zone="battlefield",
-            types=frozenset({"creature"}),
-            owner_scope="opponent",
-            is_optional=_is_optional_at(oracle_l, opp_ctrl.start()),
-            mode_group=_detect_mode_group(oracle_l, opp_ctrl.start(),
-                                          modal_start),
-            raw_phrase=opp_ctrl.group(0),
-        ))
-    elif (bare_creature is not None
-          and not _is_inside_compound(oracle_l, bare_creature.start())
-          and not _is_target_creature_spell(oracle_l, bare_creature.start())):
+    # ── 5. Creature targets, each with its owner scope ─────────────
+    # Every distinct creature target phrase is its own requirement ("up to
+    # two target creatures you control each deal damage … to target
+    # creature an opponent controls" has two).
+    scoped_spans = []
+    for pat, scope in ((_CREATURE_YOU_CONTROL, "you"),
+                       (_CREATURE_OPP_CONTROL, "opponent")):
+        m = pat.search(oracle_l)
+        if m is not None:
+            scoped_spans.append((m.start(), m.end()))
+            out.append(TargetRequirement(
+                zone="battlefield",
+                types=frozenset({"creature"}),
+                owner_scope=scope,
+                is_optional=_is_optional_at(oracle_l, m.start()),
+                mode_group=_detect_mode_group(oracle_l, m.start(), modal_start),
+                raw_phrase=m.group(0),
+            ))
+    for bare_creature in _CREATURE_BARE.finditer(oracle_l):
+        if (any(a <= bare_creature.start() < b for a, b in scoped_spans)
+                or _is_inside_compound(oracle_l, bare_creature.start())
+                or _is_target_creature_spell(oracle_l, bare_creature.start())):
+            continue
+        if scoped_spans and "another target creature" not in oracle_l[
+                max(0, bare_creature.start() - 8):bare_creature.end()]:
+            continue
         out.append(TargetRequirement(
             zone="battlefield",
             types=frozenset({"creature"}),
@@ -427,6 +504,7 @@ def parse(oracle_text: str) -> List[TargetRequirement]:
                                           modal_start),
             raw_phrase=bare_creature.group(0),
         ))
+        break
 
     # ── 6. Single-type battlefield targets ──────────────────────────
     for token, pat in _SINGLE_TYPE_BATTLEFIELD:
@@ -824,6 +902,35 @@ def has_legal_target(game: "GameState", controller: int,
             continue  # CR 601.2c: beyond the X the caster can pay
         return True
     return False
+
+
+def choose_targets(game: "GameState", controller: int, req: TargetRequirement,
+                   preferred=None, key=None, hostile: bool = True,
+                   exclude: Optional["CardInstance"] = None,
+                   source: Optional["CardInstance"] = None) -> List["CardInstance"]:
+    """Up to ``req.count_max`` distinct legal targets (CR 115.3, 601.2c):
+    the chosen ids that are legal first, in order, then — to fill the count
+    — the remaining legal candidates by ``key`` (highest first; default
+    mana value). ``hostile`` leaves the controller's own permanents out of
+    the fill unless the requirement is scoped to them. The one place a
+    counted target set is chosen."""
+    candidates = enumerate_legal_targets(game, controller, req,
+                                         exclude=exclude, source=source)
+    by_id = {c.instance_id: c for c in candidates}
+    chosen: List["CardInstance"] = []
+    for tid in (preferred or []):
+        c = by_id.get(tid) if isinstance(tid, int) else None
+        if c is not None and all(c is not x for x in chosen):
+            chosen.append(c)
+    limit = max(1, req.count_max or 1)
+    if len(chosen) < limit:
+        def _ctrl(c):
+            return c.controller if c.controller is not None else c.owner
+        pool = [c for c in candidates if all(c is not x for x in chosen)
+                and (not hostile or req.owner_scope == "you" or _ctrl(c) != controller)]
+        pool.sort(key=key or (lambda c: c.template.cmc or 0), reverse=True)
+        chosen.extend(pool[:limit - len(chosen)])
+    return chosen[:limit]
 
 
 def enumerate_legal_targets(game: "GameState", controller: int,

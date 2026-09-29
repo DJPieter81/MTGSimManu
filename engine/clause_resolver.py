@@ -466,7 +466,7 @@ def _a_targeted_removal(ctx):
         ctx.game, ctx.card, ctx.controller, ctx.targets, None,
         zone_dest='exile' if exile else 'graveyard',
         types=frozenset(rm['types']), mv_max_fn=mv_fn,
-        log_verb='exiles' if exile else 'destroys')
+        log_verb='exiles' if exile else 'destroys', count=rm.get('count', 1))
     return True
 
 
