@@ -2268,7 +2268,27 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
                 projected.my_lifelink_power += p * power_factor
 
     # Removal — kills best opponent creature
-    if 'removal' in tags and not 'board_wipe' in tags:
+    # A bounce is the resolving effect only of an instant or sorcery (or a
+    # sorcery-typed ability clause); a permanent's bounce is one of its
+    # abilities (a loyalty line, an ETB), not what casting it does.
+    bounce_req = (getattr(t, 'bounce_target', None)
+                  if (t.is_instant or t.is_sorcery) else None)
+    if bounce_req is not None and game is not None:
+        # CR 608.2b: a bounce takes the chosen legal creature off the
+        # opponent's board and gives the card back — position_value then
+        # prices the swing on its own card term (tempo, not card advantage).
+        from engine.target_solver import enumerate_legal_targets
+        theirs = [c for c in enumerate_legal_targets(game, player_idx, bounce_req)
+                  if c.controller != player_idx and c.effective_is_creature]
+        if theirs:
+            gone = max(theirs, key=lambda c: creature_threat_value(c, snap))
+            projected.opp_power = max(0, projected.opp_power - (gone.power or 0))
+            projected.opp_toughness = max(0, projected.opp_toughness - (gone.toughness or 0))
+            projected.opp_creature_count = max(0, projected.opp_creature_count - 1)
+            projected.opp_hand_size = projected.opp_hand_size + len([gone])
+
+    if ('removal' in tags and not 'board_wipe' in tags
+            and bounce_req is None):
         if snap.opp_creature_count > 0 and game:
             opp = game.players[1 - player_idx]
             # Damage-based removal removes only what its damage KILLS
