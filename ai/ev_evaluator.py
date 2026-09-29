@@ -1917,7 +1917,8 @@ def _has_useful_minus_ability(oracle: str) -> bool:
 
 
 def expected_future_value(card: "CardInstance",
-                           snap: EVSnapshot) -> float:
+                           snap: EVSnapshot,
+                           loyalty: Optional[int] = None) -> float:
     """Power-equivalent value of a permanent's future activation pool.
 
     Composes across permanent types without per-type branching at the
@@ -1983,9 +1984,15 @@ def expected_future_value(card: "CardInstance",
     # on an empty board. Equal to "loyalty - 1" historical estimate
     # (first +1 is sunk; ticks 2..loyalty count) when both terms
     # match, but composes generically via clock primitives.
+    loyalty_override = loyalty
     loyalty = t.loyalty or PLANESWALKER_DEFAULT_LOYALTY
     if on_board and (getattr(card, 'loyalty_counters', 0) or 0) > 0:
         loyalty = card.loyalty_counters
+    if loyalty_override is not None:
+        # The pool at a hypothetical loyalty (after an activation's cost).
+        if loyalty_override <= 0:
+            return 0.0
+        loyalty = loyalty_override
     # Residency: the walker stays until the game ends (the nearer of the
     # two clocks) or until attacking power removes its loyalty (creatures
     # can attack planeswalkers, CR 508.1b) — whichever comes first. An
@@ -2015,10 +2022,16 @@ def expected_future_value(card: "CardInstance",
 
 def _project_spell(card: "CardInstance", snap: EVSnapshot,
                    dk: Optional[DeckKnowledge] = None,
-                   game: "GameState" = None, player_idx: int = 0) -> EVSnapshot:
-    """Project the board state after casting a spell (without mutating game state)."""
+                   game: "GameState" = None, player_idx: int = 0,
+                   as_ability: bool = False) -> EVSnapshot:
+    """Project the board state after casting a spell (without mutating game state).
+
+    ``as_ability``: project the same effect as an activated ability (a
+    loyalty line's clause) — no card leaves the hand, no mana is paid and
+    no spell is cast (storm)."""
     t = card.template
     tags = getattr(t, 'tags', set())
+    spell_count = 0 if as_ability else len([card])
     projected = EVSnapshot(
         my_life=snap.my_life,
         opp_life=snap.opp_life,
@@ -2028,7 +2041,7 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
         opp_toughness=snap.opp_toughness,
         my_creature_count=snap.my_creature_count,
         opp_creature_count=snap.opp_creature_count,
-        my_hand_size=snap.my_hand_size - 1,  # we cast it from hand
+        my_hand_size=snap.my_hand_size - spell_count,  # we cast it from hand
         opp_hand_size=snap.opp_hand_size,
         # M9 — charge the *effective* mana cost (delve / evoke /
         # on-board cost reducers / affinity / improvise) instead of
@@ -2039,14 +2052,14 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
         # (Midrange F5) — Murktide projecting as a 7-mana spell,
         # Storm rituals un-discounted under Medallion, Solitude
         # priced at 3WW.
-        my_mana=max(0, snap.my_mana - effective_cmc(
+        my_mana=max(0, snap.my_mana - (0 if as_ability else effective_cmc(
             card, snap, game=game, player_idx=player_idx,
-        )),
+        ))),
         opp_mana=snap.opp_mana,
         my_total_lands=snap.my_total_lands,
         opp_total_lands=snap.opp_total_lands,
         turn_number=snap.turn_number,
-        storm_count=snap.storm_count + 1,
+        storm_count=snap.storm_count + spell_count,
         my_gy_creatures=snap.my_gy_creatures,
         opp_gy_creatures=snap.opp_gy_creatures,
         my_energy=snap.my_energy,

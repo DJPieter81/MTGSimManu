@@ -36,6 +36,15 @@ def _add(game, card_db, name, controller, zone):
     return card
 
 
+def _walker_from(card_db, game, pw_data, loyalty):
+    """The same printed lines as a typed walker (what a loaded card carries)."""
+    from tests.conftest import typed_walker
+    text = "\n".join(
+        f"[{'+' if cost > 0 else ('−' if cost < 0 else '')}{abs(cost)}]: {desc}"
+        for cost, desc in pw_data.values())
+    return typed_walker(card_db, game, 0, text, loyalty=loyalty)
+
+
 class _FakeWalker:
     def __init__(self, loyalty: int):
         self.loyalty_counters = loyalty
@@ -64,8 +73,9 @@ def test_minus_loyalty_ability_declined_when_its_targeted_effect_has_no_legal_ta
     assert life_phase(snap) not in (LifePhase.PANIC, LifePhase.LETHAL)
     pw = _FakeWalker(loyalty=4)  # -3 leaves 1: NOT a suicide
     pw_data = {"minus": _TEFERI_MINUS}  # +1 is unclassified → engine filtered it
-    choice = choose_pw_ability(pw, pw_data, game.players[0], game.players[1],
-                               game, player_idx=0)
+    pw = _walker_from(card_db, game, pw_data, pw.loyalty_counters)
+    choice = choose_pw_ability(pw, pw.template.loyalty_abilities,
+                               game.players[0], game.players[1], game, player_idx=0)
     assert choice == PW_DECLINE, (
         f"a loyalty-negative bounce with no legal target and a safe race must "
         f"be declined (hold loyalty), got {choice!r}")
@@ -76,23 +86,43 @@ def test_walker_with_only_executable_minus_is_not_forced_to_tick_down(card_db):
     game = _quiet_game()
     pw = _FakeWalker(loyalty=4)
     pw_data = {"minus": _TEFERI_MINUS}
-    choice = choose_pw_ability(pw, pw_data, game.players[0], game.players[1],
-                               game, player_idx=0)
+    pw = _walker_from(card_db, game, pw_data, pw.loyalty_counters)
+    choice = choose_pw_ability(pw, pw.template.loyalty_abilities,
+                               game.players[0], game.players[1], game, player_idx=0)
     assert choice != "minus", "must not tick down into a whiff"
 
 
 def test_minus_activated_when_its_bounce_has_a_real_target(card_db):
+    """S4 restatement: the minus is activated when what it bounces is worth
+    the loyalty it spends — here the opponent's only creature, a 5/5 clock.
+    (Before S4 any legal target counted; a bare replayable two-drop does not
+    pay for three loyalty — see the next test.)"""
     from ai.pw_ability import choose_pw_ability, PW_DECLINE
     game = _quiet_game()
-    _add(game, card_db, "Isochron Scepter", 1, "battlefield")  # a bounce target
+    _add(game, card_db, "Gurmag Angler", 1, "battlefield")  # a real threat
     pw = _FakeWalker(loyalty=4)
     pw_data = {"minus": _TEFERI_MINUS}
-    choice = choose_pw_ability(pw, pw_data, game.players[0], game.players[1],
-                               game, player_idx=0)
+    pw = _walker_from(card_db, game, pw_data, pw.loyalty_counters)
+    choice = choose_pw_ability(pw, pw.template.loyalty_abilities,
+                               game.players[0], game.players[1], game, player_idx=0)
     assert choice == "minus", (
-        f"with a legal bounce target the minus is real value — activate, "
+        f"with a threat worth the loyalty the minus is real value — activate, "
         f"got {choice!r}")
     assert choice != PW_DECLINE
+
+
+def test_a_replayable_bounce_worth_less_than_its_loyalty_is_held(card_db):
+    """A bare two-mana artifact the opponent replays next turn does not pay
+    for three loyalty (three future activations): hold the walker."""
+    from ai.pw_ability import choose_pw_ability, PW_DECLINE
+    game = _quiet_game()
+    _add(game, card_db, "Isochron Scepter", 1, "battlefield")
+    for _ in range(5):
+        _add(game, card_db, "Island", 1, "battlefield")
+    pw = _walker_from(card_db, game, {"minus": _TEFERI_MINUS}, 4)
+    choice = choose_pw_ability(pw, pw.template.loyalty_abilities,
+                               game.players[0], game.players[1], game, player_idx=0)
+    assert choice == PW_DECLINE
 
 
 def test_a_loyalty_positive_line_is_never_declined(card_db):
@@ -101,6 +131,7 @@ def test_a_loyalty_positive_line_is_never_declined(card_db):
     pw = _FakeWalker(loyalty=3)
     pw_data = {"plus": (1, "Look at the top two cards of your library. "
                            "Put one into your hand.")}
-    choice = choose_pw_ability(pw, pw_data, game.players[0], game.players[1],
-                               game, player_idx=0)
+    pw = _walker_from(card_db, game, pw_data, pw.loyalty_counters)
+    choice = choose_pw_ability(pw, pw.template.loyalty_abilities,
+                               game.players[0], game.players[1], game, player_idx=0)
     assert choice == "plus" and choice != PW_DECLINE

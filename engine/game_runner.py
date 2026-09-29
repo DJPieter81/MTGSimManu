@@ -1649,25 +1649,17 @@ class GameRunner:
                 continue
 
             pw_name = pw.template.name
-            from .game_state import _parse_planeswalker_abilities
-            # Use back face oracle for transformed cards (e.g., Ral creature → PW)
-            oracle = pw.template.oracle_text
-            loyalty = pw.template.loyalty
-            if getattr(pw, 'is_transformed', False) and pw.template.back_face_oracle:
-                oracle = pw.template.back_face_oracle
-                loyalty = pw.template.back_face_loyalty
-            pw_data = _parse_planeswalker_abilities(oracle, loyalty)
             # Engine legality first, AI choice second: an ability whose
             # printed effect the resolver cannot execute is refused
             # before any loyalty is paid, so it must not be OFFERED
             # either — otherwise the AI spends the walker's one
-            # activation per turn on a line that will be refused.
+            # activation per turn on a line that will be refused. The
+            # lines are the typed ones of the face currently up.
             from .planeswalker_manager import PlaneswalkerManager
             resolvable = PlaneswalkerManager.resolvable_ability_slots(pw)
-            pw_data = {k: v for k, v in pw_data.items()
-                       if k in resolvable or k == "starting_loyalty"}
-            if not any(k in pw_data
-                       for k in ("plus", "zero", "minus", "ult")):
+            pw_data = {k: v for k, v in PlaneswalkerManager.loyalty_abilities(pw).items()
+                       if k in resolvable}
+            if not pw_data:
                 continue  # nothing this engine can execute
             opp = game.players[opponent]
 
@@ -1705,7 +1697,7 @@ class GameRunner:
         choose_pw_ability`.  The engine only delegates here and then
         enforces loyalty legality in `game.activate_planeswalker`.
         `pw_name` is retained in the signature for call-site
-        compatibility; the chooser is description-driven and does not
+        compatibility; the chooser values the typed lines and does not
         consume it.
         """
         from ai.pw_ability import choose_pw_ability

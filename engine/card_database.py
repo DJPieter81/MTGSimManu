@@ -1406,8 +1406,8 @@ class CardDatabase:
         from .clause_resolver import clause_is_executable
         typed = dict(abilities)
         for slot, ability in abilities.items():
-            if ability.effect_kind is not LoyaltyEffectKind.UNCLASSIFIED:
-                continue
+            # Every line carries its typed clause (the AI values a line by
+            # it); only UNCLASSIFIED lines change their dispatch kind.
             clause_name = f"{walker_name} ({slot})"
             clause = self._build_template(clause_name, {
                 'name': clause_name, 'text': ability.text,
@@ -1416,11 +1416,16 @@ class CardDatabase:
                 'colorIdentity': [], 'legalities': {'modern': 'Legal'}})
             if clause is None:
                 continue
+            if ability.effect_kind is not LoyaltyEffectKind.UNCLASSIFIED:
+                typed[slot] = dataclasses.replace(ability, clause=clause)
+                continue
             probe = CardInstance(template=clause, owner=0, controller=0,
                                  instance_id=0, zone="stack")
             if clause_is_executable(probe):
                 typed[slot] = dataclasses.replace(
                     ability, effect_kind=LoyaltyEffectKind.CLAUSE, clause=clause)
+            else:
+                typed[slot] = dataclasses.replace(ability, clause=clause)
         return typed
 
     def _build_template(self, name: str, data: dict) -> Optional[CardTemplate]:
