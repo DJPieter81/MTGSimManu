@@ -980,6 +980,12 @@ Named predicates, counted by ratchet (c), come in two kinds:
 - the `OracleTextParser` → `OracleEffect` → `_build_abilities` pipeline (`Ability.description`, `is_counterspell`) and `classify_card_role` (fourth interpreter, A41): the verb set and role each derives, against the spec verbs;
 - `cast_targets` (G15).
 
+**Known legacy-side disagreements** (seed rows for `tools/effect_spec_equivalence_allowlist.json`, step 18). The grammar is the rules-correct side; the legacy fix is a separate `target_solver` unit, not E0:
+- "target nonland permanent card from <zone>" is a battlefield requirement in `target_solver._PERMANENT_PATTERN`; the destination leaf reads the graveyard (CR 115.1: the target is the card in that zone). "target permanent card from ..." without "nonland" is already a graveyard requirement. 9 of the 19 "return target ..." pool disagreements are this shape.
+- "target spell or creature": legacy `reqs[0]` is the stack only; the grammar gives the union {stack, battlefield} (A21 `target.zone_union`).
+- "nonland permanent or suspended card": the grammar gives {battlefield, exile} (CR 702.62a).
+- a graveyard-or-exile object: the grammar gives {graveyard, exile}.
+
 **Diff classes.** As before (REMINDER_TEXT, UNMODELLED_CLAUSE, RESIDUE_WIDENING, LEGACY_* quirk classes, DERIVED_COVERAGE_GROWTH, SEMANTIC_FIX, UNEXPLAINED), plus three:
 - `RESIDUE_NARROWING`: the legacy handler typed the same narrowed requirement;
 - `MASKED_GROWTH`: derived growth hidden by a `_legacy_domain_*` mask, so the field value equals legacy;

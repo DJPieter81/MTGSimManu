@@ -333,6 +333,11 @@ def test_the_destination_locator_skips_a_zone_phrase_inside_the_object():
     ("target artifact or creature spell", "stack"),
     ("target instant or sorcery spell", "stack"),
     ("target permanent card in your graveyard", "graveyard"),
+    # CR 115.1: the target is the card in the graveyard. (Legacy
+    # target_solver reads 'target nonland permanent card from ...' as a
+    # battlefield requirement; the equivalence tool records that as a
+    # legacy-side row, design doc section 10.)
+    ("target nonland permanent card from your graveyard", "graveyard"),
     ("each land in play", "battlefield"),
     ("target creature or vehicle card from your graveyard", "graveyard"),
     # Nouns inside a qualifier name other objects, not the moved one.
