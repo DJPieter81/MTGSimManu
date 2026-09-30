@@ -6829,14 +6829,42 @@ def _classify_loyalty_effect(text: str):
     return _K.UNCLASSIFIED, None, 0
 
 
+def loyalty_slot_for(lines, i: int) -> str:
+    """The slot of loyalty line `i` (CR 606): the one owner of the rule.
+
+    `lines` is the face's loyalty lines in printed order, given as signed
+    costs (only the sign is read, so a variable cost passes +1 / -1). The
+    first loyalty-positive line is "plus", a zero line "zero", the first
+    loyalty-negative line "minus" and the second "ult"; a line whose slot
+    is already taken (a second positive or zero line, a third negative
+    line) gets "" -- no slot.
+    """
+    taken = set()
+    for j in range(i + 1):
+        cost = lines[j]
+        if cost > 0:
+            slot = "plus"
+        elif cost == 0:
+            slot = "zero"
+        else:
+            slot = "ult" if "minus" in taken else "minus"
+        if slot in taken:
+            slot = ""
+        if j == i:
+            return slot
+        if slot:
+            taken.add(slot)
+    return ""
+
+
 def parse_loyalty_abilities(oracle: str, loyalty: Optional[int] = 0) -> Dict:
     """Parse and classify a planeswalker's printed loyalty abilities.
 
-    Returns ``{slot: LoyaltyAbility}`` keyed by the same slot names
-    `engine.player_state._parse_planeswalker_abilities` uses — "plus"
-    (the first loyalty-positive line), "zero", "minus" (the first
-    loyalty-negative line) and "ult" (the second) — so the AI chooser
-    and the engine agree on what "the minus" means.
+    Returns ``{slot: LoyaltyAbility}`` keyed by the slot names
+    `loyalty_slot_for` assigns — "plus" (the first loyalty-positive line),
+    "zero", "minus" (the first loyalty-negative line) and "ult" (the
+    second) — so the AI chooser and the engine agree on what "the minus"
+    means.
 
     Empty dict for a card with no printed loyalty abilities.
     """
@@ -6846,20 +6874,13 @@ def parse_loyalty_abilities(oracle: str, loyalty: Optional[int] = 0) -> Dict:
     if not oracle:
         return result
 
-    plus_found = False
-    for cost_str, desc in _LOYALTY_LINE_PATTERN.findall(oracle):
-        cost = int(cost_str.replace('−', '-'))
+    lines = _LOYALTY_LINE_PATTERN.findall(oracle)
+    costs = [int(cost_str.replace('−', '-')) for cost_str, _ in lines]
+    for i, (_, desc) in enumerate(lines):
+        cost = costs[i]
         desc = desc.strip().rstrip('.')
-        if cost > 0 and not plus_found:
-            slot = "plus"
-            plus_found = True
-        elif cost == 0:
-            slot = "zero"
-        elif cost < 0:
-            slot = "ult" if "minus" in result else "minus"
-        else:
-            continue  # a second loyalty-positive line: no slot for it
-        if slot in result:
+        slot = loyalty_slot_for(costs, i)
+        if not slot:
             continue
         kind, requirement, draws = _classify_loyalty_effect(desc)
         result[slot] = LoyaltyAbility(

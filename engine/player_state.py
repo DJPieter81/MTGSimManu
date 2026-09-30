@@ -5,14 +5,12 @@ Contains:
 - class PlayerState (dataclass; per-player zones, life, mana, counters,
   per-turn tracking).
 - TOKEN_DEFS (token archetype table consumed by create_token).
-- _parse_planeswalker_abilities (oracle-text → loyalty ability dict).
 
 Re-exported from engine/game_state.py so existing importers of
 `engine.game_state.PlayerState` etc. continue to work unchanged.
 """
 from __future__ import annotations
 
-import re
 from dataclasses import dataclass, field
 from typing import Dict, List
 
@@ -502,40 +500,6 @@ class PlayerState:
         self.nonartifact_spells_cast_this_turn = 0
         self.removal_evokes_resolved_this_turn = 0
         self._landfall_count_this_turn = 0
-
-
-# Planeswalker loyalty ability definitions: (plus_amount, minus_amount, ult_amount)
-def _parse_planeswalker_abilities(oracle_text: str, loyalty: int = 0) -> dict:
-    """Parse planeswalker abilities from oracle text.
-
-    Detects [+N], [-N], [0] loyalty ability patterns.
-    Returns dict with 'plus', 'minus', 'ult', 'zero', 'starting_loyalty'.
-    """
-    result = {"starting_loyalty": loyalty or 0}
-    if not oracle_text:
-        return result
-
-    # Find all loyalty abilities: [+1]: text, [-3]: text, [0]: text
-    abilities = re.findall(r'\[([+\-−]?\d+)\]:\s*([^\[]+?)(?=\[|$)', oracle_text)
-
-    plus_found = False
-    for cost_str, desc in abilities:
-        cost_str = cost_str.replace('−', '-')  # unicode minus
-        cost = int(cost_str)
-        desc = desc.strip().rstrip('.')
-
-        if cost > 0 and not plus_found:
-            result["plus"] = (cost, desc)
-            plus_found = True
-        elif cost == 0:
-            result["zero"] = (0, desc)
-        elif cost < 0:
-            if "minus" not in result:
-                result["minus"] = (cost, desc)
-            else:
-                result["ult"] = (cost, desc)
-
-    return result
 
 
 # Token definitions: (name, types, power, toughness, keywords)

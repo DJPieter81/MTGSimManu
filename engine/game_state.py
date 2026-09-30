@@ -40,12 +40,12 @@ from .constants import (
     STARTING_LIFE, MAX_HAND_SIZE, MAX_TURNS, SBA_MAX_ITERATIONS,
     FETCH_LAND_LIFE_COST,
 )
-# PlayerState, TOKEN_DEFS, and _parse_planeswalker_abilities were extracted
-# to engine/player_state.py. Re-exported here so existing importers of
-# `engine.game_state.PlayerState` (14 call sites across ai/ and tests/) and
-# the late `from .game_state import _parse_planeswalker_abilities` in
-# game_runner.py continue to resolve without edits.
-from .player_state import PlayerState, TOKEN_DEFS, _parse_planeswalker_abilities
+# PlayerState and TOKEN_DEFS were extracted to engine/player_state.py.
+# Re-exported here so existing importers of `engine.game_state.PlayerState`
+# (14 call sites across ai/ and tests/) continue to resolve without edits.
+# (The uncalled second loyalty-slot parser was removed: the slot rule has
+# one owner, oracle_parser.loyalty_slot_for.)
+from .player_state import PlayerState, TOKEN_DEFS
 from .mana_payment import ManaPayment
 from .land_manager import LandManager
 from .cast_manager import CastManager
