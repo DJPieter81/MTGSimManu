@@ -18,7 +18,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
-from typing import FrozenSet, List, Literal, Optional, TYPE_CHECKING
+from typing import FrozenSet, List, Literal, Optional, Tuple, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .cards import CardInstance
@@ -272,6 +272,25 @@ def _singularize_targets(oracle_l: str) -> str:
     return _TARGET_SPAN.sub(_span, oracle_l)
 
 
+def _singularize_targets_located(oracle_text: str):
+    """`_singularize_targets(oracle_text.lower())` plus its offset map:
+    `offsets[i]` is the input-text index of normalised index `i`
+    (`offsets[len(norm)] == len(oracle_text)`). Singularisation keeps every
+    index in place, so the map only absorbs `str.lower()` length changes
+    (a character whose lowercase form is longer, e.g. U+0130)."""
+    lowered = oracle_text.lower()
+    norm = _singularize_targets(lowered)
+    if len(lowered) == len(oracle_text):
+        offsets = range(len(norm) + 1)
+    else:
+        m = []
+        for i, ch in enumerate(oracle_text):
+            m.extend([i] * len(ch.lower()))
+        m.append(len(oracle_text))
+        offsets = m
+    return norm, offsets
+
+
 def _count_before(text: str, idx: int):
     """(count_min, count_max) from the words just before a target phrase:
     "up to N" → (0, N), "one or two" → (1, 2), "any number of" → (0, ∞),
@@ -291,13 +310,14 @@ def _count_before(text: str, idx: int):
     return None if n is None or n == 1 else (n, n)
 
 
-def parse(oracle_text: str) -> List[TargetRequirement]:
-    """Parse all target requirements from an oracle text, each with its
-    count (CR 115.1 / 601.2c): plural and counted target phrases are the
-    same requirement as their singular form with count_min / count_max."""
+def _parse_placed(oracle_text: str):
+    """The one placement owner. Returns `[(req, norm_start, norm_end)]` in
+    parse() order plus the normalised-to-input offset map; each start is the
+    occurrence parse() claimed for the requirement's phrase (and read its
+    count before), -1 when the phrase was not found."""
     if not oracle_text:
-        return []
-    norm = _singularize_targets(oracle_text.lower())
+        return [], range(1)
+    norm, offsets = _singularize_targets_located(oracle_text)
     reqs = _parse_singular(norm)
     import dataclasses as _dc
     # Each requirement reads the count before ITS occurrence of its phrase:
@@ -313,7 +333,7 @@ def parse(oracle_text: str) -> List[TargetRequirement]:
         if start >= 0:
             claimed.append((start, start + len(phrase)))
         where[i] = start
-    out: List[TargetRequirement] = []
+    out = []
     for i, r in enumerate(reqs):
         idx = where[i]
         counts = _count_before(norm, idx) if idx >= 0 else None
@@ -323,8 +343,32 @@ def parse(oracle_text: str) -> List[TargetRequirement]:
         elif r.is_optional and r.count_min == 1:
             # "up to one target X": zero or one (CR 115.1).
             r = _dc.replace(r, count_min=0)
-        out.append(r)
-    return out
+        end = idx + len(r.raw_phrase or "") if idx >= 0 else -1
+        out.append((r, idx, end))
+    return out, offsets
+
+
+def parse_located(oracle_text: str) -> List[Tuple[TargetRequirement, int]]:
+    """`parse()` with each requirement's start in the input text: the
+    occurrence parse() itself claimed (never a second search), -1 when its
+    phrase was not found. Order is parse() order, not printed order."""
+    placed, offsets = _parse_placed(oracle_text)
+    return [(r, offsets[s] if s >= 0 else -1) for r, s, _ in placed]
+
+
+def parse_spans(oracle_text: str) -> List[Tuple[TargetRequirement, int, int]]:
+    """`parse_located()` plus each requirement's end offset, both in
+    input-text coordinates; (-1, -1) when the phrase was not found."""
+    placed, offsets = _parse_placed(oracle_text)
+    return [(r, offsets[s], offsets[e]) if s >= 0 else (r, -1, -1)
+            for r, s, e in placed]
+
+
+def parse(oracle_text: str) -> List[TargetRequirement]:
+    """Parse all target requirements from an oracle text, each with its
+    count (CR 115.1 / 601.2c): plural and counted target phrases are the
+    same requirement as their singular form with count_min / count_max."""
+    return [r for r, _ in parse_located(oracle_text)]
 
 
 def _parse_singular(oracle_text: str) -> List[TargetRequirement]:
