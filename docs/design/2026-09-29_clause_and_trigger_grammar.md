@@ -594,13 +594,13 @@ The parse is a pure function of `(text, facts)`.
 1. Apply `oracle_parser.strip_reminder_text`, recording each removed reminder span per paragraph (A4).
 2. Mask `named <Name>` spans into `⟨Nk⟩`.
 3. Replace self-forms with `~`, longest first, word-bounded on printed case:
-   - the full name, the face names, and "this <noun>";
+   - the full name, the face names, and "this <noun>" for the object nouns in `engine.effect_grammar.sub.SELF_NOUNS` (creature, artifact, enchantment, land, planeswalker, permanent, battle, spell, card, equipment, aura, vehicle, token). "this ability" names the ability (CR 113.1) and stays;
    - the legendary short name, gated as before;
    - on planeswalker and legendary-character faces, pronouns by case (A9): object him/her → `~`, possessive his/her → `~'s`, subject he/she → `~`, he's/she's → `~ is`.
 
    A name that collides with a lexicon word is rewritten only where the lexicon cannot read it as that word, and never at clause start.
 4. Mask each top-level double-quoted span into `⟨Qk⟩`, with nested single quotes under the A10 delimiter rule to depth 3.
-5. Unify dashes, collapse whitespace and lowercase for matching. The steps above keep breakpoints `(norm_offset, printed_offset)` for the duration of the call. The map is never stored.
+5. Unify dashes, unify curly apostrophes (U+2019) to `'`, collapse whitespace and lowercase for matching. The steps above keep breakpoints `(norm_offset, printed_offset)` for the duration of the call. The map is never stored.
 
 **L1, structure** (`structure.py`). Paragraphs are split with the `oracle_clauses.split_abilities` semantics. Each paragraph is classified with first-match precedence:
 1. **LOYALTY.** `[±N]:` or `[±X]:`, using the grammar's own loyalty-line pattern, a superset of `_LOYALTY_LINE_PATTERN` (A12). The cost comes from the printed span; `loyalty_slot` comes from the shared slot function, which gives an X line none (A12).
@@ -668,7 +668,16 @@ The parse is a pure function of `(text, facts)`.
 
 Each of the last three yields a sibling in the same `group`. A clause with no subject before its lemma inherits the previous clause's subject or actor.
 
-**L4, pattern cascade** (`lexicon.py`, `patterns.py`, `sub/*`). As before: participant sub-grammar, lemma buckets, bounded slot regexes, typed sub-grammar results, `UNMODELLED(deepest failure)`. `match_clause(text, host_class, has_x)` is memoised. Target slots follow section 5 (located parse, consumption and residue polarity); CardFilter slots require full consumption (A21).
+**L4, pattern cascade** (`lexicon.py`, `patterns.py`, `sub/*`). As before: participant sub-grammar, lemma buckets, bounded slot regexes, typed sub-grammar results, `UNMODELLED(deepest failure)`.
+
+**The leaf contract** (`sub/__init__.py`, pinned by `tests/test_effect_grammar_leaf_contract.py`). Every sub-grammar leaf follows one contract, so the spine calls every leaf the same way and the coverage invariant below can be checked uniformly:
+- a slot parser takes `(host, span, *, lemma="")`: `host` is the whole normalised host text, `span` the slot inside it, and every returned span indexes `host`;
+- it returns the one `SlotResult` (`value`, `unmodelled`, `span`, `rest_spans`, `flags`, `pending`, `amount`, `alternatives`, `object_span`); on failure `span` is the whole trimmed slot;
+- the unconsumed rest is `rest_spans` into `host`, never a rewritten string, so a later leaf's spans compose with an earlier one's;
+- `Unmodelled.lemma` is the caller's printed lemma, never a leaf default; `Unmodelled.detail` is `<leaf>.<code>[:<param>]` with `<code>` from the leaf's closed `DETAIL_CODES` and `<param>` one word; the census groups by `(stage, lemma, <leaf>.<code>)`;
+- every leaf reads L0 output (the L0 steps above) and none re-normalises it;
+- memo caches are bounded (`CACHE_SIZE`), every leaf has `clear_caches()`, and the package `clear_caches()` clears them all once the load pass finishes;
+- a leaf imports another only along `LEAF_EDGES`: destination reads entry counters through payload's counter parser (one count table, one kind vocabulary), and payload reads the duration boundary `DURATION_START` from duration (one duration table). `match_clause(text, host_class, has_x)` is memoised. Target slots follow section 5 (located parse, consumption and residue polarity); CardFilter slots require full consumption (A21).
 
 **L5, link** (`link.py`). This runs once per host over the merged host text, in this order:
 1. Assign `seq` in pre-order.
@@ -714,6 +723,7 @@ Each of the last three yields a sibling in the same `group`. A clause with no su
 ## 4. Verb lexicon (`lexicon.py`)
 
 `VERB_LEXICON` maps each lemma and inflection to an entry with these fields:
+- `lemma` (the printed lemma, passed to every sub-grammar leaf: the payload leaf builds A19 option prefixes and re-joins a consumed keyword-action lemma from it, and every leaf stamps it on its `Unmodelled`);
 - `verb`;
 - `family`;
 - `roles`;
@@ -861,7 +871,7 @@ An unknown phrase makes the clause `UNMODELLED(QUANTITY)`, never zero.
 
 An unknown condition gives `UNMODELLED(CONDITION)`.
 
-**Duration.** Unchanged (F6). A duration on EXILE (UNTIL_LEAVES) makes the Tier A ETB-removal derivation reject the host (A39).
+**Duration.** Unchanged (F6). A duration on EXILE (UNTIL_LEAVES) makes the Tier A ETB-removal derivation reject the host (A39). "for the rest of the game" is PERMANENT (CR 611.2a: the effect has no end); "this combat" is `UNMODELLED(DURATION)`. "this turn" is history only when the last history frame or event before it (condition, quantity, relative clause, "that <verb>ed") is not followed by the main predicate (can't, can, may, must, gets, gains, loses): in "creatures dealt damage this way can't block this turn" the phrase closes the prohibition. A "this turn" inside a delay phrase belongs to the delay.
 
 **Delay** (CR 603.7). A delay is not a spec field any more. A delay prefix or suffix opens a `CREATE_TRIGGER(DELAYED, timing)` sub-ability (A30), with timing from the reused phrase table. "at end of combat" is still `UNMODELLED(DELAY)`.
 

@@ -2,15 +2,16 @@
 section 2 ``Payload`` union).
 
 Types the object of a payload verb, once, at LOAD (never at resolution),
-over NORMALISED clause text (lowercased, dashes unified, self-references
-``~``, quoted spans masked ``⟨qk⟩``, "named X" masked ``⟨nk⟩``):
+over L0 output (the leaf contract in `engine.effect_grammar.sub`: every
+public parser takes ``(host, span)`` and returns the shared `SlotResult`
+with spans into ``host``):
 
 * mana (CR 106): a ``ManaSpec`` -- a SYMBOL MULTISET, not an amount.
   "{G}{G}" is ``symbols=('G','G')``; "three mana of any one color" is three
   wildcard units ``('*','*','*')`` with ``one_color``. A variable count ("X
   mana", "that much") is the per-unit multiset plus a multiplier `amount`;
-  a scaler ("for each ...", "equal to ...") is left in ``rest`` for the
-  amount grammar. "Spend this mana only ..." is ``ManaSpec.restriction``.
+  a scaler ("for each ...", "equal to ...") is left in ``rest_spans`` for
+  the amount grammar. "Spend this mana only ..." is ``ManaSpec.restriction``.
   `adds_mana` is the ADD_MANA recognition the CR 605.1a/b mana-ability rule
   reads (A6);
 * counters (CR 122): a ``CounterSpec`` whose ``kinds`` is the counter
@@ -39,11 +40,15 @@ The leaf reads no card name and no game state.
 """
 from __future__ import annotations
 
+import dataclasses
 import re
-from dataclasses import dataclass
 from functools import lru_cache
 from typing import Any, Dict, Optional, Tuple, Union
 
+from engine.effect_grammar.sub import (CACHE_SIZE, SlotResult, Span,
+                                       join_spans, rest_spans_after,
+                                       unmodelled)
+from engine.effect_grammar.sub.duration import DURATION_START
 from engine.effect_model import ModKind, Modification
 from engine.effect_spec import (Amount, AmountKind, CostSnapshot, CounterSpec,
                                 Granted, KeywordAction, ManaSpec, Ref, RefKind,
@@ -51,49 +56,32 @@ from engine.effect_spec import (Amount, AmountKind, CostSnapshot, CounterSpec,
                                 freeze_cost)
 from engine.target_solver import _NUMBER_WORDS
 
-__all__ = ["Span", "SlotResult", "parse_payload", "parse_mana", "adds_mana",
-           "parse_mana_restriction", "parse_counters", "parse_token",
-           "parse_modification", "parse_cost_modifier",
+__all__ = ["LEAF", "DETAIL_CODES", "parse_payload", "parse_mana",
+           "adds_mana", "parse_mana_restriction", "parse_counters",
+           "parse_token", "parse_modification", "parse_cost_modifier",
            "parse_keyword_action", "parse_alternatives",
            "KEYWORD_ACTION_NAMES", "UNSUPPORTED_KEYWORD_ACTIONS",
-           "PREDEFINED_TOKENS", "WILDCARD"]
+           "PREDEFINED_TOKENS", "WILDCARD", "clear_caches"]
 
-Span = Tuple[int, int]
+LEAF = "payload"
+DETAIL_CODES = frozenset({
+    "mana_no_symbols", "mana_count", "mana_tail", "counter_kind",
+    "counter_choice_count", "counter_mixed_variable", "counter_no_counter",
+    "counter_alternative", "token_no_token", "token_type_phrase",
+    "token_no_type", "token_alternative", "modification_unknown",
+    "prohibit_action", "prohibit_qualifier", "cost_delta_subject",
+    "keyword_action_unsupported", "keyword_action_unknown",
+    "keyword_action_param", "keyword_action_nothing_consumed", "pay_cost",
+    "emblem_no_quote"})
 
 PayloadValue = Union[Modification, TokenSpec, CounterSpec, ManaSpec,
                      KeywordAction, Granted, CostSnapshot]
 
-
-@dataclass(frozen=True, slots=True)
-class SlotResult:
-    """One payload slot. At most one of `value` / `unmodelled` is set; both
-    are None for a verb with no payload, and for an alternative whose
-    options are in `alternatives`.
-
-    span:         the consumed text, in the caller's coordinates.
-    rest:         unconsumed trailing text (object, scaler, duration, ...),
-                  for the caller's other sub-grammars.
-    amount:       a count / multiplier the phrase printed (token count,
-                  variable counter or mana count, keyword-action N, PAY any
-                  amount). Literal mana symbols and counters are multisets,
-                  never an amount.
-    pending:      named sub-slot texts left for the linker: ('granted',
-                  '⟨qk⟩'), ('copy_of', np), ('copy_except', vp),
-                  ('entry', 'tapped'), ('amount', 'a number of'), ...
-    alternatives: A19 options, each a full SlotResult.
-    """
-    value: Optional[PayloadValue] = None
-    unmodelled: Optional[Unmodelled] = None
-    span: Span = (0, 0)
-    rest: str = ""
-    amount: Optional[Amount] = None
-    pending: Tuple[Tuple[str, str], ...] = ()
-    alternatives: Tuple["SlotResult", ...] = ()
-
-
 # A relative parse: (value, unmodelled, consumed_end, amount, pending, alts).
-# `consumed_end` indexes the stripped text; the public wrappers shift it
-# into the caller's span and cut `rest`.
+# `consumed_end` indexes the stripped slot text; `_finish` shifts it into
+# the host and cuts the rest span. The relative parsers are memoised on the
+# slot text alone, so their Unmodelled carries no lemma: `_finish` stamps
+# the caller's.
 _Rel = Tuple[Optional[PayloadValue], Optional[Unmodelled], int,
              Optional[Amount], Tuple[Tuple[str, str], ...],
              Tuple[SlotResult, ...]]
@@ -101,19 +89,33 @@ _Rel = Tuple[Optional[PayloadValue], Optional[Unmodelled], int,
 WILDCARD = "*"     # one mana / counter unit whose colour or kind is chosen
 
 
-def _um(lemma: str, detail: str, stage: Stage = Stage.CLAUSE) -> Unmodelled:
-    return Unmodelled(stage=stage, lemma=lemma, detail=detail)
+def _um(code: str, stage: Stage = Stage.CLAUSE, param: str = "") -> Unmodelled:
+    return unmodelled(stage, "", LEAF, code, DETAIL_CODES, param)
 
 
-def _finish(text: str, span: Span, rel: _Rel) -> SlotResult:
-    value, unmodelled, end, amount, pending, alts = rel
-    lead = len(text) - len(text.lstrip())
-    body = text.strip()
-    start = span[0] + lead
-    rest = body[end:].lstrip(" ,.;")
-    return SlotResult(value=value, unmodelled=unmodelled,
-                      span=(start, start + end), rest=rest, amount=amount,
-                      pending=pending, alternatives=alts)
+def _stamp(u: Optional[Unmodelled], lemma: str) -> Optional[Unmodelled]:
+    return u if u is None or u.lemma == lemma else dataclasses.replace(u, lemma=lemma)
+
+
+def _finish(slot: str, offset: int, rel: _Rel, lemma: str = "") -> SlotResult:
+    """`rel` over the stripped `slot` (which sits at `offset` in the host)
+    as a SlotResult in host coordinates. On failure the span is the whole
+    trimmed slot."""
+    value, um, end, amount, pending, alts = rel
+    lead = len(slot) - len(slot.lstrip())
+    body = slot.strip()
+    start = offset + lead
+    if value is None and um is not None:
+        return SlotResult(unmodelled=_stamp(um, lemma),
+                          span=(start, start + len(body)))
+    rest = rest_spans_after(slot, lead + end, lead + len(body), " ,.;")
+    return SlotResult(value=value, span=(start, start + end),
+                      rest_spans=tuple((a + offset, b + offset) for a, b in rest),
+                      amount=amount, pending=pending, alternatives=alts)
+
+
+def _slot(host: str, span: Span) -> Tuple[str, int]:
+    return host[span[0]:span[1]], span[0]
 
 
 # ── Counts ─────────────────────────────────────────────────────────────
@@ -194,7 +196,7 @@ def parse_mana_restriction(text: str) -> Optional[str]:
     return m.group("only").strip() if m.group("only") else m.group("cant").strip()
 
 
-@lru_cache(maxsize=1 << 15)
+@lru_cache(maxsize=CACHE_SIZE)
 def _mana_rel(t: str) -> _Rel:
     pos = 0
     m = _MANA_PREFIX_RE.match(t)
@@ -223,11 +225,11 @@ def _mana_rel(t: str) -> _Rel:
     else:
         m = _MANA_COUNT_RE.match(t, pos)
         if m is None:
-            return (None, _um("add", "mana:no_symbols"), 0, None, (), ())
+            return (None, _um("mana_no_symbols"), 0, None, (), ())
         word = m.group("count")
         n = _THAT_MUCH if word == "that much" else _count(word)
         if n is None:
-            return (None, _um("add", "mana:count"), 0, None, (), ())
+            return (None, _um("mana_count"), 0, None, (), ())
         for tail, overrides in _MANA_TAILS:
             mt = tail.match(t, m.end())
             if mt:
@@ -238,7 +240,7 @@ def _mana_rel(t: str) -> _Rel:
                 end = mt.end()
                 break
         else:
-            return (None, _um("add", "mana:tail"), 0, None, (), ())
+            return (None, _um("mana_tail"), 0, None, (), ())
         if n.kind is AmountKind.LITERAL:
             fields["symbols"] = (WILDCARD,) * n.n
         else:
@@ -251,9 +253,11 @@ def _mana_rel(t: str) -> _Rel:
     return (ManaSpec(**fields), None, end, amount, (), ())
 
 
-def parse_mana(text: str, span: Span) -> SlotResult:
-    """The object of "add" as a ManaSpec (a symbol multiset)."""
-    return _finish(text, span, _mana_rel(text.strip()))
+def parse_mana(text: str, span: Span, *, lemma: str = "") -> SlotResult:
+    """The object of "add" in ``text[span]`` as a ManaSpec (a symbol
+    multiset)."""
+    slot, offset = _slot(text, span)
+    return _finish(slot, offset, _mana_rel(slot.strip()), lemma)
 
 
 _ADD_RE = re.compile(r"\badds?\s+")
@@ -277,8 +281,10 @@ _COUNTER_COUNT = (r"(?P<count>an additional|a number of|any number of|"
                   r"that many|all|%s)" % _COUNT_RE)
 _KIND = r"(?:[+-]\d+/[+-]\d+|(?:first|double) strike|[a-z][a-z'\-]*)"
 _KIND_LIST = r"(?P<kinds>%s(?:(?:, or |, | or )%s)*)" % (_KIND, _KIND)
+# "two additional +1/+1 counters": 'additional' after a count qualifies the
+# count, it is no kind.
 _COUNTER_GROUP_RE = re.compile(
-    r"(?:%s )?(?:%s )?counters?\b" % (_COUNTER_COUNT, _KIND_LIST))
+    r"(?:%s )?(?:additional )?(?:%s )?counters?\b" % (_COUNTER_COUNT, _KIND_LIST))
 _KIND_SEP_RE = re.compile(r", or |, | or ")
 _ENERGY_RE = re.compile(r"(?P<pre>an amount of |any amount of )?(?P<run>(?:\{e\})+)")
 _NOT_A_KIND = frozenset(_WORD_COUNTS) | {"the", "of", "each", "all", "that",
@@ -301,7 +307,7 @@ def _energy_rel(t: str) -> Optional[_Rel]:
     return (CounterSpec(kinds=("energy",) * n), None, m.end(), None, (), ())
 
 
-@lru_cache(maxsize=1 << 15)
+@lru_cache(maxsize=CACHE_SIZE)
 def _counters_rel(t: str) -> _Rel:
     energy = _energy_rel(t)
     if energy is not None:
@@ -318,7 +324,7 @@ def _counters_rel(t: str) -> _Rel:
         group_kinds = tuple(_KIND_SEP_RE.split(m.group("kinds"))) \
             if m.group("kinds") else (WILDCARD,)
         if any(k in _NOT_A_KIND for k in group_kinds):
-            return (None, _um("counter", "counter:kind"), 0, None, (), ())
+            return (None, _um("counter_kind"), 0, None, (), ())
         word = m.group("count") or "a"
         n: Optional[Amount]
         if word in ("a", "an", "an additional"):
@@ -336,15 +342,13 @@ def _counters_rel(t: str) -> _Rel:
         groups += 1
         if len(group_kinds) > 1:                       # "a flying or ... counter"
             if groups > 1 or n != Amount(AmountKind.LITERAL, n=1):
-                return (None, _um("counter", "counter:choice_count"), 0,
-                        None, (), ())
+                return (None, _um("counter_choice_count"), 0, None, (), ())
             kinds, choice = group_kinds, True
         elif n is not None and n.kind is AmountKind.LITERAL:
             kinds += group_kinds * n.n
         else:
             if groups > 1 or amount is not None:
-                return (None, _um("counter", "counter:mixed_variable"), 0,
-                        None, (), ())
+                return (None, _um("counter_mixed_variable"), 0, None, (), ())
             kinds += group_kinds
             amount = n
         pos = m.end()
@@ -353,18 +357,20 @@ def _counters_rel(t: str) -> _Rel:
                 t, pos + nxt.end()) is None:
             break
         if amount is not None or pending:
-            return (None, _um("counter", "counter:mixed_variable"), 0, None,
-                    (), ())
+            return (None, _um("counter_mixed_variable"), 0, None, (), ())
         pos += nxt.end()
     if not groups:
-        return (None, _um("counter", "counter:no_counter"), 0, None, (), ())
+        return (None, _um("counter_no_counter"), 0, None, (), ())
     return (CounterSpec(kinds=kinds, choice=choice), None, pos, amount,
             pending, ())
 
 
-def parse_counters(text: str, span: Span) -> SlotResult:
-    """A counter phrase ("two +1/+1 counters ...", "{e}{e}") as CounterSpec."""
-    return _finish(text, span, _counters_rel(text.strip()))
+def parse_counters(text: str, span: Span, *, lemma: str = "") -> SlotResult:
+    """A counter phrase in ``text[span]`` ("two +1/+1 counters ...",
+    "{e}{e}") as CounterSpec. This is the one counter noun-phrase parser:
+    the destination leaf reads entry counters through it."""
+    slot, offset = _slot(text, span)
+    return _finish(slot, offset, _counters_rel(slot.strip()), lemma)
 
 
 # ── Keyword abilities a continuous effect or token can carry (CR 702) ──
@@ -412,8 +418,7 @@ _FROM_QUALITY = (
     r"|(?!(?:its|this|has|is|was|as|us|always)\b)[a-z]+s)")
 # A quality ends at a boundary a later sub-grammar owns; "each color among
 # ...", "colorless or from ..." are qualified qualities the leaf does not type.
-_FROM_END = (r"(?=$|[,.;)]| and\b| until\b| this turn\b| as long as\b"
-             r"| for as long as\b| during\b)")
+_FROM_END = (r"(?=$|[,.;)]| and\b| as long as\b| %s)" % DURATION_START)
 _KEYWORD_ITEM_RE = re.compile(
     r"(?:(?P<quote>⟨q\d+⟩)"
     r"|(?:protection|hexproof) from (?P<from>%s)%s" % (_FROM_QUALITY, _FROM_END)
@@ -523,7 +528,7 @@ _NAMED_RE = re.compile(r" (?:named )?(?P<name>⟨n\d+⟩)| named (?P<plain>[a-z]
 
 def _type_phrase(words: Tuple[str, ...]):
     """P/T, colours, supertypes, subtypes and card types of a type phrase.
-    Returns a dict, or a detail string when a word is outside the table."""
+    Returns a dict, or the first word outside the table."""
     out: Dict[str, Any] = {"power": None, "toughness": None, "colors": [],
                            "colorless": False, "supertypes": [],
                            "subtypes": [], "types": [], "pt_raw": None}
@@ -552,11 +557,11 @@ def _type_phrase(words: Tuple[str, ...]):
         elif _SUBTYPE_RE.match(w) and not out["types"]:
             out["subtypes"].append(w)
         else:
-            return "type_phrase:%s" % w
+            return w
     return out
 
 
-@lru_cache(maxsize=1 << 15)
+@lru_cache(maxsize=CACHE_SIZE)
 def _token_rel(t: str) -> _Rel:
     m = _COPY_RE.match(t)
     if m:
@@ -579,7 +584,7 @@ def _token_rel(t: str) -> _Rel:
                 tuple(pending), ())
     m = _TOKEN_HEAD_RE.match(t)
     if m is None:
-        return (None, _um("create", "token:no_token"), 0, None, (), ())
+        return (None, _um("token_no_token"), 0, None, (), ())
     pending = []
     words = tuple(m.group("body").split())
     if words[:3] == ("tapped", "and", "attacking"):
@@ -590,14 +595,14 @@ def _token_rel(t: str) -> _Rel:
         words = words[1:]
     phrase = _type_phrase(words)
     if isinstance(phrase, str):
-        return (None, _um("create", "token:" + phrase), 0, None, (), ())
+        return (None, _um("token_type_phrase", param=phrase), 0, None, (), ())
     fields: Dict[str, Any] = {}
     if not phrase["types"]:
         if (len(phrase["subtypes"]) == 1 and phrase["power"] is None
                 and phrase["subtypes"][0] in PREDEFINED_TOKENS):
             fields["predefined"] = phrase["subtypes"][0]
         else:
-            return (None, _um("create", "token:no_type"), 0, None, (), ())
+            return (None, _um("token_no_type"), 0, None, (), ())
     else:
         fields.update(power=phrase["power"], toughness=phrase["toughness"],
                       types=tuple(phrase["types"]),
@@ -639,9 +644,11 @@ def _token_count(word: Optional[str]) -> Optional[Amount]:
     return _count(word)
 
 
-def parse_token(text: str, span: Span) -> SlotResult:
-    """The object of "create" as a TokenSpec; the count is `amount`."""
-    return _finish(text, span, _token_rel(text.strip()))
+def parse_token(text: str, span: Span, *, lemma: str = "") -> SlotResult:
+    """The object of "create" in ``text[span]`` as a TokenSpec; the count
+    is `amount`."""
+    slot, offset = _slot(text, span)
+    return _finish(slot, offset, _token_rel(slot.strip()), lemma)
 
 
 # ── A19: alternatives ──────────────────────────────────────────────────
@@ -654,9 +661,9 @@ _ALT_HEAD_RE = re.compile(r"^(?:a|an|%s|x) " % _COUNT_RE)
 # duration, object ("on it"), scaler, condition, or the clause's end. The
 # text from it on is shared by every option (A19), never the last one's.
 _ALT_TAIL_RE = re.compile(
-    r"(?: until\b| this turn\b| for as long as\b| as long as\b| on\b| onto\b"
+    r"(?: %s| as long as\b| on\b| onto\b"
     r"| for each\b| if\b| unless\b| where\b| equal to\b| instead\b"
-    r"| under\b| to\b|[.,;])")
+    r"| under\b| to\b|[.,;])" % DURATION_START)
 
 # Option offsets (start, end) in the stripped text, plus the tail offset.
 _AltSplit = Tuple[Tuple[Tuple[int, int], ...], int]
@@ -696,14 +703,16 @@ def _split_alternatives(t: str) -> _AltSplit:
     return ((), len(t))
 
 
-def parse_alternatives(text: str, span: Span) -> Tuple[str, ...]:
-    """A19: the option texts of "your choice of X or Y" / "a Food token or a
-    Treasure token", chosen at resolution; () when the text is one payload.
-    Trailing text a later sub-grammar owns (a duration, "on <object>", a
-    scaler) is shared by every option and is not part of the last one."""
-    t = text.strip()
-    opts, _ = _split_alternatives(t)
-    return tuple(t[a:b] for a, b in opts)
+def parse_alternatives(text: str, span: Span) -> Tuple[Span, ...]:
+    """A19: the option spans (into ``text``) of "your choice of X or Y" /
+    "a Food token or a Treasure token" in ``text[span]``, chosen at
+    resolution; () when the slot is one payload. Trailing text a later
+    sub-grammar owns (a duration, "on <object>", a scaler) is shared by
+    every option and is not part of the last one."""
+    slot, offset = _slot(text, span)
+    start = offset + len(slot) - len(slot.lstrip())
+    opts, _ = _split_alternatives(slot.strip())
+    return tuple((start + a, start + b) for a, b in opts)
 
 
 # ── Modifications (CR 611-613) ─────────────────────────────────────────
@@ -754,10 +763,12 @@ _PROHIBIT_ACTIONS = (
 _PROHIBIT_ROW_RES = tuple((re.compile(phrase + r"\b"), actions)
                           for phrase, actions in _PROHIBIT_ACTIONS)
 _PROHIBIT_BOUNDARY_RE = re.compile(
-    r"(?:$|[,.;]| this turn\b| this combat\b| for the rest of the game\b"
-    r"| until\b| during\b| for as long as\b"
+    r"(?:$|[,.;]| %s"
     r"| as long as\b| unless\b| if\b| while\b| each combat\b"
-    r"| and (?!(?:block|attack|be)\b))")
+    r"| and (?!(?:block|attack|be)\b))" % DURATION_START)
+# The object of a cast / activate / play / be-targeted prohibition runs to
+# the prohibition's boundary.
+_PROHIBIT_OBJECT_RE = re.compile(r" ([^,.;]+?)(?= %s|[,.;]|$)" % DURATION_START)
 _CANT_RE = re.compile(r"(?:can't|cannot) ")
 _LIMIT_RE = re.compile(r"(?:can't|cannot) (?P<act>draw|cast) more than "
                        r"(?P<n>%s) (?:cards?|spells?) each turn\b" % _COUNT_RE)
@@ -779,6 +790,11 @@ def _mod(kind: ModKind, action: Optional[str] = None, **data: Any) -> Modificati
                                           if v is not None)))
 
 
+_TYPE_PHRASE_STOP_RE = re.compile(
+    r"(?: with |,| in addition to | %s| and (?!(?:white|blue|black|red|green)\b)"
+    r"|\.|$| that's)" % DURATION_START)
+
+
 def _type_change_rel(t: str) -> Optional[_Rel]:
     m = _COLOR_OF_CHOICE_RE.match(t)
     if m:
@@ -787,17 +803,16 @@ def _type_change_rel(t: str) -> Optional[_Rel]:
     m = _BECOMES_RE.match(t)
     if m is None:
         return None
-    # The type phrase runs to its first boundary (with / in addition / , / end).
-    stop = re.search(r"(?: with |,| in addition to | until | for as long as "
-                     r"| and (?!(?:white|blue|black|red|green)\b)|\.|$| that's)",
-                     t[m.end():])
-    words = tuple(t[m.end():m.end() + stop.start()].split())
+    # The type phrase runs to its first boundary (with / in addition / a
+    # duration / , / end).
+    stop = _TYPE_PHRASE_STOP_RE.search(t, m.end())
+    words = tuple(t[m.end():stop.start()].split())
     if not words:
         return None
     phrase = _type_phrase(words)
     if isinstance(phrase, str):
         return None
-    end = m.end() + stop.start()
+    end = stop.start()
     data: Dict[str, Any] = {}
     if phrase["colors"]:
         data["colors"] = tuple(phrase["colors"])
@@ -839,7 +854,7 @@ def _type_change_rel(t: str) -> Optional[_Rel]:
     return (_mod(kind, **data), None, end, None, (), ())
 
 
-@lru_cache(maxsize=1 << 15)
+@lru_cache(maxsize=CACHE_SIZE)
 def _modification_rel(t: str) -> _Rel:
     m = _PT_MOD_RE.match(t)
     if m:
@@ -883,7 +898,7 @@ def _modification_rel(t: str) -> _Rel:
                      max=_count(m.group("n"))), None, m.end(), None, (), ())
     m = _CANT_RE.match(t)
     if m:
-        detail = "prohibit:action"
+        code = "prohibit_action"
         for row_re, actions in _PROHIBIT_ROW_RES:
             am = row_re.match(t, m.end())
             if am is None:
@@ -892,20 +907,19 @@ def _modification_rel(t: str) -> _Rel:
             data: Dict[str, Any] = {}
             if actions in (("cast",), ("activate",), ("play",),
                            ("be_targeted",)):
-                obj = re.match(r" ([^,.;]+?)(?= this turn\b| until\b|[,.;]|$)",
-                               t[end:])
+                obj = _PROHIBIT_OBJECT_RE.match(t, end)
                 if obj:
                     data["filter"] = obj.group(1).strip()
-                    end += obj.end()
+                    end = obj.end()
             if _PROHIBIT_BOUNDARY_RE.match(t, end) is None:
-                detail = "prohibit:qualifier"
+                code = "prohibit_qualifier"
                 continue
             if len(actions) == 1:
                 return (_mod(ModKind.PROHIBIT, action=actions[0], **data),
                         None, end, None, (), ())
             return (_mod(ModKind.PROHIBIT, actions=actions, **data), None,
                     end, None, (), ())
-        return (None, _um("can't", detail), 0, None, (), ())
+        return (None, _um(code), 0, None, (), ())
     m = _UNTAP_RE.match(t)
     if m:
         return (_mod(ModKind.PROHIBIT, action="untap"), None, m.end(), None,
@@ -936,20 +950,21 @@ def _modification_rel(t: str) -> _Rel:
     changed = _type_change_rel(t)
     if changed is not None:
         return changed
-    return (None, _um("", "modification:unknown"), 0, None, (), ())
+    return (None, _um("modification_unknown"), 0, None, (), ())
 
 
-def parse_modification(entry: Any, text: str, span: Span) -> SlotResult:
-    """A continuous predicate ("gets +2/+2", "gains flying", "can't block",
-    "becomes a 3/3 ... creature") as one effect_model.Modification.
+def parse_modification(entry: Any, text: str, span: Span, *,
+                       lemma: Optional[str] = None) -> SlotResult:
+    """A continuous predicate in ``text[span]`` ("gets +2/+2", "gains
+    flying", "can't block", "becomes a 3/3 ... creature") as one
+    effect_model.Modification.
 
-    `entry` is the lexicon entry (read: `lemma`); its `mod_kind` is a hint
-    only -- the printed predicate decides the kind."""
-    r = _finish(text, span, _modification_rel(text.strip()))
-    if r.unmodelled is not None and getattr(entry, "lemma", ""):
-        r = SlotResult(unmodelled=_um(entry.lemma, r.unmodelled.detail),
-                       span=r.span, rest=r.rest)
-    return r
+    `entry` is the lexicon entry; its `mod_kind` is a hint only -- the
+    printed predicate decides the kind. `lemma` is the printed lemma
+    (default: the entry's)."""
+    slot, offset = _slot(text, span)
+    return _finish(slot, offset, _modification_rel(slot.strip()),
+                   _lemma(entry, lemma))
 
 
 # ── A8: cost modifiers (CR 601.2f, 602.2b) ─────────────────────────────
@@ -959,13 +974,13 @@ _COST_MOD_RE = re.compile(
     r"(?P<act>activate|cast)\b" % _SYM)
 
 
-# Closed subject table. A self subject is exactly this spell / this ability
-# / ~ / it; a global subject names spells or abilities under a filter and
+# Closed subject table. A self subject is exactly ~ (L0 has rewritten
+# "this spell" and the card's names) / it / this ability; a global subject names spells or abilities under a filter and
 # never names the object itself ("this spell", "this <object>'s ...
 # ability") and carries no prefix (an ability word "x - ", a cost "{t}:",
 # a condition "if ..., "). Anything else is Unmodelled, never widened into a
 # static reducer for all spells.
-_SELF_SPELL_SUBJECTS = frozenset({"this spell", "~", "it"})
+_SELF_SPELL_SUBJECTS = frozenset({"~", "it"})
 _SELF_ABILITY_RE = re.compile(r"^this ability$")
 _GLOBAL_SUBJECT_RE = re.compile(
     r"^(?!this\b)(?!.*(?:\bthis (?:spell|ability)\b|(?:^|\s)~(?:\s|$)"
@@ -985,7 +1000,7 @@ def _cost_subject_scope(subject: str, act: str) -> Optional[str]:
     return "spells" if g.group("noun").startswith("spell") else "abilities"
 
 
-@lru_cache(maxsize=1 << 15)
+@lru_cache(maxsize=CACHE_SIZE)
 def _cost_modifier_rel(t: str) -> Optional[_Rel]:
     m = _COST_MOD_RE.match(t)
     if m is None:
@@ -993,7 +1008,7 @@ def _cost_modifier_rel(t: str) -> Optional[_Rel]:
     subject = m.group("subject")
     scope = _cost_subject_scope(subject, m.group("act"))
     if scope is None:
-        return (None, _um("cost", "cost_delta:subject"), 0, None, (), ())
+        return (None, _um("cost_delta_subject"), 0, None, (), ())
     syms = _symbols(m.group("amt"))
     data: Dict[str, Any] = {"scope": scope, "cost_of": m.group("act"),
                             "sign": -1 if m.group("dir") == "less" else 1}
@@ -1008,12 +1023,15 @@ def _cost_modifier_rel(t: str) -> Optional[_Rel]:
     return (_mod(ModKind.COST_DELTA, **data), None, m.end(), None, (), ())
 
 
-def parse_cost_modifier(text: str, span: Span) -> Optional[SlotResult]:
+def parse_cost_modifier(text: str, span: Span, *,
+                        lemma: str = "") -> Optional[SlotResult]:
     """A8: "This ability costs {N} less to activate ..." (and the spell /
-    static forms) as a COST_DELTA Modification; None when the text is no
-    cost modifier. Structure absorbs it into `cost_modifiers`."""
-    rel = _cost_modifier_rel(text.strip())
-    return None if rel is None else _finish(text, span, rel)
+    static forms) in ``text[span]`` as a COST_DELTA Modification; None when
+    the slot is no cost modifier. Structure absorbs it into
+    `cost_modifiers`."""
+    slot, offset = _slot(text, span)
+    rel = _cost_modifier_rel(slot.strip())
+    return None if rel is None else _finish(slot, offset, rel, lemma)
 
 
 # ── CR 701 keyword actions ─────────────────────────────────────────────
@@ -1061,15 +1079,24 @@ def _canonical_action(printed: str) -> str:
     return printed
 
 
-@lru_cache(maxsize=1 << 12)
+def _canonical_unsupported(printed: str) -> str:
+    for name in UNSUPPORTED_KEYWORD_ACTIONS:
+        if re.fullmatch(_inflected(name), printed):
+            return name
+    return printed
+
+
+@lru_cache(maxsize=CACHE_SIZE)
 def _keyword_action_rel(t: str) -> _Rel:
     m = _KA_RE.match(t)
     if m is None:
         u = _KA_UNSUPPORTED_RE.match(t)
         if u:
-            return (None, _um(u.group(0), "keyword_action:unsupported",
-                              Stage.RECOGNIZED_UNSUPPORTED), 0, None, (), ())
-        return (None, _um("", "keyword_action:unknown"), 0, None, (), ())
+            name = _canonical_unsupported(u.group(0)).replace(" ", "_")
+            return (None, _um("keyword_action_unsupported",
+                              Stage.RECOGNIZED_UNSUPPORTED, name),
+                    0, None, (), ())
+        return (None, _um("keyword_action_unknown"), 0, None, (), ())
     name = _canonical_action(m.group("name"))
     shape = KEYWORD_ACTION_NAMES[name]
     end = m.end()
@@ -1078,7 +1105,7 @@ def _keyword_action_rel(t: str) -> _Rel:
     if shape == "subtype_n":
         sm = re.match(r" (?:(?P<sub>[a-z][a-z'\-]*) )?(?P<n>\d+|x)\b", t[end:])
         if sm is None:
-            return (None, _um(name, "keyword_action:param"), 0, None, (), ())
+            return (None, _um("keyword_action_param"), 0, None, (), ())
         sub = sm.group("sub")
         if sub is not None:
             subtype = sub[:-1] if sub.endswith("s") else sub
@@ -1087,7 +1114,7 @@ def _keyword_action_rel(t: str) -> _Rel:
     elif shape == "n":
         nm = re.match(r" (?P<n>%s)\b" % _COUNT_RE, t[end:])
         if nm is None:
-            return (None, _um(name, "keyword_action:param"), 0, None, (), ())
+            return (None, _um("keyword_action_param"), 0, None, (), ())
         amount = _count(nm.group("n"))
         end += nm.end()
     elif shape == "none":
@@ -1100,10 +1127,13 @@ def _keyword_action_rel(t: str) -> _Rel:
             end, None, (), ())
 
 
-def parse_keyword_action(text: str, span: Span) -> SlotResult:
-    """A CR 701 keyword action clause ("amass zombies 2") as KeywordAction.
-    The `expansion` stays empty: the full grammar fills it."""
-    return _finish(text, span, _keyword_action_rel(text.strip()))
+def parse_keyword_action(text: str, span: Span, *,
+                         lemma: str = "") -> SlotResult:
+    """A CR 701 keyword action clause in ``text[span]`` ("amass zombies
+    2") as KeywordAction. The `expansion` stays empty: the full grammar
+    fills it."""
+    slot, offset = _slot(text, span)
+    return _finish(slot, offset, _keyword_action_rel(slot.strip()), lemma)
 
 
 # ── PAY and emblems ────────────────────────────────────────────────────
@@ -1112,20 +1142,20 @@ _PAY_COST_RE = re.compile(r"(?:%s)+|\d+ life" % _SYM)
 _EMBLEM_RE = re.compile(r"an emblem with (?P<q>⟨q\d+⟩)")
 
 
-@lru_cache(maxsize=1 << 12)
+@lru_cache(maxsize=CACHE_SIZE)
 def _pay_rel(t: str) -> _Rel:
     energy = _energy_rel(t)
     if energy is not None:
         return energy
     m = _PAY_COST_RE.match(t)
     if m is None:
-        return (None, _um("pay", "pay:cost"), 0, None, (), ())
+        return (None, _um("pay_cost"), 0, None, (), ())
     from engine.oracle_parser import parse_activation_cost
     printed = m.group(0)
     snapshot = freeze_cost(parse_activation_cost(
         "pay " + printed if printed.endswith("life") else printed))
     if not _cost_owner_represents(printed, snapshot):
-        return (None, _um("pay", "pay:cost"), 0, None, (), ())
+        return (None, _um("pay_cost"), 0, None, (), ())
     return (snapshot, None, m.end(), None, (), ())
 
 
@@ -1163,7 +1193,7 @@ def _cost_owner_represents(printed: str, snapshot: CostSnapshot) -> bool:
 def _emblem_rel(t: str) -> _Rel:
     m = _EMBLEM_RE.match(t)
     if m is None:
-        return (None, _um("get", "emblem:no_quote"), 0, None, (), ())
+        return (None, _um("emblem_no_quote"), 0, None, (), ())
     return (Granted(), None, m.end(), None, (("granted", m.group("q")),), ())
 
 
@@ -1175,29 +1205,36 @@ _COUNTER_VERBS = frozenset({Verb.PUT_COUNTERS, Verb.REMOVE_COUNTERS,
 _DOUBLE_PREFIX_RE = re.compile(r"the number of (?:each kind of counter\b)?")
 
 
-def _alternatives(entry: Any, text: str, span: Span, prefix: str,
-                  split: _AltSplit, facts: Any) -> SlotResult:
+def _lemma(entry: Any, lemma: Optional[str]) -> str:
+    """The printed lemma: the caller's, else the lexicon entry's
+    (section 4: every entry carries its printed `lemma`)."""
+    if lemma is not None:
+        return lemma
+    return getattr(entry, "lemma", "") or ""
+
+
+def _alternatives(entry: Any, slot: str, offset: int, lemma: str,
+                  prefix: str, split: _AltSplit) -> SlotResult:
     """Each option typed on its own text (with the verb `prefix` a
-    continuous predicate needs), its span in the caller's coordinates; the
-    shared tail is the outer rest and every option's rest (A19)."""
+    continuous predicate needs), its span in host coordinates; the shared
+    tail is the outer rest and every option's rest (A19)."""
     options, tail_at = split
-    lead = len(text) - len(text.lstrip())
-    t = text.strip()
-    tail = t[tail_at:].strip(" ,.;")
+    lead = len(slot) - len(slot.lstrip())
+    t = slot.strip()
+    tail = tuple((a + offset, b + offset) for a, b in rest_spans_after(
+        slot, lead + tail_at, lead + len(t), " ,.;"))
     results = []
     for a, b in options:
         opt = t[a:b]
-        at = span[0] + lead + a
-        r = parse_payload(entry, prefix + opt, (at - len(prefix), at + len(opt)),
-                          facts)
-        own = r.rest
-        results.append(SlotResult(
-            value=r.value, unmodelled=r.unmodelled,
-            span=(max(r.span[0], at), max(r.span[1], at)),
-            rest=" ".join(x for x in (own, tail) if x), amount=r.amount,
-            pending=r.pending, alternatives=r.alternatives))
-    return SlotResult(span=(span[0] + lead, span[0] + lead + tail_at),
-                      rest=tail, alternatives=tuple(results))
+        at = offset + lead + a
+        # The option is typed as `prefix + opt` placed so that `opt` sits at
+        # its host offset; spans before `at` (the prefix) are clamped.
+        r = _payload(entry, prefix + opt, at - len(prefix), lemma)
+        results.append(dataclasses.replace(
+            r, span=(max(r.span[0], at), max(r.span[1], at)),
+            rest_spans=r.rest_spans + tail))
+    return SlotResult(span=(offset + lead, offset + lead + tail_at),
+                      rest_spans=tail, alternatives=tuple(results))
 
 
 # A disjunction of payloads left after one typed payload: the choice would
@@ -1205,44 +1242,60 @@ def _alternatives(entry: Any, text: str, span: Span, prefix: str,
 _LEFTOVER_OR_RE = re.compile(r"^or (?:a|an|%s|x|your choice)\b" % _COUNT_RE)
 
 
-def _no_dropped_choice(r: SlotResult, lemma: str, family: str) -> SlotResult:
-    if r.value is not None and _LEFTOVER_OR_RE.match(r.rest):
-        return SlotResult(unmodelled=_um(lemma, family + ":alternative"),
-                          span=r.span, rest=r.rest)
+def _no_dropped_choice(r: SlotResult, slot: str, offset: int, lemma: str,
+                       code: str) -> SlotResult:
+    if r.value is not None and _LEFTOVER_OR_RE.match(
+            join_spans(slot, tuple((a - offset, b - offset)
+                                   for a, b in r.rest_spans))):
+        body = slot.strip()
+        start = offset + len(slot) - len(slot.lstrip())
+        return SlotResult(unmodelled=_stamp(_um(code), lemma),
+                          span=(start, start + len(body)))
     return r
 
 
-def parse_payload(entry: Any, text: str, span: Span, facts: Any) -> SlotResult:
-    """Type the payload slot of a clause whose lexicon entry is `entry`
-    (read: `verb`, `lemma`). `text` is the slot text, normalised; `span` its
-    place in the host text. `facts` is reserved for face-dependent payloads
+def parse_payload(entry: Any, text: str, span: Span, facts: Any, *,
+                  lemma: Optional[str] = None) -> SlotResult:
+    """Type the payload slot ``text[span]`` of a clause whose lexicon entry
+    is `entry` (read: `verb`, `lemma`). `text` is the whole normalised host
+    text; every returned span indexes it. `lemma` is the printed lemma
+    (default: the entry's). `facts` is reserved for face-dependent payloads
     and read by none today."""
+    slot, offset = _slot(text, span)
+    return _payload(entry, slot, offset, _lemma(entry, lemma))
+
+
+def _payload(entry: Any, text: str, offset: int, lemma: str) -> SlotResult:
+    """`parse_payload` over the slot text `text` sitting at `offset`."""
     verb = getattr(entry, "verb", None)
-    lemma = getattr(entry, "lemma", "") or ""
     t = text.strip()
+    lead = len(text) - len(text.lstrip())
     if verb is Verb.ADD_MANA:
-        return parse_mana(text, span)
+        return _finish(text, offset, _mana_rel(t), lemma)
     if verb in _COUNTER_VERBS:
         if verb is Verb.DOUBLE_COUNTERS:
             m = _DOUBLE_PREFIX_RE.match(t)
             if m and m.group(0).endswith("counter"):
-                return _finish(text, span, (CounterSpec(kinds=(WILDCARD,)),
-                                            None, m.end(), None, (), ()))
+                return _finish(text, offset, (CounterSpec(kinds=(WILDCARD,)),
+                                              None, m.end(), None, (), ()),
+                               lemma)
             if m:
-                lead = len(text) - len(text.lstrip()) + m.end()
-                r = parse_counters(text[lead:], (span[0] + lead, span[1]))
-                return SlotResult(value=r.value, unmodelled=r.unmodelled,
-                                  span=(span[0], r.span[1]), rest=r.rest,
-                                  amount=r.amount, pending=r.pending)
+                cut = lead + m.end()
+                r = _finish(text[cut:], offset + cut,
+                            _counters_rel(text[cut:].strip()), lemma)
+                start = offset + lead
+                return dataclasses.replace(r, span=(start, r.span[1]))
         split = _split_alternatives(t)
         if split[0]:
-            return _alternatives(entry, text, span, "", split, facts)
-        return _no_dropped_choice(parse_counters(text, span), lemma, "counter")
+            return _alternatives(entry, text, offset, lemma, "", split)
+        return _no_dropped_choice(_finish(text, offset, _counters_rel(t), lemma),
+                                  text, offset, lemma, "counter_alternative")
     if verb is Verb.CREATE_TOKEN:
         split = _split_alternatives(t)
         if split[0]:
-            return _alternatives(entry, text, span, "", split, facts)
-        return _no_dropped_choice(parse_token(text, span), lemma, "token")
+            return _alternatives(entry, text, offset, lemma, "", split)
+        return _no_dropped_choice(_finish(text, offset, _token_rel(t), lemma),
+                                  text, offset, lemma, "token_alternative")
     if verb is Verb.CONTINUOUS:
         m = _CHOICE_OF_RE.match(t)
         split = _split_alternatives(t) if m else ((), len(t))
@@ -1250,27 +1303,38 @@ def parse_payload(entry: Any, text: str, span: Span, facts: Any) -> SlotResult:
             verb_word = t.split(" ", 1)[0]
             prefix = (verb_word + " " if verb_word != "your"
                       else lemma + " " if lemma else "")
-            return _alternatives(entry, text, span, prefix, split, facts)
-        return parse_modification(entry, text, span)
+            return _alternatives(entry, text, offset, lemma, prefix, split)
+        return _finish(text, offset, _modification_rel(t), lemma)
     if verb is Verb.KEYWORD_ACTION:
-        r = parse_keyword_action(text, span)
+        r = _finish(text, offset, _keyword_action_rel(t), lemma)
         if r.value is None and lemma and not t.startswith(lemma):
+            # The action's lemma was consumed by the clause ("amass" before
+            # "zombies 2"): parse it re-joined, keep only the slot's part.
             joined = lemma + " " + t
             rel = _keyword_action_rel(joined)
             past_lemma = rel[2] - len(lemma) - 1
+            start = offset + lead
             if rel[0] is not None and past_lemma > 0:
-                lead = len(text) - len(text.lstrip())
+                rest = rest_spans_after(t, past_lemma, len(t), " ,.;")
                 return SlotResult(
-                    value=rel[0],
-                    span=(span[0] + lead, span[0] + lead + past_lemma),
-                    rest=joined[rel[2]:].strip(" ,.;"))
+                    value=rel[0], span=(start, start + past_lemma),
+                    rest_spans=tuple((a + start, b + start) for a, b in rest))
             if rel[0] is not None:
                 return SlotResult(
-                    unmodelled=_um(lemma, "keyword_action:nothing_consumed"),
-                    span=(span[0], span[0]), rest=t)
+                    unmodelled=_stamp(_um("keyword_action_nothing_consumed"),
+                                      lemma),
+                    span=(start, start + len(t)))
         return r
     if verb is Verb.PAY:
-        return _finish(text, span, _pay_rel(t))
+        return _finish(text, offset, _pay_rel(t), lemma)
     if verb is Verb.CREATE_EMBLEM:
-        return _finish(text, span, _emblem_rel(t))
-    return SlotResult(span=(span[0], span[0]), rest=t)
+        return _finish(text, offset, _emblem_rel(t), lemma)
+    start = offset + lead
+    return SlotResult(span=(start, start),
+                      rest_spans=((start, start + len(t)),) if t else ())
+
+
+def clear_caches() -> None:
+    for fn in (_mana_rel, _counters_rel, _token_rel, _modification_rel,
+               _cost_modifier_rel, _keyword_action_rel, _pay_rel):
+        fn.cache_clear()

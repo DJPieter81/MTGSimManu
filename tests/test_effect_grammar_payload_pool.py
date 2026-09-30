@@ -3,9 +3,11 @@ section 4; E0).
 
 Runs the payload leaf over every payload-verb clause of every oracle text in
 the card DB (clauses cut by a light stand-in for L0-L3: reminder text
-stripped, self-name -> ``~``, double quotes masked ``⟨qk⟩``, lowercased,
-sentences split on ``.``/newlines, the slot cut after the verb). It asserts
-that the leaf
+stripped, self-name and "this <noun>" -> ``~`` (the L0 contract in
+`engine.effect_grammar.sub`), double quotes masked ``⟨qk⟩``, lowercased,
+sentences split on ``.``/newlines, the slot cut after the verb). The leaf is
+called the way the spine calls it: the sentence is the host and the slot a
+span inside it. It asserts that the leaf
 
 * never raises,
 * is deterministic (a second pass after clearing its memo is canonically
@@ -28,6 +30,7 @@ import pytest
 
 from engine.effect_model import ModKind
 from engine.effect_spec import Amount, AmountKind, Verb, canonical
+from engine.effect_grammar.sub import SELF_NOUNS
 from engine.effect_grammar.sub import payload as P
 from engine.oracle_parser import strip_reminder_text
 
@@ -40,6 +43,7 @@ class _Entry:
 
 
 _QUOTE_RE = re.compile(r'"[^"]*"')
+_THIS_NOUN_RE = re.compile(r"\bthis (?:%s)\b" % "|".join(SELF_NOUNS))
 _SENT_RE = re.compile(r"(?<=[.])\s+|\n")
 _COUNT = r"(?:a|an|one|two|three|four|five|six|seven|eight|nine|ten|\d+|x)"
 
@@ -89,6 +93,14 @@ _COST_MOD_RE = re.compile(
 # 377/379 when the subject table closed ("<ability word> - this spell" and
 # prefixed subjects were global reducers); the stand-in now strips an
 # ability word the way L2 does.
+#
+# Re-measured 2026-09-30 after the stand-in applied the L0 contract ("this
+# <noun>" -> ~, the leaf contract in engine.effect_grammar.sub): the slot
+# set shifts slightly (e.g. counters 784/816, token 1097/1151), and
+# cost_modifier is 341/376 (90.7%): "activated abilities of ~ cost ..."
+# names the object itself and is refused, where "... of this creature
+# cost ..." used to pass the global-subject table as a static reducer for
+# all abilities.
 _FLOORS = {
     "mana": 0.85, "token": 0.90, "counters": 0.92, "energy": 0.90,
     "pt": 0.95, "keywords": 0.72, "prohibit": 0.52, "becomes": 0.38,
@@ -116,7 +128,8 @@ def _normalise(template) -> str:
                      key=len, reverse=True):
         if nm:
             text = text.replace(nm, "~")
-    return text.lower().replace("—", "-")
+    text = text.lower().replace("—", "-").replace("’", "'")
+    return _THIS_NOUN_RE.sub("~", text)
 
 
 def _slots(card_db):
@@ -132,30 +145,26 @@ def _slots(card_db):
                     key = (fam, m.group(1))
                     if key not in seen:
                         seen.add(key)
-                        yield fam, verb, lemma, m.group(1), m.start(1)
+                        yield fam, verb, lemma, s, m.span(1)
             m = _COST_MOD_RE.search(s)
             if m and ("cost_modifier", m.group(1)) not in seen:
                 seen.add(("cost_modifier", m.group(1)))
-                yield "cost_modifier", None, "", m.group(1), m.start(1)
+                yield "cost_modifier", None, "", s, m.span(1)
 
 
 def _run(slots):
     out = []
-    for fam, verb, lemma, text, start in slots:
-        span = (start, start + len(text))
+    for fam, verb, lemma, host, span in slots:
         if fam == "cost_modifier":
-            r = P.parse_cost_modifier(text, span)
+            r = P.parse_cost_modifier(host, span)
         else:
-            r = P.parse_payload(_Entry(verb, lemma), text, span, None)
-        out.append((fam, text, span, r))
+            r = P.parse_payload(_Entry(verb, lemma), host, span, None)
+        out.append((fam, host, span, r))
     return out
 
 
 def _clear():
-    for fn in (P._mana_rel, P._counters_rel, P._token_rel,
-               P._modification_rel, P._cost_modifier_rel,
-               P._keyword_action_rel, P._pay_rel):
-        fn.cache_clear()
+    P.clear_caches()
 
 
 # Pool-wide (~9k distinct payload slots). Measured 2026-09-30 on this
@@ -186,8 +195,8 @@ def test_the_payload_leaf_types_every_pool_payload_slot_deterministically(card_d
             assert span[0] <= typed_r.span[0] <= typed_r.span[1] <= span[1], (
                 text, typed_r.span)
             if typed_r.value is not None and _OWNED_CONNECTIVE_RE.match(
-                    typed_r.rest):
-                swallowed.append((fam, text, typed_r.rest))
+                    typed_r.rest_text(text)):
+                swallowed.append((fam, text, typed_r.rest_text(text)))
         if r.value is not None or r.alternatives:
             typed[fam] += 1
         elif r.unmodelled is not None:
@@ -231,13 +240,14 @@ def test_registered_deck_payload_witnesses_type_exactly_the_printed_rule(
     slot = printed("Practiced Offense", "gains your choice of double strike "
                    "or lifelink until end of turn")
     r = _witness(Verb.CONTINUOUS, "gain", slot)
-    assert r.value is None and r.rest == "until end of turn"
+    assert r.value is None and r.rest_text(slot) == "until end of turn"
     assert [a.value for a in r.alternatives] == [
         Modification(ModKind.ADD_KEYWORDS,
                      data=(("keywords", (("double_strike", None),)),)),
         Modification(ModKind.ADD_KEYWORDS,
                      data=(("keywords", (("lifelink", None),)),))]
-    assert [a.rest for a in r.alternatives] == ["until end of turn"] * 2
+    assert [a.rest_text(slot) for a in r.alternatives] == [
+        "until end of turn"] * 2
 
     # A8: a costed keyword grant leaves its cost to the rider.
     for card in ("Snapcaster Mage", "Past in Flames"):
@@ -246,12 +256,13 @@ def test_registered_deck_payload_witnesses_type_exactly_the_printed_rule(
         assert r.value == Modification(
             ModKind.ADD_KEYWORDS, data=(("keywords", (("flashback", None),)),))
         assert r.pending == (("cost_rule", "flashback"),)
-        assert r.rest == "until end of turn"
+        assert r.rest_text(slot) == "until end of turn"
 
     # A8: a self cost reduction under an ability word is never a global
-    # reducer; once L2 strips the ability word it is this spell's own.
+    # reducer; once L2 strips the ability word it is this spell's own (L0
+    # has already rewritten "this spell" to ~).
     for card, n in (("Leyline Binding", 1), ("Scion of Draco", 2)):
-        tail = ("this spell costs {%d} less to cast for each basic land "
+        tail = ("~ costs {%d} less to cast for each basic land "
                 "type among lands you control" % n)
         slot = printed(card, "domain - " + tail)
         assert P.parse_cost_modifier(slot, (0, len(slot))).value is None
@@ -259,7 +270,7 @@ def test_registered_deck_payload_witnesses_type_exactly_the_printed_rule(
         assert r.value == Modification(ModKind.COST_DELTA, data=(
             ("amount", Amount(AmountKind.LITERAL, n=n)), ("cost_of", "cast"),
             ("scope", "this_spell"), ("sign", -1)))
-        assert r.rest == "for each basic land type among lands you control"
+        assert r.rest_text(tail) == "for each basic land type among lands you control"
 
     # PROHIBIT: a qualified prohibition is Unmodelled, a two-action one
     # names both actions.

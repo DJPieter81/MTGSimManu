@@ -77,7 +77,7 @@ def _run(sentences):
                 continue
             cut = _SLOT_END.search(s, m.end())
             end = cut.start() if cut else len(s)
-            lemma = "shuffle" if verb == "shuffle" else ""
+            lemma = verb             # the caller's printed lemma
             span = D.locate_destination(s, (m.end(), end), lemma=lemma)
             if span is None:
                 counts["no_destination"] += 1
@@ -104,10 +104,11 @@ def _run(sentences):
             if r.value is not None:
                 assert r.value.instead_of and "dest_override" in r.flags
                 instead["typed"] += 1
-            elif r.unmodelled.detail in ("instead_of.replacement_effect",
-                                         "instead_of.unlinked"):
+            elif r.unmodelled.detail in (
+                    "destination.instead_of_replacement_effect",
+                    "destination.instead_of_unlinked"):
                 assert "dest_override" not in r.flags
-                instead[r.unmodelled.detail.split(".")[1]] += 1
+                instead[r.unmodelled.detail.split(".instead_of_")[1]] += 1
             else:
                 instead["unmodelled"] += 1
             digest.append(canonical((s, r.value, r.unmodelled, r.object_span)))

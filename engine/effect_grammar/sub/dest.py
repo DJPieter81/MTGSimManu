@@ -2,8 +2,8 @@
 the put/return disambiguation; section 3 L2 instead-of trailer; A9, A13,
 A15, A18).
 
-A closed table over NORMALISED clause text (lowercased, dashes unified,
-self-references already ``~``). It runs at load, never at resolution, and
+A closed table over L0 output (the leaf contract in
+`engine.effect_grammar.sub`). It runs at load, never at resolution, and
 reads no game.
 
 * ``parse_destination`` types one destination prepositional phrase
@@ -36,39 +36,26 @@ from __future__ import annotations
 
 import dataclasses
 import re
-from dataclasses import dataclass
 from functools import lru_cache
 from typing import FrozenSet, Optional, Tuple
 
+from engine.effect_grammar.sub import CACHE_SIZE, SlotResult, Span, unmodelled
+from engine.effect_grammar.sub import payload as _payload
 from engine.effect_spec import (Amount, AmountKind, Destination, Ref, RefKind,
                                 Stage, Unmodelled)
 
-__all__ = ["Span", "SlotResult", "parse_destination", "locate_destination",
+__all__ = ["LEAF", "DETAIL_CODES", "parse_destination", "locate_destination",
            "parse_instead_of", "source_zone", "source_zones", "clear_caches"]
 
-Span = Tuple[int, int]
-
-_DEFAULT_LEMMA = "move"
+LEAF = "destination"
+DETAIL_CODES = frozenset({
+    "top_or_bottom", "back", "shuffle_into_non_library", "unconsumed",
+    "no_head", "controller", "attached_to", "entry_counters",
+    "duplicate_modifier", "instead_of_replacement_effect",
+    "instead_of_unlinked", "instead_of_no_replaced_zone",
+    "instead_of_no_move_action", "instead_of_no_destination",
+    "instead_of_no_object", "instead_of_unconsumed"})
 _DEST_OVERRIDE = "dest_override"     # effect_spec.SPEC_FLAGS
-
-
-@dataclass(frozen=True, slots=True)
-class SlotResult:
-    """A typed slot. Exactly one of ``value`` / ``unmodelled`` is set.
-
-    ``span`` is absolute in the text passed in: the consumed phrase on
-    success, the whole (whitespace-trimmed) slot on failure.
-    ``object_span`` is the moved object's span when the slot held one
-    (``parse_instead_of``)."""
-    value: Optional[Destination]
-    span: Span
-    unmodelled: Optional[Unmodelled] = None
-    flags: FrozenSet[str] = frozenset()
-    object_span: Optional[Span] = None
-
-    @property
-    def ok(self) -> bool:
-        return self.value is not None
 
 
 # ── Closed vocabulary ──────────────────────────────────────────────────
@@ -111,19 +98,9 @@ _HEAD_RES = tuple(
 _ANY_HEAD = re.compile(r"(?<![\w'])(?:%s)(?![\w'])" % "|".join(
     p if pos == "back" else _BACK + p for p, _, pos in _HEADS))
 
-# The entry-counter count words. Dependency: sub/amount (E0 step 11) owns
-# number words once it lands; this closed table then routes through it. A
-# count outside it ("that many", "equal to") is UNMODELLED(AMOUNT), never a
-# guess.
-_COUNT_WORDS = {"a": 1, "an": 1, "one": 1, "two": 2, "three": 3, "four": 4,
-                "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9,
-                "ten": 10}
 _ORDINALS = {"second": 2, "third": 3, "fourth": 4, "fifth": 5, "sixth": 6,
              "seventh": 7, "eighth": 8, "ninth": 9, "tenth": 10}
 
-_COUNTER_ITEM = re.compile(
-    r"(?P<n>[a-z]+|\d+) (?:additional )?"
-    r"(?P<kind>[+-]\d+/[+-]\d+|(?:[a-z]+ )?[a-z]+?) counters?")
 _WITH_COUNTERS = re.compile(r"with (?P<items>.+?) on (?:it|them|each of them|~)(?![\w'])")
 
 # Modifiers after a head, keyed by the zones that admit them.
@@ -141,37 +118,39 @@ _NTH = re.compile(r"(?P<o>%s) from the top" % "|".join(_ORDINALS))
 _SEP = re.compile(r"(?:,? and | )")
 
 
-def _unmodelled(stage: Stage, lemma: str, detail: str) -> Unmodelled:
-    return Unmodelled(stage=stage, lemma=lemma or _DEFAULT_LEMMA, detail=detail)
+def _unmodelled(stage: Stage, lemma: str, code: str, param: str = "") -> Unmodelled:
+    return unmodelled(stage, lemma, LEAF, code, DETAIL_CODES, param)
 
 
-def _amount(word: str) -> Optional[Amount]:
-    if word == "x":
-        return Amount(AmountKind.X, n=1)
-    if word.isdigit():
-        return Amount(AmountKind.LITERAL, n=int(word))
-    n = _COUNT_WORDS.get(word)
-    return None if n is None else Amount(AmountKind.LITERAL, n=n)
+# The entry-counter amounts a Destination can carry: a literal count, X, or
+# "that many" (CR 122.1; the count is bound at resolution).
+_ENTRY_VARIABLE = frozenset({AmountKind.X, AmountKind.THAT_MUCH})
 
 
 def _counters(items: str) -> Optional[Tuple[Tuple[str, Amount], ...]]:
     """'a +1/+1 counter and a flying counter' -> ((kind, Amount), ...), or
-    None when any token is left over or a count is outside the table."""
-    out = []
-    for part in re.split(r",? and |, ", items):
-        m = _COUNTER_ITEM.fullmatch(part)
-        if not m:
+    None when a token is left over or the counter phrase is not an entry
+    count. The counter noun phrase ('<count> [additional] <kind>
+    counter(s)') is read by payload's counter parser, the one count table
+    and kind vocabulary; this only reshapes its multiset."""
+    r = _payload.parse_counters(items, (0, len(items)))
+    spec = r.value
+    if (spec is None or r.rest_spans or r.pending or spec.choice
+            or _payload.WILDCARD in spec.kinds):
+        return None
+    if r.amount is not None:
+        if r.amount.kind not in _ENTRY_VARIABLE or len(spec.kinds) != 1:
             return None
-        amt = _amount(m.group("n"))
-        if amt is None:
-            return None
-        out.append((m.group("kind"), amt))
-    return tuple(out)
+        return ((spec.kinds[0], r.amount),)
+    counts = {}
+    for kind in spec.kinds:
+        counts[kind] = counts.get(kind, 0) + 1
+    return tuple((k, Amount(AmountKind.LITERAL, n=n)) for k, n in counts.items())
 
 
 # ── The destination PP ─────────────────────────────────────────────────
 
-_DUPLICATE = "destination.duplicate_modifier"
+_DUPLICATE = "duplicate_modifier"
 
 
 def _parse_modifiers(s: str, pos: int, zone: str, lemma: str, fields: dict):
@@ -215,21 +194,21 @@ def _parse_modifiers(s: str, pos: int, zone: str, lemma: str, fields: dict):
                     fields["controller"], hit, key = "owner", mm, "controller"
                 elif _CONTROL_OTHER.match(s, p):
                     return pos, _unmodelled(Stage.RECOGNIZED_UNSUPPORTED,
-                                            lemma, "destination.controller")
+                                            lemma, "controller")
             if hit is None:
                 mm = _ATTACHED_SELF.match(s, p)
                 if mm:
                     fields["attached_to"], hit, key = Ref(RefKind.SELF), mm, "attached_to"
                 elif _ATTACHED_OTHER.match(s, p):
                     return pos, _unmodelled(Stage.REFERENCE, lemma,
-                                            "destination.attached_to")
+                                            "attached_to")
         if hit is None and zone in ("battlefield", "exile"):
             mm = _WITH_COUNTERS.match(s, p)
             if mm:
                 counters = _counters(mm.group("items"))
                 if counters is None:
                     return pos, _unmodelled(Stage.AMOUNT, lemma,
-                                            "destination.entry_counters")
+                                            "entry_counters")
                 fields["entry_counters"] = counters
                 hit, key = mm, "entry_counters"
         if hit is None and zone == "library":
@@ -253,7 +232,7 @@ def _parse_modifiers(s: str, pos: int, zone: str, lemma: str, fields: dict):
     return pos, None
 
 
-@lru_cache(maxsize=None)
+@lru_cache(maxsize=CACHE_SIZE)
 def _parse_rel(s: str, lemma: str):
     """(Destination|None, Unmodelled|None) for a trimmed slot string."""
     for rx, zone, position in _HEAD_RES:
@@ -262,21 +241,21 @@ def _parse_rel(s: str, lemma: str):
             continue
         if zone is None:
             return None, _unmodelled(Stage.RECOGNIZED_UNSUPPORTED, lemma,
-                                     "destination.%s" % position)
+                                     position)
         if lemma == "shuffle" and not (zone == "library" and position is None):
             return None, _unmodelled(Stage.CLAUSE, lemma,
-                                     "destination.shuffle_into_non_library")
+                                     "shuffle_into_non_library")
         fields = {"position": position}
         pos, bad = _parse_modifiers(s, m.end(), zone, lemma, fields)
         if bad is not None:
             return None, bad
         if pos != len(s):
-            return None, _unmodelled(Stage.CLAUSE, lemma,
-                                     "destination.unconsumed:%s" % s[pos:].strip())
+            return None, _unmodelled(Stage.CLAUSE, lemma, "unconsumed",
+                                     s[pos:])
         if lemma == "shuffle":
             fields["position"] = "shuffle"       # A18
         return Destination(zone, **fields), None
-    return None, _unmodelled(Stage.CLAUSE, lemma, "destination.no_head")
+    return None, _unmodelled(Stage.CLAUSE, lemma, "no_head")
 
 
 def _trim(text: str, span: Span) -> Span:
@@ -294,7 +273,7 @@ def parse_destination(text: str, span: Span, *, lemma: str = "") -> SlotResult:
     ``lemma`` is the move verb's lemma when the caller knows it; 'shuffle'
     makes "into <library>" a shuffle-into (A18) and admits no other zone."""
     start, end = _trim(text, span)
-    value, bad = _parse_rel(text[start:end].replace("’", "'"), lemma)
+    value, bad = _parse_rel(text[start:end], lemma)
     return SlotResult(value=value, span=(start, end), unmodelled=bad)
 
 
@@ -305,7 +284,7 @@ def locate_destination(text: str, span: Span, *, lemma: str = "") -> Optional[Sp
     inside the object; the last one's UNMODELLED result is the one to
     report), else None."""
     start, end = _trim(text, span)
-    s = text[:end].replace("’", "'")
+    s = text[:end]
     last = None
     for m in _ANY_HEAD.finditer(s, start, end):
         cand = (m.start(), end)
@@ -331,32 +310,31 @@ _INSTEAD_OF = re.compile(
     r"(?P<anywhere>anywhere else))(?: as it resolves)?$" % _ZONE_POSS)
 _MOVE_VERB = re.compile(r"(?P<verb>exile|put|return|shuffle)s? ")
 _EXILE_MOD = re.compile(r" (?=face down(?: |$)|with )")
-_REPLACEMENT = "instead_of.replacement_effect"
-_UNLINKED = "instead_of.unlinked"
+_REPLACEMENT = "instead_of_replacement_effect"
+_UNLINKED = "instead_of_unlinked"
 
 
-def _exile_body(s: str, body_start: int, body_end: int):
+def _exile_body(s: str, body_start: int, body_end: int, lemma: str):
     """(object span, Destination|None, Unmodelled|None) for 'exile <object>
     [<modifiers>]'. The modifiers after the object run through the same
     loop as a destination PP and must reach the body end."""
     body = s[:body_end]
     for m in _EXILE_MOD.finditer(body, body_start):
         fields = {}
-        pos, bad = _parse_modifiers(body, m.start(), "exile", "exile", fields)
+        pos, bad = _parse_modifiers(body, m.start(), "exile", lemma, fields)
         if bad is not None:
             return (body_start, m.start()), None, bad
         if pos == body_end and pos > m.start():
             return (body_start, m.start()), Destination("exile", **fields), None
         if pos > m.start():
             return (body_start, m.start()), None, _unmodelled(
-                Stage.CLAUSE, "exile", "instead_of.unconsumed:%s" % body[pos:].strip())
+                Stage.CLAUSE, lemma, "instead_of_unconsumed", body[pos:])
     return (body_start, body_end), Destination("exile"), None
 
 
-@lru_cache(maxsize=None)
-def _instead_rel(s: str, linked: bool):
+@lru_cache(maxsize=CACHE_SIZE)
+def _instead_rel(s: str, linked: bool, lemma: str):
     """(Destination|None, Unmodelled|None, object span|None) relative to s."""
-    lemma = _DEFAULT_LEMMA
     pos = 0
     if _WOULD_FRAME.match(s):
         return None, _unmodelled(Stage.RECOGNIZED_UNSUPPORTED, lemma, _REPLACEMENT), None
@@ -365,7 +343,7 @@ def _instead_rel(s: str, linked: bool):
         pos = m.end()
     tail = _INSTEAD_OF.search(s, pos)
     if tail is None:
-        return None, _unmodelled(Stage.CLAUSE, lemma, "instead_of.no_replaced_zone"), None
+        return None, _unmodelled(Stage.CLAUSE, lemma, "instead_of_no_replaced_zone"), None
     if tail.group("anywhere"):
         # "instead of putting it anywhere else" overrides no named action's
         # destination: it is a leave-the-battlefield replacement (CR 614).
@@ -378,29 +356,30 @@ def _instead_rel(s: str, linked: bool):
     replaced = tail.group("zone")
     vm = _MOVE_VERB.match(s, pos)
     if vm is None:
-        return None, _unmodelled(Stage.CLAUSE, lemma, "instead_of.no_move_action"), None
+        return None, _unmodelled(Stage.CLAUSE, lemma, "instead_of_no_move_action"), None
     verb = vm.group("verb")
     body_start, body_end = vm.end(), tail.start()
     if verb == "exile":
-        obj, dest, bad = _exile_body(s, body_start, body_end)
+        obj, dest, bad = _exile_body(s, body_start, body_end, lemma)
         if bad is not None:
             return None, bad, obj
     else:
         sub_lemma = "shuffle" if verb == "shuffle" else ""
         where = locate_destination(s, (body_start, body_end), lemma=sub_lemma)
         if where is None:
-            return None, _unmodelled(Stage.CLAUSE, verb, "instead_of.no_destination"), None
+            return None, _unmodelled(Stage.CLAUSE, lemma, "instead_of_no_destination"), None
         obj = (body_start, where[0])
         dest, bad = _parse_rel(s[where[0]:where[1]].rstrip(), sub_lemma)
         if bad is not None:
-            return None, bad, obj
+            return None, dataclasses.replace(bad, lemma=lemma), obj
     obj = _trim(s, obj)
     if obj[0] == obj[1]:
-        return None, _unmodelled(Stage.CLAUSE, verb, "instead_of.no_object"), None
+        return None, _unmodelled(Stage.CLAUSE, lemma, "instead_of_no_object"), None
     return dataclasses.replace(dest, instead_of=replaced), None, obj
 
 
-def parse_instead_of(text: str, span: Span, *, linked: bool = False) -> SlotResult:
+def parse_instead_of(text: str, span: Span, *, linked: bool = False,
+                     lemma: str = "") -> SlotResult:
     """Type "<move VP> instead of putting it into <zone>" as a destination
     override of the named action: ``Destination(zone, instead_of=<replaced
     zone>)`` flagged ``dest_override`` (A15, CR 701.5a).
@@ -410,10 +389,12 @@ def parse_instead_of(text: str, span: Span, *, linked: bool = False) -> SlotResu
     ``linked=True`` because it has already bound the move to the named
     spec. A "would <event>" frame or "instead of putting it anywhere else"
     is a CR 614 replacement effect, refused as
-    ``instead_of.replacement_effect``; an unlinked slice without either is
-    refused as ``instead_of.unlinked``. Neither carries the flag."""
+    ``instead_of_replacement_effect``; an unlinked slice without either is
+    refused as ``instead_of_unlinked``. Neither carries the flag.
+
+    ``lemma`` is the caller's printed lemma of the overriding move."""
     start, end = _trim(text, span)
-    value, bad, obj = _instead_rel(text[start:end].replace("’", "'"), linked)
+    value, bad, obj = _instead_rel(text[start:end], linked, lemma)
     return SlotResult(
         value=value, span=(start, end), unmodelled=bad,
         flags=frozenset({_DEST_OVERRIDE}) if value is not None else frozenset(),
@@ -516,7 +497,7 @@ def _participle_in_exile(words, i: int) -> bool:
                for j in (i - 1, i + 1))
 
 
-@lru_cache(maxsize=None)
+@lru_cache(maxsize=CACHE_SIZE)
 def source_zones(object_text: str) -> FrozenSet[str]:
     """Every zone the moved object names, read from its object span only.
 
@@ -526,7 +507,7 @@ def source_zones(object_text: str) -> FrozenSet[str]:
     or spell. A bare zone object ("your graveyard") is that zone. A card
     with no zone phrase and a pronoun name none (empty set: linking binds
     them). More than one zone is a union (A21 ``target.zone_union``)."""
-    s = object_text.lower().replace("’", "'").strip()
+    s = object_text.strip()
     zones = set()
     if _BARE_ZONE.fullmatch(s):
         return frozenset(_ZONE_OF[w] for w in _ZONE_WORD.findall(s))

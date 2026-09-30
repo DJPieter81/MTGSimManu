@@ -45,13 +45,18 @@ def _mana(text):
     return r
 
 
+def _rest(r, host):
+    """The rest spans' text: every leaf hands the rest on as host spans."""
+    return r.rest_text(host)
+
+
 # ── Mana (CR 106.1, 106.4): a symbol multiset, not an amount ──────────
 
 def test_mana_is_a_symbol_multiset_not_an_amount():
     r = _mana("{g}{g}")
     assert r.value == ManaSpec(symbols=("G", "G"))
     assert r.amount is None                       # never Amount(LITERAL, 2)
-    assert r.rest == ""
+    assert r.rest_spans == ()
     # Order-insensitive multiset: {W}{U} and {U}{W} add the same mana.
     assert sorted(_mana("{w}{u}").value.symbols) == sorted(
         _mana("{u}{w}").value.symbols)
@@ -66,8 +71,9 @@ def test_mana_is_a_symbol_multiset_not_an_amount():
     assert r.value.symbols == ("*",)
     assert r.amount == Amount(AmountKind.X, n=1)
     # "for each" is a multiplier the amount grammar owns: left in `rest`.
-    r = _mana("{g} for each elf you control")
-    assert r.value.symbols == ("G",) and r.rest == "for each elf you control"
+    text = "{g} for each elf you control"
+    r = _mana(text)
+    assert r.value.symbols == ("G",) and _rest(r, text) == "for each elf you control"
 
 
 @pytest.mark.parametrize("text,choice", [
@@ -111,7 +117,7 @@ def test_spend_this_mana_only_is_a_restriction_on_the_mana_spec():
     r = _mana("{c}{c}. spend this mana only to cast colorless spells")
     assert r.value.symbols == ("C", "C")
     assert r.value.restriction == "to cast colorless spells"
-    assert r.rest == ""
+    assert r.rest_spans == ()
 
 
 def test_an_unknown_mana_phrase_is_unmodelled_not_a_guess():
@@ -121,8 +127,12 @@ def test_an_unknown_mana_phrase_is_unmodelled_not_a_guess():
 
 
 def test_mana_spans_are_in_the_callers_coordinates():
-    r = parse_mana("{g}{g} instead", (10, 24))
-    assert r.span == (10, 16) and r.rest == "instead"
+    host = "you may add {g}{g} instead"
+    at = host.index("{g}")
+    r = parse_mana(host, (at, len(host)))
+    assert r.span == (at, at + 6) and host[slice(*r.span)] == "{g}{g}"
+    assert r.rest_spans == ((at + 7, len(host)),)
+    assert _rest(r, host) == "instead"
 
 
 # ── A6: ADD_MANA recognition for the mana-ability rule (CR 605.1a/b) ──
@@ -172,11 +182,12 @@ def test_an_activation_cost_modifier_is_absorbed_onto_the_host_not_resolved():
     assert mod.get("scope") == "this_ability"
     assert mod.get("cost_of") == "activate"
     assert mod.get("sign") == -1 and mod.get("amount") == _lit(1)
-    assert r.rest == "for each legendary creature you control"
+    assert _rest(r, text) == "for each legendary creature you control"
 
 
 def test_a_spell_or_static_cost_delta_types_scope_and_direction():
-    r = parse_cost_modifier("this spell costs {2} more to cast", (0, 33))
+    # L0 has rewritten "this spell" to ~ (the leaf contract).
+    r = parse_cost_modifier("~ costs {2} more to cast", (0, 24))
     assert r.value.get("scope") == "this_spell" and r.value.get("sign") == 1
     r = parse_cost_modifier(
         "noncreature spells cost {1} more to cast", (0, 40))
@@ -195,9 +206,10 @@ def _ctr(text):
 
 
 def test_literal_counters_are_a_kind_multiset_and_the_rest_is_the_object():
-    r = _ctr("two +1/+1 counters on target creature")
+    text = "two +1/+1 counters on target creature"
+    r = _ctr(text)
     assert r.value == CounterSpec(kinds=("+1/+1", "+1/+1"))
-    assert r.amount is None and r.rest == "on target creature"
+    assert r.amount is None and _rest(r, text) == "on target creature"
 
 
 def test_mixed_counter_groups_join_into_one_multiset():
@@ -271,10 +283,12 @@ def test_a_copy_token_of_self_is_a_self_ref():
 # ── A19: resolution-time alternatives ─────────────────────────────────
 
 def test_your_choice_of_x_or_y_is_a_resolution_time_alternative():
-    assert parse_alternatives("your choice of flying or first strike",
-                              (0, 37)) == ("flying", "first strike")
-    assert parse_alternatives("a food token or a treasure token",
-                              (0, 32)) == ("a food token", "a treasure token")
+    def options(text):
+        return tuple(text[a:b] for a, b in parse_alternatives(text, (0, len(text))))
+    assert options("your choice of flying or first strike") == (
+        "flying", "first strike")
+    assert options("a food token or a treasure token") == (
+        "a food token", "a treasure token")
     # A plain disjunction inside one payload is not an alternative.
     assert parse_alternatives("{r} or {g}", (0, 10)) == ()
     # The payload keeps every option, typed, for EffectSpec.alternatives.
@@ -346,9 +360,10 @@ def test_a_becomes_creature_sets_types_and_base_pt():
 
 
 def test_a_pt_scaled_by_a_quantity_leaves_the_scaler_in_rest():
-    r = _mod("gets +1/+1 for each artifact you control")
+    text = "gets +1/+1 for each artifact you control"
+    r = _mod(text)
     assert r.value.get("power") == _lit(1)
-    assert r.rest == "for each artifact you control"
+    assert _rest(r, text) == "for each artifact you control"
 
 
 def test_an_unknown_predicate_is_unmodelled():
@@ -402,7 +417,8 @@ def test_an_emblem_payload_is_a_granted_placeholder():
 
 def test_a_verb_without_a_payload_returns_an_empty_result():
     r = parse_payload(_Entry(Verb.DRAW, "draw"), "two cards", (0, 9), None)
-    assert r.value is None and r.unmodelled is None and r.rest == "two cards"
+    assert r.value is None and r.unmodelled is None
+    assert _rest(r, "two cards") == "two cards"
 
 
 def test_the_payload_parse_is_a_pure_function_of_its_text():
@@ -425,10 +441,10 @@ def test_an_alternative_shares_its_trailing_duration_with_every_option():
     # last option alone; it is the outer rest and every option's rest.
     text = "gains your choice of double strike or lifelink until end of turn"
     r = _cont(text)
-    assert r.value is None and r.rest == "until end of turn"
+    assert r.value is None and _rest(r, text) == "until end of turn"
     kws = [a.value.get("keywords") for a in r.alternatives]
     assert kws == [(("double_strike", None),), (("lifelink", None),)]
-    assert [a.rest for a in r.alternatives] == ["until end of turn"] * 2
+    assert [_rest(a, text) for a in r.alternatives] == ["until end of turn"] * 2
     # Each option's span covers exactly that option's text.
     assert [text[slice(*a.span)] for a in r.alternatives] == [
         "double strike", "lifelink"]
@@ -438,10 +454,10 @@ def test_an_alternative_shares_its_trailing_object_with_every_option():
     text = "your choice of a +1/+1 counter or a flying counter on it"
     r = parse_payload(_Entry(Verb.PUT_COUNTERS, "put"), text,
                       (0, len(text)), None)
-    assert r.rest == "on it"
+    assert _rest(r, text) == "on it"
     assert [a.value.kinds for a in r.alternatives] == [("+1/+1",),
                                                        ("flying",)]
-    assert [a.rest for a in r.alternatives] == ["on it", "on it"]
+    assert [_rest(a, text) for a in r.alternatives] == ["on it", "on it"]
 
 
 @pytest.mark.parametrize("text,rest", [
@@ -455,7 +471,7 @@ def test_a_token_alternative_is_recognised_before_a_trailing_scaler(text,
     assert r.value is None
     assert [a.value.predefined for a in r.alternatives] == ["food",
                                                             "treasure"]
-    assert r.rest == rest
+    assert _rest(r, text) == rest
 
 
 def test_a_counter_alternative_is_recognised_before_its_object():
@@ -465,7 +481,7 @@ def test_a_counter_alternative_is_recognised_before_its_object():
     assert r.value is None
     assert [a.value.kinds for a in r.alternatives] == [("+1/+1",),
                                                        ("flying",)]
-    assert r.rest == "on it"
+    assert _rest(r, text) == "on it"
 
 
 def test_an_unrecognised_payload_disjunction_is_unmodelled_not_one_option():
@@ -486,20 +502,23 @@ def test_a_prohibition_with_an_unowned_qualifier_is_unmodelled():
 
 
 def test_a_two_action_prohibition_types_both_actions():
-    r = _cont("can't block or be blocked this turn", "can't")
+    text = "can't block or be blocked this turn"
+    r = _cont(text, "can't")
     assert r.value.kind is ModKind.PROHIBIT
     assert r.value.get("actions") == ("block", "be_blocked")
-    assert r.rest == "this turn"
-    r = _cont("can't attack or block this turn", "can't")
+    assert _rest(r, text) == "this turn"
+    text = "can't attack or block this turn"
+    r = _cont(text, "can't")
     assert r.value.get("actions") == ("attack", "block")
-    assert r.rest == "this turn"
+    assert _rest(r, text) == "this turn"
 
 
 def test_a_copy_token_object_ends_at_its_sentence():
-    r = _tok("a token that's a copy of target creature you control. it gains "
-             "haste. sacrifice it at the beginning of the next end step")
+    text = ("a token that's a copy of target creature you control. it gains "
+            "haste. sacrifice it at the beginning of the next end step")
+    r = _tok(text)
     assert ("copy_of", "target creature you control") in r.pending
-    assert r.rest.startswith("it gains haste")
+    assert _rest(r, text).startswith("it gains haste")
 
 
 def test_a_copy_token_of_self_keeps_its_ref_and_entry_rider():
@@ -507,7 +526,7 @@ def test_a_copy_token_of_self_keeps_its_ref_and_entry_rider():
     assert r.value.copy_of == Ref(RefKind.SELF)
     assert ("entry", "tapped and attacking") in r.pending
     assert not any(k == "copy_of" for k, _ in r.pending)
-    assert r.rest == ""
+    assert r.rest_spans == ()
 
 
 @pytest.mark.parametrize("text", [
@@ -542,7 +561,7 @@ def test_a_representable_pay_cost_is_a_cost_snapshot():
 
 
 @pytest.mark.parametrize("subject", [
-    "domain - this spell", "this spell and ~", "a creature"])
+    "domain - ~", "this ability and ~", "a creature"])
 def test_a_cost_modifier_subject_outside_the_table_is_unmodelled(subject):
     text = subject + " costs {1} less to cast"
     r = parse_cost_modifier(text, (0, len(text)))
@@ -574,11 +593,12 @@ def test_a_keyword_action_fallback_that_consumes_nothing_is_unmodelled():
 def test_a_costed_keyword_grant_leaves_its_cost_for_the_cost_rule():
     # A8: "gains flashback" with no printed cost takes its cost from the
     # "flashback cost is equal to its mana cost" rider, linked later.
-    r = _cont("gains flashback until end of turn")
+    text = "gains flashback until end of turn"
+    r = _cont(text)
     assert r.value.kind is ModKind.ADD_KEYWORDS
     assert r.value.get("keywords") == (("flashback", None),)
     assert ("cost_rule", "flashback") in r.pending
-    assert r.rest == "until end of turn"
+    assert _rest(r, text) == "until end of turn"
     r = _cont("has flashback {2}{r}")
     assert r.value.get("keywords") == (("flashback", "{2}{R}"),)
     assert r.pending == ()

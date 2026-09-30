@@ -74,7 +74,7 @@ def test_an_instead_of_move_not_attached_to_a_named_action_is_a_replacement_effe
     r = _dest().parse_instead_of(text, (0, len(text)))
     assert r.value is None and "dest_override" not in r.flags
     assert r.unmodelled is not None
-    assert r.unmodelled.detail == "instead_of.replacement_effect"
+    assert r.unmodelled.detail == "destination.instead_of_replacement_effect"
 
 
 def test_an_instead_of_move_with_no_rider_and_no_caller_link_sets_no_override():
@@ -83,11 +83,11 @@ def test_an_instead_of_move_with_no_rider_and_no_caller_link_sets_no_override():
     text = "exile it instead of putting it into its owner's graveyard"
     r = _dest().parse_instead_of(text, (0, len(text)))
     assert r.value is None and "dest_override" not in r.flags
-    assert r.unmodelled.detail == "instead_of.unlinked"
+    assert r.unmodelled.detail == "destination.instead_of_unlinked"
     # 'anywhere else' stays a replacement even when the caller links it.
     text = "exile them instead of putting them anywhere else"
     r = _dest().parse_instead_of(text, (0, len(text)), linked=True)
-    assert r.value is None and r.unmodelled.detail == "instead_of.replacement_effect"
+    assert r.value is None and r.unmodelled.detail == "destination.instead_of_replacement_effect"
 
 
 @pytest.mark.parametrize("text", [
@@ -236,9 +236,9 @@ def test_a_self_owner_possessive_is_accepted_in_a_destination():
     "into your hand blorp",
 ])
 def test_a_destination_phrase_with_unconsumed_tokens_is_unmodelled(text):
-    r = _whole(text)
+    r = _whole(text, lemma="put")
     assert r.value is None
-    assert r.unmodelled is not None and r.unmodelled.lemma
+    assert r.unmodelled is not None and r.unmodelled.lemma == "put"
 
 
 @pytest.mark.parametrize("text", [
