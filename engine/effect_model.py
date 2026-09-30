@@ -21,6 +21,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
+from functools import lru_cache
 from typing import Any, FrozenSet, Optional, Tuple
 
 
@@ -116,22 +117,35 @@ class Selector:
 
 
 # Value-typed FILTER support: exactly the (key, value) entries
-# `Selector.covers_object` evaluates. ANY_KEYWORD stands for any non-empty
-# keyword value. Any other entry ('controller': 'you', type keys, …) is
-# ignored by covers_object, so a spec that needs it is not executable.
-ANY_KEYWORD = "<any keyword>"
+# `Selector.covers_object` evaluates. ANY_KEYWORD stands for any value
+# covers_object can match a keyword against -- a `cards.Keyword` value
+# ('first_strike', never the printed 'first strike'). Any other entry
+# ('controller': 'you', a Ref controller, type keys, a printed or unknown
+# keyword, …) is ignored or never matched by covers_object, so a spec that
+# needs it is not executable.
+ANY_KEYWORD = "<any cards.Keyword value>"
 SUPPORTED_FILTER_VALUES: FrozenSet[Tuple[str, Any]] = frozenset({
     ("controller", "opponents"),
     ("without_keyword", ANY_KEYWORD),
 })
 
 
+@lru_cache(maxsize=1)
+def _keyword_values() -> FrozenSet[str]:
+    """The values covers_object compares keywords against (`k.value`)."""
+    from .cards import Keyword     # lazy: the effect model imports no card module
+    return frozenset(k.value for k in Keyword)
+
+
 def is_supported_filter_entry(key: str, value: Any) -> bool:
     """Does `Selector.covers_object` evaluate this FILTER entry?"""
     if key == "without_keyword":
-        return (isinstance(value, str) and bool(value)
-                and ("without_keyword", ANY_KEYWORD) in SUPPORTED_FILTER_VALUES)
-    return (key, value) in SUPPORTED_FILTER_VALUES
+        return (("without_keyword", ANY_KEYWORD) in SUPPORTED_FILTER_VALUES
+                and isinstance(value, str) and value in _keyword_values())
+    try:
+        return (key, value) in SUPPORTED_FILTER_VALUES
+    except TypeError:          # an unhashable value is no supported entry
+        return False
 
 
 # ── Modification ─────────────────────────────────────────────────────
@@ -171,11 +185,19 @@ _RULE_KINDS = frozenset({ModKind.PROHIBIT, ModKind.PERMIT, ModKind.LIMIT,
                          ModKind.COST_DELTA, ModKind.PREVENT_DAMAGE, ModKind.OBSERVE,
                          ModKind.REQUIRE})
 
-# The kinds some owner applies today (layers or a rule gate). The payload
-# vocabulary above is excluded until its owner lands.
-APPLIED_MODKINDS: FrozenSet[ModKind] = frozenset(ModKind) - frozenset({
-    ModKind.GRANT_ABILITY, ModKind.REMOVE_ALL_ABILITIES, ModKind.SWITCH_PT,
-    ModKind.SET_CONTROLLER, ModKind.REQUIRE})
+# The kinds some owner applies today, listed member by member and never
+# derived from ModKind: a kind added later is unapplied (refused by a
+# dispatcher) until its owner lands and it is listed here -- fail closed.
+# The payload vocabulary above is absent for that reason.
+APPLIED_MODKINDS: FrozenSet[ModKind] = frozenset({
+    # the layer system (continuous_effects, CR 613)
+    ModKind.SET_TYPES, ModKind.ADD_TYPES, ModKind.SET_COLORS,
+    ModKind.ADD_KEYWORDS, ModKind.REMOVE_KEYWORDS, ModKind.SET_BASE_PT,
+    ModKind.MODIFY_PT,
+    # the rule gate that owns the action (rules_query)
+    ModKind.PROHIBIT, ModKind.PERMIT, ModKind.LIMIT, ModKind.COST_DELTA,
+    ModKind.PREVENT_DAMAGE, ModKind.OBSERVE,
+})
 
 
 @dataclass(frozen=True)
