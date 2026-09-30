@@ -27,7 +27,7 @@ from typing import Optional
 import pytest
 
 from engine.effect_model import ModKind
-from engine.effect_spec import Verb, canonical
+from engine.effect_spec import Amount, AmountKind, Verb, canonical
 from engine.effect_grammar.sub import payload as P
 from engine.oracle_parser import strip_reminder_text
 
@@ -57,28 +57,51 @@ _FAMILIES = (
      re.compile(r"\b((?:gains?|loses?) (?!control|life|\d|x |that much).*)$")),
     ("prohibit", Verb.CONTINUOUS, "can't", re.compile(r"\b(can't .*)$")),
     ("becomes", Verb.CONTINUOUS, "become", re.compile(r"\b(becomes? .*)$")),
+    ("pay", Verb.PAY, "pay", re.compile(
+        r"\bpays? ((?:\{[^}]+\}|\d+ life|an amount of \{e\}"
+        r"|any amount of \{e\}).*)$")),
     ("keyword_action", Verb.KEYWORD_ACTION, "",
      re.compile(r"(?:^|\bthen |\byou |, )((?:%s)\b.*)$" % "|".join(
          re.escape(n) for n in sorted(P.KEYWORD_ACTION_NAMES, key=len,
                                       reverse=True)))),
 )
+# An ability word ("domain - ") is stripped by L2 before the cost modifier
+# is read; the stand-in strips a leading "<words> - " the same way.
 _COST_MOD_RE = re.compile(
-    r"^([^.]*? costs? (?:\{[^}]+\})+ (?:less|more) to (?:activate|cast).*)$")
+    r"^(?:[a-z' ]+ - )?"
+    r"([^.]*? costs? (?:\{[^}]+\})+ (?:less|more) to (?:activate|cast).*)$")
 
 # Typed share per family, measured 2026-09-30 on this branch's DB (22.7k
 # cards): mana 179/200 (89.5%), token 1100/1154 (95.3%), counters 806/838
-# (96.2%), energy 15/15, pt 1158/1160 (99.8%), keywords 325/407 (79.9%),
-# prohibit 260/324 (80.2%), becomes 285/643 (44.3%: "becomes tapped" and
+# (96.2%), energy 15/15, pt 1158/1160 (99.8%), keywords 322/407 (79.1%),
+# prohibit 186/324 (57.4%), becomes 285/643 (44.3%: "becomes tapped" and
 # "becomes a copy of" are a state and COPY, correctly not a type change),
-# keyword_action 108/111 (97.3%), cost_modifier 377/379 (99.5%). The slot
-# cut is a stand-in for L0-L3, so the denominators include non-payload
-# text. Floors sit a few points under the measurement: a regression fails,
-# a DB refresh does not.
+# keyword_action 108/111 (97.3%), cost_modifier 347/376 (92.3%), pay
+# 268/274 (97.8%: hybrid and phyrexian payments are Unmodelled until the
+# cost owner represents them). The slot cut is a stand-in for L0-L3, so
+# the denominators include non-payload text. Floors sit a few points under
+# the measurement: a regression fails, a DB refresh does not.
+#
+# prohibit fell from 260/324 when qualified prohibitions stopped counting
+# as typed: "can't be blocked by <filter>", "except by", "can't attack you",
+# "can't block alone" were full prohibitions with the qualifier in `rest`
+# (74 are now Unmodelled prohibit:qualifier). cost_modifier fell from
+# 377/379 when the subject table closed ("<ability word> - this spell" and
+# prefixed subjects were global reducers); the stand-in now strips an
+# ability word the way L2 does.
 _FLOORS = {
     "mana": 0.85, "token": 0.90, "counters": 0.92, "energy": 0.90,
-    "pt": 0.95, "keywords": 0.72, "prohibit": 0.72, "becomes": 0.38,
-    "keyword_action": 0.90, "cost_modifier": 0.95,
+    "pt": 0.95, "keywords": 0.72, "prohibit": 0.52, "becomes": 0.38,
+    "keyword_action": 0.90, "cost_modifier": 0.88, "pay": 0.92,
 }
+
+
+# Connectives a typed payload must have consumed or refused: a second
+# payload option (A19), "alone" (CR 506.5 attack/block alone), and an
+# evasion qualifier ("except by", "by more than one").
+_OWNED_CONNECTIVE_RE = re.compile(
+    r"^(?:or (?:a|an|%s|your choice)\b|alone\b|except by\b"
+    r"|by more than\b)" % _COUNT)
 
 
 def _normalise(template) -> str:
@@ -152,12 +175,19 @@ def test_the_payload_leaf_types_every_pool_payload_slot_deterministically(card_d
 
     total, typed = Counter(), Counter()
     unmodelled = Counter()
+    swallowed = []
     for fam, text, span, r in first:
         total[fam] += 1
         if r is None:
             continue
         assert not (r.value is not None and r.unmodelled is not None), text
         assert span[0] <= r.span[0] <= r.span[1] <= span[1], (text, r.span)
+        for typed_r in ((r,) if r.value is not None else ()) + r.alternatives:
+            assert span[0] <= typed_r.span[0] <= typed_r.span[1] <= span[1], (
+                text, typed_r.span)
+            if typed_r.value is not None and _OWNED_CONNECTIVE_RE.match(
+                    typed_r.rest):
+                swallowed.append((fam, text, typed_r.rest))
         if r.value is not None or r.alternatives:
             typed[fam] += 1
         elif r.unmodelled is not None:
@@ -168,7 +198,77 @@ def test_the_payload_leaf_types_every_pool_payload_slot_deterministically(card_d
         share = typed[fam] / total[fam]
         print(f"  {fam:15s} {typed[fam]:6d} / {total[fam]:6d}  {share:6.1%}")
     print("  top unmodelled:", unmodelled.most_common(12))
+    # A typed value is never plausible-but-broader: a connective the leaf
+    # owns (a second option, a qualifier) is never left in `rest`.
+    assert not swallowed, swallowed[:10]
     for fam, floor in _FLOORS.items():
         assert total[fam], fam
         assert typed[fam] / total[fam] >= floor, (
             fam, typed[fam], total[fam])
+
+
+# Witnesses: payload slots printed by registered-deck cards, with the exact
+# value the leaf must return. The share floors above count a slot as typed
+# whenever a value exists; these pin that the value is the printed rule, not
+# a plausible broader one (A19 shared tails, A8 cost rules and self-scoped
+# cost modifiers, qualified prohibitions). The card name only locates the
+# printed text in the DB; the leaf never sees it.
+def _witness(verb, lemma, text):
+    return P.parse_payload(_Entry(verb, lemma), text, (0, len(text)), None)
+
+
+@pytest.mark.timeout(120)
+def test_registered_deck_payload_witnesses_type_exactly_the_printed_rule(
+        card_db):
+    from engine.effect_model import Modification
+
+    def printed(card, slot):
+        text = _normalise(card_db.cards[card])
+        assert slot in text, (card, slot, text)
+        return slot
+
+    # A19: the duration is shared by both options (Practiced Offense).
+    slot = printed("Practiced Offense", "gains your choice of double strike "
+                   "or lifelink until end of turn")
+    r = _witness(Verb.CONTINUOUS, "gain", slot)
+    assert r.value is None and r.rest == "until end of turn"
+    assert [a.value for a in r.alternatives] == [
+        Modification(ModKind.ADD_KEYWORDS,
+                     data=(("keywords", (("double_strike", None),)),)),
+        Modification(ModKind.ADD_KEYWORDS,
+                     data=(("keywords", (("lifelink", None),)),))]
+    assert [a.rest for a in r.alternatives] == ["until end of turn"] * 2
+
+    # A8: a costed keyword grant leaves its cost to the rider.
+    for card in ("Snapcaster Mage", "Past in Flames"):
+        slot = printed(card, "gains flashback until end of turn")
+        r = _witness(Verb.CONTINUOUS, "gain", slot)
+        assert r.value == Modification(
+            ModKind.ADD_KEYWORDS, data=(("keywords", (("flashback", None),)),))
+        assert r.pending == (("cost_rule", "flashback"),)
+        assert r.rest == "until end of turn"
+
+    # A8: a self cost reduction under an ability word is never a global
+    # reducer; once L2 strips the ability word it is this spell's own.
+    for card, n in (("Leyline Binding", 1), ("Scion of Draco", 2)):
+        tail = ("this spell costs {%d} less to cast for each basic land "
+                "type among lands you control" % n)
+        slot = printed(card, "domain - " + tail)
+        assert P.parse_cost_modifier(slot, (0, len(slot))).value is None
+        r = P.parse_cost_modifier(tail, (0, len(tail)))
+        assert r.value == Modification(ModKind.COST_DELTA, data=(
+            ("amount", Amount(AmountKind.LITERAL, n=n)), ("cost_of", "cast"),
+            ("scope", "this_spell"), ("sign", -1)))
+        assert r.rest == "for each basic land type among lands you control"
+
+    # PROHIBIT: a qualified prohibition is Unmodelled, a two-action one
+    # names both actions.
+    for text in ("can't attack or block alone",
+                 "can't be blocked except by creatures with flying",
+                 "can't be blocked by more than one creature"):
+        r = _witness(Verb.CONTINUOUS, "can't", text)
+        assert r.value is None and r.unmodelled is not None, text
+    r = _witness(Verb.CONTINUOUS, "can't", "can't block or be blocked "
+                 "this turn")
+    assert r.value == Modification(ModKind.PROHIBIT, data=(
+        ("actions", ("block", "be_blocked")),))

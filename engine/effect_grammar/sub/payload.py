@@ -378,8 +378,8 @@ _PLAIN_KEYWORDS = (
     "devoid", "decayed", "cascade", "storm", "convoke", "banding", "phasing",
     "riot", "myriad", "melee", "mentor", "training", "provoke", "ascend",
     "rebound", "haunt", "unleash", "evolve", "extort", "dethrone", "soulbond",
-    "fuse", "undaunted", "improvise", "assist", "jump-start", "spectacle",
-    "flanking", "encore", "daybound", "nightbound", "ravenous", "compleated",
+    "fuse", "undaunted", "improvise", "assist", "jump-start", "retrace",
+    "daybound", "nightbound", "ravenous", "compleated",
     "enlist", "read ahead", "for mirrodin!", "living weapon", "totem armor",
     "umbra armor", "sunburst", "epic", "delve", "affinity for artifacts",
 )
@@ -389,17 +389,44 @@ _N_KEYWORDS = (
     "crew", "bloodthirst", "tribute", "vanishing", "fading", "backup",
     "amplify", "graft", "dredge", "ripple", "casualty", "squad", "offspring",
 )
+# CR 702 keywords whose ability carries a cost. Granted without a printed
+# cost ("gains flashback until end of turn") the cost is set by a rider the
+# linker reads ("... cost is equal to its mana cost", A8): the item is typed
+# and ("cost_rule", <name>) is left pending.
+_COSTED_KEYWORDS = (
+    "flashback", "escape", "unearth", "embalm", "eternalize", "madness",
+    "cycling", "kicker", "buyback", "evoke", "dash", "blitz", "disturb",
+    "overload", "ninjutsu", "equip", "echo", "megamorph", "morph",
+    "disguise", "foretell", "plot", "bestow", "emerge", "entwine", "miracle",
+    "outlast", "scavenge", "transmute", "reconfigure", "surge", "encore",
+    "spectacle", "prowl", "mutate",
+)
+# CR 702.11 / 702.16 qualities a hexproof / protection item may name. The
+# vocabulary is closed; a plural noun is a card type or subtype ("from
+# artifacts", "from zombies").
+_FROM_QUALITY = (
+    r"(?:the colou?r of your choice|the chosen colou?r|that colou?r"
+    r"|each colou?r|all colou?rs|everything|multicolou?red|monocolou?red"
+    r"|colou?rless|(?:white|blue|black|red|green)"
+    r"(?: (?:spells|creatures|permanents))?"
+    r"|(?!(?:its|this|has|is|was|as|us|always)\b)[a-z]+s)")
+# A quality ends at a boundary a later sub-grammar owns; "each color among
+# ...", "colorless or from ..." are qualified qualities the leaf does not type.
+_FROM_END = (r"(?=$|[,.;)]| and\b| until\b| this turn\b| as long as\b"
+             r"| for as long as\b| during\b)")
 _KEYWORD_ITEM_RE = re.compile(
-    r"(?P<quote>⟨q\d+⟩)"
-    r"|(?:protection|hexproof) from (?P<from>the color of your choice|each color|"
-    r"everything|[a-z]+(?: (?:spells|creatures|permanents))?)"
-    r"(?P<more>(?: and from [a-z]+)*)"
-    r"|ward (?P<ward>(?:%s)+|\d+)" % _SYM
+    r"(?:(?P<quote>⟨q\d+⟩)"
+    r"|(?:protection|hexproof) from (?P<from>%s)%s" % (_FROM_QUALITY, _FROM_END)
+    + r"(?P<more>(?: and from %s%s)*)" % (_FROM_QUALITY, _FROM_END)
+    + r"|ward (?P<ward>(?:%s)+|\d+)" % _SYM
     + r"|(?P<walk>(?:nonbasic |snow )?(?:land|island|swamp|mountain|forest|plains|desert)walk)"
     r"|(?P<nkw>%s) (?P<n>\d+|x)" % "|".join(re.escape(k) for k in _N_KEYWORDS)
-    + r"|(?P<plain>%s)" % "|".join(
+    + r"|(?P<ckw>%s)(?: (?P<ccost>(?:%s)+))?" % (
+        "|".join(re.escape(k) for k in sorted(_COSTED_KEYWORDS, key=len,
+                                              reverse=True)), _SYM)
+    + r"|(?P<plain>%s)(?! from\b)" % "|".join(
         re.escape(k) for k in sorted(set(_PLAIN_KEYWORDS), key=len, reverse=True))
-    + r"(?![a-z])")
+    + r")(?![\w/'+\-])")
 _LIST_SEP_RE = re.compile(r"(?:,? and |, )")
 
 KeywordList = Tuple[Tuple[str, Optional[str]], ...]
@@ -412,10 +439,13 @@ def _kw_name(printed: str) -> str:
 
 
 def _keyword_list(t: str, pos: int = 0
-                  ) -> Tuple[KeywordList, Tuple[str, ...], int]:
-    """Greedy keyword list at `pos`: (keywords, quoted spans, end)."""
+                  ) -> Tuple[KeywordList, Tuple[str, ...], int,
+                             Tuple[Tuple[str, str], ...]]:
+    """Greedy keyword list at `pos`: (keywords, quoted spans, end, pending
+    cost rules for costed keywords printed without a cost)."""
     kws: list = []
     quotes: list = []
+    cost_rules: list = []
     end = pos
     while True:
         m = _KEYWORD_ITEM_RE.match(t, pos)
@@ -427,14 +457,23 @@ def _keyword_list(t: str, pos: int = 0
             head = "protection" if t.startswith("protection", m.start()) \
                 else "hexproof"
             kws.append((head, m.group("from")))
-            for extra in re.findall(r" and from ([a-z]+)", m.group("more") or ""):
-                kws.append((head, extra))
+            for extra in re.finditer(r" and from (%s)%s" % (_FROM_QUALITY,
+                                                             _FROM_END),
+                                     m.group("more") or ""):
+                kws.append((head, extra.group(1)))
         elif m.group("ward") is not None:
             kws.append(("ward", m.group("ward")))
         elif m.group("walk") is not None:
             kws.append((_kw_name(m.group("walk")), None))
         elif m.group("nkw") is not None:
             kws.append((_kw_name(m.group("nkw")), m.group("n")))
+        elif m.group("ckw") is not None:
+            name = _kw_name(m.group("ckw"))
+            if m.group("ccost"):
+                kws.append((name, _braced(m.group("ccost"))))
+            else:
+                kws.append((name, None))
+                cost_rules.append(("cost_rule", name))
         else:
             kws.append((_kw_name(m.group("plain")), None))
         end = m.end()
@@ -442,7 +481,7 @@ def _keyword_list(t: str, pos: int = 0
         if sep is None or _KEYWORD_ITEM_RE.match(t, sep.end()) is None:
             break
         pos = sep.end()
-    return tuple(kws), tuple(quotes), end
+    return tuple(kws), tuple(quotes), end, tuple(cost_rules)
 
 
 # ── Tokens (CR 111) ────────────────────────────────────────────────────
@@ -467,10 +506,16 @@ _TOKEN_HEAD_RE = re.compile(
     r"(?:(?P<tname>[^,]+(?:, [^,]+)?), (?=a legendary\b))?"
     r"(?:(?P<count>a number of|that many|%s) )?(?P<body>.*?)\btokens?\b"
     % _COUNT_RE)
+# The copied object ends at its first boundary: the except rider, an entry
+# rider, a scaler, a following clause or sentence. What follows the object
+# (and its except rider) is the entry tail, then `rest`.
 _COPY_RE = re.compile(
     r"(?:(?P<count>a number of|that many|%s) )?(?P<tapped>tapped )?tokens? "
     r"that(?:'s| are) (?:a )?cop(?:y|ies) of (?P<obj>.+?)"
-    r"(?:, except (?P<exc>.+))?$" % _COUNT_RE)
+    r"(?=,? except\b| that(?:'s| are) tapped\b| tapped\b| for each\b"
+    r"| and (?:it|they|that|those|then|you|sacrifice|exile)\b|, then\b|[.;]|$)"
+    r"(?:,? except (?P<exc>[^.;]+?)(?= that(?:'s| are) tapped\b|[.;]|$))?"
+    % _COUNT_RE)
 _TOKEN_TAILS_RE = re.compile(
     r" (?:that's |that are )?(?P<entry>tapped and attacking|tapped)\b")
 _NAMED_RE = re.compile(r" (?:named )?(?P<name>⟨n\d+⟩)| named (?P<plain>[a-z][a-z' ,\-]*?)(?= with\b|$|[.,])")
@@ -516,15 +561,21 @@ def _token_rel(t: str) -> _Rel:
     m = _COPY_RE.match(t)
     if m:
         amount = _token_count(m.group("count"))
-        pending = [("copy_of", m.group("obj"))] if m.group("obj") != "~" else []
+        obj = m.group("obj").strip()
+        pending = [("copy_of", obj)] if obj != "~" else []
         if m.group("exc"):
-            pending.append(("copy_except", m.group("exc")))
+            pending.append(("copy_except", m.group("exc").strip()))
         if m.group("tapped"):
             pending.append(("entry", "tapped"))
+        end = m.end()
+        tm = _TOKEN_TAILS_RE.match(t, end)
+        if tm:
+            pending.append(("entry", tm.group("entry")))
+            end = tm.end()
         if m.group("count") == "a number of":
             pending.append(("amount", "a number of"))
-        copy_of = Ref(RefKind.SELF) if m.group("obj") == "~" else None
-        return (TokenSpec(copy_of=copy_of), None, len(t), amount,
+        copy_of = Ref(RefKind.SELF) if obj == "~" else None
+        return (TokenSpec(copy_of=copy_of), None, end, amount,
                 tuple(pending), ())
     m = _TOKEN_HEAD_RE.match(t)
     if m is None:
@@ -566,10 +617,11 @@ def _token_rel(t: str) -> _Rel:
         end = nm.end()
     wm = re.match(r" with ", t[end:])
     if wm:
-        kws, quotes, kend = _keyword_list(t, end + wm.end())
+        kws, quotes, kend, cost_rules = _keyword_list(t, end + wm.end())
         if kws or quotes:
             fields["keywords"] = kws
             pending.extend(("granted", q) for q in quotes)
+            pending.extend(cost_rules)
             end = kend
     tm = _TOKEN_TAILS_RE.match(t, end)
     if tm:
@@ -598,29 +650,60 @@ _CHOICE_OF_RE = re.compile(
     r"(?:(?:gains?|has|have|puts?|creates?|gets?) )?your choice of (?P<body>.+)$")
 _OR_SPLIT_RE = re.compile(r",? or |, ")
 _ALT_HEAD_RE = re.compile(r"^(?:a|an|%s|x) " % _COUNT_RE)
+# The first boundary after the last option that a trailing sub-grammar owns:
+# duration, object ("on it"), scaler, condition, or the clause's end. The
+# text from it on is shared by every option (A19), never the last one's.
+_ALT_TAIL_RE = re.compile(
+    r"(?: until\b| this turn\b| for as long as\b| as long as\b| on\b| onto\b"
+    r"| for each\b| if\b| unless\b| where\b| equal to\b| instead\b"
+    r"| under\b| to\b|[.,;])")
+
+# Option offsets (start, end) in the stripped text, plus the tail offset.
+_AltSplit = Tuple[Tuple[Tuple[int, int], ...], int]
 
 
-def _or_list(body: str) -> Tuple[str, ...]:
-    if " or " not in body:
-        return ()
-    return tuple(p.strip() for p in _OR_SPLIT_RE.split(body) if p.strip())
+def _or_split(t: str, start: int) -> _AltSplit:
+    """Split t[start:] into ', '/' or '-separated options up to the shared
+    tail. ((), len(t)) when there is no ' or '."""
+    last_or = t.rfind(" or ", start)
+    if last_or < 0:
+        return ((), len(t))
+    tail = _ALT_TAIL_RE.search(t, last_or + len(" or "))
+    end = tail.start() if tail else len(t)
+    opts = []
+    pos = start
+    for sep in _OR_SPLIT_RE.finditer(t, start, end):
+        if sep.start() > pos:
+            opts.append((pos, sep.start()))
+        pos = sep.end()
+    if end > pos:
+        opts.append((pos, end))
+    return (tuple(opts), end)
+
+
+def _split_alternatives(t: str) -> _AltSplit:
+    m = _CHOICE_OF_RE.match(t)
+    if m:
+        return _or_split(t, m.start("body"))
+    opts, end = _or_split(t, 0)
+    if len(opts) < 2:
+        return ((), len(t))
+    texts = [t[a:b] for a, b in opts]
+    heads = {o.rsplit(" ", 1)[-1] for o in texts}
+    if heads <= {"token", "tokens"} or heads <= {"counter", "counters"}:
+        if all(_ALT_HEAD_RE.match(o) for o in texts):
+            return (opts, end)
+    return ((), len(t))
 
 
 def parse_alternatives(text: str, span: Span) -> Tuple[str, ...]:
     """A19: the option texts of "your choice of X or Y" / "a Food token or a
-    Treasure token", chosen at resolution; () when the text is one payload."""
+    Treasure token", chosen at resolution; () when the text is one payload.
+    Trailing text a later sub-grammar owns (a duration, "on <object>", a
+    scaler) is shared by every option and is not part of the last one."""
     t = text.strip()
-    m = _CHOICE_OF_RE.match(t)
-    if m:
-        return _or_list(m.group("body"))
-    opts = _or_list(t)
-    if len(opts) < 2:
-        return ()
-    heads = {o.rsplit(" ", 1)[-1] for o in opts}
-    if heads <= {"token", "tokens"} or heads <= {"counter", "counters"}:
-        if all(_ALT_HEAD_RE.match(o) for o in opts):
-            return opts
-    return ()
+    opts, _ = _split_alternatives(t)
+    return tuple(t[a:b] for a, b in opts)
 
 
 # ── Modifications (CR 611-613) ─────────────────────────────────────────
@@ -642,10 +725,14 @@ _IN_ADDITION_RE = re.compile(
 _STILL_LAND_RE = re.compile(r"(?:,)? (?:that's|it's) still a land\b")
 _COLOR_OF_CHOICE_RE = re.compile(
     r"becomes? the colou?r (?:or colou?rs )?of your choice\b")
+# Longest rows first: a row is a prefix of the rows after it. A row's match
+# must end at a boundary a later sub-grammar owns (_PROHIBIT_BOUNDARY_RE);
+# anything else ("alone", "except by ...", "by more than one creature", a
+# second "or" action) is a qualifier the leaf does not type, so the clause
+# is Unmodelled rather than a broader prohibition than the printed rule.
 _PROHIBIT_ACTIONS = (
     ("attack or block", ("attack", "block")),
-    ("attack or block alone", None),
-    ("attack or be blocked", None),
+    ("block or be blocked", ("block", "be_blocked")),
     ("be blocked", ("be_blocked",)),
     ("be countered", ("be_countered",)),
     ("be attacked", ("be_attacked",)),
@@ -664,6 +751,13 @@ _PROHIBIT_ACTIONS = (
     ("cast", ("cast",)),
     ("play", ("play",)),
 )
+_PROHIBIT_ROW_RES = tuple((re.compile(phrase + r"\b"), actions)
+                          for phrase, actions in _PROHIBIT_ACTIONS)
+_PROHIBIT_BOUNDARY_RE = re.compile(
+    r"(?:$|[,.;]| this turn\b| this combat\b| for the rest of the game\b"
+    r"| until\b| during\b| for as long as\b"
+    r"| as long as\b| unless\b| if\b| while\b| each combat\b"
+    r"| and (?!(?:block|attack|be)\b))")
 _CANT_RE = re.compile(r"(?:can't|cannot) ")
 _LIMIT_RE = re.compile(r"(?:can't|cannot) (?P<act>draw|cast) more than "
                        r"(?P<n>%s) (?:cards?|spells?) each turn\b" % _COUNT_RE)
@@ -711,8 +805,8 @@ def _type_change_rel(t: str) -> Optional[_Rel]:
         data["colorless"] = True
     kws: KeywordList = ()
     if t.startswith(" with ", end):
-        kws, quotes, kend = _keyword_list(t, end + len(" with "))
-        if kws and not quotes:
+        kws, quotes, kend, cost_rules = _keyword_list(t, end + len(" with "))
+        if kws and not quotes and not cost_rules:
             end = kend
         else:
             kws = ()
@@ -763,20 +857,20 @@ def _modification_rel(t: str) -> _Rel:
         return (_mod(ModKind.SET_CONTROLLER), None, m.end(), None, (), ())
     m = _GAIN_RE.match(t)
     if m:
-        kws, quotes, end = _keyword_list(t, m.end())
+        kws, quotes, end, cost_rules = _keyword_list(t, m.end())
         if quotes and not kws:
             return (_mod(ModKind.GRANT_ABILITY, abilities=quotes), None, end,
                     None, (), ())
         if kws:
             return (_mod(ModKind.ADD_KEYWORDS, keywords=kws), None, end, None,
-                    tuple(("granted", q) for q in quotes), ())
+                    tuple(("granted", q) for q in quotes) + cost_rules, ())
     m = _LOSE_ALL_RE.match(t)
     if m:
         return (_mod(ModKind.REMOVE_ALL_ABILITIES), None, m.end(), None, (),
                 ())
     m = _LOSE_RE.match(t)
     if m:
-        kws, quotes, end = _keyword_list(t, m.end())
+        kws, quotes, end, _ = _keyword_list(t, m.end())
         if kws and not quotes:
             return (_mod(ModKind.REMOVE_KEYWORDS, keywords=kws), None, end,
                     None, (), ())
@@ -789,12 +883,11 @@ def _modification_rel(t: str) -> _Rel:
                      max=_count(m.group("n"))), None, m.end(), None, (), ())
     m = _CANT_RE.match(t)
     if m:
-        for phrase, actions in _PROHIBIT_ACTIONS:
-            am = re.compile(phrase + r"\b").match(t, m.end())
+        detail = "prohibit:action"
+        for row_re, actions in _PROHIBIT_ROW_RES:
+            am = row_re.match(t, m.end())
             if am is None:
                 continue
-            if actions is None:
-                break
             end = am.end()
             data: Dict[str, Any] = {}
             if actions in (("cast",), ("activate",), ("play",),
@@ -804,12 +897,15 @@ def _modification_rel(t: str) -> _Rel:
                 if obj:
                     data["filter"] = obj.group(1).strip()
                     end += obj.end()
+            if _PROHIBIT_BOUNDARY_RE.match(t, end) is None:
+                detail = "prohibit:qualifier"
+                continue
             if len(actions) == 1:
                 return (_mod(ModKind.PROHIBIT, action=actions[0], **data),
                         None, end, None, (), ())
             return (_mod(ModKind.PROHIBIT, actions=actions, **data), None,
                     end, None, (), ())
-        return (None, _um("can't", "prohibit:action"), 0, None, (), ())
+        return (None, _um("can't", detail), 0, None, (), ())
     m = _UNTAP_RE.match(t)
     if m:
         return (_mod(ModKind.PROHIBIT, action="untap"), None, m.end(), None,
@@ -863,22 +959,40 @@ _COST_MOD_RE = re.compile(
     r"(?P<act>activate|cast)\b" % _SYM)
 
 
+# Closed subject table. A self subject is exactly this spell / this ability
+# / ~ / it; a global subject names spells or abilities under a filter and
+# never names the object itself ("this spell", "this <object>'s ...
+# ability") and carries no prefix (an ability word "x - ", a cost "{t}:",
+# a condition "if ..., "). Anything else is Unmodelled, never widened into a
+# static reducer for all spells.
+_SELF_SPELL_SUBJECTS = frozenset({"this spell", "~", "it"})
+_SELF_ABILITY_RE = re.compile(r"^this ability$")
+_GLOBAL_SUBJECT_RE = re.compile(
+    r"^(?!this\b)(?!.*(?:\bthis (?:spell|ability)\b|(?:^|\s)~(?:\s|$)"
+    r"| - |[:,]))"
+    r"[a-z0-9 ,'/~\-]*?\b(?P<noun>spells?|abilit(?:y|ies))\b[a-z0-9 ,'/~\-]*$")
+
+
+def _cost_subject_scope(subject: str, act: str) -> Optional[str]:
+    if _SELF_ABILITY_RE.match(subject) or (subject == "it"
+                                           and act == "activate"):
+        return "this_ability"
+    if subject in _SELF_SPELL_SUBJECTS:
+        return "this_spell"
+    g = _GLOBAL_SUBJECT_RE.match(subject)
+    if g is None:
+        return None
+    return "spells" if g.group("noun").startswith("spell") else "abilities"
+
+
 @lru_cache(maxsize=1 << 15)
 def _cost_modifier_rel(t: str) -> Optional[_Rel]:
     m = _COST_MOD_RE.match(t)
     if m is None:
         return None
     subject = m.group("subject")
-    if subject.startswith("this ability") or subject == "it" and \
-            m.group("act") == "activate":
-        scope = "this_ability"
-    elif subject in ("this spell", "~", "it"):
-        scope = "this_spell"
-    elif "abilit" in subject:
-        scope = "abilities"
-    elif "spell" in subject:
-        scope = "spells"
-    else:
+    scope = _cost_subject_scope(subject, m.group("act"))
+    if scope is None:
         return (None, _um("cost", "cost_delta:subject"), 0, None, (), ())
     syms = _symbols(m.group("amt"))
     data: Dict[str, Any] = {"scope": scope, "cost_of": m.group("act"),
@@ -1007,10 +1121,43 @@ def _pay_rel(t: str) -> _Rel:
     if m is None:
         return (None, _um("pay", "pay:cost"), 0, None, (), ())
     from engine.oracle_parser import parse_activation_cost
-    return (freeze_cost(parse_activation_cost("pay " + m.group(0)
-                                              if m.group(0).endswith("life")
-                                              else m.group(0))),
-            None, m.end(), None, (), ())
+    printed = m.group(0)
+    snapshot = freeze_cost(parse_activation_cost(
+        "pay " + printed if printed.endswith("life") else printed))
+    if not _cost_owner_represents(printed, snapshot):
+        return (None, _um("pay", "pay:cost"), 0, None, (), ())
+    return (snapshot, None, m.end(), None, (), ())
+
+
+_MANA_FIELD = {"W": "white", "U": "blue", "B": "black", "R": "red",
+               "G": "green", "C": "colorless"}
+
+
+def _cost_owner_represents(printed: str, snapshot: CostSnapshot) -> bool:
+    """Does the cost owner's snapshot hold exactly the printed payment? A
+    symbol it drops (snow) or folds into generic (hybrid, phyrexian), or an
+    `unpayable` flag, makes the PAY payload Unmodelled rather than a
+    cheaper payment than the printed one."""
+    items = dict(snapshot.items)
+    if items.get("unpayable"):
+        return False
+    if printed.endswith("life"):
+        return True
+    want = {f: 0 for f in _MANA_FIELD.values()}
+    want["generic"] = 0
+    x_count = 0
+    for sym in _symbols(printed):
+        if sym.isdigit():
+            want["generic"] += int(sym)
+        elif sym == "X":
+            x_count += 1
+        elif sym in _MANA_FIELD:
+            want[_MANA_FIELD[sym]] += 1
+        else:                        # snow, hybrid, phyrexian
+            return False
+    mana = dict(items.get("mana", ()))
+    return (all(mana.get(f, 0) == n for f, n in want.items())
+            and items.get("x_count", 0) == x_count)
 
 
 def _emblem_rel(t: str) -> _Rel:
@@ -1029,20 +1176,40 @@ _DOUBLE_PREFIX_RE = re.compile(r"the number of (?:each kind of counter\b)?")
 
 
 def _alternatives(entry: Any, text: str, span: Span, prefix: str,
-                  options: Tuple[str, ...], facts: Any) -> SlotResult:
+                  split: _AltSplit, facts: Any) -> SlotResult:
+    """Each option typed on its own text (with the verb `prefix` a
+    continuous predicate needs), its span in the caller's coordinates; the
+    shared tail is the outer rest and every option's rest (A19)."""
+    options, tail_at = split
+    lead = len(text) - len(text.lstrip())
+    t = text.strip()
+    tail = t[tail_at:].strip(" ,.;")
     results = []
-    base = text.find(options[0]) if options else 0
-    for opt in options:
-        at = text.find(opt, base)
-        at = at if at >= 0 else base
-        results.append(parse_payload(entry, prefix + opt,
-                                     (span[0] + at - len(prefix),
-                                      span[0] + at + len(opt)), facts))
-        base = at + len(opt)
-    end = base
-    return SlotResult(span=(span[0], span[0] + end),
-                      rest=text[end:].strip(" ,.;"),
-                      alternatives=tuple(results))
+    for a, b in options:
+        opt = t[a:b]
+        at = span[0] + lead + a
+        r = parse_payload(entry, prefix + opt, (at - len(prefix), at + len(opt)),
+                          facts)
+        own = r.rest
+        results.append(SlotResult(
+            value=r.value, unmodelled=r.unmodelled,
+            span=(max(r.span[0], at), max(r.span[1], at)),
+            rest=" ".join(x for x in (own, tail) if x), amount=r.amount,
+            pending=r.pending, alternatives=r.alternatives))
+    return SlotResult(span=(span[0] + lead, span[0] + lead + tail_at),
+                      rest=tail, alternatives=tuple(results))
+
+
+# A disjunction of payloads left after one typed payload: the choice would
+# be silently dropped, so the slot is Unmodelled instead.
+_LEFTOVER_OR_RE = re.compile(r"^or (?:a|an|%s|x|your choice)\b" % _COUNT_RE)
+
+
+def _no_dropped_choice(r: SlotResult, lemma: str, family: str) -> SlotResult:
+    if r.value is not None and _LEFTOVER_OR_RE.match(r.rest):
+        return SlotResult(unmodelled=_um(lemma, family + ":alternative"),
+                          span=r.span, rest=r.rest)
+    return r
 
 
 def parse_payload(entry: Any, text: str, span: Span, facts: Any) -> SlotResult:
@@ -1051,6 +1218,7 @@ def parse_payload(entry: Any, text: str, span: Span, facts: Any) -> SlotResult:
     place in the host text. `facts` is reserved for face-dependent payloads
     and read by none today."""
     verb = getattr(entry, "verb", None)
+    lemma = getattr(entry, "lemma", "") or ""
     t = text.strip()
     if verb is Verb.ADD_MANA:
         return parse_mana(text, span)
@@ -1066,32 +1234,40 @@ def parse_payload(entry: Any, text: str, span: Span, facts: Any) -> SlotResult:
                 return SlotResult(value=r.value, unmodelled=r.unmodelled,
                                   span=(span[0], r.span[1]), rest=r.rest,
                                   amount=r.amount, pending=r.pending)
-        opts = parse_alternatives(t, span)
-        if opts:
-            return _alternatives(entry, text, span, "", opts, facts)
-        return parse_counters(text, span)
+        split = _split_alternatives(t)
+        if split[0]:
+            return _alternatives(entry, text, span, "", split, facts)
+        return _no_dropped_choice(parse_counters(text, span), lemma, "counter")
     if verb is Verb.CREATE_TOKEN:
-        opts = parse_alternatives(t, span)
-        if opts:
-            return _alternatives(entry, text, span, "", opts, facts)
-        return parse_token(text, span)
+        split = _split_alternatives(t)
+        if split[0]:
+            return _alternatives(entry, text, span, "", split, facts)
+        return _no_dropped_choice(parse_token(text, span), lemma, "token")
     if verb is Verb.CONTINUOUS:
         m = _CHOICE_OF_RE.match(t)
-        opts = parse_alternatives(t, span) if m else ()
-        if opts:
+        split = _split_alternatives(t) if m else ((), len(t))
+        if split[0]:
             verb_word = t.split(" ", 1)[0]
-            prefix = verb_word + " " if verb_word != "your" else ""
-            return _alternatives(entry, text, span, prefix, opts, facts)
+            prefix = (verb_word + " " if verb_word != "your"
+                      else lemma + " " if lemma else "")
+            return _alternatives(entry, text, span, prefix, split, facts)
         return parse_modification(entry, text, span)
     if verb is Verb.KEYWORD_ACTION:
         r = parse_keyword_action(text, span)
-        lemma = getattr(entry, "lemma", "")
         if r.value is None and lemma and not t.startswith(lemma):
-            rel = _keyword_action_rel((lemma + " " + t).strip())
+            joined = lemma + " " + t
+            rel = _keyword_action_rel(joined)
+            past_lemma = rel[2] - len(lemma) - 1
+            if rel[0] is not None and past_lemma > 0:
+                lead = len(text) - len(text.lstrip())
+                return SlotResult(
+                    value=rel[0],
+                    span=(span[0] + lead, span[0] + lead + past_lemma),
+                    rest=joined[rel[2]:].strip(" ,.;"))
             if rel[0] is not None:
-                return SlotResult(value=rel[0], span=(span[0], span[0] + max(
-                    0, rel[2] - len(lemma) - 1)), rest=(lemma + " " + t)[
-                        rel[2]:].strip(" ,.;"))
+                return SlotResult(
+                    unmodelled=_um(lemma, "keyword_action:nothing_consumed"),
+                    span=(span[0], span[0]), rest=t)
         return r
     if verb is Verb.PAY:
         return _finish(text, span, _pay_rel(t))

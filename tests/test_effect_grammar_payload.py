@@ -411,3 +411,174 @@ def test_the_payload_parse_is_a_pure_function_of_its_text():
     b = _tok(text)
     assert canonical(a) == canonical(b)
     hash(a)                                # frozen and hashable (A31)
+
+
+# ── Review fixes: shared tails, qualifiers, closed tables ─────────────
+
+def _cont(text, lemma="gain"):
+    return parse_payload(_Entry(Verb.CONTINUOUS, lemma), text,
+                         (0, len(text)), None)
+
+
+def test_an_alternative_shares_its_trailing_duration_with_every_option():
+    # A19: the duration after the last option qualifies the choice, not the
+    # last option alone; it is the outer rest and every option's rest.
+    text = "gains your choice of double strike or lifelink until end of turn"
+    r = _cont(text)
+    assert r.value is None and r.rest == "until end of turn"
+    kws = [a.value.get("keywords") for a in r.alternatives]
+    assert kws == [(("double_strike", None),), (("lifelink", None),)]
+    assert [a.rest for a in r.alternatives] == ["until end of turn"] * 2
+    # Each option's span covers exactly that option's text.
+    assert [text[slice(*a.span)] for a in r.alternatives] == [
+        "double strike", "lifelink"]
+
+
+def test_an_alternative_shares_its_trailing_object_with_every_option():
+    text = "your choice of a +1/+1 counter or a flying counter on it"
+    r = parse_payload(_Entry(Verb.PUT_COUNTERS, "put"), text,
+                      (0, len(text)), None)
+    assert r.rest == "on it"
+    assert [a.value.kinds for a in r.alternatives] == [("+1/+1",),
+                                                       ("flying",)]
+    assert [a.rest for a in r.alternatives] == ["on it", "on it"]
+
+
+@pytest.mark.parametrize("text,rest", [
+    ("a food token or a treasure token.", ""),
+    ("a food token or a treasure token for each opponent",
+     "for each opponent"),
+])
+def test_a_token_alternative_is_recognised_before_a_trailing_scaler(text,
+                                                                    rest):
+    r = _tok(text)
+    assert r.value is None
+    assert [a.value.predefined for a in r.alternatives] == ["food",
+                                                            "treasure"]
+    assert r.rest == rest
+
+
+def test_a_counter_alternative_is_recognised_before_its_object():
+    text = "a +1/+1 counter or a flying counter on it"
+    r = parse_payload(_Entry(Verb.PUT_COUNTERS, "put"), text,
+                      (0, len(text)), None)
+    assert r.value is None
+    assert [a.value.kinds for a in r.alternatives] == [("+1/+1",),
+                                                       ("flying",)]
+    assert r.rest == "on it"
+
+
+def test_an_unrecognised_payload_disjunction_is_unmodelled_not_one_option():
+    # "<payload> or <payload>" left after one typed payload would silently
+    # drop the choice: the slot is Unmodelled instead.
+    text = "a 1/1 white soldier creature token or a clue token with ⟨q0⟩"
+    r = _tok(text)
+    assert r.value is None
+    assert r.unmodelled is not None or r.alternatives
+
+
+def test_a_prohibition_with_an_unowned_qualifier_is_unmodelled():
+    for text in ("can't attack or block alone",
+                 "can't be blocked except by creatures with flying",
+                 "can't be blocked by more than one creature"):
+        r = _cont(text, "can't")
+        assert r.value is None and r.unmodelled is not None, (text, r)
+
+
+def test_a_two_action_prohibition_types_both_actions():
+    r = _cont("can't block or be blocked this turn", "can't")
+    assert r.value.kind is ModKind.PROHIBIT
+    assert r.value.get("actions") == ("block", "be_blocked")
+    assert r.rest == "this turn"
+    r = _cont("can't attack or block this turn", "can't")
+    assert r.value.get("actions") == ("attack", "block")
+    assert r.rest == "this turn"
+
+
+def test_a_copy_token_object_ends_at_its_sentence():
+    r = _tok("a token that's a copy of target creature you control. it gains "
+             "haste. sacrifice it at the beginning of the next end step")
+    assert ("copy_of", "target creature you control") in r.pending
+    assert r.rest.startswith("it gains haste")
+
+
+def test_a_copy_token_of_self_keeps_its_ref_and_entry_rider():
+    r = _tok("a token that's a copy of ~ that's tapped and attacking")
+    assert r.value.copy_of == Ref(RefKind.SELF)
+    assert ("entry", "tapped and attacking") in r.pending
+    assert not any(k == "copy_of" for k, _ in r.pending)
+    assert r.rest == ""
+
+
+@pytest.mark.parametrize("text", [
+    "has protection from each of your opponents",
+    "gains annihilator 2x",
+    "has hexproof from each of your opponents",
+])
+def test_a_keyword_item_outside_the_closed_vocabulary_is_unmodelled(text):
+    r = _cont(text)
+    assert r.value is None and r.unmodelled is not None, r
+
+
+def test_a_protection_quality_from_the_closed_vocabulary_is_typed():
+    r = _cont("gains protection from the color of your choice until end of "
+              "turn")
+    assert r.value.get("keywords") == (("protection",
+                                        "the color of your choice"),)
+    assert _cont("has protection from artifacts").value.get("keywords") == (
+        ("protection", "artifacts"),)
+
+
+@pytest.mark.parametrize("cost", ["{s}", "{b/p}", "{2/w}", "{w/u}"])
+def test_a_pay_cost_the_cost_owner_cannot_represent_is_unmodelled(cost):
+    r = parse_payload(_Entry(Verb.PAY, "pay"), cost, (0, len(cost)), None)
+    assert r.value is None and r.unmodelled is not None, r
+
+
+def test_a_representable_pay_cost_is_a_cost_snapshot():
+    from engine.effect_spec import CostSnapshot
+    r = parse_payload(_Entry(Verb.PAY, "pay"), "{2}{r}", (0, 6), None)
+    assert isinstance(r.value, CostSnapshot)
+
+
+@pytest.mark.parametrize("subject", [
+    "domain - this spell", "this spell and ~", "a creature"])
+def test_a_cost_modifier_subject_outside_the_table_is_unmodelled(subject):
+    text = subject + " costs {1} less to cast"
+    r = parse_cost_modifier(text, (0, len(text)))
+    assert r.value is None and r.unmodelled is not None, r
+
+
+def test_a_global_cost_modifier_names_spells_or_abilities():
+    r = parse_cost_modifier(
+        "the first instant spell you cast each turn costs {1} less to cast",
+        (0, 66))
+    assert r.value.get("scope") == "spells"
+    r = parse_cost_modifier(
+        "activated abilities of creatures you control cost {1} less to "
+        "activate", (0, 71))
+    assert r.value.get("scope") == "abilities"
+
+
+def test_a_keyword_action_fallback_that_consumes_nothing_is_unmodelled():
+    r = parse_payload(_Entry(Verb.KEYWORD_ACTION, "explore"), "it explores",
+                      (0, 11), None)
+    assert r.value is None and r.unmodelled is not None
+    r = parse_payload(_Entry(Verb.KEYWORD_ACTION, "amass"), "zombies 2",
+                      (0, 9), None)
+    assert r.value == KeywordAction(name="amass", amount=_lit(2),
+                                    subtype="zombie")
+    assert r.span[1] > r.span[0]
+
+
+def test_a_costed_keyword_grant_leaves_its_cost_for_the_cost_rule():
+    # A8: "gains flashback" with no printed cost takes its cost from the
+    # "flashback cost is equal to its mana cost" rider, linked later.
+    r = _cont("gains flashback until end of turn")
+    assert r.value.kind is ModKind.ADD_KEYWORDS
+    assert r.value.get("keywords") == (("flashback", None),)
+    assert ("cost_rule", "flashback") in r.pending
+    assert r.rest == "until end of turn"
+    r = _cont("has flashback {2}{r}")
+    assert r.value.get("keywords") == (("flashback", "{2}{R}"),)
+    assert r.pending == ()
