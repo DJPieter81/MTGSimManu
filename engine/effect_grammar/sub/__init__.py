@@ -85,6 +85,7 @@ LEAF_EDGES = {
     "payload": frozenset({"duration"}),
     "dest": frozenset({"payload"}),
     "filter": frozenset({"payload"}),
+    "target": frozenset({"dest"}),
 }
 
 
@@ -156,6 +157,8 @@ def unmodelled(stage, lemma: str, leaf: str, code: str,
 def clear_caches() -> None:
     """Clear every leaf's memo caches (the load driver calls this once the
     grammar pass finishes)."""
-    from engine.effect_grammar.sub import dest, duration, filter, payload
-    for leaf in (duration, payload, dest, filter):
+    from engine.effect_grammar.sub import (
+        dest, duration, filter, payload, target,
+    )
+    for leaf in (duration, payload, dest, filter, target):
         leaf.clear_caches()
