@@ -27,6 +27,7 @@ its polarity (A21).
 from __future__ import annotations
 
 import dataclasses
+from collections.abc import Mapping as _AbcMapping
 from dataclasses import dataclass
 from enum import Enum
 from types import MappingProxyType
@@ -613,29 +614,57 @@ class AbilityEffects:
     restrictions: Tuple[str, ...] = ()
 
 
+# Payload fields that hold specs of the SAME host (walked by iter_specs):
+# a keyword action's rules-English expansion and a token copy's exceptions.
+# A payload's hosts (SubAbility.host, Granted.hosts, TokenSpec.granted) are
+# other hosts, reached by the host walk instead.
+PAYLOAD_SPEC_FIELDS: Mapping[type, str] = MappingProxyType({
+    KeywordAction: "expansion",
+    TokenSpec: "copy_except",
+})
+
+
 def iter_specs(specs: Tuple[EffectSpec, ...]) -> Iterator[EffectSpec]:
-    """Pre-order over specs and their nested branches (then, otherwise,
-    alternatives, keyword-action expansions); sub-ability hosts are not
-    entered."""
+    """Pre-order over specs and every spec nested in them: their branches
+    (then, otherwise, alternatives) and the specs their payloads carry
+    (PAYLOAD_SPEC_FIELDS). Sub-ability and granted hosts are not entered."""
     for s in specs:
         yield s
         yield from iter_specs(s.then)
         yield from iter_specs(s.otherwise)
         yield from iter_specs(s.alternatives)
-        if isinstance(s.payload, KeywordAction):
-            yield from iter_specs(s.payload.expansion)
+        field_name = PAYLOAD_SPEC_FIELDS.get(type(s.payload))
+        if field_name is not None:
+            yield from iter_specs(getattr(s.payload, field_name))
 
 
-def _nested_hosts(host: AbilityEffects, include_sub: bool,
-                  include_granted: bool):
-    for s in iter_specs(host.specs):
-        p = s.payload
-        if include_sub and isinstance(p, SubAbility):
-            yield p.host
-        elif include_granted and isinstance(p, Granted):
-            yield from p.hosts
-        elif include_granted and isinstance(p, TokenSpec):
-            yield from p.granted
+def _walk_hosts(faces, include_granted: bool, include_sub: bool
+                ) -> Iterator[Tuple[AbilityEffects, Tuple[AbilityEffects, ...]]]:
+    """(host, creators) in pre-order: each host, then the sub-ability (and,
+    on request, granted) hosts its specs create, then its modes.
+
+    `creators` are the hosts besides its own whose specs a host's RESULT
+    refs may name (invariant 3): a sub-ability host's creating host and, in
+    turn, that host's creators (the A34 snapshot chain). A mode shares its
+    modal host's creators; a granted ability is an ability of its own and
+    has none."""
+    def _visit(h: AbilityEffects, creators):
+        yield h, creators
+        for s in iter_specs(h.specs):
+            p = s.payload
+            if include_sub and isinstance(p, SubAbility):
+                yield from _visit(p.host, (h,) + creators)
+            elif include_granted and isinstance(p, Granted):
+                for g in p.hosts:
+                    yield from _visit(g, ())
+            elif include_granted and isinstance(p, TokenSpec):
+                for g in p.granted:
+                    yield from _visit(g, ())
+        for m in h.modes:
+            yield from _visit(m, creators)
+    for face in faces:
+        for h in face:
+            yield from _visit(h, ())
 
 
 @dataclass(**_FROZEN)
@@ -688,15 +717,8 @@ class CardEffects:
              include_sub: bool = True) -> Iterator[AbilityEffects]:
         """Pre-order over every host: each host, then the sub-ability (and,
         on request, granted) hosts its specs create, then its modes."""
-        def _visit(h: AbilityEffects):
+        for h, _ in _walk_hosts(self.faces, include_granted, include_sub):
             yield h
-            for n in _nested_hosts(h, include_sub, include_granted):
-                yield from _visit(n)
-            for m in h.modes:
-                yield from _visit(m)
-        for face in self.faces:
-            for h in face:
-                yield from _visit(h)
 
     def unmodelled(self) -> Tuple[Tuple[AbilityEffects, EffectSpec], ...]:
         return tuple((h, s) for h in self.walk() for s in iter_specs(h.specs)
@@ -712,9 +734,41 @@ WIDENING = "WIDENING"      # the requirement admits objects the text excludes
 NARROWING = "NARROWING"    # the requirement excludes objects the text admits
 UNPARSED = "UNPARSED"      # slot tokens that were not consumed; never tolerable
 
-# Exact codes, and parameterised families written '<prefix>:*' (the
-# parameter must be non-empty).
-RESIDUE_CODES: Mapping[str, str] = MappingProxyType({
+class _ResidueCodes(_AbcMapping):
+    """The residue vocabulary as a read-only Mapping code -> polarity.
+
+    Entries are exact codes and parameterised families declared as
+    '<prefix>:*'. A family resolves every '<prefix>:<param>' with a
+    non-empty param, so `code in RESIDUE_CODES`, `RESIDUE_CODES[code]` and
+    `.get(code)` answer for real codes ('target.keyword:flying') exactly as
+    for exact ones. Iteration yields the declared entries."""
+    __slots__ = ("_table",)
+
+    def __init__(self, table: Mapping[str, str]):
+        self._table = MappingProxyType(dict(table))
+
+    def __getitem__(self, code: Any) -> str:
+        if isinstance(code, str):
+            polarity = self._table.get(code)
+            if polarity is None:
+                prefix, sep, param = code.partition(":")
+                if sep and param:
+                    polarity = self._table.get(prefix + ":*")
+            if polarity is not None:
+                return polarity
+        raise KeyError(code)
+
+    def __iter__(self) -> Iterator[str]:
+        return iter(self._table)
+
+    def __len__(self) -> int:
+        return len(self._table)
+
+    def __repr__(self) -> str:
+        return f"RESIDUE_CODES({dict(self._table)!r})"
+
+
+RESIDUE_CODES: Mapping[str, str] = _ResidueCodes({
     "target.scope:opponent": WIDENING,
     "target.scope:not_you": WIDENING,
     "target.exclude_source": WIDENING,
@@ -735,16 +789,9 @@ RESIDUE_CODES: Mapping[str, str] = MappingProxyType({
 })
 
 
-def residue_polarity(code: str) -> Optional[str]:
+def residue_polarity(code: Any) -> Optional[str]:
     """The polarity of a residue code, or None when it is not a code."""
-    if not isinstance(code, str):
-        return None
-    if code in RESIDUE_CODES:
-        return RESIDUE_CODES[code]
-    prefix, sep, param = code.partition(":")
-    if sep and param:
-        return RESIDUE_CODES.get(prefix + ":*")
-    return None
+    return RESIDUE_CODES.get(code)
 
 
 # ── Canonical form (F10) ───────────────────────────────────────────────
@@ -766,7 +813,7 @@ def canonical(obj: Any) -> str:
         return "(" + ",".join(canonical(x) for x in obj) + ")"
     if isinstance(obj, list):
         return "[" + ",".join(canonical(x) for x in obj) + "]"
-    if isinstance(obj, (dict, MappingProxyType)):
+    if isinstance(obj, _AbcMapping):
         return "{" + ",".join(sorted(f"{canonical(k)}:{canonical(v)}"
                                      for k, v in obj.items())) + "}"
     return f"<{type(obj).__name__}>"
@@ -777,7 +824,7 @@ def canonical(obj: Any) -> str:
 SCHEMA_INVARIANTS: Tuple[str, ...] = (
     "principal",     # 1. at most one principal; actor-only verbs have none
     "target_slot",   # 2. target set iff target_slot set, and is host.targets[slot]
-    "ref_order",     # 3. Ref(RESULT).index and replaces seqs precede the spec
+    "ref_order",     # 3. refs point backwards and never cross hosts (see _check)
     "unmodelled",    # 4. UNMODELLED iff an Unmodelled payload, with raw text
     "payload",       # 5. CONTINUOUS: Modification; CREATE_TRIGGER: SubAbility, no duration
     "duration",      # 6. duration only on CONTINUOUS, EXILE UNTIL_LEAVES, PLAYER_COUNTERS
@@ -785,16 +832,16 @@ SCHEMA_INVARIANTS: Tuple[str, ...] = (
     "immutable",     # 8. hashable, no mutable object reachable
 )
 
-# Verbs whose only participant is the acting player(s) (the lexicon's
-# "player" role). A targeted player of such a verb is its actor, designated
-# through targeting (CR 115.1), so it may occupy the target slot; no other
-# principal is allowed.
+# Verbs whose only participant is the acting player(s) -- the lexicon's
+# "player" role. They have no principal (invariant 1): a targeted player acts
+# through `actor=Ref(TARGET, k)`, its requirement only in the owning host's
+# `targets` (CR 115.1), so "target player draws two cards" has exactly one
+# encoding.
 ACTOR_ONLY_VERBS: FrozenSet[Verb] = frozenset({
     Verb.SHUFFLE, Verb.LOSE_LIFE, Verb.GAIN_LIFE, Verb.SET_LIFE,
     Verb.EXCHANGE_LIFE, Verb.DRAW, Verb.MILL, Verb.SCRY, Verb.SURVEIL,
     Verb.SEARCH, Verb.PLAYER_COUNTERS, Verb.ADD_MANA, Verb.CREATE_EMBLEM,
     Verb.EXTRA_TURN, Verb.END_TURN, Verb.SKIP})
-_PLAYER_TARGET_TYPES = frozenset({"player", "opponent"})
 
 _IMMUTABLE_LEAVES = (type(None), bool, int, float, str, bytes, Enum)
 
@@ -847,7 +894,12 @@ _SPEC_OWN_FIELDS = tuple(f for f in EffectSpec.__dataclass_fields__
                          if f not in ("then", "otherwise", "alternatives"))
 
 
-def _check(spec: EffectSpec, host: Optional[AbilityEffects]) -> Optional[str]:
+def _host_seqs(host: AbilityEffects) -> FrozenSet[int]:
+    return frozenset(s.seq for s in iter_specs(host.specs))
+
+
+def _check(spec: EffectSpec, host: Optional[AbilityEffects],
+           creators: Tuple[AbilityEffects, ...]) -> Optional[str]:
     verb = spec.verb
     if not isinstance(verb, Verb):
         return "invalid:verb"
@@ -856,12 +908,8 @@ def _check(spec: EffectSpec, host: Optional[AbilityEffects]) -> Optional[str]:
                   if getattr(spec, n) is not None]
     if len(principals) > 1:
         return "principal:" + "+".join(principals)
-    if verb in ACTOR_ONLY_VERBS:
-        if spec.subject is not None or spec.ref is not None:
-            return "principal:actor_only"
-        t = spec.target
-        if t is not None and not (t.types and t.types <= _PLAYER_TARGET_TYPES):
-            return "principal:actor_only_target"
+    if principals and verb in ACTOR_ONLY_VERBS:
+        return "principal:actor_only"
     # 2. target_slot
     if (spec.target is None) != (spec.target_slot is None):
         return "target_slot:unpaired"
@@ -873,14 +921,34 @@ def _check(spec: EffectSpec, host: Optional[AbilityEffects]) -> Optional[str]:
             return "target_slot:out_of_range"
         if host.targets[k] is not spec.target:
             return "target_slot:not_host_target"
-    # 3. ref_order
+    # 3. ref_order: a RESULT index and a replaces seq name an EARLIER spec
+    # of this host; a RESULT index may also name a spec of a host that
+    # created this sub-ability host (the A34 snapshot). A TARGET index names
+    # one of this host's own targets. LINKED (CR 607) and the other kinds
+    # are not host-relative. Without a host nothing can be resolved.
     for name in _SPEC_OWN_FIELDS:
         for r in _refs(getattr(spec, name)):
-            if r.kind is RefKind.RESULT and not (
-                    isinstance(r.index, int) and 0 <= r.index < spec.seq):
-                return "ref_order:result"
-    if any(not isinstance(s, int) or not 0 <= s < spec.seq for s in spec.replaces):
-        return "ref_order:replaces"
+            if r.kind is RefKind.RESULT:
+                if not (isinstance(r.index, int) and 0 <= r.index < spec.seq):
+                    return "ref_order:result"
+                if host is None:
+                    return "ref_order:no_host"
+                if not any(r.index in _host_seqs(h) for h in (host,) + creators):
+                    return "ref_order:cross_host"
+            elif r.kind is RefKind.TARGET:
+                if not isinstance(r.index, int):
+                    return "ref_order:target"
+                if host is None:
+                    return "ref_order:no_host"
+                if not 0 <= r.index < len(host.targets):
+                    return "ref_order:cross_host"
+    for s in spec.replaces:
+        if not (isinstance(s, int) and 0 <= s < spec.seq):
+            return "ref_order:replaces"
+        if host is None:
+            return "ref_order:no_host"
+        if s not in _host_seqs(host):
+            return "ref_order:cross_host"
     # 4. unmodelled
     is_um = isinstance(spec.payload, Unmodelled)
     if (verb is Verb.UNMODELLED) != is_um:
@@ -903,7 +971,7 @@ def _check(spec: EffectSpec, host: Optional[AbilityEffects]) -> Optional[str]:
         return "duration"
     # 7. residue
     for code in spec.residue:
-        if residue_polarity(code) is None:
+        if code not in RESIDUE_CODES:
             return f"residue:{code}"
     # 8. immutable
     where = find_mutable(spec)
@@ -916,36 +984,55 @@ def _check(spec: EffectSpec, host: Optional[AbilityEffects]) -> Optional[str]:
     return None
 
 
-def validate_spec(spec: Any, host: Any = None) -> Optional[str]:
+def validate_spec(spec: Any, host: Any = None, parents: Any = ()) -> Optional[str]:
     """The first violated schema invariant of `spec` inside its innermost
     owning host, as '<rule>[:<detail>]' (rule in SCHEMA_INVARIANTS), or None.
-    Nested branch specs are checked on their own. Never raises."""
+    `parents` are the hosts that created a sub-ability `host`, innermost
+    first: its RESULT refs may name their specs (invariant 3). Nested branch
+    specs are checked on their own. Never raises."""
     try:
         if not isinstance(spec, EffectSpec):
             return "invalid:not_a_spec"
-        return _check(spec, host if isinstance(host, AbilityEffects) else None)
+        creators = (tuple(p for p in parents if isinstance(p, AbilityEffects))
+                    if isinstance(parents, (tuple, list)) else ())
+        return _check(spec, host if isinstance(host, AbilityEffects) else None,
+                      creators)
     except Exception as exc:          # a malformed value must not escape
         return f"invalid:{type(exc).__name__}"
 
 
-def enforce_invariants(spec: EffectSpec, host: Any = None) -> EffectSpec:
+def _well_formed_span(span: Any) -> Tuple[int, int]:
+    if (isinstance(span, (tuple, list)) and len(span) == 2
+            and all(isinstance(x, int) for x in span)):
+        return (span[0], span[1])
+    return (0, 0)
+
+
+def enforce_invariants(spec: EffectSpec, host: Any = None,
+                       parents: Any = ()) -> EffectSpec:
     """`spec` if it satisfies the invariants, else UNMODELLED(INVALID) with
-    the violated rule as detail, keeping seq, span and raw."""
-    rule = validate_spec(spec, host)
+    the violated rule as detail. seq, span and raw are carried over when
+    well-formed and replaced when not (0, (0, 0), '<lemma>'), so the lowered
+    spec itself satisfies every invariant -- a violation in one of those
+    fields never survives the lowering."""
+    rule = validate_spec(spec, host, parents)
     if rule is None:
         return spec
     verb = getattr(spec, "verb", None)
     lemma = verb.value if isinstance(verb, Verb) else ""
-    raw = getattr(spec, "raw", "") or f"<{lemma or 'spec'}>"
+    raw = getattr(spec, "raw", None)
+    seq = getattr(spec, "seq", 0)
     return EffectSpec(verb=Verb.UNMODELLED,
                       payload=Unmodelled(Stage.INVALID, lemma=lemma, detail=rule),
-                      seq=getattr(spec, "seq", 0), span=getattr(spec, "span", (0, 0)),
-                      raw=raw)
+                      seq=seq if isinstance(seq, int) else 0,
+                      span=_well_formed_span(getattr(spec, "span", None)),
+                      raw=raw if isinstance(raw, str) and raw else f"<{lemma or 'spec'}>")
 
 
 def validate_card_effects(effects: Any) -> Optional[str]:
     """Invariant 8 on the whole value, then every spec of every host
-    (sub-ability and granted hosts included). None when all hold."""
+    (sub-ability and granted hosts included, each with the hosts that
+    created it in view). None when all hold."""
     try:
         if not isinstance(effects, CardEffects):
             return "immutable:not_card_effects"
@@ -953,9 +1040,10 @@ def validate_card_effects(effects: Any) -> Optional[str]:
         if where is not None:
             return f"immutable:{where}"
         hash(effects)
-        for h in effects.walk(include_granted=True, include_sub=True):
+        for h, creators in _walk_hosts(effects.faces, include_granted=True,
+                                       include_sub=True):
             for s in iter_specs(h.specs):
-                rule = validate_spec(s, h)
+                rule = validate_spec(s, h, creators)
                 if rule is not None:
                     return f"{rule} @face{h.face}/host{h.index}/seq{s.seq}"
         return None

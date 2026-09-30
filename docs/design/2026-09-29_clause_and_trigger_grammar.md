@@ -550,15 +550,20 @@ class CardEffects:
     def unmodelled(self): ...
 
 EMPTY_EFFECTS = CardEffects()
-RESIDUE_CODES: Mapping[str, str]   # code -> 'WIDENING' | 'NARROWING' | 'UNPARSED'
+RESIDUE_CODES: Mapping[str, str]   # code -> 'WIDENING' | 'NARROWING' | 'UNPARSED'; a family declared
+                                   # '<prefix>:*' resolves every '<prefix>:<param>' through in / [] / get
 def canonical(obj) -> str: ...
-def validate_spec(spec, host) -> Optional[str]: ...
+def validate_spec(spec, host, parents=()) -> Optional[str]: ...   # parents: the hosts that created a sub-ability host
 ```
 
 **Invariants.** `validate_spec` checks these. A violation lowers the spec to `UNMODELLED(INVALID, detail=<rule>)` and never raises.
 1. At most one principal participant is set. Actor-only verbs have none.
 2. `target` is set exactly when `target_slot` is set, and `owning_host.targets[target_slot] is target`, where the owning host is the innermost host, including a sub-ability host.
-3. Every `Ref(RESULT).index` and every `replaces` seq is lower than the spec's own seq. Refs never cross hosts, except LINKED and refs from a sub-ability host to its parent's specs; the latter are captured in the snapshot (A34).
+3. Every `Ref(RESULT).index` and every `replaces` seq is lower than the spec's own seq. Refs never cross hosts, except LINKED and refs from a sub-ability host to its parent's specs; the latter are captured in the snapshot (A34). Precisely:
+   - a `replaces` seq names a spec of the same host;
+   - a RESULT index names a spec of the same host or of a host that created this sub-ability host, transitively; a MODE host shares its modal host's creators, and a GRANTED host (an ability of its own) has none;
+   - a TARGET index names one of the owning host's own `targets`;
+   - `validate_spec(spec, host, parents)` takes the creating hosts, and a host-relative ref with no host is a violation (`ref_order:no_host`).
 4. UNMODELLED has an `Unmodelled` payload and non-empty `raw`.
 5. CONTINUOUS has a `Modification` payload. CREATE_TRIGGER has a `SubAbility` payload and no duration.
 6. `duration` is set only on CONTINUOUS, on EXILE with UNTIL_LEAVES, or on PLAYER_COUNTERS.
