@@ -6101,3 +6101,69 @@ Leads recorded: `position_value`'s card term (a card ≈ 1% of a kill);
 "deals N damage to target creature" projected as face damage when no
 creature is present (burn branch); `target_solver` parses no plural target;
 activation ordered against spells inside the main-phase planner.
+
+**S4c follow-ups** — `4e70d13` a quoted ability a loyalty line grants is not
+its effect (CR 113.1a / 114.4; 12 emblem-only lines had resolved their
+granted ability at once — loyalty unclassified 382 → 394, raised
+deliberately); `1a8fa66` a directly built walker types its clauses like a
+loaded one; `082abc9` anchor: three turn-only drifts refreshed (winners
+unchanged; first divergence on 4/5c vs Pinnacle s50500 is T10 Wrenn and Six
+taking +1 over the −1 ping on Memnite).
+
+**S4c measured (same seeds, n=20, pinned worktrees `9b1abd4` → `082abc9`):**
+Azorius Control 33.1 → **30.0 (−3.1)**, Ruby Storm 24.0 → 22.1, Dimir
+Midrange 45.4 → 44.8, Jeskai Blink 49.0 → 49.2; Eldrazi Tron 45.8 → 47.7,
+Domain Zoo 74.0 → 75.6, Boros Energy 66.5 → 66.5. **Azorius Control's −3.1
+is past the movement bar and is treated as a regression, not accepted:** the
+projection under-values what walker lines hit — a 1/1 artifact creature's
+synergy (removal subtracts raw power only; the Memnite choice above) and a
+card in hand (0.025). The fix belongs in the per-verb projection (plan
+stage E-AI: removal subtracts `creature_threat_value`, the card term
+re-derived) — the next AI unit, pulled ahead of the family switches.
+
+## S5 — a counted target is one requirement with a count (`0b370ba`, CR 115.1/115.3/601.2c)
+
+`target_solver.parse` parsed no plural target anywhere ("up to two target
+creatures", "two target permanents", "one or two …", "any number of …" →
+`[]`). A length-preserving singulariser + one count reader set count_min /
+count_max on the same requirement (308 pool cards whose target parsed to
+nothing now parse; 772 gain counts); every distinct creature target phrase
+is its own requirement; `target_solver.choose_targets` is the one chooser
+(distinct, legal, filled to the count; auditor `115.3/distinct_targets`);
+counted removal; a cast trigger whose effect is a typed removal resolves
+through the clause resolver (Ulamog's "exile two target permanents" had done
+nothing); Force of Vigor's card-name handler deleted (registry 86 → 85,
+single-owner target_pick 12 → 11). Measured (`082abc9` → `0b370ba`, n=20):
+**Eldrazi Tron 47.7 → 50.0 (+2.3)**, Amulet Titan 27.7 → 27.9, Hollow One
+35.6 → 35.6, Boros Energy 66.5 → 66.5, Domain Zoo 75.6 → 75.4.
+
+## Clause and trigger grammar (docs/design/2026-09-29_clause_and_trigger_grammar.md)
+
+User: "Generalize significantly" → "Both, clause first". Every unit this
+month had added another per-shape parser + typed field + handler (~30 effect
+parsers, only 2 using `target_solver`; 10 of 22 clause handlers reading raw
+text at runtime; triggers inline with no real stack, no generic upkeep /
+end-step dispatch, 42 card-name ETB handlers). Design by a 17-agent workflow
+(6 verb-family pool surveys, 3 designs, 3 judges, synthesis, 3 adversarial
+refuters using registered-deck cards, amend): the Layered Clause Cascade —
+one grammar to typed `EffectSpec`s held on `CardTemplate.effects`, one
+dispatcher over the existing owners, strangler migration one verb family per
+commit, then `TriggerSpec` on an event bus with real trigger stack items.
+
+**E0 stage 1 (spec steps 0–6, `acec168`…`231ce27`, no behaviour change):**
+seeded-game digest tool + baseline recorded on `0b370ba` (26 games incl. 6
+post-sideboard; combined `bc47e2df…`); the design doc; additive
+`effect_model` vocabulary (payload-only kinds, applied kinds fail closed,
+value-typed filter support: `without_keyword` admits exactly the `Keyword`
+values `covers_object` compares); `target_solver.parse_located` /
+`parse_spans` from `parse()`'s own placement (0 differences over 53,310 pool
+texts; the mana-value ceiling now read at the placed phrase, not a
+first-occurrence find); `oracle_parser.loyalty_slot_for` as the one slot rule
+(dead duplicate `player_state._parse_planeswalker_abilities` deleted —
+oracle-runtime-parse 177 → 176; loyalty abilities unchanged for all 316
+walkers); four resolution-choice callbacks declared, uncalled; the
+`engine/effect_spec.py` schema (frozen+slotted, 8 invariants as written,
+every nested spec walked, lowering always valid). Two adversarial reviewers
+raised 14 findings (2 major); all verified and fixed with red-first tests.
+Verified independently before push: every ratchet at baseline, digest
+`--check` byte-identical (26 games), chunks A 2405 / B 2549.
