@@ -16,8 +16,12 @@ Usage::
 
 Determinism guards (CLAUDE.md "Sequencing rules"):
 
-* ``MTG_LLM_DECISION_SCORER_OFFLINE=1`` is set before any engine or ai
-  import and asserted, so no live LLM call enters the decision loop.
+* ``MTG_LLM_DECISION_SCORER_OFFLINE=1`` is set and asserted when the roster
+  runs (``force_offline_scorer``, the first statement of
+  ``compute_digests``, before any engine or ai import), so no live LLM call
+  enters the decision loop. Importing the module sets nothing: a flag
+  written at import would flip it for every test of a pytest session that
+  merely collects the roster test.
 * The CPU safety budget is neutralised through the same constant the WR
   anchor test and ``tools/refresh_wr_baseline.py`` use
   (``tests.test_wr_baseline_anchor._ANCHOR_TIMEOUT_SECONDS``), so a
@@ -30,16 +34,11 @@ This is a per-commit proof tool, not a standing CI gate. The roster lives in
 """
 from __future__ import annotations
 
-import os
-
-# Must precede every engine / ai import (see module docstring).
-os.environ["MTG_LLM_DECISION_SCORER_OFFLINE"] = "1"
-assert os.environ.get("MTG_LLM_DECISION_SCORER_OFFLINE") == "1"
-
 import argparse
 import hashlib
 import json
 import logging
+import os
 import random
 import sys
 from pathlib import Path
@@ -75,8 +74,16 @@ def _entry(result) -> dict:
     }
 
 
+def force_offline_scorer() -> None:
+    """Force the offline decision scorer for the games this process runs
+    (CLAUDE.md sequencing rule 0). Called before any engine or ai import."""
+    os.environ["MTG_LLM_DECISION_SCORER_OFFLINE"] = "1"
+    assert os.environ.get("MTG_LLM_DECISION_SCORER_OFFLINE") == "1"
+
+
 def compute_digests(pairs=None) -> dict:
     """Run the roster and return the digest document (JSON-serialisable)."""
+    force_offline_scorer()
     pairs = pairs if pairs is not None else load_pairs()
     logging.disable(logging.CRITICAL)
 
