@@ -314,7 +314,8 @@ def _parse_placed(oracle_text: str):
     """The one placement owner. Returns `[(req, norm_start, norm_end)]` in
     parse() order plus the normalised-to-input offset map; each start is the
     occurrence parse() claimed for the requirement's phrase (and read its
-    count before), -1 when the phrase was not found."""
+    count before, and its mana-value ceiling after), -1 when the phrase was
+    not found."""
     if not oracle_text:
         return [], range(1)
     norm, offsets = _singularize_targets_located(oracle_text)
@@ -344,7 +345,7 @@ def _parse_placed(oracle_text: str):
             # "up to one target X": zero or one (CR 115.1).
             r = _dc.replace(r, count_min=0)
         end = idx + len(r.raw_phrase or "") if idx >= 0 else -1
-        out.append((r, idx, end))
+        out.append((_with_mana_value_ceiling(norm, r, end), idx, end))
     return out, offsets
 
 
@@ -596,7 +597,6 @@ def _parse_singular(oracle_text: str) -> List[TargetRequirement]:
             raw_phrase=player_match.group(0),
         ))
 
-    _attach_mana_value_bound(oracle_l, out)
     return out
 
 _MV_BOUND_AFTER_RE = re.compile(
@@ -604,26 +604,27 @@ _MV_BOUND_AFTER_RE = re.compile(
     r"\s+with mana value (x|\d+) or less")
 
 
-def _attach_mana_value_bound(oracle_l: str, reqs: List[TargetRequirement]) -> None:
-    """Attach a trailing "with mana value N/X or less" clause to the
-    battlefield requirement it follows (CR 601.2c: the printed ceiling is
-    part of the target's legality). Numeric ceilings populate
-    `max_mana_value`; an X ceiling sets `max_mana_value_is_x`, bound at
-    enumeration time by the caller's affordable X."""
+def _with_mana_value_ceiling(norm: str, req: TargetRequirement,
+                             end: int) -> TargetRequirement:
+    """`req` with the trailing "with mana value N/X or less" clause that
+    follows its phrase where parse() placed it (ending at `end`; CR 601.2c:
+    the printed ceiling is part of the target's legality). Read at that
+    occurrence only -- never at the phrase's first occurrence, which can be
+    inside another requirement's longer phrase. Battlefield requirements
+    only. A numeric ceiling populates `max_mana_value`; an X ceiling sets
+    `max_mana_value_is_x`, bound at enumeration time by the caller's
+    affordable X."""
     import dataclasses as _dc
-    for n, req in enumerate(reqs):
-        if req.zone != "battlefield" or not req.raw_phrase:
-            continue
-        idx = oracle_l.find(req.raw_phrase)
-        if idx < 0:
-            continue
-        m = _MV_BOUND_AFTER_RE.match(oracle_l[idx + len(req.raw_phrase):])
-        if m is None:
-            continue
-        if m.group(1) == "x":
-            reqs[n] = _dc.replace(req, max_mana_value_is_x=True)
-        elif req.max_mana_value is None:
-            reqs[n] = _dc.replace(req, max_mana_value=int(m.group(1)))
+    if req.zone != "battlefield" or not req.raw_phrase or end < 0:
+        return req
+    m = _MV_BOUND_AFTER_RE.match(norm[end:])
+    if m is None:
+        return req
+    if m.group(1) == "x":
+        return _dc.replace(req, max_mana_value_is_x=True)
+    if req.max_mana_value is None:
+        return _dc.replace(req, max_mana_value=int(m.group(1)))
+    return req
 
 
 def _types_for_word(type_word: str) -> FrozenSet[str]:
