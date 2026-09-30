@@ -185,6 +185,7 @@ The refutations named the witness cards in brackets; section 18.1 turns each wit
   - Loyalty clause templates are built with `parse_effects=False` and receive a slice of the LOYALTY host of the face the engine activates. They are never parsed under their synthetic `<walker> (slot)` name.
   - Face-1 LOYALTY hosts are Tier A against `back_face_loyalty_abilities`.
   - `[+X]` and `[−X]` lines are LOYALTY hosts with `loyalty_cost = Amount(X, n=±1)`. X is bound from the paid loyalty cost (CR 107.3, 606.4) and never falls through to ACTIVATED.
+  - An `[+X]` or `[−X]` line takes no loyalty slot in E0. `oracle_parser.loyalty_slot_for`, the one owner of the slot rule, gives a variable-cost line `""` and lets it take no slot from a later line. Those are the slots of legacy's line set (`_LOYALTY_LINE_PATTERN` reads fixed costs only), so the grammar, which passes the printed superset, and `parse_loyalty_abilities`, which passes fixed lines only, agree on every fixed line, and `CardEffects.loyalty(slot)` finds the host legacy's slot names. A pool test pins that agreement for every face. Giving X lines slots is a behaviour change for its own measured commit: those lines become activatable, and minus/ult move on the 9 pool walkers whose X line precedes a fixed negative line (Ashiok, Nightmare Weaver; Chandra Nalaar; Chandra, Chill of Compliance; Kasmina, Enigma Sage; Liliana, Defiant Necromancer; Sorin, Grim Nemesis; Tamiyo, Compleated Sage; Tezzeret the Seeker; Ugin, the Spirit Dragon). None of them is in a registered deck.
   - [Ajani, Nacatl Avenger; Ral, Leyline Prodigy; Tamiyo, Seasoned Scholar; Chandra, Awakened Inferno; Grist, the Hunger Tide.]
 
 **Clauses (L2 and L3)**
@@ -602,7 +603,7 @@ The parse is a pure function of `(text, facts)`.
 5. Unify dashes, collapse whitespace and lowercase for matching. The steps above keep breakpoints `(norm_offset, printed_offset)` for the duration of the call. The map is never stored.
 
 **L1, structure** (`structure.py`). Paragraphs are split with the `oracle_clauses.split_abilities` semantics. Each paragraph is classified with first-match precedence:
-1. **LOYALTY.** `[±N]:` or `[±X]:`, using the grammar's own loyalty-line pattern, a superset of `_LOYALTY_LINE_PATTERN` (A12). The cost comes from the printed span; `loyalty_slot` comes from the shared slot function.
+1. **LOYALTY.** `[±N]:` or `[±X]:`, using the grammar's own loyalty-line pattern, a superset of `_LOYALTY_LINE_PATTERN` (A12). The cost comes from the printed span; `loyalty_slot` comes from the shared slot function, which gives an X line none (A12).
 2. **CHAPTER.** `^[ivx]+(, [ivx]+)* —`.
 3. **KEYWORD** (A1). A list of CR 702 keyword abilities in any of the A1 forms. Its KeywordSpecs carry cost snapshots parsed from the printed span. This rule runs before the ability-word strip, so "Flashback—" and "Escape—" are never labels.
 4. **Ability-word strip.** A `'<ability word> — '` prefix is recorded as `label` (CR 207.2c), and classification continues on the remainder. `channel` also sets `from_zone='hand'`.

@@ -10,6 +10,9 @@ and nothing else in engine/ or ai/ assigns a slot.
 
 Rules pinned:
 * the slot rule itself, on signed cost sequences (only the sign is read);
+* one line set for every caller: a variable-cost ([+X] / [-X]) line takes no
+  slot and consumes none, so the printed superset the grammar passes and the
+  fixed lines legacy passes give every fixed line the same slot, pool-wide;
 * no other engine/ai code writes the "ult" slot literal;
 * `loyalty_abilities` and `back_face_loyalty_abilities` are unchanged for
   every planeswalker in the pool against a capture taken before the rule
@@ -20,6 +23,7 @@ from __future__ import annotations
 import ast
 import hashlib
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -73,6 +77,54 @@ def test_the_slot_rule_assigns_first_plus_zero_first_minus_then_ult():
     # Printed order decides, not magnitude.
     assert [loyalty_slot_for([-7, 1, -2], i) for i in range(3)] == [
         "minus", "plus", "ult"]
+
+
+def test_a_variable_loyalty_cost_takes_no_slot_and_leaves_every_fixed_lines_slot_unchanged():
+    """One line set for every caller (A12): the grammar passes the printed
+    superset ([+X] / [-X] lines included, as their printed cost), legacy
+    passes fixed-cost lines only (`_LOYALTY_LINE_PATTERN`), and both must get
+    the same slot for every fixed line -- so an X line takes no slot and
+    consumes none."""
+    from engine.oracle_parser import loyalty_slot_for
+    assert [loyalty_slot_for([2, "−X", -10], i) for i in range(3)] == [
+        "plus", "", "minus"]
+    assert [loyalty_slot_for(["+X", 1, -3, -8], i) for i in range(4)] == [
+        "", "plus", "minus", "ult"]
+    for printed in ([1, 1, "−X", -6], ["−X", 0, "+X", -2, -7, -9],
+                    [3, "−X", "−X", -4]):
+        fixed = [c for c in printed if isinstance(c, int)]
+        got = [loyalty_slot_for(printed, i) for i in range(len(printed))
+               if isinstance(printed[i], int)]
+        assert got == [loyalty_slot_for(fixed, k) for k in range(len(fixed))], printed
+        assert all(loyalty_slot_for(printed, i) == ""
+                   for i in range(len(printed)) if not isinstance(printed[i], int))
+
+
+# The printed loyalty-line superset: fixed and variable ([+X] / [-X]) costs.
+_PRINTED_LOYALTY_COST = re.compile(r"\[([+\-−]?(?:\d+|X))\]:")
+
+
+# Pool-wide over every face text with a bracketed line (~330). Measured
+# 2026-09-30 on this container: ~0.1 s for the body; with the shared card DB
+# loaded first (when this test runs alone) ~17 s. 120 s bounds a hang with
+# room for a slower 2-core CI runner.
+@pytest.mark.timeout(120)
+def test_the_printed_superset_and_legacys_fixed_lines_get_the_same_slots_pool_wide(card_db):
+    from engine.oracle_parser import loyalty_slot_for, parse_loyalty_abilities
+    faces_with_x = 0
+    for t in {id(v): v for v in card_db.cards.values()}.values():
+        for face in (t.oracle_text or "", getattr(t, "back_face_oracle", "") or ""):
+            printed = [c.replace("−", "-") for c in _PRINTED_LOYALTY_COST.findall(face)]
+            if not printed:
+                continue
+            costs = [c if "X" in c else int(c) for c in printed]
+            faces_with_x += any("X" in c for c in printed)
+            superset = {loyalty_slot_for(costs, i): costs[i]
+                        for i in range(len(costs))
+                        if loyalty_slot_for(costs, i)}
+            legacy = {slot: a.cost for slot, a in parse_loyalty_abilities(face).items()}
+            assert superset == legacy, (t.name, printed)
+    assert faces_with_x > 0       # the X class exists, or the pin is vacuous
 
 
 def _ult_writers(path: Path):

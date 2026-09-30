@@ -6832,17 +6832,27 @@ def _classify_loyalty_effect(text: str):
 def loyalty_slot_for(lines, i: int) -> str:
     """The slot of loyalty line `i` (CR 606): the one owner of the rule.
 
-    `lines` is the face's loyalty lines in printed order, given as signed
-    costs (only the sign is read, so a variable cost passes +1 / -1). The
+    `lines` is the face's printed loyalty lines in order, each given by its
+    cost: an int for a fixed cost (only the sign is read), anything else --
+    the grammar passes the printed "+X" / "−X" -- for a variable cost. The
     first loyalty-positive line is "plus", a zero line "zero", the first
     loyalty-negative line "minus" and the second "ult"; a line whose slot
     is already taken (a second positive or zero line, a third negative
     line) gets "" -- no slot.
+
+    A variable-cost line gets "" and takes no slot from a later line. The
+    slots are those of legacy's line set (`_LOYALTY_LINE_PATTERN` reads fixed
+    costs only), so a caller passing the printed superset and a caller
+    passing fixed lines only agree on every fixed line. Giving X lines slots
+    re-slots minus/ult wherever an X line precedes a fixed negative line
+    (design doc A12): a behaviour change for its own measured commit.
     """
     taken = set()
     for j in range(i + 1):
         cost = lines[j]
-        if cost > 0:
+        if not isinstance(cost, int):
+            slot = ""                      # variable cost: no slot (A12)
+        elif cost > 0:
             slot = "plus"
         elif cost == 0:
             slot = "zero"
