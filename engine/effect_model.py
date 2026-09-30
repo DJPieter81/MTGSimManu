@@ -67,6 +67,11 @@ def until_your_next_turn(player: int) -> Duration:
     return Duration(DurationKind.UNTIL_YOUR_NEXT_TURN, player=player)
 
 
+# The duration kinds `Duration.expired_by` (or source retraction) ends. A
+# printed duration outside this set is unmodelled, never a new kind here.
+CLOCKED_DURATIONS: FrozenSet[DurationKind] = frozenset(DurationKind)
+
+
 # ── Selector ─────────────────────────────────────────────────────────
 
 class SelectorKind(Enum):
@@ -110,6 +115,25 @@ class Selector:
                 or (k is SelectorKind.OPPONENTS and self.player != idx))
 
 
+# Value-typed FILTER support: exactly the (key, value) entries
+# `Selector.covers_object` evaluates. ANY_KEYWORD stands for any non-empty
+# keyword value. Any other entry ('controller': 'you', type keys, …) is
+# ignored by covers_object, so a spec that needs it is not executable.
+ANY_KEYWORD = "<any keyword>"
+SUPPORTED_FILTER_VALUES: FrozenSet[Tuple[str, Any]] = frozenset({
+    ("controller", "opponents"),
+    ("without_keyword", ANY_KEYWORD),
+})
+
+
+def is_supported_filter_entry(key: str, value: Any) -> bool:
+    """Does `Selector.covers_object` evaluate this FILTER entry?"""
+    if key == "without_keyword":
+        return (isinstance(value, str) and bool(value)
+                and ("without_keyword", ANY_KEYWORD) in SUPPORTED_FILTER_VALUES)
+    return (key, value) in SUPPORTED_FILTER_VALUES
+
+
 # ── Modification ─────────────────────────────────────────────────────
 
 class ModFamily(Enum):
@@ -133,10 +157,25 @@ class ModKind(Enum):
     COST_DELTA = "cost_delta"
     PREVENT_DAMAGE = "prevent_damage"
     OBSERVE = "observe"                 # "whenever <event>, <effect>"
+    # Payload vocabulary for the clause grammar (design doc 2026-09-29).
+    # Typed at load, applied by nothing yet: absent from APPLIED_MODKINDS, so
+    # a dispatcher refuses them until an owner applies each one.
+    GRANT_ABILITY = "grant_ability"                 # CR 613.1f (layer 6)
+    REMOVE_ALL_ABILITIES = "remove_all_abilities"   # CR 613.1f (layer 6)
+    SWITCH_PT = "switch_pt"                         # CR 613.4d (layer 7d)
+    SET_CONTROLLER = "set_controller"               # CR 613.1b (layer 2)
+    REQUIRE = "require"                             # "must attack/block" (rule)
 
 
 _RULE_KINDS = frozenset({ModKind.PROHIBIT, ModKind.PERMIT, ModKind.LIMIT,
-                         ModKind.COST_DELTA, ModKind.PREVENT_DAMAGE, ModKind.OBSERVE})
+                         ModKind.COST_DELTA, ModKind.PREVENT_DAMAGE, ModKind.OBSERVE,
+                         ModKind.REQUIRE})
+
+# The kinds some owner applies today (layers or a rule gate). The payload
+# vocabulary above is excluded until its owner lands.
+APPLIED_MODKINDS: FrozenSet[ModKind] = frozenset(ModKind) - frozenset({
+    ModKind.GRANT_ABILITY, ModKind.REMOVE_ALL_ABILITIES, ModKind.SWITCH_PT,
+    ModKind.SET_CONTROLLER, ModKind.REQUIRE})
 
 
 @dataclass(frozen=True)
