@@ -153,6 +153,11 @@ def test_the_schema_holds_no_mutable_cost_and_thaw_hands_out_fresh_objects():
     assert es.find_mutable(cost) is not None
 
 
+# Pool-wide (every parsed activation cost, >1000). Measured 2026-09-30 on
+# this container (quiet, 4 cores): ~0.5 s for the body, plus ~16 s when it is
+# the first test of the process to load the shared card DB. 120 s bounds a
+# hang with room for a slower 2-core CI runner.
+@pytest.mark.timeout(120)
 def test_a_cost_snapshot_round_trips_every_parsed_activation_cost():
     from engine import effect_spec as es
     from tests._card_db_cache import shared_card_database

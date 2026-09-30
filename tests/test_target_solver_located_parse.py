@@ -5,20 +5,24 @@ clause each TargetRequirement was read, so it can keep the requirements whose
 span lies inside a verb's object slot. That placement must come from the one
 place that already decides it -- the claimed-span dict inside
 `target_solver.parse()`, which is also where each requirement reads its count
-("up to two target ...") -- never from a second search that could land on a
-different occurrence of the same phrase.
+("up to two target ...") and its mana-value ceiling -- never from a second
+search that could land on a different occurrence of the same phrase.
 
-Rules pinned:
-* `parse()` is re-expressed as `[r for r, _ in parse_located(text)]` and its
-  output is canonically identical, text for text, to a capture taken before
-  the refactor over every oracle text, line and sentence in the card pool
-  (fixture `tests/fixtures/target_solver_parse_capture.json`);
+Rules pinned here:
+* `parse()` is `[r for r, _ in parse_located(text)]`;
 * a text without the word "target" yields no requirement;
 * `parse_spans` places each requirement on the printed phrase it was read
-  from, in input-text coordinates, including sentences whose requirements
-  `parse()` returns out of printed order;
+  from, in input-text coordinates;
 * a trailing "with mana value N/X or less" ceiling is read at that same
   placed occurrence (CR 601.2c), never at a first-occurrence search.
+
+Pinned under their E0 spec IDs elsewhere, with the helpers below:
+`parse()` output unchanged against a capture taken before the refactor, over
+every oracle text, line and sentence of the pool
+(tests/test_effect_grammar_pool_invariants.py, fixture
+`tests/fixtures/target_solver_parse_capture.json`), and counted requirements
+placed where their count was read, out-of-printed-order sentences included
+(tests/test_effect_grammar_participants.py).
 
 Regenerating the capture (`python tests/test_target_solver_located_parse.py
 --capture`) is only legitimate in a commit that deliberately changes what
@@ -81,48 +85,38 @@ def capture(db) -> dict:
             for t in sorted(pool_texts(db)) if "target" in t.lower()}
 
 
-@pytest.fixture(scope="module")
-def db():
-    from tests._card_db_cache import shared_card_database
-    return shared_card_database()
-
-
-def test_target_solver_parse_is_unchanged_by_the_located_refactor_pool_wide(db):
+# Pool-wide (every oracle text, line and sentence, ~53k). Measured 2026-09-30
+# on this container (quiet, 4 cores): ~1.2 s for the body, plus ~16 s when it
+# is the first test of the process to load the shared card DB. 120 s bounds a
+# hang with room for a slower 2-core CI runner.
+@pytest.mark.timeout(120)
+def test_a_text_without_the_word_target_yields_no_requirement(card_db):
     from engine.target_solver import parse
-    pinned = json.loads(CAPTURE_PATH.read_text())["entries"]
-    texts = pool_texts(db)
-    checked, diffs = 0, []
-    for t in texts:
-        if "target" not in t.lower():
-            continue
-        want = pinned.get(_digest(t))
-        if want is None:          # a text added by a later DB refresh
-            continue
-        checked += 1
-        if output_digest(parse(t)) != want:
-            diffs.append(t)
-    # The capture must still describe the pool, or the pin is vacuous.
-    assert checked >= 0.95 * len(pinned), (checked, len(pinned))
-    assert not diffs, f"{len(diffs)} texts changed, e.g. {diffs[:3]}"
-
-
-def test_a_text_without_the_word_target_yields_no_requirement(db):
-    from engine.target_solver import parse
-    hits = [t for t in pool_texts(db)
+    hits = [t for t in pool_texts(card_db)
             if "target" not in t.lower() and parse(t)]
     assert hits == []
 
 
-def test_parse_is_the_located_parse_without_its_positions(db):
+# Pool-wide (~17k pool texts containing "target"). Measured 2026-09-30 on
+# this container (quiet, 4 cores): ~1.5 s for the body, plus ~16 s when it is
+# the first test of the process to load the shared card DB. 120 s bounds a
+# hang with room for a slower 2-core CI runner.
+@pytest.mark.timeout(120)
+def test_parse_is_the_located_parse_without_its_positions(card_db):
     from engine.target_solver import parse, parse_located
-    for t in pool_texts(db):
+    for t in pool_texts(card_db):
         if "target" in t.lower():
             assert parse(t) == [r for r, _ in parse_located(t)]
 
 
-def test_parse_spans_places_each_requirement_on_its_printed_phrase(db):
+# Pool-wide (~17k pool texts containing "target"). Measured 2026-09-30 on
+# this container (quiet, 4 cores): ~0.9 s for the body, plus ~16 s when it is
+# the first test of the process to load the shared card DB. 120 s bounds a
+# hang with room for a slower 2-core CI runner.
+@pytest.mark.timeout(120)
+def test_parse_spans_places_each_requirement_on_its_printed_phrase(card_db):
     from engine.target_solver import _singularize_targets, parse_spans
-    for t in pool_texts(db):
+    for t in pool_texts(card_db):
         if "target" not in t.lower():
             continue
         norm = _singularize_targets(t.lower())
@@ -131,29 +125,6 @@ def test_parse_spans_places_each_requirement_on_its_printed_phrase(db):
                 assert end < 0
                 continue
             assert norm[start:end] == r.raw_phrase, (t, r.raw_phrase)
-
-
-def test_parse_spans_places_requirements_where_parse_counted_them(db):
-    """Sentences whose requirements parse() returns out of printed order map
-    to their printed positions, and a counted requirement's span is the
-    occurrence its count was read before."""
-    from engine.target_solver import _count_before, _singularize_targets, parse_spans
-    out_of_order = 0
-    for t in pool_texts(db):
-        if "target" not in t.lower():
-            continue
-        spans = parse_spans(t)
-        starts = [s for _, s, _ in spans if s >= 0]
-        if starts != sorted(starts):
-            out_of_order += 1
-        norm = _singularize_targets(t.lower())
-        for r, start, _ in spans:
-            if start < 0:
-                continue
-            counts = _count_before(norm, start)
-            if counts is not None:
-                assert (r.count_min, r.count_max) == counts, (t, r)
-    assert out_of_order > 0     # the class the located parse exists for
 
 
 def _by_scope(text):
@@ -181,13 +152,18 @@ def test_a_trailing_mana_value_ceiling_binds_to_the_occurrence_the_requirement_i
     assert not reqs["you"].max_mana_value_is_x
 
 
-def test_every_pool_mana_value_ceiling_is_read_at_its_requirements_placed_phrase(db):
+# Pool-wide (~17k pool texts containing "target"). Measured 2026-09-30 on
+# this container (quiet, 4 cores): ~0.9 s for the body, plus ~16 s when it is
+# the first test of the process to load the shared card DB. 120 s bounds a
+# hang with room for a slower 2-core CI runner.
+@pytest.mark.timeout(120)
+def test_every_pool_mana_value_ceiling_is_read_at_its_requirements_placed_phrase(card_db):
     """Pool-wide: a battlefield requirement carries exactly the ceiling that
     follows the phrase parse_spans places it on, and none when unplaced."""
     from engine.target_solver import (_MV_BOUND_AFTER_RE, _singularize_targets,
                                       parse_spans)
     checked = 0
-    for t in pool_texts(db):
+    for t in pool_texts(card_db):
         if "target" not in t.lower():
             continue
         norm = _singularize_targets(t.lower())

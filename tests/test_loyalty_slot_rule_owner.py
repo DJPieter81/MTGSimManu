@@ -8,15 +8,20 @@ Both the legacy loyalty parser and the clause grammar's structure layer need
 that rule, so it lives in one function, `oracle_parser.loyalty_slot_for`,
 and nothing else in engine/ or ai/ assigns a slot.
 
-Rules pinned:
+Rules pinned here:
 * the slot rule itself, on signed cost sequences (only the sign is read);
 * one line set for every caller: a variable-cost ([+X] / [-X]) line takes no
   slot and consumes none, so the printed superset the grammar passes and the
-  fixed lines legacy passes give every fixed line the same slot, pool-wide;
-* no other engine/ai code writes the "ult" slot literal;
-* `loyalty_abilities` and `back_face_loyalty_abilities` are unchanged for
-  every planeswalker in the pool against a capture taken before the rule
-  was factored out (`tests/fixtures/loyalty_abilities_capture.json`).
+  fixed lines legacy passes give every fixed line the same slot, pool-wide.
+
+Pinned under its E0 spec ID in tests/test_effect_grammar_pool_invariants.py,
+with the helpers below: the rule has one owner (no other engine/ai code
+writes the "ult" slot literal; `parse_loyalty_abilities` reads the owner),
+and `loyalty_abilities` / `back_face_loyalty_abilities` are unchanged for
+every planeswalker in the pool against a capture taken before the rule was
+factored out (`tests/fixtures/loyalty_abilities_capture.json`; regenerate
+with `python tests/test_loyalty_slot_rule_owner.py --capture` only in a
+commit that deliberately changes loyalty slots).
 """
 from __future__ import annotations
 
@@ -104,10 +109,10 @@ def test_a_variable_loyalty_cost_takes_no_slot_and_leaves_every_fixed_lines_slot
 _PRINTED_LOYALTY_COST = re.compile(r"\[([+\-−]?(?:\d+|X))\]:")
 
 
-# Pool-wide over every face text with a bracketed line (~330). Measured
-# 2026-09-30 on this container: ~0.1 s for the body; with the shared card DB
-# loaded first (when this test runs alone) ~17 s. 120 s bounds a hang with
-# room for a slower 2-core CI runner.
+# Pool-wide (~330 face texts with a bracketed loyalty line). Measured
+# 2026-09-30 on this container (quiet, 4 cores): ~0.05 s for the body, plus
+# ~16 s when it is the first test of the process to load the shared card DB.
+# 120 s bounds a hang with room for a slower 2-core CI runner.
 @pytest.mark.timeout(120)
 def test_the_printed_superset_and_legacys_fixed_lines_get_the_same_slots_pool_wide(card_db):
     from engine.oracle_parser import loyalty_slot_for, parse_loyalty_abilities
@@ -128,6 +133,8 @@ def test_the_printed_superset_and_legacys_fixed_lines_get_the_same_slots_pool_wi
 
 
 def _ult_writers(path: Path):
+    """(functions writing the "ult" slot literal outside docstrings, count
+    of such literals) in one module: the one-owner scan."""
     tree = ast.parse(path.read_text())
     doc_nodes = set()
     for node in ast.walk(tree):
@@ -150,39 +157,6 @@ def _ult_writers(path: Path):
                     if isinstance(n, ast.Constant) and n.value == "ult"
                     and id(n) not in doc_nodes]
     return owners, len(module_level)
-
-
-def test_no_other_engine_or_ai_code_assigns_a_loyalty_slot():
-    owners, total = [], 0
-    for sub in ("engine", "ai"):
-        for path in sorted((REPO / sub).rglob("*.py")):
-            o, n = _ult_writers(path)
-            owners.extend(o)
-            total += n
-    assert owners == ["engine/oracle_parser.py::loyalty_slot_for"], owners
-    assert total == 1
-
-
-def test_parse_loyalty_abilities_reads_its_slots_from_the_one_owner():
-    import inspect
-    from engine import oracle_parser
-    src = inspect.getsource(oracle_parser.parse_loyalty_abilities)
-    assert "loyalty_slot_for(" in src
-
-
-@pytest.fixture(scope="module")
-def db():
-    from tests._card_db_cache import shared_card_database
-    return shared_card_database()
-
-
-def test_the_loyalty_slot_rule_has_one_owner_and_loyalty_abilities_are_unchanged(db):
-    pinned = json.loads(CAPTURE_PATH.read_text())["walkers"]
-    now = walker_digests(db)
-    common = set(pinned) & set(now)
-    assert len(common) >= 0.95 * len(pinned), (len(common), len(pinned))
-    changed = sorted(k for k in common if pinned[k] != now[k])
-    assert not changed, f"{len(changed)} walkers changed"
 
 
 if __name__ == "__main__" and "--capture" in sys.argv:
