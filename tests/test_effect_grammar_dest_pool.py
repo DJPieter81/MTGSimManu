@@ -39,11 +39,16 @@ _INSTEAD = re.compile(r"\b(?:exile|put|return|shuffle)s? [^,;.:\"]*? instead of 
 
 # Measured 2026-09-30 on the full pool (see the printed report): 96.4% of
 # the located destination slots are typed (2834 typed, 106 unmodelled, 298
-# slots the stand-in splitter left without a destination) and 23 of 24
-# instead-of overrides (the other is a choice of top or bottom). The floors sit a little under the measurement: a fall below
-# them is a closed-table regression, not noise (the parse is deterministic).
+# slots the stand-in splitter left without a destination). Instead-of forms
+# are passed as the whole sentence: 5 of the 6 A15 overrides led by the
+# 'this way' rider are typed (the other is a choice of top or bottom); 11
+# 'would <event>' / 'anywhere else' / discard CR 614 replacements are
+# refused with no override flag, and 7 unlinked instead-of moves are left
+# to the clause linker. The floors sit a little under the measurement: a
+# fall below them is a closed-table regression, not noise (the parse is
+# deterministic).
 LOCATED_TYPED_FLOOR = 0.94
-INSTEAD_OF_TYPED_FLOOR = 0.9
+INSTEAD_OF_TYPED_FLOOR = 0.8
 
 
 def _pool_sentences(db):
@@ -90,11 +95,21 @@ def _run(sentences):
             zones["typed" if z else "none"] += 1
             digest.append(canonical((s, span, r.value, r.unmodelled, z)))
         for m in _INSTEAD.finditer(s):
-            r = D.parse_instead_of(s, (m.start(), m.end()))
+            # The whole sentence up to the override, never a slice from the
+            # move verb: the leaf must see the 'this way' rider or the
+            # 'would <event>' frame to tell an A15 override from a CR 614
+            # replacement effect.
+            r = D.parse_instead_of(s, (0, m.end()))
             assert (r.value is None) != (r.unmodelled is None), (s, r)
             if r.value is not None:
                 assert r.value.instead_of and "dest_override" in r.flags
-            instead["typed" if r.value is not None else "unmodelled"] += 1
+                instead["typed"] += 1
+            elif r.unmodelled.detail in ("instead_of.replacement_effect",
+                                         "instead_of.unlinked"):
+                assert "dest_override" not in r.flags
+                instead[r.unmodelled.detail.split(".")[1]] += 1
+            else:
+                instead["unmodelled"] += 1
             digest.append(canonical((s, r.value, r.unmodelled, r.object_span)))
     return counts, zones, instead, digest
 
@@ -115,14 +130,16 @@ def test_the_destination_grammar_types_or_refuses_every_pool_move_slot_determini
 
     located = counts["typed"] + counts["unmodelled"]
     typed_share = counts["typed"] / located
-    instead_share = instead["typed"] / max(1, sum(instead.values()))
+    instead_share = instead["typed"] / max(1, instead["typed"] + instead["unmodelled"])
     print("\ndestination slots: typed=%d unmodelled=%d no_destination=%d "
           "(typed share of located %.1f%%)" % (
               counts["typed"], counts["unmodelled"], counts["no_destination"],
               100 * typed_share))
     print("source zone from object span: typed=%d none=%d" % (
         zones["typed"], zones["none"]))
-    print("instead-of overrides: typed=%d unmodelled=%d" % (
-        instead["typed"], instead["unmodelled"]))
+    print("instead-of: overrides typed=%d unmodelled=%d; replacement "
+          "effects refused=%d; unlinked=%d" % (
+              instead["typed"], instead["unmodelled"],
+              instead["replacement_effect"], instead["unlinked"]))
     assert typed_share >= LOCATED_TYPED_FLOOR
     assert instead_share >= INSTEAD_OF_TYPED_FLOOR
