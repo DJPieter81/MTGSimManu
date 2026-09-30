@@ -15,7 +15,7 @@ to discover and present these costs — no mechanic-named callbacks.
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, List, Optional, Protocol
+from typing import TYPE_CHECKING, Any, List, Optional, Protocol, Sequence
 
 if TYPE_CHECKING:
     from engine.game_state import GameState
@@ -152,6 +152,36 @@ class GameCallbacks(Protocol):
         engine default — highest mana value within the constraint.
         """
         ...
+
+    # ── Resolution-time choices (design doc 2026-09-29, A35) ──────────
+    # One channel per KIND of choice a resolving ability asks of its
+    # controller. `ctx` is the resolution context, `spec` the typed
+    # EffectSpec asking. Declared ahead of their caller: in E0 nothing
+    # calls them (tests/test_effect_resolver_sequencing.py pins that), and
+    # the default raises rather than guessing an answer.
+
+    def choose_optional_effect(self, ctx: Any, spec: Any) -> bool:
+        """Perform this optional ("you may") effect? True = perform."""
+        raise NotImplementedError
+
+    def choose_amount(self, ctx: Any, spec: Any, lo: int, hi: int,
+                      remaining_specs: Sequence[Any]) -> int:
+        """Pick a variable amount in [lo, hi] ("any number", "up to N",
+        pay-X-at-resolution). `remaining_specs` are the specs that resolve
+        after this one, so the answer can see what the amount feeds."""
+        raise NotImplementedError
+
+    def choose_cards(self, ctx: Any, spec: Any, pool: Sequence[Any],
+                     n: int) -> List[Any]:
+        """Pick `n` cards (or up to `n`, per the spec) out of `pool`, the
+        engine-enumerated legal choices."""
+        raise NotImplementedError
+
+    def choose_division(self, ctx: Any, spec: Any, slots: Sequence[Any],
+                        total: int) -> List[int]:
+        """Divide `total` among `slots` (CR 601.2d: fixed as targets are
+        chosen); one non-negative share per slot, summing to `total`."""
+        raise NotImplementedError
 
 
 class DefaultCallbacks:
@@ -294,3 +324,16 @@ class DefaultCallbacks:
         if not eligible:
             return None
         return max(eligible, key=default_tutor_rank)
+
+    # Resolution-time choices (A35): declared, uncalled in E0, no default.
+    def choose_optional_effect(self, ctx, spec) -> bool:
+        raise NotImplementedError
+
+    def choose_amount(self, ctx, spec, lo, hi, remaining_specs) -> int:
+        raise NotImplementedError
+
+    def choose_cards(self, ctx, spec, pool, n):
+        raise NotImplementedError
+
+    def choose_division(self, ctx, spec, slots, total):
+        raise NotImplementedError
