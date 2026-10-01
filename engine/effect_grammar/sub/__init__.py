@@ -157,8 +157,9 @@ def unmodelled(stage, lemma: str, leaf: str, code: str,
 def clear_caches() -> None:
     """Clear every leaf's memo caches (the load driver calls this once the
     grammar pass finishes)."""
+    from engine.effect_grammar import normalize
     from engine.effect_grammar.sub import (
         dest, duration, filter, payload, target,
     )
-    for leaf in (duration, payload, dest, filter, target):
+    for leaf in (normalize, duration, payload, dest, filter, target):
         leaf.clear_caches()
