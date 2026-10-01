@@ -230,13 +230,17 @@ class _Host:
 class _Ctx:
     """Per-ability facts the linker reads: the host antecedent and LKI."""
     __slots__ = ("kind", "trigger", "source_left", "type_class", "seq",
-                 "quotes", "facts", "face")
+                 "quotes", "facts", "face", "printers")
 
-    def __init__(self, l1, facts, quotes, face, antecedent=None):
+    def __init__(self, l1, facts, quotes, face, antecedent=None,
+                 printers=None):
         # A mode reads its modal host's antecedent (the trigger head of a
         # modal trigger, CR 700.2).
         self.kind, self.trigger = antecedent or (l1.kind, l1.trigger)
         self.facts, self.quotes, self.face = facts, quotes, face
+        # The face's per-quote printed maps (`normalize.quote_printers`),
+        # read by a granted host's L1 (A7); None: the quote text stands in.
+        self.printers = printers
         self.type_class = facts.type_class
         cost = dict(l1.cost.items) if l1.cost is not None else {}
         hints = set(self.trigger.event_hints) if self.trigger is not None \
@@ -900,16 +904,20 @@ def _granted_hosts(ctx: _Ctx, mark: str) -> Tuple[AbilityEffects, ...]:
     k = int(m.group(1))
     if k >= len(ctx.quotes):
         return ()
-    return _granted(ctx.quotes[k], ctx.quotes, ctx.face)
+    printers = ctx.printers
+    printed = printers[k] if printers and k < len(printers) else None
+    return _granted(ctx.quotes[k], ctx.quotes, ctx.face, printed, printers)
 
 
-def _granted(text: str, quotes: Tuple[str, ...], face: int
-             ) -> Tuple[AbilityEffects, ...]:
+def _granted(text: str, quotes: Tuple[str, ...], face: int, printed=None,
+             printers=None) -> Tuple[AbilityEffects, ...]:
     """A quoted ability parsed as an ability of its own (CR 113.1a); a
     nested quote reads the face's quote table. Self-references inside it
-    already name the recipient (L0, A10)."""
-    fs = _structure.parse_face_structure(text, _normalize.Facts(), face)
-    return tuple(link_host(h, _normalize.Facts(), quotes, face)
+    already name the recipient (L0, A10); its costs are read from the
+    printed quote (`printed`, A7), as at top level."""
+    fs = _structure.parse_granted_structure(text, printed, face)
+    return tuple(link_host(h, _normalize.Facts(), quotes, face,
+                           printers=printers)
                  for h in fs.hosts)
 
 
@@ -1368,11 +1376,12 @@ def _violations(root: AbilityEffects) -> Dict[int, Unmodelled]:
 
 def link_host(l1, facts: _normalize.Facts = _normalize.Facts(),
               quotes: Optional[Tuple[str, ...]] = None, face: int = 0,
-              *, mode: bool = False, antecedent=None) -> AbilityEffects:
+              *, mode: bool = False, antecedent=None,
+              printers=None) -> AbilityEffects:
     """L2-L5 for one L1 host (see the module docstring): its
     `AbilityEffects`, modes linked as hosts of their own (each its own
     instruction, CR 700.2, so a sub-ability stops at its mode's end, M8)."""
-    ctx = _Ctx(l1, facts, quotes, face, antecedent)
+    ctx = _Ctx(l1, facts, quotes, face, antecedent, printers)
     fms = _patterns.match_host(l1, has_x=facts.has_x_cost)
     items: List[Any] = list(fms)
     if l1.unmodelled:
@@ -1387,7 +1396,8 @@ def link_host(l1, facts: _normalize.Facts = _normalize.Facts(),
              "cost_modifiers": list(l1.cost_modifiers)}
     _link_frames(ctx, root, items, state)
     modes = tuple(link_host(m, facts, quotes, face, mode=True,
-                            antecedent=(ctx.kind, ctx.trigger))
+                            antecedent=(ctx.kind, ctx.trigger),
+                            printers=printers)
                   for m in l1.modes)
     base = dict(kind=l1.kind, face=l1.face, index=l1.index,
                 paragraphs=l1.paragraphs, text=l1.text, trigger=l1.trigger,
@@ -1445,7 +1455,13 @@ def parse_face_hosts(text: str, facts: _normalize.Facts = _normalize.Facts(),
     every input the parse reads is in it."""
     fs = _structure.parse_face_structure(text or "", facts, face)
     quotes = fs.normalized.quotes
-    return tuple(link_host(h, facts, quotes, face) for h in fs.hosts)
+    # A face with quotes re-runs L0 once for the quotes' printed maps (A7:
+    # a granted host's costs are read from print); the maps die with this
+    # parse.
+    printers = _normalize.quote_printers(text or "", facts) if quotes \
+        else None
+    return tuple(link_host(h, facts, quotes, face, printers=printers)
+                 for h in fs.hosts)
 
 
 def clear_caches() -> None:

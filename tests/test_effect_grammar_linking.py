@@ -1000,6 +1000,46 @@ def test_a_quoted_ability_is_parsed_as_a_granted_host_of_its_recipient():
     assert [h.kind for h in g.hosts] == [HostKind.MANA_ABILITY]
 
 
+def _cost_items(host):
+    return dict(host.cost.items) if host.cost is not None else {}
+
+
+def test_a_granted_abilitys_activation_cost_is_typed_from_its_printed_text():
+    """A7, section 3 L1 rule 9: a granted host's cost is
+    `freeze_cost(parse_activation_cost(printed head))` exactly as at top
+    level -- read from the printed quote, never from its L0 text, where
+    "sacrifice this creature" is already "sacrifice ~" and unpayable."""
+    top = _effect_host("{2}, {T}, Sacrifice this artifact: Draw a card.",
+                       types=("artifact",))
+    assert _cost_items(top)["sacrifice_self"] is True
+    (create,) = _effect_host(
+        'Create a 1/1 colorless Eldrazi Spawn creature token with '
+        '"Sacrifice this creature: Add {C}."', types=("sorcery",)).specs
+    (mana,) = create.payload.granted
+    assert mana.kind is HostKind.MANA_ABILITY
+    items = _cost_items(mana)
+    assert items["sacrifice_self"] is True and items["unpayable"] == ()
+    (create,) = _effect_host(
+        'Create a 0/0 Construct artifact creature token with "{2}, {T}, '
+        'Sacrifice this creature: Draw a card."', types=("sorcery",)).specs
+    (act,) = create.payload.granted
+    assert act.kind is HostKind.ACTIVATED
+    items = _cost_items(act)
+    assert items["sacrifice_self"] and items["tap_self"]
+    assert items["unpayable"] == () and act.activation_index == 0
+    # A nested quote reads its own printed span (A10).
+    (grant,) = _effect_host(
+        '{T}: This land gains "{2}, {T}: Create a 1/1 colorless Eldrazi '
+        'Spawn creature token with \'Sacrifice this creature: Add {C}.\'" '
+        'until end of turn.',
+        types=("land",)).specs
+    (g,) = [v for k, v in grant.payload.data if k == "granted"]
+    (outer,) = g.hosts
+    assert _cost_items(outer)["tap_self"] is True
+    (inner,) = outer.specs[0].payload.granted
+    assert _cost_items(inner)["sacrifice_self"] is True
+
+
 def test_the_face_memo_key_is_every_fact_the_parse_reads():
     """A32: the face parse is memoised on (text, facts, face); a changed
     fact that changes the output is a different key, never a stale hit."""

@@ -82,7 +82,7 @@ from engine.effect_grammar.sub import CACHE_SIZE, SELF_NOUNS, Span
 
 __all__ = ["LEAF", "FLAGS", "QUOTE_DEPTH", "SELF", "Facts", "Reminder",
            "Normalized", "self_names", "normalize", "normalize_mapped",
-           "printed_span", "clear_caches"]
+           "printed_span", "quote_printers", "clear_caches"]
 
 LEAF = "normalize"
 SELF = "~"
@@ -795,6 +795,24 @@ def normalize_mapped(text: str, facts: Facts = Facts()
     def printed(span: Span) -> str:
         return text[m.start(span[0]):m.end(span[1])]
     return r.normalized, printed
+
+
+def quote_printers(text: str, facts: Facts = Facts()
+                   ) -> Tuple["Callable[[Span], str]", ...]:
+    """For each quote k of one face (the `Normalized.quotes` numbering),
+    the printed text behind a normalised span of quote k's text: the
+    `printed_span(host_index=k)` map without recomputing L0 per call. A
+    granted ability's L1 parse reads its printed costs, riders and loyalty
+    spans through it exactly as a top-level ability does (A7). Uncached,
+    like `normalize_mapped`: the maps live as long as the caller's parse
+    and are never stored."""
+    text = text or ""
+    r = _run(text, facts)
+
+    def printer(segs):
+        m = _Map(segs)
+        return lambda span: text[m.start(span[0]):m.end(span[1])]
+    return tuple(printer(segs) for segs in r.quote_segs)
 
 
 def clear_caches() -> None:

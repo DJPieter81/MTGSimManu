@@ -112,7 +112,8 @@ from engine.oracle_parser import (loyalty_slot_for, parse_activation_cost,
                                   strip_reminder_text)
 
 __all__ = ["LEAF", "DETAIL_CODES", "FACE_CACHE_SIZE", "Part", "L1Host",
-           "FaceStructure", "parse_face_structure", "uncovered",
+           "FaceStructure", "parse_face_structure", "parse_granted_structure",
+           "uncovered",
            "clear_caches"]
 
 LEAF = "structure"
@@ -1086,11 +1087,33 @@ def parse_face_structure(text: str, facts: normalize.Facts = normalize.Facts(),
                          face: int = 0) -> FaceStructure:
     """L1 for one face's printed text (see the module docstring)."""
     norm, printed = normalize.normalize_mapped(text or "", facts)
+    return _structure(norm, printed, facts, face)
+
+
+def _structure(norm, printed, facts, face) -> FaceStructure:
     paragraphs = norm.paragraphs
     ctx = _Ctx(facts, face, printed, paragraphs)
     builders = _face_builders(ctx, norm, paragraphs)
     return FaceStructure(face=face, normalized=norm,
                          hosts=_merge(ctx, builders))
+
+
+def parse_granted_structure(text: str, printed: Optional[Callable[[Span], str]],
+                            face: int = 0) -> FaceStructure:
+    """L1 for a quoted (granted) ability, CR 113.1a: `text` is the quote's
+    L0 text (the face's `Normalized.quotes` entry, self-forms already the
+    recipient, A10) and `printed` maps a span of it to the printed quote
+    (`normalize.quote_printers`), so costs, riders and loyalty spans are
+    read from print exactly as at top level (A7, rule 9). L0 over an L0
+    quote text is the identity, so its spans index `text`; were it not,
+    or with no map, the quote text stands in for print. The facts are
+    empty: a granted ability is no face of the card. Uncached -- the
+    caller's face memo holds it, and the map must not be stored."""
+    facts = normalize.Facts()
+    norm, own = normalize.normalize_mapped(text or "", facts)
+    if printed is None or norm.text != (text or ""):
+        printed = own
+    return _structure(norm, printed, facts, face)
 
 
 def uncovered(host: L1Host) -> str:

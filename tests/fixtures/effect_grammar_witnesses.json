@@ -1678,7 +1678,35 @@
            }
           ]
          }
-        ]
+        ],
+        "cost_items": {
+         "tap_self": true,
+         "sacrifice_self": false
+        }
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "card": "Basking Broodscale",
+   "class": "A7 granted cost read from print",
+   "face": 0,
+   "host": {
+    "kind": "TRIGGERED",
+    "nth": 0
+   },
+   "expect": {
+    "specs": [
+     {
+      "verb": "CREATE_TOKEN",
+      "granted": [
+       {
+        "kind": "MANA_ABILITY",
+        "cost_items": {
+         "sacrifice_self": true
+        }
        }
       ]
      }
