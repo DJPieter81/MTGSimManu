@@ -273,7 +273,8 @@ _ROWS: Tuple[_Row, ...] = (
     _r("return", Verb.MOVE),
     _r("put", Verb.PUT_COUNTERS,
        r"(?= (?:(?:%s|that many|an additional|any number of|a number of|all|"
-       r"those|the|its|their|x|your choice of|another|twice|half)\b|[+-]\d)"
+       r"those|the|its|their|x|your choice of|another|twice|half|up to)\b|"
+       r"[+-]\d)"
        r"(?:(?!%s)[^.;])*?"
        r"\bcounters?\b(?:(?!%s)[^.;])*? (?:on|onto)\b)" % (
            _COUNT, _ZONE_WORDS, _ZONE_WORDS)),

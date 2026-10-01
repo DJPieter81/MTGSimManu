@@ -138,6 +138,9 @@ def test_damage_names_its_recipient_as_principal_and_its_source_as_the_other_rol
 @pytest.mark.parametrize("text,verb", [
     ("put two +1/+1 counters on target creature", Verb.PUT_COUNTERS),
     ("put a +1/+1 counter on each creature you control", Verb.PUT_COUNTERS),
+    ("put up to three lore counters on it", Verb.PUT_COUNTERS),
+    ("put up to one +1/+1 counter on each creature you control",
+     Verb.PUT_COUNTERS),
     ("put it onto the battlefield with a +1/+1 counter on it", Verb.MOVE),
     ("put that card onto the battlefield tapped", Verb.MOVE),
     ("put the rest on the bottom of your library in a random order", Verb.MOVE),
