@@ -1394,6 +1394,23 @@ E0 is complete when:
 
 **Load CPU after step 13 (2026-10-01).** `process_time` of `CardDatabase()` on the full pool (23,481 entries), quiet 4-core box (loadavg 0.7), parent commit `fbd4d3e` in a pinned worktree against step 13, interleaved, 3 runs each: parent 18.29 / 17.52 / 17.13 s (mean 17.65), step 13 17.85 / 17.47 / 18.54 s (mean 17.95) -- within run-to-run noise (spread about 1.1 s each side). After a full load, 0 templates and 0 loyalty clause templates hold effects. Tests: `test_no_template_parses_its_effects_while_the_database_loads` (parse calls counted over a fixture load), `test_the_lazy_effects_property_and_the_eager_pool_path_give_identical_specs` (every registered-deck card plus every 97th pool template).
 
+**Steps 9-13 integration record (2026-10-01).** Measured on this branch after the integration fixes (granted costs read from print, the meld layout fact, the steps 9-13 tests, the memo budget), quiet 4-core box (loadavg 0.5-1.0), process CPU, caches cleared, card DB frozen out of the collector, best of two:
+
+| Pass | Input | CPU |
+|---|---|---|
+| L0 (`normalize.normalize`) | 23,204 distinct faces | 0.77 s |
+| L0 + L1 (`structure.parse_face_structure`) | same faces | 3.03 s (L1 about 2.26 s) |
+| L2-L4 (`patterns.match_host`, from L1 hosts) | 42,663 hosts and modes | 5.23 s |
+| L0-L5 eager (`parse_pool`) | 22,738 templates | 18.30 s |
+
+L5 is the remainder, about 10 s of the eager pass: linking, granted hosts (now one extra L0 run per face that has quotes, for their printed maps), schema lowering with `validate_spec` over every spec, freezing, and collector time over the retained output. The eager gate is `POOL_L0_L5_EAGER_CPU_BUDGET_S` = 30 s; the lazy per-template path is gated separately (section 12).
+
+Typed share after L5 (non-UNMODELLED specs, sub-ability hosts included), 44,316 specs, 72.3% overall: MANA_ABILITY 95.0% (1,593), TRIGGERED 78.4% (15,272), ACTIVATED 78.4% (6,634), MODE 76.8% (1,758), LOYALTY 75.3% (1,302), CHAPTER 74.0% (699), SPELL 72.5% (9,992), STATIC 60.8% (5,376); REPLACEMENT (1,439), UNKNOWN (226), ALTERNATIVE_COST (16) and KEYWORD (9) specs are refusals by construction (0%). Registered-deck cards: 870 specs, 73.9% typed.
+
+`CardDatabase()` load, `process_time` on the full pool (23,481 entries), the pre-integration commit `418acde` in a worktree against this branch, interleaved, 6 runs each with the order reversed for the second three: before 18.35 / 18.27 / 19.26 / 18.52 / 20.23 / 18.07 s (mean 18.78), after 18.05 / 19.64 / 19.91 / 19.47 / 18.82 / 19.02 s (mean 19.15) -- a 0.37 s difference inside the run-to-run spread (about 2 s each side). The only load-path change is `CardTemplate.layout` read from the MTGJSON entry; nothing parses at load.
+
+Integration review findings (2026-10-01): (1) granted hosts read their activation costs from the L0 quote text, so "sacrifice this creature" inside a quote was "sacrifice ~" and unpayable on 21 pool hosts -- fixed, the granted L1 parse now reads the printed quote through `normalize.quote_printers`; (2) the production face facts never carried the meld layout fact (CR 712.4) while the pool pins built it themselves -- fixed through `CardTemplate.layout`, and the structure / normalize pool fixtures now call `template_facts`; (3)-(5) the steps 9-13 e0_tests missing or partial (post-L5 coverage, reference order, mode / back-face loyalty / activation-cost alignment, frozen shared parses, the card-name scan, the full hashable check, the three restated-instead forms) -- added under their spec names, the 233 activation-cost divergences seeded as `tests/fixtures/effect_grammar_activation_cost_divergences.json`, every one classified `grammar_reads_more`; (6) the whole-grammar memo budget -- revised and gated (section 12).
+
 Measured values (fill in on landing): pool parse CPU __ s; mean __ µs per template; peak __ MB; typed share __% (pool) / __% (deck cards); UNMODELLED by stage __; residue by code and polarity __; equivalence per Tier A field __; legacy-fallback pairs per handler __.
 
 ---
