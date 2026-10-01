@@ -59,8 +59,11 @@ flags; "another" is a count of one plus ``other``.
 * zones ("in your graveyard", "from exile", "from among them");
 * characteristic bounds ("with mana value 3 or less", CR 202.3, 208);
 * keyword qualifiers ("with flying", "without first strike", CR 702) typed
-  as `cards.Keyword` values ('first_strike'), the value
-  `Selector.covers_object` compares (F5 / A22);
+  as the CR 702 name in the `cards.Keyword` value spelling, '_' for spaces
+  ('first_strike'). Every Keyword value is in the table, so each keyword
+  `Selector.covers_object` compares is typed as the value it compares (F5 /
+  A22); a table keyword outside Keyword ('ward') is typed but
+  `effect_model.is_supported_filter_entry` refuses to execute it;
 * counter qualifiers ("with a +1/+1 counter on it"), read through the one
   counter noun-phrase parser in `payload` (one count table, one kind
   vocabulary);
@@ -77,14 +80,14 @@ from functools import lru_cache
 from typing import Any, Dict, FrozenSet, List, Optional, Tuple
 
 from engine.effect_grammar.sub import (CACHE_SIZE, SlotResult, Span,
-                                       rest_spans_after, unmodelled)
+                                       unmodelled)
 from engine.effect_grammar.sub import payload as _payload
 from engine.effect_spec import (Amount, AmountKind, CardFilter, Ref, RefKind,
                                 Stage, Unmodelled)
 from engine.target_solver import _NUMBER_WORDS
 
 __all__ = ["LEAF", "DETAIL_CODES", "parse_filter", "CARD_TYPES",
-           "PERMANENT_TYPES", "SUPERTYPES", "SUBTYPES", "CLASSES", "STATES",
+           "PERMANENT_TYPES", "NONPERMANENT_TYPES", "SUPERTYPES", "SUBTYPES", "CLASSES", "STATES",
            "QUALIFIER_KEYWORDS", "EACH", "ALL", "clear_caches"]
 
 LEAF = "filter"
@@ -171,10 +174,14 @@ STATES = frozenset({"tapped", "untapped", "attacking", "blocking", "blocked",
 # planeswalker or battle card.
 PERMANENT_TYPES = frozenset({"artifact", "creature", "enchantment", "land",
                              "planeswalker", "battle"})
+# CR 110.4a: instants and sorceries are never permanents.
+NONPERMANENT_TYPES = frozenset({"instant", "sorcery"})
 # Head nouns that carry no type: where the object is.
 _HEADS = {"permanent": "battlefield", "card": None, "spell": "stack"}
 # CR 702 keywords a filter qualifier names ("with flying", "without
-# first strike"). Typed as `cards.Keyword` value spelling (spaces -> '_').
+# first strike"): every `cards.Keyword` value plus printed keywords Keyword
+# does not model. Typed in the Keyword value spelling (spaces -> '_'), so
+# only the Keyword values among them are entries covers_object evaluates.
 QUALIFIER_KEYWORDS = frozenset({
     "flying", "first strike", "double strike", "deathtouch", "lifelink",
     "trample", "haste", "vigilance", "reach", "menace", "defender",
@@ -811,6 +818,10 @@ def _build(t, zone, zone_phrase, content, f, token, colorless, other,
         return _fail("card_zone")
     elif "spell" in heads:
         where = "stack"
+    elif (types and types <= NONPERMANENT_TYPES) or (all_types & NONPERMANENT_TYPES):
+        # CR 110.4a: an instant or sorcery is never on the battlefield, and
+        # no zone says where it is.
+        return _fail("card_zone")
     else:
         where = "battlefield"
     if "card" in heads and where == "battlefield":
@@ -845,9 +856,10 @@ def parse_filter(host: str, span: Optional[Span] = None, *, lemma: str = "",
     ``zone`` is the zone the caller's verb reads when the phrase prints
     none (a search passes "library"); otherwise a "spell" is on the stack
     and anything else on the battlefield, and a "card" with neither is
-    UNMODELLED (a card is never on the battlefield, CR 108.3). On
-    success ``span`` is the whole slot (trailing punctuation handed back in
-    ``rest_spans``), ``amount`` the determiner's count, ``flags`` holds
+    UNMODELLED (a card is never on the battlefield, CR 108.3; nor is an
+    instant or sorcery, CR 110.4a). On success ``span`` is the whole slot
+    without trailing punctuation, which is structure and is in neither
+    ``span`` nor ``rest_spans`` (the payload rule), ``amount`` the determiner's count, ``flags`` holds
     ``each`` / ``all``, and ``pending`` the anaphoric players and "from
     among" results the linker binds. Any token the tables cannot place
     makes the slot ``UNMODELLED(FILTER)`` over the whole trimmed slot."""
@@ -862,10 +874,8 @@ def parse_filter(host: str, span: Optional[Span] = None, *, lemma: str = "",
         code, param = failure
         return SlotResult(unmodelled=_um(code, param, lemma),
                           span=(start, start + len(trimmed)))
-    end = start + len(body)
-    rest = rest_spans_after(host, end, start + len(trimmed), " ")
-    rest = tuple(s for s in rest if host[s[0]:s[1]].strip(" .,;"))
-    return SlotResult(value=value, span=(start, end), rest_spans=rest,
+    # Everything past `body` is trailing punctuation: no rest span.
+    return SlotResult(value=value, span=(start, start + len(body)),
                       flags=flags, pending=pending, amount=amount)
 
 

@@ -282,6 +282,18 @@ def test_a_spell_head_is_on_the_stack():
     assert _ok("each instant or sorcery spell").value.zone == "stack"
 
 
+@pytest.mark.parametrize("text", ["each instant", "all sorceries",
+                                  "each instant or sorcery"])
+def test_a_nonpermanent_type_without_a_zone_is_unmodelled_card_zone(text):
+    """CR 110.4a: an instant or sorcery is never a permanent, so it is not
+    on the battlefield; with no zone printed and none from the caller the
+    slot is refused, as a 'card' head is."""
+    r = _f(text)
+    assert r.value is None and r.unmodelled.detail == "filter.card_zone", r
+    assert _ok(text, zone="graveyard").value.zone == "graveyard"
+    assert _ok(text + " card in your graveyard").value.zone == "graveyard"
+
+
 def test_from_among_a_result_is_left_to_the_linker():
     r = _ok("a historic card from among them")
     assert r.pending == (("among", "them"),)
@@ -322,6 +334,25 @@ def test_a_keyword_exclusion_is_typed_as_the_keyword_value_covers_object_compare
     entry = ("without_keyword", entry["without_keyword"])
     assert is_supported_filter_entry(*entry)
     assert _ok("each creature with flying").value.with_keywords == frozenset({"flying"})
+
+
+def test_the_keyword_table_spells_every_cards_keyword_value_and_only_those_execute():
+    """F5 / A22: a qualifier keyword is typed as its CR 702 name with '_' for
+    spaces -- the `cards.Keyword` value spelling. Every Keyword value is in
+    the table, so each one `Selector.covers_object` compares can be typed;
+    a table keyword outside Keyword is typed but not executable."""
+    from engine.cards import Keyword
+    from engine.effect_grammar.sub import filter as F
+    from engine.effect_model import is_supported_filter_entry
+    values = {k.value for k in Keyword}
+    typed = {k.replace(" ", "_") for k in F.QUALIFIER_KEYWORDS}
+    assert values <= typed, values - typed
+    for kw in sorted(F.QUALIFIER_KEYWORDS):
+        r = _ok("each creature without " + kw)
+        (value,) = r.value.without_keywords
+        assert value == kw.replace(" ", "_")
+        assert is_supported_filter_entry("without_keyword", value) == (
+            value in values), value
 
 
 def test_a_keyword_the_table_lacks_is_unmodelled_keyword():
@@ -383,6 +414,18 @@ def test_the_filter_reads_a_slot_of_the_whole_host_and_returns_host_spans():
     bad = (host.index("draw"), len(host) - 1)
     u = F.parse_filter(host, bad, lemma="draw")
     assert u.unmodelled.lemma == "draw" and u.span == bad
+
+
+@pytest.mark.parametrize("text", ["creatures you control.",
+                                  "creatures you control,",
+                                  "  creatures you control .",
+                                  "creatures you control;"])
+def test_trailing_punctuation_is_outside_the_span_and_no_rest_span(text):
+    """Section 3 coverage: punctuation is structure, not slot content, so
+    it is in neither ``span`` nor ``rest_spans`` (the payload rule)."""
+    r = _ok(text)
+    assert text[slice(*r.span)] == "creatures you control"
+    assert r.rest_spans == ()
 
 
 def test_an_unmodelled_filter_carries_the_callers_lemma_and_a_closed_code():
