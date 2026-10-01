@@ -1320,15 +1320,6 @@ class CardDatabase:
                         back = card_entries[1]
                         template.back_face_oracle = back.get('text', '')
                         template.back_face_loyalty = int(back.get('loyalty', 0) or 0)
-                        # The back face's own printed loyalty lines — a
-                        # transformed DFC activates these, not the front's.
-                        from .oracle_parser import (
-                            parse_loyalty_abilities as _parse_loyalty)
-                        template.back_face_loyalty_abilities = (
-                            self._type_loyalty_clauses(
-                                template.name, _parse_loyalty(
-                                    template.back_face_oracle,
-                                    template.back_face_loyalty)))
                         template.back_face_types = [
                             TYPE_MAP[t] for t in back.get('types', []) if t in TYPE_MAP
                         ]
@@ -1345,6 +1336,19 @@ class CardDatabase:
                             KEYWORD_MAP[k] for k in back.get('keywords', []) or []
                             if k in KEYWORD_MAP
                         }
+                        # The back face's own printed loyalty lines — a
+                        # transformed DFC activates these, not the front's.
+                        # Typed LAST (A12): their clause templates slice the
+                        # face-1 parse, whose facts (the back face's types
+                        # and subtypes) must be complete by then.
+                        from .oracle_parser import (
+                            parse_loyalty_abilities as _parse_loyalty)
+                        template.back_face_loyalty_abilities = (
+                            self._type_loyalty_clauses(
+                                template.name, _parse_loyalty(
+                                    template.back_face_oracle,
+                                    template.back_face_loyalty),
+                                walker=template, face=1))
                     self.cards[card_name] = template
                     self._raw_data[card_name] = entry
                     count += 1
@@ -1388,7 +1392,8 @@ class CardDatabase:
         project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         return os.path.join(project_root, 'ModernAtomic.json')
 
-    def _type_loyalty_clauses(self, walker_name: str, abilities: dict) -> dict:
+    def _type_loyalty_clauses(self, walker_name: str, abilities: dict,
+                              walker=None, face: int = 0) -> dict:
         """Type each UNCLASSIFIED loyalty line as a clause (CR 606.1).
 
         The line's own text is built into a template by this same pipeline
@@ -1398,6 +1403,13 @@ class CardDatabase:
         stay UNCLASSIFIED and are refused before their loyalty is paid.
         The clause template carries a name distinct from the card's, so the
         whole card's classifier tags never leak into the clause.
+
+        Each clause template's `effects` is the LOYALTY host of `walker`'s
+        face `face` for that slot -- the face the engine activates these
+        lines from -- sliced lazily from the walker's own parse; the
+        clause's synthetic text is never parsed (A12, design step 13).
+        Without a `walker` the clause has no face to slice and its effects
+        are empty.
         """
         if not abilities:
             return abilities
@@ -1420,6 +1432,7 @@ class CardDatabase:
                 'colorIdentity': [], 'legalities': {'modern': 'Legal'}})
             if clause is None:
                 continue
+            clause._effects_slice = (walker, face, slot)
             if ability.effect_kind is not LoyaltyEffectKind.UNCLASSIFIED:
                 typed[slot] = dataclasses.replace(ability, clause=clause)
                 continue
@@ -2005,7 +2018,8 @@ class CardDatabase:
         # `PlaneswalkerManager` can dispatch off a typed field and refuse
         # what it cannot execute before charging loyalty.
         template.loyalty_abilities = self._type_loyalty_clauses(
-            template.name, parse_loyalty_abilities(oracle, template.loyalty))
+            template.name, parse_loyalty_abilities(oracle, template.loyalty),
+            walker=template, face=0)
         # Overrun-shape team pump. The 'spell' form is an instant/sorcery's
         # own resolution; on any other card type the same paragraph would
         # be a static/other ability this resolver does not own.

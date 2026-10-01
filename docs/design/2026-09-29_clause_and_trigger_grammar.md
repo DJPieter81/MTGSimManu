@@ -1212,12 +1212,13 @@ def chosen_from_legacy(ability, item_targets) -> Tuple[Tuple[Union[Handle, int],
 
 ## 12. Load time, memory and determinism
 
-**Where parsing runs** (A12). Parsing runs once per template during `CardDatabase` load:
-- face 0 at the end of `_build_template`, except for clause templates built with `parse_effects=False`;
-- face 1 inside the back-face attachment block, before that block calls `_type_loyalty_clauses` for `back_face_loyalty_abilities`;
-- loyalty clauses as slices of the face the engine activates.
+**Where parsing runs** (A12; superseded by the 2026-10-01 lazy decision below, as landed in step 13). Nothing parses during `CardDatabase` load. `CardTemplate.effects` is a property over `_effects` that parses on first access, per template, through `engine.effect_grammar.parse_template(t)` -- the same call the eager tools' path `parse_pool` makes -- and memoises:
+- the face facts (names, type_class, is_spell, is_legendary, is_planeswalker, has_x, keywords702) are computed lazily by `template_facts` from fields the load already sets (`printed_keywords` is the MTGJSON keyword list), so the load builds nothing new;
+- face 1 is parsed with the back face's facts; the back-face attachment block now sets the back face's types, subtypes, P/T and keywords BEFORE it calls `_type_loyalty_clauses` for `back_face_loyalty_abilities`, so those facts are complete whenever a clause slice is taken (the A12 order, kept under laziness);
+- loyalty clause templates (`_type_loyalty_clauses(..., walker=, face=)`) never parse: `_effects_slice = (walker, face, slot)` makes their `effects` the walker's LOYALTY host for that slot on the face the engine activates (`loyalty_abilities` face 0, `back_face_loyalty_abilities` face 1) -- the very host object, sliced from the walker's own memo. A legacy line read from inside a quoted granted ability (67 of ~900 typed lines, e.g. a token's or an anthem's granted loyalty lines) has no LOYALTY host on its face and gets `EMPTY_EFFECTS`; so does a clause typed with no walker;
+- `_effects_key` is the printed identity the memo was parsed from (name, both faces' text): a template copied and re-printed (tests do this) parses again. `set_effects` pins a value for the current text; `parse_pool(db, populate=True)` pins every template's eager result for tools.
 
-`CardTemplate.effects` is a property over `_effects`. A synthetic template parses lazily through the same memo; a clause template never does. The name is distinct from `CardDatabase.get_effects`, which returns `List[OracleEffect]`, and the neutrality AST test keys on template attribute access only.
+The name is distinct from `CardDatabase.get_effects`, which returns `List[OracleEffect]`, and the neutrality AST test keys on template attribute access only. Every legacy field is unchanged (seeded digest byte-identical).
 
 **Measured** (unchanged): full DB load 19.6 s idle; L0–L3 prototype 0.84 s over 23,276 faces; D2 skeleton with target_solver 1.02 s CPU; `target_solver.parse` 36–38 µs per unique targeted sentence; 51,813 sentences, 27,622 unique.
 
@@ -1388,6 +1389,8 @@ E0 is complete when:
 5. The harness self-check (legacy against legacy) is deterministic on every registered-deck MB and SB host.
 6. `--timing` figures are recorded on a quiet box, and the pool CPU is ≤ 4.0 s.
 7. The frontmatter of this doc links the generated census.
+
+**Load CPU after step 13 (2026-10-01).** `process_time` of `CardDatabase()` on the full pool (23,481 entries), quiet 4-core box (loadavg 0.7), parent commit `fbd4d3e` in a pinned worktree against step 13, interleaved, 3 runs each: parent 18.29 / 17.52 / 17.13 s (mean 17.65), step 13 17.85 / 17.47 / 18.54 s (mean 17.95) -- within run-to-run noise (spread about 1.1 s each side). After a full load, 0 templates and 0 loyalty clause templates hold effects. Tests: `test_no_template_parses_its_effects_while_the_database_loads` (parse calls counted over a fixture load), `test_the_lazy_effects_property_and_the_eager_pool_path_give_identical_specs` (every registered-deck card plus every 97th pool template).
 
 Measured values (fill in on landing): pool parse CPU __ s; mean __ µs per template; peak __ MB; typed share __% (pool) / __% (deck cards); UNMODELLED by stage __; residue by code and polarity __; equivalence per Tier A field __; legacy-fallback pairs per handler __.
 

@@ -729,3 +729,132 @@ def test_the_face_parse_is_a_pure_memoised_function_of_text_and_facts():
     d = S.parse_face_structure("Draw a card.\nScry 1.",
                                _facts(types=("enchantment",)))
     assert len(c.hosts) == 1 and len(d.hosts) == 2
+
+
+# ── Loyalty clause templates (CR 606; A12, step 13) ─────────────────────
+#
+# A loyalty line's clause template (`LoyaltyAbility.clause`, built by
+# `CardDatabase._type_loyalty_clauses`) is named "<walker> (<slot>)" and
+# printed as a sorcery so the legacy typed-field parsers can read the line.
+# Its `effects` is never a reparse of that synthetic text (which would name
+# the wrong card and read the line as a spell): it is the LOYALTY host of
+# the face the engine activates -- `loyalty_abilities` the front face,
+# `back_face_loyalty_abilities` the back face -- sliced from the walker's
+# own lazy parse.
+
+def _clause_rows(template):
+    """(face, slot, LoyaltyAbility) for every typed loyalty line."""
+    for face, abil in ((0, template.loyalty_abilities),
+                       (1, template.back_face_loyalty_abilities)):
+        for slot, ab in sorted((abil or {}).items()):
+            if ab.clause is not None:
+                yield face, slot, ab
+
+
+def _counting_parses(monkeypatch):
+    """Record every face parse (L0-L5 entry) as (text, face)."""
+    from engine.effect_grammar import link
+    seen = []
+    real = link.parse_face_hosts
+
+    def counting(text, facts, face=0):
+        seen.append((text, face))
+        return real(text, facts, face)
+    monkeypatch.setattr(link, "parse_face_hosts", counting)
+    return seen
+
+
+# Every template with a typed loyalty line (~320 in the pool), each walker
+# parsed lazily once. Measured 2026-10-01: ~1.0 s body, plus ~16 s when
+# first in the process to load the card DB. 300 s bounds a hang on a slower
+# 2-core runner.
+@pytest.mark.timeout(300)
+def test_a_loyalty_clause_template_carries_a_slice_of_its_line_host_not_a_reparse(card_db):
+    from engine.effect_spec import EMPTY_EFFECTS, validate_card_effects
+    walkers = [t for t in {id(v): v for v in card_db.cards.values()}.values()
+               if any(True for _ in _clause_rows(t))]
+    assert len(walkers) >= 250, len(walkers)
+    granted = 0
+    for t in walkers:
+        for face, slot, ab in _clause_rows(t):
+            hosts = t.effects.faces[face] if face < len(t.effects.faces) \
+                else ()
+            if not any(h.kind is HostKind.LOYALTY for h in hosts):
+                # The legacy line parse also reads loyalty lines printed
+                # inside a quoted ability the card GRANTS (a token's, an
+                # anthem's, CR 113.1a): the face itself has no LOYALTY host,
+                # so the clause has nothing to slice.
+                assert ab.clause.effects is EMPTY_EFFECTS, (t.name, slot)
+                granted += 1
+                continue
+            line = t.effects.loyalty(slot, face)
+            assert line is not None, (t.name, face, slot)
+            assert line.loyalty_cost.n == ab.cost, (t.name, face, slot)
+            ce = ab.clause.effects
+            assert ce.faces[face] == (line,), (t.name, face, slot)
+            assert all(f == () for i, f in enumerate(ce.faces) if i != face)
+            # The very host object, not an equal reparse.
+            assert ce.faces[face][0] is line
+            assert validate_card_effects(ce) is None, (t.name, slot)
+    # Granted lines are a small minority (67 of ~900 on 2026-10-01).
+    assert granted <= 0.15 * sum(len(list(_clause_rows(t))) for t in walkers)
+
+
+def test_loyalty_clause_templates_are_never_parsed_under_their_synthetic_names(card_db, tmp_path, monkeypatch):
+    from engine.effect_spec import EMPTY_EFFECTS
+    from tests._mini_card_db import load_mini_db
+    import engine.effect_grammar as grammar
+    db = load_mini_db(tmp_path)
+    grammar.clear_caches()
+    seen = _counting_parses(monkeypatch)
+    parsed = 0
+    for t in {id(v): v for v in db.cards.values()}.values():
+        seen.clear()
+        for face, slot, ab in _clause_rows(t):
+            ab.clause.effects
+            assert ab.clause.oracle_text not in [s for s, _f in seen]
+            assert all(s in (t.oracle_text, t.back_face_oracle)
+                       for s, _f in seen), (t.name, seen)
+            parsed += bool(seen)
+    assert parsed, "the walkers' own faces were parsed for the slices"
+    # A clause typed with no walker (a bare line, as tests build them)
+    # has no face to slice and still never parses its synthetic text.
+    from engine.oracle_parser import parse_loyalty_abilities
+    seen.clear()
+    bare = card_db._type_loyalty_clauses(
+        "Fixture Walker", parse_loyalty_abilities("[+1]: Draw a card.", 3))
+    assert bare["plus"].clause.effects is EMPTY_EFFECTS
+    assert seen == []
+
+
+def test_a_back_face_is_parsed_before_its_loyalty_clauses_are_typed(tmp_path):
+    """A12: the back face's loyalty clauses slice the face-1 parse, so the
+    back face's facts (its card types and subtypes, which make the face a
+    planeswalker with loyalty hosts) are complete when the back face's
+    clauses are typed, and the slice carries the face-1 host."""
+    from engine.effect_grammar import template_facts
+    from engine.effect_spec import HostKind
+    from tests._mini_card_db import load_mini_db
+    at_typing = []
+
+    def spy(db):
+        real = db._type_loyalty_clauses
+
+        def recording(name, abilities, *a, **kw):
+            w = kw.get("walker")
+            if kw.get("face") == 1 and w is not None:
+                at_typing.append(template_facts(w, 1))
+            return real(name, abilities, *a, **kw)
+        db._type_loyalty_clauses = recording
+    db = load_mini_db(tmp_path, before_load=spy)
+    t = db.cards["Fixture Adept // Fixture Ascended"]
+    assert len(at_typing) == 1
+    assert at_typing[0].is_planeswalker
+    assert at_typing[0] == template_facts(t, 1)
+    back = t.back_face_loyalty_abilities
+    assert sorted(back) == ["minus", "plus"]
+    for slot, ab in back.items():
+        host = ab.clause.effects.faces[1][0]
+        assert host.kind is HostKind.LOYALTY and host.face == 1
+        assert host is t.effects.loyalty(slot, 1)
+    assert t.effects.loyalty("plus", 0) is None      # the front is a creature

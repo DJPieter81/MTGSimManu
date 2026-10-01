@@ -1286,6 +1286,23 @@ class CardTemplate:
     # on-draw watchers do not fire (CR 121.1c).
     # Populated by oracle_parser.parse_library_dig.
     library_dig_data: Optional[dict] = None
+    # -- Clause grammar (design doc 2026-09-29, section 12, step 13) ------
+    # The card's typed `engine.effect_spec.CardEffects`, read through the
+    # `effects` property. LAZY: nothing is parsed at DB load (the whole-pool
+    # parse costs several times the load budget); the first access parses
+    # this template through `engine.effect_grammar.parse_template` -- the
+    # same call the eager tools' path `parse_pool` makes -- and memoises.
+    # `_effects_key` is the printed identity the memo was parsed from (name
+    # and both faces' text), so a copied and re-printed template parses
+    # again. `_effects_slice` marks a loyalty CLAUSE template (built by
+    # `CardDatabase._type_loyalty_clauses`): ``(walker, face, slot)``; its
+    # effects are the walker's LOYALTY host for that slot on the face the
+    # engine activates, never a parse of the clause's synthetic text (A12).
+    _effects: Optional[Any] = field(default=None, compare=False, repr=False)
+    _effects_key: Optional[tuple] = field(default=None, compare=False,
+                                          repr=False)
+    _effects_slice: Optional[tuple] = field(default=None, compare=False,
+                                            repr=False)
 
     def __post_init__(self) -> None:
         # Derive fields from oracle text for templates not loaded through
@@ -1307,7 +1324,7 @@ class CardTemplate:
                 from .card_database import CardDatabase as _CDB
                 if _CDB._shared is not None and self.loyalty_abilities:
                     self.loyalty_abilities = _CDB._shared._type_loyalty_clauses(
-                        self.name, self.loyalty_abilities)
+                        self.name, self.loyalty_abilities, walker=self, face=0)
             from .oracle_parser import parse_self_cost_reduction as _pscr
             if not self.self_cost_reduction_unit:
                 (self.self_cost_reduction_amount,
@@ -1582,6 +1599,37 @@ class CardTemplate:
     @property
     def has_haste(self) -> bool:
         return Keyword.HASTE in self.keywords
+
+    @property
+    def effects(self):
+        """This card's `CardEffects` (every face), parsed on first access
+        and memoised; see `_effects`. A loyalty clause template returns its
+        walker's LOYALTY host slice and never parses."""
+        e = self._effects
+        if self._effects_slice is not None:
+            if e is None:
+                from .effect_spec import EMPTY_EFFECTS
+                walker, face, slot = self._effects_slice
+                host = (walker.effects.loyalty(slot, face)
+                        if walker is not None else None)
+                e = (EMPTY_EFFECTS if host is None
+                     else EMPTY_EFFECTS.with_face(face, (host,)))
+                self._effects = e
+            return e
+        key = (self.name, self.oracle_text, self.back_face_oracle)
+        if e is None or self._effects_key != key:
+            from . import effect_grammar
+            e = effect_grammar.parse_template(self)
+            self._effects, self._effects_key = e, key
+        return e
+
+    def set_effects(self, effects) -> None:
+        """Pin this template's effects for its current printed text (the
+        eager tools' path, tests); None clears the memo."""
+        self._effects = effects
+        self._effects_key = (None if effects is None else
+                             (self.name, self.oracle_text,
+                              self.back_face_oracle))
 
     def __hash__(self):
         return hash(self.name)

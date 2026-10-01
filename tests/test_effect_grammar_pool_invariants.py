@@ -687,3 +687,168 @@ def test_effect_parse_is_independent_of_the_hash_seed():
     digests = [o.strip().splitlines()[-1] if o.strip() else "" for o, _e in outs]
     assert all(p.returncode == 0 for p in procs), [e[-2000:] for _o, e in outs]
     assert digests[0] and digests[0] == digests[1], digests
+
+
+# ════════════════════════════════════════════════════════════════════════
+# CardTemplate.effects: lazy, memoised, never parsed at load (step 13)
+# ════════════════════════════════════════════════════════════════════════
+#
+# Decided 2026-10-01 (section 12): the whole-pool parse costs far more than
+# the load budget, so `CardTemplate.effects` parses on first access, per
+# template, through the same `parse_template(t)` the eager tools' path
+# (`parse_pool`) calls, and memoises. `CardDatabase()` parses nothing.
+
+def _deck_card_names():
+    from decks.modern_meta import MODERN_DECKS
+    return sorted({c for d in MODERN_DECKS.values()
+                   for part in ("mainboard", "sideboard")
+                   for c in (d.get(part) or {})})
+
+
+def _effects_sample(card_db):
+    """Every registered-deck template plus every 97th pool template."""
+    pool = sorted({id(v): v for v in card_db.cards.values()}.values(),
+                  key=lambda t: t.name)
+    picked = {t.name: t for t in pool[::97]}
+    for n in _deck_card_names():
+        t = card_db.cards.get(n)
+        if t is not None:
+            picked[t.name] = t
+    return [picked[k] for k in sorted(picked)]
+
+
+def _counting_template_parses(monkeypatch):
+    """Count every template parse and every face parse (L0-L5)."""
+    import engine.effect_grammar as grammar
+    from engine.effect_grammar import link
+    calls = {"template": 0, "face": 0}
+    real_t, real_f = grammar.parse_template, link.parse_face_hosts
+
+    def t(*a, **kw):
+        calls["template"] += 1
+        return real_t(*a, **kw)
+
+    def f(*a, **kw):
+        calls["face"] += 1
+        return real_f(*a, **kw)
+    monkeypatch.setattr(grammar, "parse_template", t)
+    monkeypatch.setattr(link, "parse_face_hosts", f)
+    return calls
+
+
+def test_no_template_parses_its_effects_while_the_database_loads(tmp_path, monkeypatch):
+    """CardDatabase load builds no effects: every template's `_effects` is
+    still unset after the load and no face was parsed, so the load's CPU is
+    unchanged by the grammar."""
+    from tests._mini_card_db import load_mini_db
+    calls = _counting_template_parses(monkeypatch)
+    db = load_mini_db(tmp_path)
+    assert len(db.cards) >= 4
+    assert calls == {"template": 0, "face": 0}
+    for t in db.cards.values():
+        assert t._effects is None, t.name
+        for ab in list((t.loyalty_abilities or {}).values()) + \
+                list((t.back_face_loyalty_abilities or {}).values()):
+            assert ab.clause is None or ab.clause._effects is None
+
+
+def test_a_template_parses_its_effects_on_first_access_and_memoises(monkeypatch):
+    from engine.cards import CardTemplate, CardType
+    from engine.effect_spec import EMPTY_EFFECTS, HostKind, Verb
+    from engine.mana import ManaCost
+    calls = _counting_template_parses(monkeypatch)
+    t = CardTemplate(name="Fixture Insight", card_types=[CardType.SORCERY],
+                     mana_cost=ManaCost(generic=2),
+                     oracle_text="Draw two cards.")
+    assert calls["template"] == 0 and t._effects is None
+    first = t.effects
+    assert calls["template"] == 1
+    assert first.spell().kind is HostKind.SPELL
+    assert Verb.DRAW in first.verbs
+    assert t.effects is first and calls["template"] == 1     # memoised
+    # The memo is the effects of the printed text it was parsed from: a
+    # template whose text is replaced (tests copy and re-print templates)
+    # parses again instead of serving the old text's effects.
+    t.oracle_text = "Draw a card."
+    assert t.effects is not first and calls["template"] == 2
+    # set_effects pins a value for the current text.
+    t.set_effects(EMPTY_EFFECTS)
+    assert t.effects is EMPTY_EFFECTS and calls["template"] == 2
+
+
+# Every registered-deck template (~360) plus every 97th pool template
+# (~235), each parsed twice. Measured 2026-10-01: ~1.5 s body, plus ~16 s
+# when first in the process to load the card DB. 300 s bounds a hang on a
+# slower 2-core runner.
+@pytest.mark.timeout(300)
+def test_the_lazy_effects_property_and_the_eager_pool_path_give_identical_specs(card_db):
+    import engine.effect_grammar as grammar
+    from engine.effect_spec import canonical
+    sample = _effects_sample(card_db)
+    assert len(sample) >= 400, len(sample)
+    grammar.clear_caches()
+    for t in sample:
+        t.set_effects(None)
+    lazy = {t.name: canonical(t.effects) for t in sample}
+    grammar.clear_caches()
+
+    class _Subset:
+        cards = {t.name: t for t in sample}
+    eager = grammar.parse_pool(_Subset)
+    assert sorted(eager) == sorted(lazy)
+    diff = [n for n in lazy if canonical(eager[n]) != lazy[n]]
+    assert not diff, (len(diff), diff[:5])
+    # The tools' populate mode writes the same value the property computes.
+    for t in sample:
+        t.set_effects(None)
+    grammar.parse_pool(_Subset, populate=True)
+    assert all(t._effects is not None and canonical(t._effects) == lazy[t.name]
+               for t in sample)
+
+
+def _rules_text(text):
+    import re
+    return re.sub(r"\([^)]*\)", "", text or "").strip()
+
+
+@pytest.mark.timeout(300)
+def test_every_template_with_oracle_text_has_effects_after_load(card_db):
+    """Lazily: every template's first `effects` access returns a validated
+    CardEffects with a host for every printed face."""
+    from engine.effect_spec import CardEffects, validate_card_effects
+    for t in _effects_sample(card_db):
+        ce = t.effects
+        assert isinstance(ce, CardEffects), t.name
+        assert validate_card_effects(ce) is None, t.name
+        # A face whose printed text is only reminder text (CR 207.2) has
+        # no ability to host.
+        if _rules_text(t.oracle_text):
+            assert ce.faces and ce.faces[0], t.name
+        if _rules_text(getattr(t, "back_face_oracle", "")):
+            assert len(ce.faces) == 2 and ce.faces[1], t.name
+
+
+def test_synthetic_templates_get_the_same_effects_as_loaded_ones(card_db):
+    """A template built directly (tests, tokens) parses through the same
+    lazy path and facts as a loaded one: equal printed fields give equal
+    effects."""
+    import dataclasses
+    from engine.cards import CardTemplate
+    from engine.effect_spec import canonical
+    checked = 0
+    for name in _deck_card_names():
+        t = card_db.cards.get(name)
+        if t is None or getattr(t, "back_face_oracle", ""):
+            continue
+        synthetic = CardTemplate(
+            name=t.name, card_types=list(t.card_types),
+            mana_cost=t.mana_cost, supertypes=list(t.supertypes),
+            subtypes=list(t.subtypes), oracle_text=t.oracle_text,
+            printed_keywords=t.printed_keywords)
+        assert synthetic._effects is None
+        assert canonical(synthetic.effects) == canonical(t.effects), name
+        # A copied template (dataclasses.replace) carries the memo while
+        # its text is unchanged.
+        assert dataclasses.replace(t).effects is t.effects
+        checked += 1
+    assert checked >= 200, checked

@@ -179,17 +179,26 @@ def printed_span(oracle, facts, face: int, host_index: int,
     return N.printed_span(text, facts, (a + base, b + base))
 
 
-def parse_pool(db, *, keywords_of=None) -> Dict[str, object]:
+def parse_pool(db, *, keywords_of=None, populate: bool = False
+               ) -> Dict[str, object]:
     """The eager pool path the tools use: every template of `db` parsed,
     keyed by name, through the same `parse_template(t)` call the lazy
-    per-template path makes (the facts come from `template_facts`, the
-    keywords from `CardTemplate.printed_keywords`); `keywords_of` may
-    supply a face-0 keyword list instead. Games never call this: they
-    parse lazily, per template."""
+    `CardTemplate.effects` property makes (the facts come from
+    `template_facts`, the keywords from `CardTemplate.printed_keywords`);
+    `keywords_of` may supply a face-0 keyword list instead. `populate`
+    also pins each result on its template (`CardTemplate.set_effects`), so
+    a tool that walks the whole pool reads `t.effects` without a second
+    parse; it is refused with `keywords_of`, whose facts differ from the
+    property's. Games never call this: they parse lazily, per template."""
+    if populate and keywords_of is not None:
+        raise ValueError("populate pins the property's own parse; "
+                         "keywords_of changes its facts")
     out: Dict[str, object] = {}
     for t in {id(v): v for v in db.cards.values()}.values():
         if keywords_of is None:
             out[t.name] = parse_template(t)
+            if populate:
+                t.set_effects(out[t.name])
             continue
         facts = [template_facts(t, 0, keywords_of(t))]
         if getattr(t, "back_face_oracle", ""):
