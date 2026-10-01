@@ -26,9 +26,13 @@ import pytest
 from engine.effect_spec import KeywordSpec, canonical
 
 # Measured 2026-10-01 on the full pool (see the printed report):
-# * front faces gated by their MTGJSON keywords: 99.94% of the keyword
-#   lines are typed (9830 typed, 6 unmodelled: 5 "{g} or {w}" cost choices
-#   the cost owner cannot hold, 1 self-form ward cost with no printed span);
+# * front faces gated by their MTGJSON keywords: 99.76% of the keyword
+#   lines are typed with a cost the cost owner reads (9830 typed, of which
+#   18 carry the owner's 'unrecognised' refusal -- ward 5, cumulative
+#   upkeep 5, equip 2, flashback 2, bestow, madness, recover, splice 1 --
+#   and are kept out of the share; 6 unmodelled: 5 "{g} or {w}" cost
+#   choices the cost owner cannot hold, 1 self-form ward cost with no
+#   printed span);
 #   no paragraph that opens with one of the face's keywords and is not a
 #   sentence is dropped as "not a keyword line" (A1);
 # * back faces, CR 702 table alone: 318 typed, 0 unmodelled;
@@ -91,6 +95,13 @@ def _satisfied(kw, typed):
     return kw in typed or (kw == "cycling" and "typecycling" in typed)
 
 
+def _cost_refused(spec):
+    """The cost owner's image of the spec's cost carries its 'unrecognised'
+    refusal (`oracle_parser.parse_activation_cost`)."""
+    return (spec.cost_snapshot is not None and "unrecognised"
+            in dict(spec.cost_snapshot.items)["unpayable"])
+
+
 def _run(faces, gated=True):
     from engine.effect_grammar import keywords as K
     counts = Counter()
@@ -120,6 +131,14 @@ def _run(faces, gated=True):
                 assert r.value and all(isinstance(s, KeywordSpec) for s in r.value)
                 assert 0 <= r.span[0] <= r.span[1] <= len(para)
                 counts[key + "typed"] += 1
+                # A line whose cost the cost owner could not read is typed
+                # by the keyword table but refused by the cost owner: it
+                # is reported apart and kept out of the typed share.
+                refused = [s.name for s in r.value if _cost_refused(s)]
+                if refused:
+                    counts[key + "cost_refused"] += 1
+                    for kw in refused:
+                        counts["refused:" + kw] += 1
                 typed_names.update(s.name for s in r.value)
             else:
                 assert r.unmodelled.detail.startswith("keywords."), r
@@ -156,14 +175,20 @@ def test_the_keyword_table_types_or_refuses_every_pool_keyword_line_deterministi
 
     table_counts, _, _ = _run([f for f in faces if f[1] == 0], gated=False)
     lines = counts["typed"] + counts["unmodelled"]
-    typed_share = counts["typed"] / lines
+    typed_share = (counts["typed"] - counts["cost_refused"]) / lines
     back = counts["back_typed"] + counts["back_unmodelled"]
-    back_share = counts["back_typed"] / max(1, back)
+    back_share = (counts["back_typed"] - counts["back_cost_refused"]) / max(1, back)
     recall = found["found"] / max(1, found["listed"])
-    print("\nkeyword lines (front, gated): typed=%d unmodelled=%d (%.2f%% typed)"
-          % (counts["typed"], counts["unmodelled"], 100 * typed_share))
-    print("keyword lines (back, table only): typed=%d unmodelled=%d (%.2f%%)"
-          % (counts["back_typed"], counts["back_unmodelled"], 100 * back_share))
+    print("\nkeyword lines (front, gated): typed=%d (of which cost refused by "
+          "the cost owner=%d) unmodelled=%d (%.2f%% typed with an unrefused cost)"
+          % (counts["typed"], counts["cost_refused"], counts["unmodelled"],
+             100 * typed_share))
+    print("keyword lines (back, table only): typed=%d (cost refused=%d) "
+          "unmodelled=%d (%.2f%%)"
+          % (counts["back_typed"], counts["back_cost_refused"],
+             counts["back_unmodelled"], 100 * back_share))
+    print("cost refused by keyword:", sorted(
+        (k, v) for k, v in counts.items() if k.startswith("refused:")))
     print("front faces, table only (no gate): typed=%d unmodelled=%d"
           % (table_counts["typed"], table_counts["unmodelled"]))
     print("face keywords found on a typed line: %d/%d (%.2f%%)"
@@ -280,6 +305,30 @@ WITNESSES = {
     "Fire Magic": [("tiered", None, None, None)],
 }
 
+# card -> the cost owner's image of each costed item, in printed order:
+# (unpayable, the non-zero mana pips). An 'unrecognised' refusal is the
+# cost owner's verdict, pinned as such -- never read as a fully typed cost.
+WITNESS_COSTS = {
+    "Lava Dart": [(("sacrifice",), {})],
+    "Cling to Dust": [(("exile",), {"generic": 3, "black": 1})],
+    "Desperate Ritual": [((), {"generic": 1, "red": 1})],
+    "Goryo's Vengeance": [((), {"generic": 2, "black": 1})],
+    "Unburial Rites": [((), {"generic": 3, "white": 1})],
+    "Faithless Looting": [((), {"generic": 2, "red": 1})],
+    "Past in Flames": [((), {"generic": 4, "red": 1})],
+    "Consult the Star Charts": [((), {"generic": 1, "blue": 1})],
+    "Orim's Chant": [((), {"white": 1})],
+    "Consign to Memory": [((), {"generic": 1})],
+    "Vandalblast": [((), {"generic": 4, "red": 1})],
+    "Solitude": [(("exile",), {})],
+    "Subtlety": [(("exile",), {})],
+    "Endurance": [(("exile",), {})],
+    "Street Wraith": [((), {})],
+    # The red pip is read; "collect evidence 6" is not a cost the owner
+    # models, so it refuses the rest.
+    "Detective's Phoenix": [(("unrecognised",), {"red": 1})],
+}
+
 # Cards whose "<keyword> cost is equal to its mana cost" sentence is the A8
 # cost rule of the keyword they grant.
 COST_RULE_WITNESSES = {"Past in Flames": "flashback",
@@ -306,14 +355,19 @@ def test_a_registered_deck_keyword_line_is_a_keyword_host_never_resolution_text(
     paragraphs are never keyword lines, so they cannot merge."""
     assert name in _deck_cards(), name
     _, typed, other = _witness_lines(card_db, name)
-    items = []
+    items, costs = [], []
     for para, r in typed:
         assert r.unmodelled is None, (para, r)
         assert r.rest_spans == (), (para, r)
         items += [(s.name, s.n, s.param, s.cost) for s in r.value]
         for s in r.value:
             assert (s.cost is None) == (s.cost_snapshot is None), s
+            if s.cost_snapshot is not None:
+                snap = dict(s.cost_snapshot.items)
+                costs.append((snap["unpayable"],
+                              {k: v for k, v in snap["mana"] if v}))
     assert items == WITNESSES[name]
+    assert costs == WITNESS_COSTS.get(name, []), costs
     # Every witness but a keyword-only face keeps its other text apart.
     assert other or name == "Street Wraith", name
 
