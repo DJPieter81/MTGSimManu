@@ -92,6 +92,7 @@ LEAF_EDGES = {
     # names from payload's table, the CR 702 names from keywords' and the
     # zone possessives from destination's.
     "lexicon": frozenset({"payload", "keywords", "dest"}),
+    "quantity": frozenset({"filter", "payload", "duration"}),
 }
 
 
@@ -167,7 +168,8 @@ def clear_caches() -> None:
     point)."""
     from engine.effect_grammar import lexicon, normalize
     from engine.effect_grammar.sub import (
-        dest, duration, filter, payload, target,
+        dest, duration, filter, payload, quantity, target,
     )
-    for leaf in (normalize, duration, payload, dest, filter, target, lexicon):
+    for leaf in (normalize, duration, payload, dest, filter, target,
+                 lexicon, quantity):
         leaf.clear_caches()
