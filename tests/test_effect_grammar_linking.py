@@ -1138,3 +1138,51 @@ def test_a_pending_references_noun_is_its_singular_head_with_the_possessive_suff
     assert participant.reference_noun("those creatures'") == "creature"
     assert participant.reference_noun("that class's") == "class"
     assert participant.reference_noun("them") == ""
+
+
+def test_schema_lowering_repeats_until_no_spec_of_the_host_violates(monkeypatch):
+    """L5 step 11: a violating spec is lowered to UNMODELLED(INVALID); a
+    lowering may expose a new violation, so the pass repeats until none
+    is left -- a host is never returned holding a violation, however many
+    rounds that takes."""
+    import engine.effect_spec as ES
+    from engine.effect_grammar import link
+    from engine.effect_spec import iter_specs
+
+    def first_typed_violates(spec, host=None, parents=()):
+        typed = [s.seq for s in iter_specs(host.specs)
+                 if s.verb is not Verb.UNMODELLED] if host is not None else []
+        if spec.verb is not Verb.UNMODELLED and typed and spec.seq == min(typed):
+            return "test.cascade"
+        return None
+    link.clear_caches()
+    monkeypatch.setattr(ES, "validate_spec", first_typed_violates)
+    monkeypatch.setattr(link, "validate_spec", first_typed_violates)
+    try:
+        (h,) = parse_face("Draw a card. Draw a card. Draw a card. Draw a "
+                          "card. Draw a card.", _facts(types=("sorcery",)))
+        assert len(h.specs) == 5
+        assert link._violations(h) == {}
+        assert all(_refusal(s).stage is Stage.INVALID for s in h.specs)
+    finally:
+        link.clear_caches()
+
+
+def test_a_violation_that_survives_lowering_refuses_the_whole_host(monkeypatch):
+    """L5 step 11: when lowering every named spec leaves a violation, the
+    pass ends with every spec of the host lowered -- it terminates, and no
+    typed spec is returned beside the violation."""
+    import engine.effect_spec as ES
+    from engine.effect_grammar import link
+
+    def always(spec, host=None, parents=()):
+        return "test.always"
+    link.clear_caches()
+    monkeypatch.setattr(ES, "validate_spec", always)
+    monkeypatch.setattr(link, "validate_spec", always)
+    try:
+        (h,) = parse_face("Draw a card. Discard a card.",
+                          _facts(types=("sorcery",)))
+        assert [s.verb for s in h.specs] == [Verb.UNMODELLED] * 2
+    finally:
+        link.clear_caches()

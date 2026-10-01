@@ -1398,8 +1398,13 @@ def link_host(l1, facts: _normalize.Facts = _normalize.Facts(),
                 label=l1.label, keywords=l1.keywords, from_zone=l1.from_zone,
                 flags=frozenset(state["flags"]),
                 restrictions=l1.restrictions)
+    # Lower each violating spec and re-validate: a lowering can expose a
+    # new violation (a spec that read the lowered one), so the pass repeats
+    # until no spec violates. Lowering only grows the lowered set, so this
+    # ends; a violation that survives lowering every spec it names lowers
+    # the whole host, never returning it with a violation.
     lowered: Dict[int, Unmodelled] = {}
-    for _ in range(3):
+    while True:
         frozen = {"_targets": {}, "_text": l1.text}
         out = _freeze_host(ctx, root, frozen, lowered, base)
         # Modes were validated when they were linked (their seqs are their
@@ -1407,8 +1412,18 @@ def link_host(l1, facts: _normalize.Facts = _normalize.Facts(),
         bad = _violations(dataclasses.replace(out, modes=()))
         if not bad:
             return out
-        lowered.update(bad)
-    return out
+        new = {k: v for k, v in bad.items() if k not in lowered}
+        if not new:
+            break
+        lowered.update(new)
+    from engine.effect_spec import _walk_hosts
+    um = next(iter(bad.values()))
+    for h, _creators in _walk_hosts(((dataclasses.replace(out, modes=()),),),
+                                    include_granted=False, include_sub=True):
+        for s in iter_specs(h.specs):
+            lowered.setdefault(s.seq, um)
+    frozen = {"_targets": {}, "_text": l1.text}
+    return _freeze_host(ctx, root, frozen, lowered, base)
 
 
 # ── The face memo ───────────────────────────────────────────────────────
