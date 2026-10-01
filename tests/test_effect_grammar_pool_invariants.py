@@ -776,6 +776,28 @@ def test_a_template_parses_its_effects_on_first_access_and_memoises(monkeypatch)
     assert t.effects is EMPTY_EFFECTS and calls["template"] == 2
 
 
+def test_a_template_whose_facts_change_after_its_first_effects_read_parses_again(monkeypatch):
+    """The memo is keyed on the complete parse input -- both face texts and
+    every face's facts (types, supertypes, subtypes, X cost, printed
+    keywords) -- so a template whose type changes after its first read
+    parses again instead of serving effects parsed under the old facts."""
+    from engine.cards import CardTemplate, CardType
+    from engine.effect_spec import HostKind
+    from engine.mana import ManaCost
+    calls = _counting_template_parses(monkeypatch)
+    t = CardTemplate(name="Fixture Shape", card_types=[CardType.CREATURE],
+                     mana_cost=ManaCost(generic=2), oracle_text="Draw a card.")
+    assert not any(h.kind is HostKind.SPELL for h in t.effects.faces[0])
+    assert calls["template"] == 1
+    t.card_types = [CardType.SORCERY]
+    assert t.effects.spell() is not None and calls["template"] == 2
+    t.printed_keywords = ["Flying"]
+    t.effects
+    assert calls["template"] == 3
+    t.effects
+    assert calls["template"] == 3                             # memoised
+
+
 # Every registered-deck template (~360) plus every 97th pool template
 # (~235), each parsed twice. Measured 2026-10-01: ~1.5 s body, plus ~16 s
 # when first in the process to load the card DB. 300 s bounds a hang on a

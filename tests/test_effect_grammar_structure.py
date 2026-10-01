@@ -827,6 +827,58 @@ def test_loyalty_clause_templates_are_never_parsed_under_their_synthetic_names(c
     assert seen == []
 
 
+def _fixture_walker(card_db, text, loyalty=3):
+    """A synthetic walker typed the way the card database types one."""
+    from engine.cards import CardTemplate, CardType
+    from engine.oracle_parser import parse_loyalty_abilities
+    from engine.mana import ManaCost
+    w = CardTemplate(name="Fixture Walker", card_types=[CardType.PLANESWALKER],
+                     mana_cost=ManaCost(generic=3), oracle_text=text,
+                     loyalty=loyalty)
+    w.loyalty_abilities = card_db._type_loyalty_clauses(
+        w.name, parse_loyalty_abilities(text, loyalty), walker=w, face=0)
+    return w
+
+
+def test_a_loyalty_clause_slice_follows_its_walkers_repinned_effects(card_db):
+    """The clause's effects ARE its walker's line host: when the walker's
+    effects are re-pinned (set_effects, parse_pool(populate=True)) or
+    re-parsed after a re-print, the clause reads the new host, never a
+    slice memoised from the old one."""
+    from engine.effect_spec import EMPTY_EFFECTS, Verb
+    w = _fixture_walker(
+        card_db, "[+1]: Draw a card.\n[−2]: Destroy target creature.")
+    clause = w.loyalty_abilities["plus"].clause
+    assert Verb.DRAW in clause.effects.verbs
+    assert clause.effects.faces[0][0] is w.effects.loyalty("plus", 0)
+    # Re-pinned to nothing: the clause has no line to slice.
+    w.set_effects(EMPTY_EFFECTS)
+    assert clause.effects is EMPTY_EFFECTS
+    # Re-printed: the clause slices the new parse's line.
+    w.set_effects(None)
+    w.oracle_text = "[+1]: You gain 2 life.\n[−2]: Destroy target creature."
+    assert Verb.GAIN_LIFE in clause.effects.verbs
+    assert Verb.DRAW not in clause.effects.verbs
+    assert clause.effects.faces[0][0] is w.effects.loyalty("plus", 0)
+
+
+def test_the_typed_walker_fixture_slices_its_own_lines_not_empty_effects(card_db):
+    """The shared loyalty fixture types its clauses against the fixture
+    walker, so a clause's effects are that walker's line host (a bare
+    clause would read EMPTY_EFFECTS and a test on it would pass vacuously)."""
+    import random
+    from engine.effect_spec import Verb
+    from engine.game_state import GameState
+    from tests.conftest import typed_walker
+    game = GameState(rng=random.Random(0))
+    pw = typed_walker(card_db, game, 0,
+                      "[+1]: Draw a card.\n[−2]: You gain 2 life.", 3)
+    tpl = pw.template
+    plus = tpl.loyalty_abilities["plus"].clause.effects
+    assert Verb.DRAW in plus.verbs
+    assert plus.faces[0][0] is tpl.effects.loyalty("plus", 0)
+
+
 def test_a_back_face_is_parsed_before_its_loyalty_clauses_are_typed(tmp_path):
     """A12: the back face's loyalty clauses slice the face-1 parse, so the
     back face's facts (its card types and subtypes, which make the face a

@@ -1,8 +1,9 @@
 """The clause and trigger grammar (design doc 2026-09-29, section 3).
 
-The single parse-once owner of clause structure: it reads oracle text at
-LOAD, never at resolution, and produces the typed `engine.effect_spec`
-model. Layers L0-L5 live in sibling modules; the closed sub-grammars live
+The single parse-once owner of clause structure: it reads oracle text
+through the per-template `CardTemplate.effects` memo -- lazily, on a
+template's first access (which may fall mid-game), never at resolution --
+and produces the typed `engine.effect_spec` model. Layers L0-L5 live in sibling modules; the closed sub-grammars live
 in `engine.effect_grammar.sub`.
 
 **Entry points** (section 3):
@@ -18,10 +19,13 @@ in `engine.effect_grammar.sub`.
 * `printed_span(oracle, facts, face, host_index, span) -> str` -- the
   printed text behind a host span, the L0 offset map recomputed for the
   call (A40) through `normalize.printed_span`;
-* `clear_caches()`.
+* `clear_caches()` -- the module memos only; the per-template
+  `CardTemplate.effects` memos live as long as their templates
+  (`CardTemplate.set_effects(None)` clears one).
 
 `template_facts` builds a face's `normalize.Facts` from a template (the
-section-3 fact list), and `parse_pool` is the eager whole-pool path the
+section-3 fact list), `template_inputs` the complete parse input the
+`CardTemplate.effects` memo is keyed on, and `parse_pool` is the eager whole-pool path the
 tools use; a game parses lazily, per template, through `parse_template`.
 """
 from __future__ import annotations
@@ -30,7 +34,7 @@ from typing import Dict, Iterable, Optional, Sequence, Tuple
 
 __all__ = ["parse_template", "parse_face", "parse_effects",
            "parse_text_effects", "printed_span", "template_facts",
-           "parse_pool", "clear_caches"]
+           "template_inputs", "parse_pool", "clear_caches"]
 
 _SPELL_TYPES = frozenset({"instant", "sorcery"})
 
@@ -84,6 +88,18 @@ def _face_texts(template) -> Tuple[str, ...]:
     front = getattr(template, "oracle_text", "") or ""
     back = getattr(template, "back_face_oracle", "") or ""
     return (front, back) if back else (front,)
+
+
+def template_inputs(template):
+    """The complete parse input of `template`: ``(key, facts)`` where
+    `facts` lists `template_facts` per printed face and `key` is
+    ``(name, face texts, facts)``. `CardTemplate.effects` keys its memo on
+    `key` (A32's rule one level up), so a change to any field a face's
+    facts read -- types, supertypes, subtypes, X cost, printed keywords,
+    the back face's types -- parses again."""
+    texts = _face_texts(template)
+    facts = tuple(template_facts(template, i) for i in range(len(texts)))
+    return (getattr(template, "name", "") or "", texts, facts), facts
 
 
 def parse_face(text: str, facts=None, face: int = 0):
@@ -212,9 +228,12 @@ def clear_caches() -> None:
     (`engine.effect_grammar.sub.clear_caches`) and the leaves that sit
     beside them (L0 normalize, the CR 701/702 keyword tables, the verb
     lexicon), the L1 structure memo, the L4 clause memo and the L5 face
-    memo. The load driver calls this once,
-    when the grammar pass finishes; the leaf-contract test pins that no
-    module's cache is missed."""
+    memo. Tools call it after a pool pass (`parse_pool`) to drop the
+    module memos; no load pass calls it, since nothing parses at load.
+    It does not clear the per-template `CardTemplate.effects` memos,
+    which live as long as their templates (`set_effects(None)` clears
+    one). The leaf-contract test pins that no module's cache is
+    missed."""
     from engine.effect_grammar import (clauses, keywords, lexicon, link,
                                        normalize, patterns, structure, sub)
     sub.clear_caches()

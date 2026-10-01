@@ -1292,15 +1292,19 @@ class CardTemplate:
     # parse costs several times the load budget); the first access parses
     # this template through `engine.effect_grammar.parse_template` -- the
     # same call the eager tools' path `parse_pool` makes -- and memoises.
-    # `_effects_key` is the printed identity the memo was parsed from (name
-    # and both faces' text), so a copied and re-printed template parses
-    # again. `_effects_slice` marks a loyalty CLAUSE template (built by
+    # `_effects_key` is the complete parse input the memo was parsed from
+    # (`effect_grammar.template_inputs`: name, both faces' text and every
+    # face's facts), so a copied, re-printed or re-typed template parses
+    # again; on a clause template it is the walker's effects object the
+    # slice was cut from. The memo lives as long as the template:
+    # `effect_grammar.clear_caches` does not clear it (`set_effects(None)`
+    # does). `_effects_slice` marks a loyalty CLAUSE template (built by
     # `CardDatabase._type_loyalty_clauses`): ``(walker, face, slot)``; its
     # effects are the walker's LOYALTY host for that slot on the face the
     # engine activates, never a parse of the clause's synthetic text (A12).
     _effects: Optional[Any] = field(default=None, compare=False, repr=False)
-    _effects_key: Optional[tuple] = field(default=None, compare=False,
-                                          repr=False)
+    _effects_key: Optional[Any] = field(default=None, compare=False,
+                                        repr=False)
     _effects_slice: Optional[tuple] = field(default=None, compare=False,
                                             repr=False)
 
@@ -1603,33 +1607,51 @@ class CardTemplate:
     @property
     def effects(self):
         """This card's `CardEffects` (every face), parsed on first access
-        and memoised; see `_effects`. A loyalty clause template returns its
-        walker's LOYALTY host slice and never parses."""
-        e = self._effects
+        and memoised on the complete parse input; see `_effects`. A loyalty
+        clause template returns its walker's LOYALTY host slice and never
+        parses."""
         if self._effects_slice is not None:
-            if e is None:
-                from .effect_spec import EMPTY_EFFECTS
-                walker, face, slot = self._effects_slice
-                host = (walker.effects.loyalty(slot, face)
-                        if walker is not None else None)
-                e = (EMPTY_EFFECTS if host is None
-                     else EMPTY_EFFECTS.with_face(face, (host,)))
-                self._effects = e
-            return e
-        key = (self.name, self.oracle_text, self.back_face_oracle)
+            return self._sliced_effects()
+        from . import effect_grammar
+        key, facts = effect_grammar.template_inputs(self)
+        e = self._effects
         if e is None or self._effects_key != key:
-            from . import effect_grammar
-            e = effect_grammar.parse_template(self)
+            e = effect_grammar.parse_template(self, list(facts))
             self._effects, self._effects_key = e, key
         return e
 
+    def _sliced_effects(self):
+        """A clause template's effects: its walker's LOYALTY host for the
+        slot, on the face the engine activates. The slice is re-cut whenever
+        the walker's own effects object changes (re-pinned, re-parsed after
+        a re-print), so it is always the very host object of the walker's
+        current effects."""
+        from .effect_spec import EMPTY_EFFECTS
+        walker, face, slot = self._effects_slice
+        if walker is None:
+            return EMPTY_EFFECTS
+        we = walker.effects
+        if self._effects is None or self._effects_key is not we:
+            host = we.loyalty(slot, face)
+            self._effects = (EMPTY_EFFECTS if host is None
+                             else EMPTY_EFFECTS.with_face(face, (host,)))
+            self._effects_key = we
+        return self._effects
+
     def set_effects(self, effects) -> None:
-        """Pin this template's effects for its current printed text (the
-        eager tools' path, tests); None clears the memo."""
+        """Pin this template's effects for its current parse input (the
+        eager tools' path, tests); None clears the memo. A loyalty clause
+        template's pin holds while its walker's effects stay the same
+        object."""
         self._effects = effects
-        self._effects_key = (None if effects is None else
-                             (self.name, self.oracle_text,
-                              self.back_face_oracle))
+        if effects is None:
+            self._effects_key = None
+        elif self._effects_slice is not None:
+            walker = self._effects_slice[0]
+            self._effects_key = walker.effects if walker is not None else None
+        else:
+            from . import effect_grammar
+            self._effects_key = effect_grammar.template_inputs(self)[0]
 
     def __hash__(self):
         return hash(self.name)

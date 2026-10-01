@@ -238,8 +238,13 @@ def typed_walker(card_db, game, controller, text, loyalty, counters=None):
     tpl.oracle_text = text
     tpl.loyalty = loyalty
     tpl.back_face_oracle = ""
+    # The copy carries Karn's effects memo; the memo key (name, text,
+    # facts) already differs, and clearing it keeps the fixture honest.
+    tpl.set_effects(None)
+    # Clauses sliced from THIS walker's own lines (a bare clause would
+    # carry EMPTY_EFFECTS).
     tpl.loyalty_abilities = card_db._type_loyalty_clauses(
-        tpl.name, parse_loyalty_abilities(text, loyalty))
+        tpl.name, parse_loyalty_abilities(text, loyalty), walker=tpl, face=0)
     pw = CardInstance(template=tpl, owner=controller, controller=controller,
                       instance_id=game.next_instance_id(), zone="battlefield")
     pw._game_state = game
