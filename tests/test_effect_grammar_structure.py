@@ -395,6 +395,27 @@ def test_one_or_more_and_any_number_modal_headers_are_recognised():
         assert h[0].choose == bounds and len(h[0].modes) == 3, header
 
 
+def test_a_modal_header_count_reads_every_word_of_the_one_count_table():
+    """CR 700.2: the header's count is a printed count word, read from the
+    leaves' one table (`sub.NUMBER_WORDS`), so a count above five is a
+    header like any other, never orphaned bullets."""
+    bullets = "".join("\n• Scry %d." % i for i in range(1, 8))
+    for header, bounds in (("Choose six —", (6, 6)),
+                           ("Choose up to six —", (0, 6))):
+        h = _hosts(header + bullets)
+        assert _kinds(h) == [HostKind.SPELL], header
+        assert h[0].choose == bounds and len(h[0].modes) == 7, header
+
+
+def test_the_mana_ability_tests_read_the_host_at_its_own_offsets():
+    """A6: the ADD_MANA test reads the body as a span of the host (the leaf
+    contract), with the same verdict as on the body alone."""
+    from engine.effect_grammar.sub import payload
+    host = "{t}: add {g}. activate only as a sorcery."
+    assert payload.adds_mana(host, (host.index("add"), len(host)))
+    assert not payload.adds_mana(host, (0, host.index("add")))
+
+
 def test_a_modal_trigger_header_keeps_its_trigger_head():
     h = _hosts("Whenever this creature attacks, choose one —\n"
                "• Discard a card. If you do, draw a card.\n"

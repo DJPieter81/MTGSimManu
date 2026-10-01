@@ -265,9 +265,11 @@ def parse_mana(host: str, span: Optional[Span] = None, *, lemma: str = "") -> Sl
 _ADD_RE = re.compile(r"\badds?\s+")
 
 
-def adds_mana(text: str) -> bool:
-    """Does the clause text hold an ADD_MANA clause (CR 605.1a/b, A6)?"""
-    for m in _ADD_RE.finditer(text):
+def adds_mana(host: str, span: Optional[Span] = None) -> bool:
+    """Does ``host[span]`` (default: the whole host) hold an ADD_MANA
+    clause (CR 605.1a/b, A6)?"""
+    text = host if span is None else host[:span[1]]
+    for m in _ADD_RE.finditer(text, 0 if span is None else span[0]):
         tail = text[m.end():]
         if _mana_rel(tail.split(".")[0].strip())[0] is not None:
             return True

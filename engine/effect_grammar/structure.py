@@ -27,9 +27,11 @@ classified with first-match precedence (section 3):
 5. ALTERNATIVE_COST -- "rather than pay ~'s mana cost" and "you may cast ~
    without paying its mana cost" (CR 118.9, A2): the cost and its
    condition, no effect text.
-6. Modal -- a header in the text ("choose one -", the grammar's own table,
-   a superset of `oracle_parser._MODAL_HEADER_RE` with "one or more" and
-   "any number"), or Tiered / Spree through the face keywords or the
+6. Modal -- a header in the text ("choose one -"; its count word is read
+   from the leaves' one count table, `sub.COUNT_WORDS`, plus "one or
+   both", "one or more" and "any number" -- a superset of the legacy
+   `oracle_parser._MODAL_HEADER_RE`, which stays the game path's until its
+   family migrates), or Tiered / Spree through the face keywords or the
    removed reminder (A4). The header paragraph keeps its own kind (a
    trigger head stays a trigger, CR 700.2); its bullets are MODE hosts with
    ``mode_index`` and, for tiered and spree bullets, ``mode_cost``.
@@ -96,8 +98,9 @@ from typing import Callable, FrozenSet, List, NamedTuple, Optional, Tuple
 
 from engine.delayed_triggers import DelayedTriggerTiming
 from engine.effect_grammar import keywords, lexicon, normalize
-from engine.effect_grammar.sub import (CACHE_SIZE, Span, condition, duration,
-                                       payload, target, unmodelled)
+from engine.effect_grammar.sub import (CACHE_SIZE, COUNT_WORDS, NUMBER_WORDS,
+                                       Span, condition, duration, payload,
+                                       target, unmodelled)
 from engine.effect_grammar.sub import filter as _filter
 from engine.effect_model import Modification
 from engine.effect_spec import (Amount, Condition, CostSnapshot, EventHint,
@@ -253,9 +256,12 @@ _ROMAN = {"i": 1, "v": 5, "x": 10}
 # An ability word / flavor word / labelled keyword ability: a short run of
 # words before " - " at paragraph start (CR 207.2c).
 _LABEL_RE = re.compile(r"(?P<label>[a-z][a-z'!&]*(?: [a-z0-9'!&]+){0,5}) - (?=\S)")
-_HEADER_COUNT = (r"one or both|one or more|any number|up to (?:one|two|three|"
-                 r"four|five)|one|two|three|four|five")
-_COUNT = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5}
+# The header's count word comes from the leaves' one count table
+# (`sub.COUNT_WORDS`, longest first), so a printed count is a header count
+# in every size or in none.
+_COUNT_ALT = "|".join(COUNT_WORDS)
+_HEADER_COUNT = (r"one or both|one or more|any number|up to (?:%s)|%s"
+                 % (_COUNT_ALT, _COUNT_ALT))
 # A modal header (A4, CR 700.2): the paragraph's last "choose <N>",
 # ending it or followed by sentences about the choice ("if this spell was
 # kicked, choose both instead.", "you may choose the same mode more than
@@ -736,7 +742,7 @@ def _triggered(ctx: _Ctx, p: int, t: str, label: str) -> _B:
                                      once_each_turn=once, frequency_raw=freq)
     if EventHint.TAPPED_FOR_MANA in hints and \
             not target.target_words(t, (pos, n)) and \
-            payload.adds_mana(t[pos:]):
+            payload.adds_mana(t, (pos, n)):
         b.flags.add("mana_ability")
     return b
 
@@ -809,7 +815,7 @@ def _activated(ctx: _Ctx, p: int, t: str, off: int, c: int,
     holes = _riders_and_cost_modifiers(ctx, p, t, off, b, c + 1, n)
     b.body.extend(_subtract(t, (c + 1, n), holes))
     # CR 605.1a (A6): no target anywhere, an ADD_MANA anywhere.
-    if not target.target_words(t, (c + 1, n)) and payload.adds_mana(t[c + 1:]):
+    if not target.target_words(t, (c + 1, n)) and payload.adds_mana(t, (c + 1, n)):
         b.kind = HostKind.MANA_ABILITY
     return b
 
@@ -874,8 +880,8 @@ def _bounds(word: str, n_modes: int) -> Tuple[int, int]:
     if word == "up to x":
         return 0, n_modes                   # X bounds it at resolution
     if word.startswith("up to "):
-        return 0, _COUNT[word[6:]]
-    return _COUNT[word], _COUNT[word]
+        return 0, NUMBER_WORDS[word[6:]]
+    return NUMBER_WORDS[word], NUMBER_WORDS[word]
 
 
 def _reminder_bounds(ctx: _Ctx, norm, n_modes: int) -> Optional[Tuple[int, int]]:
