@@ -787,6 +787,51 @@ def test_an_ambiguous_or_unbound_pronoun_is_unmodelled_never_guessed():
     assert _refusal(ret).detail == "link.ambiguous"
 
 
+def test_a_player_reference_never_binds_to_the_result_of_a_refused_clause():
+    """Section 7 "That player": a player reference binds to the nearest
+    player mention. A refused clause's result is an object set of unknown
+    kind, never a player, so "that player" skips it for the target player
+    while "that card" may still name it."""
+    h = _effect_host("Target player reveals their hand. You choose a nonland "
+                     "card from it. That player discards that card.",
+                     types=("sorcery",))
+    discard = h.specs[-1]
+    assert discard.verb is Verb.DISCARD
+    assert discard.actor == Ref(RefKind.TARGET, 0)
+
+
+def test_a_number_only_actor_pronoun_names_the_nearest_player():
+    """Section 7: "they" as a clause's actor names the nearest player who
+    could perform it -- a targeted player, or each player of a multi-player
+    subject (CR 101.4) -- never the object an earlier clause produced."""
+    from engine.effect_model import Selector, SelectorKind
+    h = _effect_host("Target opponent sacrifices a creature. If they can't, "
+                     "they lose 2 life.", types=("sorcery",))
+    (sac,) = h.specs
+    (lose,) = sac.otherwise
+    assert lose.verb is Verb.LOSE_LIFE and lose.actor == Ref(RefKind.TARGET, 0)
+    h = _effect_host("Each opponent may discard a card. If they don't, they "
+                     "lose 3 life.", types=("sorcery",))
+    (discard,) = h.specs
+    (lose,) = discard.otherwise
+    assert isinstance(lose.actor, Selector)
+    assert lose.actor.kind is SelectorKind.OPPONENTS
+
+
+def test_a_gapped_follower_of_a_refused_multi_player_choice_reads_its_result_per_player():
+    """CR 101.4, A28: "each opponent chooses ..., then sacrifices the rest"
+    -- the follower's elided subject is the chooser's, so each opponent
+    sacrifices the rest of their own choice even when the choice clause is
+    refused."""
+    h = _effect_host("Each opponent chooses an artifact, a creature, an "
+                     "enchantment, and a planeswalker from among the nonland "
+                     "permanents they control, then sacrifices the rest.",
+                     types=("sorcery",))
+    sac = h.specs[-1]
+    assert sac.verb is Verb.SACRIFICE
+    assert sac.ref.part is RefPart.REST and sac.ref.per_actor
+
+
 def test_the_exiled_card_binds_to_an_exile_in_the_same_ability_before_a_linked_ability():
     """A26, CR 607: "the exiled card" is the RESULT of an EXILE earlier in
     the same ability; with none, it names the card a linked ability

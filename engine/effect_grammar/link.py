@@ -350,8 +350,16 @@ def _mentions(node: _Node) -> List[_Mention]:
             out.append(_Mention(node, v, player=v.kind in (
                 RefKind.CONTROLLER_OF, RefKind.OWNER_OF, RefKind.EVENT_PLAYER,
                 RefKind.DEFENDING_PLAYER) or v.noun == "player"))
+        elif role == "actor" and isinstance(v, Selector) and \
+                v.kind in _MULTI_PLAYER:
+            # "Each opponent may discard a card. If they don't, they lose 3
+            # life": a later "they" is each of those players (CR 101.4).
+            out.append(_Mention(node, v, player=True, plural=True))
     if verb is Verb.UNMODELLED:
-        out.append(_Mention(node, Ref(RefKind.RESULT, node.seq), player=None))
+        # A refused clause's result is an object set whose kind is unknown;
+        # it is never a player, so a player reference ("that player") skips
+        # it for the nearest player mention (section 7 "That player").
+        out.append(_Mention(node, Ref(RefKind.RESULT, node.seq), player=False))
         return out
     principal = None
     if node.slot is not None:
@@ -555,15 +563,15 @@ def _bind(ctx: _Ctx, node: _Node, w: _Want, *, last_known=False) -> Ref:
         ref = dataclasses.replace(m.pre, lki=True) \
             if m.node.host is node.host else Ref(RefKind.RESULT, m.node.seq,
                                                   lki=True)
-    elif last_known and cand.spec.verb in _LEAVERS:
+    elif last_known and cand.spec.verb in _LEAVERS and isinstance(ref, Ref):
         ref = dataclasses.replace(ref, lki=True)
     return _with_part(ref, w)
 
 
 def _with_part(ref: Ref, w: _Want) -> Ref:
     """The bound antecedent with the anaphor's partitive (A28); the
-    antecedent's own noun is kept."""
-    if w.part is RefPart.ALL and w.n is None:
+    antecedent's own noun is kept. A player selector is bound whole."""
+    if not isinstance(ref, Ref) or (w.part is RefPart.ALL and w.n is None):
         return ref
     return dataclasses.replace(ref, part=w.part, n=w.n)
 
@@ -805,7 +813,24 @@ def _bind_node(ctx: _Ctx, node: _Node, antecedent: Optional[_Node]) -> None:
                     raise _Unbound("unbound")
                 node.fields[{"principal": "ref"}.get(role, role)] = ref
                 continue
-            ref = _bind(ctx, node, _want_of(v))
+            w = _want_of(v)
+            if role == "actor" and w.player is None:
+                # A number-only anaphor ("they") as the clause's actor names
+                # the nearest player who could perform it; only with no
+                # player antecedent is it an object ("they explore").
+                try:
+                    ref = _bind(ctx, node, _Want(
+                        player=True, noun=w.noun, plural=w.plural,
+                        participle=w.participle, part=w.part, n=w.n))
+                except _Unbound:
+                    ref = _bind(ctx, node, w)
+                    if isinstance(ref, Ref) and ref.kind is RefKind.RESULT \
+                            and node.bound and _refused(node.bound[-1]):
+                        # Only a refused clause's unknown result is left:
+                        # who acts is unknown, never guessed.
+                        raise _Unbound("unbound")
+            else:
+                ref = _bind(ctx, node, w)
             field = {"principal": "ref"}.get(role, role)
             if field == "ref" and (node.slot is not None
                                    or node.get("subject") is not None):
@@ -836,6 +861,18 @@ def _mark_lki(ctx: _Ctx, node: _Node) -> None:
             node.fields[slot] = nv
 
 
+def _refused(node: _Node) -> bool:
+    """Is the spec refused -- by its layer, or by a failed link?"""
+    return node.spec.verb is Verb.UNMODELLED or node.failed is not None
+
+
+def _shares_subject(node: _Node, src: _Node) -> bool:
+    """Is `node` a later clause of `src`'s sentence whose subject is
+    elided -- so its actor is the subject `src` printed (L3 gapping)?"""
+    return node.frame is not None and src.frame is node.frame and \
+        node.clause is not None and node.clause.gap == "subject"
+
+
 def _mark_per_actor(node: _Node) -> None:
     """A28 / CR 101.4: a RESULT of a multi-player actor's spec read by a
     spec of the same actor is bound per actor."""
@@ -847,8 +884,14 @@ def _mark_per_actor(node: _Node) -> None:
     def fn(v):
         if isinstance(v, Ref) and v.kind is RefKind.RESULT and not \
                 v.per_actor and v.index in seqs:
-            src = seqs[v.index].get("actor")
+            b = seqs[v.index]
+            src = b.get("actor")
             if isinstance(src, Selector) and src.kind is actor.kind:
+                return dataclasses.replace(v, per_actor=True)
+            if _refused(b) and _shares_subject(node, b):
+                # "Each opponent chooses ..., then sacrifices the rest": the
+                # refused clause's actor is unknown, but this clause's
+                # elided subject is that clause's, so it is the same actor.
                 return dataclasses.replace(v, per_actor=True)
         return None
     for slot in ("ref", "condition", "amount", "filter"):
