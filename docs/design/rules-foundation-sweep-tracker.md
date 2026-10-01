@@ -6203,3 +6203,30 @@ L1–L5 exist. Stage 3 therefore makes `CardTemplate.effects` lazy for every
 template, not only synthetic ones. A game parses only the cards it touches,
 pool-wide tools parse eagerly, and `CardDatabase()` load time is unchanged.
 An on-disk cache is held in reserve if the pool tools become too slow.
+
+**E0 stage 3 (spec steps 9–13, the grammar spine; `f7a2d03`…`a777c3d`, no behaviour change):**
+- **Layers:**
+  - **L1 `structure.py`** gives one host per ability: KEYWORD 26%, TRIGGERED 25%, SPELL 13%, ACTIVATED 12%, STATIC 12%, and so on. 0 hosts are uncovered, and 0 loyalty-slot disagreements with the legacy owner.
+  - **L2/L3 `clauses.py`** handles frames, connectives and the lemma-gated split.
+  - **L4 `patterns.py`** has nine verb-family rows.
+  - **L5 `link.py`** handles sub-abilities, pronouns, instead and RESULT refs. Every spec goes through `validate_spec`.
+  - **Package entry points:** `parse_template` / `parse_face` / `parse_effects` / `parse_pool`.
+- **Typed share:** 72.3% of 44,316 pool specs, and 73.9% of the 870 specs on registered-deck cards.
+  - By host kind: MANA_ABILITY 95, TRIGGERED 78, ACTIVATED 78, MODE 77, LOYALTY 75, SPELL 73, STATIC 61.
+- **Step 13:** `CardTemplate.effects` parses lazily per template and memoises it, keyed on the complete parse input. Loyalty clause templates slice their walker's LOYALTY host.
+  - `CardDatabase()` load CPU: 18.78 s before vs 19.15 s after, inside the ~2 s run-to-run spread.
+  - 0 templates hold effects after a load. One template parses in about 2 ms.
+- **The budget, honestly:** the eager whole-pool pass (`parse_pool`, used only by tools) measures 18.3–19.5 s CPU, against the 4.0 s budget agreed on 2026-10-01.
+  - Roughly half of L5 is `validate_spec` over every spec.
+  - Games never take that path. Their cost is the per-template lazy parse, and load time is unchanged.
+  - The eager pass is pinned at a regression ceiling, not at 4.0 s. Bringing it toward the budget (validation once per distinct spec, cheaper L1 cascade) is open.
+- **Every layer** was built, adversarially reviewed and fixed: 27 review findings fixed red-first, plus 2 integration fixes (granted-ability costs read from the printed quote; meld layout fact).
+- **One pre-existing test-isolation bug surfaced and was fixed** (`e2e1369`): `test_activation_safety_valves.py` rebound `activated_abilities` on the shared card DB's template, and the new pool cost invariant caught it as a false regression when the chunk ran in order.
+- **Verified independently before push:** every ratchet at baseline; digest `--check` byte-identical (26 games); chunk B 2549 passed. Chunk A had 4179 passed and 1 failure (the isolation bug); the failing pair was re-run before and after the fix.
+
+**Jev classifier backend (`7393bdd`):**
+- For a decision-model provider (`typesafe:`), `classify_oracle` asks one boolean per `Tag`, worded from the prompt's tag table. `decision_to_tags` maps the answers back to the committed cache's shape.
+- Live check (scratch data only):
+  - On the 36 committed cards, 31 match exactly, and 45 of Jev's 46 tags agree.
+  - On the 357 registered-deck cards (2 min, 0 errors), 103 would gain tags they lack today, 67 of them ETB_ORACLE_TRIGGER.
+- The committed cache is unchanged. Adopting Jev's tags changes game behaviour, so it waits for a same-seed A/B.
