@@ -60,7 +60,9 @@ L0 steps 1-5) and none re-normalises it:
   stays;
 * quoted spans masked ``⟨qk⟩``; "named X" masked ``⟨nk⟩``.
 
-**Caches.** A leaf's memo caches are bounded (`CACHE_SIZE`) and every leaf
+**Caches.** A leaf's memo caches are bounded (`CACHE_SIZE`, or a smaller
+bound the module documents: the L1 face memo, whose entries are whole
+face parses, keeps `structure.FACE_CACHE_SIZE`) and every leaf
 exposes ``clear_caches()``; `clear_caches` here clears the sub-grammars'
 only, and the package's `engine.effect_grammar.clear_caches` -- the one
 entry point the load driver calls once the grammar pass finishes -- clears

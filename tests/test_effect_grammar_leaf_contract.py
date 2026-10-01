@@ -554,7 +554,10 @@ def test_every_leaf_cache_is_bounded_and_cleared_by_the_package():
         for attr in vars(leaf).values():
             if callable(attr) and hasattr(attr, "cache_info") and \
                     getattr(attr, "__module__", "") == leaf.__name__:
-                assert attr.cache_info().maxsize == sub.CACHE_SIZE, (name, attr)
+                # One bound for every leaf memo; a module may document a
+                # smaller one (the L1 face memo, structure.FACE_CACHE_SIZE).
+                bound = attr.cache_info().maxsize
+                assert bound is not None and bound <= sub.CACHE_SIZE, (name, attr)
                 caches.append(attr)
     assert caches
     leaves = _leaves()

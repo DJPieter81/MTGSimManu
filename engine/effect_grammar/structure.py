@@ -85,9 +85,9 @@ cost, label, rider, keyword, header or bullet), a ``pending`` span (a cost
 delta's scaler, typed by L4) or an ``unmodelled`` span -- `uncovered`
 reports what is not.
 
-The parse is a pure function of ``(text, facts, face)`` and memoised on it;
-the printed spans it reads are a function of the text, so the key is
-complete (A32).
+The parse is a pure function of ``(text, facts, face)`` and memoised on it
+in a bounded memo (`FACE_CACHE_SIZE`); the printed spans it reads are a
+function of the text, so the key is complete (A32).
 """
 from __future__ import annotations
 
@@ -110,8 +110,9 @@ from engine.oracle_parser import (loyalty_slot_for, parse_activation_cost,
                                   split_activation_riders,
                                   strip_reminder_text)
 
-__all__ = ["LEAF", "DETAIL_CODES", "Part", "L1Host", "FaceStructure",
-           "parse_face_structure", "uncovered", "clear_caches"]
+__all__ = ["LEAF", "DETAIL_CODES", "FACE_CACHE_SIZE", "Part", "L1Host",
+           "FaceStructure", "parse_face_structure", "uncovered",
+           "clear_caches"]
 
 LEAF = "structure"
 DETAIL_CODES = frozenset({
@@ -1061,7 +1062,17 @@ def _merge(ctx: _Ctx, builders: List[_B]) -> Tuple[L1Host, ...]:
     return tuple(_freeze(ctx, g, i) for i, g in enumerate(groups))
 
 
-@lru_cache(maxsize=CACHE_SIZE)
+# The face memo's bound. A pool pass never repeats a face (0 hits over
+# 23,204 faces), so the memo only absorbs repeat calls for the faces in
+# play -- two 75-card lists and their sideboards touch a few hundred --
+# and the per-template memo on CardTemplate.effects holds the rest. At
+# the pool's size (CACHE_SIZE) it kept every FaceStructure with its L0
+# output, 73 MB (design section 12), and the cyclic collector re-walked
+# them, about 1 s of the pass.
+FACE_CACHE_SIZE = 512
+
+
+@lru_cache(maxsize=FACE_CACHE_SIZE)
 def parse_face_structure(text: str, facts: normalize.Facts = normalize.Facts(),
                          face: int = 0) -> FaceStructure:
     """L1 for one face's printed text (see the module docstring)."""

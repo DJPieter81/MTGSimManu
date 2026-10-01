@@ -241,6 +241,9 @@ def test_l0_normalises_every_pool_face_deterministically_within_its_floors(faces
 # keeps its 1.5 s ceiling: 0.375 of the budget.
 POOL_PARSE_CPU_BUDGET_S = 4.0
 L0_SHARE_OF_BUDGET = 0.375
+# Design section 12: the grammar's memo caches may hold at most 40 MB
+# extra (tracemalloc) after a pool pass.
+POOL_PARSE_MEMO_BUDGET_MB = 40.0
 
 
 @pytest.mark.timeout(120)  # measured: 0.8 s CPU for L0 after the shared DB load

@@ -20,34 +20,49 @@ build (names, card types, the MTGJSON keywords cut to CR 702, M3). It must:
   A12 makes it a LOYALTY host, so a legacy ordinal L1 does not assign is
   allowed only for such a line, or for a line inside a level gate's
   refusal block (rule 13: a Class level line is no activated ability);
-* fit its measured CPU ceiling.
+* fit its share of the whole-grammar CPU budget, and keep a face memo
+  bounded far below the pool.
 
-Measured 2026-10-01 on this branch's DB (23,204 distinct faces, 41,399
-hosts; process CPU, caches cleared, quiet 4-core box): 3.5 s for L0 + L1
-together (L0 alone 0.84 s), about 150 us per face. The whole-grammar
-budget (`POOL_PARSE_CPU_BUDGET_S`, 4.0 s) is nearly spent by L0 + L1
-here and by the leaves' own pool slots (design section 12), which is why
-stage 3 makes
-`CardTemplate.effects` lazy: a game parses only the faces it touches, and
-this ceiling guards the pool tools' eager pass. Host shares at the same
-measurement: KEYWORD 26.0%, TRIGGERED 25.1%, SPELL 13.3%, ACTIVATED
-12.3%, STATIC 11.9%, MANA_ABILITY 3.6%, REPLACEMENT 3.5%, LOYALTY 2.0%,
-CHAPTER 1.1%, ADDITIONAL_COST 0.6%, UNKNOWN 0.5% (die tables, leveler
-bands, siege bullets with no choose header), ALTERNATIVE_COST 0.2%.
-0 uncovered hosts; 0 loyalty slot disagreements; 17 legacy ordinal
-extras, every one a variable-cost loyalty line.
+Measured 2026-10-01 on this branch's DB (23,204 distinct faces, 41,241
+hosts; process CPU, caches cleared, card DB frozen out of the collector,
+quiet 4-core box): 2.8-2.9 s for L0 + L1 together (L0 alone 0.75 s),
+about 125 us per face. Before the face memo was bounded the same pass
+took 3.3-3.6 s and the memo held 73 MB: it kept every FaceStructure with
+its L0 output and the cyclic collector re-walked them. Bounded at
+`structure.FACE_CACHE_SIZE` it holds 1.8 MB after a pool pass. L0 + L1
+are part of the whole grammar, so their ceiling is a share of
+`POOL_PARSE_CPU_BUDGET_S` (4.0 s) -- all of it: the subset may not exceed
+the whole -- which leaves L2-L5 about 1.1 s on the eager pool path, less
+than L4's leaf work (about 2.2 s, design section 12). That is why
+`CardTemplate.effects` is lazy (a game parses only the faces it
+touches); the eager pool budget itself is the section 12 open question.
+Host shares at the same measurement: KEYWORD 26.1%, TRIGGERED 25.1%,
+SPELL 13.3%, ACTIVATED 12.2%, STATIC 11.9%, MANA_ABILITY 3.6%,
+REPLACEMENT 3.5%, LOYALTY 2.0%, CHAPTER 1.1%, ADDITIONAL_COST 0.6%,
+UNKNOWN 0.5% (die tables, level-gate blocks, siege bullets with no choose
+header), ALTERNATIVE_COST 0.2%. 0 uncovered hosts; 0 loyalty slot
+disagreements; 91 legacy ordinal extras, every one a variable-cost
+loyalty line or a line inside a level-gate block.
 """
 from __future__ import annotations
 
+import gc
 import re
 import time
+import tracemalloc
 from collections import Counter
 
 import pytest
 
-# Twice the measured L0 + L1 process CPU (3.5 s): a regression that doubles
-# the structure pass fails here, by name, before it reaches a load path.
-STRUCTURE_POOL_CPU_CEILING_S = 7.0
+# L0 + L1 are part of the whole grammar, so their pass gets a share of the
+# whole-grammar budget (POOL_PARSE_CPU_BUDGET_S), never an absolute
+# ceiling above it -- the leaves' shares (test_effect_grammar_leaf_budget)
+# read the same budget. See the measurement in the module docstring.
+STRUCTURE_SHARE_OF_BUDGET = 1.0
+# The L1 face memo after a pool pass, as a share of the grammar's memo
+# budget (POOL_PARSE_MEMO_BUDGET_MB): bounded at structure.FACE_CACHE_SIZE
+# faces, never the pool.
+STRUCTURE_MEMO_SHARE_OF_BUDGET = 0.1
 # UNKNOWN hosts are refusals of structure the model has no host for; a
 # rise means a paragraph shape fell out of a typed host.
 UNKNOWN_SHARE_CEILING = 0.01
@@ -105,16 +120,32 @@ def _parse_all(faces):
             for _n, i, text, facts in faces]
 
 
-@pytest.mark.timeout(300)  # measured: 30 s wall incl. the ~16 s DB load
+@pytest.mark.timeout(300)  # measured: 38 s wall incl. the ~16 s DB load
 def test_every_pool_face_classifies_covered_deterministic_and_within_its_cpu_ceiling(faces):
     import engine.effect_grammar as grammar
     from engine.effect_grammar import structure as S
     from engine.effect_spec import HostKind
 
+    from tests.test_effect_grammar_normalize_pool import \
+        POOL_PARSE_CPU_BUDGET_S
+
     grammar.clear_caches()
-    t0 = time.process_time()
+    # As for L0: the card DB is frozen out of the cyclic collector so a
+    # full collection over its heap (the load pays it once) is not
+    # charged to the layer, and the timed pass keeps no results (the
+    # bounded memo keeps FACE_CACHE_SIZE faces), so the collector does not
+    # re-walk 23k parses the test holds for its checks.
+    gc.collect()
+    gc.freeze()
+    try:
+        t0 = time.process_time()
+        for _n, i, text, facts in faces:
+            S.parse_face_structure(text, facts, face=i)
+        cpu = time.process_time() - t0
+    finally:
+        gc.unfreeze()
+    grammar.clear_caches()
     first = _parse_all(faces)
-    cpu = time.process_time() - t0
 
     kinds, uncovered, missing_paragraphs = Counter(), [], []
     for (name, _i, _text, _f), fs in zip(faces, first):
@@ -141,7 +172,7 @@ def test_every_pool_face_classifies_covered_deterministic_and_within_its_cpu_cei
     # L5's; MODE hosts live under their modal host).
     assert set(kinds) == set(HostKind) - {HostKind.GRANTED, HostKind.MODE}
     assert kinds[HostKind.UNKNOWN] / total <= UNKNOWN_SHARE_CEILING
-    assert cpu <= STRUCTURE_POOL_CPU_CEILING_S, cpu
+    assert cpu <= POOL_PARSE_CPU_BUDGET_S * STRUCTURE_SHARE_OF_BUDGET, cpu
 
     grammar.clear_caches()
     assert _parse_all(faces) == first
@@ -193,3 +224,41 @@ def test_activation_ordinals_follow_the_legacy_ordinal_rule_on_every_face(faces)
         extras += n - len(mine)
     print("\nlegacy ordinals on X loyalty lines and level-gated lines: %d" % extras)
     assert bad == [], bad[:10]
+
+
+@pytest.mark.timeout(300)  # measured: about 15 s under tracemalloc
+def test_the_face_memo_is_bounded_below_the_pool_and_fits_its_memory_share(faces):
+    """Design section 12: the grammar's memos hold at most
+    POOL_PARSE_MEMO_BUDGET_MB after a pool pass. The L1 face memo keeps
+    whole face parses (hosts and L0 output), so it is bounded far below
+    the pool: after a full pass, with every leaf memo cleared and the
+    results dropped, what the face memo still holds fits its share."""
+    import engine.effect_grammar as grammar
+    from engine.effect_grammar import keywords, lexicon, normalize, sub
+    from engine.effect_grammar import structure as S
+    from tests.test_effect_grammar_normalize_pool import \
+        POOL_PARSE_MEMO_BUDGET_MB
+
+    assert S.parse_face_structure.cache_info().maxsize == S.FACE_CACHE_SIZE
+    assert S.FACE_CACHE_SIZE < len(faces) // 10
+    grammar.clear_caches()
+    gc.collect()
+    tracemalloc.start()
+    try:
+        base = tracemalloc.get_traced_memory()[0]
+        for _n, i, text, facts in faces:
+            S.parse_face_structure(text, facts, face=i)
+        sub.clear_caches()
+        for leaf in (normalize, keywords, lexicon):
+            leaf.clear_caches()
+        S._cost.cache_clear()
+        gc.collect()
+        held = tracemalloc.get_traced_memory()[0] - base
+        kept = S.parse_face_structure.cache_info().currsize
+    finally:
+        tracemalloc.stop()
+        grammar.clear_caches()
+    assert kept == S.FACE_CACHE_SIZE
+    print("\nL1 face memo after a pool pass: %.1f MB" % (held / 1e6))
+    assert held <= POOL_PARSE_MEMO_BUDGET_MB * 1e6 * \
+        STRUCTURE_MEMO_SHARE_OF_BUDGET, held
