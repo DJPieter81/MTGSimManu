@@ -47,7 +47,8 @@ It holds:
 
 One table per vocabulary: the CR 701 keyword-action names are the payload
 leaf's (`KEYWORD_ACTION_NAMES`, `UNSUPPORTED_KEYWORD_ACTIONS`), and the
-keywords a "has"/"have" grant names are the CR 702 table of `keywords`.
+keywords a "has"/"have"/"gain" grant or a "lose" removal names are the CR
+702 table of `keywords`.
 The lexicon reads no card name and no game state.
 
 **Lemma.** The lexicon is where a clause's printed lemma comes from: a
@@ -225,13 +226,23 @@ _SYM = r"\{[^{}]+\}"
 _OBJ = (r"(?:(?:target|up to|all|each|it|its|them|that|those|these|this|"
         r"another|other|any number of|enchanted|equipped|the|%s)\b|~)" % _COUNT)
 _ZONE_WORDS = r"\b(?:onto|into|on top of|on the bottom of|under|beneath)\b"
-# Keyword names a "has"/"have" grant can name: the CR 702 table, and the
-# variant families printed in a keyword's name (<type>walk, <type>cycling).
+# Keyword names a "has"/"have"/"gain" grant or a "lose" removal can name:
+# the CR 702 table, and the variant families printed in a keyword's name
+# (<type>walk, <type>cycling). Any other object of the verb-only "gain" /
+# "lose" (a coin flip, control, unspent mana) is refused, never guessed.
 _KW_NAMES = sorted((k for k in KEYWORD_ABILITIES
                     if k not in ("typecycling", "landwalk", "offering")),
                    key=len, reverse=True)
 _KW = r"(?:%s|[a-z]+walk|[a-z]+cycling)\b" % "|".join(
     re.escape(k) for k in _KW_NAMES)
+# The printed amount of a life change (CR 119.3): a count, an amount
+# phrase, a multiple of X ("two times x", "twice x"), a fraction of X or of
+# a life total ("half x", "a third of their life").
+_LIFE_OWNER = r"(?:their|your|his or her)"
+_LIFE_AFTER = (
+    r"(?= (?:(?:%s|that much|twice that much|half that much|an amount of|"
+    r"twice x|half x|%s times x|half %s|a third of %s) )?life\b)" % (
+        _COUNT, _COUNT, _LIFE_OWNER, _LIFE_OWNER))
 _PLAYER_COUNTER = (r"(?:\{e\}|poison counters?|experience counters?|"
                    r"rad counters?|ticket counters?)")
 _LIBRARY_OWNER = (r"(?:your|their|his or her|its owner's|its owners'|"
@@ -279,12 +290,8 @@ _ROWS: Tuple[_Row, ...] = (
     # damage and life (CR 120, 119)
     _r("deal", Verb.DAMAGE, r"(?= [^.;]*?\bdamage\b)"),
     _r("fight", Verb.FIGHT),
-    _r("lose", Verb.LOSE_LIFE,
-       r"(?= (?:(?:%s|that much|twice that much|half that much|"
-       r"an amount of|half (?:their|your|his or her)) )?life\b)" % _COUNT),
-    _r("gain", Verb.GAIN_LIFE,
-       r"(?= (?:(?:%s|that much|twice that much|half that much|"
-       r"an amount of|twice x) )?life\b)" % _COUNT),
+    _r("lose", Verb.LOSE_LIFE, _LIFE_AFTER),
+    _r("gain", Verb.GAIN_LIFE, _LIFE_AFTER),
     _r("become", Verb.SET_LIFE, subject=r"\blife totals? $"),
     _r("exchange", Verb.EXCHANGE_LIFE, r"(?= life totals\b)"),
     # card flow (CR 121, 701.9, 701.13, 701.18-22)
@@ -320,9 +327,10 @@ _ROWS: Tuple[_Row, ...] = (
     _r("gain", _C, r"(?= ⟨q\d+⟩)", ModKind.GRANT_ABILITY),
     _r("gain", _C, r"(?= your choice of\b)", ModKind.ADD_KEYWORDS,
        flags=frozenset({"alternatives"})),
-    _r("gain", _C, r"(?= \S)", ModKind.ADD_KEYWORDS),
-    _r("lose", _C, r"(?= all abilities\b)", ModKind.REMOVE_ALL_ABILITIES),
-    _r("lose", _C, r"(?= (?!the game\b)[a-z])", ModKind.REMOVE_KEYWORDS),
+    _r("gain", _C, r"(?= %s)" % _KW, ModKind.ADD_KEYWORDS),
+    _r("lose", _C, r"(?= all (?:other )?abilities\b)",
+       ModKind.REMOVE_ALL_ABILITIES),
+    _r("lose", _C, r"(?= %s)" % _KW, ModKind.REMOVE_KEYWORDS),
     _r("have", _C, r"(?= base power and toughness\b)", ModKind.SET_BASE_PT),
     _r("have", _C, r"(?= ⟨q\d+⟩)", ModKind.GRANT_ABILITY),
     _r("have", _C, r"(?= your choice of\b)", ModKind.ADD_KEYWORDS,

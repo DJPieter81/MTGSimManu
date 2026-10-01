@@ -180,6 +180,56 @@ def test_gain_lose_and_get_read_life_and_counters_before_continuous_predicates(
     assert (e.verb, e.mod_kind) == (verb, mod), (text, e)
 
 
+@pytest.mark.parametrize("text,verb", [
+    ("each opponent loses two times x life", Verb.LOSE_LIFE),
+    ("each opponent loses twice x life", Verb.LOSE_LIFE),
+    ("each player loses a third of their life, rounded up", Verb.LOSE_LIFE),
+    ("you gain three times x life", Verb.GAIN_LIFE),
+    ("you gain half x life and draw half x cards", Verb.GAIN_LIFE),
+])
+def test_a_multiplied_or_fractional_life_amount_is_a_life_change(text, verb):
+    """CR 119.3: 'lose/gain <amount> life' is a life change whatever the
+    printed amount -- a multiple of X or a fraction of a life total too --
+    never a keyword change."""
+    assert _verb(text).verb is verb, text
+
+
+@pytest.mark.parametrize("text,mod", [
+    ("target creature gains protection from the color of your choice until "
+     "end of turn", ModKind.ADD_KEYWORDS),
+    ("target creature gains islandwalk until end of turn", ModKind.ADD_KEYWORDS),
+    ("target creature gains hexproof from that color", ModKind.ADD_KEYWORDS),
+    ("~ loses defender and gains flying", ModKind.REMOVE_KEYWORDS),
+    ("creatures your opponents control lose hexproof", ModKind.REMOVE_KEYWORDS),
+    ("it's a 0/1 aura and loses all other abilities",
+     ModKind.REMOVE_ALL_ABILITIES),
+])
+def test_gain_and_lose_change_keywords_only_when_they_name_a_cr_702_keyword(
+        text, mod):
+    e = _verb(text)
+    assert e.verb is Verb.CONTINUOUS and e.mod_kind is mod, (text, e)
+
+
+@pytest.mark.parametrize("text,lemma", [
+    ("you lose the flip", "lose"),
+    ("if you lose a flip, ~ has no effect", "lose"),
+    ("you lose control of that equipment", "lose"),
+    ("each player loses all unspent mana", "lose"),
+    ("target opponent loses all counters", "lose"),
+    ("creatures you control gain that ability until end of turn", "gain"),
+    ("~ gains all activated abilities of that card until end of turn", "gain"),
+])
+def test_a_gain_or_lose_object_that_is_neither_life_nor_a_keyword_is_refused(
+        text, lemma):
+    """'gain'/'lose' are verb-only words: an object the table does not read
+    (a coin flip, control, unspent mana, counters, a borrowed ability) is
+    lexicon.no_reading, never guessed as a keyword grant or removal."""
+    r = _read(text)
+    assert r.value is None, (text, r.value)
+    assert r.unmodelled.stage is Stage.CLAUSE
+    assert r.unmodelled.detail == "lexicon.no_reading:" + lemma
+
+
 def test_shuffling_an_object_into_a_library_is_a_zone_move_not_a_library_shuffle():
     """A18: 'shuffle(s) <object> into <library>' is MOVE; only a player
     shuffling their library (or a bare 'then shuffle') is SHUFFLE."""
