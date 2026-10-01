@@ -454,8 +454,9 @@ def test_the_filter_caches_are_bounded_and_cleared_by_the_package():
 
 
 def test_the_filter_imports_another_leaf_only_along_its_declared_edge():
-    """The counter qualifier reads the one counter noun-phrase parser, so
-    filter -> payload is the one edge."""
+    """The counter qualifier reads the one counter noun-phrase parser
+    (filter -> payload) and a keyword qualifier the one keyword table and
+    spelling (filter -> keywords)."""
     from engine.effect_grammar.sub import LEAF_EDGES
     out = set()
     for node in ast.walk(ast.parse((SUB / "filter.py").read_text())):
@@ -465,7 +466,10 @@ def test_the_filter_imports_another_leaf_only_along_its_declared_edge():
             elif node.module == "engine.effect_grammar.sub":
                 out.update(a.name for a in node.names
                            if (SUB / (a.name + ".py")).exists())
-    assert out == set(LEAF_EDGES["filter"]) == {"payload"}
+            elif node.module == "engine.effect_grammar":
+                out.update(a.name for a in node.names
+                           if (SUB.parent / (a.name + ".py")).exists())
+    assert out == set(LEAF_EDGES["filter"]) == {"payload", "keywords"}
 
 
 def test_the_filter_does_not_re_normalise_l0_output():

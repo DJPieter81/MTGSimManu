@@ -56,11 +56,12 @@ from dataclasses import dataclass
 from functools import lru_cache
 from typing import List, Optional, Tuple
 
-from engine.cards import Keyword
 from engine.effect_grammar.sub import (CACHE_SIZE, COUNT_WORDS, NUMBER_WORDS,
                                        SlotResult, Span, rest_spans_after,
                                        unmodelled)
+from engine.effect_grammar import keywords as _kw
 from engine.effect_grammar.sub import dest as _dest
+from engine.effect_grammar.sub import quantity as _quantity
 from engine.effect_spec import Amount, AmountKind, Stage
 from engine.target_solver import ANY_NUMBER, TargetRequirement, parse_spans
 
@@ -169,22 +170,19 @@ def target_words(host: str, span: Optional[Span] = None) -> Tuple[Span, ...]:
 _TYPE = (r"(?:creature|artifact|enchantment|planeswalker|land|battle|"
          r"permanent|spell|card|player|opponent|activated ability|"
          r"triggered ability|ability|vehicle|equipment|aura|token)")
-_KEYWORDS = sorted({k.value.replace("_", " ") for k in Keyword},
-                   key=lambda s: (-len(s), s))
-_KW = "(?:%s)" % "|".join(re.escape(k) for k in _KEYWORDS)
+# Keyword qualifiers: the keywords leaf's one table and spelling (the
+# filter leaf reads the same), so "with islandwalk" is a keyword feature.
+_KW = _kw.PRINTED_KEYWORD
 _STAT_WORD = re.compile(r"power|toughness|mana value")
 _STAT = (r"(?:base )?(?P<stat>(?:power|toughness)"
          r"(?: (?:or|and) (?:power|toughness))?)")
 # Comparison operands: a closed grammar, never a wildcard (A21). A quantity
-# is "the number of" a counted noun with a closed complement; anything else
-# is left unread, so it is target.unparsed.
-_QUANTITY = (r"the number of (?:[\w+/-]+ ){0,2}?[\w-]+s(?: (?:you control|"
-             r"an opponent controls|on the battlefield|on ~|removed this way|"
-             r"of mana spent to cast ~|in (?:your|its controller's|"
-             r"that player's|their|all) (?:graveyards?|hands?)))?(?![\w'])")
+# ("the number of ...") is read through the quantity leaf (one quantity
+# table, `_QuantityCompare`); anything else is left unread, so it is
+# target.unparsed.
 _OPERAND = (r"(?:(?:\d+|x)(?: plus \d+)?(?![\w'])|(?:~'s |its |that \w+'s |"
             r"\w+'s )(?:power|toughness|mana value|loyalty)(?![\w'])|"
-            r"your life total|that number|%s)" % _QUANTITY)
+            r"your life total|that number)")
 _COMPARE = (r"(?:(?:\d+|x) or (?:less|greater|more|fewer)(?![\w'])|"
             r"(?:less|greater) than(?: or equal to)? %s|equal to %s)"
             % (_OPERAND, _OPERAND))
@@ -225,7 +223,48 @@ _ANY_POSS = frozenset({"", "a", "all", "any", "any one", "the"})
 # Tail features: read after a requirement's phrase. Each row is
 # (row name, pattern); `_tail_code` maps a hit to a residue code or None
 # (carried by the requirement).
-_TAIL = tuple((n, re.compile(p)) for n, p in (
+_RESULT_AMOUNT = "quantity.result_amount"
+
+
+class _QuantityHit:
+    """A tail hit whose operand the quantity leaf consumed: the head
+    match's groups, ending where the quantity ends."""
+    __slots__ = ("_m", "_end")
+
+    def __init__(self, m, end: int):
+        self._m, self._end = m, end
+
+    def end(self) -> int:
+        return self._end
+
+    def group(self, name):
+        return self._m.group(name)
+
+
+class _QuantityCompare:
+    """'with <stat> less than [or equal to] / equal to the number of ...':
+    the operand is the quantity leaf's (one quantity table), so the leaf
+    and the quantity grammar never disagree on a "the number of" phrase."""
+    _HEAD = re.compile(r"with %s (?:(?:less|greater) than(?: or equal to)?|"
+                       r"equal to) (?=the number of )" % _STAT)
+
+    def match(self, clause: str, pos: int, endpos: int):
+        m = self._HEAD.match(clause, pos, endpos)
+        if m is None:
+            return None
+        q = _quantity.parse_quantity(clause, (m.end(), endpos))
+        if q.value is not None:
+            return _QuantityHit(m, q.span[1])
+        # The quantity leaf classifies an earlier result ("the number of
+        # counters removed this way", CR 608.2c) as a result amount -- a
+        # bound operand, the amount leaf's THAT_MUCH RESULT -- over the
+        # whole remaining slot.
+        if q.unmodelled.detail == _RESULT_AMOUNT:
+            return _QuantityHit(m, q.span[1])
+        return None
+
+
+_TAIL = ((("stat", _QuantityCompare()),) + tuple((n, re.compile(p)) for n, p in (
     # "target player's graveyard", "target players' graveyards".
     ("possessive", r"(?:'s|(?<=s)')(?![\w'])"),
     ("scope_opponent", r"(?:an opponent|your opponents|opponents) controls?"),
@@ -268,7 +307,7 @@ _TAIL = tuple((n, re.compile(p)) for n, p in (
     ("conj_type", r"(?P<noun>creature|artifact|enchantment|land|planeswalker|"
                   r"battle)s?(?![\w'])"),
     ("token", r"tokens?(?![\w'])"),
-))
+)))
 _THATS = {"nontoken": _NONTOKEN, "historic": _HISTORIC, "token":
           "target.state:token", "colorless": "target.color:colorless"}
 _TYPE_WORDS = frozenset({"creature", "artifact", "enchantment", "land",
@@ -347,7 +386,7 @@ def _tail_code(row: str, m, req: TargetRequirement):
     if row == "keyword":
         neg = "without_" if m.group("neg") else ""
         return tuple(dict.fromkeys(
-            "target.keyword:" + neg + k.replace(" ", "_")
+            "target.keyword:" + neg + _kw.keyword_key(*_kw.typed_keyword(k))
             for k in _KW_RE.findall(m.group("kw"))))
     if row == "counter":
         return "target.state:counter"

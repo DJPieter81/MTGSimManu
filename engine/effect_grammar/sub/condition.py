@@ -1237,13 +1237,14 @@ def _object_rows(t: str) -> Optional[_W]:
                                       ref=ref, filter=f, op=op, n=n, raw=t),
                             pending, flags), t, "n't" in v or " not" in v)
     m = _KEYWORD_HAS_RE.fullmatch(t)
-    if m is not None and m.group("kw") in _filter.QUALIFIER_KEYWORDS:
+    kw = None if m is None else _filter.qualifier_keyword(m.group("kw"))
+    if kw is not None:
         v = m.group("v")
         o = _subject_object(t, m, v in _PAST)
         if o is not None:
             ref, pending, flags = o
-            f = CardFilter(zone="", raw=m.group("kw"), with_keywords=frozenset(
-                {m.group("kw").replace(" ", "_")}))
+            f = CardFilter(zone="", raw=m.group("kw"),
+                           with_keywords=frozenset({kw}))
             return _neg(_ok(Condition(ConditionKind.OBJECT, pred="is", ref=ref,
                                       filter=f, raw=t), pending, flags),
                         t, "n't" in v or " not" in v)

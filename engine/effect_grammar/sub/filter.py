@@ -58,12 +58,15 @@ flags; "another" is a count of one plus ``other``.
   player", "its owner's") is left to the linker in ``pending``;
 * zones ("in your graveyard", "from exile", "from among them");
 * characteristic bounds ("with mana value 3 or less", CR 202.3, 208);
-* keyword qualifiers ("with flying", "without first strike", CR 702) typed
-  as the CR 702 name in the `cards.Keyword` value spelling, '_' for spaces
-  ('first_strike'). Every Keyword value is in the table, so each keyword
-  `Selector.covers_object` compares is typed as the value it compares (F5 /
-  A22); a table keyword outside Keyword ('ward') is typed but
-  `effect_model.is_supported_filter_entry` refuses to execute it;
+* keyword qualifiers ("with flying", "without first strike", CR 702) read
+  through the keywords leaf's one table and spelling
+  (`keywords.typed_keyword` / `keyword_key`): the CR 702 name in the
+  `cards.Keyword` value spelling, '_' for spaces ('first_strike'), a family
+  variant as 'name:param' ('landwalk:island'). Every Keyword value is in
+  the table, so each keyword `Selector.covers_object` compares is typed as
+  the value it compares (F5 / A22); a table keyword outside Keyword
+  ('ward') is typed but `effect_model.is_supported_filter_entry` refuses
+  to execute it;
 * counter qualifiers ("with a +1/+1 counter on it"), read through the one
   counter noun-phrase parser in `payload` (one count table, one kind
   vocabulary);
@@ -81,13 +84,14 @@ from typing import Any, Dict, FrozenSet, List, Optional, Tuple
 
 from engine.effect_grammar.sub import (CACHE_SIZE, COUNT_WORDS, NUMBER_WORDS,
                                        SlotResult, Span, unmodelled)
+from engine.effect_grammar import keywords as _kw
 from engine.effect_grammar.sub import payload as _payload
 from engine.effect_spec import (Amount, AmountKind, CardFilter, Ref, RefKind,
                                 Stage, Unmodelled)
 
 __all__ = ["LEAF", "DETAIL_CODES", "parse_filter", "CARD_TYPES",
            "PERMANENT_TYPES", "NONPERMANENT_TYPES", "SUPERTYPES", "SUBTYPES", "CLASSES", "STATES",
-           "QUALIFIER_KEYWORDS", "EACH", "ALL", "clear_caches"]
+           "QUALIFIER_KEYWORDS", "qualifier_keyword", "EACH", "ALL", "clear_caches"]
 
 LEAF = "filter"
 DETAIL_CODES = frozenset({
@@ -178,23 +182,21 @@ NONPERMANENT_TYPES = frozenset({"instant", "sorcery"})
 # Head nouns that carry no type: where the object is.
 _HEADS = {"permanent": "battlefield", "card": None, "spell": "stack"}
 # CR 702 keywords a filter qualifier names ("with flying", "without
-# first strike"): every `cards.Keyword` value plus printed keywords Keyword
-# does not model. Typed in the Keyword value spelling (spaces -> '_'), so
-# only the Keyword values among them are entries covers_object evaluates.
-QUALIFIER_KEYWORDS = frozenset({
-    "flying", "first strike", "double strike", "deathtouch", "lifelink",
-    "trample", "haste", "vigilance", "reach", "menace", "defender",
-    "hexproof", "shroud", "indestructible", "flash", "prowess", "infect",
-    "wither", "toxic", "changeling", "decayed", "shadow", "fear",
-    "intimidate", "horsemanship", "skulk", "flanking", "protection", "ward",
-    "islandwalk", "swampwalk", "forestwalk", "mountainwalk", "plainswalk",
-    "landwalk", "flashback", "cycling", "disturb", "foretell", "crew",
-    "modular", "convoke", "cascade", "storm", "affinity", "undying",
-    "persist", "unearth", "evoke", "suspend", "annihilator", "improvise",
-    "kicker", "madness", "morph", "mutate", "bushido", "ninjutsu",
-    "partner", "devoid", "exalted", "afterlife", "riot", "equip", "echo",
-    "escape", "embalm", "eternalize", "dash", "blitz", "bestow", "delve",
-    "split second", "rebound", "retrace", "encore", "ravenous"})
+# first strike"): the keywords leaf's one table (`keywords.PRINTED_KEYWORD`,
+# every CR 702 name and its family variants), typed through
+# `keywords.typed_keyword` in the one typed spelling ('first_strike',
+# 'landwalk:island'). Every `cards.Keyword` value is a table name, so each
+# keyword `Selector.covers_object` compares is typed as the value it
+# compares; only those Keyword values are entries it evaluates.
+QUALIFIER_KEYWORDS = frozenset(_kw.KEYWORD_ABILITIES) - frozenset(
+    {_kw.TYPECYCLING, _kw.LANDWALK, _kw.OFFERING})
+
+
+def qualifier_keyword(printed: str) -> Optional[str]:
+    """A printed qualifier keyword as its typed set entry, or None."""
+    t = _kw.typed_keyword(printed)
+    return None if t is None else _kw.keyword_key(*t)
+
 
 # Words a filter slot may open with that name something already known (a
 # reference, CR 608.2b) rather than describe a set.
@@ -357,8 +359,7 @@ _STAT_SHAPE_RE = re.compile(
 _COUNTER_RE = re.compile(
     r"with(?P<out>out)? (?:(?P<q>a|an|one or more|no|any) )?"
     r"(?P<np>(?:[+-]\d+/[+-]\d+ |[a-z][a-z'\-]* )?counters?) on (?:it|them)(?![\w'])")
-_KW_ALT = "|".join(re.escape(k) for k in sorted(QUALIFIER_KEYWORDS, key=len,
-                                                 reverse=True))
+_KW_ALT = _kw.PRINTED_KEYWORD
 _KEYWORD_RE = re.compile(
     r"with(?P<out>out)? (?P<kw>%s)(?P<more>(?:,? (?:and|or) (?:%s))*)(?![\w'])"
     % (_KW_ALT, _KW_ALT))
@@ -706,7 +707,7 @@ def _filter_rel(t: str, zone: str) -> _Rel:
             m = _KEYWORD_RE.match(t, pos)
             if m.group("more"):
                 return _fail("keyword_list")
-            kw = m.group("kw").replace(" ", "_")
+            kw = qualifier_keyword(m.group("kw"))
             f["without_keywords" if m.group("out") else "with_keywords"].add(kw)
         elif _KEYWORD_SHAPE_RE.match(t, pos):
             return _fail("keyword", _KEYWORD_SHAPE_RE.match(t, pos).group("w"))

@@ -91,7 +91,10 @@ def _faces(db):
 
 def _satisfied(kw, typed):
     """A listed keyword is found when a typed line holds it; typecycling is
-    a cycling ability (CR 702.29e), so it satisfies a listed 'cycling'."""
+    a cycling ability (CR 702.29e), so it satisfies a listed 'cycling'.
+    `kw` is a CR 702 table name; a typed spec carries its typed spelling."""
+    from engine.effect_grammar.keywords import keyword_value
+    kw = keyword_value(kw)
     return kw in typed or (kw == "cycling" and "typecycling" in typed)
 
 

@@ -51,6 +51,7 @@ from engine.oracle_parser import parse_activation_cost
 
 __all__ = ["LEAF", "DETAIL_CODES", "KEYWORD_ABILITIES", "Expansion",
            "EXPANSIONS", "SPELL_EXPANSIONS", "canonical_keyword", "keywords702",
+           "PRINTED_KEYWORD", "LANDWALK_TYPES", "typed_keyword", "keyword_value", "keyword_key",
            "parse_keyword_line", "parse_cost_rule", "expansion_text",
            "clear_caches"]
 
@@ -249,6 +250,70 @@ _FAMILY_RE = {
     OFFERING: re.compile(r"(?P<p>[a-z]+) offering" + _BOUNDARY),
 }
 _ITEM_RE = {shape: re.compile(p) for shape, p in _PARAM_RE.items()}
+
+# ── The one typed keyword spelling (F5 / A22) ──────────────────────────
+#
+# Every leaf that types a CR 702 keyword -- a keyword line here, a granted
+# or token keyword in payload, a filter qualifier, a target's tail, a
+# condition's "has <kw>" -- reads the printed name through `typed_keyword`:
+# the CR 702 table name, variants folded onto their family with the
+# variant as the param ('islandwalk' -> ('landwalk', 'island'),
+# 'swampcycling' -> ('typecycling', 'swamp'), 'affinity for artifacts' ->
+# ('affinity', 'artifacts')), spelled as `keyword_value` spells it. That is
+# the `cards.Keyword` value spelling ('_' for spaces: 'first_strike'), the
+# value `Selector.covers_object` compares (F5 / A22), so one printed
+# keyword is one typed value wherever it is printed.
+
+# CR 702.14c: the land type (or "land", with a quality) a landwalk names.
+LANDWALK_TYPES = frozenset({"land", "plains", "island", "swamp", "mountain",
+                            "forest", "desert"})
+
+# A printed keyword name (consumers append their own boundary): every
+# table name, longest first, then the family compounds.
+PRINTED_KEYWORD = r"(?:affinity for [a-z]+s|%s|%s)" % (
+    "|".join(re.escape(n) for n in sorted(
+        (n for n, s in KEYWORD_ABILITIES.items() if s not in _FAMILIES),
+        key=len, reverse=True)),
+    r"(?:basic |artifact |snow )?[a-z]+cycling"
+    r"|(?:nonbasic |legendary |snow )?(?:%s)walk|[a-z]+ offering" % "|".join(
+        sorted(LANDWALK_TYPES, key=len, reverse=True)))
+_AFFINITY_FOR_RE = re.compile(r"affinity for (?P<p>[a-z][a-z ]*)")
+
+
+def keyword_value(name: str) -> str:
+    """A CR 702 table name in the one typed spelling ('_' for spaces)."""
+    return name.replace(" ", "_")
+
+
+def typed_keyword(printed: str) -> Optional[Tuple[str, Optional[str]]]:
+    """A printed keyword as (typed name, family param), or None when it is
+    no CR 702 keyword. The param is the variant a family prints in its
+    name; every other parameter (a count, a cost, a protection quality) is
+    the caller's."""
+    k = " ".join(printed.split())
+    shape = KEYWORD_ABILITIES.get(k)
+    if shape is not None and shape not in _FAMILIES:
+        return keyword_value(k), None
+    m = _AFFINITY_FOR_RE.fullmatch(k)
+    if m is not None:
+        return "affinity", m.group("p")
+    for family, rx in _FAMILY_RE.items():
+        m = rx.fullmatch(k)
+        if m is None or m.group("p") in KEYWORD_ABILITIES:
+            continue
+        if family == LANDWALK and \
+                m.group("p").split()[-1] not in LANDWALK_TYPES:
+            return None
+        return keyword_value(family), m.group("p")
+    return None
+
+
+def keyword_key(name: str, param: Optional[str] = None) -> str:
+    """One typed keyword as a single set entry (a filter's ``with_keywords``
+    holds strings): the name, or 'name:param' for a family variant
+    ('landwalk:island')."""
+    return name if not param else "%s:%s" % (name, keyword_value(param))
+
 _FROM_EACH_RE = re.compile(r"(?:,? and |, )from (%s)" % _QUALITY)
 _SEP_RE = re.compile(r"[,;] ")
 _WHERE_X_RE = re.compile(r",? (?=where x is )")
@@ -410,7 +475,8 @@ def parse_keyword_line(host: str, span: Optional[Span] = None, *,
     specs = []
     for name, n, param, cost in items:
         if cost is None:
-            specs.append(KeywordSpec(name=name, n=n, param=param))
+            specs.append(KeywordSpec(name=keyword_value(name), n=n,
+                                     param=param))
             continue
         cs, ce = cost[0] + a, cost[1] + a
         text = host[cs:ce]
@@ -422,7 +488,8 @@ def parse_keyword_line(host: str, span: Optional[Span] = None, *,
                 span=(a, b))
         else:
             source = text
-        specs.append(KeywordSpec(name=name, n=n, param=param, cost=text,
+        specs.append(KeywordSpec(name=keyword_value(name), n=n, param=param,
+                                 cost=text,
                                  cost_snapshot=_cost_snapshot(source)))
     rest = () if rest_start is None else rest_spans_after(host, a + rest_start, b)
     return SlotResult(value=tuple(specs), span=(a, a + consumed),
@@ -464,7 +531,8 @@ def parse_cost_rule(host: str, span: Optional[Span] = None, *,
         return SlotResult(
             unmodelled=_um(Stage.CLAUSE, lemma, "cost_rule_modified"),
             span=(a, b))
-    return SlotResult(value=KeywordSpec(name=rel[1], cost_rule="mana_cost"),
+    return SlotResult(value=KeywordSpec(name=keyword_value(rel[1]),
+                                        cost_rule="mana_cost"),
                       span=(a, b))
 
 

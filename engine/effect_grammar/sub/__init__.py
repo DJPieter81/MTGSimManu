@@ -110,10 +110,15 @@ CACHE_SIZE = 1 << 15
 # tests/test_effect_grammar_leaf_contract.py).
 LEAF_EDGES = {
     "duration": frozenset(),
-    "payload": frozenset({"duration"}),
+    # Every leaf that types a CR 702 keyword reads the keywords leaf's one
+    # table and spelling (`keywords.typed_keyword`).
+    "payload": frozenset({"duration", "keywords"}),
     "dest": frozenset({"payload"}),
-    "filter": frozenset({"payload"}),
-    "target": frozenset({"dest"}),
+    "filter": frozenset({"payload", "keywords"}),
+    # Target: zones through destination's object reader, comparison
+    # operands through the quantity leaf, keyword qualifiers through the
+    # keywords leaf.
+    "target": frozenset({"dest", "quantity", "keywords"}),
     # The verb lexicon (beside the sub-grammars) reads the CR 701 action
     # names from payload's table, the CR 702 names from keywords' and the
     # zone possessives from destination's.

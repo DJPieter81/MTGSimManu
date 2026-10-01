@@ -48,6 +48,7 @@ from typing import Any, Dict, Optional, Tuple, Union
 from engine.effect_grammar.sub import (CACHE_SIZE, NUMBER_WORDS,
                                        SlotResult, Span, join_spans,
                                        rest_spans_after, unmodelled)
+from engine.effect_grammar import keywords as _kw
 from engine.effect_grammar.sub.duration import DURATION_START
 from engine.effect_model import ModKind, Modification
 from engine.effect_spec import (Amount, AmountKind, CostSnapshot, CounterSpec,
@@ -374,38 +375,22 @@ def parse_counters(text: str, span: Span, *, lemma: str = "") -> SlotResult:
 
 # ── Keyword abilities a continuous effect or token can carry (CR 702) ──
 
-_PLAIN_KEYWORDS = (
-    "first strike", "double strike", "split second", "flying", "deathtouch",
-    "lifelink", "trample", "haste", "vigilance", "reach", "menace",
-    "hexproof", "indestructible", "defender", "shroud", "intimidate", "fear",
-    "flash", "prowess", "infect", "wither", "persist", "undying",
-    "horsemanship", "shadow", "flanking", "exalted", "skulk", "changeling",
-    "devoid", "decayed", "cascade", "storm", "convoke", "banding", "phasing",
-    "riot", "myriad", "melee", "mentor", "training", "provoke", "ascend",
-    "rebound", "haunt", "unleash", "evolve", "extort", "dethrone", "soulbond",
-    "fuse", "undaunted", "improvise", "assist", "jump-start", "retrace",
-    "daybound", "nightbound", "ravenous", "compleated",
-    "enlist", "read ahead", "for mirrodin!", "living weapon", "totem armor",
-    "umbra armor", "sunburst", "epic", "delve", "affinity for artifacts",
-)
-_N_KEYWORDS = (
-    "toxic", "afflict", "annihilator", "bushido", "rampage", "absorb",
-    "afterlife", "fabricate", "modular", "renown", "frenzy", "poisonous",
-    "crew", "bloodthirst", "tribute", "vanishing", "fading", "backup",
-    "amplify", "graft", "dredge", "ripple", "casualty", "squad", "offspring",
-)
+# The CR 702 table (`keywords.KEYWORD_ABILITIES`, the one keyword
+# vocabulary) by the parameter a granted or token keyword prints: none, a
+# count, or a cost. Shapes no grant prints (enchant, splice, craft, ...)
+# are not grantable items.
+_PLAIN_KEYWORDS = tuple(
+    k for k, shape in _kw.KEYWORD_ABILITIES.items()
+    if shape in (_kw.PLAIN, _kw.OVER_OPT, _kw.FROM_OPT))
+_N_KEYWORDS = tuple(k for k, shape in _kw.KEYWORD_ABILITIES.items()
+                    if shape in (_kw.N, _kw.N_OPT, _kw.MODULAR))
 # CR 702 keywords whose ability carries a cost. Granted without a printed
 # cost ("gains flashback until end of turn") the cost is set by a rider the
 # linker reads ("... cost is equal to its mana cost", A8): the item is typed
 # and ("cost_rule", <name>) is left pending.
-_COSTED_KEYWORDS = (
-    "flashback", "escape", "unearth", "embalm", "eternalize", "madness",
-    "cycling", "kicker", "buyback", "evoke", "dash", "blitz", "disturb",
-    "overload", "ninjutsu", "equip", "echo", "megamorph", "morph",
-    "disguise", "foretell", "plot", "bestow", "emerge", "entwine", "miracle",
-    "outlast", "scavenge", "transmute", "reconfigure", "surge", "encore",
-    "spectacle", "prowl", "mutate",
-)
+_COSTED_KEYWORDS = tuple(
+    k for k, shape in _kw.KEYWORD_ABILITIES.items()
+    if shape in (_kw.COST, _kw.COST_OPT, _kw.EMERGE, _kw.EQUIP))
 # CR 702.11 / 702.16 qualities a hexproof / protection item may name. The
 # vocabulary is closed; a plural noun is a card type or subtype ("from
 # artifacts", "from zombies").
@@ -424,6 +409,7 @@ _KEYWORD_ITEM_RE = re.compile(
     + r"(?P<more>(?: and from %s%s)*)" % (_FROM_QUALITY, _FROM_END)
     + r"|ward (?P<ward>(?:%s)+|\d+)" % _SYM
     + r"|(?P<walk>(?:nonbasic |snow )?(?:land|island|swamp|mountain|forest|plains|desert)walk)"
+    r"|(?P<aff>affinity for [a-z]+s)"
     r"|(?P<nkw>%s) (?P<n>\d+|x)" % "|".join(re.escape(k) for k in _N_KEYWORDS)
     + r"|(?P<ckw>%s)(?: (?P<ccost>(?:%s)+))?" % (
         "|".join(re.escape(k) for k in sorted(_COSTED_KEYWORDS, key=len,
@@ -436,10 +422,13 @@ _LIST_SEP_RE = re.compile(r"(?:,? and |, )")
 KeywordList = Tuple[Tuple[str, Optional[str]], ...]
 
 
-def _kw_name(printed: str) -> str:
-    """Printed keyword -> canonical name (cards.Keyword values where the
-    enum has one: 'first strike' -> 'first_strike')."""
-    return printed.replace(" ", "_")
+def _typed(printed: str, param: Optional[str] = None
+           ) -> Tuple[str, Optional[str]]:
+    """A printed keyword item as (typed name, param) through the keywords
+    leaf's one spelling; a family variant's param is the variant
+    ('islandwalk' -> ('landwalk', 'island'))."""
+    name, family = _kw.typed_keyword(printed)
+    return name, family if family is not None else param
 
 
 def _keyword_list(t: str, pos: int = 0
@@ -460,26 +449,28 @@ def _keyword_list(t: str, pos: int = 0
         elif m.group("from") is not None:
             head = "protection" if t.startswith("protection", m.start()) \
                 else "hexproof"
-            kws.append((head, m.group("from")))
+            kws.append(_typed(head, m.group("from")))
             for extra in re.finditer(r" and from (%s)%s" % (_FROM_QUALITY,
                                                              _FROM_END),
                                      m.group("more") or ""):
-                kws.append((head, extra.group(1)))
+                kws.append(_typed(head, extra.group(1)))
         elif m.group("ward") is not None:
-            kws.append(("ward", m.group("ward")))
+            kws.append(_typed("ward", m.group("ward")))
         elif m.group("walk") is not None:
-            kws.append((_kw_name(m.group("walk")), None))
+            kws.append(_typed(m.group("walk")))
+        elif m.group("aff") is not None:
+            kws.append(_typed(m.group("aff")))
         elif m.group("nkw") is not None:
-            kws.append((_kw_name(m.group("nkw")), m.group("n")))
+            kws.append(_typed(m.group("nkw"), m.group("n")))
         elif m.group("ckw") is not None:
-            name = _kw_name(m.group("ckw"))
+            name = _typed(m.group("ckw"))[0]
             if m.group("ccost"):
                 kws.append((name, _braced(m.group("ccost"))))
             else:
                 kws.append((name, None))
                 cost_rules.append(("cost_rule", name))
         else:
-            kws.append((_kw_name(m.group("plain")), None))
+            kws.append(_typed(m.group("plain")))
         end = m.end()
         sep = _LIST_SEP_RE.match(t, end)
         if sep is None or _KEYWORD_ITEM_RE.match(t, sep.end()) is None:

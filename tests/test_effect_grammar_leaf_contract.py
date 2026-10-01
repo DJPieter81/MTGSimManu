@@ -317,6 +317,54 @@ def test_a_printed_count_word_is_typed_in_every_slot_that_counts(word, n):
         assert r.unmodelled.detail == "target.count_unread:" + word, r
 
 
+# ── One keyword spelling ─────────────────────────────────────────────────
+
+@pytest.mark.parametrize("printed,typed", [
+    ("flying", ("flying", None)),
+    ("first strike", ("first_strike", None)),
+    ("islandwalk", ("landwalk", "island")),
+    ("nonbasic landwalk", ("landwalk", "nonbasic land")),
+    ("swampcycling", ("typecycling", "swamp")),
+    ("affinity for artifacts", ("affinity", "artifacts")),
+])
+def test_a_keyword_is_one_typed_value_wherever_it_is_printed(printed, typed):
+    """A keyword printed on a keyword line, granted by a continuous
+    effect, carried by a token, named by a filter qualifier, a target's
+    tail or a condition is the same typed value: the keywords leaf's CR 702
+    name, variants folded onto their family with the variant as the param,
+    in the `cards.Keyword` value spelling (F5 / A22)."""
+    from engine.effect_grammar import keywords
+    from engine.effect_grammar.sub import condition, filter, payload, target
+    assert keywords.typed_keyword(printed) == typed
+    key = keywords.keyword_key(*typed)
+    costed = typed[0] == "typecycling"   # its items and grants print a cost
+    line = keywords.parse_keyword_line(printed + (" {2}" if costed else ""))
+    (spec,) = line.value
+    assert (spec.name, spec.param) == typed, line
+    if not costed:
+        text = "gains %s until end of turn" % printed
+        g = payload.parse_payload(_Entry(Verb.CONTINUOUS, "gain"), text,
+                                  (0, len(text)), None)
+        assert g.value.get("keywords") == (typed,), g
+        np = "a 1/1 white spirit creature token with %s" % printed
+        t = payload.parse_token(np, (0, len(np)))
+        assert t.value.keywords == (typed,), t
+    f = filter.parse_filter("creatures with %s" % printed)
+    assert f.value.with_keywords == frozenset({key}), f
+    host = "destroy target creature with %s." % printed
+    r = target.parse_target(host, (host.index("target"), len(host) - 1))
+    assert r.value.residue == ("target.keyword:" + key,), r
+    c = condition.parse_condition("if it has %s" % printed)
+    assert c.value.filter.with_keywords == frozenset({key}), c
+
+
+def test_every_cards_keyword_value_is_a_typed_keyword_spelling():
+    from engine.cards import Keyword
+    from engine.effect_grammar import keywords
+    for k in Keyword:
+        assert keywords.typed_keyword(k.value.replace("_", " ")) == (k.value, None)
+
+
 # ── Caches, clear_caches and import edges ──────────────────────────────
 
 def test_every_leaf_cache_is_bounded_and_cleared_by_the_package():
@@ -375,7 +423,12 @@ def test_one_package_entry_point_clears_every_grammar_cache(monkeypatch):
     assert set(caches) - cleared == set()
 
 
+GRAMMAR = SUB.parent
+
+
 def _sub_imports(path: Path):
+    """The grammar leaves a module imports: sub-grammars and the leaves
+    beside them (keywords, lexicon, normalize)."""
     out = set()
     for node in ast.walk(ast.parse(path.read_text())):
         if isinstance(node, ast.ImportFrom) and node.module:
@@ -384,6 +437,12 @@ def _sub_imports(path: Path):
             elif node.module == "engine.effect_grammar.sub":
                 out.update(a.name for a in node.names
                            if (SUB / (a.name + ".py")).exists())
+            elif node.module.startswith("engine.effect_grammar.") and \
+                    node.module.count(".") == 2:
+                out.add(node.module.rsplit(".", 1)[1])
+            elif node.module == "engine.effect_grammar":
+                out.update(a.name for a in node.names
+                           if (GRAMMAR / (a.name + ".py")).exists())
     return out
 
 

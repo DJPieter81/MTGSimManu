@@ -499,6 +499,9 @@ def test_the_target_leaf_imports_only_its_declared_leaf_edges():
             elif node.module == "engine.effect_grammar.sub":
                 found.update(a.name for a in node.names
                              if (path.parent / (a.name + ".py")).exists())
-    assert found == set(LEAF_EDGES["target"])
+            elif node.module == "engine.effect_grammar":
+                found.update(a.name for a in node.names
+                             if (path.parent.parent / (a.name + ".py")).exists())
+    assert found == set(LEAF_EDGES["target"]) == {"dest", "quantity", "keywords"}
     src = path.read_text()
     assert "’" not in src and ".lower()" not in src

@@ -56,10 +56,10 @@ def _snap(spec):
     ("flying, haste", [("flying", None, None, None), ("haste", None, None, None)]),
     ("flash; convoke", [("flash", None, None, None), ("convoke", None, None, None)]),
     ("first strike, double strike, trample",
-     [("first strike", None, None, None), ("double strike", None, None, None),
+     [("first_strike", None, None, None), ("double_strike", None, None, None),
       ("trample", None, None, None)]),
-    ("split second", [("split second", None, None, None)]),
-    ("start your engines!", [("start your engines!", None, None, None)]),
+    ("split second", [("split_second", None, None, None)]),
+    ("start your engines!", [("start_your_engines!", None, None, None)]),
 ])
 def test_a_list_of_keyword_abilities_types_every_item(text, items):
     r = _line(text)
@@ -225,7 +225,7 @@ def test_a_face_keyword_whose_parameter_is_not_its_shape_is_refused_never_droppe
 
 
 @pytest.mark.parametrize("text,item", [
-    ("aura swap {2}{u}", ("aura swap", None, None, "{2}{u}")),
+    ("aura swap {2}{u}", ("aura_swap", None, None, "{2}{u}")),
     ("transfigure {1}{b}{b}", ("transfigure", None, None, "{1}{b}{b}")),
     ("goblin offering", ("offering", None, "goblin", None)),
     ("moonfolk offering", ("offering", None, "moonfolk", None)),
