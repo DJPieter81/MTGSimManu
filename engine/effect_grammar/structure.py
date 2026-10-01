@@ -57,8 +57,15 @@ classified with first-match precedence (section 3):
     ``STATIC(from_zone='stack')``, a cost delta in ``cost_modifiers``.
 12. REPLACEMENT -- one ``UNMODELLED(REPLACEMENT)`` over the paragraph
     (CR 614).
-13. UNKNOWN -- level bands, power/toughness lines and die-roll tables:
-    ``UNMODELLED(STRUCTURE)``.
+13. UNKNOWN -- level structure, power/toughness lines and die-roll tables:
+    ``UNMODELLED(STRUCTURE)``. A level gate -- a leveler band
+    ``level n-m`` / ``level n+`` (CR 711), a Class level line
+    ``{cost}: level n`` (CR 716) or a station threshold row ``n+ | ...``
+    on a face with a station line -- opens a block that runs to the next
+    gate or the end of the face; the gate and every paragraph in the block
+    are ONE refusal host (``level_band`` / ``class_level`` /
+    ``station_threshold``), so a gated ability is never emitted as an
+    always-on host. The face pass finds the gates before the cascade.
 14. Anything else -- SPELL on an instant or sorcery face, STATIC otherwise.
 
 **F1 merge.** The SPELL hosts of an instant or sorcery face (rule 14,
@@ -108,7 +115,9 @@ DETAIL_CODES = frozenset({
     "unterminated_head",      # a trigger head with no comma ending it
     "replacement_static",     # a CR 614 static (rule 12)
     "level_band",             # "level 1-3": a leveler band (CR 711)
-    "pt_line",                # "3/3": a leveler band's power/toughness
+    "class_level",            # "{2}{r}: level 2": a Class level (CR 716)
+    "station_threshold",      # "5+ | flying": a station threshold row
+    "pt_line",                # "3/3": a power/toughness line outside a band
     "die_table",              # "1-9 | ...": a die-roll result row (CR 706)
 })
 
@@ -289,10 +298,30 @@ _REPLACEMENT_RE = re.compile(
     r"[^.]*\benters? (?:the battlefield )?(?:tapped|with)\b)")
 _SPELL_REPLACEMENT_RE = re.compile(r"(?:if ~ would|as ~ enters)\b")
 _UNKNOWN_RE = (
-    (re.compile(r"level \d+(?:-\d+|\+)$"), "level_band"),
     (re.compile(r"\d+/\d+$"), "pt_line"),
     (re.compile(r"\d+(?:-\d+|\+)? \| "), "die_table"),
 )
+
+
+# Level gates (rule 13): each opens a block of gated paragraphs.
+_LEVEL_BAND_RE = re.compile(r"level \d+(?:-\d+|\+)$")
+_CLASS_LEVEL_RE = re.compile(r"(?:\{[^{}]+\})+: level \d+$")
+_STATION_ROW_RE = re.compile(r"\d+\+ \| ")
+_STATION_LINE_RE = re.compile(r"station\b")
+
+
+def _level_gates(paragraphs) -> dict:
+    """paragraph index -> detail code of every level gate on the face."""
+    station = any(_STATION_LINE_RE.match(t) for t in paragraphs)
+    out = {}
+    for p, t in enumerate(paragraphs):
+        if t.startswith("level ") and _LEVEL_BAND_RE.match(t):
+            out[p] = "level_band"
+        elif ": level " in t and _CLASS_LEVEL_RE.match(t):
+            out[p] = "class_level"
+        elif station and t[:1].isdigit() and _STATION_ROW_RE.match(t):
+            out[p] = "station_threshold"
+    return out
 
 
 # ── Trigger heads (A11) ────────────────────────────────────────────────
@@ -811,8 +840,18 @@ def _face_builders(ctx: _Ctx, norm, paragraphs) -> List[_B]:
     out: List[_B] = []
     p = 0
     np_ = len(paragraphs)
+    gates = _level_gates(paragraphs)
     while p < np_:
         t = paragraphs[p]
+        if p in gates:
+            q = next((g for g in sorted(gates) if g > p), np_)
+            b = _B(HostKind.UNKNOWN, p, "\n".join(paragraphs[p:q]))
+            b.paragraphs = list(range(p, q))
+            b.unmodelled.append((_um(Stage.STRUCTURE, gates[p]),
+                                 (0, len(b.text))))
+            out.append(b)
+            p = q
+            continue
         modes = []
         q = p + 1
         while q < np_:

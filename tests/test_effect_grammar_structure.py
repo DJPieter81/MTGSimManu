@@ -529,14 +529,58 @@ def test_a_replacement_static_is_an_explicit_unmodelled_replacement_host():
         assert h[0].body == ()
 
 
-def test_level_bands_and_die_tables_are_unknown_structure():
-    h = _hosts("Level up {2}\nLEVEL 1-3\n3/3\nFlying", types=("creature",),
-               keywords=("Level up", "Flying"))
-    assert _kinds(h) == [HostKind.KEYWORD, HostKind.UNKNOWN,
-                         HostKind.UNKNOWN, HostKind.KEYWORD]
+def _refusals(h):
+    return [u.detail for u, _ in h.unmodelled]
+
+
+def test_abilities_under_a_level_band_are_refused_with_the_band_never_unconditional():
+    """Rule 13 (CR 711.2): a leveler's band gates its P/T and abilities.
+    The band and every paragraph up to the next band are one
+    UNMODELLED(STRUCTURE) refusal -- never an always-on host."""
+    h = _hosts("Level up {W}\nLEVEL 2-6\n3/3\nFirst strike\nLEVEL 7+\n4/4\n"
+               "Double strike", types=("creature",),
+               keywords=("Level up", "First strike", "Double strike"))
+    assert _kinds(h) == [HostKind.KEYWORD, HostKind.UNKNOWN, HostKind.UNKNOWN]
+    assert h[0].keywords[0].name == "level_up"
+    assert [x.paragraphs for x in h[1:]] == [(1, 2, 3), (4, 5, 6)]
+    assert [_refusals(x) for x in h[1:]] == [["structure.level_band"]] * 2
+    assert all(x.body == () and S.uncovered(x) == "" for x in h)
+
+
+def test_a_class_level_line_gates_every_ability_up_to_the_next_level_and_is_no_activated_ability():
+    """Rule 13 (CR 716): a Class level line "{cost}: Level N" is the level
+    gate, not an activated ability with effect text "level N", and the
+    abilities it gates are refused with it. Level 1 is always on."""
+    h = _hosts("(Gain the next level as a sorcery to add its ability.)\n"
+               "Whenever you cast a noncreature spell, you may discard a "
+               "card. If you do, draw a card.\n{2}{R}: Level 2\n"
+               "Noncreature spells you cast cost {1} less to cast.\n"
+               "{2}{R}: Level 3\nIf a source you control would deal "
+               "noncombat damage to an opponent, it deals that much damage "
+               "plus 2 instead.", types=("enchantment",))
+    assert _kinds(h) == [HostKind.TRIGGERED, HostKind.UNKNOWN, HostKind.UNKNOWN]
+    assert [x.paragraphs for x in h[1:]] == [(1, 2), (3, 4)]
+    assert [_refusals(x) for x in h[1:]] == [["structure.class_level"]] * 2
+    assert all(x.activation_index is None for x in h)
+
+
+def test_a_station_threshold_gates_its_abilities_and_is_not_a_die_roll_row():
+    """Rule 13: a Spacecraft's "N+ | <abilities>" row is a station
+    threshold (the CR 702 station keyword), refused under its own code -- not a CR 706
+    die-roll result row."""
+    h = _hosts("Station (Tap another creature you control: Put charge "
+               "counters equal to its power on this Spacecraft.)\n"
+               "5+ | Flying, trample\n8+ | Whenever this Spacecraft attacks, "
+               "draw a card.", types=("artifact",), keywords=("Station",))
+    assert _kinds(h) == [HostKind.KEYWORD, HostKind.UNKNOWN, HostKind.UNKNOWN]
+    assert [_refusals(x) for x in h[1:]] == [["structure.station_threshold"]] * 2
+
+
+def test_a_die_roll_result_row_is_unknown_structure():
     h = _hosts("Roll a d20.\n1—9 | Draw a card.\n10—20 | Draw two cards.",
                types=("sorcery",))
     assert _kinds(h) == [HostKind.SPELL, HostKind.UNKNOWN, HostKind.UNKNOWN]
+    assert [_refusals(x) for x in h[1:]] == [["structure.die_table"]] * 2
 
 
 # ── The coverage invariant and determinism ──────────────────────────────

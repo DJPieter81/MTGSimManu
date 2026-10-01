@@ -18,7 +18,8 @@ build (names, card types, the MTGJSON keywords cut to CR 702, M3). It must:
   Legacy counts a variable-cost loyalty line ("[-X]:", whose bracket
   `parse_activation_cost` does not recognise) as an activated ability;
   A12 makes it a LOYALTY host, so a legacy ordinal L1 does not assign is
-  allowed only for such a line;
+  allowed only for such a line, or for a line inside a level gate's
+  refusal block (rule 13: a Class level line is no activated ability);
 * fit its measured CPU ceiling.
 
 Measured 2026-10-01 on this branch's DB (23,204 distinct faces, 41,399
@@ -51,6 +52,8 @@ STRUCTURE_POOL_CPU_CEILING_S = 7.0
 # rise means a paragraph shape fell out of a typed host.
 UNKNOWN_SHARE_CEILING = 0.01
 
+_GATE_DETAILS = frozenset({"structure.level_band", "structure.class_level",
+                           "structure.station_threshold"})
 _MELD_RE = re.compile(r"\bmeld them into\b")
 
 
@@ -178,9 +181,15 @@ def test_activation_ordinals_follow_the_legacy_ordinal_rule_on_every_face(faces)
         x_lines = sum(1 for h in fs.hosts if h.kind is HostKind.LOYALTY
                       and h.loyalty_cost is not None
                       and h.loyalty_cost.kind is AmountKind.X)
+        # Rule 13: a level gate's block is one refusal, so a Class level
+        # line (and any activated line it gates) takes no ordinal here.
+        gated = sum(line.count(":") > 0 and "⟨q" not in line
+                    for h in fs.hosts if h.kind is HostKind.UNKNOWN
+                    and any(u.detail in _GATE_DETAILS for u, _ in h.unmodelled)
+                    for line in h.text.split("\n"))
         if len(mine) != len(set(mine)) or not set(mine) <= set(range(n)) \
-                or n - len(mine) > x_lines:
+                or n - len(mine) > x_lines + gated:
             bad.append((name, i, mine, n))
         extras += n - len(mine)
-    print("\nlegacy ordinals on variable-cost loyalty lines: %d" % extras)
+    print("\nlegacy ordinals on X loyalty lines and level-gated lines: %d" % extras)
     assert bad == [], bad[:10]
