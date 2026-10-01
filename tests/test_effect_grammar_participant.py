@@ -180,6 +180,20 @@ def test_the_controller_or_owner_of_a_known_object_is_a_possessive_ref(text, ref
     assert r.value == ref and r.pending == pending and P.PLAYER in r.flags, r
 
 
+@pytest.mark.parametrize("text,per_object", [
+    ("their owners", True), ("its controllers", True),
+    ("the exiled cards' owners", True), ("those creatures' controllers", True),
+    ("its owner", False), ("their controller", False),
+    ("the exiled cards' owner", False), ("~'s owner", False)])
+def test_a_plural_possessed_role_is_one_player_per_object(text, per_object):
+    """"their owners" names the owner of each object of a plural possessor
+    -- a set of players, one per object -- so it is flagged ``PER_OBJECT``,
+    never collapsed into the single player of "its owner"."""
+    r = _p(text)
+    assert isinstance(r.value, Ref) and P.PLAYER in r.flags, r
+    assert (P.PER_OBJECT in r.flags) is per_object, r
+
+
 def test_a_possessor_outside_the_reference_table_is_unmodelled_possessor():
     r = _p("the blorp's controller")
     assert r.value is None and _code(r) == "participant.possessor", r
@@ -187,7 +201,6 @@ def test_a_possessor_outside_the_reference_table_is_unmodelled_possessor():
 
 @pytest.mark.parametrize("text,anaphor", [
     ("it", P.Anaphor()),
-    ("them", P.Anaphor(plural=True)),
     ("that creature", P.Anaphor(noun="creature")),
     ("that card", P.Anaphor(noun="card")),
     ("that spell", P.Anaphor(noun="spell")),
@@ -214,17 +227,49 @@ def test_an_object_pronoun_or_demonstrative_is_an_anaphor_with_noun_and_number(t
     ("those players", "player", True, True),
     ("the player", "player", False, True),
     ("he or she", "", False, True),
-    ("they", "", True, None),
+    ("they", "", None, None),
+    ("them", "", None, None),
+    ("he", "", False, None),
+    ("him", "", False, None),
 ])
 def test_a_player_pronoun_is_an_anaphor_the_linker_binds(text, noun, plural, player):
     """Section 7 "That player": the nearest target player, then a
     single-player subject, then CONTROLLER_OF the nearest object -- the
     linker's rule, so the leaf only records the noun and number. "they"
-    may be players or objects."""
+    and "them" may be players or objects, of either number."""
     r = _p(text)
     assert r.value == P.Anaphor(noun=noun, plural=plural, player=player), r
-    key = "player" if player else "ref"
+    key = "player" if player else P.EITHER
     assert r.pending == ((key, text),)
+
+
+@pytest.mark.parametrize("text", ["they", "them"])
+def test_they_and_them_leave_the_number_of_their_antecedent_open(text):
+    """Current Oracle wording uses singular "they" / "them" for one player
+    ("~ deals 2 damage to them" after "enchanted player"), and plural for
+    objects ("sacrifice them"). Section 7 checks number, so the anaphor
+    leaves it open (None) instead of fixing it plural."""
+    r = _p(text)
+    assert r.value.plural is None and r.value.player is None, r
+
+
+@pytest.mark.parametrize("text", ["they", "them", "he", "she", "him", "her"])
+def test_an_anaphor_that_may_be_a_player_or_an_object_is_flagged_as_both(text):
+    """The flags say what the participant is: a word that may name a
+    player or an object is both, never a player alone, and its pending key
+    says the same (``EITHER``)."""
+    r = _p(text)
+    assert r.value.player is None, r
+    assert r.flags == frozenset({P.PLAYER, P.OBJECT}), r
+    assert r.pending == ((P.EITHER, text),), r
+
+
+def test_a_damage_recipient_pronoun_after_an_enchanted_player_head_is_not_a_plural_object():
+    host = "whenever enchanted player casts a spell, ~ deals 2 damage to them."
+    a = host.index("them")
+    r = P.parse_participant(host, (a, len(host)), lemma="deal")
+    assert r.value == P.Anaphor(plural=None, player=None), r
+    assert P.PLAYER in r.flags and host[slice(*r.span)] == "them"
 
 
 @pytest.mark.parametrize("text,participle,noun,plural", [
@@ -259,6 +304,14 @@ def test_the_chosen_object_is_a_chosen_ref():
     ("the rest", RefPart.REST, None, "", True),
     ("the rest of them", RefPart.REST, None, "", True),
     ("the other", RefPart.OTHER, None, "", False),
+    ("up to one of them", RefPart.ONE, Amount(AmountKind.UP_TO, n=1), "", False),
+    ("up to two of them", RefPart.ONE, Amount(AmountKind.UP_TO, n=2), "", True),
+    ("up to two of those cards", RefPart.ONE, Amount(AmountKind.UP_TO, n=2),
+     "card", True),
+    ("up to x of them", RefPart.ONE,
+     Amount(AmountKind.UP_TO, inner=Amount(AmountKind.X, n=1)), "", True),
+    ("any number of them", RefPart.ONE, Amount(AmountKind.ANY_NUMBER), "",
+     True),
 ])
 def test_a_partitive_reference_keeps_its_part_and_count(text, part, n, noun, plural):
     """A28: REST and OTHER are set differences over an earlier result,
@@ -277,6 +330,24 @@ def test_an_unknown_reference_is_unmodelled_reference_never_a_filter(text):
     assert r.value is None and _code(r) == "participant.reference", r
 
 
+@pytest.mark.parametrize("text,code", [
+    ("any of them", "participant.reference"),
+    ("one of them at random", "participant.reference"),
+    ("two of those blorps", "participant.reference"),
+    ("defending player's", "participant.possessor"),
+    ("each opponent's", "participant.possessor"),
+    ("~'s", "participant.possessor"),
+])
+def test_a_reference_form_outside_the_tables_is_refused_by_the_reference_grammar(text, code):
+    """A partitive of an earlier result ("... of them", "... of those
+    <noun>") and a dangling possessive are reference forms: a gap there is
+    the reference grammar's (Stage.REFERENCE), never blamed on the filter
+    leaf."""
+    r = _p(text)
+    assert r.value is None and r.unmodelled.stage is Stage.REFERENCE, r
+    assert _code(r) == code, r
+
+
 def test_this_ability_names_the_ability_not_a_participant():
     """CR 113.1: "this ability" is not a self-form (L0 leaves it), and no
     effect acts on it as a participant."""
@@ -292,6 +363,26 @@ def test_a_characteristic_is_not_a_participant(text):
     whose subject is one ("~'s power is equal to ...") is refused here."""
     r = _p(text)
     assert r.value is None and _code(r) == "participant.characteristic", r
+
+
+@pytest.mark.parametrize("text", [
+    "creatures with power less than ~'s power",
+    "each creature with toughness less than its power",
+    "creatures with mana value less than that creature's mana value"])
+def test_a_group_compared_against_a_characteristic_is_the_filter_leafs(text):
+    """Only a slot that is itself a characteristic is refused
+    ``characteristic``; a group whose comparison operand is one reaches the
+    filter leaf, which types or refuses it with its own code -- the same
+    bucket whichever possessive the operand prints."""
+    from engine.effect_grammar.sub import filter as F
+    r = _p(text)
+    f = F.parse_filter(text, (0, len(text)))
+    if f.value is None:
+        assert r.unmodelled.stage is Stage.FILTER, r
+        assert r.unmodelled.detail == "participant.filter:" + \
+            f.unmodelled.detail.split(".", 1)[1].split(":")[0], (r, f)
+    else:
+        assert r.value == f.value and P.GROUP in r.flags, r
 
 
 # ── Groups and targets (section 5) ────────────────────────────────────
@@ -337,10 +428,34 @@ def test_a_slot_with_a_counted_target_word_belongs_to_the_target_leaf(text):
     assert r.value is None and _code(r) == "participant.targeted", r
 
 
-def test_a_noun_use_of_target_is_not_routed_to_the_target_leaf():
-    """F11: "spells that target ~" prints no requirement."""
-    r = _p("spells that target ~")
-    assert r.unmodelled is None or _code(r) != "participant.targeted", r
+@pytest.mark.parametrize("text,stage,detail", [
+    # The verb use: an object group the filter leaf reads (and here
+    # refuses with its own code), never the target leaf's.
+    ("spells that target ~", Stage.FILTER, "participant.filter:unparsed"),
+    # The noun use: a reference to an earlier target, the linker's.
+    ("the target creature", Stage.REFERENCE, "participant.reference:the"),
+    ("that target", Stage.REFERENCE, "participant.reference:that"),
+])
+def test_a_noun_use_of_target_is_not_routed_to_the_target_leaf(text, stage, detail):
+    """F11: "spells that target ~" and "the target creature" print no
+    counted target word, so the slot goes to the filter leaf or the
+    reference tables -- an exact outcome, not merely "not targeted"."""
+    from engine.effect_grammar.sub import target as T
+    assert T.target_words(text) == ()
+    r = _p(text)
+    assert r.value is None and r.unmodelled.stage is stage, r
+    assert r.unmodelled.detail == detail, r
+
+
+def test_a_reference_moved_out_of_a_targeted_zone_belongs_to_the_target_leaf():
+    """A slot that prints a counted target word anywhere is refused
+    ``participant.targeted`` whole; the source-zone recovery never hands a
+    counted target word on as rest."""
+    for text in ("~ from target opponent's graveyard",
+                 "it from target player's graveyard"):
+        r = _p(text)
+        assert r.value is None and _code(r) == "participant.targeted", r
+        assert r.rest_spans == () and r.span == (0, len(text)), r
 
 
 @pytest.mark.parametrize("text", [

@@ -126,9 +126,9 @@ def _key(r):
 # Typed share per position over distinct slots, measured 2026-10-01 on this
 # branch's DB (22.7k cards; 3.6k distinct slots, 844 of them
 # target-routed and excluded from the share): subject 472/1052 (44.9%),
-# recipient 74/145 (51.0%), object 524/912 (57.5%), payer 8/9 (88.9%),
-# chooser 321/323 (99.4%); 1399/2441 (57.3%) overall. Most refusals
-# (772) are object groups the filter leaf refuses (the filter pool's own
+# recipient 74/145 (51.0%), object 525/912 (57.6%), payer 8/9 (88.9%),
+# chooser 321/323 (99.4%); 1400/2441 (57.4%) overall. Most refusals
+# (765) are object groups the filter leaf refuses (the filter pool's own
 # measure) and stand-in cuts that land inside a clause ("spells you",
 # "it also", "the same"); the rest are the closed table working --
 # characteristics ("~'s power and toughness"), A17 unions ("a permanent or
@@ -183,7 +183,13 @@ def test_the_participant_leaf_types_or_refuses_every_pool_participant_slot_deter
         if r.value is not None:
             assert isinstance(r.value, (Selector, Ref, P.Anaphor,
                                         CardFilter)), (host, r)
-            assert len(r.flags & {P.PLAYER, P.OBJECT, P.GROUP}) == 1, (host, r)
+            kind_flags = r.flags & {P.PLAYER, P.OBJECT, P.GROUP}
+            # An anaphor that may name a player or an object ("they",
+            # "them") is both; every other participant is exactly one.
+            if isinstance(r.value, P.Anaphor) and r.value.player is None:
+                assert kind_flags == {P.PLAYER, P.OBJECT}, (host, r)
+            else:
+                assert len(kind_flags) == 1, (host, r)
             assert (P.GROUP in r.flags) == isinstance(r.value, CardFilter)
             total[position] += 1
             typed[position] += 1
@@ -222,6 +228,12 @@ def test_the_participant_leaf_types_or_refuses_every_pool_participant_slot_deter
 # Participant slots printed by registered-deck cards (decks/modern_meta.py),
 # with the exact participant the leaf must return. The card name only
 # locates the printed text in the DB; the leaf never sees it.
+#
+# Known deviation (E0 step 21, design section 18): real registered-deck
+# card names are to live only in tests/fixtures/effect_grammar_witnesses.json.
+# That fixture is created by step 21 with its spec-chain schema; until
+# then these rows sit here, as the filter, quantity, lexicon, keywords and
+# normalize pool tests' rows do, and move into the fixture with theirs.
 
 _YOU = Selector(SelectorKind.PLAYER)
 _OPPONENTS = Selector(SelectorKind.OPPONENTS)
@@ -274,8 +286,14 @@ _WITNESSES = (
      lambda: _anaphor(noun="spell"), (("ref", "that spell"),), set()),
     ("Galvanic Discharge", "damage to that permanent", "that permanent",
      lambda: _anaphor(noun="permanent"), (("ref", "that permanent"),), set()),
+    # "them" may be objects (plural) or one player (singular "them"), so
+    # its number and kind are the linker's.
     ("Dalkovan Encampment", "sacrifice them", "them",
-     lambda: _anaphor(plural=True), (("ref", "them"),), set()),
+     lambda: _anaphor(plural=None, player=None), (("either", "them"),),
+     set()),
+    ("Curse of Shaken Faith", "deals 2 damage to them", "them",
+     lambda: _anaphor(plural=None, player=None), (("either", "them"),),
+     set()),
     # A26: the card a linked exile ability exiled.
     ("Ugin's Labyrinth", "return the exiled card", "the exiled card",
      lambda: _anaphor(noun="card", participle="exiled"),

@@ -27,7 +27,9 @@ exactly one of:
   / OWNER_OF, of=<object ref>)``. A9 / M1: "~'s owner" is a possessive of
   SELF and never goes through pronoun binding; a possessor the linker must
   bind ("its", "that creature's") leaves ``of=None`` and the possessor
-  text in ``pending`` as ``("ref", text)``;
+  text in ``pending`` as ``("ref", text)``. A plural role ("their
+  owners", "the exiled cards' owners") is one player per object of the
+  possessor and is flagged `PER_OBJECT`;
 * an object REFERENCE -- "~" is ``Ref(SELF)``; "enchanted / equipped /
   fortified <noun>" is ``Ref(ATTACHED, noun)`` (CR 301.5, 303.4); "the
   chosen <noun>" is ``Ref(CHOSEN, noun)``;
@@ -37,7 +39,11 @@ exactly one of:
   anaphor carries both, plus the participle of the action that produced
   its referent (A26) and its part (A28: REST and OTHER are resolution-time
   set differences). ``pending`` holds ``("ref", text)`` for an object and
-  ``("player", text)`` for a player, the quantity leaf's convention;
+  ``("player", text)`` for a player, the quantity leaf's convention, and
+  ``("either", text)`` for a word that may name either ("they", "them",
+  "him"), which is flagged both `PLAYER` and `OBJECT`. Current Oracle
+  wording uses singular "they" / "them" for one player, so their number
+  is left open (``plural=None``) for the linker's compatibility check;
 * an object GROUP -- the filter leaf's `CardFilter` (the one owner of
   object descriptions), with the filter's count and ``each`` / ``all``
   flags; `CardFilter.as_selector` is its FILTER selector.
@@ -78,8 +84,8 @@ from engine.effect_spec import (Amount, AmountKind, Chooser, Ref, RefKind,
 from engine.target_solver import _NUMBER_WORDS
 
 __all__ = ["LEAF", "DETAIL_CODES", "Anaphor", "PLAYER", "OBJECT", "GROUP",
-           "EACH", "ANY", "parse_participant", "parse_chooser",
-           "clear_caches"]
+           "EACH", "ANY", "PER_OBJECT", "EITHER", "parse_participant",
+           "parse_chooser", "clear_caches"]
 
 LEAF = "participant"
 DETAIL_CODES = frozenset({
@@ -88,14 +94,21 @@ DETAIL_CODES = frozenset({
     "filter", "chooser", "library_position"})
 
 # SlotResult flags: what the participant is.
-PLAYER = "player"      # a player set or reference, or an anaphor that may
-                       # name a player ("that player", "they")
-OBJECT = "object"      # an object reference or object anaphor
+PLAYER = "player"      # a player set or reference, or a player anaphor
+                       # ("that player")
+OBJECT = "object"      # an object reference or object anaphor; an anaphor
+                       # that may name either ("they", "them") is flagged
+                       # PLAYER and OBJECT both
 GROUP = "group"        # an untargeted object group (a CardFilter)
 # SlotResult flags: the quantifier of a player set (a group carries the
 # filter leaf's own each / all flags, whose "each" is this same word).
 EACH = _filter.EACH    # "each opponent", "every player"
 ANY = "any"            # "any player": every member holds the option
+# SlotResult flag: a plural possessed role ("their owners") -- one player
+# per object of the possessor, never collapsed into one player.
+PER_OBJECT = "per_object"
+# Pending key of an anaphor that may bind a player or an object.
+EITHER = "either"
 
 _ONE = Amount(AmountKind.LITERAL, n=1)
 
@@ -105,11 +118,12 @@ class Anaphor:
     """A participant the linker binds (section 7). Compatibility checks
     noun and number, so both are recorded; ``player`` is True for a
     player, False for an object and None when the word may be either
-    ("they"). ``participle`` names the earlier action that produced the
+    ("they"); ``plural`` is None when the number is open (singular
+    "they" / "them" names one player in current Oracle wording). ``participle`` names the earlier action that produced the
     referent ("the exiled card", A26); ``part`` and ``n`` the partitive
     (A28); ``reflexive`` marks "itself" (the clause's own subject)."""
     noun: str = ""
-    plural: bool = False
+    plural: Optional[bool] = False
     player: Optional[bool] = False
     part: RefPart = RefPart.ALL
     n: Optional[Amount] = None
@@ -166,8 +180,11 @@ _PLAYER_ANAPHORS = {
     "him or her": ("", False, True),
     # May be players or objects. L0 rewrites a self-pronoun on a
     # planeswalker or legendary face to ~ (A9), so a lone he / she left
-    # names a player of older wording or another object.
-    "they": ("", True, None),
+    # names a player of older wording or another object. "they" / "them"
+    # are singular for one player and plural for objects, so their number
+    # is open.
+    "they": ("", None, None),
+    "them": ("", None, None),
     "he": ("", False, None),
     "she": ("", False, None),
     "him": ("", False, None),
@@ -207,8 +224,6 @@ _PARTICIPLES = frozenset({
     "blocking", "blocked", "attached", "created", "drawn", "searched",
     "looked"})
 _ATTACHED_RE = re.compile(r"^(?:enchanted|equipped|fortified) (?P<noun>.+)$")
-_OBJECT_PRONOUNS = frozenset({"it", "them"})
-_PLURAL_PRONOUNS = frozenset({"them"})
 
 
 def _singular(word: str) -> Optional[Tuple[str, bool]]:
@@ -242,8 +257,12 @@ def _noun(text: str) -> Optional[Tuple[str, bool]]:
 _NUMBER = r"(?:%s|\d+|x)" % "|".join(sorted(_NUMBER_WORDS, key=len,
                                              reverse=True))
 _PARTITIVE_RE = re.compile(
-    r"^(?:(?P<each>each)|(?P<all>all|both)|(?P<count>%s)) of "
-    r"(?P<of>them|those (?P<noun>.+)|the (?P<pnoun>.+))$" % _NUMBER)
+    r"^(?:(?P<each>each)|(?P<all>all|both)|(?P<anynum>any number)"
+    r"|up to (?P<upto>%s)|(?P<count>%s)) of "
+    r"(?P<of>them|those (?P<noun>.+)|the (?P<pnoun>.+))$" % (_NUMBER, _NUMBER))
+# Any other partitive of an earlier result is a reference form, never an
+# object group.
+_PARTITIVE_OF_RE = re.compile(r"(?<![\w'])of (?:them|those)(?![\w'])")
 _REST_RE = re.compile(r"^the (?:(?P<rest>rest)|(?P<others>others)|(?P<other>other))"
                       r"(?: of (?:them|those (?P<noun>.+)|the (?P<pnoun>.+)))?$")
 _THIS_WAY_RE = re.compile(r"^the (?P<noun>.+?) (?P<part>[a-z]+ed) this way$")
@@ -284,9 +303,8 @@ def _object_ref(t: str) -> Optional[_Rel]:
             return _ok(Ref(RefKind.ATTACHED, noun=noun[0]), {OBJECT})
         return None
     pending = (("ref", t),)
-    if t in _OBJECT_PRONOUNS:
-        return _ok(Anaphor(plural=t in _PLURAL_PRONOUNS), {OBJECT}, None,
-                   pending)
+    if t == "it":
+        return _ok(Anaphor(), {OBJECT}, None, pending)
     if t == "itself":
         return _ok(Anaphor(reflexive=True), {OBJECT}, None, pending)
     m = _PARTITIVE_RE.match(t)
@@ -303,6 +321,20 @@ def _object_ref(t: str) -> Optional[_Rel]:
                        {OBJECT}, None, pending)
         if m.group("all"):
             return _ok(Anaphor(noun=noun, plural=True), {OBJECT}, None, pending)
+        if m.group("anynum"):
+            return _ok(Anaphor(noun=noun, plural=True, part=RefPart.ONE,
+                               n=Amount(AmountKind.ANY_NUMBER)),
+                       {OBJECT}, None, pending)
+        if m.group("upto"):
+            bound = _count(m.group("upto"))
+            if bound is None:
+                return None
+            plural = bound != _ONE
+            n = Amount(AmountKind.UP_TO, n=bound.n) \
+                if bound.kind is AmountKind.LITERAL \
+                else Amount(AmountKind.UP_TO, inner=bound)
+            return _ok(Anaphor(noun=noun, plural=plural, part=RefPart.ONE,
+                               n=n), {OBJECT}, None, pending)
         n = _count(m.group("count"))
         if n is None:
             return None
@@ -360,36 +392,47 @@ def _object_ref(t: str) -> Optional[_Rel]:
 _POSSESSED_RE = re.compile(
     r"^(?P<poss>.+?)(?:'s|') (?P<role>owner|controller)(?P<pl>s)?$")
 _PRONOUN_POSSESSED_RE = re.compile(
-    r"^(?P<poss>its|their|his or her|his|her) (?P<role>owner|controller)s?$")
+    r"^(?P<poss>its|their|his or her|his|her) (?P<role>owner|controller)"
+    r"(?P<pl>s)?$")
 _ROLE = {"owner": RefKind.OWNER_OF, "controller": RefKind.CONTROLLER_OF}
 
 
 def _possessed(t: str) -> Optional[_Rel]:
     """The controller or owner of an object (A9 / M1), or None when ``t``
     is not of that shape."""
-    m = _PRONOUN_POSSESSED_RE.match(t)
-    if m is not None:
-        return _ok(Ref(_ROLE[m.group("role")]), {PLAYER}, None,
-                   (("ref", m.group("poss")),))
-    m = _POSSESSED_RE.match(t)
+    m = _PRONOUN_POSSESSED_RE.match(t) or _POSSESSED_RE.match(t)
     if m is None:
         return None
+    flags = {PLAYER, PER_OBJECT} if m.group("pl") else {PLAYER}
     poss, kind = m.group("poss"), _ROLE[m.group("role")]
+    if m.re is _PRONOUN_POSSESSED_RE:
+        return _ok(Ref(kind), flags, None, (("ref", poss),))
     inner = _object_ref(poss)
     if inner is None:
         return _fail("possessor", poss.split(" ")[-1])
     value, _, _, pending, _ = inner
     if isinstance(value, Ref):
-        return _ok(Ref(kind, of=value), {PLAYER})
+        return _ok(Ref(kind, of=value), flags)
     if value.reflexive or value.part is not RefPart.ALL:
         return _fail("possessor", poss.split(" ")[-1])
-    return _ok(Ref(kind), {PLAYER}, None, pending)
+    return _ok(Ref(kind), flags, None, pending)
 
 
+# A slot that is itself a characteristic: the whole slot is the stat, its
+# possessive pronoun, or a possessor's "'s" form ("~'s power", "that
+# creature's mana value"). A possessor that narrows a group ("creatures
+# with power less than ~'s power") makes the slot a compared group, the
+# filter leaf's.
 _CHARACTERISTIC_RE = re.compile(
-    r"(?:^|'s |^(?:its|their|your|his|her) )(?:base )?"
+    r"^(?:(?P<poss>[a-z~][a-z~ ]*?)(?:'s|') |(?:its|their|your|his or her"
+    r"|his|her) )?(?:base )?"
     r"(?:power|toughness|mana value|loyalty|life total|converted mana cost)"
     r"(?: and toughness)?$")
+# A narrowing word after the possessor's head ("that creature" is a
+# demonstrative, "creatures that ..." a relative clause).
+_NARROWING_RE = re.compile(
+    r"(?<= )(?:with|without|who|whose|that|less|greater|equal|among)"
+    r"(?![\w'])")
 _ABILITY_RE = re.compile(r"^this ability$")
 # The source zone a moved reference prints after it.
 _FROM_RE = re.compile(r" (?=from (?:exile|the battlefield|the stack|among"
@@ -418,9 +461,11 @@ def _single(t: str) -> Optional[_Rel]:
         return _ok(_PLAYER_REFS[t], {PLAYER})
     if t in _PLAYER_ANAPHORS:
         noun, plural, player = _PLAYER_ANAPHORS[t]
-        key = "player" if player else "ref"
-        return _ok(Anaphor(noun=noun, plural=plural, player=player), {PLAYER},
-                   None, ((key, t),))
+        if player:
+            return _ok(Anaphor(noun=noun, plural=plural, player=True),
+                       {PLAYER}, None, (("player", t),))
+        return _ok(Anaphor(noun=noun, plural=plural, player=None),
+                   {PLAYER, OBJECT}, None, ((EITHER, t),))
     r = _object_ref(t)
     if r is not None:
         return r
@@ -472,7 +517,9 @@ def _participant_rel(host: str, a: int, b: int, zone: str) -> _Rel:
         return _fail("designation")
     if _ABILITY_RE.match(t):
         return _fail("ability")
-    if _CHARACTERISTIC_RE.search(t):
+    m = _CHARACTERISTIC_RE.match(t)
+    if m is not None and not (m.group("poss")
+                              and _NARROWING_RE.search(m.group("poss"))):
         return _fail("characteristic")
     if _LIBRARY_POSITION_RE.match(t):
         return _fail("library_position")
@@ -485,6 +532,12 @@ def _participant_rel(host: str, a: int, b: int, zone: str) -> _Rel:
         return _fail("relative_clause")
     if _PLAYER_WORD_RE.match(t):
         return _fail("player", t.split(" ")[0])
+    if t.endswith("'s") or t.endswith("s'"):
+        # A dangling possessive ("defending player's"): a possessor whose
+        # possessed noun the slot cut off.
+        return _fail("possessor", t.split(" ")[-1])
+    if _PARTITIVE_OF_RE.search(t):
+        return _fail("reference", t.split(" ")[0])
     head = t.split(" ")[0]
     if head in _REFERENCE_HEADS or head.endswith("'s"):
         return _fail("reference", head)
@@ -519,10 +572,12 @@ def parse_participant(host: str, span: Optional[Span] = None, *,
     value, flags, amount, pending, failure = _participant_rel(
         host, start, start + len(body), zone)
     rest: Tuple[Span, ...] = ()
-    if failure is not None:
+    if failure is not None and failure[0] != "targeted":
         # A reference moved out of a zone prints its source zone ("return
         # ~ from your graveyard"); the zone is the object span's, read by
         # the destination leaf's zone reader, so it is handed on as rest.
+        # A slot that prints a counted target word anywhere stays the
+        # target leaf's, whole.
         m = _FROM_RE.search(body)
         if m is not None:
             cut = start + m.start()
