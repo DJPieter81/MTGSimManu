@@ -55,6 +55,10 @@ and the package's `engine.effect_grammar.clear_caches` -- the one entry
 point the load driver calls once the grammar pass finishes -- clears these
 and every leaf beside them.
 
+**Count words.** `NUMBER_WORDS` (and `COUNT_WORDS`, longest first) is the
+one count-word table of every leaf; no leaf builds its own, so a printed
+count is typed in every slot that counts or in none.
+
 **Dependency edges.** A leaf may import another only along `LEAF_EDGES`
 (pinned by a test): destination reads counter noun phrases through
 payload's counter parser (one count table, one kind vocabulary); payload
@@ -66,10 +70,11 @@ from dataclasses import dataclass
 from typing import Any, FrozenSet, Optional, Tuple
 
 from engine.effect_spec import Amount, Unmodelled
+from engine.target_solver import _NUMBER_WORDS as _SOLVER_NUMBER_WORDS
 
 __all__ = ["Span", "SlotResult", "unmodelled", "rest_spans_after",
            "join_spans", "SELF_NOUNS", "CACHE_SIZE", "LEAF_EDGES", "SCALED",
-           "clear_caches"]
+           "NUMBER_WORDS", "COUNT_WORDS", "clear_caches"]
 
 Span = Tuple[int, int]
 
@@ -77,6 +82,20 @@ Span = Tuple[int, int]
 SELF_NOUNS = ("creature", "artifact", "enchantment", "land", "planeswalker",
               "permanent", "battle", "spell", "card", "equipment", "aura",
               "vehicle", "token")
+
+# The one count-word table of every leaf (amount, payload, filter,
+# participant, target, condition): the target solver's words extended
+# through twenty and its hyphenated compounds ("twenty-five"), the highest
+# count words the pool prints. A count word is typed in every slot or in
+# none -- a damage count and a token count read the same table.
+NUMBER_WORDS = dict(_SOLVER_NUMBER_WORDS, eleven=11, twelve=12, thirteen=13,
+                    fourteen=14, fifteen=15, sixteen=16, seventeen=17,
+                    eighteen=18, nineteen=19, twenty=20)
+NUMBER_WORDS.update({"twenty-" + w: 20 + n
+                     for w, n in _SOLVER_NUMBER_WORDS.items() if 1 <= n <= 9})
+# The words longest first, so a regex alternation tries "twenty-one"
+# before "twenty".
+COUNT_WORDS = tuple(sorted(NUMBER_WORDS, key=len, reverse=True))
 
 # The deferred-count flag (see "Result"): the slot's count is a trailing
 # scaler's, so the slot holds neither a value nor a refusal.

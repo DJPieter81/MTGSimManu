@@ -57,12 +57,12 @@ from functools import lru_cache
 from typing import List, Optional, Tuple
 
 from engine.cards import Keyword
-from engine.effect_grammar.sub import (CACHE_SIZE, SlotResult, Span,
-                                       rest_spans_after, unmodelled)
+from engine.effect_grammar.sub import (CACHE_SIZE, COUNT_WORDS, NUMBER_WORDS,
+                                       SlotResult, Span, rest_spans_after,
+                                       unmodelled)
 from engine.effect_grammar.sub import dest as _dest
 from engine.effect_spec import Amount, AmountKind, Stage
-from engine.target_solver import (ANY_NUMBER, TargetRequirement,
-                                  _NUMBER_WORDS, parse_spans)
+from engine.target_solver import ANY_NUMBER, TargetRequirement, parse_spans
 
 __all__ = ["LEAF", "DETAIL_CODES", "POSSESSIVE", "TargetSlot",
            "target_words", "parse_target", "clear_caches"]
@@ -106,7 +106,7 @@ class TargetSlot:
 
 # ── F11: counted target words ──────────────────────────────────────────
 
-_COUNT_WORD = r"(?:%s|\d+|x)" % "|".join(sorted(_NUMBER_WORDS))
+_COUNT_WORD = r"(?:%s|\d+|x)" % "|".join(COUNT_WORDS)
 _TARGET_WORD = re.compile(r"(?<![\w'])(?P<w>target(?P<pl>s)?)(?![\w'])")
 # Determiners and adjectives that make "target" a noun ("the target of",
 # "a single target", "choose new targets", "each target beyond the first").
@@ -399,16 +399,16 @@ def _printed_count(m) -> Optional[Tuple[int, int, Optional[Amount], str]]:
     """(min, max, amount, word) of a count prefix; max None = unbounded."""
     if m.group("up"):
         w = m.group("up")
-        n = _NUMBER_WORDS.get(w) or (int(w) if w.isdigit() else None)
+        n = NUMBER_WORDS.get(w) or (int(w) if w.isdigit() else None)
         return (0, n, None if n is None else Amount(AmountKind.UP_TO, n=n), w)
     if m.group("oor"):
-        return (1, _NUMBER_WORDS[m.group("oor")], None, "range")
+        return (1, NUMBER_WORDS[m.group("oor")], None, "range")
     if m.group("any"):
         return (0, ANY_NUMBER, Amount(AmountKind.ANY_NUMBER), "any")
     w = m.group("n")
     if w is None:                                   # one, two, or three
-        return (1, _NUMBER_WORDS["three"], None, "range")
-    n = _NUMBER_WORDS.get(w) or (int(w) if w.isdigit() else None)
+        return (1, NUMBER_WORDS["three"], None, "range")
+    n = NUMBER_WORDS.get(w) or (int(w) if w.isdigit() else None)
     if n is None:
         return (0, None, None, w)                   # x: not a literal
     return (n, n, None if n == 1 else Amount(AmountKind.LITERAL, n=n), w)

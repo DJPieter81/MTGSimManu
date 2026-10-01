@@ -79,12 +79,11 @@ import re
 from functools import lru_cache
 from typing import Any, Dict, FrozenSet, List, Optional, Tuple
 
-from engine.effect_grammar.sub import (CACHE_SIZE, SlotResult, Span,
-                                       unmodelled)
+from engine.effect_grammar.sub import (CACHE_SIZE, COUNT_WORDS, NUMBER_WORDS,
+                                       SlotResult, Span, unmodelled)
 from engine.effect_grammar.sub import payload as _payload
 from engine.effect_spec import (Amount, AmountKind, CardFilter, Ref, RefKind,
                                 Stage, Unmodelled)
-from engine.target_solver import _NUMBER_WORDS
 
 __all__ = ["LEAF", "DETAIL_CODES", "parse_filter", "CARD_TYPES",
            "PERMANENT_TYPES", "NONPERMANENT_TYPES", "SUPERTYPES", "SUBTYPES", "CLASSES", "STATES",
@@ -204,8 +203,8 @@ _REFERENCE_WORDS = frozenset({"it", "them", "that", "those", "this", "these",
                               "equipped", "fortified", "such"})
 _PLAYER_NOUNS = frozenset({"player", "opponent", "players", "opponents"})
 
-_WORD_COUNTS: Dict[str, int] = dict(_NUMBER_WORDS, a=1, an=1)
-_N = r"(?:%s|\d+|x)" % "|".join(sorted(_NUMBER_WORDS, key=len, reverse=True))
+_WORD_COUNTS: Dict[str, int] = dict(NUMBER_WORDS, a=1, an=1)
+_N = r"(?:%s|\d+|x)" % "|".join(COUNT_WORDS)
 _X_UNIT = Amount(AmountKind.X, n=1)
 _THAT_MUCH = Amount(AmountKind.THAT_MUCH)
 

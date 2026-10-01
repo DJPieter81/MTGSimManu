@@ -45,16 +45,15 @@ import re
 from functools import lru_cache
 from typing import Any, Dict, Optional, Tuple, Union
 
-from engine.effect_grammar.sub import (CACHE_SIZE, SlotResult, Span,
-                                       join_spans, rest_spans_after,
-                                       unmodelled)
+from engine.effect_grammar.sub import (CACHE_SIZE, NUMBER_WORDS,
+                                       SlotResult, Span, join_spans,
+                                       rest_spans_after, unmodelled)
 from engine.effect_grammar.sub.duration import DURATION_START
 from engine.effect_model import ModKind, Modification
 from engine.effect_spec import (Amount, AmountKind, CostSnapshot, CounterSpec,
                                 Granted, KeywordAction, ManaSpec, Ref, RefKind,
                                 Stage, TokenSpec, Unmodelled, Verb,
                                 freeze_cost)
-from engine.target_solver import _NUMBER_WORDS
 
 __all__ = ["LEAF", "DETAIL_CODES", "parse_payload", "parse_mana",
            "adds_mana", "parse_mana_restriction", "parse_counters",
@@ -120,7 +119,7 @@ def _slot(host: str, span: Span) -> Tuple[str, int]:
 
 # ── Counts ─────────────────────────────────────────────────────────────
 
-_WORD_COUNTS: Dict[str, int] = dict(_NUMBER_WORDS, a=1, an=1)
+_WORD_COUNTS: Dict[str, int] = dict(NUMBER_WORDS, a=1, an=1)
 _COUNT_WORDS = sorted(_WORD_COUNTS, key=len, reverse=True)
 _COUNT_RE = r"(?:%s|\d+|x)" % "|".join(_COUNT_WORDS)
 _X_UNIT = Amount(AmountKind.X, n=1)

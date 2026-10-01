@@ -77,12 +77,11 @@ import re
 from functools import lru_cache
 from typing import Optional, Tuple
 
-from engine.effect_grammar.sub import (CACHE_SIZE, SCALED, SlotResult, Span,
-                                       unmodelled)
+from engine.effect_grammar.sub import (CACHE_SIZE, NUMBER_WORDS, SCALED,
+                                       SlotResult, Span, unmodelled)
 from engine.effect_grammar.sub import quantity as _Q
 from engine.effect_spec import (Amount, AmountKind, Quantity, QuantityKind,
                                 Ref, RefKind, Stage, Unmodelled)
-from engine.target_solver import _NUMBER_WORDS
 
 __all__ = ["LEAF", "DETAIL_CODES", "ADDITIONAL", "SCALED", "NUMBER_WORDS",
            "parse_amount", "parse_scaler", "parse_where_x",
@@ -100,14 +99,7 @@ ADDITIONAL = "additional"   # flag: "an additional card" (one more)
 # SCALED (the contract's deferred-count flag): "a number of" -- the scaler
 # holds the count.
 
-# The target solver's number words (one table) extended through twenty
-# and its hyphenated compounds ("twenty-five"), the highest count words the
-# pool prints.
-NUMBER_WORDS = dict(_NUMBER_WORDS, eleven=11, twelve=12, thirteen=13,
-                    fourteen=14, fifteen=15, sixteen=16, seventeen=17,
-                    eighteen=18, nineteen=19, twenty=20)
-NUMBER_WORDS.update({"twenty-" + w: 20 + n for w, n in _NUMBER_WORDS.items()
-                     if 1 <= n <= 9})
+# NUMBER_WORDS is the contract's one count-word table (re-exported).
 _WORDS = sorted(NUMBER_WORDS, key=len, reverse=True)
 _NUM = r"(?:\d{1,3}(?:,\d{3})+|\d+|%s)" % "|".join(_WORDS)
 # Where a count word ends: no letter, digit or hyphen glued on, so

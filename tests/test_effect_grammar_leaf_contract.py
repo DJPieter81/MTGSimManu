@@ -83,11 +83,11 @@ def test_a_failed_slot_reports_the_whole_slot_as_its_span():
     """The census and the coverage invariant see the text the leaf did not
     consume."""
     from engine.effect_grammar.sub import dest, payload
-    host = "put it into your hand blorp. put eleven +1/+1 counters on it."
+    host = "put it into your hand blorp. put blorp +1/+1 counters on it."
     slot = (host.index("into"), host.index("."))
     d = dest.parse_destination(host, slot, lemma="put")
     assert d.value is None and d.span == slot
-    slot = (host.index("eleven"), len(host) - 1)
+    slot = (host.index("blorp +1"), len(host) - 1)
     p = payload.parse_payload(_Entry(Verb.PUT_COUNTERS, "put"), host, slot, None)
     assert p.value is None and p.unmodelled is not None
     assert p.span == slot
@@ -145,7 +145,7 @@ def test_the_payload_leaf_reads_the_printed_lemma_from_the_entry_or_the_caller()
 
 def test_an_unmodelled_slot_carries_the_callers_lemma_never_a_leaf_default():
     from engine.effect_grammar.sub import dest, duration, payload
-    text = "eleven +1/+1 counters on it"
+    text = "blorp +1/+1 counters on it"
     r = payload.parse_payload(_Entry(Verb.PUT_COUNTERS, "put"), text,
                               (0, len(text)), None)
     assert r.unmodelled.lemma == "put"
@@ -169,7 +169,7 @@ _DETAIL_RE = re.compile(r"^(?P<leaf>[a-z]+)\.(?P<code>[a-z_]+)(?::\S+)?$")
 
 @pytest.mark.parametrize("call", [
     lambda L: L["payload"].parse_payload(_Entry(Verb.PUT_COUNTERS, "put"),
-                                         "eleven +1/+1 counters", (0, 21), None),
+                                         "blorp +1/+1 counters", (0, 20), None),
     lambda L: L["payload"].parse_payload(_Entry(Verb.CREATE_TOKEN, "create"),
                                          "a 2/2 blorp to it token", (0, 23), None),
     lambda L: L["payload"].parse_payload(_Entry(Verb.CONTINUOUS, "can't"),
@@ -271,6 +271,50 @@ def test_every_payload_phrase_ends_where_a_printed_duration_begins(duration_phra
                                   (0, len(text)), None)
         assert r.value is not None or r.alternatives, (text, r)
         assert r.rest_text(text) == duration_phrase, (text, r)
+
+
+# ── One count-word table ────────────────────────────────────────────────
+
+@pytest.mark.parametrize("word,n", [("ten", 10), ("eleven", 11),
+                                    ("thirteen", 13), ("twenty", 20),
+                                    ("twenty-one", 21)])
+def test_a_printed_count_word_is_typed_in_every_slot_that_counts(word, n):
+    """One count table: a count word typed in a damage slot is typed in a
+    counter, token, entry-counter, filter, participant and target slot."""
+    from engine.effect_grammar import sub
+    from engine.effect_grammar.sub import (amount, dest, filter, participant,
+                                           payload, target)
+    lit = Amount(AmountKind.LITERAL, n=n)
+    assert sub.NUMBER_WORDS[word] == n
+    assert amount.NUMBER_WORDS is sub.NUMBER_WORDS
+    assert amount.parse_amount("%s damage" % word, lemma="deal").value == lit
+    np = "%s +1/+1 counters" % word
+    c = payload.parse_counters(np, (0, len(np)))
+    assert c.value is not None and len(c.value.kinds) == n, c
+    np = "%s tapped 2/2 black zombie creature tokens" % word
+    t = payload.parse_token(np, (0, len(np)))
+    assert isinstance(t.value, TokenSpec) and t.amount == lit, t
+    text = "onto the battlefield with %s +1/+1 counters on it" % word
+    d = dest.parse_destination(text, (0, len(text)))
+    assert d.value == Destination("battlefield",
+                                  entry_counters=(("+1/+1", lit),)), d
+    f = filter.parse_filter("%s creatures you control" % word)
+    assert f.value is not None and f.amount == lit, f
+    text = "up to %s target creatures" % word
+    ten = participant.parse_participant("up to ten target creatures")
+    p = participant.parse_participant(text)
+    assert (p.value, p.unmodelled) == (ten.value, ten.unmodelled), p
+    # The target leaf reads the count from the same table. Above ten the
+    # target solver (the TargetRequirement owner, unchanged in E0) carries
+    # no such count, so the slot is the typed TARGET_COUNT refusal naming
+    # the word -- never target.unparsed.
+    host = "destroy up to %s target creatures." % word
+    r = target.parse_target(host, (host.index("up"), len(host) - 1))
+    if n <= 10:
+        assert r.value.requirements[0].count_max == n, r
+        assert r.amount == Amount(AmountKind.UP_TO, n=n), r
+    else:
+        assert r.unmodelled.detail == "target.count_unread:" + word, r
 
 
 # ── Caches, clear_caches and import edges ──────────────────────────────

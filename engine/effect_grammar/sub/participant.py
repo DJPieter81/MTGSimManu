@@ -74,14 +74,14 @@ from dataclasses import dataclass
 from functools import lru_cache
 from typing import Optional, Tuple
 
-from engine.effect_grammar.sub import (CACHE_SIZE, SELF_NOUNS, SlotResult,
-                                       Span, rest_spans_after, unmodelled)
+from engine.effect_grammar.sub import (CACHE_SIZE, COUNT_WORDS, NUMBER_WORDS,
+                                       SELF_NOUNS, SlotResult, Span,
+                                       rest_spans_after, unmodelled)
 from engine.effect_grammar.sub import filter as _filter
 from engine.effect_grammar.sub import target as _target
 from engine.effect_model import Selector, SelectorKind
 from engine.effect_spec import (Amount, AmountKind, Chooser, Ref, RefKind,
                                 RefPart, Stage, Unmodelled)
-from engine.target_solver import _NUMBER_WORDS
 
 __all__ = ["LEAF", "DETAIL_CODES", "Anaphor", "PLAYER", "OBJECT", "GROUP",
            "EACH", "ANY", "PER_OBJECT", "EITHER", "parse_participant",
@@ -254,8 +254,7 @@ def _noun(text: str) -> Optional[Tuple[str, bool]]:
     return None
 
 
-_NUMBER = r"(?:%s|\d+|x)" % "|".join(sorted(_NUMBER_WORDS, key=len,
-                                             reverse=True))
+_NUMBER = r"(?:%s|\d+|x)" % "|".join(COUNT_WORDS)
 _PARTITIVE_RE = re.compile(
     r"^(?:(?P<each>each)|(?P<all>all|both)|(?P<anynum>any number)"
     r"|up to (?P<upto>%s)|(?P<count>%s)) of "
@@ -273,7 +272,7 @@ def _count(word: str) -> Optional[Amount]:
         return Amount(AmountKind.X, n=1)
     if word.isdigit():
         return Amount(AmountKind.LITERAL, n=int(word))
-    n = _NUMBER_WORDS.get(word)
+    n = NUMBER_WORDS.get(word)
     return None if n is None else Amount(AmountKind.LITERAL, n=n)
 
 
