@@ -10,9 +10,10 @@ test instead of surfacing as an unexplained overrun once L4 lands.
 
 The ceilings are regression guards, not an allocation: measured on a quiet
 4-core box (2026-10-01, best of two passes, caches cleared) the leaves
-alone take ~2.1 s and L0 ~0.7 s, ~2.9 s of the 3.0 s budget before any
-L1-L5 work. Section 12 records this as an open question to settle (a
-budget revision or the on-disk cache fallback) before L4 lands. Each
+alone take ~2.1 s and L0 ~0.7 s, ~2.9 s before any L1-L5 work. The budget was
+raised from 3.0 s to 4.0 s (section 12, 2026-10-01) to leave the spine
+room; the shares were rescaled by 3/4 so every leaf keeps its absolute
+ceiling. Each
 ceiling is about twice the measurement, so a slower CI core does not trip
 it but a doubling of a leaf does.
 """
@@ -28,17 +29,17 @@ from tests.test_effect_grammar_normalize_pool import POOL_PARSE_CPU_BUDGET_S
 # leaf -> ceiling as a share of POOL_PARSE_CPU_BUDGET_S, with the measured
 # CPU (s) it guards (2026-10-01, quiet 4-core box, best of two passes).
 LEAF_SHARE_OF_BUDGET = {
-    "amount": 0.07,          # 0.10 s, 3,226 slots
-    "condition": 0.19,       # 0.28 s, 3,727 slots
-    "filter": 0.03,          # 0.03 s, 1,178 slots
-    "participant": 0.07,     # 0.10 s, 3,344 slots
-    "payload": 0.08,         # 0.12 s, 5,471 slots
-    "quantity": 0.04,        # 0.06 s, 1,191 slots
-    "target": 0.27,          # 0.40 s, 8,022 slots
-    "duration": 0.17,        # 0.26 s, 52,612 sentences (duration + delay)
-    "keywords": 0.08,        # 0.12 s, 44,114 paragraphs
-    "lexicon": 0.27,         # 0.41 s, find_verb over 52,612 sentences + loyalty
-    "dest": 0.20,            # 0.27 s, the destination pool pass
+    "amount": 0.0525,          # 0.10 s, 3,226 slots
+    "condition": 0.1425,       # 0.28 s, 3,727 slots
+    "filter": 0.0225,          # 0.03 s, 1,178 slots
+    "participant": 0.0525,     # 0.10 s, 3,344 slots
+    "payload": 0.06,         # 0.12 s, 5,471 slots
+    "quantity": 0.03,        # 0.06 s, 1,191 slots
+    "target": 0.2025,          # 0.40 s, 8,022 slots
+    "duration": 0.1275,        # 0.26 s, 52,612 sentences (duration + delay)
+    "keywords": 0.06,        # 0.12 s, 44,114 paragraphs
+    "lexicon": 0.2025,         # 0.41 s, find_verb over 52,612 sentences + loyalty
+    "dest": 0.15,            # 0.27 s, the destination pool pass
 }
 
 

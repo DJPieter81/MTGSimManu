@@ -236,10 +236,11 @@ def test_l0_normalises_every_pool_face_deterministically_within_its_floors(faces
     assert N.normalize.cache_info().currsize == 0
 
 
-# Design section 12: the whole grammar (L0-L5) gets 3.0 s of process CPU
-# for the pool. L0 is held to half of it.
-POOL_PARSE_CPU_BUDGET_S = 3.0
-L0_SHARE_OF_BUDGET = 0.5
+# Design section 12: the whole grammar (L0-L5) gets 4.0 s of process CPU
+# for the pool (raised from 3.0 s on 2026-10-01 to leave L1-L5 room). L0
+# keeps its 1.5 s ceiling: 0.375 of the budget.
+POOL_PARSE_CPU_BUDGET_S = 4.0
+L0_SHARE_OF_BUDGET = 0.375
 
 
 @pytest.mark.timeout(120)  # measured: 0.8 s CPU for L0 after the shared DB load

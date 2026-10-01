@@ -287,7 +287,7 @@ The refutations named the witness cards in brackets; section 18.1 turns each wit
   - The completeness scan covers all 193 `template.<attr> =` assignments (142 are `parse_*` calls), the `__post_init__` lazy fields, and the `ActivatedAbility` and `LoyaltyAbility` fields.
   - [Ulamog, the Ceaseless Hunger; Devourer of Destiny; Sowing Mycospawn.]
 - **A42. The per-host resolution harness and the Bo3 digest.** For every registered-deck card (mainboard and sideboard) whose host a switched handler takes, the harness resolves legacy and new paths on fixed synthetic boards and seeds, and compares state and log bytes. It is a gate of every E_k. [Into the Flood Maw, Wistfulness, Price of Freedom.]
-- **A43. The load budget is gated on pool CPU.** The budget test measures the process time of the whole pool parse against the stated 3.0 s. The earlier 260 µs × 23.5k sample bound allowed about 6.1 s and is dropped.
+- **A43. The load budget is gated on pool CPU.** The budget test measures the process time of the whole pool parse against the stated budget (3.0 s, raised to 4.0 s on 2026-10-01; section 12). The earlier 260 µs × 23.5k sample bound allowed about 6.1 s and is dropped.
 
 ### 1.4 Round-2 items modified or rejected (M1–M9)
 
@@ -1217,10 +1217,10 @@ def chosen_from_legacy(ability, item_targets) -> Tuple[Tuple[Union[Handle, int],
 **Measured** (unchanged): full DB load 19.6 s idle; L0–L3 prototype 0.84 s over 23,276 faces; D2 skeleton with target_solver 1.02 s CPU; `target_solver.parse` 36–38 µs per unique targeted sentence; 51,813 sentences, 27,622 unique.
 
 **Budget:**
-- ≤ 3.0 s process CPU for the whole pool on an idle 4-core box (`POOL_PARSE_CPU_BUDGET_S`);
+- ≤ 4.0 s process CPU for the whole pool (raised from 3.0 s on 2026-10-01: the leaves and L0 measured 2.9 s before L1-L5 existed) on an idle 4-core box (`POOL_PARSE_CPU_BUDGET_S`);
 - ≤ 40 MB extra RSS (tracemalloc).
 
-**Leaf measurements (E0 integration review, 2026-10-01).** Process CPU over each leaf's own pool slots, caches cleared, best of two, quiet 4-core box: target 0.45 s, lexicon 0.38, dest 0.29, duration 0.28, condition 0.27, keywords 0.14, payload 0.11, amount 0.11, participant 0.09, quantity 0.06, filter 0.03 -- leaves 2.2 s, plus L0 0.72 s: about 2.9 s of the 3.0 s budget before any L1-L5 work (3.2 s before the review's lexicon index, duration pre-gate and memo trimming). `tests/test_effect_grammar_leaf_budget.py` pins each leaf to a share of `POOL_PARSE_CPU_BUDGET_S` at about twice its measurement, so a regressing leaf is named by its own test. Memo caches held after one full pass of every leaf: 58.5 MB (tracemalloc; normalize's face cache is the largest), cleared by `engine.effect_grammar.clear_caches`. Open question, to settle before L4 lands: the 3.0 s CPU and 40 MB budgets cannot hold L1-L5 on top of these leaves; either revise them or take the on-disk cache fallback.
+**Leaf measurements (E0 integration review, 2026-10-01).** Process CPU over each leaf's own pool slots, caches cleared, best of two, quiet 4-core box: target 0.45 s, lexicon 0.38, dest 0.29, duration 0.28, condition 0.27, keywords 0.14, payload 0.11, amount 0.11, participant 0.09, quantity 0.06, filter 0.03 -- leaves 2.2 s, plus L0 0.72 s: about 2.9 s of the 3.0 s budget before any L1-L5 work (3.2 s before the review's lexicon index, duration pre-gate and memo trimming). `tests/test_effect_grammar_leaf_budget.py` pins each leaf to a share of `POOL_PARSE_CPU_BUDGET_S` at about twice its measurement, so a regressing leaf is named by its own test. Memo caches held after one full pass of every leaf: 58.5 MB (tracemalloc; normalize's face cache is the largest), cleared by `engine.effect_grammar.clear_caches`. Settled 2026-10-01: the CPU budget is raised to 4.0 s (leaf shares rescaled so each leaf keeps its absolute ceiling), and `CardTemplate.effects` parses lazily per template, so `CardDatabase()` load time is unchanged and a game parses only the cards it touches; the pool budget gates the eager pool path that tools use. The 40 MB memo budget is unchanged. The on-disk cache stays the fallback.
 
 The test `effect_parse_fits_the_load_budget` clears the caches, parses the whole pool and asserts `process_time ≤ POOL_PARSE_CPU_BUDGET_S` (A43). It carries `@pytest.mark.timeout(N)` and records the measurement in a comment. Mean µs per template is reported, not gated. Wall-clock is never measured. If the 2-core CI runner fails the gate, the fallback is an on-disk cache keyed on `(GRAMMAR_VERSION, sha256(text), facts key)` (open question).
 
@@ -1369,7 +1369,7 @@ E0 is complete when:
 3. The census is generated and pinned, and the deck-card typed share is recorded. E2 does not start while fewer than 85% of registered-deck removal-family clauses are typed and executable-or-tolerable.
 4. The equivalence baseline is pinned, the completeness scan passes over all 193 assignments plus the lazy fields, every Tier A field is registered, and the `--closure` report is committed.
 5. The harness self-check (legacy against legacy) is deterministic on every registered-deck MB and SB host.
-6. `--timing` figures are recorded on a quiet box, and the pool CPU is ≤ 3.0 s.
+6. `--timing` figures are recorded on a quiet box, and the pool CPU is ≤ 4.0 s.
 7. The frontmatter of this doc links the generated census.
 
 Measured values (fill in on landing): pool parse CPU __ s; mean __ µs per template; peak __ MB; typed share __% (pool) / __% (deck cards); UNMODELLED by stage __; residue by code and polarity __; equivalence per Tier A field __; legacy-fallback pairs per handler __.
