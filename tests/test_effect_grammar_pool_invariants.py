@@ -444,6 +444,16 @@ def test_the_witness_fixture_names_only_pool_cards_and_every_defect_class(card_d
 #   any one template (single-template times are noisy: a collector pass
 #   can land in any one of them).
 POOL_L0_L5_EAGER_CPU_BUDGET_S = 30.0
+# The module memos (every lru_cache of L0-L5 and the leaves) held after one
+# eager pool pass with its results dropped, by tracemalloc. Revised in the
+# E0 integration review (2026-10-01) from the 40 MB design budget to its
+# measurement: 51-52 MB (sub/filter 8.6, keywords 7.9, patterns 6.1,
+# effect_spec 4.3, lexicon 4.2, normalize 4.1, sub/target 3.8,
+# sub/condition 2.9, the rest under 1.5 each), gated at about 1.3x so a
+# memo that grows by a third is named. Every memo is bounded, so a game
+# (which parses only the cards it touches) holds less; `clear_caches`
+# drops them all.
+POOL_L0_L5_MEMO_BUDGET_MB = 68.0
 DECK_CARDS_LAZY_CPU_BUDGET_S = 1.0
 TEMPLATE_LAZY_CPU_MAX_S = 0.05
 
@@ -639,6 +649,41 @@ def test_effect_parse_fits_the_load_budget(pool_effects):
     about half is validate_spec over every spec, plus collector time)."""
     _effects, cpu = pool_effects
     assert cpu <= POOL_L0_L5_EAGER_CPU_BUDGET_S, cpu
+
+
+# One eager pool pass under tracemalloc. Measured 2026-10-01: ~140 s wall
+# (tracemalloc roughly sextuples the pass), plus ~16 s when first in the
+# process to load the card DB. 900 s bounds a hang on a slower runner.
+@pytest.mark.timeout(900)
+def test_the_whole_grammar_memos_after_a_pool_pass_fit_their_budget(card_db):
+    """Section 12: after one eager L0-L5 pool pass, with its results
+    dropped, the grammar's module memos hold at most
+    POOL_L0_L5_MEMO_BUDGET_MB (tracemalloc), and `clear_caches` returns
+    them -- every memo is bounded, none keeps the pool."""
+    import gc
+    import tracemalloc
+
+    import engine.effect_grammar as grammar
+    grammar.clear_caches()
+    gc.collect()
+    tracemalloc.start()
+    try:
+        base = tracemalloc.take_snapshot()
+        grammar.parse_pool(card_db)
+        gc.collect()
+        held = sum(d.size_diff for d in
+                   tracemalloc.take_snapshot().compare_to(base, "filename"))
+        grammar.clear_caches()
+        gc.collect()
+        left = sum(d.size_diff for d in
+                   tracemalloc.take_snapshot().compare_to(base, "filename"))
+    finally:
+        tracemalloc.stop()
+        grammar.clear_caches()
+    print("\nwhole-grammar memos after a pool pass: %.1f MB (%.1f MB after "
+          "clear_caches)" % (held / 1e6, left / 1e6))
+    assert held <= POOL_L0_L5_MEMO_BUDGET_MB * 1e6, held / 1e6
+    assert left <= 0.05 * POOL_L0_L5_MEMO_BUDGET_MB * 1e6, left / 1e6
 
 
 # Registered-deck templates (~360), each parsed cold. Measured 2026-10-01:
