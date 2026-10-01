@@ -23,6 +23,7 @@ Synthetic phrases only; no card names.
 from __future__ import annotations
 
 import ast
+import dataclasses
 import re
 from pathlib import Path
 
@@ -160,6 +161,11 @@ def test_counters_on_an_object_read_the_one_counter_kind_vocabulary():
         assert r.value.kind is QuantityKind.COUNTERS_ON
         assert r.value.counter_kind == "+1/+1"
         assert r.value.ref == Ref(RefKind.SELF)
+    # "coin" is a counter kind (CR 122.1); only a coin-flip tally is refused.
+    for text in ("coin counter on ~", "the number of coin counters on ~"):
+        r = _q(text)
+        assert r.value.kind is QuantityKind.COUNTERS_ON, text
+        assert r.value.counter_kind == "coin"
     r = _q("counter on it")
     assert r.value.kind is QuantityKind.COUNTERS_ON
     assert r.value.counter_kind is None and ("ref", "it") in r.pending
@@ -199,11 +205,64 @@ def test_greatest_and_total_name_their_characteristic_and_set():
     r = _q("the greatest power among creatures you control")
     assert (r.value.kind, r.value.stat) == (QuantityKind.GREATEST, "power")
     assert r.value.filter.types == frozenset({"creature"})
+    # "highest" is the same quantity as "greatest".
+    h = _q("the highest power among creatures you control")
+    assert h.value == dataclasses.replace(
+        r.value, raw=h.value.raw,
+        filter=dataclasses.replace(r.value.filter, raw=h.value.filter.raw))
     r = _q("the total power of creatures you control")
     assert (r.value.kind, r.value.stat) == (QuantityKind.TOTAL, "power")
     r = _q("their total power")
     assert (r.value.kind, r.value.stat) == (QuantityKind.TOTAL, "power")
     assert ("ref", "their") in r.pending
+
+
+@pytest.mark.parametrize("text, kind", [
+    ("the greatest power among creatures they control", QuantityKind.GREATEST),
+    ("the greatest power among creatures you control", QuantityKind.GREATEST),
+    ("the total power of creatures you control", QuantityKind.TOTAL),
+    ("the number of +1/+1 counters on creatures you control",
+     QuantityKind.COUNTERS_ON),
+    ("the number of basic land types among lands you control",
+     QuantityKind.BASIC_LAND_TYPES),
+    ("the number of creatures you control", QuantityKind.COUNT),
+])
+def test_a_quantity_over_a_set_names_no_player_its_filter_holds_control(text, kind):
+    """One encoding for every set-based kind: who controls the set is the
+    filter's (or a pending anaphor's), and ``player`` is "any" -- never a
+    default "you" the printed text does not say."""
+    r = _q(text)
+    assert r.value.kind is kind
+    assert r.value.player == "any"
+
+
+@pytest.mark.parametrize("text, kind", [
+    ("the greatest mana value among cards discarded this way", QuantityKind.GREATEST),
+    ("the total power of creatures exiled this way", QuantityKind.TOTAL),
+    ("the number of +1/+1 counters on creatures exiled this way",
+     QuantityKind.COUNTERS_ON),
+    ("the number of creatures exiled this way", QuantityKind.RESULT_SIZE),
+])
+def test_a_quantity_over_a_filtered_result_carries_the_result_ref(text, kind):
+    """Section 6: a set that is an earlier spec's result is bound by the
+    linker through ``Ref(RESULT)`` whatever the kind reads of it."""
+    r = _q(text)
+    assert r.value.kind is kind
+    assert r.value.ref == Ref(RefKind.RESULT)
+    assert any(k == "result" for k, _ in r.pending)
+    assert Q.LKI not in r.flags
+
+
+@pytest.mark.parametrize("text", [
+    "the total power of creatures sacrificed this way",
+    "the number of +1/+1 counters on creatures sacrificed this way",
+    "the greatest power among creatures sacrificed this way",
+    "the number of creatures sacrificed this way",
+])
+def test_a_sacrificed_result_set_is_marked_last_known_information(text):
+    """CR 608.2h: objects sacrificed as part of the cost or effect are gone;
+    the quantity reads them as they last existed, plural as singular."""
+    assert Q.LKI in _q(text).flags
 
 
 def test_colors_spent_and_times_kicked_read_the_cast():
@@ -237,6 +296,9 @@ def test_a_life_total_names_its_player():
     ("the amount of life you gained this turn", "life_gained", "you"),
     ("1 life your opponents have lost this turn", "life_lost", "opponents"),
     ("token you control that entered this turn", "entered", "any"),
+    # The printed actor is kept: "you" is never widened to any player.
+    ("the number of times you descended this turn", "descended", "you"),
+    ("time you've descended this turn", "descended", "you"),
 ])
 def test_this_turn_inside_a_quantity_is_history_not_a_duration(text, event, player):
     """Section 6: "this turn" closing a quantity says what happened, so the
@@ -254,6 +316,48 @@ def test_this_turn_inside_a_quantity_is_history_not_a_duration(text, event, play
     assert r.value.event in Q.HISTORY_EVENTS
 
 
+@pytest.mark.parametrize("a, b", [
+    ("creature that died under your control this turn",
+     "creature you control that died this turn"),
+    ("creature that died under an opponent's control this turn",
+     "creature an opponent controls that died this turn"),
+    ("token that entered the battlefield under your control this turn",
+     "token you control that entered this turn"),
+])
+def test_control_of_a_history_object_has_one_encoding_whatever_the_word_order(a, b):
+    """Who controlled the object that died or entered is the filter's
+    controller; ``player`` is the actor of the event (who cast, drew,
+    discarded) and is "any" for an event no player performs."""
+    ra, rb = _q(a), _q(b)
+    va, vb = ra.value, rb.value
+    assert va.kind is vb.kind is QuantityKind.HISTORY
+    assert va.player == vb.player == "any"
+    assert va.filter.as_tuple() == vb.filter.as_tuple()
+    assert va.filter.controller != "any"
+    assert ra.pending == rb.pending
+
+
+def test_an_anaphoric_controller_of_a_history_object_is_left_for_the_linker():
+    r = _q("creature that died under their control this turn")
+    assert r.value.player == "any"
+    assert ("controller", "their") in r.pending
+
+
+@pytest.mark.parametrize("text", [
+    "the number of spells you've cast this turn",
+    "card you've drawn this turn",
+    "card you've cycled or discarded this turn",
+    "creature that died this turn",
+    "token you control that entered this turn",
+])
+def test_a_history_filter_names_no_current_zone(text):
+    """A tally counts past events: a spell cast this turn has resolved, a
+    discarded card may since have been exiled. The filter describes the
+    object at the event, so it carries no current zone (as a RESULT_SIZE
+    filter does not)."""
+    assert _q(text).value.filter.zone == ""
+
+
 def test_a_history_filter_keeps_its_printed_qualifiers():
     r = _q("the number of nontoken creatures that died this turn")
     assert r.value.filter.types == frozenset({"creature"})
@@ -264,7 +368,7 @@ def test_a_history_filter_keeps_its_printed_qualifiers():
 
 # ── Refusals ───────────────────────────────────────────────────────────
 
-@pytest.mark.parametrize("text, code", [
+_REFUSED_CASES = [
     ("color pair", "filter"),
     ("the difference", "anaphoric_number"),
     ("that number", "anaphoric_number"),
@@ -288,7 +392,20 @@ def test_a_history_filter_keeps_its_printed_qualifiers():
     ("{g}{g} spent to cast ~", "mana_spent"),
     ("lands you control in your graveyard", "zone_controller"),
     ("", "empty"),
-])
+    ("two creatures you control", "determiner"),
+    ("+1/+1 or -1/-1 counter on ~", "counter"),
+    ("the lowest life total among players", "extremum"),
+    ("the highest life total among players", "extremum"),
+    ("the damage dealt to ~ this turn", "damage_amount"),
+    ("the number of card types among other nonland permanents you control",
+     "card_types_zone"),
+    # Control printed twice ("you control" and "under your control").
+    ("creature you control that died under your control this turn",
+     "history_control"),
+]
+
+
+@pytest.mark.parametrize("text, code", _REFUSED_CASES)
 def test_an_uncountable_quantity_makes_the_clause_unmodelled_never_zero(text, code):
     """Section 6: an unknown phrase is UNMODELLED(QUANTITY), never a zero
     or a broader count; the failure span is the whole slot."""
@@ -302,6 +419,12 @@ def test_an_uncountable_quantity_makes_the_clause_unmodelled_never_zero(text, co
     assert r.unmodelled.detail.split(".")[1].split(":")[0] in Q.DETAIL_CODES
     trimmed = host[slot[0]:slot[1]].strip()
     assert host[slice(*r.span)] == trimmed
+
+
+def test_every_closed_detail_code_is_one_the_leaf_emits():
+    """The census buckets are the leaf's refusals: a closed code no phrase
+    reaches would claim a bucket that is always empty."""
+    assert {code for _, code in _REFUSED_CASES} == set(Q.DETAIL_CODES)
 
 
 def test_a_counted_phrase_the_filter_refuses_carries_the_filter_code():

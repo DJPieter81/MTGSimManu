@@ -37,6 +37,18 @@ here so the census sees it.
 * HISTORY -- a tally of what happened this turn, ``event`` from the closed
   `HISTORY_EVENTS`. "this turn" closing a quantity is history and the
   quantity consumes it; it is never left as a duration (section 6).
+  ``player`` is the actor of the event (who cast, drew, discarded, lost
+  life) and "any" for an event no player performs; who controlled the
+  object that died or entered is the filter's ``controller`` whichever
+  word order prints it ("<noun> you control that died" = "<noun> that
+  died under your control"). The filter describes the object at the
+  event, so it names no current zone: a spell cast this turn has
+  resolved, a discarded card may since have been exiled.
+
+**Sets.** Every kind over a set (COUNT, RESULT_SIZE, COUNTERS_ON, GREATEST,
+TOTAL, BASIC_LAND_TYPES) has ``player="any"``: who controls the set is the
+filter's. A set that is an earlier spec's result ("... this way") carries
+``ref=Ref(RESULT)`` whatever the kind reads of it, for the linker to bind.
 
 **References.** "~" is ``Ref(SELF)``; "enchanted / equipped <noun>" is
 ``Ref(ATTACHED)``; pronouns, "that <noun>", "the <participle> <noun>" and
@@ -44,7 +56,8 @@ here so the census sees it.
 (CR 608.2b), and anaphoric players as ``("player", text)``. A27 / CR
 608.2h: when the caller says the source left as part of the cost
 (``source_left``), the SELF reference reads last-known information
-(``lki=True``); a sacrificed referent carries the `LKI` flag.
+(``lki=True``); a sacrificed referent -- "the sacrificed <noun>" or a
+set "<noun>s sacrificed this way" -- carries the `LKI` flag.
 
 **Spans.** The slot is read whole first. Only when it is no quantity is it
 cut before a closed tail word ("to", "plus", "rather than", a printed
@@ -57,6 +70,7 @@ The leaf reads no card name and no game state.
 """
 from __future__ import annotations
 
+import dataclasses
 import re
 from functools import lru_cache
 from typing import Optional, Tuple
@@ -74,7 +88,7 @@ __all__ = ["LEAF", "DETAIL_CODES", "HISTORY_EVENTS", "LKI", "STATS",
 
 LEAF = "quantity"
 DETAIL_CODES = frozenset({
-    "empty", "unparsed", "filter", "reference", "determiner", "player",
+    "empty", "filter", "reference", "determiner", "history_control",
     "element_anaphor", "anaphoric_number", "stat_pair", "party",
     "colors_among", "mana_spent", "mana_cost", "mana_symbols",
     "starting_life_total", "greatest_number", "extremum", "counter",
@@ -119,7 +133,9 @@ _NOUN = r"(?:%s)" % "|".join(re.escape(n) for n in _NOUNS)
 _PARTICIPLES = r"(?:sacrificed|exiled|discarded|revealed|returned|destroyed" \
                r"|chosen|milled|copied|countered|targeted|amassed|tapped" \
                r"|attacking|blocking|blocked)"
-# A referent that left the battlefield as part of a cost (CR 608.2h).
+# A referent that left the battlefield as part of the cost or the effect,
+# read as it last existed (CR 608.2h), whether one object ("the sacrificed
+# creature") or a result set ("creatures sacrificed this way").
 _LEFT_AS_COST = frozenset({"sacrificed"})
 _REF_RE = re.compile(
     r"(?P<self>~)"
@@ -203,13 +219,17 @@ _REFUSALS = tuple((code, re.compile(p)) for code, p in (
     ("mana_spent", r"^(?:the )?(?:total )?(?:amount of )?(?:mana|(?:\{[a-z]\})+"
                    r"(?: or (?:\{[a-z]\})+)?) (?:you )?spent\b"
                    r"|^(?:the )?amount of mana\b|^mana from\b"),
-    ("coin_flip", r"^(?:the number of )?(?:flips?|coins?)\b"),
+    # "coin" is also a counter kind (CR 122.1): "coin counters" is no flip.
+    ("coin_flip", r"^(?:the number of )?(?:flips?|coins?)\b(?! counters?\b)"),
     ("player_counters", r"^(?:the number of )?poison counters? (?:%s) ha(?:ve|s)$"
                         % _WHO),
     ("starting_life_total", r"\bstarting life total\b"),
     ("greatest_number", r"^the (?:greatest|highest|least|lowest|most|fewest)"
                         r" number\b"),
-    ("extremum", r"^the (?:highest|lowest|least|smallest|largest)\b"),
+    # "the highest <stat> among <set>" is GREATEST; every other extremum
+    # (a lowest, a highest life total) has no kind.
+    ("extremum", r"^the (?:lowest|least|smallest|largest)\b"
+                 r"|^the highest\b(?! (?:power|toughness|mana value) among\b)"),
     ("stat_pair", r"\bpower and toughness\b|\bpower plus toughness\b"),
     ("counter_kinds", r"\bkinds? of counters?\b"),
     ("result_amount", r"^(?:the |that )?(?:total )?(?:amount of )?(?:1 )?"
@@ -227,6 +247,12 @@ _MANA_COST_RE = re.compile(r"\bmana costs?$")
 _HAVE = r"(?:'ve| have| has)?"
 _UNDER = (r"(?: under (?P<under>your|an opponent's|your opponents'|their"
           r"|its owner's|its controller's) control)?")
+# "under <possessor> control" as the filter's controller (value, anaphor).
+_UNDER_CONTROLLER = {"your": ("you", None), "an opponent's": ("opponents", None),
+                     "your opponents'": ("opponents", None),
+                     "their": ("any", "their"),
+                     "its owner's": ("any", "its owner's"),
+                     "its controller's": ("any", "its controller's")}
 # (event, pattern, default zone of the counted object). np is the counted
 # object (a filter phrase), who the actor, under the controller.
 _HISTORY = tuple((event, re.compile(p), zone) for event, p, zone in (
@@ -249,7 +275,7 @@ _HISTORY = tuple((event, re.compile(p), zone) for event, p, zone in (
     ("died", r"(?P<np>.+?) that died%s this turn" % _UNDER, ""),
     ("entered", r"(?P<np>.+?) that entered(?: the battlefield)?%s this turn"
                 % _UNDER, ""),
-    ("descended", r"times? you%s descended this turn" % _HAVE, None),
+    ("descended", r"times? (?P<who>you)%s descended this turn" % _HAVE, None),
     ("attacked", r"times? (?P<ref>it|~) (?:has )?attacked this turn", None),
 ))
 _THE_NUMBER_OF = re.compile(r"^the (?:total )?number of ")
@@ -268,7 +294,7 @@ def _history(t: str, source_left: bool):
             who = "opponents" if gd["players"].startswith("opponent") else "any"
             return (Quantity(QuantityKind.HISTORY, player=who, event=event,
                              raw=t), None, (), frozenset())
-        player, pending = _player(gd.get("who") or gd.get("under"))
+        player, pending = _player(gd.get("who"))
         ref = None
         if gd.get("ref"):
             ref, rp, _ = _ref(gd["ref"], source_left)
@@ -280,8 +306,16 @@ def _history(t: str, source_left: bool):
                 return _fail("filter", _filter_code(f))
             if f.amount is not None or f.flags:
                 return _fail("determiner")
-            filt = f.value
+            filt = dataclasses.replace(f.value, zone="")
             pending = f.pending + pending
+            if gd.get("under"):
+                if filt.controller != "any" or any(
+                        k == "controller" for k, _ in f.pending):
+                    return _fail("history_control")
+                controller, anaphor = _UNDER_CONTROLLER[gd["under"]]
+                filt = dataclasses.replace(filt, controller=controller)
+                if anaphor:
+                    pending = pending + (("controller", anaphor),)
         return (Quantity(QuantityKind.HISTORY, filter=filt, player=player,
                          ref=ref, event=event, raw=t), None, pending,
                 frozenset())
@@ -306,14 +340,21 @@ def _fail(code: str, param: str = "") -> _Whole:
 
 
 def _set(text: str, zone: str = ""):
-    """(filter, pending, failure) of a set phrase through the filter
-    leaf; a determiner on the set is no quantity."""
+    """(filter, ref, pending, flags, failure) of a set phrase through the
+    filter leaf; a determiner on the set is no quantity. The one place a
+    set's result binding and last-known information are decided: a set
+    that is an earlier spec's result ("... this way") is ``Ref(RESULT)``,
+    and one that left as a cost or an effect (CR 608.2h) carries `LKI`."""
     f = _filter.parse_filter(text, zone=zone)
     if f.value is None:
-        return None, (), ("filter", _filter_code(f))
+        return None, None, (), frozenset(), ("filter", _filter_code(f))
     if f.amount is not None or f.flags:
-        return None, (), ("determiner", "")
-    return f.value, f.pending, None
+        return None, None, (), frozenset(), ("determiner", "")
+    results = [v for k, v in f.pending if k == "result"]
+    ref = Ref(RefKind.RESULT) if results else None
+    flags = frozenset({LKI}) if any(v in _LEFT_AS_COST for v in results) \
+        else frozenset()
+    return f.value, ref, f.pending, flags, None
 
 
 _LIFE_RE = re.compile(r"(?P<who>your|.+?'s) life total")
@@ -324,7 +365,7 @@ _COLORS_SPENT_RE = re.compile(
     r"(?:the number of )?colou?rs? of mana spent to cast (?P<ref>.+)")
 _BASIC_TYPES_RE = re.compile(r"(?:the number of )?basic land types? among (?P<f>.+)")
 _CARD_TYPES_RE = re.compile(r"(?:the number of )?card types? among (?P<f>.+)")
-_GREATEST_RE = re.compile(r"the greatest %s among (?P<f>.+)" % _STAT)
+_GREATEST_RE = re.compile(r"the (?:greatest|highest) %s among (?P<f>.+)" % _STAT)
 _TOTAL_OF_RE = re.compile(r"the total %s of (?P<x>.+)" % _STAT)
 _STAT_OF_RE = re.compile(r"the %s of (?P<x>.+)" % _STAT)
 _KICKED_RE = re.compile(
@@ -338,13 +379,12 @@ def _counted(t: str) -> _Whole:
     """COUNT / CARDS_IN / RESULT_SIZE of a counted set ("[the number of]
     <filter>")."""
     body = _THE_NUMBER_OF.sub("", t)
-    filt, pending, failure = _set(body)
+    filt, ref, pending, flags, failure = _set(body)
     if failure is not None:
         return _fail(*failure)
-    if any(k == "result" for k, _ in pending):
-        return (Quantity(QuantityKind.RESULT_SIZE, filter=filt,
-                         ref=Ref(RefKind.RESULT), player="any", raw=t),
-                None, pending, frozenset())
+    if ref is not None:
+        return (Quantity(QuantityKind.RESULT_SIZE, filter=filt, ref=ref,
+                         player="any", raw=t), None, pending, flags)
     if filt.zone in _CARD_ZONES and filt.controller != "any":
         # CR 108.4a: a card outside the battlefield and the stack has no
         # controller, so "<permanents> you control from your hand" is no
@@ -375,12 +415,12 @@ def _counters(t: str, source_left: bool) -> Optional[_Whole]:
         ref, pending, flags = r
         return (Quantity(QuantityKind.COUNTERS_ON, ref=ref,
                          counter_kind=counter_kind, raw=t), None, pending, flags)
-    filt, pending, failure = _set(on)
+    filt, ref, pending, flags, failure = _set(on)
     if failure is not None:
         return _fail(*failure)
-    return (Quantity(QuantityKind.COUNTERS_ON, filter=filt,
-                     counter_kind=counter_kind, raw=t), None, pending,
-            frozenset())
+    return (Quantity(QuantityKind.COUNTERS_ON, filter=filt, ref=ref,
+                     player="any", counter_kind=counter_kind, raw=t), None,
+            pending, flags)
 
 
 def _stat_of_ref(t: str, source_left: bool) -> Optional[_Whole]:
@@ -422,11 +462,11 @@ def _total(t: str, source_left: bool) -> Optional[_Whole]:
         ref, pending, flags = r
         return (Quantity(QuantityKind.TOTAL, ref=ref, stat=stat, raw=t), None,
                 pending, flags)
-    filt, pending, failure = _set(x)
+    filt, ref, pending, flags, failure = _set(x)
     if failure is not None:
         return _fail(*failure)
-    return (Quantity(QuantityKind.TOTAL, filter=filt, stat=stat, raw=t), None,
-            pending, frozenset())
+    return (Quantity(QuantityKind.TOTAL, filter=filt, ref=ref, player="any",
+                     stat=stat, raw=t), None, pending, flags)
 
 
 def _whole(t: str, source_left: bool) -> _Whole:
@@ -474,14 +514,14 @@ def _whole(t: str, source_left: bool) -> _Whole:
                 pending, flags)
     m = _BASIC_TYPES_RE.fullmatch(t)
     if m is not None:
-        filt, pending, failure = _set(m.group("f"))
+        filt, ref, pending, flags, failure = _set(m.group("f"))
         if failure is not None:
             return _fail(*failure)
-        return (Quantity(QuantityKind.BASIC_LAND_TYPES, filter=filt, raw=t),
-                None, pending, frozenset())
+        return (Quantity(QuantityKind.BASIC_LAND_TYPES, filter=filt, ref=ref,
+                         player="any", raw=t), None, pending, flags)
     m = _CARD_TYPES_RE.fullmatch(t)
     if m is not None:
-        filt, pending, failure = _set(m.group("f"))
+        filt, _, pending, _, failure = _set(m.group("f"))
         if failure is not None:
             return _fail(*failure)
         if filt.zone != "graveyard":
@@ -490,12 +530,12 @@ def _whole(t: str, source_left: bool) -> _Whole:
                          player=filt.owner, raw=t), None, pending, frozenset())
     m = _GREATEST_RE.fullmatch(t)
     if m is not None:
-        filt, pending, failure = _set(m.group("f"))
+        filt, ref, pending, flags, failure = _set(m.group("f"))
         if failure is not None:
             return _fail(*failure)
-        return (Quantity(QuantityKind.GREATEST, filter=filt,
-                         stat=m.group("stat"), raw=t), None, pending,
-                frozenset())
+        return (Quantity(QuantityKind.GREATEST, filter=filt, ref=ref,
+                         player="any", stat=m.group("stat"), raw=t), None,
+                pending, flags)
     m = _KICKED_RE.fullmatch(t)
     if m is not None:
         ref, pending, flags = _ref(m.group("ref"), source_left) or (

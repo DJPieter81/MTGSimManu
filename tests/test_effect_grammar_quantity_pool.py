@@ -79,9 +79,9 @@ def _run(slots):
 
 
 # Typed share per frame, measured 2026-10-01 on this branch's DB (22.7k
-# cards, 1191 distinct slots): for_each 289/452 (63.9%), equal_to 322/437
-# (73.7%), where_x 191/271 (70.5%), number_of 20/31 (64.5%); 822/1191
-# (69.0%) overall. 176 typed slots leave a tail as rest (mostly "to <any
+# cards, 1191 distinct slots): for_each 289/452 (63.9%), equal_to 323/437
+# (73.9%), where_x 191/271 (70.5%), number_of 20/31 (64.5%); 823/1191
+# (69.1%) overall. 177 typed slots leave a tail as rest (mostly "to <any
 # target>" after an equal-to operand). The refusals are
 # the closed table working, not gaps: element anaphors ("for each of those
 # creatures", A16 iteration), "for each target beyond the first", party and
@@ -169,6 +169,9 @@ _CREATURES_YOU_CONTROL = CardFilter(types=frozenset({"creature"}),
                                     controller="you")
 _LANDS_YOU_CONTROL = CardFilter(types=frozenset({"land"}), controller="you")
 
+# A HISTORY filter names no current zone (the object as it was at the
+# event), and every kind over a set has player "any" (control is the
+# filter's).
 # (card, printed slot, source_left, Quantity (raw and filter raw ignored),
 #  pending, consumed prefix or None for the whole slot)
 _WITNESSES = (
@@ -216,11 +219,13 @@ _WITNESSES = (
               filter=CardFilter(zone="")),
      (("result", "exiled"),), None),
     ("Leyline Binding", "basic land type among lands you control", False,
-     Quantity(QuantityKind.BASIC_LAND_TYPES, filter=_LANDS_YOU_CONTROL),
+     Quantity(QuantityKind.BASIC_LAND_TYPES, player="any",
+              filter=_LANDS_YOU_CONTROL),
      (), None),
     ("Territorial Kavu",
      "the number of basic land types among lands you control", False,
-     Quantity(QuantityKind.BASIC_LAND_TYPES, filter=_LANDS_YOU_CONTROL),
+     Quantity(QuantityKind.BASIC_LAND_TYPES, player="any",
+              filter=_LANDS_YOU_CONTROL),
      (), None),
     ("Prismatic Ending", "the number of colors of mana spent to cast ~", False,
      Quantity(QuantityKind.COLORS_SPENT, ref=_SELF), (), None),
@@ -231,7 +236,7 @@ _WITNESSES = (
      (), None),
     ("Tyvar, the Pummeler", "the greatest power among creatures you control",
      False,
-     Quantity(QuantityKind.GREATEST, stat="power",
+     Quantity(QuantityKind.GREATEST, player="any", stat="power",
               filter=_CREATURES_YOU_CONTROL),
      (), None),
     ("Solitude", "its power", False,
@@ -246,15 +251,15 @@ _WITNESSES = (
     # CR 702.29a: a cycled card was discarded to pay the cycling cost.
     ("Hollow One", "card you've cycled or discarded this turn", False,
      Quantity(QuantityKind.HISTORY, player="you", event="discarded",
-              filter=CardFilter(zone="graveyard")),
+              filter=CardFilter(zone="")),
      (), None),
     ("Damping Sphere", "other spell that player has cast this turn", False,
      Quantity(QuantityKind.HISTORY, player="any", event="cast",
-              filter=CardFilter(zone="stack", other=True)),
+              filter=CardFilter(zone="", other=True)),
      (("player", "that player"),), None),
     ("Ocelot Pride", "token you control that entered this turn", False,
      Quantity(QuantityKind.HISTORY, player="any", event="entered",
-              filter=CardFilter(token=True, controller="you")),
+              filter=CardFilter(zone="", token=True, controller="you")),
      (), None),
     ("Thraben Charm",
      "the number of creatures you control to target creature", False,
