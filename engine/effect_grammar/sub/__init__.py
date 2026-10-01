@@ -93,6 +93,9 @@ LEAF_EDGES = {
     # zone possessives from destination's.
     "lexicon": frozenset({"payload", "keywords", "dest"}),
     "quantity": frozenset({"filter", "payload", "duration"}),
+    # Participants: object groups are the filter leaf's CardFilter, and a
+    # counted "target" word is routed by the target leaf's count (F11).
+    "participant": frozenset({"filter", "target"}),
 }
 
 
@@ -168,8 +171,8 @@ def clear_caches() -> None:
     point)."""
     from engine.effect_grammar import lexicon, normalize
     from engine.effect_grammar.sub import (
-        dest, duration, filter, payload, quantity, target,
+        dest, duration, filter, participant, payload, quantity, target,
     )
     for leaf in (normalize, duration, payload, dest, filter, target,
-                 lexicon, quantity):
+                 lexicon, quantity, participant):
         leaf.clear_caches()
