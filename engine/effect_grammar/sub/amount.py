@@ -129,10 +129,15 @@ def _fail(code: str, param: str = "", stage: Stage = Stage.AMOUNT) -> _Rel:
 
 
 def _finish(host: str, span: Optional[Span], rel_fn, lemma: str) -> SlotResult:
-    """Run the memoised relative parser over the trimmed slot and lift its
-    result into host coordinates. On failure the span is the whole trimmed
-    slot; on success the span is the hull of the consumed pieces and the
-    rest is every unconsumed stretch of the slot."""
+    """Run the relative parser over the trimmed slot and lift its result
+    into host coordinates. On failure the span is the whole trimmed slot.
+    On success the span is the first run of consumed pieces (pieces
+    separated only by spaces or commas are one run) and the rest is every
+    unconsumed stretch of the slot, so span and rest never overlap. A later
+    run -- an operator printed after the counted noun ("that much damage
+    plus 2") -- is consumed but outside ``span``: it is handed on as
+    ``('operator', <text>)`` in ``pending`` (already folded into the
+    value), and the noun between stays rest for the caller's leaf."""
     a, b = (0, len(host)) if span is None else span
     slot = host[a:b]
     lead = len(slot) - len(slot.lstrip())
@@ -147,12 +152,20 @@ def _finish(host: str, span: Optional[Span], rel_fn, lemma: str) -> SlotResult:
             stage, code, param = failure
             um = unmodelled(stage, lemma, LEAF, code, DETAIL_CODES, param)
         return SlotResult(unmodelled=um, span=(start, start + len(trimmed)))
-    hull = (start + pieces[0][0], start + pieces[-1][1]) if pieces else (start, start)
+    runs = []
+    for p, q in pieces:
+        if runs and not body[runs[-1][1]:p].strip(" ,"):
+            runs[-1] = (runs[-1][0], max(runs[-1][1], q))
+        else:
+            runs.append((p, q))
+    first = (start + runs[0][0], start + runs[0][1]) if runs else (start, start)
+    pending = tuple(pending) + tuple(("operator", body[p:q].strip(" ,"))
+                                     for p, q in runs[1:])
     rest, pos = [], 0
     for p, q in pieces + ((len(body), len(body)),):
         _rest_piece(body, pos, p, start, rest)
         pos = max(pos, q)
-    return SlotResult(value=value, span=hull, rest_spans=tuple(rest),
+    return SlotResult(value=value, span=first, rest_spans=tuple(rest),
                       flags=flags, pending=pending)
 
 
@@ -471,8 +484,10 @@ def parse_amount(host: str, span: Optional[Span] = None, *, lemma: str = "",
     ``x_bound`` is True when the host's cost binds X (a {X} in the mana or
     activation cost, a loyalty X); ``x_defined`` is the host's
     `parse_where_x` value, which replaces X. ``lemma`` is the caller's
-    printed lemma. On success ``span`` is the hull of the consumed count
-    and ``rest_spans`` the counted noun and the text after it; for "a
+    printed lemma. On success ``span`` is the consumed count and
+    ``rest_spans`` the counted noun and the text after it (an operator
+    printed after the noun is ``('operator', <text>)`` in ``pending``,
+    never inside ``span``); for "a
     number of" the slot holds no amount (`SCALED`). Otherwise
     UNMODELLED(AMOUNT) over the whole trimmed slot."""
     return _finish(host, span, lambda b: _count_rel(b, x_bound, x_defined),

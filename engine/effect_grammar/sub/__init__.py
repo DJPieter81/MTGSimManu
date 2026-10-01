@@ -234,7 +234,10 @@ class SlotResult:
     rest_spans: Tuple[Span, ...] = ()
     flags: FrozenSet[str] = frozenset()
     # Named sub-slot texts left for the linker: ('granted', '⟨qk⟩'),
-    # ('copy_of', np), ('entry', 'tapped'), ('amount', 'a number of'), ...
+    # ('copy_of', np), ('entry', 'tapped'), ('amount', 'a number of'),
+    # ('operator', 'plus 2') -- a piece the leaf consumed outside ``span``
+    # because unconsumed text sits between (``span`` and ``rest_spans``
+    # never overlap) ...
     pending: Tuple[Tuple[str, str], ...] = ()
     # A count / multiplier the phrase printed (token count, variable counter
     # or mana count, keyword-action N). Literal multisets are never amounts.

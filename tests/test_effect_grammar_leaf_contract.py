@@ -398,6 +398,25 @@ def test_every_payload_phrase_ends_where_a_printed_duration_begins(duration_phra
         assert r.rest_text(text) == duration_phrase, (text, r)
 
 
+@pytest.mark.parametrize("host", [
+    "that much damage plus 2 instead.",
+    "it deals that much damage plus 1 to that permanent or player instead.",
+    "two damage plus 1 to any target"])
+def test_a_slots_span_and_rest_never_overlap(host):
+    """span is the consumed phrase and rest the unconsumed text: an operator
+    printed after the counted noun is consumed outside the span (pending
+    'operator'), and the noun stays rest for the caller's leaf."""
+    from engine.effect_grammar.sub import amount
+    a = host.index("that much") if "that much" in host else 0
+    r = amount.parse_amount(host, (a, len(host)), lemma="deal")
+    assert r.value is not None, r
+    s, e = r.span
+    for x, y in r.rest_spans:
+        assert y <= s or x >= e, (r.span, r.rest_spans)
+    assert "damage" in [host[x:y] for x, y in r.rest_spans]
+    assert [k for k, _ in r.pending] == ["operator"]
+
+
 # ── One count-word table ────────────────────────────────────────────────
 
 @pytest.mark.parametrize("word,n", [("ten", 10), ("eleven", 11),
