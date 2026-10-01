@@ -27,12 +27,15 @@ from engine.effect_spec import KeywordSpec, canonical
 
 # Measured 2026-10-01 on the full pool (see the printed report):
 # * front faces gated by their MTGJSON keywords: 99.94% of the keyword
-#   lines are typed (9810 typed, 6 unmodelled: 5 "{g} or {w}" cost choices
+#   lines are typed (9823 typed, 6 unmodelled: 5 "{g} or {w}" cost choices
 #   the cost owner cannot hold, 1 self-form ward cost with no printed span);
+#   no paragraph that opens with one of the face's keywords and is not a
+#   sentence is dropped as "not a keyword line" (A1);
 # * back faces, CR 702 table alone: 318 typed, 0 unmodelled;
-# * the table alone classifies exactly the same front-face lines as the
-#   gated run (9810 / 6): on this pool the M3 gate removes nothing the
-#   table admits, it only keeps CR 701 actions out by construction;
+# * the table alone types two front-face lines more than the gated run
+#   (9825 / 6): equip-quality lines on faces whose MTGJSON keywords omit
+#   equip -- the M3 gate otherwise removes nothing the table admits, it
+#   only keeps CR 701 actions out by construction;
 # * 99.46% of the (card, CR 702 keyword) pairs MTGJSON lists are found on a
 #   typed line of either face (10898 / 10957). The rest are keywords printed
 #   inside an effect or grant ("equipped creature has reach", "the top card
@@ -101,8 +104,15 @@ def _run(faces, gated=True):
             para = para.strip()
             if not para:
                 continue
-            r = K.parse_keyword_line(para, candidates=cands if gated else None)
+            gate = cands if gated else None
+            r = K.parse_keyword_line(para, candidates=gate)
             if r is None:
+                # A1: a paragraph that opens with one of the face's keywords
+                # and is not a sentence is a keyword line -- typed or
+                # UNMODELLED, never handed on as resolution text.
+                head = K._head(para, 0)
+                assert head is None or para.endswith(".") or (
+                    gate is not None and head[0] not in gate), (name, para)
                 continue
             assert (r.value is None) != (r.unmodelled is None), (name, para, r)
             key = "back_" if face else ""

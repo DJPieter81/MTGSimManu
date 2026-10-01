@@ -89,6 +89,8 @@ PROTOTYPE = "prototype"        # prototype {cost} - p/t
 DEVOUR = "devour"              # devour [<type>] N
 MODULAR = "modular"            # modular N / modular-sunburst
 DASH_PARAM = "dash_param"      # companion - <condition>
+EQUIP = "equip"                # equip [<quality>] {cost} (CR 702.6e)
+OVER_OPT = "over_opt"          # trample [over planeswalkers] (CR 702.19c)
 TYPECYCLING = "typecycling"    # <type>cycling {cost} (CR 702.29e)
 LANDWALK = "landwalk"          # <type>walk (CR 702.14c)
 
@@ -96,7 +98,7 @@ _SHAPES = {
     PLAIN: (
         "deathtouch", "defender", "double strike", "first strike", "flash",
         "flying", "haste", "indestructible", "intimidate", "lifelink",
-        "reach", "shroud", "trample", "vigilance", "menace", "prowess",
+        "reach", "shroud", "vigilance", "menace", "prowess",
         "fear", "shadow", "horsemanship", "flanking", "phasing", "banding",
         "storm", "cascade", "convoke", "delve", "improvise", "rebound",
         "split second", "fuse", "aftermath", "persist", "undying", "wither",
@@ -122,7 +124,7 @@ _SHAPES = {
         "flashback", "escape", "unearth", "embalm", "eternalize", "madness",
         "cycling", "kicker", "multikicker", "buyback", "evoke", "dash",
         "blitz", "disturb", "overload", "ninjutsu", "commander ninjutsu",
-        "equip", "echo", "megamorph", "morph", "disguise", "foretell", "plot",
+        "echo", "megamorph", "morph", "disguise", "foretell", "plot",
         "bestow", "entwine", "miracle", "outlast", "scavenge", "transmute",
         "reconfigure", "surge", "encore", "spectacle", "prowl", "mutate",
         "ward", "fortify", "replicate", "recover", "cumulative upkeep",
@@ -143,6 +145,8 @@ _SHAPES = {
     DEVOUR: ("devour",),
     MODULAR: ("modular",),
     DASH_PARAM: ("companion",),
+    EQUIP: ("equip",),
+    OVER_OPT: ("trample",),
     TYPECYCLING: ("typecycling",),
     LANDWALK: ("landwalk",),
 }
@@ -155,7 +159,7 @@ KEYWORD_ABILITIES: Mapping[str, str] = {
 # matched by their own patterns, never by name.
 _FAMILIES = frozenset({TYPECYCLING, LANDWALK})
 _COSTED = frozenset({COST, COST_OPT, N_DASH_COST, SPLICE, CRAFT, EMERGE,
-                     PROTOTYPE, TYPECYCLING})
+                     PROTOTYPE, EQUIP, TYPECYCLING})
 
 
 def canonical_keyword(name: str) -> Optional[str]:
@@ -217,6 +221,10 @@ _PARAM_RE = {
     DEVOUR: r" (?:(?P<p>[a-z]+) )?%s\b" % _NUM,
     MODULAR: r"(?: %s\b|\s*-\s*(?P<p>sunburst)\b)" % _NUM,
     DASH_PARAM: r"\s*-\s*(?P<p>[^.]+?)%s" % _END,
+    # The quality is the words before a mana cost that ends the item, so a
+    # sentence about equip abilities ("... cost {1} less") never reads as one.
+    EQUIP: r"(?: (?P<p>[a-z][a-z ]*?)(?= %s(?:[.;,]|$)))?%s" % (_MANA, _COST),
+    OVER_OPT: r"(?: over (?P<p>[a-z]+))?",
     TYPECYCLING: _COST,
     LANDWALK: r"",
 }
@@ -249,23 +257,28 @@ class _Item(NamedTuple):
     cost_choice: bool
 
 
-def _match_item(t: str, pos: int) -> Optional[_Item]:
-    """One keyword item of slot text `t` at `pos`, or None."""
+def _head(t: str, pos: int):
+    """The keyword name of slot text `t` at `pos`: (name, shape, end,
+    head_param), or None when no CR 702 name starts there."""
     m = _NAME_RE.match(t, pos)
     if m is not None:
         name = m.group("name")
-        shape = KEYWORD_ABILITIES[name]
-        head_param = None
-    else:
-        for shape, rx in _FAMILY_RE.items():
-            m = rx.match(t, pos)
-            if m is not None:
-                break
-        else:
-            return None
-        name = shape
-        head_param = m.group("p")
-    p = _ITEM_RE[shape].match(t, m.end())
+        return name, KEYWORD_ABILITIES[name], m.end(), None
+    for shape, rx in _FAMILY_RE.items():
+        m = rx.match(t, pos)
+        if m is not None:
+            return shape, shape, m.end(), m.group("p")
+    return None
+
+
+def _match_item(t: str, pos: int, head=None) -> Optional[_Item]:
+    """One keyword item of slot text `t` at `pos`, or None (no keyword name
+    there, or its parameter is not the keyword's closed shape)."""
+    head = head or _head(t, pos)
+    if head is None:
+        return None
+    name, shape, name_end, head_param = head
+    p = _ITEM_RE[shape].match(t, name_end)
     if p is None:
         return None
     g = p.groupdict()
@@ -285,7 +298,7 @@ def _match_item(t: str, pos: int) -> Optional[_Item]:
     if g.get("more"):
         for q in _FROM_EACH_RE.finditer(g["more"]):
             items.append((name, None, q.group(1), None))
-    bare = p.end() == m.end() and head_param is None
+    bare = p.end() == name_end and head_param is None
     return _Item(tuple(items), p.end(), bare, num == "x", bool(g.get("orc")))
 
 
@@ -294,16 +307,26 @@ def _line_rel(t: str, candidates: Optional[FrozenSet[str]]):
     """The keyword list of trimmed slot text `t`:
     ('none',) | ('um', code, param) |
     ('ok', items, consumed_end, rest_start or None)."""
+    head = _head(t, 0)
+    if head is None:
+        return ("none",)
+    if candidates is not None and head[0] not in candidates:
+        return ("none",)
+    item = _match_item(t, 0, head)
+    if item is None:
+        # The face's own keyword opens the paragraph but its parameter is
+        # not the keyword's shape. A sentence ("equip abilities you
+        # activate cost {1} less.") is ability text; a keyword item -- no
+        # sentence end -- is a keyword line the table cannot type, and it
+        # is refused rather than handed on as resolution text (A1).
+        if t.endswith("."):
+            return ("none",)
+        return ("um", "unconsumed", head[0])
     items = []
     first = True
-    item = _match_item(t, 0)
-    if item is None:
-        return ("none",)
     while True:
         name = item.items[0][0]
         if candidates is not None and name not in candidates:
-            if first:
-                return ("none",)
             return ("um", "face_keywords_disagree", name)
         if item.cost_choice:
             return ("um", "cost_choice", "")

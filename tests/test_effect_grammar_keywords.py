@@ -80,8 +80,12 @@ def test_a_numeric_keyword_carries_its_n_and_x_is_a_parameter(text, item):
     assert got == item
 
 
-def test_a_numeric_keyword_without_its_number_is_not_a_keyword_line():
-    assert _line("crew") is None
+def test_a_numeric_keyword_without_its_number_is_refused_and_a_sentence_about_it_is_not_a_keyword_line():
+    """A1: an item whose keyword has no number is a keyword line the table
+    cannot type (UNMODELLED, never resolution text); a sentence that names
+    the keyword's abilities is ability text."""
+    r = _line("crew")
+    assert r.value is None and r.unmodelled.detail == "keywords.unconsumed:crew"
     assert _line("crew abilities you activate cost {1} less to activate.") is None
 
 
@@ -163,6 +167,60 @@ def test_multi_word_and_noun_parameter_keywords_keep_their_parameter(text, item)
     assert r is not None and r.unmodelled is None, r
     (got,) = _items(r)
     assert got == item
+
+
+@pytest.mark.parametrize("text,item", [
+    ("equip {2}", ("equip", None, None, "{2}")),
+    ("equip legendary creature {3}", ("equip", None, "legendary creature", "{3}")),
+    ("equip halfling {1}", ("equip", None, "halfling", "{1}")),
+    ("equip creature token {1}", ("equip", None, "creature token", "{1}")),
+    ("equip soldier {w}", ("equip", None, "soldier", "{w}")),
+    ("equip planeswalker {1}", ("equip", None, "planeswalker", "{1}")),
+])
+def test_an_equip_quality_parameter_is_the_keywords_parameter(text, item):
+    """CR 702.6e: 'equip [quality] {cost}' is equip whose parameter is the
+    quality; the cost is typed the same as an unqualified equip's."""
+    r = _line(text, candidates=frozenset({"equip"}))
+    assert r is not None and r.unmodelled is None, r
+    (spec,) = r.value
+    assert (spec.name, spec.n, spec.param, spec.cost) == item
+    assert _snap(spec)["unpayable"] == ()
+
+
+@pytest.mark.parametrize("text", [
+    "equip abilities you activate cost {1} less to activate.",
+    "equip abilities you activate that target ~ cost {2} less to activate.",
+    "equip costs you pay cost {1} less.",
+])
+def test_a_sentence_about_equip_abilities_is_not_an_equip_quality(text):
+    assert _line(text, candidates=frozenset({"equip"})) is None
+
+
+def test_trample_over_planeswalkers_is_trample_with_its_parameter():
+    """CR 702.19c."""
+    assert _items(_line("trample over planeswalkers",
+                        candidates=frozenset({"trample"}))) == [
+        ("trample", None, "planeswalkers", None)]
+    assert _items(_line("trample")) == [("trample", None, None, None)]
+
+
+@pytest.mark.parametrize("text,name", [
+    ("kicker blorp", "kicker"),
+    ("ward blorp", "ward"),
+    ("swampcycling blorp", "typecycling"),
+])
+def test_a_face_keyword_whose_parameter_is_not_its_shape_is_refused_never_dropped(
+        text, name):
+    """A1: a paragraph that opens with one of the face's own keywords and is
+    not a sentence is a keyword line; when the parameter is not the
+    keyword's closed shape it is UNMODELLED, never None -- None would hand
+    it to the later static and spell rules as resolution text."""
+    r = _line(text, candidates=frozenset({name}))
+    assert r.value is None and r.unmodelled.stage is Stage.STRUCTURE
+    assert r.unmodelled.detail == "keywords.unconsumed:" + name.split()[0]
+    assert r.span == (0, len(text))
+    # Not the face's keyword: not this face's keyword line.
+    assert _line(text, candidates=frozenset({"flying"})) is None
 
 
 @pytest.mark.parametrize("text,params", [
