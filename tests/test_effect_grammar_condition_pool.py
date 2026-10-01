@@ -48,6 +48,17 @@ _FRAMES = (
     ("as_long_as", re.compile(r"\b((?:for )?as long as [^,;]+?)(?=[,;]|$)")),
 )
 
+def _closed_detail(detail: str) -> bool:
+    """'<leaf>.<code>[:<param>]' whose code is in that leaf's closed
+    DETAIL_CODES, for any grammar leaf (a callee's refusal propagates
+    unchanged through its caller)."""
+    import importlib
+    leaf, code = detail.split(":")[0].split(".")
+    name = {"destination": "dest"}.get(leaf, leaf)
+    mod = importlib.import_module("engine.effect_grammar.sub." + name)
+    return mod.LEAF == leaf and code in mod.DETAIL_CODES
+
+
 
 def _slots(card_db):
     seen = set()
@@ -145,9 +156,12 @@ def test_the_condition_leaf_types_or_refuses_every_pool_condition_slot_determini
             kinds[r.value.kind.name] += 1
         else:
             u = r.unmodelled
-            assert u.stage is Stage.CONDITION and u.lemma == "x"
+            assert u.lemma == "x"
             leaf, code = u.detail.split(":")[0].split(".")
-            assert leaf == C.LEAF and code in C.DETAIL_CODES, u.detail
+            # The condition leaf's own refusal, or a callee's propagated
+            # unchanged.
+            assert _closed_detail(u.detail), u.detail
+            assert (u.stage is Stage.CONDITION) == (leaf == C.LEAF), u
             assert host[slice(*r.span)] == host[a:b].strip(), (host, r)
             refused[frame] += 1
             codes[u.detail.split(":")[0]] += 1

@@ -379,8 +379,7 @@ def test_a_group_compared_against_a_characteristic_is_the_filter_leafs(text):
     f = F.parse_filter(text, (0, len(text)))
     if f.value is None:
         assert r.unmodelled.stage is Stage.FILTER, r
-        assert r.unmodelled.detail == "participant.filter:" + \
-            f.unmodelled.detail.split(".", 1)[1].split(":")[0], (r, f)
+        assert r.unmodelled.detail == f.unmodelled.detail, (r, f)
     else:
         assert r.value == f.value and P.GROUP in r.flags, r
 
@@ -410,10 +409,12 @@ def test_untargeted_groups_are_filter_selectors_not_targets(text, filt, flags, a
     assert r.value.as_selector().kind is SelectorKind.FILTER
 
 
-def test_a_group_the_filter_leaf_refuses_is_unmodelled_filter_with_its_code():
+def test_a_group_the_filter_leaf_refuses_is_the_filters_refusal_unchanged():
+    from engine.effect_grammar.sub import filter as F
     r = _p("creatures with a blorp")
     assert r.value is None and r.unmodelled.stage is Stage.FILTER
-    assert r.unmodelled.detail.startswith("participant.filter:"), r
+    assert r.unmodelled.detail == F.parse_filter(
+        "creatures with a blorp").unmodelled.detail == "filter.unparsed:with", r
 
 
 @pytest.mark.parametrize("text", [
@@ -431,7 +432,7 @@ def test_a_slot_with_a_counted_target_word_belongs_to_the_target_leaf(text):
 @pytest.mark.parametrize("text,stage,detail", [
     # The verb use: an object group the filter leaf reads (and here
     # refuses with its own code), never the target leaf's.
-    ("spells that target ~", Stage.FILTER, "participant.filter:unparsed"),
+    ("spells that target ~", Stage.FILTER, "filter.unparsed:that"),
     # The noun use: a reference to an earlier target, the linker's.
     ("the target creature", Stage.REFERENCE, "participant.reference:the"),
     ("that target", Stage.REFERENCE, "participant.reference:that"),
@@ -566,7 +567,7 @@ _DETAIL_RE = re.compile(r"^participant\.(?P<code>[a-z_]+)(?::\S+)?$")
 @pytest.mark.parametrize("text", [
     "", "target player", "the monarch", "each player who attacked",
     "that blorp", "this ability", "~'s power", "the blorp's owner",
-    "you and each opponent", "creatures with a blorp"])
+    "you and each opponent"])
 def test_every_refusal_detail_is_leaf_dot_code_from_the_closed_list(text):
     u = _p(text).unmodelled
     m = _DETAIL_RE.match(u.detail)

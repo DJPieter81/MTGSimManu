@@ -245,12 +245,55 @@ def test_an_entry_counter_phrase_reads_through_the_one_counter_parser(np, entry)
     assert p.value is not None and p.rest_spans == ()
 
 
-def test_an_entry_counter_phrase_the_counter_parser_refuses_is_unmodelled():
+def test_an_entry_counter_phrase_the_counter_parser_refuses_keeps_its_refusal():
+    """Refusal propagation: payload's refusal reaches the census unchanged
+    through the destination leaf."""
+    from engine.effect_grammar.sub import dest, payload
+    np = "one fewer revival counter"
+    own = payload.parse_counters(np, (0, len(np))).unmodelled
+    text = "onto the battlefield with %s on it" % np
+    r = dest.parse_destination(text, (0, len(text)), lemma="return")
+    assert r.value is None
+    assert (r.unmodelled.stage, r.unmodelled.detail) == (own.stage, own.detail)
+    assert r.unmodelled.lemma == "return"
+
+
+def test_a_typed_counter_phrase_that_is_no_entry_count_is_the_destinations_refusal():
     from engine.effect_grammar.sub import dest
-    text = "onto the battlefield with one fewer revival counter on it"
+    text = "onto the battlefield with any number of +1/+1 counters on it"
     r = dest.parse_destination(text, (0, len(text)))
     assert r.value is None
     assert r.unmodelled.detail == "destination.entry_counters"
+
+
+def _refused_filter_set():
+    from engine.effect_grammar.sub import filter
+    u = filter.parse_filter("blorp you control").unmodelled
+    assert u.detail == "filter.unparsed:blorp"
+    return u
+
+
+@pytest.mark.parametrize("call", [
+    lambda: __import__("engine.effect_grammar.sub.quantity", fromlist=["x"]
+                       ).parse_quantity("the number of blorp you control",
+                                        lemma="draw"),
+    lambda: __import__("engine.effect_grammar.sub.amount", fromlist=["x"]
+                       ).parse_scaler("for each blorp you control", lemma="draw"),
+    lambda: __import__("engine.effect_grammar.sub.participant", fromlist=["x"]
+                       ).parse_participant("each blorp you control", lemma="draw"),
+    lambda: __import__("engine.effect_grammar.sub.condition", fromlist=["x"]
+                       ).parse_condition("if you control three or more blorp you control",
+                                         lemma="draw"),
+])
+def test_a_refusal_from_a_callee_leaf_reaches_the_census_unchanged(call):
+    """Refusal propagation (the contract's one rule): a caller passes the
+    deepest leaf's stage and '<leaf>.<code>:<param>' through, stamped with
+    its own lemma, so one root cause is one census bucket whatever the
+    caller, and the refused token survives."""
+    own = _refused_filter_set()
+    u = call().unmodelled
+    assert (u.stage, u.detail) == (own.stage, own.detail), u
+    assert u.lemma == "draw"
 
 
 @pytest.mark.parametrize("duration_phrase", [

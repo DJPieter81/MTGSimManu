@@ -88,7 +88,7 @@ __all__ = ["LEAF", "DETAIL_CODES", "HISTORY_EVENTS", "LKI", "STATS",
 
 LEAF = "quantity"
 DETAIL_CODES = frozenset({
-    "empty", "filter", "reference", "determiner", "history_control",
+    "empty", "reference", "determiner", "history_control",
     "element_anaphor", "anaphoric_number", "stat_pair", "party",
     "colors_among", "mana_spent", "mana_cost", "mana_symbols",
     "starting_life_total", "greatest_number", "extremum", "counter",
@@ -303,7 +303,7 @@ def _history(t: str, source_left: bool):
         if gd.get("np"):
             f = _filter.parse_filter(gd["np"], zone=zone or "")
             if f.value is None:
-                return _fail("filter", _filter_code(f))
+                return _fail(f.unmodelled)
             if f.amount is not None or f.flags:
                 return _fail("determiner")
             filt = dataclasses.replace(f.value, zone="")
@@ -329,12 +329,6 @@ _Whole = Tuple[Optional[Quantity], Optional[Tuple[str, str]],
                Tuple[Tuple[str, str], ...], frozenset]
 
 
-def _filter_code(f: SlotResult) -> str:
-    """The filter leaf's detail code of a refused set (the census groups a
-    quantity the filter refused by it)."""
-    return f.unmodelled.detail.split(".", 1)[1].split(":")[0]
-
-
 def _fail(code: str, param: str = "") -> _Whole:
     return (None, (code, param), (), frozenset())
 
@@ -347,7 +341,7 @@ def _set(text: str, zone: str = ""):
     and one that left as a cost or an effect (CR 608.2h) carries `LKI`."""
     f = _filter.parse_filter(text, zone=zone)
     if f.value is None:
-        return None, None, (), frozenset(), ("filter", _filter_code(f))
+        return None, None, (), frozenset(), (f.unmodelled, "")
     if f.amount is not None or f.flags:
         return None, None, (), frozenset(), ("determiner", "")
     results = [v for k, v in f.pending if k == "result"]

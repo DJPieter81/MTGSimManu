@@ -75,6 +75,17 @@ _CHOICE_RE = re.compile(r"\bchoice\b|\bat random\b")
 # cast cost ...") is the stand-in's error, not a slot.
 _RELATIVE_CUT_RE = re.compile(r". (?:you|opponents?|players?)$")
 
+def _closed_detail(detail: str) -> bool:
+    """'<leaf>.<code>[:<param>]' whose code is in that leaf's closed
+    DETAIL_CODES, for any grammar leaf (a callee's refusal propagates
+    unchanged through its caller)."""
+    import importlib
+    leaf, code = detail.split(":")[0].split(".")
+    name = {"destination": "dest"}.get(leaf, leaf)
+    mod = importlib.import_module("engine.effect_grammar.sub." + name)
+    return mod.LEAF == leaf and code in mod.DETAIL_CODES
+
+
 
 def _sentences(card_db):
     for template in {id(v): v for v in card_db.cards.values()}.values():
@@ -197,9 +208,10 @@ def test_the_participant_leaf_types_or_refuses_every_pool_participant_slot_deter
             continue
         u = r.unmodelled
         leaf, code = u.detail.split(":")[0].split(".")
-        assert leaf == P.LEAF and code in P.DETAIL_CODES, u.detail
+        assert _closed_detail(u.detail), u.detail
+        assert leaf in (P.LEAF, "filter"), u.detail
         assert u.lemma == "x"
-        assert u.stage is (Stage.FILTER if code == "filter"
+        assert u.stage is (Stage.FILTER if leaf == "filter"
                            else Stage.REFERENCE), u
         assert host[slice(*r.span)] == host[a:b].strip(), (host, r)
         if code == "targeted":

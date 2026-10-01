@@ -55,6 +55,17 @@ and the package's `engine.effect_grammar.clear_caches` -- the one entry
 point the load driver calls once the grammar pass finishes -- clears these
 and every leaf beside them.
 
+**Refusal propagation.** When a leaf reads part of its slot through
+another leaf and that callee REFUSES the phrase, the caller returns the
+callee's `Unmodelled` unchanged -- its stage and its
+``<leaf>.<code>[:<param>]`` detail, so the refused token survives -- with
+the caller's lemma (pass it as the ``code`` of `unmodelled`). One root
+cause is then one census bucket whatever the caller, the L4 rule
+"UNMODELLED(deepest failure)". A caller uses a code of its own only when
+the callee TYPED the phrase and the caller refuses the typed value's shape
+(a counter choice where one kind is required, a variable count where an
+entry count is required).
+
 **Count words.** `NUMBER_WORDS` (and `COUNT_WORDS`, longest first) is the
 one count-word table of every leaf; no leaf builds its own, so a printed
 count is typed in every slot that counts or in none.
@@ -66,6 +77,7 @@ reads the duration boundary from duration (one duration table).
 """
 from __future__ import annotations
 
+import dataclasses
 from dataclasses import dataclass
 from typing import Any, FrozenSet, Optional, Tuple
 
@@ -191,11 +203,18 @@ def rest_spans_after(host: str, pos: int, end: int,
     return ((pos, end),) if pos < end else ()
 
 
-def unmodelled(stage, lemma: str, leaf: str, code: str,
+def unmodelled(stage, lemma: str, leaf: str, code,
                codes: FrozenSet[str], param: str = "") -> Unmodelled:
     """The one Unmodelled constructor of the leaves: the lemma is the
     caller's, the detail is '<leaf>.<code>[:<param>]' with `code` from the
-    leaf's closed list and `param` one word."""
+    leaf's closed list and `param` one word.
+
+    Refusal propagation: when `code` is a callee leaf's `Unmodelled`, it is
+    returned unchanged -- its stage and detail -- with the caller's lemma
+    (see "Refusal propagation" in the module docstring)."""
+    if isinstance(code, Unmodelled):
+        return code if code.lemma == lemma else dataclasses.replace(
+            code, lemma=lemma)
     if code not in codes:
         raise ValueError("%s: detail code %r is not in DETAIL_CODES" % (leaf, code))
     detail = "%s.%s" % (leaf, code)

@@ -185,11 +185,6 @@ def _neg(w: _W, raw: str, negated: bool) -> _W:
     return (Condition(ConditionKind.NOT, children=(w[0],), raw=raw),) + w[1:]
 
 
-def _code_of(r: SlotResult) -> str:
-    """The refusing leaf's detail code, the condition's param."""
-    return r.unmodelled.detail.split(".", 1)[1].split(":")[0]
-
-
 # ── Numbers and comparisons ────────────────────────────────────────────
 
 _WORDS = sorted(_amount.NUMBER_WORDS, key=len, reverse=True)
@@ -256,7 +251,7 @@ def _operand(t: str, a: int, b: int):
         return n, (), None
     q = _Q.parse_quantity(t, (a, b))
     if q.value is None:
-        return None, (), ("quantity", _code_of(q))
+        return None, (), (q.unmodelled, "")
     if q.rest_spans or q.span != (a, b):
         return None, (), ("quantity", "")
     return Amount(AmountKind.EQUAL_TO, quantity=q.value), q.pending, None
@@ -428,7 +423,7 @@ def _single_np(t: str, a: int, b: int, zone: str):
         op, n, a = cmp
     f = _filter.parse_filter(t, (a, b), zone=zone)
     if f.value is None:
-        return None, None, None, (), ("filter", _code_of(f))
+        return None, None, None, (), (f.unmodelled, "")
     if f.flags:
         return None, None, None, (), ("quantifier", "")
     if cmp is None:
@@ -638,6 +633,8 @@ def _cast_fact(t: str) -> Optional[_W]:
     m = _MANA_SPENT_RE.fullmatch(t)
     if m is not None:
         pay = _payload.parse_payload(_PAY, t, m.span("sym"), None)
+        if pay.unmodelled is not None:
+            return _fail(pay.unmodelled)
         if not isinstance(pay.value, CostSnapshot) or pay.rest_spans:
             return _fail("cast_fact", "mana")
         ref, pending = _spell_ref(t, m)
@@ -828,7 +825,7 @@ def _comparand_count(t: str, m, field: str, zone: str, player: _Player,
         return refusal
     f = _filter.parse_filter(t, m.span("np"), zone=zone)
     if f.value is None:
-        return _fail("filter", _code_of(f))
+        return _fail(f.unmodelled)
     if f.amount is not None or f.flags:
         return _fail("comparison")
     mine = _with_player(f.value, field, player)
@@ -941,7 +938,7 @@ def _total(t: str) -> Optional[_W]:
         return None
     f = _filter.parse_filter(t, m.span("np"))
     if f.value is None:
-        return _fail("filter", _code_of(f))
+        return _fail(f.unmodelled)
     if f.amount is not None or f.flags:
         return _fail("quantifier")
     op, n, pending, failure = _cmp_post(t, m.end())
@@ -1180,7 +1177,7 @@ def _object_predicate(t: str, a: int, b: int):
             return None, None, ("object_zone", "")
         r = _filter.parse_filter(t, (a, b), zone=_ANY_CARD_ZONE)
         if r.value is None:
-            return None, None, ("filter", _code_of(r))
+            return None, None, (r.unmodelled, "")
         if r.flags or r.pending or r.amount != _ONE:
             return None, None, ("filter", "determiner")
         return "is", dataclasses.replace(r.value, zone=""), None
@@ -1222,6 +1219,8 @@ def _object_rows(t: str) -> Optional[_W]:
             if cmp is not None:
                 op, n, a = cmp
             c = _payload.parse_counters(t, (a, b))
+            if c.unmodelled is not None:
+                return _fail(c.unmodelled)
             if c.value is None or c.rest_spans or c.amount is not None \
                     or c.value.choice or len(set(c.value.kinds)) != 1:
                 return _fail("counter")
@@ -1332,6 +1331,8 @@ def _unless_rel(t: str) -> _U:
         player = _player(t, *m.span("payer"))
         if player is not None:
             pay = _payload.parse_payload(_PAY, t, m.span("cost"), None)
+            if pay.unmodelled is not None:
+                return None, (pay.unmodelled, ""), (), frozenset(), 0
             if pay.value is None or not isinstance(pay.value, CostSnapshot):
                 return None, ("unless_cost", ""), (), frozenset(), 0
             end = pay.span[1]

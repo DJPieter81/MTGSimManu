@@ -56,9 +56,11 @@ it, so one that reaches this leaf is ``participant.union``. A player set
 narrowed by a relative clause, a game designation (the monarch, the
 active player), a characteristic ("~'s power") and "this ability" (CR
 113.1) are refused with codes of their own. A phrase no row places is
-``UNMODELLED(REFERENCE)`` (a filter group the filter leaf refused is
-``UNMODELLED(FILTER)``) over the whole trimmed slot, with detail
-``participant.<code>[:<param>]`` -- never a broader participant.
+``UNMODELLED(REFERENCE)`` over the whole trimmed slot, with detail
+``participant.<code>[:<param>]`` -- never a broader participant. A filter
+group the filter leaf refused keeps the filter leaf's own refusal
+(``UNMODELLED(FILTER)``, ``filter.<code>[:<param>]``) unchanged -- the
+contract's refusal propagation.
 
 **Chooser** (CR 115.1, 701.21a). `parse_chooser` reads the printed chooser
 of an untargeted choice ("of their choice" -> PARTICIPANT, "of your
@@ -91,7 +93,7 @@ LEAF = "participant"
 DETAIL_CODES = frozenset({
     "empty", "targeted", "union", "relative_clause", "designation",
     "characteristic", "ability", "reference", "player", "possessor",
-    "filter", "chooser", "library_position"})
+    "chooser", "library_position"})
 
 # SlotResult flags: what the participant is.
 PLAYER = "player"      # a player set or reference, or a player anaphor
@@ -474,8 +476,7 @@ def _single(t: str) -> Optional[_Rel]:
 def _group(t: str, zone: str) -> _Rel:
     f = _filter.parse_filter(t, (0, len(t)), zone=zone)
     if f.value is None:
-        code = f.unmodelled.detail.split(".", 1)[1].split(":")[0]
-        return _fail("filter", code, Stage.FILTER)
+        return _fail(f.unmodelled)          # refusal propagation
     return _ok(f.value, f.flags | {GROUP}, f.amount, f.pending)
 
 

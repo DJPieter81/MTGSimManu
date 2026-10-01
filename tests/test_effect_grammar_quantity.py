@@ -369,7 +369,6 @@ def test_a_history_filter_keeps_its_printed_qualifiers():
 # ── Refusals ───────────────────────────────────────────────────────────
 
 _REFUSED_CASES = [
-    ("color pair", "filter"),
     ("the difference", "anaphoric_number"),
     ("that number", "anaphoric_number"),
     ("creature in your party", "party"),
@@ -427,10 +426,17 @@ def test_every_closed_detail_code_is_one_the_leaf_emits():
     assert {code for _, code in _REFUSED_CASES} == set(Q.DETAIL_CODES)
 
 
-def test_a_counted_phrase_the_filter_refuses_carries_the_filter_code():
-    r = _q("land your opponents control that could produce {c}")
+@pytest.mark.parametrize("text", [
+    "land your opponents control that could produce {c}", "color pair"])
+def test_a_counted_phrase_the_filter_refuses_carries_the_filters_refusal(text):
+    """Refusal propagation: the filter leaf's stage and detail (with the
+    refused token) reach the census unchanged, stamped with the lemma."""
+    from engine.effect_grammar.sub import filter as F
+    r = _q(text)
     assert r.value is None
-    assert re.match(r"^quantity\.filter:[a-z_]+$", r.unmodelled.detail)
+    own = F.parse_filter(text).unmodelled
+    assert (r.unmodelled.stage, r.unmodelled.detail) == (own.stage, own.detail)
+    assert re.match(r"^filter\.[a-z_]+(:\S+)?$", r.unmodelled.detail)
 
 
 # ── Spans: the consumed phrase and the rest ────────────────────────────

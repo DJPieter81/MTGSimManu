@@ -696,6 +696,8 @@ def _filter_rel(t: str, zone: str) -> _Rel:
         elif _COUNTER_RE.match(t, pos):
             m = _COUNTER_RE.match(t, pos)
             r = _payload.parse_counters(t, m.span("np"))
+            if r.unmodelled is not None:
+                return _fail(r.unmodelled)      # refusal propagation
             if r.value is None or r.rest_spans or len(set(r.value.kinds)) != 1:
                 return _fail("counter")
             has = not (m.group("out") or m.group("q") == "no")

@@ -57,6 +57,17 @@ _COMPARATOR_REST_RE = re.compile(r"or (?:more|fewer|less|greater)\b")
 # scaler's, not a count slot.
 _NO_COUNT_RE = re.compile(r"(?:cards?|life|damage)\b")
 
+def _closed_detail(detail: str) -> bool:
+    """'<leaf>.<code>[:<param>]' whose code is in that leaf's closed
+    DETAIL_CODES, for any grammar leaf (a callee's refusal propagates
+    unchanged through its caller)."""
+    import importlib
+    leaf, code = detail.split(":")[0].split(".")
+    name = {"destination": "dest"}.get(leaf, leaf)
+    mod = importlib.import_module("engine.effect_grammar.sub." + name)
+    return mod.LEAF == leaf and code in mod.DETAIL_CODES
+
+
 
 def _x_binding(template, text: str, sentence: str) -> bool:
     """Section 6: X is bound by a cost -- {X} in the mana cost (the typed
@@ -211,12 +222,11 @@ def test_the_amount_leaf_types_or_refuses_every_pool_amount_slot_deterministical
             u = r.unmodelled
             assert u.lemma == "x"
             leaf, code = u.detail.split(":")[0].split(".")
-            if u.stage is Stage.QUANTITY:
-                from engine.effect_grammar.sub import quantity as Q
-                assert leaf == Q.LEAF and code in Q.DETAIL_CODES, u.detail
-            else:
+            # The amount leaf's own refusal, or a callee's (quantity,
+            # filter) propagated unchanged.
+            assert _closed_detail(u.detail), u.detail
+            if leaf == A.LEAF:
                 assert u.stage in (Stage.AMOUNT, Stage.ITERATION), u
-                assert leaf == A.LEAF and code in A.DETAIL_CODES, u.detail
             assert host[slice(*r.span)] == host[a:b].strip(), (host, r)
             codes[u.detail.split(":")[0]] += 1
 

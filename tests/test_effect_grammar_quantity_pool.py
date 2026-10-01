@@ -48,6 +48,17 @@ _FRAMES = (
 _OPERATOR_RE = re.compile(
     r"(?:twice |half |three times |(?:\d+|one|two|three|x) (?:plus|minus) )")
 
+def _closed_detail(detail: str) -> bool:
+    """'<leaf>.<code>[:<param>]' whose code is in that leaf's closed
+    DETAIL_CODES, for any grammar leaf (a callee's refusal propagates
+    unchanged through its caller)."""
+    import importlib
+    leaf, code = detail.split(":")[0].split(".")
+    name = {"destination": "dest"}.get(leaf, leaf)
+    mod = importlib.import_module("engine.effect_grammar.sub." + name)
+    return mod.LEAF == leaf and code in mod.DETAIL_CODES
+
+
 
 def _slots(card_db):
     seen = set()
@@ -132,9 +143,12 @@ def test_the_quantity_leaf_types_or_refuses_every_pool_quantity_slot_determinist
                 with_rest[frame] += 1
         else:
             u = r.unmodelled
-            assert u.stage is Stage.QUANTITY and u.lemma == "x"
+            assert u.lemma == "x"
             leaf, code = u.detail.split(":")[0].split(".")
-            assert leaf == Q.LEAF and code in Q.DETAIL_CODES, u.detail
+            # The quantity leaf's own refusal, or a callee's propagated
+            # unchanged (the leaf contract's refusal propagation).
+            assert u.stage is Stage.QUANTITY or leaf != Q.LEAF, u
+            assert _closed_detail(u.detail), u.detail
             assert host[slice(*r.span)] == host[a:b].strip().rstrip(" .,;") \
                 or host[slice(*r.span)] == host[a:b].strip(), (host, r)
             codes[u.detail.split(":")[0]] += 1
@@ -276,7 +290,7 @@ _REFUSED = (
     ("Wrath of the Skies", "the amount of {e} paid this way",
      "quantity.result_amount"),
     ("Obsidian Charmaw", "land your opponents control that could produce {c}",
-     "quantity.filter"),
+     "filter.unparsed"),
 )
 
 

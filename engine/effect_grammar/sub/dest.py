@@ -131,13 +131,17 @@ def _unmodelled(stage: Stage, lemma: str, code: str, param: str = "") -> Unmodel
 _ENTRY_VARIABLE = frozenset({AmountKind.X, AmountKind.THAT_MUCH})
 
 
-def _counters(items: str) -> Optional[Tuple[Tuple[str, Amount], ...]]:
+def _counters(items: str):
     """'a +1/+1 counter and a flying counter' -> ((kind, Amount), ...), or
     None when a token is left over or the counter phrase is not an entry
-    count. The counter noun phrase ('<count> [additional] <kind>
-    counter(s)') is read by payload's counter parser, the one count table
-    and kind vocabulary; this only reshapes its multiset."""
+    count, or payload's own refusal (an `Unmodelled`, propagated unchanged
+    by the caller) when payload refuses the phrase. The counter noun phrase
+    ('<count> [additional] <kind> counter(s)') is read by payload's counter
+    parser, the one count table and kind vocabulary; this only reshapes its
+    multiset."""
     r = _payload.parse_counters(items, (0, len(items)))
+    if r.unmodelled is not None:
+        return r.unmodelled
     spec = r.value
     if (spec is None or r.rest_spans or r.pending or spec.choice
             or _payload.WILDCARD in spec.kinds):
@@ -210,9 +214,11 @@ def _parse_modifiers(s: str, pos: int, zone: str, lemma: str, fields: dict):
             mm = _WITH_COUNTERS.match(s, p)
             if mm:
                 counters = _counters(mm.group("items"))
-                if counters is None:
-                    return pos, _unmodelled(Stage.AMOUNT, lemma,
-                                            "entry_counters")
+                if counters is None or isinstance(counters, Unmodelled):
+                    # payload's refusal propagates unchanged; a typed
+                    # counter phrase that is no entry count is this leaf's.
+                    return pos, _unmodelled(
+                        Stage.AMOUNT, lemma, counters or "entry_counters")
                 fields["entry_counters"] = counters
                 hit, key = mm, "entry_counters"
         if hit is None and zone == "library":
