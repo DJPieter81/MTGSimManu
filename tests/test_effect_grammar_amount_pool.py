@@ -50,6 +50,9 @@ _DIVIDED_BASE_RE = re.compile(r"\bdeals? (\S+(?: \S+)?) damage divided\b")
 _LOYALTY_X_RE = re.compile(r"^\[[+\-−]x\]")
 _X_WORD_RE = re.compile(r"\bx\b")
 _FRAMES = ("count", "scaler", "where_x", "leading")
+# The rest a typed count may never open with: the comparator of a
+# threshold ("6 or more damage").
+_COMPARATOR_REST_RE = re.compile(r"or (?:more|fewer|less|greater)\b")
 # A slot whose verb printed no count ("gain life equal to ...") is the
 # scaler's, not a count slot.
 _NO_COUNT_RE = re.compile(r"(?:cards?|life|damage)\b")
@@ -143,12 +146,14 @@ def _key(r):
 
 
 # Typed share per frame, measured 2026-10-01 on this branch's DB (22.7k
-# cards, 3226 distinct slots): count 1712/1850 (92.5%), scaler 701/961
-# (72.9%), where_x 210/298 (70.5%), leading 14/117 (12.0%); 2637/3226
-# (81.7%) overall, plus 4 "a number of" SCALED markers. The count refusals
+# cards, 3226 distinct slots): count 1692/1850 (91.5%), scaler 706/961
+# (73.5%), where_x 211/298 (70.8%), leading 14/117 (12.0%); 2623/3226
+# (81.3%) overall, plus 4 "a number of" SCALED markers. The count refusals
 # are the closed table working: "no_count" where the stand-in's verb has
 # no count ("discard another card", "draw ... ~: draw"), ordinals ("your
-# second card each turn"), an X no cost binds, "exactly", exponent X. The
+# second card each turn"), an X no cost binds, "exactly", exponent X, and
+# 20 thresholds ("6 or more damage", "one or more cards") that an earlier
+# cut typed as their first number. The
 # scaler and where_x refusals are almost all the quantity leaf's
 # UNMODELLED(QUANTITY) (filters it refuses, result amounts, references
 # outside its table, mana spent, colour-among counts) plus sums of two
@@ -192,6 +197,14 @@ def test_the_amount_leaf_types_or_refuses_every_pool_amount_slot_deterministical
         if r.value is not None:
             assert isinstance(r.value, Amount)
             hash(r.value)
+            if frame == "count" and r.rest_spans:
+                # A typed count is the whole count: a threshold ("6 or
+                # more") or a compound number word ("twenty-five") left
+                # behind in the rest means the value is wrong, not partial.
+                rest = host[slice(*r.rest_spans[0])]
+                glued = r.rest_spans[0][0] == r.span[1]
+                assert not (glued and rest.startswith("-")), (host, r)
+                assert not _COMPARATOR_REST_RE.match(rest), (host, r)
             typed[frame] += 1
             kinds[r.value.kind.name] += 1
         else:
@@ -311,6 +324,9 @@ _WITNESSES = (
      Amount(AmountKind.X_DEFINED, inner=_eq(
          QuantityKind.GREATEST, player="any", stat="power",
          filter=_CREATURES_YOU_CONTROL)), ""),
+    # A result amount named outright is THAT_MUCH bound to the result.
+    ("Wrath of the Skies", "equal to the amount of {e} paid this way",
+     "scaler", {}, Amount(AmountKind.THAT_MUCH, ref=Ref(RefKind.RESULT)), ""),
     # A16: no anaphor to the element -- the count of the counted verb.
     ("Seasoned Pyromancer",
      "for each nonland card discarded this way, create a 1/1 red elemental "
@@ -333,6 +349,13 @@ _REFUSED = (
      "for each token you control that entered this turn, create a token "
      "that's a copy of it", "leading", Stage.ITERATION,
      "amount.element_anaphor"),
+    # A threshold count is compared against, not counted.
+    ("Marauding Mako",
+     "one or more cards, put that many +1/+1 counters on ~", "count",
+     Stage.AMOUNT, "amount.comparison"),
+    ("Quantum Riddler",
+     "one or more cards, you draw that many cards plus one instead", "count",
+     Stage.AMOUNT, "amount.comparison"),
     # An X no cost binds is never zero (section 6).
     ("Chandra, Awakened Inferno", "x damage to target creature or planeswalker",
      "count", Stage.AMOUNT, "amount.x_unbound"),

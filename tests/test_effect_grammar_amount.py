@@ -231,6 +231,59 @@ def test_a_count_the_closed_table_lacks_is_unmodelled_amount(text, code):
     assert r.span == (0, len(text.strip()))
 
 
+@pytest.mark.parametrize("text, kw", [
+    ("6 or more damage", {}),
+    ("three or fewer cards", {}),
+    ("one or more cards", {}),
+    ("x or more cards", {"x_bound": True}),
+    ("2 or less", {}),
+    ("7 or greater", {}),
+    ("up to two or more cards", {}),
+])
+def test_a_threshold_count_is_no_amount(text, kw):
+    """"N or more" / "N or fewer" is a threshold a condition compares
+    against, not how many: the count is refused (one comparator family with
+    "exactly N"), never typed as N."""
+    r = _count(text, **kw)
+    assert r.value is None, r
+    assert r.unmodelled.stage is Stage.AMOUNT
+    assert r.unmodelled.detail == "amount.comparison"
+    assert r.span == (0, len(text))
+
+
+@pytest.mark.parametrize("text", [
+    "one, two, or three cards", "one or two cards", "1 or 2 damage",
+    "two, three, or four target creatures",
+])
+def test_a_choice_list_of_counts_is_no_single_amount(text):
+    """A printed list of counts to choose from is a choice, not its first
+    count: refused, never typed as the first number."""
+    r = _count(text)
+    assert r.value is None, r
+    assert r.unmodelled.detail == "amount.choice_list"
+
+
+@pytest.mark.parametrize("text, n", [
+    ("twenty-five cards", 25), ("twenty-one cards", 21),
+])
+def test_a_hyphenated_number_word_is_one_count(text, n):
+    """A compound number word is one count, never its first half."""
+    r = _count(text)
+    assert r.value == _lit(n), r
+    assert r.rest_text(text) == "cards"
+
+
+@pytest.mark.parametrize("text", [
+    "twenty-blorp cards", "thirty-two cards", "two-headed giants",
+])
+def test_a_number_word_glued_to_a_hyphen_is_no_count(text):
+    """A number word followed by a hyphen the table cannot read is never
+    truncated to the number word."""
+    r = _count(text)
+    assert r.value is None, r
+    assert r.unmodelled.detail.split(":")[0] == "amount.no_count"
+
+
 def test_mana_is_a_symbol_multiset_not_an_amount():
     """CR 106: '{2}{r}' is the payload leaf's symbol multiset; the amount
     leaf never reads it as a number."""
@@ -291,11 +344,51 @@ def test_equal_to_reads_its_operand_and_operators(text, outer, rest):
     assert r.rest_text(text) == rest
 
 
-def test_the_damage_dealt_this_way_is_that_much_in_one_encoding():
-    """'equal to the damage dealt this way' and 'that much' name the same
-    number: one encoding."""
-    a = _scaler("equal to the damage dealt this way").value
-    assert a == _count("that much life").value == _THAT
+_RESULT = Amount(AmountKind.THAT_MUCH, ref=Ref(RefKind.RESULT))
+
+
+@pytest.mark.parametrize("text, event, noun", [
+    ("equal to the damage dealt this way", "dealt", "damage"),
+    ("equal to the damage dealt to that creature this way", "dealt", "damage"),
+    ("equal to the life lost this way", "lost", "life"),
+    ("equal to the life gained this way", "gained", "life"),
+    ("equal to the damage prevented this way", "prevented", "damage"),
+    ("equal to the amount of {e} paid this way", "paid", "{e}"),
+    ("equal to the excess damage dealt this way", "dealt", "excess damage"),
+])
+def test_a_result_amount_is_that_much_bound_to_the_result_it_names(text, event, noun):
+    """A result amount named outright ("the damage dealt this way") is
+    THAT_MUCH bound to an earlier spec's result (Ref(RESULT)), and the event
+    it names is left in ``pending`` so the linker binds it to the spec that
+    produced it; a bare "that much" carries no such binding."""
+    r = _scaler(text)
+    assert r.value == _RESULT, r
+    assert ("result", event) in r.pending and ("result_of", noun) in r.pending
+    assert _count("that much life").value == _THAT != _RESULT
+
+
+def test_half_a_result_amount_is_half_of_the_same_result_encoding():
+    """One rule, one encoding: "half the damage dealt this way" halves the
+    same result amount "equal to the damage dealt this way" names."""
+    text = "half the damage dealt this way, rounded up"
+    r = _count(text)
+    assert r.value == Amount(AmountKind.HALF, inner=_RESULT, rounding="up"), r
+    assert ("result", "dealt") in r.pending
+    s = _scaler("equal to half the damage dealt this way, rounded down")
+    assert s.value == Amount(AmountKind.HALF, inner=_RESULT, rounding="down"), s
+
+
+@pytest.mark.parametrize("text", [
+    "equal to the damage", "equal to that damage", "equal to the life",
+])
+def test_a_named_amount_without_its_result_event_is_unmodelled(text):
+    """"the damage" with no "this way" is the triggering event's damage, not
+    an earlier spec's result; the leaf has no event binding, so it refuses
+    rather than collapse it into the result encoding."""
+    r = _scaler(text)
+    assert r.value is None
+    assert r.unmodelled.stage is Stage.AMOUNT
+    assert r.unmodelled.detail == "amount.result_event"
 
 
 def test_equal_to_a_quantity_keeps_its_references_for_the_linker():
@@ -415,12 +508,14 @@ def test_every_closed_detail_code_is_one_the_leaf_emits():
     emitted = set()
     for text in ("", "blorp cards", "your second card", "{2}", "2ˣ cards",
                  "exactly 1 life", "half of their library",
-                 "that much damage plus x", "x damage"):
+                 "that much damage plus x", "x damage", "6 or more damage",
+                 "one, two, or three cards"):
         emitted.add(_count(text).unmodelled.detail.split(".")[1].split(":")[0])
     for text, per in (("blorp", None),
                       ("equal to the number of creatures you control plus the "
                        "number of lands you control", None),
                       ("for each artifact you control", _X),
+                      ("equal to the damage", None),
                       ("equal to the number of artifacts you control", _lit(2)),
                       ("divided as you choose among any number of targets", None),
                       ("divided as its controller chooses among two creatures",

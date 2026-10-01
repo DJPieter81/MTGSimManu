@@ -16,8 +16,11 @@ and never a rewritten string.
 
 **Result.** A slot parser returns one `SlotResult`:
 
-* ``value`` XOR ``unmodelled`` on a parse; both None only for "no payload
-  here" or an A19 choice whose options are in ``alternatives``;
+* ``value`` XOR ``unmodelled`` on a parse; both None only in three
+  closed cases: "no payload here", an A19 choice whose options are in
+  ``alternatives``, or a deferred count -- a phrase holding no count of its
+  own because a trailing scaler holds it ("a number of cards equal to
+  ..."), flagged `SCALED`, with the phrase as ``span``;
 * ``span``: the consumed phrase on success; the WHOLE (whitespace-trimmed)
   slot on failure, so the census and the coverage invariant see the text
   the leaf did not consume;
@@ -65,7 +68,7 @@ from typing import Any, FrozenSet, Optional, Tuple
 from engine.effect_spec import Amount, Unmodelled
 
 __all__ = ["Span", "SlotResult", "unmodelled", "rest_spans_after",
-           "join_spans", "SELF_NOUNS", "CACHE_SIZE", "LEAF_EDGES",
+           "join_spans", "SELF_NOUNS", "CACHE_SIZE", "LEAF_EDGES", "SCALED",
            "clear_caches"]
 
 Span = Tuple[int, int]
@@ -74,6 +77,10 @@ Span = Tuple[int, int]
 SELF_NOUNS = ("creature", "artifact", "enchantment", "land", "planeswalker",
               "permanent", "battle", "spell", "card", "equipment", "aura",
               "vehicle", "token")
+
+# The deferred-count flag (see "Result"): the slot's count is a trailing
+# scaler's, so the slot holds neither a value nor a refusal.
+SCALED = "scaled"
 
 # One memo bound for every leaf cache: the grammar runs once at load and a
 # pool pass has near-zero hit rate, so a cache only needs to absorb repeats

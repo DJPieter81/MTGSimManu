@@ -193,6 +193,29 @@ def test_an_unmodelled_detail_is_leaf_dot_code_from_a_closed_list(call):
     assert m.group("code") in by_name[m.group("leaf")].DETAIL_CODES, u.detail
 
 
+def test_a_slot_with_neither_value_nor_refusal_is_one_of_the_declared_cases():
+    """The contract's both-None cases are closed: "no payload here", an A19
+    choice whose options are in ``alternatives``, or a deferred count -- a
+    phrase that holds no count of its own because a trailing scaler holds
+    it ("a number of cards equal to ..."), flagged with the contract's one
+    `SCALED` marker. A leaf never returns both-None any other way, so the
+    L4 spine's "value XOR unmodelled" check reads one rule."""
+    from engine.effect_grammar import sub
+    from engine.effect_grammar.sub import amount
+    assert amount.SCALED is sub.SCALED
+    assert "SCALED" in sub.__all__
+    assert "SCALED" in (sub.SlotResult.__doc__ or "") + sub.__doc__
+    host = "draw a number of cards equal to the number of creatures you control"
+    r = amount.parse_amount(host, (host.index("a number"), len(host)), lemma="draw")
+    assert r.value is None and r.unmodelled is None
+    assert sub.SCALED in r.flags and not r.alternatives
+    assert host[slice(*r.span)] == "a number of"
+    for text in ("3 damage", "blorp cards", "that many cards", "6 or more damage"):
+        r = amount.parse_amount(text, lemma="deal")
+        assert (r.value is None) != (r.unmodelled is None), (text, r)
+        assert sub.SCALED not in r.flags, text
+
+
 def test_a_delay_detail_is_a_bounded_code_not_the_printed_clause():
     from engine.effect_grammar.sub import duration
     text = "add {c}{c} at the beginning of your next main phase this turn"

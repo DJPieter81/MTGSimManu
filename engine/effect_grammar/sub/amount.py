@@ -29,9 +29,14 @@ lemma="")``, one `SlotResult`, host-absolute spans). Four slots:
 * EQUAL_TO -- "equal to <Q>": ``quantity`` from the quantity leaf;
 * FOR_EACH -- "for each <Q>": ``n`` is the per-unit count the verb printed
   (1 when none), ``quantity`` the counted quantity;
-* THAT_MUCH -- "that many", "that much", and a result amount named
-  outright ("the damage dealt this way"): one number, one encoding; the
-  linker binds it;
+* THAT_MUCH -- "that many", "that much": the linker binds it. A result
+  amount named outright ("the damage dealt this way", "the amount of {e}
+  paid this way") is THAT_MUCH bound to an earlier spec's result
+  (``ref=Ref(RESULT)``) with the event it names in ``pending`` --
+  ``("result", <verb>)`` and ``("result_of", <noun>)`` -- so the linker
+  binds it to the spec that produced it; "half <result amount>" is HALF of
+  the same encoding. "the damage" / "the life" with no "this way" names
+  no result (it is a triggering event's), so it is refused;
 * MULTIPLY -- "twice", "double that", "triple that", "<N> times";
   ``n`` the factor, ``inner`` the scaled amount;
 * HALF -- "half <amount>" with the printed ``rounding`` ("up" / "down");
@@ -46,8 +51,14 @@ lemma="")``, one `SlotResult`, host-absolute spans). Four slots:
   ``evenly`` and ``rounding`` when printed.
 
 "a number of" / "an amount of" hold no count of their own: the count is
-the trailing scaler's, so the slot is no amount (``value`` and
-``unmodelled`` both None) and carries `SCALED`.
+the trailing scaler's, so the slot is the contract's deferred count
+(``value`` and ``unmodelled`` both None, flag `SCALED`).
+
+A threshold ("6 or more", "x or fewer", like "exactly N") is compared
+against, not counted, and a printed list of counts to choose from ("one,
+two, or three") is a choice, not its first count: both are refused, never
+typed as their first number. A compound number word ("twenty-five") is one
+count; a number word glued to a hyphen the table cannot read is no count.
 
 Mana is a symbol multiset (the payload leaf's, CR 106), never an amount:
 a slot that opens with a mana symbol is refused. A quantity the quantity
@@ -66,10 +77,11 @@ import re
 from functools import lru_cache
 from typing import Optional, Tuple
 
-from engine.effect_grammar.sub import CACHE_SIZE, SlotResult, Span, unmodelled
+from engine.effect_grammar.sub import (CACHE_SIZE, SCALED, SlotResult, Span,
+                                       unmodelled)
 from engine.effect_grammar.sub import quantity as _Q
 from engine.effect_spec import (Amount, AmountKind, Quantity, QuantityKind,
-                                Stage, Unmodelled)
+                                Ref, RefKind, Stage, Unmodelled)
 from engine.target_solver import _NUMBER_WORDS
 
 __all__ = ["LEAF", "DETAIL_CODES", "ADDITIONAL", "SCALED", "NUMBER_WORDS",
@@ -81,21 +93,30 @@ DETAIL_CODES = frozenset({
     "empty", "no_count", "ordinal", "x_unbound", "mana_symbols", "exponent",
     "exactly", "operand", "operator", "sum", "scaler", "for_each_base",
     "equal_to_base", "divided_base", "divided_chooser", "where_x",
-    "for_each_comma", "element_anaphor"})
+    "for_each_comma", "element_anaphor", "comparison", "choice_list",
+    "result_event"})
 
 ADDITIONAL = "additional"   # flag: "an additional card" (one more)
-SCALED = "scaled"           # flag: "a number of" -- the scaler holds the count
+# SCALED (the contract's deferred-count flag): "a number of" -- the scaler
+# holds the count.
 
-# The target solver's number words (one table) extended through twenty,
-# the highest count word the pool prints.
+# The target solver's number words (one table) extended through twenty
+# and its hyphenated compounds ("twenty-five"), the highest count words the
+# pool prints.
 NUMBER_WORDS = dict(_NUMBER_WORDS, eleven=11, twelve=12, thirteen=13,
                     fourteen=14, fifteen=15, sixteen=16, seventeen=17,
                     eighteen=18, nineteen=19, twenty=20)
+NUMBER_WORDS.update({"twenty-" + w: 20 + n for w, n in _NUMBER_WORDS.items()
+                     if 1 <= n <= 9})
 _WORDS = sorted(NUMBER_WORDS, key=len, reverse=True)
 _NUM = r"(?:\d{1,3}(?:,\d{3})+|\d+|%s)" % "|".join(_WORDS)
+# Where a count word ends: no letter, digit or hyphen glued on, so
+# "twenty-blorp" is never "twenty".
+_END = r"(?![\w-])"
 
 _X = Amount(AmountKind.X, n=1)
 _THAT = Amount(AmountKind.THAT_MUCH)
+_RESULT = Amount(AmountKind.THAT_MUCH, ref=Ref(RefKind.RESULT))
 _FACTORS = {"twice": 2, "double": 2, "triple": 3}
 
 
@@ -156,10 +177,12 @@ def _rest_piece(body: str, pos: int, end: int, offset: int, out: list) -> None:
 # ── Operands through the quantity leaf ─────────────────────────────────
 
 _ROUNDING_RE = re.compile(r",? rounded (?P<r>up|down)\b")
-# A result amount named outright is "that much" (one number, one encoding).
+# A result amount named outright: THAT_MUCH bound to the result whose event
+# it names. Without "this way" it names no result (refused).
 _RESULT_AMOUNT_RE = re.compile(
-    r"(?:the |that )(?:amount of )?(?:damage|life)"
-    r"(?: (?:dealt|gained|lost|prevented)(?: [a-z~' ]+?)? this way)?")
+    r"(?:the |that )(?:total )?(?:amount of )?"
+    r"(?P<noun>excess damage|damage|life|\{e\})"
+    r"(?: (?P<ev>dealt|gained|lost|prevented|paid)(?: [a-z~' ]+?)? this way)?")
 
 
 _CLAUSE_COMMA_RE = re.compile(r", (?!rounded\b)")
@@ -204,6 +227,21 @@ def _quantity_operand(t: str, pos: int, end: int, source_left: bool):
             r.pending, r.flags, None)
 
 
+def _result_operand(t: str, pos: int):
+    """A result amount named outright at ``t[pos:]`` that closes the
+    operand: THAT_MUCH bound to the result, with the named event pending;
+    refused when it names no "this way" result. (None, pos, (), {}, None)
+    when the operand is no result amount -- the one encoding "equal to" and
+    "half" share."""
+    m = _RESULT_AMOUNT_RE.match(t, pos)
+    if m is None or m.end() != _operand_end(t, pos):
+        return None, pos, (), frozenset(), None
+    if m.group("ev") is None:
+        return None, pos, (), frozenset(), (Stage.AMOUNT, "result_event", "")
+    pending = (("result", m.group("ev")), ("result_of", m.group("noun")))
+    return _RESULT, m.end(), pending, frozenset(), None
+
+
 def _operand(t: str, pos: int, x, source_left: bool):
     """The operand of an expression at ``t[pos:]``: "that many", "that
     much", a named result amount, X, or a quantity. Returns (amount, end,
@@ -213,9 +251,9 @@ def _operand(t: str, pos: int, x, source_left: bool):
         if t.startswith(phrase, pos) and (pos + len(phrase) == len(t) or
                                           not t[pos + len(phrase)].isalpha()):
             return _THAT, pos + len(phrase), (), frozenset(), None
-    m = _RESULT_AMOUNT_RE.match(t, pos)
-    if m is not None and m.end() == end:
-        return _THAT, m.end(), (), frozenset(), None
+    r = _result_operand(t, pos)
+    if r[0] is not None or r[4] is not None:
+        return r
     if re.match(r"x\b", t[pos:]):
         if isinstance(x, tuple):
             return None, pos, (), frozenset(), x
@@ -232,7 +270,7 @@ def _x_value(x_bound: bool, x_defined: Optional[Amount]):
     return (Stage.AMOUNT, "x_unbound", "")
 
 
-_PLUS_RE = re.compile(r" (?P<op>plus|minus) (?P<n>%s)(?![\w])" % _NUM)
+_PLUS_RE = re.compile(r" (?P<op>plus|minus) (?P<n>%s)%s" % (_NUM, _END))
 _PLUS_ANY_RE = re.compile(r" (?:plus|minus) ")
 _LEAD_PLUS_RE = re.compile(r"(?P<n>%s) plus " % _NUM)
 _FACTOR_RE = re.compile(r"(?:(?P<w>twice)|(?P<n>%s) times) " % _NUM)
@@ -286,13 +324,17 @@ _HALF_LIFE_RE = re.compile(
     r"|target player's|target opponent's|each opponent's) life(?: total)?\b")
 _MULT_RE = re.compile(
     r"(?:(?P<w>twice|double|triple)|(?P<n>%s) times) "
-    r"(?P<op>that many|that much|that|x|%s)(?![\w])" % (_NUM, _NUM))
-_HALF_RE = re.compile(r"half (?P<op>that many|that much|that|x)(?![\w])")
-_UP_TO_RE = re.compile(r"up to (?P<op>that many|that much|x|%s)(?![\w])" % _NUM)
+    r"(?P<op>that many|that much|that|x|%s)%s" % (_NUM, _NUM, _END))
+_HALF_RE = re.compile(r"half (?P<op>that many|that much|that|x)%s" % _END)
+_UP_TO_RE = re.compile(r"up to (?P<op>that many|that much|x|%s)%s" % (_NUM, _END))
 _SIMPLE_RE = re.compile(
     r"(?P<p>any number of|any amount of|a number of|an amount of|that many"
     r"|that much|an additional|all|x|(?P<n>%s)(?: (?P<add>additional))?"
-    r"|an|a)(?!\w|,\d)" % _NUM)
+    r"|an|a)(?![\w-]|,\d)" % _NUM)
+# A threshold after a count ("6 or more", "x or fewer"), and a list of
+# counts to choose from ("one, two, or three", "one or two").
+_COMPARISON_RE = re.compile(r" or (?:more|fewer|less|greater)\b")
+_CHOICE_RE = re.compile(r"(?:,| or) (?:or )?%s%s" % (_NUM, _END))
 # The counted noun an operator may bracket ("cards" in "that many cards
 # plus one"): up to three words that are no clause boundary.
 _NOUN = (r"(?: (?!(?:to|and|or|then|for|equal|where|from|on|onto|into|at"
@@ -341,8 +383,10 @@ def _count_rel(t: str, x_bound: bool, x_defined: Optional[Amount]) -> _Rel:
                        rounding=r.group("r") if r else None)
         return value, None, ((0, r.end() if r else end),), pending, flags
     if t.startswith("half the "):
-        v, end, pending, flags, failure = _quantity_operand(
-            t, len("half the "), _operand_end(t, len("half the ")), False)
+        v, end, pending, flags, failure = _result_operand(t, len("half "))
+        if v is None and failure is None:
+            v, end, pending, flags, failure = _quantity_operand(
+                t, len("half the "), _operand_end(t, len("half the ")), False)
         if failure is not None:
             return None, failure, (), (), frozenset()
         r = _ROUNDING_RE.match(t, end)
@@ -395,6 +439,10 @@ def _count_rel(t: str, x_bound: bool, x_defined: Optional[Amount]) -> _Rel:
             value = Amount(AmountKind.LITERAL, n=_number(m.group("n")))
             if m.group("add"):
                 flags = frozenset({ADDITIONAL})
+    if _COMPARISON_RE.match(t, end):
+        return _fail("comparison")
+    if _CHOICE_RE.match(t, end):
+        return _fail("choice_list")
     pieces = [(0, end)]
     # An operator on the count the counted noun brackets.
     if value.kind is AmountKind.HALF:
