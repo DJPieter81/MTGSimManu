@@ -47,3 +47,64 @@ def test_parse_spans_places_requirements_where_parse_counted_them(card_db):
             if counts is not None:
                 assert (r.count_min, r.count_max) == counts, (t, r)
     assert out_of_order > 0     # the class the located parse exists for
+
+
+# ── Clause-level participants (L3/L4, E0 step 10-11) ───────────────────
+
+def _clause_specs(text, types=("instant",)):
+    from engine.effect_grammar import normalize as N
+    from engine.effect_grammar import patterns as PT
+    from engine.effect_grammar import structure as S
+    tc = frozenset(types)
+    facts = N.Facts(type_class=tc, is_spell=bool({"instant", "sorcery"} & tc),
+                    names=N.self_names("Some Card"))
+    out = []
+    for h in S.parse_face_structure(text, facts).hosts:
+        for fm in PT.match_host(h):
+            out.extend(fm.clauses)
+    return out
+
+
+def test_the_solvers_you_may_optional_window_survives_clause_level_parsing():
+    """The solver reads "you may" before a target as an optional
+    requirement (CR 601.2c "up to" / optional targeting); the clause the
+    target leaf hands it keeps that window, including a clause whose
+    "you may" subject is inherited."""
+    from engine.target_solver import parse_spans
+    (cm,) = _clause_specs("You may exile target creature.")
+    (req,) = [r for _, r, _ in cm.targets]
+    assert req.is_optional
+    assert req == parse_spans("you may exile target creature")[0][0]
+    assert cm.spec.optional
+
+
+def test_a_clause_needs_one_requirement_per_printed_target_word():
+    """F11: a slot whose printed target words outnumber the solver's
+    requirements is UNMODELLED(TARGET_COUNT), never a collapsed target."""
+    (cm,) = _clause_specs("Return target creature card from your graveyard "
+                          "and target artifact to your hand.")
+    assert cm.spec.verb.name == "UNMODELLED"
+    assert cm.spec.payload.stage.name == "TARGET_COUNT"
+
+
+def test_an_elided_subject_is_inherited_by_the_next_coordinated_clause_without_a_second_target():
+    """"Target player draws two cards and loses 2 life": one requirement;
+    the second clause's actor is the inherited subject, not a new target."""
+    a, b = _clause_specs("Target player draws two cards and loses 2 life.")
+    assert [s.spec.verb.name for s in (a, b)] == ["DRAW", "LOSE_LIFE"]
+    assert [role for role, _, _ in a.targets] == ["actor"]
+    assert b.targets == ()
+    assert ("actor", "inherited") in [(r, v) for r, v, _ in b.participants]
+
+
+def test_a_recipient_union_splits_into_simultaneous_damage_siblings():
+    """A17: "damage to each opponent and each planeswalker you don't
+    control" is two DAMAGE siblings sharing one simultaneity group and the
+    printed amount."""
+    a, b = _clause_specs("~ deals 4 damage to each opponent and each "
+                         "planeswalker you don't control.")
+    assert a.spec.verb.name == b.spec.verb.name == "DAMAGE"
+    assert a.spec.amount == b.spec.amount and a.spec.amount.n == 4
+    assert a.spec.group == b.spec.group is not None
+    assert b.spec.filter is not None and \
+        b.spec.filter.types == frozenset({"planeswalker"})

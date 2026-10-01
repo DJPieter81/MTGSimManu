@@ -239,6 +239,22 @@ LEAF_EDGES = {
     # land subtypes.
     "structure": frozenset({"normalize", "keywords", "lexicon", "duration",
                             "payload", "condition", "target", "filter"}),
+    # L2/L3, the frame and clause-split spine (not a leaf): connectives and
+    # the A13 verb test through the lexicon, conditions / unless-pays
+    # through condition, delays and durations through duration, for-each
+    # and where-X through amount, the A15 instead-of override through
+    # destination, and the absorbed riders through their owners (A8 cost
+    # rule: keywords; mana spend and cost deltas: payload).
+    # A coordinated clause's own subject is recognised by the participant
+    # and target leaves that read it (A13).
+    "clauses": frozenset({"lexicon", "keywords", "condition", "duration",
+                          "amount", "dest", "payload", "participant",
+                          "target"}),
+    # L4, the pattern cascade (not a leaf): L2/L3 frames, the lexicon's
+    # lemma, and every slot through the leaf that owns it.
+    "patterns": frozenset({"clauses", "lexicon", "amount", "dest",
+                           "duration", "filter", "participant", "payload",
+                           "target"}),
 }
 
 

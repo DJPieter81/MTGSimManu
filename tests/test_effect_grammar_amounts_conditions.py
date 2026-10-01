@@ -286,3 +286,80 @@ def test_this_combat_is_a_printed_duration_the_model_cannot_expire():
     m = parse_duration("that creature can't block this combat.")
     assert m.value is None and m.unmodelled.stage is Stage.DURATION
     assert m.unmodelled.detail == "duration.this_combat"
+
+
+# ── Clause-level amounts and riders (L2-L4, E0 step 10-11) ─────────────
+
+def _frames_and_specs(text, types=("sorcery",), keywords=()):
+    from engine.effect_grammar import clauses as CL
+    from engine.effect_grammar import normalize as N
+    from engine.effect_grammar import patterns as PT
+    from engine.effect_grammar import structure as S
+    from engine.effect_grammar.keywords import keywords702
+    tc = frozenset(types)
+    facts = N.Facts(type_class=tc, is_spell=bool({"instant", "sorcery"} & tc),
+                    keywords702=keywords702(keywords))
+    frames, specs = [], []
+    for h in S.parse_face_structure(text, facts).hosts:
+        frames.extend(CL.frame_host(h))
+        specs.extend(cm.spec for fm in PT.match_host(h) for cm in fm.clauses)
+    return frames, specs
+
+
+@pytest.mark.parametrize("text, stage", [
+    ("You gain life equal to the greatest number of creatures any opponent "
+     "controls.", Stage.QUANTITY),
+    ("Draw a card for each color among permanents you control.",
+     Stage.QUANTITY),
+])
+def test_an_uncountable_quantity_makes_the_clause_unmodelled_never_zero(text, stage):
+    _, specs = _frames_and_specs(text)
+    (s,) = specs
+    assert s.verb is Verb.UNMODELLED
+    assert s.payload.stage is stage
+    assert s.amount is None
+
+
+def test_the_flashback_cost_equal_to_mana_cost_sentence_is_the_granted_keywords_cost_rule():
+    """A8: the cost-rule sentence is absorbed as the cost parameter of the
+    granted flashback keyword, never an effect clause."""
+    from engine.effect_spec import KeywordSpec
+    frames, specs = _frames_and_specs(
+        "Each instant and sorcery card in your graveyard gains flashback "
+        "until end of turn. The flashback cost is equal to its mana cost.")
+    assert frames[-1].clauses == () or len(frames) == 1
+    riders = [v for f in frames for k, v in f.riders if k == "cost_rule"]
+    assert riders == [KeywordSpec("flashback", cost_rule="mana_cost")]
+    assert len(specs) == 1
+
+
+def test_a_leading_for_each_is_a_for_each_amount_on_the_counted_verb():
+    """A16: "For each <Q>, <counted VP>" with no anaphor to the element is
+    FOR_EACH(Q) on the counted verb."""
+    from engine.effect_spec import AmountKind
+    frames, specs = _frames_and_specs("For each opponent, create a 1/1 "
+                                      "black Rat creature token.")
+    (s,) = specs
+    assert s.verb is Verb.CREATE_TOKEN
+    assert s.amount.kind is AmountKind.FOR_EACH and s.amount.n == 1
+
+
+def test_unless_pays_is_an_unless_condition_with_the_printed_cost():
+    from engine.effect_spec import ConditionKind
+    frames, specs = _frames_and_specs(
+        "Counter target spell unless its controller pays {3}.",
+        types=("instant",))
+    (s,) = specs
+    assert s.verb is Verb.COUNTER
+    assert s.condition.kind is ConditionKind.UNLESS
+    assert s.condition.cost is not None
+
+
+def test_where_x_defines_the_amount_of_the_clause():
+    from engine.effect_spec import AmountKind
+    frames, specs = _frames_and_specs(
+        "~ deals X damage to any target, where X is the number of cards in "
+        "your hand.", types=("instant",))
+    (s,) = specs
+    assert s.verb is Verb.DAMAGE
+    assert s.amount.kind is AmountKind.X_DEFINED
