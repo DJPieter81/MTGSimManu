@@ -568,6 +568,23 @@ def test_a_cost_modifier_subject_outside_the_table_is_unmodelled(subject):
     assert r.value is None and r.unmodelled is not None, r
 
 
+@pytest.mark.parametrize("text", [
+    "equip costs you pay cost {1} less.",
+    "dash costs you pay cost {2} less.",
+    "unlock costs you pay cost {1} less.",
+    "plotting cards from your hand costs {2} less.",
+    "boast abilities you activate cost {1} more."])
+def test_a_cost_delta_naming_no_cast_or_activation_is_unmodelled_never_absent(text):
+    """CR 601.2f / 118.7: a reduction scoped to a keyword's cost or a
+    special action is not a spell or ability cost modifier the subject
+    table types. It is refused, so the clause never falls through to a PAY
+    or continuous reading, and it is never widened to every spell."""
+    r = parse_cost_modifier(text, (0, len(text)))
+    assert r is not None, text
+    assert r.value is None
+    assert r.unmodelled.detail == "payload.cost_delta_subject"
+
+
 def test_a_global_cost_modifier_names_spells_or_abilities():
     r = parse_cost_modifier(
         "the first instant spell you cast each turn costs {1} less to cast",

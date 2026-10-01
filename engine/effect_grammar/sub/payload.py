@@ -962,6 +962,13 @@ def parse_modification(entry: Any, host: str, span: Optional[Span] = None, *,
 _COST_MOD_RE = re.compile(
     r"(?P<subject>.+?) costs? (?P<amt>(?:%s)+) (?P<dir>less|more) to "
     r"(?P<act>activate|cast)\b" % _SYM)
+# A cost delta that names no cast or activation ("equip costs you pay cost
+# {1} less", "plotting cards from your hand costs {2} less"): a reduction
+# scoped to a keyword's cost or a special action (CR 601.2f, 118.7) the
+# subject table cannot type. It is refused, never read as a PAY or a
+# continuous clause and never widened to every spell.
+_COST_DELTA_RE = re.compile(
+    r"(?P<subject>.+?) costs? (?:%s)+ (?:less|more)(?![\w'])" % _SYM)
 
 
 # Closed subject table. A self subject is exactly ~ (L0 has rewritten
@@ -993,6 +1000,8 @@ def _cost_subject_scope(subject: str, act: str) -> Optional[str]:
 def _cost_modifier_rel(t: str) -> Optional[_Rel]:
     m = _COST_MOD_RE.match(t)
     if m is None:
+        if _COST_DELTA_RE.match(t):
+            return (None, _um("cost_delta_subject"), 0, None, (), ())
         return None
     subject = m.group("subject")
     scope = _cost_subject_scope(subject, m.group("act"))
