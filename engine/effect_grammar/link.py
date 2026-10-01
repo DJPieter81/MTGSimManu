@@ -356,8 +356,10 @@ def _mentions(node: _Node) -> List[_Mention]:
     elif isinstance(node.get("ref"), Ref) and \
             node.get("ref").kind is not RefKind.MEMBER:
         r = node.get("ref")
-        principal = _Mention(node, r, player=r.noun == "player",
-                             plural=None if r.part is RefPart.ALL else None)
+        # A bound reference's number is its antecedent's, which this
+        # mention does not carry: explicitly unknown, so it never blocks a
+        # later anaphor on number agreement.
+        principal = _Mention(node, r, player=r.noun == "player", plural=None)
     if principal is not None:
         if mover:
             principal = _Mention(node, Ref(RefKind.RESULT, node.seq),

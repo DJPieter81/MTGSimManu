@@ -694,6 +694,17 @@ def test_an_instead_clause_with_no_same_verb_antecedent_replaces_the_nearest_spe
     assert destroy.verb is Verb.DESTROY and destroy.replaces == (dmg.seq,)
 
 
+def test_one_instead_clause_replaces_every_simultaneous_sibling_of_a_split_group():
+    """Section 7 Links, A15: "exile target creature and target artifact" is
+    one simultaneous group of two siblings; an instead clause of that verb
+    replaces the whole group, never only its first or last sibling."""
+    h = _effect_host("Exile target creature and target artifact. If you "
+                     "control a Wizard, exile target enchantment instead.")
+    a, b, alt = h.specs
+    assert a.group == b.group is not None
+    assert alt.replaces == (a.seq, b.seq)
+
+
 def test_a_restated_instead_target_is_an_alternative_target_slot():
     """G9: an instead clause that prints a target of its own records the
     pair (replaced slot, its slot) in ``target_alts``."""
