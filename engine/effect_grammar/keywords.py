@@ -6,7 +6,8 @@ apostrophes unified, self-forms ``~``). The module follows the leaf
 contract of `engine.effect_grammar.sub` -- ``(host, span, *, lemma="")``,
 the shared `SlotResult`, host-absolute spans, ``keywords.<code>[:<param>]``
 details over the closed `DETAIL_CODES`, bounded caches and
-``clear_caches()`` -- but it is not a sub-grammar: L1 (structure) reads it
+``clear_caches()`` (reached through the package's
+`engine.effect_grammar.clear_caches`) -- but it is not a sub-grammar: L1 (structure) reads it
 to classify a paragraph, and the full grammar reads its expansions. It
 imports no sub-grammar leaf and no game state.
 

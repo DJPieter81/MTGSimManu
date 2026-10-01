@@ -47,8 +47,10 @@ L0 steps 1-5) and none re-normalises it:
 * quoted spans masked ``⟨qk⟩``; "named X" masked ``⟨nk⟩``.
 
 **Caches.** A leaf's memo caches are bounded (`CACHE_SIZE`) and every leaf
-exposes ``clear_caches()``; `clear_caches` here clears them all, and the
-load driver calls it once the grammar pass finishes.
+exposes ``clear_caches()``; `clear_caches` here clears the sub-grammars',
+and the package's `engine.effect_grammar.clear_caches` -- the one entry
+point the load driver calls once the grammar pass finishes -- clears these
+and every leaf beside them.
 
 **Dependency edges.** A leaf may import another only along `LEAF_EDGES`
 (pinned by a test): destination reads counter noun phrases through
@@ -155,8 +157,9 @@ def unmodelled(stage, lemma: str, leaf: str, code: str,
 
 
 def clear_caches() -> None:
-    """Clear every leaf's memo caches (the load driver calls this once the
-    grammar pass finishes)."""
+    """Clear every sub-grammar's memo caches, and L0 normalize's (called by
+    `engine.effect_grammar.clear_caches`, the load driver's one entry
+    point)."""
     from engine.effect_grammar import normalize
     from engine.effect_grammar.sub import (
         dest, duration, filter, payload, target,

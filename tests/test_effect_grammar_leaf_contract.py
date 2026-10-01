@@ -274,6 +274,40 @@ def test_every_leaf_cache_is_bounded_and_cleared_by_the_package():
     assert all(c.cache_info().currsize == 0 for c in caches)
 
 
+def _grammar_modules():
+    """Every module of the engine.effect_grammar package, sub-grammars and
+    the non-sub leaves (keywords, normalize, lexicon) alike."""
+    import importlib
+    import pkgutil
+
+    import engine.effect_grammar as pkg
+    out = [pkg]
+    for info in pkgutil.walk_packages(pkg.__path__, pkg.__name__ + "."):
+        out.append(importlib.import_module(info.name))
+    return out
+
+
+def test_one_package_entry_point_clears_every_grammar_cache(monkeypatch):
+    """The leaf contract: the load driver calls one clear_caches once the
+    grammar pass finishes, so every memo cache of every module under
+    engine/effect_grammar -- not only the sub-grammars -- is cleared by
+    engine.effect_grammar.clear_caches."""
+    import engine.effect_grammar as grammar
+    cleared, caches = set(), []
+    for mod in _grammar_modules():
+        for attr_name, attr in vars(mod).items():
+            if callable(attr) and hasattr(attr, "cache_info") and \
+                    getattr(attr, "__module__", "") == mod.__name__:
+                key = (mod.__name__, attr_name)
+                caches.append(key)
+                monkeypatch.setattr(attr, "cache_clear",
+                                    lambda key=key: cleared.add(key),
+                                    raising=False)
+    assert ("engine.effect_grammar.keywords", "_line_rel") in caches
+    grammar.clear_caches()
+    assert set(caches) - cleared == set()
+
+
 def _sub_imports(path: Path):
     out = set()
     for node in ast.walk(ast.parse(path.read_text())):
