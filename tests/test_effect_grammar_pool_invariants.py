@@ -428,13 +428,24 @@ def test_the_witness_fixture_names_only_pool_cards_and_every_defect_class(card_d
 
 # ── The pool ────────────────────────────────────────────────────────────
 
-# The eager whole-pool L0-L5 pass, measured 2026-10-01 on this container
-# (quiet 4-core box, card DB frozen out of the cyclic collector, caches
-# cleared, results kept): see the CPU test below. The design budget
-# (POOL_PARSE_CPU_BUDGET_S, 4.0 s) is the decided target of the LAZY
-# per-template path; the eager pass the tools run is pinned at a regression
-# ceiling over its measurement, so a regressing layer is named here.
-POOL_L0_L5_CEILING_SHARE = 6.0
+# Design section 12, decided in the L5 review (2026-10-01): the 4.0 s
+# POOL_PARSE_CPU_BUDGET_S stays the design budget the leaf and L0-L1 shares
+# are scaled from, and two budgets gate the whole grammar:
+#
+# * the EAGER whole-pool L0-L5 pass (`parse_pool`, the tools' path; games
+#   never run it) is revised to its measurement: 19.8 s process CPU on a
+#   quiet 4-core box (card DB frozen out of the collector, caches cleared,
+#   best of two), gated at 30 s -- about 1.5x, sized so a slower CI core
+#   still passes while a layer that regresses by half is named;
+# * the LAZY per-template path (`parse_template`, what a game calls through
+#   CardTemplate.effects) is gated over the cards a game can touch: every
+#   registered-deck card parsed cold, measured 0.30-0.39 s for 359
+#   templates (mean ~1 ms, max 4-6 ms), against 1.0 s total and 50 ms for
+#   any one template (single-template times are noisy: a collector pass
+#   can land in any one of them).
+POOL_L0_L5_EAGER_CPU_BUDGET_S = 30.0
+DECK_CARDS_LAZY_CPU_BUDGET_S = 1.0
+TEMPLATE_LAZY_CPU_MAX_S = 0.05
 
 # Typed share (non-UNMODELLED specs, sub-ability hosts included) by host
 # kind, measured 2026-10-01 over the whole pool after L5. A floor a few
@@ -480,8 +491,8 @@ def pool_effects(card_db):
     return effects, cpu
 
 
-# Measured 2026-10-01: ~35 s wall when first in the process (16 s DB load,
-# ~19 s for the eager L0-L5 pass and the walks below). 600 s bounds a hang
+# Measured 2026-10-01: ~36 s wall when first in the process (16 s DB load,
+# ~20 s for the eager L0-L5 pass and the walks below). 600 s bounds a hang
 # with room for a slower 2-core CI runner.
 @pytest.mark.timeout(600)
 def test_every_template_parses_without_exception_and_every_spec_satisfies_the_schema_invariants(card_db, pool_effects):
@@ -607,16 +618,51 @@ def test_the_typed_share_by_host_kind_holds_its_floor(pool_effects):
 @pytest.mark.timeout(600)
 def test_effect_parse_fits_the_load_budget(pool_effects):
     """Section 12: the whole-pool eager L0-L5 pass (the tools' path) in
-    process CPU, against a regression ceiling over its measurement. The
-    4.0 s POOL_PARSE_CPU_BUDGET_S is the per-template lazy path's budget
-    (the decided design: CardDatabase() load time is unchanged and a game
-    parses only the cards it touches), which the eager pass does not meet:
-    measured 2026-10-01 at ~17 s (L0-L4 ~9 s, L5 ~5 s of which ~2.5 s is
-    validate_spec over every spec, plus collector time)."""
-    from tests.test_effect_grammar_normalize_pool import \
-        POOL_PARSE_CPU_BUDGET_S
+    process CPU against its revised budget, POOL_L0_L5_EAGER_CPU_BUDGET_S
+    (measured 2026-10-01 at 19.8 s: L0-L4 about 9 s, L5 about 5 s of which
+    about half is validate_spec over every spec, plus collector time)."""
     _effects, cpu = pool_effects
-    assert cpu <= POOL_L0_L5_CEILING_SHARE * POOL_PARSE_CPU_BUDGET_S, cpu
+    assert cpu <= POOL_L0_L5_EAGER_CPU_BUDGET_S, cpu
+
+
+# Registered-deck templates (~360), each parsed cold. Measured 2026-10-01:
+# ~0.4 s body, plus ~16 s when first in the process to load the card DB.
+# 300 s bounds a hang on a slower 2-core runner.
+@pytest.mark.timeout(300)
+def test_the_lazy_per_template_parse_of_every_card_a_game_can_touch_fits_its_budget(card_db):
+    """Section 12: a game parses lazily, per template (CardTemplate.effects),
+    so `CardDatabase()` load time is unchanged. The cards a game can touch
+    are the registered decks' main and sideboards: parsed cold, in process
+    CPU, they fit DECK_CARDS_LAZY_CPU_BUDGET_S, and no one template takes
+    more than TEMPLATE_LAZY_CPU_MAX_S."""
+    import gc
+    import time
+
+    import engine.effect_grammar as grammar
+    from decks.modern_meta import MODERN_DECKS
+    names = sorted({c for d in MODERN_DECKS.values()
+                    for part in ("mainboard", "sideboard")
+                    for c in (d.get(part) or {})})
+    templates = [card_db.cards[n] for n in names if n in card_db.cards]
+    assert len(templates) >= 200, len(templates)
+    grammar.clear_caches()
+    gc.collect()
+    gc.freeze()
+    try:
+        per = []
+        t0 = time.process_time()
+        for t in templates:
+            a = time.process_time()
+            grammar.parse_template(t)
+            per.append(time.process_time() - a)
+        total = time.process_time() - t0
+    finally:
+        gc.unfreeze()
+        grammar.clear_caches()
+    assert total <= DECK_CARDS_LAZY_CPU_BUDGET_S, total
+    worst = max(per)
+    assert worst <= TEMPLATE_LAZY_CPU_MAX_S, (
+        worst, templates[per.index(worst)].name)
 
 
 # Two subprocesses, run in parallel, each loading the card DB (~16 s) and
