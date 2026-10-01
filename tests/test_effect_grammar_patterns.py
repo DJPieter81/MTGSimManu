@@ -234,3 +234,29 @@ def test_a_selection_from_among_named_cards_takes_no_default_zone():
     assert m.spec.verb is Verb.REVEAL
     assert m.spec.filter.zone != "hand"
     assert _m("reveal a creature card").spec.filter.zone == "hand"
+
+
+@pytest.mark.parametrize("text", [
+    "search target opponent's library for a creature card",
+    "search target player's library for a land card",
+])
+def test_a_counted_target_word_no_requirement_covers_refuses_the_clause(text):
+    """F11: each counted target word of a clause is one requirement of that
+    clause. A word another slot consumed without one (a searched library's
+    targeted owner) would drop the target silently, so the clause is
+    UNMODELLED(TARGET, uncovered_target)."""
+    cm = _m(text)
+    assert cm.spec.verb is Verb.UNMODELLED
+    assert cm.spec.payload.stage is Stage.TARGET
+    assert cm.spec.payload.detail.startswith("patterns.uncovered_target")
+
+
+def test_a_target_union_member_the_requirement_dropped_is_narrowing_residue():
+    """A21, M4: a union member or controller scope the solver dropped stays
+    on the still-typed spec as polarity-typed residue -- visible, gated by
+    the executor -- never lost."""
+    cm = _m("destroy target artifact, enchantment, or nonbasic land an "
+            "opponent controls")
+    assert cm.spec.verb is Verb.DESTROY
+    assert {"target.union:enchantment", "target.union:land",
+            "target.scope:opponent"} <= set(cm.spec.residue)

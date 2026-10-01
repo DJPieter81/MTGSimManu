@@ -1441,7 +1441,12 @@
     "specs": [
      {
       "verb": "DESTROY",
-      "target_slot": 0
+      "target_slot": 0,
+      "residue": [
+       "target.scope:opponent",
+       "target.union:enchantment",
+       "target.union:land"
+      ]
      },
      {
       "verb": "SEARCH",

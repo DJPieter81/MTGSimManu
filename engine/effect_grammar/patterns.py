@@ -102,6 +102,7 @@ DETAIL_CODES = frozenset({
     "subject",                # a subject on a verb that takes none
     "duration_unread",        # a printed duration the duration leaf does not read
     "player_control",         # control of a player (CR 722), not of an object
+    "uncovered_target",       # a counted target word no requirement of the clause covers
 })
 
 
@@ -710,6 +711,14 @@ def match_clause(text: str, host_kind: HostKind = HostKind.SPELL,
     if i >= 0:
         return _refused(_um(Stage.CLAUSE, m.lemma, "unconsumed", h[i:j]),
                         text, m.lemma)
+    # F11: each counted target word the clause prints is one requirement
+    # of the clause. A word some other slot consumed without one ("search
+    # target opponent's library") would drop the target silently.
+    covered = [s for _k, _req, s in m.targets]
+    for wa, wb in _target.target_words(h, (off, len(h))):
+        if not any(a <= wa and wb <= b for a, b in covered):
+            return _refused(_um(Stage.TARGET, m.lemma, "uncovered_target",
+                                h[wa:wb]), text, m.lemma)
     fields = {k: v for k, v in m.fields.items() if not k.startswith("_")}
     spec = EffectSpec(verb=m.entry.verb, flags=frozenset(m.flags),
                       residue=tuple(sorted(set(m.residue))),
