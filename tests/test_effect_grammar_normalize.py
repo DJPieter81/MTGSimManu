@@ -214,6 +214,10 @@ def test_a_name_is_rewritten_only_as_a_whole_word_on_printed_case():
     ("Gallant's Reverie", True, ("enchantment",), (), None),
     ("The Hollow Crown", True, ("artifact",), (), None),
     ("Kessa, Who Waits", True, ("land",), (), "Kessa"),
+    # The article gate reads derived heads only: a printed comma head that
+    # begins with "The" is the character's name.
+    ("The Vessel, Undying Shade", True, ("creature",), (), "The Vessel"),
+    ("The Lantern Warden", True, ("creature",), (), None),
 ])
 def test_the_legendary_short_name_is_gated(name, legendary, types, subtypes,
                                            short):
@@ -224,6 +228,119 @@ def test_the_legendary_short_name_is_gated(name, legendary, types, subtypes,
                    subtypes=subtypes).names
     shorts = [n for n in names if n not in (name, *name.split(" // "))]
     assert shorts == ([short] if short else [])
+
+
+def test_a_comma_head_short_name_led_by_an_article_is_a_self_form():
+    f = _facts("The Vessel, Undying Shade", legendary=True)
+    r = _norm("When The Vessel enters, exile target card. When The Vessel "
+              "dies, draw a card.", f)
+    assert r.text == ("when ~ enters, exile target card. when ~ dies, draw "
+                      "a card.")
+
+
+def test_a_short_name_never_ends_in_a_possessive():
+    """A first-word short name of a half that is not a character (an Aura
+    back face "<Name>'s <Noun>") is never the possessive word; the
+    character's own possessive reads '~'s'."""
+    f = _facts("Velka, Dawn Martyr // Velka's Rising Dawn", legendary=True)
+    assert not any(n.endswith("'s") or n.endswith("s'") for n in f.names)
+    assert "Velka" in f.names
+    r = _norm("Velka's power and toughness are each equal to 2.", f)
+    assert r.text == "~'s power and toughness are each equal to 2."
+
+
+@pytest.mark.parametrize("printed,expected", [
+    ("When Varek dies, create Varek, Frost Tongue, a legendary white "
+     "Equipment artifact token.",
+     "when ~ dies, create varek, frost tongue, a legendary white equipment "
+     "artifact token."),
+    ("Create Varek's Notebook, a legendary colorless artifact token.",
+     "create varek's notebook, a legendary colorless artifact token."),
+    ("Varek, Frost Tyrant deals 2 damage. Varek's power is 3.",
+     "~ deals 2 damage. ~'s power is 3."),
+])
+def test_a_short_name_followed_by_a_comma_or_possessive_proper_name_is_another_object(
+        printed, expected):
+    """'<short>, <Capitalised>' and "<short>'s <Capitalised>" begin another
+    object's proper name (a token, another card); the face's own full name
+    still wins longest-first."""
+    f = _facts("Varek, Frost Tyrant", legendary=True)
+    assert _norm(printed, f).text == expected
+
+
+def test_a_named_card_that_begins_with_the_faces_short_name_is_masked_whole():
+    """A short name is not taken exactly after 'named': the printed name
+    "<short>'s <Noun>" is another card and is masked whole."""
+    f = _facts("Quorra Revane", types=("planeswalker",), legendary=True)
+    assert "Quorra" in f.names
+    r = _norm("Search your library for a card named Quorra's Chosen, put it "
+              "onto the battlefield.", f)
+    assert r.names == ("Quorra's Chosen",)
+    assert r.text == ("search your library for a card named ⟨n0⟩, put it "
+                      "onto the battlefield.")
+
+
+@pytest.mark.parametrize("printed,masked,names,flagged", [
+    # A serial list (", and" / ", or") splits at every ", ".
+    ("Equipment named Blade of Orm, Shield of Orm, and Helm of Orm have "
+     "indestructible.",
+     "equipment named ⟨n0⟩, ⟨n1⟩, and ⟨n2⟩ have indestructible.",
+     ("Blade of Orm", "Shield of Orm", "Helm of Orm"), False),
+    # A bare "A and B" may be one card or two: the boundary is flagged.
+    ("an artifact named The Grindstone and Whetstone, exile them",
+     "an artifact named ⟨n0⟩ and ⟨n1⟩, exile them",
+     ("The Grindstone", "Whetstone"), True),
+    # "and" before a non-name word ends the list: nothing is ambiguous.
+    ("a card named Ember Cask and put it onto the battlefield",
+     "a card named ⟨n0⟩ and put it onto the battlefield", ("Ember Cask",),
+     False),
+    # A lowercase-led word with a capital after its apostrophe is a name word.
+    ("a creature named Fang, Fearless l'Cie, you may pay {3}.",
+     "a creature named ⟨n0⟩, you may pay {3}.", ("Fang, Fearless l'Cie",),
+     False),
+])
+def test_a_named_list_reads_serial_commas_and_flags_a_bare_and(
+        printed, masked, names, flagged):
+    r = _norm(printed)
+    assert r.text == masked
+    assert r.names == names
+    assert ("ambiguous_name" in r.flags) == flagged
+    assert r.flags <= _N().FLAGS
+
+
+def test_a_meld_result_is_not_a_self_name_of_its_meld_pieces():
+    """CR 712.4: the melded permanent is a different object; a meld card's
+    names are its own half only."""
+    N = _N()
+    names = N.self_names("Gisra, the Cracked Blade // Brisra, Voice of Dread",
+                         is_legendary=True, is_character=True, meld=True)
+    assert set(names) == {"Gisra, the Cracked Blade", "Gisra"}
+    f = N.Facts(names=names, type_class=frozenset({"creature"}),
+                is_legendary=True)
+    r = _norm("If you control Gisra, exile them, then meld them into Brisra, "
+              "Voice of Dread.", f)
+    assert r.text == ("if you control ~, exile them, then meld them into "
+                      "brisra, voice of dread.")
+
+
+@pytest.mark.parametrize("printed,expected,flagged", [
+    ("Put a counter on her. Double her power.",
+     "put a counter on ~. double ~'s power.", False),
+    ("Return her to her owner's hand.", "return ~ to ~'s owner's hand.", False),
+    ("Creatures blocking her get -1/-0.", "creatures blocking her get -1/-0.",
+     True),
+    ("Prevent all damage dealt to her plus 1.",
+     "prevent all damage dealt to her plus 1.", True),
+])
+def test_her_is_possessive_only_before_a_possessed_noun_and_is_refused_otherwise(
+        printed, expected, flagged):
+    """A9: 'her' reads possessive before a closed possessed noun, object at
+    a noun-phrase end (punctuation, a follower word); any other next word
+    leaves it unrewritten under the 'pronoun_case' flag."""
+    f = _facts("Ilsa, Bright Lance", legendary=True)
+    r = _norm(printed, f)
+    assert r.text == expected
+    assert ("pronoun_case" in r.flags) == flagged
 
 
 def test_a_short_name_that_begins_a_longer_proper_name_is_not_a_self_form():
@@ -391,7 +508,7 @@ def test_printed_span_inside_a_quote_indexes_that_quotes_text():
     text = 'Creatures you control have "{T}, Sacrifice this creature: Draw a card."'
     r = _norm(text)
     q = r.quotes[0]
-    assert N.printed_span(text, _facts(), (0, q.index(":")), quote=0) == (
+    assert N.printed_span(text, _facts(), (0, q.index(":")), host_index=0) == (
         "{T}, Sacrifice this creature")
     assert N.printed_span(text, _facts(), (r.text.index("⟨"), len(r.text))) == (
         '"{T}, Sacrifice this creature: Draw a card."')

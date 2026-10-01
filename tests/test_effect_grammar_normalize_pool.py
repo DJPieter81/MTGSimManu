@@ -11,15 +11,29 @@ below the measurement so a regression in a closed table shows here:
 * self-reference coverage: of the printed occurrences of a face's own
   names (outside "named X"), the share L0 rewrote to ``~``;
 * pronoun coverage: of the he/she/him/his/her(self) occurrences on
-  character faces (A9), the share rewritten;
+  character faces (A9), the share rewritten or refused (``pronoun_case``);
+* pronoun case: a test-side reference independent of L0's tables reads
+  every self-possessive "~'s" in the output, which must be followed by a
+  word that is not a noun-phrase end (punctuation, the text's end, a
+  preposition or conjunction), and every "~" before "owner's" / "power" /
+  "toughness" / "loyalty", which must have been "~'s" (a case error);
+* comma-head coverage: of the printed occurrences of a legendary face's
+  comma head ("<Head>, <Epithet>": the part before the comma, derived here
+  and not by `self_names`), outside "named X" and not beginning a longer
+  proper name, the share L0 rewrote to ``~``;
 * clean faces: the share with no L0 flag (an unbalanced quote or a quote
   nested past depth 3 is flagged, never guessed).
 
 Measured 2026-10-01 on this branch's DB (22.7k cards, 23.2k faces): 856
 quotes (8 nested), 244 named masks, 8482 reminders; self-reference
-coverage 0.998 (the residue is lexicon-word names printed lowercase, which
+coverage 0.9965 (the residue is lexicon-word names printed lowercase, which
 are rightly not self-forms, and ability names that begin with the short
-name); pronoun coverage 1.000 (137 of 137); clean faces 1.000.
+name); comma-head coverage 0.9972 (4 of 1427 left, all ability-word or
+keyword-action labels such as "<Head> Beam -"; the pre-fix L0 left 14,
+the "The <Word>," heads among them); pronoun coverage 1.000 (137 of 137,
+0 refused) with 0 case errors (the pre-fix L0 had 1: a possessive
+short name that swallowed "'s"); clean faces 0.9997 (8 bare "named A and
+B" lists flagged ``ambiguous_name``).
 
 The registered-deck witnesses at the end pin the exact L0 reading of
 printed text from decks/modern_meta.py cards (A9, A10, A40, A4 witness
@@ -40,10 +54,23 @@ import pytest
 # a fall below them is a closed-table regression, not noise.
 SELF_REF_FLOOR = 0.97
 PRONOUN_FLOOR = 0.97
+COMMA_HEAD_FLOOR = 0.97
 CLEAN_FLOOR = 0.995
 
+# A self-form whose case is wrong: a possessive at a noun-phrase end, or
+# the bare form before a possessed noun.
+_CASE_ERROR_RE = re.compile(
+    r"~'s(?:$|[.,;:)\n]| (?:to|into|onto|from|and|or|with|until|at|as|in|"
+    r"under|then|if|unless|for|by|get|gets|is|are|has|have)\b)"
+    r"|~ (?:owner's|power|toughness|loyalty)\b")
 _PRONOUN_RE = re.compile(r"(?<![\w'-])(?:he|she|him|his|her|himself|herself|"
                          r"he's|she's)(?![\w'-])", re.I)
+
+
+# The meld layout fact (CR 712.4) is not on CardTemplate yet; until the
+# card_database Facts builder reads MTGJSON `layout`, a two-half name whose
+# face text melds "them" stands in for it.
+_MELD_RE = re.compile(r"\bmeld them into\b")
 
 
 def _faces(db):
@@ -64,7 +91,9 @@ def _faces(db):
             facts = N.Facts(
                 names=N.self_names(t.name, is_legendary=legendary,
                                    is_character=character,
-                                   subtypes=tuple(subs) if "creature" in tc else ()),
+                                   subtypes=tuple(subs) if "creature" in tc else (),
+                                   meld=" // " in t.name
+                                   and bool(_MELD_RE.search(text))),
                 type_class=tc,
                 is_spell=bool({"instant", "sorcery"} & tc),
                 is_legendary=legendary,
@@ -135,8 +164,27 @@ def _run(faces):
                                      "creature" in facts.type_class):
             stripped = strip_reminder_text(text)
             counts["pronoun_printed"] += len(_PRONOUN_RE.findall(stripped))
-            counts["pronoun_left"] += sum(len(_PRONOUN_RE.findall(s))
-                                          for s in (r.text, *r.quotes))
+            refused = sum(len(_PRONOUN_RE.findall(s))
+                          for s in (r.text, *r.quotes))
+            if "pronoun_case" not in r.flags:
+                counts["pronoun_left"] += refused
+            else:
+                counts["pronoun_refused"] += refused
+            for s in (r.text, *r.quotes):
+                counts["pronoun_case_error"] += len(_CASE_ERROR_RE.findall(s))
+
+        # Comma-head coverage, independent of self_names.
+        if facts.is_legendary:
+            heads = {h.split(", ", 1)[0] for h in t.name.split(" // ")
+                     if ", " in h}
+            plain = strip_reminder_text(masked)
+            for h in heads:
+                counts["comma_head_printed"] += len(re.findall(
+                    r"(?<![\w-])%s(?![\w-])(?!(?:,| the| of|'s) [A-Z])"
+                    % re.escape(h), plain))
+                counts["comma_head_left"] += sum(len(re.findall(
+                    r"(?<![\w~-])%s(?![\w-])(?!(?:,| the| of|'s) )"
+                    % re.escape(h.lower()), s)) for s in (r.text, *r.quotes))
 
         # printed_span maps the whole normalised text onto the printed
         # text from its first to its last surviving character.
@@ -167,18 +215,23 @@ def test_l0_normalises_every_pool_face_deterministically_within_its_floors(faces
         gc.unfreeze()
 
     self_cov = 1 - counts["self_left"] / max(1, counts["self_printed"])
+    head_cov = 1 - counts["comma_head_left"] / max(
+        1, counts["comma_head_printed"])
     pron_cov = 1 - counts["pronoun_left"] / max(1, counts["pronoun_printed"])
     clean = 1 - counts["flagged"] / counts["faces"]
     print("\nL0 pool report (%.2f s CPU incl. checks)" % elapsed)
     for k in sorted(counts):
         print("  %-22s %d" % (k, counts[k]))
     print("  self-reference coverage %.4f" % self_cov)
+    print("  comma-head coverage     %.4f" % head_cov)
     print("  pronoun coverage        %.4f" % pron_cov)
     print("  clean faces             %.4f" % clean)
     print("  'this <word>' left (not a SELF_NOUN):",
           other_this.most_common(12))
     assert self_cov >= SELF_REF_FLOOR
+    assert head_cov >= COMMA_HEAD_FLOOR
     assert pron_cov >= PRONOUN_FLOOR
+    assert counts["pronoun_case_error"] == 0
     assert clean >= CLEAN_FLOOR
     assert N.normalize.cache_info().currsize == 0
 

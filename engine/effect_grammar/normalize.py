@@ -16,15 +16,21 @@ run in this order:
    there is data (a card to search for, a token's name), never a
    self-reference. A name is a run of capitalised words joined by spaces,
    hyphens, a comma before a capitalised word, or the lowercase name
-   particles in `_NAME_PARTICLES`; ``or`` / ``and`` / ``and/or`` before
-   another capitalised run starts a second name.
+   particles in `_NAME_PARTICLES` (an elided "l'Cie" word is a name word);
+   ``or`` / ``and`` / ``and/or`` before another capitalised run starts a
+   second name. In a serial list (", and" / ", or") every ", " before a
+   capital starts a new name; a bare "A and B" (one card or two) is
+   flagged ``ambiguous_name``. The face's own full and face names are
+   taken exactly; its short name is not (it may begin another card's
+   name, "<short>'s <Noun>").
 3. **Self-forms** become ``~``, longest first (steps 2 and 3 read the same
    text; a self-form inside a masked name is dropped):
 
    * the face's names (`Facts.names`: the full name, the face names and the
      gated legendary short name, see `self_names`), word-bounded on printed
      case. A short name that begins a longer proper name ("<short> the
-     <Word>") is a different object and stays. A one-word name that reads
+     <Word>", "<short>, <Word>", "<short>'s <Word>") is a different object
+     and stays. A one-word name that reads
      as an imperative verb at clause start (it takes an object noun phrase,
      `_OBJECT_NP_START`) is that verb and stays there;
    * "this <noun>" for the object nouns in `SELF_NOUNS` ("this ability"
@@ -32,8 +38,10 @@ run in this order:
    * on planeswalker and legendary-creature faces (A9, M1), the
      self-pronouns by grammatical case: subject he/she and object
      him/her/himself/herself -> ``~``; possessive his/her -> ``~'s``;
-     he's/she's -> ``~ is``. "her" is possessive unless the next word ends
-     its noun phrase (`_OBJECT_FOLLOWERS`).
+     he's/she's -> ``~ is``. "her" is possessive before a closed possessed
+     noun (`_POSSESSED_NOUNS`), the object at punctuation, the text's end
+     or a word that ends its noun phrase (`_OBJECT_FOLLOWERS`); before any
+     other word it is left and flagged ``pronoun_case``.
 4. **Quotes.** Each double-quoted span is masked ``⟨qk⟩`` (quote marks
    included). Inside it, a single quote opens a nested quote only right
    after with/gains/gain/has/have (or "' and " after a nested quote that
@@ -49,9 +57,10 @@ run in this order:
 
 The output is a `Normalized`: the face text, the quote table (each quote's
 own normalised text, nested quotes masked inside it), the name table, the
-recorded reminders, and closed `FLAGS` for what L0 refused (an unbalanced
-quote, a quote nested past `QUOTE_DEPTH`): those spans are left unmasked,
-never guessed.
+recorded reminders, and closed `FLAGS` for what L0 refused or could not
+decide (an unbalanced quote or a quote nested past `QUOTE_DEPTH`, left
+unmasked; a pronoun whose case is open, left unrewritten; a name-list
+boundary that may be one card or two).
 
 **Offset map.** Every step keeps breakpoints ``(normalised offset, printed
 span)`` for the length of one call; the map is never stored. `printed_span`
@@ -79,6 +88,8 @@ SELF = "~"
 FLAGS = frozenset({
     "unbalanced_quote",     # a double or nested single quote never closes
     "quote_depth",          # a quote nested past QUOTE_DEPTH
+    "ambiguous_name",       # "named A and B": one card or two (step 2)
+    "pronoun_case",         # "her" whose case the next word does not fix
 })
 # A10: a double-quoted span (depth 1) may hold single-quoted abilities
 # (depth 2), which may hold their own (depth 3).
@@ -127,11 +138,13 @@ class Normalized:
 _ARTICLES = frozenset({"The", "A", "An"})
 # A character's epithet starts at its first " the " / " of ".
 _EPITHET_RE = re.compile(r"(.+?) (?:the|of) ")
+_POSSESSIVE_ENDS = ("'s", "s'", "’s", "s’")
 
 
 def _short_name(face: str, is_character: bool,
                 subtypes: Sequence[str]) -> Optional[str]:
-    if ", " in face:
+    comma = ", " in face
+    if comma:
         head = face.split(",", 1)[0]
     elif is_character:
         m = _EPITHET_RE.match(face)
@@ -145,29 +158,40 @@ def _short_name(face: str, is_character: bool,
     else:
         return None
     first = head.split()[0] if head.split() else ""
-    if not head or head == face or first in _ARTICLES \
-            or not first[:1].isupper():
+    # The article gate reads derived heads only: a printed comma head led by
+    # "The" is the character's name. A possessive word is never a name.
+    if not head or head == face or (not comma and first in _ARTICLES) \
+            or not first[:1].isupper() or head.endswith(_POSSESSIVE_ENDS):
         return None
-    if ", " not in face and head.lower() in {s.lower() for s in subtypes}:
+    if not comma and head.lower() in {s.lower() for s in subtypes}:
         return None         # "<Subtype> <Epithet>": the word is the type
     return head
 
 
 def self_names(name: str, face_name: str = "", *, is_legendary: bool = False,
-               is_character: bool = False,
-               subtypes: Sequence[str] = ()) -> Tuple[str, ...]:
+               is_character: bool = False, subtypes: Sequence[str] = (),
+               meld: bool = False) -> Tuple[str, ...]:
     """`Facts.names` for a face: the full name, the face names (both halves
     of "A // B") and, on a legendary face, the short name of each half: the
     part before its comma; on a character face (creature or planeswalker)
     without a comma, the part before " the " / " of ", else the first word.
     A short name is never an article, and a comma-less one is never one of
     the face's creature subtypes (`subtypes`: pass a creature face's
-    subtypes; a planeswalker's subtype is its character name). Longest
+    subtypes; a planeswalker's subtype is its character name). A short name
+    never ends in a possessive ("<Name>'s <Noun>" is not a character).
+
+    `meld` is the card's layout fact: a meld card's "A // B" second half is
+    the melded permanent, a different object (CR 712.4), so only the face's
+    own half (`face_name`, else the first half) is a self-name. Longest
     first."""
     halves = [h for h in name.split(" // ") if h]
-    names = {name, face_name, *halves}
+    if meld:
+        halves = [face_name or halves[0]] if halves else []
+        names = set(halves)
+    else:
+        names = {name, face_name, *halves}
     if is_legendary:
-        for h in {face_name, *halves} - {""}:
+        for h in ({*halves} if meld else {face_name, *halves}) - {""}:
             s = _short_name(h, is_character, subtypes)
             if s:
                 names.add(s)
@@ -333,8 +357,13 @@ _NAMED_RE = re.compile(r"(?<![\w-])named ")
 _NAME_LIST_RE = re.compile(r",? (?:and/or|and|or) ")
 
 
+# A lowercase-led name word with a capital after its elision ("l'Cie").
+_ELIDED_NAME_WORD_RE = re.compile(r"[a-z]{1,2}'[A-Z]")
+
+
 def _is_cap(word: str) -> bool:
-    return word[:1].isupper() or word[:1].isdigit()
+    return (word[:1].isupper() or word[:1].isdigit()
+            or _ELIDED_NAME_WORD_RE.match(word) is not None)
 
 
 def _name_end(text: str, pos: int) -> int:
@@ -366,30 +395,55 @@ def _name_end(text: str, pos: int) -> int:
     return end
 
 
-def _named_repls(text: str, own: Sequence[str]
+_SERIAL_SPLIT_RE = re.compile(r", (?=[A-Z0-9])")
+
+
+def _named_repls(text: str, own: Sequence[str], flags: set
                  ) -> Tuple[List[Tuple[int, int, str]], List[str]]:
-    """Step 2 replacements and the printed names. A name of the face's own
-    (`own`, longest first) printed there is taken exactly, so a cost list
-    after it ("named <Own Name>, Sacrifice ...") is not read into it."""
+    """Step 2 replacements and the printed names. A full or face name of the
+    face's own (`own`, longest first; never a short name, which may begin
+    another card's name) printed there and not followed by a possessive is
+    taken exactly, so a cost list after it ("named <Own Name>, Sacrifice
+    ...") is not read into it. In a serial list (one that continues with
+    ", and" / ", or"), every ", " before a capital starts a new name. A bare
+    "A and B" may be one card or two: it reads as two and is flagged
+    ``ambiguous_name``."""
     repls, names = [], []
-    k = 0
     if "named " not in text:
         return repls, names
+    own = [n for n in own if n and not _is_short(n, own)]
     for m in _NAMED_RE.finditer(text):
         pos = m.end()
+        runs = []           # (start, end, taken exactly)
+        serial = False
+        join = ""
         while True:
-            end = next((pos + len(n) for n in own if n and text.startswith(n, pos)
-                        and _bounded(text, pos, pos + len(n))), None) \
-                or _name_end(text, pos)
+            end = next((pos + len(n) for n in own if text.startswith(n, pos)
+                        and _bounded(text, pos, pos + len(n))
+                        and not text.startswith("'", pos + len(n))), None)
+            exact = end is not None
+            if not exact:
+                end = _name_end(text, pos)
             if end == pos:
                 break
-            repls.append((pos, end, "⟨n%d⟩" % k))
-            names.append(text[pos:end])
-            k += 1
+            if join.startswith(","):
+                serial = True
+            elif join == " and ":
+                flags.add("ambiguous_name")
+            runs.append((pos, end, exact))
             lm = _NAME_LIST_RE.match(text, end)
             if not lm:
                 break
+            join = lm.group()
             pos = lm.end()
+        for a, b, exact in runs:
+            cuts = [a]
+            if serial and not exact:
+                cuts += [x.end() for x in _SERIAL_SPLIT_RE.finditer(text, a, b)]
+            ends = [c - 2 for c in cuts[1:]] + [b]
+            for x, y in zip(cuts, ends):
+                repls.append((x, y, "⟨n%d⟩" % len(names)))
+                names.append(text[x:y])
     return repls, names
 
 
@@ -406,6 +460,12 @@ _PRONOUN_RE = re.compile(
 _PRONOUN_FORM = {"he's": SELF + " is", "she's": SELF + " is",
                  "himself": SELF, "herself": SELF, "him": SELF, "he": SELF,
                  "she": SELF, "his": SELF + "'s"}
+# Nouns "her" possesses on character faces (closed; "her" before any other
+# word that is not an object follower is refused, `pronoun_case`).
+_POSSESSED_NOUNS = frozenset({
+    "owner", "controller", "power", "toughness", "mana", "loyalty", "face",
+    "morph", "sneak", "base", "own", "name", "abilities", "ability", "hand",
+    "library", "graveyard", "color", "colors", "counters", "life"})
 # Words that end the noun phrase after "her": "her" there is the object.
 _OBJECT_FOLLOWERS = frozenset({
     "to", "into", "onto", "on", "from", "and", "or", "with", "until", "at",
@@ -418,8 +478,10 @@ _OBJECT_NP_START = frozenset({
     "target", "a", "an", "all", "each", "another", "any", "up", "x", "one",
     "two", "three", "that", "those", "it", "them", "half", "your", "their",
     "~"})
-# A short name followed by this begins a longer proper name.
-_LONGER_NAME_RE = re.compile(r"(?: (?:the|of))* [A-Z]")
+# A short name followed by this begins a longer proper name: "<short> the
+# <Word>", "<short>, <Word>" (a token or another card; the face's own full
+# name is a longer candidate and wins), "<short>'s <Word>".
+_LONGER_NAME_RE = re.compile(r"(?:(?: (?:the|of))* |, |'s )[A-Z]")
 _CLAUSE_OPEN = frozenset("\n.:;•—\"'")
 
 
@@ -449,7 +511,8 @@ def _is_short(n: str, names: Sequence[str]) -> bool:
                for o in names)
 
 
-def _self_repls(text: str, facts: Facts) -> List[Tuple[int, int, str]]:
+def _self_repls(text: str, facts: Facts,
+                flags: set) -> List[Tuple[int, int, str]]:
     cands: List[Tuple[int, int, str]] = []
     for n in facts.names:
         i = text.find(n) if n else -1
@@ -474,8 +537,14 @@ def _self_repls(text: str, facts: Facts) -> List[Tuple[int, int, str]]:
             w = m.group("w").lower()
             if w == "her":
                 nxt = _NEXT_WORD_RE.match(low, m.end())
-                form = (SELF + "'s" if nxt and nxt.group(1)
-                        not in _OBJECT_FOLLOWERS else SELF)
+                word = nxt.group(1) if nxt else ""
+                if word in _POSSESSED_NOUNS:
+                    form = SELF + "'s"
+                elif not word or word in _OBJECT_FOLLOWERS:
+                    form = SELF
+                else:
+                    flags.add("pronoun_case")
+                    continue
             else:
                 form = _PRONOUN_FORM[w]
             cands.append((m.start(), m.end(), form))
@@ -620,8 +689,8 @@ def _run(text: str, facts: Facts) -> _Result:
         joined = _join(segs)
     # 2. named <Name> and 3. self-forms, over the same text: a self-form
     # candidate inside a masked name is dropped (the name is data).
-    repls, names = _named_repls(joined, facts.names)
-    selfs = _self_repls(joined, facts)
+    repls, names = _named_repls(joined, facts.names, flags)
+    selfs = _self_repls(joined, facts, flags)
     if repls and selfs:
         selfs = [c for c in selfs
                  if not any(a < c[1] and c[0] < b for a, b, _ in repls)]
@@ -692,12 +761,19 @@ def normalize(text: str, facts: Facts = Facts()) -> Normalized:
 
 
 def printed_span(text: str, facts: Facts, span: Span, *,
-                 quote: int = -1) -> str:
-    """The printed text behind normalised `span` of the face text (or of
-    quote `quote`'s text). The offset map is recomputed for this call and
-    dropped (A40); a span that cuts a self-form or a mask widens to it."""
+                 host_index: int = -1) -> str:
+    """The printed text behind normalised `span` of one face's L0 host:
+    the face text (`host_index` -1) or quote k's text (`host_index` k, the
+    `Reminder.host` numbering). The offset map is recomputed for this call
+    and dropped (A40); a span that cuts a self-form or a mask widens to it.
+
+    This is the L0 primitive over ONE face's printed text. The design's
+    package entry point ``effect_grammar.printed_span(oracle, facts, face,
+    host_index, span)`` selects the face's printed text from the card's
+    oracle and delegates here; it lands with the face splitter, so the A40
+    view (E0 step 14) has this one owner of the offset map."""
     r = _run(text or "", facts)
-    segs = r.segs if quote < 0 else r.quote_segs[quote]
+    segs = r.segs if host_index < 0 else r.quote_segs[host_index]
     m = _Map(segs)
     a, b = span
     return (text or "")[m.start(a):m.end(b)]
