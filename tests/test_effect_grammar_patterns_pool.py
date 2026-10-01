@@ -27,12 +27,18 @@ detail) is printed for ``pytest -s``.
 
 Measured 2026-10-01 on this branch's DB (23,204 distinct faces, 42,663
 hosts and modes, 41.9k clause specs; quiet 4-core box, caches cleared,
-card DB frozen out of the collector): 76.8% of clauses typed. Refusals by
+card DB frozen out of the collector): 76.8% of clauses typed (76.6% after
+the L2-L4 review: "this way" tests on an object and "would" replacements
+are refused, recipient-less instead upgrades and where-X followers are
+typed). Refusals by
 stage: CLAUSE 1.9k (mostly the payload leaf's unknown continuous
 predicates and "no row" verbs such as attach), FILTER 1.6k, REFERENCE 1.3k
 (library positions: "the top card of your library"), NO_LEMMA 1.2k,
 TARGET 1.1k, CONDITION 0.8k, AMOUNT 0.8k, RECOGNIZED_UNSUPPORTED 0.5k.
-L2-L4 CPU: 4.5-4.6 s with `patterns.CLAUSE_CACHE_SIZE` (4096 clauses,
+L2-L4 CPU: 4.5-4.6 s at the stage-3 commit; 5.1 s for that same
+commit and 5.3 s after the review fixes, measured back to back on
+2026-10-01 (the review's participant-leaf subject checks cost ~0.15 s),
+with `patterns.CLAUSE_CACHE_SIZE` (4096 clauses,
 7-8 MB after a pool pass; unbounded the memo held 25 MB for no measurable
 CPU gain). L2/L3 alone are ~1.3 s; the rest is L4, mostly leaf work.
 
@@ -42,7 +48,7 @@ decision keeps `CardTemplate.effects` lazy, so `CardDatabase()` load time
 does not carry it; the eager whole-pool budget (and its fallback, the
 on-disk cache) is decided with the step-13/22 budget test. This pass is
 pinned at its own regression ceiling, `PATTERNS_SHARE_OF_BUDGET` of the
-budget, about 1.75x the measurement, so a regressing L2-L4 is named here.
+budget, about 1.3x the measurement, so a regressing L2-L4 is named here.
 """
 from __future__ import annotations
 
@@ -53,8 +59,10 @@ from collections import Counter
 import pytest
 
 # L2-L4 pass ceiling as a share of POOL_PARSE_CPU_BUDGET_S (see the module
-# docstring: measured ~4.6 s, ceiling 8.0 s).
-PATTERNS_SHARE_OF_BUDGET = 2.0
+# docstring: measured 5.1-5.3 s on 2026-10-01 after the L2-L4 review, so
+# the 6.8 s ceiling is ~1.3x the measurement and a regression is named
+# here, not absorbed by headroom).
+PATTERNS_SHARE_OF_BUDGET = 1.7
 # The clause memo after a pool pass, as a share of POOL_PARSE_MEMO_BUDGET_MB
 # (measured 7-8 MB at CLAUSE_CACHE_SIZE).
 PATTERNS_MEMO_SHARE_OF_BUDGET = 0.3
