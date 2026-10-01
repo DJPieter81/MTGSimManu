@@ -222,6 +222,14 @@ LEAF_EDGES = {
     # spent") through payload's PAY payload (A31).
     "condition": frozenset({"amount", "filter", "participant", "payload",
                             "quantity"}),
+    # L1, the structure spine (not a leaf): it reads L0 through normalize,
+    # keyword lines and loyalty costs through keywords / lexicon, the A5
+    # delay through duration, A8 cost deltas and the A6 ADD_MANA test
+    # through payload, intervening-ifs and alternative-cost conditions
+    # through condition, and the A6 no-target test through target's F11
+    # counted target words.
+    "structure": frozenset({"normalize", "keywords", "lexicon", "duration",
+                            "payload", "condition", "target"}),
 }
 
 

@@ -75,13 +75,14 @@ import re
 from bisect import bisect_right
 from dataclasses import dataclass
 from functools import lru_cache
-from typing import FrozenSet, List, NamedTuple, Optional, Sequence, Tuple
+from typing import (Callable, FrozenSet, List, NamedTuple, Optional, Sequence,
+                    Tuple)
 
 from engine.effect_grammar.sub import CACHE_SIZE, SELF_NOUNS, Span
 
 __all__ = ["LEAF", "FLAGS", "QUOTE_DEPTH", "SELF", "Facts", "Reminder",
-           "Normalized", "self_names", "normalize", "printed_span",
-           "clear_caches"]
+           "Normalized", "self_names", "normalize", "normalize_mapped",
+           "printed_span", "clear_caches"]
 
 LEAF = "normalize"
 SELF = "~"
@@ -777,6 +778,23 @@ def printed_span(text: str, facts: Facts, span: Span, *,
     m = _Map(segs)
     a, b = span
     return (text or "")[m.start(a):m.end(b)]
+
+
+def normalize_mapped(text: str, facts: Facts = Facts()
+                     ) -> Tuple[Normalized, "Callable[[Span], str]"]:
+    """L0 output for one face and, for the length of the caller's parse,
+    the printed text behind a normalised span of the face text (the
+    `printed_span` map without recomputing L0). One L0 run serves both, so
+    L1 reads printed costs, riders and loyalty spans (A7) without a second
+    pass. Uncached: the caller's face memo holds the parse; the map is
+    dropped with the closure, never stored (section 3, L0 step 5)."""
+    text = text or ""
+    r = _run(text, facts)
+    m = _Map(r.segs)
+
+    def printed(span: Span) -> str:
+        return text[m.start(span[0]):m.end(span[1])]
+    return r.normalized, printed
 
 
 def clear_caches() -> None:
