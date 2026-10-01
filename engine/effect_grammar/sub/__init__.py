@@ -88,6 +88,9 @@ LEAF_EDGES = {
     "dest": frozenset({"payload"}),
     "filter": frozenset({"payload"}),
     "target": frozenset({"dest"}),
+    # The verb lexicon (beside the sub-grammars) reads the CR 701 action
+    # names from payload's table and the CR 702 names from keywords'.
+    "lexicon": frozenset({"payload", "keywords"}),
 }
 
 
@@ -157,12 +160,13 @@ def unmodelled(stage, lemma: str, leaf: str, code: str,
 
 
 def clear_caches() -> None:
-    """Clear every sub-grammar's memo caches, and L0 normalize's (called by
+    """Clear every sub-grammar's memo caches, L0 normalize's and the verb
+    lexicon's (called by
     `engine.effect_grammar.clear_caches`, the load driver's one entry
     point)."""
-    from engine.effect_grammar import normalize
+    from engine.effect_grammar import lexicon, normalize
     from engine.effect_grammar.sub import (
         dest, duration, filter, payload, target,
     )
-    for leaf in (normalize, duration, payload, dest, filter, target):
+    for leaf in (normalize, duration, payload, dest, filter, target, lexicon):
         leaf.clear_caches()
