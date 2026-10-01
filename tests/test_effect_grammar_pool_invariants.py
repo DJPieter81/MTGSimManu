@@ -346,12 +346,9 @@ def _witness_rows():
 
 
 def _template_effects(db, template):
-    from engine.effect_grammar import parse_template, template_facts
-    kws = (db._raw_data.get(template.name) or {}).get("keywords") or ()
-    facts = [template_facts(template, 0, kws)]
-    if getattr(template, "back_face_oracle", ""):
-        facts.append(template_facts(template, 1, ()))
-    return parse_template(template, facts)
+    """The lazy per-template path a game uses (step 13)."""
+    from engine.effect_grammar import parse_template
+    return parse_template(template)
 
 
 def _template(db, card):
@@ -359,6 +356,42 @@ def _template(db, card):
     if t is None:
         t = next(v for k, v in db.cards.items() if k.split(" // ")[0] == card)
     return t
+
+
+# Pool-wide (~22.7k templates, facts only, no parse) plus a full parse of
+# every registered-deck card both ways. Measured 2026-10-01: ~1.5 s body,
+# plus ~16 s when first in the process to load the card DB. 300 s bounds a
+# hang on a slower 2-core runner.
+@pytest.mark.timeout(300)
+def test_the_lazy_template_parse_reads_the_same_facts_as_the_eager_pool_path(card_db):
+    """Section 3: a face's facts -- its CR 702 keywords included -- come
+    from one source, so `parse_template(t)` (the lazy path a game uses)
+    and the eager pool path agree. The keywords are the raw MTGJSON list
+    the database loaded, never the typed engine enum."""
+    from engine.effect_grammar import parse_template, template_facts
+    from engine.effect_spec import canonical
+    raw = card_db._raw_data
+    diff = [t.name for t in {id(v): v for v in card_db.cards.values()}.values()
+            if template_facts(t) != template_facts(
+                t, 0, (raw.get(t.name) or {}).get("keywords") or ())]
+    assert not diff, (len(diff), diff[:5])
+    from decks.modern_meta import MODERN_DECKS
+    names = sorted({c for d in MODERN_DECKS.values()
+                    for part in ("mainboard", "sideboard")
+                    for c in (d.get(part) or {})})
+    checked = 0
+    for name in names:
+        t = card_db.cards.get(name)
+        if t is None:
+            continue
+        kws = (raw.get(t.name) or {}).get("keywords") or ()
+        facts = [template_facts(t, 0, kws)]
+        if getattr(t, "back_face_oracle", ""):
+            facts.append(template_facts(t, 1))
+        assert canonical(parse_template(t)) == \
+            canonical(parse_template(t, facts)), name
+        checked += 1
+    assert checked >= 200, checked
 
 
 @pytest.mark.parametrize("row", _witness_rows())

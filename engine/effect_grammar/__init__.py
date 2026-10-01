@@ -45,7 +45,11 @@ def template_facts(template, face: int = 0,
     (full name, face names, the legendary / character short name), the
     face's card types, spell / legendary / planeswalker / X-cost facts and
     the face's MTGJSON keywords intersected with the CR 702 table
-    (`keywords`, default the template's typed keywords)."""
+    (`keywords`, default the template's printed MTGJSON list,
+    `CardTemplate.printed_keywords`). The typed `CardTemplate.keywords`
+    enum is never read: it omits keywords the engine does not model and
+    holds granted ones, so a parse from it would differ from the eager
+    pool path's."""
     from engine.effect_grammar import normalize as N
     from engine.effect_grammar.keywords import keywords702
     legendary = any(getattr(s, "value", s) == "legendary"
@@ -56,8 +60,7 @@ def template_facts(template, face: int = 0,
         mc = getattr(template, "mana_cost", None)
         has_x = bool(getattr(mc, "x_count", 0))
         if keywords is None:
-            keywords = [getattr(k, "value", str(k)).replace("_", " ")
-                        for k in getattr(template, "keywords", ()) or ()]
+            keywords = getattr(template, "printed_keywords", ()) or ()
     else:
         tc = _type_names(getattr(template, "back_face_types", ()))
         subs = tuple(getattr(template, "back_face_subtypes", ()) or ())
@@ -178,18 +181,19 @@ def printed_span(oracle, facts, face: int, host_index: int,
 
 def parse_pool(db, *, keywords_of=None) -> Dict[str, object]:
     """The eager pool path the tools use: every template of `db` parsed,
-    keyed by name. A face's keywords come from the raw MTGJSON entry when
-    the database kept it (`db._raw_data`), as at load; `keywords_of` may
-    supply them instead. Games never call this: they parse lazily, per
-    template."""
-    raw = getattr(db, "_raw_data", {}) or {}
+    keyed by name, through the same `parse_template(t)` call the lazy
+    per-template path makes (the facts come from `template_facts`, the
+    keywords from `CardTemplate.printed_keywords`); `keywords_of` may
+    supply a face-0 keyword list instead. Games never call this: they
+    parse lazily, per template."""
     out: Dict[str, object] = {}
     for t in {id(v): v for v in db.cards.values()}.values():
-        kws = keywords_of(t) if keywords_of is not None else \
-            (raw.get(t.name) or {}).get("keywords") or ()
-        facts = [template_facts(t, 0, kws)]
+        if keywords_of is None:
+            out[t.name] = parse_template(t)
+            continue
+        facts = [template_facts(t, 0, keywords_of(t))]
         if getattr(t, "back_face_oracle", ""):
-            facts.append(template_facts(t, 1, ()))
+            facts.append(template_facts(t, 1))
         out[t.name] = parse_template(t, facts)
     return out
 

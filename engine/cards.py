@@ -521,6 +521,13 @@ class CardTemplate:
     toughness: Optional[int] = None
     loyalty: Optional[int] = None
     keywords: Set[Keyword] = field(default_factory=set)
+    # The front face's MTGJSON `keywords` list exactly as printed (CR 702),
+    # e.g. ("Delve", "Flying"). `keywords` above is the engine's typed enum:
+    # it omits keywords the engine does not model (ward, delve, equip...)
+    # and adds ones a token or the oracle scan grants, so the clause grammar
+    # (`engine.effect_grammar.template_facts`) reads its keyword facts from
+    # this list -- one source for the lazy and the eager parse.
+    printed_keywords: Tuple[str, ...] = ()
     abilities: List[Ability] = field(default_factory=list)
     color_identity: Set[Color] = field(default_factory=set)
     # The permanent's own printed color (MTGJSON `colors`) — NOT the

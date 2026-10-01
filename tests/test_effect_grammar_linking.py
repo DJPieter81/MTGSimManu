@@ -977,3 +977,24 @@ def test_the_package_entry_points_parse_specs_faces_and_printed_spans():
         "Some Bird deals 1 damage to any target"
     grammar.clear_caches()
     assert grammar.parse_face(printed, facts) == hosts
+
+
+def test_a_templates_keyword_facts_are_its_printed_keyword_list_never_the_typed_enum():
+    """Section 3 facts: a face's CR 702 keywords are the printed MTGJSON
+    list. The typed engine enum omits keywords the engine does not model
+    and holds granted ones; a parse from it would make the lazy
+    per-template path differ from the eager pool path."""
+    from engine.cards import CardTemplate, CardType, Keyword
+    from engine.mana import ManaCost
+    import engine.effect_grammar as grammar
+    t = CardTemplate(name="Some Cannoneer", oracle_text="Ward {4}",
+                     card_types=[CardType.CREATURE],
+                     mana_cost=ManaCost(generic=0),
+                     keywords={Keyword.PROWESS},
+                     printed_keywords=("Ward",))
+    facts = grammar.template_facts(t)
+    assert facts.keywords702 == keywords702(("Ward",))
+    assert grammar.template_facts(t, 0, ("Ward",)) == facts
+    (host,) = grammar.parse_template(t).faces[0]
+    assert host.kind is HostKind.KEYWORD
+    assert [k.name for k in host.keywords] == ["ward"]
