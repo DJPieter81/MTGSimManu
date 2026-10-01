@@ -108,3 +108,68 @@ def test_a_recipient_union_splits_into_simultaneous_damage_siblings():
     assert a.spec.group == b.spec.group is not None
     assert b.spec.filter is not None and \
         b.spec.filter.types == frozenset({"planeswalker"})
+
+
+# ── Linked participants (L5; section 5, A15) ───────────────────────────
+
+def _linked_spell(text, keywords=()):
+    from engine.effect_grammar import normalize as N
+    from engine.effect_grammar import parse_face
+    from engine.effect_grammar.keywords import keywords702
+    from engine.effect_spec import CardEffects, validate_card_effects
+    facts = N.Facts(type_class=frozenset({"instant"}), is_spell=True,
+                    keywords702=keywords702(keywords))
+    hosts = parse_face(text, facts)
+    assert validate_card_effects(CardEffects.of((hosts,))) is None
+    return next(h for h in hosts if h.specs)
+
+
+def test_a_repeated_mention_of_a_target_is_a_reference_not_a_second_requirement():
+    """CR 115.1: "that creature" / "its" after "target creature" names the
+    chosen object again; the host holds one requirement and the later
+    mention is a TARGET reference to it (or its controller), never a
+    second target."""
+    from engine.effect_spec import Ref, RefKind
+    h = _linked_spell("Target creature gets +2/+2 until end of turn. Untap "
+                      "that creature.")
+    pump, untap = h.specs
+    assert len(h.targets) == 1 and pump.target_slot == 0
+    assert untap.target is None and untap.ref == Ref(RefKind.TARGET, 0)
+    h = _linked_spell("Exile target creature. Its controller gains life "
+                      "equal to its power.")
+    exile, gain = h.specs
+    assert len(h.targets) == 1 and gain.target is None
+    assert gain.actor.kind is RefKind.CONTROLLER_OF
+    assert (gain.actor.of.kind, gain.actor.of.index) == (RefKind.TARGET, 0)
+    assert gain.amount.quantity.ref.kind is RefKind.TARGET
+
+
+@pytest.mark.parametrize("keywords,text", [
+    # kicked: a trailing "instead" upgrade naming its own target
+    (("Kicker",), "Kicker {2}{U}\nReturn target creature an opponent "
+     "controls to its owner's hand. If this spell was kicked, return target "
+     "nonland permanent an opponent controls to its owner's hand instead."),
+    (("Kicker",), "Kicker {4}\nThis spell deals 2 damage to target "
+     "creature. If this spell was kicked, it deals 5 damage to target "
+     "creature or planeswalker instead."),
+    # gift: the promised-gift upgrade
+    (("Gift",), "Gift a card (You may promise an opponent a gift as you "
+     "cast this spell. If you do, they draw a card before its other "
+     "effects.)\nReturn target creature an opponent controls to its owner's "
+     "hand. If the gift was promised, instead return target nonland "
+     "permanent an opponent controls to its owner's hand."),
+    # leading instead
+    ((), "Return target creature an opponent controls to its owner's hand. "
+     "If you control a Wizard, instead return target nonland permanent an "
+     "opponent controls to its owner's hand."),
+], ids=["kicked", "kicked-damage", "gift", "leading-instead"])
+def test_a_restated_instead_target_is_an_alternative_to_the_base_target_not_an_additional_one(keywords, text):
+    """A15, G9: an instead clause that prints a target of its own replaces
+    the base spec, and its requirement is the alternative of the base
+    requirement -- the pair (base slot, its slot) in ``target_alts`` --
+    so one of the two is chosen, never both."""
+    h = _linked_spell(text, keywords)
+    base, alt = h.specs
+    assert alt.replaces == (base.seq,)
+    assert (base.target_slot, alt.target_slot) == (0, 1)
+    assert len(h.targets) == 2 and h.target_alts == ((0, 1),)

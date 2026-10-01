@@ -705,18 +705,6 @@ def test_one_instead_clause_replaces_every_simultaneous_sibling_of_a_split_group
     assert alt.replaces == (a.seq, b.seq)
 
 
-def test_a_restated_instead_target_is_an_alternative_target_slot():
-    """G9: an instead clause that prints a target of its own records the
-    pair (replaced slot, its slot) in ``target_alts``."""
-    h = _effect_host("Return target creature an opponent controls to its "
-                     "owner's hand. If you control a Wizard, instead return "
-                     "target nonland permanent an opponent controls to its "
-                     "owner's hand.")
-    base, alt = h.specs
-    assert alt.replaces == (base.seq,)
-    assert len(h.targets) == 2 and h.target_alts == ((0, 1),)
-
-
 def test_instead_of_putting_it_into_a_zone_folds_into_the_named_actions_destination():
     """CR 701.5a, A15: the countered-this-way sentence is a destination
     override of the counter, never a spec of its own."""

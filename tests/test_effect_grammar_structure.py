@@ -910,3 +910,82 @@ def test_a_back_face_is_parsed_before_its_loyalty_clauses_are_typed(tmp_path):
         assert host.kind is HostKind.LOYALTY and host.face == 1
         assert host is t.effects.loyalty(slot, 1)
     assert t.effects.loyalty("plus", 0) is None      # the front is a creature
+
+
+# ── Linked structure: mode groups, granted self-reference, faces ───────
+
+def _linked(text, *a, **kw):
+    from engine.effect_grammar import parse_face
+    return parse_face(text, _facts(*a, **kw))
+
+
+@pytest.mark.parametrize("text", [
+    "Choose one —\n• Destroy target artifact.\n• Destroy target "
+    "enchantment.\n• Target player loses 2 life.",
+    "Choose one or both —\n• Target creature gets +1/+1 until end of "
+    "turn.\n• Target creature gains flying until end of turn.",
+])
+def test_every_target_in_a_modal_block_shares_one_mode_group(text):
+    """CR 700.2: the requirements of one modal block are chosen from the
+    chosen modes only, so every requirement in every mode host carries the
+    same `mode_group`; the modal host itself holds none."""
+    (spell,) = _linked(text, types=("sorcery",))
+    assert spell.targets == () and spell.modes
+    groups = {t.mode_group for m in spell.modes for t in m.targets}
+    assert all(m.targets for m in spell.modes)
+    assert len(groups) == 1 and None not in groups
+
+
+def test_self_reference_inside_a_granted_ability_means_the_recipient_at_every_nesting_depth():
+    """CR 113.1a, A10: "this creature" inside a quoted ability is the
+    object that has the ability -- the token at depth one, the token that
+    token creates at depth two -- never the card that printed the quote."""
+    from engine.effect_spec import HostKind, Ref, RefKind, Verb
+    (spell,) = _linked(
+        'Some Card deals 1 damage to any target. Create a 0/0 Construct '
+        'artifact creature token with "{T}: Create a 1/1 Thopter artifact '
+        'creature token with \'This creature gets +1/+1 for each artifact '
+        'you control.\'"', "Some Card", types=("sorcery",))
+    dmg, create = spell.specs
+    assert dmg.other == Ref(RefKind.SELF)          # the card, at top level
+    (depth1,) = create.payload.granted
+    assert depth1.kind is HostKind.ACTIVATED
+    (inner_create,) = depth1.specs
+    assert inner_create.verb is Verb.CREATE_TOKEN
+    (depth2,) = inner_create.payload.granted
+    (pump,) = depth2.specs
+    assert pump.verb is Verb.CONTINUOUS and pump.ref == Ref(RefKind.SELF)
+    # Both quoted texts read their own self-form as the recipient.
+    assert "~" in depth2.text
+
+
+def test_each_face_is_parsed_separately_and_front_face_views_read_face_zero():
+    """CR 712: each face of a double-faced card is its own set of
+    abilities with its own characteristics, so each face parses with its
+    own facts into its own host tuple; the front-face views (`front`,
+    `spell`, `activated`, `loyalty` with the default face) read face 0
+    only."""
+    from types import SimpleNamespace
+
+    from engine.cards import CardType
+    from engine.effect_grammar import parse_template
+    from engine.effect_spec import HostKind, Ref, RefKind
+    t = SimpleNamespace(
+        name="Front Thing // Back Thing", layout="modal_dfc",
+        oracle_text="Front Thing deals 2 damage to any target.",
+        back_face_oracle="{T}: Back Thing deals 1 damage to any target.",
+        card_types=[CardType.INSTANT], subtypes=[], supertypes=[],
+        back_face_types=[CardType.LAND], back_face_subtypes=[],
+        mana_cost=None, printed_keywords=())
+    ce = parse_template(t)
+    assert len(ce.faces) == 2
+    (front,) = ce.faces[0]
+    (back,) = ce.faces[1]
+    assert (front.kind, front.face) == (HostKind.SPELL, 0)
+    assert (back.kind, back.face, back.activation_index) == \
+        (HostKind.ACTIVATED, 1, 0)
+    assert ce.front() is ce.faces[0] and ce.spell() is front
+    assert ce.activated(0) is None and ce.activated(0, face=1) is back
+    assert ce.spell(1) is None
+    # Each face's self-name is its own: both read as the source.
+    assert front.specs[0].other == back.specs[0].other == Ref(RefKind.SELF)

@@ -495,13 +495,11 @@ def pool_effects(card_db):
 # ~20 s for the eager L0-L5 pass and the walks below). 600 s bounds a hang
 # with room for a slower 2-core CI runner.
 @pytest.mark.timeout(600)
-def test_every_template_parses_without_exception_and_every_spec_satisfies_the_schema_invariants(card_db, pool_effects):
-    """L5 step 11: every spec of every host -- sub-ability and granted
-    hosts with their creating hosts in view -- passes validate_spec, and
-    every CardEffects value is hashable with no mutable object reachable
-    (invariant 8)."""
-    from engine.effect_spec import (CardEffects, find_mutable,
-                                    validate_card_effects)
+def test_every_spec_satisfies_the_schema_invariants(card_db, pool_effects):
+    """L5 step 11: every template parses without an exception, and every
+    spec of every host -- sub-ability and granted hosts with their creating
+    hosts in view -- passes validate_spec."""
+    from engine.effect_spec import CardEffects, validate_card_effects
     effects, _cpu = pool_effects
     assert len(effects) >= 0.95 * len({id(v) for v in card_db.cards.values()})
     bad = []
@@ -511,8 +509,26 @@ def test_every_template_parses_without_exception_and_every_spec_satisfies_the_sc
         if rule is not None:
             bad.append((name, rule))
     assert not bad, bad[:10]
-    some = list(effects.values())[::97]
-    assert all(find_mutable(ce) is None and hash(ce) is not None for ce in some)
+
+
+@pytest.mark.timeout(600)
+def test_every_card_effects_value_is_hashable_and_holds_no_mutable_cost(pool_effects):
+    """Invariant 8: every CardEffects of the pool -- not a sample -- is
+    hashable and reaches no mutable object (a cost is a frozen
+    CostSnapshot, never an ActivationCost)."""
+    from engine.effect_spec import find_mutable
+    effects, _cpu = pool_effects
+    bad = []
+    for name, ce in effects.items():
+        where = find_mutable(ce)
+        if where is not None:
+            bad.append((name, where))
+            continue
+        try:
+            hash(ce)
+        except TypeError as e:
+            bad.append((name, str(e)))
+    assert not bad, (len(bad), bad[:5])
 
 
 @pytest.mark.timeout(600)
@@ -866,7 +882,7 @@ def test_synthetic_templates_get_the_same_effects_as_loaded_ones(card_db):
             name=t.name, card_types=list(t.card_types),
             mana_cost=t.mana_cost, supertypes=list(t.supertypes),
             subtypes=list(t.subtypes), oracle_text=t.oracle_text,
-            printed_keywords=t.printed_keywords)
+            printed_keywords=t.printed_keywords, layout=t.layout)
         assert synthetic._effects is None
         assert canonical(synthetic.effects) == canonical(t.effects), name
         # A copied template (dataclasses.replace) carries the memo while
@@ -905,3 +921,363 @@ def test_a_meld_cards_melded_permanent_name_is_not_a_self_reference(card_db):
                  if " // " in t.name and t.layout in ("split", "adventure"))
     names = template_facts(split).names
     assert all(h in names for h in split.name.split(" // ")), split.name
+
+
+# ════════════════════════════════════════════════════════════════════════
+# The linked pool against L1-L4 and the legacy owners (steps 12-13)
+# ════════════════════════════════════════════════════════════════════════
+
+def _l1_and_linked(card_db, effects):
+    """(name, face facts, L1 host, linked host) for every host and mode of
+    every face, the linked host read from the eager pool parse."""
+    from engine.effect_grammar import _face_texts, template_facts
+    from engine.effect_grammar import structure as S
+    for t in {id(v): v for v in card_db.cards.values()}.values():
+        ce = effects.get(t.name)
+        if ce is None:
+            continue
+        for i, text in enumerate(_face_texts(t)):
+            if not text:
+                continue
+            facts = template_facts(t, i)
+            fs = S.parse_face_structure(text, facts, face=i)
+            linked = ce.faces[i] if i < len(ce.faces) else ()
+            assert len(linked) == len(fs.hosts), (t.name, i)
+            for l1, h in zip(fs.hosts, linked):
+                yield t.name, facts, l1, h
+                assert len(l1.modes) == len(h.modes), (t.name, i)
+                for ml, mh in zip(l1.modes, h.modes):
+                    yield t.name, facts, ml, mh
+
+
+# One L1 + L2-L4 pass over the pool beside the eager linked parse. Measured
+# 2026-10-01: ~15 s body after the pool_effects fixture, plus the fixture
+# (~36 s) when first. 600 s bounds a hang on a slower 2-core runner.
+@pytest.mark.timeout(600)
+def test_every_effect_text_span_is_covered_by_a_spec_or_a_consumed_frame_token(card_db, pool_effects):
+    """The coverage invariant after L5 (section 3): L1-L4 pin that every
+    non-space character of a host is in a consumed span, a frame token or a
+    clause span (`structure.uncovered`, `clauses.uncovered`); linking must
+    drop none of them, so every L4 clause span and every L1 refusal span
+    lies inside a spec span of the linked host or of a sub-ability host it
+    created (a branch, an instead sibling and a lowered spec keep their
+    span)."""
+    from engine.effect_grammar import patterns as PT
+    from engine.effect_spec import _walk_hosts, iter_specs
+    effects, _cpu = pool_effects
+    lost, n = [], 0
+    for name, facts, l1, h in _l1_and_linked(card_db, effects):
+        spans = [s.span for hh, _c in _walk_hosts(((h,),), False, True)
+                 if hh is h or hh.mode_index < 0
+                 for s in iter_specs(hh.specs)]
+        need = [cm.spec.span for fm in PT.match_host(l1, has_x=facts.has_x_cost)
+                for cm in fm.clauses]
+        need += [sp for _um, sp in l1.unmodelled]
+        for a, b in need:
+            n += 1
+            if not any(x <= a and b <= y for x, y in spans):
+                lost.append((name, l1.text[a:b]))
+    assert n > 40000, n
+    assert not lost, (len(lost), lost[:10])
+
+
+_COST_LINE_KINDS = ("KEYWORD", "ALTERNATIVE_COST", "ADDITIONAL_COST")
+
+
+@pytest.mark.timeout(300)
+def test_no_registered_deck_spell_merges_a_keyword_or_cost_line_into_its_resolution_host(card_db):
+    """F1, CR 113.3a / 118.9 / 601.2f: an instant's or sorcery's spell
+    ability is its resolution text only. A keyword line, an alternative
+    cost and an additional cost are hosts of their own, so no SPELL host of
+    a registered-deck card shares a paragraph with one, carries keywords,
+    or has an activation cost."""
+    from engine.effect_spec import HostKind
+    bad, spells = [], 0
+    for name in _deck_card_names():
+        t = card_db.cards.get(name)
+        if t is None:
+            continue
+        for face in t.effects.faces:
+            lines = {p for h in face if h.kind.name in _COST_LINE_KINDS
+                     for p in h.paragraphs}
+            for h in face:
+                if h.kind is not HostKind.SPELL:
+                    continue
+                spells += 1
+                if set(h.paragraphs) & lines or h.keywords or h.cost:
+                    bad.append((name, h.paragraphs, sorted(lines), h.text))
+    assert spells >= 50, spells
+    assert not bad, bad[:10]
+
+
+@pytest.mark.timeout(600)
+def test_every_reference_points_backwards_within_its_ability_or_to_its_parent_from_a_sub_ability(pool_effects):
+    """Section 7, invariant 3: a RESULT reference names an earlier spec of
+    its own host or, from a sub-ability host, of a host that created it (a
+    granted ability is an ability of its own and reads no creator); a
+    TARGET reference names one of its own host's requirements; an instead
+    sibling replaces earlier specs of its own host."""
+    from engine.effect_spec import (Granted, RefKind, SubAbility, TokenSpec,
+                                    _refs, _walk_hosts, iter_specs)
+    effects, _cpu = pool_effects
+    skip = (SubAbility, Granted, TokenSpec)
+    fields = ("target", "subject", "ref", "other", "actor", "filter",
+              "amount", "dest", "payload", "condition")
+    bad, checked = [], 0
+    for name, ce in effects.items():
+        for h, creators in _walk_hosts(ce.faces, True, True):
+            own = {s.seq for s in iter_specs(h.specs)}
+            reach = own | {s.seq for c in creators for s in iter_specs(c.specs)}
+            for s in iter_specs(h.specs):
+                for f in fields:
+                    v = getattr(s, f)
+                    if v is None or isinstance(v, skip):
+                        continue
+                    for r in _refs(v):
+                        if r.kind is RefKind.RESULT:
+                            checked += 1
+                            if not (r.index < s.seq and r.index in reach):
+                                bad.append((name, s.raw, "result"))
+                        elif r.kind is RefKind.TARGET:
+                            checked += 1
+                            if not 0 <= r.index < len(h.targets):
+                                bad.append((name, s.raw, "target"))
+                if any(not (k < s.seq and k in own) for k in s.replaces):
+                    bad.append((name, s.raw, "replaces"))
+    assert checked > 4000, checked
+    assert not bad, (len(bad), bad[:10])
+
+
+@pytest.mark.timeout(600)
+def test_mode_hosts_align_with_template_modes_by_index(card_db, pool_effects):
+    """CR 700.2: where the legacy modal parse (`CardTemplate.modes`) and the
+    grammar both read a card's modes, they read the same number and mode
+    host i is legacy mode i (mode_index i, a non-empty text each; the
+    texts differ in case and self-forms only). A disagreement is one of two
+    classified kinds and nothing else: the grammar reads modes legacy has
+    no model for (a spree spell's mode costs, a modal triggered ability),
+    or the grammar refuses a header legacy reads (every bullet an explicit
+    structure.orphan_mode refusal, never a silent drop)."""
+    from engine.effect_spec import HostKind, Verb
+    effects, _cpu = pool_effects
+    ok, reads_more, refused, bad = 0, 0, 0, []
+    for t in {id(v): v for v in card_db.cards.values()}.values():
+        ce = effects.get(t.name)
+        legacy = t.modes or []
+        mine = ce.modes(0) if ce is not None else ()
+        if not legacy and not mine:
+            continue
+        if len(legacy) == len(mine):
+            for i, (lm, m) in enumerate(zip(legacy, mine)):
+                if m.mode_index != i or not m.text.strip("• ") or \
+                        not (lm.get("text") or "").strip():
+                    bad.append((t.name, i, lm.get("text"), m.text))
+            ok += 1
+        elif not legacy:
+            host = next(h for h in ce.faces[0] if h.modes)
+            if host.kind is HostKind.TRIGGERED or any(m.mode_cost for m in mine):
+                reads_more += 1
+            else:
+                bad.append((t.name, "grammar-only modes", host.kind.name))
+        elif not mine:
+            orphans = [h for h in ce.faces[0] if h.kind is HostKind.UNKNOWN
+                       and h.specs and all(
+                           s.verb is Verb.UNMODELLED
+                           and s.payload.detail == "structure.orphan_mode"
+                           for s in h.specs)]
+            if len(orphans) == len(legacy):
+                refused += 1
+            else:
+                bad.append((t.name, "legacy-only modes", len(legacy)))
+        else:
+            bad.append((t.name, len(legacy), len(mine)))
+    print("\nmodes: %d aligned, %d grammar-only (spree / modal trigger), "
+          "%d refused headers" % (ok, reads_more, refused))
+    assert ok >= 500, ok
+    assert not bad, (len(bad), bad[:10])
+
+
+@pytest.mark.timeout(600)
+def test_back_face_loyalty_hosts_align_with_back_face_loyalty_abilities(card_db, pool_effects):
+    """A12: a transforming walker's back-face loyalty abilities and the
+    face-1 LOYALTY hosts are one set of slots with the same signed costs
+    (one `loyalty_slot_for` owner), and each back-face clause template's
+    effects are the face-1 host of its slot."""
+    from engine.effect_spec import HostKind
+    effects, _cpu = pool_effects
+    checked, bad = 0, []
+    for t in {id(v): v for v in card_db.cards.values()}.values():
+        back = t.back_face_loyalty_abilities
+        if not back:
+            continue
+        ce = effects[t.name]
+        hosts = {h.loyalty_slot: h for h in (ce.faces[1] if len(ce.faces) > 1
+                                             else ())
+                 if h.kind is HostKind.LOYALTY and h.loyalty_slot}
+        if sorted(hosts) != sorted(back):
+            bad.append((t.name, sorted(back), sorted(hosts)))
+            continue
+        for slot, ab in back.items():
+            lc = hosts[slot].loyalty_cost
+            if lc is None or lc.n != ab.cost:
+                bad.append((t.name, slot, ab.cost, lc))
+        checked += 1
+    assert checked >= 10, checked
+    assert not bad, bad[:10]
+
+
+# The step-18 equivalence allowlist's seed for activation costs: every pool
+# ability whose grammar host cost differs from the legacy
+# `ActivatedAbility.cost`, each classified. Regenerate with
+#   python -c "from tests.test_effect_grammar_pool_invariants import \
+#              write_cost_divergences as w; w()"
+COST_DIVERGENCE_PATH = Path(__file__).resolve().parent / "fixtures" / \
+    "effect_grammar_activation_cost_divergences.json"
+
+
+def _cost_default(v) -> bool:
+    if isinstance(v, tuple) and v and isinstance(v[0], tuple):
+        return all(_cost_default(x[1]) for x in v)       # a mana snapshot
+    return not v
+
+
+def _cost_class(legacy, mine) -> str:
+    """'grammar_reads_more' when the host cost is the legacy cost with
+    more of the printed cost read: legacy gave up on part of it (a
+    non-empty `unpayable`), the host's `unpayable` is a strict subset of
+    legacy's, and every other field that differs is at its default in
+    legacy. Anything else is 'regression'."""
+    a, b = dict(legacy.items), dict(mine.items)
+    lu, mu = set(a.get("unpayable") or ()), set(b.get("unpayable") or ())
+    if not lu or not mu < lu:
+        return "regression"
+    for k in set(a) | set(b):
+        if k != "unpayable" and a.get(k) != b.get(k) and \
+                not _cost_default(a.get(k)):
+            return "regression"
+    return "grammar_reads_more"
+
+
+def _cost_divergences(card_db, effects):
+    """{"<card>|<index>": class} for every face-0 activated ability whose
+    host cost differs from its legacy cost (the ordinal half is pinned by
+    test_activation_ordinals_follow_the_legacy_ordinal_rule_on_every_face)."""
+    from engine.effect_spec import freeze_cost
+    out, ok = {}, 0
+    for t in {id(v): v for v in card_db.cards.values()}.values():
+        ce = effects.get(t.name)
+        for ab in t.activated_abilities or ():
+            h = ce.activated(ab.index) if ce is not None else None
+            if h is None:
+                continue
+            legacy = freeze_cost(ab.cost)
+            if legacy == h.cost:
+                ok += 1
+                continue
+            out["%s|%d" % (t.name, ab.index)] = (
+                _cost_class(legacy, h.cost) if legacy and h.cost
+                else "regression")
+    return out, ok
+
+
+def write_cost_divergences():
+    import engine.effect_grammar as grammar
+    from tests._card_db_cache import shared_card_database
+    db = shared_card_database()
+    rows, _ok = _cost_divergences(db, grammar.parse_pool(db))
+    COST_DIVERGENCE_PATH.write_text(json.dumps({
+        "doc": "Activation costs where the grammar host (A7: "
+               "parse_activation_cost over the printed head) differs from "
+               "the legacy ActivatedAbility.cost, each classified; the seed "
+               "of the step-18 equivalence allowlist. Only "
+               "grammar_reads_more rows may appear.",
+        "rows": [{"key": k, "class": v} for k, v in sorted(rows.items())]},
+        indent=1, ensure_ascii=False) + "\n")
+
+
+@pytest.mark.timeout(600)
+def test_activated_hosts_align_with_parsed_activated_abilities_by_index_and_cost(card_db, pool_effects):
+    """A7, section 3 L1 rule 9: an activated host's cost is
+    freeze_cost(parse_activation_cost(printed head)), the rule legacy
+    `ActivatedAbility.cost` follows, so host i's cost equals legacy
+    ability i's -- except where the grammar reads more of the printed cost
+    than legacy did. Every divergence is classified and listed in the
+    allowlist seed: a regression fails, a new divergence fails, and a
+    stale row (a divergence that closed) fails until it is removed."""
+    effects, _cpu = pool_effects
+    found, ok = _cost_divergences(card_db, effects)
+    pinned = {r["key"]: r["class"] for r in
+              json.loads(COST_DIVERGENCE_PATH.read_text())["rows"]}
+    regressions = sorted(k for k, v in found.items() if v != "grammar_reads_more")
+    assert not regressions, regressions[:10]
+    assert set(pinned.values()) <= {"grammar_reads_more"}
+    new = sorted(set(found) - set(pinned))
+    stale = sorted(set(pinned) - set(found))
+    assert not new and not stale, (new[:10], stale[:10])
+    assert ok >= 6000, ok
+
+
+def test_identical_ability_text_parses_once_to_shared_frozen_specs():
+    """A32, section 12: a face parse is a pure function of (text, facts,
+    face), so two templates printing the same face share ONE parse -- the
+    same host objects, not equal copies -- and that parse is frozen: no
+    host or spec can be changed by a reader, and every value is hashable."""
+    import dataclasses
+    from types import SimpleNamespace
+
+    from engine.cards import CardType
+    from engine.effect_grammar import parse_template
+    from engine.effect_spec import find_mutable
+
+    def template():
+        return SimpleNamespace(
+            name="Some Relic", layout="normal",
+            oracle_text="{2}, {T}, Sacrifice this artifact: Draw a card.\n"
+                        "When this artifact enters, scry 1.",
+            card_types=[CardType.ARTIFACT], subtypes=[], supertypes=[],
+            mana_cost=None, printed_keywords=())
+    a, b = parse_template(template()), parse_template(template())
+    assert a == b and all(x is y for x, y in zip(a.faces[0], b.faces[0]))
+    host = a.faces[0][0]
+    with pytest.raises(dataclasses.FrozenInstanceError):
+        host.text = ""
+    with pytest.raises(dataclasses.FrozenInstanceError):
+        host.specs[0].verb = None
+    assert find_mutable(a) is None and hash(a) == hash(b)
+
+
+def test_effect_grammar_holds_no_card_names(card_db):
+    """Knowledge location (CLAUDE.md): card-specific knowledge lives in
+    oracle text and the pool data, never in grammar source. No string
+    literal of any engine/effect_grammar module (docstrings and `__all__`
+    identifiers aside) is a pool card or face name, or contains a
+    multi-word one."""
+    import ast
+    names = set()
+    for n in card_db._raw_data:
+        names.add(n)
+        names.update(n.split(" // "))
+    multi = sorted((n for n in names if " " in n), key=len)
+    root = Path(__file__).resolve().parent.parent / "engine" / "effect_grammar"
+    files = sorted(root.rglob("*.py"))
+    assert len(files) >= 18, files
+    hits = []
+    for p in files:
+        tree = ast.parse(p.read_text())
+        skip = {id(n.body[0].value) for n in ast.walk(tree)
+                if isinstance(n, (ast.Module, ast.FunctionDef, ast.ClassDef))
+                and n.body and isinstance(n.body[0], ast.Expr)
+                and isinstance(n.body[0].value, ast.Constant)}
+        for n in ast.walk(tree):
+            if isinstance(n, ast.Assign) and any(
+                    isinstance(t, ast.Name) and t.id == "__all__"
+                    for t in n.targets):
+                skip.update(id(c) for c in ast.walk(n.value))
+        for n in ast.walk(tree):
+            if not (isinstance(n, ast.Constant) and isinstance(n.value, str)) \
+                    or id(n) in skip:
+                continue
+            v = n.value
+            if v in names or any(m in v for m in multi if len(m) <= len(v)):
+                hits.append((p.name, n.lineno, v[:60]))
+    assert not hits, hits[:10]
