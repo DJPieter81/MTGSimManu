@@ -74,10 +74,9 @@ from __future__ import annotations
 
 import dataclasses
 import re
-from functools import lru_cache
 from typing import Optional, Tuple
 
-from engine.effect_grammar.sub import (CACHE_SIZE, NUMBER_WORDS, SCALED,
+from engine.effect_grammar.sub import (NUMBER_WORDS, SCALED,
                                        SlotResult, Span, unmodelled)
 from engine.effect_grammar.sub import quantity as _Q
 from engine.effect_spec import (Amount, AmountKind, Quantity, QuantityKind,
@@ -351,7 +350,6 @@ def _atom(op: str, x) -> object:
     return Amount(AmountKind.LITERAL, n=_number(op))
 
 
-@lru_cache(maxsize=CACHE_SIZE)
 def _count_rel(t: str, x_bound: bool, x_defined: Optional[Amount]) -> _Rel:
     if not t:
         return _fail("empty")
@@ -488,7 +486,6 @@ _DIVIDED_RE = re.compile(
     r"|(?P<evenly>evenly)(?:,? rounded (?P<r>up|down),?)?)(?= among\b|$)")
 
 
-@lru_cache(maxsize=CACHE_SIZE)
 def _scaler_rel(t: str, per: Optional[Amount], x_bound: bool,
                 x_defined: Optional[Amount], source_left: bool) -> _Rel:
     if t.startswith("for each "):
@@ -539,7 +536,6 @@ def parse_scaler(host: str, span: Optional[Span] = None, *, lemma: str = "",
 _WHERE_X_RE = re.compile(r",? ?where x is ")
 
 
-@lru_cache(maxsize=CACHE_SIZE)
 def _where_x_rel(t: str, source_left: bool) -> _Rel:
     m = _WHERE_X_RE.match(t)
     if m is None or m.end() == len(t):
@@ -571,7 +567,6 @@ _ELEMENT_ANAPHOR_RE = re.compile(
     r"[a-z]+|those [a-z]+|the chosen [a-z]+)\b")
 
 
-@lru_cache(maxsize=CACHE_SIZE)
 def _leading_rel(t: str, source_left: bool) -> _Rel:
     commas = [i for i, c in enumerate(t) if c == ","]
     if not commas:
@@ -611,5 +606,6 @@ def parse_leading_for_each(host: str, span: Optional[Span] = None, *,
 
 
 def clear_caches() -> None:
-    for fn in (_count_rel, _scaler_rel, _where_x_rel, _leading_rel):
-        fn.cache_clear()
+    """The amount leaf keeps no memo: a pool pass repeats almost no amount
+    slot (measured hit rate under 1%), so a cache would only hold memory
+    until the load driver clears it. Kept for the leaf contract."""

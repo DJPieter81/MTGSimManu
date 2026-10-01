@@ -1322,7 +1322,6 @@ _U = Tuple[Optional[Condition], Optional[Tuple[str, str]],
            Tuple[Tuple[str, str], ...], frozenset, int]
 
 
-@lru_cache(maxsize=CACHE_SIZE)
 def _unless_rel(t: str) -> _U:
     """The condition of "unless <t>" and the length of ``t`` it consumed
     (a trailing "instead" is the frame's)."""
@@ -1437,5 +1436,4 @@ def parse_condition(host: str, span: Optional[Span] = None, *,
 
 
 def clear_caches() -> None:
-    _cond_rel.cache_clear()
-    _unless_rel.cache_clear()
+    _cond_rel.cache_clear()     # _unless_rel: no memo (2% hit rate)

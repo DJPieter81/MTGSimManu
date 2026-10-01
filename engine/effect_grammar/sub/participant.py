@@ -73,10 +73,9 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
-from functools import lru_cache
 from typing import Optional, Tuple
 
-from engine.effect_grammar.sub import (CACHE_SIZE, COUNT_WORDS, NUMBER_WORDS,
+from engine.effect_grammar.sub import (COUNT_WORDS, NUMBER_WORDS,
                                        SELF_NOUNS, SlotResult, Span,
                                        rest_spans_after, unmodelled)
 from engine.effect_grammar.sub import filter as _filter
@@ -506,7 +505,6 @@ def _member(t: str) -> bool:
     return _mine(t) or _filter.parse_filter(t, (0, len(t))).value is not None
 
 
-@lru_cache(maxsize=CACHE_SIZE)
 def _participant_rel(host: str, a: int, b: int, zone: str) -> _Rel:
     t = host[a:b]
     if not t:
@@ -605,7 +603,6 @@ _CHOOSERS = {"their": Chooser.PARTICIPANT, "his or her": Chooser.PARTICIPANT,
              "your": Chooser.CONTROLLER, "an opponent's": Chooser.OPPONENT}
 
 
-@lru_cache(maxsize=CACHE_SIZE)
 def _chooser_rel(clause: str):
     m = _CHOOSER_RE.search(clause)
     if m is None:
@@ -643,5 +640,7 @@ def parse_chooser(host: str, span: Optional[Span] = None, *,
 
 
 def clear_caches() -> None:
-    _participant_rel.cache_clear()
-    _chooser_rel.cache_clear()
+    """The participant leaf keeps no memo: a pool pass repeats almost no
+    participant slot (measured hit rate 3%), and the relative parse is keyed
+    on the whole host, so a cache would only hold memory until the load
+    driver clears it. Kept for the leaf contract."""

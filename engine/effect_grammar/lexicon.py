@@ -503,6 +503,9 @@ def _build() -> Tuple[Tuple[_Reading, ...], Dict[str, Tuple[_Reading, ...]]]:
 
 
 _READINGS, _BUCKETS = _build()
+# A reading's position, by identity: `_find_rel` returns the index without
+# a linear `.index()` scan comparing frozen dataclasses field by field.
+_POSITION = {id(rd): i for i, rd in enumerate(_READINGS)}
 
 LEXICON: Tuple[LexEntry, ...] = tuple(rd.entry for rd in _READINGS)
 VERB_LEXICON: Mapping[str, Tuple[LexEntry, ...]] = MappingProxyType(
@@ -556,7 +559,7 @@ def _find_rel(t: str, lemma: str):
         hit = _accept(t, m.start(), len(t), m.end(), pre, lemma)
         if hit is not None:
             rd, consumed = hit
-            return ("ok", _READINGS.index(rd), m.start(), consumed)
+            return ("ok", _POSITION[id(rd)], m.start(), consumed)
         if refused is None and word in VERB_ONLY_WORDS and not lemma:
             refused = word
             break

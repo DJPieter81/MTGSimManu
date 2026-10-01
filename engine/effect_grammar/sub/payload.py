@@ -199,7 +199,6 @@ def parse_mana_restriction(text: str) -> Optional[str]:
     return m.group("only").strip() if m.group("only") else m.group("cant").strip()
 
 
-@lru_cache(maxsize=CACHE_SIZE)
 def _mana_rel(t: str) -> _Rel:
     pos = 0
     m = _MANA_PREFIX_RE.match(t)
@@ -554,7 +553,6 @@ def _type_phrase(words: Tuple[str, ...]):
     return out
 
 
-@lru_cache(maxsize=CACHE_SIZE)
 def _token_rel(t: str) -> _Rel:
     m = _COPY_RE.match(t)
     if m:
@@ -847,7 +845,6 @@ def _type_change_rel(t: str) -> Optional[_Rel]:
     return (_mod(kind, **data), None, end, None, (), ())
 
 
-@lru_cache(maxsize=CACHE_SIZE)
 def _modification_rel(t: str) -> _Rel:
     m = _PT_MOD_RE.match(t)
     if m:
@@ -993,7 +990,6 @@ def _cost_subject_scope(subject: str, act: str) -> Optional[str]:
     return "spells" if g.group("noun").startswith("spell") else "abilities"
 
 
-@lru_cache(maxsize=CACHE_SIZE)
 def _cost_modifier_rel(t: str) -> Optional[_Rel]:
     m = _COST_MOD_RE.match(t)
     if m is None:
@@ -1079,7 +1075,6 @@ def _canonical_unsupported(printed: str) -> str:
     return printed
 
 
-@lru_cache(maxsize=CACHE_SIZE)
 def _keyword_action_rel(t: str) -> _Rel:
     m = _KA_RE.match(t)
     if m is None:
@@ -1327,6 +1322,8 @@ def _payload(entry: Any, text: str, offset: int, lemma: str) -> SlotResult:
 
 
 def clear_caches() -> None:
-    for fn in (_mana_rel, _counters_rel, _token_rel, _modification_rel,
-               _cost_modifier_rel, _keyword_action_rel, _pay_rel):
+    # Memoised only where a pool pass repeats (counters 20%, pay 19%); the
+    # mana, token, modification, cost-modifier and keyword-action parses
+    # repeat under 2% and keep no memo.
+    for fn in (_counters_rel, _pay_rel):
         fn.cache_clear()

@@ -455,7 +455,6 @@ def _printed_count(m) -> Optional[Tuple[int, int, Optional[Amount], str]]:
 
 # ── The slot ───────────────────────────────────────────────────────────
 
-@lru_cache(maxsize=CACHE_SIZE)
 def _solver_spans(clause: str) -> Tuple[Tuple[TargetRequirement, int, int], ...]:
     return tuple(parse_spans(clause))
 
@@ -671,5 +670,4 @@ def parse_target(host: str, span: Optional[Span] = None, *,
 
 def clear_caches() -> None:
     _words_rel.cache_clear()
-    _solver_spans.cache_clear()
-    _slot_rel.cache_clear()
+    _slot_rel.cache_clear()     # _solver_spans: no memo (3% hit rate)

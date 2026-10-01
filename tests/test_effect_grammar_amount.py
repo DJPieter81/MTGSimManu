@@ -542,22 +542,16 @@ def test_the_amount_leaf_imports_only_its_declared_edges():
     assert out == set(LEAF_EDGES["amount"]) == {"quantity"}
 
 
-def test_the_amount_caches_are_bounded_and_cleared_by_the_package():
-    from engine.effect_grammar import sub
-    import engine.effect_grammar as grammar
+def test_the_amount_leaf_holds_no_memo_and_keeps_the_contracts_clear_hook():
+    """A pool pass repeats almost no amount slot, so the leaf memoises
+    nothing (no memory held until the load driver clears); it still
+    exposes the contract's clear_caches."""
     caches = [a for a in vars(A).values()
               if callable(a) and hasattr(a, "cache_info")
               and getattr(a, "__module__", "") == A.__name__]
-    assert caches
-    assert all(c.cache_info().maxsize == sub.CACHE_SIZE for c in caches)
-    _count("two cards")
-    _scaler("for each artifact you control")
-    assert any(c.cache_info().currsize for c in caches)
-    sub.clear_caches()
-    assert all(c.cache_info().currsize == 0 for c in caches)
-    _count("two cards")
-    grammar.clear_caches()
-    assert all(c.cache_info().currsize == 0 for c in caches)
+    assert caches == []
+    assert callable(A.clear_caches)
+    A.clear_caches()
 
 
 def test_the_amount_leaf_does_not_re_normalise_l0_output():

@@ -609,22 +609,16 @@ def test_the_leaf_edge_graph_stays_acyclic_with_the_participant_edges():
     assert _acyclic(LEAF_EDGES)
 
 
-def test_the_participant_caches_are_bounded_and_cleared_by_the_package():
-    from engine.effect_grammar import sub
-    import engine.effect_grammar as grammar
+def test_the_participant_leaf_holds_no_memo_and_keeps_the_contracts_clear_hook():
+    """A pool pass repeats almost no participant slot and the relative
+    parse is keyed on the whole host, so the leaf memoises nothing; it
+    still exposes the contract's clear_caches."""
     caches = [a for a in vars(P).values()
               if callable(a) and hasattr(a, "cache_info")
               and getattr(a, "__module__", "") == P.__name__]
-    assert caches
-    assert all(c.cache_info().maxsize == sub.CACHE_SIZE for c in caches)
-    _p("each opponent")
-    P.parse_chooser("a card at random")
-    assert any(c.cache_info().currsize for c in caches)
-    sub.clear_caches()
-    assert all(c.cache_info().currsize == 0 for c in caches)
-    _p("each opponent")
-    grammar.clear_caches()
-    assert all(c.cache_info().currsize == 0 for c in caches)
+    assert caches == []
+    assert callable(P.clear_caches)
+    P.clear_caches()
 
 
 def test_the_participant_leaf_reads_l0_output_and_no_card_or_game_state():

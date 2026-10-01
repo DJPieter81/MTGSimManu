@@ -188,14 +188,21 @@ def _slot(host: str, span: Optional[Span]) -> Span:
     return (0, len(host)) if span is None else span
 
 
-@lru_cache(maxsize=CACHE_SIZE)
 def _delay_span(clause: str) -> Optional[Span]:
+    # Not memoised: its one caller, `_duration_rel`, is, on the same key.
     m = _DELAY_RE.search(clause) or _DELAY_UNMODELLED_RE.search(clause)
     return None if m is None else (m.start(), m.end())
 
 
+# Every table row opens with one of the DURATION_START leads, so a clause
+# holding none of them holds no duration: one search gates the twelve.
+_ANY_LEAD = re.compile(r"\b" + DURATION_START)
+
+
 @lru_cache(maxsize=CACHE_SIZE)
 def _duration_rel(clause: str):
+    if _ANY_LEAD.search(clause) is None:
+        return None
     delay = _delay_span(clause)
     best = None
     for rx, kind, code in _COMPILED:
@@ -317,4 +324,3 @@ def delay_paragraph(paragraph: str, is_spell: bool) -> Optional[SlotResult]:
 
 def clear_caches() -> None:
     _duration_rel.cache_clear()
-    _delay_span.cache_clear()
