@@ -7,9 +7,12 @@ through `lexicon.parse_loyalty_cost`. The clause frame is cut by a crude
 stand-in for L1/L2 (the structure layer is another leaf): a keyword line
 is skipped, a loyalty cost, an activation cost before a depth-0 colon, an
 ability-word label and a trigger head up to its first comma are dropped,
-and the paragraph is split into sentences at '. '. A frame word the
-stand-in leaves in ("if you do, ...") is read past by the lexicon like any
-non-verb word, so the measure is the lexicon's own.
+the paragraph is split into sentences at '. ', and a leading condition
+frame ("if|unless|as long as|while <COND>, ", "if you do, ") up to its
+first comma is dropped (section 3: L2 consumes it; `find_verb` reads a
+frame body). Without that last step a verb inside the condition ("if
+equipped creature is a vampire", "if a source would deal damage") would be
+counted as the clause's typed verb, so the measure is the lexicon's own.
 
 The leaf must not raise, must return exactly one of a typed entry or an
 Unmodelled (never a guess), and must be deterministic across a cache
@@ -29,9 +32,11 @@ from engine.effect_model import ModKind
 from engine.effect_spec import Amount, AmountKind, Stage, Verb, canonical
 
 # Measured 2026-10-01 on this branch's DB (22.7k cards; see the printed
-# report): 39,676 effect sentences after the stand-in frame; 37,751 (95.1%)
-# read a typed verb, 431 (1.1%) a recognised-unsupported action, 7 a
-# verb-only word no reading accepts, 1,487 (3.7%) no lexicon verb (mostly
+# report), with the stand-in L2 condition strip: 39,573 effect sentences
+# after the stand-in frame; 37,647 (95.1%) read a typed verb from the frame
+# body, 488 (1.2%) a recognised-unsupported action (copy effects included),
+# 24 a verb-only word no reading accepts (a coin flip, control or unspent
+# mana lost, a type set gained or lost), 1,414 (3.6%) no lexicon verb (mostly
 # characteristic-defining statics "~'s power is equal to ...", frames the
 # stand-in leaves whole, and CR 701 actions missing from payload's table:
 # earthbend, airbend, distribute). All 820 loyalty lines are read; 17 of
@@ -97,6 +102,19 @@ def hosts():
     return _l0_hosts(_faces(shared_card_database()))
 
 
+# L2's leading condition frame (section 3), up to its first comma.
+_CONDITION_RE = re.compile(r"(?:if|unless|as long as|while)\b[^,.;]*?, ")
+
+
+def _frame_body_start(p: str, start: int, end: int) -> int:
+    """The stand-in L2: past a leading condition frame of the sentence
+    ``p[start:end]``."""
+    while start < end and p[start] == " ":
+        start += 1
+    m = _CONDITION_RE.match(p, start, end)
+    return m.end() if m else start
+
+
 def _clause_start(p: str, start: int) -> int:
     """The stand-in frame: past an activation cost and a trigger head."""
     colon = p.find(": ", start)
@@ -131,10 +149,11 @@ def _run(hosts):
             start = m.end()
         start = _clause_start(p, start)
         for m in _SENT_RE.finditer(p, start):
-            span = m.span()
             if not m.group(0).strip(" ."):
                 continue
-            if _NOT_L4_RE.match(m.group(0).strip()):
+            span = (_frame_body_start(p, *m.span()), m.end())
+            if not p[span[0]:span[1]].strip(" .") or \
+                    _NOT_L4_RE.match(p[span[0]:span[1]].strip()):
                 counts["not_l4"] += 1
                 continue
             r = L.find_verb(p, span)
@@ -304,6 +323,19 @@ SERIAL_WITNESSES = (
     ("Expressive Iteration", "exile one of them", Verb.EXILE),
 )
 
+# Conditional sentences (anchor = the sentence start): L2 consumes the
+# leading condition, and the frame body reads its main-clause verb, never a
+# verb inside the condition ("is", "put", "lose").
+CONDITIONAL_WITNESSES = (
+    ("Blade of the Bloodchief", "if equipped creature is a vampire, put two",
+     Verb.PUT_COUNTERS, None),
+    ("Spelunking", "if you put a cave onto the battlefield this way, you gain",
+     Verb.GAIN_LIFE, None),
+    ("Ral, Monsoon Mage // Ral, Leyline Prodigy",
+     "if you lose the flip, ~ deals 1 damage",
+     Verb.DAMAGE, None),
+)
+
 # A12 witnesses: printed loyalty costs, variable lines included.
 LOYALTY_WITNESSES = (
     ("Chandra, Awakened Inferno", [Amount(AmountKind.LITERAL, n=2),
@@ -325,7 +357,8 @@ def test_registered_deck_witness_names_are_in_a_registered_deck():
         for part in ("mainboard", "sideboard"):
             registered.update(deck.get(part, {}))
     names = ({n for n, _ in WITNESSES} | {n for n, _, _ in SERIAL_WITNESSES}
-             | {n for n, _ in LOYALTY_WITNESSES})
+             | {n for n, _ in LOYALTY_WITNESSES}
+             | {n for n, _, _, _ in CONDITIONAL_WITNESSES})
     assert names <= registered, names - registered
 
 
@@ -355,6 +388,25 @@ def test_registered_deck_witness_sentences_read_their_printed_verb(name, rows):
         r = L.find_verb(text, (a, end if end >= 0 else len(text)))
         assert r.value is not None, (name, anchor, r)
         assert (r.value.verb, r.value.mod_kind) == (verb, mod), (name, anchor, r)
+
+
+@pytest.mark.parametrize("name,anchor,verb,mod", CONDITIONAL_WITNESSES,
+                         ids=[n for n, _, _, _ in CONDITIONAL_WITNESSES])
+def test_registered_deck_conditional_sentences_read_their_main_clause_verb(
+        name, anchor, verb, mod):
+    """The lexicon reads a frame body (section 3: L2 consumes a leading
+    'if <COND>,'); the measured stand-in strips the condition the same way,
+    so a verb inside the condition is never counted as the clause's."""
+    from engine.effect_grammar import lexicon as L
+    text = _l0(name)
+    assert anchor in text, (name, anchor, text)
+    a = text.index(anchor)
+    end = text.find(".", a)
+    body = _frame_body_start(text, a, end)
+    assert body > a, (name, anchor)
+    r = L.find_verb(text, (body, end))
+    assert r.value is not None, (name, anchor, r)
+    assert (r.value.verb, r.value.mod_kind) == (verb, mod), (name, anchor, r)
 
 
 def test_galvanic_discharge_pays_any_amount_and_practiced_offense_offers_a_choice():

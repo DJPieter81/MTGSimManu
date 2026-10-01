@@ -591,7 +591,15 @@ def find_verb(host: str, span: Optional[Span] = None, *,
     lemma; a verb-only word no reading accepts is ``CLAUSE``
     (``lexicon.no_reading:<lemma>``); a slot with no verb is ``NO_LEMMA``
     with the caller's `lemma`. A non-empty `lemma` reads only that lemma's
-    readings."""
+    readings.
+
+    The slot is a frame body (section 3). L2 owns the leading and trailing
+    frames -- a condition ``if|unless|as long as|while <COND>,``, a
+    connective (``if you do,``), a ``would`` replacement test, a duration
+    -- and consumes them before L4 asks for the lemma; the lexicon does not
+    strip them a second time. Handed a whole conditional sentence it reads
+    the first accepted word, which may be the condition's ("if equipped
+    creature is a vampire, put ..." reads "is")."""
     a, b = _trim(host, span)
     rel = _find_rel(host[a:b], lemma)
     if rel[0] == "um":
