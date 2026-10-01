@@ -75,8 +75,9 @@ import re
 from functools import lru_cache
 from typing import Optional, Tuple
 
-from engine.effect_grammar.sub import (CACHE_SIZE, SELF_NOUNS, SlotResult,
-                                       Span, rest_spans_after, unmodelled)
+from engine.effect_grammar.sub import (CACHE_SIZE, POSSESSIVE, SELF_NOUNS,
+                                       SlotResult, Span, possessive_player,
+                                       rest_spans_after, unmodelled)
 from engine.effect_grammar.sub import filter as _filter
 from engine.effect_grammar.sub import payload as _payload
 from engine.effect_grammar.sub.duration import DURATION_START
@@ -245,14 +246,9 @@ _MANA_COST_RE = re.compile(r"\bmana costs?$")
 # ── History (section 6) ────────────────────────────────────────────────
 
 _HAVE = r"(?:'ve| have| has)?"
-_UNDER = (r"(?: under (?P<under>your|an opponent's|your opponents'|their"
-          r"|its owner's|its controller's) control)?")
-# "under <possessor> control" as the filter's controller (value, anaphor).
-_UNDER_CONTROLLER = {"your": ("you", None), "an opponent's": ("opponents", None),
-                     "your opponents'": ("opponents", None),
-                     "their": ("any", "their"),
-                     "its owner's": ("any", "its owner's"),
-                     "its controller's": ("any", "its controller's")}
+# "under <possessor> control": the contract's one possessive vocabulary,
+# read as the filter's controller (value, anaphor) by `possessive_player`.
+_UNDER = r"(?: under (?P<under>%s) control)?" % POSSESSIVE
 # (event, pattern, default zone of the counted object). np is the counted
 # object (a filter phrase), who the actor, under the controller.
 _HISTORY = tuple((event, re.compile(p), zone) for event, p, zone in (
@@ -312,7 +308,7 @@ def _history(t: str, source_left: bool):
                 if filt.controller != "any" or any(
                         k == "controller" for k, _ in f.pending):
                     return _fail("history_control")
-                controller, anaphor = _UNDER_CONTROLLER[gd["under"]]
+                controller, anaphor = possessive_player(gd["under"])
                 filt = dataclasses.replace(filt, controller=controller)
                 if anaphor:
                     pending = pending + (("controller", anaphor),)

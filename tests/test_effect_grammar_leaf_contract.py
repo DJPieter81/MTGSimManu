@@ -408,6 +408,40 @@ def test_every_cards_keyword_value_is_a_typed_keyword_spelling():
         assert keywords.typed_keyword(k.value.replace("_", " ")) == (k.value, None)
 
 
+# ── One possessive vocabulary ─────────────────────────────────────────────
+
+def _possessives():
+    from engine.effect_grammar.sub import POSSESSIVES
+    return sorted(POSSESSIVES)
+
+
+@pytest.mark.parametrize("poss", _possessives())
+def test_a_zone_possessive_is_read_by_every_leaf_that_reads_a_zone(poss):
+    """One possessive vocabulary (`sub.POSSESSIVES`): a possessive the
+    destination leaf accepts on a zone noun, the filter leaf accepts on the
+    same zone noun, with the same player value `possessive_player` gives."""
+    from engine.effect_grammar.sub import dest, filter, possessive_player
+    text = "into %s graveyard" % poss
+    d = dest.parse_destination(text, (0, len(text)))
+    assert d.value == Destination("graveyard"), d
+    text = "on top of %s library" % poss
+    d = dest.parse_destination(text, (0, len(text)))
+    assert d.value == Destination("library", position="top"), d
+    f = filter.parse_filter("creature card from %s graveyard" % poss)
+    assert f.value is not None, f
+    value, anaphor = possessive_player(poss)
+    assert f.value.owner == value, f
+    assert (("owner", anaphor) in f.pending) == (anaphor is not None), f
+
+
+def test_under_a_possessives_control_reads_the_one_vocabulary():
+    from engine.effect_grammar.sub import quantity
+    for poss in ("your", "an opponent's", "its owner's", "~'s owner's",
+                 "target player's"):
+        text = "the number of creatures that died under %s control this turn" % poss
+        assert quantity.parse_quantity(text).value is not None, poss
+
+
 # ── Caches, clear_caches and import edges ──────────────────────────────
 
 def test_every_leaf_cache_is_bounded_and_cleared_by_the_package():

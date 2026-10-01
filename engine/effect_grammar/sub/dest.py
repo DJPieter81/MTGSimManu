@@ -39,7 +39,9 @@ import re
 from functools import lru_cache
 from typing import FrozenSet, Optional, Tuple
 
-from engine.effect_grammar.sub import CACHE_SIZE, SlotResult, Span, unmodelled
+from engine.effect_grammar.sub import (CACHE_SIZE, OWNER_POSSESSIVE,
+                                       POSSESSIVE, SlotResult, Span,
+                                       unmodelled)
 from engine.effect_grammar.sub import payload as _payload
 from engine.effect_spec import (Amount, AmountKind, Destination, Ref, RefKind,
                                 Stage, Unmodelled)
@@ -61,14 +63,15 @@ _DEST_OVERRIDE = "dest_override"     # effect_spec.SPEC_FLAGS
 
 # ── Closed vocabulary ──────────────────────────────────────────────────
 
-# Possessives a destination zone may carry. A9: '~'s owner's' is the
-# normalised "his/her owner's" on legendary and planeswalker faces.
-_OWNER_POSS = (r"(?:its|their|his|her|~'s|that card's|that creature's|"
-               r"that permanent's) owners?'s?")
-_ZONE_POSS = (r"(?:your|their|its|~'s|that player's|each player's|the|"
-              r"%s)" % _OWNER_POSS)
-# The one possessive vocabulary of a zone noun; the verb lexicon reads it
-# for "shuffle <object> into <library>" (A18).
+# Possessives a destination zone may carry: the contract's one possessive
+# vocabulary (`sub.POSSESSIVES`; A9: '~'s owner's' is the normalised
+# "his/her owner's" on legendary and planeswalker faces), or the
+# determiner "the". CR 400.3: a card put into a hand, library or graveyard
+# goes to its owner's, whatever the possessive names.
+_OWNER_POSS = OWNER_POSSESSIVE
+_ZONE_POSS = r"(?:%s|the)" % POSSESSIVE
+# The zone-noun possessive the verb lexicon reads for "shuffle <object>
+# into <library>" (A18).
 ZONE_POSSESSIVE = _ZONE_POSS
 
 _CONTROL_OWNER = re.compile(r"under %s control" % _OWNER_POSS)

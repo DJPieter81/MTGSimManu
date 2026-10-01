@@ -83,7 +83,8 @@ from functools import lru_cache
 from typing import Any, Dict, FrozenSet, List, Optional, Tuple
 
 from engine.effect_grammar.sub import (CACHE_SIZE, COUNT_WORDS, NUMBER_WORDS,
-                                       SlotResult, Span, unmodelled)
+                                       POSSESSIVE, SlotResult, Span,
+                                       possessive_player, unmodelled)
 from engine.effect_grammar import keywords as _kw
 from engine.effect_grammar.sub import payload as _payload
 from engine.effect_spec import (Amount, AmountKind, CardFilter, Ref, RefKind,
@@ -332,10 +333,9 @@ _WHO = (r"you|your opponents|opponents|an opponent|each opponent|target player"
 _PLAYER_CLAUSE_RE = re.compile(
     r"(?P<who>%s) (?P<neg>don't |doesn't )?(?P<verb>control|own)s?(?![\w'])"
     % _WHO)
-_POSS = (r"your|their|his or her|that player's|target player's"
-         r"|target opponent's|an opponent's|each opponent's|each player's"
-         r"|a player's|its owner's|its controller's|your opponents'"
-         r"|opponents'|defending player's|that opponent's|a single|all|any|a")
+# A zone's possessive: the contract's one possessive vocabulary
+# (`sub.POSSESSIVES`), or a determiner naming no owner.
+_POSS = r"%s|a single|all|any|a" % POSSESSIVE
 _ZONE_WORD = r"graveyards?|hands?|librar(?:y|ies)"
 _ZONE_RE = re.compile(
     r"(?:from|in) (?:(?P<exile>exile)|(?:(?P<poss>%s) )?(?P<zone>%s)"
@@ -660,7 +660,9 @@ def _filter_rel(t: str, zone: str) -> _Rel:
                 zone_phrase = _zone_name(m.group("zone"))
                 poss = m.group("poss")
                 if poss is not None:
-                    value, anaphor, ok = _player(poss, False)
+                    player = possessive_player(poss)
+                    value, anaphor, ok = ((player + (True,)) if player
+                                          else _player(poss, False))
                     if not ok:
                         return _fail("unparsed", poss.split()[0])
                     owner = value

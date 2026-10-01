@@ -78,15 +78,17 @@ reads the duration boundary from duration (one duration table).
 from __future__ import annotations
 
 import dataclasses
+import re
 from dataclasses import dataclass
 from typing import Any, FrozenSet, Optional, Tuple
 
-from engine.effect_spec import Amount, Unmodelled
+from engine.effect_spec import Amount, Ref, RefKind, Unmodelled
 from engine.target_solver import _NUMBER_WORDS as _SOLVER_NUMBER_WORDS
 
 __all__ = ["Span", "SlotResult", "unmodelled", "rest_spans_after",
            "join_spans", "SELF_NOUNS", "CACHE_SIZE", "LEAF_EDGES", "SCALED",
-           "NUMBER_WORDS", "COUNT_WORDS", "clear_caches"]
+           "NUMBER_WORDS", "COUNT_WORDS", "POSSESSIVES", "POSSESSIVE",
+           "OWNER_POSSESSIVE", "possessive_player", "clear_caches"]
 
 Span = Tuple[int, int]
 
@@ -108,6 +110,59 @@ NUMBER_WORDS.update({"twenty-" + w: 20 + n
 # The words longest first, so a regex alternation tries "twenty-one"
 # before "twenty".
 COUNT_WORDS = tuple(sorted(NUMBER_WORDS, key=len, reverse=True))
+
+# The one possessive vocabulary of every leaf: what a zone noun ("into <p>
+# graveyard", "from <p> hand", "on top of <p> library") or "under <p>
+# control" prints, by the player it names. Destination, filter, quantity
+# and the verb lexicon read it; a determiner ("the", "a", "all") is not a
+# possessive and stays with the leaf that reads it.
+_OBJECT_OWNERS = ("its", "their", "his", "her", "~'s", "that card's",
+                  "that creature's", "that permanent's")
+POSSESSIVES = {
+    "your": "you",
+    "an opponent's": "opponents", "each opponent's": "opponents",
+    "your opponents'": "opponents", "opponents'": "opponents",
+    "target player's": "target", "target opponent's": "target",
+    "defending player's": "defending",
+    "each player's": "any", "a player's": "any",
+    # Anaphors the linker binds (CR 608.2b): a player named earlier, or
+    # an object's owner / controller (A9: "~'s owner's").
+    "their": "anaphor", "his or her": "anaphor", "its": "anaphor",
+    "~'s": "anaphor", "that player's": "anaphor",
+    "that opponent's": "anaphor", "its controller's": "anaphor",
+}
+POSSESSIVES.update({"%s %s" % (o, form): "anaphor" for o in _OBJECT_OWNERS
+                    for form in ("owner's", "owners'")})
+
+
+def _alternation(words) -> str:
+    return "(?:%s)" % "|".join(
+        re.escape(w) for w in sorted(words, key=len, reverse=True))
+
+
+POSSESSIVE = _alternation(POSSESSIVES)
+# An object owner's possessive ("its owner's", "~'s owner's"): the
+# "under <owner> control" of a returned card (CR 110.2).
+OWNER_POSSESSIVE = _alternation(
+    w for w in POSSESSIVES if w.endswith(("owner's", "owners'")))
+
+
+def possessive_player(poss: str):
+    """(player value, anaphor text) of a printed possessive -- the
+    `CardFilter` controller / owner value ("you", "opponents", "any" or a
+    `Ref`) and, for an anaphor, the text the linker binds -- or None when
+    `poss` is not in `POSSESSIVES`."""
+    kind = POSSESSIVES.get(poss)
+    if kind is None:
+        return None
+    if kind == "target":
+        return Ref(RefKind.TARGET, noun=poss.split()[1][:-2]), None
+    if kind == "defending":
+        return Ref(RefKind.DEFENDING_PLAYER), None
+    if kind == "anaphor":
+        return "any", poss
+    return kind, None
+
 
 # The deferred-count flag (see "Result"): the slot's count is a trailing
 # scaler's, so the slot holds neither a value nor a refusal.
