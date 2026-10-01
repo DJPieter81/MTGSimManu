@@ -139,7 +139,7 @@ def _run(hosts):
             continue
         loyal = L.parse_loyalty_cost(p)
         start = 0
-        if loyal.value is not None or loyal.unmodelled is not None:
+        if loyal is not None:
             counts["loyalty_lines"] += 1
             counts["loyalty_typed"] += loyal.value is not None
             start = loyal.span[1]
@@ -235,7 +235,7 @@ def test_loyalty_slots_from_the_grammar_superset_agree_with_legacy_on_every_walk
             costs = []
             for p in paras:
                 r = L.parse_loyalty_cost(p)
-                if r.value is not None:
+                if r is not None and r.value is not None:
                     costs.append(L.loyalty_slot_cost(r.value))
             walkers += 1
             variable += sum(not isinstance(c, int) for c in costs)
@@ -438,5 +438,5 @@ def test_registered_deck_walkers_loyalty_lines_read_their_signed_costs(name, cos
     from engine.effect_grammar import lexicon as L
     got = [r.value for r in (L.parse_loyalty_cost(p)
                              for p in _l0(name).split("\n"))
-           if r.value is not None]
+           if r is not None and r.value is not None]
     assert got == costs

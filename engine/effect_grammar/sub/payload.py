@@ -114,7 +114,10 @@ def _finish(slot: str, offset: int, rel: _Rel, lemma: str = "") -> SlotResult:
                       amount=amount, pending=pending, alternatives=alts)
 
 
-def _slot(host: str, span: Span) -> Tuple[str, int]:
+def _slot(host: str, span: Optional[Span]) -> Tuple[str, int]:
+    """The slot text and its offset; span None is the whole host."""
+    if span is None:
+        return host, 0
     return host[span[0]:span[1]], span[0]
 
 
@@ -253,10 +256,10 @@ def _mana_rel(t: str) -> _Rel:
     return (ManaSpec(**fields), None, end, amount, (), ())
 
 
-def parse_mana(text: str, span: Span, *, lemma: str = "") -> SlotResult:
-    """The object of "add" in ``text[span]`` as a ManaSpec (a symbol
+def parse_mana(host: str, span: Optional[Span] = None, *, lemma: str = "") -> SlotResult:
+    """The object of "add" in ``host[span]`` as a ManaSpec (a symbol
     multiset)."""
-    slot, offset = _slot(text, span)
+    slot, offset = _slot(host, span)
     return _finish(slot, offset, _mana_rel(slot.strip()), lemma)
 
 
@@ -365,11 +368,11 @@ def _counters_rel(t: str) -> _Rel:
             pending, ())
 
 
-def parse_counters(text: str, span: Span, *, lemma: str = "") -> SlotResult:
-    """A counter phrase in ``text[span]`` ("two +1/+1 counters ...",
+def parse_counters(host: str, span: Optional[Span] = None, *, lemma: str = "") -> SlotResult:
+    """A counter phrase in ``host[span]`` ("two +1/+1 counters ...",
     "{e}{e}") as CounterSpec. This is the one counter noun-phrase parser:
     the destination leaf reads entry counters through it."""
-    slot, offset = _slot(text, span)
+    slot, offset = _slot(host, span)
     return _finish(slot, offset, _counters_rel(slot.strip()), lemma)
 
 
@@ -634,10 +637,10 @@ def _token_count(word: Optional[str]) -> Optional[Amount]:
     return _count(word)
 
 
-def parse_token(text: str, span: Span, *, lemma: str = "") -> SlotResult:
-    """The object of "create" in ``text[span]`` as a TokenSpec; the count
+def parse_token(host: str, span: Optional[Span] = None, *, lemma: str = "") -> SlotResult:
+    """The object of "create" in ``host[span]`` as a TokenSpec; the count
     is `amount`."""
-    slot, offset = _slot(text, span)
+    slot, offset = _slot(host, span)
     return _finish(slot, offset, _token_rel(slot.strip()), lemma)
 
 
@@ -693,13 +696,13 @@ def _split_alternatives(t: str) -> _AltSplit:
     return ((), len(t))
 
 
-def parse_alternatives(text: str, span: Span) -> Tuple[Span, ...]:
-    """A19: the option spans (into ``text``) of "your choice of X or Y" /
-    "a Food token or a Treasure token" in ``text[span]``, chosen at
+def parse_alternatives(host: str, span: Optional[Span] = None) -> Tuple[Span, ...]:
+    """A19: the option spans (into ``host``) of "your choice of X or Y" /
+    "a Food token or a Treasure token" in ``host[span]``, chosen at
     resolution; () when the slot is one payload. Trailing text a later
     sub-grammar owns (a duration, "on <object>", a scaler) is shared by
     every option and is not part of the last one."""
-    slot, offset = _slot(text, span)
+    slot, offset = _slot(host, span)
     start = offset + len(slot) - len(slot.lstrip())
     opts, _ = _split_alternatives(slot.strip())
     return tuple((start + a, start + b) for a, b in opts)
@@ -943,16 +946,16 @@ def _modification_rel(t: str) -> _Rel:
     return (None, _um("modification_unknown"), 0, None, (), ())
 
 
-def parse_modification(entry: Any, text: str, span: Span, *,
-                       lemma: Optional[str] = None) -> SlotResult:
-    """A continuous predicate in ``text[span]`` ("gets +2/+2", "gains
+def parse_modification(entry: Any, host: str, span: Optional[Span] = None, *,
+                       lemma: str = "") -> SlotResult:
+    """A continuous predicate in ``host[span]`` ("gets +2/+2", "gains
     flying", "can't block", "becomes a 3/3 ... creature") as one
     effect_model.Modification.
 
     `entry` is the lexicon entry; its `mod_kind` is a hint only -- the
     printed predicate decides the kind. `lemma` is the printed lemma
     (default: the entry's)."""
-    slot, offset = _slot(text, span)
+    slot, offset = _slot(host, span)
     return _finish(slot, offset, _modification_rel(slot.strip()),
                    _lemma(entry, lemma))
 
@@ -1013,13 +1016,13 @@ def _cost_modifier_rel(t: str) -> Optional[_Rel]:
     return (_mod(ModKind.COST_DELTA, **data), None, m.end(), None, (), ())
 
 
-def parse_cost_modifier(text: str, span: Span, *,
+def parse_cost_modifier(host: str, span: Optional[Span] = None, *,
                         lemma: str = "") -> Optional[SlotResult]:
     """A8: "This ability costs {N} less to activate ..." (and the spell /
-    static forms) in ``text[span]`` as a COST_DELTA Modification; None when
+    static forms) in ``host[span]`` as a COST_DELTA Modification; None when
     the slot is no cost modifier. Structure absorbs it into
     `cost_modifiers`."""
-    slot, offset = _slot(text, span)
+    slot, offset = _slot(host, span)
     rel = _cost_modifier_rel(slot.strip())
     return None if rel is None else _finish(slot, offset, rel, lemma)
 
@@ -1117,12 +1120,12 @@ def _keyword_action_rel(t: str) -> _Rel:
             end, None, (), ())
 
 
-def parse_keyword_action(text: str, span: Span, *,
+def parse_keyword_action(host: str, span: Optional[Span] = None, *,
                          lemma: str = "") -> SlotResult:
-    """A CR 701 keyword action clause in ``text[span]`` ("amass zombies
+    """A CR 701 keyword action clause in ``host[span]`` ("amass zombies
     2") as KeywordAction. The `expansion` stays empty: the full grammar
     fills it."""
-    slot, offset = _slot(text, span)
+    slot, offset = _slot(host, span)
     return _finish(slot, offset, _keyword_action_rel(slot.strip()), lemma)
 
 
@@ -1198,7 +1201,7 @@ _DOUBLE_PREFIX_RE = re.compile(r"the number of (?:each kind of counter\b)?")
 def _lemma(entry: Any, lemma: Optional[str]) -> str:
     """The printed lemma: the caller's, else the lexicon entry's
     (section 4: every entry carries its printed `lemma`)."""
-    if lemma is not None:
+    if lemma:
         return lemma
     return getattr(entry, "lemma", "") or ""
 
@@ -1244,14 +1247,15 @@ def _no_dropped_choice(r: SlotResult, slot: str, offset: int, lemma: str,
     return r
 
 
-def parse_payload(entry: Any, text: str, span: Span, facts: Any, *,
-                  lemma: Optional[str] = None) -> SlotResult:
-    """Type the payload slot ``text[span]`` of a clause whose lexicon entry
-    is `entry` (read: `verb`, `lemma`). `text` is the whole normalised host
-    text; every returned span indexes it. `lemma` is the printed lemma
-    (default: the entry's). `facts` is reserved for face-dependent payloads
-    and read by none today."""
-    slot, offset = _slot(text, span)
+def parse_payload(entry: Any, host: str, span: Optional[Span] = None,
+                  facts: Any = None, *, lemma: str = "") -> Optional[SlotResult]:
+    """Type the payload slot ``host[span]`` (default: the whole host) of a
+    clause whose lexicon entry is `entry` (read: `verb`, `lemma`). `host`
+    is the whole normalised host text; every returned span indexes it.
+    `lemma` is the printed lemma (default: the entry's). `facts` is
+    reserved for face-dependent payloads and read by none today. None when
+    the entry's verb takes no payload (the contract's one "nothing here")."""
+    slot, offset = _slot(host, span)
     return _payload(entry, slot, offset, _lemma(entry, lemma))
 
 
@@ -1319,9 +1323,7 @@ def _payload(entry: Any, text: str, offset: int, lemma: str) -> SlotResult:
         return _finish(text, offset, _pay_rel(t), lemma)
     if verb is Verb.CREATE_EMBLEM:
         return _finish(text, offset, _emblem_rel(t), lemma)
-    start = offset + lead
-    return SlotResult(span=(start, start),
-                      rest_spans=((start, start + len(t)),) if t else ())
+    return None
 
 
 def clear_caches() -> None:

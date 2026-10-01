@@ -558,8 +558,7 @@ def test_a_variable_loyalty_line_takes_no_slot_through_the_one_slot_owner():
 
 def test_a_paragraph_that_is_not_a_loyalty_line_has_no_loyalty_cost():
     for text in ("draw a card.", "{t}: add {g}.", "[+1] draw a card."):
-        r = _L().parse_loyalty_cost(text)
-        assert r.value is None and r.unmodelled is None, text
+        assert _L().parse_loyalty_cost(text) is None, text
 
 
 # ── Caches, edges, no re-normalisation ─────────────────────────────────

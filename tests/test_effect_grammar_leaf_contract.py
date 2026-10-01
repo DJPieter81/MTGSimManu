@@ -102,6 +102,59 @@ def test_every_leaf_result_is_the_one_shared_slot_result():
         "at the beginning of the next end step, draw a card").__class__ is sub.SlotResult
 
 
+def _slot_parsers():
+    """Every public parse_* of every grammar module that returns a
+    SlotResult (or None)."""
+    import inspect
+    out = []
+    for mod in _grammar_modules():
+        for name, fn in vars(mod).items():
+            if not (name.startswith("parse_") and callable(fn)
+                    and fn.__module__ == mod.__name__):
+                continue
+            ret = str(inspect.signature(fn).return_annotation)
+            if "SlotResult" in ret:
+                out.append((mod.__name__.rsplit(".", 1)[1], name, fn))
+    return out
+
+
+def test_every_slot_parser_takes_host_span_and_a_keyword_lemma():
+    """One calling convention: (host, span=None, *, lemma="", ...); the
+    entry-first payload dispatchers are the documented exception."""
+    import inspect
+    parsers = _slot_parsers()
+    assert len(parsers) >= 20
+    for leaf, name, fn in parsers:
+        params = list(inspect.signature(fn).parameters.values())
+        if (leaf, name) in {("payload", "parse_payload"),
+                            ("payload", "parse_modification")}:
+            assert params[0].name == "entry", name
+            params = params[1:]
+        assert [p.name for p in params[:2]] == ["host", "span"], (leaf, name)
+        assert params[1].default is None, (leaf, name)
+        lemma = inspect.signature(fn).parameters["lemma"]
+        assert lemma.kind is inspect.Parameter.KEYWORD_ONLY, (leaf, name)
+        assert lemma.default == "", (leaf, name)
+
+
+@pytest.mark.parametrize("call", [
+    lambda: __import__("engine.effect_grammar.sub.payload", fromlist=["x"]
+                       ).parse_payload(_Entry(Verb.DRAW, "draw"), "two cards"),
+    lambda: __import__("engine.effect_grammar.sub.duration", fromlist=["x"]
+                       ).parse_duration("draw two cards"),
+    lambda: __import__("engine.effect_grammar.sub.condition", fromlist=["x"]
+                       ).parse_condition("for as long as you control ~"),
+    lambda: __import__("engine.effect_grammar.sub.target", fromlist=["x"]
+                       ).parse_target("each creature you control"),
+    lambda: __import__("engine.effect_grammar.lexicon", fromlist=["x"]
+                       ).parse_loyalty_cost("draw a card."),
+    lambda: __import__("engine.effect_grammar.keywords", fromlist=["x"]
+                       ).parse_keyword_line("scry 2."),
+])
+def test_nothing_here_is_none_the_one_absent_encoding(call):
+    assert call() is None
+
+
 # ── The rest is host spans, so leaves compose ──────────────────────────
 
 def test_a_later_leaf_reads_an_earlier_leafs_rest_spans_with_host_offsets():
@@ -194,8 +247,8 @@ def test_an_unmodelled_detail_is_leaf_dot_code_from_a_closed_list(call):
 
 
 def test_a_slot_with_neither_value_nor_refusal_is_one_of_the_declared_cases():
-    """The contract's both-None cases are closed: "no payload here", an A19
-    choice whose options are in ``alternatives``, or a deferred count -- a
+    """The contract's both-None cases are closed: an A19 choice whose
+    options are in ``alternatives``, or a deferred count -- a
     phrase that holds no count of its own because a trailing scaler holds
     it ("a number of cards equal to ..."), flagged with the contract's one
     `SCALED` marker. A leaf never returns both-None any other way, so the

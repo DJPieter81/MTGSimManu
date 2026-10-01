@@ -271,8 +271,8 @@ def _parse_rel(s: str, lemma: str):
     return None, _unmodelled(Stage.CLAUSE, lemma, "no_head")
 
 
-def _trim(text: str, span: Span) -> Span:
-    start, end = span
+def _trim(text: str, span: Optional[Span]) -> Span:
+    start, end = (0, len(text)) if span is None else span
     while start < end and text[start].isspace():
         start += 1
     while end > start and text[end - 1].isspace():
@@ -280,13 +280,15 @@ def _trim(text: str, span: Span) -> Span:
     return start, end
 
 
-def parse_destination(text: str, span: Span, *, lemma: str = "") -> SlotResult:
-    """Type the destination PP that fills ``text[span]``.
+def parse_destination(host: str, span: Optional[Span] = None, *,
+                      lemma: str = "") -> SlotResult:
+    """Type the destination PP that fills ``host[span]`` (default: the
+    whole host).
 
     ``lemma`` is the move verb's lemma when the caller knows it; 'shuffle'
     makes "into <library>" a shuffle-into (A18) and admits no other zone."""
-    start, end = _trim(text, span)
-    value, bad = _parse_rel(text[start:end], lemma)
+    start, end = _trim(host, span)
+    value, bad = _parse_rel(host[start:end], lemma)
     return SlotResult(value=value, span=(start, end), unmodelled=bad)
 
 
@@ -391,7 +393,8 @@ def _instead_rel(s: str, linked: bool, lemma: str):
     return dataclasses.replace(dest, instead_of=replaced), None, obj
 
 
-def parse_instead_of(text: str, span: Span, *, linked: bool = False,
+def parse_instead_of(host: str, span: Optional[Span] = None, *,
+                     linked: bool = False,
                      lemma: str = "") -> SlotResult:
     """Type "<move VP> instead of putting it into <zone>" as a destination
     override of the named action: ``Destination(zone, instead_of=<replaced
@@ -406,8 +409,8 @@ def parse_instead_of(text: str, span: Span, *, linked: bool = False,
     refused as ``instead_of_unlinked``. Neither carries the flag.
 
     ``lemma`` is the caller's printed lemma of the overriding move."""
-    start, end = _trim(text, span)
-    value, bad, obj = _instead_rel(text[start:end], linked, lemma)
+    start, end = _trim(host, span)
+    value, bad, obj = _instead_rel(host[start:end], linked, lemma)
     return SlotResult(
         value=value, span=(start, end), unmodelled=bad,
         flags=frozenset({_DEST_OVERRIDE}) if value is not None else frozenset(),

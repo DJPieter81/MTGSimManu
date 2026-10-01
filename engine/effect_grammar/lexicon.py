@@ -656,18 +656,18 @@ def _loyalty_rel(t: str):
 
 
 def parse_loyalty_cost(host: str, span: Optional[Span] = None, *,
-                       lemma: str = "") -> SlotResult:
+                       lemma: str = "") -> Optional[SlotResult]:
     """A12: the loyalty cost opening the paragraph ``host[span]``.
 
     ``value`` is the signed cost: ``Amount(LITERAL, n=+-N)`` for a fixed
     cost, ``Amount(X, n=+-1)`` for ``[+X]`` / ``[-X]`` (X bound from the
     paid loyalty cost, CR 107.3, 606.4); ``span`` covers ``[...]:``;
     ``rest_spans`` is the line's body. A paragraph that is not a loyalty
-    line gives an empty SlotResult (value and unmodelled both None)."""
+    line gives None (the contract's one "nothing here")."""
     a, b = _trim(host, span)
     rel = _loyalty_rel(host[a:b])
     if rel is None:
-        return SlotResult(span=(a, a))
+        return None
     value, end = rel
     if value == "um":
         return SlotResult(unmodelled=_um(Stage.STRUCTURE, lemma,

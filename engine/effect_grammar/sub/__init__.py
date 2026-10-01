@@ -8,19 +8,30 @@ spine calls every leaf the same way and the section 3 coverage invariant
 (every character of an effect-bearing host is covered by a spec, frame or
 rider span) can be checked uniformly.
 
-**Calling convention.** A slot parser takes ``(host, span, *, lemma="")``:
-``host`` is the WHOLE normalised host text and ``span`` the slot inside it
-(``host[span[0]:span[1]]``). ``span`` defaults to the whole host where a
-leaf allows it. Every span a leaf returns indexes ``host``, never the slot
-and never a rewritten string.
+**Calling convention.** A slot parser (every public ``parse_*`` that
+returns a `SlotResult`, in every grammar module) takes
+``(host, span=None, *, lemma="", <leaf keywords>)``: ``host`` is the WHOLE
+normalised host text and ``span`` the slot inside it
+(``host[span[0]:span[1]]``), None for the whole host. Every span a leaf
+returns indexes ``host``, never the slot and never a rewritten string. The
+one exception is payload's ``parse_payload(entry, host, span=None,
+facts=None, *, lemma="")`` and ``parse_modification(entry, host, ...)``:
+the lexicon entry L4 read comes first because it selects the payload
+grammar, and its lemma is the default printed lemma.
 
-**Result.** A slot parser returns one `SlotResult`:
+**Nothing here.** A slot parser returns ``None`` -- the one "absent"
+encoding -- when its slot holds nothing of its kind: a verb that takes no
+payload, no duration, no delay, no condition, no counted target word, no
+chooser, no leading "for each", no keyword line, no cost rule, no loyalty
+cost, no cost modifier.
 
-* ``value`` XOR ``unmodelled`` on a parse; both None only in three
-  closed cases: "no payload here", an A19 choice whose options are in
-  ``alternatives``, or a deferred count -- a phrase holding no count of its
-  own because a trailing scaler holds it ("a number of cards equal to
-  ..."), flagged `SCALED`, with the phrase as ``span``;
+**Result.** Otherwise a slot parser returns one `SlotResult`:
+
+* ``value`` XOR ``unmodelled`` on a parse; both None only in two closed
+  cases: an A19 choice whose options are in ``alternatives``, or a
+  deferred count -- a phrase holding no count of its own because a
+  trailing scaler holds it ("a number of cards equal to ..."), flagged
+  `SCALED`, with the phrase as ``span``;
 * ``span``: the consumed phrase on success; the WHOLE (whitespace-trimmed)
   slot on failure, so the census and the coverage invariant see the text
   the leaf did not consume;

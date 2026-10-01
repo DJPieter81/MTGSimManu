@@ -415,10 +415,10 @@ def test_an_emblem_payload_is_a_granted_placeholder():
     assert ("granted", "⟨q1⟩") in r.pending
 
 
-def test_a_verb_without_a_payload_returns_an_empty_result():
-    r = parse_payload(_Entry(Verb.DRAW, "draw"), "two cards", (0, 9), None)
-    assert r.value is None and r.unmodelled is None
-    assert _rest(r, "two cards") == "two cards"
+def test_a_verb_without_a_payload_returns_nothing_here():
+    """The contract's one "nothing here" encoding is None."""
+    assert parse_payload(_Entry(Verb.DRAW, "draw"), "two cards", (0, 9),
+                         None) is None
 
 
 def test_the_payload_parse_is_a_pure_function_of_its_text():
