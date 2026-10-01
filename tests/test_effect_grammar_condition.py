@@ -552,3 +552,115 @@ def test_the_condition_leaf_reads_l0_output_without_re_normalising():
     src = (SUB / "condition.py").read_text()
     assert "’" not in src
     assert ".lower()" not in src
+
+
+# ── Review: the condition is checked, not the clause it gates ──────────
+
+@pytest.mark.parametrize("host,cond,rest", [
+    ("if you control a creature, damage that would be dealt to you is prevented",
+     "if you control a creature", "damage that would be dealt to you is prevented"),
+    ("if ~ was kicked, untap all forests put onto the battlefield this way",
+     "if ~ was kicked", "untap all forests put onto the battlefield this way"),
+    ("if you control a forest, exile the cards revealed this way",
+     "if you control a forest", "exile the cards revealed this way"),
+])
+def test_a_leading_condition_whose_gated_clause_says_would_or_this_way_is_still_a_condition(
+        host, cond, rest):
+    """Section 6: 'would' and 'this way' make the *condition* structure;
+    the same words in the clause the condition gates do not."""
+    r = C.parse_condition(host, (0, len(host)), lemma="x")
+    assert r is not None and r.value is not None, (host, r)
+    assert host[slice(*r.span)] == cond
+    assert r.rest_text(host) == rest
+
+
+# ── Review: a player quantifier is never collapsed ─────────────────────
+
+@pytest.mark.parametrize("text,detail", [
+    ("if each opponent has 10 or less life", "condition.quantifier:each"),
+    ("if each player has 10 or less life", "condition.quantifier:each"),
+    ("if each opponent controls no creatures", "condition.quantifier:each"),
+    ("if all opponents control no creatures", "condition.quantifier:all"),
+    ("if each opponent lost life this turn", "condition.quantifier:each"),
+    ("if you control more creatures than each other player",
+     "condition.quantifier:each"),
+    ("if you control more creatures than each opponent",
+     "condition.quantifier:each"),
+    ("if you control more creatures than an opponent",
+     "condition.quantifier:some"),
+    ("if you have more life than an opponent", "condition.quantifier:some"),
+])
+def test_a_universal_or_set_comparand_player_quantifier_is_refused(text, detail):
+    """A condition over a multi-member player set is read existentially
+    (some member satisfies it); 'each' / 'all' and a comparand over a set
+    (whose count is no one player's) have no encoding and are refused,
+    never read as the existential."""
+    r = _cond(text)
+    assert r.value is None and r.unmodelled.detail == detail, (text, r)
+
+
+@pytest.mark.parametrize("text,payer", [
+    ("if an opponent has 10 or less life", Selector(SelectorKind.OPPONENTS)),
+    ("if a player has 10 or less life", Selector(SelectorKind.ALL_PLAYERS)),
+    ("if an opponent controls no creatures", Selector(SelectorKind.OPPONENTS)),
+    ("if a player controls three or more creatures",
+     Selector(SelectorKind.ALL_PLAYERS)),
+])
+def test_an_existential_player_set_condition_names_the_set_as_its_payer(text, payer):
+    """'an opponent' / 'a player' is the existential reading; a count over
+    it carries the set as payer, so it differs from the summed 'there
+    are' count over the same filter."""
+    v = _value(text).value
+    assert v.payer == payer, (text, v)
+
+
+def test_an_existential_player_count_is_not_the_summed_board_count():
+    a = _value("if a player controls three or more creatures").value
+    b = _value("if there are three or more creatures on the battlefield").value
+    assert _raw_free(a) != _raw_free(b)
+
+
+# ── Review: past-tense state is never present state ────────────────────
+
+@pytest.mark.parametrize("text,detail", [
+    ("if you controlled a creature", "condition.unparsed:controlled"),
+    ("if you controlled more creatures than an opponent",
+     "condition.unparsed:controlled"),
+    ("if you had a card in hand", "condition.unparsed:had"),
+    ("if you had 10 or less life", "condition.unparsed:had"),
+    ("if you had more life than that player", "condition.unparsed:had"),
+])
+def test_a_past_tense_count_or_player_state_is_never_a_present_state(text, detail):
+    """CR 608.2h: past-tense state is last-known information; a count or a
+    player's state has no LKI encoding, so it is refused, not read now."""
+    r = _cond(text)
+    assert r.value is None and r.unmodelled.detail == detail, (text, r)
+
+
+# ── Review: an object on the battlefield is an object condition ────────
+
+@pytest.mark.parametrize("text,ref,pending", [
+    ("as long as ~ is on the battlefield", Ref(RefKind.SELF), ()),
+    ("if it is on the battlefield", None, (("ref", "it"),)),
+])
+def test_a_reference_on_the_battlefield_is_an_object_zone_condition(text, ref, pending):
+    r = _value(text)
+    assert _raw_free(r.value) == Condition(
+        ConditionKind.OBJECT, pred="in_zone", ref=ref,
+        filter=CardFilter(zone="battlefield"))
+    assert r.pending == pending
+
+
+# ── Review: an ordinal cast is history, not a turn designation ─────────
+
+@pytest.mark.parametrize("text,detail", [
+    ("if it's the second creature spell you cast this turn",
+     "condition.history_event:ordinal"),
+    ("if it's the first instant spell you've cast this turn",
+     "condition.history_event:ordinal"),
+    ("if it's your end step", "condition.turn"),
+    ("if it's an opponent's turn", "condition.turn"),
+])
+def test_an_ordinal_cast_condition_is_refused_as_history_not_as_a_turn(text, detail):
+    r = _cond(text)
+    assert r.value is None and r.unmodelled.detail == detail, (text, r)

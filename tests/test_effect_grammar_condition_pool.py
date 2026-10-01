@@ -85,10 +85,13 @@ def _walk(c: Condition):
 
 
 # Typed share of the non-structural slots per frame, measured 2026-10-01 on
-# this branch's DB (22.7k cards, 3727 distinct slots): leading 1159/1660
-# (69.8%, 890 more structural), trailing 255/389 (65.6%), unless 125/224
-# (55.8%), as_long_as 361/518 (69.7%, 40 "for as long as"); 1900/2791
-# (68.1%) overall. The floors sit a few points under the measurement. The parse is deterministic, so a fall
+# this branch's DB (22.7k cards, 3727 distinct slots): leading 1156/1675
+# (69.0%, 875 more structural), trailing 251/389 (64.5%), unless 125/224
+# (55.8%), as_long_as 359/518 (69.3%, 40 "for as long as"); 1891/2806
+# (67.4%) overall. (Re-measured after the review fixes: 15 leading slots
+# a gated clause's "would" / "this way" had dropped as structure are now
+# typed or refused, and universal player quantifiers, set comparands and
+# past-tense counts are refused instead of typed as a broader state.) The floors sit a few points under the measurement. The parse is deterministic, so a fall
 # below a floor is a closed-table regression; a DB refresh moves the share
 # by far less. The refusals are the closed table working, not gaps:
 # replacement and performed-gating shapes the stand-in cannot tell from a
@@ -119,6 +122,14 @@ def test_the_condition_leaf_types_or_refuses_every_pool_condition_slot_determini
     kinds, codes = Counter(), Counter()
     for frame, host, (a, b), r in first:
         if r is None:
+            # Structure is the condition phrase's own: the slot cut at its
+            # first comma (the leading condition alone) is structure too,
+            # so a "would" / "this way" in the gated clause never drops a
+            # parseable condition.
+            slot = host[a:b]
+            head = slot.split(", ", 1)[0]
+            assert C.parse_condition(head, (0, len(head)), lemma="x") is None, (
+                host, head)
             structural[frame] += 1
             continue
         assert (r.value is None) != (r.unmodelled is None), (host, r)

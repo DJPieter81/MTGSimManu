@@ -17,7 +17,10 @@ phrase is the caller's structure, not a predicate -- for performed-gating
 ("if you do", "if they don't", "if a player does", A14), any "... this
 way" result or destination override ("if that spell is countered this
 way", A15), a replacement's "would" (CR 614.1a), the requirement rider "if
-able" (CR 508.1d) and "for as long as" (the duration leaf's). Trigger-side
+able" (CR 508.1d) and "for as long as" (the duration leaf's). Only the
+condition phrase is read for these (up to a leading condition's comma): a
+"would" or "this way" in the clause it gates is that clause's, so "if
+<COND>, <clause ... this way>" is a typed condition. Trigger-side
 filters stay in ``TriggerHead.frequency_raw`` and a reflexive "when you
 do, if ..." is the sub-ability head's intervening-if (F9): the caller
 passes only the "if ..." part.
@@ -34,6 +37,18 @@ passes only the "if ..." part.
   ``neither_day_nor_night`` (CR 730). The player whose state is read is
   ``payer`` (a player set) or ``ref`` (a player reference); a count's
   player is the filter's controller or owner;
+
+  **Player quantifiers.** A predicate over a multi-member player set is
+  read existentially -- some member satisfies it ("an opponent", "a
+  player", "another player"); a count over such a set also names it as
+  ``payer``, so it is never the summed count of "there are N ...". The
+  universal "each" / "every" and a bare plural ("all opponents") have no
+  encoding and are refused (``condition.quantifier:each|all``), and so is
+  a comparand player that is a set ("more lands than an opponent",
+  ``condition.quantifier:some``): the comparand quantity reads one player.
+  A past-tense count or player state ("you controlled", "you had", CR
+  608.2h) has no last-known-information encoding and is refused
+  (``condition.unparsed:controlled|had``);
 * OBJECT -- an object the ability already knows (``ref``, or a pronoun the
   linker binds): ``is`` (a characteristic, state or controller, as a
   CardFilter with no zone), ``in_zone``, ``power`` / ``toughness`` /
@@ -45,6 +60,9 @@ passes only the "if ..." part.
   CostSnapshot in ``cost``, CR 601.2h), ``mana_spent_total``,
   ``additional_cost_paid`` (CR 601.2f) and ``x`` (the chosen X, CR 107.3);
 * TURN -- ``your_turn``, ``not_your_turn`` (A2), ``your_main_phase``;
+  another turn, phase or step designation is ``condition.turn``, and an
+  ordinal over this turn's casts ("it's the second creature spell you
+  cast this turn") ``condition.history_event:ordinal``;
 * HISTORY -- what happened this turn (`HISTORY_PREDS`, the quantity leaf's
   event vocabulary plus ``permanent_left``, revolt). "this turn" closing a
   condition is history and the condition consumes it; it is never left as
@@ -272,15 +290,26 @@ _SELECTOR_PLAYER = {SelectorKind.PLAYER: "you",
                     SelectorKind.ALL_PLAYERS: "any"}
 
 
+# The player sets with more than one member: a predicate over one of them
+# needs a quantifier (some member / every member).
+_MULTI = frozenset({SelectorKind.OPPONENTS, SelectorKind.ALL_PLAYERS})
+
+
 class _Player:
     """A printed player: ``selector`` (a set), ``ref`` (a reference) or an
     anaphor (``text`` left to the linker); ``value`` is its spelling in a
-    CardFilter controller / owner and a Quantity player."""
-    __slots__ = ("selector", "ref", "pending", "text", "value")
+    CardFilter controller / owner and a Quantity player.
 
-    def __init__(self, selector, ref, pending, text):
+    ``quantifier`` is "" for one player, and for a multi-member set
+    "some" (the existential "an opponent", "a player", "another player"),
+    "each" ("each" / "every", the participant leaf's EACH) or "all" (a
+    bare plural, "all opponents", "your opponents")."""
+    __slots__ = ("selector", "ref", "pending", "text", "value", "quantifier")
+
+    def __init__(self, selector, ref, pending, text, quantifier=""):
         self.selector, self.ref, self.pending, self.text = (
             selector, ref, tuple(pending), text)
+        self.quantifier = quantifier
         if selector is not None:
             self.value = _SELECTOR_PLAYER[selector.kind]
         elif ref is not None:
@@ -315,10 +344,45 @@ def _player(t: str, a: int, b: int) -> Optional[_Player]:
         return None
     v = r.value
     if isinstance(v, Selector):
-        return _Player(v, None, r.pending, text)
+        quantifier = ""
+        if v.kind in _MULTI:
+            quantifier = ("each" if _participant.EACH in r.flags
+                          else "some" if r.amount is not None else "all")
+        return _Player(v, None, r.pending, text, quantifier)
     if isinstance(v, Ref):
         return _Player(None, v, r.pending, text)
     return _Player(None, None, r.pending, text)
+
+
+def _universal(player: _Player) -> Optional["_W"]:
+    """The refusal of a condition's subject player read universally.
+
+    A predicate over a multi-member set is read existentially (some
+    member satisfies it, the "an opponent" reading); "each" / "all" has no
+    encoding in a Condition and is refused rather than collapsed into the
+    existential."""
+    if player.quantifier in ("each", "all"):
+        return _fail("quantifier", player.quantifier)
+    return None
+
+
+def _one_player(player: _Player) -> Optional["_W"]:
+    """The refusal of a comparand player that is no one player: the
+    comparand quantity reads one player's measure, and a set's ("than an
+    opponent", "than each other player") is neither its minimum nor its
+    maximum."""
+    if player.quantifier:
+        return _fail("quantifier", player.quantifier)
+    return None
+
+
+def _set_payer(player: Optional[_Player]) -> Optional[Selector]:
+    """The payer of a count whose player is a multi-member set: the set
+    whose members are each measured (some member's count satisfies the
+    comparison), never the summed count of "there are"."""
+    if player is not None and player.quantifier:
+        return player.selector
+    return None
 
 
 def _object(t: str, a: int, b: int):
@@ -423,7 +487,8 @@ def _count_condition(t: str, a: int, b: int, field: str,
             if f is None:
                 return _fail("subject", field)
         children.append(Condition(ConditionKind.STATE, pred=pred, filter=f,
-                                  op=op, n=n, raw=f.raw))
+                                  payer=_set_payer(player), op=op, n=n,
+                                  raw=f.raw))
         pending.extend(p)
     if player is not None:
         pending.extend(player.anaphor_pending(field))
@@ -457,7 +522,10 @@ _TURN = {
     "it is not your turn": "not_your_turn",
     "it's your main phase": "your_main_phase",
 }
-_TURN_SHAPE_RE = re.compile(r"^it(?:'s| is| isn't) .*\b(?:turn|phase|step)$")
+# A turn, phase or step designation the closed TURN table lacks.
+_TURN_SHAPE_RE = re.compile(
+    r"^it(?:'s| is| isn't| is not) (?:not )?(?:your|an opponent's|the|their"
+    r"|that player's) .*\b(?:turn|phase|step)$")
 _DAY_NIGHT = {"it's day": "day", "it's night": "night",
               "it's neither day nor night": "neither_day_nor_night"}
 
@@ -466,6 +534,11 @@ _ORDINALS = {"first": 1, "second": 2, "third": 3, "fourth": 4, "fifth": 5,
 _ORDINAL_RE = re.compile(
     r"(?:this|it)(?: is|'s) the (?P<o>%s) time"
     r"(?: this ability has resolved this turn)?" % "|".join(_ORDINALS))
+# "it's the Nth <spell> you cast this turn": a HISTORY ordinal over cast
+# events, which the table has no predicate for (and never a TURN row).
+_ORDINAL_CAST_RE = re.compile(
+    r"(?:it|this|that spell|~)(?:'s| is| was) the (?:%s) .+ cast this turn"
+    % "|".join(_ORDINALS))
 
 
 def _fixed(t: str) -> Optional[_W]:
@@ -479,6 +552,8 @@ def _fixed(t: str) -> Optional[_W]:
         n = Amount(AmountKind.LITERAL, n=_ORDINALS[m.group("o")])
         return _ok(Condition(ConditionKind.RESOLUTION_ORDINAL, pred="resolved",
                              op="==", n=n, raw=t))
+    if _ORDINAL_CAST_RE.fullmatch(t):
+        return _fail("history_event", "ordinal")
     if _TURN_SHAPE_RE.match(t):
         return _fail("turn")
     return None
@@ -654,6 +729,9 @@ def _actor_event(t: str, m) -> Optional[_W]:
     player = _player(t, *m.span("subj"))
     if player is None:
         return None
+    refusal = _universal(player)
+    if refusal is not None:
+        return refusal
     event = _EVENTS[m.group("ev")]
     rest = m.group("rest").strip()
     rest_a = m.end("rest") - len(rest)
@@ -745,6 +823,9 @@ def _comparand_count(t: str, m, field: str, zone: str, player: _Player,
     p2 = _player(t, *m.span("p2"))
     if p2 is None:
         return _fail("subject", "comparand")
+    refusal = _universal(player) or _one_player(p2)
+    if refusal is not None:
+        return refusal
     f = _filter.parse_filter(t, m.span("np"), zone=zone)
     if f.value is None:
         return _fail("filter", _code_of(f))
@@ -760,7 +841,7 @@ def _comparand_count(t: str, m, field: str, zone: str, player: _Player,
     pending = f.pending + player.anaphor_pending(field) + p2.anaphor_pending(field)
     op = ">" if m.group("dir") == "more" else "<"
     return _ok(Condition(ConditionKind.STATE, pred="count", filter=mine,
-                         op=op, n=n, raw=t), pending)
+                         payer=_set_payer(player), op=op, n=n, raw=t), pending)
 
 
 def _control(t: str) -> Optional[_W]:
@@ -774,6 +855,14 @@ def _control(t: str) -> Optional[_W]:
     past = m.group("v") == "controlled"
     a, b = m.span("obj")
     o = _object(t, a, b)
+    if o is None:
+        refusal = _universal(player)
+        if refusal is not None:
+            return refusal
+        if past:
+            # CR 608.2h: what a player controlled is last-known
+            # information; a count has no LKI encoding.
+            return _fail("unparsed", "controlled")
     if o is not None:
         ref, pending = o
         ref, flags = _lki(ref, pending, past)
@@ -810,9 +899,15 @@ _QUANTITY_STATE = {QuantityKind.CARD_TYPES_IN_GRAVEYARD: "card_types",
 
 
 def _there(t: str) -> Optional[_W]:
-    m = _THERE_RE.fullmatch(t) or _ON_BF_RE.fullmatch(t)
+    m = _THERE_RE.fullmatch(t)
     if m is None:
-        return None
+        m = _ON_BF_RE.fullmatch(t)
+        if m is None:
+            return None
+        if _object(t, *m.span("np")) is not None:
+            # "<reference> is on the battlefield" is an OBJECT in_zone
+            # condition (`_object_rows`), not a count.
+            return None
     a, b = m.span("np")
     cmp = _cmp_pre(t, a)
     if cmp is not None:
@@ -891,6 +986,9 @@ def _player_has(t: str) -> Optional[_W]:
     if m is not None:
         player = _player(t, *m.span("subj"))
         if player is not None:
+            refusal = _universal(player)
+            if refusal is not None:
+                return refusal
             if m.group("obj") == "the monarch":
                 w = _player_state("monarch", player, t)
             else:
@@ -903,6 +1001,9 @@ def _player_has(t: str) -> Optional[_W]:
         player = _player(head, 0, len(head))
         if player is None:
             return _fail("subject", "life")
+        refusal = _universal(player)
+        if refusal is not None:
+            return refusal
         op, n, pending, failure = _cmp_post(t, m.end())
         if failure is not None:
             return _fail(*failure)
@@ -913,6 +1014,20 @@ def _player_has(t: str) -> Optional[_W]:
     player = _player(t, *m.span("subj"))
     if player is None:
         return None
+    w = _player_has_obj(t, m, player)
+    if w is not None and w[0] is not None:
+        refusal = _universal(player)
+        if refusal is not None:
+            return refusal
+        if m.group("v") == "had":
+            # CR 608.2h: a player's past state is last-known information;
+            # a player state has no LKI encoding.
+            return _fail("unparsed", "had")
+    return w
+
+
+def _player_has_obj(t: str, m, player: _Player) -> Optional[_W]:
+    """The "<player> has <obj>" rows, the verb's tense aside."""
     negated = bool(m.group("neg"))
     a, b = m.span("obj")
     obj = t[a:b]
@@ -927,6 +1042,9 @@ def _player_has(t: str) -> Optional[_W]:
         p2 = _player(t, *mm.span("p2"))
         if p2 is None:
             return _fail("subject", "comparand")
+        refusal = _one_player(p2)
+        if refusal is not None:
+            return refusal
         q = Quantity(QuantityKind.LIFE_TOTAL, player=p2.value, raw=t[mm.start("p2"):])
         op = ">" if mm.group("dir") == "more" else "<"
         return _player_state("life_total", player, t, op,
@@ -1249,8 +1367,12 @@ _STRUCTURAL_RE = re.compile(r"\bthis way\b|\bwould\b")
 
 
 def _structural(inner: str) -> bool:
+    """Whether the condition phrase ``inner`` (the connective's body up to
+    the leading condition's own comma) is structure. Only the condition is
+    read: a "would" or "this way" in the clause the condition gates is
+    that clause's, never the condition's."""
     return bool(_PERFORMED_RE.match(inner) or _STRUCTURAL_RE.search(inner)
-                or inner == "able" or inner.startswith("able,"))
+                or inner == "able")
 
 
 def parse_condition(host: str, span: Optional[Span] = None, *,
@@ -1278,15 +1400,19 @@ def parse_condition(host: str, span: Optional[Span] = None, *,
     if conn == "for as long as":
         return None
     pos = m.end() if m else 0
-    inner = body[pos:]
-    if conn != "unless" and _structural(inner):
-        return None
     ends = [len(body)] + sorted(
         (c.start() for c in re.finditer(", ", body) if c.start() > pos),
         reverse=True)
+    # ends[-1] is the first comma: the leading condition's own boundary.
+    if conn != "unless" and _structural(body[pos:ends[-1]]):
+        return None
     failure = None
     for end in ends:
         text = body[pos:end]
+        if conn != "unless" and _STRUCTURAL_RE.search(text):
+            # A longer cut reaching into the gated clause's "would" /
+            # "this way" is never the condition.
+            continue
         if conn == "unless":
             value, fail, pending, flags, used = _unless_rel(text)
         else:
