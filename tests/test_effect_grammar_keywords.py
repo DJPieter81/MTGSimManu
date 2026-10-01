@@ -22,6 +22,7 @@ from __future__ import annotations
 import ast
 import re
 from pathlib import Path
+from string import Template
 
 import pytest
 
@@ -451,10 +452,10 @@ def test_every_typed_keyword_action_and_predefined_token_has_an_expansion():
 
 def test_an_expansion_is_l0_text_with_every_parameter_filled():
     kw = _kw()
-    for name, e in kw.EXPANSIONS.items():
+    for name, e in [*kw.EXPANSIONS.items(), *kw.SPELL_EXPANSIONS.items()]:
         args = {p: "2" if p == "n" else ("zombie" if p == "subtype" else "~")
                 for p in e.params}
-        text = kw.expansion_text(name, **args)
+        text = Template(e.template).substitute(args)
         assert "$" not in text, name
         assert text == "" or text.endswith("."), name
         assert text == re.sub(r"\s+", " ", text).strip(), name
@@ -466,6 +467,23 @@ def test_an_expansion_is_l0_text_with_every_parameter_filled():
     assert kw.expansion_text("blorp") is None
     with pytest.raises(KeyError):
         kw.expansion_text("adapt")
+
+
+def test_support_on_a_spell_may_target_any_creature_and_on_a_permanent_only_others():
+    """CR 701.41a: support N on a permanent puts counters on up to N *other*
+    target creatures; on an instant or sorcery there is no 'other' -- the
+    spell may target any creature."""
+    kw = _kw()
+    assert kw.expansion_text("support", n="2") == (
+        "put a +1/+1 counter on each of up to 2 other target creatures.")
+    assert kw.expansion_text("support", spell=True, n="2") == (
+        "put a +1/+1 counter on each of up to 2 target creatures.")
+    # An action with one meaning has it on either host.
+    assert kw.expansion_text("adapt", spell=True, n="1") == kw.expansion_text(
+        "adapt", n="1")
+    for name, e in kw.SPELL_EXPANSIONS.items():
+        assert name in kw.EXPANSIONS and e.section == kw.EXPANSIONS[name].section
+        assert e.params == kw.EXPANSIONS[name].params, name
 
 
 # ── Leaf conventions ───────────────────────────────────────────────────

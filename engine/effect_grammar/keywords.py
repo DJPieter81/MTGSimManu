@@ -49,7 +49,7 @@ from engine.effect_spec import KeywordSpec, Stage, freeze_cost
 from engine.oracle_parser import parse_activation_cost
 
 __all__ = ["LEAF", "DETAIL_CODES", "KEYWORD_ABILITIES", "Expansion",
-           "EXPANSIONS", "canonical_keyword", "keywords702",
+           "EXPANSIONS", "SPELL_EXPANSIONS", "canonical_keyword", "keywords702",
            "parse_keyword_line", "parse_cost_rule", "expansion_text",
            "clear_caches"]
 
@@ -494,7 +494,8 @@ def _x(section: str, host: str, template: str) -> Expansion:
 
 
 EXPANSIONS: Mapping[str, Expansion] = {
-    # CR 701 keyword actions: what the action instructs.
+    # CR 701 keyword actions: what the action instructs. A permanent's
+    # meaning where an instant or sorcery's differs (SPELL_EXPANSIONS).
     "investigate": _x("701", "effect", "create a clue token."),
     "proliferate": _x("701", "effect",
                       "choose any number of permanents and/or players, then "
@@ -644,12 +645,24 @@ EXPANSIONS: Mapping[str, Expansion] = {
 }
 
 
-def expansion_text(name: str, **params: str) -> Optional[str]:
+# Keyword actions whose rules English differs when an instant or sorcery
+# performs them: the permanent form in EXPANSIONS, the spell form here.
+SPELL_EXPANSIONS: Mapping[str, Expansion] = {
+    # CR 701.41a: a spell has no "other" to exclude.
+    "support": _x("701", "effect",
+                  "put a +1/+1 counter on each of up to $n target creatures."),
+}
+
+
+def expansion_text(name: str, *, spell: bool = False,
+                   **params: str) -> Optional[str]:
     """The L0 expansion of keyword action / ability / predefined token
     `name` with its parameters filled ("adapt", n="3"), or None when the
-    table has none. A missing parameter raises KeyError: an expansion is
-    never parsed with a placeholder left in it."""
-    e = EXPANSIONS.get(name)
+    table has none. ``spell`` is the host face's kind: True for an instant
+    or sorcery, whose meaning of an action may differ from a permanent's
+    (`SPELL_EXPANSIONS`). A missing parameter raises KeyError: an expansion
+    is never parsed with a placeholder left in it."""
+    e = (SPELL_EXPANSIONS.get(name) if spell else None) or EXPANSIONS.get(name)
     if e is None:
         return None
     return Template(e.template).substitute(params)
