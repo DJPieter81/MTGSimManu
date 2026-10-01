@@ -68,7 +68,7 @@ DETAIL_CODES = frozenset({
     "mana_no_symbols", "mana_count", "mana_tail", "counter_kind",
     "counter_choice_count", "counter_mixed_variable", "counter_no_counter",
     "counter_alternative", "token_no_token", "token_type_phrase",
-    "token_no_type", "token_alternative", "modification_unknown",
+    "token_no_type", "token_alternative", "token_list", "modification_unknown",
     "prohibit_action", "prohibit_qualifier", "cost_delta_subject",
     "keyword_action_unsupported", "keyword_action_unknown",
     "keyword_action_param", "keyword_action_nothing_consumed", "pay_cost",
@@ -623,8 +623,19 @@ def _token_rel(t: str) -> _Rel:
     if tm:
         pending.append(("entry", tm.group("entry")))
         end = tm.end()
+    if _TOKEN_LIST_RE.match(t, end):
+        # "create A, B, and C": every listed token is created; one
+        # TokenSpec cannot hold the list, and a first-member parse would
+        # drop the rest silently.
+        return (None, _um("token_list"), 0, None, (), ())
     return (TokenSpec(**fields), None, end, _token_count(m.group("count")),
             tuple(pending), ())
+
+
+# A further token phrase joined by "," / "and" after a typed token: a token
+# list (an "or" list is A19's alternatives, split before this parse).
+_TOKEN_LIST_RE = re.compile(
+    r",? (?:and )?(?:%s|that many) [^.;]*?\btokens?\b" % _COUNT_RE)
 
 
 def _token_count(word: Optional[str]) -> Optional[Amount]:

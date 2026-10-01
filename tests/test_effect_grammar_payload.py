@@ -24,7 +24,7 @@ from engine.effect_spec import (Amount, AmountKind, CounterSpec, Granted,
 from engine.effect_grammar.sub.payload import (
     SlotResult, adds_mana, parse_alternatives, parse_cost_modifier,
     parse_counters, parse_keyword_action, parse_mana, parse_modification,
-    parse_payload, KEYWORD_ACTION_NAMES)
+    parse_payload, parse_token, KEYWORD_ACTION_NAMES)
 
 
 @dataclass(frozen=True)
@@ -619,3 +619,23 @@ def test_a_costed_keyword_grant_leaves_its_cost_for_the_cost_rule():
     r = _cont("has flashback {2}{r}")
     assert r.value.get("keywords") == (("flashback", "{2}{R}"),)
     assert r.pending == ()
+
+
+@pytest.mark.parametrize("text", [
+    "a 2/2 white knight creature token with vigilance, a 3/3 green centaur "
+    "creature token, and a 4/4 green rhino creature token with trample",
+    "a food token and a clue token",
+    "two 1/1 white soldier creature tokens and a 2/2 white knight creature token"])
+def test_a_token_list_joined_by_and_is_refused_never_typed_as_its_first_member(text):
+    """CR 111.1: every listed token is created. One TokenSpec cannot hold
+    the list, so the slot is refused with its own closed code instead of a
+    first-member parse that hands the rest on as plain text."""
+    r = parse_token(text, (0, len(text)))
+    assert r.value is None
+    assert r.unmodelled.detail == "payload.token_list"
+
+
+def test_a_token_followed_by_a_conjoined_clause_is_still_one_token():
+    text = "two 1/1 red goblin creature tokens and put a +1/+1 counter on each of them"
+    r = parse_token(text, (0, len(text)))
+    assert r.value is not None and r.amount == Amount(AmountKind.LITERAL, n=2)
