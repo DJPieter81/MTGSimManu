@@ -98,6 +98,7 @@ from engine.delayed_triggers import DelayedTriggerTiming
 from engine.effect_grammar import keywords, lexicon, normalize
 from engine.effect_grammar.sub import (CACHE_SIZE, Span, condition, duration,
                                        payload, target, unmodelled)
+from engine.effect_grammar.sub import filter as _filter
 from engine.effect_model import Modification
 from engine.effect_spec import (Amount, Condition, CostSnapshot, EventHint,
                                 HostKind, KeywordSpec, Stage, TriggerHead,
@@ -325,17 +326,23 @@ def _level_gates(paragraphs) -> dict:
 _DISJUNCT_RE = re.compile(
     r",? (?:and|or) (?=(?:whenever|when|at the beginning of) )")
 _TRIGGER_WORD_RE = re.compile(r"(?:whenever|when|at) ")
-_VERB_RE = re.compile(r"\b(?:enters|dies|attacks|attack|leaves the battlefield|"
+# The event verbs, singular and plural: "one or more <objects> die /
+# enter / attack / leave the battlefield" is the singular's event, once
+# per object (CR 603.2).
+_VERB_RE = re.compile(r"\b(?:enters|enter|dies|die|attacks|attack|"
+                      r"leaves the battlefield|leave the battlefield|"
                       r"is put into a graveyard from the battlefield|"
                       r"are put into a graveyard from the battlefield)\b")
+_SINGULAR = {"enter": "enters", "die": "dies", "attack": "attacks",
+             "leave the battlefield": "leaves the battlefield"}
 _SELF_HINT = {"enters": EventHint.SELF_ENTERS, "dies": EventHint.SELF_DIES,
               "attacks": EventHint.SELF_ATTACKS,
-              "attack": EventHint.SELF_ATTACKS,     # "~ and <others> attack"
               "leaves the battlefield": EventHint.SELF_LEAVES}
 _OTHER_HINT = {"enters": EventHint.OTHER_ENTERS, "dies": EventHint.OTHER_DIES,
                "attacks": EventHint.ATTACKS_OTHER,
-               "attack": EventHint.ATTACKS_OTHER,
                "leaves the battlefield": EventHint.OTHER}
+_LAND_WORDS = frozenset({"land", "lands"}) | _filter.LAND_SUBTYPES | {
+    w + "s" for w in _filter.LAND_SUBTYPES if not w.endswith("s")}
 _COMBAT_TO_PLAYER_RE = re.compile(
     r"deals? combat damage to (?:a player|an opponent|one or more players|"
     r"that player|defending player|you|your opponent)\b")
@@ -343,7 +350,16 @@ _SUBJECT_NOUN_RE = re.compile(r"[a-z]")
 
 
 def _verb_key(v: str) -> str:
-    return "dies" if v.endswith("from the battlefield") else v
+    if v.endswith("from the battlefield"):
+        return "dies"
+    return _SINGULAR.get(v, v)
+
+
+def _names_land(subject: str) -> bool:
+    """Does a trigger subject name a land (CR 205.3i: "a land", "a
+    Mountain", "one or more Forests"), and no creature?"""
+    words = subject.split()
+    return "creature" not in subject and any(w in _LAND_WORDS for w in words)
 
 
 def _part_hints(part: str) -> Tuple[Tuple[EventHint, ...], str]:
@@ -371,7 +387,7 @@ def _part_hints(part: str) -> Tuple[Tuple[EventHint, ...], str]:
     is_self = "~" in subject
     other = subject.replace("~", "").replace(" or ", " ").replace(" and ", " ")
     is_other = bool(_SUBJECT_NOUN_RE.search(other)) or not is_self
-    land = bool(re.search(r"\blands?\b", subject)) and "creature" not in subject
+    land = _names_land(subject)
     hints = []
     for v in verbs:
         key = _verb_key(v.group())

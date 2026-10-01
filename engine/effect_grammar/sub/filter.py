@@ -169,6 +169,11 @@ SUBTYPES = frozenset({
     'walker', 'wall', 'warlock', 'warrior', 'weasel', 'weird', 'werewolf',
     'whale', 'wizard', 'wolf', 'wolverine', 'wombat', 'worm', 'wraith',
     'wurm', 'yeti', 'zombie', 'zubera'})
+# CR 205.3i: the land subtypes. A subject that names one is a land.
+LAND_SUBTYPES = frozenset({
+    "cave", "desert", "forest", "gate", "island", "lair", "locus", "mine",
+    "mountain", "plains", "planet", "power-plant", "sphere", "swamp",
+    "tower", "town", "urza's"})
 _COLORS = {"white": "W", "blue": "U", "black": "B", "red": "R", "green": "G"}
 # Derived classes (A19): closed, CR-defined.
 CLASSES = frozenset({"historic", "colored", "multicolored", "monocolored"})

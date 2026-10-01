@@ -329,8 +329,9 @@ def test_witness_nested_quote_on_a_saga_chapter(faces):
     from engine.effect_grammar import normalize as N
     text, facts = _face(faces, "Urza's Saga")
     r = N.normalize(text, facts)
-    assert r.text.split("\n")[:2] == ["i - this saga gains ⟨q0⟩",
-                                      "ii - this saga gains ⟨q1⟩"]
+    # "this Saga" is the source (SELF_NOUNS, L0 step 3).
+    assert r.text.split("\n")[:2] == ["i - ~ gains ⟨q0⟩",
+                                      "ii - ~ gains ⟨q1⟩"]
     assert r.quotes == (
         "{t}: add {c}.",
         "{2}, {t}: create a 0/0 colorless construct artifact creature token "

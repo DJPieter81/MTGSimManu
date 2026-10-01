@@ -106,10 +106,15 @@ __all__ = ["Span", "SlotResult", "unmodelled", "rest_spans_after",
 
 Span = Tuple[int, int]
 
-# Object nouns whose "this <noun>" L0 rewrites to ~ (L0 step 3).
+# Object nouns whose "this <noun>" L0 rewrites to ~ (L0 step 3): the
+# card types, and the permanent subtypes the pool prints of its own source
+# ("this Saga", "this Class", "this Case", "this Room", "this Spacecraft").
+# "this door" names one half of a Room (CR 709.5), not the source, and
+# stays.
 SELF_NOUNS = ("creature", "artifact", "enchantment", "land", "planeswalker",
               "permanent", "battle", "spell", "card", "equipment", "aura",
-              "vehicle", "token")
+              "vehicle", "token", "saga", "class", "case", "room",
+              "spacecraft")
 
 # The one count-word table of every leaf (amount, payload, filter,
 # participant, target, condition): the target solver's words extended
@@ -228,8 +233,10 @@ LEAF_EDGES = {
     # through payload, intervening-ifs and alternative-cost conditions
     # through condition, and the A6 no-target test through target's F11
     # counted target words.
+    # The land-subject test (LANDFALL) reads the filter leaf's CR 205.3i
+    # land subtypes.
     "structure": frozenset({"normalize", "keywords", "lexicon", "duration",
-                            "payload", "condition", "target"}),
+                            "payload", "condition", "target", "filter"}),
 }
 
 

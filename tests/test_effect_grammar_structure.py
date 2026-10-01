@@ -470,6 +470,54 @@ def test_a_disjunctive_trigger_head_keeps_every_event_hint():
     assert t.trigger.step == "your upkeep"
 
 
+def test_a_plural_event_verb_types_the_same_event_hint_as_its_singular():
+    """CR 603.2: "one or more <objects> die / enter / leave" is the same
+    event as its singular, observed for each object."""
+    cases = {
+        "Whenever one or more other creatures you control die, draw a "
+        "card.": (EventHint.OTHER_DIES,),
+        "Whenever one or more other creatures you control enter, draw a "
+        "card.": (EventHint.OTHER_ENTERS,),
+        "Whenever this creature and another creature die, draw a card.":
+            (EventHint.SELF_DIES, EventHint.OTHER_DIES),
+        "Whenever one or more lands you control enter, draw a card.":
+            (EventHint.LANDFALL,),
+    }
+    for text, hints in cases.items():
+        t = _hosts(text, types=("creature",))[0]
+        assert t.trigger.event_hints == hints, text
+
+
+def test_a_self_reference_by_the_permanent_subtype_noun_is_the_source():
+    """L0 step 3 (CR 201.4b): "this <noun>" is a self-reference for every
+    object noun the pool prints of its own source -- a Saga, Class, Case,
+    Room or Spacecraft names itself so -- in a trigger head and a body."""
+    for noun, types in (("Spacecraft", ("artifact",)),
+                        ("Class", ("enchantment",)),
+                        ("Case", ("enchantment",)),
+                        ("Room", ("enchantment",)),
+                        ("Saga", ("enchantment",))):
+        t = _hosts("When this %s enters, exile this %s." % (noun, noun),
+                   types=types)[0]
+        assert t.trigger.raw == "when ~ enters", noun
+        assert t.trigger.event_hints == (EventHint.SELF_ENTERS,), noun
+        assert _body(t) == "exile ~.", noun
+
+
+def test_a_land_subtype_subject_entering_is_landfall():
+    """CR 205.3i: a land subtype names a land, so "a Mountain you control
+    enters" is a land entering -- LANDFALL, like "a land"."""
+    for text in ("Whenever a Mountain you control enters, draw a card.",
+                 "Whenever one or more Forests you control enter, draw a "
+                 "card.",
+                 "Whenever a Desert enters, draw a card."):
+        t = _hosts(text, types=("land",))[0]
+        assert t.trigger.event_hints == (EventHint.LANDFALL,), text
+    t = _hosts("Whenever a Goblin you control enters, draw a card.",
+               types=("creature",))[0]
+    assert t.trigger.event_hints == (EventHint.OTHER_ENTERS,)
+
+
 def test_a_trigger_filter_stays_in_the_head_and_is_not_an_effect_condition():
     """The head runs past a serial list in its subject; the filter is the
     head's, and the body starts after the head's own comma."""
