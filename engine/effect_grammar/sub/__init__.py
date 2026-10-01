@@ -96,6 +96,9 @@ LEAF_EDGES = {
     # Participants: object groups are the filter leaf's CardFilter, and a
     # counted "target" word is routed by the target leaf's count (F11).
     "participant": frozenset({"filter", "target"}),
+    # Amount reads "for each <Q>" / "equal to <Q>" through the quantity
+    # leaf (one quantity table).
+    "amount": frozenset({"quantity"}),
 }
 
 
@@ -171,8 +174,9 @@ def clear_caches() -> None:
     point)."""
     from engine.effect_grammar import lexicon, normalize
     from engine.effect_grammar.sub import (
-        dest, duration, filter, participant, payload, quantity, target,
+        amount, dest, duration, filter, participant, payload, quantity,
+        target,
     )
     for leaf in (normalize, duration, payload, dest, filter, target,
-                 lexicon, quantity, participant):
+                 lexicon, quantity, participant, amount):
         leaf.clear_caches()
