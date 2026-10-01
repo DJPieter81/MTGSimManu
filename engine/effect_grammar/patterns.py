@@ -30,8 +30,9 @@ section 5; A13, A16-A19, A21; E0 step 11, the patterns.py part).
    clause ``UNMODELLED(CLAUSE)`` ``patterns.unconsumed:<word>`` -- never a
    typed spec that silently ignores printed text.
 
-**Roles.** The subject (text before the verb, a "may" stripped and flagged
-optional) is the ACTOR of an acting verb ("each player sacrifices", "target
+**Roles.** The subject (text before the verb, a printed "may" stripped
+and flagged optional; a "may" inherited with the antecedent's subject is
+stripped but not flagged, CR 608.2d) is the ACTOR of an acting verb ("each player sacrifices", "target
 player draws": `effect_spec.ACTOR_ONLY_VERBS` have no principal), the
 ``other`` participant of DAMAGE and FIGHT (the source, the first fighter),
 and the PRINCIPAL of a continuous predicate ("target creature gets
@@ -49,7 +50,7 @@ target it holds is the antecedent's requirement -- recorded as an
 ``inherited`` role, never a second requirement.
 
 `match_clause` is memoised on ``(text, host_kind, has_x, prefix,
-x_defined)`` in a bounded cache (`CLAUSE_CACHE_SIZE`); its spans index the
+x_defined, instead)`` in a bounded cache (`CLAUSE_CACHE_SIZE`); its spans index the
 clause text.
 `match_host` runs L2/L3 (`clauses.frame_host`) and L4 over one L1 host and
 applies each frame's tokens to its clause specs (condition, unless,
@@ -73,9 +74,9 @@ from engine.effect_grammar.sub import filter as _filter
 from engine.effect_grammar.sub import participant as _participant
 from engine.effect_grammar.sub import payload as _payload
 from engine.effect_grammar.sub import target as _target
-from engine.effect_model import DurationKind, ModKind, Selector
+from engine.effect_model import DurationKind, ModKind, Selector, SelectorKind
 from engine.effect_spec import (ACTOR_ONLY_VERBS, Amount, AmountKind,
-                                CardFilter, Condition, ConditionKind,
+                                CardFilter, Chooser, Condition, ConditionKind,
                                 EffectSpec, HostKind, Ref, Stage, Unmodelled,
                                 Verb)
 from engine.target_solver import TargetRequirement
@@ -99,6 +100,8 @@ DETAIL_CODES = frozenset({
     "search_zone",            # a search of anything but one library
     "amount_operator",        # an arithmetic operator on a printed count
     "subject",                # a subject on a verb that takes none
+    "duration_unread",        # a printed duration the duration leaf does not read
+    "player_control",         # control of a player (CR 722), not of an object
 })
 
 
@@ -142,12 +145,13 @@ class _Refuse(Exception):
 
 class _M:
     __slots__ = ("h", "off", "lemma", "entry", "entry_amount", "has_x",
-                 "xdef", "host_kind", "fields", "consumed", "targets",
-                 "parts", "pending", "residue", "flags")
+                 "xdef", "host_kind", "instead", "fields", "consumed",
+                 "targets", "parts", "pending", "residue", "flags")
 
-    def __init__(self, h, off, has_x, xdef, host_kind):
+    def __init__(self, h, off, has_x, xdef, host_kind, instead=False):
         self.h, self.off = h, off
         self.has_x, self.xdef, self.host_kind = has_x, xdef, host_kind
+        self.instead = instead
         self.lemma = ""
         self.entry = None
         self.entry_amount: Optional[Amount] = None
@@ -203,8 +207,22 @@ def _slot(m: _M, span: Span, role: str, zone: str = "") -> None:
         return
     inherited = b <= m.off
     z = _WHOLE_ZONE.match(h, a, b) if role == "principal" else None
+    targeted = _target.target_words(h, (a, b))
     if z is not None:
         owner, anaphor = possessive_player(z.group("poss"))
+        if targeted:
+            # "target player's graveyard": the counted target word is the
+            # zone owner's requirement, read by the target leaf; the zone
+            # noun is the rest it hands on.
+            r = m.leaf(_target.parse_target(h, (a, b), lemma=m.lemma))
+            if [h[x:y] for x, y in r.rest_spans] != [z.group("zone")]:
+                m.refuse(Stage.TARGET, "possessive_object")
+            if inherited:
+                m.parts.append((role, "inherited", None))
+            else:
+                for req, sp in zip(r.value.requirements, r.value.spans):
+                    m.targets.append((role, req, sp))
+                m.residue.extend(r.value.residue)
         m.fields["filter"] = CardFilter(zone=z.group("zone"), owner=owner,
                                         raw=h[a:b])
         m.fields["amount"] = Amount(AmountKind.WHOLE_ZONE)
@@ -212,7 +230,7 @@ def _slot(m: _M, span: Span, role: str, zone: str = "") -> None:
             m.pending.append(("player", anaphor))
         m.take(role, (a, b))
         return
-    if _target.target_words(h, (a, b)):
+    if targeted:
         r = m.leaf(_target.parse_target(h, (a, b), lemma=m.lemma))
         if r.rest_spans:
             m.refuse(Stage.TARGET, "possessive_object")
@@ -350,12 +368,20 @@ def _row_damage(m: _M, a: int, b: int) -> None:
         amt = r.value
         p = r.rest_spans[0][0] if r.rest_spans else b
     if not h.startswith("to ", p):
-        if h.startswith("divided ", p):
+        if m.instead and p >= _trim(h, p, b)[1]:
+            # A15: an instead clause that restates only the amount ("~
+            # deals 4 damage instead") inherits its recipient from the
+            # clause it replaces; L5 binds it.
+            m.parts.append(("principal", "inherited", None))
+            cut = b
+        elif h.startswith("divided ", p):
             m.refuse(Stage.AMOUNT, "no_recipient")
-        m.refuse(Stage.CLAUSE, "no_recipient", _first_word(h, p, b))
-    m.take("to", (p, p + 2))
-    cut = _scaler_cut(h, p + 3, b)
-    _slot(m, (p + 3, cut), "principal")
+        else:
+            m.refuse(Stage.CLAUSE, "no_recipient", _first_word(h, p, b))
+    else:
+        m.take("to", (p, p + 2))
+        cut = _scaler_cut(h, p + 3, b)
+        _slot(m, (p + 3, cut), "principal")
     if cut < b:
         scaled, _ = _scaler(m, cut, b, amt)
         amt = scaled if scaled is not None else amt
@@ -403,7 +429,28 @@ def _row_object(m: _M, a: int, b: int) -> None:
         if not c.rest_spans:
             return
         a, b = c.rest_spans[0][0], c.rest_spans[-1][1]
-    _slot(m, (a, b), "principal", _OBJECT_ZONES.get(verb, ""))
+    elif verb in _ACTOR_CHOOSES and not _actor_is_controller(m):
+        # CR 701.21a / 701.8a: the player who sacrifices or discards
+        # chooses which, printed "of their choice" or not.
+        m.fields["chooser"] = Chooser.PARTICIPANT
+    # A verb's default zone applies only when the object prints no source
+    # of its own ("from among them", "from your graveyard").
+    zone = "" if _FROM_RE.search(h, a, b) else _OBJECT_ZONES.get(verb, "")
+    _slot(m, (a, b), "principal", zone)
+
+
+_ACTOR_CHOOSES = frozenset({Verb.SACRIFICE, Verb.DISCARD})
+_FROM_RE = re.compile(r"(?<![\w'])from ")
+
+
+def _actor_is_controller(m: _M) -> bool:
+    """Is the clause's actor the ability's controller: no subject, or the
+    participant "you"?"""
+    a = m.fields.get("actor")
+    if a is not None:
+        return isinstance(a, Selector) and a.kind is SelectorKind.PLAYER
+    return not any(role == "actor" for role, _r, _s in m.targets) and \
+        not any(role == "actor" for role, _v, _s in m.parts)
 
 
 def _row_move(m: _M, a: int, b: int) -> None:
@@ -500,6 +547,11 @@ def _row_continuous(m: _M, a: int, b: int) -> None:
     p, e = r.rest_spans[0][0], r.rest_spans[-1][1]
     d = _duration.parse_duration(h, (p, e), lemma=m.lemma) \
         if _duration_in(h, p, e) else None
+    if d is None and _DURING_RE.search(h, p, e):
+        # A "during <player>'s <turn>" the duration leaf does not read: the
+        # printed duration is refused, never consumed into another slot
+        # and replaced by the host's default.
+        m.refuse(Stage.DURATION, "duration_unread", "during")
     if d is not None:
         d = m.leaf(d)
         m.fields["duration"] = d.value
@@ -515,6 +567,11 @@ def _row_continuous(m: _M, a: int, b: int) -> None:
         if mod.kind is ModKind.SET_CONTROLLER and "principal" not in \
                 [k for k, _ in m.consumed]:
             _slot(m, (x, y), "principal")
+            if any(role == "principal" and "player" in req.types
+                   for role, req, _s in m.targets):
+                # CR 722: controlling another player is not gaining
+                # control of an object.
+                m.refuse(Stage.CLAUSE, "player_control")
             continue
         scaled, _ = _scaler(m, x, y, Amount(AmountKind.LITERAL, n=1))
         if scaled is not None:
@@ -595,6 +652,7 @@ _SUBJECT_ROLE = {Verb.DAMAGE: "other", Verb.FIGHT: "other"}
 _MAY_RE = re.compile(r"(?:^|(?<= ))may$")
 _CAUSATIVE_RE = re.compile(r"you (?P<may>may )?have ")
 _DURATION_START_RE = re.compile(r"(?<![\w'])%s" % _duration.DURATION_START)
+_DURING_RE = re.compile(r"(?<![\w'])during ")
 
 
 def _duration_in(h: str, a: int, b: int) -> bool:
@@ -633,14 +691,17 @@ CLAUSE_CACHE_SIZE = 1 << 12
 @lru_cache(maxsize=CLAUSE_CACHE_SIZE)
 def match_clause(text: str, host_kind: HostKind = HostKind.SPELL,
                  has_x: bool = False, *, prefix: str = "",
-                 x_defined: Optional[Amount] = None) -> ClauseMatch:
+                 x_defined: Optional[Amount] = None,
+                 instead: bool = False) -> ClauseMatch:
     """Type one L3 clause (see the module docstring). `host_kind` decides
     a continuous spec's unprinted duration (CR 611.2a / 611.3a); `has_x`
     says the host's cost binds X; `x_defined` is the frame's where-X;
-    `prefix` is the inherited antecedent text. Spans index `text`."""
+    `prefix` is the inherited antecedent text; `instead` says the frame
+    replaces an earlier clause (A15), so an argument the clause does not
+    restate is inherited from it. Spans index `text`."""
     h = prefix + " " + text if prefix else text
     off = len(prefix) + 1 if prefix else 0
-    m = _M(h, off, has_x, x_defined, host_kind)
+    m = _M(h, off, has_x, x_defined, host_kind, instead)
     try:
         row = _match(m, len(h))
     except _Refuse as r:
@@ -683,14 +744,19 @@ def _match(m: _M, end: int) -> str:
     sa, sb = _trim(h, 0, vs)
     mm = _MAY_RE.search(h, sa, sb)
     if mm is not None:
-        m.fields["optional"] = True
-        m.take("may", (mm.start(), mm.end()))
+        # Only a "may" the clause prints makes it optional. One inherited
+        # with the antecedent's subject ("X may A, B, then C") is the
+        # head's single choice (CR 608.2d): the follower is not optional
+        # on its own, and L5 nests it under the head (A29).
+        if mm.start() >= m.off:
+            m.fields["optional"] = True
+            m.take("may", (mm.start(), mm.end()))
         sa, sb = _trim(h, sa, mm.start())
     # The causative "you [may] have <NP> <verb>": the controller has NP
     # perform the action; NP is the clause's subject.
     cm = _CAUSATIVE_RE.match(h, sa, sb)
     if cm is not None and cm.end() < sb:
-        if cm.group("may"):
+        if cm.group("may") and cm.start("may") >= m.off:
             m.fields["optional"] = True
         m.take("causative", (sa, cm.end()))
         sa = cm.end()
@@ -835,7 +901,7 @@ def _frame_match(t: str, f, host_kind: HostKind, has_x: bool) -> FrameMatch:
         text = t[c.span[0]:c.span[1]]
         prefix = " ".join(t[a:b] for a, b in c.prefix)
         cm = match_clause(text, host_kind, has_x, prefix=prefix,
-                          x_defined=f.where_x)
+                          x_defined=f.where_x, instead=f.instead)
         cms.append(_apply_frame(_shift_cm(cm, c.span[0]), f, c, text))
     _inherit_durations(f, cms)
     if not f.clauses and f.unmodelled:

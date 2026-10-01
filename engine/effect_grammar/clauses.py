@@ -14,10 +14,13 @@ the lexicon's `verb_at` / `find_verb`.
 quote, so every ``.`` left is depth 0). Each sentence becomes one `Frame`
 by consuming, in a loop, its leading phrases --
 
-* a connective, sentence-wide (A14): ``then``; ``if you do`` / ``if they
-  do`` / ``if a player does``; ``if you don't`` / ``if no one does``;
-  ``if you don't <VP>,`` (the named performed test: the VP is a frame token
-  whose lemma L5 matches against an earlier spec); ``otherwise``;
+* a connective, sentence-wide (A14): ``then``; ``if <player> do(es)``;
+  ``if <player> don't`` / ``if no one does``; ``if <player> don't <VP>,``
+  and ``if <player> <VP> this way,`` (the named performed test: the VP is
+  a frame token whose lemma L5 matches against an earlier spec; an object
+  subject -- "if a red card is discarded this way" -- is refused, and an
+  "if ... would ..." test is a CR 614 replacement, refused); ``otherwise``.
+  <player> is any player participant the participant leaf reads;
 * a sub-ability opener (A30): ``when you do[, if <COND>],`` opens a
   REFLEXIVE sub-ability (CR 603.12) whose "if" is the sub-ability head's
   intervening-if (CR 603.4, F9), never the frame's condition; a delay
@@ -28,7 +31,9 @@ by consuming, in a loop, its leading phrases --
   UNMODELLED(ITERATION) when the body refers to the element (A16);
 * a duration prefix ("until end of turn, ...");
 
--- and its trailing phrases: ``, where x is <Q>``; a delay suffix; the
+-- and its trailing phrases: ``, where x is <Q>`` (the definition ends
+where the amount leaf's expression ends; clauses printed after it are
+split like any others, the definition a hole in the body); a delay suffix; the
 instead-of destination override ``If <ref> is <verb>ed this way, <move>
 instead of putting it into <zone>`` (A15: the whole sentence is the
 override, never a sibling clause); `` unless <player> pays <cost>`` (the
@@ -160,32 +165,70 @@ class Frame(NamedTuple):
 
 # ── Closed phrase tables (over L0 output) ──────────────────────────────
 
-_ACTOR = r"(?:you|they|that player|a player|an opponent|he or she|each player)"
+# The connectives and openers name the player whose action they test
+# ("if you do", "if that player doesn't", "when they do"): the subject is
+# any player the participant leaf reads (`_player_subject`); the spine
+# keeps no subject vocabulary of its own.
+_WHO = r"(?P<who>[a-z~'][a-z~' ]*?)"
 _THEN_RE = re.compile(r"then,? ")
-_IF_DO_RE = re.compile(r"if %s (?:do|does|did), " % _ACTOR)
+_IF_DO_RE = re.compile(r"if %s (?:do|does|did), " % _WHO)
 _IF_DONT_RE = re.compile(
     r"if (?:%s (?:don't|doesn't|didn't|do not|does not|can't|cannot)|"
-    r"no one does), "
-    % _ACTOR)
+    r"no one does), " % _WHO)
 _IF_DONT_VP_RE = re.compile(r"if %s (?:don't|doesn't|didn't) (?=[a-z])"
-                            % _ACTOR)
+                            % _WHO)
 _OTHERWISE_RE = re.compile(r"otherwise,? ")
-_WHEN_DO_RE = re.compile(r"when %s (?:do|does),? " % _ACTOR)
+_WHEN_DO_RE = re.compile(r"when %s (?:do|does),? " % _WHO)
+_WHEN_DO_WORD_RE = re.compile(r"when %s (?:do|does)\b" % _WHO)
 _INSTEAD_LEAD_RE = re.compile(r"instead,? ")
 _DURATION_LEAD_RE = re.compile(_duration.DURATION_START)
-# A trigger word inside resolution text, other than the reflexive opener.
-_EMBEDDED_RE = re.compile(
-    r"(?<![\w'~-])(?:whenever|when(?! %s (?:do|does)\b))\b" % _ACTOR)
+# A trigger word inside resolution text; the reflexive opener "when <player>
+# do(es)" is not one (`_embedded`).
+_TRIGGER_WORD_RE = re.compile(r"(?<![\w'~-])(?:whenever|when)\b")
 
-_PRONOUN = (r"(?:it|they|that creature|those creatures|the creature|"
-            r"the creatures|~|that permanent|those permanents|that land|"
-            r"those lands)")
-_NO_REGEN_RE = re.compile(r"%s can't be regenerated$" % _PRONOUN)
+# The absorbed riders' subjects are object references the participant
+# leaf reads ("it", "that artifact", "those creatures", "~").
+_NO_REGEN_RE = re.compile(r"(?P<subj>.+?) can't be regenerated$")
 _STILL_LAND_RE = re.compile(r"(?:it's|they're|it is|they are) still "
                             r"(?:a land|lands)$")
 _UNCOUNTERABLE_RE = re.compile(r"~ can't be countered$")
 _REVEAL_RE = re.compile(r"reveal (?:it|them|that card|those cards)$")
 _REVEAL_AFTER = frozenset({"search", "put", "return"})
+
+
+def _actor(rx: "re.Pattern[str]", t: str, pos: int, end: int):
+    """`rx` matched at `pos` whose ``who`` group (when it printed one) is a
+    player participant; None otherwise."""
+    m = rx.match(t, pos, end)
+    if m is None or m.group("who") is None:
+        return m
+    return m if _player_subject(t, m.start("who"), m.end("who")) else None
+
+
+def _player_subject(t: str, a: int, b: int) -> bool:
+    """Is ``t[a:b]`` a player participant (the participant leaf's PLAYER
+    reading: "you", "they", "that player", "each opponent", ...)?"""
+    a, b = _trim(t, a, b)
+    if a >= b:
+        return False
+    r = _participant.parse_participant(t, (a, b))
+    return r.value is not None and _participant.PLAYER in r.flags
+
+
+def _object_subject(t: str, a: int, b: int) -> bool:
+    """Is ``t[a:b]`` an object reference the participant leaf reads?"""
+    r = _participant.parse_participant(t, (a, b))
+    return r.value is not None and _participant.OBJECT in r.flags
+
+
+def _embedded(t: str, s: int, e: int) -> bool:
+    """Does ``t[s:e]`` hold a trigger word other than the reflexive opener
+    "when <player> do(es)"?"""
+    for m in _TRIGGER_WORD_RE.finditer(t, s, e):
+        if m.group(0) == "when" and _actor(_WHEN_DO_WORD_RE, t, m.start(), e):
+            continue
+        return True
+    return False
 
 
 def _trim(t: str, a: int, b: int, chars: str = " ") -> Span:
@@ -201,7 +244,9 @@ def _trim(t: str, a: int, b: int, chars: str = " ") -> Span:
 def _rider(t: str, s: int, e: int) -> Optional[Tuple[str, Any]]:
     """The absorbed rider a whole sentence ``t[s:e]`` is, or None."""
     sent = t[s:e]
-    if _NO_REGEN_RE.match(sent):
+    m = _NO_REGEN_RE.match(sent)
+    if m is not None and _object_subject(t, s + m.start("subj"),
+                                         s + m.end("subj")):
         return ("no_regeneration", True)
     if _STILL_LAND_RE.match(sent):
         return ("still_land", True)
@@ -248,13 +293,27 @@ def _set_condition(f: _F, c: Condition) -> None:
         ConditionKind.ALL_OF, children=(old, c), raw=old.raw + "; " + c.raw)
 
 
+def _performed_test(t: str, a: int, b: int) -> Optional[str]:
+    """The lemma of a "<player> <VP> this way" performed test at
+    ``t[a:b]`` (A14), or None when its subject is not a player: the test
+    is on the player's own action, never on an object the action
+    produced."""
+    v = _lexicon.find_verb(t, (a, b))
+    if v.value is not None:
+        return v.value.lemma if _player_subject(t, a, v.span[0]) else None
+    # A past-tense VP the lexicon does not inflect ("if you exiled a card
+    # this way"): the subject is the first word; the lemma stays open.
+    sp = t.find(" ", a, b)
+    return "" if sp > a and _player_subject(t, a, sp) else None
+
+
 def _leading(t: str, pos: int, end: int, f: _F) -> Optional[int]:
     """Consume leading frame phrases from `pos`; the new position, or None
     when the rest of the sentence was refused."""
     while pos < end:
         if "connective" not in f.fields and "opener" not in f.fields:
-            m = (_THEN_RE.match(t, pos, end) or _IF_DO_RE.match(t, pos, end)
-                 or _IF_DONT_RE.match(t, pos, end)
+            m = (_THEN_RE.match(t, pos, end) or _actor(_IF_DO_RE, t, pos, end)
+                 or _actor(_IF_DONT_RE, t, pos, end)
                  or _OTHERWISE_RE.match(t, pos, end))
             if m is not None:
                 rx = m.re
@@ -265,7 +324,7 @@ def _leading(t: str, pos: int, end: int, f: _F) -> Optional[int]:
                 f.consumed.append(("connective", (pos, m.end())))
                 pos = m.end()
                 continue
-            m = _IF_DONT_VP_RE.match(t, pos, end)
+            m = _actor(_IF_DONT_VP_RE, t, pos, end)
             if m is not None:
                 comma = t.find(", ", m.end(), end)
                 v = _lexicon.find_verb(t, (m.end(), comma)) if comma > 0 \
@@ -280,7 +339,7 @@ def _leading(t: str, pos: int, end: int, f: _F) -> Optional[int]:
                     f.consumed.append(("named_vp", (m.end(), comma + 1)))
                     pos = comma + 2
                     continue
-            m = _WHEN_DO_RE.match(t, pos, end)
+            m = _actor(_WHEN_DO_RE, t, pos, end)
             if m is not None:
                 f.consumed.append(("opener", (pos, m.end())))
                 pos = m.end()
@@ -307,19 +366,25 @@ def _leading(t: str, pos: int, end: int, f: _F) -> Optional[int]:
                 cut = t.find(", ", pos, end)
                 if cut < 0 or t.find(_INSTEAD_OF, pos, end) >= 0:
                     return pos               # the A15 override: _trailing
-                if " this way" in t[pos:cut]:
+                v = _performed_test(t, pos + 3, cut) \
+                    if " this way" in t[pos:cut] and \
+                    " would " not in t[pos:cut] else None
+                if v is not None:
                     # "If you search your library this way," -- the
-                    # performed test of the named earlier action (A14), a
-                    # connective like "if you do" whose VP L5 matches.
-                    v = _lexicon.find_verb(t, (pos + 3, cut))
+                    # performed test of the player's own named earlier
+                    # action (A14), a connective like "if you do" whose VP
+                    # L5 matches.
                     f.fields.setdefault("connective", "if_you_do")
                     f.fields["named_vp"] = (pos + 3, cut)
-                    f.fields["named_lemma"] = v.value.lemma if v.value else ""
+                    f.fields["named_lemma"] = v
                     f.consumed.append(("named_vp", (pos, cut + 1)))
                 else:
-                    # A CR 614 "would" test or another structure phrase
-                    # the condition table does not type: refused, never a
-                    # clause.
+                    # A CR 614 "would" test (tested first: "if a creature
+                    # dealt damage this way would die" is a replacement),
+                    # an object-qualified result test ("if an insect card
+                    # was milled this way": a filter the connective cannot
+                    # carry) or another structure phrase the condition
+                    # table does not type: refused, never a clause.
                     stage = Stage.REPLACEMENT if " would " in t[pos:cut] \
                         else Stage.CONDITION
                     f.unm.append((_um(stage, "structure_condition"),
@@ -395,14 +460,24 @@ def _trailing(t: str, pos: int, end: int, f: _F) -> Optional[int]:
     while changed and end > pos:
         changed = False
         i = t.find(_WHERE_X, pos, end)
-        if i >= 0:
+        if i >= 0 and "where_x" not in f.fields:
             r = _amount.parse_where_x(t, (i, end))
-            if r.value is not None:
-                f.fields["where_x"] = r.value
-                f.pending.extend(r.pending)
-            else:
+            if r.value is None:
                 f.unm.append((r.unmodelled, (i + 2, end)))
-            f.consumed.append(("where_x", (i, end)))
+                f.consumed.append(("where_x", (i, end)))
+                end = i
+                changed = True
+                continue
+            f.fields["where_x"] = r.value
+            f.pending.extend(r.pending)
+            f.consumed.append(("where_x", (i, r.span[1])))
+            if r.rest_spans:
+                # Text printed after the definition is clauses of the
+                # body, never part of the definition: the definition is a
+                # hole the clause split skips, and the trailing phrases
+                # stop here (they would read across the hole).
+                f.fields["_hole"] = (i, r.span[1])
+                return end
             end = i
             changed = True
             continue
@@ -511,7 +586,7 @@ def frame_sentence(t: str, s: int, e: int, *, part: int = -1,
     if delay is not None:
         f.fields["opener"] = Opener(SubAbilityKind.DELAYED, timing=delay,
                                     span=(s, s))
-    if _EMBEDDED_RE.search(t, s, e):
+    if _embedded(t, s, e):
         f.unm.append((_um(Stage.TRIGGER_EMBEDDED, "trigger_embedded"), (s, e)))
         return _freeze(f, (s, e), part, label, ())
     pos = _leading(t, s, e, f)
@@ -523,7 +598,7 @@ def frame_sentence(t: str, s: int, e: int, *, part: int = -1,
     a, b = _trim(t, pos, end, " ,")
     clauses: Tuple[Clause, ...] = ()
     if a < b:
-        clauses, consumed = _split(t, a, b)
+        clauses, consumed = _split(t, a, b, f.fields.pop("_hole", None))
         f.consumed.extend(consumed)
     elif not f.unm and f.fields.get("dest_override") is None:
         f.unm.append((_um(Stage.SPLIT, "empty_body"), (s, e)))
@@ -560,12 +635,6 @@ _GAP_OBJECT_RE = re.compile(
 _ELLIPTICAL_RE = re.compile(r"(?:%s|x|\d+|that much|half that much|twice "
                             r"that much) damage to " % _COUNT_ALT)
 _UNION_RE = re.compile(r"(?:to )?each ")
-# A coordinated clause with a subject of its own ("draw a card and you
-# lose 1 life"): a closed set of player and object subjects, then a verb.
-_COORD_SUBJECT_RE = re.compile(
-    r"(?:you|they|it|~|each (?:player|opponent)|target (?:player|opponent)|"
-    r"that (?:player|creature|permanent)|its (?:controller|owner)|"
-    r"defending player|your opponents) ")
 _DAMAGE_TO = " damage to "
 _GAP_LEMMAS = frozenset({"put", "return"})
 
@@ -574,13 +643,13 @@ _GAP_LEMMAS = frozenset({"put", "return"})
 _SUBJECT_MAX_WORDS = 6
 
 
-def _coordinated_subject(t: str, a: int, b: int, comma: bool) -> bool:
+def _coordinated_subject(t: str, a: int, b: int) -> bool:
     """Does ``t[a:b]`` open with a clause of its own -- a short subject the
-    participant or target leaf reads, then a lexicon verb ("..., and its
-    activated abilities can't be activated", "... and attacking player
-    loses that much life")? After a bare "and" the subject must be one of
-    the leaf-typed participants; a type list ("artifacts and creatures")
-    has no verb after its member."""
+    participant or target leaf reads, then a lexicon verb ("draw a card
+    and you lose 1 life", "... and attacking player loses that much
+    life")? The subject vocabulary is the leaves' (the spine keeps none);
+    a type list ("artifacts and creatures") has no verb after its
+    member."""
     v = _lexicon.find_verb(t, (a, b))
     if v.value is None or v.span[0] <= a:
         return False
@@ -620,34 +689,43 @@ class _C:
         return r.value, r.span
 
 
-def _split(t: str, a: int, b: int):
+def _split(t: str, a: int, b: int, hole: Optional[Span] = None):
+    """L3 over the frame body ``t[a:b]``. `hole` is a frame token printed
+    inside the body (a where-X definition with clauses after it): no
+    separator inside it splits, and the clause it falls in ends at it."""
     out: List[_C] = [_C(a)]
     consumed: List[Tuple[str, Span]] = []
     for m in _SEP_RE.finditer(t, a, b):
         cur = out[-1]
         if m.start() < cur.start:
             continue
+        if hole is not None and hole[0] <= m.start() < hole[1]:
+            continue
         sep, nxt = m.group(0), m.end()
+        if hole is not None and m.start() == hole[1]:
+            # The separator after the hole joins the next clause to the
+            # clause before the hole: that clause ends at the hole.
+            cut = _trim(t, cur.start, hole[0], " ,")[1]
+        else:
+            cut = m.start()
         new = None
         if sep in (", then ", "; "):
             new = _C(nxt, "then" if sep == ", then " else "semicolon")
         elif sep in (", and ", " and "):
-            sm = _COORD_SUBJECT_RE.match(t, nxt)
             if _lexicon.verb_at(t, nxt) is not None and (
-                    sep == ", and " or _holds_verb(t, cur.start, m.start())):
+                    sep == ", and " or _holds_verb(t, cur.start, cut)):
                 new = _C(nxt, "and")
-            elif _holds_verb(t, cur.start, m.start()) and (
-                    (sm is not None and _lexicon.verb_at(t, sm.end()))
-                    or _coordinated_subject(t, nxt, b, sep == ", and ")):
+            elif _holds_verb(t, cur.start, cut) and \
+                    _coordinated_subject(t, nxt, b):
                 new = _C(nxt, "and")
             else:
-                new = _gapped(t, cur, m.start(), nxt, b)
+                new = _gapped(t, cur, cut, nxt, b)
         elif _lexicon.verb_at(t, nxt) is not None and \
-                _holds_verb(t, cur.start, m.start()):
+                _holds_verb(t, cur.start, cut):
             new = _C(nxt, "serial")
         if new is None:
             continue
-        cur.end = m.start()
+        cur.end = cut
         consumed.append(("joiner", (m.start(), nxt)))
         out.append(new)
     out[-1].end = b

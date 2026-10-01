@@ -152,6 +152,13 @@ def test_may_scope_nests_only_followers_that_depend_on_the_optional_action():
     specs = _specs(fms)
     assert [s.verb for s in specs] == [Verb.SEARCH, Verb.MOVE, Verb.SHUFFLE]
     assert specs[0].optional is True
+    # CR 608.2d: the choice is made once, by the head. A follower that
+    # only inherits the head's subject is not a second optional action.
+    assert [s.optional for s in specs[1:]] == [False, False]
+    h, fms = _matches("Its controller may search their library for a basic "
+                      "land card, put it onto the battlefield tapped, then "
+                      "shuffle.", types=("sorcery",))
+    assert [s.optional for s in _specs(fms)] == [True, False, False]
 
 
 # ── L2: connectives ────────────────────────────────────────────────────
@@ -275,14 +282,24 @@ def test_a_leading_instead_verb_phrase_replaces_the_earlier_sibling():
 
 def test_an_instead_sibling_inherits_the_arguments_it_does_not_restate():
     """A15 (L4 half): the replacing clause is typed on its own; arguments
-    it does not restate are left for L5's inheritance, never guessed."""
-    h, fms = _matches("~ deals 2 damage to target creature. If you control "
-                      "a Wizard, ~ deals 3 damage to that creature instead.",
-                      "Some Bolt", types=("instant",))
+    it does not restate are left for L5's inheritance, never guessed. The
+    common upgrade restates only the amount: its recipient is inherited,
+    never a refusal."""
+    h, fms = _matches("~ deals 2 damage to any target. If you control three "
+                      "or more artifacts, ~ deals 4 damage instead.",
+                      "Some Blast", types=("instant",))
     first, second = fms
     assert first.clauses[0].spec.verb is Verb.DAMAGE
     assert second.frame.instead is True
-    assert second.clauses[0].spec.amount.n == 3
+    (cm,) = second.clauses
+    assert cm.spec.verb is Verb.DAMAGE, cm.spec
+    assert cm.spec.amount.n == 4
+    assert cm.targets == ()
+    assert ("principal", "inherited", None) in cm.participants
+    # Without "instead" a recipient-less damage clause has nothing to
+    # inherit from: still refused.
+    cm = PT.match_clause("~ deals 4 damage")
+    assert cm.spec.verb is Verb.UNMODELLED
 
 
 def test_instead_of_putting_it_into_a_zone_is_a_destination_override_of_the_named_action():
@@ -342,3 +359,68 @@ def test_whenever_inside_an_effect_body_is_unmodelled_trigger_embedded():
                and s.payload.stage is Stage.TRIGGER_EMBEDDED
                for s in _specs(fms))
     assert _specs(fms)
+
+
+# ── L2: where-X, "this way" tests ──────────────────────────────────────
+
+def test_a_clause_after_a_where_x_definition_is_its_own_clause_never_absorbed_into_the_definition():
+    """The where-X definition is a frame token that ends where its
+    expression ends; a clause printed after it is split like any other,
+    never consumed with the definition."""
+    h, (f,) = _frames("Target creature gets +X/+0 until end of turn, where X "
+                      "is the number of creature cards in your graveyard, "
+                      "then draw a card.", types=("instant",))
+    assert f.where_x is not None
+    assert _clauses(h, f) == ["target creature gets +x/+0 until end of turn",
+                              "draw a card"]
+    assert f.clauses[1].joiner == "then"
+    (wx,) = [h.text[a:b] for k, (a, b) in f.consumed if k == "where_x"]
+    assert "draw" not in wx
+    assert CL.uncovered(h, (f,)) == ""
+    h, fms = _matches("Search your library for up to X basic land cards, "
+                      "where X is the number of lands you control, put them "
+                      "onto the battlefield tapped, then shuffle.",
+                      types=("sorcery",))
+    assert [s.verb for s in _specs(fms)][1:] == [Verb.MOVE, Verb.SHUFFLE]
+
+
+def test_a_would_test_on_a_result_of_this_way_is_a_replacement_never_a_performed_test():
+    """CR 614: "if a creature dealt damage this way would die this turn,
+    exile it instead" is a replacement effect; it is refused as one, never
+    typed as an if-you-do connective with an instead clause."""
+    h, frames = _frames("~ deals 3 damage to target creature. If a creature "
+                        "dealt damage this way would die this turn, exile it "
+                        "instead.", "Some Fire", types=("instant",))
+    f = frames[1]
+    assert f.connective == ""
+    assert f.unmodelled and f.unmodelled[0][0].stage is Stage.REPLACEMENT
+    assert CL.uncovered(h, frames) == ""
+
+
+def test_a_this_way_test_is_a_performed_test_only_when_its_subject_is_a_player():
+    """A14: "If you <VP> this way," tests the player's own action, like
+    "if you do". An object-qualified result test ("if an insect card was
+    milled this way") narrows what was done by a filter the connective
+    cannot carry: refused, never a bare performed test."""
+    h, frames = _frames("Search your library for a creature card, reveal it, "
+                        "put it into your hand, then shuffle. If you "
+                        "search your library this way, you gain 2 life.",
+                        types=("sorcery",))
+    assert frames[1].connective == "if_you_do"
+    assert frames[1].named_lemma == "search"
+    h, frames = _frames("Mill three cards. If an insect card was milled this "
+                        "way, draw a card.", types=("sorcery",))
+    f = frames[1]
+    assert f.connective == ""
+    assert f.unmodelled and f.unmodelled[0][0].stage is Stage.CONDITION
+    assert CL.uncovered(h, frames) == ""
+
+
+def test_a_rider_subject_is_any_object_reference_the_participant_leaf_reads():
+    """CR 701.15: the no-regeneration rider's subject is an object
+    reference; the participant leaf owns that vocabulary, so a
+    demonstrative of any card type is a rider subject."""
+    h, frames = _frames("Destroy target artifact. That artifact can't be "
+                        "regenerated.")
+    assert len(frames) == 1
+    assert ("no_regeneration", True) in frames[0].riders

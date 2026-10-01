@@ -13,7 +13,7 @@ from __future__ import annotations
 import pytest
 
 from engine.effect_grammar import patterns as PT
-from engine.effect_model import ModKind, SelectorKind
+from engine.effect_model import DurationKind, ModKind, SelectorKind
 from engine.effect_spec import (AmountKind, Chooser, ConditionKind, HostKind,
                                 Ref, RefKind, Stage, Verb)
 
@@ -86,10 +86,13 @@ def test_a_continuous_predicate_takes_its_subject_as_principal_and_its_duration(
 
 
 def test_a_continuous_predicate_with_no_printed_duration_takes_the_hosts_default():
+    """CR 611.3a: a static ability's effect lasts while its source is on
+    the battlefield; CR 611.2a: a resolving spell's effect with no printed
+    duration lasts indefinitely."""
     m = _m("creatures you control get +1/+1", host_kind=HostKind.STATIC)
-    assert m.spec.duration is not None
+    assert m.spec.duration.kind is DurationKind.WHILE_SOURCE_ON_BATTLEFIELD
     m = _m("target creature gets +1/+1", host_kind=HostKind.SPELL)
-    assert m.spec.duration is not None
+    assert m.spec.duration.kind is DurationKind.PERMANENT
 
 
 def test_an_untargeted_choice_is_a_filter_with_its_count():
@@ -170,3 +173,64 @@ def test_a_frame_condition_reaches_every_clause_spec_of_its_sentence():
     assert [s.verb for s in specs] == [Verb.DRAW, Verb.GAIN_LIFE]
     assert all(s.condition is not None
                and s.condition.kind is ConditionKind.STATE for s in specs)
+
+
+@pytest.mark.parametrize("text", [
+    "each opponent sacrifices a creature",
+    "target player discards a card",
+    "each player discards two cards",
+    "that player sacrifices a permanent",
+])
+def test_an_unprinted_sacrifice_or_discard_choice_belongs_to_the_acting_player(text):
+    """CR 701.21a / 701.8a: the player who sacrifices or discards chooses
+    which; an unprinted "of their choice" changes nothing."""
+    unprinted = _m(text).spec
+    printed = _m(text + " of their choice").spec
+    assert unprinted.verb is printed.verb is not Verb.UNMODELLED
+    assert unprinted.chooser is printed.chooser is Chooser.PARTICIPANT
+
+
+def test_your_own_sacrifice_or_discard_is_chosen_by_the_controller():
+    assert _m("sacrifice a creature").spec.chooser is Chooser.CONTROLLER
+    assert _m("you discard a card").spec.chooser is Chooser.CONTROLLER
+    assert _m("discard a card at random").spec.chooser is Chooser.RANDOM
+
+
+@pytest.mark.parametrize("text", [
+    "exile target player's graveyard",
+    "exile target opponent's graveyard",
+])
+def test_a_target_players_zone_as_the_object_is_one_target_requirement(text):
+    """Section 5 acceptance (a): every counted target word is one
+    requirement. "target player's graveyard" is the whole zone of the
+    targeted player, whose requirement is the player."""
+    m = _m(text)
+    assert m.spec.verb is Verb.EXILE, m.spec
+    assert m.spec.amount.kind is AmountKind.WHOLE_ZONE
+    assert m.spec.filter.zone == "graveyard"
+    ((role, req, _span),) = m.targets
+    assert role == "principal" and req.types == frozenset({"player"})
+    assert PT.unconsumed(m, text) == ""
+
+
+def test_control_of_a_player_is_never_a_typed_object_control_change():
+    """CR 722: controlling another player is not gaining control of an
+    object; the printed "during that player's next turn" is a duration the
+    duration leaf does not read. Refused, never a permanent SET_CONTROLLER
+    over a player."""
+    m = _m("you gain control of target opponent during that player's next "
+           "turn")
+    assert m.spec.verb is Verb.UNMODELLED
+    m = _m("you gain control of target creature until end of turn")
+    assert m.spec.verb is Verb.CONTINUOUS
+    assert m.spec.payload.kind is ModKind.SET_CONTROLLER
+    assert m.spec.duration.kind is DurationKind.THIS_TURN
+
+
+def test_a_selection_from_among_named_cards_takes_no_default_zone():
+    """A verb's default zone (a discard or reveal reads the hand) applies
+    only when no source is printed; "from among them" is the source."""
+    m = _m("you may reveal a colorless card from among them")
+    assert m.spec.verb is Verb.REVEAL
+    assert m.spec.filter.zone != "hand"
+    assert _m("reveal a creature card").spec.filter.zone == "hand"
