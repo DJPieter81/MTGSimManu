@@ -487,6 +487,47 @@ def test_a_trigger_filter_stays_in_the_head_and_is_not_an_effect_condition():
     assert _body(t) == "it gets +1/+0 until end of turn."
 
 
+def test_a_trigger_head_runs_through_any_serial_list_and_ends_where_a_sentence_starts():
+    """Rule 8: the head ends at the first depth-0 comma after which the
+    remainder is a sentence. A list of subtypes, coordinate adjectives or
+    keyword actions in the head is no sentence, whatever its nouns; an
+    intervening "if" and a body that is itself a serial list end it."""
+    cases = {
+        "Whenever another Goblin, Orc, or Army you control dies, exile the "
+        "top card of your library.":
+            "whenever another goblin, orc, or army you control dies",
+        "Whenever another Frog, Rabbit, Raccoon, or Squirrel you control "
+        "enters, put a +1/+1 counter on it.":
+            "whenever another frog, rabbit, raccoon, or squirrel you "
+            "control enters",
+        "Whenever a nontoken, non-Angel creature you control dies, return "
+        "that card to the battlefield.":
+            "whenever a nontoken, non-angel creature you control dies",
+        "Whenever you waterbend, earthbend, firebend, or airbend, draw a "
+        "card.": "whenever you waterbend, earthbend, firebend, or airbend",
+        "Whenever this creature attacks, if you control an artifact, draw "
+        "a card.": "whenever ~ attacks",
+        "When this creature enters, you gain 2 life, draw a card, and "
+        "scry 1.": "when ~ enters",
+        "Whenever this creature attacks, it gets +2/+0, gains trample, and "
+        "can't be blocked this turn.": "whenever ~ attacks",
+        "Whenever you cast a creature spell with mana value 4, 5, or 6, "
+        "draw a card.":
+            "whenever you cast a creature spell with mana value 4, 5, or 6",
+        # A list that runs to the sentence end is the body's subject.
+        "Whenever you cast a noncreature spell, Birds, Frogs, Otters, and "
+        "Rats you control get +1/+1 until end of turn.":
+            "whenever you cast a noncreature spell",
+        "When this creature enters, for each opponent, create a 1/1 "
+        "token.": "when ~ enters",
+    }
+    for text, head in cases.items():
+        t = _hosts(text, "Probe", types=("creature",))[0]
+        assert t.kind is HostKind.TRIGGERED, text
+        assert t.trigger.raw == head, text
+        assert S.uncovered(t) == "", text
+
+
 def test_an_ability_word_is_a_label_not_a_condition():
     """CR 207.2c: the ability word has no rules meaning; it is the host's
     label and the classification reads the rest."""

@@ -272,13 +272,6 @@ _TIERED_BULLET_RE = re.compile(
 _SPREE_BULLET_RE = re.compile(r"\+ (?P<cost>(?:\{[^{}]+\})+) - ")
 _BULLET_RE = re.compile(r"• ")
 _TRIGGER_RE = re.compile(r"(?:when|whenever|at)\b")
-# A serial-list member of a head's subject or object ("an artifact,
-# creature, or enchantment"): up to three words ending in an object noun,
-# then ", or" / ", and". A member that opens with a verb is a clause.
-_SERIAL_NEXT_RE = re.compile(
-    r"(?:[a-z\-]+ ){0,2}(?:creature|artifact|enchantment|planeswalker|land|"
-    r"battle|instant|sorcery|permanent|spell|card|token|player|opponent|"
-    r"equipment|aura|vehicle)s?, (?:or|and|and/or) ")
 _FREQ_RE = re.compile(r"(?:^|(?<=\. ))this ability triggers only "
                       r"(?P<f>once|twice|[a-z]+ times) each turn\.")
 _RIDER_RE = re.compile(r"(?:^|(?<=[ .]))activate only[^.]*\.")
@@ -403,14 +396,60 @@ def _event_hints(head: str) -> Tuple[Tuple[EventHint, ...], str]:
     return tuple(out), step
 
 
+_WORD_START_RE = re.compile(r"(?<![\w'~-])[a-z]")
+
+
+def _holds_verb(t: str, a: int, b: int) -> bool:
+    """Does ``t[a:b]`` hold a lexicon verb at any token (A13, read in
+    the whole host so the verb reader sees its left context)?"""
+    return any(lexicon.verb_at(t, m.start()) is not None
+               for m in _WORD_START_RE.finditer(t, a, b))
+
+
+# A head list member is a short noun phrase: "orc", "mana value",
+# "non-angel creature". A longer segment is a clause, not a member.
+_MEMBER_MAX_WORDS = 3
+_CONJ = ("or ", "and ", "and/or ")
+
+
+def _list_continues(t: str, pos: int) -> bool:
+    """Does a serial list run on from ``t[pos:]`` and close inside the
+    head: members of at most `_MEMBER_MAX_WORDS` words holding no
+    lexicon verb, then a member opened by "or" / "and" / "and/or" that
+    a further comma follows (the head's own end)? A list that reaches the
+    sentence end is the body's ("..., and rats you control get +1/+1.")."""
+    while True:
+        nxt = t.find(", ", pos)
+        stop = t.find(".", pos)
+        if nxt < 0 or 0 <= stop < nxt:
+            return False
+        if t.startswith(_CONJ, pos):
+            return True
+        if t.count(" ", pos, nxt) >= _MEMBER_MAX_WORDS or \
+                _holds_verb(t, pos, nxt):
+            return False
+        pos = nxt + 2
+
+
 def _head_end(t: str) -> Optional[int]:
-    """The comma ending a trigger head: the first depth-0 comma not inside
-    a serial list of the head's subject (quotes are masked by L0)."""
+    """The comma ending a trigger head (rule 8): the first depth-0 comma
+    after which the remainder is a sentence (quotes are masked by L0).
+    The remainder is no sentence when it continues a list: it opens with
+    "or" / "and" / "and/or", it is the next of coordinate negated
+    adjectives ("a nontoken, non-angel creature", CR 205.4b), or it is a
+    member of a serial list that closes inside the head (`_list_continues`:
+    subtypes, colours, numbers, keyword actions alike). An intervening
+    "if" always starts the remainder."""
     for m in re.finditer(r",(?: |$)", t):
-        rem = t[m.end():]
-        if rem.startswith(("or ", "and ", "and/or ")):
+        pos = m.end()
+        if t.startswith(_CONJ, pos):
             continue
-        if _SERIAL_NEXT_RE.match(rem) and lexicon.verb_at(rem, 0) is None:
+        if t.startswith("if ", pos):
+            return m.start()
+        if t.startswith("non", pos) and t.startswith(
+                "non", t.rfind(" ", 0, m.start()) + 1):
+            continue
+        if _list_continues(t, pos):
             continue
         return m.start()
     return None
