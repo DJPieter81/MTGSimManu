@@ -44,8 +44,9 @@ from engine.effect_grammar.sub import payload as _payload
 from engine.effect_spec import (Amount, AmountKind, Destination, Ref, RefKind,
                                 Stage, Unmodelled)
 
-__all__ = ["LEAF", "DETAIL_CODES", "parse_destination", "locate_destination",
-           "parse_instead_of", "source_zone", "source_zones", "clear_caches"]
+__all__ = ["LEAF", "DETAIL_CODES", "ZONE_POSSESSIVE", "parse_destination",
+           "locate_destination", "parse_instead_of", "source_zone",
+           "source_zones", "clear_caches"]
 
 LEAF = "destination"
 DETAIL_CODES = frozenset({
@@ -66,6 +67,9 @@ _OWNER_POSS = (r"(?:its|their|his|her|~'s|that card's|that creature's|"
                r"that permanent's) owners?'s?")
 _ZONE_POSS = (r"(?:your|their|its|~'s|that player's|each player's|the|"
               r"%s)" % _OWNER_POSS)
+# The one possessive vocabulary of a zone noun; the verb lexicon reads it
+# for "shuffle <object> into <library>" (A18).
+ZONE_POSSESSIVE = _ZONE_POSS
 
 _CONTROL_OWNER = re.compile(r"under %s control" % _OWNER_POSS)
 _CONTROL_YOU = re.compile(r"under your control")

@@ -237,6 +237,9 @@ def test_shuffling_an_object_into_a_library_is_a_zone_move_not_a_library_shuffle
     """A18: 'shuffle(s) <object> into <library>' is MOVE; only a player
     shuffling their library (or a bare 'then shuffle') is SHUFFLE."""
     for text in ("shuffle ~ into its owner's library",
+                 "shuffle ~ into ~'s owner's library",
+                 "shuffle target creature into their owners' library",
+                 "shuffle that card into that card's owner's library",
                  "each player shuffles their hand and graveyard into their library",
                  "shuffle your graveyard into your library"):
         assert _verb(text).verb is Verb.MOVE, text

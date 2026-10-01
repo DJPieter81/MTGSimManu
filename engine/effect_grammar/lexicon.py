@@ -48,7 +48,8 @@ It holds:
 One table per vocabulary: the CR 701 keyword-action names are the payload
 leaf's (`KEYWORD_ACTION_NAMES`, `UNSUPPORTED_KEYWORD_ACTIONS`), and the
 keywords a "has"/"have"/"gain" grant or a "lose" removal names are the CR
-702 table of `keywords`.
+702 table of `keywords`, and a library's possessive is destination's
+`ZONE_POSSESSIVE`.
 The lexicon reads no card name and no game state.
 
 **Lemma.** The lexicon is where a clause's printed lemma comes from: a
@@ -68,6 +69,7 @@ from typing import Dict, FrozenSet, List, Mapping, Optional, Tuple
 from engine.effect_grammar.keywords import KEYWORD_ABILITIES
 from engine.effect_grammar.sub import (CACHE_SIZE, SlotResult, Span,
                                        rest_spans_after, unmodelled)
+from engine.effect_grammar.sub.dest import ZONE_POSSESSIVE
 from engine.effect_grammar.sub.payload import (KEYWORD_ACTION_NAMES,
                                                UNSUPPORTED_KEYWORD_ACTIONS)
 from engine.effect_model import ModKind
@@ -246,8 +248,9 @@ _LIFE_AFTER = (
 _COLOR = r"(?:white|blue|black|red|green)"
 _PLAYER_COUNTER = (r"(?:\{e\}|poison counters?|experience counters?|"
                    r"rad counters?|ticket counters?)")
-_LIBRARY_OWNER = (r"(?:your|their|his or her|its owner's|its owners'|"
-                  r"their owner's|their owners'|that player's|the)")
+# A library's possessive is destination's zone possessive (one table; A9's
+# "~'s owner's" included).
+_LIBRARY_OWNER = ZONE_POSSESSIVE
 
 # (lemma, verb, mod_kind, after, subject, flags, amount)
 #   after:   matched right after the printed word; what it consumes beyond

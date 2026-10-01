@@ -89,8 +89,9 @@ LEAF_EDGES = {
     "filter": frozenset({"payload"}),
     "target": frozenset({"dest"}),
     # The verb lexicon (beside the sub-grammars) reads the CR 701 action
-    # names from payload's table and the CR 702 names from keywords'.
-    "lexicon": frozenset({"payload", "keywords"}),
+    # names from payload's table, the CR 702 names from keywords' and the
+    # zone possessives from destination's.
+    "lexicon": frozenset({"payload", "keywords", "dest"}),
 }
 
 
