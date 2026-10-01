@@ -424,3 +424,556 @@ def test_a_rider_subject_is_any_object_reference_the_participant_leaf_reads():
                         "regenerated.")
     assert len(frames) == 1
     assert ("no_regeneration", True) in frames[0].riders
+
+
+# ════════════════════════════════════════════════════════════════════════
+# L5: linking (design section 3 "L5, link", section 7; A14-A16, A23-A30)
+# ════════════════════════════════════════════════════════════════════════
+# The assertions below read the package entry point `parse_face`, the
+# whole L0-L5 pipeline. Texts are printed oracle wording; a card name
+# appears only to build the face facts.
+
+from engine.effect_grammar import parse_face  # noqa: E402
+from engine.effect_spec import (EffectSpec, HostKind, Ref,  # noqa: E402,F811
+                                RefKind, RefPart, validate_card_effects)
+
+
+def _linked(text, *a, **kw):
+    """The hosts of one face, every spec checked against the schema."""
+    from engine.effect_spec import CardEffects
+    hosts = parse_face(text, _facts(*a, **kw))
+    assert validate_card_effects(CardEffects.of((hosts,))) is None
+    return hosts
+
+
+def _effect_host(text, *a, **kw):
+    return next(h for h in _linked(text, *a, **kw) if h.specs or h.modes)
+
+
+def _sub(spec):
+    assert spec.verb is Verb.CREATE_TRIGGER, spec
+    return spec.payload
+
+
+def _refusal(spec):
+    assert spec.verb is Verb.UNMODELLED, spec
+    return spec.payload
+
+
+# ── Sub-abilities (A30, M8) ────────────────────────────────────────────
+
+def test_a_reflexive_sub_ability_owns_the_rest_of_its_ability_and_its_targets():
+    """CR 603.12, A30: "When you do" opens a reflexive triggered ability in
+    the performed action's ``then``; it owns the rest of the ability and
+    its own targets (chosen when it triggers), the parent none of them."""
+    h = _effect_host("Whenever you attack, you may pay {E}{E}{E}. When you "
+                     "do, put a +1/+1 counter on target creature. It gains "
+                     "flying until end of turn.", types=("creature",))
+    (pay,) = h.specs
+    assert pay.verb is Verb.PAY and pay.optional
+    assert h.targets == ()
+    (ct,) = pay.then
+    sub = _sub(ct)
+    assert sub.kind is SubAbilityKind.REFLEXIVE and sub.timing is None
+    assert "reflexive" in ct.flags
+    put, grant = sub.host.specs
+    assert len(sub.host.targets) == 1
+    assert put.verb is Verb.PUT_COUNTERS and put.target_slot == 0
+    assert put.target is sub.host.targets[0]
+    assert grant.verb is Verb.CONTINUOUS
+    assert grant.ref == Ref(RefKind.TARGET, 0)
+    assert pay.seq < ct.seq < put.seq < grant.seq
+
+
+def test_a_reflexive_intervening_if_is_the_sub_ability_heads_condition():
+    """CR 603.4, F9: "when you do, if C," is the sub-ability head's
+    intervening-if, never a condition on its specs."""
+    h = _effect_host("Whenever ~ attacks, you may sacrifice an artifact. When "
+                     "you do, if you control three or more artifacts, draw a "
+                     "card.", "Some Golem", types=("creature",))
+    sub = _sub(h.specs[0].then[0])
+    assert sub.host.trigger.intervening_if.kind is ConditionKind.STATE
+    (draw,) = sub.host.specs
+    assert draw.verb is Verb.DRAW and draw.condition is None
+
+
+def test_a_reflexive_sub_ability_stops_at_the_end_of_its_mode():
+    """M8, CR 700.2: each mode is its own instruction, so a reflexive
+    sub-ability opened in one mode never absorbs the next mode."""
+    h = _effect_host("Choose one —\n• You may sacrifice a creature. When you "
+                     "do, destroy target creature.\n• Draw a card.",
+                     types=("sorcery",))
+    m0, m1 = h.modes
+    sub = _sub(m0.specs[0].then[0])
+    assert [s.verb for s in sub.host.specs] == [Verb.DESTROY]
+    assert m0.targets == ()
+    assert [t.mode_group for t in sub.host.targets] == [1]
+    assert [s.verb for s in m1.specs] == [Verb.DRAW]
+
+
+def test_a_delayed_sub_ability_absorbs_only_sentences_that_bind_to_its_results_and_reads_its_parent_by_result():
+    """CR 603.7, A30, A34: a delayed sub-ability holds its own sentence and
+    a later sentence bound to its results; an independent later sentence
+    stays in the parent. A reference from the delayed host to the parent's
+    moved object is the parent spec's RESULT (a snapshot), never the
+    parent's target slot."""
+    h = _effect_host("Return target legendary creature card from your "
+                     "graveyard to the battlefield. That creature gains "
+                     "haste. Exile it at the beginning of the next end step.")
+    ret, haste, ct = h.specs
+    assert ret.verb is Verb.MOVE and ret.target_slot == 0
+    assert haste.ref == Ref(RefKind.RESULT, ret.seq)
+    sub = _sub(ct)
+    assert sub.kind is SubAbilityKind.DELAYED
+    assert sub.timing is DelayedTriggerTiming.NEXT_END_STEP
+    (exile,) = sub.host.specs
+    assert exile.verb is Verb.EXILE and exile.ref == Ref(RefKind.RESULT, ret.seq)
+    assert sub.host.targets == ()
+    h = _effect_host("Exile up to one target creature. At the beginning of "
+                     "the next end step, return that card to the battlefield "
+                     "under its owner's control. Put a +1/+1 counter on it.")
+    exile, ct = h.specs
+    ret, put = _sub(ct).host.specs
+    assert put.verb is Verb.PUT_COUNTERS and put.ref == Ref(RefKind.RESULT, ret.seq)
+    h = _effect_host("Exile target creature. Return it to the battlefield "
+                     "under its owner's control at the beginning of the next "
+                     "end step. You gain 2 life.")
+    assert [s.verb for s in h.specs] == [Verb.EXILE, Verb.CREATE_TRIGGER,
+                                         Verb.GAIN_LIFE]
+
+
+def test_a_delay_paragraph_of_a_spell_holds_the_connective_bound_to_its_payment():
+    """CR 603.7, A5: a spell's delay-prefixed paragraph is a delayed
+    sub-ability, and an "if you don't" bound to its payment is in it."""
+    h = _effect_host("Search your library for a green creature card, reveal "
+                     "it, put it into your hand, then shuffle.\nAt the "
+                     "beginning of your next upkeep, pay {2}{G}{G}. If you "
+                     "don't, you lose the game.", "Some Pact")
+    ct = h.specs[-1]
+    sub = _sub(ct)
+    assert sub.timing is DelayedTriggerTiming.YOUR_NEXT_UPKEEP
+    (pay,) = sub.host.specs
+    assert pay.verb is Verb.PAY
+    (lose,) = pay.otherwise
+    assert _refusal(lose).stage is Stage.RECOGNIZED_UNSUPPORTED
+
+
+# ── Connectives and may-scope (A14, A29) ───────────────────────────────
+
+def test_if_you_do_nests_every_clause_of_its_sentence_under_the_performed_action():
+    """A14: "If you do" gates every clause of its sentence on the previous
+    action; each nested spec is flagged ``if_you_do``."""
+    h = _effect_host("You may sacrifice a creature. If you do, draw two cards "
+                     "and you gain 2 life.")
+    (sac,) = h.specs
+    assert sac.verb is Verb.SACRIFICE and sac.optional
+    assert [s.verb for s in sac.then] == [Verb.DRAW, Verb.GAIN_LIFE]
+    assert all("if_you_do" in s.flags for s in sac.then)
+
+
+def test_if_you_dont_and_otherwise_nest_into_the_else_branch_of_the_named_action():
+    """A14: "If you don't <VP>" names the action whose declining it tests
+    (by its lemma); "If you don't" and "Otherwise" read the previous one."""
+    h = _effect_host(
+        "Whenever ~ or another Elemental you control enters, look at the "
+        "top card of your library. If it's a land card, you may put it onto "
+        "the battlefield tapped. If you don't put the card onto the "
+        "battlefield, put it into your hand.", "Risen Reef",
+        types=("creature",))
+    look, put = h.specs
+    assert put.verb is Verb.MOVE and put.optional
+    assert put.ref == Ref(RefKind.RESULT, look.seq)
+    assert put.condition.ref == Ref(RefKind.RESULT, look.seq)       # rule 0
+    (to_hand,) = put.otherwise
+    assert to_hand.dest.zone == "hand"
+    h = _effect_host("You may discard a card. If you don't, you lose 3 life.")
+    (discard,) = h.specs
+    assert [s.verb for s in discard.otherwise] == [Verb.LOSE_LIFE]
+    h = _effect_host("Exile target card from a graveyard. If it was a "
+                     "creature card, you gain 3 life. Otherwise, you draw a "
+                     "card.")
+    exile, gain = h.specs
+    assert gain.condition.ref == Ref(RefKind.RESULT, exile.seq)
+    assert [s.verb for s in gain.otherwise] == [Verb.DRAW]
+
+
+def test_a_declined_optional_action_skips_only_the_followers_that_depend_on_it():
+    """A29, CR 608.2d: in an optional head's sentence, a follower bound to
+    the head's result, or shuffling the library it searched, is under the
+    head (flag ``may_scope``); a REST of an earlier result is a sibling."""
+    h = _effect_host("Exile target creature. Its controller may search their "
+                     "library for a basic land card, put that card onto the "
+                     "battlefield tapped, then shuffle.")
+    exile, search = h.specs
+    assert search.verb is Verb.SEARCH and search.optional
+    put, shuffle = search.then
+    assert put.verb is Verb.MOVE and put.ref == Ref(RefKind.RESULT, search.seq)
+    assert shuffle.verb is Verb.SHUFFLE
+    assert {"may_scope"} <= put.flags and {"may_scope"} <= shuffle.flags
+    # The followers inherit the head's actor as bound, never a fresh read.
+    assert put.actor == shuffle.actor == search.actor
+    h = _effect_host("Look at the top four cards of your library. You may "
+                     "reveal a creature card from among them and put it into "
+                     "your hand. Put the rest on the bottom of your library "
+                     "in a random order.", types=("sorcery",))
+    look, reveal, rest = h.specs
+    assert reveal.optional and [s.verb for s in reveal.then] == [Verb.MOVE]
+    assert rest.ref == Ref(RefKind.RESULT, look.seq, part=RefPart.REST)
+
+
+# ── Instead (A15, G9) ──────────────────────────────────────────────────
+
+def test_an_instead_sibling_replaces_the_earlier_spec_and_inherits_what_it_does_not_restate():
+    """A15, G9: an instead clause ``replaces`` the earlier spec of its verb;
+    an argument it does not restate is the replaced spec's (the same
+    target slot), never a new requirement."""
+    h = _effect_host("~ deals 2 damage to any target. If you control three "
+                     "or more artifacts, ~ deals 4 damage instead.",
+                     "Some Blast")
+    base, upgrade = h.specs
+    assert upgrade.replaces == (base.seq,)
+    assert len(h.targets) == 1
+    assert upgrade.target is base.target and upgrade.target_slot == 0
+    h = _effect_host("Draw a card. If you control an artifact, instead draw "
+                     "two cards.")
+    one, two = h.specs
+    assert two.replaces == (one.seq,) and two.amount.n == 2
+    h = _effect_host("~ deals 2 damage to target creature.\nIf you control "
+                     "a Wizard, ~ deals 3 damage to that creature instead.",
+                     "Some Bolt")
+    base, upgrade = h.specs
+    assert upgrade.replaces == (base.seq,)
+    assert upgrade.ref == Ref(RefKind.TARGET, 0)
+
+
+def test_a_restated_instead_target_is_an_alternative_target_slot():
+    """G9: an instead clause that prints a target of its own records the
+    pair (replaced slot, its slot) in ``target_alts``."""
+    h = _effect_host("Return target creature an opponent controls to its "
+                     "owner's hand. If you control a Wizard, instead return "
+                     "target nonland permanent an opponent controls to its "
+                     "owner's hand.")
+    base, alt = h.specs
+    assert alt.replaces == (base.seq,)
+    assert len(h.targets) == 2 and h.target_alts == ((0, 1),)
+
+
+def test_instead_of_putting_it_into_a_zone_folds_into_the_named_actions_destination():
+    """CR 701.5a, A15: the countered-this-way sentence is a destination
+    override of the counter, never a spec of its own."""
+    h = _effect_host("Counter target noncreature spell. If that spell is "
+                     "countered this way, exile it instead of putting it "
+                     "into its owner's graveyard.")
+    (counter,) = h.specs
+    assert counter.verb is Verb.COUNTER
+    assert (counter.dest.zone, counter.dest.instead_of) == ("exile",
+                                                            "graveyard")
+    assert "dest_override" in counter.flags
+
+
+# ── Pronouns and references (section 7; A23-A28) ───────────────────────
+
+def test_a_pronoun_in_a_specs_own_condition_binds_to_that_specs_principal():
+    """Rule 0 (A23): "if it has ..." and "unless its controller pays" on a
+    spec are about that spec's own principal."""
+    h = _effect_host("Destroy target creature if it has mana value 2 or "
+                     "less.")
+    (d,) = h.specs
+    assert d.condition.kind is ConditionKind.OBJECT
+    assert d.condition.ref == Ref(RefKind.TARGET, 0)
+    h = _effect_host("Counter target noncreature spell unless its controller "
+                     "pays {2}.")
+    (c,) = h.specs
+    assert c.condition.kind is ConditionKind.UNLESS
+    assert c.condition.ref == Ref(RefKind.CONTROLLER_OF,
+                                  of=Ref(RefKind.TARGET, 0))
+
+
+def test_a_pronoun_in_a_quantified_subjects_condition_binds_to_each_member():
+    """A23: a condition on a quantified subject's pronoun is evaluated per
+    member: ``Ref(MEMBER)``."""
+    for text, types in (("Each creature you control gets +1/+0 until end of "
+                         "turn if it's red.", ("sorcery",)),
+                        ("Each creature you control has trample as long as "
+                         "it's red.", ("enchantment",))):
+        (s,) = _effect_host(text, types=types).specs
+        assert s.condition.ref == Ref(RefKind.MEMBER), text
+
+
+def test_every_earlier_participant_mention_is_a_pronoun_antecedent():
+    """A24: the source named as a principal, an attached object named as a
+    principal, and a condition's subject are all antecedents of a later
+    "it" -- a prior mention wins over the trigger head (M2)."""
+    h = _effect_host("Whenever ~ or another artifact you control enters, put "
+                     "a +1/+1 counter on ~. It can't be blocked this turn.",
+                     "Some Cannon", types=("artifact", "creature"))
+    put, prohibit = h.specs
+    assert prohibit.ref == Ref(RefKind.SELF)
+    h = _effect_host("Whenever a creature dies, put a +1/+1 counter on "
+                     "equipped creature. If equipped creature is a Vampire, "
+                     "put two +1/+1 counters on it instead.",
+                     types=("artifact",))
+    one, two = h.specs
+    assert two.ref == Ref(RefKind.ATTACHED, noun="creature")
+    assert two.replaces == (one.seq,)
+    h = _effect_host("If equipped creature is a Vampire, you gain 1 life. Put "
+                     "a +1/+1 counter on it.", types=("artifact",))
+    gain, put = h.specs
+    assert put.ref == gain.condition.ref == Ref(RefKind.ATTACHED,
+                                                noun="creature")
+
+
+def test_a_pronoun_binds_to_the_nearest_compatible_prior_object():
+    """Section 7: an object pronoun skips a nearer player mention."""
+    h = _effect_host("Tap target creature. Target player draws a card. Put a "
+                     "+1/+1 counter on it.", types=("sorcery",))
+    tap, draw, put = h.specs
+    assert draw.actor == Ref(RefKind.TARGET, 1)
+    assert put.ref == Ref(RefKind.TARGET, 0)
+
+
+def test_after_a_zone_change_a_reference_to_the_moved_object_binds_to_the_result():
+    """CR 400.7, A25: an object that changed zones is a new object; a later
+    reference names the moving spec's RESULT, not the old target."""
+    h = _effect_host("Exile target creature. Return it to the battlefield "
+                     "under its owner's control.")
+    exile, ret = h.specs
+    assert ret.ref == Ref(RefKind.RESULT, exile.seq)
+
+
+def test_a_mixed_self_or_other_trigger_head_binds_it_to_the_event_object_only_without_a_prior_mention():
+    """M2: "~ or another <noun>" heads give the event object, which is the
+    source when the source triggered -- but only when no earlier mention
+    in the body is nearer."""
+    h = _effect_host("Whenever ~ or another creature you control enters, it "
+                     "gains haste until end of turn.", "Some Herald",
+                     types=("creature",))
+    (s,) = h.specs
+    assert s.ref == Ref(RefKind.EVENT_OBJECT)
+    h = _effect_host("Whenever ~ or another artifact you control enters, put "
+                     "a +1/+1 counter on ~. It can't be blocked this turn.",
+                     "Some Cannon", types=("artifact", "creature"))
+    assert h.specs[1].ref == Ref(RefKind.SELF)
+
+
+def test_a_pronoun_in_a_trigger_body_binds_to_the_event_object_or_the_source_by_head():
+    """Rule 3: an other-object head gives EVENT_OBJECT, a self head SELF,
+    a player head EVENT_PLAYER."""
+    (s,) = _effect_host("Whenever another creature you control enters, it "
+                        "gains haste until end of turn.",
+                        types=("enchantment",)).specs
+    assert s.ref == Ref(RefKind.EVENT_OBJECT)
+    (s,) = _effect_host("When ~ enters, it deals 1 damage to any target.",
+                        "Some Elemental", types=("creature",)).specs
+    assert s.other == Ref(RefKind.SELF)
+    (s,) = _effect_host("Whenever an opponent casts a spell, that player "
+                        "loses 1 life.", types=("enchantment",)).specs
+    assert s.actor == Ref(RefKind.EVENT_PLAYER)
+
+
+def test_an_ambiguous_or_unbound_pronoun_is_unmodelled_never_guessed():
+    """Section 7 rule 4: no antecedent, or two equally near (simultaneous
+    siblings), is UNMODELLED(REFERENCE) for that clause only."""
+    (s,) = _effect_host("Return it to its owner's hand.").specs
+    um = _refusal(s)
+    assert (um.stage, um.detail) == (Stage.REFERENCE, "link.unbound")
+    h = _effect_host("Exile target creature and target artifact. Return it "
+                     "to the battlefield under its owner's control.",
+                     types=("sorcery",))
+    a, b, ret = h.specs
+    # Two principal requirements are two simultaneous siblings.
+    assert a.verb is b.verb is Verb.EXILE and a.group == b.group is not None
+    assert (a.target_slot, b.target_slot) == (0, 1)
+    assert _refusal(ret).detail == "link.ambiguous"
+
+
+def test_the_exiled_card_binds_to_an_exile_in_the_same_ability_before_a_linked_ability():
+    """A26, CR 607: "the exiled card" is the RESULT of an EXILE earlier in
+    the same ability; with none, it names the card a linked ability
+    exiled."""
+    h = _effect_host("Exile target creature. Return the exiled card to the "
+                     "battlefield under its owner's control.")
+    exile, ret = h.specs
+    assert ret.ref == Ref(RefKind.RESULT, exile.seq)
+    (ret,) = _effect_host("{T}: Return the exiled card to the battlefield "
+                          "under its owner's control.",
+                          types=("artifact",)).specs
+    assert ret.ref.kind is RefKind.LINKED
+
+
+def test_the_source_is_read_with_last_known_information_after_a_cost_or_leave_event():
+    """A27, CR 608.2h: an ability whose cost sacrifices its source, or whose
+    head is the source dying, reads the source as it last existed."""
+    (draw,) = _effect_host("{2}, Sacrifice this artifact: Draw cards equal "
+                           "to the number of charge counters on this "
+                           "artifact.", "Some Orb", types=("artifact",)).specs
+    assert draw.amount.quantity.ref == Ref(RefKind.SELF, lki=True)
+    (dmg,) = _effect_host("When ~ dies, it deals 2 damage to any target.",
+                          "Some Imp", types=("creature",)).specs
+    assert dmg.other == Ref(RefKind.SELF, lki=True)
+    (dmg,) = _effect_host("When ~ enters, it deals 2 damage to any target.",
+                          "Some Imp", types=("creature",)).specs
+    assert dmg.other == Ref(RefKind.SELF)
+
+
+def test_its_controller_is_the_controller_of_the_antecedent_with_last_known_information():
+    """CR 608.2h: "its controller" after the object was exiled or
+    destroyed is the controller of that object as it last existed."""
+    for verb in ("Exile", "Destroy"):
+        h = _effect_host("%s target creature. Its controller may search their "
+                         "library for a basic land card, put it onto the "
+                         "battlefield tapped, then shuffle." % verb)
+        assert h.specs[1].actor == Ref(
+            RefKind.CONTROLLER_OF, of=Ref(RefKind.TARGET, 0, lki=True)), verb
+
+
+def test_rest_is_the_result_minus_every_later_consumer_including_instead_siblings():
+    """A28: "the rest" names the whole earlier result as a REST part --
+    the set difference is taken at resolution, after every consumer,
+    the instead sibling included, has run; it never names a selection."""
+    h = _effect_host("Look at the top three cards of your library. Put one of "
+                     "them into your hand. If this spell was kicked, put two "
+                     "of them into your hand instead. Put the rest on the "
+                     "bottom of your library in a random order.",
+                     types=("instant",), keywords=("Kicker",))
+    look, one, two, rest = h.specs
+    assert two.replaces == (one.seq,)
+    assert one.ref.index == two.ref.index == look.seq
+    assert rest.ref == Ref(RefKind.RESULT, look.seq, part=RefPart.REST)
+
+
+def test_this_way_and_that_many_bind_to_the_result_of_the_named_prior_action():
+    """A16, A28: "that many" and "<noun> discarded this way" read the
+    result of the named earlier action."""
+    h = _effect_host("Sacrifice any number of lands. Search your library for "
+                     "up to that many land cards, put them onto the "
+                     "battlefield tapped, then shuffle.", types=("sorcery",))
+    sac, search = h.specs[:2]
+    assert search.amount.inner.ref == Ref(RefKind.RESULT, sac.seq)
+    h = _effect_host("When ~ enters, discard two cards, then draw two cards. "
+                     "For each nonland card discarded this way, create a 1/1 "
+                     "red Elemental creature token.", "Some Pyromancer",
+                     types=("creature",))
+    discard, draw, create = h.specs
+    q = create.amount.quantity
+    assert create.amount.kind.name == "FOR_EACH"
+    assert q.kind.name == "RESULT_SIZE" and q.ref == Ref(RefKind.RESULT,
+                                                         discard.seq)
+
+
+def test_results_of_a_multi_player_actor_bind_per_player():
+    """CR 101.4, A28: when each player acts and then reads "them", each
+    player reads their own result (``per_actor``)."""
+    h = _effect_host("Each player mills two cards, then returns them to their "
+                     "hand.", types=("sorcery",))
+    mill, ret = h.specs
+    assert ret.ref == Ref(RefKind.RESULT, mill.seq, per_actor=True)
+    h = _effect_host("Each player sacrifices a creature, then returns the "
+                     "sacrificed creature to the battlefield.",
+                     types=("sorcery",))
+    sac, ret = h.specs
+    assert ret.ref.per_actor and ret.ref.index == sac.seq
+
+
+# ── Granted hosts and the face memo ────────────────────────────────────
+
+def test_a_quoted_ability_is_parsed_as_a_granted_host_of_its_recipient():
+    """CR 113.1a, A10: a token's quoted ability is an ability of the token,
+    parsed as hosts of its own (``TokenSpec.granted``); "this token"
+    inside it is the recipient."""
+    (create,) = _effect_host('Create a 0/0 colorless Construct artifact '
+                             'creature token with "This token gets +1/+1 for '
+                             'each artifact you control."',
+                             types=("sorcery",)).specs
+    (granted,) = create.payload.granted
+    assert granted.kind is HostKind.STATIC
+    (pump,) = granted.specs
+    assert pump.verb is Verb.CONTINUOUS and pump.ref == Ref(RefKind.SELF)
+    assert pump.amount.kind.name == "FOR_EACH"
+    (grant,) = _effect_host('Target creature gains "{T}: Add {G}." until end '
+                            'of turn.').specs
+    (g,) = [v for k, v in grant.payload.data if k == "granted"]
+    assert [h.kind for h in g.hosts] == [HostKind.MANA_ABILITY]
+
+
+def test_the_face_memo_key_is_every_fact_the_parse_reads():
+    """A32: the face parse is memoised on (text, facts, face); a changed
+    fact that changes the output is a different key, never a stale hit."""
+    text = "Some Bolt deals 3 damage to any target."
+    named = parse_face(text, _facts("Some Bolt"))
+    unnamed = parse_face(text, _facts())
+    assert named[0].specs[0].other == Ref(RefKind.SELF)
+    assert unnamed[0].specs[0] != named[0].specs[0]
+    assert parse_face(text, _facts("Some Bolt")) is named
+
+
+def test_a_connective_before_a_delayed_instruction_gates_the_creation_of_the_delayed_ability():
+    """A14, A30: "If you do, return it ... at the beginning of your next
+    upkeep" creates the delayed ability only when the named action was
+    performed: its CREATE_TRIGGER is in that action's ``then``."""
+    h = _effect_host("At the beginning of your end step, you may exile ~. If "
+                     "you do, return it to the battlefield under its owner's "
+                     "control at the beginning of your next upkeep.",
+                     "Some Ghost", types=("creature",))
+    (exile,) = h.specs
+    (ct,) = exile.then
+    assert "if_you_do" in ct.flags
+    sub = _sub(ct)
+    assert sub.timing is DelayedTriggerTiming.YOUR_NEXT_UPKEEP
+    (ret,) = sub.host.specs
+    assert ret.ref == Ref(RefKind.RESULT, exile.seq)
+
+
+def test_a_trigger_bodys_that_much_with_no_earlier_action_reads_the_event_amount():
+    """CR 603.2: "whenever ~ is dealt damage, it deals that much damage"
+    -- with no earlier spec in the ability, "that much" is the triggering
+    event's amount; in a spell it would be unbound."""
+    (s,) = _effect_host("Whenever ~ is dealt damage, it deals that much "
+                        "damage to any target.", "Some Reckoner",
+                        types=("creature",)).specs
+    assert s.amount.kind.name == "THAT_MUCH"
+    assert s.amount.ref == Ref(RefKind.EVENT_OBJECT)
+    assert s.other == Ref(RefKind.SELF)
+
+
+def test_a_demonstrative_after_a_group_action_names_the_affected_set():
+    """Section 7: a quantified group a spec acted on is an antecedent of a
+    later "those <noun>" -- that spec's RESULT, the affected set."""
+    h = _effect_host("Creatures you control get +1/+2 until end of turn. "
+                     "Untap those creatures.")
+    pump, untap = h.specs
+    assert untap.ref == Ref(RefKind.RESULT, pump.seq)
+
+
+def test_itself_is_the_clauses_own_subject():
+    """A reflexive pronoun names the clause's own subject, and a rule-0
+    pronoun after it reads that principal."""
+    (s,) = _effect_host("Target creature deals damage to itself equal to its "
+                        "power.").specs
+    assert s.other == s.ref == Ref(RefKind.TARGET, 0)
+    assert s.amount.quantity.ref == Ref(RefKind.TARGET, 0)
+
+
+# ── The package entry points (section 3) ───────────────────────────────
+
+def test_the_package_entry_points_parse_specs_faces_and_printed_spans():
+    """parse_effects / parse_text_effects / parse_face share one pipeline;
+    printed_span maps a host span back to the printed text (A40)."""
+    import engine.effect_grammar as grammar
+    from engine.effect_spec import CardEffects
+    specs = grammar.parse_effects("Draw two cards, then discard a card.")
+    assert [s.verb for s in specs] == [Verb.DRAW, Verb.DISCARD]
+    specs = grammar.parse_effects("{T}: Draw a card.", HostKind.ACTIVATED)
+    assert [s.verb for s in specs] == [Verb.DRAW]
+    assert grammar.parse_effects("Draw a card.", HostKind.LOYALTY) == ()
+    ce = grammar.parse_text_effects("Destroy target creature.")
+    assert isinstance(ce, CardEffects) and Verb.DESTROY in ce.verbs
+    printed = "Flying\nWhenever Some Bird attacks, Some Bird deals 1 damage to any target."
+    facts = _facts("Some Bird", types=("creature",), keywords=("Flying",))
+    hosts = grammar.parse_face(printed, facts)
+    trig = next(h for h in hosts if h.kind is HostKind.TRIGGERED)
+    (dmg,) = trig.specs
+    assert grammar.printed_span(printed, facts, 0, trig.index, dmg.span) == \
+        "Some Bird deals 1 damage to any target"
+    grammar.clear_caches()
+    assert grammar.parse_face(printed, facts) == hosts

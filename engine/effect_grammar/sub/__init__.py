@@ -255,6 +255,11 @@ LEAF_EDGES = {
     "patterns": frozenset({"clauses", "lexicon", "amount", "dest",
                            "duration", "filter", "participant", "payload",
                            "target"}),
+    # L5, the linker (not a leaf): one face's L1 hosts (and a granted
+    # quote's) through structure, their frames and typed clauses through
+    # patterns, and the face facts' type through normalize. It types no
+    # phrase of its own.
+    "link": frozenset({"normalize", "patterns", "structure"}),
 }
 
 

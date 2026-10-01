@@ -846,48 +846,89 @@ ACTOR_ONLY_VERBS: FrozenSet[Verb] = frozenset({
 _IMMUTABLE_LEAVES = (type(None), bool, int, float, str, bytes, Enum)
 
 
-def find_mutable(obj: Any, _path: str = "", _seen=None) -> Optional[str]:
-    """The path of the first mutable object reachable from `obj`, or None."""
-    _seen = set() if _seen is None else _seen
-    if isinstance(obj, _IMMUTABLE_LEAVES):
+# Value types a walk never enters (exact types: a subclass may hold state).
+_LEAF_TYPES = frozenset({type(None), bool, int, float, str, bytes})
+_DATACLASS_FIELDS: dict = {}
+
+
+def _field_names(cls: type) -> Tuple[str, ...]:
+    names = _DATACLASS_FIELDS.get(cls)
+    if names is None:
+        names = tuple(f.name for f in dataclasses.fields(cls))
+        _DATACLASS_FIELDS[cls] = names
+    return names
+
+
+def _mutable_path(obj: Any, seen: set) -> Optional[list]:
+    """The path components to the first mutable object reachable from
+    `obj` ([] when `obj` itself is mutable), or None. Paths are built only
+    on a hit, so a clean walk allocates no strings."""
+    if type(obj) in _LEAF_TYPES or isinstance(obj, _IMMUTABLE_LEAVES):
         return None
-    if id(obj) in _seen:
+    if id(obj) in seen:
         return None
-    _seen.add(id(obj))
+    seen.add(id(obj))
     if isinstance(obj, (tuple, frozenset)):
         for i, x in enumerate(obj):
-            hit = find_mutable(x, f"{_path}[{i}]", _seen)
-            if hit:
-                return hit
+            if type(x) in _LEAF_TYPES:
+                continue
+            hit = _mutable_path(x, seen)
+            if hit is not None:
+                return [f"[{i}]"] + hit
         return None
-    if dataclasses.is_dataclass(obj) and not isinstance(obj, type):
-        if not type(obj).__dataclass_params__.frozen:
-            return _path or type(obj).__name__
-        for f in dataclasses.fields(obj):
-            hit = find_mutable(getattr(obj, f.name), f"{_path}.{f.name}", _seen)
-            if hit:
-                return hit
+    cls = type(obj)
+    params = getattr(cls, "__dataclass_params__", None)
+    if params is not None and not isinstance(obj, type):
+        if not params.frozen:
+            return []
+        for name in _field_names(cls):
+            v = getattr(obj, name)
+            if type(v) in _LEAF_TYPES:
+                continue
+            hit = _mutable_path(v, seen)
+            if hit is not None:
+                return [f".{name}"] + hit
         return None
-    return _path or type(obj).__name__
+    return []
+
+
+def find_mutable(obj: Any, _path: str = "", _seen=None) -> Optional[str]:
+    """The path of the first mutable object reachable from `obj`, or None."""
+    hit = _mutable_path(obj, set() if _seen is None else _seen)
+    if hit is None:
+        return None
+    path = _path + "".join(hit)
+    if path:
+        return path
+    return type(obj).__name__
 
 
 def _refs(obj: Any, _seen=None) -> Iterator[Ref]:
     """Every Ref reachable from a spec's own fields, not entering nested
     EffectSpecs (they are checked on their own) or sub-ability hosts."""
-    _seen = set() if _seen is None else _seen
-    if isinstance(obj, _IMMUTABLE_LEAVES) or id(obj) in _seen:
+    out: list = []
+    _collect_refs(obj, set() if _seen is None else _seen, out)
+    return iter(out)
+
+
+def _collect_refs(obj: Any, seen: set, out: list) -> None:
+    if type(obj) in _LEAF_TYPES or isinstance(obj, _IMMUTABLE_LEAVES) \
+            or id(obj) in seen:
         return
-    _seen.add(id(obj))
+    seen.add(id(obj))
     if isinstance(obj, (EffectSpec, AbilityEffects)):
         return
     if isinstance(obj, Ref):
-        yield obj
+        out.append(obj)
     if isinstance(obj, (tuple, frozenset, list)):
         for x in obj:
-            yield from _refs(x, _seen)
+            if type(x) not in _LEAF_TYPES:
+                _collect_refs(x, seen, out)
     elif dataclasses.is_dataclass(obj) and not isinstance(obj, type):
-        for f in dataclasses.fields(obj):
-            yield from _refs(getattr(obj, f.name), _seen)
+        for name in _field_names(type(obj)):
+            v = getattr(obj, name)
+            if type(v) not in _LEAF_TYPES:
+                _collect_refs(v, seen, out)
 
 
 _SPEC_OWN_FIELDS = tuple(f for f in EffectSpec.__dataclass_fields__
@@ -927,7 +968,10 @@ def _check(spec: EffectSpec, host: Optional[AbilityEffects],
     # one of this host's own targets. LINKED (CR 607) and the other kinds
     # are not host-relative. Without a host nothing can be resolved.
     for name in _SPEC_OWN_FIELDS:
-        for r in _refs(getattr(spec, name)):
+        value = getattr(spec, name)
+        if type(value) in _LEAF_TYPES:
+            continue
+        for r in _refs(value):
             if r.kind is RefKind.RESULT:
                 if not (isinstance(r.index, int) and 0 <= r.index < spec.seq):
                     return "ref_order:result"
