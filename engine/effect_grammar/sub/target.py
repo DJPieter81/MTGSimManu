@@ -15,8 +15,11 @@ slot, unmodified, in printed order (CR 601.2c). The spine stamps
 **Count (F11).** Each printed target word must produce exactly one
 requirement. Noun and verb uses of "target" do not count ("the target of",
 "a single target", "new targets", "spells that target ~", "each target
-beyond the first"); a quoted ability is already masked ``⟨qk⟩`` by L0 and is
-counted in its granted host. `target_words` returns the counted words. A
+beyond the first"); "any target", "another target" and an ordinal ("a
+third target") count, and so does the imperative "copy target <X>"; a
+plural counts only after a printed count ("up to two other targets"). A
+quoted ability is already masked ``⟨qk⟩`` by L0 and is counted in its
+granted host. `target_words` returns the counted words. A
 slot whose words have no requirement is ``UNMODELLED(TARGET)``; a different
 number of requirements is ``UNMODELLED(TARGET_COUNT)``; a printed count the
 requirement does not carry ("x target creatures") is TARGET_COUNT too.
@@ -29,7 +32,13 @@ carry becomes a residue code of `effect_spec.RESIDUE_CODES` with its
 polarity (WIDENING: the requirement admits objects the text excludes;
 NARROWING: a union member the requirement dropped). A token no feature
 reads, or a qualifier with no residue code of its own, is the UNPARSED
-``target.unparsed``: never tolerable (F4). A requirement read inside its own
+``target.unparsed``: never tolerable (F4). No row is a wildcard: a
+comparison operand, an extreme's comparison set and a history verb's
+complement are closed grammars, so an unknown word is left over and is
+unparsed, never absorbed into a WIDENING code. A listed restriction ("with
+flying or reach", "power or toughness") is one code per member; negation
+("without flying") and the passive ("was dealt damage") have codes of
+their own. A requirement read inside its own
 phrase is checked too: "target nonbasic land" typed as any land is
 ``target.unparsed``.
 
@@ -108,8 +117,11 @@ _NOUN_BEFORE = re.compile(
 # target ~", "if it targets a creature", "the spell could target").
 _VERB_BEFORE = re.compile(
     r"(?<![\w'])(?:that|which|it|they|would|could|can|can't|cannot|"
-    r"doesn't|don't|also|spells?|abilit(?:y|ies)|copy)\s+$")
-_ANY_BEFORE = re.compile(r"(?<![\w'])any (?:other )?$")
+    r"doesn't|don't|also|spells?|abilit(?:y|ies))\s+$")
+# "any target", and the further targets of one ability: "another target",
+# "a second target", "a third target" (a bare noun that still targets).
+_ANY_BEFORE = re.compile(r"(?<![\w'])(?:any (?:other )?|another |"
+                         r"an? (?:second|third|fourth|fifth) )$")
 # "target" followed by what a verb takes ("that target a creature").
 _OBJECT_AFTER = re.compile(r"\s+(?:of|a|an|~|you|only|it|them|that|your|"
                            r"exactly)(?![\w'])")
@@ -117,7 +129,7 @@ _OBJECT_AFTER = re.compile(r"\s+(?:of|a|an|~|you|only|it|them|that|your|"
 # targets", "any number of targets", "each of up to two targets").
 _COUNT_BEFORE_PLURAL = re.compile(
     r"(?<![\w'])(?:one, two,? (?:and|or) three|one or (?:two|three)|"
-    r"any number of|up to %s|%s)\s+$" % (_COUNT_WORD, _COUNT_WORD))
+    r"any number of|up to %s|%s)\s+(?:other\s+)?$" % (_COUNT_WORD, _COUNT_WORD))
 _WINDOW = 24         # characters looked back for a determiner or count
 
 
@@ -133,7 +145,9 @@ def _counted(text: str, m) -> bool:
         return False
     if _OBJECT_AFTER.match(after):
         return False
-    return bool(re.match(r"\s+[\w~⟨]", after))
+    # A word, a self-form, a masked quote or a bracketed perpetual word
+    # ("target [attacking] creature") follows a counted target word.
+    return bool(re.match(r"\s+[\w~⟨\[]", after))
 
 
 @lru_cache(maxsize=CACHE_SIZE)
@@ -158,12 +172,43 @@ _TYPE = (r"(?:creature|artifact|enchantment|planeswalker|land|battle|"
 _KEYWORDS = sorted({k.value.replace("_", " ") for k in Keyword},
                    key=lambda s: (-len(s), s))
 _KW = "(?:%s)" % "|".join(re.escape(k) for k in _KEYWORDS)
-_STAT = r"(?:base )?(?P<stat>power|toughness)(?: (?:or|and) (?:power|toughness))?"
-_OPERAND = (r"(?:\d+|x|(?:[\w~]+'s |its |that [\w]+'s )?"
-            r"(?:power|toughness|mana value)|the number of [^,;.]+|[\w~']+)")
-_COMPARE = (r"(?:(?:\d+|x) or (?:less|greater|more|fewer)|"
+_STAT_WORD = re.compile(r"power|toughness|mana value")
+_STAT = (r"(?:base )?(?P<stat>(?:power|toughness)"
+         r"(?: (?:or|and) (?:power|toughness))?)")
+# Comparison operands: a closed grammar, never a wildcard (A21). A quantity
+# is "the number of" a counted noun with a closed complement; anything else
+# is left unread, so it is target.unparsed.
+_QUANTITY = (r"the number of (?:[\w+/-]+ ){0,2}?[\w-]+s(?: (?:you control|"
+             r"an opponent controls|on the battlefield|on ~|removed this way|"
+             r"of mana spent to cast ~|in (?:your|its controller's|"
+             r"that player's|their|all) (?:graveyards?|hands?)))?(?![\w'])")
+_OPERAND = (r"(?:(?:\d+|x)(?: plus \d+)?(?![\w'])|(?:~'s |its |that \w+'s |"
+            r"\w+'s )(?:power|toughness|mana value|loyalty)(?![\w'])|"
+            r"your life total|that number|%s)" % _QUANTITY)
+_COMPARE = (r"(?:(?:\d+|x) or (?:less|greater|more|fewer)(?![\w'])|"
             r"(?:less|greater) than(?: or equal to)? %s|equal to %s)"
             % (_OPERAND, _OPERAND))
+# "with the greatest power among creatures you control": the extreme's
+# comparison set is closed.
+_AMONG = (r"(?: or tied for the (?:greatest|least|highest|lowest) "
+          r"(?:power|toughness|mana value))?"
+          r"(?: among (?:other )?(?:creatures|permanents|artifacts|lands|"
+          r"creatures and planeswalkers|nonland permanents)"
+          r"(?: (?:you control|they control|an opponent controls|"
+          r"that player controls|your opponents control|"
+          r"on the battlefield))?)?(?![\w'])")
+# "that attacked or blocked this turn": each verb with its closed
+# complement; the time is optional (an unread remainder is unparsed).
+_HIST_VERB = (r"(?:attacked|blocked|(?:was|were) blocked|"
+              r"(?:was|were) dealt damage|dealt (?:combat )?damage|entered|"
+              r"came under your control)"
+              r"(?: (?:to you|by (?:it|~|an? [\w-]+ creature)|"
+              r"the battlefield(?: under your control)?))?")
+_HIST_CODE = ((re.compile(r"^(?:was|were) blocked"), "was_blocked"),
+              (re.compile(r"^(?:was|were) dealt"), "was_dealt"),
+              (re.compile(r"^dealt"), "dealt"),
+              (re.compile(r"^came under"), "came_under"),
+              (re.compile(r"^(\w+)"), None))
 _STATES = ("attacking or blocking", "attacking", "blocking", "tapped",
            "untapped", "blocked", "unblocked", "enchanted", "equipped",
            "modified", "suspected", "saddled", "face-down", "face down")
@@ -181,7 +226,8 @@ _ANY_POSS = frozenset({"", "a", "all", "any", "any one", "the"})
 # (row name, pattern); `_tail_code` maps a hit to a residue code or None
 # (carried by the requirement).
 _TAIL = tuple((n, re.compile(p)) for n, p in (
-    ("possessive", r"'s(?![\w'])"),
+    # "target player's graveyard", "target players' graveyards".
+    ("possessive", r"(?:'s|(?<=s)')(?![\w'])"),
     ("scope_opponent", r"(?:an opponent|your opponents|opponents) controls?"),
     ("scope_you", r"you control"),
     ("scope_not_you", r"you don't control"),
@@ -190,9 +236,10 @@ _TAIL = tuple((n, re.compile(p)) for n, p in (
                   r"that opponent|the chosen player|chosen player|"
                   r"enchanted player|that creature's controller|"
                   r"each opponent|each player|they|it) controls?"),
-    ("controls", r"controls?"),
+    ("controls", r"controls?(?![\w'])"),
+    ("owns", r"owns?(?![\w'])"),
     ("owner", r"(?:you|an opponent|that player|target player) "
-              r"(?:own|owns|don't own|doesn't own)"),
+              r"(?:own|owns|don't own|doesn't own)(?![\w'])"),
     ("zone", r"(?:cards? )?(?:from|in) (?P<poss>%s)%s"
              r"(?:(?:,| or| and| and/or) %s%s)*" % (
                  _POSS, _ZONE_NOUN, _POSS, _ZONE_NOUN)),
@@ -200,16 +247,17 @@ _TAIL = tuple((n, re.compile(p)) for n, p in (
     ("mv", r"with (?P<total>total )?mana value (?:(?P<n>\d+|x) or less|%s|"
            r"\d+|x)(?![\w'])" % _COMPARE),
     ("stat", r"with %s %s" % (_STAT, _COMPARE)),
-    ("stat_extreme", r"with the (?:greatest|least|highest|lowest) "
-                     r"(?P<stat>power|toughness|mana value)[^,;.]*"),
-    ("keyword", r"with(?:out)? (?P<kw>%s)(?:(?:,| or| and|, or|, and) %s)*"
-                % (_KW, _KW)),
-    ("counter", r"with (?:a|an|one or more|\w+) (?:[\w+/-]+ )?counters? on it"),
+    ("stat_extreme", r"with the (?P<ext>greatest|least|highest|lowest) "
+                     r"(?P<stat>power|toughness|mana value)" + _AMONG),
+    ("keyword", r"with(?P<neg>out)? (?P<kw>%s(?:(?:,| or| and|, or|, and) %s)*)"
+                r"(?![\w'])" % (_KW, _KW)),
+    ("counter", r"with (?:a|an|one or more|%s) (?:[\w+/-]+ )?counters? on it"
+                % _COUNT_WORD),
     ("colored", r"that's (?:one or more colors|multicolored|monocolored|"
                 r"colored|a multicolored permanent)"),
     ("thats", r"that's (?:an? )?(?P<w>\w+)"),
-    ("history", r"that (?P<w>attacked|blocked|dealt|was dealt|entered|"
-                r"came under)[^,;.]*?(?= this turn|$|,)(?: this turn)?"),
+    ("history", r"that (?P<w>%s(?: or %s)*)(?: this turn| since your last "
+                r"turn ended)?(?![\w'])" % (_HIST_VERB, _HIST_VERB)),
     ("other_than", r"other than (?:~|it|that \w+|the \w+|target \w+|"
                    r"enchanted \w+|equipped \w+)"),
     ("state_rel", r"(?P<w>attacking|blocking|blocked by|blocking or blocked by)"
@@ -237,9 +285,23 @@ _PREFIX = tuple((n, re.compile(p)) for n, p in (
 _SEP = re.compile(r" *")
 
 
-def _tail_code(row: str, m, req: TargetRequirement) -> Optional[str]:
-    """The residue code of a tail feature, or None when the requirement
-    carries it."""
+_KW_RE = re.compile(r"(?<![\w'])%s(?![\w'])" % _KW)
+_EXTREME = {"highest": "greatest", "lowest": "least"}
+
+
+def _tail_codes(row: str, m, req: TargetRequirement) -> Tuple[str, ...]:
+    """The residue codes of a tail feature: one per printed restriction the
+    requirement does not carry (a listed keyword or stat is one code per
+    member); () when the requirement carries it."""
+    code = _tail_code(row, m, req)
+    if isinstance(code, tuple):
+        return code
+    return (code,) if code else ()
+
+
+def _tail_code(row: str, m, req: TargetRequirement):
+    """The residue code (or codes) of a tail feature, or None when the
+    requirement carries it."""
     if row == "scope_opponent":
         return None if req.owner_scope == "opponent" else _SCOPE_OPPONENT
     if row == "scope_you":
@@ -250,7 +312,7 @@ def _tail_code(row: str, m, req: TargetRequirement) -> Optional[str]:
         return _SCOPE_NOT_YOU
     if row in ("dependent", "controls"):
         return _DEPENDENT_CONTROLLER
-    if row == "owner":
+    if row in ("owner", "owns"):
         return _UNPARSED
     if row == "zone":
         poss = (m.group("poss") or "").strip()
@@ -276,10 +338,17 @@ def _tail_code(row: str, m, req: TargetRequirement) -> Optional[str]:
         if n is not None and n != "x" and req.max_mana_value == int(n):
             return None
         return "target.stat:mana_value"
-    if row in ("stat", "stat_extreme"):
-        return "target.stat:" + m.group("stat").replace(" ", "_")
+    if row == "stat":
+        return tuple("target.stat:" + w for w in
+                      dict.fromkeys(_STAT_WORD.findall(m.group("stat"))))
+    if row == "stat_extreme":
+        ext = _EXTREME.get(m.group("ext"), m.group("ext"))
+        return "target.stat:%s_%s" % (ext, m.group("stat").replace(" ", "_"))
     if row == "keyword":
-        return "target.keyword:" + m.group("kw").replace(" ", "_")
+        neg = "without_" if m.group("neg") else ""
+        return tuple(dict.fromkeys(
+            "target.keyword:" + neg + k.replace(" ", "_")
+            for k in _KW_RE.findall(m.group("kw"))))
     if row == "counter":
         return "target.state:counter"
     if row == "colored":
@@ -294,11 +363,21 @@ def _tail_code(row: str, m, req: TargetRequirement) -> Optional[str]:
             return "target.state:" + w
         return _UNPARSED
     if row == "history":
-        return "target.state:" + m.group("w").split()[-1]
+        codes = []
+        for v in re.finditer(_HIST_VERB, m.group("w")):
+            for rx, name in _HIST_CODE:
+                h = rx.match(v.group(0))
+                if h:
+                    codes.append("target.state:" + (name or h.group(1)))
+                    break
+        return tuple(dict.fromkeys(codes))
     if row == "other_than":
         return _EXCLUDE_SOURCE
     if row == "state_rel":
-        return "target.state:" + m.group("w").split()[0]
+        w = m.group("w")
+        return tuple(dict.fromkeys(
+            "target.state:" + ("blocked_by" if x.startswith("blocked") else x)
+            for x in re.findall(r"attacking|blocking|blocked by", w)))
     if row == "union":
         noun, adj = m.group("noun").split()[0], m.group("adj").split()
         if noun in ("card", "spell") and adj:
@@ -355,6 +434,9 @@ def _skip(text: str, p: int, end: int) -> int:
     return m.end() if m else p
 
 
+_REFUSED = re.compile(r"[\w/+-]+")
+
+
 @lru_cache(maxsize=CACHE_SIZE)
 def _slot_rel(clause: str, a: int, b: int, lemma: str):
     """The slot ``clause[a:b]`` (already trimmed): (value, unmodelled,
@@ -377,9 +459,11 @@ def _slot_rel(clause: str, a: int, b: int, lemma: str):
         placed.append((s, e, req))
     placed.sort(key=lambda x: (x[0], x[1]))
     if not placed:
-        after = clause[in_words[0][1]:b].split()
+        # The refused token is one word, punctuation stripped (the leaf
+        # contract's param).
+        tok = _REFUSED.search(clause, in_words[0][1], b)
         return (None, _um(Stage.TARGET, lemma, "no_requirement",
-                          after[0] if after else ""), None, (), (), b)
+                          tok.group(0) if tok else ""), None, (), (), b)
     if len(placed) != len(in_words):
         return (None, _um(Stage.TARGET_COUNT, lemma, "count_mismatch"),
                 None, (), (), b)
@@ -404,9 +488,7 @@ def _slot_rel(clause: str, a: int, b: int, lemma: str):
                     m = rx.match(clause, p, s)
                     if m and row not in ("possessive", "union", "conj_type"):
                         hit = m
-                        code = _tail_code(row, m, prev)
-                        if code:
-                            residue.add(code)
+                        residue.update(_tail_codes(row, m, prev))
                         break
             if hit is None:
                 for row, rx in _PREFIX:
@@ -456,12 +538,13 @@ def _slot_rel(clause: str, a: int, b: int, lemma: str):
             if row == "possessive":
                 flags.add(POSSESSIVE)
                 np_end, consumed_end, stop = p, m.end(), m.end()
-            elif row == "controls" and _is_player(last) and not juxtaposed:
+            elif (row in ("controls", "owns") and _is_player(last)
+                  and not juxtaposed):
+                # "each permanent target player controls/owns": the verb is
+                # the relative clause's, handed on as rest.
                 np_end = consumed_end = stop = p
             else:
-                code = _tail_code(row, m, last)
-                if code:
-                    residue.add(code)
+                residue.update(_tail_codes(row, m, last))
             break
         if stop is not None:
             rest = rest_spans_after(clause, stop, b)

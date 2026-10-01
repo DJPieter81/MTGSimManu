@@ -62,22 +62,26 @@ _SLOT_END = re.compile(
     r"(?<!or )equal to)(?![\w'])"
     % _TYPEWORD)
 
-# Measured 2026-09-30 on this branch's DB (22.7k cards), see the printed
-# report: of 7977 slots, 6750 (84.6%) are typed (a TargetSlot, with or
-# without residue) and 5436 (68.1%) are typed with no residue at all.
-# Typed slots with residue: WIDENING 842, NARROWING 272 (mostly "target
-# player or planeswalker" read as a player), UNPARSED 300 (mostly "you
+# Measured 2026-10-01 on this branch's DB (22.7k cards), see the printed
+# report: of 8022 slots, 6777 (84.5%) are typed (a TargetSlot, with or
+# without residue) and 5446 (67.9%) are typed with no residue at all.
+# Typed slots with residue: WIDENING 840, NARROWING 273 (mostly "target
+# player or planeswalker" read as a player), UNPARSED 317 (mostly "you
 # control" after a requirement the solver scoped "any": RESIDUE_CODES has
-# no code for it, and "target nonbasic land" read as any land). Of 1227
-# UNMODELLED slots, 1002 are solver gaps (no_requirement: "target attacking
-# creature", "one or two targets", subtype targets), 121 zone mismatches
-# (chiefly the solver's loose graveyard fallback reading "in your
-# graveyard" elsewhere in the sentence), 70 unread counts ("x target
-# creatures", "one, two, or three"), 33 zone unions. Floors sit a few
-# points under the measurement: a fall below them is a closed-table
-# regression, not noise (the parse is deterministic).
+# no code for it; "target nonbasic land" read as any land; comparison
+# operands outside the closed operand grammar). Of 1245 UNMODELLED slots,
+# 1017 are solver gaps (no_requirement: "target attacking creature", "one
+# or two targets", subtype targets), 124 zone mismatches (chiefly the
+# solver's loose graveyard fallback reading "in your graveyard" elsewhere
+# in the sentence), 70 unread counts ("x target creatures", "one, two, or
+# three"), 33 zone unions, 1 count mismatch. Floors sit a few points under
+# the measurement: a fall below them is a closed-table regression, not
+# noise (the parse is deterministic).
 TYPED_FLOOR = 0.82
 CLEAN_FLOOR = 0.65
+
+
+_DETAIL_RE = re.compile(r"^target\.[a-z_]+(?::[\w/+-]+)?$")
 
 
 def _normalise(template, text: str) -> str:
@@ -165,6 +169,8 @@ def _run(slots):
                 host[slice(*r.span)], (host, span, r)
             counts["unmodelled"] += 1
             details[r.unmodelled.detail.split(":")[0]] += 1
+            # The leaf contract's param is one word, never punctuation.
+            assert _DETAIL_RE.match(r.unmodelled.detail), r.unmodelled.detail
         digest.append(canonical((host, span, r.value, r.unmodelled, r.amount,
                                  r.rest_spans, sorted(r.flags))))
     return counts, residue, details, digest
@@ -209,6 +215,47 @@ def test_the_target_leaf_types_or_refuses_every_pool_target_slot_deterministical
     print("unmodelled details:", details.most_common())
     assert typed >= TYPED_FLOOR
     assert clean >= CLEAN_FLOOR
+
+
+# F11 false negatives: a "target" word the leaf does not count must be a
+# noun or verb use. The closed contexts, by the word before it (singular
+# and plural apart: "copy target X" is an imperative and counts, "the copy
+# targets" is a verb; "any target" counts, "any targets of" is a noun).
+_UNCOUNTED_PREV = {
+    "target": frozenset({"the", "a", "new", "single", "each", "~'s", "that",
+                         "could", "must", "doesn't"}),
+    "targets": frozenset({"the", "new", "that", "it", "copy", "spell", "~",
+                          "any"}),
+}
+# Uncounted words outside those contexts, pinned with a ceiling. Measured
+# 2026-09-30: one, "{t}: target ~ creature" (a subtype the card's own name
+# replaced with ~, read as "spells that target ~").
+_UNCOUNTED_CEILING = {("{t}:", "target"): 1}
+
+
+@pytest.mark.timeout(120)
+def test_every_uncounted_target_word_is_a_noun_or_verb_use(card_db):
+    """The slot floors only see counted words, so a word the leaf wrongly
+    reads as a noun or verb would drop out of both numerator and
+    denominator. Every uncounted word is checked against the closed F11
+    contexts here, and no sentence where the solver places a requirement
+    may have zero counted words (a silently untargeted slot)."""
+    from engine.effect_grammar.sub import target as T
+    from engine.target_solver import parse_spans
+    stray = Counter()
+    for host in _paragraphs(card_db):
+        counted = set(T.target_words(host))
+        for m in T._TARGET_WORD.finditer(host):
+            if m.span("w") in counted:
+                continue
+            prev = host[:m.start()].split()[-1:] or [""]
+            if prev[0] not in _UNCOUNTED_PREV[m.group("w")]:
+                stray[(prev[0], m.group("w"))] += 1
+        for sent in re.split(r"[.\n]", host):
+            placed = [x for x in parse_spans(sent) if x[1] >= 0]
+            assert not placed or T.target_words(sent), sent
+    for key, n in stray.items():
+        assert n <= _UNCOUNTED_CEILING.get(key, 0), (key, n, stray)
 
 
 # Witnesses: target phrases printed by registered-deck cards
@@ -286,9 +333,15 @@ def test_registered_deck_target_witnesses_read_exactly_the_printed_rule(card_db)
     assert r.value.residue == ()
     _, r = slot("Warping Wail",
                 "target creature with power or toughness 1 or less")
-    assert r.value.residue == ("target.stat:power",)
+    assert r.value.residue == ("target.stat:power", "target.stat:toughness")
     _, r = slot("Warping Wail", "target sorcery spell")
     assert r.value.requirements[0].zone == "stack" and r.value.residue == ()
+
+    # F11: "copy target <X>" is an imperative; its target word counts.
+    h, span = _printed(card_db, "Mirrorpool",
+                       "copy target instant or sorcery spell you control")
+    assert [h[a:b] for a, b in T.target_words(h, span)] == ["target"]
+    assert T.parse_target(h, (span[0] + len("copy "), span[1])) is not None
 
     # F11 and counts: "the target of" and "a single target" are nouns; a
     # "one or two" count is the requirement's own, with no amount.

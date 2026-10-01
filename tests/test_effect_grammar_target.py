@@ -111,6 +111,19 @@ def test_a_slot_without_a_counted_target_word_is_not_a_target_slot():
      ["targets"]),
     ("tap target creature target player controls.", ["target", "target"]),
     ("creatures you control have ⟨q0⟩.", []),
+    # "copy" is an imperative verb before a counted target word; the noun
+    # "copy" as a subject makes "targets" a verb (a plural needs a count).
+    ("{2}, {t}: copy target instant or sorcery spell you control.",
+     ["target"]),
+    ("copy target activated or triggered ability you control.", ["target"]),
+    ("the copy targets a creature.", []),
+    ("each copy targets a different creature.", []),
+    # "another" and ordinals introduce further targets of one ability.
+    ("~ deals 1 damage to any target, 2 damage to another target, and 3 "
+     "damage to a third target.", ["target", "target", "target"]),
+    ("choose a second target.", ["target"]),
+    ("~ deals 2 damage to each of up to two other targets.", ["targets"]),
+    ("~ deals 1 damage to each of two other targets.", ["targets"]),
 ])
 def test_noun_uses_of_the_word_target_do_not_count_as_requirements(host, counted):
     words = _T().target_words(host)
@@ -185,6 +198,22 @@ def test_a_target_phrase_the_solver_cannot_parse_is_unmodelled_not_untargeted():
      "target land you control blorp", "target.unparsed", UNPARSED),
     ("destroy target nonbasic land.", "target nonbasic land",
      "target.unparsed", UNPARSED),
+    # One code per listed member, negation and passive kept apart.
+    ("destroy target creature without flying.",
+     "target creature without flying", "target.keyword:without_flying",
+     WIDENING),
+    ("destroy target creature with flying or reach.",
+     "target creature with flying or reach", "target.keyword:reach",
+     WIDENING),
+    ("destroy target creature with power or toughness 1 or less.",
+     "target creature with power or toughness 1 or less",
+     "target.stat:toughness", WIDENING),
+    ("destroy target creature that was dealt damage this turn.",
+     "target creature that was dealt damage this turn",
+     "target.state:was_dealt", WIDENING),
+    ("destroy target creature that attacked or blocked this turn.",
+     "target creature that attacked or blocked this turn",
+     "target.state:blocked", WIDENING),
 ])
 def test_every_token_of_a_target_slot_is_consumed_or_recorded_as_residue(
         host, phrase, code, polarity):
@@ -201,6 +230,73 @@ def test_every_token_of_a_target_slot_is_consumed_or_recorded_as_residue(
     assert all(residue_polarity(c) for c in r.value.residue)
     assert list(r.value.residue) == sorted(set(r.value.residue))
     assert r.span == _slot(host, phrase)
+
+
+@pytest.mark.parametrize("phrase,codes", [
+    ("target creature without flying", ["target.keyword:without_flying"]),
+    ("target creature with flying", ["target.keyword:flying"]),
+    ("target creature with flying or reach",
+     ["target.keyword:flying", "target.keyword:reach"]),
+    ("target creature with power or toughness 1 or less",
+     ["target.stat:power", "target.stat:toughness"]),
+    ("target creature with power 3 or greater", ["target.stat:power"]),
+    ("target creature that was dealt damage this turn",
+     ["target.state:was_dealt"]),
+    ("target creature that dealt damage this turn", ["target.state:dealt"]),
+    ("target creature that attacked or blocked this turn",
+     ["target.state:attacked", "target.state:blocked"]),
+    ("target creature with the greatest power among creatures you control",
+     ["target.stat:greatest_power"]),
+])
+def test_distinct_printed_restrictions_get_distinct_residue_codes(phrase, codes):
+    """The residue names what a later modelling step must add: every listed
+    keyword or stat is its own code, "without" is not "with", and a passive
+    history ("was dealt damage") is not the active one."""
+    r = _parse("exile %s." % phrase, phrase)
+    assert r.value is not None, r
+    assert list(r.value.residue) == sorted(codes)
+
+
+@pytest.mark.parametrize("phrase", [
+    "target creature with the greatest power among creatures you control blorp",
+    "target creature with the greatest power blorp",
+    "target spell with mana value less than or equal to blorp",
+    "target creature with power less than blorp",
+    "target creature with power less than or equal to the number of blorp",
+    "target creature that attacked or blorp this turn",
+    "target creature that dealt damage blorp",
+    "target creature that blocked or",
+    "target creature with blorp +1/+1 counters on it",
+])
+def test_a_token_no_feature_reads_is_unparsed_never_absorbed_by_a_widening_row(phrase):
+    """A21 full consumption: a wildcard must not swallow a word nothing
+    reads into a tolerable WIDENING code."""
+    r = _parse("exile %s." % phrase, phrase)
+    assert r.value is not None, r
+    assert "target.unparsed" in r.value.residue, r.value.residue
+
+
+@pytest.mark.parametrize("phrase,code", [
+    ("target spell with mana value less than or equal to ~'s power",
+     "target.stat:mana_value"),
+    ("target creature with power less than or equal to the number of "
+     "cards in your hand", "target.stat:power"),
+    ("target creature with power less than or equal to the number of "
+     "+1/+1 counters removed this way", "target.stat:power"),
+    ("target creature with power greater than or equal to your life total",
+     "target.stat:power"),
+    ("target creature with the greatest power among creatures target "
+     "opponent controls", "target.stat:greatest_power"),
+    ("target creature that dealt damage to you this turn",
+     "target.state:dealt"),
+    ("target creature that entered this turn", "target.state:entered"),
+    ("target creature with two +1/+1 counters on it", "target.state:counter"),
+])
+def test_closed_operands_and_complements_are_consumed(phrase, code):
+    r = _parse("exile %s." % phrase, phrase)
+    assert r.value is not None, r
+    assert code in r.value.residue
+    assert "target.unparsed" not in r.value.residue, r.value.residue
 
 
 @pytest.mark.parametrize("host,phrase", [
@@ -321,6 +417,26 @@ def test_a_player_target_heading_a_relative_clause_hands_its_verb_on_as_rest():
     assert r.rest_text(host) == "controls"
 
 
+def test_a_player_target_heading_an_owns_relative_clause_hands_its_verb_on_as_rest():
+    host = "return each nonland permanent target player owns to its owner's hand."
+    r = _parse(host, "target player owns")
+    (req,) = r.value.requirements
+    assert req.types == frozenset({"player"})
+    assert r.value.residue == ()
+    assert host[slice(*r.span)] == "target player"
+    assert r.rest_text(host) == "owns"
+
+
+def test_a_plural_possessive_target_leaves_the_possessed_noun_as_rest():
+    host = "exile any number of target players' graveyards."
+    r = _parse(host, "any number of target players' graveyards")
+    (req,) = r.value.requirements
+    assert req.types == frozenset({"player"})
+    assert "possessive" in r.flags
+    assert "target.unparsed" not in r.value.residue
+    assert r.rest_text(host) == "graveyards"
+
+
 def test_a_juxtaposed_player_target_names_the_objects_controller_as_residue():
     """"target creature target player controls": the creature's controller
     is the targeted player, a dependency the requirement cannot carry."""
@@ -344,6 +460,16 @@ def test_a_failed_target_slot_reports_the_whole_trimmed_slot_and_the_callers_lem
     assert r.unmodelled.lemma == ""
     m = re.match(r"^target\.([a-z_]+)(?::\S+)?$", r.unmodelled.detail)
     assert m and m.group(1) in T.DETAIL_CODES
+
+
+def test_a_refused_token_param_is_one_word_without_punctuation():
+    host = "counter target noncreature, nonland spell."
+    r = _parse(host, "target noncreature, nonland spell")
+    if r.value is None:
+        assert re.match(r"^target\.[a-z_]+(?::[\w/+-]+)?$", r.unmodelled.detail)
+    host = "exile target attacking, blocking creature."
+    r = _parse(host, "target attacking, blocking creature")
+    assert r.unmodelled.detail == "target.no_requirement:attacking"
 
 
 def test_the_target_leaf_caches_are_bounded_and_cleared_by_the_package():
