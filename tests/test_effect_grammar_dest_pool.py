@@ -105,8 +105,8 @@ def _run(sentences):
                 assert r.value.instead_of and "dest_override" in r.flags
                 instead["typed"] += 1
             elif r.unmodelled.detail in (
-                    "destination.instead_of_replacement_effect",
-                    "destination.instead_of_unlinked"):
+                    "dest.instead_of_replacement_effect",
+                    "dest.instead_of_unlinked"):
                 assert "dest_override" not in r.flags
                 instead[r.unmodelled.detail.split(".instead_of_")[1]] += 1
             else:

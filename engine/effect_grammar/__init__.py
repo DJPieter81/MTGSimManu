@@ -11,11 +11,12 @@ __all__ = ["clear_caches"]
 
 def clear_caches() -> None:
     """Clear the memo caches of every grammar module: the sub-grammars
-    and L0 normalize (`engine.effect_grammar.sub.clear_caches`) and the
-    leaves that sit beside them (keywords; lexicon joins here when it
-    lands). The load driver calls this once, when the grammar pass
+    (`engine.effect_grammar.sub.clear_caches`) and the leaves that sit
+    beside them (L0 normalize, the CR 701/702 keyword tables, the verb
+    lexicon). The load driver calls this once, when the grammar pass
     finishes; the leaf-contract test pins that no module's cache is
     missed."""
-    from engine.effect_grammar import keywords, sub
+    from engine.effect_grammar import keywords, lexicon, normalize, sub
     sub.clear_caches()
-    keywords.clear_caches()
+    for leaf in (normalize, keywords, lexicon):
+        leaf.clear_caches()

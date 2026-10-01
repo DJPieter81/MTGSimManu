@@ -51,8 +51,37 @@ class _EntryWithoutLemma:
 
 
 def _leaves():
-    from engine.effect_grammar.sub import dest, duration, payload
-    return {"duration": duration, "dest": dest, "payload": payload}
+    """Every grammar leaf -- each sub-grammar and each leaf beside them
+    (normalize, keywords, lexicon) -- found by walking the package, so a
+    new leaf inherits every contract pin below."""
+    import importlib
+    import pkgutil
+
+    import engine.effect_grammar as pkg
+    out = {}
+    for info in pkgutil.walk_packages(pkg.__path__, pkg.__name__ + "."):
+        if info.ispkg:
+            continue
+        mod = importlib.import_module(info.name)
+        out[info.name.rsplit(".", 1)[1]] = mod
+    assert {"duration", "dest", "payload", "filter", "target", "participant",
+            "quantity", "amount", "condition", "normalize", "keywords",
+            "lexicon"} <= set(out), sorted(out)
+    return out
+
+
+def _leaf_path(name: str) -> Path:
+    path = SUB / (name + ".py")
+    return path if path.exists() else SUB.parent / (name + ".py")
+
+
+def test_every_leaf_is_named_by_its_module():
+    """The census groups details by `LEAF`, and `LEAF_EDGES` is keyed by
+    it: one name per leaf."""
+    from engine.effect_grammar.sub import LEAF_EDGES
+    for name, leaf in _leaves().items():
+        assert leaf.LEAF == name, (name, leaf.LEAF)
+        assert name in LEAF_EDGES, name
 
 
 # ── One calling convention and one result shape ────────────────────────
@@ -316,7 +345,7 @@ def test_a_typed_counter_phrase_that_is_no_entry_count_is_the_destinations_refus
     text = "onto the battlefield with any number of +1/+1 counters on it"
     r = dest.parse_destination(text, (0, len(text)))
     assert r.value is None
-    assert r.unmodelled.detail == "destination.entry_counters"
+    assert r.unmodelled.detail == "dest.entry_counters"
 
 
 def _refused_filter_set():
@@ -498,6 +527,7 @@ def test_under_a_possessives_control_reads_the_one_vocabulary():
 # ── Caches, clear_caches and import edges ──────────────────────────────
 
 def test_every_leaf_cache_is_bounded_and_cleared_by_the_package():
+    import engine.effect_grammar as grammar
     from engine.effect_grammar import sub
     caches = []
     for name, leaf in _leaves().items():
@@ -515,8 +545,23 @@ def test_every_leaf_cache_is_bounded_and_cleared_by_the_package():
     leaves["payload"].parse_payload(_Entry(Verb.CONTINUOUS, "get"),
                                     "gets +1/+1", (0, 10), None)
     assert any(c.cache_info().currsize for c in caches)
-    sub.clear_caches()
+    grammar.clear_caches()
     assert all(c.cache_info().currsize == 0 for c in caches)
+
+
+def test_the_sub_package_clears_only_the_sub_grammars(monkeypatch):
+    """Layering: the contract module clears the sub-grammars; the package
+    entry point clears them and the leaves beside them."""
+    import engine.effect_grammar as grammar
+    from engine.effect_grammar import keywords, lexicon, normalize, sub
+    called = []
+    for leaf in (normalize, keywords, lexicon):
+        monkeypatch.setattr(leaf, "clear_caches",
+                            lambda leaf=leaf: called.append(leaf.LEAF))
+    sub.clear_caches()
+    assert called == []
+    grammar.clear_caches()
+    assert sorted(called) == ["keywords", "lexicon", "normalize"]
 
 
 def _grammar_modules():
@@ -579,7 +624,7 @@ def _sub_imports(path: Path):
 def test_a_leaf_imports_another_leaf_only_along_a_declared_edge():
     from engine.effect_grammar.sub import LEAF_EDGES
     for name in _leaves():
-        assert _sub_imports(SUB / (name + ".py")) == set(LEAF_EDGES[name]), name
+        assert _sub_imports(_leaf_path(name)) == set(LEAF_EDGES[name]), name
 
 
 def test_no_leaf_re_normalises_l0_output():
@@ -587,7 +632,9 @@ def test_no_leaf_re_normalises_l0_output():
     contract); a leaf that re-normalises would accept input the others
     refuse."""
     for name in _leaves():
-        src = (SUB / (name + ".py")).read_text()
+        if name == "normalize":
+            continue                    # L0 itself
+        src = _leaf_path(name).read_text()
         assert "’" not in src, name
         assert ".lower()" not in src, name
         assert not re.search(r"this \(\?:creature", src), name

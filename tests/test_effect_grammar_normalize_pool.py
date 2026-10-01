@@ -198,7 +198,7 @@ def _run(faces):
 @pytest.mark.timeout(240)  # measured: 7.3 s wall after the shared DB load
 def test_l0_normalises_every_pool_face_deterministically_within_its_floors(faces):
     from engine.effect_grammar import normalize as N
-    from engine.effect_grammar.sub import clear_caches
+    from engine.effect_grammar import clear_caches
     import gc
     gc.collect()
     gc.freeze()     # keep full collections over the DB heap out of the pass

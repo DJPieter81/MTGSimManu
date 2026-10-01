@@ -528,13 +528,13 @@ def test_every_normalised_character_maps_inside_the_printed_text():
 # ── Determinism, caches, imports ───────────────────────────────────────
 
 def test_normalize_is_memoised_in_a_bounded_cache_the_package_clears():
-    from engine.effect_grammar import sub
+    import engine.effect_grammar as grammar
     N = _N()
     assert N.normalize.cache_info().maxsize == CACHE_SIZE
     a = _norm("Draw a card.")
     assert _norm("Draw a card.") is a
     assert N.normalize.cache_info().currsize > 0
-    sub.clear_caches()
+    grammar.clear_caches()
     assert N.normalize.cache_info().currsize == 0
     b = _norm("Draw a card.")
     assert b == a and hash(b) == hash(a)

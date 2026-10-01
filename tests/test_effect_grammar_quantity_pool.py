@@ -54,8 +54,7 @@ def _closed_detail(detail: str) -> bool:
     unchanged through its caller)."""
     import importlib
     leaf, code = detail.split(":")[0].split(".")
-    name = {"destination": "dest"}.get(leaf, leaf)
-    mod = importlib.import_module("engine.effect_grammar.sub." + name)
+    mod = importlib.import_module("engine.effect_grammar.sub." + leaf)
     return mod.LEAF == leaf and code in mod.DETAIL_CODES
 
 

@@ -74,7 +74,7 @@ def test_an_instead_of_move_not_attached_to_a_named_action_is_a_replacement_effe
     r = _dest().parse_instead_of(text, (0, len(text)))
     assert r.value is None and "dest_override" not in r.flags
     assert r.unmodelled is not None
-    assert r.unmodelled.detail == "destination.instead_of_replacement_effect"
+    assert r.unmodelled.detail == "dest.instead_of_replacement_effect"
 
 
 def test_an_instead_of_move_with_no_rider_and_no_caller_link_sets_no_override():
@@ -83,11 +83,11 @@ def test_an_instead_of_move_with_no_rider_and_no_caller_link_sets_no_override():
     text = "exile it instead of putting it into its owner's graveyard"
     r = _dest().parse_instead_of(text, (0, len(text)))
     assert r.value is None and "dest_override" not in r.flags
-    assert r.unmodelled.detail == "destination.instead_of_unlinked"
+    assert r.unmodelled.detail == "dest.instead_of_unlinked"
     # 'anywhere else' stays a replacement even when the caller links it.
     text = "exile them instead of putting them anywhere else"
     r = _dest().parse_instead_of(text, (0, len(text)), linked=True)
-    assert r.value is None and r.unmodelled.detail == "destination.instead_of_replacement_effect"
+    assert r.value is None and r.unmodelled.detail == "dest.instead_of_replacement_effect"
 
 
 @pytest.mark.parametrize("text", [
@@ -251,7 +251,7 @@ def test_a_destination_phrase_with_unconsumed_tokens_is_unmodelled(text):
 def test_a_destination_modifier_given_twice_is_unmodelled_not_last_one_wins(text):
     r = _whole(text)
     assert r.value is None
-    assert r.unmodelled.detail == "destination.duplicate_modifier"
+    assert r.unmodelled.detail == "dest.duplicate_modifier"
 
 
 @pytest.mark.parametrize("np_pp,object_text,expected", [
@@ -274,7 +274,7 @@ def test_the_adverb_back_before_a_destination_head_belongs_to_the_destination_ph
 
 def test_a_bare_back_is_still_a_recognised_unsupported_destination():
     r = _whole("back in any order")
-    assert r.value is None and r.unmodelled.detail == "destination.back"
+    assert r.value is None and r.unmodelled.detail == "dest.back"
 
 
 def test_the_destination_locator_reports_the_last_head_when_no_phrase_parses_fully():

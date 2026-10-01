@@ -61,10 +61,13 @@ L0 steps 1-5) and none re-normalises it:
 * quoted spans masked ``⟨qk⟩``; "named X" masked ``⟨nk⟩``.
 
 **Caches.** A leaf's memo caches are bounded (`CACHE_SIZE`) and every leaf
-exposes ``clear_caches()``; `clear_caches` here clears the sub-grammars',
-and the package's `engine.effect_grammar.clear_caches` -- the one entry
-point the load driver calls once the grammar pass finishes -- clears these
-and every leaf beside them.
+exposes ``clear_caches()``; `clear_caches` here clears the sub-grammars'
+only, and the package's `engine.effect_grammar.clear_caches` -- the one
+entry point the load driver calls once the grammar pass finishes -- clears
+these and every leaf beside them (normalize, keywords, lexicon).
+
+**Names.** A leaf's `LEAF` is its module name; the census groups details
+by it and `LEAF_EDGES` is keyed by it.
 
 **Refusal propagation.** When a leaf reads part of its slot through
 another leaf and that callee REFUSES the phrase, the caller returns the
@@ -187,6 +190,10 @@ CACHE_SIZE = 1 << 15
 # leaf -> leaves it may import (pinned by
 # tests/test_effect_grammar_leaf_contract.py).
 LEAF_EDGES = {
+    # The leaves beside the sub-grammars: L0, the CR 701/702 tables and
+    # the verb lexicon.
+    "normalize": frozenset(),
+    "keywords": frozenset(),
     "duration": frozenset(),
     # Every leaf that types a CR 702 keyword reads the keywords leaf's one
     # table and spelling (`keywords.typed_keyword`).
@@ -291,15 +298,14 @@ def unmodelled(stage, lemma: str, leaf: str, code,
 
 
 def clear_caches() -> None:
-    """Clear every sub-grammar's memo caches, L0 normalize's and the verb
-    lexicon's (called by
-    `engine.effect_grammar.clear_caches`, the load driver's one entry
-    point)."""
-    from engine.effect_grammar import lexicon, normalize
+    """Clear every sub-grammar's memo caches. The leaves beside the
+    sub-grammars (normalize, keywords, lexicon) are cleared by the
+    package's `engine.effect_grammar.clear_caches`, the load driver's one
+    entry point."""
     from engine.effect_grammar.sub import (
         amount, condition, dest, duration, filter, participant, payload,
         quantity, target,
     )
-    for leaf in (normalize, duration, payload, dest, filter, target,
-                 lexicon, quantity, participant, amount, condition):
+    for leaf in (duration, payload, dest, filter, target, quantity,
+                 participant, amount, condition):
         leaf.clear_caches()

@@ -50,7 +50,7 @@ __all__ = ["LEAF", "DETAIL_CODES", "ZONE_POSSESSIVE", "parse_destination",
            "locate_destination", "parse_instead_of", "source_zone",
            "source_zones", "clear_caches"]
 
-LEAF = "destination"
+LEAF = "dest"
 DETAIL_CODES = frozenset({
     "top_or_bottom", "back", "shuffle_into_non_library", "unconsumed",
     "no_head", "controller", "attached_to", "entry_counters",
