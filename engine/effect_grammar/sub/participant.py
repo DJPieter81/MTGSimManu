@@ -86,7 +86,8 @@ from engine.effect_spec import (Amount, AmountKind, Chooser, Ref, RefKind,
 
 __all__ = ["LEAF", "DETAIL_CODES", "Anaphor", "PLAYER", "OBJECT", "GROUP",
            "EACH", "ANY", "PER_OBJECT", "EITHER", "parse_participant",
-           "parse_chooser", "clear_caches"]
+           "parse_chooser", "reference_noun", "head_names",
+           "REFERENCE_WORD_RE", "clear_caches"]
 
 LEAF = "participant"
 DETAIL_CODES = frozenset({
@@ -238,6 +239,55 @@ def _singular(word: str) -> Optional[Tuple[str, bool]]:
             if stem in _NOUNS:
                 return stem, True
     return None
+
+
+def reference_noun(text: str) -> str:
+    """The singular head noun of a reference noun phrase the leaves left
+    pending ("those creatures" -> 'creature', "that creature's" ->
+    'creature'); '' for a one-word pronoun. A possessive suffix is removed
+    as a suffix, never as a character run."""
+    words = text.split()
+    if len(words) < 2:
+        return ""
+    w = words[-1]
+    if w.endswith("'s"):
+        w = w[:-2]
+    elif w.endswith("'"):
+        w = w[:-1]
+    r = _singular(w)
+    return r[0] if r is not None else w
+
+
+# The object nouns a trigger head's event names besides the source: the
+# card types and the stack / card forms ("whenever a permanent ... is put
+# into a graveyard", "whenever enchanted creature becomes the target").
+_HEAD_OBJECT_NOUNS = _filter.CARD_TYPES | _EXTRA_NOUNS
+_HEAD_WORD_RE = re.compile(r"[a-z]+")
+
+
+def head_names(head: str) -> Tuple[bool, bool]:
+    """(names a player, names an object) of a trigger head's printed text:
+    a player noun of this leaf's player table, or an object noun (a card
+    type or a card / stack form, singular or plural)."""
+    player = obj = False
+    for w in _HEAD_WORD_RE.findall(head):
+        if w in _PLAYER_NOUNS:
+            player = True
+            continue
+        r = _singular(w)
+        if r is not None and r[0] in _HEAD_OBJECT_NOUNS:
+            obj = True
+    return player, obj
+
+
+# A clause whose text prints none of these words, and whose leaves left no
+# pending reference, holds no unbound reference (the linker's pre-gate):
+# the pronouns and determiners of this leaf's reference tables, "this way"
+# and the produced-object participles.
+REFERENCE_WORD_RE = re.compile(r"(?<![\w~'])(?:it|its|it's|that|those|them|"
+                               r"their|they|his|her|this way|target|the "
+                               r"(?:exiled|chosen|sacrificed|revealed|"
+                               r"discarded))(?![\w])")
 
 
 def _noun(text: str) -> Optional[Tuple[str, bool]]:

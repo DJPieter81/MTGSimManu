@@ -99,8 +99,9 @@ from typing import Callable, FrozenSet, List, NamedTuple, Optional, Tuple
 from engine.delayed_triggers import DelayedTriggerTiming
 from engine.effect_grammar import keywords, lexicon, normalize
 from engine.effect_grammar.sub import (CACHE_SIZE, COUNT_WORDS, NUMBER_WORDS,
-                                       Span, condition, duration, payload,
-                                       target, unmodelled)
+                                       Span, condition, duration,
+                                       participant, payload, target,
+                                       unmodelled)
 from engine.effect_grammar.sub import filter as _filter
 from engine.effect_model import Modification
 from engine.effect_spec import (Amount, Condition, CostSnapshot, EventHint,
@@ -704,13 +705,21 @@ def _roman(s: str) -> int:
     return total
 
 
+def _head(hints, raw: str, **kw) -> TriggerHead:
+    """A trigger head, with what its event names typed by the participant
+    leaf (the one noun table)."""
+    player, obj = participant.head_names(raw)
+    return TriggerHead(event_hints=hints, raw=raw, names_player=player,
+                       names_object=obj, **kw)
+
+
 def _triggered(ctx: _Ctx, p: int, t: str, label: str) -> _B:
     b = _B(HostKind.TRIGGERED, p, t, label=label)
     n = len(t)
     end = _head_end(t)
     if end is None:
         b.unmodelled.append((_um(Stage.STRUCTURE, "unterminated_head"), (0, n)))
-        b.extra["trigger"] = TriggerHead(event_hints=_event_hints(t)[0], raw=t)
+        b.extra["trigger"] = _head(_event_hints(t)[0], t)
         return b
     head = t[:end]
     hints, step = _event_hints(head)
@@ -738,9 +747,9 @@ def _triggered(ctx: _Ctx, p: int, t: str, label: str) -> _B:
         holes.append(fm.span())
         b.consumed.append(("frequency", fm.span()))
     b.body.extend(_subtract(t, (pos, n), holes))
-    b.extra["trigger"] = TriggerHead(event_hints=hints, raw=head, step=step,
-                                     intervening_if=intervening,
-                                     once_each_turn=once, frequency_raw=freq)
+    b.extra["trigger"] = _head(hints, head, step=step,
+                               intervening_if=intervening,
+                               once_each_turn=once, frequency_raw=freq)
     if EventHint.TAPPED_FOR_MANA in hints and \
             not target.target_words(t, (pos, n)) and \
             payload.adds_mana(t, (pos, n)):

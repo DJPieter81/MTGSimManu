@@ -1091,3 +1091,50 @@ def test_a_templates_keyword_facts_are_its_printed_keyword_list_never_the_typed_
     (host,) = grammar.parse_template(t).faces[0]
     assert host.kind is HostKind.KEYWORD
     assert [k.name for k in host.keywords] == ["ward"]
+
+
+def test_a_participle_reference_names_the_earlier_action_its_lemma_inflects():
+    """A26, section 7: "the <participle> <noun>" names the RESULT of the
+    earlier spec whose lemma the participle inflects -- an -ied form
+    ("copied" -> copy) included. The inflection is the lexicon's one
+    table, never a second one in the linker."""
+    from engine.effect_grammar import lexicon
+    h = _effect_host("Copy target instant spell. Exile the copied spell.")
+    copy, exile = h.specs
+    assert copy.verb is Verb.COPY
+    assert exile.verb is Verb.EXILE
+    assert exile.ref == Ref(RefKind.RESULT, copy.seq)
+    assert [lexicon.participle_lemma(w) for w in (
+        "copied", "exiled", "milled", "dealt", "chosen", "tapped",
+        "sacrificed")] == ["copy", "exile", "mill", "deal", "choose", "tap",
+                           "sacrifice"]
+    assert lexicon.participle_lemma("spent") == ""      # no lexicon lemma
+
+
+def test_a_trigger_heads_named_player_and_object_are_typed_at_l1():
+    """Section 3 L1, section 7 rule 3: what a trigger head's event names --
+    a player, an object besides the source -- is typed onto the head by
+    the participant leaf; the linker's host antecedent reads it, never
+    the raw head text."""
+    def head(text):
+        return next(h for h in parse_face(text, _facts(
+            "Some Watcher", types=("creature",)))
+            if h.kind is HostKind.TRIGGERED).trigger
+    h = head("Whenever an opponent casts a spell, that player loses 1 life.")
+    assert (h.names_player, h.names_object) == (True, True)
+    h = head("Whenever another creature dies, you gain 1 life.")
+    assert (h.names_player, h.names_object) == (False, True)
+    h = head("When Some Watcher enters, draw a card.")
+    assert (h.names_player, h.names_object) == (False, False)
+
+
+def test_a_pending_references_noun_is_its_singular_head_with_the_possessive_suffix_removed():
+    """Section 7: the noun a pending reference names is read by the
+    participant leaf -- a possessive suffix is removed as a suffix ("that
+    class's" is a class), a plural is singular."""
+    from engine.effect_grammar.sub import participant
+    assert participant.reference_noun("those creatures") == "creature"
+    assert participant.reference_noun("that creature's") == "creature"
+    assert participant.reference_noun("those creatures'") == "creature"
+    assert participant.reference_noun("that class's") == "class"
+    assert participant.reference_noun("them") == ""

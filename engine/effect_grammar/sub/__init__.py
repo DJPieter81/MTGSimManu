@@ -236,9 +236,11 @@ LEAF_EDGES = {
     # through condition, and the A6 no-target test through target's F11
     # counted target words.
     # The land-subject test (LANDFALL) reads the filter leaf's CR 205.3i
-    # land subtypes.
+    # land subtypes; what a trigger head's event names (a player, an
+    # object) is typed by the participant leaf's noun tables.
     "structure": frozenset({"normalize", "keywords", "lexicon", "duration",
-                            "payload", "condition", "target", "filter"}),
+                            "payload", "condition", "target", "filter",
+                            "participant"}),
     # L2/L3, the frame and clause-split spine (not a leaf): connectives and
     # the A13 verb test through the lexicon, conditions / unless-pays
     # through condition, delays and durations through duration, for-each
@@ -258,8 +260,12 @@ LEAF_EDGES = {
     # L5, the linker (not a leaf): one face's L1 hosts (and a granted
     # quote's) through structure, their frames and typed clauses through
     # patterns, and the face facts' type through normalize. It types no
-    # phrase of its own.
-    "link": frozenset({"normalize", "patterns", "structure"}),
+    # phrase of its own: a producing participle's lemma is the lexicon's
+    # (one inflection table), a pending reference's noun and the pronoun
+    # pre-gate are the participant leaf's, and the card-type nouns a
+    # reference may name are the filter leaf's.
+    "link": frozenset({"normalize", "patterns", "structure", "lexicon",
+                       "participant", "filter"}),
 }
 
 

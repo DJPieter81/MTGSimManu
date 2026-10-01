@@ -583,6 +583,12 @@ class TriggerHead:
     intervening_if: Optional[Condition] = None   # CR 603.4; also on reflexive heads
     once_each_turn: bool = False
     frequency_raw: str = ""
+    # What the head's event names, typed by the participant leaf at L1
+    # (`participant.head_names`): a player ("whenever an opponent casts")
+    # and / or an object besides the source ("whenever a creature dies").
+    # The linker's host antecedent reads these, never the raw head.
+    names_player: bool = False
+    names_object: bool = False
 
 
 @dataclass(**_FROZEN)

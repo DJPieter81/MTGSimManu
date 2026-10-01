@@ -511,6 +511,8 @@ class TriggerHead:
     intervening_if: Optional[Condition] = None # CR 603.4; also on reflexive sub-ability heads
     once_each_turn: bool = False
     frequency_raw: str = ""
+    names_player: bool = False                   # the head's event names a player (participant leaf, at L1)
+    names_object: bool = False                   # ... an object besides the source; L5's host antecedent reads these
 
 class AbilityEffects:
     kind: HostKind

@@ -78,7 +78,8 @@ from engine.effect_spec import Amount, AmountKind, Stage, Unmodelled, Verb
 __all__ = ["LEAF", "DETAIL_CODES", "Family", "VERB_FAMILY", "ROLES",
            "OTHER_ROLES", "LexEntry", "LEXICON", "VERB_LEXICON",
            "VERB_ONLY_WORDS", "find_verb", "verb_at", "parse_loyalty_cost",
-           "loyalty_slot_cost", "LOYALTY_LINE_RE", "clear_caches"]
+           "loyalty_slot_cost", "LOYALTY_LINE_RE", "participle_lemma",
+           "clear_caches"]
 
 LEAF = "lexicon"
 DETAIL_CODES = frozenset({
@@ -435,6 +436,38 @@ def _inflections(lemma: str) -> Tuple[str, ...]:
     return (w, w + "s")
 
 
+# Past participles whose stem is not the lemma plus -(e)d.
+_IRREGULAR_PARTICIPLES = {
+    "chosen": "choose", "drawn": "draw", "dealt": "deal", "lost": "lose",
+    "paid": "pay", "put": "put", "cast": "cast", "spent": "spend",
+    "dug": "dig", "taken": "take", "won": "win", "set": "set",
+    "gotten": "get", "got": "get", "had": "have", "been": "be"}
+
+
+@lru_cache(maxsize=CACHE_SIZE)
+def participle_lemma(word: str) -> str:
+    """The lexicon lemma (its first word) whose past participle `word` is
+    -- "exiled" -> "exile", "copied" -> "copy", "milled" -> "mill",
+    "dealt" -> "deal" -- or '' when `word` inflects no lexicon lemma. The
+    one inflection table of a participle: the linker names a producing
+    action ("the exiled card", "dealt damage this way") through it."""
+    irregular = _IRREGULAR_PARTICIPLES.get(word)
+    if irregular is not None:
+        cands: Tuple[str, ...] = (irregular,)
+    elif word.endswith("ied"):
+        cands = (word[:-3] + "y",)
+    elif word.endswith("ed"):
+        cands = (word[:-1], word[:-2])
+        if len(word) > 4 and word[-3] == word[-4]:
+            cands += (word[:-3],)            # a doubled final consonant
+    else:
+        return ""
+    for c in cands:
+        if c in _LEMMA_HEADS:
+            return c
+    return ""
+
+
 def _inflected_phrase(name: str) -> str:
     """A pattern for a multi-word action name whose first word inflects."""
     head, _, tail = name.partition(" ")
@@ -508,6 +541,8 @@ _READINGS, _BUCKETS = _build()
 _POSITION = {id(rd): i for i, rd in enumerate(_READINGS)}
 
 LEXICON: Tuple[LexEntry, ...] = tuple(rd.entry for rd in _READINGS)
+# The first word of every lemma: the bases a participle may inflect.
+_LEMMA_HEADS = frozenset(e.lemma.split()[0] for e in LEXICON)
 VERB_LEXICON: Mapping[str, Tuple[LexEntry, ...]] = MappingProxyType(
     {w: tuple(rd.entry for rd in rds) for w, rds in _BUCKETS.items()})
 
@@ -689,5 +724,5 @@ def loyalty_slot_cost(cost: Amount):
 
 
 def clear_caches() -> None:
-    for fn in (_find_rel, _loyalty_rel):
+    for fn in (_find_rel, _loyalty_rel, participle_lemma):
         fn.cache_clear()

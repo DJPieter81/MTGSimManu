@@ -80,9 +80,12 @@ import re
 from functools import lru_cache
 from typing import Any, Dict, List, Optional, Tuple
 
+from engine.effect_grammar import lexicon as _lexicon
 from engine.effect_grammar import normalize as _normalize
 from engine.effect_grammar import patterns as _patterns
 from engine.effect_grammar import structure as _structure
+from engine.effect_grammar.sub import filter as _filter
+from engine.effect_grammar.sub import participant as _participant
 from engine.effect_grammar.sub import unmodelled
 from engine.effect_model import Modification, ModKind, Selector, SelectorKind
 from engine.effect_spec import (AbilityEffects, Amount, AmountKind,
@@ -130,11 +133,6 @@ _PRODUCERS = frozenset({Verb.SEARCH, Verb.LOOK, Verb.REVEAL,
 # Verbs whose result is a number a later "that much" / "that many" reads.
 _DEST_VERBS = frozenset({Verb.COUNTER, Verb.DESTROY, Verb.SACRIFICE,
                          Verb.DISCARD, Verb.MILL, Verb.EXILE, Verb.MOVE})
-# English participles whose stem is not the lemma plus -(e)d; the rest are
-# derived (exiled -> exile, discarded -> discard).
-_IRREGULAR = {"chosen": "choose", "drawn": "draw", "dealt": "deal",
-              "lost": "lose", "paid": "pay", "put": "put", "cast": "cast",
-              "spent": "spend", "gained": "gain", "dug": "dig"}
 _SELF_HINTS = frozenset({EventHint.SELF_ENTERS, EventHint.SELF_DIES,
                          EventHint.SELF_LEAVES, EventHint.SELF_ATTACKS,
                          EventHint.SELF_CAST})
@@ -143,34 +141,21 @@ _OBJECT_HINTS = frozenset({EventHint.OTHER_ENTERS, EventHint.OTHER_DIES,
                            EventHint.LANDFALL, EventHint.COUNTERS_PUT,
                            EventHint.CYCLE, EventHint.TAPPED_FOR_MANA})
 _LEAVE_HINTS = frozenset({EventHint.SELF_DIES, EventHint.SELF_LEAVES})
-_PLAYER_HEAD_RE = re.compile(r"\b(?:player|opponent|opponents|players)\b")
-# A head whose event names an object other than the source (its hint is
-# OTHER when the L1 hint table has no narrower kind): "whenever enchanted
-# creature becomes the target of ...", "whenever a permanent ... is put
-# into a graveyard".
-_OBJECT_HEAD_RE = re.compile(
-    r"\b(?:creature|artifact|enchantment|land|permanent|card|spell|token|"
-    r"planeswalker|battle|source|ability)s?\b")
 _SELF_HOSTS = frozenset({HostKind.ACTIVATED, HostKind.MANA_ABILITY,
                          HostKind.LOYALTY, HostKind.STATIC, HostKind.CHAPTER,
                          HostKind.KEYWORD})
-_CARD_NOUNS = frozenset({"card", "cards"})
-_TYPE_NOUNS = frozenset({"creature", "artifact", "enchantment", "land",
-                         "planeswalker", "battle", "instant", "sorcery"})
+# The card-type nouns a reference may name (the filter leaf's table).
+_TYPE_NOUNS = _filter.CARD_TYPES
 _WIDE_TYPES = frozenset({"permanent", "permanent_nonland", "card", "any",
                          "spell", "object"})
 _MULTI_PLAYER = frozenset({SelectorKind.ALL_PLAYERS, SelectorKind.OPPONENTS})
 
 
-def _participle_lemmas(word: str) -> Tuple[str, ...]:
-    if word in _IRREGULAR:
-        return (_IRREGULAR[word],)
-    out = []
-    if word.endswith("ed"):
-        out += [word[:-1], word[:-2]]
-        if len(word) > 4 and word[-3] == word[-4]:
-            out.append(word[:-3])           # "milled" -> "mill" kept above
-    return tuple(out) or (word,)
+def _produced_by(node: "_Node", participle: str) -> bool:
+    """Did the spec perform the action `participle` names ("the exiled
+    card", "dealt damage this way")? The lexicon owns the inflection."""
+    lemma = _lexicon.participle_lemma(participle)
+    return bool(lemma) and node.lemma.split(" ")[0] == lemma
 
 
 # ── The mutable linking state ───────────────────────────────────────────
@@ -429,7 +414,7 @@ def _compatible(w: _Want, m: _Mention) -> bool:
     if w.part is RefPart.ALL and w.plural is not None and \
             m.plural is not None and w.plural != m.plural:
         return False
-    noun = w.noun.rstrip("s") if w.noun not in ("its",) else ""
+    noun = w.noun
     if noun in _TYPE_NOUNS and m.types and not (m.types & _WIDE_TYPES) \
             and noun not in m.types:
         return False
@@ -475,14 +460,14 @@ def _search(node: _Node, w: _Want):
             if w.participle:
                 if cand.spec.verb is Verb.UNMODELLED and not cand.lemma:
                     continue
-                if cand.lemma not in _participle_lemmas(w.participle):
+                if not _produced_by(cand, w.participle):
                     continue
                 ref = Ref(RefKind.RESULT, cand.seq)
                 return _for_scope(node.host, _Mention(cand, ref), ref), cand, None
             ms = [m for m in cand.mentions if _compatible(w, m)]
             if not ms:
                 continue
-            if w.noun in _CARD_NOUNS:
+            if w.noun == "card":
                 off = [m for m in ms if not (m.ref.kind is RefKind.TARGET
                                              and m.zone == "battlefield")]
                 ms = off or ms
@@ -521,17 +506,17 @@ def _host_antecedent(ctx: _Ctx, node: _Node, w: _Want) -> Optional[Ref]:
     if kind is HostKind.TRIGGERED and ctx.trigger is not None:
         hints = set(ctx.trigger.event_hints)
         if w.player is True:
-            if _PLAYER_HEAD_RE.search(ctx.trigger.raw):
+            if ctx.trigger.names_player:
                 return Ref(RefKind.EVENT_PLAYER)
             return None
         if hints & _OBJECT_HINTS or (EventHint.OTHER in hints and
-                                     _OBJECT_HEAD_RE.search(ctx.trigger.raw)):
+                                     ctx.trigger.names_object):
             return Ref(RefKind.EVENT_OBJECT)
         if hints & _SELF_HINTS or "~" in ctx.trigger.raw:
             return Ref(RefKind.SELF)
         return None
     if kind in _SELF_HOSTS and w.player is not True:
-        noun = w.noun.rstrip("s")
+        noun = w.noun
         if noun in _TYPE_NOUNS and ctx.type_class and noun not in ctx.type_class:
             return None
         return Ref(RefKind.SELF)
@@ -603,9 +588,9 @@ def _pending_noun(node: _Node) -> str:
     for k, text in tuple(node.cm.pending if node.cm else ()) + tuple(
             node.frame.pending if node.frame is not None else ()):
         if k in ("ref", "either"):
-            words = text.split()
-            if len(words) > 1:
-                return words[-1].rstrip("'s")
+            noun = _participant.reference_noun(text)
+            if noun:
+                return noun
     return ""
 
 
@@ -622,19 +607,17 @@ def _nearest_result(node: _Node, event: str) -> Optional[Ref]:
     spec of the named event's verb, else the nearest earlier spec."""
     for host, earlier in _scopes(node):
         for cand in earlier:
-            if event and cand.lemma not in _participle_lemmas(event):
+            if event and not _produced_by(cand, event):
                 continue
             node.bound.append(cand)
             return Ref(RefKind.RESULT, cand.seq)
     return None
 
 
-# A clause whose text prints none of these words, and whose leaves left no
-# pending reference, holds no unbound reference: its fields are not walked.
-_HOLE_WORDS_RE = re.compile(r"(?<![\w~'])(?:it|its|it's|that|those|them|"
-                            r"their|they|his|her|this way|target|the "
-                            r"(?:exiled|chosen|sacrificed|revealed|"
-                            r"discarded))(?![\w])")
+# A clause whose text prints no reference word (the participant leaf's
+# pre-gate), and whose leaves left no pending reference, holds no unbound
+# reference: its fields are not walked.
+_HOLE_WORDS_RE = _participant.REFERENCE_WORD_RE
 
 
 def _fill_holes(ctx: _Ctx, node: _Node) -> None:
