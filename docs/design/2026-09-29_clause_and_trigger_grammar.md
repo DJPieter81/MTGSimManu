@@ -986,6 +986,15 @@ Named predicates, counted by ratchet (c), come in two kinds:
 - "nonland permanent or suspended card": the grammar gives {battlefield, exile} (CR 702.62a).
 - a graveyard-or-exile object: the grammar gives {graveyard, exile}.
 
+Further seed rows from the E0 integration review (2026-10-01; legacy-wrong, grammar rules-correct unless noted):
+- **Printed counts above ten.** `target_solver._NUMBER_WORDS` stops at ten, so "up to eleven target creatures" is one requirement with `count_max` 1. The grammar reads the count from the leaves' one count table (`sub.NUMBER_WORDS`, through twenty-nine) and refuses the slot as `target.count_unread:<word>` rather than editing the owner's requirement.
+- **Token subtypes, keyword scope and slot identity** (`oracle_parser.parse_token_spec`). Legacy keeps only the last creature subtype ('rogue' for "faerie rogue", 'spawn' for "eldrazi spawn"; CR 111.4 gives a token every printed subtype), lets its keyword window run into other sentences ('flying' from "Vehicles you control have flying."; 'indestructible' granted to a target, not the token), and can read a different token than the create slot (amass's Army instead of the Treasure). 250 of the 1,120 single-create slots both sides type disagree; no case was found where legacy was right. The grammar also types "land creature" token types that legacy drops.
+- **Ritual mana** (`CardTemplate.ritual_mana`). `parse_ritual_mana` counts the activation cost's pips with the produced mana ('{R}, Sacrifice: Add {R}{R}{R}' -> ('R', 4); grammar ManaSpec {R}x3), reads "add an additional {C}" as two (grammar {C}x1), and collapses multi-colour adds to one colour. 74 of 101 coloured legacy rituals agree. `ritual_mana` is not the reference value for a ManaSpec on a cost-bearing mana ability.
+- **Activation tutor filter** (`parse_activation_tutor`). A relative clause becomes subtypes ("card with the same name as that ..." -> subtypes ['card', 'with', ...]); the grammar refuses it (`filter.unparsed:with`). The other 73 tutor filters and all 75 destinations agree.
+- **Keyword-scoped cost reductions** (`CardTemplate.cost_reduction_rule`). "Equip / Dash / Unlock costs you pay cost {N} less" and "Plotting cards from your hand costs {2} less" are stored as `{'target': 'all', ...}`, a reduction of every spell; rules-correct they are scoped to that keyword's cost or special action (CR 601.2f, 118.7). The grammar refuses them (`payload.cost_delta_subject`). Pool class: 5 faces.
+
+Lines checked and found in full agreement: loot draw/discard (174), put-counter kind and amount (135), pump P/T (290), direct-damage amount (79), the soft-counter condition, and delayed timing (102 agree, grammar strictly broader).
+
 **Diff classes.** As before (REMINDER_TEXT, UNMODELLED_CLAUSE, RESIDUE_WIDENING, LEGACY_* quirk classes, DERIVED_COVERAGE_GROWTH, SEMANTIC_FIX, UNEXPLAINED), plus three:
 - `RESIDUE_NARROWING`: the legacy handler typed the same narrowed requirement;
 - `MASKED_GROWTH`: derived growth hidden by a `_legacy_domain_*` mask, so the field value equals legacy;
@@ -1210,6 +1219,8 @@ def chosen_from_legacy(ability, item_targets) -> Tuple[Tuple[Union[Handle, int],
 **Budget:**
 - ≤ 3.0 s process CPU for the whole pool on an idle 4-core box (`POOL_PARSE_CPU_BUDGET_S`);
 - ≤ 40 MB extra RSS (tracemalloc).
+
+**Leaf measurements (E0 integration review, 2026-10-01).** Process CPU over each leaf's own pool slots, caches cleared, best of two, quiet 4-core box: target 0.45 s, lexicon 0.38, dest 0.29, duration 0.28, condition 0.27, keywords 0.14, payload 0.11, amount 0.11, participant 0.09, quantity 0.06, filter 0.03 -- leaves 2.2 s, plus L0 0.72 s: about 2.9 s of the 3.0 s budget before any L1-L5 work (3.2 s before the review's lexicon index, duration pre-gate and memo trimming). `tests/test_effect_grammar_leaf_budget.py` pins each leaf to a share of `POOL_PARSE_CPU_BUDGET_S` at about twice its measurement, so a regressing leaf is named by its own test. Memo caches held after one full pass of every leaf: 58.5 MB (tracemalloc; normalize's face cache is the largest), cleared by `engine.effect_grammar.clear_caches`. Open question, to settle before L4 lands: the 3.0 s CPU and 40 MB budgets cannot hold L1-L5 on top of these leaves; either revise them or take the on-disk cache fallback.
 
 The test `effect_parse_fits_the_load_budget` clears the caches, parses the whole pool and asserts `process_time ≤ POOL_PARSE_CPU_BUDGET_S` (A43). It carries `@pytest.mark.timeout(N)` and records the measurement in a comment. Mean µs per template is reported, not gated. Wall-clock is never measured. If the 2-core CI runner fails the gate, the fallback is an on-disk cache keyed on `(GRAMMAR_VERSION, sha256(text), facts key)` (open question).
 
