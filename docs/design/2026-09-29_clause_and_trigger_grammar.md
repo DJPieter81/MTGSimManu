@@ -202,6 +202,7 @@ The refutations named the witness cards in brackets; section 18.1 turns each wit
 - **A15. `instead` forms.**
   - Leading "If <COND>, instead <VP>" and "instead <VP>" (139 pool cards) are replacing siblings.
   - "If <ref> is <verb>ed this way, <move ref> instead of putting it into <zone>" folds into the named spec as a destination override: `dest=Destination(zone, instead_of=<zone>)`. It applies only when that spec is performed, and it is never a sibling that replaces the counter itself (CR 701.5a).
+  - A replacing sibling replaces the nearest earlier spec that prints its verb, a refused one included. Only when no earlier spec prints that verb at all does it replace the nearest earlier spec of another verb ("deals 2 damage to target creature ... destroy that creature instead"). When the same-verb antecedent is refused, the replaced action is unknown: the clause is `UNMODELLED(REFERENCE, 'no_antecedent')`, never rewired. A leading "if ... would ..." is a REPLACEMENT refusal (CR 614), never a replacing sibling, and carries no `replaces` (L5 review, 2026-10-01).
   - A replacing spec's condition is evaluated lazily, once, at its first victim's position (A33).
   - [Force of Negation (22 pool counters), Into the Flood Maw, Gemstone Caverns.]
 - **A16. Leading "For each <Q>, <counted VP>".** When the body has no anaphor to the element, this is the amount `FOR_EACH(Q)`. It is `UNMODELLED(ITERATION)` only when the body refers to the element ("a copy of it", "of that type"). [Seasoned Pyromancer.]
@@ -903,7 +904,7 @@ An unknown condition gives `UNMODELLED(CONDITION)`.
    SPELL hosts have no host antecedent.
 4. **Otherwise** `UNMODELLED(REFERENCE)`. Two equally near candidates not related by A25 give `UNMODELLED(REFERENCE, 'ambiguous')`.
 
-**"That player".** It binds to the nearest target player, then a single-player subject, then CONTROLLER_OF the nearest object antecedent (lki when that object has left), then EVENT_PLAYER.
+**"That player".** It binds to the nearest target player, then a single-player subject, then CONTROLLER_OF the nearest object antecedent (lki when that object has left), then EVENT_PLAYER. A refused (UNMODELLED) clause's result is an object set of unknown kind, never a player candidate; a number-only actor pronoun ("they") binds the nearest player mention first -- a target player, or a multi-player subject read per player (CR 101.4) -- and with only a refused result left it is `UNMODELLED(REFERENCE, 'unbound')` (L5 review, 2026-10-01).
 
 **Links.**
 - `, then` and a sentence-initial `Then` are text order only (CR 608.2c).

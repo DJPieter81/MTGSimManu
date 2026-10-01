@@ -1277,19 +1277,37 @@ def _place_frame(ctx, target, fm, fi, ct, host_state) -> None:
             _instead(n, before)
 
 
+def _same_verb(a: _Node, b: _Node) -> bool:
+    """Do two clauses print one verb? A refused clause keeps its printed
+    lemma, so it is compared by lemma, never by its UNMODELLED verb."""
+    if a.lemma and b.lemma:
+        return a.lemma == b.lemma
+    return a.spec.verb is b.spec.verb and a.spec.verb is not Verb.UNMODELLED
+
+
 def _instead(node: _Node, before: List[_Node]) -> None:
-    replaced = next((b for b in reversed(before)
-                     if b.spec.verb is node.spec.verb), None)
+    """A15: the instead clause replaces the nearest earlier spec with its
+    verb, refused ones included. Only when no earlier spec prints its verb
+    at all does it replace the nearest earlier spec (a damage upgraded to
+    a destroy). A refused antecedent leaves what is replaced unknown: the
+    clause is refused, never rewired. A REPLACEMENT refusal ("if ...
+    would ...", CR 614) is a replacement effect, not an instead sibling."""
+    um = node.spec.payload if node.spec.verb is Verb.UNMODELLED else None
+    if isinstance(um, Unmodelled) and um.stage is Stage.REPLACEMENT:
+        return
+    replaced = next((b for b in reversed(before) if _same_verb(b, node)),
+                    None)
     if replaced is None:
         replaced = before[-1] if before else None
-    if replaced is None:
-        node.fail(_um(Stage.REFERENCE, node.lemma, "no_antecedent"))
+    if replaced is None or _refused(replaced):
+        if um is None:                    # a refused clause keeps its own
+            node.fail(_um(Stage.REFERENCE, node.lemma, "no_antecedent"))
         return
     seqs = [replaced.seq]
-    g = replaced.spec.group
+    g = replaced.get("group")
     if g is not None:
         seqs += [b.seq for b in before if b is not replaced and
-                 b.spec.group == g and b.spec.verb is replaced.spec.verb]
+                 b.get("group") == g and b.spec.verb is replaced.spec.verb]
     node.fields["replaces"] = tuple(sorted(seqs))
     if any(v == "inherited" and role == "principal"
            for role, v, _s in node.cm.participants):

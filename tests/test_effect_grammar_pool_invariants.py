@@ -542,6 +542,29 @@ def test_no_actor_is_the_result_of_a_refused_clause(pool_effects):
 
 
 @pytest.mark.timeout(600)
+def test_no_spec_replaces_a_refused_spec_and_no_replacement_refusal_replaces(pool_effects):
+    """A15, section 7: an instead clause replaces a known spec; a refused
+    antecedent leaves the replaced action unknown, and a REPLACEMENT
+    refusal ("if ... would ...", CR 614) is no instead sibling."""
+    from engine.effect_spec import Stage, Verb, iter_specs
+    effects, _cpu = pool_effects
+    bad = []
+    for name, ce in effects.items():
+        for h in ce.walk():
+            by = {s.seq: s for s in iter_specs(h.specs)}
+            for s in iter_specs(h.specs):
+                if not s.replaces:
+                    continue
+                if s.verb is Verb.UNMODELLED and \
+                        s.payload.stage is Stage.REPLACEMENT:
+                    bad.append((name, "replacement", s.raw))
+                elif any(k in by and by[k].verb is Verb.UNMODELLED
+                         for k in s.replaces):
+                    bad.append((name, "refused antecedent", s.raw))
+    assert not bad, (len(bad), bad[:5])
+
+
+@pytest.mark.timeout(600)
 def test_the_typed_share_by_host_kind_holds_its_floor(pool_effects):
     """The census by host kind after L5: the share of specs that are typed
     (not UNMODELLED) per host kind, each at or above its floor; a linking

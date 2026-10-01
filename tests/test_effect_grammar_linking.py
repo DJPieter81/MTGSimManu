@@ -646,6 +646,54 @@ def test_an_instead_sibling_replaces_the_earlier_spec_and_inherits_what_it_does_
     assert upgrade.ref == Ref(RefKind.TARGET, 0)
 
 
+def test_an_instead_clause_whose_same_verb_antecedent_is_refused_is_unmodelled_never_rewired():
+    """A15, section 7: an instead clause replaces the nearest earlier spec
+    with its verb. When that spec is refused, what it replaces is unknown:
+    the clause is UNMODELLED(REFERENCE, no_antecedent), never wired to the
+    nearest spec of another verb. Its siblings with a typed same-verb
+    antecedent still replace it."""
+    h = _effect_host("Reveal a card from your hand. Search your library for "
+                     "a card with the same name as that card, reveal it, put "
+                     "it into your hand, then shuffle.\nHellbent — If you "
+                     "have no cards in hand, instead search your library for "
+                     "a card, put it into your hand, then shuffle.",
+                     types=("sorcery",))
+    specs = list(h.specs)
+    first_search = next(s for s in specs if "same name" in s.raw)
+    assert first_search.verb is Verb.UNMODELLED
+    later = specs[specs.index(first_search) + 1:]
+    put, shuffle = later[0], later[1]
+    search2, put2, shuffle2 = later[2:5]
+    assert (_refusal(search2).stage, _refusal(search2).detail) == (
+        Stage.REFERENCE, "link.no_antecedent")
+    assert search2.replaces == ()
+    assert put2.replaces == (put.seq,) and shuffle2.replaces == (shuffle.seq,)
+
+
+def test_a_would_replacement_clause_never_replaces_an_earlier_sibling():
+    """Section 7: a leading "if ... would ..." is a REPLACEMENT refusal (a
+    replacement effect, CR 614), not an instead sibling: it carries no
+    ``replaces``."""
+    h = _effect_host("Some Chandra deals 3 damage to target creature or "
+                     "planeswalker. If a permanent dealt damage this way "
+                     "would die this turn, exile it instead.", "Some Chandra",
+                     types=("sorcery",))
+    dmg, rep = h.specs
+    assert _refusal(rep).stage is Stage.REPLACEMENT
+    assert rep.replaces == ()
+
+
+def test_an_instead_clause_with_no_same_verb_antecedent_replaces_the_nearest_spec():
+    """A15: "deals 2 damage to target creature. If ..., destroy that
+    creature instead" -- with no earlier spec of its verb at all, the
+    instead clause replaces the nearest earlier spec."""
+    h = _effect_host("Some Temper deals 2 damage to target creature. If you "
+                     "control a black permanent, destroy that creature "
+                     "instead.", "Some Temper")
+    dmg, destroy = h.specs
+    assert destroy.verb is Verb.DESTROY and destroy.replaces == (dmg.seq,)
+
+
 def test_a_restated_instead_target_is_an_alternative_target_slot():
     """G9: an instead clause that prints a target of its own records the
     pair (replaced slot, its slot) in ``target_alts``."""
