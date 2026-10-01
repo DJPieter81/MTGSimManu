@@ -27,17 +27,17 @@ from engine.effect_spec import KeywordSpec, canonical
 
 # Measured 2026-10-01 on the full pool (see the printed report):
 # * front faces gated by their MTGJSON keywords: 99.94% of the keyword
-#   lines are typed (9823 typed, 6 unmodelled: 5 "{g} or {w}" cost choices
+#   lines are typed (9830 typed, 6 unmodelled: 5 "{g} or {w}" cost choices
 #   the cost owner cannot hold, 1 self-form ward cost with no printed span);
 #   no paragraph that opens with one of the face's keywords and is not a
 #   sentence is dropped as "not a keyword line" (A1);
 # * back faces, CR 702 table alone: 318 typed, 0 unmodelled;
 # * the table alone types two front-face lines more than the gated run
-#   (9825 / 6): equip-quality lines on faces whose MTGJSON keywords omit
+#   (9832 / 6): equip-quality lines on faces whose MTGJSON keywords omit
 #   equip -- the M3 gate otherwise removes nothing the table admits, it
 #   only keeps CR 701 actions out by construction;
 # * 99.46% of the (card, CR 702 keyword) pairs MTGJSON lists are found on a
-#   typed line of either face (10898 / 10957). The rest are keywords printed
+#   typed line of either face (10905 / 10964). The rest are keywords printed
 #   inside an effect or grant ("equipped creature has reach", "the top card
 #   of your library has plot"), a labelled keyword ("<flavor word> - equip
 #   {6}", which L1 reads after its label strip), or a split card's other
@@ -173,6 +173,68 @@ def test_the_keyword_table_types_or_refuses_every_pool_keyword_line_deterministi
     assert typed_share >= TYPED_SHARE_FLOOR
     assert back_share >= BACK_FACE_TYPED_SHARE_FLOOR
     assert recall >= FACE_KEYWORD_RECALL_FLOOR
+
+
+# MTGJSON ``keywords`` entries that are not CR 702 keyword abilities and
+# are not printed as a label ("<name> - ...") on the card: CR 701 keyword
+# actions, CR 207.2c ability words a face prints under another face's name,
+# and CR 111.10 / role token names. Closed: a new name here must be read and
+# placed, so a CR 702 keyword the table lacks fails instead of vanishing.
+NON_702_KEYWORDS = frozenset({
+    # CR 701 keyword actions.
+    "adapt", "airbend", "amass", "assemble", "behold", "blight", "bolster",
+    "clash", "cloak", "collect evidence", "connive", "detain", "discover",
+    "double", "earthbend", "endure", "exert", "explore", "fateseal",
+    "fight", "forage", "goad", "heal", "incubate", "investigate", "learn",
+    "manifest", "manifest dread", "meld", "mill", "monstrosity", "populate",
+    "prepared", "proliferate", "recruit", "regenerate", "scry", "support", "surveil",
+    "suspect", "transform", "triple", "venture into the dungeon",
+    "waterbend",
+    # CR 207.2c ability words.
+    "coven", "delirium", "descend", "domain", "enrage", "heroic", "landfall",
+    "magecraft", "metalcraft", "raid", "storied", "threshold",
+    # CR 111.10 predefined tokens and role tokens.
+    "food", "treasure", "role token",
+})
+
+
+def _texts_by_card(db):
+    """Every printed face text of each pool card, under every name it is
+    registered by (a split or DFC card's keywords cover all its faces)."""
+    by_part = {}
+    for name, entry in db._raw_data.items():
+        t = db.cards.get(name)
+        texts = [entry.get("text") or "",
+                 getattr(t, "back_face_oracle", "") if t is not None else ""]
+        for part in [name] + name.split(" // "):
+            by_part.setdefault(part, []).extend(texts)
+    return {name: [x for part in [name] + name.split(" // ")
+                   for x in by_part.get(part, ())]
+            for name in db._raw_data}
+
+
+@pytest.mark.timeout(120)
+def test_every_pool_keyword_is_in_the_cr_702_table_or_a_closed_non_702_list(card_db):
+    """A1/M3: `keywords702` drops a keyword the table lacks, and its lines
+    then read as resolution text. Every MTGJSON keyword in the pool is
+    therefore a CR 702 table entry (after the variant folds), a label the
+    card prints ("<name> - ..."), or one of the closed non-702 names."""
+    from engine.effect_grammar import keywords as K
+    texts = _texts_by_card(card_db)
+    unplaced = {}
+    for name, entry in card_db._raw_data.items():
+        for kw in entry.get("keywords") or ():
+            if K.canonical_keyword(kw) is not None:
+                continue
+            k = " ".join(kw.split()).casefold().replace("’", "'")
+            if k in NON_702_KEYWORDS:
+                continue
+            label = re.compile(r"(?:^|[•\n-] ?)%s ?[-—]" % re.escape(k),
+                               re.IGNORECASE)
+            if any(label.search(t.replace("’", "'")) for t in texts[name]):
+                continue
+            unplaced.setdefault(kw, name)
+    assert not unplaced, sorted(unplaced.items())
 
 
 # ── Registered-deck witnesses (A1, A8) ─────────────────────────────────

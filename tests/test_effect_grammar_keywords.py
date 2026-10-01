@@ -223,6 +223,24 @@ def test_a_face_keyword_whose_parameter_is_not_its_shape_is_refused_never_droppe
     assert _line(text, candidates=frozenset({"flying"})) is None
 
 
+@pytest.mark.parametrize("text,item", [
+    ("aura swap {2}{u}", ("aura swap", None, None, "{2}{u}")),
+    ("transfigure {1}{b}{b}", ("transfigure", None, None, "{1}{b}{b}")),
+    ("goblin offering", ("offering", None, "goblin", None)),
+    ("moonfolk offering", ("offering", None, "moonfolk", None)),
+])
+def test_aura_swap_transfigure_and_offering_are_cr_702_keyword_lines(text, item):
+    """CR 702.65 aura swap and 702.71 transfigure are costed keywords; CR
+    702.48 '<subtype> offering' is one keyword whose parameter is the
+    subtype (like typecycling and landwalk)."""
+    kw = _kw()
+    face = kw.keywords702(["Aura Swap", "Transfigure", "Offering"])
+    assert face == frozenset({"aura swap", "transfigure", "offering"})
+    r = _line(text, candidates=face)
+    assert r is not None and r.unmodelled is None, r
+    assert _items(r) == [item]
+
+
 @pytest.mark.parametrize("text,params", [
     ("protection from red", ["red"]),
     ("protection from black and from red", ["black", "red"]),

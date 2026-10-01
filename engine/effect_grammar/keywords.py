@@ -93,6 +93,7 @@ EQUIP = "equip"                # equip [<quality>] {cost} (CR 702.6e)
 OVER_OPT = "over_opt"          # trample [over planeswalkers] (CR 702.19c)
 TYPECYCLING = "typecycling"    # <type>cycling {cost} (CR 702.29e)
 LANDWALK = "landwalk"          # <type>walk (CR 702.14c)
+OFFERING = "offering"          # <subtype> offering (CR 702.48a)
 
 _SHAPES = {
     PLAIN: (
@@ -130,7 +131,7 @@ _SHAPES = {
         "ward", "fortify", "replicate", "recover", "cumulative upkeep",
         "level up", "escalate", "cleave", "freerunning", "offspring",
         "sneak", "harmonize", "warp", "web-slinging", "squad",
-        "more than meets the eye"),
+        "more than meets the eye", "aura swap", "transfigure"),
     COST_OPT: ("mayhem",),
     N_DASH_COST: ("suspend", "reinforce", "awaken", "impending"),
     FROM: ("protection",),
@@ -149,15 +150,17 @@ _SHAPES = {
     OVER_OPT: ("trample",),
     TYPECYCLING: ("typecycling",),
     LANDWALK: ("landwalk",),
+    OFFERING: ("offering",),
 }
 
 # CR 702 keyword ability -> parameter shape.
 KEYWORD_ABILITIES: Mapping[str, str] = {
     name: shape for shape, names in _SHAPES.items() for name in names}
 
-# Variant families printed as one word (<type>cycling, <type>walk) are
-# matched by their own patterns, never by name.
-_FAMILIES = frozenset({TYPECYCLING, LANDWALK})
+# Variant families whose parameter is printed in the keyword's name
+# (<type>cycling, <type>walk, <subtype> offering) are matched by their own
+# patterns, never by name.
+_FAMILIES = frozenset({TYPECYCLING, LANDWALK, OFFERING})
 _COSTED = frozenset({COST, COST_OPT, N_DASH_COST, SPLICE, CRAFT, EMERGE,
                      PROTOTYPE, EQUIP, TYPECYCLING})
 
@@ -167,7 +170,8 @@ def canonical_keyword(name: str) -> Optional[str]:
     it is not a CR 702 keyword ability (a CR 701 keyword action, an ability
     word, a token name, a mode name). Variants fold onto their keyword:
     'Swampcycling' / 'Basic landcycling' -> 'typecycling', 'Islandwalk' ->
-    'landwalk', 'Hexproof from' -> 'hexproof', 'Partner with' -> 'partner'."""
+    'landwalk', 'Goblin offering' -> 'offering', 'Hexproof from' ->
+    'hexproof', 'Partner with' -> 'partner'."""
     k = " ".join(name.split()).casefold()
     if k.endswith(" from") or k.endswith(" with"):
         k = k[:-5]
@@ -176,6 +180,8 @@ def canonical_keyword(name: str) -> Optional[str]:
             k = TYPECYCLING
         elif k.endswith("walk"):
             k = LANDWALK
+        elif k.endswith(" offering"):
+            k = OFFERING
     return k if k in KEYWORD_ABILITIES else None
 
 
@@ -227,6 +233,7 @@ _PARAM_RE = {
     OVER_OPT: r"(?: over (?P<p>[a-z]+))?",
     TYPECYCLING: _COST,
     LANDWALK: r"",
+    OFFERING: r"",
 }
 _BOUNDARY = r"(?![\w'])"
 _NAME_RE = re.compile(r"(?P<name>%s)%s" % ("|".join(
@@ -238,6 +245,7 @@ _FAMILY_RE = {
         r"(?P<p>(?:basic |artifact |snow )?[a-z]+)cycling" + _BOUNDARY),
     LANDWALK: re.compile(
         r"(?P<p>(?:nonbasic |legendary |snow )?[a-z]+)walk" + _BOUNDARY),
+    OFFERING: re.compile(r"(?P<p>[a-z]+) offering" + _BOUNDARY),
 }
 _ITEM_RE = {shape: re.compile(p) for shape, p in _PARAM_RE.items()}
 _FROM_EACH_RE = re.compile(r"(?:,? and |, )from (%s)" % _QUALITY)
