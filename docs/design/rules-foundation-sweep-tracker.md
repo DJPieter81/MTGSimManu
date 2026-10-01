@@ -6167,3 +6167,39 @@ every nested spec walked, lowering always valid). Two adversarial reviewers
 raised 14 findings (2 major); all verified and fixed with red-first tests.
 Verified independently before push: every ratchet at baseline, digest
 `--check` byte-identical (26 games), chunks A 2405 / B 2549.
+
+**E0 stage 2 (spec steps 8–11, the twelve grammar leaves, `b697e18`…`c2fc5d5`, no behaviour change):**
+`engine/effect_grammar/` holds L0 `normalize` (offset map, self-forms,
+nested quotes, reminder spans), `keywords` (CR 701/702 tables, M3 face
+filter, A8 cost rule), `lexicon` (section-4 verb table, A12 loyalty
+superset), and the nine closed sub-grammars `sub/{target, participant,
+filter, amount, quantity, condition, duration, dest, payload}`. One leaf
+contract lives in `sub/__init__.py` and is pinned by
+`tests/test_effect_grammar_leaf_contract.py`:
+- one `(host, span, *, lemma)` calling convention with host-absolute spans;
+- one "nothing here" encoding;
+- closed `<leaf>.<code>` refusal details, with refusals reaching the census unchanged;
+- one keyword table, one count-word table and one possessive vocabulary;
+- an acyclic `LEAF_EDGES`;
+- bounded caches with a package `clear_caches`.
+
+Every leaf was built in its own worktree and checked by an adversarial
+reviewer. Two integration reviewers followed (cross-leaf consistency; pool
+behaviour and performance), and all real findings were fixed with red-first tests.
+
+Pool coverage, measured:
+- target: 84.6% of slots typed;
+- filter: 59.9% typed; the rest are deliberate A21 refusals (history and relative clauses, computed bounds, unions);
+- normalize: self-references 99.8% resolved, pronouns 100%.
+
+Legacy-side disagreements are seeded into design section 10 for the step-18
+allowlist. Verified independently before push: every ratchet at baseline,
+1482 grammar tests pass, digest `--check` byte-identical (26 games), and the
+agent's chunk runs give A 3855 / B 2549.
+
+**Open: the load budget.** The leaves alone take about 2.2 s, plus 0.72 s
+for L0, against the 3.0 s whole-grammar budget (design section 12), before
+L1–L5 exist. Stage 3 therefore makes `CardTemplate.effects` lazy for every
+template, not only synthetic ones. A game parses only the cards it touches,
+pool-wide tools parse eagerly, and `CardDatabase()` load time is unchanged.
+An on-disk cache is held in reserve if the pool tools become too slow.
