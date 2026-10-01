@@ -106,6 +106,13 @@ LEAF_EDGES = {
     # Amount reads "for each <Q>" / "equal to <Q>" through the quantity
     # leaf (one quantity table).
     "amount": frozenset({"quantity"}),
+    # Conditions: counts over the filter leaf's CardFilter, comparands and
+    # set measures through the quantity leaf, numbers from the amount
+    # leaf's count table, players and object references from the
+    # participant leaf, and printed payments ("unless ... pays", "{c} was
+    # spent") through payload's PAY payload (A31).
+    "condition": frozenset({"amount", "filter", "participant", "payload",
+                            "quantity"}),
 }
 
 
@@ -181,9 +188,9 @@ def clear_caches() -> None:
     point)."""
     from engine.effect_grammar import lexicon, normalize
     from engine.effect_grammar.sub import (
-        amount, dest, duration, filter, participant, payload, quantity,
-        target,
+        amount, condition, dest, duration, filter, participant, payload,
+        quantity, target,
     )
     for leaf in (normalize, duration, payload, dest, filter, target,
-                 lexicon, quantity, participant, amount):
+                 lexicon, quantity, participant, amount, condition):
         leaf.clear_caches()
