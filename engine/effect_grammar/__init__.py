@@ -46,7 +46,9 @@ def _type_names(types) -> frozenset:
 def template_facts(template, face: int = 0,
                    keywords: Optional[Iterable[str]] = None):
     """The section-3 face facts of one template face: the self names
-    (full name, face names, the legendary / character short name), the
+    (full name, face names, the legendary / character short name; a meld
+    card's melded-permanent half is none, CR 712.4, read from the printed
+    layout `CardTemplate.layout`), the
     face's card types, spell / legendary / planeswalker / X-cost facts and
     the face's MTGJSON keywords intersected with the CR 702 table
     (`keywords`, default the template's printed MTGJSON list,
@@ -75,7 +77,8 @@ def template_facts(template, face: int = 0,
     return N.Facts(
         names=N.self_names(name, is_legendary=legendary,
                            is_character=character,
-                           subtypes=subs if "creature" in tc else ()),
+                           subtypes=subs if "creature" in tc else (),
+                           meld=getattr(template, "layout", "") == "meld"),
         type_class=tc,
         is_spell=bool(_SPELL_TYPES & tc),
         is_legendary=legendary,

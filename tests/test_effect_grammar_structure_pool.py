@@ -47,7 +47,6 @@ loyalty line or a line inside a level-gate block.
 from __future__ import annotations
 
 import gc
-import re
 import time
 import tracemalloc
 from collections import Counter
@@ -69,38 +68,23 @@ UNKNOWN_SHARE_CEILING = 0.01
 
 _GATE_DETAILS = frozenset({"structure.level_band", "structure.class_level",
                            "structure.station_threshold"})
-_MELD_RE = re.compile(r"\bmeld them into\b")
 
 
 def _faces(db):
-    """(name, face index, printed text, Facts) for every distinct face."""
-    from engine.effect_grammar import normalize as N
-    from engine.effect_grammar.keywords import keywords702
+    """(name, face index, printed text, Facts) for every distinct face. The
+    facts are the production ones (`effect_grammar.template_facts`, which
+    the lazy `CardTemplate.effects` path and the eager `parse_pool` read),
+    so the pool pins run on the facts the shipped path builds and cannot
+    drift from them."""
+    from engine.effect_grammar import template_facts
     out, seen = [], set()
     for t in {id(v): v for v in db.cards.values()}.values():
-        legendary = any(getattr(s, "value", s) == "legendary"
-                        for s in t.supertypes)
-        entry = db._raw_data.get(t.name) or {}
-        faces = ((0, t.oracle_text or "", t.card_types, t.subtypes,
-                  entry.get("keywords") or ()),
-                 (1, getattr(t, "back_face_oracle", "") or "",
-                  t.back_face_types, t.back_face_subtypes, ()))
-        for i, text, types, subs, kws in faces:
+        faces = ((0, t.oracle_text or ""),
+                 (1, getattr(t, "back_face_oracle", "") or ""))
+        for i, text in faces:
             if not text:
                 continue
-            tc = frozenset(getattr(c, "value", str(c)) for c in types)
-            character = "planeswalker" in tc or (legendary and "creature" in tc)
-            facts = N.Facts(
-                names=N.self_names(t.name, is_legendary=legendary,
-                                   is_character=character,
-                                   subtypes=tuple(subs) if "creature" in tc else (),
-                                   meld=" // " in t.name
-                                   and bool(_MELD_RE.search(text))),
-                type_class=tc,
-                is_spell=bool({"instant", "sorcery"} & tc),
-                is_legendary=legendary,
-                is_planeswalker="planeswalker" in tc,
-                keywords702=keywords702(kws))
+            facts = template_facts(t, i)
             key = (text, facts, i)
             if key not in seen:
                 seen.add(key)

@@ -528,6 +528,12 @@ class CardTemplate:
     # (`engine.effect_grammar.template_facts`) reads its keyword facts from
     # this list -- one source for the lazy and the eager parse.
     printed_keywords: Tuple[str, ...] = ()
+    # The card's MTGJSON `layout` exactly as printed ("normal", "transform",
+    # "meld", ...). Read by the clause grammar's face facts
+    # (`engine.effect_grammar.template_facts`): a meld card's second name is
+    # the melded permanent, a different object (CR 712.4), never a
+    # self-reference.
+    layout: str = ""
     abilities: List[Ability] = field(default_factory=list)
     color_identity: Set[Color] = field(default_factory=set)
     # The permanent's own printed color (MTGJSON `colors`) — NOT the

@@ -1662,6 +1662,7 @@ class CardDatabase:
             loyalty=loyalty,
             keywords=keywords,
             printed_keywords=tuple(data.get("keywords") or ()),
+            layout=data.get("layout") or "",
             abilities=abilities,
             color_identity=color_identity,
             colors=colors,

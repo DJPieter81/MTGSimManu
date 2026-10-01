@@ -67,38 +67,19 @@ _PRONOUN_RE = re.compile(r"(?<![\w'-])(?:he|she|him|his|her|himself|herself|"
                          r"he's|she's)(?![\w'-])", re.I)
 
 
-# The meld layout fact (CR 712.4) is not on CardTemplate yet; until the
-# card_database Facts builder reads MTGJSON `layout`, a two-half name whose
-# face text melds "them" stands in for it.
-_MELD_RE = re.compile(r"\bmeld them into\b")
-
-
 def _faces(db):
-    """(template, face index, printed text, Facts) for every face."""
-    from engine.effect_grammar import normalize as N
+    """(template, face index, printed text, Facts) for every face, with the
+    production face facts (`effect_grammar.template_facts`): the meld
+    layout fact (CR 712.4) is the template's printed MTGJSON layout."""
+    from engine.effect_grammar import template_facts
     out = []
     for t in {id(v): v for v in db.cards.values()}.values():
-        legendary = any(getattr(s, "value", s) == "legendary"
-                        for s in t.supertypes)
-        faces = ((0, t.oracle_text or "", t.card_types, t.subtypes),
-                 (1, getattr(t, "back_face_oracle", "") or "",
-                  t.back_face_types, t.back_face_subtypes))
-        for i, text, types, subs in faces:
+        faces = ((0, t.oracle_text or ""),
+                 (1, getattr(t, "back_face_oracle", "") or ""))
+        for i, text in faces:
             if not text:
                 continue
-            tc = frozenset(getattr(c, "value", str(c)) for c in types)
-            character = "planeswalker" in tc or (legendary and "creature" in tc)
-            facts = N.Facts(
-                names=N.self_names(t.name, is_legendary=legendary,
-                                   is_character=character,
-                                   subtypes=tuple(subs) if "creature" in tc else (),
-                                   meld=" // " in t.name
-                                   and bool(_MELD_RE.search(text))),
-                type_class=tc,
-                is_spell=bool({"instant", "sorcery"} & tc),
-                is_legendary=legendary,
-                is_planeswalker="planeswalker" in tc)
-            out.append((t, i, text, facts))
+            out.append((t, i, text, template_facts(t, i)))
     return out
 
 

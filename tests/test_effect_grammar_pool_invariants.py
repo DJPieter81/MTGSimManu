@@ -874,3 +874,34 @@ def test_synthetic_templates_get_the_same_effects_as_loaded_ones(card_db):
         assert dataclasses.replace(t).effects is t.effects
         checked += 1
     assert checked >= 200, checked
+
+
+@pytest.mark.timeout(300)
+def test_a_meld_cards_melded_permanent_name_is_not_a_self_reference(card_db):
+    """CR 712.4: a meld card's "A // B" second half names the melded
+    permanent, a different object, so the production face facts
+    (`template_facts`, read by the lazy and the eager path alike) never
+    make it a self-name; the face's own half still is. The layout fact is
+    the card's printed MTGJSON layout (`CardTemplate.layout`)."""
+    from engine.effect_grammar import parse_template, template_facts
+    melds = [t for t in {id(v): v for v in card_db.cards.values()}.values()
+             if t.layout == "meld" and " // " in t.name]
+    assert len(melds) >= 8, len(melds)
+    linked = 0
+    for t in melds:
+        own, melded = t.name.split(" // ", 1)
+        names = template_facts(t).names
+        assert own in names and melded not in names, (t.name, names)
+        text = (t.oracle_text or "").lower()
+        if "meld them into" in text:
+            texts = [h.text for h in parse_template(t).faces[0]]
+            assert any("meld them into " + melded.lower() in x
+                       for x in texts), (t.name, texts)
+            assert not any("meld them into ~" in x for x in texts), t.name
+            linked += 1
+    assert linked >= 1
+    # A non-meld split name keeps both halves as self-names.
+    split = next(t for t in card_db.cards.values()
+                 if " // " in t.name and t.layout in ("split", "adventure"))
+    names = template_facts(split).names
+    assert all(h in names for h in split.name.split(" // ")), split.name
