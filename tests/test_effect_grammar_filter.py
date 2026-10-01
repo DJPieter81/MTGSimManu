@@ -117,6 +117,102 @@ def test_a_token_word_is_the_token_field():
     assert _ok("a nontoken creature").value.token is False
 
 
+# ── Premodifier scope and coordinated descriptors (A21) ──────────────
+
+@pytest.mark.parametrize("text", [
+    "a creature or basic land card",
+    "a creature card or basic land card",
+    "each red creature or white artifact",
+    "each creature or white artifact",
+    "a creature or legendary planeswalker",
+    "each creature or nontoken artifact",
+    "each creature token or artifact",
+])
+def test_a_premodifier_on_one_union_member_does_not_constrain_the_other_members(text):
+    """A21: a descriptor printed on one member of an 'or' / 'and' union
+    states a rule about that member only. The one CardFilter has one set of
+    descriptor fields, so the leaf refuses rather than apply the member's
+    descriptor to every member (a broader or narrower filter)."""
+    r = _f(text, zone="library")
+    assert r.value is None, (text, r.value)
+    assert r.unmodelled.detail == "filter.modifier_scope", r.unmodelled
+
+
+def test_premodifiers_before_the_first_union_member_are_shared_by_every_member():
+    r = _ok("each legendary creature or planeswalker")
+    assert r.value.types == frozenset({"creature", "planeswalker"})
+    assert r.value.supertypes == frozenset({"legendary"})
+    r = _ok("each nonland, nontoken permanent")
+    assert r.value.not_types == frozenset({"land"}) and r.value.token is False
+    r = _ok("each nontoken creature or planeswalker")
+    assert r.value.token is False
+    r = _ok("each white creature or white artifact")
+    assert r.value.colors == frozenset({"W"})
+    assert r.value.types == frozenset({"creature", "artifact"})
+
+
+def test_colours_and_states_joined_by_or_are_a_union_of_that_field():
+    """``colors`` and ``state`` are disjunctive fields: a CardFilter matches
+    an object with any one of the values ('black or red', 'attacking or
+    blocking')."""
+    assert _ok("a white or blue creature").value.colors == frozenset({"W", "U"})
+    assert _ok("each white, blue, or black creature").value.colors == \
+        frozenset({"W", "U", "B"})
+    assert _ok("an attacking or blocking creature").value.state == \
+        frozenset({"attacking", "blocking"})
+    assert _ok("each tapped and/or attacking creature").value.state == \
+        frozenset({"tapped", "attacking"})
+
+
+@pytest.mark.parametrize("text", [
+    "a white and blue creature",          # both colours: a conjunction
+    "each red and green artifact",
+    "each untapped attacking creature",   # both states: a conjunction
+    "each tapped attacking creature",
+    "each attacking creature that's tapped",
+    "each white creature that's black or red",
+])
+def test_stacked_or_and_joined_colours_or_states_are_refused(text):
+    """A conjunction of two values of a disjunctive field is not a
+    CardFilter; the leaf refuses it rather than type the union."""
+    r = _f(text)
+    assert r.value is None, (text, r.value)
+    assert r.unmodelled.detail == "filter.modifier_join", r.unmodelled
+
+
+def test_stacked_exclusions_supertypes_and_classes_are_a_conjunction():
+    """``not_*``, ``supertypes`` and ``classes`` are conjunctive fields:
+    every listed value holds ('noncreature, nonland' is neither)."""
+    r = _ok("each noncreature, nonland permanent")
+    assert r.value.not_types == frozenset({"creature", "land"})
+    r = _ok("a legendary snow permanent")
+    assert r.value.supertypes == frozenset({"legendary", "snow"})
+    r = _ok("each untapped red creature")
+    assert r.value.state == frozenset({"untapped"})
+    assert r.value.colors == frozenset({"R"})
+
+
+@pytest.mark.parametrize("text", [
+    "each noncreature or nonland permanent",
+    "a legendary or basic land",
+    "each multicolored or colorless creature",
+    "each red or colorless creature",
+    "each tapped or red creature",
+    "each historic or monocolored permanent",
+])
+def test_or_between_conjunctive_or_different_descriptor_fields_is_refused(text):
+    """'or' is a union only inside one disjunctive field; between exclusions,
+    supertypes or classes, or across two fields, it is not a CardFilter."""
+    r = _f(text)
+    assert r.value is None, (text, r.value)
+    assert r.unmodelled.detail == "filter.modifier_join", r.unmodelled
+
+
+def test_a_descriptor_with_no_head_after_a_connector_is_refused():
+    r = _f("each creature or white")
+    assert r.value is None and r.unmodelled.detail == "filter.no_head"
+
+
 # ── Determiners are amounts and flags, never filter entries ────────────
 
 @pytest.mark.parametrize("text,amount,flags,other", [

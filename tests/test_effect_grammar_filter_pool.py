@@ -100,8 +100,10 @@ def _run(slots):
 
 
 # Typed share per family, measured 2026-09-30 on this branch's DB (22.7k
-# cards): search 187/260 (71.9%), choice 147/209 (70.3%), mass 162/256
-# (63.3%), quantity 210/453 (46.4%); 706/1178 (59.9%) overall. The refusals
+# cards): search 186/260 (71.5%), choice 146/209 (69.9%), mass 162/256
+# (63.3%), quantity 210/453 (46.4%); 704/1178 (59.8%) overall. (Two slots
+# typed before 2026-09-30's premodifier-scope rule are now refused: a
+# descriptor on one union member is that member's rule.) The refusals
 # are A21 working as intended, not table gaps: history and relative clauses
 # ("that died this turn", "you've cast"), "with the same name as",
 # computed bounds ("mana value equal to the number of ..."), alternatives
@@ -292,3 +294,24 @@ def test_registered_deck_filter_witnesses_type_exactly_the_printed_rule(card_db)
         r = F.parse_filter(slot, (0, len(slot)), lemma="x", zone="library")
         assert r.value is None, (card, r)
         assert r.unmodelled.detail.split(":")[0] == detail, (card, r)
+
+
+# Pool slots outside the registered decks that must be refused, not typed
+# broader or narrower (A21). The card name only locates the printed text.
+_POOL_REFUSED = (
+    # "basic" is the land member's premodifier: typing it over the union
+    # would search for a basic creature card, which does not exist.
+    ("The Huntsman's Redemption", "a creature or basic land card", "library",
+     "filter.modifier_scope"),
+)
+
+
+@pytest.mark.timeout(120)
+def test_a_printed_premodifier_on_one_union_member_is_refused_in_the_pool(card_db):
+    from engine.effect_grammar.sub import filter as F
+    for card, slot, zone, detail in _POOL_REFUSED:
+        text = _mask_names(_normalise(card_db.cards[card]))
+        assert slot in text, (card, slot, text)
+        r = F.parse_filter(slot, (0, len(slot)), lemma="x", zone=zone)
+        assert r.value is None, (card, r)
+        assert r.unmodelled.detail == detail, (card, r)

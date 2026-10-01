@@ -35,6 +35,19 @@ flags; "another" is a count of one plus ``other``.
   types). Adjacent card types are a conjunction ("artifact creature",
   ``all_types``); a list joined by "or" / "and" is a union (``types``);
   "non<type>" is an exclusion;
+* descriptor scope: a CardFilter has one set of descriptor fields, so a
+  union is typed only when its members print the same descriptors or all
+  of them precede the leading member's first noun ("legendary creature or
+  planeswalker"); a descriptor on one member only is that member's rule
+  and the slot is refused (``filter.modifier_scope``);
+* descriptor coordination: ``colors`` and ``state`` are disjunctive (any
+  listed value: "black or red", "attacking or blocking"), every other set
+  field is conjunctive (every listed value: "noncreature, nonland",
+  "legendary snow"). Descriptors joined by "or" / "and/or" are a union of
+  one disjunctive field; stacked, comma- or "and"-joined descriptors are a
+  conjunction. A phrase that needs the meaning its field lacks ("white and
+  blue", "untapped attacking", "noncreature or nonland", "multicolored or
+  colorless") is refused (``filter.modifier_join``);
 * colours (CR 105.1) as mana letters, ``colorless``, and the derived
   classes ``historic`` (CR 700.6), ``colored`` ("one or more colors"),
   ``multicolored`` and ``monocolored`` (CR 105.2, A19);
@@ -78,7 +91,8 @@ LEAF = "filter"
 DETAIL_CODES = frozenset({
     "empty", "unparsed", "no_head", "targeted", "reference", "player_head",
     "card_zone", "zone_union", "type_mix", "subtype_conjunction", "np_union",
-    "keyword", "keyword_list", "stat", "counter", "that_clause"})
+    "keyword", "keyword_list", "stat", "counter", "that_clause",
+    "modifier_scope", "modifier_join"})
 
 EACH = "each"      # SlotResult flag: "each" / "every" quantifies the filter
 ALL = "all"        # SlotResult flag: "all" quantifies the filter
@@ -410,15 +424,100 @@ def _zone_name(word: str) -> str:
 
 # ── The parse ──────────────────────────────────────────────────────────
 
+# Descriptor fields. A CardFilter has one value set per field, so each field
+# has ONE meaning for several values: a DISJUNCTIVE field matches an object
+# with any listed value ("black or red", "attacking or blocking"); every
+# other set field is CONJUNCTIVE, every listed value holds ("noncreature,
+# nonland" is neither, "legendary snow" is both). A phrase that needs the
+# other meaning is refused (``filter.modifier_join``), never typed as the
+# field's meaning.
+_DISJUNCTIVE = frozenset({"colors", "state"})
+_SET_FIELDS = ("colors", "not_colors", "classes", "supertypes",
+               "not_supertypes", "not_types", "not_subtypes", "state")
+# descriptor kind -> CardFilter field
+_FIELD = {"color": "colors", "not_color": "not_colors", "class": "classes",
+          "super": "supertypes", "not_super": "not_supertypes",
+          "state": "state", "not_type": "not_types",
+          "not_subtype": "not_subtypes", "colorless": "colorless",
+          "token": "token", "other": "other"}
+
+
+@dataclasses.dataclass
+class _Mod:
+    """One descriptor word: its field and value, the connector printed
+    before it inside a coordination of descriptors ('' when stacked), and
+    whether it precedes the member's first type or head noun."""
+    field: str
+    value: Any
+    join: str
+    pre: bool
+
+
 @dataclasses.dataclass
 class _Item:
     types: List[str] = dataclasses.field(default_factory=list)
     subtypes: List[str] = dataclasses.field(default_factory=list)
     heads: List[str] = dataclasses.field(default_factory=list)
     token: bool = False
+    mods: List[_Mod] = dataclasses.field(default_factory=list)
+    join: str = ""      # a connector read after a descriptor, not yet used
 
     def content(self) -> bool:
         return bool(self.types or self.subtypes or self.heads or self.token)
+
+
+def _descriptors(mods: List[_Mod]) -> Optional[Dict[str, Any]]:
+    """The descriptor fields of one union member, or None when its
+    coordination needs the meaning its field does not have. Descriptors
+    linked by connectors form one coordination: 'or' / 'and/or' is a union
+    of ONE disjunctive field; 'and' and bare commas are a conjunction."""
+    out: Dict[str, Any] = {}
+    chains: List[List[_Mod]] = []
+    for m in mods:
+        if m.join and chains:
+            chains[-1].append(m)
+        else:
+            chains.append([m])
+    for chain in chains:
+        joins = {m.join for m in chain[1:]}
+        disjoint = bool(joins & {"or", "and/or"})
+        if disjoint and "and" in joins:
+            return None
+        fields = {m.field for m in chain}
+        if disjoint and (len(fields) != 1 or not fields <= _DISJUNCTIVE):
+            return None
+        for field in fields:
+            vals = {m.value for m in chain if m.field == field}
+            if field in _SET_FIELDS:
+                if field in _DISJUNCTIVE and (
+                        field in out or (len(vals) > 1 and not disjoint)):
+                    return None        # a conjunction of disjunctive values
+                out[field] = frozenset(out.get(field, frozenset()) | vals)
+            else:
+                out[field] = next(iter(vals)) if len(vals) == 1 else None
+                if out[field] is None:
+                    return None
+    return out
+
+
+def _shared_descriptors(content: List[_Item]):
+    """(descriptors, failure code) of a union: the members' descriptors
+    when every member prints the same ones, or the leading member's when
+    they all precede its first noun ("legendary creature or planeswalker",
+    "nontoken creature or planeswalker") and no other member prints any.
+    A descriptor on one member only is that member's rule, which one
+    CardFilter cannot state (A21)."""
+    sigs = []
+    for item in content:
+        d = _descriptors(item.mods)
+        if d is None:
+            return None, "modifier_join"
+        sigs.append(d)
+    if len(content) == 1 or all(d == sigs[0] for d in sigs[1:]):
+        return sigs[0], None
+    if not any(sigs[1:]) and all(m.pre for m in content[0].mods):
+        return sigs[0], None
+    return None, "modifier_scope"
 
 
 # A relative parse: (value, (code, param) | None, amount, flags, pending).
@@ -440,18 +539,13 @@ def _filter_rel(t: str, zone: str) -> _Rel:
     if not t:
         return _fail("empty")
     pos, amount, flags, other = _determiner(t)
-    f: Dict[str, Any] = {"colors": set(), "not_colors": set(), "classes": set(),
-                         "supertypes": set(), "not_supertypes": set(),
-                         "not_types": set(), "not_subtypes": set(),
-                         "state": set(), "with_keywords": set(),
-                         "without_keywords": set()}
-    token: Optional[bool] = None
-    colorless: Optional[bool] = None
     items = [_Item()]
     pending: List[Tuple[str, str]] = []
 
-    # Descriptor words: premodifiers and head nouns, in items separated by
-    # connectors. The first word no table places starts the postmodifiers.
+    # Descriptor words: premodifiers and head nouns, in union members
+    # separated by connectors; a connector after a descriptor coordinates
+    # descriptors inside the member. The first word no table places starts
+    # the postmodifiers.
     first = True
     while pos < len(t):
         m = _WORD_RE.match(t, pos)
@@ -477,36 +571,23 @@ def _filter_rel(t: str, zone: str) -> _Rel:
             return _fail("player_head")
         first = False
         item = items[-1]
-        if kind == "other":
-            other = True
-        elif kind == "token":
-            token = value
-            if value:
-                item.token = True
-        elif kind == "color":
-            f["colors"].add(value)
-        elif kind == "not_color":
-            f["not_colors"].add(value)
-        elif kind == "colorless":
-            colorless = True
-        elif kind == "class":
-            f["classes"].add(value)
-        elif kind == "super":
-            f["supertypes"].add(value)
-        elif kind == "not_super":
-            f["not_supertypes"].add(value)
-        elif kind == "state":
-            f["state"].add(value)
+        descriptor = kind not in ("head", "type", "subtype") and not (
+            kind == "token" and value)
+        if descriptor:
+            item.mods.append(_Mod(_FIELD[kind], value, item.join,
+                                  not item.content()))
+        elif item.join:
+            return _fail("modifier_join")   # "tapped or creature"
+        elif kind == "token":               # "creature token": a head noun
+            item.token = True
+            item.mods.append(_Mod("token", True, "", False))
         elif kind == "head":
             item.heads.append(value)
         elif kind == "type":
             item.types.append(value)
-        elif kind == "subtype":
+        else:
             item.subtypes.append(value)
-        elif kind == "not_type":
-            f["not_types"].add(value)
-        elif kind == "not_subtype":
-            f["not_subtypes"].add(value)
+        item.join = ""
         pos = m.end()
         conn = _CONN_RE.match(t, pos)
         if conn is None:
@@ -520,15 +601,25 @@ def _filter_rel(t: str, zone: str) -> _Rel:
             return _fail("np_union")
         if _classify(nxt.group(0)) is None or _PLAYER_CLAUSE_RE.match(t, conn.end()):
             return _fail("unparsed", conn.group(0).strip(" ,") or ",")
-        if conn.group(0).strip(" ,"):   # "or" / "and": a new union member
-            items.append(_Item())
-        elif items[-1].content():       # ", " after a content word: a list
+        if descriptor and not item.content():
+            # "white or blue", "noncreature, nonland": descriptors of one
+            # member, coordinated.
+            item.join = conn.group(0).strip(" ,") or ","
+        else:                           # after a noun: a new union member
             items.append(_Item())
         pos = conn.end()
 
     content = [i for i in items if i.content()]
-    if not content:
+    if not content or len(content) != len(items):
         return _fail("no_head")
+    shared, code = _shared_descriptors(content)
+    if shared is None:
+        return _fail(code)
+    f: Dict[str, Any] = {k: set(shared.get(k, ())) for k in _SET_FIELDS}
+    f.update(with_keywords=set(), without_keywords=set())
+    token: Optional[bool] = shared.get("token")
+    colorless: Optional[bool] = shared.get("colorless")
+    other = other or bool(shared.get("other"))
 
     # Postmodifiers, in any order, until the slot is consumed.
     controller: Any = "any"
@@ -641,8 +732,12 @@ def _filter_rel(t: str, zone: str) -> _Rel:
             elif m.group("colorless"):
                 colorless = True
             elif m.group("cols"):
+                if f["colors"]:     # a second colour set: a conjunction
+                    return _fail("modifier_join")
                 f["colors"].update(_COLORS[c] for c in _LIST_SEP_RE.split(m.group("cols")))
             elif m.group("state"):
+                if f["state"]:      # a second state: a conjunction
+                    return _fail("modifier_join")
                 f["state"].add(m.group("state"))
             else:
                 subs = [_lookup(w, SUBTYPES) for w in _LIST_SEP_RE.split(m.group("subs"))]
