@@ -322,6 +322,44 @@ def test_continuous_predicates_read_their_mod_kind_hint(text, mod):
     assert e.verb is Verb.CONTINUOUS and e.mod_kind is mod, (text, e)
 
 
+@pytest.mark.parametrize("text,mod", [
+    ("target creature becomes the color or colors of your choice until end "
+     "of turn", ModKind.SET_COLORS),
+    ("~ becomes colorless", ModKind.SET_COLORS),
+    ("it becomes white until end of turn", ModKind.SET_COLORS),
+    ("all creatures become all colors until end of turn", ModKind.SET_COLORS),
+    ("~'s base power and toughness each become equal to that creature's power",
+     ModKind.SET_BASE_PT),
+    ("it becomes a 3/3 elemental creature", ModKind.ADD_TYPES),
+])
+def test_become_hints_colour_and_base_pt_changes_by_their_layer(text, mod):
+    """Section 4: 'becomes the colour(s) / <colour> / colorless' is a layer 5
+    colour change (SET_COLORS) and 'base power and toughness become' a layer
+    7b setting (SET_BASE_PT); only a type phrase keeps the ADD_TYPES hint."""
+    e = _verb(text)
+    assert e.verb is Verb.CONTINUOUS and e.mod_kind is mod, (text, e)
+
+
+def test_becoming_a_copy_is_a_recognised_copy_effect_not_a_type_change():
+    """CR 707.2 / 613.1a: 'becomes a copy of' is a layer 1 copy effect, not
+    a type change; with no owner yet it is recognised and refused."""
+    for text in ("~ becomes a copy of target permanent card in your graveyard",
+                 "you may have shapeshifters you control become copies of "
+                 "that creature until end of turn"):
+        r = _read(text)
+        assert r.value is None, (text, r.value)
+        assert r.unmodelled.stage is Stage.RECOGNIZED_UNSUPPORTED
+        assert r.unmodelled.lemma == "become a copy"
+
+
+@pytest.mark.parametrize("text", ["it becomes plotted", "~ becomes saddled"])
+def test_a_designation_a_permanent_or_card_becomes_is_not_a_type_change(text):
+    """Plotted (CR 718), saddled, monstrous and the like are designations,
+    not characteristics: 'becomes <designation>' has no continuous reading."""
+    r = _read(text)
+    assert r.value is None or r.value.mod_kind is not ModKind.ADD_TYPES, (text, r)
+
+
 # ── Non-verb uses of verb words ────────────────────────────────────────
 
 @pytest.mark.parametrize("text,verb", [

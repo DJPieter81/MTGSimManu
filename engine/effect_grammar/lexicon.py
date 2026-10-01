@@ -243,6 +243,7 @@ _LIFE_AFTER = (
     r"(?= (?:(?:%s|that much|twice that much|half that much|an amount of|"
     r"twice x|half x|%s times x|half %s|a third of %s) )?life\b)" % (
         _COUNT, _COUNT, _LIFE_OWNER, _LIFE_OWNER))
+_COLOR = r"(?:white|blue|black|red|green)"
 _PLAYER_COUNTER = (r"(?:\{e\}|poison counters?|experience counters?|"
                    r"rad counters?|ticket counters?)")
 _LIBRARY_OWNER = (r"(?:your|their|his or her|its owner's|its owners'|"
@@ -337,10 +338,21 @@ _ROWS: Tuple[_Row, ...] = (
        flags=frozenset({"alternatives"})),
     _r("have", _C, r"(?= %s)" % _KW, ModKind.ADD_KEYWORDS),
     _r("exchange", _C, r"(?= control of\b)", ModKind.SET_CONTROLLER),
+    # "become": a colour change (layer 5), a base P/T setting (layer 7b),
+    # then a type change; a copy effect (layer 1) is recognised below and a
+    # designation (tapped, blocked, plotted, ...) has no continuous reading.
+    _r("become", _C,
+       r"(?= (?:the colou?rs? (?:or colou?rs )?of\b|the chosen colou?r\b|"
+       r"that colou?r\b|all colou?rs\b|(?:colorless|%s(?: and %s)?)"
+       r"(?=$|[.,;]| until\b| instead\b)))" % (_COLOR, _COLOR),
+       ModKind.SET_COLORS),
+    _r("become", _C, mod=ModKind.SET_BASE_PT,
+       subject=r"\bbase power and toughness (?:each )?$"),
     _r("become", _C,
        r"(?= (?!the target\b|tapped\b|untapped\b|blocked\b|attached\b|"
        r"unattached\b|monstrous\b|renowned\b|suspected\b|saddled\b|"
-       r"the monarch\b|prepared\b|the day\b|the night\b|day\b|night\b))",
+       r"plotted\b|the monarch\b|prepared\b|the day\b|the night\b|"
+       r"day\b|night\b|a copy of\b|copies of\b))",
        ModKind.ADD_TYPES),
     _r("be", _C, r"(?= (?:an?|all|still|every|colorless|the colou?r|"
                  r"(?:white|blue|black|red|green)(?: and \w+)?)\b)",
@@ -383,6 +395,8 @@ _ROWS: Tuple[_Row, ...] = (
 _UNSUPPORTED_ROWS: Tuple[Tuple[str, str], ...] = (
     ("phase out", r"phases? out\b"),
     ("regenerate", r"regenerates?\b"),
+    # CR 707.2, 613.1a: a layer 1 copy effect has no continuous owner yet.
+    ("become a copy", r"(?:becomes? a copy|become copies) of\b"),
     ("win the game", r"wins? the game\b"),
     ("lose the game", r"loses? the game\b"),
     ("face a villainous choice", r"faces? a villainous choice\b"),
