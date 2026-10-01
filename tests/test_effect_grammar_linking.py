@@ -1009,6 +1009,23 @@ def test_the_face_memo_key_is_every_fact_the_parse_reads():
     assert named[0].specs[0].other == Ref(RefKind.SELF)
     assert unnamed[0].specs[0] != named[0].specs[0]
     assert parse_face(text, _facts("Some Bolt")) is named
+    # Every fact is in the key: perturbing any one field of Facts is a
+    # memo miss, never a hit on the other facts' parse.
+    from engine.effect_grammar import link
+    base = _facts("Some Bolt")
+    perturbed = {
+        "names": ("Other Bolt",), "type_class": frozenset({"sorcery"}),
+        "is_spell": not base.is_spell, "is_legendary": not base.is_legendary,
+        "is_planeswalker": not base.is_planeswalker,
+        "has_x_cost": not base.has_x_cost,
+        "keywords702": keywords702(("Flying",))}
+    assert set(perturbed) == set(N.Facts._fields)     # a new fact is listed
+    for field, value in perturbed.items():
+        variant = base._replace(**{field: value})
+        assert variant != base, field
+        misses = link.parse_face_hosts.cache_info().misses
+        parse_face(text, variant)
+        assert link.parse_face_hosts.cache_info().misses == misses + 1, field
 
 
 def test_a_connective_before_a_delayed_instruction_gates_the_creation_of_the_delayed_ability():

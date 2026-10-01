@@ -508,7 +508,7 @@ def test_every_template_parses_without_exception_and_every_spec_satisfies_the_sc
 def test_sub_ability_targets_are_never_in_the_parents_targets(pool_effects):
     """A30, CR 603.12: a sub-ability's requirements are chosen when it
     triggers -- they are its own host's, never its creator's."""
-    from engine.effect_spec import SubAbility, iter_specs
+    from engine.effect_spec import RefKind, SubAbility, _refs, iter_specs
     effects, _cpu = pool_effects
     checked = 0
     for name, ce in effects.items():
@@ -517,6 +517,18 @@ def test_sub_ability_targets_are_never_in_the_parents_targets(pool_effects):
                 if isinstance(s.payload, SubAbility):
                     sub = s.payload.host
                     checked += 1
+                    # Every target the sub host's specs name -- a slot or
+                    # a TARGET ref -- indexes the sub host's own targets;
+                    # a creator's target is read as its spec's RESULT
+                    # (A34), never as a TARGET ref of the sub host.
+                    for t in iter_specs(sub.specs):
+                        if t.target_slot is not None:
+                            assert t.target_slot < len(sub.targets), name
+                            assert t.target is sub.targets[t.target_slot], name
+                        for r in _refs(t):
+                            if r.kind is RefKind.TARGET:
+                                assert r.index is not None and \
+                                    r.index < len(sub.targets), name
                     assert not any(t is p for t in sub.targets
                                    for p in h.targets), name
     assert checked >= 100
