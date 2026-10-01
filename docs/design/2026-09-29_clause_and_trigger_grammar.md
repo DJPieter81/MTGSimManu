@@ -37,7 +37,7 @@ summary: >
 **What E0 ships.** E0 adds data and tooling only:
 - the schema (`engine/effect_spec.py`);
 - the grammar package (`engine/effect_grammar/`);
-- `CardTemplate.effects`, populated at load;
+- `CardTemplate.effects`, parsed lazily per template on first access and memoised (section 12; nothing parses during `CardDatabase` load);
 - one derivation per legacy per-shape field (`engine/effect_views.py`), masked to the legacy domain;
 - a dispatcher skeleton with empty executor tables and no callers (`engine/effect_resolver.py`), plus resolution-choice callback declarations that nothing calls yet;
 - the UNMODELLED and residue census, the pool-wide equivalence tool (with gate parity and verb-closure reports), the seeded-game digest tool, and the `check_effect_parsers` ratchet;
@@ -182,7 +182,7 @@ The refutations named the witness cards in brackets; section 18.1 turns each wit
 - **A11. Disjunctive trigger heads.** `TriggerHead.event_hints` (and later `TriggerSpec.events`) is a tuple sharing one body (CR 603.2). 179 pool cards have such heads. [Primeval Titan, Archon of Cruelty, Orcish Bowmasters, Cityscape Leveler.]
 - **A12. Faces and loyalty.**
   - Face 1 is parsed before `_type_loyalty_clauses` runs for `back_face_loyalty_abilities`.
-  - Loyalty clause templates are built with `parse_effects=False` and receive a slice of the LOYALTY host of the face the engine activates. They are never parsed under their synthetic `<walker> (slot)` name.
+  - Loyalty clause templates are built by `_type_loyalty_clauses(..., walker=, face=)` and their `effects` is a slice of the LOYALTY host of the face the engine activates, re-cut whenever the walker's effects object changes (section 12). They are never parsed under their synthetic `<walker> (slot)` name.
   - Face-1 LOYALTY hosts are Tier A against `back_face_loyalty_abilities`.
   - `[+X]` and `[−X]` lines are LOYALTY hosts with `loyalty_cost = Amount(X, n=±1)`. X is bound from the paid loyalty cost (CR 107.3, 606.4) and never falls through to ACTIVATED.
   - An `[+X]` or `[−X]` line takes no loyalty slot in E0. `oracle_parser.loyalty_slot_for`, the one owner of the slot rule, gives a variable-cost line `""` and lets it take no slot from a later line. Those are the slots of legacy's line set (`_LOYALTY_LINE_PATTERN` reads fixed costs only), so the grammar, which passes the printed superset, and `parse_loyalty_abilities`, which passes fixed lines only, agree on every fixed line, and `CardEffects.loyalty(slot)` finds the host legacy's slot names. A pool test pins that agreement for every face. Giving X lines slots is a behaviour change for its own measured commit: those lines become activatable, and minus/ult move on the 9 pool walkers whose X line precedes a fixed negative line (Ashiok, Nightmare Weaver; Chandra Nalaar; Chandra, Chill of Compliance; Kasmina, Enigma Sage; Liliana, Defiant Necromancer; Sorin, Grim Nemesis; Tamiyo, Compleated Sage; Tezzeret the Seeker; Ugin, the Spirit Dragon). None of them is in a registered deck.
@@ -681,7 +681,7 @@ Each of the last three yields a sibling in the same `group`. A clause with no su
 - the unconsumed rest is `rest_spans` into `host`, never a rewritten string, so a later leaf's spans compose with an earlier one's;
 - `Unmodelled.lemma` is the caller's printed lemma, never a leaf default; `Unmodelled.detail` is `<leaf>.<code>[:<param>]` with `<code>` from the leaf's closed `DETAIL_CODES` and `<param>` one word; the census groups by `(stage, lemma, <leaf>.<code>)`;
 - every leaf reads L0 output (the L0 steps above) and none re-normalises it;
-- memo caches are bounded (`CACHE_SIZE`), every leaf has `clear_caches()`, and the package `clear_caches()` clears them all once the load pass finishes;
+- memo caches are bounded (`CACHE_SIZE`), every leaf has `clear_caches()`, and the package `clear_caches()` clears them all (tools call it after a pool pass; it does not touch the per-template `CardTemplate.effects` memos, which live as long as their template and are cleared by `set_effects(None)`);
 - a leaf imports another only along `LEAF_EDGES`: destination reads entry counters through payload's counter parser (one count table, one kind vocabulary), and payload reads the duration boundary `DURATION_START` from duration (one duration table). `match_clause(text, host_class, has_x)` is memoised. Target slots follow section 5 (located parse, consumption and residue polarity); CardFilter slots require full consumption (A21).
 
 **L5, link** (`link.py`). This runs once per host over the merged host text, in this order:
@@ -1215,8 +1215,8 @@ def chosen_from_legacy(ability, item_targets) -> Tuple[Tuple[Union[Handle, int],
 **Where parsing runs** (A12; superseded by the 2026-10-01 lazy decision below, as landed in step 13). Nothing parses during `CardDatabase` load. `CardTemplate.effects` is a property over `_effects` that parses on first access, per template, through `engine.effect_grammar.parse_template(t)` -- the same call the eager tools' path `parse_pool` makes -- and memoises:
 - the face facts (names, type_class, is_spell, is_legendary, is_planeswalker, has_x, keywords702) are computed lazily by `template_facts` from fields the load already sets (`printed_keywords` is the MTGJSON keyword list), so the load builds nothing new;
 - face 1 is parsed with the back face's facts; the back-face attachment block now sets the back face's types, subtypes, P/T and keywords BEFORE it calls `_type_loyalty_clauses` for `back_face_loyalty_abilities`, so those facts are complete whenever a clause slice is taken (the A12 order, kept under laziness);
-- loyalty clause templates (`_type_loyalty_clauses(..., walker=, face=)`) never parse: `_effects_slice = (walker, face, slot)` makes their `effects` the walker's LOYALTY host for that slot on the face the engine activates (`loyalty_abilities` face 0, `back_face_loyalty_abilities` face 1) -- the very host object, sliced from the walker's own memo. A legacy line read from inside a quoted granted ability (67 of ~900 typed lines, e.g. a token's or an anthem's granted loyalty lines) has no LOYALTY host on its face and gets `EMPTY_EFFECTS`; so does a clause typed with no walker;
-- `_effects_key` is the printed identity the memo was parsed from (name, both faces' text): a template copied and re-printed (tests do this) parses again. `set_effects` pins a value for the current text; `parse_pool(db, populate=True)` pins every template's eager result for tools.
+- loyalty clause templates (`_type_loyalty_clauses(..., walker=, face=)`) never parse: `_effects_slice = (walker, face, slot)` makes their `effects` the walker's LOYALTY host for that slot on the face the engine activates (`loyalty_abilities` face 0, `back_face_loyalty_abilities` face 1) -- the very host object, sliced from the walker's current memo. A legacy line read from inside a quoted granted ability (67 of ~900 typed lines, e.g. a token's or an anthem's granted loyalty lines) has no LOYALTY host on its face and gets `EMPTY_EFFECTS`; so does a clause typed with no walker;
+- `_effects_key` is the complete parse input the memo was parsed from (`effect_grammar.template_inputs`: name, both faces' text and every face's `template_facts`): a template copied and re-printed, or re-typed (types, supertypes, subtypes, X cost, printed keywords, back-face types), parses again. A memo hit recomputes the facts (about 9 µs). A clause template's key is the walker's effects object its slice was cut from, so the slice follows a re-pinned or re-parsed walker; it is never a stale memo. `set_effects` pins a value for the current parse input; `parse_pool(db, populate=True)` pins every template's eager result for tools. The per-template memos live as long as their templates: `clear_caches` clears only the module memos, `set_effects(None)` clears one template's.
 
 The name is distinct from `CardDatabase.get_effects`, which returns `List[OracleEffect]`, and the neutrality AST test keys on template attribute access only. Every legacy field is unchanged (seeded digest byte-identical).
 
@@ -1259,7 +1259,7 @@ Both carry `@pytest.mark.timeout(N)` with the measurement in a comment. Wall-clo
 **Card and deck names.** The grammar, lexicon, patterns, views and dispatcher are generic. `test_effect_grammar_holds_no_card_names` scans string literals as before. Card names appear only in `tests/fixtures/effect_grammar_witnesses.json`. `check_abstraction` and `check_card_name_registry` are unchanged in E0.
 
 **Single owner.**
-- The grammar is the only new reader of oracle text, and only at load. `engine/effect_grammar/` joins `check_oracle_runtime_parse._EXCLUDED` through new directory-prefix support.
+- The grammar is the only new reader of oracle text, and only through the parse-once `CardTemplate.effects` memo (lazy: the first access, which may fall mid-game, parses; every later one reads the memo), never at resolution. `engine/effect_grammar/` joins `check_oracle_runtime_parse._EXCLUDED` through new directory-prefix support.
 - TargetRequirements come only from `target_solver`. `parse_located` is the one placement owner, and `parse()` is re-expressed over it.
 - Costs come from `parse_activation_cost` on printed spans.
 - Delays come from `_DELAY_TIMING_PHRASES`, and the loyalty slot rule has one owner.
