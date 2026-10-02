@@ -56,6 +56,15 @@
    "pattern": "\\b(?:equip|dash|unlock|plot|plotting)\\b[^.]*\\bcosts?\\b[^.]*\\bless\\b",
    "reason": "\"Equip / Dash / Unlock costs you pay cost {N} less\" and \"Plotting cards from your hand costs {2} less\" are stored as {'target': 'all', ...}, a reduction of every spell; they are scoped to that keyword's cost or special action (CR 601.2f, 118.7). The grammar refuses them (payload.cost_delta_subject).",
    "source": "design doc section 10, further seed rows, keyword-scoped cost reductions"
+  },
+  {
+   "id": "pump_keyword_set_order",
+   "class": "LEGACY_HASH_ORDER",
+   "fields": ["pump_spell_keyword"],
+   "always": true,
+   "cards": ["Aerial Maneuver", "Alchemist's Gift", "Archon's Glory", "Ferocification", "Fervent Strike", "Leap of Flame", "Rig for War", "Rush of Vitality", "Scales of Shale", "Slayers' Stronghold", "Smaug's Fury", "The Royal Scions", "Whirling Strike"],
+   "reason": "A pump spell whose 'gains/has' window names two or more keywords: oracle_parser._pt_mod_keyword returns the first member of the _KEYWORD_WORDS set literal found in the window, so the legacy keyword is decided by the process's hash seed, not by printed order, and the comparison is none. The row classes every comparison on these cards (an equal one included) so the pinned counts are seed-free. The legacy fix (a printed-order pick) changes game behaviour: a legacy unit, not E0.",
+   "source": "design doc section 10, hash-order legacy value (follow-up review 2026-10-02)"
   }
  ],
  "unsurfaced": [

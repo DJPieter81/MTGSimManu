@@ -25,8 +25,9 @@ the walk `CardEffects.walk` makes -- is counted:
 plus the report rows) and generates `docs/design/effect_grammar_census.md`
 from it. ``--check`` re-runs the census and fails when the typed share
 (overall, per host kind, on deck cards) falls or any refusal total (per
-stage, per residue code, per polarity, on deck cards) grows; an improvement
-passes and is reported, to be locked in with ``--update``.
+stage, per residue code, per polarity, on deck cards) grows, and on any
+improvement too: a stale baseline, locked in with ``--update`` in the same
+commit so a later regression cannot refill the ceiling.
 
 Usage::
 
@@ -313,6 +314,17 @@ def compare(baseline: Mapping[str, Any], current: Mapping[str, Any]
     return bad, good
 
 
+def check(baseline: Mapping[str, Any], current: Mapping[str, Any]
+          ) -> List[str]:
+    """Every reason `--check` fails: each regression, and each improvement
+    as a stale baseline -- the commit that improves a count locks it in
+    (``--update``), so a later regression cannot silently refill the
+    ceiling (the effect-parser ratchet's rule)."""
+    bad, good = compare(baseline, current)
+    return bad + [f"{g} -- stale baseline: lock it in with --update in "
+                  f"this commit" for g in good]
+
+
 # ── the generated doc ─────────────────────────────────────────────────
 
 def _pct(x: float) -> str:
@@ -463,15 +475,10 @@ def main(argv: Optional[List[str]] = None) -> int:
         return 0
     if args.check:
         base = json.loads(args.baseline.read_text())
-        bad, good = compare(base, c)
-        for g in good:
-            print(f"improved: {g}")
-        if good:
-            print("(run `python tools/effect_census.py --update` to lock "
-                  "the improvements in)")
-        if bad:
+        problems = check(base, c)
+        if problems:
             print("Effect census FAILED:")
-            for b in bad:
+            for b in problems:
                 print(f"  {b}")
             return 1
         print("Effect census OK")

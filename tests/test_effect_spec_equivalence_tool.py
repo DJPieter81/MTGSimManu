@@ -1395,28 +1395,132 @@ SECTION_10_SEED_ROWS = {
 }
 
 
+# Rows the follow-up review added beyond the section-10 seeds.
+REVIEW_ROWS = {"pump_keyword_set_order"}
+
+
 def test_the_committed_allowlist_is_valid_and_accounts_for_every_section_10_seed_row():
     t = _eq_tool()
     rows, unsurfaced = t.load_allowlist(), t.load_unsurfaced()
     assert t.validate_allowlist(rows) == []
     assert t.validate_unsurfaced(unsurfaced) == []
     ids = {r.id for r in rows} | {u["id"] for u in unsurfaced}
-    assert ids == SECTION_10_SEED_ROWS
+    assert ids == SECTION_10_SEED_ROWS | REVIEW_ROWS
     assert all(r.source.startswith("design doc section 10") for r in rows)
+
+
+def _set_order_pump_keyword_cards(card_db):
+    """Cards whose legacy pump keyword is the first member of a SET found
+    in the printed 'gains/has' window: two or more members there make the
+    pick hash-seed dependent."""
+    import re
+    from engine import oracle_parser as op
+    out = set()
+    for tpl in {id(x): x for x in card_db.cards.values()}.values():
+        text = op.strip_reminder_text(tpl.oracle_text or "").lower()
+        m = next((mm for mm in re.finditer(
+            op._PT_MOD_CLAUSE + r" until end of turn", text)
+            if not mm.group(1).startswith("-")
+            and not mm.group(2).startswith("-")), None)
+        if m is None:
+            continue
+        kw = re.search(r"(?:gains|has) ([a-z ]+?)(?: until end of turn|"
+                       r"[.,]|$)", text[m.start():m.start() + 120])
+        if kw and sum(w in kw.group(1) for w in op._KEYWORD_WORDS) >= 2:
+            out.add(tpl.name)
+    return out
+
+
+def test_every_card_whose_legacy_pump_keyword_depends_on_set_order_is_classed_seed_free(card_db):
+    t = _eq_tool()
+    row = next(r for r in t.load_allowlist() if r.id == "pump_keyword_set_order")
+    assert row.always and row.fields == ("pump_spell_keyword",)
+    assert set(row.cards) == _set_order_pump_keyword_cards(card_db)
+
+
+def _report(agree, unexplained, full=False):
+    t = _eq_tool()
+    return t.Report(counts={"f": {t.AGREE: agree, t.UNEXPLAINED: unexplained}},
+                    diffs=[], row_hits={}, templates=1, full=full)
 
 
 def test_check_fails_when_unexplained_grows_or_agree_falls_for_a_field():
     t = _eq_tool()
     base = {"fields": {"f": {t.AGREE: 10, t.UNEXPLAINED: 2}}}
-    same = t.Report(counts={"f": {t.AGREE: 10, t.UNEXPLAINED: 2}}, diffs=[],
-                    row_hits={}, templates=1, full=False)
-    assert t.check(base, same, rows=[]) == []
-    grew = t.Report(counts={"f": {t.AGREE: 10, t.UNEXPLAINED: 3}}, diffs=[],
-                    row_hits={}, templates=1, full=False)
-    assert any("UNEXPLAINED grew" in p for p in t.check(base, grew, rows=[]))
-    fell = t.Report(counts={"f": {t.AGREE: 9, t.UNEXPLAINED: 2}}, diffs=[],
-                    row_hits={}, templates=1, full=False)
-    assert any("AGREE fell" in p for p in t.check(base, fell, rows=[]))
+    assert t.check(base, _report(10, 2), rows=[], unsurfaced=[]) == []
+    assert any("UNEXPLAINED grew" in p
+               for p in t.check(base, _report(10, 3), rows=[], unsurfaced=[]))
+    assert any("AGREE fell" in p
+               for p in t.check(base, _report(9, 2), rows=[], unsurfaced=[]))
+
+
+def test_an_improvement_on_a_full_run_is_a_stale_baseline_that_must_be_lowered_in_the_same_commit():
+    # The ceiling may only shrink, and a shrink is locked in by the commit
+    # that makes it, so a later regression cannot silently refill it.
+    t = _eq_tool()
+    base = {"fields": {"f": {t.AGREE: 10, t.UNEXPLAINED: 2}}}
+    fell = t.check(base, _report(11, 1, full=True), rows=[], unsurfaced=[])
+    assert any("UNEXPLAINED fell" in p and "stale" in p for p in fell), fell
+    assert any("AGREE rose" in p and "stale" in p for p in fell), fell
+    # a partial run (--decks / --field) cannot judge the pool baseline
+    assert t.check(base, _report(11, 1), rows=[], unsurfaced=[]) == []
+
+
+def test_check_validates_the_unsurfaced_entries_whatever_rows_it_is_given():
+    t = _eq_tool()
+    base = {"fields": {"f": {t.AGREE: 10, t.UNEXPLAINED: 2}}}
+    probs = t.check(base, _report(10, 2), rows=[],
+                    unsurfaced=[{"id": "u", "reason": "r", "source": "s"}])
+    assert any("unsurfaced u: no carrier" in p for p in probs), probs
+    # the default is the committed allowlist's unsurfaced list, valid
+    assert t.check(base, _report(10, 2), rows=[]) == []
+
+
+def test_check_holds_gate_parity_to_its_failures_and_its_pinned_fallback_count():
+    t = _eq_tool()
+    base = {"fields": {}, "gate_parity": {"pairs": 3, "new_path": 0,
+                                          "legacy_fallback": 3}}
+    rep = t.Report(counts={}, diffs=[], row_hits={}, templates=1, full=True)
+    ok = t.gate_parity([_pair(), _pair(card="D"), _pair(card="E")])
+    assert t.check(base, rep, rows=[], unsurfaced=[], parity=ok) == []
+    bad = t.gate_parity([_pair(family="?"), _pair(card="D"), _pair(card="E")])
+    assert any("no family" in p for p in t.check(
+        base, rep, rows=[], unsurfaced=[], parity=bad))
+    more = t.gate_parity([_pair(card=c) for c in "CDEF"])
+    assert any("legacy fallback grew" in p for p in t.check(
+        base, rep, rows=[], unsurfaced=[], parity=more))
+    fewer = t.gate_parity([_pair(card=c) for c in "CD"])
+    assert any("legacy fallback fell" in p and "stale" in p for p in t.check(
+        base, rep, rows=[], unsurfaced=[], parity=fewer))
+
+
+def test_the_check_command_runs_gate_parity(monkeypatch, tmp_path):
+    from types import SimpleNamespace
+    t = _eq_tool()
+    monkeypatch.setattr(t, "load_db", lambda: SimpleNamespace(cards={}))
+    monkeypatch.setattr(t, "load_allowlist", lambda *a: [])
+    base = tmp_path / "base.json"
+    base.write_text('{"fields": {}, "gate_parity": {"legacy_fallback": 1}}')
+    monkeypatch.setattr(t, "closure", lambda templates, effects: [_pair()])
+    assert t.main(["--check", "--baseline", str(base)]) == 0
+    monkeypatch.setattr(t, "closure", lambda templates, effects:
+                        [_pair(family="?")])
+    assert t.main(["--check", "--baseline", str(base)]) == 1
+
+
+def test_an_always_row_classes_every_comparison_of_its_cards_even_an_equal_one():
+    # A legacy value that depends on set iteration order is no comparison
+    # at all: its cards take the row's class whether or not this process's
+    # hash order happened to agree, so the pinned counts are seed-free.
+    t = _eq_tool()
+    tpl, ce = _fake_template(), _effects_with()
+    row = _row(id="hash", cls="LEGACY_HASH_ORDER", always=True)
+    assert t.classify(_fake_rec(1, 1), tpl, ce, None, [row]).cls == \
+        "LEGACY_HASH_ORDER"
+    assert t.classify(_fake_rec(1, 2), tpl, ce, None, [row]).cls == \
+        "LEGACY_HASH_ORDER"
+    plain = _row(id="plain")
+    assert t.classify(_fake_rec(1, 1), tpl, ce, None, [plain]).cls == t.AGREE
 
 
 def test_no_field_is_switched_and_no_legacy_snapshot_is_frozen_in_e0():
@@ -1509,9 +1613,9 @@ def test_the_pool_equivalence_and_gate_parity_hold_their_committed_baselines(car
     effects = t.parse_effects_of(templates)
     rep = t.run(templates, effects, full=True)
     base = json.loads(t.BASELINE_PATH.read_text())
-    assert t.check(base, rep, templates=templates, effects=effects) == []
     parity = t.gate_parity(t.closure(templates, effects))
-    assert parity["failures"] == []
+    assert t.check(base, rep, templates=templates, effects=effects,
+                   parity=parity) == []
     assert parity["legacy_fallback"] == base["gate_parity"]["legacy_fallback"]
     parsers = json.loads((REPO / "tools" / "effect_parsers_baseline.json")
                          .read_text())

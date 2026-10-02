@@ -35,8 +35,13 @@ falls; when an allowlist row is stale (explains nothing on a full run); when
 a SEMANTIC_FIX row names no existing test; when a frozen legacy snapshot
 (`tools/effect_legacy_snapshots/<field>.json`, written at a family's
 migration step 4) mismatches; when a switched field (one `card_database`
-assigns from `effect_views`) differs from legacy on any template (A39); or,
-with ``--gate-parity``, when gate parity fails.
+assigns from `effect_views`) differs from legacy on any template (A39); when
+gate parity fails or its legacy-fallback count grows (``--check`` always
+runs the closure); and, on a full run, when the baseline is stale -- an
+UNEXPLAINED fall, an AGREE rise or a legacy-fallback fall not locked in
+with ``--update`` in the same commit. An ``always`` allowlist row classes
+every comparison of its cards, an equal one included (a legacy value that
+depends on set iteration order).
 
 ``--closure`` lists every legacy handler (the clause_resolver registry, the
 planeswalker_manager kind branches, the activation effect kinds, the ETB
@@ -171,6 +176,12 @@ class AllowRow:
     cards: Tuple[str, ...] = ()
     test: str = ""
     source: str = ""
+    # An `always` row classes every comparison of its field on a matching
+    # card, an equal one included: the legacy value there is no stable
+    # comparison (it depends on set iteration order, so the hash seed
+    # decides whether it agrees), and counting it as AGREE in one process
+    # and UNEXPLAINED in another would make the pinned counts seed-bound.
+    always: bool = False
 
     def matches(self, field: str, card: str, text: str) -> bool:
         if field not in self.fields:
@@ -188,7 +199,7 @@ def load_allowlist(path: Path = ALLOWLIST_PATH) -> List[AllowRow]:
             id=r["id"], cls=r["class"], fields=tuple(r["fields"]),
             reason=r.get("reason", ""), pattern=r.get("pattern"),
             cards=tuple(r.get("cards", ())), test=r.get("test", ""),
-            source=r.get("source", "")))
+            source=r.get("source", ""), always=bool(r.get("always"))))
     return rows
 
 
@@ -250,6 +261,8 @@ def validate_allowlist(rows: Iterable[AllowRow], *, repo: Path = REPO,
             out.append(f"{r.id}: SEMANTIC_FIX row has no test")
         if r.test and not _test_exists(r.test, repo):
             out.append(f"{r.id}: test {r.test} does not exist")
+        if r.always and not r.cls.startswith("LEGACY_"):
+            out.append(f"{r.id}: an always row must carry a LEGACY_* class")
     return out
 
 
@@ -333,10 +346,13 @@ def classify(rec, template, effects, key, rows: Iterable[AllowRow],
     if rec.partial:
         derived, legacy = projection(rec, derived), projection(rec, legacy)
     label = template.name
+    text = _printed_text(template) if text is None else text
+    for r in rows:
+        if r.always and r.matches(rec.field, label, text):
+            return Diff(rec.field, label, key, r.cls, r.id, derived, legacy)
     if views_equal(derived, legacy):
         cls = MASKED_GROWTH if rec.masked(effects, key, template) else AGREE
         return Diff(rec.field, label, key, cls)
-    text = _printed_text(template) if text is None else text
     for r in rows:
         if r.matches(rec.field, label, text):
             return Diff(rec.field, label, key, r.cls, r.id, derived, legacy)
@@ -577,23 +593,43 @@ def baseline_of(report: Report, parity: Optional[dict] = None) -> dict:
 def check(baseline: Mapping[str, Any], report: Report, *,
           rows: Optional[List[AllowRow]] = None,
           templates: Iterable[Any] = (),
-          effects: Optional[Mapping[str, Any]] = None) -> List[str]:
-    """Every reason `--check` exits 1 (section 10, "Tool usage")."""
-    if rows is None:
-        rows = load_allowlist()
-        out = validate_allowlist(rows) + validate_unsurfaced(
-            load_unsurfaced())
-    else:
-        out = list(validate_allowlist(rows))
+          effects: Optional[Mapping[str, Any]] = None,
+          unsurfaced: Optional[List[dict]] = None,
+          parity: Optional[dict] = None) -> List[str]:
+    """Every reason `--check` exits 1 (section 10, "Tool usage"). On a
+    full run an improvement is a stale baseline (UNEXPLAINED fell, AGREE
+    rose, legacy fallback fell): the commit that makes it lowers the
+    ceiling (``--update``), so a later regression cannot refill it.
+    `parity` is the gate-parity report (`gate_parity`), checked when
+    given."""
+    rows = load_allowlist() if rows is None else rows
+    unsurfaced = load_unsurfaced() if unsurfaced is None else unsurfaced
+    out = list(validate_allowlist(rows)) + validate_unsurfaced(unsurfaced)
     base = baseline.get("fields", {})
+    stale = " -- stale baseline: lock it in with --update in this commit"
     for field, c in sorted(report.counts.items()):
         b = base.get(field, {})
-        if c.get(UNEXPLAINED, 0) > b.get(UNEXPLAINED, 0):
-            out.append(f"{field}: UNEXPLAINED grew {b.get(UNEXPLAINED, 0)} "
-                       f"-> {c.get(UNEXPLAINED, 0)}")
-        if c.get(AGREE, 0) < b.get(AGREE, 0):
-            out.append(f"{field}: AGREE fell {b.get(AGREE, 0)} -> "
-                       f"{c.get(AGREE, 0)}")
+        un, ag = c.get(UNEXPLAINED, 0), c.get(AGREE, 0)
+        bun, bag = b.get(UNEXPLAINED, 0), b.get(AGREE, 0)
+        if un > bun:
+            out.append(f"{field}: UNEXPLAINED grew {bun} -> {un}")
+        elif report.full and un < bun:
+            out.append(f"{field}: UNEXPLAINED fell {bun} -> {un}{stale}")
+        if ag < bag:
+            out.append(f"{field}: AGREE fell {bag} -> {ag}")
+        elif report.full and ag > bag:
+            out.append(f"{field}: AGREE rose {bag} -> {ag}{stale}")
+    if parity is not None:
+        out += list(parity.get("failures", ()))
+        pinned = baseline.get("gate_parity", {}).get("legacy_fallback")
+        got = parity.get("legacy_fallback", 0)
+        if report.full and pinned is not None:
+            if got > pinned:
+                out.append(f"gate parity: legacy fallback grew {pinned} -> "
+                           f"{got}")
+            elif got < pinned:
+                out.append(f"gate parity: legacy fallback fell {pinned} -> "
+                           f"{got}{stale}")
     if report.full:
         for r in rows:
             if report.row_hits.get(r.id, 0) == 0:
@@ -973,11 +1009,13 @@ def main(argv: Optional[List[str]] = None) -> int:
     timing["parse"] = time.process_time() - t0
     full = not args.decks and not args.field
 
-    if args.closure or args.gate_parity:
+    parity = None
+    if args.closure or args.gate_parity or args.check or args.update:
         t0 = time.process_time()
         pairs = closure(templates, effects)
         timing["closure"] = time.process_time() - t0
         parity = gate_parity(pairs)
+    if args.closure or args.gate_parity:
         if args.closure:
             rep = closure_report(pairs)
             if args.json:
@@ -1034,7 +1072,6 @@ def main(argv: Optional[List[str]] = None) -> int:
         if not full:
             print("--update needs the full pool and every field")
             return 2
-        parity = gate_parity(closure(templates, effects))
         args.baseline.write_text(json.dumps(
             baseline_of(report, parity), indent=1, sort_keys=True) + "\n")
         print(f"wrote {args.baseline}")
@@ -1042,7 +1079,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     if args.check:
         baseline = json.loads(args.baseline.read_text())
         problems = check(baseline, report, rows=rows, templates=templates,
-                         effects=effects)
+                         effects=effects, parity=parity)
         if problems:
             print("Effect-spec equivalence FAILED:")
             for p in problems:

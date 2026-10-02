@@ -7,7 +7,7 @@ host kind and on registered-deck cards, and the section-9 report rows
 (may_scope nestings, sub-ability shapes, keyword-line classifications,
 cost_modifiers absorptions). `--update` pins the baseline and generates the
 census doc; `--check` fails when a typed share falls or a refusal total
-grows.
+grows, and on an improvement not yet locked in (a stale baseline).
 
 The unit tests build synthetic CardEffects (no card DB); the pool test reads
 the shared card DB through the eager parse without pinning anything on a
@@ -157,6 +157,20 @@ def test_check_fails_when_a_typed_share_falls_or_a_refusal_total_grows_and_passe
     assert not bad and any("rose" in g for g in good)
 
 
+def test_an_improvement_is_a_stale_baseline_that_check_fails_until_it_is_locked_in():
+    # The ceiling may only shrink, and the commit that shrinks it lowers
+    # the baseline, so a later regression cannot silently refill it.
+    from engine.effect_spec import HostKind, Verb
+    t = _tool()
+    base = t.baseline_of(_census())
+    assert t.check(base, _census()) == []
+    better = _effects()
+    better["Another"] = _card(_host(HostKind.SPELL, [_spec(Verb.DRAW)]))
+    probs = t.check(base, t.census(better))
+    assert probs and all("stale" in p for p in probs), probs
+    assert t.check(t.baseline_of(t.census(better)), t.census(better)) == []
+
+
 def test_the_generated_census_doc_carries_frontmatter_and_names_the_design():
     t = _tool()
     base = t.baseline_of(_census(deck_names={"Synthetic Spell"}))
@@ -196,5 +210,4 @@ def test_the_census_doc_passes_doc_hygiene_and_the_design_doc_links_it():
 def test_the_pool_census_holds_its_committed_baseline(card_db):
     t = _tool()
     base = json.loads(t.BASELINE_PATH.read_text())
-    bad, _good = t.compare(base, t.pool_census(card_db))
-    assert not bad, bad
+    assert t.check(base, t.pool_census(card_db)) == []
