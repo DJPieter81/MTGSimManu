@@ -1947,13 +1947,16 @@ def _legacy_domain_single_kicker(effects: CardEffects, key: Any = None
     return len(kickers) == 1 and (kickers[0].cost or "").startswith("{")
 
 
-def kicked_clause(template) -> Optional[str]:
+def kicked_clause(template, effects: Optional[CardEffects] = None
+                  ) -> Optional[str]:
     """The kicked payoff as printed (A40): from the end of the kicked
     frame ("if this spell was kicked,") to the end of its sentence,
     reminder text stripped, printed case kept, "instead" included. A
     SELF_CAST trigger whose intervening-if is CAST_FACT kicked gives its
-    body. None when no spec is gated on the kicker."""
-    hit = _kicked_span(template.effects)
+    body. None when no spec is gated on the kicker. `effects` is the
+    template's parse when the caller holds it (default
+    `template.effects`)."""
+    hit = _kicked_span(template.effects if effects is None else effects)
     if hit is None:
         return None
     face, host, span = hit
@@ -1979,11 +1982,13 @@ def _legacy_channel_to_face_end(effects, host: AbilityEffects
     return hosts[at:]
 
 
-def channel_clause(template) -> str:
+def channel_clause(template, effects: Optional[CardEffects] = None) -> str:
     """The channel ability's printed host text (A40, section 8),
     lower-cased as legacy's field is, through the end of the face as
-    legacy reads it; '' when the card has none."""
-    effects = template.effects
+    legacy reads it; '' when the card has none. `effects` as for
+    `kicked_clause`."""
+    if effects is None:
+        effects = template.effects
     h = _channel_host(effects)
     if h is None:
         return ""
@@ -1993,11 +1998,11 @@ def channel_clause(template) -> str:
 
 
 def _kicked_view(effects, key=None, template=None):
-    return None if template is None else kicked_clause(template)
+    return None if template is None else kicked_clause(template, effects)
 
 
 def _channel_view(effects, key=None, template=None):
-    return "" if template is None else channel_clause(template)
+    return "" if template is None else channel_clause(template, effects)
 
 
 # ── A41: host_for_override ─────────────────────────────────────────────
@@ -2045,11 +2050,12 @@ _OVERRIDE_TABLES: "OrderedDict[int, Tuple[CardEffects, Tuple[_HostTable, _HostTa
 _OVERRIDE_TABLE_LIMIT = 4096   # bounded like the grammar memos (section 12)
 
 
-def _override_table(template):
+def _override_table(template, effects: Optional[CardEffects] = None):
     """(primary, secondary): normalised key -> every distinct host that
     prints it, in card order. A key with more than one host is ambiguous;
     the lookup names none of them unless the trigger event narrows it."""
-    effects = template.effects
+    if effects is None:
+        effects = template.effects
     hit = _OVERRIDE_TABLES.get(id(effects))
     if hit is not None and hit[0] is effects:
         _OVERRIDE_TABLES.move_to_end(id(effects))
@@ -2095,7 +2101,8 @@ def _override_table(template):
 
 
 def host_for_override(template, text: str, *,
-                      event: Optional[EventHint] = None
+                      event: Optional[EventHint] = None,
+                      effects: Optional[CardEffects] = None
                       ) -> Optional[AbilityEffects]:
     """The host an `oracle_override` text names (section 11, A41): a MODE
     host for a mode clause, the host holding the kicked payoff for the
@@ -2107,11 +2114,13 @@ def host_for_override(template, text: str, *,
     host's first spec. A text two hosts print is ambiguous: `event` (the
     trigger event the handler resolves for) keeps only the TRIGGERED hosts
     of that event, and a text still naming more than one host names none.
-    None for a text the card does not print."""
+    None for a text the card does not print. `effects` is the
+    template's parse when the caller holds it (default
+    `template.effects`)."""
     from . import effect_grammar as G
     if not text:
         return None
-    tables = _override_table(template)
+    tables = _override_table(template, effects)
     facts = G.template_inputs(template)[1]
     key = override_key(text, facts[0] if facts else None)
     for table in tables:

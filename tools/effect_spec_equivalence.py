@@ -8,8 +8,10 @@ per-field derivation table). E0: a report and a ratchet; nothing switches.
 For every template of the pool and every `engine.effect_views.DERIVATIONS`
 record (per key for the scoped carriers: a mode, an activated ability, a
 loyalty line), the legacy value (`rec.legacy(template, key)`) is compared
-with the derived value (`rec.derive(effects, key, template)`, the eager pool
-parse; nothing is pinned on a template). A partial record compares its
+with the derived value (`rec.derive(effects, key, template)` over the
+eager pool parse the tool supplies; every view, the printed-span ones
+included, reads that parse, so a run never parses through or pins
+`template.effects`). A partial record compares its
 `compare` projection. Each comparison gets one class:
 
 * ``AGREE`` -- equal; ``MASKED_GROWTH`` -- equal because a
@@ -22,7 +24,9 @@ parse; nothing is pinned on a template). A partial record compares its
   section-10 diff classes);
 * ``DERIVED_COVERAGE_GROWTH`` -- legacy holds its empty value and the view
   types one; ``UNMODELLED_CLAUSE`` -- the view holds its empty value, legacy
-  types one and the card has a refused (UNMODELLED) clause;
+  types one and a host the derivation read holds a refused (UNMODELLED,
+  non-REPLACEMENT) clause (the read hosts are traced per comparison; a
+  refusal on a host the derivation never read is no excuse);
 * ``UNEXPLAINED`` -- everything else.
 
 `tools/effect_spec_equivalence_baseline.json` pins the per-field class
@@ -269,15 +273,61 @@ def _printed_text(template) -> str:
     return "\n".join(p for p in parts if p).lower()
 
 
-def _has_refusal(effects) -> bool:
+# The host attributes that hold a host's content: reading one of them is
+# reading the host. `kind`, `face`, `index`, `modes` and the slot labels
+# only locate or traverse hosts, so a derivation that filters hosts by
+# kind (a trigger-head view skipping a mana ability) has not read them.
+_HOST_CONTENT = frozenset({
+    "text", "specs", "targets", "target_alts", "trigger", "cost",
+    "cost_modifiers", "cost_condition", "loyalty_cost", "chapters",
+    "choose", "mode_cost", "label", "keywords", "from_zone", "flags",
+    "restrictions"})
+# CardEffects' summary of every host's verbs: reading it reads every host.
+_ALL_HOSTS = object()
+
+
+def _traced(fn: Callable[[], Any]) -> Tuple[Any, Any]:
+    """(result, hosts read): `fn()` with every content read of an
+    AbilityEffects recorded by identity. Reading `CardEffects.verbs`
+    records `_ALL_HOSTS`."""
+    from engine.effect_spec import AbilityEffects, CardEffects
+    seen: set = set()
+    base = object.__getattribute__
+
+    def host_get(self, name):
+        if name in _HOST_CONTENT:
+            seen.add(id(self))
+        return base(self, name)
+
+    def card_get(self, name):
+        if name == "verbs":
+            seen.add(_ALL_HOSTS)
+        return base(self, name)
+    AbilityEffects.__getattribute__ = host_get
+    CardEffects.__getattribute__ = card_get
+    try:
+        out = fn()
+    finally:
+        del AbilityEffects.__getattribute__
+        del CardEffects.__getattribute__
+    return out, seen
+
+
+def _has_refusal(effects, read: Any = _ALL_HOSTS) -> bool:
+    """A non-REPLACEMENT refusal in a host the derivation read (`read`:
+    the identities `_traced` recorded, or `_ALL_HOSTS`)."""
     from engine.effect_spec import Stage
-    return any(s.payload.stage is not Stage.REPLACEMENT
-               for _h, s in effects.unmodelled())
+    every = read is _ALL_HOSTS or _ALL_HOSTS in read
+    return any(s.payload.stage is not Stage.REPLACEMENT and
+               (every or id(h) in read)
+               for h, s in effects.unmodelled())
 
 
 def classify(rec, template, effects, key, rows: Iterable[AllowRow],
              *, text: Optional[str] = None) -> Diff:
-    """The class of one (record, template, key) comparison."""
+    """The class of one (record, template, key) comparison. UNMODELLED_
+    CLAUSE blames only a refusal in a host the derivation read: a refusal
+    elsewhere on the card cannot have hidden the field's value."""
     derived = rec.derive(effects, key, template)
     legacy = rec.legacy(template, key)
     if rec.partial:
@@ -292,7 +342,9 @@ def classify(rec, template, effects, key, rows: Iterable[AllowRow],
             return Diff(rec.field, label, key, r.cls, r.id, derived, legacy)
     if _empty(legacy) and not _empty(derived):
         cls = DERIVED_COVERAGE_GROWTH
-    elif _empty(derived) and not _empty(legacy) and _has_refusal(effects):
+    elif _empty(derived) and not _empty(legacy) and \
+            _has_refusal(effects) and _has_refusal(effects, _traced(
+                lambda: rec.derive(effects, key, template))[1]):
         cls = UNMODELLED_CLAUSE
     else:
         cls = UNEXPLAINED
@@ -716,7 +768,7 @@ def _clause_contexts(t, ce):
             yield m["text"], m.get("removal"), h, _host_label(h, i)
     kc = getattr(t, "kicked_clause", None)
     if kc:
-        h = _views().host_for_override(t, kc)
+        h = _views().host_for_override(t, kc, effects=ce)
         if h is not None:
             yield kc, None, h, _host_label(h) + ":kicked"
 

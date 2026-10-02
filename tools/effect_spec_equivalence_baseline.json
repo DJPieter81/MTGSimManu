@@ -18,12 +18,12 @@
   "ActivatedAbility.effect_kind[DAMAGE_ANY_TARGET]": {
    "AGREE": 6337,
    "DERIVED_COVERAGE_GROWTH": 5,
-   "UNMODELLED_CLAUSE": 2
+   "UNEXPLAINED": 2
   },
   "ActivatedAbility.effect_kind[DRAW_N]": {
    "AGREE": 6325,
    "DERIVED_COVERAGE_GROWTH": 18,
-   "UNMODELLED_CLAUSE": 1
+   "UNEXPLAINED": 1
   },
   "ActivatedAbility.effect_kind[EXILE_FROM_GRAVEYARD]": {
    "AGREE": 6337,
@@ -36,7 +36,7 @@
   "ActivatedAbility.effect_kind[PUMP_SELF_UEOT]": {
    "AGREE": 6332,
    "DERIVED_COVERAGE_GROWTH": 11,
-   "UNMODELLED_CLAUSE": 1
+   "UNEXPLAINED": 1
   },
   "ActivatedAbility.effect_kind[PUT_COUNTER_SELF]": {
    "AGREE": 6323,
@@ -82,22 +82,20 @@
   },
   "LoyaltyAbility.effect_kind[DAMAGE]": {
    "AGREE": 820,
-   "UNEXPLAINED": 2,
-   "UNMODELLED_CLAUSE": 3
+   "UNEXPLAINED": 5
   },
   "LoyaltyAbility.effect_kind[DRAW_AND_UNTAP_LANDS]": {
    "AGREE": 822,
-   "UNEXPLAINED": 1,
-   "UNMODELLED_CLAUSE": 2
+   "UNEXPLAINED": 2,
+   "UNMODELLED_CLAUSE": 1
   },
   "LoyaltyAbility.effect_kind[EMBLEM_EXILE_PERMANENT]": {
    "AGREE": 821,
-   "UNEXPLAINED": 3,
-   "UNMODELLED_CLAUSE": 1
+   "UNEXPLAINED": 4
   },
   "LoyaltyAbility.effect_kind[GAIN_LIFE_AND_DRAW]": {
    "AGREE": 824,
-   "UNMODELLED_CLAUSE": 1
+   "UNEXPLAINED": 1
   },
   "LoyaltyAbility.effect_kind[RETURN_TO_HAND]": {
    "AGREE": 823,
@@ -115,7 +113,7 @@
   "attack_observer": {
    "AGREE": 22727,
    "DERIVED_COVERAGE_GROWTH": 9,
-   "UNMODELLED_CLAUSE": 2
+   "UNEXPLAINED": 2
   },
   "aura_mana_units": {
    "AGREE": 22728,
@@ -179,8 +177,8 @@
   "cast_trigger_token": {
    "AGREE": 22675,
    "DERIVED_COVERAGE_GROWTH": 44,
-   "UNEXPLAINED": 10,
-   "UNMODELLED_CLAUSE": 9
+   "UNEXPLAINED": 14,
+   "UNMODELLED_CLAUSE": 5
   },
   "channel_clause": {
    "AGREE": 22738
@@ -192,7 +190,8 @@
   "cost_reduction_rule": {
    "AGREE": 22590,
    "LEGACY_COST_REDUCTION_SCOPE": 13,
-   "UNMODELLED_CLAUSE": 135
+   "UNEXPLAINED": 6,
+   "UNMODELLED_CLAUSE": 129
   },
   "counter_placement_trigger": {
    "AGREE": 22713,
@@ -248,8 +247,8 @@
   },
   "direct_damage_data": {
    "AGREE": 22694,
-   "UNEXPLAINED": 39,
-   "UNMODELLED_CLAUSE": 5
+   "UNEXPLAINED": 41,
+   "UNMODELLED_CLAUSE": 3
   },
   "domain_reduction": {
    "AGREE": 22738
@@ -266,20 +265,20 @@
   },
   "equip_keyword_grant": {
    "AGREE": 22716,
-   "UNEXPLAINED": 6,
-   "UNMODELLED_CLAUSE": 16
+   "UNEXPLAINED": 11,
+   "UNMODELLED_CLAUSE": 11
   },
   "equip_power_grant": {
    "AGREE": 22718,
    "DERIVED_COVERAGE_GROWTH": 2,
-   "UNEXPLAINED": 8,
-   "UNMODELLED_CLAUSE": 10
+   "UNEXPLAINED": 14,
+   "UNMODELLED_CLAUSE": 4
   },
   "equip_toughness_grant": {
    "AGREE": 22724,
    "DERIVED_COVERAGE_GROWTH": 2,
-   "UNEXPLAINED": 6,
-   "UNMODELLED_CLAUSE": 6
+   "UNEXPLAINED": 10,
+   "UNMODELLED_CLAUSE": 2
   },
   "etb_exile_returns_on_leave": {
    "AGREE": 22737,
@@ -318,44 +317,43 @@
   "hand_attack_data": {
    "AGREE": 22605,
    "DERIVED_COVERAGE_GROWTH": 11,
-   "UNEXPLAINED": 84,
-   "UNMODELLED_CLAUSE": 38
+   "UNEXPLAINED": 115,
+   "UNMODELLED_CLAUSE": 7
   },
   "hand_refill": {
    "AGREE": 22734,
    "DERIVED_COVERAGE_GROWTH": 1,
-   "UNEXPLAINED": 1,
-   "UNMODELLED_CLAUSE": 2
+   "UNEXPLAINED": 3
   },
   "has_another_creature_enters_lifegain": {
    "AGREE": 22690,
    "DERIVED_COVERAGE_GROWTH": 36,
-   "UNEXPLAINED": 10,
-   "UNMODELLED_CLAUSE": 2
+   "UNEXPLAINED": 11,
+   "UNMODELLED_CLAUSE": 1
   },
   "has_another_creature_enters_trigger": {
    "AGREE": 22194,
    "DERIVED_COVERAGE_GROWTH": 410,
-   "UNEXPLAINED": 74,
-   "UNMODELLED_CLAUSE": 60
+   "UNEXPLAINED": 121,
+   "UNMODELLED_CLAUSE": 13
   },
   "has_attack_trigger": {
    "AGREE": 22572,
    "DERIVED_COVERAGE_GROWTH": 51,
-   "UNEXPLAINED": 71,
-   "UNMODELLED_CLAUSE": 44
+   "UNEXPLAINED": 105,
+   "UNMODELLED_CLAUSE": 10
   },
   "has_cast_spell_draw": {
    "AGREE": 22654,
    "DERIVED_COVERAGE_GROWTH": 69,
-   "UNEXPLAINED": 9,
-   "UNMODELLED_CLAUSE": 6
+   "UNEXPLAINED": 10,
+   "UNMODELLED_CLAUSE": 5
   },
   "has_cast_trigger": {
    "AGREE": 21817,
    "DERIVED_COVERAGE_GROWTH": 859,
-   "UNEXPLAINED": 44,
-   "UNMODELLED_CLAUSE": 18
+   "UNEXPLAINED": 60,
+   "UNMODELLED_CLAUSE": 2
   },
   "has_charge_counter_ability": {
    "AGREE": 22678,
@@ -365,14 +363,14 @@
   "has_combat_damage_player_trigger": {
    "AGREE": 22608,
    "DERIVED_COVERAGE_GROWTH": 10,
-   "UNEXPLAINED": 70,
-   "UNMODELLED_CLAUSE": 50
+   "UNEXPLAINED": 110,
+   "UNMODELLED_CLAUSE": 10
   },
   "has_combat_damage_trigger": {
    "AGREE": 22549,
    "DERIVED_COVERAGE_GROWTH": 145,
-   "UNEXPLAINED": 29,
-   "UNMODELLED_CLAUSE": 15
+   "UNEXPLAINED": 41,
+   "UNMODELLED_CLAUSE": 3
   },
   "has_cycling_watch_trigger": {
    "AGREE": 22703,
@@ -442,8 +440,8 @@
   "has_landfall": {
    "AGREE": 22203,
    "DERIVED_COVERAGE_GROWTH": 12,
-   "UNEXPLAINED": 455,
-   "UNMODELLED_CLAUSE": 68
+   "UNEXPLAINED": 512,
+   "UNMODELLED_CLAUSE": 11
   },
   "has_library_search_opponent_trigger": {
    "AGREE": 22738
@@ -451,8 +449,8 @@
   "has_lifegain_token_trigger": {
    "AGREE": 22611,
    "DERIVED_COVERAGE_GROWTH": 120,
-   "UNEXPLAINED": 4,
-   "UNMODELLED_CLAUSE": 3
+   "UNEXPLAINED": 5,
+   "UNMODELLED_CLAUSE": 2
   },
   "has_look_hand_selection": {
    "AGREE": 22517,
@@ -473,8 +471,8 @@
   "has_noncreature_spell_cast_trigger": {
    "AGREE": 22644,
    "DERIVED_COVERAGE_GROWTH": 2,
-   "UNEXPLAINED": 68,
-   "UNMODELLED_CLAUSE": 24
+   "UNEXPLAINED": 81,
+   "UNMODELLED_CLAUSE": 11
   },
   "has_opponent_cast_damage": {
    "AGREE": 22639,
@@ -491,13 +489,13 @@
   "has_recurring_draw_trigger": {
    "AGREE": 21783,
    "DERIVED_COVERAGE_GROWTH": 81,
-   "UNEXPLAINED": 582,
-   "UNMODELLED_CLAUSE": 292
+   "UNEXPLAINED": 734,
+   "UNMODELLED_CLAUSE": 140
   },
   "has_recurring_trigger": {
    "AGREE": 17533,
-   "UNEXPLAINED": 3475,
-   "UNMODELLED_CLAUSE": 1730
+   "UNEXPLAINED": 4130,
+   "UNMODELLED_CLAUSE": 1075
   },
   "has_sacrifice_for_damage": {
    "AGREE": 22691,
@@ -525,8 +523,8 @@
   "has_self_trigger": {
    "AGREE": 20997,
    "DERIVED_COVERAGE_GROWTH": 1344,
-   "UNEXPLAINED": 285,
-   "UNMODELLED_CLAUSE": 112
+   "UNEXPLAINED": 354,
+   "UNMODELLED_CLAUSE": 43
   },
   "has_surveil": {
    "AGREE": 22682,
@@ -609,8 +607,8 @@
   "mana_units": {
    "AGREE": 22351,
    "DERIVED_COVERAGE_GROWTH": 156,
-   "UNEXPLAINED": 216,
-   "UNMODELLED_CLAUSE": 15
+   "UNEXPLAINED": 217,
+   "UNMODELLED_CLAUSE": 14
   },
   "mass_graveyard_return": {
    "AGREE": 22690,
@@ -639,28 +637,28 @@
    "UNMODELLED_CLAUSE": 2
   },
   "pump_spell_keyword": {
-   "AGREE": 22612,
+   "AGREE": 22611,
    "DERIVED_COVERAGE_GROWTH": 44,
-   "UNEXPLAINED": 52,
-   "UNMODELLED_CLAUSE": 30
+   "UNEXPLAINED": 59,
+   "UNMODELLED_CLAUSE": 24
   },
   "pump_spell_keywords": {
    "AGREE": 22620,
    "DERIVED_COVERAGE_GROWTH": 50,
-   "UNEXPLAINED": 44,
-   "UNMODELLED_CLAUSE": 24
+   "UNEXPLAINED": 50,
+   "UNMODELLED_CLAUSE": 18
   },
   "pump_spell_power": {
    "AGREE": 22592,
    "DERIVED_COVERAGE_GROWTH": 82,
-   "UNEXPLAINED": 42,
-   "UNMODELLED_CLAUSE": 22
+   "UNEXPLAINED": 49,
+   "UNMODELLED_CLAUSE": 15
   },
   "pump_spell_toughness": {
    "AGREE": 22655,
    "DERIVED_COVERAGE_GROWTH": 48,
-   "UNEXPLAINED": 21,
-   "UNMODELLED_CLAUSE": 14
+   "UNEXPLAINED": 28,
+   "UNMODELLED_CLAUSE": 7
   },
   "reanimates_from_graveyard": {
    "AGREE": 22302,
@@ -674,8 +672,8 @@
   "requires_creature_target": {
    "AGREE": 19080,
    "DERIVED_COVERAGE_GROWTH": 2,
-   "UNEXPLAINED": 2313,
-   "UNMODELLED_CLAUSE": 1343
+   "UNEXPLAINED": 3375,
+   "UNMODELLED_CLAUSE": 281
   },
   "ritual_mana": {
    "AGREE": 22513,
@@ -693,8 +691,8 @@
   "saga_chapter_one_material": {
    "AGREE": 22645,
    "DERIVED_COVERAGE_GROWTH": 18,
-   "UNEXPLAINED": 21,
-   "UNMODELLED_CLAUSE": 54
+   "UNEXPLAINED": 48,
+   "UNMODELLED_CLAUSE": 27
   },
   "self_cost_reduction_amount": {
    "AGREE": 22738
@@ -704,8 +702,7 @@
   },
   "tap_damage": {
    "AGREE": 22735,
-   "UNEXPLAINED": 2,
-   "UNMODELLED_CLAUSE": 1
+   "UNEXPLAINED": 3
   },
   "tap_for_mana_trigger": {
    "AGREE": 22713,
@@ -728,8 +725,8 @@
   "team_keyword_grant": {
    "AGREE": 22651,
    "DERIVED_COVERAGE_GROWTH": 14,
-   "UNEXPLAINED": 51,
-   "UNMODELLED_CLAUSE": 22
+   "UNEXPLAINED": 63,
+   "UNMODELLED_CLAUSE": 10
   },
   "team_pump_data": {
    "AGREE": 22701,
@@ -755,14 +752,14 @@
  },
  "templates": 22738,
  "totals": {
-  "AGREE": 2813156,
+  "AGREE": 2813155,
   "DERIVED_COVERAGE_GROWTH": 7842,
   "LEGACY_COST_REDUCTION_SCOPE": 13,
   "LEGACY_RITUAL_MANA": 1,
   "LEGACY_TARGET_ZONE": 14,
   "MASKED_GROWTH": 68,
   "REMINDER_TEXT": 190,
-  "UNEXPLAINED": 15657,
-  "UNMODELLED_CLAUSE": 12662
+  "UNEXPLAINED": 17957,
+  "UNMODELLED_CLAUSE": 10363
  }
 }

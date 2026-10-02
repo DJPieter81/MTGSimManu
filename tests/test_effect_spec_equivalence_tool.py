@@ -1174,12 +1174,23 @@ def _eq_tool():
     return effect_spec_equivalence
 
 
+def _read_every_host(e):
+    for h in e.walk():
+        h.specs
+
+
 def _fake_rec(derived, legacy, *, masked=False, field="synthetic_field",
-              partial=False, compare="eq"):
+              partial=False, compare="eq", reads=_read_every_host):
+    """A record whose derivation reads the hosts `reads` reads (every
+    host by default) and returns `derived`."""
     from types import SimpleNamespace
+
+    def derive(e, k=None, t=None):
+        reads(e)
+        return derived
     return SimpleNamespace(
         field=field, family="damage", partial=partial, compare=compare,
-        derive=lambda e, k=None, t=None: derived,
+        derive=derive,
         legacy=lambda t, k=None: legacy,
         masked=lambda e, k=None, t=None: masked,
         keys=lambda t: (None,))
@@ -1249,6 +1260,69 @@ def test_an_unlisted_disagreement_is_coverage_growth_unmodelled_clause_or_unexpl
                       []).cls == t.UNEXPLAINED
     assert t.classify(_fake_rec({"n": 2}, {"n": 1}), tpl, refused, None,
                       []).cls == t.UNEXPLAINED
+
+
+def _two_host_effects(refused_kind, other_kind):
+    from engine.effect_spec import AbilityEffects, CardEffects
+    return CardEffects.of(((
+        AbilityEffects(kind=refused_kind, face=0, index=0,
+                       specs=(_refused(),)),
+        AbilityEffects(kind=other_kind, face=0, index=1)),))
+
+
+def _read_kind(kind):
+    def reads(e):
+        for h in e.front():
+            if h.kind is kind:
+                h.specs
+    return reads
+
+
+def test_a_refusal_is_blamed_only_when_it_lies_in_a_host_the_derivation_reads():
+    from engine.effect_spec import HostKind
+    t = _eq_tool()
+    tpl = _fake_template()
+    ce = _two_host_effects(HostKind.MANA_ABILITY, HostKind.TRIGGERED)
+    # the derivation reads only the triggered host; the refusal is in the
+    # mana ability, so it cannot have hidden the value legacy holds
+    unrelated = _fake_rec(None, True, reads=_read_kind(HostKind.TRIGGERED))
+    assert t.classify(unrelated, tpl, ce, None, []).cls == t.UNEXPLAINED
+    # the same refusal in the host the derivation reads is blamed
+    related = _fake_rec(None, True, reads=_read_kind(HostKind.MANA_ABILITY))
+    assert t.classify(related, tpl, ce, None, []).cls == t.UNMODELLED_CLAUSE
+    # a derivation that reads the card-level verb summary reads every host
+    def verbs(e):
+        e.verbs
+    summary = _fake_rec(None, True, reads=verbs)
+    assert t.classify(summary, tpl, ce, None, []).cls == t.UNMODELLED_CLAUSE
+
+
+def test_a_trigger_head_field_does_not_blame_a_refusal_in_a_mana_ability():
+    from types import SimpleNamespace
+    from engine.effect_spec import HostKind
+    t = _eq_tool()
+    rec = _views().DERIVATIONS["has_landfall"]
+    tpl = SimpleNamespace(name="Synthetic Land", oracle_text="x",
+                          back_face_oracle="", has_landfall=True)
+    ce = _two_host_effects(HostKind.MANA_ABILITY, HostKind.STATIC)
+    assert t.classify(rec, tpl, ce, None, []).cls == t.UNEXPLAINED
+
+
+def test_the_equivalence_run_and_the_closure_read_the_supplied_parse_and_pin_nothing(card_db):
+    # Every derivation (the printed-span kicked and channel views included)
+    # and the closure's override lookups read the CardEffects the tool
+    # hands them; none parses again through, or pins, `template.effects`.
+    import copy
+    t = _eq_tool()
+    deck = [copy.copy(x) for x in t.deck_templates(card_db)]
+    for x in deck:
+        x.set_effects(None)
+    effects = t.parse_effects_of(deck)
+    assert not any(x._effects is not None for x in deck)
+    t.run(deck, effects, full=False)
+    t.closure(deck, effects)
+    pinned = sorted(x.name for x in deck if x._effects is not None)
+    assert pinned == [], pinned[:10]
 
 
 def test_a_partial_record_compares_only_its_compare_projection():
