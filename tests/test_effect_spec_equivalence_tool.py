@@ -615,6 +615,39 @@ def test_an_instead_upgrade_to_one_mana_of_any_colour_is_no_conditional_bonus():
     assert _derive("conditional_mana", t) is None
 
 
+def test_a_lands_mandatory_entry_trigger_returning_a_land_you_control_is_the_etb_return_land_view():
+    """CR 603.6a: "When this land enters, return a land you control to
+    its owner's hand" is a triggered ability whose resolution moves a land
+    to hand -- effect data, typed as a removal-family record."""
+    rec = _views().DERIVATIONS["etb_return_land"]
+    assert rec.family == "removal" and rec.tier == "C"
+    karoo = _template("Probe Karoo", ["land"],
+                      "This land enters tapped.\nWhen this land enters, "
+                      "return a land you control to its owner's hand.\n"
+                      "{T}: Add {R}{G}.")
+    assert _derive("etb_return_land", karoo) is True
+
+
+@pytest.mark.parametrize("types,text", [
+    (["land"], "When this land enters, you may return a land you control "
+               "to its owner's hand."),
+    (["creature"], "When this creature enters, return a land you control "
+                   "to its owner's hand."),
+    (["land"], "When this land enters, return target creature to its "
+               "owner's hand."),
+])
+def test_an_optional_a_non_land_or_a_non_land_return_is_not_the_etb_return_land_view(types, text):
+    assert _derive("etb_return_land", _template("Probe", types, text)) is False
+
+
+def test_etb_return_land_view_equals_the_legacy_field_on_every_registered_deck_card(card_db):
+    rec = _views().DERIVATIONS["etb_return_land"]
+    diffs = [(t.name, t.etb_return_land)
+             for t in _deck_templates(card_db)
+             if rec.derive(t.effects, template=t) != t.etb_return_land]
+    assert not diffs, diffs
+
+
 def test_kicked_clause_is_the_printed_span_from_the_kicked_frame_to_the_sentence_end():
     """Printed case is kept (the self-name, not `~`), reminder text is
     stripped, and the replacing word 'instead' is part of the span."""

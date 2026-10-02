@@ -2214,6 +2214,26 @@ def _is_type(template, t: str) -> bool:
                for c in getattr(template, "card_types", ()) or ())
 
 
+def _etb_return_land(effects, key=None, template=None) -> bool:
+    """A land's entry trigger (CR 603.6a) whose resolution is a mandatory
+    MOVE of a land you control to its owner's hand (the bounce-land
+    karoo): a TRIGGERED(SELF_ENTERS) host without an intervening-if whose
+    specs hold that MOVE, not optional."""
+    if not _is_type(template, "land"):
+        return False
+    for h in _triggered(effects, EventHint.SELF_ENTERS):
+        if h.trigger.intervening_if is not None:
+            continue
+        for s in h.specs:
+            f = s.filter
+            if s.verb is Verb.MOVE and not s.optional and \
+                    s.dest is not None and s.dest.zone == "hand" and \
+                    f is not None and f.types == frozenset({"land"}) and \
+                    f.controller == "you":
+                return True
+    return False
+
+
 # ── The derivation table (10.1) ────────────────────────────────────────
 
 def _attr(name: str, default=None):
@@ -2354,6 +2374,7 @@ _row("etb_targeted_removal_data", R, "A", "E2", _etb_removal,
      domain=_legacy_domain_etb_removal)
 _row("removal_mv_condition", R, "A", "E2", _removal_mv_condition)
 _row("board_sweep_data", R, "A", "E2", _board_sweep)
+_row("etb_return_land", R, "C", "E2", _etb_return_land, default=False)
 _row("bounce_target", R, "A", "E2", _bounce_target)
 _row("land_destruction_data", R, "A", "E2", _land_destruction, partial=True)
 _row("destroys_target_land", R, "A", "E2", _destroys_target_land,
@@ -2710,10 +2731,14 @@ NON_EFFECT_FIELDS: Mapping[str, str] = MappingProxyType({
         "enchant keyword restriction (CR 303.4a, 702.5)"),
     "aura_mana_color_chosen": "an entry choice of an aura (CR 614.12)",
     # land manager
-    "etb_return_land": _LAND, "enters_tapped": _LAND,
+    "enters_tapped": _LAND,
     "untap_life_cost": _LAND, "untap_max_other_lands": _LAND,
     "extra_land_drops": _STATIC, "land_type_bonuses": _AI,
-    "has_bounce_land_oracle": _LAND, "has_mana_add_text": _AI,
+    "has_bounce_land_oracle": (
+        "whole-text phrase test for \"return a land you control\" (an "
+        "activation cost or a trigger alike), an AI land-priority "
+        "heuristic; the entry trigger itself is the etb_return_land record"),
+    "has_mana_add_text": _AI,
     # modal containers
     "is_modal": "modal header fact (CR 700.2) of the SPELL host",
     "modal_choose_count": (
