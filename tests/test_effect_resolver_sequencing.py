@@ -672,6 +672,26 @@ def test_a_reflexive_trigger_resolves_after_its_parent_and_rechecks_its_if(er, r
     assert order == [0, 2]
 
 
+def test_a_triggered_abilitys_intervening_if_is_rechecked_on_resolution(er, run):
+    """CR 603.4: an intervening-if is checked again as the triggered
+    ability resolves; false then, the ability does nothing. Its leaves need
+    an evaluator like any condition, or the host is not executable."""
+    rec = run.register(Verb.DRAW, _Recorder())
+    gate = Condition(ConditionKind.CAST_FACT, pred="kicked")
+    host = _host(_spec(Verb.DRAW, 0), kind=HostKind.TRIGGERED,
+                 trigger=TriggerHead(intervening_if=gate))
+    assert er.can_execute(host) is False
+    assert er.resolve_ability(_game(), _src(), 0, host, ()) is False
+    assert rec.calls == []
+    run.evaluator(ConditionKind.CAST_FACT, lambda ctx, c: c.pred in ctx.cast_facts)
+    assert er.can_execute(host) is True
+    assert er.resolve_ability(_game(), _src(), 0, host, ()) is False
+    assert rec.calls == []
+    assert er.resolve_ability(_game(), _src(), 0, host, (),
+                              cast_facts=frozenset({"kicked"})) is True
+    assert rec.calls == [(0, (0,))]
+
+
 def test_a_sub_ability_chooses_its_own_targets_unbound(er, run):
     """A30/A36: a sub-ability's targets are not the parent's; the
     dispatcher never picks, so its slots reach the owner unbound."""

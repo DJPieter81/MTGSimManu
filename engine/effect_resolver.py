@@ -159,18 +159,20 @@ def can_execute(ability: AbilityEffects, family: Optional[str] = None) -> bool:
     when THEY are activated or trigger) -- be executed by an owner? Never
     raises: a malformed value is simply not executable."""
     try:
-        return _host_executable(ability, family, {}, is_sub=False)
+        return _host_executable(ability, family, {})
     except Exception:            # a malformed host must not escape (A37)
         return False
 
 
 def _host_executable(host: AbilityEffects, family: Optional[str],
-                     outer: Mapping[int, EffectSpec], *, is_sub: bool) -> bool:
+                     outer: Mapping[int, EffectSpec]) -> bool:
     if not isinstance(host, AbilityEffects):
         return False
     by_seq = dict(outer)
     by_seq.update((s.seq, s) for s in iter_specs(host.specs))
-    if is_sub and host.trigger is not None \
+    # CR 603.4: the dispatcher rechecks every host's intervening-if on
+    # resolution (_intervening_if_holds), top-level or sub-ability alike.
+    if host.trigger is not None \
             and host.trigger.intervening_if is not None \
             and not _condition_executable(host.trigger.intervening_if):
         return False
@@ -178,8 +180,7 @@ def _host_executable(host: AbilityEffects, family: Optional[str],
         return False
     if not all(_spec_executable(s, family, by_seq) for s in iter_specs(host.specs)):
         return False
-    return all(_host_executable(m, family, by_seq, is_sub=False)
-               for m in host.modes)
+    return all(_host_executable(m, family, by_seq) for m in host.modes)
 
 
 def _sibling_lists(specs: Tuple[EffectSpec, ...]) -> Iterator[Tuple[EffectSpec, ...]]:
@@ -222,7 +223,7 @@ def _spec_executable(s: EffectSpec, family: Optional[str],
             return False
         if sub.kind is SubAbilityKind.DELAYED and sub.timing is None:
             return False
-        if not _host_executable(sub.host, family, by_seq, is_sub=True):
+        if not _host_executable(sub.host, family, by_seq):
             return False
     else:
         executor = EXECUTORS.get(verb)
@@ -355,10 +356,20 @@ def resolve_ability(game: Any, source: Handle, controller: int,
                      division=dict(division or {}), x_value=x_value,
                      event=event, cast_facts=frozenset(cast_facts),
                      modes=tuple(modes), family=family)
+    if not _intervening_if_holds(ctx, ability):
+        return False
     specs = ability.specs + tuple(s for i in modes for s in ability.modes[i].specs)
     _sequence(ctx, specs)
     _drain_reflexive(ctx)
     return any(ctx.performed.values())
+
+
+def _intervening_if_holds(ctx: Resolution, host: AbilityEffects) -> bool:
+    """CR 603.4: a triggered ability's intervening-if is checked again as
+    it resolves (the trigger-time check is its carrier's); false, the
+    ability does nothing."""
+    head = host.trigger
+    return head is None or holds(ctx, head.intervening_if)
 
 
 def _sequence(ctx: Resolution, specs: Tuple[EffectSpec, ...]) -> None:
@@ -484,9 +495,7 @@ def resolve_sub_ability(game: Any, sub: SubAbility, snap: Snapshot) -> bool:
     own = {s.seq for s in iter_specs(host.specs)}
     ctx.results.update((k, v) for k, v in snap.results_map().items() if k not in own)
     ctx.performed.update((k, v) for k, v in snap.performed if k not in own)
-    head = host.trigger
-    if head is not None and head.intervening_if is not None \
-            and not holds(ctx, head.intervening_if):
+    if not _intervening_if_holds(ctx, host):
         return False
     _sequence(ctx, host.specs)
     _drain_reflexive(ctx)
