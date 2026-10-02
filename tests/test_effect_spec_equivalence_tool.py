@@ -533,6 +533,24 @@ def test_two_or_more_same_colour_pips_added_by_a_spell_are_the_ritual_view():
 
 # ── A40: printed spans ─────────────────────────────────────────────────
 
+def test_a_bundle_choice_of_two_mana_is_one_unit_per_produced_mana():
+    """CR 106.1 / 605: "Add {W}{W}, {W}{U}, or {U}{U}" produces two mana,
+    each white or blue; every choice is a pick per mana, so the units are
+    one per produced mana, each a colour."""
+    t = _template("Probe Filter", ["land"],
+                  "{T}: Add {C}.\n{W/U}, {T}: Add {W}{W}, {W}{U}, or {U}{U}.")
+    assert _derive("mana_units", t) == [["C"], ["U", "W"], ["U", "W"]]
+
+
+def test_a_bundle_choice_that_is_not_a_pick_per_mana_has_no_units():
+    """A choice between bundles whose per-mana picks would add a bundle
+    the card does not print ({R}{R} or {G}{G}: never {R}{G}) is not a list
+    of independent units, so the view refuses it (the legacy default)."""
+    t = _template("Probe Bundle", ["land"],
+                  "{T}: Add {R}{R} or {G}{G}.")
+    assert _derive("mana_units", t) == []
+
+
 def test_kicked_clause_is_the_printed_span_from_the_kicked_frame_to_the_sentence_end():
     """Printed case is kept (the self-name, not `~`), reminder text is
     stripped, and the replacing word 'instead' is part of the span."""
@@ -725,6 +743,32 @@ def test_every_derivation_runs_on_every_registered_deck_card_and_a_pool_sample(c
                 except Exception as e:          # pragma: no cover - report
                     failures.append((t.name, name, key, repr(e)[:80]))
     assert not failures, failures[:10]
+
+
+_MANA_COLOURS = frozenset("WUBRGC")
+
+
+@pytest.mark.timeout(120)
+def test_every_mana_unit_a_view_yields_is_a_single_colour_or_colorless(card_db):
+    """A mana unit is the colours ONE produced mana can be (CR 106.1b):
+    every entry is one of W U B R G C, over the registered decks and a
+    pool sample, for every view that yields units."""
+    v = _views()
+    pool = sorted({id(t): t for t in card_db.cards.values()}.values(),
+                  key=lambda t: t.name)
+    sample = {t.name: t for t in pool[::97]}
+    sample.update({t.name: t for t in _deck_templates(card_db)})
+    bad = []
+    for t in sample.values():
+        for field in ("mana_units", "sacrifice_mana_units",
+                      "aura_mana_units", "tap_for_mana_trigger"):
+            got = _derive(field, t)
+            units = (got or {}).get("units", []) if isinstance(got, dict) \
+                else got
+            for unit in units or ():
+                if not unit or not set(unit) <= _MANA_COLOURS:
+                    bad.append((t.name, field, unit))
+    assert not bad, bad[:20]
 
 
 def test_kicked_clause_view_equals_the_legacy_field_on_every_registered_deck_card(card_db):

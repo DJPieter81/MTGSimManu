@@ -47,6 +47,7 @@ from __future__ import annotations
 import re
 from collections import OrderedDict
 from dataclasses import dataclass
+from itertools import combinations_with_replacement
 from types import MappingProxyType
 from typing import Any, Callable, Dict, Mapping, Optional, Tuple
 
@@ -1716,13 +1717,55 @@ def _legacy_ritual_cost_pips(h: AbilityEffects, color: str) -> int:
     return int(mana.get(_COST_COLOR[color], 0) or 0)
 
 
-def _units_of(spec) -> list:
+_MANA_SYMBOL = re.compile(r"\{([^}]+)\}")
+_UNIT_COLOURS = frozenset(_WUBRG) | {"C"}
+
+
+def _bundle_units(choice) -> Optional[list]:
+    """The units of a choice between mana bundles ("{W}{W}, {W}{U}, or
+    {U}{U}"): one unit per produced mana, each the union of the bundles'
+    colours, when every bundle has the same size and the bundles are
+    exactly the per-mana picks of that union (CR 106.1b: a unit is the
+    colours one mana can be). None when the choice is not independent per
+    mana ({R}{R} or {G}{G} never gives {R}{G}) or names a non-colour."""
+    bundles = [tuple(_MANA_SYMBOL.findall(c)) for c in choice]
+    sizes = {len(b) for b in bundles}
+    if len(sizes) != 1 or 0 in sizes:
+        return None
+    n = sizes.pop()
+    union = sorted({c for b in bundles for c in b})
+    if not set(union) <= _UNIT_COLOURS:
+        return None
+    printed = {tuple(sorted(b)) for b in bundles}
+    picks = set(combinations_with_replacement(union, n))
+    if printed != picks:
+        return None
+    return [list(union) for _ in range(n)]
+
+
+def _units_of(spec) -> Optional[list]:
+    """The units one ADD_MANA spec produces, or None when its choice is
+    not a list of independent units (`_bundle_units`)."""
     p = spec.payload
     if p.choice:
-        return [list(dict.fromkeys(c.strip("{}") for c in p.choice))]
+        if all(len(_MANA_SYMBOL.findall(c)) == 1 for c in p.choice):
+            return [list(dict.fromkeys(c.strip("{}") for c in p.choice))]
+        return _bundle_units(p.choice)
     if p.any_color or "*" in p.symbols:
         return [sorted(_WUBRG)] * max(1, len(p.symbols))
     return [[c] for c in p.symbols]
+
+
+def _host_units(h) -> Optional[list]:
+    """Every unit a host's mana specs produce; None when one spec's
+    choice is not a list of units."""
+    units = []
+    for s in _mana_specs(h):
+        got = _units_of(s)
+        if got is None:
+            return None
+        units.extend(got)
+    return units
 
 
 def _mana_units(effects, key=None, template=None):
@@ -1730,8 +1773,10 @@ def _mana_units(effects, key=None, template=None):
     for h in _face(effects, 0):
         if h.kind is HostKind.MANA_ABILITY and h.cost is not None and \
                 dict(h.cost.items).get("tap_self"):
-            for s in _mana_specs(h):
-                units.extend(_units_of(s))
+            got = _host_units(h)
+            if got is None:
+                return []           # refused: the legacy default
+            units.extend(got)
     return units
 
 
@@ -1739,10 +1784,7 @@ def _sacrifice_mana_units(effects, key=None, template=None):
     for h in _face(effects, 0):
         if h.kind is HostKind.MANA_ABILITY and h.cost is not None and \
                 dict(h.cost.items).get("sacrifice_self"):
-            out = []
-            for s in _mana_specs(h):
-                out.extend(_units_of(s))
-            return out
+            return _host_units(h) or []
     return []
 
 
@@ -1818,20 +1860,15 @@ def _legacy_basic_land_type_words(effects) -> bool:
 def _tap_for_mana_trigger(effects, key=None, template=None):
     for h in _triggered(effects, EventHint.TAPPED_FOR_MANA):
         if "mana_ability" in h.flags:
-            units = []
-            for s in _mana_specs(h):
-                units.extend(_units_of(s))
-            return {"units": units}
+            units = _host_units(h)
+            return None if units is None else {"units": units}
     return None
 
 
 def _aura_mana_units(effects, key=None, template=None):
     for h in _triggered(effects, EventHint.TAPPED_FOR_MANA):
         if "enchanted" in h.trigger.raw:
-            units = []
-            for s in _mana_specs(h):
-                units.extend(_units_of(s))
-            return units
+            return _host_units(h) or []
     return []
 
 
@@ -2143,7 +2180,7 @@ def _landfall_ordinal(verb: Verb, ordinal: int):
                         _lit(c.n) == ordinal:
                     if verb is Verb.ADD_MANA:
                         return tuple(sorted({
-                            u for unit in _units_of(s) for u in unit}))
+                            u for unit in (_units_of(s) or ()) for u in unit}))
                     return _lit(s.amount) or 0
         return () if verb is Verb.ADD_MANA else 0
     view.__name__ = f"_landfall_{verb.value}_{ordinal}"
