@@ -38,7 +38,8 @@ it never switches.
 **`host_for_override(template, text)`** is the static table the switched
 handlers resolve an `oracle_override` through (section 11): the normalised
 printed text of every MODE host, the kicked clause, the channel host and
-the head-stripped body of every TRIGGERED host, keyed to its host. It is
+the head-stripped body of every TRIGGERED host, keyed to its host. A text
+two hosts print names none unless the trigger event narrows it. It is
 built once per parsed `CardEffects` and a lookup never parses.
 """
 from __future__ import annotations
@@ -1964,73 +1965,104 @@ def _host_key(text: str) -> str:
 
 
 def _trigger_bodies(h: AbilityEffects):
-    """The head-stripped bodies of a TRIGGERED host: after the head's
-    comma, and after its intervening-if."""
+    """(primary, secondary) head-stripped bodies of a TRIGGERED host. The
+    primary body is the text after the head's comma -- what the card
+    prints after its trigger condition, intervening-if and multipliers
+    included. The secondary body starts at the first spec, so an override
+    that drops an intervening-if or a "for each" frame still finds it, but
+    only when no host prints that text as its primary body."""
     text = h.text
     raw = h.trigger.raw if h.trigger is not None else ""
+    primary = ""
     if raw and text.startswith(raw):
-        body = text[len(raw):].lstrip(" ,")
-        yield body
-    if h.specs:
-        yield text[h.specs[0].span[0]:]
+        primary = text[len(raw):].lstrip(" ,")
+    secondary = text[h.specs[0].span[0]:] if h.specs else ""
+    return primary, secondary
 
 
-_OVERRIDE_TABLES: "OrderedDict[int, Tuple[CardEffects, Dict[str, AbilityEffects]]]" \
+_HostTable = Dict[str, Tuple[AbilityEffects, ...]]
+_OVERRIDE_TABLES: "OrderedDict[int, Tuple[CardEffects, Tuple[_HostTable, _HostTable]]]" \
     = OrderedDict()
 _OVERRIDE_TABLE_LIMIT = 4096   # bounded like the grammar memos (section 12)
 
 
-def _override_table(template) -> Dict[str, AbilityEffects]:
+def _override_table(template):
+    """(primary, secondary): normalised key -> every distinct host that
+    prints it, in card order. A key with more than one host is ambiguous;
+    the lookup names none of them unless the trigger event narrows it."""
     effects = template.effects
     hit = _OVERRIDE_TABLES.get(id(effects))
     if hit is not None and hit[0] is effects:
         _OVERRIDE_TABLES.move_to_end(id(effects))
         return hit[1]
-    table: Dict[str, AbilityEffects] = {}
+    primary: Dict[str, list] = {}
+    secondary: Dict[str, list] = {}
 
-    def put(text, host):
+    def put(table, text, host):
         k = _host_key(text)
-        if k and k not in table:
-            table[k] = host
+        if not k:
+            return
+        hosts = table.setdefault(k, [])
+        if not any(x is host for x in hosts):
+            hosts.append(host)
 
     for face, hosts in enumerate(effects.faces):
         for h in hosts:
             for m in h.modes:
-                put(m.text, m)
+                put(primary, m.text, m)
             if h.kind is HostKind.TRIGGERED:
-                for body in _trigger_bodies(h):
-                    put(body, h)
+                body, tail = _trigger_bodies(h)
+                put(primary, body, h)
+                put(secondary, tail, h)
     kicked = _kicked_span(effects)
     if kicked is not None:
         _, host, (a, b) = kicked
-        put(host.text[a:b], host)
+        put(primary, host.text[a:b], host)
     channel = _channel_host(effects)
     if channel is not None:
-        put(channel.text, channel)
-        put("\n".join(x.text for x in
-                      _legacy_channel_to_face_end(effects, channel)), channel)
+        put(primary, channel.text, channel)
+        put(primary, "\n".join(x.text for x in
+                               _legacy_channel_to_face_end(effects, channel)),
+            channel)
     for h in _face(effects, 0):
         if h.kind is HostKind.ACTIVATED and h.from_zone == "hand":
-            put(h.text, h)
-    _OVERRIDE_TABLES[id(effects)] = (effects, table)
+            put(primary, h.text, h)
+    tables = tuple({k: tuple(v) for k, v in t.items()}
+                   for t in (primary, secondary))
+    _OVERRIDE_TABLES[id(effects)] = (effects, tables)
     if len(_OVERRIDE_TABLES) > _OVERRIDE_TABLE_LIMIT:
         _OVERRIDE_TABLES.popitem(last=False)
-    return table
+    return tables
 
 
-def host_for_override(template, text: str) -> Optional[AbilityEffects]:
+def host_for_override(template, text: str, *,
+                      event: Optional[EventHint] = None
+                      ) -> Optional[AbilityEffects]:
     """The host an `oracle_override` text names (section 11, A41): a MODE
     host for a mode clause, the host holding the kicked payoff for the
     kicked clause, the channel ACTIVATED host for the channel clause, a
     TRIGGERED host for its head-stripped body. A lookup in a table built
-    once per parsed `CardEffects`; it never parses. None for a text the
-    card does not print."""
+    once per parsed `CardEffects`; it never parses.
+
+    A host's printed body wins over a body that only starts at another
+    host's first spec. A text two hosts print is ambiguous: `event` (the
+    trigger event the handler resolves for) keeps only the TRIGGERED hosts
+    of that event, and a text still naming more than one host names none.
+    None for a text the card does not print."""
     from . import effect_grammar as G
     if not text:
         return None
-    table = _override_table(template)
+    tables = _override_table(template)
     facts = G.template_inputs(template)[1]
-    return table.get(override_key(text, facts[0] if facts else None))
+    key = override_key(text, facts[0] if facts else None)
+    for table in tables:
+        hosts = table.get(key, ())
+        if event is not None:
+            hosts = tuple(h for h in hosts if h.trigger is not None and
+                          event in h.trigger.event_hints)
+        if hosts:
+            return hosts[0] if len(hosts) == 1 else None
+    return None
 
 
 # ── Tier B / C predicate builders ─────────────────────────────────────

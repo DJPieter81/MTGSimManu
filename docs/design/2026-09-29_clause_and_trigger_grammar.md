@@ -1210,7 +1210,7 @@ def chosen_from_legacy(ability, item_targets) -> Tuple[Tuple[Union[Handle, int],
 **Carrier switch (F7, A37, A38).**
 - Each switched handler keeps its gate and registry position.
 - Its apply becomes: `if strict(ctx.ability) and can_execute(ctx.ability, family): resolve_ability(...) else legacy_apply(ctx)`.
-- `ClauseContext.ability` is resolved statically: the SPELL host, or `effect_views.host_for_override(template, override)`. That is a load-built table keyed on the normalised text of MODE, kicked, channel and head-stripped TRIGGERED bodies (A41); a lookup, never a parse.
+- `ClauseContext.ability` is resolved statically: the SPELL host, or `effect_views.host_for_override(template, override)`. That is a load-built table keyed on the normalised text of MODE, kicked, channel and head-stripped TRIGGERED bodies (A41); a lookup, never a parse. A host's printed body wins over a body that only starts at another trigger's first spec (one dropping a "for each" frame or an intervening-if). A text two hosts print is ambiguous and names no host, so the handler stays on legacy, unless the handler passes the trigger event it resolves for (`event=`), which keeps that event's hosts only. Pool scan 2026-10-02: 9,661 TRIGGERED bodies, 0 resolve to another host, 57 are ambiguous without an event (Ugin, Eye of the Storms prints one body under its SELF_CAST and its colorless-cast trigger).
 - `planeswalker_manager`, the ETB carriers and `resolve_self_cast_trigger` switch the same way.
 - E7 collapses the registry.
 

@@ -615,6 +615,46 @@ def test_host_for_override_finds_the_channel_host():
     assert h.from_zone == "hand"
 
 
+def test_an_override_body_two_triggers_of_one_card_share_names_no_host_unless_the_event_names_one():
+    """A41: a body printed by two triggers is ambiguous, so the bare
+    lookup names no host (the handler stays on legacy); the trigger event
+    the handler resolves for narrows it to the one host."""
+    from engine.effect_spec import EventHint
+    v = _views()
+    t = _template("Probe Twin Draw", ["creature"],
+                  "When this creature enters, draw a card.\nWhenever "
+                  "another creature you control enters, draw a card.")
+    assert v.host_for_override(t, "draw a card.") is None
+    own = v.host_for_override(t, "draw a card.", event=EventHint.SELF_ENTERS)
+    other = v.host_for_override(t, "draw a card.",
+                                event=EventHint.OTHER_ENTERS)
+    assert own is not None and own.index == 0
+    assert other is not None and other.index == 1
+
+
+def test_a_trigger_body_names_the_host_that_prints_it_not_one_whose_spec_starts_with_it():
+    """A41: a body names the trigger whose head-stripped body it is, not
+    a trigger whose body merely ends with it after a multiplier or an
+    intervening-if."""
+    v = _views()
+    each = _template("Probe Shrine", ["enchantment"],
+                     "When this enchantment enters, for each artifact you "
+                     "control, create a 1/1 colorless Servo artifact "
+                     "creature token.\nWhenever another artifact you control "
+                     "enters, create a 1/1 colorless Servo artifact creature "
+                     "token.")
+    h = v.host_for_override(each, "create a 1/1 colorless servo artifact "
+                                  "creature token.")
+    assert h is not None and h.index == 1
+    gated = _template("Probe Uprising", ["enchantment"],
+                      "When this enchantment enters, if you control a "
+                      "creature with power 4 or greater, draw a card.\n"
+                      "Whenever a creature you control with power 4 or "
+                      "greater enters, draw a card.")
+    g = v.host_for_override(gated, "draw a card.")
+    assert g is not None and g.index == 1
+
+
 def test_host_for_override_is_a_lookup_and_never_parses(monkeypatch):
     """Section 11: the override table is a lookup, never a parse -- once
     the template's effects exist, a lookup (hit or miss) runs no grammar
@@ -721,6 +761,57 @@ def test_host_for_override_resolves_every_registered_deck_override(card_db):
                 t, t.channel_clause) is None:
             missing.append((t.name, "channel", t.channel_clause))
     assert not missing, missing
+
+
+def _body_start(h):
+    raw = h.trigger.raw if h.trigger is not None else ""
+    if not raw or not h.text.startswith(raw):
+        return None
+    rest = h.text[len(raw):]
+    return len(raw) + (len(rest) - len(rest.lstrip(" ,")))
+
+
+@pytest.mark.timeout(120)
+def test_every_triggered_hosts_printed_body_names_that_host_or_an_ambiguity(card_db):
+    """A41 over the registered decks and a pool sample: the printed
+    head-stripped body of every TRIGGERED host names that host; when
+    another trigger of the card prints the same body the bare lookup names
+    none, and the trigger's own event names it unless a second trigger of
+    that event prints it too. Never a different host."""
+    from engine.effect_spec import HostKind
+    v = _views()
+    pool = sorted({id(t): t for t in card_db.cards.values()}.values(),
+                  key=lambda t: t.name)
+    sample = {t.name: t for t in pool[::97]}
+    sample.update({t.name: t for t in _deck_templates(card_db)})
+    wrong = []
+    for t in sample.values():
+        trig = [h for hosts in t.effects.faces for h in hosts
+                if h.kind is HostKind.TRIGGERED]
+        for face, hosts in enumerate(t.effects.faces):
+            for h in (x for x in hosts if x.kind is HostKind.TRIGGERED):
+                start = _body_start(h)
+                if start is None:
+                    continue
+                body = v._printed(t, face, h, (start, len(h.text)))
+                key = v._host_key(h.text[start:])
+                twins = [o for o in trig if o is not h and
+                         _body_start(o) is not None and
+                         v._host_key(o.text[_body_start(o):]) == key]
+                got = v.host_for_override(t, body)
+                if got is not h and not (got is None and twins):
+                    wrong.append((t.name, face, h.index, "bare",
+                                  None if got is None else got.index))
+                hint = h.trigger.event_hints[0] if h.trigger.event_hints \
+                    else None
+                if hint is None:
+                    continue
+                same = [o for o in twins if hint in o.trigger.event_hints]
+                got = v.host_for_override(t, body, event=hint)
+                if got is not h and not (got is None and same):
+                    wrong.append((t.name, face, h.index, hint.value,
+                                  None if got is None else got.index))
+    assert not wrong, wrong[:20]
 
 
 # Registered-deck cards where a non-partial Tier A view differs from the
