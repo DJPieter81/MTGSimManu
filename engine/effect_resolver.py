@@ -505,31 +505,38 @@ def resolve_sub_ability(game: Any, sub: SubAbility, snap: Snapshot) -> bool:
 # ── The legacy target adapter (A36) ────────────────────────────────────
 
 def chosen_from_legacy(ability: AbilityEffects, item_targets: Sequence[int],
-                       positions: Sequence[int], *, game: Any,
+                       positions: Sequence[int], *,
+                       slot_spans: Sequence[Tuple[int, int]], game: Any,
                        face: int) -> Chosen:
     """Map the legacy flat `item.targets` onto this host's per-slot tuples.
 
     `positions[i]` is the printed position, in `ability.text`, of the
     requirement `item_targets[i]` was chosen for (the legacy list is in
     whole-oracle category order; the caller locates each entry with the
-    parse-once `parse_located` -- this function reads no text). Slots are
-    in printed order (A20), so the k-th distinct in-host position is slot k.
+    parse-once `parse_located`). `slot_spans[k]` is the printed
+    `[start, end)` of slot k's target phrase in `ability.text` (the caller's
+    `parse_spans`; this function reads no text). Each position goes to the
+    slot whose span holds it (A36 step 2) -- never to its rank among the
+    positions present, so an unchosen earlier slot shifts nothing.
+
     An entry outside the host (another host's target, or -1 = unlocated)
-    is not this host's. The -1 face sentinel becomes the `face` player; an
+    is not this host's. An in-host position no slot's span holds, or one
+    two spans hold, is a disagreement between the legacy parse and the
+    host: ValueError. The -1 face sentinel becomes the `face` player; an
     id is the Handle of that object now. A slot nothing maps to stays
     empty: the owner's picker decides (A36)."""
     if len(item_targets) != len(positions):
         raise ValueError("one position per legacy target")
-    located = sorted({p for p in positions if 0 <= p < len(ability.text)})
-    if len(located) > len(ability.targets):
-        raise ValueError("more located targets than the host has slots")
-    slot_of = {p: k for k, p in enumerate(located)}
+    if len(slot_spans) != len(ability.targets):
+        raise ValueError("one printed span per host slot")
     slots: List[List[Union[Handle, int]]] = [[] for _ in ability.targets]
     for tid, p in zip(item_targets, positions):
-        k = slot_of.get(p)
-        if k is None:
+        if not 0 <= p < len(ability.text):
             continue
-        slots[k].append(face if tid == -1 else _legacy_handle(game, tid))
+        ks = [k for k, (a, b) in enumerate(slot_spans) if a <= p < b]
+        if len(ks) != 1:
+            raise ValueError(f"position {p} is held by {len(ks)} host slots")
+        slots[ks[0]].append(face if tid == -1 else _legacy_handle(game, tid))
     return tuple(tuple(s) for s in slots)
 
 

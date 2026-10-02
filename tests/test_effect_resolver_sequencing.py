@@ -714,28 +714,57 @@ def test_a_sub_ability_chooses_its_own_targets_unbound(er, run):
 
 # ── chosen_from_legacy (A36) ───────────────────────────────────────────
 
+def _two_slot_legacy_host():
+    from engine.target_solver import TargetRequirement
+    a = TargetRequirement(zone="battlefield", types=frozenset({"creature"}))
+    b = TargetRequirement(zone="battlefield", types=frozenset({"any"}))
+    host = _host(targets=(a, b), text="x" * 100)
+    spans = ((10, 25), (60, 70))          # each slot's printed phrase in host.text
+    cards = {11: SimpleNamespace(instance_id=11, zone="battlefield",
+                                 battlefield_entry_seq=2),
+             12: SimpleNamespace(instance_id=12, zone="graveyard",
+                                 battlefield_entry_seq=4)}
+    return host, spans, SimpleNamespace(get_card_by_id=cards.get)
+
+
 def test_legacy_targets_map_onto_printed_order_slots(er):
     """A36: the legacy flat list (whole-oracle category order) maps onto
     this host's printed-order slots by printed position; the -1 face
     sentinel becomes the face player; a target outside the host is not
     this host's."""
-    from engine.target_solver import TargetRequirement
-    a = TargetRequirement(zone="battlefield", types=frozenset({"creature"}))
-    b = TargetRequirement(zone="battlefield", types=frozenset({"any"}))
-    host = _host(targets=(a, b), text="x" * 100)
-    cards = {11: SimpleNamespace(instance_id=11, zone="battlefield",
-                                 battlefield_entry_seq=2),
-             12: SimpleNamespace(instance_id=12, zone="graveyard",
-                                 battlefield_entry_seq=4)}
-    game = SimpleNamespace(get_card_by_id=cards.get)
+    host, spans, game = _two_slot_legacy_host()
     # legacy order: [the 'any' target (printed 2nd), creature x2 (printed 1st), other host]
     chosen = er.chosen_from_legacy(host, [-1, 11, 12, 99], [60, 10, 10, 500],
-                                   game=game, face=1)
+                                   slot_spans=spans, game=game, face=1)
     assert chosen == ((er.Handle(11, "battlefield", 2), er.Handle(12, "graveyard", 4)),
                       (1,))
     # an unfilled slot stays empty: the owner's picker decides (A36)
-    assert er.chosen_from_legacy(host, [11], [10], game=game, face=1) == (
+    assert er.chosen_from_legacy(host, [11], [10], slot_spans=spans,
+                                 game=game, face=1) == (
         (er.Handle(11, "battlefield", 2),), ())
+
+
+def test_a_legacy_target_lands_in_the_slot_whose_printed_span_holds_it(er):
+    """A36 step 2: a position is matched to the slot whose printed span
+    contains it, never to its rank among the positions present -- so an
+    earlier slot left unchosen ('up to one') does not shift later targets
+    into it."""
+    host, spans, game = _two_slot_legacy_host()
+    assert er.chosen_from_legacy(host, [-1], [60], slot_spans=spans,
+                                 game=game, face=1) == ((), (1,))
+    assert er.chosen_from_legacy(host, [-1, 11], [-1, 62], slot_spans=spans,
+                                 game=game, face=1) == ((), (er.Handle(11, "battlefield", 2),))
+
+
+def test_a_legacy_target_inside_the_host_but_in_no_slot_is_refused(er):
+    """An in-host position no slot's span holds means the legacy parse and
+    the host disagree on a requirement: refuse rather than guess a slot."""
+    host, spans, game = _two_slot_legacy_host()
+    with pytest.raises(ValueError):
+        er.chosen_from_legacy(host, [11], [40], slot_spans=spans, game=game, face=1)
+    with pytest.raises(ValueError):                  # one span per slot
+        er.chosen_from_legacy(host, [11], [10], slot_spans=spans[:1],
+                              game=game, face=1)
 
 
 def test_a_handle_is_an_immutable_object_identity(er):
