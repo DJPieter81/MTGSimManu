@@ -879,28 +879,88 @@ def test_every_triggered_hosts_printed_body_names_that_host_or_an_ambiguity(card
 
 
 # Registered-deck cards where a non-partial Tier A view differs from the
-# legacy field today, each with the side that is wrong. A new difference
-# fails (a derivation regressed or a legacy parser changed); a listed one
-# that disappears fails too, so the list only shrinks (the tool's
-# equivalence baseline takes over the pool-wide count).
+# legacy field today, each with the side that is wrong, pinned as
+# {field: {"card[ key]": digest of the (view, legacy) pair}}. A new
+# difference fails (a derivation regressed or a legacy parser changed); a
+# pinned one whose values change fails; a listed one that disappears fails
+# too, so the list only shrinks (the tool's equivalence baseline takes over
+# the pool-wide count).
 KNOWN_DECK_DISAGREEMENTS = {
     # legacy reads a permanent's activated burn line as a burn spell
-    "direct_damage_data": {"Goblin Bombardment"},
+    "direct_damage_data": {"Goblin Bombardment": "caad058ce7a2"},
     # target.zone_union: legacy keeps one union member (design section 10)
-    "bounce_target": {"Sink into Stupor // Soporific Springs"},
+    "bounce_target": {
+        "Sink into Stupor // Soporific Springs": "a93d9e3d4fb5"},
     # legacy refuses any text naming "this creature"
-    "mass_graveyard_return": {"Tyvar, Jubilant Brawler"},
+    "mass_graveyard_return": {"Tyvar, Jubilant Brawler": "5d5be987d596"},
     # the grammar refuses "target cards from graveyards" (no requirement)
-    "ActivatedAbility.effect_kind[EXILE_FROM_GRAVEYARD]": {"Faerie Macabre"},
+    "ActivatedAbility.effect_kind[EXILE_FROM_GRAVEYARD]": {
+        "Faerie Macabre 0": "d40be18e9798"},
     # legacy reads the source only as "this creature / permanent / it"
-    "ActivatedAbility.effect_kind[PUT_COUNTER_SELF]": {"The Filigree Sylex"},
+    "ActivatedAbility.effect_kind[PUT_COUNTER_SELF]": {
+        "The Filigree Sylex 0": "215f31289668"},
     # the grammar refuses "your choice of"; legacy also reads the
     # delirium upgrade's keyword as the base grant's
-    "pump_spell_keyword": {"Practiced Offense"},
-    "pump_spell_keywords": {"Practiced Offense", "Violent Urge"},
+    "pump_spell_keyword": {"Practiced Offense": "609c4e0ce535"},
+    "pump_spell_keywords": {"Practiced Offense": "daf7ac434763",
+                            "Violent Urge": "14fd6d1689d2"},
     # legacy refuses "another target permanent"
-    "ActivatedAbility.effect_kind[UNTAP_TARGET_PERMANENT]":
-        {"Formidable Speaker"},
+    "ActivatedAbility.effect_kind[UNTAP_TARGET_PERMANENT]": {
+        "Formidable Speaker 0": "5d5be987d596"},
+}
+
+
+# Registered-deck cards where a PARTIAL Tier A record differs from legacy
+# on its compare projection (the `compare` keys, or the whole value for
+# "eq"), pinned the same way. A partial record never switches; the pins
+# make a regressed view, a wrong compare key or a changed legacy value
+# fail instead of passing silently.
+KNOWN_DECK_PARTIAL_DISAGREEMENTS = {
+    # the same two cards as the non-partial effect_kind pins above
+    "ActivatedAbility.graveyard_exile_data": {
+        "Faerie Macabre 0": "df12ee68376b"},
+    "ActivatedAbility.put_counter_data": {
+        "The Filigree Sylex 0": "34b2693457ca"},
+    # the grammar leaves the tron condition "an X and a Y" UNMODELLED
+    # (filter.np_union), so the view has no bonus yet
+    "conditional_mana": {"Urza's Mine": "7524a645a815",
+                         "Urza's Power Plant": "7524a645a815",
+                         "Urza's Tower": "5fe0554e9a20"},
+    # legacy types the reduction, the view gives None today
+    "cost_reduction_rule": {
+        "Artist's Talent": "fd6e03546e22",
+        "Ral, Monsoon Mage // Ral, Leyline Prodigy": "8c55025aadd3",
+        "Ruby Medallion": "5d759227e775"},
+    # the view types the dig (rest to the bottom), legacy gives None
+    "library_dig_data": {"Narset, Parter of Veils": "033ff35d528c",
+                         "Stock Up": "033ff35d528c"},
+    # the view concatenates the units of every {T} mana ability and reads
+    # any permanent; legacy reads lands only, merges a land's alternative
+    # abilities into one unit, drops pain/spend-restricted/paid lines and
+    # widens all-{C} lines (Eldrazi Temple) by its own rule
+    "mana_units": {
+        "Abstergo Entertainment": "256d7928363e",
+        "Arena of Glory": "e6679def187e",
+        "Delighted Halfling": "8c5551b0226c",
+        "Eldrazi Temple": "b873a86e04aa",
+        "Fiery Islet": "447f3979491a",
+        "Gemstone Caverns": "256d7928363e",
+        "Gloomlake Verge": "a37ae88530a6",
+        "Horizon Canopy": "5b18b512c073",
+        "Mox Opal": "cee6696b2a21",
+        "Mystic Gate": "986617a3b3f6",
+        "Nurturing Peatland": "2b94e64175d7",
+        "Shang-Chi, Master of Kung Fu": "5411ce2eca62",
+        "Shivan Reef": "529afc19c3bc",
+        "Silent Clearing": "3899ea0efb30",
+        "Spire of Industry": "256d7928363e",
+        "Springleaf Drum": "cee6696b2a21",
+        "Sunbaked Canyon": "99457c741d3d",
+        "Sunken Citadel": "60dc1b264ca9",
+        "Talisman of Resilience": "97f6b5daf12d",
+        "The Mycosynth Gardens": "256d7928363e"},
+    # legacy types the X pump and trample grant, the view gives None
+    "team_pump_data": {"Craterhoof Behemoth": "dcb6f5e46316"},
 }
 
 
@@ -916,18 +976,81 @@ def _views_equal(a, b):
     return norm(a) == norm(b)
 
 
-def test_tier_a_views_equal_legacy_on_registered_deck_cards_but_the_named_ones(card_db):
+def _stable(v):
+    """A hash-seed-independent form of a view or legacy value for the
+    digest: sets sorted, dicts by key, dataclasses by field."""
+    if dataclasses.is_dataclass(v) and not isinstance(v, type):
+        return (type(v).__name__,) + tuple(
+            (f.name, _stable(getattr(v, f.name)))
+            for f in dataclasses.fields(v))
+    if isinstance(v, dict):
+        return ("dict",) + tuple(sorted(((repr(_stable(k)), _stable(x))
+                                         for k, x in v.items()), key=repr))
+    if isinstance(v, (set, frozenset)):
+        return ("set",) + tuple(sorted((_stable(x) for x in v), key=repr))
+    if isinstance(v, (list, tuple)):
+        return tuple(_stable(x) for x in v)
+    return v
+
+
+def _digest(view, legacy):
+    import hashlib
+    return hashlib.sha256(repr((_stable(view), _stable(legacy)))
+                          .encode()).hexdigest()[:12]
+
+
+def _projection(rec, value):
+    """A partial record's compare projection: its `compare` keys of a
+    dict (or attributes of an object), or the whole value for "eq"."""
+    if rec.compare == _views().COMPARE_EQ or value is None:
+        return value
+    if isinstance(value, dict):
+        return {k: value.get(k) for k in rec.compare}
+    return {k: getattr(value, k, None) for k in rec.compare}
+
+
+def _deck_disagreements(card_db, partial):
     v = _views()
     found = {}
     for t in _deck_templates(card_db):
         for name, rec in v.DERIVATIONS.items():
-            if rec.tier != "A" or rec.partial:
+            if rec.tier != "A" or rec.partial != partial:
                 continue
             for key in rec.keys(t):
                 got = rec.derive(t.effects, key=key, template=t)
-                if not _views_equal(got, rec.legacy(t, key)):
-                    found.setdefault(name, set()).add(t.name)
-    assert found == KNOWN_DECK_DISAGREEMENTS
+                legacy = rec.legacy(t, key)
+                if partial:
+                    got, legacy = (_projection(rec, got),
+                                   _projection(rec, legacy))
+                if not _views_equal(got, legacy):
+                    label = t.name if key is None else f"{t.name} {key}"
+                    found.setdefault(name, {})[label] = _digest(got, legacy)
+    return found
+
+
+def test_tier_a_views_equal_legacy_on_registered_deck_cards_but_the_named_ones(card_db):
+    assert _deck_disagreements(card_db, False) == KNOWN_DECK_DISAGREEMENTS
+
+
+def test_partial_tier_a_views_equal_legacy_on_their_compare_keys_but_the_named_ones(card_db):
+    """Every partial Tier A record's compare keys are keys of the legacy
+    value, and its projection equals legacy on every registered-deck card
+    but the pinned ones."""
+    v = _views()
+    bad_keys = set()
+    for t in _deck_templates(card_db):
+        for name, rec in v.DERIVATIONS.items():
+            if rec.tier != "A" or not rec.partial or \
+                    rec.compare == v.COMPARE_EQ:
+                continue
+            for key in rec.keys(t):
+                legacy = rec.legacy(t, key)
+                if isinstance(legacy, dict):
+                    bad_keys |= {(name, k) for k in rec.compare
+                                 if k not in legacy}
+    assert not bad_keys, bad_keys
+    assert _deck_disagreements(card_db, True) == \
+        KNOWN_DECK_PARTIAL_DISAGREEMENTS
 
 
 def test_the_etb_removal_mask_hides_exactly_the_intervening_if_and_linked_duration_witnesses(card_db):
