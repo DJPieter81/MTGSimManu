@@ -1788,13 +1788,35 @@ def _sacrifice_mana_units(effects, key=None, template=None):
     return []
 
 
+def _colorless_count(spec) -> Optional[int]:
+    """The amount of a plain colorless ADD_MANA spec, None otherwise."""
+    p = spec.payload if spec.verb is Verb.ADD_MANA else None
+    if not isinstance(p, ManaSpec) or p.choice or p.any_color or \
+            not p.symbols or any(c != "C" for c in p.symbols):
+        return None
+    return len(p.symbols)
+
+
 def _conditional_mana(effects, key=None, template=None):
+    """A mana ability's INSTEAD upgrade (CR 614.1a) under a condition on
+    what you control: {"bonus": the extra colorless mana the upgrade adds
+    over the base it replaces}. Legacy's other keys (its condition label
+    and the required land names) have no spec counterpart; the record
+    compares on `bonus` only."""
     for h in _face(effects, 0):
         if h.kind is not HostKind.MANA_ABILITY:
             continue
-        for s in _mana_specs(h):
-            if s.replaces and s.condition is not None:
-                return {"symbols": tuple(s.payload.symbols)}
+        for s in h.specs:
+            c = s.condition
+            if not s.replaces or c is None or c.filter is None or \
+                    c.filter.controller != "you":
+                continue
+            base_i = s.replaces[0]
+            if not 0 <= base_i < len(h.specs):
+                continue
+            up, base = _colorless_count(s), _colorless_count(h.specs[base_i])
+            if up is not None and base is not None and up > base:
+                return {"bonus": up - base}
     return None
 
 
@@ -2560,7 +2582,8 @@ _row("ritual_mana", S, "A", "E6", _ritual)
 _row("mana_units", S, "A", "E6", _mana_units, default=[], partial=True)
 _row("sacrifice_mana_units", S, "A", "E6", _sacrifice_mana_units,
      default=[], partial=True)
-_row("conditional_mana", S, "A", "E6", _conditional_mana, partial=True)
+_row("conditional_mana", S, "A", "E6", _conditional_mana,
+     compare=("bonus",), partial=True)
 _row("cost_reduction_rule", S, "A", "E6", _cost_reduction_rule,
      compare=("target", "amount"), partial=True)
 _row("self_cost_reduction_amount", S, "A", "E6", _self_cost_amount,

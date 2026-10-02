@@ -551,6 +551,26 @@ def test_a_bundle_choice_that_is_not_a_pick_per_mana_has_no_units():
     assert _derive("mana_units", t) == []
 
 
+def test_an_instead_colorless_upgrade_under_a_control_condition_is_its_bonus_over_the_base():
+    """CR 614.1a: "add {C}{C}{C} instead" replaces the base {C}; the
+    conditional mana is the extra mana the upgrade produces (legacy's
+    `bonus`), compared on that key alone."""
+    rec = _views().DERIVATIONS["conditional_mana"]
+    assert rec.compare == ("bonus",)
+    t = _template("Probe Cave Mine", ["land"],
+                  "{T}: Add {C}. If you control a Cave, add {C}{C}{C} "
+                  "instead.")
+    assert _derive("conditional_mana", t) == {"bonus": 2}
+
+
+def test_an_instead_upgrade_to_one_mana_of_any_colour_is_no_conditional_bonus():
+    """The upgrade changes the colour, not the amount: no extra mana."""
+    t = _template("Probe Luck Cavern", ["land"],
+                  "{T}: Add {C}. If this land has a luck counter on it, "
+                  "instead add one mana of any color.")
+    assert _derive("conditional_mana", t) is None
+
+
 def test_kicked_clause_is_the_printed_span_from_the_kicked_frame_to_the_sentence_end():
     """Printed case is kept (the self-name, not `~`), reminder text is
     stripped, and the replacing word 'instead' is part of the span."""
