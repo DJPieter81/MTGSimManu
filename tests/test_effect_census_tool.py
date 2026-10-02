@@ -246,12 +246,21 @@ def test_the_census_doc_passes_doc_hygiene_and_the_design_doc_links_it():
     assert "docs/design/effect_grammar_census.md" in design
 
 
+def test_the_session_pool_parse_is_one_read_only_parse_of_every_template(card_db, pool_effects):
+    """The census, the equivalence tool and their pool tests share one
+    eager parse per session (about 18 s of CPU each saved)."""
+    t = _tool()
+    assert set(pool_effects) == {x.name for x in t.pool_templates(card_db)}
+    with pytest.raises(TypeError):
+        pool_effects["x"] = None
+
+
 # Measured 2026-10-02 (4-core box, under a concurrent 4-worker matrix
-# run): ~18 s eager pool parse + ~1 s census walk, plus ~18 s when first in
-# the process to load the shared card DB. 600 s bounds a hang on a slower
-# 2-core CI runner.
+# run): ~1 s census walk over the session's shared eager parse (the
+# `pool_effects` fixture: ~18 s when first in the process, plus ~18 s for
+# the shared card DB). 600 s bounds a hang on a slower 2-core CI runner.
 @pytest.mark.timeout(600)
-def test_the_pool_census_holds_its_committed_baseline(card_db):
+def test_the_pool_census_holds_its_committed_baseline(card_db, pool_effects):
     t = _tool()
     base = json.loads(t.BASELINE_PATH.read_text())
-    assert t.check(base, t.pool_census(card_db)) == []
+    assert t.check(base, t.pool_census(card_db, effects=pool_effects)) == []

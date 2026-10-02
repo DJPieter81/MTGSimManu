@@ -156,6 +156,19 @@ def card_db():
     return shared_card_database()
 
 
+@pytest.fixture(scope="session")
+def pool_effects(card_db):
+    """One eager clause-grammar parse of every template of the shared card
+    DB ({name: CardEffects}, read-only), for the pool-wide tool tests (the
+    census, the equivalence tool): ~18 s of CPU once per session instead of
+    once per test. `parse_pool` without `populate` pins nothing on a
+    template; CardEffects are frozen."""
+    from types import MappingProxyType
+    from engine.effect_grammar import parse_pool
+
+    return MappingProxyType(parse_pool(card_db))
+
+
 @pytest.fixture
 def game_runner(card_db):
     """Create a fresh GameRunner for each test."""

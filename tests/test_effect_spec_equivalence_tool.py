@@ -1667,16 +1667,17 @@ def test_the_closure_lists_the_registered_deck_hosts_legacy_gates_accept_and_non
     assert parity["new_path"] == 0 and parity["legacy_fallback"] == len(pairs)
 
 
-# One full pool run: ~18 s eager parse, ~45 s for every derivation on every
+# One full pool run over the session's shared eager parse (`pool_effects`,
+# ~18 s when first in the process): ~22 s for every derivation on every
 # template, ~1 s for the closure (measured 2026-10-02 on a 4-core box under
 # a concurrent 4-worker matrix run), plus ~18 s when first in the process
 # to load the shared card DB. 900 s bounds a hang on a 2-core CI runner.
 @pytest.mark.timeout(900)
-def test_the_pool_equivalence_and_gate_parity_hold_their_committed_baselines(card_db):
+def test_the_pool_equivalence_and_gate_parity_hold_their_committed_baselines(card_db, pool_effects):
     import json
     t = _eq_tool()
     templates = t.pool_templates(card_db)
-    effects = t.parse_effects_of(templates)
+    effects = pool_effects
     rep = t.run(templates, effects, full=True)
     base = json.loads(t.BASELINE_PATH.read_text())
     pairs = t.closure(templates, effects)
