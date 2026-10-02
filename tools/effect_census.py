@@ -57,6 +57,10 @@ DESIGN_DOC = "docs/design/2026-09-29_clause_and_trigger_grammar.md"
 # pinned totals are complete; the long tail of (stage, lemma, detail) rows
 # is summarised by its total.
 TOP_ROWS = 60
+# Section 17, exit criterion 3: E2 (the removal family) does not start
+# while fewer than this share of registered-deck removal-family clauses
+# are typed and executable-or-tolerable.
+E2_GATE_SHARE = 0.85
 # Shares are compared at this many decimals, so a float round-trip
 # through JSON never reads as a fall.
 SHARE_DECIMALS = 4
@@ -102,6 +106,40 @@ def _keyword_lines(face_hosts, keywords: Iterable[str]):
                 break
 
 
+def _zone_family(s) -> bool:
+    """A removal-family clause: its verb's section-14 family is the zone
+    family (`lexicon.VERB_FAMILY`); a refused clause counts by the family
+    of its lemma's readings."""
+    from engine.effect_grammar.lexicon import Family, VERB_FAMILY, VERB_LEXICON
+    from engine.effect_spec import Verb
+    if s.verb is not Verb.UNMODELLED:
+        return VERB_FAMILY.get(s.verb) is Family.ZONE
+    lemma = getattr(s.payload, "lemma", "") or ""
+    entries = VERB_LEXICON.get(lemma) or VERB_LEXICON.get(
+        lemma.split()[0] if lemma else "", ())
+    return any(VERB_FAMILY.get(e.verb) is Family.ZONE for e in entries)
+
+
+def _removal_ready(host, s, executable: Dict[int, bool]) -> bool:
+    """A typed removal-family clause is executable (its host passes
+    `can_execute` for the removal family) or tolerable (it carries
+    residue and the removal family's legacy apply tolerates every code;
+    an UNPARSED code never is)."""
+    from engine import effect_resolver
+    from engine.effect_spec import UNPARSED, residue_polarity
+    from engine.effect_views import FAMILY_REMOVAL
+    if id(host) not in executable:
+        executable[id(host)] = effect_resolver.can_execute(host,
+                                                           FAMILY_REMOVAL)
+    if executable[id(host)]:
+        return True
+    tolerated = effect_resolver.LEGACY_RESIDUE_TOLERATED.get(
+        FAMILY_REMOVAL, frozenset())
+    return bool(s.residue) and all(
+        code in tolerated and residue_polarity(code) != UNPARSED
+        for code in s.residue)
+
+
 def census(effects: Mapping[str, Any], *,
            deck_names: Iterable[str] = (),
            keywords_of=None) -> dict:
@@ -122,6 +160,8 @@ def census(effects: Mapping[str, Any], *,
     may_scope, sub_shapes = collections.Counter(), collections.Counter()
     kw_lines, cost_mods = collections.Counter(), collections.Counter()
     cards = deck_cards = 0
+    rm_clauses = rm_typed = rm_ready = 0
+    executable: Dict[int, bool] = {}
     for name in sorted(effects):
         ce = effects[name]
         on_deck = name in deck
@@ -135,6 +175,11 @@ def census(effects: Mapping[str, Any], *,
                 tot[k] += 1
                 if on_deck:
                     dtot[k] += 1
+                    if _zone_family(s):
+                        rm_clauses += 1
+                        if s.verb is not Verb.UNMODELLED:
+                            rm_typed += 1
+                            rm_ready += _removal_ready(h, s, executable)
                 if s.verb is Verb.UNMODELLED:
                     p = s.payload
                     stage = getattr(getattr(p, "stage", None), "name", "?")
@@ -178,7 +223,14 @@ def census(effects: Mapping[str, Any], *,
                  "typed_share": _share(d_typed, d_total),
                  "by_host_kind": _kind_table(dtot, dtyped),
                  "unmodelled_by_stage": dict(sorted(deck_um_stage.items())),
-                 "residue_by_code": dict(sorted(deck_residue.items()))},
+                 "residue_by_code": dict(sorted(deck_residue.items())),
+                 "removal_gate": {
+                     "clauses": rm_clauses, "typed": rm_typed,
+                     "typed_share": _share(rm_typed, rm_clauses),
+                     "ready": rm_ready,
+                     "ready_share": _share(rm_ready, rm_clauses),
+                     "gate": E2_GATE_SHARE,
+                     "met": _share(rm_ready, rm_clauses) >= E2_GATE_SHARE}},
         "unmodelled": sum(um_stage.values()),
         "unmodelled_by_stage": dict(sorted(um_stage.items())),
         "unmodelled_rows": [list(r) + [n] for r, n in sorted(
@@ -254,13 +306,15 @@ def baseline_of(c: Mapping[str, Any]) -> dict:
         "residue_by_polarity": dict(c["residue_by_polarity"]),
         "deck_unmodelled_by_stage": dict(c["deck"]["unmodelled_by_stage"]),
         "deck_residue_by_code": dict(c["deck"]["residue_by_code"]),
+        "deck_removal_typed_share": c["deck"]["removal_gate"]["typed_share"],
+        "deck_removal_ready_share": c["deck"]["removal_gate"]["ready_share"],
     }
     report = {
         "cards": c["cards"], "specs": c["specs"], "typed": c["typed"],
         "unmodelled": c["unmodelled"], "residue": c["residue"],
         "by_host_kind": c["by_host_kind"],
         "deck": {k: c["deck"][k] for k in ("cards", "specs", "typed",
-                                           "by_host_kind")},
+                                           "by_host_kind", "removal_gate")},
         "unmodelled_rows": _top(c["unmodelled_rows"]),
         "unmodelled_row_count": len(c["unmodelled_rows"]),
         "may_scope": [list(r) for r in c["may_scope"]],
@@ -298,6 +352,12 @@ def compare(baseline: Mapping[str, Any], current: Mapping[str, Any]
 
     share("pool", b["typed_share"], c["typed_share"])
     share("deck cards", b["deck_typed_share"], c["deck_typed_share"])
+    for k, label in (("deck_removal_typed_share",
+                      "deck removal-family clauses (typed)"),
+                     ("deck_removal_ready_share",
+                      "deck removal-family clauses (executable or "
+                      "tolerable)")):
+        share(label, b.get(k, 0.0), c[k])
     for k in sorted(set(b["typed_share_by_host_kind"])
                     | set(c["typed_share_by_host_kind"])):
         share(f"host kind {k}", b["typed_share_by_host_kind"].get(k, 1.0),
@@ -390,7 +450,21 @@ def render_markdown(base: Mapping[str, Any]) -> str:
               f" ({_pct(p['typed_share'])}). Registered-deck cards:"
               f" {deck['cards']:,} templates, {deck['specs']:,} specs,"
               f" {deck['typed']:,} typed ({_pct(p['deck_typed_share'])}).",
-              "", "## UNMODELLED by stage", ""]
+              "", "## E2 gate: registered-deck removal-family clauses", "",
+              "Section 17, exit criterion 3: E2 does not start while fewer"
+              " than the gate share of registered-deck removal-family"
+              " (zone-verb) clauses are typed and executable-or-tolerable. A"
+              " refused clause counts by its lemma's verb family; a typed"
+              " clause is executable when its host passes `can_execute` for"
+              " the removal family, tolerable when every residue code it"
+              " carries is in `LEGACY_RESIDUE_TOLERATED['removal']`.", ""]
+    g = deck["removal_gate"]
+    lines += _table(["Clauses", "Typed", "Typed share", "Ready",
+                     "Ready share", "Gate", "Met"],
+                    [(g["clauses"], g["typed"], _pct(g["typed_share"]),
+                      g["ready"], _pct(g["ready_share"]), _pct(g["gate"]),
+                      "yes" if g["met"] else "no")])
+    lines += ["", "## UNMODELLED by stage", ""]
     lines += _table(["Stage", "Pool", "Deck cards"],
                     [(k, f"{n:,}", p["deck_unmodelled_by_stage"].get(k, 0))
                      for k, n in sorted(p["unmodelled_by_stage"].items(),

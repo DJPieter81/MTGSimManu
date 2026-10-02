@@ -88,6 +88,10 @@ if str(REPO) not in sys.path:
 ALLOWLIST_PATH = REPO / "tools" / "effect_spec_equivalence_allowlist.json"
 BASELINE_PATH = REPO / "tools" / "effect_spec_equivalence_baseline.json"
 SNAPSHOT_DIR = REPO / "tools" / "effect_legacy_snapshots"
+# The committed `--closure` report (section 17, exit criterion 4): every
+# legacy handler with the hosts its gate accepts; `--update` writes it and
+# a full `--check` fails when it is stale.
+CLOSURE_PATH = REPO / "tools" / "effect_closure_report.json"
 CARD_DATABASE = REPO / "engine" / "card_database.py"
 
 AGREE = "AGREE"
@@ -595,13 +599,16 @@ def check(baseline: Mapping[str, Any], report: Report, *,
           templates: Iterable[Any] = (),
           effects: Optional[Mapping[str, Any]] = None,
           unsurfaced: Optional[List[dict]] = None,
-          parity: Optional[dict] = None) -> List[str]:
+          parity: Optional[dict] = None,
+          closure: Optional[dict] = None,
+          closure_path: Optional[Path] = None) -> List[str]:
     """Every reason `--check` exits 1 (section 10, "Tool usage"). On a
     full run an improvement is a stale baseline (UNEXPLAINED fell, AGREE
     rose, legacy fallback fell): the commit that makes it lowers the
     ceiling (``--update``), so a later regression cannot refill it.
     `parity` is the gate-parity report (`gate_parity`), checked when
-    given."""
+    given; `closure` (a `closure_report`) is compared, on a full run, with
+    the committed report at `closure_path`."""
     rows = load_allowlist() if rows is None else rows
     unsurfaced = load_unsurfaced() if unsurfaced is None else unsurfaced
     out = list(validate_allowlist(rows)) + validate_unsurfaced(unsurfaced)
@@ -630,6 +637,13 @@ def check(baseline: Mapping[str, Any], report: Report, *,
             elif got < pinned:
                 out.append(f"gate parity: legacy fallback fell {pinned} -> "
                            f"{got}{stale}")
+    if closure is not None and report.full:
+        closure_path = CLOSURE_PATH if closure_path is None else closure_path
+        committed = closure_path.read_text() if closure_path.is_file() \
+            else ""
+        if committed != closure_json(closure):
+            out.append(f"closure report {closure_path.name} differs from "
+                       f"the pool closure{stale}")
     if report.full:
         for r in rows:
             if report.row_hits.get(r.id, 0) == 0:
@@ -923,6 +937,11 @@ def gate_parity(pairs: Iterable[Pair],
             "failures": sorted(set(failures))}
 
 
+def closure_json(rep: Mapping[str, Any]) -> str:
+    """The committed form of a closure report."""
+    return json.dumps(rep, indent=1, sort_keys=True) + "\n"
+
+
 def closure_report(pairs: Iterable[Pair]) -> dict:
     """Per handler: hosts by deck part, the verb sets and sub-ability
     kinds, the earliest executable step and the strict-view matches."""
@@ -1074,12 +1093,14 @@ def main(argv: Optional[List[str]] = None) -> int:
             return 2
         args.baseline.write_text(json.dumps(
             baseline_of(report, parity), indent=1, sort_keys=True) + "\n")
-        print(f"wrote {args.baseline}")
+        CLOSURE_PATH.write_text(closure_json(closure_report(pairs)))
+        print(f"wrote {args.baseline} and {CLOSURE_PATH}")
         return 0
     if args.check:
         baseline = json.loads(args.baseline.read_text())
         problems = check(baseline, report, rows=rows, templates=templates,
-                         effects=effects, parity=parity)
+                         effects=effects, parity=parity,
+                         closure=closure_report(pairs))
         if problems:
             print("Effect-spec equivalence FAILED:")
             for p in problems:

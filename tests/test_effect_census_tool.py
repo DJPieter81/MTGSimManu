@@ -136,6 +136,50 @@ def test_the_census_reports_may_scope_nestings_sub_ability_shapes_keyword_lines_
     assert c["cost_modifiers"] == [["TRIGGERED", "COST_DELTA", 1]]
 
 
+def _removal_cards():
+    """One deck card: a typed DESTROY (with a residue code), a refused
+    clause whose lemma is a zone verb ('exile') and a DRAW (card flow);
+    one pool card with a typed SACRIFICE."""
+    from engine.effect_spec import HostKind, Stage, Verb
+    deck = _card(_host(HostKind.SPELL, [
+        _spec(Verb.DESTROY, 0, residue=("target.scope:opponent",)),
+        _refusal(Stage.TARGET, "exile", "target.unparsed", 1),
+        _spec(Verb.DRAW, 2)]))
+    pool = _card(_host(HostKind.SPELL, [_spec(Verb.SACRIFICE)]))
+    return {"Deck Card": deck, "Pool Card": pool}
+
+
+def test_the_census_measures_the_e2_gate_over_registered_deck_removal_family_clauses(monkeypatch):
+    # Section 17 criterion 3: E2 starts once 85% of registered-deck
+    # removal-family (zone-verb) clauses are typed and executable or
+    # tolerable. A refused clause counts by its lemma's verb family.
+    from engine import effect_resolver
+    t = _tool()
+    c = t.census(_removal_cards(), deck_names={"Deck Card"})
+    g = c["deck"]["removal_gate"]
+    assert (g["clauses"], g["typed"], g["ready"]) == (2, 1, 0), g
+    assert g["typed_share"] == 0.5 and g["ready_share"] == 0.0
+    assert g["gate"] == t.E2_GATE_SHARE and g["met"] is False
+    # a typed clause whose residue the family's legacy apply tolerates is
+    # ready even before an executor lands
+    monkeypatch.setitem(effect_resolver.LEGACY_RESIDUE_TOLERATED, "removal",
+                        frozenset({"target.scope:opponent"}))
+    g = t.census(_removal_cards(), deck_names={"Deck Card"})["deck"][
+        "removal_gate"]
+    assert g["ready"] == 1 and g["ready_share"] == 0.5
+
+
+def test_the_e2_gate_shares_are_pinned_and_rendered():
+    t = _tool()
+    base = t.baseline_of(t.census(_removal_cards(), deck_names={"Deck Card"}))
+    assert base["pinned"]["deck_removal_typed_share"] == 0.5
+    assert base["pinned"]["deck_removal_ready_share"] == 0.0
+    base["session"] = "2026-10-02"
+    doc = t.render_markdown(base)
+    assert "## E2 gate: registered-deck removal-family clauses" in doc
+    assert "| 2 | 1 | 50.0% | 0 | 0.0% | 85.0% | no |" in doc
+
+
 # ── baseline and check ────────────────────────────────────────────────
 
 def test_check_fails_when_a_typed_share_falls_or_a_refusal_total_grows_and_passes_on_improvement():

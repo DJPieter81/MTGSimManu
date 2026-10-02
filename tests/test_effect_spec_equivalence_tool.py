@@ -1494,6 +1494,24 @@ def test_check_holds_gate_parity_to_its_failures_and_its_pinned_fallback_count()
         base, rep, rows=[], unsurfaced=[], parity=fewer))
 
 
+def test_a_full_check_fails_when_the_committed_closure_report_is_stale(tmp_path):
+    import json
+    t = _eq_tool()
+    rep = t.Report(counts={}, diffs=[], row_hits={}, templates=1, full=True)
+    closure = t.closure_report([_pair()])
+    path = tmp_path / "closure.json"
+    path.write_text(t.closure_json(closure))
+    assert t.check({"fields": {}}, rep, rows=[], unsurfaced=[],
+                   closure=closure, closure_path=path) == []
+    other = t.closure_report([_pair(), _pair(card="D")])
+    assert any("closure report" in p and "stale" in p for p in t.check(
+        {"fields": {}}, rep, rows=[], unsurfaced=[], closure=other,
+        closure_path=path))
+    # the committed report is the pool closure's, in its JSON form
+    committed = json.loads(t.CLOSURE_PATH.read_text())
+    assert set(committed) >= {"direct_damage", "targeted_removal"}
+
+
 def test_the_check_command_runs_gate_parity(monkeypatch, tmp_path):
     from types import SimpleNamespace
     t = _eq_tool()
@@ -1501,6 +1519,9 @@ def test_the_check_command_runs_gate_parity(monkeypatch, tmp_path):
     monkeypatch.setattr(t, "load_allowlist", lambda *a: [])
     base = tmp_path / "base.json"
     base.write_text('{"fields": {}, "gate_parity": {"legacy_fallback": 1}}')
+    closure = tmp_path / "closure.json"
+    closure.write_text(t.closure_json(t.closure_report([_pair()])))
+    monkeypatch.setattr(t, "CLOSURE_PATH", closure)
     monkeypatch.setattr(t, "closure", lambda templates, effects: [_pair()])
     assert t.main(["--check", "--baseline", str(base)]) == 0
     monkeypatch.setattr(t, "closure", lambda templates, effects:
@@ -1613,9 +1634,10 @@ def test_the_pool_equivalence_and_gate_parity_hold_their_committed_baselines(car
     effects = t.parse_effects_of(templates)
     rep = t.run(templates, effects, full=True)
     base = json.loads(t.BASELINE_PATH.read_text())
-    parity = t.gate_parity(t.closure(templates, effects))
+    pairs = t.closure(templates, effects)
+    parity = t.gate_parity(pairs)
     assert t.check(base, rep, templates=templates, effects=effects,
-                   parity=parity) == []
+                   parity=parity, closure=t.closure_report(pairs)) == []
     assert parity["legacy_fallback"] == base["gate_parity"]["legacy_fallback"]
     parsers = json.loads((REPO / "tools" / "effect_parsers_baseline.json")
                          .read_text())

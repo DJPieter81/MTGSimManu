@@ -34,6 +34,14 @@ Every spec of every host is counted, sub-ability hosts included and granted host
 
 Pool: 44,316 specs, 32,054 typed (72.3%). Registered-deck cards: 358 templates, 867 specs, 641 typed (73.9%).
 
+## E2 gate: registered-deck removal-family clauses
+
+Section 17, exit criterion 3: E2 does not start while fewer than the gate share of registered-deck removal-family (zone-verb) clauses are typed and executable-or-tolerable. A refused clause counts by its lemma's verb family; a typed clause is executable when its host passes `can_execute` for the removal family, tolerable when every residue code it carries is in `LEGACY_RESIDUE_TOLERATED['removal']`.
+
+| Clauses | Typed | Typed share | Ready | Ready share | Gate | Met |
+|---|---|---|---|---|---|---|
+| 259 | 216 | 83.4% | 0 | 0.0% | 85.0% | no |
+
 ## UNMODELLED by stage
 
 | Stage | Pool | Deck cards |
