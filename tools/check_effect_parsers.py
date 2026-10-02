@@ -16,7 +16,7 @@ commit retires. This ratchet pins that debt. Each count may only FALL:
     spell_resolution, planeswalker_manager and triggers (the OracleTextParser
     description consumers): oracle-text / ability-description substring and
     regex tests (the `check_oracle_runtime_parse` data-flow detector, with
-    `.description` added), calls of an `oracle_parser.parse_*` function at
+    `.description` and an ability's printed `.text` added), calls of an `oracle_parser.parse_*` function at
     resolution, and `host_for_override` lookups;
 (c) the `_legacy_*` quirk predicates and `_legacy_domain_*` masks in
     `engine/effect_views.py` (`LEGACY_PREDICATES`);
@@ -159,8 +159,10 @@ def count_e(db_src: str, parsers: Iterable[str],
 
 # ── (b): runtime oracle reads in resolution handlers ──────────────────
 
+# `text` is a LoyaltyAbility / ActivatedAbility's printed oracle span
+# (planeswalker_manager resolves loyalty abilities by reading it).
 _READ_ATTRS = frozenset({"oracle_text", "oracle", "description",
-                         "back_face_oracle"})
+                         "back_face_oracle", "text"})
 _READ_PARAMS = frozenset({"oracle", "oracle_text", "oracle_lower",
                           "oracle_l", "desc", "description"})
 _SUBSTR = frozenset({"count", "find", "index", "rfind", "rindex",

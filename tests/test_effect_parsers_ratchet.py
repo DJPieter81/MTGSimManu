@@ -97,6 +97,36 @@ def test_runtime_oracle_reads_parse_calls_and_override_lookups_in_a_handler_are_
                      "host_for_override(...)"], kinds
 
 
+def test_a_printed_ability_text_read_at_resolution_is_a_runtime_oracle_read():
+    # A loyalty / activated ability's `.text` is its printed oracle span:
+    # parsing it when the ability resolves is the same debt as parsing
+    # `oracle_text`.
+    r = _r()
+    src = ("import re\n"
+           "def resolve(game, ability):\n"
+           "    effect_desc = ability.text\n"
+           "    m = re.search(r'(\\d+) damage', effect_desc)\n"
+           "    if 'equal to instants' in effect_desc:\n"
+           "        pass\n"
+           "    if ability.text.startswith('draw'):\n"
+           "        pass\n")
+    hits = r.count_b_source(src, "engine/x.py", set())
+    kinds = [h.split(" ", 1)[1] for h in hits]
+    assert kinds == ["re.search(..., oracle)",
+                     "membership test on oracle text",
+                     "oracle.startswith(...)"], kinds
+
+
+def test_the_planeswalker_manager_printed_text_reads_are_pinned():
+    r = _r()
+    rel = "engine/planeswalker_manager.py"
+    hits = r.count_b_source((REPO / rel).read_text(), rel,
+                            r.parser_functions(
+                                (REPO / "engine" / "oracle_parser.py")
+                                .read_text()))
+    assert hits, "resolution-time reads of LoyaltyAbility.text are uncounted"
+
+
 def test_a_count_above_its_baseline_regresses_and_a_count_below_it_is_stale():
     r = _r()
     base = {"a": 2, "b": 2, "c": 1, "d": 0, "e": 0}
