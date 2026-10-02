@@ -235,15 +235,50 @@ def test_dispatcher_reads_no_oracle_text_and_writes_no_game_state():
                 assert "effect_grammar" not in m, node.lineno
                 assert "oracle" not in m, node.lineno
                 assert "target_solver" not in m, node.lineno
+    assert _state_writes(tree) == []
+
+
+def _state_writes(tree):
+    """Line numbers of assignments in `tree` that may write state other
+    than the dispatcher's own Resolution: the target chain must be rooted
+    at `ctx` or `self` and must not pass through a `game` attribute
+    (ctx.game.<x> is the game, not the Resolution)."""
+    bad = []
+    for node in ast.walk(tree):
         if isinstance(node, (ast.Assign, ast.AugAssign, ast.AnnAssign)):
-            targets = node.targets if isinstance(node, ast.Assign) else [node.target]
-            for t in targets:
+            targets = list(node.targets if isinstance(node, ast.Assign)
+                           else [node.target])
+            while targets:
+                t = targets.pop()
+                if isinstance(t, (ast.Tuple, ast.List)):       # a, b = ...
+                    targets.extend(t.elts)
+                    continue
+                if isinstance(t, ast.Starred):
+                    targets.append(t.value)
+                    continue
+                attrs = []
                 while isinstance(t, (ast.Attribute, ast.Subscript)):
-                    root = t.value
-                    if not isinstance(root, (ast.Attribute, ast.Subscript)):
-                        assert isinstance(root, ast.Name) and root.id in (
-                            "ctx", "self"), (node.lineno, ast.dump(t))
-                    t = root
+                    if isinstance(t, ast.Attribute):
+                        attrs.append(t.attr)
+                    t = t.value
+                if attrs or not isinstance(t, ast.Name):
+                    rooted = isinstance(t, ast.Name) and t.id in ("ctx", "self")
+                    if not rooted or "game" in attrs:
+                        bad.append(node.lineno)
+    return bad
+
+
+def test_a_write_through_the_resolutions_game_counts_as_a_game_state_write():
+    """The no-state-write check above is only as strong as its detector: a
+    chain that reaches the game through the Resolution (ctx.game...) is a
+    game write, while ctx.<Resolution field> is the dispatcher's own."""
+    for src in ("ctx.game.players[0].life = 0", "ctx.game.foo = 1",
+                "ctx.game.turn_number += 1", "game.x = 1"):
+        assert _state_writes(ast.parse(src)) != [], src
+    assert _state_writes(ast.parse("a, ctx.game.x = 1, 2")) != []
+    for src in ("ctx.results[s.seq] = {}", "ctx.instead_holds[r] = True",
+                "x = 1", "a, b = 1, 2"):
+        assert _state_writes(ast.parse(src)) == [], src
 
 
 # ── can_execute: fail closed (section 11) ──────────────────────────────
@@ -264,7 +299,10 @@ def test_an_unmodelled_clause_is_never_executable_even_if_registered(er, run):
 
 def test_a_reference_to_an_unmodelled_clause_is_not_executable(er, run):
     """A delayed sub-ability acting on the RESULT of an unmodelled parent
-    clause has nothing to act on."""
+    clause has nothing to act on. Only the direct `_refs_unmodelled` call
+    pins this rule: every spec a RESULT ref can name is itself in a host
+    can_execute walks, so the host-level refusal below already follows
+    from the UNMODELLED spec itself (the ref check is defence in depth)."""
     um = _spec(Verb.UNMODELLED, 0, payload=Unmodelled(Stage.CLAUSE, "x"))
     sub = _host(_spec(Verb.EXILE, 2, ref=Ref(RefKind.RESULT, index=0)),
                 kind=HostKind.TRIGGERED)
@@ -273,7 +311,8 @@ def test_a_reference_to_an_unmodelled_clause_is_not_executable(er, run):
     run.register(Verb.EXILE, _Recorder())
     assert er.can_execute(sub) is True
     assert er._refs_unmodelled(sub.specs[0], {0: um}) is True
-    assert er.can_execute(_host(um, trig)) is False
+    assert er._refs_unmodelled(sub.specs[0], {0: _spec(Verb.MOVE, 0)}) is False
+    assert er.can_execute(_host(um, trig)) is False   # not load-bearing: see docstring
 
 
 def test_unparsed_target_residue_is_never_tolerated(er, run, monkeypatch):

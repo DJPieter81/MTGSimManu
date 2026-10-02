@@ -52,11 +52,18 @@ from .effect_spec import (UNPARSED, AbilityEffects, CardFilter, Condition,
 @dataclass(frozen=True, slots=True)
 class Handle:
     """An object, not a card (CR 400.7): the instance in one zone, entered
-    once. A Handle whose object has since changed zone (or re-entered) no
-    longer binds, so an executor acting on it does nothing (CR 603.7c, A34)."""
+    once. A Handle whose object has since changed zone no longer binds, so
+    an executor acting on it does nothing (CR 603.7c, A34).
+
+    Known gap (open for E1): `entry_seq` is `battlefield_entry_seq`, the
+    only zone-entry ordinal the engine keeps, and it counts battlefield
+    entries only. A battlefield re-entry is told apart; a card that leaves
+    a non-battlefield zone and returns to it (graveyard -> exile ->
+    graveyard) gets an equal Handle, so CR 400.7 is NOT enforced outside
+    the battlefield until CardInstance keeps a generic zone-entry ordinal."""
     instance_id: int
     zone: str
-    entry_seq: int          # battlefield_entry_seq (the engine keeps no other zone-entry ordinal yet)
+    entry_seq: int          # battlefield_entry_seq: battlefield entries only (see above)
     lki: Optional[object] = None   # characteristics snapshot taken when it left (CR 608.2h)
 
 
@@ -229,6 +236,9 @@ def _spec_executable(s: EffectSpec, family: Optional[str],
         executor = EXECUTORS.get(verb)
         if executor is None:
             return False
+    # Defence in depth: every spec a RESULT ref can name (this host's, an
+    # outer host's) is itself walked and refused if UNMODELLED, so this
+    # never changes the verdict today; it keeps the rule local to the ref.
     if _refs_unmodelled(s, by_seq):
         return False
     tolerated = LEGACY_RESIDUE_TOLERATED.get(family, frozenset()) \
