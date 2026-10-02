@@ -1094,6 +1094,14 @@ Flags: `--field/--list/--class/--decks/--patterns/--timing/--json/--update/--clo
 | Description interpreter and OracleTextParser pipeline | A (report) | E7 | Per-verb reach; each family deletes its branch at zero reach. |
 | `aura_mana_units`, `tap_for_mana_trigger` | C | E6 / T | Triggered mana abilities (A6). |
 
+**Views landed (E0, 2026-10-02; `engine/effect_views.py`, no caller).** 145 `FieldDerivation` records cover every row above, plus the Tier B AI predicates and the stage-T head predicates. The remaining 116 legacy fields are named in `NON_EFFECT_FIELDS` with a reason. The completeness test covers every public field of `CardTemplate`, `ActivatedAbility` and `LoyaltyAbility` and every `template.<attr> =` assignment. Scoped carriers are keyed as `ActivatedAbility.effect_kind[KIND]`, `LoyaltyAbility.effect_kind[KIND]` (key `(face, slot)`) and `modes[removal]`.
+
+Named predicates (ratchet (c)) number 15 today (`LEGACY_PREDICATES`):
+- quirks: `_legacy_prefix_window`, `_legacy_rider_tokens`, `_legacy_loyalty_damage_word`, `_legacy_tap_damage_one`, `_legacy_when_head`, `_legacy_removal_scope_residue`, `_legacy_colorless_counter`, `_legacy_counter_kind`, `_legacy_draw_word_limit`, `_legacy_equip_grantable`, `_legacy_ritual_cost_pips`, `_legacy_basic_land_type_words`, `_legacy_channel_to_face_end`;
+- masks: `_legacy_domain_etb_removal` (Wistfulness and Leyline Binding are its two registered-deck hits) and `_legacy_domain_single_kicker` (13 pool hits: and/or and non-mana kickers, another spell's kick).
+
+`kicked_clause` and `channel_clause` equal legacy on the whole pool after the kicker mask. On registered-deck cards, every non-partial Tier A view equals legacy except 9 named (field, card) pairs. Each pair is pinned with the side that is wrong in `tests/test_effect_spec_equivalence_tool.py`. Pool-wide Tier A disagreement counts are the equivalence tool's to pin. At landing they ran from 0 (`removal_mv_condition`, `is_land_sacrifice_tutor`, `counter_upgrade_condition`, the cost-reduction views) to 233 (`ritual_mana`, whose legacy parser also reads reminder and granted text).
+
 ---
 
 ## 11. The dispatcher (`engine/effect_resolver.py`; skeleton in E0, no callers)
