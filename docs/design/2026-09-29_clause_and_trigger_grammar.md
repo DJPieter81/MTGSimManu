@@ -1479,7 +1479,7 @@ The E0 tests are the `e0_tests` output of this synthesis. Their files:
 - `tests/test_effect_spec_equivalence_tool.py`
 - `tests/test_effect_neutrality.py`
 
-Each uses the session `card_db` fixture and takes under 10 s, except the pool-wide tests, which carry `@pytest.mark.timeout(N)` with the measurement recorded. The fast files are added to the abstraction-contract workflow step.
+Tests that read real cards use the session `card_db` fixture; the pool-wide tests carry `@pytest.mark.timeout(N)` with the measurement recorded. Workflow placement (2026-10-02): the files that need no card DB (`test_effect_grammar_amounts_conditions.py`, `test_effect_grammar_linking.py`, `test_effect_resolver_sequencing.py`; 143 tests, 1.6 s) are added to the abstraction-contract pytest step. The shared-DB files (`test_effect_grammar_structure.py`, `test_effect_grammar_participants.py`, `test_effect_grammar_pool_invariants.py`, `test_effect_spec_equivalence_tool.py`) run only in the full-suite step: the session DB load alone takes about 17 s, past that step's 10 s per-file budget (the equivalence-tool file measured 20.8 s, of which about 4 s is test bodies), and the full suite already runs them on every PR. `tests/test_effect_neutrality.py` has not landed yet.
 
 ### 18.3 Later-family regression tests (written red in the named step)
 
