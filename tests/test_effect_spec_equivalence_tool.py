@@ -153,6 +153,50 @@ TABLE_ROWS = {
 }
 
 
+# The runtime rows of 10.1: functions the handlers and the AI recompute,
+# not template fields, each with the step that row gives it.
+TABLE_CARRIERS = {
+    "oracle_resolver.effective_direct_damage": "E1",
+    "ai.card_classes.burn_damage": "E1",
+    "clause_resolver._a_energy_damage": "E1",
+    "oracle_resolver.resolve_self_cast_trigger": "E2",
+    "clause_resolver._reanimate_ability": "E2",
+    "clause_resolver._g_mass_reanimate": "E2",
+    "clause_resolver._bounce_shape": "E2",
+    "oracle_resolver._resolve_mass_mode_clause": "E2",
+    "clause_resolver._card_flow_effects": "E3",
+    "clause_resolver._impulse_count": "E3",
+    "clause_resolver._a_hand_attack": "E3",
+    "oracle_parser.parse_token_spec": "E4",
+    "clause_resolver._token_clause": "E4",
+    "clause_resolver._combat_prevention_shape": "E5",
+    "clause_resolver._object_restriction_shape": "E5",
+    # the cast_targets pseudo-field (G15): the whole-oracle target parse
+    "target_solver.parse": "E6",
+    "card_database.OracleTextParser": "E7",
+}
+
+
+def test_every_runtime_row_of_the_derivation_table_is_a_named_carrier_that_exists():
+    """10.1's runtime rows are not template fields, so the field scan
+    cannot see them: each is a RUNTIME_CARRIERS entry at its step, and
+    each names a callable that exists (an engine module path, or an
+    `ai.` one)."""
+    import importlib
+    v = _views()
+    wrong = {}
+    for name, step in TABLE_CARRIERS.items():
+        entry = v.RUNTIME_CARRIERS.get(name)
+        if entry is None or entry[1] != step:
+            wrong[name] = entry
+    for name in v.RUNTIME_CARRIERS:
+        mod, _, attr = name.rpartition(".")
+        path = mod if mod.startswith("ai.") else f"engine.{mod}"
+        if not callable(getattr(importlib.import_module(path), attr, None)):
+            wrong[name] = "missing"
+    assert not wrong, wrong
+
+
 def _legacy_fields():
     """Every public field of the legacy carriers: CardTemplate,
     ActivatedAbility and LoyaltyAbility (scoped `Carrier.field`)."""

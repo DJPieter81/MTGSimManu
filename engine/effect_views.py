@@ -2651,21 +2651,27 @@ LEGACY_PREDICATES: Tuple[str, ...] = tuple(sorted(
 # runtime, compared by the tool on a game-less context. Named here so the
 # report has one list.
 RUNTIME_CARRIERS: Mapping[str, Tuple[str, str]] = MappingProxyType({
+    # Tier B (10.1): the burn amount the resolver and the AI recompute
+    # over direct_damage_data plus its upgrade.
+    "oracle_resolver.effective_direct_damage": (FAMILY_DAMAGE, "E1"),
+    "ai.card_classes.burn_damage": (FAMILY_DAMAGE, "E1"),
     "oracle_resolver.resolve_self_cast_trigger": (FAMILY_REMOVAL, "E2"),
     "clause_resolver._reanimate_ability": (FAMILY_REMOVAL, "E2"),
     "clause_resolver._g_mass_reanimate": (FAMILY_REMOVAL, "E2"),
     "clause_resolver._bounce_shape": (FAMILY_REMOVAL, "E2"),
-    "clause_resolver._resolve_mass_mode_clause": (FAMILY_REMOVAL, "E2"),
+    "oracle_resolver._resolve_mass_mode_clause": (FAMILY_REMOVAL, "E2"),
     "clause_resolver._card_flow_effects": (FAMILY_CARD_FLOW, "E3"),
     "clause_resolver._impulse_count": (FAMILY_CARD_FLOW, "E3"),
     "clause_resolver._a_hand_attack": (FAMILY_CARD_FLOW, "E3"),
     "clause_resolver._a_energy_damage": (FAMILY_DAMAGE, "E1"),
-    "permanent_effects.parse_token_spec": (FAMILY_TOKENS_COUNTERS, "E4"),
+    "oracle_parser.parse_token_spec": (FAMILY_TOKENS_COUNTERS, "E4"),
     "clause_resolver._token_clause": (FAMILY_TOKENS_COUNTERS, "E4"),
     "clause_resolver._combat_prevention_shape": (FAMILY_PUMP_RESTRICT, "E5"),
     "clause_resolver._object_restriction_shape": (FAMILY_PUMP_RESTRICT, "E5"),
-    "spell_resolution.cast_targets": (FAMILY_STACK_MANA, "E6"),
-    "oracle_parser.OracleTextParser": (FAMILY_STACK_MANA, "E7"),
+    # the cast_targets pseudo-field (G15): SPELL host targets against
+    # the whole-oracle target parse
+    "target_solver.parse": (FAMILY_STACK_MANA, "E6"),
+    "card_database.OracleTextParser": (FAMILY_STACK_MANA, "E7"),
 })
 
 
