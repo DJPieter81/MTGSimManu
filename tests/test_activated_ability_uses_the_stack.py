@@ -15,6 +15,8 @@ Rules-phrased; card names are fixture carriers only.
 """
 from __future__ import annotations
 
+import copy
+
 import random
 
 from engine.activation import ActivationManager
@@ -31,6 +33,10 @@ _DB = CardDatabase()
 def _add(game, name, controller=0, zone="battlefield"):
     t = _DB.get_card(name)
     assert t is not None, f"missing {name}"
+    # Tests below rebind activated_abilities on the template; a private
+    # copy keeps that off the card DB, which can be the process-wide
+    # shared one (CardDatabase.register_shared).
+    t = copy.copy(t)
     c = CardInstance(template=t, owner=controller, controller=controller,
                      instance_id=game.next_instance_id(), zone=zone)
     c._game_state = game
