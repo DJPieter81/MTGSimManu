@@ -1,0 +1,768 @@
+{
+ "description": "Per-field equivalence class counts (design doc 2026-09-29 section 10): UNEXPLAINED may only fall and AGREE may only rise, per field. Regenerate with `python tools/effect_spec_equivalence.py --update`.",
+ "fields": {
+  "ActivatedAbility.delayed_timing": {
+   "AGREE": 6343,
+   "DERIVED_COVERAGE_GROWTH": 1
+  },
+  "ActivatedAbility.effect_kind[ADAPT]": {
+   "AGREE": 6342,
+   "DERIVED_COVERAGE_GROWTH": 2
+  },
+  "ActivatedAbility.effect_kind[ANIMATE_SELF_UEOT]": {
+   "AGREE": 6287,
+   "DERIVED_COVERAGE_GROWTH": 48,
+   "UNEXPLAINED": 4,
+   "UNMODELLED_CLAUSE": 5
+  },
+  "ActivatedAbility.effect_kind[DAMAGE_ANY_TARGET]": {
+   "AGREE": 6337,
+   "DERIVED_COVERAGE_GROWTH": 5,
+   "UNMODELLED_CLAUSE": 2
+  },
+  "ActivatedAbility.effect_kind[DRAW_N]": {
+   "AGREE": 6325,
+   "DERIVED_COVERAGE_GROWTH": 18,
+   "UNMODELLED_CLAUSE": 1
+  },
+  "ActivatedAbility.effect_kind[EXILE_FROM_GRAVEYARD]": {
+   "AGREE": 6337,
+   "UNMODELLED_CLAUSE": 7
+  },
+  "ActivatedAbility.effect_kind[GRANT_HASTE_TARGET]": {
+   "AGREE": 6337,
+   "DERIVED_COVERAGE_GROWTH": 7
+  },
+  "ActivatedAbility.effect_kind[PUMP_SELF_UEOT]": {
+   "AGREE": 6332,
+   "DERIVED_COVERAGE_GROWTH": 11,
+   "UNMODELLED_CLAUSE": 1
+  },
+  "ActivatedAbility.effect_kind[PUT_COUNTER_SELF]": {
+   "AGREE": 6323,
+   "DERIVED_COVERAGE_GROWTH": 21
+  },
+  "ActivatedAbility.effect_kind[PUT_COUNTER_TARGET]": {
+   "AGREE": 6327,
+   "DERIVED_COVERAGE_GROWTH": 17
+  },
+  "ActivatedAbility.effect_kind[PUT_COUNTER_TEAM]": {
+   "AGREE": 6329,
+   "DERIVED_COVERAGE_GROWTH": 15
+  },
+  "ActivatedAbility.effect_kind[TUTOR_CREATURE_TO_BATTLEFIELD]": {
+   "AGREE": 6339,
+   "DERIVED_COVERAGE_GROWTH": 5
+  },
+  "ActivatedAbility.effect_kind[TUTOR_TO_HAND]": {
+   "AGREE": 6335,
+   "DERIVED_COVERAGE_GROWTH": 8,
+   "UNMODELLED_CLAUSE": 1
+  },
+  "ActivatedAbility.effect_kind[UNTAP_TARGET_PERMANENT]": {
+   "AGREE": 6318,
+   "DERIVED_COVERAGE_GROWTH": 22,
+   "UNMODELLED_CLAUSE": 4
+  },
+  "ActivatedAbility.graveyard_exile_data": {
+   "AGREE": 6337,
+   "UNMODELLED_CLAUSE": 7
+  },
+  "ActivatedAbility.put_counter_data": {
+   "AGREE": 6291,
+   "DERIVED_COVERAGE_GROWTH": 53
+  },
+  "ActivatedAbility.tutor_data": {
+   "AGREE": 6330,
+   "DERIVED_COVERAGE_GROWTH": 13,
+   "UNMODELLED_CLAUSE": 1
+  },
+  "LoyaltyAbility.draws": {
+   "AGREE": 825
+  },
+  "LoyaltyAbility.effect_kind[DAMAGE]": {
+   "AGREE": 820,
+   "UNEXPLAINED": 2,
+   "UNMODELLED_CLAUSE": 3
+  },
+  "LoyaltyAbility.effect_kind[DRAW_AND_UNTAP_LANDS]": {
+   "AGREE": 822,
+   "UNEXPLAINED": 1,
+   "UNMODELLED_CLAUSE": 2
+  },
+  "LoyaltyAbility.effect_kind[EMBLEM_EXILE_PERMANENT]": {
+   "AGREE": 821,
+   "UNEXPLAINED": 3,
+   "UNMODELLED_CLAUSE": 1
+  },
+  "LoyaltyAbility.effect_kind[GAIN_LIFE_AND_DRAW]": {
+   "AGREE": 824,
+   "UNMODELLED_CLAUSE": 1
+  },
+  "LoyaltyAbility.effect_kind[RETURN_TO_HAND]": {
+   "AGREE": 823,
+   "DERIVED_COVERAGE_GROWTH": 1,
+   "UNMODELLED_CLAUSE": 1
+  },
+  "LoyaltyAbility.effect_kind[TUCK_TARGET_INTO_LIBRARY]": {
+   "AGREE": 825
+  },
+  "LoyaltyAbility.target": {
+   "AGREE": 823,
+   "DERIVED_COVERAGE_GROWTH": 1,
+   "UNMODELLED_CLAUSE": 1
+  },
+  "attack_observer": {
+   "AGREE": 22727,
+   "DERIVED_COVERAGE_GROWTH": 9,
+   "UNMODELLED_CLAUSE": 2
+  },
+  "aura_mana_units": {
+   "AGREE": 22728,
+   "UNEXPLAINED": 10
+  },
+  "board_sweep_data": {
+   "AGREE": 22737,
+   "DERIVED_COVERAGE_GROWTH": 1
+  },
+  "bounce_target": {
+   "AGREE": 22630,
+   "DERIVED_COVERAGE_GROWTH": 52,
+   "LEGACY_TARGET_ZONE": 4,
+   "UNEXPLAINED": 39,
+   "UNMODELLED_CLAUSE": 13
+  },
+  "can_destroy_artifact": {
+   "AGREE": 22488,
+   "DERIVED_COVERAGE_GROWTH": 221,
+   "UNEXPLAINED": 14,
+   "UNMODELLED_CLAUSE": 15
+  },
+  "can_destroy_enchantment": {
+   "AGREE": 22424,
+   "DERIVED_COVERAGE_GROWTH": 312,
+   "UNMODELLED_CLAUSE": 2
+  },
+  "can_destroy_nonland_permanent": {
+   "AGREE": 22711,
+   "DERIVED_COVERAGE_GROWTH": 25,
+   "UNMODELLED_CLAUSE": 2
+  },
+  "can_exile_permanent": {
+   "AGREE": 22492,
+   "DERIVED_COVERAGE_GROWTH": 84,
+   "UNEXPLAINED": 58,
+   "UNMODELLED_CLAUSE": 104
+  },
+  "can_target_planeswalker": {
+   "AGREE": 22011,
+   "DERIVED_COVERAGE_GROWTH": 17,
+   "UNEXPLAINED": 300,
+   "UNMODELLED_CLAUSE": 410
+  },
+  "can_target_player": {
+   "AGREE": 21602,
+   "DERIVED_COVERAGE_GROWTH": 22,
+   "UNEXPLAINED": 501,
+   "UNMODELLED_CLAUSE": 613
+  },
+  "cast_prohibition": {
+   "AGREE": 22734,
+   "DERIVED_COVERAGE_GROWTH": 4
+  },
+  "cast_targets": {
+   "AGREE": 4351,
+   "LEGACY_TARGET_ZONE": 10,
+   "UNEXPLAINED": 355,
+   "UNMODELLED_CLAUSE": 520
+  },
+  "cast_trigger_token": {
+   "AGREE": 22675,
+   "DERIVED_COVERAGE_GROWTH": 44,
+   "UNEXPLAINED": 10,
+   "UNMODELLED_CLAUSE": 9
+  },
+  "channel_clause": {
+   "AGREE": 22738
+  },
+  "conditional_mana": {
+   "AGREE": 22735,
+   "UNMODELLED_CLAUSE": 3
+  },
+  "cost_reduction_rule": {
+   "AGREE": 22590,
+   "LEGACY_COST_REDUCTION_SCOPE": 13,
+   "UNMODELLED_CLAUSE": 135
+  },
+  "counter_placement_trigger": {
+   "AGREE": 22713,
+   "DERIVED_COVERAGE_GROWTH": 21,
+   "UNEXPLAINED": 4
+  },
+  "counter_target_kind": {
+   "AGREE": 22713,
+   "DERIVED_COVERAGE_GROWTH": 2,
+   "UNEXPLAINED": 2,
+   "UNMODELLED_CLAUSE": 21
+  },
+  "counter_tax_amount": {
+   "AGREE": 22718,
+   "DERIVED_COVERAGE_GROWTH": 3,
+   "UNEXPLAINED": 1,
+   "UNMODELLED_CLAUSE": 16
+  },
+  "counter_upgrade_condition": {
+   "AGREE": 22738
+  },
+  "counters_colorless_only": {
+   "AGREE": 22738
+  },
+  "creature_dies_observer": {
+   "AGREE": 22389,
+   "DERIVED_COVERAGE_GROWTH": 346,
+   "UNEXPLAINED": 3
+  },
+  "cycling_variant_data": {
+   "AGREE": 22664,
+   "UNEXPLAINED": 74
+  },
+  "cycling_watch_trigger_damage": {
+   "AGREE": 22734,
+   "DERIVED_COVERAGE_GROWTH": 4
+  },
+  "cycling_watch_trigger_life_gain": {
+   "AGREE": 22735,
+   "DERIVED_COVERAGE_GROWTH": 1,
+   "UNEXPLAINED": 2
+  },
+  "deals_targeted_damage": {
+   "AGREE": 20969,
+   "DERIVED_COVERAGE_GROWTH": 23,
+   "UNEXPLAINED": 876,
+   "UNMODELLED_CLAUSE": 870
+  },
+  "destroys_target_land": {
+   "AGREE": 22726,
+   "DERIVED_COVERAGE_GROWTH": 11,
+   "UNMODELLED_CLAUSE": 1
+  },
+  "direct_damage_data": {
+   "AGREE": 22694,
+   "UNEXPLAINED": 39,
+   "UNMODELLED_CLAUSE": 5
+  },
+  "domain_reduction": {
+   "AGREE": 22738
+  },
+  "energy_production": {
+   "AGREE": 22664,
+   "DERIVED_COVERAGE_GROWTH": 71,
+   "UNEXPLAINED": 2,
+   "UNMODELLED_CLAUSE": 1
+  },
+  "enters_type_counter": {
+   "AGREE": 22678,
+   "DERIVED_COVERAGE_GROWTH": 60
+  },
+  "equip_keyword_grant": {
+   "AGREE": 22716,
+   "UNEXPLAINED": 6,
+   "UNMODELLED_CLAUSE": 16
+  },
+  "equip_power_grant": {
+   "AGREE": 22718,
+   "DERIVED_COVERAGE_GROWTH": 2,
+   "UNEXPLAINED": 8,
+   "UNMODELLED_CLAUSE": 10
+  },
+  "equip_toughness_grant": {
+   "AGREE": 22724,
+   "DERIVED_COVERAGE_GROWTH": 2,
+   "UNEXPLAINED": 6,
+   "UNMODELLED_CLAUSE": 6
+  },
+  "etb_exile_returns_on_leave": {
+   "AGREE": 22737,
+   "UNMODELLED_CLAUSE": 1
+  },
+  "etb_return_land": {
+   "AGREE": 22738
+  },
+  "etb_targeted_removal_data": {
+   "AGREE": 22678,
+   "DERIVED_COVERAGE_GROWTH": 5,
+   "MASKED_GROWTH": 55
+  },
+  "exile_hits_noncreature": {
+   "AGREE": 22688,
+   "DERIVED_COVERAGE_GROWTH": 14,
+   "UNEXPLAINED": 9,
+   "UNMODELLED_CLAUSE": 27
+  },
+  "fetchland": {
+   "AGREE": 22727,
+   "DERIVED_COVERAGE_GROWTH": 9,
+   "UNEXPLAINED": 1,
+   "UNMODELLED_CLAUSE": 1
+  },
+  "grants_haste_activation": {
+   "AGREE": 22731,
+   "DERIVED_COVERAGE_GROWTH": 7
+  },
+  "group_restriction": {
+   "AGREE": 22724,
+   "DERIVED_COVERAGE_GROWTH": 10,
+   "UNEXPLAINED": 3,
+   "UNMODELLED_CLAUSE": 1
+  },
+  "hand_attack_data": {
+   "AGREE": 22605,
+   "DERIVED_COVERAGE_GROWTH": 11,
+   "UNEXPLAINED": 84,
+   "UNMODELLED_CLAUSE": 38
+  },
+  "hand_refill": {
+   "AGREE": 22734,
+   "DERIVED_COVERAGE_GROWTH": 1,
+   "UNEXPLAINED": 1,
+   "UNMODELLED_CLAUSE": 2
+  },
+  "has_another_creature_enters_lifegain": {
+   "AGREE": 22690,
+   "DERIVED_COVERAGE_GROWTH": 36,
+   "UNEXPLAINED": 10,
+   "UNMODELLED_CLAUSE": 2
+  },
+  "has_another_creature_enters_trigger": {
+   "AGREE": 22194,
+   "DERIVED_COVERAGE_GROWTH": 410,
+   "UNEXPLAINED": 74,
+   "UNMODELLED_CLAUSE": 60
+  },
+  "has_attack_trigger": {
+   "AGREE": 22572,
+   "DERIVED_COVERAGE_GROWTH": 51,
+   "UNEXPLAINED": 71,
+   "UNMODELLED_CLAUSE": 44
+  },
+  "has_cast_spell_draw": {
+   "AGREE": 22654,
+   "DERIVED_COVERAGE_GROWTH": 69,
+   "UNEXPLAINED": 9,
+   "UNMODELLED_CLAUSE": 6
+  },
+  "has_cast_trigger": {
+   "AGREE": 21817,
+   "DERIVED_COVERAGE_GROWTH": 859,
+   "UNEXPLAINED": 44,
+   "UNMODELLED_CLAUSE": 18
+  },
+  "has_charge_counter_ability": {
+   "AGREE": 22678,
+   "UNEXPLAINED": 22,
+   "UNMODELLED_CLAUSE": 38
+  },
+  "has_combat_damage_player_trigger": {
+   "AGREE": 22608,
+   "DERIVED_COVERAGE_GROWTH": 10,
+   "UNEXPLAINED": 70,
+   "UNMODELLED_CLAUSE": 50
+  },
+  "has_combat_damage_trigger": {
+   "AGREE": 22549,
+   "DERIVED_COVERAGE_GROWTH": 145,
+   "UNEXPLAINED": 29,
+   "UNMODELLED_CLAUSE": 15
+  },
+  "has_cycling_watch_trigger": {
+   "AGREE": 22703,
+   "DERIVED_COVERAGE_GROWTH": 35
+  },
+  "has_damage_equal_scaling": {
+   "AGREE": 22531,
+   "DERIVED_COVERAGE_GROWTH": 5,
+   "UNEXPLAINED": 54,
+   "UNMODELLED_CLAUSE": 148
+  },
+  "has_destroy_or_exile": {
+   "AGREE": 20671,
+   "DERIVED_COVERAGE_GROWTH": 28,
+   "UNEXPLAINED": 910,
+   "UNMODELLED_CLAUSE": 1129
+  },
+  "has_discard_effect": {
+   "AGREE": 22268,
+   "DERIVED_COVERAGE_GROWTH": 75,
+   "UNEXPLAINED": 219,
+   "UNMODELLED_CLAUSE": 176
+  },
+  "has_draw_effect": {
+   "AGREE": 20918,
+   "DERIVED_COVERAGE_GROWTH": 273,
+   "UNEXPLAINED": 652,
+   "UNMODELLED_CLAUSE": 895
+  },
+  "has_dual_land_search": {
+   "AGREE": 22682,
+   "DERIVED_COVERAGE_GROWTH": 50,
+   "UNEXPLAINED": 5,
+   "UNMODELLED_CLAUSE": 1
+  },
+  "has_energy_damage_target": {
+   "AGREE": 22738
+  },
+  "has_energy_production": {
+   "AGREE": 22725,
+   "DERIVED_COVERAGE_GROWTH": 4,
+   "UNEXPLAINED": 3,
+   "UNMODELLED_CLAUSE": 6
+  },
+  "has_exile_own_creature": {
+   "AGREE": 22698,
+   "DERIVED_COVERAGE_GROWTH": 40
+  },
+  "has_graveyard_hate": {
+   "AGREE": 22307,
+   "DERIVED_COVERAGE_GROWTH": 23,
+   "UNEXPLAINED": 216,
+   "UNMODELLED_CLAUSE": 192
+  },
+  "has_graveyard_recursion": {
+   "AGREE": 21472,
+   "DERIVED_COVERAGE_GROWTH": 29,
+   "UNEXPLAINED": 700,
+   "UNMODELLED_CLAUSE": 537
+  },
+  "has_graveyard_target": {
+   "AGREE": 22121,
+   "DERIVED_COVERAGE_GROWTH": 572,
+   "UNEXPLAINED": 17,
+   "UNMODELLED_CLAUSE": 28
+  },
+  "has_landfall": {
+   "AGREE": 22203,
+   "DERIVED_COVERAGE_GROWTH": 12,
+   "UNEXPLAINED": 455,
+   "UNMODELLED_CLAUSE": 68
+  },
+  "has_library_search_opponent_trigger": {
+   "AGREE": 22738
+  },
+  "has_lifegain_token_trigger": {
+   "AGREE": 22611,
+   "DERIVED_COVERAGE_GROWTH": 120,
+   "UNEXPLAINED": 4,
+   "UNMODELLED_CLAUSE": 3
+  },
+  "has_look_hand_selection": {
+   "AGREE": 22517,
+   "DERIVED_COVERAGE_GROWTH": 113,
+   "UNEXPLAINED": 19,
+   "UNMODELLED_CLAUSE": 89
+  },
+  "has_mana_value_wipe": {
+   "AGREE": 22711,
+   "DERIVED_COVERAGE_GROWTH": 26,
+   "UNMODELLED_CLAUSE": 1
+  },
+  "has_may_play_or_cast": {
+   "AGREE": 21223,
+   "UNEXPLAINED": 639,
+   "UNMODELLED_CLAUSE": 876
+  },
+  "has_noncreature_spell_cast_trigger": {
+   "AGREE": 22644,
+   "DERIVED_COVERAGE_GROWTH": 2,
+   "UNEXPLAINED": 68,
+   "UNMODELLED_CLAUSE": 24
+  },
+  "has_opponent_cast_damage": {
+   "AGREE": 22639,
+   "DERIVED_COVERAGE_GROWTH": 97,
+   "UNEXPLAINED": 1,
+   "UNMODELLED_CLAUSE": 1
+  },
+  "has_pump_grant": {
+   "AGREE": 20581,
+   "DERIVED_COVERAGE_GROWTH": 720,
+   "UNEXPLAINED": 873,
+   "UNMODELLED_CLAUSE": 564
+  },
+  "has_recurring_draw_trigger": {
+   "AGREE": 21783,
+   "DERIVED_COVERAGE_GROWTH": 81,
+   "UNEXPLAINED": 582,
+   "UNMODELLED_CLAUSE": 292
+  },
+  "has_recurring_trigger": {
+   "AGREE": 17533,
+   "UNEXPLAINED": 3475,
+   "UNMODELLED_CLAUSE": 1730
+  },
+  "has_sacrifice_for_damage": {
+   "AGREE": 22691,
+   "DERIVED_COVERAGE_GROWTH": 16,
+   "UNEXPLAINED": 24,
+   "UNMODELLED_CLAUSE": 7
+  },
+  "has_sacrifice_search_land": {
+   "AGREE": 22635,
+   "UNEXPLAINED": 88,
+   "UNMODELLED_CLAUSE": 15
+  },
+  "has_scaling_token_finisher": {
+   "AGREE": 22586,
+   "DERIVED_COVERAGE_GROWTH": 120,
+   "UNEXPLAINED": 8,
+   "UNMODELLED_CLAUSE": 24
+  },
+  "has_scry": {
+   "AGREE": 22698,
+   "DERIVED_COVERAGE_GROWTH": 3,
+   "UNEXPLAINED": 12,
+   "UNMODELLED_CLAUSE": 25
+  },
+  "has_self_trigger": {
+   "AGREE": 20997,
+   "DERIVED_COVERAGE_GROWTH": 1344,
+   "UNEXPLAINED": 285,
+   "UNMODELLED_CLAUSE": 112
+  },
+  "has_surveil": {
+   "AGREE": 22682,
+   "DERIVED_COVERAGE_GROWTH": 4,
+   "UNEXPLAINED": 11,
+   "UNMODELLED_CLAUSE": 41
+  },
+  "has_symmetric_reanimation": {
+   "AGREE": 22712,
+   "UNEXPLAINED": 12,
+   "UNMODELLED_CLAUSE": 14
+  },
+  "has_token_effect": {
+   "AGREE": 21997,
+   "DERIVED_COVERAGE_GROWTH": 52,
+   "UNEXPLAINED": 299,
+   "UNMODELLED_CLAUSE": 390
+  },
+  "has_x_counter_scaling": {
+   "AGREE": 22633,
+   "DERIVED_COVERAGE_GROWTH": 7,
+   "UNEXPLAINED": 58,
+   "UNMODELLED_CLAUSE": 40
+  },
+  "has_x_damage": {
+   "AGREE": 22595,
+   "UNEXPLAINED": 33,
+   "UNMODELLED_CLAUSE": 110
+  },
+  "is_counterspell": {
+   "AGREE": 22714,
+   "DERIVED_COVERAGE_GROWTH": 2,
+   "UNEXPLAINED": 1,
+   "UNMODELLED_CLAUSE": 21
+  },
+  "is_land_sacrifice_tutor": {
+   "AGREE": 22738
+  },
+  "is_tutor": {
+   "AGREE": 22401,
+   "DERIVED_COVERAGE_GROWTH": 39,
+   "UNEXPLAINED": 96,
+   "UNMODELLED_CLAUSE": 202
+  },
+  "kicked_clause": {
+   "AGREE": 22725,
+   "MASKED_GROWTH": 13
+  },
+  "land_destruction_data": {
+   "AGREE": 22726,
+   "DERIVED_COVERAGE_GROWTH": 11,
+   "UNMODELLED_CLAUSE": 1
+  },
+  "landfall_first_life_gain": {
+   "AGREE": 22736,
+   "DERIVED_COVERAGE_GROWTH": 1,
+   "UNEXPLAINED": 1
+  },
+  "landfall_second_mana_colors": {
+   "AGREE": 22737,
+   "UNEXPLAINED": 1
+  },
+  "landfall_third_damage": {
+   "AGREE": 22738
+  },
+  "library_dig_data": {
+   "AGREE": 22565,
+   "DERIVED_COVERAGE_GROWTH": 171,
+   "UNMODELLED_CLAUSE": 2
+  },
+  "library_search_trigger_draws_card": {
+   "AGREE": 22738
+  },
+  "loot_data": {
+   "AGREE": 22701,
+   "DERIVED_COVERAGE_GROWTH": 27,
+   "UNEXPLAINED": 4,
+   "UNMODELLED_CLAUSE": 6
+  },
+  "mana_units": {
+   "AGREE": 22351,
+   "DERIVED_COVERAGE_GROWTH": 156,
+   "UNEXPLAINED": 216,
+   "UNMODELLED_CLAUSE": 15
+  },
+  "mass_graveyard_return": {
+   "AGREE": 22690,
+   "DERIVED_COVERAGE_GROWTH": 18,
+   "UNEXPLAINED": 5,
+   "UNMODELLED_CLAUSE": 25
+  },
+  "modes[removal]": {
+   "AGREE": 1358,
+   "DERIVED_COVERAGE_GROWTH": 1
+  },
+  "next_turn_effect": {
+   "AGREE": 22727,
+   "DERIVED_COVERAGE_GROWTH": 11
+  },
+  "object_restriction": {
+   "AGREE": 22723,
+   "DERIVED_COVERAGE_GROWTH": 6,
+   "UNEXPLAINED": 5,
+   "UNMODELLED_CLAUSE": 4
+  },
+  "ordinal_cast_trigger": {
+   "AGREE": 22732,
+   "DERIVED_COVERAGE_GROWTH": 2,
+   "UNEXPLAINED": 2,
+   "UNMODELLED_CLAUSE": 2
+  },
+  "pump_spell_keyword": {
+   "AGREE": 22612,
+   "DERIVED_COVERAGE_GROWTH": 44,
+   "UNEXPLAINED": 52,
+   "UNMODELLED_CLAUSE": 30
+  },
+  "pump_spell_keywords": {
+   "AGREE": 22620,
+   "DERIVED_COVERAGE_GROWTH": 50,
+   "UNEXPLAINED": 44,
+   "UNMODELLED_CLAUSE": 24
+  },
+  "pump_spell_power": {
+   "AGREE": 22592,
+   "DERIVED_COVERAGE_GROWTH": 82,
+   "UNEXPLAINED": 42,
+   "UNMODELLED_CLAUSE": 22
+  },
+  "pump_spell_toughness": {
+   "AGREE": 22655,
+   "DERIVED_COVERAGE_GROWTH": 48,
+   "UNEXPLAINED": 21,
+   "UNMODELLED_CLAUSE": 14
+  },
+  "reanimates_from_graveyard": {
+   "AGREE": 22302,
+   "DERIVED_COVERAGE_GROWTH": 9,
+   "UNEXPLAINED": 259,
+   "UNMODELLED_CLAUSE": 168
+  },
+  "removal_mv_condition": {
+   "AGREE": 22738
+  },
+  "requires_creature_target": {
+   "AGREE": 19080,
+   "DERIVED_COVERAGE_GROWTH": 2,
+   "UNEXPLAINED": 2313,
+   "UNMODELLED_CLAUSE": 1343
+  },
+  "ritual_mana": {
+   "AGREE": 22513,
+   "DERIVED_COVERAGE_GROWTH": 6,
+   "LEGACY_RITUAL_MANA": 1,
+   "REMINDER_TEXT": 190,
+   "UNEXPLAINED": 2,
+   "UNMODELLED_CLAUSE": 26
+  },
+  "sacrifice_mana_units": {
+   "AGREE": 22723,
+   "DERIVED_COVERAGE_GROWTH": 3,
+   "UNEXPLAINED": 12
+  },
+  "saga_chapter_one_material": {
+   "AGREE": 22645,
+   "DERIVED_COVERAGE_GROWTH": 18,
+   "UNEXPLAINED": 21,
+   "UNMODELLED_CLAUSE": 54
+  },
+  "self_cost_reduction_amount": {
+   "AGREE": 22738
+  },
+  "self_cost_reduction_unit": {
+   "AGREE": 22738
+  },
+  "tap_damage": {
+   "AGREE": 22735,
+   "UNEXPLAINED": 2,
+   "UNMODELLED_CLAUSE": 1
+  },
+  "tap_for_mana_trigger": {
+   "AGREE": 22713,
+   "DERIVED_COVERAGE_GROWTH": 20,
+   "UNEXPLAINED": 5
+  },
+  "targeted_removal_data": {
+   "AGREE": 22725,
+   "DERIVED_COVERAGE_GROWTH": 6,
+   "UNEXPLAINED": 7
+  },
+  "targets_creature_spell": {
+   "AGREE": 22738
+  },
+  "targets_planeswalker_spell": {
+   "AGREE": 22726,
+   "UNEXPLAINED": 2,
+   "UNMODELLED_CLAUSE": 10
+  },
+  "team_keyword_grant": {
+   "AGREE": 22651,
+   "DERIVED_COVERAGE_GROWTH": 14,
+   "UNEXPLAINED": 51,
+   "UNMODELLED_CLAUSE": 22
+  },
+  "team_pump_data": {
+   "AGREE": 22701,
+   "DERIVED_COVERAGE_GROWTH": 16,
+   "UNEXPLAINED": 21
+  },
+  "turn_scoped_restriction": {
+   "AGREE": 22716,
+   "DERIVED_COVERAGE_GROWTH": 4,
+   "UNEXPLAINED": 3,
+   "UNMODELLED_CLAUSE": 15
+  },
+  "x_creature_tutor_data": {
+   "AGREE": 22734,
+   "DERIVED_COVERAGE_GROWTH": 2,
+   "UNMODELLED_CLAUSE": 2
+  }
+ },
+ "gate_parity": {
+  "legacy_fallback": 5223,
+  "new_path": 0,
+  "pairs": 5223
+ },
+ "templates": 22738,
+ "totals": {
+  "AGREE": 2813156,
+  "DERIVED_COVERAGE_GROWTH": 7842,
+  "LEGACY_COST_REDUCTION_SCOPE": 13,
+  "LEGACY_RITUAL_MANA": 1,
+  "LEGACY_TARGET_ZONE": 14,
+  "MASKED_GROWTH": 68,
+  "REMINDER_TEXT": 190,
+  "UNEXPLAINED": 15657,
+  "UNMODELLED_CLAUSE": 12662
+ }
+}

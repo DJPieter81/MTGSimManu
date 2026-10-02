@@ -4,6 +4,7 @@ status: active
 priority: primary
 session: 2026-09-29
 depends_on: [docs/design/2026-09-28_temporal_state_model.md, docs/design/rules-foundation-sweep-tracker.md]
+generated: [docs/design/effect_grammar_census.md]
 tags: [engine, oracle, grammar, effects, triggers, architecture]
 summary: >
   One grammar (parse_effects) turns oracle text into typed, frozen EffectSpecs
@@ -951,7 +952,7 @@ As before, with these changes:
   - the sub-ability shapes (REFLEXIVE and DELAYED, with and without intervening-if);
   - the keyword-line classifications, so a keyword line that falls to SPELL on any face is visible;
   - the `cost_modifiers` absorptions.
-- `tools/effect_unmodelled_baseline.json` pins totals per stage, per residue code, per polarity, and on deck cards. `--check` fails on growth.
+- `tools/effect_census_baseline.json` pins totals per stage, per residue code, per polarity, and on deck cards, and the typed shares (pool, per host kind, deck cards). `--check` fails on growth of a total or a fall of a share. `--update` also generates `docs/design/effect_grammar_census.md` from that baseline (landed 2026-10-02; the name replaces the earlier `effect_unmodelled_baseline.json`).
 - The runtime census (`rules_audit.census('608.2/unmodelled_effect', …)`) is unchanged.
 
 **Expected E0 magnitudes.** These are estimates, replaced by the first census:
@@ -1430,6 +1431,13 @@ Integration review findings (2026-10-01): (1) granted hosts read their activatio
 
 Measured values (fill in on landing): pool parse CPU __ s; mean __ µs per template; peak __ MB; typed share __% (pool) / __% (deck cards); UNMODELLED by stage __; residue by code and polarity __; equivalence per Tier A field __; legacy-fallback pairs per handler __.
 
+**Tools landed (2026-10-02).** Measured with the four tools of sections 9, 10 and 13, process CPU, on a 4-core box that was NOT quiet (a concurrent 4-worker matrix run held the load average at 4-5), so the `--timing` figures of criterion 6 still need a quiet-box re-run:
+- `tools/effect_census.py` (criterion 3, generated `docs/design/effect_grammar_census.md`, pinned in `tools/effect_census_baseline.json`): 44,316 specs over 22,738 templates, 72.3% typed; registered-deck cards 73.9% of 867 specs. UNMODELLED 12,262: CLAUSE 1,934, FILTER 1,617, REPLACEMENT 1,543, REFERENCE 1,524, NO_LEMMA 1,190, TARGET 1,188, CONDITION 1,164, AMOUNT 779, RECOGNIZED_UNSUPPORTED 478, STRUCTURE 231, TRIGGER_EMBEDDED 165, QUANTITY 133, ITERATION 110, DURATION 108, TARGET_COUNT 82, DELAY 16. Residue 1,547 codes: WIDENING 865, UNPARSED 390, NARROWING 292. Census pass about 36 s wall including the 16 s DB load.
+- `tools/effect_spec_equivalence.py --timing` (criterion 4, pinned in `tools/effect_spec_equivalence_baseline.json`): DB load 15.9 s, eager parse of every template 17.7-20.1 s, every derivation on every template 42 s (stack_mana views 19.6 s of it, the printed-span views). 2,849,603 comparisons over 147 records (the 146 FieldDerivations plus the tool's `cast_targets` carrier): AGREE 2,813,156, DERIVED_COVERAGE_GROWTH 7,842, UNMODELLED_CLAUSE 12,662, UNEXPLAINED 15,657 (almost all Tier B/C presence predicates; `has_recurring_trigger` 3,475 and `requires_creature_target` 2,313 lead), MASKED_GROWTH 68, and the seeded allowlist classes REMINDER_TEXT 190, LEGACY_TARGET_ZONE 14, LEGACY_COST_REDUCTION_SCOPE 13, LEGACY_RITUAL_MANA 1. Four section-10 seed rows surface in no field comparison and are listed as `unsurfaced` with their reason (counts above ten, token-spec subtypes, ritual cost pips, the tutor relative-clause filter).
+- `--closure` / `--gate-parity`: 5,223 (handler, host) pairs pool-wide, 147 on registered-deck cards; 0 on the new path, so all are on legacy fallback (ratchet (f)); closure 0.9 s after the parse.
+- `tools/host_resolution_equivalence.py` (criterion 5): 234 registered-deck MB and SB hosts with a legacy apply (SPELL, MODE, ACTIVATED, executable LOYALTY), 6 boards x 2 seeds, legacy against legacy: 0 divergences in digest, log bytes or result, 59 s CPU. 499 hosts (triggered, static, keyword and cost hosts) have no single legacy apply in E0 and are reported as skipped.
+- `tools/check_effect_parsers.py` (`tools/effect_parsers_baseline.json`): (a) 116, (b) 102, (c) 15, (d) 0, (e) 0, (f) 5,223.
+
 ---
 
 ## 18. Tests
@@ -1488,7 +1496,7 @@ The E0 tests are the `e0_tests` output of this synthesis. Their files:
 - `tests/test_effect_spec_equivalence_tool.py`
 - `tests/test_effect_neutrality.py`
 
-Tests that read real cards use the session `card_db` fixture; the pool-wide tests carry `@pytest.mark.timeout(N)` with the measurement recorded. Workflow placement (2026-10-02): the files that need no card DB (`test_effect_grammar_amounts_conditions.py`, `test_effect_grammar_linking.py`, `test_effect_resolver_sequencing.py`; 177 tests, 2.3 s after the dispatcher skeleton landed) are added to the abstraction-contract pytest step. The shared-DB files (`test_effect_grammar_structure.py`, `test_effect_grammar_participants.py`, `test_effect_grammar_pool_invariants.py`, `test_effect_spec_equivalence_tool.py`) run only in the full-suite step: the session DB load alone takes about 17 s, past that step's 10 s per-file budget (the equivalence-tool file measured 20.8 s, of which about 4 s is test bodies), and the full suite already runs them on every PR. `tests/test_effect_neutrality.py` has not landed yet.
+Tests that read real cards use the session `card_db` fixture; the pool-wide tests carry `@pytest.mark.timeout(N)` with the measurement recorded. Workflow placement (2026-10-02): the files that need no card DB (`test_effect_grammar_amounts_conditions.py`, `test_effect_grammar_linking.py`, `test_effect_resolver_sequencing.py`; 177 tests, 2.3 s after the dispatcher skeleton landed) are added to the abstraction-contract pytest step. The shared-DB files (`test_effect_grammar_structure.py`, `test_effect_grammar_participants.py`, `test_effect_grammar_pool_invariants.py`, `test_effect_spec_equivalence_tool.py`) run only in the full-suite step: the session DB load alone takes about 17 s, past that step's 10 s per-file budget (the equivalence-tool file measured 20.8 s, of which about 4 s is test bodies), and the full suite already runs them on every PR. `tests/test_effect_neutrality.py` has not landed yet. The tool tests (2026-10-02): `tests/test_effect_parsers_ratchet.py` reads sources only and runs in the abstraction-contract pytest step; `tests/test_effect_census_tool.py`, `tests/test_host_resolution_harness.py` and the tool section of `tests/test_effect_spec_equivalence_tool.py` hold the pool-wide checks and run in the full-suite step.
 
 ### 18.3 Later-family regression tests (written red in the named step)
 

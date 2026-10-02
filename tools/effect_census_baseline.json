@@ -1,0 +1,1592 @@
+{
+ "description": "Clause-grammar census (design doc 2026-09-29 section 9): pinned typed shares may only rise, pinned refusal totals may only fall. Regenerate with `python tools/effect_census.py --update`.",
+ "pinned": {
+  "deck_residue_by_code": {
+   "target.colored": 3,
+   "target.exclude_source": 4,
+   "target.keyword:flying": 1,
+   "target.scope:not_you": 2,
+   "target.scope:opponent": 7,
+   "target.stat:mana_value": 2,
+   "target.stat:power": 1,
+   "target.stat:toughness": 1,
+   "target.union:creature": 1,
+   "target.union:enchantment": 1,
+   "target.union:land": 1,
+   "target.union:planeswalker": 1,
+   "target.union:sorcery": 3,
+   "target.union:triggered": 1,
+   "target.unparsed": 9
+  },
+  "deck_typed_share": 0.7393,
+  "deck_unmodelled_by_stage": {
+   "AMOUNT": 7,
+   "CLAUSE": 29,
+   "CONDITION": 20,
+   "DURATION": 9,
+   "FILTER": 29,
+   "ITERATION": 2,
+   "NO_LEMMA": 15,
+   "RECOGNIZED_UNSUPPORTED": 6,
+   "REFERENCE": 26,
+   "REPLACEMENT": 59,
+   "STRUCTURE": 3,
+   "TARGET": 19,
+   "TRIGGER_EMBEDDED": 2
+  },
+  "residue_by_code": {
+   "target.colored": 7,
+   "target.conjunctive_types": 21,
+   "target.dependent_controller": 41,
+   "target.exclude_source": 257,
+   "target.keyword:awaken": 1,
+   "target.keyword:cycling": 1,
+   "target.keyword:defender": 5,
+   "target.keyword:flying": 72,
+   "target.keyword:foretell": 1,
+   "target.keyword:infect": 1,
+   "target.keyword:landwalk:island": 1,
+   "target.keyword:shadow": 1,
+   "target.keyword:toxic": 2,
+   "target.keyword:without_double_strike": 1,
+   "target.keyword:without_first_strike": 1,
+   "target.keyword:without_flying": 14,
+   "target.keyword:without_vigilance": 1,
+   "target.scope:not_you": 92,
+   "target.scope:opponent": 73,
+   "target.stat:greatest_power": 2,
+   "target.stat:least_mana_value": 1,
+   "target.stat:mana_value": 76,
+   "target.stat:power": 103,
+   "target.stat:toughness": 19,
+   "target.state:attacking": 2,
+   "target.state:blocked": 3,
+   "target.state:blocked_by": 2,
+   "target.state:blocking": 5,
+   "target.state:counter": 19,
+   "target.state:dealt": 6,
+   "target.state:entered": 2,
+   "target.state:token": 7,
+   "target.state:was_blocked": 2,
+   "target.state:was_dealt": 22,
+   "target.total_mv": 1,
+   "target.union:ability": 1,
+   "target.union:activated": 5,
+   "target.union:artifact": 1,
+   "target.union:battle": 5,
+   "target.union:creature": 21,
+   "target.union:enchantment": 16,
+   "target.union:equipment": 1,
+   "target.union:food": 1,
+   "target.union:land": 8,
+   "target.union:opponent": 1,
+   "target.union:planeswalker": 133,
+   "target.union:player": 2,
+   "target.union:sorcery": 61,
+   "target.union:spacecraft": 2,
+   "target.union:triggered": 6,
+   "target.union:vehicle": 28,
+   "target.unparsed": 390
+  },
+  "residue_by_polarity": {
+   "NARROWING": 292,
+   "UNPARSED": 390,
+   "WIDENING": 865
+  },
+  "typed_share": 0.7233,
+  "typed_share_by_host_kind": {
+   "ACTIVATED": 0.7843,
+   "ALTERNATIVE_COST": 0.0,
+   "CHAPTER": 0.7396,
+   "KEYWORD": 0.0,
+   "LOYALTY": 0.7527,
+   "MANA_ABILITY": 0.9498,
+   "MODE": 0.7679,
+   "REPLACEMENT": 0.0,
+   "SPELL": 0.725,
+   "STATIC": 0.6077,
+   "TRIGGERED": 0.7844,
+   "UNKNOWN": 0.0
+  },
+  "unmodelled_by_stage": {
+   "AMOUNT": 779,
+   "CLAUSE": 1934,
+   "CONDITION": 1164,
+   "DELAY": 16,
+   "DURATION": 108,
+   "FILTER": 1617,
+   "ITERATION": 110,
+   "NO_LEMMA": 1190,
+   "QUANTITY": 133,
+   "RECOGNIZED_UNSUPPORTED": 478,
+   "REFERENCE": 1524,
+   "REPLACEMENT": 1543,
+   "STRUCTURE": 231,
+   "TARGET": 1188,
+   "TARGET_COUNT": 82,
+   "TRIGGER_EMBEDDED": 165
+  }
+ },
+ "report": {
+  "by_host_kind": {
+   "ACTIVATED": {
+    "share": 0.7843,
+    "specs": 6634,
+    "typed": 5203
+   },
+   "ALTERNATIVE_COST": {
+    "share": 0.0,
+    "specs": 16,
+    "typed": 0
+   },
+   "CHAPTER": {
+    "share": 0.7396,
+    "specs": 699,
+    "typed": 517
+   },
+   "KEYWORD": {
+    "share": 0.0,
+    "specs": 9,
+    "typed": 0
+   },
+   "LOYALTY": {
+    "share": 0.7527,
+    "specs": 1302,
+    "typed": 980
+   },
+   "MANA_ABILITY": {
+    "share": 0.9498,
+    "specs": 1593,
+    "typed": 1513
+   },
+   "MODE": {
+    "share": 0.7679,
+    "specs": 1758,
+    "typed": 1350
+   },
+   "REPLACEMENT": {
+    "share": 0.0,
+    "specs": 1439,
+    "typed": 0
+   },
+   "SPELL": {
+    "share": 0.725,
+    "specs": 9992,
+    "typed": 7244
+   },
+   "STATIC": {
+    "share": 0.6077,
+    "specs": 5376,
+    "typed": 3267
+   },
+   "TRIGGERED": {
+    "share": 0.7844,
+    "specs": 15272,
+    "typed": 11980
+   },
+   "UNKNOWN": {
+    "share": 0.0,
+    "specs": 226,
+    "typed": 0
+   }
+  },
+  "cards": 22738,
+  "cost_modifiers": [
+   [
+    "STATIC",
+    "COST_DELTA",
+    220
+   ],
+   [
+    "ACTIVATED",
+    "COST_DELTA",
+    36
+   ],
+   [
+    "KEYWORD",
+    "COST_DELTA",
+    3
+   ]
+  ],
+  "deck": {
+   "by_host_kind": {
+    "ACTIVATED": {
+     "share": 0.7949,
+     "specs": 156,
+     "typed": 124
+    },
+    "CHAPTER": {
+     "share": 0.8,
+     "specs": 15,
+     "typed": 12
+    },
+    "LOYALTY": {
+     "share": 0.7636,
+     "specs": 55,
+     "typed": 42
+    },
+    "MANA_ABILITY": {
+     "share": 0.9333,
+     "specs": 75,
+     "typed": 70
+    },
+    "MODE": {
+     "share": 0.875,
+     "specs": 40,
+     "typed": 35
+    },
+    "REPLACEMENT": {
+     "share": 0.0,
+     "specs": 58,
+     "typed": 0
+    },
+    "SPELL": {
+     "share": 0.8315,
+     "specs": 184,
+     "typed": 153
+    },
+    "STATIC": {
+     "share": 0.3684,
+     "specs": 76,
+     "typed": 28
+    },
+    "TRIGGERED": {
+     "share": 0.8634,
+     "specs": 205,
+     "typed": 177
+    },
+    "UNKNOWN": {
+     "share": 0.0,
+     "specs": 3,
+     "typed": 0
+    }
+   },
+   "cards": 358,
+   "specs": 867,
+   "typed": 641
+  },
+  "keyword_lines": [
+   [
+    "flying",
+    "KEYWORD",
+    2188
+   ],
+   [
+    "enchant",
+    "KEYWORD",
+    789
+   ],
+   [
+    "trample",
+    "KEYWORD",
+    517
+   ],
+   [
+    "equip",
+    "KEYWORD",
+    495
+   ],
+   [
+    "flash",
+    "KEYWORD",
+    490
+   ],
+   [
+    "vigilance",
+    "KEYWORD",
+    357
+   ],
+   [
+    "reach",
+    "KEYWORD",
+    315
+   ],
+   [
+    "haste",
+    "KEYWORD",
+    273
+   ],
+   [
+    "menace",
+    "KEYWORD",
+    243
+   ],
+   [
+    "defender",
+    "KEYWORD",
+    231
+   ],
+   [
+    "deathtouch",
+    "KEYWORD",
+    209
+   ],
+   [
+    "cycling",
+    "KEYWORD",
+    206
+   ],
+   [
+    "first strike",
+    "KEYWORD",
+    187
+   ],
+   [
+    "lifelink",
+    "KEYWORD",
+    168
+   ],
+   [
+    "kicker",
+    "KEYWORD",
+    166
+   ],
+   [
+    "flashback",
+    "KEYWORD",
+    148
+   ],
+   [
+    "crew",
+    "KEYWORD",
+    139
+   ],
+   [
+    "devoid",
+    "KEYWORD",
+    125
+   ],
+   [
+    "ward",
+    "KEYWORD",
+    108
+   ],
+   [
+    "convoke",
+    "KEYWORD",
+    92
+   ],
+   [
+    "double strike",
+    "KEYWORD",
+    79
+   ],
+   [
+    "indestructible",
+    "KEYWORD",
+    78
+   ],
+   [
+    "prowess",
+    "KEYWORD",
+    75
+   ],
+   [
+    "protection",
+    "KEYWORD",
+    68
+   ],
+   [
+    "affinity",
+    "KEYWORD",
+    64
+   ],
+   [
+    "changeling",
+    "KEYWORD",
+    61
+   ],
+   [
+    "morph",
+    "KEYWORD",
+    61
+   ],
+   [
+    "hexproof",
+    "KEYWORD",
+    58
+   ],
+   [
+    "suspend",
+    "KEYWORD",
+    58
+   ],
+   [
+    "madness",
+    "KEYWORD",
+    48
+   ],
+   [
+    "unearth",
+    "KEYWORD",
+    46
+   ],
+   [
+    "infect",
+    "KEYWORD",
+    44
+   ],
+   [
+    "bestow",
+    "KEYWORD",
+    42
+   ],
+   [
+    "start your engines!",
+    "KEYWORD",
+    40
+   ],
+   [
+    "disguise",
+    "KEYWORD",
+    39
+   ],
+   [
+    "foretell",
+    "KEYWORD",
+    37
+   ],
+   [
+    "bushido",
+    "KEYWORD",
+    35
+   ],
+   [
+    "daybound",
+    "KEYWORD",
+    35
+   ],
+   [
+    "exalted",
+    "KEYWORD",
+    33
+   ],
+   [
+    "evoke",
+    "KEYWORD",
+    32
+   ],
+   [
+    "warp",
+    "KEYWORD",
+    32
+   ],
+   [
+    "ninjutsu",
+    "KEYWORD",
+    31
+   ],
+   [
+    "plot",
+    "KEYWORD",
+    31
+   ],
+   [
+    "toxic",
+    "KEYWORD",
+    31
+   ],
+   [
+    "entwine",
+    "KEYWORD",
+    30
+   ],
+   [
+    "megamorph",
+    "KEYWORD",
+    30
+   ],
+   [
+    "mutate",
+    "KEYWORD",
+    30
+   ],
+   [
+    "saddle",
+    "KEYWORD",
+    30
+   ],
+   [
+    "splice",
+    "KEYWORD",
+    29
+   ],
+   [
+    "fear",
+    "KEYWORD",
+    28
+   ],
+   [
+    "sneak",
+    "KEYWORD",
+    27
+   ],
+   [
+    "station",
+    "KEYWORD",
+    27
+   ],
+   [
+    "rebound",
+    "KEYWORD",
+    26
+   ],
+   [
+    "soulshift",
+    "KEYWORD",
+    26
+   ],
+   [
+    "disturb",
+    "KEYWORD",
+    25
+   ],
+   [
+    "level up",
+    "KEYWORD",
+    25
+   ],
+   [
+    "wither",
+    "KEYWORD",
+    25
+   ],
+   [
+    "ascend",
+    "KEYWORD",
+    24
+   ],
+   [
+    "cumulative upkeep",
+    "KEYWORD",
+    23
+   ],
+   [
+    "escape",
+    "KEYWORD",
+    23
+   ],
+   [
+    "gift",
+    "KEYWORD",
+    23
+   ],
+   [
+    "modular",
+    "KEYWORD",
+    23
+   ],
+   [
+    "persist",
+    "KEYWORD",
+    23
+   ],
+   [
+    "bloodthirst",
+    "KEYWORD",
+    22
+   ],
+   [
+    "delve",
+    "KEYWORD",
+    22
+   ],
+   [
+    "exploit",
+    "KEYWORD",
+    22
+   ],
+   [
+    "overload",
+    "KEYWORD",
+    22
+   ],
+   [
+    "echo",
+    "KEYWORD",
+    21
+   ],
+   [
+    "spree",
+    "KEYWORD",
+    21
+   ],
+   [
+    "bargain",
+    "KEYWORD",
+    20
+   ],
+   [
+    "dash",
+    "KEYWORD",
+    20
+   ],
+   [
+    "renown",
+    "KEYWORD",
+    20
+   ],
+   [
+    "shroud",
+    "KEYWORD",
+    20
+   ],
+   [
+    "backup",
+    "KEYWORD",
+    19
+   ],
+   [
+    "craft",
+    "KEYWORD",
+    19
+   ],
+   [
+    "intimidate",
+    "KEYWORD",
+    19
+   ],
+   [
+    "prototype",
+    "KEYWORD",
+    19
+   ],
+   [
+    "soulbond",
+    "KEYWORD",
+    19
+   ],
+   [
+    "cascade",
+    "KEYWORD",
+    18
+   ],
+   [
+    "improvise",
+    "KEYWORD",
+    18
+   ],
+   [
+    "undying",
+    "KEYWORD",
+    18
+   ],
+   [
+    "multikicker",
+    "KEYWORD",
+    17
+   ],
+   [
+    "offspring",
+    "KEYWORD",
+    17
+   ],
+   [
+    "storm",
+    "KEYWORD",
+    17
+   ],
+   [
+    "firebending",
+    "KEYWORD",
+    16
+   ],
+   [
+    "job select",
+    "KEYWORD",
+    16
+   ],
+   [
+    "living weapon",
+    "KEYWORD",
+    16
+   ],
+   [
+    "split second",
+    "KEYWORD",
+    16
+   ],
+   [
+    "vanishing",
+    "KEYWORD",
+    16
+   ],
+   [
+    "awaken",
+    "KEYWORD",
+    15
+   ],
+   [
+    "devour",
+    "KEYWORD",
+    15
+   ],
+   [
+    "embalm",
+    "KEYWORD",
+    15
+   ],
+   [
+    "evolve",
+    "KEYWORD",
+    15
+   ],
+   [
+    "extort",
+    "KEYWORD",
+    15
+   ],
+   [
+    "fabricate",
+    "KEYWORD",
+    15
+   ],
+   [
+    "fuse",
+    "KEYWORD",
+    15
+   ],
+   [
+    "sunburst",
+    "KEYWORD",
+    15
+   ],
+   [
+    "mentor",
+    "KEYWORD",
+    14
+   ],
+   [
+    "reconfigure",
+    "KEYWORD",
+    14
+   ],
+   [
+    "transmute",
+    "KEYWORD",
+    14
+   ],
+   [
+    "buyback",
+    "KEYWORD",
+    13
+   ],
+   [
+    "cipher",
+    "KEYWORD",
+    13
+   ],
+   [
+    "dredge",
+    "KEYWORD",
+    13
+   ],
+   [
+    "emerge",
+    "KEYWORD",
+    13
+   ],
+   [
+    "graft",
+    "KEYWORD",
+    13
+   ],
+   [
+    "hideaway",
+    "KEYWORD",
+    13
+   ],
+   [
+    "replicate",
+    "KEYWORD",
+    13
+   ],
+   [
+    "retrace",
+    "KEYWORD",
+    13
+   ],
+   [
+    "riot",
+    "KEYWORD",
+    13
+   ],
+   [
+    "shadow",
+    "KEYWORD",
+    13
+   ],
+   [
+    "unleash",
+    "KEYWORD",
+    13
+   ],
+   [
+    "blitz",
+    "KEYWORD",
+    12
+   ],
+   [
+    "casualty",
+    "KEYWORD",
+    12
+   ],
+   [
+    "champion",
+    "KEYWORD",
+    12
+   ],
+   [
+    "cleave",
+    "KEYWORD",
+    12
+   ],
+   [
+    "eternalize",
+    "KEYWORD",
+    12
+   ],
+   [
+    "freerunning",
+    "KEYWORD",
+    12
+   ],
+   [
+    "mayhem",
+    "KEYWORD",
+    12
+   ],
+   [
+    "mobilize",
+    "KEYWORD",
+    12
+   ],
+   [
+    "outlast",
+    "KEYWORD",
+    12
+   ],
+   [
+    "scavenge",
+    "KEYWORD",
+    12
+   ],
+   [
+    "teamwork",
+    "KEYWORD",
+    12
+   ],
+   [
+    "umbra armor",
+    "KEYWORD",
+    12
+   ],
+   [
+    "afterlife",
+    "KEYWORD",
+    11
+   ],
+   [
+    "annihilator",
+    "KEYWORD",
+    11
+   ],
+   [
+    "enlist",
+    "KEYWORD",
+    11
+   ],
+   [
+    "flanking",
+    "KEYWORD",
+    11
+   ],
+   [
+    "jump-start",
+    "KEYWORD",
+    11
+   ],
+   [
+    "miracle",
+    "KEYWORD",
+    11
+   ],
+   [
+    "reinforce",
+    "KEYWORD",
+    11
+   ],
+   [
+    "surge",
+    "KEYWORD",
+    11
+   ],
+   [
+    "tribute",
+    "KEYWORD",
+    11
+   ],
+   [
+    "battle cry",
+    "KEYWORD",
+    10
+   ],
+   [
+    "conspire",
+    "KEYWORD",
+    10
+   ],
+   [
+    "for mirrodin!",
+    "KEYWORD",
+    10
+   ],
+   [
+    "harmonize",
+    "KEYWORD",
+    10
+   ],
+   [
+    "haunt",
+    "KEYWORD",
+    10
+   ],
+   [
+    "read ahead",
+    "KEYWORD",
+    10
+   ],
+   [
+    "skulk",
+    "KEYWORD",
+    10
+   ],
+   [
+    "spectacle",
+    "KEYWORD",
+    10
+   ],
+   [
+    "afflict",
+    "KEYWORD",
+    9
+   ],
+   [
+    "escalate",
+    "KEYWORD",
+    9
+   ],
+   [
+    "increment",
+    "KEYWORD",
+    9
+   ],
+   [
+    "ingest",
+    "KEYWORD",
+    9
+   ],
+   [
+    "prowl",
+    "KEYWORD",
+    9
+   ],
+   [
+    "training",
+    "KEYWORD",
+    9
+   ],
+   [
+    "web-slinging",
+    "KEYWORD",
+    9
+   ],
+   [
+    "companion",
+    "KEYWORD",
+    7
+   ],
+   [
+    "compleated",
+    "KEYWORD",
+    7
+   ],
+   [
+    "recover",
+    "KEYWORD",
+    7
+   ],
+   [
+    "tiered",
+    "KEYWORD",
+    6
+   ],
+   [
+    "epic",
+    "KEYWORD",
+    5
+   ],
+   [
+    "impending",
+    "KEYWORD",
+    5
+   ],
+   [
+    "paradigm",
+    "KEYWORD",
+    5
+   ],
+   [
+    "ripple",
+    "KEYWORD",
+    5
+   ],
+   [
+    "partner",
+    "KEYWORD",
+    2
+   ],
+   [
+    "aura swap",
+    "KEYWORD",
+    1
+   ],
+   [
+    "dash",
+    "STATIC",
+    1
+   ],
+   [
+    "decayed",
+    "KEYWORD",
+    1
+   ],
+   [
+    "equip",
+    "STATIC",
+    1
+   ],
+   [
+    "fortify",
+    "KEYWORD",
+    1
+   ],
+   [
+    "gravestorm",
+    "KEYWORD",
+    1
+   ],
+   [
+    "ninjutsu",
+    "STATIC",
+    1
+   ],
+   [
+    "rampage",
+    "KEYWORD",
+    1
+   ],
+   [
+    "transfigure",
+    "KEYWORD",
+    1
+   ]
+  ],
+  "may_scope": [
+   [
+    "REVEAL? > MOVE",
+    123
+   ],
+   [
+    "SEARCH? > MOVE, SHUFFLE",
+    109
+   ],
+   [
+    "SEARCH? > SHUFFLE, MOVE",
+    22
+   ],
+   [
+    "EXILE? > MOVE",
+    6
+   ],
+   [
+    "DISCARD? > DRAW",
+    3
+   ],
+   [
+    "SEARCH? > MOVE",
+    3
+   ],
+   [
+    "MOVE? > UNMODELLED",
+    2
+   ],
+   [
+    "PAY? > DISCARD",
+    2
+   ],
+   [
+    "PAY? > EXILE",
+    2
+   ],
+   [
+    "PAY? > SACRIFICE",
+    2
+   ],
+   [
+    "SEARCH? > UNMODELLED, SHUFFLE",
+    2
+   ],
+   [
+    "CHOOSE? > PUT_COUNTERS",
+    1
+   ],
+   [
+    "DISCARD? > UNMODELLED",
+    1
+   ],
+   [
+    "EXILE? > KEYWORD_ACTION",
+    1
+   ],
+   [
+    "EXILE? > PUT_COUNTERS",
+    1
+   ],
+   [
+    "MOVE? > CONTINUOUS",
+    1
+   ],
+   [
+    "MOVE? > MOVE",
+    1
+   ],
+   [
+    "REMOVE_COUNTERS? > TRANSFORM",
+    1
+   ],
+   [
+    "REVEAL? > PUT_COUNTERS",
+    1
+   ],
+   [
+    "SEARCH? > EXILE, SHUFFLE",
+    1
+   ],
+   [
+    "SEARCH? > SHUFFLE",
+    1
+   ],
+   [
+    "UNTAP? > CONTINUOUS",
+    1
+   ]
+  ],
+  "residue": 1547,
+  "specs": 44316,
+  "sub_abilities": [
+   [
+    "DELAYED",
+    "NEXT_END_STEP",
+    "plain",
+    183
+   ],
+   [
+    "REFLEXIVE",
+    "-",
+    "plain",
+    171
+   ],
+   [
+    "DELAYED",
+    "YOUR_NEXT_UPKEEP",
+    "plain",
+    14
+   ],
+   [
+    "DELAYED",
+    "YOUR_NEXT_END_STEP",
+    "plain",
+    13
+   ],
+   [
+    "DELAYED",
+    "NEXT_UPKEEP",
+    "plain",
+    5
+   ],
+   [
+    "REFLEXIVE",
+    "-",
+    "intervening_if",
+    2
+   ]
+  ],
+  "typed": 32054,
+  "unmodelled": 12262,
+  "unmodelled_row_count": 1976,
+  "unmodelled_rows": [
+   [
+    "REPLACEMENT",
+    "",
+    "structure.replacement_static",
+    1439
+   ],
+   [
+    "NO_LEMMA",
+    "",
+    "lexicon.no_lemma",
+    1190
+   ],
+   [
+    "REFERENCE",
+    "look",
+    "participant.library_position",
+    402
+   ],
+   [
+    "CLAUSE",
+    "cost",
+    "payload.modification_unknown",
+    228
+   ],
+   [
+    "REFERENCE",
+    "exile",
+    "participant.library_position",
+    207
+   ],
+   [
+    "CLAUSE",
+    "can't",
+    "payload.prohibit_qualifier",
+    193
+   ],
+   [
+    "CLAUSE",
+    "play",
+    "payload.modification_unknown",
+    182
+   ],
+   [
+    "CLAUSE",
+    "cast",
+    "payload.modification_unknown",
+    160
+   ],
+   [
+    "CLAUSE",
+    "attach",
+    "patterns.no_row:attach",
+    155
+   ],
+   [
+    "REFERENCE",
+    "reveal",
+    "participant.library_position",
+    150
+   ],
+   [
+    "RECOGNIZED_UNSUPPORTED",
+    "regenerate",
+    "lexicon.unsupported:regenerate",
+    138
+   ],
+   [
+    "CLAUSE",
+    "can't",
+    "payload.prohibit_action",
+    125
+   ],
+   [
+    "CLAUSE",
+    "doesn't",
+    "payload.modification_unknown",
+    121
+   ],
+   [
+    "FILTER",
+    "choose",
+    "filter.unparsed:new",
+    112
+   ],
+   [
+    "AMOUNT",
+    "deal",
+    "amount.x_unbound",
+    94
+   ],
+   [
+    "FILTER",
+    "choose",
+    "filter.unparsed:from",
+    93
+   ],
+   [
+    "REPLACEMENT",
+    "exile",
+    "clauses.structure_condition",
+    89
+   ],
+   [
+    "CONDITION",
+    "",
+    "condition.last_turn",
+    70
+   ],
+   [
+    "REFERENCE",
+    "shuffle",
+    "link.unbound",
+    70
+   ],
+   [
+    "AMOUNT",
+    "become",
+    "amount.scaler:with",
+    65
+   ],
+   [
+    "CLAUSE",
+    "prevent",
+    "payload.modification_unknown",
+    64
+   ],
+   [
+    "TARGET",
+    "create",
+    "patterns.uncovered_target:target",
+    59
+   ],
+   [
+    "CLAUSE",
+    "create",
+    "payload.token_no_type",
+    58
+   ],
+   [
+    "FILTER",
+    "have",
+    "filter.unparsed:during",
+    58
+   ],
+   [
+    "STRUCTURE",
+    "",
+    "structure.die_table",
+    57
+   ],
+   [
+    "STRUCTURE",
+    "",
+    "structure.class_level",
+    54
+   ],
+   [
+    "CLAUSE",
+    "reveal",
+    "patterns.no_row:reveal_until",
+    52
+   ],
+   [
+    "RECOGNIZED_UNSUPPORTED",
+    "become a copy",
+    "lexicon.unsupported:become_a_copy",
+    52
+   ],
+   [
+    "STRUCTURE",
+    "",
+    "structure.level_band",
+    50
+   ],
+   [
+    "AMOUNT",
+    "prevent",
+    "amount.scaler:to",
+    49
+   ],
+   [
+    "CLAUSE",
+    "search",
+    "patterns.search_zone:and",
+    47
+   ],
+   [
+    "CONDITION",
+    "",
+    "condition.history_event",
+    47
+   ],
+   [
+    "TARGET",
+    "deal",
+    "target.no_requirement:attacking",
+    46
+   ],
+   [
+    "REFERENCE",
+    "put",
+    "link.unbound",
+    45
+   ],
+   [
+    "AMOUNT",
+    "deal",
+    "patterns.no_recipient",
+    44
+   ],
+   [
+    "RECOGNIZED_UNSUPPORTED",
+    "the ring tempts you",
+    "lexicon.unsupported:the_ring_tempts_you",
+    44
+   ],
+   [
+    "TARGET",
+    "get",
+    "target.no_requirement:attacking",
+    44
+   ],
+   [
+    "CLAUSE",
+    "become",
+    "payload.modification_unknown",
+    43
+   ],
+   [
+    "DURATION",
+    "play",
+    "duration.until_end_of_your_next_turn",
+    43
+   ],
+   [
+    "CLAUSE",
+    "gain",
+    "payload.modification_unknown",
+    38
+   ],
+   [
+    "FILTER",
+    "choose",
+    "filter.unparsed:name",
+    34
+   ],
+   [
+    "REFERENCE",
+    "untap",
+    "participant.player:you",
+    34
+   ],
+   [
+    "STRUCTURE",
+    "",
+    "structure.orphan_mode",
+    34
+   ],
+   [
+    "TARGET",
+    "gain",
+    "target.no_requirement:attacking",
+    34
+   ],
+   [
+    "CONDITION",
+    "",
+    "condition.unparsed:a",
+    31
+   ],
+   [
+    "STRUCTURE",
+    "",
+    "structure.station_threshold",
+    31
+   ],
+   [
+    "CLAUSE",
+    "block",
+    "payload.modification_unknown",
+    30
+   ],
+   [
+    "ITERATION",
+    "create",
+    "amount.element_anaphor",
+    30
+   ],
+   [
+    "CLAUSE",
+    "attack",
+    "payload.modification_unknown",
+    29
+   ],
+   [
+    "FILTER",
+    "exile",
+    "filter.unparsed:from",
+    29
+   ],
+   [
+    "RECOGNIZED_UNSUPPORTED",
+    "venture into the dungeon",
+    "lexicon.unsupported:venture_into_the_dungeon",
+    29
+   ],
+   [
+    "RECOGNIZED_UNSUPPORTED",
+    "clash",
+    "lexicon.unsupported:clash",
+    28
+   ],
+   [
+    "CLAUSE",
+    "add",
+    "payload.mana_tail",
+    27
+   ],
+   [
+    "CONDITION",
+    "",
+    "condition.unparsed:you",
+    27
+   ],
+   [
+    "TARGET",
+    "exile",
+    "target.no_requirement:cards",
+    27
+   ],
+   [
+    "TRIGGER_EMBEDDED",
+    "deal",
+    "clauses.trigger_embedded",
+    27
+   ],
+   [
+    "AMOUNT",
+    "be",
+    "amount.scaler:with",
+    26
+   ],
+   [
+    "REFERENCE",
+    "put",
+    "participant.reference:the",
+    26
+   ],
+   [
+    "TARGET",
+    "exile",
+    "patterns.possessive_object",
+    26
+   ],
+   [
+    "AMOUNT",
+    "must",
+    "amount.scaler:if",
+    25
+   ]
+  ]
+ },
+ "session": "2026-10-02"
+}

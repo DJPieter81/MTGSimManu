@@ -1154,3 +1154,291 @@ def test_a_self_cast_trigger_body_and_its_kicked_payoff_index_their_triggered_ho
     k = v.host_for_override(spawn, spawn.kicked_clause)
     assert k is not None and k.kind is HostKind.TRIGGERED
     assert k.trigger.intervening_if is not None
+
+
+# ══ the equivalence tool (tools/effect_spec_equivalence.py) ═══════════
+#
+# Section 10, "Tool usage": per card and per FieldDerivation (plus the
+# tool's cast_targets carrier), the legacy value against the derived one,
+# each comparison classed; the baseline pins per-field class counts and
+# --check fails when UNEXPLAINED grows, AGREE falls, an allowlist row is
+# stale, a SEMANTIC_FIX row has no test, a snapshot mismatches, a switched
+# field differs or gate parity fails.
+
+def _eq_tool():
+    import sys
+    tools = str(REPO / "tools")
+    if tools not in sys.path:
+        sys.path.insert(0, tools)
+    import effect_spec_equivalence
+    return effect_spec_equivalence
+
+
+def _fake_rec(derived, legacy, *, masked=False, field="synthetic_field",
+              partial=False, compare="eq"):
+    from types import SimpleNamespace
+    return SimpleNamespace(
+        field=field, family="damage", partial=partial, compare=compare,
+        derive=lambda e, k=None, t=None: derived,
+        legacy=lambda t, k=None: legacy,
+        masked=lambda e, k=None, t=None: masked,
+        keys=lambda t: (None,))
+
+
+def _fake_template(text="Synthetic text.", name="Synthetic Card"):
+    from types import SimpleNamespace
+    return SimpleNamespace(name=name, oracle_text=text, back_face_oracle="")
+
+
+def _effects_with(*specs):
+    from engine.effect_spec import AbilityEffects, CardEffects, HostKind
+    return CardEffects.of(((AbilityEffects(kind=HostKind.SPELL, face=0,
+                                           index=0, specs=tuple(specs)),),))
+
+
+def _refused():
+    from engine.effect_spec import EffectSpec, Stage, Unmodelled, Verb
+    return EffectSpec(verb=Verb.UNMODELLED, raw="x",
+                      payload=Unmodelled(Stage.TARGET, "exile", "t"))
+
+
+def _row(**kw):
+    t = _eq_tool()
+    base = dict(id="row", cls="LEGACY_SYNTHETIC", fields=("synthetic_field",),
+                reason="a reason", pattern="synthetic")
+    base.update(kw)
+    return t.AllowRow(**base)
+
+
+def test_a_view_equal_to_legacy_agrees_and_an_equal_view_a_mask_hid_is_masked_growth():
+    t = _eq_tool()
+    tpl, ce = _fake_template(), _effects_with()
+    assert t.classify(_fake_rec(3, 3), tpl, ce, None, []).cls == t.AGREE
+    assert t.classify(_fake_rec({"a": [1, 2]}, {"a": (1, 2)}), tpl, ce,
+                      None, []).cls == t.AGREE
+    assert t.classify(_fake_rec(None, None, masked=True), tpl, ce, None,
+                      []).cls == t.MASKED_GROWTH
+
+
+def test_a_disagreement_takes_the_class_of_the_first_allowlist_row_matching_its_field_and_printed_text():
+    t = _eq_tool()
+    tpl, ce = _fake_template("Destroy target synthetic thing."), \
+        _effects_with()
+    rows = [_row(id="other_field", fields=("another_field",)),
+            _row(id="no_match", pattern="nothing like this"),
+            _row(id="first", cls="LEGACY_FIRST"),
+            _row(id="second", cls="LEGACY_SECOND")]
+    d = t.classify(_fake_rec(1, 2), tpl, ce, None, rows)
+    assert (d.cls, d.row) == ("LEGACY_FIRST", "first")
+    by_card = [_row(id="card", pattern=None, cards=("Synthetic Card",))]
+    assert t.classify(_fake_rec(1, 2), tpl, ce, None, by_card).row == "card"
+
+
+def test_an_unlisted_disagreement_is_coverage_growth_unmodelled_clause_or_unexplained_by_its_values():
+    t = _eq_tool()
+    tpl = _fake_template()
+    plain, refused = _effects_with(), _effects_with(_refused())
+    # legacy has no value, the view types one: the grammar reads more
+    assert t.classify(_fake_rec({"n": 1}, None), tpl, plain, None,
+                      []).cls == t.DERIVED_COVERAGE_GROWTH
+    # the view has no value on a card with a refused clause
+    assert t.classify(_fake_rec(None, {"n": 1}), tpl, refused, None,
+                      []).cls == t.UNMODELLED_CLAUSE
+    # ... and no refusal to blame: unexplained
+    assert t.classify(_fake_rec(None, {"n": 1}), tpl, plain, None,
+                      []).cls == t.UNEXPLAINED
+    assert t.classify(_fake_rec({"n": 2}, {"n": 1}), tpl, refused, None,
+                      []).cls == t.UNEXPLAINED
+
+
+def test_a_partial_record_compares_only_its_compare_projection():
+    t = _eq_tool()
+    rec = _fake_rec({"dest": "hand", "types": ["x"]},
+                    {"dest": "hand", "types": ["with", "the"]},
+                    partial=True, compare=("dest",))
+    assert t.classify(rec, _fake_template(), _effects_with(), None,
+                      []).cls == t.AGREE
+
+
+def test_an_allowlist_row_that_explains_nothing_on_a_full_run_is_stale():
+    t = _eq_tool()
+    rows = [_row(id="used"), _row(id="unused", pattern="absent")]
+    tpl = _fake_template()
+    rep = t.run([tpl], {tpl.name: _effects_with()}, rows=rows, full=True,
+                recs=[_fake_rec(1, 2)])
+    assert rep.row_hits == {"used": 1, "unused": 0}
+    base = t.baseline_of(rep)
+    problems = t.check(base, rep, rows=rows, templates=[tpl])
+    assert any("unused" in p and "stale" in p for p in problems), problems
+    assert not any("row used" in p for p in problems), problems
+    # a partial run (--decks / --field) never calls a row stale
+    rep.full = False
+    assert not any("stale" in p for p in t.check(base, rep, rows=rows))
+
+
+def test_a_semantic_fix_row_names_a_test_that_exists():
+    t = _eq_tool()
+    missing = _row(id="fix", cls=t.SEMANTIC_FIX)
+    assert any("no test" in p for p in t.validate_allowlist(
+        [missing], fields=["synthetic_field"]))
+    wrong = _row(id="fix", cls=t.SEMANTIC_FIX,
+                 test="tests/test_effect_spec_equivalence_tool.py::nope")
+    assert any("does not exist" in p for p in t.validate_allowlist(
+        [wrong], fields=["synthetic_field"]))
+    here = ("tests/test_effect_spec_equivalence_tool.py::"
+            "test_a_semantic_fix_row_names_a_test_that_exists")
+    assert t.validate_allowlist([_row(id="fix", cls=t.SEMANTIC_FIX,
+                                      test=here)],
+                                fields=["synthetic_field"]) == []
+
+
+def test_an_allowlist_row_needs_a_known_class_a_reason_a_derived_field_and_a_compiling_pattern():
+    t = _eq_tool()
+    probs = t.validate_allowlist([
+        _row(id="a", cls="NOT_A_CLASS"), _row(id="b", reason=" "),
+        _row(id="c", fields=("no_such_field",)), _row(id="d", pattern="("),
+        _row(id="e", pattern=None), _row(id="e")],
+        fields=["synthetic_field"])
+    for needle in ("a: unknown class", "b: no reason", "c: field",
+                   "d: pattern", "e: neither", "e: duplicate"):
+        assert any(p.startswith(needle) for p in probs), (needle, probs)
+
+
+# Section 10's recorded legacy-side disagreements (the seed rows): every
+# one is an allowlist row or a named unsurfaced entry with its reason.
+SECTION_10_SEED_ROWS = {
+    "target_nonland_permanent_card_from_zone",
+    "target_spell_or_creature_zone_union",
+    "nonland_permanent_or_suspended_card",
+    "graveyard_or_exile_object",
+    "printed_target_counts_above_ten",
+    "token_subtypes_keyword_scope_and_slot_identity",
+    "ritual_mana_reads_reminder_and_granted_text",
+    "ritual_mana_additional_colorless",
+    "ritual_mana_activation_cost_pips_and_colour_collapse",
+    "activation_tutor_relative_clause_filter",
+    "keyword_scoped_cost_reduction",
+}
+
+
+def test_the_committed_allowlist_is_valid_and_accounts_for_every_section_10_seed_row():
+    t = _eq_tool()
+    rows, unsurfaced = t.load_allowlist(), t.load_unsurfaced()
+    assert t.validate_allowlist(rows) == []
+    assert t.validate_unsurfaced(unsurfaced) == []
+    ids = {r.id for r in rows} | {u["id"] for u in unsurfaced}
+    assert ids == SECTION_10_SEED_ROWS
+    assert all(r.source.startswith("design doc section 10") for r in rows)
+
+
+def test_check_fails_when_unexplained_grows_or_agree_falls_for_a_field():
+    t = _eq_tool()
+    base = {"fields": {"f": {t.AGREE: 10, t.UNEXPLAINED: 2}}}
+    same = t.Report(counts={"f": {t.AGREE: 10, t.UNEXPLAINED: 2}}, diffs=[],
+                    row_hits={}, templates=1, full=False)
+    assert t.check(base, same, rows=[]) == []
+    grew = t.Report(counts={"f": {t.AGREE: 10, t.UNEXPLAINED: 3}}, diffs=[],
+                    row_hits={}, templates=1, full=False)
+    assert any("UNEXPLAINED grew" in p for p in t.check(base, grew, rows=[]))
+    fell = t.Report(counts={"f": {t.AGREE: 9, t.UNEXPLAINED: 2}}, diffs=[],
+                    row_hits={}, templates=1, full=False)
+    assert any("AGREE fell" in p for p in t.check(base, fell, rows=[]))
+
+
+def test_no_field_is_switched_and_no_legacy_snapshot_is_frozen_in_e0():
+    t = _eq_tool()
+    assert t.switched_fields() == []
+    assert t.snapshot_problems([]) == []
+
+
+def test_a_switched_field_is_one_card_database_assigns_from_a_view(tmp_path):
+    t = _eq_tool()
+    src = tmp_path / "db.py"
+    src.write_text("def f(template):\n"
+                   "    template.a = parse_a(template.oracle_text)\n"
+                   "    template.b = effect_views.b(template.effects)\n")
+    assert t.switched_fields(src) == ["b"]
+
+
+def test_the_earliest_step_of_a_host_is_the_latest_family_step_among_its_verbs():
+    t = _eq_tool()
+    assert t.earliest_step(["DAMAGE"]) == "E1"
+    assert t.earliest_step(["DESTROY", "SEARCH", "SHUFFLE"]) == "E3"
+    assert t.earliest_step(["CREATE_TRIGGER", "DAMAGE"]) == "E1"
+    assert t.earliest_step(["DAMAGE", "UNMODELLED"]) is None
+    assert t.earliest_step(["ATTACH"]) is None
+
+
+def test_every_clause_resolver_handler_belongs_to_a_family_step():
+    from engine import clause_resolver as CR
+    t = _eq_tool()
+    names = {h.name for h in list(CR.PRE_ORACLE_HANDLERS) + list(CR.HANDLERS)}
+    assert names <= set(t.HANDLER_FAMILY), names - set(t.HANDLER_FAMILY)
+    assert set(t.HANDLER_FAMILY.values()) <= set(_views().STRICT)
+
+
+def _pair(**kw):
+    t = _eq_tool()
+    base = dict(handler="direct_damage", family="damage", card="C",
+                host="SPELL:0:0", part="pool", verbs=("DAMAGE",),
+                sub_kinds=(), step="E1", strict=True, executable=True,
+                switched=False)
+    base.update(kw)
+    return t.Pair(**base)
+
+
+def test_gate_parity_counts_every_accepted_host_of_an_unswitched_handler_as_legacy_fallback():
+    t = _eq_tool()
+    rep = t.gate_parity([_pair(), _pair(card="D", strict=False)])
+    assert (rep["pairs"], rep["new_path"], rep["legacy_fallback"]) == (2, 0, 2)
+    assert rep["failures"] == []
+
+
+def test_gate_parity_fails_a_new_path_host_without_a_harness_identical_run_and_an_unmapped_handler():
+    t = _eq_tool()
+    on_new = _pair(switched=True)
+    assert t.gate_parity([on_new])["new_path"] == 1
+    assert t.gate_parity([on_new])["failures"]
+    assert t.gate_parity([on_new], harness_ok=lambda p: True)["failures"] == []
+    # a switched handler whose host is not strict stays on legacy fallback
+    assert t.gate_parity([_pair(switched=True, strict=False)])[
+        "legacy_fallback"] == 1
+    assert t.gate_parity([_pair(family="?")])["failures"]
+
+
+def test_the_closure_lists_the_registered_deck_hosts_legacy_gates_accept_and_none_is_on_the_new_path(card_db):
+    t = _eq_tool()
+    templates = t.deck_templates(card_db)
+    pairs = t.closure(templates, t.parse_effects_of(templates))
+    rep = t.closure_report(pairs)
+    for handler in ("direct_damage", "targeted_removal", "board_sweep",
+                    "planeswalker_manager:DAMAGE",
+                    "activated_effects:DAMAGE_ANY_TARGET",
+                    "etb:etb_targeted_removal_data",
+                    "oracle_resolver.resolve_self_cast_trigger"):
+        assert handler in rep, handler
+    assert all(p.part in ("mainboard", "sideboard") for p in pairs)
+    parity = t.gate_parity(pairs)
+    assert parity["failures"] == []
+    assert parity["new_path"] == 0 and parity["legacy_fallback"] == len(pairs)
+
+
+# One full pool run: ~18 s eager parse, ~45 s for every derivation on every
+# template, ~1 s for the closure (measured 2026-10-02 on a 4-core box under
+# a concurrent 4-worker matrix run), plus ~18 s when first in the process
+# to load the shared card DB. 900 s bounds a hang on a 2-core CI runner.
+@pytest.mark.timeout(900)
+def test_the_pool_equivalence_and_gate_parity_hold_their_committed_baselines(card_db):
+    import json
+    t = _eq_tool()
+    templates = t.pool_templates(card_db)
+    effects = t.parse_effects_of(templates)
+    rep = t.run(templates, effects, full=True)
+    base = json.loads(t.BASELINE_PATH.read_text())
+    assert t.check(base, rep, templates=templates, effects=effects) == []
+    parity = t.gate_parity(t.closure(templates, effects))
+    assert parity["failures"] == []
+    assert parity["legacy_fallback"] == base["gate_parity"]["legacy_fallback"]
+    parsers = json.loads((REPO / "tools" / "effect_parsers_baseline.json")
+                         .read_text())
+    assert parsers["f"] == parity["legacy_fallback"]
