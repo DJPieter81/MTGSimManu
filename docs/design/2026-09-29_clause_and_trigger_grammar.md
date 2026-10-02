@@ -1025,7 +1025,7 @@ Lines checked and found in full agreement: loot draw/discard (174), put-counter 
 - a SEMANTIC_FIX row has no test;
 - a snapshot mismatches;
 - a switched field differs from legacy on any template (A39);
-- gate parity fails, or its legacy-fallback count grows (`--check` always runs the closure);
+- gate parity fails, or its legacy-fallback count grows (`--check` always runs the closure; a pair is switched when its legacy apply -- clause_resolver handler, planeswalker branch, activation path, ETB carrier or `resolve_self_cast_trigger` -- reaches `resolve_ability` directly or through any helper on its static call graph, so a carrier never stays on fallback by a constant);
 - on a full run, the baseline is stale: UNEXPLAINED fell, AGREE rose or the legacy-fallback count fell without `--update` in the same commit.
 
 An allowlist row with `"always": true` classes every comparison of its cards, an equal one included. It exists for a legacy value that is no comparison: `pump_keyword_set_order` (class LEGACY_HASH_ORDER, 13 pool cards) covers `pump_spell_keyword` on pump spells whose "gains/has" window names two or more keywords, where `oracle_parser._pt_mod_keyword` returns the first member of a set literal found there, so the hash seed picks the keyword. Without the row the pinned counts moved by 3 between processes (follow-up review, 2026-10-02); the legacy fix changes game behaviour and is a legacy unit.

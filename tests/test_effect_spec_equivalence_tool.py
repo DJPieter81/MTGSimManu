@@ -1586,6 +1586,51 @@ def _pair(**kw):
     return t.Pair(**base)
 
 
+def _switched_helper(game):
+    from engine.effect_resolver import resolve_ability
+    return resolve_ability(game, None, 0)
+
+
+def _switched_through_a_helper(game):
+    return _switched_helper(game)
+
+
+def _legacy_apply(game):
+    return game
+
+
+def test_a_handler_that_reaches_the_dispatcher_through_a_helper_is_switched():
+    t = _eq_tool()
+    anywhere = lambda f: True
+    assert t._is_switched(_switched_helper, within=anywhere)
+    assert t._is_switched(_switched_through_a_helper, within=anywhere)
+    assert not t._is_switched(_legacy_apply, within=anywhere)
+    # E0: no engine handler reaches the dispatcher
+    from engine import clause_resolver as CR
+    assert not any(t._is_switched(h.apply) for h in
+                   list(CR.PRE_ORACLE_HANDLERS) + list(CR.HANDLERS))
+
+
+def test_every_etb_carrier_and_the_self_cast_handler_name_an_apply_that_reads_it():
+    import inspect
+    t = _eq_tool()
+    assert set(t.ETB_CARRIER_APPLY) == set(t.ETB_CARRIERS)
+    for field, path in t.ETB_CARRIER_APPLY.items():
+        fn = t._resolve_path(path)
+        assert field in inspect.getsource(fn), (field, path)
+    assert callable(t._resolve_path(t.SELF_CAST_APPLY))
+
+
+def test_the_closure_takes_every_pairs_switch_from_its_apply_never_a_constant(card_db, monkeypatch):
+    t = _eq_tool()
+    monkeypatch.setattr(t, "_is_switched", lambda fn, **kw: True)
+    templates = t.deck_templates(card_db)
+    pairs = t.closure(templates, t.parse_effects_of(templates))
+    kinds = {p.handler.split(":")[0] for p in pairs}
+    assert {"etb", t.SELF_CAST_HANDLER} <= kinds
+    assert all(p.switched for p in pairs)
+
+
 def test_gate_parity_counts_every_accepted_host_of_an_unswitched_handler_as_legacy_fallback():
     t = _eq_tool()
     rep = t.gate_parity([_pair(), _pair(card="D", strict=False)])

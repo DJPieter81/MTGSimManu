@@ -720,7 +720,21 @@ LOYALTY_FAMILY = {
 # The ETB carriers: legacy fields an enter trigger resolves from.
 ETB_CARRIERS = ("etb_targeted_removal_data", "etb_exile_returns_on_leave",
                 "etb_return_land")
+# The legacy apply that resolves each carrier ("module:qualname"): what
+# `_is_switched` inspects, so a carrier switch is seen like any handler's.
+ETB_CARRIER_APPLY = {
+    "etb_targeted_removal_data":
+        "engine.oracle_resolver:resolve_etb_from_oracle",
+    "etb_exile_returns_on_leave":
+        "engine.oracle_resolver:resolve_dies_trigger",
+    "etb_return_land":
+        "engine.land_manager:LandManager.apply_land_etb_static",
+}
 SELF_CAST_HANDLER = "oracle_resolver.resolve_self_cast_trigger"
+SELF_CAST_APPLY = "engine.oracle_resolver:resolve_self_cast_trigger"
+# The dispatcher entry point a switched apply reaches (section 10,
+# migration step 6).
+DISPATCHER = "resolve_ability"
 
 
 @dataclasses.dataclass(frozen=True)
@@ -776,13 +790,99 @@ def earliest_step(verbs: Iterable[str]) -> Optional[str]:
     return STEP_ORDER[max(steps)] if steps else "E0"
 
 
-def _is_switched(fn: Callable) -> bool:
-    """A legacy apply is switched once it calls the dispatcher (section
-    10, migration step 6); none is in E0."""
+def _resolve_path(path: str) -> Callable:
+    """"module:qualname" -> the function."""
+    import importlib
+    mod, _, qual = path.partition(":")
+    obj: Any = importlib.import_module(mod)
+    for part in qual.split("."):
+        obj = getattr(obj, part)
+    return obj
+
+
+def _engine_function(fn: Callable) -> bool:
+    return (getattr(fn, "__module__", "") or "").startswith("engine")
+
+
+_CALLEES: Dict[int, Tuple[bool, Tuple[Callable, ...]]] = {}
+
+
+def _callees(fn: Callable) -> Tuple[bool, Tuple[Callable, ...]]:
+    """(calls the dispatcher directly, the functions it calls that resolve
+    by name: module globals, function-local imports, Class.method and
+    module.attr), memoised per function."""
+    import importlib
+    import textwrap
+    key = id(fn)
+    if key in _CALLEES:
+        return _CALLEES[key]
     try:
-        return "resolve_ability" in inspect.getsource(fn)
-    except (OSError, TypeError):
-        return False
+        tree = ast.parse(textwrap.dedent(inspect.getsource(fn)))
+    except (OSError, TypeError, SyntaxError):
+        _CALLEES[key] = (False, ())
+        return _CALLEES[key]
+    scope = dict(getattr(fn, "__globals__", {}) or {})
+    pkg = (getattr(fn, "__module__", "") or "").rpartition(".")[0]
+    for n in ast.walk(tree):
+        if isinstance(n, ast.ImportFrom):
+            try:
+                base = importlib.import_module(
+                    "." * n.level + (n.module or ""), pkg) if n.level \
+                    else importlib.import_module(n.module or "")
+            except Exception:
+                continue
+            for a in n.names:
+                v = getattr(base, a.name, None)
+                if v is None:
+                    try:
+                        v = importlib.import_module(
+                            f"{base.__name__}.{a.name}")
+                    except Exception:
+                        v = None
+                if v is not None:
+                    scope[a.asname or a.name] = v
+    direct, out = False, []
+    for n in ast.walk(tree):
+        if not isinstance(n, ast.Call):
+            continue
+        f, target = n.func, None
+        if isinstance(f, ast.Name):
+            direct |= f.id == DISPATCHER
+            target = scope.get(f.id)
+        elif isinstance(f, ast.Attribute):
+            direct |= f.attr == DISPATCHER
+            if isinstance(f.value, ast.Name) and f.value.id in scope:
+                target = getattr(scope[f.value.id], f.attr, None)
+        target = getattr(target, "__func__", target)
+        if inspect.isfunction(target):
+            out.append(target)
+    _CALLEES[key] = (direct, tuple(out))
+    return _CALLEES[key]
+
+
+def _is_switched(fn: Callable, *,
+                 within: Callable[[Callable], bool] = _engine_function
+                 ) -> bool:
+    """A legacy apply is switched once it reaches the dispatcher (section
+    10, migration step 6), directly or through any helper it calls (the
+    static call graph over the functions `within` admits: engine code,
+    followed through module functions, function-local imports,
+    `Class.method` and `module.attr` calls; a call on an instance
+    (`game.x()`) is not followed: a switch reached only through one is
+    not seen);
+    none is in E0."""
+    fn = getattr(fn, "__func__", fn)
+    seen, stack = set(), [fn]
+    while stack:
+        f = stack.pop()
+        if id(f) in seen:
+            continue
+        seen.add(id(f))
+        direct, callees = _callees(f)
+        if direct:
+            return True
+        stack.extend(c for c in callees if id(c) not in seen and within(c))
+    return False
 
 
 def _part(name: str, mb: frozenset, sb: frozenset) -> str:
@@ -837,6 +937,9 @@ def closure(templates: Iterable[Any], effects: Mapping[str, Any]
     switched = {h.name: _is_switched(h.apply) for h in handlers}
     pw_switched = _is_switched(planeswalker_manager.PlaneswalkerManager._resolve)
     act_switched = _is_switched(activated_effects.resolve_activated_ability)
+    etb_switched = {f: _is_switched(_resolve_path(p))
+                    for f, p in ETB_CARRIER_APPLY.items()}
+    self_cast_switched = _is_switched(_resolve_path(SELF_CAST_APPLY))
     out: List[Pair] = []
     for t in templates:
         ce = effects.get(t.name) or t.effects
@@ -903,14 +1006,15 @@ def closure(templates: Iterable[Any], effects: Mapping[str, Any]
             if enters and getattr(t, field, None):
                 rec = v.DERIVATIONS[field]
                 out.append(_pair(f"etb:{field}", rec.family, t, enters[0],
-                                 _host_label(enters[0]), part, False))
+                                 _host_label(enters[0]), part,
+                                 etb_switched[field]))
         # the spell's own cast triggers
         if "when you cast this spell" in _printed_text(t):
             for h in ce.front():
                 if h.kind is HostKind.TRIGGERED and h.trigger is not None \
                         and EventHint.SELF_CAST in h.trigger.event_hints:
                     out.append(_pair(SELF_CAST_HANDLER, "removal", t, h,
-                                     _host_label(h), part, False))
+                                     _host_label(h), part, self_cast_switched))
     return out
 
 
