@@ -1216,6 +1216,13 @@ def chosen_from_legacy(ability, item_targets) -> Tuple[Tuple[Union[Handle, int],
 
 **Constraints.** `effect_resolver.py` is not in the parse-once exclusions. It writes no life, damage, counters or zones directly (`check_single_owner`, `check_zone_mutation`).
 
+**As built in E0 (2026-10-02).** The skeleton follows the sketch above, with five refinements, each fail-closed:
+- **Condition evaluators.** `CONDITION_EVALUATORS: Dict[ConditionKind, evaluator]` ships empty beside `EXECUTORS`. `holds` evaluates ALL_OF, ANY_OF and NOT itself and sends each leaf to its evaluator, so `can_execute` refuses a spec (or a sub-host intervening-if) with a leaf no evaluator owns. A per-member condition is not evaluated up front; the executor evaluates it, declared by `evaluates_members = True` on the executor.
+- **Actors.** `can_execute` refuses an actor `_actors_apnap` cannot bind. The bindable shapes are: no actor (the controller), a player-set Selector bound to the controller through `covers_player`, and a `Ref(TARGET)` player slot.
+- **Replacements and CREATE_TRIGGER.** A replacing spec's victims must be its siblings in the same sequence, or `can_execute` refuses. A CREATE_TRIGGER spec passes the same condition and optional checks as any other spec before it registers its sub-ability.
+- **The delayed effect.** It is `partial(resolve_sub_ability, sub=sub, snap=snap)`. `DelayedTriggerQueue` calls `effect(game)`, so the game is the one the queue passes at fire time, not one bound at creation.
+- **The legacy adapter.** Its signature is `chosen_from_legacy(ability, item_targets, positions, *, game, face)`. The caller supplies each legacy entry's printed position (from `parse_located`), which keeps the dispatcher free of text reads. The k-th distinct in-host position is slot k, because slots are in printed order (A20). The -1 sentinel becomes `face`.
+
 ---
 
 ## 12. Load time, memory and determinism
@@ -1479,7 +1486,7 @@ The E0 tests are the `e0_tests` output of this synthesis. Their files:
 - `tests/test_effect_spec_equivalence_tool.py`
 - `tests/test_effect_neutrality.py`
 
-Tests that read real cards use the session `card_db` fixture; the pool-wide tests carry `@pytest.mark.timeout(N)` with the measurement recorded. Workflow placement (2026-10-02): the files that need no card DB (`test_effect_grammar_amounts_conditions.py`, `test_effect_grammar_linking.py`, `test_effect_resolver_sequencing.py`; 143 tests, 1.6 s) are added to the abstraction-contract pytest step. The shared-DB files (`test_effect_grammar_structure.py`, `test_effect_grammar_participants.py`, `test_effect_grammar_pool_invariants.py`, `test_effect_spec_equivalence_tool.py`) run only in the full-suite step: the session DB load alone takes about 17 s, past that step's 10 s per-file budget (the equivalence-tool file measured 20.8 s, of which about 4 s is test bodies), and the full suite already runs them on every PR. `tests/test_effect_neutrality.py` has not landed yet.
+Tests that read real cards use the session `card_db` fixture; the pool-wide tests carry `@pytest.mark.timeout(N)` with the measurement recorded. Workflow placement (2026-10-02): the files that need no card DB (`test_effect_grammar_amounts_conditions.py`, `test_effect_grammar_linking.py`, `test_effect_resolver_sequencing.py`; 177 tests, 2.3 s after the dispatcher skeleton landed) are added to the abstraction-contract pytest step. The shared-DB files (`test_effect_grammar_structure.py`, `test_effect_grammar_participants.py`, `test_effect_grammar_pool_invariants.py`, `test_effect_spec_equivalence_tool.py`) run only in the full-suite step: the session DB load alone takes about 17 s, past that step's 10 s per-file budget (the equivalence-tool file measured 20.8 s, of which about 4 s is test bodies), and the full suite already runs them on every PR. `tests/test_effect_neutrality.py` has not landed yet.
 
 ### 18.3 Later-family regression tests (written red in the named step)
 

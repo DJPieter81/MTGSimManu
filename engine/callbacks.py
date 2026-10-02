@@ -156,9 +156,10 @@ class GameCallbacks(Protocol):
     # ── Resolution-time choices (design doc 2026-09-29, A35) ──────────
     # One channel per KIND of choice a resolving ability asks of its
     # controller. `ctx` is the resolution context, `spec` the typed
-    # EffectSpec asking. Declared ahead of their caller: in E0 nothing
-    # calls them (tests/test_effect_resolver_sequencing.py pins that), and
-    # the default raises rather than guessing an answer.
+    # EffectSpec asking. Declared ahead of play use: in E0 their only
+    # caller is engine/effect_resolver, which nothing calls yet
+    # (tests/test_effect_resolver_sequencing.py pins both), and the
+    # default raises rather than guessing an answer.
 
     def choose_optional_effect(self, ctx: Any, spec: Any) -> bool:
         """Perform this optional ("you may") effect? True = perform."""
