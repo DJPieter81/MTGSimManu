@@ -195,9 +195,19 @@ def _sibling_lists(specs: Tuple[EffectSpec, ...]) -> Iterator[Tuple[EffectSpec, 
 
 def _replacements_well_formed(specs: Tuple[EffectSpec, ...]) -> bool:
     """A replacing spec runs at its first victim's position, so every
-    victim must be a sibling in the same sequence (else it never runs)."""
+    victim must be a sibling in the same sequence (else it never runs).
+    A victim with several replacers ("X and Y instead") may not have an
+    optional one: "you may X and Y instead" is one choice, not one per
+    clause."""
     seqs = {s.seq for s in specs}
-    return all(set(s.replaces) <= seqs - {s.seq} for s in specs if s.replaces)
+    if not all(set(s.replaces) <= seqs - {s.seq} for s in specs if s.replaces):
+        return False
+    replacers: Dict[int, List[EffectSpec]] = {}
+    for s in specs:
+        for v in s.replaces:
+            replacers.setdefault(v, []).append(s)
+    return not any(len(rs) > 1 and any(r.optional for r in rs)
+                   for rs in replacers.values())
 
 
 def _spec_executable(s: EffectSpec, family: Optional[str],
@@ -353,23 +363,35 @@ def resolve_ability(game: Any, source: Handle, controller: int,
 
 def _sequence(ctx: Resolution, specs: Tuple[EffectSpec, ...]) -> None:
     """CR 608.2c: in printed order. A replacing ("instead") spec runs only
-    at its first victim's position; its condition is read there, lazily and
-    once (it may read earlier results; an UNLESS cost is offered once), and
-    a group of victims is replaced by one run of it (A33)."""
-    by_victim = {v: r for r in specs for v in r.replaces}   # structural only
+    at its first victim's position; whether it applies is decided there,
+    lazily and once: its condition (it may read earlier results; an UNLESS
+    cost is offered once) and, for "you may ... instead", the controller's
+    choice -- declined, the victims happen. A group of victims is replaced
+    by one run of it (A33), and every replacer of a victim that applies
+    runs there, in printed order ("X and Y instead")."""
+    by_victim: Dict[int, List[EffectSpec]] = {}   # structural only
+    for r in specs:
+        for v in r.replaces:
+            by_victim.setdefault(v, []).append(r)
     for s in specs:
         if s.replaces:
             continue
-        r = by_victim.get(s.seq)
-        if r is not None:
-            if r.seq not in ctx.instead_holds:
-                ctx.instead_holds[r.seq] = holds(ctx, r.condition)
-            if ctx.instead_holds[r.seq]:
-                _not_performed(ctx, s)          # the victim did not happen
+        applying = [r for r in by_victim.get(s.seq, ()) if _instead_applies(ctx, r)]
+        if applying:
+            _not_performed(ctx, s)              # the victim did not happen
+            for r in applying:
                 if r.seq not in ctx.performed:
-                    _run(ctx, r, condition_checked=True)
-                continue
+                    _run(ctx, r, decided=True)
+            continue
         _run(ctx, s)
+
+
+def _instead_applies(ctx: Resolution, r: EffectSpec) -> bool:
+    if r.seq not in ctx.instead_holds:
+        ctx.instead_holds[r.seq] = holds(ctx, r.condition) and (
+            not r.optional
+            or bool(ctx.game.callbacks.choose_optional_effect(ctx, r)))
+    return ctx.instead_holds[r.seq]
 
 
 def _branch(ctx: Resolution, specs: Tuple[EffectSpec, ...]) -> None:
@@ -383,13 +405,16 @@ def _not_performed(ctx: Resolution, s: EffectSpec) -> None:
     ctx.results[s.seq] = {}
 
 
-def _run(ctx: Resolution, s: EffectSpec, *, condition_checked: bool = False) -> None:
+def _run(ctx: Resolution, s: EffectSpec, *, decided: bool = False) -> None:
+    """`decided`: a replacement whose condition and optional choice were
+    already answered at its first victim (_instead_applies)."""
     # A per-member condition (A23) is the executor's to evaluate.
-    if not condition_checked and s.condition is not None \
+    if not decided and s.condition is not None \
             and not _member_condition(s.condition) and not holds(ctx, s.condition):
         _not_performed(ctx, s)
         return _branch(ctx, s.otherwise)
-    if s.optional and not ctx.game.callbacks.choose_optional_effect(ctx, s):
+    if not decided and s.optional \
+            and not ctx.game.callbacks.choose_optional_effect(ctx, s):
         _not_performed(ctx, s)
         return _branch(ctx, s.otherwise)
     if s.verb is Verb.CREATE_TRIGGER:

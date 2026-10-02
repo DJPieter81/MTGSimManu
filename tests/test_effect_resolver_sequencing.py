@@ -523,6 +523,68 @@ def test_an_instead_condition_is_read_once_at_its_first_victims_position(er, run
     assert len(reads) == 1
 
 
+def test_a_declined_optional_instead_leaves_the_replaced_effect_to_happen(er, run):
+    """'You may <Y> instead': the choice is part of whether the replacement
+    applies, so declining it leaves the replaced effect to happen (CR
+    608.2c, A35); the choice is asked once, at the first victim, and not
+    asked at all when the replacement's condition is false."""
+    order = []
+
+    def _ex(ctx, spec, actors):
+        order.append(spec.seq)
+        return {}
+    run.register(Verb.MOVE, _Recorder(result=_ex))
+    run.evaluator(ConditionKind.CAST_FACT, lambda ctx, c: c.pred in ctx.cast_facts)
+    gate = Condition(ConditionKind.CAST_FACT, pred="kicked")
+    host = _host(_spec(Verb.MOVE, 0),
+                 _spec(Verb.MOVE, 1, replaces=(0,), optional=True, condition=gate))
+    for accept, facts, want, asked in ((False, {"kicked"}, [0], [1]),
+                                       (True, {"kicked"}, [1], [1]),
+                                       (True, set(), [0], [])):
+        order.clear()
+        g = _game(accept=accept)
+        assert er.resolve_ability(g, _src(), 0, host, (),
+                                  cast_facts=frozenset(facts)) is True
+        assert (order, g.callbacks.asked) == (want, asked), (accept, facts)
+
+
+def test_every_clause_of_an_instead_group_replaces_the_shared_victim(er, run):
+    """'X and Y instead' types as two replacing specs naming the same
+    victim: when they apply, both run, in printed order, and the victim
+    does not; when they do not, only the victim runs."""
+    order = []
+
+    def _ex(ctx, spec, actors):
+        order.append(spec.seq)
+        return {}
+    run.register(Verb.CONTINUOUS, _Recorder(result=_ex))
+    run.evaluator(ConditionKind.CAST_FACT, lambda ctx, c: c.pred in ctx.cast_facts)
+    gate = Condition(ConditionKind.CAST_FACT, pred="kicked")
+    host = _host(_spec(Verb.CONTINUOUS, 0),
+                 _spec(Verb.CONTINUOUS, 1, replaces=(0,), condition=gate),
+                 _spec(Verb.CONTINUOUS, 2, replaces=(0,), condition=gate))
+    assert er.can_execute(host) is True
+    er.resolve_ability(_game(), _src(), 0, host, (), cast_facts=frozenset({"kicked"}))
+    assert order == [1, 2]
+    order.clear()
+    er.resolve_ability(_game(), _src(), 0, host, ())
+    assert order == [0]
+
+
+def test_an_optional_instead_group_is_not_executable(er, run):
+    """'You may X and Y instead' is ONE choice; asking it per replacing
+    clause could perform half the replacement, so the shape fails closed
+    until it is modelled as one choice."""
+    run.register(Verb.CONTINUOUS, _Recorder())
+    host = _host(_spec(Verb.CONTINUOUS, 0),
+                 _spec(Verb.CONTINUOUS, 1, replaces=(0,), optional=True),
+                 _spec(Verb.CONTINUOUS, 2, replaces=(0,), optional=True))
+    assert er.can_execute(host) is False
+    single = _host(_spec(Verb.CONTINUOUS, 0),
+                   _spec(Verb.CONTINUOUS, 1, replaces=(0,), optional=True))
+    assert er.can_execute(single) is True
+
+
 def test_chosen_modes_resolve_after_the_hosts_own_specs(er, run):
     rec = _Recorder()
     for v in (Verb.DRAW, Verb.MILL, Verb.SCRY):
