@@ -6230,3 +6230,23 @@ An on-disk cache is held in reserve if the pool tools become too slow.
   - On the 36 committed cards, 31 match exactly, and 45 of Jev's 46 tags agree.
   - On the 357 registered-deck cards (2 min, 0 errors), 103 would gain tags they lack today, 67 of them ETB_ORACLE_TRIGGER.
 - The committed cache is unchanged. Adopting Jev's tags changes game behaviour, so it waits for a same-seed A/B.
+
+**E0 stage 4 (views, dispatcher skeleton, tools, eager speed; `3f2b6c5`…`72e3f99`, no behaviour change):**
+- **Units:**
+  - `engine/effect_views.py` — 146 FieldDerivations, legacy quirk predicates and domain masks;
+  - `engine/effect_resolver.py` — skeleton with no callers, pinned by an AST test;
+  - `tools/effect_census.py` — 72.3% of 44,316 specs typed, 73.9% on registered-deck cards;
+  - `tools/effect_spec_equivalence.py` — 2.85M comparisons over 147 records, the allowlist seeded from section 10;
+  - `tools/host_resolution_equivalence.py` — legacy self-check, 0 divergences;
+  - the `check_effect_parsers.py` ratchet, wired into CI;
+  - the eager parse cut 17% (27.95 → 23.12 s on this container) with output byte-identical over all 22,738 templates.
+- **The 4.0 s eager budget is not reachable** without the on-disk cache or restructuring L0–L4 (flat profile). The regression ceiling stays at 30 s because absolute CPU drifts about 2x between containers. Games parse lazily.
+- **Two shared-template test leaks fixed:** `e2e1369`, and `ec44461` (Wall of Omens given a draw ability on the shared DB's template). The equivalence pool test caught both.
+- **Open:** the absolute-CPU ceilings for L0+L1 (4.0 s, at 1.0x its share) and the duration leaf tipped over once inside the 13-minute chunk while passing alone on both the parent and this commit. They sit at their edge on a slow container.
+- **Verified before push:** ratchets at baseline, digest byte-identical, chunk B 2562 passed; chunk A 4348 passed with only those two CPU ceilings failing.
+
+**Jev oracle-tag cache A/B (rejected, 2026-10-02):**
+- **Setup:** Jev classified all 357 registered-deck cards (107 gain or change tags). The same-seed n=20 Bo3 full matrix ran pre against post.
+- **Outcome:** every deck within ±0.8 pp except Grixis Reanimator, 57.5 → 60.8 (+3.3), almost all of it from Instant Reanimator vs Grixis, 65 → 45 (4 of 20 seeds flipped). Draws 173/175, aborted 0.
+- **Root cause, from a seed-51000 Bo3 diff:** Jev tagged Archon of Cruelty `ON_OWN_DRAW_LIFE_GAIN`, which it does not have. `engine/zone_transfer.py` reads that tag and gave Grixis 3 life per draw.
+- **Decision:** the committed cache is unchanged. The lasting fix is structural: five engine rules read classifier tags (on-draw triggers, ETB surveil, ETB graveyard return, impulse draw, the sorcery-speed lockout). They should read parsed effects (`CardTemplate.effects`) in an E-family switch, leaving the tags as AI hints only. One wrong model answer must not become a game rule.
