@@ -29,7 +29,15 @@ through `resolve_spell_from_oracle` with the mode's clause; an ACTIVATED host
 through `activated_effects.resolve_activated_ability`; a LOYALTY host
 through `PlaneswalkerManager._resolve` when its kind is executable. Every
 other host kind has no single legacy apply in E0 (triggered and static
-abilities resolve through their own carriers) and is reported as skipped.
+abilities resolve through their own carriers) and is reported as skipped,
+by kind: exit criterion 5 does not cover them yet.
+
+Each apply gets the legacy targets one deterministic rule chooses on that
+board from the host's requirements (`legacy_targets`), so a targeted host
+does something where the board offers a target. The report says, per host,
+whether its resolution changed the state on any board (against the board
+with only the source placed); the hosts that change nothing anywhere are
+listed (`noop_hosts`), so determinism is never claimed on no-ops alone.
 
 Usage::
 
@@ -173,10 +181,14 @@ class BoardPool:
     def __init__(self, db):
         pool = sorted({id(t): t for t in db.cards.values()}.values(),
                       key=lambda t: t.name)
-        vanilla = [t for t in pool if not (t.back_face_oracle or "")]
-        self.basics = [t for t in vanilla if "land" in _types(t)
-                       and any(getattr(s, "value", s) == "basic"
-                               for s in t.supertypes or ())]
+        vanilla = [t for t in pool if not (t.back_face_oracle or "")
+                   and " // " not in t.name]
+        # every basic land, one template per name: the libraries cycle
+        # through them, so a basic-type search (a fetch land) has its type
+        self.basics = list({t.name: t for t in vanilla
+                            if "land" in _types(t) and any(
+                                getattr(s, "value", s) == "basic"
+                                for s in t.supertypes or ())}.values())
         self.nonbasics = [t for t in vanilla if _types(t) == {"land"}
                           and t not in self.basics][:BOARD_LANDS]
         creatures = [t for t in vanilla if "creature" in _types(t)
@@ -219,7 +231,7 @@ def build_board(pool: BoardPool, board: str):
     basic = pool.basics[0] if pool.basics else None
     for p in (0, 1):
         for i in range(LIBRARY_SIZE):
-            src = pool.grave if (pool.grave and i % 4 == 3) else [basic]
+            src = pool.grave if (pool.grave and i % 4 == 3) else pool.basics
             _add(game, src[i % len(src)], p, "library")
         for i in range(HAND_SIZE):
             _add(game, (pool.creatures + [basic])[i % (len(pool.creatures)
@@ -259,7 +271,7 @@ class HostCase:
 
 def host_cases(template, effects) -> Tuple[List[HostCase], List[HostCase]]:
     """(resolvable cases, skipped cases) of every host of `template`."""
-    from engine.cards import CardType
+    from engine.cards import ActivationEffectKind, CardType
     from engine.effect_spec import HostKind
     from engine.planeswalker_manager import EXECUTABLE_LOYALTY_KINDS
     ok, skipped = [], []
@@ -281,7 +293,12 @@ def host_cases(template, effects) -> Tuple[List[HostCase], List[HostCase]]:
             ok.append(HostCase(template.name, f"{label}:mode{h.mode_index}",
                                "MODE", h.mode_index))
         elif h.kind is HostKind.ACTIVATED and h.activation_index in acts \
-                and acts[h.activation_index].effect_kind is not None:
+                and acts[h.activation_index].effect_kind not in (
+                    None, ActivationEffectKind.UNCLASSIFIED):
+            # an UNCLASSIFIED activation is refused by the activation
+            # path (its legacy owner, if any, is another carrier: a fetch
+            # land's sacrifice-and-search, a land's own manager), so
+            # `resolve_activated_ability` is not its apply
             ok.append(HostCase(template.name, label, "ACTIVATED",
                                h.activation_index))
         elif h.kind is HostKind.LOYALTY and \
@@ -295,38 +312,108 @@ def host_cases(template, effects) -> Tuple[List[HostCase], List[HostCase]]:
     return ok, skipped
 
 
-def legacy_apply(game, template, case: HostCase) -> Any:
-    """Resolve `case` through its legacy apply on `game`; the source is
-    placed where the apply expects it (the stack for a spell or mode, the
-    battlefield for an ability)."""
-    from engine.stack import StackItem, StackItemType
+def _activated(template, case: HostCase):
+    return next(a for a in template.activated_abilities
+                if a.index == case.key)
+
+
+def legacy_place(game, template, case: HostCase):
+    """Put the source where its legacy apply expects it: the stack for a
+    spell or mode, the battlefield for an ability (a loyalty source with
+    its printed loyalty, transformed for a back-face line)."""
     if case.kind in ("SPELL", "MODE"):
-        card = _add(game, template, CONTROLLER, "stack")
-        if case.kind == "SPELL":
-            return game._execute_spell_effects(StackItem(
-                item_type=StackItemType.SPELL, source=card,
-                controller=CONTROLLER))
+        return _add(game, template, CONTROLLER, "stack")
+    card = _add(game, template, CONTROLLER, "battlefield")
+    if case.kind == "LOYALTY":
+        if case.key[0] == 1:
+            card.is_transformed = True
+        card.loyalty_counters = template.loyalty or 0
+    return card
+
+
+def legacy_requirements(template, case: HostCase) -> List[Any]:
+    """The target requirements legacy chooses for, in its flat order: the
+    whole-oracle `target_solver.parse` for a spell, the mode's clause for
+    a mode, the ability's parsed `target_requirements` for an activation.
+    A loyalty line chooses its own objects at resolution (none here)."""
+    from engine import target_solver
+    if case.kind == "SPELL":
+        return list(target_solver.parse(template.oracle_text or ""))
+    if case.kind == "MODE":
+        return list(target_solver.parse(
+            template.modes[case.key].get("text", "") or ""))
+    if case.kind == "ACTIVATED":
+        return list(_activated(template, case).target_requirements or ())
+    return []
+
+
+_PLAYER_TYPES = frozenset({"any", "player", "opponent"})
+
+
+def legacy_targets(game, template, case: HostCase, card) -> List[int]:
+    """The legacy `targets` list for `case` on this board, by one
+    deterministic rule per requirement, in requirement order: the legal
+    objects `target_solver.choose_targets` picks (the opponent's first,
+    then -- when the opponent has none -- the controller's own), else a
+    player sentinel when the requirement admits a player (the
+    controller for a "you" scope, otherwise the opponent's face), else
+    nothing (the requirement has no legal choice on this board)."""
+    from engine import target_solver
+    from engine.constants import PLAYER_TARGET_OPPONENT, PLAYER_TARGET_SELF
+    out: List[int] = []
+    for req in legacy_requirements(template, case):
+        picked: List[Any] = []
+        if req.zone != "any":
+            for hostile in (True, False):
+                picked = [c for c in target_solver.choose_targets(
+                    game, CONTROLLER, req, hostile=hostile, exclude=card,
+                    source=card) if c.instance_id not in out]
+                if picked:
+                    break
+        if picked:
+            out += [c.instance_id for c in picked]
+        elif req.zone == "any" or set(req.types) & _PLAYER_TYPES:
+            out.append(PLAYER_TARGET_SELF if req.owner_scope == "you"
+                       else PLAYER_TARGET_OPPONENT)
+    return out
+
+
+def legacy_apply(game, template, case: HostCase) -> Any:
+    """Resolve `case` through its legacy apply on `game`, with the source
+    placed (`legacy_place`) and the targets chosen (`legacy_targets`)."""
+    from engine.stack import StackItem, StackItemType
+    card = legacy_place(game, template, case)
+    targets = legacy_targets(game, template, case, card)
+    if case.kind == "SPELL":
+        return game._execute_spell_effects(StackItem(
+            item_type=StackItemType.SPELL, source=card,
+            controller=CONTROLLER, targets=list(targets)))
+    if case.kind == "MODE":
         from engine.oracle_resolver import resolve_spell_from_oracle
         mode = template.modes[case.key]
         return resolve_spell_from_oracle(
-            game, card, CONTROLLER, [], oracle_override=mode.get("text", ""),
+            game, card, CONTROLLER, list(targets),
+            oracle_override=mode.get("text", ""),
             removal_data=mode.get("removal"))
-    card = _add(game, template, CONTROLLER, "battlefield")
     if case.kind == "ACTIVATED":
         from engine.activated_effects import resolve_activated_ability
-        ab = next(a for a in template.activated_abilities
-                  if a.index == case.key)
-        return resolve_activated_ability(game, card, CONTROLLER, [],
-                                         ability=ab)
+        return resolve_activated_ability(game, card, CONTROLLER,
+                                         list(targets),
+                                         ability=_activated(template, case))
     from engine.planeswalker_manager import PlaneswalkerManager
     face, slot = case.key
     attr = "loyalty_abilities" if face == 0 else \
         "back_face_loyalty_abilities"
-    if face == 1:
-        card.is_transformed = True
-    card.loyalty_counters = template.loyalty or 0
-    ab = getattr(template, attr)[slot]
-    return PlaneswalkerManager._resolve(game, CONTROLLER, card, ab)
+    return PlaneswalkerManager._resolve(game, CONTROLLER, card,
+                                        getattr(template, attr)[slot])
+
+
+def placed_digest(base, template, case: HostCase) -> str:
+    """The digest of `base` with only the source placed: what a
+    resolution that changes nothing leaves."""
+    game = copy.deepcopy(base, _memo_for(base))
+    legacy_place(game, template, case)
+    return state_digest(game)
 
 
 def _memo_for(game) -> dict:
@@ -403,18 +490,30 @@ def self_check(db, templates: Iterable[Any], *, seeds=SEEDS,
     hosts = skipped = 0
     divergences: List[Divergence] = []
     raised = 0
+    noop: List[List[str]] = []
+    skipped_by_kind: Dict[str, int] = {}
     t0 = time.process_time()
     for t in templates:
         ok, skip = host_cases(t, parse_template(t))
         skipped += len(skip)
+        for c in skip:
+            skipped_by_kind[c.kind] = skipped_by_kind.get(c.kind, 0) + 1
         for case in ok:
             hosts += 1
             divergences += compare_host(built, t, case, seeds=seeds)
             # one outcome sample per host for the report's raise count
             o = resolve_once(built["empty"], t, case, 0)
             raised += o.result.startswith("raised")
-    return {"hosts": hosts, "skipped": skipped, "boards": list(built),
-            "seeds": list(seeds), "raised_on_empty": raised,
+            # does the resolution change state on any board (first seed)?
+            if not any(resolve_once(b, t, case, seeds[0]).digest !=
+                       placed_digest(b, t, case) for b in built.values()):
+                noop.append([case.card, case.host])
+    return {"hosts": hosts, "skipped": skipped,
+            "skipped_by_kind": dict(sorted(skipped_by_kind.items())),
+            "boards": list(built), "seeds": list(seeds),
+            "raised_on_empty": raised,
+            "state_changing_hosts": hosts - len(noop),
+            "noop_hosts": sorted(noop),
             "divergences": [dataclasses.asdict(d) for d in divergences],
             "cpu_s": round(time.process_time() - t0, 2)}
 
@@ -456,7 +555,10 @@ def main(argv: Optional[List[str]] = None) -> int:
     else:
         print(f"{rep['hosts']} hosts x {len(rep['boards'])} boards x "
               f"{len(rep['seeds'])} seeds (legacy against legacy); "
-              f"{rep['skipped']} hosts with no legacy apply skipped; "
+              f"{rep['state_changing_hosts']} change state on some board, "
+              f"{len(rep['noop_hosts'])} on none; "
+              f"{rep['skipped']} hosts with no legacy apply skipped "
+              f"{rep['skipped_by_kind']}; "
               f"{len(rep['divergences'])} divergences; "
               f"{rep['cpu_s']} s CPU")
         for d in rep["divergences"][:20]:

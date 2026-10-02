@@ -1,0 +1,167 @@
+{
+ "description": "Registered-deck MB and SB hosts whose legacy apply changes no game state on any of the six harness boards (seed 0), with the legacy targets the harness chooses (tools/host_resolution_equivalence.py legacy_targets). Each is a legacy no-op there: the board offers no legal object for its deterministic pick (no enchantment, no land card in a graveyard, a too-large creature for a mana-value bound, an empty graveyard), or legacy has no apply for the clause (e.g. an each-opponent sacrifice). The harness self-check claims determinism only over the other hosts; this list is pinned so a harness that stops choosing targets, or a host that starts or stops doing something, fails the test. Regenerate: python tools/host_resolution_equivalence.py --json (noop_hosts, state_changing_hosts, hosts).",
+ "hosts": 175,
+ "state_changing_floor": 135,
+ "noop_hosts": [
+  [
+   "Abrade",
+   "MODE:0:0:mode0"
+  ],
+  [
+   "Avengers Disassembled",
+   "MODE:0:1:mode1"
+  ],
+  [
+   "Consign to Memory",
+   "SPELL:0:1"
+  ],
+  [
+   "Devoted Druid",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "Drown in the Loch",
+   "MODE:0:0:mode0"
+  ],
+  [
+   "Drown in the Loch",
+   "MODE:0:1:mode1"
+  ],
+  [
+   "Enter the Avatar State",
+   "SPELL:0:0"
+  ],
+  [
+   "Fatal Push",
+   "SPELL:0:0"
+  ],
+  [
+   "Hex Magic",
+   "SPELL:0:0"
+  ],
+  [
+   "Inevitable Betrayal",
+   "SPELL:0:1"
+  ],
+  [
+   "Kozilek's Command",
+   "MODE:0:0:mode0"
+  ],
+  [
+   "Kozilek's Command",
+   "MODE:0:1:mode1"
+  ],
+  [
+   "Kozilek's Command",
+   "MODE:0:2:mode2"
+  ],
+  [
+   "Kozilek's Command",
+   "MODE:0:3:mode3"
+  ],
+  [
+   "Kozilek's Command",
+   "SPELL:0:0"
+  ],
+  [
+   "Lorehold Charm",
+   "MODE:0:0:mode0"
+  ],
+  [
+   "Lorehold Charm",
+   "MODE:0:1:mode1"
+  ],
+  [
+   "Lorehold Charm",
+   "MODE:0:2:mode2"
+  ],
+  [
+   "Lorehold Charm",
+   "SPELL:0:0"
+  ],
+  [
+   "March of Otherworldly Light",
+   "SPELL:0:2"
+  ],
+  [
+   "Prismatic Ending",
+   "SPELL:0:0"
+  ],
+  [
+   "Sheoldred's Edict",
+   "MODE:0:0:mode0"
+  ],
+  [
+   "Sheoldred's Edict",
+   "MODE:0:1:mode1"
+  ],
+  [
+   "Sheoldred's Edict",
+   "MODE:0:2:mode2"
+  ],
+  [
+   "Sheoldred's Edict",
+   "SPELL:0:0"
+  ],
+  [
+   "Spider-Sense",
+   "SPELL:0:1"
+  ],
+  [
+   "Summoner's Pact",
+   "SPELL:0:0"
+  ],
+  [
+   "Surgical Extraction",
+   "SPELL:0:0"
+  ],
+  [
+   "Swan Song",
+   "SPELL:0:0"
+  ],
+  [
+   "Thraben Charm",
+   "MODE:0:0:mode0"
+  ],
+  [
+   "Thraben Charm",
+   "MODE:0:1:mode1"
+  ],
+  [
+   "Thraben Charm",
+   "MODE:0:2:mode2"
+  ],
+  [
+   "Thraben Charm",
+   "SPELL:0:0"
+  ],
+  [
+   "Toxic Deluge",
+   "SPELL:0:1"
+  ],
+  [
+   "Untimely Malfunction",
+   "MODE:0:1:mode1"
+  ],
+  [
+   "Warping Wail",
+   "MODE:0:0:mode0"
+  ],
+  [
+   "Warping Wail",
+   "MODE:0:1:mode1"
+  ],
+  [
+   "Whipflare",
+   "SPELL:0:0"
+  ],
+  [
+   "Wish",
+   "SPELL:0:0"
+  ],
+  [
+   "Wrenn and Six",
+   "LOYALTY:0:0"
+  ]
+ ]
+}

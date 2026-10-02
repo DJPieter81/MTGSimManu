@@ -2,10 +2,14 @@
 
 `tools/host_resolution_equivalence.py` resolves one host on deep copies of
 six fixed synthetic boards, per seed, through two sides and compares the
-canonical game-state digest and the game-log bytes. In E0 no executor
-exists, so both sides are the legacy apply: the harness proves itself
-deterministic on every registered-deck mainboard and sideboard host (exit
-criterion 5).
+canonical game-state digest and the game-log bytes. Each legacy apply gets
+the targets a deterministic rule chooses on that board from the host's
+requirements. In E0 no executor exists, so both sides are the legacy apply:
+the harness proves itself deterministic on every registered-deck mainboard
+and sideboard SPELL, MODE, ACTIVATED and executable LOYALTY host (exit
+criterion 5; triggered and static hosts have no single legacy apply yet and
+are reported skipped), and pins the hosts whose resolution changes no state
+on any board.
 
 The boards are built from the shared card DB by characteristics; the
 harness never mutates a DB template (its deep copies share templates
@@ -141,11 +145,72 @@ def test_every_host_of_a_card_is_either_resolvable_through_a_legacy_apply_or_rep
     assert all(n > 0 for n in seen.values()), seen
 
 
-# The E0 self-check over every registered-deck MB and SB host: 234 hosts x
-# 6 boards x 2 seeds x 2 sides. Measured 2026-10-02: ~59 s CPU (4-core box
-# under a concurrent 4-worker matrix run), plus ~18 s when first in the
-# process to load the shared card DB. 900 s bounds a hang on a 2-core CI
-# runner.
+def _synthetic(name, types, text):
+    from engine.cards import CardTemplate, CardType, ManaCost
+    return CardTemplate(name=name, card_types=[CardType(t) for t in types],
+                        mana_cost=ManaCost(), oracle_text=text)
+
+
+def test_legacy_targets_are_chosen_on_each_board_from_the_hosts_requirements(boards):
+    from engine.constants import PLAYER_TARGET_OPPONENT
+    h = _h()
+    _pool, built = boards
+    kill = _synthetic("Synthetic Kill", ["instant"],
+                      "Destroy target creature.")
+    case = h.HostCase(kill.name, "SPELL:0:0", "SPELL")
+    opp = _copy(built["opponent_creatures"])
+    card = h.legacy_place(opp, kill, case)
+    ids = h.legacy_targets(opp, kill, case, card)
+    assert len(ids) == 1
+    target = next(c for c in opp.players[1].battlefield
+                  if c.instance_id == ids[0])
+    assert "creature" in h._types(target.template)
+    # the same rule picks the same object on every copy of the board
+    again = _copy(built["opponent_creatures"])
+    assert h.legacy_targets(again, kill, case,
+                            h.legacy_place(again, kill, case)) == ids
+    # with only the controller's creatures, the pick falls back to them
+    own = _copy(built["own_creatures"])
+    own_ids = h.legacy_targets(own, kill, case, h.legacy_place(own, kill, case))
+    assert own_ids and all(any(c.instance_id == i for c in
+                               own.players[0].battlefield) for i in own_ids)
+    # no legal object: no target
+    empty = _copy(built["empty"])
+    assert h.legacy_targets(empty, kill, case,
+                            h.legacy_place(empty, kill, case)) == []
+    # "any target" is the opponent's face
+    bolt = _synthetic("Synthetic Bolt", ["instant"],
+                      "Synthetic Bolt deals 3 damage to any target.")
+    bcase = h.HostCase(bolt.name, "SPELL:0:0", "SPELL")
+    e = _copy(built["empty"])
+    assert h.legacy_targets(e, bolt, bcase, h.legacy_place(e, bolt, bcase)) \
+        == [PLAYER_TARGET_OPPONENT]
+
+
+def test_a_targeted_spell_resolved_with_its_chosen_target_changes_the_board(card_db, boards):
+    h = _h()
+    _pool, built = boards
+    # "Target creature gets -5/-5 until end of turn." resolves on the
+    # target it is handed and picks none itself
+    kill = card_db.cards["Dismember"]
+    case = h.HostCase(kill.name, "SPELL:0:0", "SPELL")
+    base = built["opponent_creatures"]
+    assert h.resolve_once(base, kill, case, 0).digest != \
+        h.placed_digest(base, kill, case)
+    # nothing to target: the resolution changes nothing, and says so
+    assert h.resolve_once(built["empty"], kill, case, 0).digest == \
+        h.placed_digest(built["empty"], kill, case)
+
+
+NOOP_FIXTURE = REPO / "tests" / "fixtures" / "host_harness_noop_hosts.json"
+
+
+# The E0 self-check over every registered-deck MB and SB host with a
+# legacy apply: 175 hosts x 6 boards x 2 seeds x 2 sides, plus one
+# placed-only copy per (host, board) for the no-op report. Measured
+# 2026-10-02: ~53 s CPU (4-core box under a concurrent 4-worker matrix
+# run), plus ~18 s when first in the process to load the shared card DB.
+# 900 s bounds a hang on a 2-core CI runner.
 @pytest.mark.timeout(900)
 def test_the_legacy_self_check_is_deterministic_on_every_registered_deck_host(card_db):
     h = _h()
@@ -160,5 +225,19 @@ def test_the_legacy_self_check_is_deterministic_on_every_registered_deck_host(ca
     assert rep["divergences"] == []
     # the deep copies share the DB templates read-only
     assert snapshot() == before
-    assert rep["hosts"] >= 200, rep["hosts"]
+    import json
+    pinned = json.loads(NOOP_FIXTURE.read_text())
+    assert rep["hosts"] == pinned["hosts"], rep["hosts"]
     assert rep["boards"] == list(h.BOARDS) and rep["seeds"] == list(h.SEEDS)
+    # "deterministic" is claimed only for resolutions that do something:
+    # the hosts that change no state on any board are a pinned set, so a
+    # harness that stops choosing targets (or a host that starts doing
+    # nothing) fails here instead of passing vacuously.
+    assert rep["noop_hosts"] == pinned["noop_hosts"], sorted(
+        set(map(tuple, rep["noop_hosts"])) ^ set(map(tuple,
+                                                     pinned["noop_hosts"])))
+    assert rep["state_changing_hosts"] == rep["hosts"] - len(
+        rep["noop_hosts"])
+    assert rep["state_changing_hosts"] >= pinned["state_changing_floor"]
+    # the hosts with no single legacy apply are reported by kind
+    assert set(rep["skipped_by_kind"]) >= {"TRIGGERED", "STATIC"}
