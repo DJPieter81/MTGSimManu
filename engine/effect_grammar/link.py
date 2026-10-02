@@ -88,6 +88,7 @@ from engine.effect_grammar.sub import filter as _filter
 from engine.effect_grammar.sub import participant as _participant
 from engine.effect_grammar.sub import unmodelled
 from engine.effect_model import Modification, ModKind, Selector, SelectorKind
+from engine.effect_spec import replace as _copy_with
 from engine.effect_spec import (AbilityEffects, Amount, AmountKind,
                                 CardFilter, Condition, ConditionKind,
                                 EffectSpec, EventHint, Granted, HostKind,
@@ -216,7 +217,7 @@ class _Host:
 
     def add_target(self, req: TargetRequirement) -> int:
         if self.mode and req.mode_group is None:
-            req = dataclasses.replace(req, mode_group=1)
+            req = _copy_with(req, mode_group=1)
         self.targets.append(req)
         return len(self.targets) - 1
 
@@ -292,7 +293,7 @@ def _map(obj: Any, fn) -> Any:
         nv = _map(v, fn)
         if nv is not v:
             changes[name] = nv
-    return dataclasses.replace(obj, **changes) if changes else obj
+    return _copy_with(obj, **changes) if changes else obj
 
 
 # ── Mentions ────────────────────────────────────────────────────────────
@@ -551,11 +552,11 @@ def _bind(ctx: _Ctx, node: _Node, w: _Want, *, last_known=False) -> Ref:
     if last_known and m is not None and m.pre is not None:
         # The controller of a moved object is read from the object as it
         # last existed (CR 608.2h), not from the new object.
-        ref = dataclasses.replace(m.pre, lki=True) \
+        ref = _copy_with(m.pre, lki=True) \
             if m.node.host is node.host else Ref(RefKind.RESULT, m.node.seq,
                                                   lki=True)
     elif last_known and cand.spec.verb in _LEAVERS and isinstance(ref, Ref):
-        ref = dataclasses.replace(ref, lki=True)
+        ref = _copy_with(ref, lki=True)
     return _with_part(ref, w)
 
 
@@ -564,7 +565,7 @@ def _with_part(ref: Ref, w: _Want) -> Ref:
     antecedent's own noun is kept. A player selector is bound whole."""
     if not isinstance(ref, Ref) or (w.part is RefPart.ALL and w.n is None):
         return ref
-    return dataclasses.replace(ref, part=w.part, n=w.n)
+    return _copy_with(ref, part=w.part, n=w.n)
 
 
 class _Unbound(Exception):
@@ -671,19 +672,18 @@ def _fill_holes(ctx: _Ctx, node: _Node) -> None:
         def fn(v):
             if isinstance(v, Ref):
                 if v.kind is RefKind.RESULT and v.index is None:
-                    return dataclasses.replace(result_ref(), part=v.part,
-                                               n=v.n)
+                    return _copy_with(result_ref(), part=v.part, n=v.n)
                 if v.kind is RefKind.TARGET and v.index is None:
                     return target_ref(v)
                 if v.kind in (RefKind.CONTROLLER_OF, RefKind.OWNER_OF) and \
                         v.of is None:
-                    return dataclasses.replace(v, of=operand(subject_slot))
+                    return _copy_with(v, of=operand(subject_slot))
                 return None
             if isinstance(v, Condition) and v.kind is ConditionKind.OBJECT \
                     and v.ref is None:
                 r = own if not subject_slot and own is not None else \
                     _bind(ctx, node, _Want(player=False, noun=noun))
-                return dataclasses.replace(v, ref=r)
+                return _copy_with(v, ref=r)
             if isinstance(v, Quantity) and v.ref is None and v.filter is None \
                     and v.kind in (QuantityKind.POWER, QuantityKind.TOUGHNESS,
                                    QuantityKind.MANA_VALUE,
@@ -691,10 +691,10 @@ def _fill_holes(ctx: _Ctx, node: _Node) -> None:
                 r = own if own is not None and own.kind is not RefKind.MEMBER \
                     else _bind(ctx, node, _Want(player=False, noun=noun),
                                last_known=True)
-                return dataclasses.replace(v, ref=r)
+                return _copy_with(v, ref=r)
             if isinstance(v, Amount) and v.kind is AmountKind.THAT_MUCH and \
                     v.ref is None:
-                return dataclasses.replace(v, ref=result_ref(True))
+                return _copy_with(v, ref=result_ref(True))
             return None
         return fn
 
@@ -838,7 +838,7 @@ def _mark_lki(ctx: _Ctx, node: _Node) -> None:
 
     def fn(v):
         if isinstance(v, Ref) and v.kind is RefKind.SELF and not v.lki:
-            return dataclasses.replace(v, lki=True)
+            return _copy_with(v, lki=True)
         return None
     for slot in ("ref", "other", "actor", "condition", "amount", "filter",
                  "dest", "payload"):
@@ -876,12 +876,12 @@ def _mark_per_actor(node: _Node) -> None:
             b = seqs[v.index]
             src = b.get("actor")
             if isinstance(src, Selector) and src.kind is actor.kind:
-                return dataclasses.replace(v, per_actor=True)
+                return _copy_with(v, per_actor=True)
             if _refused(b) and _shares_subject(node, b):
                 # "Each opponent chooses ..., then sacrifices the rest": the
                 # refused clause's actor is unknown, but this clause's
                 # elided subject is that clause's, so it is the same actor.
-                return dataclasses.replace(v, per_actor=True)
+                return _copy_with(v, per_actor=True)
         return None
     for slot in ("ref", "condition", "amount", "filter"):
         v = node.get(slot)
@@ -933,11 +933,11 @@ def _attach_granted(ctx: _Ctx, node: _Node) -> None:
     if not hosts:
         return
     if isinstance(p, TokenSpec):
-        node.fields["payload"] = dataclasses.replace(p, granted=p.granted + hosts)
+        node.fields["payload"] = _copy_with(p, granted=p.granted + hosts)
     elif isinstance(p, Granted):
         node.fields["payload"] = Granted(hosts=p.hosts + hosts)
     elif isinstance(p, Modification):
-        node.fields["payload"] = dataclasses.replace(
+        node.fields["payload"] = _copy_with(
             p, data=p.data + (("granted", Granted(hosts=hosts)),))
 
 
@@ -1040,7 +1040,7 @@ def _apply_riders(host_state: dict, nodes: List[_Node], frame) -> None:
                 p = n.get("payload")
                 if n.spec.verb is Verb.ADD_MANA and p is not None and \
                         hasattr(p, "restriction"):
-                    n.fields["payload"] = dataclasses.replace(
+                    n.fields["payload"] = _copy_with(
                         p, restriction=value)
         elif rider in ("cost_rule", "still_land"):
             for n in nodes:
@@ -1048,7 +1048,7 @@ def _apply_riders(host_state: dict, nodes: List[_Node], frame) -> None:
                 if isinstance(p, Modification):
                     entry = ("cost_rule", value) if rider == "cost_rule" else \
                         ("retain_types", ("land",))
-                    n.fields["payload"] = dataclasses.replace(
+                    n.fields["payload"] = _copy_with(
                         p, data=p.data + (entry,))
 
 
@@ -1341,10 +1341,10 @@ def _freeze_node(ctx: _Ctx, node: _Node, frozen_hosts: dict,
     tgt = None
     if node.slot is not None:
         tgt = frozen_hosts["_targets"][id(node.host)][node.slot]
-    return dataclasses.replace(spec, seq=node.seq, then=then,
-                               otherwise=otherwise, target=tgt,
-                               target_slot=node.slot if tgt is not None else None,
-                               **f)
+    return _copy_with(spec, seq=node.seq, then=then,
+                      otherwise=otherwise, target=tgt,
+                      target_slot=node.slot if tgt is not None else None,
+                      **f)
 
 
 def _freeze_host(ctx: _Ctx, h: _Host, frozen_hosts: dict, lowered: dict,
@@ -1362,11 +1362,27 @@ def _freeze_host(ctx: _Ctx, h: _Host, frozen_hosts: dict, lowered: dict,
     return out
 
 
+def _own_hosts(h: AbilityEffects, creators: Tuple[AbilityEffects, ...],
+               modes: bool = True):
+    """(host, creators) for `h` and the sub-ability hosts its specs create
+    (each with its creating hosts, innermost first), then its modes unless
+    `modes` is false -- `effect_spec._walk_hosts` without granted hosts,
+    for one host whose modes were validated when they were linked."""
+    yield h, creators
+    for s in iter_specs(h.specs):
+        if isinstance(s.payload, SubAbility):
+            yield from _own_hosts(s.payload.host, (h,) + creators)
+    if modes:
+        for m in h.modes:
+            yield from _own_hosts(m, creators)
+
+
 def _violations(root: AbilityEffects) -> Dict[int, Unmodelled]:
-    from engine.effect_spec import _walk_hosts
+    """The lowered payload of every violating spec of `root` and its
+    sub-ability hosts, by seq; `root`'s modes are not walked (they were
+    validated when they were linked; their seqs are their own)."""
     bad: Dict[int, Unmodelled] = {}
-    for h, creators in _walk_hosts(((root,),), include_granted=False,
-                                   include_sub=True):
+    for h, creators in _own_hosts(root, (), modes=False):
         for s in iter_specs(h.specs):
             rule = validate_spec(s, h, creators)
             if rule is not None:
@@ -1420,8 +1436,8 @@ def link_host(l1, facts: _normalize.Facts = _normalize.Facts(),
         frozen = {"_targets": {}, "_text": l1.text}
         out = _freeze_host(ctx, root, frozen, lowered, base)
         # Modes were validated when they were linked (their seqs are their
-        # own).
-        bad = _violations(dataclasses.replace(out, modes=()))
+        # own), so `_violations` does not walk them.
+        bad = _violations(out)
         if not bad:
             return out
         new = {k: v for k, v in bad.items() if k not in lowered}
@@ -1430,7 +1446,7 @@ def link_host(l1, facts: _normalize.Facts = _normalize.Facts(),
         lowered.update(new)
     from engine.effect_spec import _walk_hosts
     um = next(iter(bad.values()))
-    for h, _creators in _walk_hosts(((dataclasses.replace(out, modes=()),),),
+    for h, _creators in _walk_hosts(((_copy_with(out, modes=()),),),
                                     include_granted=False, include_sub=True):
         for s in iter_specs(h.specs):
             lowered.setdefault(s.seq, um)

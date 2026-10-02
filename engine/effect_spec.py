@@ -22,11 +22,15 @@ enums by name) that determinism tests compare (F10). `validate_spec()`
 checks the eight schema invariants (SCHEMA_INVARIANTS), returns the violated
 rule by name and never raises; `enforce_invariants()` lowers a violating
 spec to UNMODELLED(INVALID). `RESIDUE_CODES` gives every target-residue code
-its polarity (A21).
+its polarity (A21). `replace()` is `dataclasses.replace` for the schema's
+frozen slotted classes, slot by slot; `clear_caches()` empties the bounded
+memos of the invariant checks (section 12), and the grammar's own
+`clear_caches` calls it.
 """
 from __future__ import annotations
 
 import dataclasses
+import operator
 from collections.abc import Mapping as _AbcMapping
 from dataclasses import dataclass
 from enum import Enum
@@ -865,37 +869,190 @@ def _field_names(cls: type) -> Tuple[str, ...]:
     return names
 
 
+# How the invariant walks treat a value, by its exact type (`_walk_kind`):
+# a leaf (never entered), an immutable sequence (tuple / frozenset and
+# their subclasses), a list (mutable, entered by the Ref walk), a frozen
+# dataclass with a getter of its field values, or anything else (mutable;
+# a non-frozen dataclass keeps its getter for the Ref walk), plus whether
+# it is a spec or host (the Ref walk stops there) and whether it is a Ref.
+# The table holds the answer `isinstance` would give for the type, so a
+# node costs one dict lookup instead of a chain of isinstance checks.
+_LEAF, _SEQ, _LIST, _FROZEN_DC, _OTHER = range(5)
+_WALK_KINDS: dict = {}
+
+
+def _walk_kind(cls: type) -> tuple:
+    kind = _WALK_KINDS.get(cls)
+    if kind is not None:
+        return kind
+    params = getattr(cls, "__dataclass_params__", None)
+    nesting = issubclass(cls, (EffectSpec, AbilityEffects))
+    is_ref = issubclass(cls, Ref)
+    if cls in _LEAF_TYPES or issubclass(cls, _IMMUTABLE_LEAVES):
+        kind = (_LEAF, None, (), nesting, is_ref)
+    elif issubclass(cls, (tuple, frozenset)):
+        kind = (_SEQ, None, (), nesting, is_ref)
+    elif issubclass(cls, list):
+        kind = (_LIST, None, (), nesting, is_ref)
+    elif params is not None and not issubclass(cls, type):
+        names = _field_names(cls)
+        getter = (operator.attrgetter(*names) if len(names) > 1 else
+                  (lambda o, _n=names[0]: (getattr(o, _n),)) if names else
+                  (lambda o: ()))
+        kind = (_FROZEN_DC if params.frozen else _OTHER, getter, names,
+                nesting, is_ref)
+    else:
+        kind = (_OTHER, None, (), nesting, is_ref)
+    _WALK_KINDS[cls] = kind
+    return kind
+
+
+# The bounded memo of the immutability walk (section 12): the EffectSpecs
+# and hosts it found clean. Grammar values nest -- a spec's walk covers its
+# branch specs and the specs of the sub-ability hosts it creates, which are
+# then validated on their own -- so a clean spec or host is walked once.
+# Every entry holds the object it is keyed on, so its id cannot be reused
+# while it is remembered, and only a value with no mutable object reachable
+# is remembered: such a value cannot change, so the remembered verdict is
+# the one a fresh walk would give. A memo that reaches its bound is emptied
+# (the next values refill it); `clear_caches` empties both memos.
+#
+# `_VERDICTS` keeps, per distinct clean, hashable EffectSpec (keyed on its
+# value: equal specs share a verdict, since every host-free check reads
+# only the spec's value), the host-free part of its validation
+# (`_verdict`): each distinct frozen spec is validated once; the checks
+# that read its owning host (target slots, ref order) run on every call.
+VALIDATION_MEMO_SIZE = 1 << 14
+_CLEAN: dict = {}
+_VERDICTS: dict = {}
+
+
+def _remember(memo: dict, key: Any, value: Any) -> None:
+    if len(memo) >= VALIDATION_MEMO_SIZE:
+        memo.clear()
+    memo[key] = value
+
+
+def clear_caches() -> None:
+    """Empty the invariant checks' memos (`_CLEAN`, `_VERDICTS`);
+    `engine.effect_grammar.clear_caches` calls it."""
+    _CLEAN.clear()
+    _VERDICTS.clear()
+
+
+def _field_values(obj: Any, k: tuple):
+    """The field values of a dataclass `obj` in field order (one
+    `attrgetter` call); a field that is not set raises where a walk of the
+    fields one by one would reach it."""
+    try:
+        return k[1](obj)
+    except AttributeError:
+        return (getattr(obj, name) for name in k[2])
+
+
 def _mutable_path(obj: Any, seen: set) -> Optional[list]:
     """The path components to the first mutable object reachable from
     `obj` ([] when `obj` itself is mutable), or None. Paths are built only
-    on a hit, so a clean walk allocates no strings."""
-    if type(obj) in _LEAF_TYPES or isinstance(obj, _IMMUTABLE_LEAVES):
+    on a hit, so a clean walk allocates no strings; a spec or host found
+    clean is remembered (`_CLEAN`) and never walked again."""
+    cls = type(obj)
+    return _mutable_walk(obj, _WALK_KINDS.get(cls) or _walk_kind(cls), seen,
+                         set(), [False])
+
+
+def _mutable_walk(obj: Any, k: tuple, seen: set, stack: set,
+                  cyclic: list) -> Optional[list]:
+    """`_mutable_path` for `obj` of walk kind `k`. `stack` holds the values
+    being walked; meeting one again (a cycle, which only a frozen value
+    re-pointed through object.__setattr__ can form) sets `cyclic[0]`, and
+    from then on the walk remembers nothing, since a value walked inside
+    the cycle was not walked whole."""
+    kind = k[0]
+    if kind is _LEAF:
         return None
-    if id(obj) in seen:
+    oid = id(obj)
+    if oid in seen:
+        if oid in stack:
+            cyclic[0] = True
         return None
-    seen.add(id(obj))
-    if isinstance(obj, (tuple, frozenset)):
+    if kind is _SEQ:
+        seen.add(oid)
+        stack.add(oid)
         for i, x in enumerate(obj):
-            if type(x) in _LEAF_TYPES:
+            kx = _WALK_KINDS.get(type(x)) or _walk_kind(type(x))
+            if kx[0] is _LEAF:
                 continue
-            hit = _mutable_path(x, seen)
+            hit = _mutable_walk(x, kx, seen, stack, cyclic)
             if hit is not None:
                 return [f"[{i}]"] + hit
+        stack.discard(oid)
         return None
-    cls = type(obj)
+    if kind is not _FROZEN_DC:
+        seen.add(oid)
+        return []
+    remember = k[3]
+    if remember and _CLEAN.get(oid) is obj:
+        return None
+    seen.add(oid)
+    stack.add(oid)
+    for name, v in zip(k[2], _field_values(obj, k)):
+        kv = _WALK_KINDS.get(type(v)) or _walk_kind(type(v))
+        if kv[0] is _LEAF:
+            continue
+        hit = _mutable_walk(v, kv, seen, stack, cyclic)
+        if hit is not None:
+            return [f".{name}"] + hit
+    stack.discard(oid)
+    if remember and not cyclic[0]:
+        _remember(_CLEAN, oid, obj)
+    return None
+
+
+_REPLACERS: dict = {}
+
+
+def _replacer(cls: type):
+    """(field index, slot setters) for a frozen slotted dataclass with a
+    generated `__init__`, whose fields are all init fields (no InitVar or
+    ClassVar pseudo-field) and which has no `__post_init__`, or None."""
+    got = _REPLACERS.get(cls, False)
+    if got is not False:
+        return got
+    got = None
     params = getattr(cls, "__dataclass_params__", None)
-    if params is not None and not isinstance(obj, type):
-        if not params.frozen:
-            return []
-        for name in _field_names(cls):
-            v = getattr(obj, name)
-            if type(v) in _LEAF_TYPES:
-                continue
-            hit = _mutable_path(v, seen)
-            if hit is not None:
-                return [f".{name}"] + hit
-        return None
-    return []
+    if (params is not None and params.frozen and params.init
+            and "__slots__" in cls.__dict__
+            and not hasattr(cls, "__post_init__")
+            # no InitVar / ClassVar pseudo-field, every field an init field
+            and len(cls.__dataclass_fields__) == len(dataclasses.fields(cls))
+            and all(f.init for f in dataclasses.fields(cls))):
+        names = _field_names(cls)
+        got = ({n: i for i, n in enumerate(names)},
+               tuple(cls.__dict__[n].__set__ for n in names))
+    _REPLACERS[cls] = got
+    return got
+
+
+def replace(obj: Any, **changes: Any) -> Any:
+    """`dataclasses.replace` for the schema's frozen, slotted classes: the
+    same new object, built by setting its slots directly instead of through
+    the generated keyword `__init__` (no schema class has a
+    `__post_init__` or a non-init field; any other class, or an unknown
+    field name, goes through `dataclasses.replace`). The grammar copies a
+    spec or host with a few fields changed on every clause it places and
+    every spec it freezes."""
+    cls = type(obj)
+    r = _replacer(cls)
+    if r is None or not changes.keys() <= r[0].keys():
+        return dataclasses.replace(obj, **changes)
+    index, setters = r
+    values = list(_walk_kind(cls)[1](obj))
+    for name, value in changes.items():
+        values[index[name]] = value
+    new = object.__new__(cls)
+    for setter, value in zip(setters, values):
+        setter(new, value)
+    return new
 
 
 def find_mutable(obj: Any, _path: str = "", _seen=None) -> Optional[str]:
@@ -918,23 +1075,29 @@ def _refs(obj: Any, _seen=None) -> Iterator[Ref]:
 
 
 def _collect_refs(obj: Any, seen: set, out: list) -> None:
-    if type(obj) in _LEAF_TYPES or isinstance(obj, _IMMUTABLE_LEAVES) \
-            or id(obj) in seen:
+    cls = type(obj)
+    _refs_walk(obj, _WALK_KINDS.get(cls) or _walk_kind(cls), seen, out)
+
+
+def _refs_walk(obj: Any, k: tuple, seen: set, out: list) -> None:
+    kind, getter, _names, nesting, is_ref = k
+    if kind is _LEAF or id(obj) in seen:
         return
     seen.add(id(obj))
-    if isinstance(obj, (EffectSpec, AbilityEffects)):
+    if nesting:
         return
-    if isinstance(obj, Ref):
+    if is_ref:
         out.append(obj)
-    if isinstance(obj, (tuple, frozenset, list)):
-        for x in obj:
-            if type(x) not in _LEAF_TYPES:
-                _collect_refs(x, seen, out)
-    elif dataclasses.is_dataclass(obj) and not isinstance(obj, type):
-        for name in _field_names(type(obj)):
-            v = getattr(obj, name)
-            if type(v) not in _LEAF_TYPES:
-                _collect_refs(v, seen, out)
+    if kind is _SEQ or kind is _LIST:
+        values = obj
+    elif getter is None:
+        return
+    else:
+        values = _field_values(obj, k)
+    for v in values:
+        kv = _WALK_KINDS.get(type(v)) or _walk_kind(type(v))
+        if kv[0] is not _LEAF:
+            _refs_walk(v, kv, seen, out)
 
 
 _SPEC_OWN_FIELDS = tuple(f for f in EffectSpec.__dataclass_fields__
@@ -945,60 +1108,26 @@ def _host_seqs(host: AbilityEffects) -> FrozenSet[int]:
     return frozenset(s.seq for s in iter_specs(host.specs))
 
 
-def _check(spec: EffectSpec, host: Optional[AbilityEffects],
-           creators: Tuple[AbilityEffects, ...]) -> Optional[str]:
+def _early(spec: EffectSpec) -> Optional[str]:
+    """Invariants 1 and the host-free half of 2, in their check order."""
     verb = spec.verb
     if not isinstance(verb, Verb):
         return "invalid:verb"
-    # 1. principal
     principals = [n for n in ("target", "subject", "ref")
                   if getattr(spec, n) is not None]
     if len(principals) > 1:
         return "principal:" + "+".join(principals)
     if principals and verb in ACTOR_ONLY_VERBS:
         return "principal:actor_only"
-    # 2. target_slot
     if (spec.target is None) != (spec.target_slot is None):
         return "target_slot:unpaired"
-    if spec.target is not None:
-        if not isinstance(host, AbilityEffects):
-            return "target_slot:no_host"
-        k = spec.target_slot
-        if not isinstance(k, int) or not 0 <= k < len(host.targets):
-            return "target_slot:out_of_range"
-        if host.targets[k] is not spec.target:
-            return "target_slot:not_host_target"
-    # 3. ref_order: a RESULT index and a replaces seq name an EARLIER spec
-    # of this host; a RESULT index may also name a spec of a host that
-    # created this sub-ability host (the A34 snapshot). A TARGET index names
-    # one of this host's own targets. LINKED (CR 607) and the other kinds
-    # are not host-relative. Without a host nothing can be resolved.
-    for name in _SPEC_OWN_FIELDS:
-        value = getattr(spec, name)
-        if type(value) in _LEAF_TYPES:
-            continue
-        for r in _refs(value):
-            if r.kind is RefKind.RESULT:
-                if not (isinstance(r.index, int) and 0 <= r.index < spec.seq):
-                    return "ref_order:result"
-                if host is None:
-                    return "ref_order:no_host"
-                if not any(r.index in _host_seqs(h) for h in (host,) + creators):
-                    return "ref_order:cross_host"
-            elif r.kind is RefKind.TARGET:
-                if not isinstance(r.index, int):
-                    return "ref_order:target"
-                if host is None:
-                    return "ref_order:no_host"
-                if not 0 <= r.index < len(host.targets):
-                    return "ref_order:cross_host"
-    for s in spec.replaces:
-        if not (isinstance(s, int) and 0 <= s < spec.seq):
-            return "ref_order:replaces"
-        if host is None:
-            return "ref_order:no_host"
-        if s not in _host_seqs(host):
-            return "ref_order:cross_host"
+    return None
+
+
+def _late(spec: EffectSpec, hashed: bool = False) -> Optional[str]:
+    """Invariants 4-8, in their check order; none reads the host. `hashed`:
+    the caller already hashed `spec`, so the hashability half of 8 holds."""
+    verb = spec.verb
     # 4. unmodelled
     is_um = isinstance(spec.payload, Unmodelled)
     if (verb is Verb.UNMODELLED) != is_um:
@@ -1027,11 +1156,128 @@ def _check(spec: EffectSpec, host: Optional[AbilityEffects],
     where = find_mutable(spec)
     if where is not None:
         return f"immutable:{where}"
-    try:
-        hash(spec)
-    except TypeError:
-        return "immutable:unhashable"
+    if not hashed:
+        try:
+            hash(spec)
+        except TypeError:
+            return "immutable:unhashable"
     return None
+
+
+def _own_refs(spec: EffectSpec) -> Tuple[Tuple[Ref, ...], Optional[Exception]]:
+    """The Refs of a spec's own fields (`_SPEC_OWN_FIELDS`, in order), each
+    field walked on its own as `_refs` walks it, and the exception a
+    malformed field raised (the Refs before it are kept, so the check
+    meets them in the order the field walk would)."""
+    out: list = []
+    try:
+        for name in _SPEC_OWN_FIELDS:
+            value = getattr(spec, name)
+            if type(value) in _LEAF_TYPES:
+                continue
+            _collect_refs(value, set(), out)
+    except Exception as exc:          # re-raised where the walk would raise
+        return tuple(out), exc
+    return tuple(out), None
+
+
+def _verdict(spec: EffectSpec) -> tuple:
+    """The host-free part of a spec's validation: (invariants 1-2 host-free,
+    its own Refs, the exception their walk raised, invariants 4-8 or the
+    exception they raised). Remembered per distinct frozen spec (`_VERDICTS`,
+    when the spec is clean and hashable), keyed on the spec's value -- its
+    hash, confirmed by equality, so the spec is hashed once per call -- and
+    a third of the pool's specs equal an earlier one (the same printed
+    clause at the same position on many cards), so each distinct value is
+    walked once. Every host-free check reads only the spec's value except
+    the Ref indices (an index equal to an int need not be one), so an equal
+    spec that is not the remembered object, and whose value holds Refs, has
+    its own Refs collected again."""
+    try:
+        h = hash(spec)
+    except Exception:                 # invariant 8 reports it, in its turn
+        h = None
+    if h is not None:
+        hit = _VERDICTS.get(h)
+        if hit is not None:
+            if hit[0] is spec:
+                return hit[1]
+            try:
+                same = bool(hit[0] == spec)
+            except Exception:         # an equality that raises is no hit
+                same = False
+            if same:
+                v = hit[1]
+                if not v[1]:
+                    return v
+                refs, refs_exc = _own_refs(spec)
+                return (v[0], refs, refs_exc, v[3])
+    early = _early(spec)
+    refs, refs_exc = _own_refs(spec)
+    try:
+        late = _late(spec, hashed=h is not None)
+    except Exception as exc:          # re-raised where invariants 4-8 run
+        late = exc
+    v = (early, refs, refs_exc, late)
+    if h is not None and late is None and refs_exc is None:
+        _remember(_VERDICTS, h, (spec, v))
+    return v
+
+
+def _check(spec: EffectSpec, host: Optional[AbilityEffects],
+           creators: Tuple[AbilityEffects, ...]) -> Optional[str]:
+    early, refs, refs_exc, late = _verdict(spec)
+    if early is not None:
+        return early
+    # 2. target_slot: the requirement is the owning host's target in slot.
+    if spec.target is not None:
+        if not isinstance(host, AbilityEffects):
+            return "target_slot:no_host"
+        k = spec.target_slot
+        if not isinstance(k, int) or not 0 <= k < len(host.targets):
+            return "target_slot:out_of_range"
+        if host.targets[k] is not spec.target:
+            return "target_slot:not_host_target"
+    # 3. ref_order: a RESULT index and a replaces seq name an EARLIER spec
+    # of this host; a RESULT index may also name a spec of a host that
+    # created this sub-ability host (the A34 snapshot). A TARGET index names
+    # one of this host's own targets. LINKED (CR 607) and the other kinds
+    # are not host-relative. Without a host nothing can be resolved.
+    seqs: dict = {}
+
+    def host_seqs(h: AbilityEffects) -> FrozenSet[int]:
+        got = seqs.get(id(h))
+        if got is None:
+            got = seqs[id(h)] = _host_seqs(h)
+        return got
+
+    for r in refs:
+        if r.kind is RefKind.RESULT:
+            if not (isinstance(r.index, int) and 0 <= r.index < spec.seq):
+                return "ref_order:result"
+            if host is None:
+                return "ref_order:no_host"
+            if not any(r.index in host_seqs(h) for h in (host,) + creators):
+                return "ref_order:cross_host"
+        elif r.kind is RefKind.TARGET:
+            if not isinstance(r.index, int):
+                return "ref_order:target"
+            if host is None:
+                return "ref_order:no_host"
+            if not 0 <= r.index < len(host.targets):
+                return "ref_order:cross_host"
+    if refs_exc is not None:
+        raise refs_exc
+    for s in spec.replaces:
+        if not (isinstance(s, int) and 0 <= s < spec.seq):
+            return "ref_order:replaces"
+        if host is None:
+            return "ref_order:no_host"
+        if s not in host_seqs(host):
+            return "ref_order:cross_host"
+    if isinstance(late, Exception):
+        raise late
+    return late
 
 
 def validate_spec(spec: Any, host: Any = None, parents: Any = ()) -> Optional[str]:

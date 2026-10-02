@@ -58,7 +58,6 @@ for-each, frame duration, riders, group), returning host-absolute spans.
 """
 from __future__ import annotations
 
-import dataclasses
 import re
 from functools import lru_cache
 from typing import Any, List, NamedTuple, Optional, Tuple
@@ -75,6 +74,7 @@ from engine.effect_grammar.sub import participant as _participant
 from engine.effect_grammar.sub import payload as _payload
 from engine.effect_grammar.sub import target as _target
 from engine.effect_model import DurationKind, ModKind, Selector, SelectorKind
+from engine.effect_spec import replace as _copy_with
 from engine.effect_spec import (ACTOR_ONLY_VERBS, Amount, AmountKind,
                                 CardFilter, Chooser, Condition, ConditionKind,
                                 EffectSpec, HostKind, Ref, Stage, Unmodelled,
@@ -177,7 +177,7 @@ class _M:
         if r is not None and r.value is None and r.unmodelled is not None:
             um = r.unmodelled
             raise _Refuse(um if um.lemma == self.lemma or not self.lemma
-                          else dataclasses.replace(um, lemma=self.lemma))
+                          else _copy_with(um, lemma=self.lemma))
         return r
 
 
@@ -836,11 +836,11 @@ def _apply_frame(cm: ClauseMatch, f, c, text: str) -> ClauseMatch:
     if f.unmodelled:
         um = f.unmodelled[0][0]
         if not um.lemma and lemma:
-            um = dataclasses.replace(um, lemma=lemma)
+            um = _copy_with(um, lemma=lemma)
         return cm._replace(spec=EffectSpec(verb=Verb.UNMODELLED, payload=um,
                                            **base))
     if spec.verb is Verb.UNMODELLED:
-        return cm._replace(spec=dataclasses.replace(spec, **base))
+        return cm._replace(spec=_copy_with(spec, **base))
     ch = base
     conds = [x for x in (f.condition, f.unless) if x is not None]
     if conds:
@@ -871,7 +871,7 @@ def _apply_frame(cm: ClauseMatch, f, c, text: str) -> ClauseMatch:
     flags |= _rider_flags(spec, f.riders)
     if flags != spec.flags:
         ch["flags"] = frozenset(flags)
-    return cm._replace(spec=dataclasses.replace(spec, **ch))
+    return cm._replace(spec=_copy_with(spec, **ch))
 
 
 def _rider_flags(spec: EffectSpec, riders) -> set:
@@ -899,7 +899,7 @@ def _inherit_durations(f, cms: List[ClauseMatch]) -> None:
         if any(k == "duration" for k, _ in cm.consumed):
             later = s.duration
         elif later is not None:
-            cms[i] = cm._replace(spec=dataclasses.replace(s, duration=later))
+            cms[i] = cm._replace(spec=_copy_with(s, duration=later))
         if c.gap != "subject":
             later = None
 
@@ -920,7 +920,7 @@ def _frame_match(t: str, f, host_kind: HostKind, has_x: bool) -> FrameMatch:
         v = _lexicon.find_verb(t, span)
         lemma = v.value.lemma if v.value is not None else ""
         if lemma and not um.lemma:
-            um = dataclasses.replace(um, lemma=lemma)
+            um = _copy_with(um, lemma=lemma)
         cms.append(ClauseMatch(spec=EffectSpec(
             verb=Verb.UNMODELLED, payload=um, span=span,
             raw=t[span[0]:span[1]]), lemma=lemma))

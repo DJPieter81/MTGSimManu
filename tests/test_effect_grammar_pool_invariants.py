@@ -433,10 +433,16 @@ def test_the_witness_fixture_names_only_pool_cards_and_every_defect_class(card_d
 # are scaled from, and two budgets gate the whole grammar:
 #
 # * the EAGER whole-pool L0-L5 pass (`parse_pool`, the tools' path; games
-#   never run it) is revised to its measurement: 19.8 s process CPU on a
-#   quiet 4-core box (card DB frozen out of the collector, caches cleared,
-#   best of two), gated at 30 s -- about 1.5x, sized so a slower CI core
-#   still passes while a layer that regresses by half is named;
+#   never run it) is revised to its measurement. The eager-speed pass
+#   (2026-10-02) cut it 19-29% against the parent commit, interleaved on a
+#   4-core box (card DB frozen out of the collector, caches cleared): 18.6-
+#   20.0 s -> 13.5-14.9 s in the box's slowest window, 14.0-15.4 s ->
+#   11.4-12.3 s in its last -- full collections deferred for the pass, the
+#   schema checks memoised per distinct spec over a table-driven walk, and
+#   slot-level `effect_spec.replace`. The gate stays at 30 s: absolute
+#   CPU drifts about 2x between containers (on another box the parent
+#   measured 27.95 s and this code 23.12 s, the same 17% cut), so a lower
+#   ceiling would fail on a slow container while naming no regression;
 # * the LAZY per-template path (`parse_template`, what a game calls through
 #   CardTemplate.effects) is gated over the cards a game can touch: every
 #   registered-deck card parsed cold, measured 0.30-0.39 s for 359
@@ -645,8 +651,10 @@ def test_the_typed_share_by_host_kind_holds_its_floor(pool_effects):
 def test_effect_parse_fits_the_load_budget(pool_effects):
     """Section 12: the whole-pool eager L0-L5 pass (the tools' path) in
     process CPU against its revised budget, POOL_L0_L5_EAGER_CPU_BUDGET_S
-    (measured 2026-10-01 at 19.8 s: L0-L4 about 9 s, L5 about 5 s of which
-    about half is validate_spec over every spec, plus collector time)."""
+    (measured 2026-10-02 after the eager-speed pass at 11.4-14.9 s, from
+    14.0-20.0 s, by the box's state: L0+L1 2.8-3.6 s, L2-L4 4.5-5.8 s, L5
+    linking about 2.6 s, freezing 0.7 s, validate_spec 1.4-1.8 s, collector
+    0.7-0.9 s; design section 12)."""
     _effects, cpu = pool_effects
     assert cpu <= POOL_L0_L5_EAGER_CPU_BUDGET_S, cpu
 

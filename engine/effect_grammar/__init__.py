@@ -30,6 +30,7 @@ tools use; a game parses lazily, per template, through `parse_template`.
 """
 from __future__ import annotations
 
+from contextlib import contextmanager
 from typing import Dict, Iterable, Optional, Sequence, Tuple
 
 __all__ = ["parse_template", "parse_face", "parse_effects",
@@ -198,6 +199,28 @@ def printed_span(oracle, facts, face: int, host_index: int,
     return N.printed_span(text, facts, (a + base, b + base))
 
 
+# The eager pool pass allocates the whole pool's output -- a few million
+# long-lived, acyclic frozen objects -- and every full (oldest-generation)
+# collection re-walks all of it: measured 2.6 s of 12 full collections
+# that freed about 10k objects in a 19 s pass (2026-10-02). The pass runs
+# with full collections deferred (`_deferred_full_collections`); young
+# collections still free the linker's short-lived cyclic scratch graphs,
+# and the thresholds are restored when the pass ends, so the next full
+# collection walks the output once.
+_NO_FULL_COLLECTION_THRESHOLD = 1 << 30
+
+
+@contextmanager
+def _deferred_full_collections():
+    import gc
+    saved = gc.get_threshold()
+    gc.set_threshold(saved[0], saved[1], _NO_FULL_COLLECTION_THRESHOLD)
+    try:
+        yield
+    finally:
+        gc.set_threshold(*saved)
+
+
 def parse_pool(db, *, keywords_of=None, populate: bool = False
                ) -> Dict[str, object]:
     """The eager pool path the tools use: every template of `db` parsed,
@@ -213,16 +236,17 @@ def parse_pool(db, *, keywords_of=None, populate: bool = False
         raise ValueError("populate pins the property's own parse; "
                          "keywords_of changes its facts")
     out: Dict[str, object] = {}
-    for t in {id(v): v for v in db.cards.values()}.values():
-        if keywords_of is None:
-            out[t.name] = parse_template(t)
-            if populate:
-                t.set_effects(out[t.name])
-            continue
-        facts = [template_facts(t, 0, keywords_of(t))]
-        if getattr(t, "back_face_oracle", ""):
-            facts.append(template_facts(t, 1))
-        out[t.name] = parse_template(t, facts)
+    with _deferred_full_collections():
+        for t in {id(v): v for v in db.cards.values()}.values():
+            if keywords_of is None:
+                out[t.name] = parse_template(t)
+                if populate:
+                    t.set_effects(out[t.name])
+                continue
+            facts = [template_facts(t, 0, keywords_of(t))]
+            if getattr(t, "back_face_oracle", ""):
+                facts.append(template_facts(t, 1))
+            out[t.name] = parse_template(t, facts)
     return out
 
 
@@ -230,15 +254,18 @@ def clear_caches() -> None:
     """Clear the memo caches of every grammar module: the sub-grammars
     (`engine.effect_grammar.sub.clear_caches`) and the leaves that sit
     beside them (L0 normalize, the CR 701/702 keyword tables, the verb
-    lexicon), the L1 structure memo, the L4 clause memo and the L5 face
-    memo. Tools call it after a pool pass (`parse_pool`) to drop the
+    lexicon), the L1 structure memo, the L4 clause memo, the L5 face
+    memo and the schema invariant checks' walk memos
+    (`engine.effect_spec.clear_caches`). Tools call it after a pool pass (`parse_pool`) to drop the
     module memos; no load pass calls it, since nothing parses at load.
     It does not clear the per-template `CardTemplate.effects` memos,
     which live as long as their templates (`set_effects(None)` clears
     one). The leaf-contract test pins that no module's cache is
     missed."""
+    from engine import effect_spec
     from engine.effect_grammar import (clauses, keywords, lexicon, link,
                                        normalize, patterns, structure, sub)
+    effect_spec.clear_caches()
     sub.clear_caches()
     for leaf in (normalize, keywords, lexicon):
         leaf.clear_caches()
