@@ -397,24 +397,21 @@ The 2026-04-11 6-expert panel report (~168 games, overall grade D+) lives at **`
 
 ## Dashboard — modern_meta_matrix_full.html
 
-The interactive metagame dashboard is a **standalone vanilla JS HTML file** (no React, no Babel).
+The dashboard and the showcase are built together by ONE pipeline, `tools/meta_site/`, from ONE typed data file, `data/meta_site.json` (schema: `tools/meta_site/schema.py`). Standalone vanilla-JS pages; the data is embedded as a single `<script type="application/json" id="site-data">` block, so no deck or card name can break a script.
 
-**Data source:** `metagame_data.jsx` — the canonical D object with:
-- `wins[i][j]` — win counts (out of `matches_per_pair=100`)
-- `matchup_cards["i,j"]` — per-matchup detail: insight, avg_turns, sweeps, went_to_3, g1_wins, comebacks, top_casts, finishers, top_damage, sideboard IN/OUT with cast counts + post-board WR delta
-- `deck_cards[idx]` — per-deck: mvp_casts, mvp_damage, finishers with descriptions, summary
-- `overall[idx]` — flat WR, weighted WR, meta share, delta
-- `meta_shares` — tournament representation %
+**Inputs** (`tools/meta_site/build_data.py`): `metagame_results.json` (cells, draws, aborts, provenance), `card_data.json` (card-level detail from `extract_card_data.py`), `decks/gameplans/*.json` (each deck's archetype), `decks/modern_meta.py` (meta shares), `tools/calibration_bands.json` (bands and verdicts), `replays/*.html`, and the hand-written narrative in `tools/meta_site/content/*.json` (timeline, architecture, roadmap, project). Every derived figure (flat and weighted WR, tier, band verdict) is computed there, once. Edit narrative as JSON, never in the generated HTML.
+
+**Outputs** (`tools/meta_site/render.py`, templates in `tools/meta_site/templates/`): `modern_meta_matrix_full.html`, `templates/reference_showcase.html`, `mtgsimmanu_showcase.html`, and `metagame_data.jsx` (the legacy D object, still read by `build_guide.py` and `meta_audit.py`). Every path is inside the repository the tool runs from.
 
 **Build command (each session):**
 ```bash
-# After a new matrix run — merge wins + preserve card detail, then build:
+# After a new matrix run (run_meta.py --matrix --save calls this itself):
 python3 build_dashboard.py --merge
 
-# Without a new run — just rebuild HTML from existing JSX:
+# Re-render the pages from the committed data/meta_site.json:
 python3 build_dashboard.py
 ```
-`--merge` reads `metagame_results.json`, merges wins into `metagame_data.jsx` (preserving all matchup_cards/deck_cards), recomputes WRs, then builds the HTML. Always use `--merge` after running `--matrix`.
+`--merge` refuses a partial run (`--decks N`) that would drop decks already on the site. Pinned by `tests/test_meta_site_pipeline.py`.
 
 **Dashboard features:**
 - Slide-in detail panel (CSS `translateX` transition, 420px)
