@@ -40,12 +40,12 @@ from .constants import (
     STARTING_LIFE, MAX_HAND_SIZE, MAX_TURNS, SBA_MAX_ITERATIONS,
     FETCH_LAND_LIFE_COST,
 )
-# PlayerState, TOKEN_DEFS, and _parse_planeswalker_abilities were extracted
-# to engine/player_state.py. Re-exported here so existing importers of
-# `engine.game_state.PlayerState` (14 call sites across ai/ and tests/) and
-# the late `from .game_state import _parse_planeswalker_abilities` in
-# game_runner.py continue to resolve without edits.
-from .player_state import PlayerState, TOKEN_DEFS, _parse_planeswalker_abilities
+# PlayerState and TOKEN_DEFS were extracted to engine/player_state.py.
+# Re-exported here so existing importers of `engine.game_state.PlayerState`
+# (14 call sites across ai/ and tests/) continue to resolve without edits.
+# (The uncalled second loyalty-slot parser was removed: the slot rule has
+# one owner, oracle_parser.loyalty_slot_for.)
+from .player_state import PlayerState, TOKEN_DEFS
 from .mana_payment import ManaPayment
 from .land_manager import LandManager
 from .cast_manager import CastManager
@@ -89,6 +89,9 @@ class GameState:
             PlayerState(player_idx=0),
             PlayerState(player_idx=1),
         ]
+        # Players read their effect views from this game's registry.
+        for _p in self.players:
+            _p._game = self
         self.callbacks: GameCallbacks = callbacks or DefaultCallbacks()
         self.stack = Stack()
         self.active_player: int = 0
@@ -96,6 +99,9 @@ class GameState:
         self.current_phase: Phase = Phase.UNTAP
         self.turn_number: int = 1  # internal half-turn counter (increments each player turn)
         self.game_over: bool = False
+        # CR 723: an "end the turn" effect resolved this turn — the runner
+        # skips every remaining step except cleanup, then clears it.
+        self.end_turn_requested: bool = False
         self.winner: Optional[int] = None
         self.rng = rng or random.Random()
         self._next_instance_id: int = 1
@@ -247,26 +253,12 @@ class GameState:
     # parsing, and per-card flags are forbidden by the abstraction
     # contract; the classifier tag IS the dispatch.
     def _sorcery_speed_lockout_set(self) -> set[int]:
-        """Return player indices currently restricted to sorcery-speed
-        casts (R4).
-
-        For every battlefield permanent whose classifier tag includes
-        ``Tag.SORCERY_SPEED_LOCKOUT``, the permanent's *opponents* are
-        added to the set. No oracle-text parse, no card-name check.
-        """
-        # Late import: ai.oracle_classifier is in the ai/ layer; an
-        # engine module importing from ai/ is acceptable because the
-        # classifier is a pure-data loader (no scoring/strategy logic).
-        from ai.oracle_classifier import Tag, tags_for
-
-        restricted: set[int] = set()
-        for player in self.players:
-            for card in player.battlefield:
-                if Tag.SORCERY_SPEED_LOCKOUT in tags_for(card.template.name):
-                    for opp_idx in range(len(self.players)):
-                        if opp_idx != card.controller:
-                            restricted.add(opp_idx)
-        return restricted
+        """Player indices restricted to sorcery-speed casts — the players
+        covered by a static `cast_outside_sorcery_timing` prohibition
+        (engine/continuous_effects._derive_static_rule_effects)."""
+        from . import rules_query
+        return {i for i in range(len(self.players))
+                if rules_query.sorcery_speed_only(self, i)}
 
     def setup_game(self, deck1: List[CardTemplate], deck2: List[CardTemplate],
                     forced_first_player: Optional[int] = None):
@@ -311,6 +303,28 @@ class GameState:
             self.active_player = self.rng.randint(0, 1)
         self.priority_player = self.active_player
 
+    def _lose_from_empty_library(self, player_idx: int) -> None:
+        """Flag the loss when a player must draw from an empty library
+        (CR 104.3c / 704.5c). Owns the mutation so the draw-audit invariant
+        can recompute the flag state independently."""
+        self.game_over = True
+        self.winner = 1 - player_idx
+        self.log.append(f"P{player_idx+1} loses: empty library")
+
+    def end_the_turn(self, controller: int) -> None:
+        """CR 723.1: end the turn. Every object on the stack is exiled
+        (723.1b) and the runner skips to the cleanup step (723.1d).
+        Creatures leave combat because the combat steps are skipped."""
+        while not self.stack.is_empty:
+            item = self.stack.pop()
+            src = getattr(item, 'source', None)
+            if src is not None and getattr(src, 'zone', None) == 'stack' \
+                    and item.item_type == StackItemType.SPELL:
+                self.zone_mgr.move_card_from_stack(
+                    self, src, 'exile', cause="CR 723.1b: end the turn")
+        self.end_turn_requested = True
+        self.log.append(f"T{self.display_turn} P{controller+1}: the turn ends (CR 723)")
+
     def draw_cards(self, player_idx: int, count: int) -> List[CardInstance]:
         """Draw cards from library to hand (CR 121.1).
 
@@ -325,11 +339,23 @@ class GameState:
         from .zone_transfer import TransferKind, transfer
         player = self.players[player_idx]
         drawn: List[CardInstance] = []
+        from . import rules_query
+        draw_cap = rules_query.draw_limit(self, player_idx)
         for _ in range(count):
+            if draw_cap is not None and player.cards_drawn_this_turn >= draw_cap:
+                # CR 101.2: a draw the player "can't" make does not happen
+                # (it is not a draw from an empty library).
+                return drawn
             if not player.library:
-                self.game_over = True
-                self.winner = 1 - player_idx
-                self.log.append(f"P{player_idx+1} loses: empty library")
+                self._lose_from_empty_library(player_idx)
+                # Audit (observation-only, CR 104.3c/704.5c): a draw from an
+                # empty library must flag the drawing player to lose. Recompute
+                # the flag state independently of the helper above.
+                from .rules_audit import check as _audit_check
+                _audit_check(
+                    "104.3c/empty_library_loss",
+                    self.game_over and self.winner == 1 - player_idx,
+                    f"P{player_idx+1} drew from an empty library", game=self)
                 return drawn
             card = player.library.pop(0)
             player.cards_drawn_this_turn += 1

@@ -764,6 +764,10 @@ class GameRunner:
                     break
                 if game_budget.expired(game):
                     break
+                # CR 723.1d: after "end the turn" every remaining step is
+                # skipped except cleanup.
+                if game.end_turn_requested and step != TurnStep.CLEANUP:
+                    continue
 
                 def _board_summary():
                     """Emit full board state summary."""
@@ -831,8 +835,8 @@ class GameRunner:
                     # "at the beginning of your next upkeep"). Drained
                     # FIRST, before rebound/saga/upkeep activations, so a
                     # delayed draw is in hand for every decision this turn.
-                    from engine.delayed_triggers import DelayedTriggerStep
-                    game.fire_delayed_triggers(DelayedTriggerStep.UPKEEP)
+                    from engine.turn_clock import Clock, ClockEvent, emit
+                    emit(game, ClockEvent(Clock.UPKEEP, active))
                     # Rebound (CR 702.88b): offer the free recast
                     self._process_rebound_recasts(game, active, ai)
                     # Activated abilities fired on our upkeep (Isochron Scepter, etc.)
@@ -885,6 +889,8 @@ class GameRunner:
                         break
                     new_lands = len(game.players[active].lands) - prev_lands
                     stats["lands_played"][active] += max(0, new_lands)
+                    if game.end_turn_requested:
+                        continue
                     self._activate_planeswalkers(game, ai)
                     if game.game_over:
                         break
@@ -920,7 +926,15 @@ class GameRunner:
                               pidx=active,
                               actor=game.players[active].deck_name,
                               attackers=atk_details)
-                        combat_mgr.declare_attackers(game, attackers, active)
+                        # CR 508.1b: the attacking player (AI) chooses each
+                        # attacker's defender — the player or a planeswalker.
+                        _choose = getattr(ai, 'decide_attack_targets', None)
+                        attack_targets = _choose(game, attackers) if _choose else {}
+                        for _aid, _pw in attack_targets.items():
+                            _vlog(f'  [Attack Target] {game.get_card_by_id(_aid).name}'
+                                  f' attacks {_pw.name}')
+                        combat_mgr.declare_attackers(game, attackers, active,
+                                                     attack_targets)
                     else:
                         _vlog(f'  [Declare Attackers] P{active+1} does not attack')
                         _emit(KIND_COMBAT, sub="no_attack",
@@ -1008,6 +1022,8 @@ class GameRunner:
                     self._execute_main_phase(game, ai, opponent_ai)
                     if game.game_over:
                         break
+                    if game.end_turn_requested:
+                        continue
                     self._activate_planeswalkers(game, ai)
                     if game.game_over:
                         break
@@ -1043,6 +1059,11 @@ class GameRunner:
 
                 elif step == TurnStep.CLEANUP:
                     game.current_phase = Phase.CLEANUP
+                    if game.end_turn_requested:
+                        # The end step (which runs the "until end of turn"
+                        # expiry) was skipped by CR 723; cleanup does it.
+                        game.end_of_turn_cleanup()
+                        game.end_turn_requested = False
                     game.cleanup_step()
                     # Discard to hand size
                     p = game.players[active]
@@ -1113,11 +1134,13 @@ class GameRunner:
         # unmodelled keywords is recorded once per process).
         from .rules_audit import enabled as _audit_on, drain as _audit_drain
         if _audit_on():
-            from .rules_audit_census import census_template_keywords
+            from .rules_audit_census import (census_template_keywords,
+                                             census_unhandled_effects)
             for p in game.players:
                 for zone in (p.library, p.hand, p.battlefield, p.graveyard, p.exile):
                     for c in zone:
                         census_template_keywords(c.template, game=game)
+            census_unhandled_effects(game=game)
             result.audit_findings = _audit_drain()
 
         # Structured GAME_END — terminator for the replayer's
@@ -1485,6 +1508,8 @@ class GameRunner:
         while actions < max_actions and not game.game_over:
             if game_budget.expired(game):
                 return
+            if game.end_turn_requested:
+                return  # CR 723: the turn has ended
             decision = ai.decide_main_phase(
                 game, excluded_cards=_excluded,
                 excluded_activations=_excluded_activations)
@@ -1624,29 +1649,29 @@ class GameRunner:
                 continue
 
             pw_name = pw.template.name
-            from .game_state import _parse_planeswalker_abilities
-            # Use back face oracle for transformed cards (e.g., Ral creature → PW)
-            oracle = pw.template.oracle_text
-            loyalty = pw.template.loyalty
-            if getattr(pw, 'is_transformed', False) and pw.template.back_face_oracle:
-                oracle = pw.template.back_face_oracle
-                loyalty = pw.template.back_face_loyalty
-            pw_data = _parse_planeswalker_abilities(oracle, loyalty)
             # Engine legality first, AI choice second: an ability whose
             # printed effect the resolver cannot execute is refused
             # before any loyalty is paid, so it must not be OFFERED
             # either — otherwise the AI spends the walker's one
-            # activation per turn on a line that will be refused.
+            # activation per turn on a line that will be refused. The
+            # lines are the typed ones of the face currently up.
             from .planeswalker_manager import PlaneswalkerManager
             resolvable = PlaneswalkerManager.resolvable_ability_slots(pw)
-            pw_data = {k: v for k, v in pw_data.items()
-                       if k in resolvable or k == "starting_loyalty"}
-            if not any(k in pw_data
-                       for k in ("plus", "zero", "minus", "ult")):
+            pw_data = {k: v for k, v in PlaneswalkerManager.loyalty_abilities(pw).items()
+                       if k in resolvable}
+            if not pw_data:
                 continue  # nothing this engine can execute
             opp = game.players[opponent]
 
             ability_type = self._choose_pw_ability(pw, pw_name, pw_data, player, opp, game)
+
+            # CR 606.3 — activation is optional. The AI declines (holds the
+            # walker) rather than spend loyalty on a whiff by returning the
+            # PW_DECLINE sentinel; it is never a resolvable slot, so the guard
+            # below also catches it, but check it explicitly for clarity.
+            from ai.pw_ability import PW_DECLINE
+            if ability_type == PW_DECLINE:
+                continue
 
             # The chooser falls back to a fixed slot name when nothing it
             # was offered is currently AFFORDABLE (a minus below its
@@ -1672,7 +1697,7 @@ class GameRunner:
         choose_pw_ability`.  The engine only delegates here and then
         enforces loyalty legality in `game.activate_planeswalker`.
         `pw_name` is retained in the signature for call-site
-        compatibility; the chooser is description-driven and does not
+        compatibility; the chooser values the typed lines and does not
         consume it.
         """
         from ai.pw_ability import choose_pw_ability
@@ -1934,7 +1959,8 @@ class GameRunner:
                                     f"{card.name} Ch.III: transforming into "
                                     f"Reflection of Kiki-Jiki")
                     from engine.oracle_resolver import _transform_permanent
-                    _transform_permanent(game, card, active)
+                    _transform_permanent(game, card, active,
+                                         returns_as_new_object=True)
 
             # --- Transform sagas (Legend of Roku pattern) ---
             elif 'transform' in card_oracle or 'return it to the battlefield transformed' in card_oracle:

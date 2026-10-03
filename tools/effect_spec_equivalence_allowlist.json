@@ -1,0 +1,96 @@
+{
+ "description": "Known legacy-side disagreements between a legacy typed field and its view over CardTemplate.effects (design doc 2026-09-29, section 10, 'Known legacy-side disagreements' and 'Further seed rows from the E0 integration review'). Each row explains every comparison of one of its fields on a card whose printed text (every face, lowercased) matches its pattern; the first matching row wins. A row that explains nothing on a full pool run is stale and fails `tools/effect_spec_equivalence.py --check`. A SEMANTIC_FIX row names its test. `unsurfaced` lists the section-10 rows no field comparison surfaces, with the reason, so every seed row is accounted for.",
+ "rows": [
+  {
+   "id": "target_nonland_permanent_card_from_zone",
+   "class": "LEGACY_TARGET_ZONE",
+   "fields": ["cast_targets"],
+   "pattern": "target nonland permanent card from",
+   "reason": "\"target nonland permanent card from <zone>\" is a battlefield requirement in target_solver._PERMANENT_PATTERN; the target is the card in that zone (CR 115.1). \"target permanent card from ...\" without \"nonland\" is already a graveyard requirement. Legacy fix: a target_solver unit, not E0.",
+   "source": "design doc section 10, known legacy-side disagreements, row 1"
+  },
+  {
+   "id": "target_spell_or_creature_zone_union",
+   "class": "LEGACY_TARGET_ZONE",
+   "fields": ["cast_targets", "bounce_target"],
+   "pattern": "target spell or creature",
+   "reason": "\"target spell or creature\": legacy reqs[0] is the stack only; the requirement is the union {stack, battlefield} (A21 target.zone_union), which the grammar refuses rather than narrowing.",
+   "source": "design doc section 10, known legacy-side disagreements, row 2"
+  },
+  {
+   "id": "nonland_permanent_or_suspended_card",
+   "class": "LEGACY_TARGET_ZONE",
+   "fields": ["cast_targets", "bounce_target"],
+   "pattern": "permanent or suspended card",
+   "reason": "\"nonland permanent or suspended card\" spans {battlefield, exile} (CR 702.62a); legacy keeps the battlefield member only.",
+   "source": "design doc section 10, known legacy-side disagreements, row 3"
+  },
+  {
+   "id": "graveyard_or_exile_object",
+   "class": "LEGACY_TARGET_ZONE",
+   "fields": ["cast_targets"],
+   "pattern": "graveyards? or (?:in )?exile",
+   "reason": "A graveyard-or-exile object spans {graveyard, exile}; legacy keeps one zone.",
+   "source": "design doc section 10, known legacy-side disagreements, row 4"
+  },
+  {
+   "id": "ritual_mana_reads_reminder_and_granted_text",
+   "class": "REMINDER_TEXT",
+   "fields": ["ritual_mana"],
+   "pattern": "\\([^)]*\\badd\\b[^)]*\\)|\"[^\"]*\\badd\\b[^\"]*\"",
+   "reason": "parse_ritual_mana also reads an add-mana phrase inside reminder text (a Treasure's) or a quoted granted ability; neither is the card's own mana effect, so the view gives None (section 10.1 landing note: ritual_mana's legacy parser also reads reminder and granted text).",
+   "source": "design doc section 10, ritual mana row; section 10.1 views-landed note"
+  },
+  {
+   "id": "ritual_mana_additional_colorless",
+   "class": "LEGACY_RITUAL_MANA",
+   "fields": ["ritual_mana"],
+   "pattern": "add an additional \\{c\\}",
+   "reason": "parse_ritual_mana reads \"add an additional {C}\" as two; the printed effect adds one ({C}x1).",
+   "source": "design doc section 10, further seed rows, ritual mana"
+  },
+  {
+   "id": "keyword_scoped_cost_reduction",
+   "class": "LEGACY_COST_REDUCTION_SCOPE",
+   "fields": ["cost_reduction_rule"],
+   "pattern": "\\b(?:equip|dash|unlock|plot|plotting)\\b[^.]*\\bcosts?\\b[^.]*\\bless\\b",
+   "reason": "\"Equip / Dash / Unlock costs you pay cost {N} less\" and \"Plotting cards from your hand costs {2} less\" are stored as {'target': 'all', ...}, a reduction of every spell; they are scoped to that keyword's cost or special action (CR 601.2f, 118.7). The grammar refuses them (payload.cost_delta_subject).",
+   "source": "design doc section 10, further seed rows, keyword-scoped cost reductions"
+  },
+  {
+   "id": "pump_keyword_set_order",
+   "class": "LEGACY_HASH_ORDER",
+   "fields": ["pump_spell_keyword"],
+   "always": true,
+   "cards": ["Aerial Maneuver", "Alchemist's Gift", "Archon's Glory", "Ferocification", "Fervent Strike", "Leap of Flame", "Rig for War", "Rush of Vitality", "Scales of Shale", "Slayers' Stronghold", "Smaug's Fury", "The Royal Scions", "Whirling Strike"],
+   "reason": "A pump spell whose 'gains/has' window names two or more keywords: oracle_parser._pt_mod_keyword returns the first member of the _KEYWORD_WORDS set literal found in the window, so the legacy keyword is decided by the process's hash seed, not by printed order, and the comparison is none. The row classes every comparison on these cards (an equal one included) so the pinned counts are seed-free. The legacy fix (a printed-order pick) changes game behaviour: a legacy unit, not E0.",
+   "source": "design doc section 10, hash-order legacy value (follow-up review 2026-10-02)"
+  }
+ ],
+ "unsurfaced": [
+  {
+   "id": "printed_target_counts_above_ten",
+   "carrier": "target_solver requirement count (cast_targets)",
+   "reason": "target_solver._NUMBER_WORDS stops at ten; no pool instant or sorcery prints a target count above ten, so the cast_targets comparison never meets the shape. The grammar refuses such a slot (target.count_unread:<word>).",
+   "source": "design doc section 10, further seed rows, printed counts above ten"
+  },
+  {
+   "id": "token_subtypes_keyword_scope_and_slot_identity",
+   "carrier": "oracle_parser.parse_token_spec / clause_resolver._token_clause (runtime carriers)",
+   "reason": "The token-spec disagreements (last creature subtype only, a keyword window running into other sentences, a different token than the create slot) live in the runtime token carrier, which is no template field with a FieldDerivation; the E4 family compares it.",
+   "source": "design doc section 10, further seed rows, token subtypes"
+  },
+  {
+   "id": "ritual_mana_activation_cost_pips_and_colour_collapse",
+   "carrier": "ritual_mana",
+   "reason": "Counting the activation cost's pips with the produced mana is reproduced by the named quirk predicate _legacy_ritual_cost_pips, and no pool card's multi-colour add disagrees after it, so the ritual_mana view equals legacy on these shapes.",
+   "source": "design doc section 10, further seed rows, ritual mana"
+  },
+  {
+   "id": "activation_tutor_relative_clause_filter",
+   "carrier": "ActivatedAbility.tutor_data (partial: compared on 'dest')",
+   "reason": "The relative-clause filter (\"card with the same name as that ...\" read as subtypes) is in the part of tutor_data the partial view does not compare; the destinations it compares all agree.",
+   "source": "design doc section 10, further seed rows, activation tutor filter"
+  }
+ ]
+}

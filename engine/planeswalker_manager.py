@@ -53,6 +53,7 @@ EXECUTABLE_LOYALTY_KINDS = frozenset({
     LoyaltyEffectKind.DRAW_AND_UNTAP_LANDS,
     LoyaltyEffectKind.TUCK_TARGET_INTO_LIBRARY,
     LoyaltyEffectKind.EMBLEM_EXILE_PERMANENT,
+    LoyaltyEffectKind.CLAUSE,
 })
 
 # CR 606: the tuck line puts the permanent into its owner's library
@@ -124,6 +125,16 @@ class PlaneswalkerManager:
 
         # Rule 9b (activation parity): refuse BEFORE charging the cost.
         if ability.effect_kind not in EXECUTABLE_LOYALTY_KINDS:
+            # Audit (observation-only): record the refused kind so a matrix
+            # run ranks how many printed loyalty abilities are inert (the
+            # planeswalker-loyalty no-op class). Reads the enum name, not
+            # oracle text; no-op unless MTG_RULES_AUDIT is set.
+            from .rules_audit import enabled as _audit_on, census as _audit_census
+            if _audit_on():
+                _audit_census("606/loyalty_unexecutable_kind",
+                              getattr(ability.effect_kind, "name",
+                                      str(ability.effect_kind)),
+                              game=game)
             return False
 
         pw_card.loyalty_counters = new_loyalty
@@ -162,6 +173,28 @@ class PlaneswalkerManager:
             PlaneswalkerManager._resolve_tuck(game, controller)
         elif kind is LoyaltyEffectKind.EMBLEM_EXILE_PERMANENT:
             PlaneswalkerManager._resolve_emblem_exile(game, controller)
+        elif kind is LoyaltyEffectKind.CLAUSE:
+            PlaneswalkerManager._resolve_clause(game, controller, pw_card, ability)
+
+    @staticmethod
+    def _resolve_clause(game: "GameState", controller: int,
+                        pw_card: CardInstance, ability: LoyaltyAbility) -> None:
+        """A loyalty line typed as a clause resolves through the shared
+        clause owner, with the walker as its source (CR 606.1 / 608.2)."""
+        from .clause_resolver import resolve_clause
+        source = CardInstance(template=ability.clause, owner=pw_card.owner,
+                              controller=controller,
+                              instance_id=pw_card.instance_id,
+                              zone=pw_card.zone)
+        source._game_state = game
+        resolved = resolve_clause(game, source, controller, [])
+        # Rules audit (CR 606 / 608.2): an activated clause line did
+        # something — its loyalty was not paid for nothing.
+        from .rules_audit import enabled as _audit_on, check as _audit_check
+        if _audit_on():
+            _audit_check("606/loyalty_clause_resolved", bool(resolved),
+                         f"{pw_card.name} [{ability.cost:+d}] resolved no effect",
+                         game=game)
 
     @staticmethod
     def _resolve_return_to_hand(game: "GameState", controller: int,
@@ -182,23 +215,10 @@ class PlaneswalkerManager:
             game, controller, requirement, exclude=pw_card)
 
         if requirement.zone == "battlefield":
-            # A printed "its owner's hand" bounce can legally target any
-            # player's permanent; the controller's own board is never the
-            # play, so the engine offers only the opponent's permanents —
-            # the same restriction the spell-side bounce resolver applies.
-            candidates = [
-                c for c in candidates
-                if (c.controller if c.controller is not None else c.owner)
-                != controller]
-            if candidates:
-                from .card_effects import _nonland_permanent_threat
-                opp_battlefield = game.players[1 - controller].battlefield
-                best = max(candidates,
-                           key=lambda c: _nonland_permanent_threat(
-                               c, opp_battlefield))
-                game._bounce_permanent(best)
-                game.log.append(f"T{game.display_turn} P{controller+1}: "
-                                f"  returns {best.name} to its owner's hand")
+            # The one bounce owner (clause_resolver.resolve_bounce) — the
+            # same resolution spells and channel lines use.
+            from .clause_resolver import resolve_bounce
+            resolve_bounce(game, controller, pw_card, requirement)
         else:  # graveyard → your hand
             if candidates:
                 # Recoup the largest investment — the same convention the

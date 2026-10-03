@@ -78,6 +78,16 @@ jobs:
         # auto-merge fallback instead of this explicit, visible step.
         run: python3 merge_db.py
 
+      - name: Effect-parser ratchet (needs the assembled card DB)
+        # Design doc 2026-09-29 section 13: the legacy per-shape effect
+        # parsers the clause grammar retires may only shrink -- (a)
+        # card_database legacy-parser assignments of derived fields, (b)
+        # runtime oracle reads in resolution handlers, (c) effect_views
+        # legacy predicates, (d) tolerated residue codes, (e) parse_*
+        # results in unaccounted fields (pinned at 0), and (f) the
+        # (handler, host) pairs on legacy fallback, which needs the pool.
+        run: python tools/check_effect_parsers.py --pool
+
       - name: Classifier coverage gate (tag-gated engine behavior)
         run: python tools/check_classifier_coverage.py
 
@@ -101,8 +111,20 @@ jobs:
         # X counters placed by a handler) lived in exactly such paths.
         run: python tools/check_single_owner.py
 
+      - name: Temporal-state ratchet (one read path, one clock)
+        # Gates read rule-effect state through engine/rules_query.py and
+        # every turn-boundary reset runs as an engine/turn_clock.py
+        # subscriber (docs/design/2026-09-28_temporal_state_model.md).
+        run: python tools/check_temporal_state.py
+
       - name: Run abstraction-contract pytest
-        run: python -m pytest tests/test_abstraction_contract.py tests/test_check_abstraction_deck_gates.py tests/test_doc_hygiene.py tests/test_magic_numbers_ratchet.py tests/test_check_magic_numbers.py tests/test_zone_mutation_ratchet.py tests/test_oracle_runtime_parse_ratchet.py tests/test_gameplan_consistency.py tests/test_narrow_typed_fields.py tests/test_single_owner_ratchet.py tests/test_rules_audit.py tests/test_keyword_coverage_census.py --timeout=60 -q
+        # The E0 clause-grammar files that need no card DB (design doc
+        # 2026-09-29 section 18.2, plus the schema-check memo and slot-copy
+        # tests of the section-12 eager-speed pass; 193 tests, ~2.5 s) and
+        # the effect-parser ratchet's source-only tests run here too. The
+        # shared-DB E0 files run in the full-suite step only: the DB load
+        # alone (~17 s) is past this step's 10 s per-file budget.
+        run: python -m pytest tests/test_abstraction_contract.py tests/test_check_abstraction_deck_gates.py tests/test_doc_hygiene.py tests/test_magic_numbers_ratchet.py tests/test_check_magic_numbers.py tests/test_zone_mutation_ratchet.py tests/test_oracle_runtime_parse_ratchet.py tests/test_gameplan_consistency.py tests/test_narrow_typed_fields.py tests/test_single_owner_ratchet.py tests/test_rules_audit.py tests/test_keyword_coverage_census.py tests/test_effect_grammar_amounts_conditions.py tests/test_effect_grammar_linking.py tests/test_effect_resolver_sequencing.py tests/test_effect_spec_validation_memo.py tests/test_effect_parsers_ratchet.py --timeout=60 -q
 
       - name: Run full test suite
         # The full suite now runs in CI. It became feasible once the

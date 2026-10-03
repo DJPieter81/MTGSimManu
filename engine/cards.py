@@ -189,6 +189,15 @@ class ActivationEffectKind(Enum):
     # and toughness and, unlike PUMP_SELF_UEOT, does not expire.
     PUT_COUNTER_SELF = "put_counter_self"
     PUT_COUNTER_TARGET = "put_counter_target"
+    # "[Cost]: Put N <kind> counter(s) on each [other] [artifact]
+    # <permanent-type> [you control]" — the MASS scope of the same class
+    # (22 Modern activated abilities: Gavony Township, Steel Overseer,
+    # Leyline of Abundance, Shalai, Mikaeus, the Mentor cycle). Not
+    # targeted (CR 115.1): the recipient set is every permanent of the
+    # named card type(s) under the named controller(s) at resolution,
+    # minus the source for "each other". Its shape rides on
+    # `put_counter_data` with `scope='team'`.
+    PUT_COUNTER_TEAM = "put_counter_team"
     # "[Cost]: Adapt N." (CR 702.132) — if this creature has no +1/+1
     # counters on it, put N +1/+1 counters on it. 23 Modern cards carry
     # the activated form (Basking Broodscale, Growth-Chamber Guardian,
@@ -385,6 +394,11 @@ class LoyaltyEffectKind(Enum):
     TUCK_TARGET_INTO_LIBRARY = "tuck_target_into_library"
     # An emblem line whose executed part exiles an opposing permanent.
     EMBLEM_EXILE_PERMANENT = "emblem_exile_permanent"
+    # Any other line whose own text the shared clause owner
+    # (engine/clause_resolver.py) can run — CR 606.1: a loyalty ability is
+    # an activated ability, and its effect resolves like any effect text.
+    # Typed at load; `LoyaltyAbility.clause` carries the line's template.
+    CLAUSE = "clause"
     UNCLASSIFIED = "unclassified"
 
 
@@ -405,6 +419,9 @@ class LoyaltyAbility:
     target: Optional["TargetRequirement"] = None
     # Printed "Draw a card" / "Draw N cards" rider on the same ability.
     draws: int = 0
+    # For CLAUSE lines: the template the card database built from this
+    # line's own text (every typed-field parser applied to the clause).
+    clause: Optional["CardTemplate"] = None
 
 
 @dataclass(frozen=True)
@@ -504,6 +521,19 @@ class CardTemplate:
     toughness: Optional[int] = None
     loyalty: Optional[int] = None
     keywords: Set[Keyword] = field(default_factory=set)
+    # The front face's MTGJSON `keywords` list exactly as printed (CR 702),
+    # e.g. ("Delve", "Flying"). `keywords` above is the engine's typed enum:
+    # it omits keywords the engine does not model (ward, delve, equip...)
+    # and adds ones a token or the oracle scan grants, so the clause grammar
+    # (`engine.effect_grammar.template_facts`) reads its keyword facts from
+    # this list -- one source for the lazy and the eager parse.
+    printed_keywords: Tuple[str, ...] = ()
+    # The card's MTGJSON `layout` exactly as printed ("normal", "transform",
+    # "meld", ...). Read by the clause grammar's face facts
+    # (`engine.effect_grammar.template_facts`): a meld card's second name is
+    # the melded permanent, a different object (CR 712.4), never a
+    # self-reference.
+    layout: str = ""
     abilities: List[Ability] = field(default_factory=list)
     color_identity: Set[Color] = field(default_factory=set)
     # The permanent's own printed color (MTGJSON `colors`) — NOT the
@@ -785,6 +815,11 @@ class CardTemplate:
     # Creates a storm-scaled token count ("create … tokens for each …").
     # Populated by oracle_parser.parse_has_scaling_token_finisher.
     has_scaling_token_finisher: bool = False
+    # A Saga whose chapter I has a material effect (CR 714.3a: chapter I
+    # triggers as the Saga enters). Populated by
+    # oracle_parser.parse_saga_chapter_one_material; read by the AI's
+    # same-turn-value signal so a Saga is never deferred as "no value now".
+    saga_chapter_one_material: bool = False
     # Exile permanent — True when oracle has 'exile target <permanent-type>'.
     # Covers instant/sorcery removal that exiles rather than destroys.
     # Populated by oracle_parser.parse_can_exile_permanent.
@@ -937,6 +972,9 @@ class CardTemplate:
     pump_spell_power: int = 0
     pump_spell_toughness: int = 0
     pump_spell_keyword: str = ""
+    # Every keyword the targeted modifier grants (parse_pump_spell_keywords);
+    # a keyword-only grant is typed on instants and sorceries only.
+    pump_spell_keywords: tuple = ()
     # "[each player] draw N, then discard M [at random]" loot shape —
     # parsed once (parse_loot_effect): {"draw", "discard", "random",
     # "each_player"} or None. The resolver discards through the discard
@@ -1148,6 +1186,35 @@ class CardTemplate:
     # | 'fog' | None. Read by the AI's this-turn-signal enumerator and the
     # runner's imprint-copy timing.
     turn_scoped_restriction: Optional[str] = None
+    # CR 101.2 "<who> can't cast [<type>] spells this turn", typed
+    # {'who': 'target'|'opponents'|'all', 'filter': 'all'|'noncreature'|
+    # 'creature'} (oracle_parser.parse_cast_prohibition). Applied by the
+    # generic resolver branch; enforced by CastManager.can_cast.
+    cast_prohibition: Optional[dict] = None
+    # Hand-refill wheel {'mode','graveyard','count','ends_turn'}
+    # (oracle_parser.parse_hand_refill) and static draw limit
+    # {'who': 'opponents'|'all', 'max'} (oracle_parser.parse_draw_limit).
+    hand_refill: Optional[dict] = None
+    # "Until your next turn, <owned effect>" (CR 611.2b), typed by the
+    # wrapped shape (oracle_parser.parse_until_next_turn).
+    next_turn_effect: Optional[dict] = None
+    # "(Up to N) target creature(s) can't attack/block <duration>" — a
+    # PROHIBIT effect on the chosen objects (oracle_parser.parse_object_restriction).
+    object_restriction: Optional[dict] = None
+    # "Creatures [your opponents control] [without flying] can't block …"
+    # (oracle_parser.parse_group_restriction): a PROHIBIT effect on a class.
+    group_restriction: Optional[dict] = None
+    # "Whenever a creature attacks you [or a planeswalker you control],
+    # <effect>" (oracle_parser.parse_attack_observer): an OBSERVE effect.
+    attack_observer: Optional[dict] = None
+    # "Return [up to N] target <types> to its owner's hand": the target
+    # requirement (target_solver.TargetRequirement) of the bounce clause.
+    bounce_target: Optional[object] = None
+    # A permanent's static "<spells> cost {N} less" rule
+    # (oracle_parser.parse_cost_reduction), derived as a COST_DELTA effect
+    # while the permanent is on the battlefield.
+    cost_reduction_rule: Optional[dict] = None
+    draw_limit: Optional[dict] = None
     # Targeted forced discard classified by who chooses the card:
     # {'chooser': 'caster'|'victim'|'random', 'target', 'choose_clause',
     # 'count'} (oracle_parser.parse_hand_attack). The caster-chosen
@@ -1225,6 +1292,27 @@ class CardTemplate:
     # on-draw watchers do not fire (CR 121.1c).
     # Populated by oracle_parser.parse_library_dig.
     library_dig_data: Optional[dict] = None
+    # -- Clause grammar (design doc 2026-09-29, section 12, step 13) ------
+    # The card's typed `engine.effect_spec.CardEffects`, read through the
+    # `effects` property. LAZY: nothing is parsed at DB load (the whole-pool
+    # parse costs several times the load budget); the first access parses
+    # this template through `engine.effect_grammar.parse_template` -- the
+    # same call the eager tools' path `parse_pool` makes -- and memoises.
+    # `_effects_key` is the complete parse input the memo was parsed from
+    # (`effect_grammar.template_inputs`: name, both faces' text and every
+    # face's facts), so a copied, re-printed or re-typed template parses
+    # again; on a clause template it is the walker's effects object the
+    # slice was cut from. The memo lives as long as the template:
+    # `effect_grammar.clear_caches` does not clear it (`set_effects(None)`
+    # does). `_effects_slice` marks a loyalty CLAUSE template (built by
+    # `CardDatabase._type_loyalty_clauses`): ``(walker, face, slot)``; its
+    # effects are the walker's LOYALTY host for that slot on the face the
+    # engine activates, never a parse of the clause's synthetic text (A12).
+    _effects: Optional[Any] = field(default=None, compare=False, repr=False)
+    _effects_key: Optional[Any] = field(default=None, compare=False,
+                                        repr=False)
+    _effects_slice: Optional[tuple] = field(default=None, compare=False,
+                                            repr=False)
 
     def __post_init__(self) -> None:
         # Derive fields from oracle text for templates not loaded through
@@ -1241,6 +1329,12 @@ class CardTemplate:
             if self.loyalty_abilities is None:
                 from .oracle_parser import parse_loyalty_abilities as _pl
                 self.loyalty_abilities = _pl(self.oracle_text, self.loyalty)
+                # Type each line's clause exactly as a loaded card's are, so
+                # a directly built walker dispatches and is valued the same.
+                from .card_database import CardDatabase as _CDB
+                if _CDB._shared is not None and self.loyalty_abilities:
+                    self.loyalty_abilities = _CDB._shared._type_loyalty_clauses(
+                        self.name, self.loyalty_abilities, walker=self, face=0)
             from .oracle_parser import parse_self_cost_reduction as _pscr
             if not self.self_cost_reduction_unit:
                 (self.self_cost_reduction_amount,
@@ -1402,6 +1496,33 @@ class CardTemplate:
                 from .oracle_parser import (
                     parse_turn_scoped_restriction as _ptsr)
                 self.turn_scoped_restriction = _ptsr(self.oracle_text)
+            if self.cast_prohibition is None:
+                from .oracle_parser import parse_cast_prohibition as _pcp
+                self.cast_prohibition = _pcp(self.oracle_text)
+            if self.hand_refill is None:
+                from .oracle_parser import parse_hand_refill as _phr
+                self.hand_refill = _phr(self.oracle_text)
+            if self.bounce_target is None:
+                from .oracle_parser import parse_bounce_target as _pbt
+                self.bounce_target = _pbt(self.oracle_text)
+            if self.attack_observer is None:
+                from .oracle_parser import parse_attack_observer as _pao
+                self.attack_observer = _pao(self.oracle_text)
+            if self.group_restriction is None:
+                from .oracle_parser import parse_group_restriction as _pgr
+                self.group_restriction = _pgr(self.oracle_text)
+            if self.object_restriction is None:
+                from .oracle_parser import parse_object_restriction as _por
+                self.object_restriction = _por(self.oracle_text)
+            if self.next_turn_effect is None:
+                from .oracle_parser import parse_until_next_turn as _punt
+                self.next_turn_effect = _punt(self.oracle_text)
+            if self.cost_reduction_rule is None:
+                from .oracle_parser import parse_static_cost_reduction as _pscr2
+                self.cost_reduction_rule = _pscr2(self.oracle_text)
+            if self.draw_limit is None:
+                from .oracle_parser import parse_draw_limit as _pdl
+                self.draw_limit = _pdl(self.oracle_text)
             if self.hand_attack_data is None:
                 from .oracle_parser import parse_hand_attack as _pha
                 self.hand_attack_data = _pha(self.oracle_text)
@@ -1467,6 +1588,13 @@ class CardTemplate:
         return CardType.SORCERY in self.card_types
 
     @property
+    def has_targeted_pump(self) -> bool:
+        """A targeted modifier: +N/+M and/or granted keywords until end of
+        turn (CR 613.1f / 613.4c). One predicate for the resolver and the AI."""
+        return bool(self.pump_spell_power or self.pump_spell_toughness
+                    or self.pump_spell_keywords)
+
+    @property
     def is_spell(self) -> bool:
         return not self.is_land
 
@@ -1481,6 +1609,55 @@ class CardTemplate:
     @property
     def has_haste(self) -> bool:
         return Keyword.HASTE in self.keywords
+
+    @property
+    def effects(self):
+        """This card's `CardEffects` (every face), parsed on first access
+        and memoised on the complete parse input; see `_effects`. A loyalty
+        clause template returns its walker's LOYALTY host slice and never
+        parses."""
+        if self._effects_slice is not None:
+            return self._sliced_effects()
+        from . import effect_grammar
+        key, facts = effect_grammar.template_inputs(self)
+        e = self._effects
+        if e is None or self._effects_key != key:
+            e = effect_grammar.parse_template(self, list(facts))
+            self._effects, self._effects_key = e, key
+        return e
+
+    def _sliced_effects(self):
+        """A clause template's effects: its walker's LOYALTY host for the
+        slot, on the face the engine activates. The slice is re-cut whenever
+        the walker's own effects object changes (re-pinned, re-parsed after
+        a re-print), so it is always the very host object of the walker's
+        current effects."""
+        from .effect_spec import EMPTY_EFFECTS
+        walker, face, slot = self._effects_slice
+        if walker is None:
+            return EMPTY_EFFECTS
+        we = walker.effects
+        if self._effects is None or self._effects_key is not we:
+            host = we.loyalty(slot, face)
+            self._effects = (EMPTY_EFFECTS if host is None
+                             else EMPTY_EFFECTS.with_face(face, (host,)))
+            self._effects_key = we
+        return self._effects
+
+    def set_effects(self, effects) -> None:
+        """Pin this template's effects for its current parse input (the
+        eager tools' path, tests); None clears the memo. A loyalty clause
+        template's pin holds while its walker's effects stay the same
+        object."""
+        self._effects = effects
+        if effects is None:
+            self._effects_key = None
+        elif self._effects_slice is not None:
+            walker = self._effects_slice[0]
+            self._effects_key = walker.effects if walker is not None else None
+        else:
+            from . import effect_grammar
+            self._effects_key = effect_grammar.template_inputs(self)[0]
 
     def __hash__(self):
         return hash(self.name)
@@ -2272,7 +2449,7 @@ class CardInstance:
     @property
     def has_summoning_sickness(self) -> bool:
         """A creature has summoning sickness if it entered this turn and doesn't have haste."""
-        if not (self.template.is_creature or self.is_animated):
+        if not (self.effective_is_creature or self.is_animated):
             return False
         if Keyword.HASTE in self.keywords:
             return False
@@ -2282,7 +2459,7 @@ class CardInstance:
 
     @property
     def can_attack(self) -> bool:
-        if not (self.template.is_creature or self.is_animated):
+        if not (self.effective_is_creature or self.is_animated):
             return False
         if self.tapped:
             return False
@@ -2290,19 +2467,29 @@ class CardInstance:
             return False
         if Keyword.DEFENDER in self.keywords:
             return False
-        return True
+        return not self._object_prohibited("attack")
 
     @property
     def can_block(self) -> bool:
-        if not (self.template.is_creature or self.is_animated):
+        if not (self.effective_is_creature or self.is_animated):
             return False
         if self.tapped:
             return False
-        return True
+        return not self._object_prohibited("block")
+
+    def _object_prohibited(self, action: str) -> bool:
+        # CR 508.1c / 509.1b: a resolved "can't attack/block" on this object.
+        game = getattr(self, "_game_state", None)
+        if game is None:
+            return False
+        from . import rules_query
+        return rules_query.object_prohibited(game, self, action)
 
     @property
     def is_dead(self) -> bool:
-        if not (self.template.is_creature or self.is_animated):
+        # CR 711.8: a transformed permanent has only its current face's
+        # characteristics — the creature gates read the current face.
+        if not (self.effective_is_creature or self.is_animated):
             return False
         if self.toughness <= 0:
             # CR 704.5g: toughness 0 or less puts the creature into the

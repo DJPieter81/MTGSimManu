@@ -361,8 +361,11 @@ def _resolve_put_counter(game: "GameState", source: "CardInstance",
     if amount <= 0:
         return False
 
+    team = spec.get('scope') == 'team'
     if spec['self']:
         recipients = [source] if source.zone == "battlefield" else []
+    elif team:
+        recipients = _team_counter_recipients(game, source, controller, spec)
     else:
         recipients = []
         for tid in (targets or []):
@@ -370,6 +373,12 @@ def _resolve_put_counter(game: "GameState", source: "CardInstance",
             if found is None or found.zone != "battlefield":
                 continue
             recipients.append(found)
+
+    from .rules_audit import enabled as _audit_on
+    before = None
+    if team and _audit_on():
+        before = {id(p): p.counter_count(counter_kind)
+                  for pl in game.players for p in pl.battlefield}
 
     applied = False
     for recipient in recipients:
@@ -379,7 +388,58 @@ def _resolve_put_counter(game: "GameState", source: "CardInstance",
             f"T{game.display_turn} P{controller+1}: {source.name} "
             f"activated — {amount} {counter_kind} counter"
             f"{'s' if amount != 1 else ''} on {recipient.name}")
+
+    if before is not None:
+        # CR 122.1 restated independently of `_team_counter_recipients`:
+        # every permanent the sentence names gained exactly `amount`
+        # counters of the kind, and nothing else changed.
+        from .cards import CardType
+        from .rules_audit import check as _audit_check
+        want = spec.get('types') or []
+        sides = ([controller] if spec.get('owner') == 'you'
+                 else range(len(game.players)))
+        for idx in sides:
+            for p in game.players[idx].battlefield:
+                if id(p) not in before:
+                    continue
+                named = all(
+                    w == 'permanent' or CardType(w) in p.effective_card_types
+                    for w in want)
+                if spec.get('other') and p is source:
+                    named = False
+                expected = before[id(p)] + (amount if named else 0)
+                _audit_check(
+                    "122/team_counter_placed",
+                    p.counter_count(counter_kind) == expected,
+                    f"{source.name}: {p.name} has "
+                    f"{p.counter_count(counter_kind)} {counter_kind} "
+                    f"counters, expected {expected}", game=game)
     return applied
+
+
+def _team_counter_recipients(game: "GameState", source: "CardInstance",
+                             controller: int, spec) -> List["CardInstance"]:
+    """The permanents a TEAM-scope put-counter sentence names (CR 122.1):
+    every battlefield permanent carrying ALL the card types the sentence
+    lists ('permanent' matches anything), under the controller for "you
+    control" or under every player otherwise, minus the source for "each
+    other". Read from `effective_card_types` so an animated land or a token
+    creature counts exactly as the rules count it."""
+    from .cards import CardType
+    want = spec.get('types') or []
+    sides = ([controller] if spec.get('owner') == 'you'
+             else range(len(game.players)))
+    out: List["CardInstance"] = []
+    for idx in sides:
+        for perm in list(game.players[idx].battlefield):
+            if perm.zone != "battlefield":
+                continue
+            if spec.get('other') and perm is source:
+                continue
+            types = perm.effective_card_types
+            if all(w == 'permanent' or CardType(w) in types for w in want):
+                out.append(perm)
+    return out
 
 
 def resolve_activated_ability(game: "GameState", source: "CardInstance",
@@ -512,7 +572,8 @@ def resolve_activated_ability(game: "GameState", source: "CardInstance",
                                             ability, targets)
 
         if kind in (ActivationEffectKind.PUT_COUNTER_SELF,
-                    ActivationEffectKind.PUT_COUNTER_TARGET):
+                    ActivationEffectKind.PUT_COUNTER_TARGET,
+                    ActivationEffectKind.PUT_COUNTER_TEAM):
             return _resolve_put_counter(game, source, controller,
                                         ability, targets)
         if kind is ActivationEffectKind.ADAPT:

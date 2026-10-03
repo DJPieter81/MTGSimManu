@@ -598,9 +598,10 @@ class PermanentEffects:
                         f"T{game.display_turn} P{p_idx+1}: {perm.name} — "
                         f"{creature.name} died → +{amount}/+{amount} counter(s) on {target.name}")
                 elif kind == "drain":
-                    for o_idx, opp in enumerate(game.players):
+                    from .damage import lose_life
+                    for o_idx in range(len(game.players)):
                         if o_idx != p_idx:
-                            opp.life -= spec["amount"]
+                            lose_life(game, o_idx, spec["amount"])
                     if spec["gain"]:
                         PermanentEffects.gain_life(game, p_idx, spec["gain"])
                     game.log.append(
@@ -614,7 +615,8 @@ class PermanentEffects:
                 elif kind == "draw":
                     game.draw_cards(p_idx, spec["draw"])
                     if spec["lose_life"]:
-                        player.life -= spec["lose_life"]
+                        from .damage import lose_life
+                        lose_life(game, p_idx, spec["lose_life"])
                         game.check_state_based_actions()
                 if game.game_over:
                     return

@@ -57,6 +57,7 @@ from ai.llm_schemas import (
     HandlerGapReport,
     OracleTagClassification,
     SynthesizedGameplan,
+    oracle_tag_decision_model,
 )
 
 
@@ -73,6 +74,29 @@ _OUTPUT_TYPES: dict[str, type] = {
     # Phase 1 refactor — at-decision-time scoring weights, cached.
     "decision_scorer":     DecisionScoringWeights,
 }
+
+
+# Providers whose models answer only typed decisions (booleans and closed
+# choices) and refuse any free-text output field.  A task listed in
+# `_DECISION_OUTPUT_TYPES` is asked in its decision shape on these models.
+DECISION_MODEL_PROVIDERS: tuple[str, ...] = ("typesafe:",)
+
+_DECISION_OUTPUT_TYPES = {
+    "classify_oracle": oracle_tag_decision_model,
+}
+
+
+def is_decision_model(model: str) -> bool:
+    """True when `model` names a decision-only model."""
+    return model.startswith(DECISION_MODEL_PROVIDERS)
+
+
+def output_type_for(task: str, model: str) -> type:
+    """The task's output schema for `model`: its decision shape on a
+    decision model when the task has one, else the task's schema."""
+    if is_decision_model(model) and task in _DECISION_OUTPUT_TYPES:
+        return _DECISION_OUTPUT_TYPES[task]()
+    return _OUTPUT_TYPES[task]
 
 
 def _format_fewshot(examples: list[dict]) -> str:
@@ -129,10 +153,29 @@ def _build_raw_agent(
 
     return Agent(
         chosen_model,
-        output_type=_OUTPUT_TYPES[task],
+        output_type=output_type_for(task, chosen_model),
         system_prompt=system_prompt,
         defer_model_check=True,
     )
+
+
+def render_user_prompt(user_prompt: Any) -> Any:
+    """Render a structured prompt (dict / BaseModel) to the text pydantic-ai
+    accepts; pass a string (or any other `UserContent`) through unchanged.
+
+    ONE boundary rule: a structured prompt is rendered exactly once, at the
+    last wrapper before the raw pydantic-ai ``Agent``. ``CachedAgent`` keys
+    its lookup by the structure and renders here; ``MeteredAgent`` renders
+    only when its inner agent is the raw one (a ``CachedAgent`` inner still
+    needs the structure for its key). pydantic-ai ≥ 2.48 rejects a bare
+    ``dict`` in ``UserPromptPart.content`` — earlier versions were merely
+    lenient — so every shape must cross this boundary as text.
+    ``sort_keys=True`` keeps the rendering byte-stable for the cache."""
+    if isinstance(user_prompt, BaseModel):
+        return json.dumps(user_prompt.model_dump(), sort_keys=True)
+    if isinstance(user_prompt, dict):
+        return json.dumps(user_prompt, sort_keys=True)
+    return user_prompt
 
 
 class _CachedResult:
@@ -240,16 +283,12 @@ class CachedAgent:
             return _CachedResult(cached)
 
         # A structured prompt (dict / BaseModel) is the cache key's
-        # material; the model receives it rendered as text. Callers that
-        # key their own lookups by the same structure (the decision
-        # scorer) then find the live result — a string prompt was keyed
-        # as `{"_raw_string_input": ...}` and never matched a dict lookup.
-        if isinstance(user_prompt, BaseModel):
-            raw_prompt: Any = json.dumps(user_prompt.model_dump(), sort_keys=True)
-        elif isinstance(user_prompt, dict):
-            raw_prompt = json.dumps(user_prompt, sort_keys=True)
-        else:
-            raw_prompt = user_prompt
+        # material; the model receives it rendered as text (the one
+        # rendering boundary, `render_user_prompt`). Callers that key
+        # their own lookups by the same structure (the decision scorer)
+        # then find the live result — a string prompt was keyed as
+        # `{"_raw_string_input": ...}` and never matched a dict lookup.
+        raw_prompt: Any = render_user_prompt(user_prompt)
         result = self._agent.run_sync(raw_prompt, **kwargs)
 
         if isinstance(result.output, BaseModel):
@@ -399,7 +438,12 @@ class MeteredAgent:
             cache_hit=False,
             input_hash=input_hash,
         ) as timer:
-            result = self._agent.run_sync(user_prompt, **kwargs)
+            # Render a structured prompt only when the inner agent is the
+            # raw pydantic-ai Agent; a CachedAgent inner keys its lookup by
+            # the structure and renders at its own boundary.
+            inner_prompt = (user_prompt if isinstance(self._agent, CachedAgent)
+                            else render_user_prompt(user_prompt))
+            result = self._agent.run_sync(inner_prompt, **kwargs)
             if isinstance(result, _CachedResult):
                 # Cache hit — no API call happened.  Record 0 tokens
                 # and flip the cache_hit flag so the cost calculator

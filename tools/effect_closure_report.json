@@ -1,0 +1,2141 @@
+{
+ "activated_effects:ADAPT": {
+  "deck_hosts": [
+   {
+    "card": "Basking Broodscale",
+    "host": "ACTIVATED:0:1",
+    "part": "mainboard",
+    "step": "E4",
+    "strict": false
+   },
+   {
+    "card": "Emperor of Bones",
+    "host": "ACTIVATED:0:1",
+    "part": "mainboard",
+    "step": "E4",
+    "strict": false
+   }
+  ],
+  "executable": 0,
+  "family": "tokens_counters",
+  "hosts": {
+   "mainboard": 2,
+   "pool": 19,
+   "sideboard": 0
+  },
+  "steps": {
+   "E4": 21
+  },
+  "strict": 0,
+  "sub_kinds": {},
+  "verb_sets": {
+   "KEYWORD_ACTION": 21
+  }
+ },
+ "activated_effects:ANIMATE_SELF_UEOT": {
+  "deck_hosts": [],
+  "executable": 0,
+  "family": "pump_restrict",
+  "hosts": {
+   "mainboard": 0,
+   "pool": 39,
+   "sideboard": 0
+  },
+  "steps": {
+   "E5": 33,
+   "none": 6
+  },
+  "strict": 31,
+  "sub_kinds": {},
+  "verb_sets": {
+   "CONTINUOUS": 33,
+   "CONTINUOUS,UNMODELLED": 1,
+   "UNMODELLED": 5
+  }
+ },
+ "activated_effects:DAMAGE_ANY_TARGET": {
+  "deck_hosts": [
+   {
+    "card": "Goblin Bombardment",
+    "host": "ACTIVATED:0:0",
+    "part": "mainboard",
+    "step": "E1",
+    "strict": true
+   },
+   {
+    "card": "High Noon",
+    "host": "ACTIVATED:0:1",
+    "part": "mainboard",
+    "step": "E1",
+    "strict": true
+   },
+   {
+    "card": "The Filigree Sylex",
+    "host": "ACTIVATED:0:2",
+    "part": "sideboard",
+    "step": "E1",
+    "strict": true
+   },
+   {
+    "card": "Walking Ballista",
+    "host": "ACTIVATED:0:2",
+    "part": "sideboard",
+    "step": "E1",
+    "strict": true
+   }
+  ],
+  "executable": 0,
+  "family": "damage",
+  "hosts": {
+   "mainboard": 2,
+   "pool": 94,
+   "sideboard": 2
+  },
+  "steps": {
+   "E1": 98
+  },
+  "strict": 98,
+  "sub_kinds": {},
+  "verb_sets": {
+   "DAMAGE": 98
+  }
+ },
+ "activated_effects:DRAW_N": {
+  "deck_hosts": [
+   {
+    "card": "Fiery Islet",
+    "host": "ACTIVATED:0:1",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
+    "card": "Horizon Canopy",
+    "host": "ACTIVATED:0:1",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
+    "card": "Mind Stone",
+    "host": "ACTIVATED:0:1",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
+    "card": "Mishra's Bauble",
+    "host": "ACTIVATED:0:0",
+    "part": "mainboard",
+    "step": null,
+    "strict": false
+   },
+   {
+    "card": "Nurturing Peatland",
+    "host": "ACTIVATED:0:1",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
+    "card": "Silent Clearing",
+    "host": "ACTIVATED:0:1",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
+    "card": "Soul-Guide Lantern",
+    "host": "ACTIVATED:0:2",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
+    "card": "Sunbaked Canyon",
+    "host": "ACTIVATED:0:1",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
+    "card": "Vexing Bauble",
+    "host": "ACTIVATED:0:1",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   }
+  ],
+  "executable": 0,
+  "family": "card_flow",
+  "hosts": {
+   "mainboard": 9,
+   "pool": 264,
+   "sideboard": 0
+  },
+  "steps": {
+   "E3": 272,
+   "none": 1
+  },
+  "strict": 272,
+  "sub_kinds": {
+   "DELAYED": 1
+  },
+  "verb_sets": {
+   "CREATE_TRIGGER,DRAW,UNMODELLED": 1,
+   "DRAW": 272
+  }
+ },
+ "activated_effects:EXILE_FROM_GRAVEYARD": {
+  "deck_hosts": [
+   {
+    "card": "Faerie Macabre",
+    "host": "ACTIVATED:0:1",
+    "part": "sideboard",
+    "step": null,
+    "strict": false
+   },
+   {
+    "card": "Keen-Eyed Curator",
+    "host": "ACTIVATED:0:1",
+    "part": "sideboard",
+    "step": "E2",
+    "strict": true
+   },
+   {
+    "card": "Nihil Spellbomb",
+    "host": "ACTIVATED:0:0",
+    "part": "sideboard",
+    "step": "E2",
+    "strict": true
+   },
+   {
+    "card": "Soul-Guide Lantern",
+    "host": "ACTIVATED:0:1",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": true
+   },
+   {
+    "card": "Tormod's Crypt",
+    "host": "ACTIVATED:0:0",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": true
+   }
+  ],
+  "executable": 0,
+  "family": "removal",
+  "hosts": {
+   "mainboard": 2,
+   "pool": 25,
+   "sideboard": 3
+  },
+  "steps": {
+   "E2": 23,
+   "none": 7
+  },
+  "strict": 23,
+  "sub_kinds": {},
+  "verb_sets": {
+   "EXILE": 23,
+   "UNMODELLED": 7
+  }
+ },
+ "activated_effects:GRANT_HASTE_TARGET": {
+  "deck_hosts": [
+   {
+    "card": "Hanweir Battlements // Hanweir, the Writhing Township",
+    "host": "ACTIVATED:0:1",
+    "part": "mainboard",
+    "step": "E5",
+    "strict": true
+   }
+  ],
+  "executable": 0,
+  "family": "pump_restrict",
+  "hosts": {
+   "mainboard": 1,
+   "pool": 12,
+   "sideboard": 0
+  },
+  "steps": {
+   "E5": 13
+  },
+  "strict": 13,
+  "sub_kinds": {},
+  "verb_sets": {
+   "CONTINUOUS": 13
+  }
+ },
+ "activated_effects:PUMP_SELF_UEOT": {
+  "deck_hosts": [
+   {
+    "card": "Blazing Rootwalla",
+    "host": "ACTIVATED:0:0",
+    "part": "mainboard",
+    "step": "E5",
+    "strict": true
+   }
+  ],
+  "executable": 0,
+  "family": "pump_restrict",
+  "hosts": {
+   "mainboard": 1,
+   "pool": 228,
+   "sideboard": 0
+  },
+  "steps": {
+   "E5": 229
+  },
+  "strict": 229,
+  "sub_kinds": {},
+  "verb_sets": {
+   "CONTINUOUS": 229
+  }
+ },
+ "activated_effects:PUT_COUNTER_SELF": {
+  "deck_hosts": [
+   {
+    "card": "Psychic Frog",
+    "host": "ACTIVATED:0:1",
+    "part": "mainboard",
+    "step": "E4",
+    "strict": true
+   },
+   {
+    "card": "Walking Ballista",
+    "host": "ACTIVATED:0:1",
+    "part": "sideboard",
+    "step": "E4",
+    "strict": true
+   }
+  ],
+  "executable": 0,
+  "family": "tokens_counters",
+  "hosts": {
+   "mainboard": 1,
+   "pool": 101,
+   "sideboard": 1
+  },
+  "steps": {
+   "E4": 103
+  },
+  "strict": 103,
+  "sub_kinds": {},
+  "verb_sets": {
+   "PUT_COUNTERS": 103
+  }
+ },
+ "activated_effects:PUT_COUNTER_TARGET": {
+  "deck_hosts": [
+   {
+    "card": "Oblivion Stone",
+    "host": "ACTIVATED:0:0",
+    "part": "sideboard",
+    "step": "E4",
+    "strict": true
+   }
+  ],
+  "executable": 0,
+  "family": "tokens_counters",
+  "hosts": {
+   "mainboard": 0,
+   "pool": 45,
+   "sideboard": 1
+  },
+  "steps": {
+   "E4": 46
+  },
+  "strict": 46,
+  "sub_kinds": {},
+  "verb_sets": {
+   "PUT_COUNTERS": 46
+  }
+ },
+ "activated_effects:PUT_COUNTER_TEAM": {
+  "deck_hosts": [
+   {
+    "card": "Leyline of Abundance",
+    "host": "ACTIVATED:0:2",
+    "part": "mainboard",
+    "step": "E4",
+    "strict": true
+   }
+  ],
+  "executable": 0,
+  "family": "tokens_counters",
+  "hosts": {
+   "mainboard": 1,
+   "pool": 11,
+   "sideboard": 0
+  },
+  "steps": {
+   "E4": 12
+  },
+  "strict": 12,
+  "sub_kinds": {},
+  "verb_sets": {
+   "PUT_COUNTERS": 12
+  }
+ },
+ "activated_effects:TUTOR_CREATURE_TO_BATTLEFIELD": {
+  "deck_hosts": [
+   {
+    "card": "Fiend Artisan",
+    "host": "ACTIVATED:0:1",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   }
+  ],
+  "executable": 0,
+  "family": "card_flow",
+  "hosts": {
+   "mainboard": 1,
+   "pool": 3,
+   "sideboard": 0
+  },
+  "steps": {
+   "E3": 4
+  },
+  "strict": 4,
+  "sub_kinds": {},
+  "verb_sets": {
+   "MOVE,SEARCH,SHUFFLE": 4
+  }
+ },
+ "activated_effects:TUTOR_TO_HAND": {
+  "deck_hosts": [
+   {
+    "card": "Expedition Map",
+    "host": "ACTIVATED:0:0",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   }
+  ],
+  "executable": 0,
+  "family": "card_flow",
+  "hosts": {
+   "mainboard": 1,
+   "pool": 31,
+   "sideboard": 0
+  },
+  "steps": {
+   "E3": 31,
+   "none": 1
+  },
+  "strict": 31,
+  "sub_kinds": {},
+  "verb_sets": {
+   "MOVE,SEARCH,SHUFFLE": 31,
+   "MOVE,SHUFFLE,UNMODELLED": 1
+  }
+ },
+ "activated_effects:UNTAP_TARGET_PERMANENT": {
+  "deck_hosts": [
+   {
+    "card": "Devoted Druid",
+    "host": "ACTIVATED:0:1",
+    "part": "mainboard",
+    "step": "E5",
+    "strict": true
+   }
+  ],
+  "executable": 0,
+  "family": "pump_restrict",
+  "hosts": {
+   "mainboard": 1,
+   "pool": 45,
+   "sideboard": 0
+  },
+  "steps": {
+   "E5": 42,
+   "none": 4
+  },
+  "strict": 42,
+  "sub_kinds": {},
+  "verb_sets": {
+   "UNMODELLED": 4,
+   "UNTAP": 42
+  }
+ },
+ "attack_observer": {
+  "deck_hosts": [
+   {
+    "card": "Tamiyo, Inquisitive Student // Tamiyo, Seasoned Scholar",
+    "host": "LOYALTY:1:0",
+    "part": "mainboard",
+    "step": null,
+    "strict": false
+   }
+  ],
+  "executable": 0,
+  "family": "pump_restrict",
+  "hosts": {
+   "mainboard": 1,
+   "pool": 1,
+   "sideboard": 0
+  },
+  "steps": {
+   "none": 2
+  },
+  "strict": 0,
+  "sub_kinds": {},
+  "verb_sets": {
+   "UNMODELLED": 2
+  }
+ },
+ "board_sweep": {
+  "deck_hosts": [
+   {
+    "card": "Supreme Verdict",
+    "host": "SPELL:0:1",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": true
+   },
+   {
+    "card": "Wrath of God",
+    "host": "SPELL:0:0",
+    "part": "sideboard",
+    "step": "E2",
+    "strict": true
+   }
+  ],
+  "executable": 0,
+  "family": "removal",
+  "hosts": {
+   "mainboard": 1,
+   "pool": 4,
+   "sideboard": 1
+  },
+  "steps": {
+   "E2": 6
+  },
+  "strict": 6,
+  "sub_kinds": {},
+  "verb_sets": {
+   "DESTROY": 6
+  }
+ },
+ "bounce": {
+  "deck_hosts": [
+   {
+    "card": "Into the Flood Maw",
+    "host": "SPELL:0:1",
+    "part": "sideboard",
+    "step": "E2",
+    "strict": false
+   },
+   {
+    "card": "Sink into Stupor // Soporific Springs",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": null,
+    "strict": false
+   }
+  ],
+  "executable": 0,
+  "family": "removal",
+  "hosts": {
+   "mainboard": 1,
+   "pool": 171,
+   "sideboard": 1
+  },
+  "steps": {
+   "E2": 77,
+   "E3": 34,
+   "E4": 9,
+   "E5": 9,
+   "E6": 3,
+   "none": 41
+  },
+  "strict": 55,
+  "sub_kinds": {},
+  "verb_sets": {
+   "CONTINUOUS": 3,
+   "CONTINUOUS,MOVE": 4,
+   "CREATE_TOKEN,MOVE": 6,
+   "DRAW,MOVE": 19,
+   "KEYWORD_ACTION,MOVE": 3,
+   "MOVE": 71,
+   "MOVE,SCRY": 4,
+   "MOVE,SURVEIL": 5,
+   "MOVE,UNMODELLED": 11,
+   "UNMODELLED": 13
+  }
+ },
+ "card_flow": {
+  "deck_hosts": [
+   {
+    "card": "Burning Inquiry",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
+    "card": "Cleansing Wildfire",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": false
+   },
+   {
+    "card": "Cling to Dust",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": false
+   },
+   {
+    "card": "Consider",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
+    "card": "Expressive Iteration",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": null,
+    "strict": false
+   },
+   {
+    "card": "Faithful Mending",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": false
+   },
+   {
+    "card": "Faithless Looting",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
+    "card": "Kaito, Bane of Nightmares",
+    "host": "LOYALTY:0:3",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
+    "card": "L\u00f3rien Revealed",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
+    "card": "Manamorphose",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E6",
+    "strict": false
+   },
+   {
+    "card": "Preordain",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
+    "card": "Price of Freedom",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": false
+   },
+   {
+    "card": "Territorial Kavu",
+    "host": "MODE:0:0:mode0",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
+    "card": "Thought Scour",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   }
+  ],
+  "executable": 0,
+  "family": "card_flow",
+  "hosts": {
+   "mainboard": 14,
+   "pool": 892,
+   "sideboard": 0
+  },
+  "steps": {
+   "E1": 1,
+   "E2": 2,
+   "E3": 422,
+   "E4": 52,
+   "E5": 116,
+   "E6": 34,
+   "none": 279
+  },
+  "strict": 267,
+  "sub_kinds": {
+   "DELAYED": 6,
+   "REFLEXIVE": 2
+  },
+  "verb_sets": {
+   "CONTINUOUS,DRAW": 54,
+   "CONTINUOUS,SCRY": 22,
+   "DISCARD,DRAW": 48,
+   "DRAW": 103,
+   "DRAW,LOSE_LIFE": 18,
+   "DRAW,MOVE": 40,
+   "DRAW,SCRY": 17,
+   "DRAW,UNMODELLED": 78,
+   "MOVE,UNMODELLED": 27,
+   "UNMODELLED": 19
+  }
+ },
+ "cast_prohibition": {
+  "deck_hosts": [
+   {
+    "card": "Orim's Chant",
+    "host": "SPELL:0:1",
+    "part": "mainboard",
+    "step": "E5",
+    "strict": false
+   },
+   {
+    "card": "Silence",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E5",
+    "strict": true
+   }
+  ],
+  "executable": 0,
+  "family": "pump_restrict",
+  "hosts": {
+   "mainboard": 2,
+   "pool": 2,
+   "sideboard": 0
+  },
+  "steps": {
+   "E5": 3,
+   "none": 1
+  },
+  "strict": 1,
+  "sub_kinds": {},
+  "verb_sets": {
+   "CONTINUOUS": 2,
+   "CONTINUOUS,EXILE,UNMODELLED": 1,
+   "CONTINUOUS,MOVE": 1
+  }
+ },
+ "combat_prevention": {
+  "deck_hosts": [
+   {
+    "card": "Orim's Chant",
+    "host": "SPELL:0:1:kicked",
+    "part": "mainboard",
+    "step": "E5",
+    "strict": false
+   }
+  ],
+  "executable": 0,
+  "family": "pump_restrict",
+  "hosts": {
+   "mainboard": 1,
+   "pool": 25,
+   "sideboard": 0
+  },
+  "steps": {
+   "E5": 13,
+   "none": 13
+  },
+  "strict": 8,
+  "sub_kinds": {},
+  "verb_sets": {
+   "CONTINUOUS": 9,
+   "CONTINUOUS,COUNTER,UNMODELLED": 1,
+   "CONTINUOUS,DAMAGE": 1,
+   "CONTINUOUS,GAIN_LIFE": 1,
+   "CONTINUOUS,LOSE_LIFE": 1,
+   "CONTINUOUS,MOVE": 1,
+   "CONTINUOUS,TAP,UNMODELLED": 1,
+   "CONTINUOUS,UNMODELLED": 3,
+   "GAIN_LIFE,UNMODELLED": 1,
+   "UNMODELLED": 5
+  }
+ },
+ "create_token": {
+  "deck_hosts": [
+   {
+    "card": "Empty the Warrens",
+    "host": "SPELL:0:0",
+    "part": "sideboard",
+    "step": "E4",
+    "strict": true
+   },
+   {
+    "card": "Grist, the Hunger Tide",
+    "host": "LOYALTY:0:1",
+    "part": "sideboard",
+    "step": null,
+    "strict": false
+   },
+   {
+    "card": "Malevolent Rumble",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": null,
+    "strict": false
+   },
+   {
+    "card": "Warping Wail",
+    "host": "MODE:0:2:mode2",
+    "part": "mainboard",
+    "step": "E5",
+    "strict": false
+   },
+   {
+    "card": "Warping Wail",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E6",
+    "strict": false
+   }
+  ],
+  "executable": 0,
+  "family": "tokens_counters",
+  "hosts": {
+   "mainboard": 3,
+   "pool": 417,
+   "sideboard": 2
+  },
+  "steps": {
+   "E4": 273,
+   "E5": 49,
+   "E6": 9,
+   "none": 91
+  },
+  "strict": 183,
+  "sub_kinds": {
+   "DELAYED": 12,
+   "REFLEXIVE": 2
+  },
+  "verb_sets": {
+   "CONTINUOUS,CREATE_TOKEN": 29,
+   "CONTINUOUS,CREATE_TOKEN,DAMAGE": 5,
+   "CONTINUOUS,UNMODELLED": 7,
+   "COUNTER,CREATE_TOKEN": 5,
+   "CREATE_TOKEN": 177,
+   "CREATE_TOKEN,DESTROY": 10,
+   "CREATE_TOKEN,MOVE": 10,
+   "CREATE_TOKEN,PUT_COUNTERS": 9,
+   "CREATE_TOKEN,UNMODELLED": 29,
+   "UNMODELLED": 15
+  }
+ },
+ "direct_damage": {
+  "deck_hosts": [
+   {
+    "card": "Galvanic Blast",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E1",
+    "strict": false
+   },
+   {
+    "card": "Grapeshot",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E1",
+    "strict": true
+   },
+   {
+    "card": "Lava Dart",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E1",
+    "strict": true
+   },
+   {
+    "card": "Lightning Bolt",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E1",
+    "strict": true
+   }
+  ],
+  "executable": 0,
+  "family": "damage",
+  "hosts": {
+   "mainboard": 4,
+   "pool": 34,
+   "sideboard": 0
+  },
+  "steps": {
+   "E1": 35,
+   "none": 3
+  },
+  "strict": 34,
+  "sub_kinds": {},
+  "verb_sets": {
+   "DAMAGE": 35,
+   "DAMAGE,MOVE,REVEAL,UNMODELLED": 1,
+   "DAMAGE,UNMODELLED": 2
+  }
+ },
+ "energy_damage": {
+  "deck_hosts": [
+   {
+    "card": "Galvanic Discharge",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E6",
+    "strict": false
+   }
+  ],
+  "executable": 0,
+  "family": "damage",
+  "hosts": {
+   "mainboard": 1,
+   "pool": 0,
+   "sideboard": 0
+  },
+  "steps": {
+   "E6": 1
+  },
+  "strict": 0,
+  "sub_kinds": {},
+  "verb_sets": {
+   "CHOOSE,DAMAGE,PAY,PLAYER_COUNTERS": 1
+  }
+ },
+ "etb:etb_exile_returns_on_leave": {
+  "deck_hosts": [],
+  "executable": 0,
+  "family": "removal",
+  "hosts": {
+   "mainboard": 0,
+   "pool": 3,
+   "sideboard": 0
+  },
+  "steps": {
+   "none": 3
+  },
+  "strict": 0,
+  "sub_kinds": {},
+  "verb_sets": {
+   "EXILE,REVEAL,UNMODELLED": 3
+  }
+ },
+ "etb:etb_return_land": {
+  "deck_hosts": [
+   {
+    "card": "Gruul Turf",
+    "host": "TRIGGERED:0:1",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": true
+   },
+   {
+    "card": "Simic Growth Chamber",
+    "host": "TRIGGERED:0:1",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": true
+   }
+  ],
+  "executable": 0,
+  "family": "removal",
+  "hosts": {
+   "mainboard": 2,
+   "pool": 9,
+   "sideboard": 0
+  },
+  "steps": {
+   "E2": 10,
+   "none": 1
+  },
+  "strict": 10,
+  "sub_kinds": {},
+  "verb_sets": {
+   "MOVE": 10,
+   "MOVE,UNMODELLED": 1
+  }
+ },
+ "etb:etb_targeted_removal_data": {
+  "deck_hosts": [
+   {
+    "card": "Witch Enchanter // Witch-Blessed Meadow",
+    "host": "TRIGGERED:0:0",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": true
+   }
+  ],
+  "executable": 0,
+  "family": "removal",
+  "hosts": {
+   "mainboard": 1,
+   "pool": 33,
+   "sideboard": 0
+  },
+  "steps": {
+   "E2": 34
+  },
+  "strict": 23,
+  "sub_kinds": {},
+  "verb_sets": {
+   "DESTROY": 30,
+   "EXILE": 4
+  }
+ },
+ "group_restriction": {
+  "deck_hosts": [],
+  "executable": 0,
+  "family": "pump_restrict",
+  "hosts": {
+   "mainboard": 0,
+   "pool": 11,
+   "sideboard": 0
+  },
+  "steps": {
+   "E5": 10,
+   "none": 1
+  },
+  "strict": 2,
+  "sub_kinds": {},
+  "verb_sets": {
+   "CONTINUOUS": 2,
+   "CONTINUOUS,DAMAGE": 4,
+   "CONTINUOUS,DESTROY": 3,
+   "CONTINUOUS,DESTROY,MOVE,SEARCH,SHUFFLE": 1,
+   "DAMAGE,UNMODELLED": 1
+  }
+ },
+ "hand_attack": {
+  "deck_hosts": [
+   {
+    "card": "Inquisition of Kozilek",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": null,
+    "strict": false
+   },
+   {
+    "card": "Thoughtseize",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": null,
+    "strict": false
+   }
+  ],
+  "executable": 0,
+  "family": "card_flow",
+  "hosts": {
+   "mainboard": 2,
+   "pool": 67,
+   "sideboard": 0
+  },
+  "steps": {
+   "E3": 7,
+   "none": 62
+  },
+  "strict": 3,
+  "sub_kinds": {},
+  "verb_sets": {
+   "CHOOSE,DISCARD,MOVE,REVEAL": 1,
+   "CHOOSE,DISCARD,REVEAL": 2,
+   "CONTINUOUS,DISCARD,REVEAL,UNMODELLED": 2,
+   "DISCARD,KEYWORD_ACTION,REVEAL,UNMODELLED": 3,
+   "DISCARD,LOSE_LIFE,REVEAL,UNMODELLED": 2,
+   "DISCARD,PUT_COUNTERS,REVEAL,UNMODELLED": 2,
+   "DISCARD,REVEAL": 4,
+   "DISCARD,REVEAL,UNMODELLED": 35,
+   "DISCARD,UNMODELLED": 2,
+   "REVEAL,UNMODELLED": 2
+  }
+ },
+ "hand_refill_wheel": {
+  "deck_hosts": [
+   {
+    "card": "Day's Undoing",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": null,
+    "strict": false
+   }
+  ],
+  "executable": 0,
+  "family": "card_flow",
+  "hosts": {
+   "mainboard": 1,
+   "pool": 6,
+   "sideboard": 0
+  },
+  "steps": {
+   "E3": 3,
+   "none": 4
+  },
+  "strict": 3,
+  "sub_kinds": {},
+  "verb_sets": {
+   "DISCARD,DRAW": 3,
+   "DRAW,END_TURN,UNMODELLED": 1,
+   "DRAW,EXILE,UNMODELLED": 2,
+   "DRAW,UNMODELLED": 1
+  }
+ },
+ "impulse_reveal": {
+  "deck_hosts": [
+   {
+    "card": "Reckless Impulse",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": null,
+    "strict": false
+   },
+   {
+    "card": "Wrenn's Resolve",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": null,
+    "strict": false
+   }
+  ],
+  "executable": 0,
+  "family": "card_flow",
+  "hosts": {
+   "mainboard": 2,
+   "pool": 3,
+   "sideboard": 0
+  },
+  "steps": {
+   "none": 5
+  },
+  "strict": 0,
+  "sub_kinds": {
+   "DELAYED": 1
+  },
+  "verb_sets": {
+   "CONTINUOUS,CREATE_TRIGGER,UNMODELLED": 1,
+   "UNMODELLED": 4
+  }
+ },
+ "land_destruction": {
+  "deck_hosts": [
+   {
+    "card": "Cleansing Wildfire",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": false
+   },
+   {
+    "card": "Price of Freedom",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": false
+   }
+  ],
+  "executable": 0,
+  "family": "removal",
+  "hosts": {
+   "mainboard": 2,
+   "pool": 14,
+   "sideboard": 0
+  },
+  "steps": {
+   "E2": 12,
+   "E3": 3,
+   "none": 1
+  },
+  "strict": 10,
+  "sub_kinds": {},
+  "verb_sets": {
+   "DAMAGE,DESTROY": 2,
+   "DESTROY": 10,
+   "DESTROY,DRAW,MOVE,SEARCH,SHUFFLE": 3,
+   "DESTROY,UNMODELLED": 1
+  }
+ },
+ "library_dig": {
+  "deck_hosts": [
+   {
+    "card": "Ancient Stirrings",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": null,
+    "strict": false
+   },
+   {
+    "card": "Consult the Star Charts",
+    "host": "SPELL:0:1",
+    "part": "mainboard",
+    "step": null,
+    "strict": false
+   },
+   {
+    "card": "Consult the Star Charts",
+    "host": "SPELL:0:1:kicked",
+    "part": "mainboard",
+    "step": null,
+    "strict": false
+   }
+  ],
+  "executable": 0,
+  "family": "card_flow",
+  "hosts": {
+   "mainboard": 3,
+   "pool": 30,
+   "sideboard": 0
+  },
+  "steps": {
+   "none": 33
+  },
+  "strict": 0,
+  "sub_kinds": {},
+  "verb_sets": {
+   "CONTINUOUS,MOVE,REVEAL,UNMODELLED": 1,
+   "DRAW,MOVE,REVEAL,UNMODELLED": 1,
+   "MOVE,REVEAL,UNMODELLED": 22,
+   "MOVE,UNMODELLED": 8,
+   "UNMODELLED": 1
+  }
+ },
+ "mass_mode_clause": {
+  "deck_hosts": [
+   {
+    "card": "Abrade",
+    "host": "MODE:0:0:mode0",
+    "part": "sideboard",
+    "step": "E1",
+    "strict": false
+   },
+   {
+    "card": "Abrade",
+    "host": "MODE:0:1:mode1",
+    "part": "sideboard",
+    "step": "E2",
+    "strict": true
+   },
+   {
+    "card": "Avengers Disassembled",
+    "host": "MODE:0:0:mode0",
+    "part": "mainboard",
+    "step": "E1",
+    "strict": false
+   },
+   {
+    "card": "Avengers Disassembled",
+    "host": "MODE:0:1:mode1",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": false
+   },
+   {
+    "card": "Brotherhood's End",
+    "host": "MODE:0:0:mode0",
+    "part": "sideboard",
+    "step": "E1",
+    "strict": false
+   },
+   {
+    "card": "Brotherhood's End",
+    "host": "MODE:0:1:mode1",
+    "part": "sideboard",
+    "step": "E2",
+    "strict": true
+   },
+   {
+    "card": "Consult the Star Charts",
+    "host": "SPELL:0:1:kicked",
+    "part": "mainboard",
+    "step": null,
+    "strict": false
+   },
+   {
+    "card": "Drown in the Loch",
+    "host": "MODE:0:0:mode0",
+    "part": "mainboard",
+    "step": "E6",
+    "strict": false
+   },
+   {
+    "card": "Drown in the Loch",
+    "host": "MODE:0:1:mode1",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": false
+   },
+   {
+    "card": "Fire Magic",
+    "host": "MODE:0:0:mode0",
+    "part": "sideboard",
+    "step": "E1",
+    "strict": false
+   },
+   {
+    "card": "Fire Magic",
+    "host": "MODE:0:1:mode1",
+    "part": "sideboard",
+    "step": "E1",
+    "strict": false
+   },
+   {
+    "card": "Fire Magic",
+    "host": "MODE:0:2:mode2",
+    "part": "sideboard",
+    "step": "E1",
+    "strict": false
+   },
+   {
+    "card": "Kozilek's Command",
+    "host": "MODE:0:0:mode0",
+    "part": "mainboard",
+    "step": "E4",
+    "strict": false
+   },
+   {
+    "card": "Kozilek's Command",
+    "host": "MODE:0:1:mode1",
+    "part": "mainboard",
+    "step": null,
+    "strict": false
+   },
+   {
+    "card": "Kozilek's Command",
+    "host": "MODE:0:2:mode2",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": true
+   },
+   {
+    "card": "Kozilek's Command",
+    "host": "MODE:0:3:mode3",
+    "part": "mainboard",
+    "step": null,
+    "strict": false
+   },
+   {
+    "card": "Lorehold Charm",
+    "host": "MODE:0:0:mode0",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": true
+   },
+   {
+    "card": "Lorehold Charm",
+    "host": "MODE:0:1:mode1",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": false
+   },
+   {
+    "card": "Lorehold Charm",
+    "host": "MODE:0:2:mode2",
+    "part": "mainboard",
+    "step": "E5",
+    "strict": false
+   },
+   {
+    "card": "Orim's Chant",
+    "host": "SPELL:0:1:kicked",
+    "part": "mainboard",
+    "step": "E5",
+    "strict": false
+   },
+   {
+    "card": "Sheoldred's Edict",
+    "host": "MODE:0:0:mode0",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": true
+   },
+   {
+    "card": "Sheoldred's Edict",
+    "host": "MODE:0:1:mode1",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": true
+   },
+   {
+    "card": "Sheoldred's Edict",
+    "host": "MODE:0:2:mode2",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": true
+   },
+   {
+    "card": "Sowing Mycospawn",
+    "host": "TRIGGERED:0:3:kicked",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": false
+   },
+   {
+    "card": "Territorial Kavu",
+    "host": "MODE:0:0:mode0",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": false
+   },
+   {
+    "card": "Territorial Kavu",
+    "host": "MODE:0:1:mode1",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": true
+   },
+   {
+    "card": "Thraben Charm",
+    "host": "MODE:0:0:mode0",
+    "part": "mainboard",
+    "step": "E1",
+    "strict": false
+   },
+   {
+    "card": "Thraben Charm",
+    "host": "MODE:0:1:mode1",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": true
+   },
+   {
+    "card": "Thraben Charm",
+    "host": "MODE:0:2:mode2",
+    "part": "mainboard",
+    "step": null,
+    "strict": false
+   },
+   {
+    "card": "Untimely Malfunction",
+    "host": "MODE:0:0:mode0",
+    "part": "sideboard",
+    "step": "E2",
+    "strict": true
+   },
+   {
+    "card": "Untimely Malfunction",
+    "host": "MODE:0:1:mode1",
+    "part": "sideboard",
+    "step": null,
+    "strict": false
+   },
+   {
+    "card": "Untimely Malfunction",
+    "host": "MODE:0:2:mode2",
+    "part": "sideboard",
+    "step": "E5",
+    "strict": false
+   },
+   {
+    "card": "Warping Wail",
+    "host": "MODE:0:0:mode0",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": false
+   },
+   {
+    "card": "Warping Wail",
+    "host": "MODE:0:1:mode1",
+    "part": "mainboard",
+    "step": "E6",
+    "strict": false
+   },
+   {
+    "card": "Warping Wail",
+    "host": "MODE:0:2:mode2",
+    "part": "mainboard",
+    "step": "E5",
+    "strict": false
+   }
+  ],
+  "executable": 0,
+  "family": "removal",
+  "hosts": {
+   "mainboard": 25,
+   "pool": 1466,
+   "sideboard": 10
+  },
+  "steps": {
+   "E1": 154,
+   "E2": 347,
+   "E3": 139,
+   "E4": 155,
+   "E5": 251,
+   "E6": 33,
+   "none": 422
+  },
+  "strict": 251,
+  "sub_kinds": {
+   "DELAYED": 7
+  },
+  "verb_sets": {
+   "CONTINUOUS": 187,
+   "COUNTER": 31,
+   "CREATE_TOKEN": 83,
+   "DAMAGE": 100,
+   "DESTROY": 154,
+   "EXILE": 47,
+   "GAIN_LIFE": 35,
+   "MOVE": 103,
+   "PUT_COUNTERS": 50,
+   "UNMODELLED": 307
+  }
+ },
+ "mass_reanimate": {
+  "deck_hosts": [
+   {
+    "card": "Living End",
+    "host": "SPELL:0:1",
+    "part": "mainboard",
+    "step": null,
+    "strict": false
+   }
+  ],
+  "executable": 0,
+  "family": "removal",
+  "hosts": {
+   "mainboard": 1,
+   "pool": 13,
+   "sideboard": 0
+  },
+  "steps": {
+   "E2": 6,
+   "none": 8
+  },
+  "strict": 5,
+  "sub_kinds": {},
+  "verb_sets": {
+   "CONTINUOUS,UNMODELLED": 1,
+   "DESTROY,MOVE": 1,
+   "EXILE,SACRIFICE,UNMODELLED": 1,
+   "MOVE": 5,
+   "MOVE,UNMODELLED": 1,
+   "UNMODELLED": 5
+  }
+ },
+ "object_restriction": {
+  "deck_hosts": [
+   {
+    "card": "Untimely Malfunction",
+    "host": "MODE:0:2:mode2",
+    "part": "sideboard",
+    "step": "E5",
+    "strict": true
+   },
+   {
+    "card": "Untimely Malfunction",
+    "host": "SPELL:0:0",
+    "part": "sideboard",
+    "step": null,
+    "strict": false
+   }
+  ],
+  "executable": 0,
+  "family": "pump_restrict",
+  "hosts": {
+   "mainboard": 0,
+   "pool": 17,
+   "sideboard": 2
+  },
+  "steps": {
+   "E5": 17,
+   "none": 2
+  },
+  "strict": 10,
+  "sub_kinds": {},
+  "verb_sets": {
+   "CONTINUOUS": 12,
+   "CONTINUOUS,CREATE_TOKEN,UNTAP": 1,
+   "CONTINUOUS,DESTROY": 1,
+   "CONTINUOUS,DESTROY,UNMODELLED": 1,
+   "CONTINUOUS,DRAW": 2,
+   "CONTINUOUS,KEYWORD_ACTION": 1,
+   "CONTINUOUS,UNMODELLED": 1
+  }
+ },
+ "oracle_resolver.resolve_self_cast_trigger": {
+  "deck_hosts": [
+   {
+    "card": "Cityscape Leveler",
+    "host": "TRIGGERED:0:1",
+    "part": "sideboard",
+    "step": "E4",
+    "strict": false
+   },
+   {
+    "card": "Devourer of Destiny",
+    "host": "TRIGGERED:0:1",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": false
+   },
+   {
+    "card": "Emrakul, the Promised End",
+    "host": "TRIGGERED:0:1",
+    "part": "mainboard",
+    "step": null,
+    "strict": false
+   },
+   {
+    "card": "Sowing Mycospawn",
+    "host": "TRIGGERED:0:2",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": false
+   },
+   {
+    "card": "Sowing Mycospawn",
+    "host": "TRIGGERED:0:3",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": false
+   },
+   {
+    "card": "Ugin, Eye of the Storms",
+    "host": "TRIGGERED:0:0",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": false
+   },
+   {
+    "card": "Ulamog, the Ceaseless Hunger",
+    "host": "TRIGGERED:0:0",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": true
+   }
+  ],
+  "executable": 0,
+  "family": "removal",
+  "hosts": {
+   "mainboard": 6,
+   "pool": 65,
+   "sideboard": 1
+  },
+  "steps": {
+   "E1": 2,
+   "E2": 14,
+   "E3": 6,
+   "E4": 8,
+   "E5": 7,
+   "E6": 7,
+   "none": 28
+  },
+  "strict": 5,
+  "sub_kinds": {},
+  "verb_sets": {
+   "COPY": 3,
+   "COPY,UNMODELLED": 2,
+   "CREATE_TOKEN": 6,
+   "DESTROY": 2,
+   "DRAW": 3,
+   "EXILE": 7,
+   "MOVE": 4,
+   "MOVE,SEARCH,SHUFFLE": 2,
+   "MOVE,UNMODELLED": 6,
+   "UNMODELLED": 11
+  }
+ },
+ "planeswalker_manager:DAMAGE": {
+  "deck_hosts": [
+   {
+    "card": "Ajani, Nacatl Pariah // Ajani, Nacatl Avenger",
+    "host": "LOYALTY:1:1",
+    "part": "mainboard",
+    "step": "E4",
+    "strict": false
+   },
+   {
+    "card": "Chandra, Awakened Inferno",
+    "host": "LOYALTY:0:1",
+    "part": "sideboard",
+    "step": null,
+    "strict": false
+   },
+   {
+    "card": "Chandra, Awakened Inferno",
+    "host": "LOYALTY:0:2",
+    "part": "sideboard",
+    "step": "E1",
+    "strict": true
+   },
+   {
+    "card": "Ral, Monsoon Mage // Ral, Leyline Prodigy",
+    "host": "LOYALTY:1:2",
+    "part": "mainboard",
+    "step": null,
+    "strict": false
+   },
+   {
+    "card": "Wrenn and Six",
+    "host": "LOYALTY:0:1",
+    "part": "mainboard",
+    "step": "E1",
+    "strict": true
+   }
+  ],
+  "executable": 0,
+  "family": "damage",
+  "hosts": {
+   "mainboard": 3,
+   "pool": 111,
+   "sideboard": 2
+  },
+  "steps": {
+   "E1": 41,
+   "E3": 4,
+   "E4": 6,
+   "E5": 3,
+   "E6": 2,
+   "none": 60
+  },
+  "strict": 22,
+  "sub_kinds": {
+   "REFLEXIVE": 2
+  },
+  "verb_sets": {
+   "ADD_MANA,DAMAGE": 2,
+   "CHOOSE,UNMODELLED": 2,
+   "CONTINUOUS": 2,
+   "CONTINUOUS,UNMODELLED": 2,
+   "CREATE_EMBLEM": 15,
+   "CREATE_TOKEN": 5,
+   "DAMAGE": 36,
+   "DAMAGE,GAIN_LIFE": 5,
+   "DAMAGE,UNMODELLED": 9,
+   "UNMODELLED": 26
+  }
+ },
+ "planeswalker_manager:DRAW_AND_UNTAP_LANDS": {
+  "deck_hosts": [],
+  "executable": 0,
+  "family": "pump_restrict",
+  "hosts": {
+   "mainboard": 0,
+   "pool": 3,
+   "sideboard": 0
+  },
+  "steps": {
+   "E5": 2,
+   "none": 1
+  },
+  "strict": 0,
+  "sub_kinds": {
+   "DELAYED": 1
+  },
+  "verb_sets": {
+   "CREATE_TRIGGER,DRAW,UNTAP": 1,
+   "DRAW,SCRY,TAP": 1,
+   "UNMODELLED": 1
+  }
+ },
+ "planeswalker_manager:EMBLEM_EXILE_PERMANENT": {
+  "deck_hosts": [],
+  "executable": 0,
+  "family": "removal",
+  "hosts": {
+   "mainboard": 0,
+   "pool": 4,
+   "sideboard": 0
+  },
+  "steps": {
+   "none": 4
+  },
+  "strict": 0,
+  "sub_kinds": {},
+  "verb_sets": {
+   "CREATE_EMBLEM": 4
+  }
+ },
+ "planeswalker_manager:GAIN_LIFE_AND_DRAW": {
+  "deck_hosts": [
+   {
+    "card": "Ugin, Eye of the Storms",
+    "host": "LOYALTY:0:2",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": false
+   }
+  ],
+  "executable": 0,
+  "family": "damage",
+  "hosts": {
+   "mainboard": 1,
+   "pool": 8,
+   "sideboard": 0
+  },
+  "steps": {
+   "E3": 8,
+   "none": 1
+  },
+  "strict": 0,
+  "sub_kinds": {},
+  "verb_sets": {
+   "CREATE_EMBLEM": 1,
+   "DRAW,GAIN_LIFE": 6,
+   "DRAW,GAIN_LIFE,MOVE": 1,
+   "DRAW,GAIN_LIFE,SACRIFICE": 1
+  }
+ },
+ "planeswalker_manager:RETURN_TO_HAND": {
+  "deck_hosts": [
+   {
+    "card": "Teferi, Time Raveler",
+    "host": "LOYALTY:0:2",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": false
+   },
+   {
+    "card": "Wrenn and Six",
+    "host": "LOYALTY:0:0",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": true
+   }
+  ],
+  "executable": 0,
+  "family": "removal",
+  "hosts": {
+   "mainboard": 2,
+   "pool": 9,
+   "sideboard": 0
+  },
+  "steps": {
+   "E2": 9,
+   "E3": 1,
+   "none": 1
+  },
+  "strict": 8,
+  "sub_kinds": {},
+  "verb_sets": {
+   "DRAW,MOVE": 1,
+   "MOVE": 9,
+   "UNMODELLED": 1
+  }
+ },
+ "planeswalker_manager:TUCK_TARGET_INTO_LIBRARY": {
+  "deck_hosts": [],
+  "executable": 0,
+  "family": "removal",
+  "hosts": {
+   "mainboard": 0,
+   "pool": 2,
+   "sideboard": 0
+  },
+  "steps": {
+   "E2": 2
+  },
+  "strict": 2,
+  "sub_kinds": {},
+  "verb_sets": {
+   "MOVE": 2
+  }
+ },
+ "reanimate_target": {
+  "deck_hosts": [
+   {
+    "card": "Persist",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": true
+   },
+   {
+    "card": "Unburial Rites",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": true
+   },
+   {
+    "card": "Unearth",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": true
+   }
+  ],
+  "executable": 0,
+  "family": "removal",
+  "hosts": {
+   "mainboard": 3,
+   "pool": 69,
+   "sideboard": 0
+  },
+  "steps": {
+   "E2": 42,
+   "E4": 5,
+   "E5": 7,
+   "E6": 1,
+   "none": 17
+  },
+  "strict": 30,
+  "sub_kinds": {
+   "DELAYED": 4,
+   "REFLEXIVE": 1
+  },
+  "verb_sets": {
+   "CONTINUOUS,CREATE_TRIGGER,EXILE,MOVE": 2,
+   "CONTINUOUS,CREATE_TRIGGER,MOVE,SACRIFICE": 1,
+   "CONTINUOUS,DRAW,LOSE_LIFE,MOVE,SACRIFICE": 1,
+   "CONTINUOUS,MOVE": 3,
+   "CREATE_TOKEN,MOVE": 3,
+   "DESTROY,MOVE": 2,
+   "MOVE": 36,
+   "MOVE,PUT_COUNTERS": 2,
+   "MOVE,UNMODELLED": 8,
+   "UNMODELLED": 3
+  }
+ },
+ "targeted_pump": {
+  "deck_hosts": [
+   {
+    "card": "Assault Strobe",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E5",
+    "strict": true
+   },
+   {
+    "card": "Mutagenic Growth",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E5",
+    "strict": true
+   },
+   {
+    "card": "Practiced Offense",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": null,
+    "strict": false
+   },
+   {
+    "card": "Undying Evil",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E5",
+    "strict": true
+   },
+   {
+    "card": "Violent Urge",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E5",
+    "strict": false
+   }
+  ],
+  "executable": 0,
+  "family": "pump_restrict",
+  "hosts": {
+   "mainboard": 5,
+   "pool": 399,
+   "sideboard": 0
+  },
+  "steps": {
+   "E4": 3,
+   "E5": 310,
+   "none": 91
+  },
+  "strict": 178,
+  "sub_kinds": {},
+  "verb_sets": {
+   "CONTINUOUS": 184,
+   "CONTINUOUS,CREATE_TOKEN": 7,
+   "CONTINUOUS,DAMAGE": 13,
+   "CONTINUOUS,DRAW": 22,
+   "CONTINUOUS,FIGHT": 10,
+   "CONTINUOUS,GAIN_LIFE": 6,
+   "CONTINUOUS,PUT_COUNTERS": 11,
+   "CONTINUOUS,SCRY": 15,
+   "CONTINUOUS,UNMODELLED": 63,
+   "CONTINUOUS,UNTAP": 19
+  }
+ },
+ "targeted_removal": {
+  "deck_hosts": [
+   {
+    "card": "Abrade",
+    "host": "MODE:0:1:mode1",
+    "part": "sideboard",
+    "step": "E2",
+    "strict": true
+   },
+   {
+    "card": "Force of Vigor",
+    "host": "SPELL:0:1",
+    "part": "sideboard",
+    "step": "E2",
+    "strict": true
+   },
+   {
+    "card": "Kozilek's Command",
+    "host": "MODE:0:2:mode2",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": true
+   },
+   {
+    "card": "March of Otherworldly Light",
+    "host": "SPELL:0:2",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": true
+   },
+   {
+    "card": "Thraben Charm",
+    "host": "MODE:0:1:mode1",
+    "part": "mainboard",
+    "step": "E2",
+    "strict": true
+   },
+   {
+    "card": "Untimely Malfunction",
+    "host": "MODE:0:0:mode0",
+    "part": "sideboard",
+    "step": "E2",
+    "strict": true
+   },
+   {
+    "card": "Wear // Tear",
+    "host": "SPELL:0:0",
+    "part": "sideboard",
+    "step": "E2",
+    "strict": true
+   }
+  ],
+  "executable": 0,
+  "family": "removal",
+  "hosts": {
+   "mainboard": 3,
+   "pool": 222,
+   "sideboard": 4
+  },
+  "steps": {
+   "E2": 225,
+   "E3": 2,
+   "E4": 1,
+   "E5": 1
+  },
+  "strict": 221,
+  "sub_kinds": {},
+  "verb_sets": {
+   "CONTINUOUS,DESTROY": 1,
+   "DESTROY": 170,
+   "DESTROY,KEYWORD_ACTION": 1,
+   "DESTROY,SURVEIL": 2,
+   "EXILE": 53,
+   "EXILE,MOVE": 2
+  }
+ },
+ "team_pump": {
+  "deck_hosts": [
+   {
+    "card": "Violent Outburst",
+    "host": "SPELL:0:1",
+    "part": "mainboard",
+    "step": "E5",
+    "strict": true
+   }
+  ],
+  "executable": 0,
+  "family": "pump_restrict",
+  "hosts": {
+   "mainboard": 1,
+   "pool": 39,
+   "sideboard": 0
+  },
+  "steps": {
+   "E5": 40
+  },
+  "strict": 40,
+  "sub_kinds": {},
+  "verb_sets": {
+   "CONTINUOUS": 40
+  }
+ },
+ "until_next_turn": {
+  "deck_hosts": [
+   {
+    "card": "Ral, Monsoon Mage // Ral, Leyline Prodigy",
+    "host": "LOYALTY:1:1",
+    "part": "mainboard",
+    "step": null,
+    "strict": false
+   },
+   {
+    "card": "Teferi, Time Raveler",
+    "host": "LOYALTY:0:1",
+    "part": "mainboard",
+    "step": null,
+    "strict": false
+   }
+  ],
+  "executable": 0,
+  "family": "pump_restrict",
+  "hosts": {
+   "mainboard": 2,
+   "pool": 7,
+   "sideboard": 0
+  },
+  "steps": {
+   "E5": 7,
+   "none": 2
+  },
+  "strict": 7,
+  "sub_kinds": {},
+  "verb_sets": {
+   "CONTINUOUS": 7,
+   "UNMODELLED": 2
+  }
+ },
+ "x_creature_tutor": {
+  "deck_hosts": [
+   {
+    "card": "Green Sun's Zenith",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
+    "card": "Nature's Rhythm",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   }
+  ],
+  "executable": 0,
+  "family": "card_flow",
+  "hosts": {
+   "mainboard": 2,
+   "pool": 3,
+   "sideboard": 0
+  },
+  "steps": {
+   "E3": 3,
+   "none": 2
+  },
+  "strict": 3,
+  "sub_kinds": {},
+  "verb_sets": {
+   "CONTINUOUS,MOVE,SHUFFLE,UNMODELLED": 2,
+   "MOVE,SEARCH,SHUFFLE": 3
+  }
+ }
+}

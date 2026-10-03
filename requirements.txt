@@ -1,5 +1,10 @@
 pydantic>=2.0
 pydantic-ai>=1.0
+# TypeSafe AI's Jev decision model: pydantic-ai-slim 2.51 is the first
+# release with the `typesafe` provider (model string "typesafe:jev-latest",
+# key in TYPESAFE_API_KEY); typesafe-sdk is its client.
+pydantic-ai-slim>=2.51
+typesafe-sdk>=0.7.2
 sentence-transformers>=3.0
 requests>=2.31
 beautifulsoup4>=4.12

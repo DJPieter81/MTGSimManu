@@ -1116,6 +1116,13 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
     if _has_self_etb_effect(oracle):
         signals.append('etb_trigger')
 
+    # 1b. A Saga's chapter I (CR 714.3a: the lore counter is put on as the
+    #     Saga enters, triggering chapter I at once, CR 714.2b). The
+    #     chapter's effect is this turn's value exactly as a self-ETB is.
+    #     Typed at DB load (`saga_chapter_one_material`).
+    if getattr(t, 'saga_chapter_one_material', False):
+        signals.append('saga_chapter_one')
+
     # 2. Cast trigger or storm keyword (spell counts its chain).
     if 'storm' in keywords or getattr(t, 'has_cast_trigger', False):
         signals.append('cast_trigger')
@@ -1910,7 +1917,8 @@ def _has_useful_minus_ability(oracle: str) -> bool:
 
 
 def expected_future_value(card: "CardInstance",
-                           snap: EVSnapshot) -> float:
+                           snap: EVSnapshot,
+                           loyalty: Optional[int] = None) -> float:
     """Power-equivalent value of a permanent's future activation pool.
 
     Composes across permanent types without per-type branching at the
@@ -1937,11 +1945,18 @@ def expected_future_value(card: "CardInstance",
     from ai.clock import loyalty_pool_value
     t = card.template
 
-    # Only planeswalkers carry an "activation pool" today.
-    if CardType.PLANESWALKER not in getattr(t, 'card_types', set()):
+    # Only planeswalkers carry an "activation pool" today. A permanent on
+    # the battlefield is read by its current face (a transformed DFC) and
+    # its current loyalty; a card being cast by its printed values.
+    on_board = getattr(card, 'zone', None) == 'battlefield'
+    if on_board:
+        if not getattr(card, 'effective_is_planeswalker', False):
+            return 0.0
+    elif CardType.PLANESWALKER not in getattr(t, 'card_types', set()):
         return 0.0
 
-    oracle = (t.oracle_text or '').lower()
+    oracle = ((card._effective_oracle_text() if on_board else t.oracle_text)
+              or '').lower()
     tags = getattr(t, 'tags', set())
 
     # Prefer the W0-A classifier tag when present; fall back to
@@ -1969,13 +1984,32 @@ def expected_future_value(card: "CardInstance",
     # on an empty board. Equal to "loyalty - 1" historical estimate
     # (first +1 is sunk; ticks 2..loyalty count) when both terms
     # match, but composes generically via clock primitives.
+    loyalty_override = loyalty
     loyalty = t.loyalty or PLANESWALKER_DEFAULT_LOYALTY
-    # opp_clock is a continuous float; treat NO_CLOCK as the loyalty
-    # budget — no opp pressure means we drain the pool fully.
+    if on_board and (getattr(card, 'loyalty_counters', 0) or 0) > 0:
+        loyalty = card.loyalty_counters
+    if loyalty_override is not None:
+        # The pool at a hypothetical loyalty (after an activation's cost).
+        if loyalty_override <= 0:
+            return 0.0
+        loyalty = loyalty_override
+    # Residency: the walker stays until the game ends (the nearer of the
+    # two clocks) or until attacking power removes its loyalty (creatures
+    # can attack planeswalkers, CR 508.1b) — whichever comes first. An
+    # unknown horizon (no clock on either side, nothing attacking) falls
+    # back to the loyalty budget.
     from ai.clock import NO_CLOCK
-    survival_turns = (loyalty if snap.opp_clock >= NO_CLOCK
-                       else max(0.0, snap.opp_clock))
-    activations = min(float(loyalty), survival_turns)
+    attack_survival = (loyalty / snap.opp_power if snap.opp_power > 0
+                       else NO_CLOCK)
+    residency = min(snap.my_clock, snap.opp_clock, attack_survival)
+    if residency >= NO_CLOCK:
+        residency = float(loyalty)
+    residency = max(0.0, residency)
+    # A useful non-negative ability refills or holds loyalty each turn, so
+    # the pool lasts the whole residency; otherwise every activation spends
+    # loyalty and the pool is also capped by it.
+    activations = (residency if has_useful_plus
+                   else min(float(loyalty), residency))
     # Discount slightly when the immediate +1 isn't useful (we lose
     # the on-entry tick's value but the minus abilities still pay
     # off over residency). Use the loyalty pool as the natural
@@ -1988,10 +2022,16 @@ def expected_future_value(card: "CardInstance",
 
 def _project_spell(card: "CardInstance", snap: EVSnapshot,
                    dk: Optional[DeckKnowledge] = None,
-                   game: "GameState" = None, player_idx: int = 0) -> EVSnapshot:
-    """Project the board state after casting a spell (without mutating game state)."""
+                   game: "GameState" = None, player_idx: int = 0,
+                   as_ability: bool = False) -> EVSnapshot:
+    """Project the board state after casting a spell (without mutating game state).
+
+    ``as_ability``: project the same effect as an activated ability (a
+    loyalty line's clause) — no card leaves the hand, no mana is paid and
+    no spell is cast (storm)."""
     t = card.template
     tags = getattr(t, 'tags', set())
+    spell_count = 0 if as_ability else len([card])
     projected = EVSnapshot(
         my_life=snap.my_life,
         opp_life=snap.opp_life,
@@ -2001,7 +2041,7 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
         opp_toughness=snap.opp_toughness,
         my_creature_count=snap.my_creature_count,
         opp_creature_count=snap.opp_creature_count,
-        my_hand_size=snap.my_hand_size - 1,  # we cast it from hand
+        my_hand_size=snap.my_hand_size - spell_count,  # we cast it from hand
         opp_hand_size=snap.opp_hand_size,
         # M9 — charge the *effective* mana cost (delve / evoke /
         # on-board cost reducers / affinity / improvise) instead of
@@ -2012,14 +2052,14 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
         # (Midrange F5) — Murktide projecting as a 7-mana spell,
         # Storm rituals un-discounted under Medallion, Solitude
         # priced at 3WW.
-        my_mana=max(0, snap.my_mana - effective_cmc(
+        my_mana=max(0, snap.my_mana - (0 if as_ability else effective_cmc(
             card, snap, game=game, player_idx=player_idx,
-        )),
+        ))),
         opp_mana=snap.opp_mana,
         my_total_lands=snap.my_total_lands,
         opp_total_lands=snap.opp_total_lands,
         turn_number=snap.turn_number,
-        storm_count=snap.storm_count + 1,
+        storm_count=snap.storm_count + spell_count,
         my_gy_creatures=snap.my_gy_creatures,
         opp_gy_creatures=snap.opp_gy_creatures,
         my_energy=snap.my_energy,
@@ -2241,7 +2281,27 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
                 projected.my_lifelink_power += p * power_factor
 
     # Removal — kills best opponent creature
-    if 'removal' in tags and not 'board_wipe' in tags:
+    # A bounce is the resolving effect only of an instant or sorcery (or a
+    # sorcery-typed ability clause); a permanent's bounce is one of its
+    # abilities (a loyalty line, an ETB), not what casting it does.
+    bounce_req = (getattr(t, 'bounce_target', None)
+                  if (t.is_instant or t.is_sorcery) else None)
+    if bounce_req is not None and game is not None:
+        # CR 608.2b: a bounce takes the chosen legal creature off the
+        # opponent's board and gives the card back — position_value then
+        # prices the swing on its own card term (tempo, not card advantage).
+        from engine.target_solver import enumerate_legal_targets
+        theirs = [c for c in enumerate_legal_targets(game, player_idx, bounce_req)
+                  if c.controller != player_idx and c.effective_is_creature]
+        if theirs:
+            gone = max(theirs, key=lambda c: creature_threat_value(c, snap))
+            projected.opp_power = max(0, projected.opp_power - (gone.power or 0))
+            projected.opp_toughness = max(0, projected.opp_toughness - (gone.toughness or 0))
+            projected.opp_creature_count = max(0, projected.opp_creature_count - 1)
+            projected.opp_hand_size = projected.opp_hand_size + len([gone])
+
+    if ('removal' in tags and not 'board_wipe' in tags
+            and bounce_req is None):
         if snap.opp_creature_count > 0 and game:
             opp = game.players[1 - player_idx]
             # Damage-based removal removes only what its damage KILLS
@@ -3140,8 +3200,13 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
                     detailed: bool = False,
                     bhi: "BayesianHandTracker" = None,
                     goal: Optional[str] = None,
-                    role_tags: frozenset = frozenset()):
+                    role_tags: frozenset = frozenset(),
+                    assembly=None):
     """Compute the expected value of casting a spell using 1-ply lookahead.
+
+    ``assembly`` is the main phase's `ai.assembly_state.AssemblyState`
+    (threaded like ``bhi``): when this card is the first step of its best
+    lethal line, the line's resolution-weighted win swing is credited.
 
     EV = E[V(state_after_play_and_response)] - V(current_state)
 
@@ -3334,8 +3399,8 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
             can_kill, storm_count, damage, chain = _estimate_combo_chain(
                 game, player_idx, first_card=card)
             p_resolves = 1.0 - p_interaction
-            from ai.clock import position_value
-            win_swing = max(0.0, 100.0 - position_value(snap))
+            from ai.clock import win_swing as _win_swing
+            win_swing = _win_swing(snap)
             if can_kill:
                 # Full lethal — entire win-swing is realized.
                 ev += p_resolves * win_swing
@@ -3352,6 +3417,18 @@ def compute_play_ev(card: "CardInstance", snap: EVSnapshot, archetype: str,
                 # against aggro we can't survive.
                 progress = min(1.0, damage / max(1, snap.opp_life))
                 ev += p_resolves * progress * win_swing
+
+    # Lethal-line first step (payoff sequencing §2.8 reader 2). Tag-free
+    # and OUTSIDE the combo-chain gate above: an Overrun shell or a Tron
+    # X-sink line is not archetype `combo`. The line's projected kill is
+    # credited at the same resolution weight the chain credit uses, so
+    # the cast that starts the line is the best play once the line exists.
+    if assembly is not None and assembly.best_line is not None:
+        from ai.assembly_state import STEP_CAST
+        from ai.clock import win_swing as _win_swing
+        _step = assembly.best_line.first_step
+        if _step[0] == STEP_CAST and _step[1] == card.instance_id:
+            ev += (1.0 - p_interaction) * _win_swing(snap)
 
     # ── Life-phase + goal gear-shift (M4, A2) ──
     # Pure lookups over `strategy_profile.phase_weights` and

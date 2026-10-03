@@ -1,0 +1,34 @@
+// UR Aggro — mtgtop8 event=91253 deck=893053
+1 Flooded Strand
+3 Island
+2 Misty Rainforest
+2 Polluted Delta
+2 Scalding Tarn
+4 Spirebluff Canal
+3 Steam Vents
+1 Thundering Falls
+4 Dragon's Rage Channeler
+3 Murktide Regent
+4 Ragavan, Nimble Pilferer
+2 Subtlety
+1 Consign to Memory
+4 Counterspell
+4 Expressive Iteration
+1 Force of Negation
+3 Lightning Bolt
+4 Preordain
+1 Spell Pierce
+3 Spell Snare
+4 Unholy Heat
+4 Mishra's Bauble
+
+Sideboard
+1 Blood Moon
+3 Consign to Memory
+1 Fire Magic
+1 Hurkyl's Recall
+2 Meltdown
+3 Mystical Dispute
+2 Obsidian Charmaw
+1 Stern Scolding
+1 Surgical Extraction

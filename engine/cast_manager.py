@@ -289,7 +289,8 @@ class CastManager:
         # `silenced_this_turn` from the oracle clause on resolution;
         # the cast gate enforces it here for the rest of the turn.
         # Applies to every cast route (hand, flashback, escape).
-        if getattr(player, 'silenced_this_turn', False):
+        from . import rules_query
+        if rules_query.cast_prohibited(game, player_idx, template):
             return False
 
         # Madness (CR 702.35b): a card just discarded into exile may be
@@ -414,9 +415,14 @@ class CastManager:
         # per-game lockout registry. Registry is rebuilt on demand
         # from ``Tag.SORCERY_SPEED_LOCKOUT``-tagged permanents — no
         # card-name branches, no oracle-text parse at runtime.
-        sorcery_locked = player_idx in game._sorcery_speed_lockout_set()
+        from . import rules_query
+        sorcery_locked = rules_query.sorcery_speed_only(game, player_idx)
 
-        if (template.is_instant or template.has_flash) and not sorcery_locked:
+        # "You may cast <type> spells as though they had flash" (CR 702.8d),
+        # granted until the player's next turn (player.flash_permission_types).
+        flash_granted = rules_query.cast_as_though_flash(game, player_idx, template)
+        if (template.is_instant or template.has_flash or flash_granted) \
+                and not sorcery_locked:
             pass
         elif template.is_creature or template.is_sorcery or \
                 CardType.ENCHANTMENT in template.card_types or \
@@ -488,7 +494,7 @@ class CastManager:
                 0, effective_cmc - template.domain_reduction * domain)
         # Generic cost reduction from permanents on battlefield
         from .oracle_resolver import count_cost_reducers, self_cost_reduction
-        generic_reduction = count_cost_reducers(game, player_idx, template)
+        generic_reduction = rules_query.cost_delta(game, player_idx, template)
         if generic_reduction > 0:
             effective_cmc = max(0, effective_cmc - generic_reduction)
         # Self-scaling reduction ("this spell costs {N} less for each
@@ -1380,6 +1386,17 @@ class CastManager:
             player.library.append(c)
 
     @staticmethod
+    def cast_is_prohibited(player, template) -> bool:
+        """CR 101.2: a cast prohibition covers this spell — one predicate
+        for every cast route, paid or free (a free cast is still a cast).
+        Delegates to the one read path, engine/rules_query.py."""
+        from . import rules_query
+        game = getattr(player, "_game", None)
+        if game is None:
+            return False
+        return rules_query.cast_prohibited(game, player.player_idx, template)
+
+    @staticmethod
     def cast_spell(game: "GameState", player_idx: int, card: "CardInstance",
                    targets=None, free_cast: bool = False) -> bool:
         """Cast a spell: pay costs and put on stack. free_cast skips mana payment."""
@@ -1392,6 +1409,10 @@ class CastManager:
 
         if not free_cast and not game.can_cast(player_idx, card):
             return False
+        if free_cast:
+            from . import rules_query
+            if rules_query.cast_prohibited(game, player_idx, card.template):
+                return False
 
         # Pay mana cost (unless free cast)
         evoked = False
@@ -2016,6 +2037,23 @@ class CastManager:
         # Rules audit (CR 601.2c / 702.11d / 702.16b): every battlefield
         # target chosen at cast is one this spell may target. Observes only.
         from .rules_audit import enabled as _audit_on
+        if _audit_on():
+            # CR 101.2: a player under a turn-scoped cast prohibition cast
+            # no spell it covers (restated from the player's flags, not the
+            # can_cast gate).
+            from .rules_audit import check as _audit_check
+            _caster = game.players[player_idx]
+            _ptypes = getattr(_caster, 'spell_types_prohibited_this_turn', ())
+            _covered = (getattr(_caster, 'silenced_this_turn', False)
+                        or ('noncreature' in _ptypes and CardType.CREATURE not in template.card_types)
+                        or ('creature' in _ptypes and CardType.CREATURE in template.card_types))
+            _audit_check("101.2/cast_prohibition", not _covered,
+                         f"{card.name} cast by P{player_idx+1} under a cast prohibition",
+                         game=game)
+            # CR 723.1: once the turn has been ended nothing more is cast.
+            _audit_check("723.1/cast_after_turn_end",
+                         not getattr(game, 'end_turn_requested', False),
+                         f"{card.name} cast after the turn was ended", game=game)
         if _audit_on() and targets:
             from .rules_audit import check as _audit_check
             from .target_solver import can_be_targeted as _cbt
@@ -2030,7 +2068,6 @@ class CastManager:
         # from hand that have splice_cost. Pay splice cost, add their effects,
         # spliced card stays in hand. ──
         if 'Arcane' in template.subtypes and not free_cast:
-            from .oracle_resolver import count_cost_reducers
             for sc in list(player.hand):
                 if sc.instance_id == card.instance_id:
                     continue
@@ -2038,8 +2075,8 @@ class CastManager:
                 if not splice:
                     continue
                 # splice is a ManaCost — apply cost reduction to generic portion
-                reduction = count_cost_reducers(game, player_idx, sc.template)
-                reduction += player.temp_cost_reduction
+                from . import rules_query
+                reduction = rules_query.cost_delta(game, player_idx, sc.template)
                 from .mana import ManaCost as MC
                 effective_splice = MC(
                     generic=max(0, splice.generic - reduction),

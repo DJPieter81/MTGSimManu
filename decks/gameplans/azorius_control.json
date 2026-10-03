@@ -8,9 +8,7 @@
       "card_priorities": {
         "Teferi, Time Raveler": 24.0,
         "Solitude": 22.0,
-        "Sanctifier en-Vec": 21.0,
         "Prismatic Ending": 20.0,
-        "Counterspell": 18.0,
         "Orim's Chant": 12.0,
         "Consult the Star Charts": 10.0
       },
@@ -18,12 +16,10 @@
         "interaction": [
           "Solitude",
           "Prismatic Ending",
-          "Counterspell",
           "Orim's Chant"
         ],
         "enablers": [
           "Teferi, Time Raveler",
-          "Sanctifier en-Vec",
           "Consult the Star Charts"
         ]
       },
@@ -37,9 +33,7 @@
         "Isochron Scepter": 24.0,
         "Wrath of the Skies": 22.0,
         "Supreme Verdict": 20.0,
-        "Teferi, Hero of Dominaria": 18.0,
-        "Orim's Chant": 16.0,
-        "Stock Up": 12.0
+        "Orim's Chant": 16.0
       },
       "card_roles": {
         "interaction": [
@@ -47,12 +41,10 @@
           "Wrath of the Skies"
         ],
         "payoffs": [
-          "Isochron Scepter",
-          "Teferi, Hero of Dominaria"
+          "Isochron Scepter"
         ],
         "engines": [
-          "Consult the Star Charts",
-          "Stock Up"
+          "Consult the Star Charts"
         ]
       },
       "hold_mana": true
@@ -61,7 +53,6 @@
       "goal_type": "CLOSE_GAME",
       "description": "Lock opponent out with Scepter-Chant, win with Teferi Hero ultimate or Hall of Storm Giants",
       "card_priorities": {
-        "Teferi, Hero of Dominaria": 22.0,
         "Isochron Scepter": 20.0,
         "Orim's Chant": 16.0
       }
@@ -69,7 +60,6 @@
   ],
   "mulligan_keys": [
     "Teferi, Time Raveler",
-    "Counterspell",
     "Prismatic Ending",
     "Solitude",
     "Isochron Scepter",
@@ -84,8 +74,7 @@
   "reactive_only": [
     "Orim's Chant",
     "Prismatic Ending",
-    "Supreme Verdict",
-    "Counterspell"
+    "Supreme Verdict"
   ],
   "critical_pieces": [
     "Isochron Scepter",

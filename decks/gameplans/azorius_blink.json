@@ -8,7 +8,6 @@
       "card_roles": {
         "enablers": [
           "Guide of Souls",
-          "Momo, Friendly Flier",
           "Ocelot Pride",
           "Phelia, Exuberant Shepherd"
         ],
@@ -17,9 +16,7 @@
           "Solitude",
           "Starfield Shepherd"
         ],
-        "interaction": [
-          "March of Otherworldly Light"
-        ]
+        "interaction": []
       }
     },
     {
@@ -27,7 +24,6 @@
       "description": "Attack aggressively, remove blockers",
       "card_roles": {
         "interaction": [
-          "March of Otherworldly Light",
           "Consign to Memory"
         ]
       }
@@ -39,8 +35,6 @@
   ],
   "mulligan_keys": [
     "Guide of Souls",
-    "March of Otherworldly Light",
-    "Momo, Friendly Flier",
     "Ocelot Pride",
     "Phelia, Exuberant Shepherd"
   ],
@@ -51,8 +45,6 @@
   ],
   "always_early": [
     "Guide of Souls",
-    "March of Otherworldly Light",
-    "Momo, Friendly Flier",
     "Ocelot Pride"
   ]
 }

@@ -91,7 +91,12 @@ class ContinuousEffect:
     apply: Optional[Callable] = None
     description: str = ""
     timestamp: int = 0
-    duration: str = "permanent"  # "permanent", "end_of_turn", "end_of_combat"
+    duration: str = "permanent"  # "permanent", "end_of_turn", "end_of_combat", "until_next_turn"
+    # For "until_next_turn" (CR 611.2b): the player whose next turn ends it.
+    controller: Optional[int] = None
+    # A resolved effect on a chosen object (CR 611.2c): (instance_id,
+    # battlefield_entry_seq). The object, not the card — CR 400.7.
+    target_obj: Optional[tuple] = None
 
 
 class ContinuousEffectsManager:
@@ -124,6 +129,32 @@ class ContinuousEffectsManager:
     def __init__(self):
         self._effects: List[ContinuousEffect] = []
         self._timestamp_counter: int = 0
+        # Resolved rule-modifying effects (engine/effect_model.Effect),
+        # stored until their Duration is expired by a clock event.
+        self._rule_effects: list = []
+
+    # ── rule-modifying effects (CR 101.2 / 611) ─────────────────────
+
+    def register_effect(self, effect) -> None:
+        """Store a resolved rule effect (engine/effect_model.Effect)."""
+        import dataclasses
+        self._timestamp_counter += 1
+        self._rule_effects.append(
+            dataclasses.replace(effect, timestamp=self._timestamp_counter))
+
+    def expire_rule_effects(self, event) -> None:
+        """The one expiry path: drop every stored effect whose Duration
+        this clock event ends."""
+        self._rule_effects = [e for e in self._rule_effects
+                              if not e.duration.expired_by(event)]
+
+    def drop_rule_effects(self, predicate) -> None:
+        self._rule_effects = [e for e in self._rule_effects if not predicate(e)]
+
+    def rule_effects(self, game: "GameState") -> list:
+        """Stored resolved effects plus the static ones permanents have
+        right now (derived fresh, never stored — CR 611.3a)."""
+        return list(self._rule_effects) + _derive_static_rule_effects(game)
 
     def register(self, effect: ContinuousEffect) -> None:
         """Register a new continuous effect."""
@@ -138,6 +169,13 @@ class ContinuousEffectsManager:
     def cleanup_end_of_turn(self) -> None:
         """Remove all end-of-turn effects."""
         self._effects = [e for e in self._effects if e.duration != "end_of_turn"]
+
+    def cleanup_until_next_turn(self, player_idx: int) -> None:
+        """CR 611.2b: effects that last "until your next turn" end as
+        their controller's next turn begins (called from that untap step)."""
+        self._effects = [e for e in self._effects
+                         if not (e.duration == "until_next_turn"
+                                 and e.controller == player_idx)]
 
     def cleanup_end_of_combat(self) -> None:
         """Remove all end-of-combat effects."""
@@ -205,11 +243,23 @@ class ContinuousEffectsManager:
         ))
 
         # Apply effects in order
+        from .rules_audit import enabled as _audit_on
+        _audit = _audit_on()
         for effect in sorted_effects:
             if effect.affected and effect.apply:
                 for player in game.players:
                     for card in player.battlefield:
                         if effect.affected(game, card):
+                            if _audit and effect.target_obj is not None:
+                                # CR 400.7: an effect on a chosen object does
+                                # not apply to the card's later object.
+                                from .rules_audit import check as _audit_check
+                                _audit_check(
+                                    "400.7/effect_follows_old_object",
+                                    (card.instance_id, card.battlefield_entry_seq)
+                                    == tuple(effect.target_obj),
+                                    f"{effect.description} applied to a new "
+                                    f"object of {card.name}", game=game)
                             effect.apply(game, card)
             elif effect.affected is not None and effect.apply is None:
                 # A continuous/static effect that SELECTS cards but carries no
@@ -557,7 +607,9 @@ def create_pump_spell_effect(source_id: int, source_name: str,
                               power_bonus: int = 0,
                               toughness_bonus: int = 0,
                               keyword_grants: Optional[Set[Keyword]] = None,
-                              duration: str = "end_of_turn") -> List[ContinuousEffect]:
+                              duration: str = "end_of_turn",
+                              controller: Optional[int] = None,
+                              target_seq: Optional[int] = None) -> List[ContinuousEffect]:
     """Create a pump spell effect (e.g., Giant Growth: +3/+3 until end of turn).
 
     Args:
@@ -570,9 +622,13 @@ def create_pump_spell_effect(source_id: int, source_name: str,
         duration: "end_of_turn" or "end_of_combat"
     """
     effects = []
+    target_obj = (target_id, target_seq) if target_seq is not None else None
 
     def is_target(game, card):
-        return card.instance_id == target_id
+        # CR 400.7 / 611.2c: the chosen object only — a card that left and
+        # returned is a new object (its battlefield_entry_seq moved on).
+        return (card.instance_id == target_id
+                and (target_seq is None or card.battlefield_entry_seq == target_seq))
 
     if power_bonus != 0:
         def apply_power(game, card):
@@ -587,6 +643,8 @@ def create_pump_spell_effect(source_id: int, source_name: str,
             apply=apply_power,
             description=f"{source_name}: +{power_bonus}/+0",
             duration=duration,
+            controller=controller,
+            target_obj=target_obj,
         ))
 
     if toughness_bonus != 0:
@@ -602,6 +660,8 @@ def create_pump_spell_effect(source_id: int, source_name: str,
             apply=apply_toughness,
             description=f"{source_name}: +0/+{toughness_bonus}",
             duration=duration,
+            controller=controller,
+            target_obj=target_obj,
         ))
 
     if keyword_grants:
@@ -617,6 +677,49 @@ def create_pump_spell_effect(source_id: int, source_name: str,
                 apply=apply_keyword,
                 description=f"{source_name}: grants {kw.name}",
                 duration=duration,
+                controller=controller,
+                target_obj=target_obj,
             ))
 
     return effects
+
+
+def _derive_static_rule_effects(game: "GameState") -> list:
+    """Rule-modifying effects that permanents have by being on the
+    battlefield (CR 611.3a): cost reducers, draw limits and the
+    sorcery-speed lockout apply while their source is there."""
+    from ai.oracle_classifier import Tag, tags_for
+    from .effect_model import (Effect, Modification, ModKind, OriginKind,
+                               Selector, SelectorKind, WHILE_SOURCE)
+    from .effect_model import cost_delta_effect, draw_limit_effect
+    out = []
+    for controller, player in enumerate(game.players):
+        for perm in player.battlefield:
+            rule = getattr(perm.template, 'cost_reduction_rule', None)
+            if rule:
+                # CR 601.2f: a reducer static applies to its controller's
+                # spells while the permanent is on the battlefield.
+                out.append(cost_delta_effect(controller, rule, WHILE_SOURCE,
+                                             source_id=perm.instance_id,
+                                             origin=OriginKind.STATIC))
+            obs = getattr(perm.template, 'attack_observer', None)
+            if obs and obs['duration'] == 'static':
+                # CR 611.3a / 603.2: a permanent's printed attack observer.
+                from .effect_model import observe_attacks
+                out.append(observe_attacks(controller, obs, WHILE_SOURCE,
+                                           source_id=perm.instance_id,
+                                           origin=OriginKind.STATIC))
+            lim = getattr(perm.template, 'draw_limit', None)
+            if lim:
+                # CR 101.2: "<players> can't draw more than N cards each
+                # turn" limits draws while the permanent is there.
+                out.append(draw_limit_effect(controller, lim['who'], lim['max'],
+                                             WHILE_SOURCE, source_id=perm.instance_id,
+                                             origin=OriginKind.STATIC))
+            if Tag.SORCERY_SPEED_LOCKOUT in tags_for(perm.name):
+                out.append(Effect(
+                    Selector(SelectorKind.OPPONENTS, player=controller),
+                    Modification(ModKind.PROHIBIT, action="cast_outside_sorcery_timing"),
+                    WHILE_SOURCE, OriginKind.STATIC, source_id=perm.instance_id,
+                    controller=controller, timestamp=perm.instance_id))
+    return out

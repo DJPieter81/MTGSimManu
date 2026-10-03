@@ -244,6 +244,19 @@ class ManaPayment:
                     f"{produced} mana")
 
     @staticmethod
+    def _apply_cost_reduction(cost: ManaCost, reduction: int) -> ManaCost:
+        """Apply a generic cost reduction (CR 601.2f): shrink the GENERIC
+        component only, leaving every coloured, colourless and hybrid pip
+        untouched. Owns the fold so the reduction-audit invariant can
+        recompute the surviving non-generic pips independently."""
+        from .mana import ManaCost as MC
+        return MC(
+            white=cost.white, blue=cost.blue, black=cost.black,
+            red=cost.red, green=cost.green, colorless=cost.colorless,
+            generic=max(0, cost.generic - reduction), hybrid=list(cost.hybrid),
+        )
+
+    @staticmethod
     def _tap_lands_for_mana_inner(game: "GameState", player_idx: int,
                                   cost: ManaCost,
                                   card_name: str = None,
@@ -294,13 +307,11 @@ class ManaPayment:
                     # Generic cost reduction from permanents
                     from .oracle_resolver import (count_cost_reducers,
                                                   self_cost_reduction)
-                    reduction += count_cost_reducers(game, player_idx, c.template)
+                    from . import rules_query
+                    reduction += rules_query.cost_delta(game, player_idx, c.template)
                     # Self-scaling own-cost reduction (per-turn discard/
                     # cycle count, graveyard card types, ...).
                     reduction += self_cost_reduction(game, player_idx, c.template)
-                    # Temporary cost reduction (Ral PW +1 "until your next turn")
-                    if c.template.is_instant or c.template.is_sorcery:
-                        reduction += player.temp_cost_reduction
                     # Affinity for artifacts
                     if Keyword.AFFINITY in c.template.keywords:
                         artifact_count = sum(
@@ -320,13 +331,16 @@ class ManaPayment:
             # Every other pip — coloured, colourless, hybrid — survives
             # untouched (hybrid pips used to be folded into `generic`
             # upstream, which is how two reducers made {1}{R/G} free).
-            from .mana import ManaCost as MC
-            new_generic = max(0, cost.generic - reduction)
-            cost = MC(
-                white=cost.white, blue=cost.blue, black=cost.black,
-                red=cost.red, green=cost.green, colorless=cost.colorless,
-                generic=new_generic, hybrid=list(cost.hybrid),
-            )
+            _ng_before = cost.non_generic_pips
+            cost = ManaPayment._apply_cost_reduction(cost, reduction)
+            # Audit (observation-only, CR 601.2f): the reduction may not have
+            # eaten a coloured/colourless/hybrid pip. Recomputed from the new
+            # cost's own pip fields, independently of the fold above.
+            from .rules_audit import check as _audit_check
+            _audit_check("601.2f/reduction_pips_preserved",
+                         cost.non_generic_pips == _ng_before,
+                         "a cost reduction shrank a non-generic pip",
+                         game=game)
 
         # Improvise payment (Track H handoff): tap untapped non-land
         # artifacts to pay {1} of generic each — but only for the

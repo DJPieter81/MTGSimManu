@@ -151,3 +151,90 @@ def test_transform_to_planeswalker_back_face_is_still_a_planeswalker(card_db):
     assert ral.loyalty_counters > 0, (
         "transformed planeswalker's starting loyalty was not set"
     )
+
+
+# ---------------------------------------------------------------------------
+# CR 711.8 / 704.5f-g: a transformed permanent has only its current face's
+# characteristics, so the creature gates (summoning sickness, attack, block,
+# lethal damage) read the current face, never the printed front face.
+# Replay: the 2026-09-27 audited matrix recorded 24 `704.5f/lethal_damage`
+# violations — a transformed Saga's creature face survived lethal damage
+# because `is_dead` asked whether the FRONT face was a creature.
+# ---------------------------------------------------------------------------
+
+def _transformed_fable(card_db):
+    from engine.oracle_resolver import _transform_permanent
+    game = GameState(rng=random.Random(0))
+    fable = _put_on_battlefield(game, card_db, FABLE_NAME, controller=0)
+    _transform_permanent(game, fable, controller=0)
+    fable.summoning_sick = False
+    return game, fable
+
+
+def test_a_transformed_creature_face_dies_to_lethal_damage(card_db):
+    game, fable = _transformed_fable(card_db)
+    fable.damage_marked = fable.toughness
+    assert fable.is_dead
+    game.check_state_based_actions()
+    assert fable not in game.players[0].battlefield
+    assert fable in game.players[0].graveyard
+
+
+def test_a_transformed_creature_face_can_attack_and_block(card_db):
+    _, fable = _transformed_fable(card_db)
+    assert fable.can_attack
+    assert fable.can_block
+
+
+def test_a_front_creature_transformed_to_a_non_creature_has_no_creature_gates(card_db):
+    from engine.oracle_resolver import _transform_permanent
+    game = GameState(rng=random.Random(0))
+    ral = _put_on_battlefield(game, card_db, RAL_NAME, controller=0)
+    assert ral.template.is_creature  # printed front face is a creature
+    _transform_permanent(game, ral, controller=0)
+    ral.summoning_sick = False
+    assert not ral.effective_is_creature
+    assert not ral.can_attack
+    assert not ral.can_block
+    ral.damage_marked = 99
+    assert not ral.is_dead
+
+
+# CR 400.7: "exile this, then return it to the battlefield transformed" makes
+# a NEW object — it enters summoning-sick and untapped. An in-place transform
+# ("transform ~") is the same object and keeps its status. Surfaced when the
+# creature gates above began reading the current face: a returned creature
+# face could attack the turn it came back.
+
+def test_an_exile_and_return_transform_enters_as_a_new_summoning_sick_object(card_db):
+    from engine.oracle_resolver import _transform_permanent
+    game = GameState(rng=random.Random(0))
+    fable = _put_on_battlefield(game, card_db, FABLE_NAME, controller=0)
+    fable.tapped = True
+    _transform_permanent(game, fable, controller=0, returns_as_new_object=True)
+    assert fable.summoning_sick and fable.has_summoning_sickness
+    assert not fable.can_attack
+    assert not fable.tapped
+
+
+def test_an_in_place_transform_keeps_the_objects_status(card_db):
+    from engine.oracle_resolver import _transform_permanent
+    game = GameState(rng=random.Random(0))
+    fable = _put_on_battlefield(game, card_db, FABLE_NAME, controller=0)
+    _transform_permanent(game, fable, controller=0)
+    assert not fable.summoning_sick
+    assert fable.can_attack
+
+
+def test_the_saga_chapter_that_exiles_and_returns_transformed_yields_a_sick_creature(card_db):
+    # Through the engine's lore-counter path, not the helper directly.
+    from engine.game_runner import GameRunner
+    from engine.saga import LORE_COUNTER
+    game = GameState(rng=random.Random(0))
+    fable = _put_on_battlefield(game, card_db, FABLE_NAME, controller=0)
+    game.active_player = 0
+    fable.other_counters[LORE_COUNTER] = 2
+    runner = GameRunner.__new__(GameRunner)
+    runner._process_saga_chapters(game, 0)
+    assert fable.is_transformed and fable in game.players[0].creatures
+    assert fable.has_summoning_sickness and not fable.can_attack

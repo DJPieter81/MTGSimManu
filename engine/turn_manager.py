@@ -170,15 +170,10 @@ class TurnManager:
             if ("untap" in otext
                     and "during each other player's untap step" in otext):
                 card.untap()
-        player.reset_turn_tracking()
-        # CR "this turn" window is a single game-turn clock shared by both
-        # players: the non-active player's per-turn EVENT tallies must also
-        # reset at this boundary, or a value from their own prior turn (a
-        # fetchland crack granting Revolt, life gained, etc.) leaks through
-        # the active player's entire turn and is read at instant speed.
-        # The full reset (with the silence/flashback lifecycle) stays with
-        # the active player only.
-        game.players[1 - player_idx].reset_cross_turn_event_counters()
+        # Every turn-boundary reset and expiry is a clock subscriber
+        # (engine/turn_clock.py), in the order they used to run here.
+        from .turn_clock import Clock, ClockEvent, emit
+        emit(game, ClockEvent(Clock.TURN_BEGINS, player_idx))
         # Recalculate extra land drops from permanents on battlefield
         # (Azusa gives +2, Dryad of the Ilysian Grove gives +1)
         extra = 0
@@ -268,8 +263,8 @@ class TurnManager:
         # that named "the next end step" / "your next end step" whatever
         # subsystem created it. Placed LAST so those two keep their exact
         # existing ordering relative to the Dash/Warp/Ragavan blocks.
-        from .delayed_triggers import DelayedTriggerStep
-        game.fire_delayed_triggers(DelayedTriggerStep.END_STEP)
+        from .turn_clock import Clock, ClockEvent, emit
+        emit(game, ClockEvent(Clock.END_STEP, game.active_player))
 
     def cleanup_step(self, game: "GameState") -> None:
         """CR 514: Cleanup step — cleanup continuous effects, discard to
@@ -281,8 +276,9 @@ class TurnManager:
         """
         active = game.players[game.active_player]
 
-        # Clean up end-of-turn continuous effects
-        game.continuous_effects.cleanup_end_of_turn()
+        # End-of-turn expiry is a clock subscriber (engine/turn_clock.py).
+        from .turn_clock import Clock, ClockEvent, emit
+        emit(game, ClockEvent(Clock.CLEANUP, game.active_player))
 
         # Discard to hand size via the callback
         from .constants import MAX_HAND_SIZE

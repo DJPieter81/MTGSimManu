@@ -12,36 +12,36 @@
       "deck1": "Ruby Storm",
       "deck2": "Dimir Midrange",
       "seed": 50000,
-      "winner": "Ruby Storm",
+      "winner": "Dimir Midrange",
       "turns": 7
     },
     {
       "deck1": "Domain Zoo",
       "deck2": "Eldrazi Tron",
       "seed": 50000,
-      "winner": "Eldrazi Tron",
-      "turns": 22
+      "winner": "Domain Zoo",
+      "turns": 9
     },
     {
       "deck1": "Amulet Titan",
       "deck2": "Living End",
       "seed": 50000,
       "winner": "Living End",
-      "turns": 7
+      "turns": 6
     },
     {
       "deck1": "Jeskai Blink",
       "deck2": "4c Omnath",
       "seed": 50000,
-      "winner": "4c Omnath",
-      "turns": 9
+      "winner": "Jeskai Blink",
+      "turns": 14
     },
     {
       "deck1": "Goryo's Vengeance",
       "deck2": "Izzet Prowess",
       "seed": 50000,
       "winner": "Izzet Prowess",
-      "turns": 4
+      "turns": 6
     },
     {
       "deck1": "Pinnacle Affinity",
@@ -54,15 +54,15 @@
       "deck1": "Azorius Control",
       "deck2": "Azorius Control (WST)",
       "seed": 50000,
-      "winner": "Azorius Control",
-      "turns": 16
+      "winner": "Azorius Control (WST)",
+      "turns": 7
     },
     {
       "deck1": "Azorius Control (WST v2)",
       "deck2": "Boros Energy",
       "seed": 50000,
-      "winner": "Boros Energy",
-      "turns": 7
+      "winner": "Azorius Control (WST v2)",
+      "turns": 10
     },
     {
       "deck1": "Boros Energy",
@@ -75,7 +75,7 @@
       "deck1": "Affinity",
       "deck2": "Domain Zoo",
       "seed": 50500,
-      "winner": "Affinity",
+      "winner": "Domain Zoo",
       "turns": 6
     },
     {
@@ -89,8 +89,8 @@
       "deck1": "Living End",
       "deck2": "Jeskai Blink",
       "seed": 50500,
-      "winner": "Jeskai Blink",
-      "turns": 12
+      "winner": "Living End",
+      "turns": 6
     },
     {
       "deck1": "4c Omnath",
@@ -104,42 +104,42 @@
       "deck2": "Dimir Midrange",
       "seed": 50500,
       "winner": "Dimir Midrange",
-      "turns": 12
+      "turns": 9
     },
     {
       "deck1": "4/5c Control",
       "deck2": "Pinnacle Affinity",
       "seed": 50500,
       "winner": "4/5c Control",
-      "turns": 18
+      "turns": 15
     },
     {
       "deck1": "Azorius Control (WST)",
       "deck2": "Azorius Control (WST v2)",
       "seed": 50500,
-      "winner": "draw",
-      "turns": 30
+      "winner": "Azorius Control (WST)",
+      "turns": 27
     },
     {
       "deck1": "Instant Reanimator",
       "deck2": "Dimir Midrange",
       "seed": 51000,
-      "winner": "Instant Reanimator",
-      "turns": 15
+      "winner": "Dimir Midrange",
+      "turns": 12
     },
     {
       "deck1": "Boros Ponza",
       "deck2": "Boros Energy",
       "seed": 51000,
-      "winner": "Boros Ponza",
-      "turns": 16
+      "winner": "Boros Energy",
+      "turns": 7
     },
     {
       "deck1": "Instant Reanimator",
       "deck2": "Boros Ponza",
       "seed": 51500,
-      "winner": "Boros Ponza",
-      "turns": 6
+      "winner": "Instant Reanimator",
+      "turns": 7
     },
     {
       "deck1": "Eldrazi Ramp",
@@ -153,42 +153,42 @@
       "deck2": "Grixis Reanimator",
       "seed": 52000,
       "winner": "Grixis Reanimator",
-      "turns": 9
+      "turns": 8
     },
     {
       "deck1": "Azorius Blink",
       "deck2": "Eldrazi Ramp",
       "seed": 52500,
       "winner": "Eldrazi Ramp",
-      "turns": 9
+      "turns": 7
     },
     {
       "deck1": "Broodscale Bloodchief",
       "deck2": "Creatures Toolbox",
       "seed": 52500,
       "winner": "Broodscale Bloodchief",
-      "turns": 9
+      "turns": 7
     },
     {
       "deck1": "Grixis Reanimator",
       "deck2": "Azorius Blink",
       "seed": 53000,
       "winner": "Grixis Reanimator",
-      "turns": 9
+      "turns": 11
     },
     {
       "deck1": "Hollow One",
       "deck2": "Eldrazi Ramp",
       "seed": 53500,
-      "winner": "Eldrazi Ramp",
-      "turns": 9
+      "winner": "Hollow One",
+      "turns": 6
     },
     {
       "deck1": "Broodscale Bloodchief",
       "deck2": "Hollow One",
       "seed": 53500,
       "winner": "Broodscale Bloodchief",
-      "turns": 8
+      "turns": 7
     }
   ]
 }

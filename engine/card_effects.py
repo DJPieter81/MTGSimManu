@@ -988,22 +988,6 @@ def stock_up_resolve(game, card, controller, targets=None, item=None):
             player.library.append(c)
 
 
-@EFFECT_REGISTRY.register("Orim's Chant", EffectTiming.SPELL_RESOLVE,
-                           description="Target player can't cast spells this turn")
-def orims_chant_resolve(game, card, controller, targets=None, item=None):
-    # Oracle: "Kicker {W}. Target player can't cast spells this turn. If this
-    # spell was kicked, creatures can't attack this turn." The sim does not
-    # model kicker payments, so every cast resolves as the base (unkicked)
-    # variant — scope is "this turn", never a carryover to the opponent's
-    # next turn. Cast on own main phase → opp is silenced for the remainder
-    # of the current turn (narrow: blocks end-of-turn instants). Cast during
-    # opp's turn (flash/Scepter) → silences their ongoing turn.
-    opponent = 1 - controller
-    game.players[opponent].silenced_this_turn = True
-    game.log.append(f"T{game.display_turn} P{controller+1}: "
-                    f"Orim's Chant silences P{opponent+1} this turn")
-
-
 @EFFECT_REGISTRY.register("Mutagenic Growth", EffectTiming.SPELL_RESOLVE,
                            description="Target creature gets +2/+2, pay 2 life")
 def mutagenic_growth_resolve(game, card, controller, targets=None, item=None):
@@ -1310,28 +1294,9 @@ def gifts_ungiven_resolve(game, card, controller, targets=None, item=None):
 # Missing Card Effects — Artifact/Enchantment Interaction
 # ═══════════════════════════════════════════════════════════════════
 
-@EFFECT_REGISTRY.register("Force of Vigor", EffectTiming.SPELL_RESOLVE,
-                           description="Destroy up to 2 artifacts/enchantments")
-def force_of_vigor_resolve(game, card, controller, targets=None, item=None):
-    from .cards import CardType
-    opponent = 1 - controller
-    opp = game.players[opponent]
-    # Find artifacts and enchantments on opponent's board
-    valid_targets = [c for c in opp.battlefield
-                     if not c.template.is_land and
-                     (CardType.ARTIFACT in c.template.card_types or
-                      CardType.ENCHANTMENT in c.template.card_types)]
-    # Destroy up to 2, prioritizing highest value
-    valid_targets.sort(key=lambda c: c.template.cmc, reverse=True)
-    destroyed = 0
-    for target in valid_targets[:2]:
-        game._permanent_destroyed(target)
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Force of Vigor destroys {target.name}")
-        destroyed += 1
-    if destroyed == 0:
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Force of Vigor: no valid targets")
+# Force of Vigor's "destroy up to two target artifacts and/or enchantments"
+# resolves through the typed counted-removal path (targeted_removal_data
+# count=2, clause_resolver) — its card-name handler was deleted (S5).
 
 
 @EFFECT_REGISTRY.register("Wear // Tear", EffectTiming.SPELL_RESOLVE,
@@ -1547,6 +1512,7 @@ def _resolve_nonland_permanent_removal(
         owner_scope="opponent",
         mv_max_fn=None,
         log_verb="destroys",
+        count=1,
 ):
     """Generic resolver for the destroy/exile-target-permanent cluster
     (see module comment above). Every card in the cluster shares this
@@ -1588,7 +1554,7 @@ def _resolve_nonland_permanent_removal(
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"{card.name} {log_verb} {target.name}")
 
-    if targets:
+    if targets and count <= 1:
         # A target was already chosen (cast time / trigger-target
         # selection) — honor it rather than re-deriving a fresh pick.
         for tid in targets:
@@ -1600,6 +1566,31 @@ def _resolve_nonland_permanent_removal(
             _apply(target)
             return
         return  # every chosen id was illegal at resolution — no effect
+
+    if count > 1:
+        # A counted target (CR 115.1): up to `count` distinct legal
+        # objects through the one chooser; each still-legal one is
+        # affected (CR 608.2b).
+        from . import target_solver
+        req = target_solver.TargetRequirement(
+            zone="battlefield", types=frozenset(types), owner_scope=owner_scope,
+            count_min=0, count_max=count)
+        opp_battlefield = game.players[1 - controller].battlefield
+        chosen = target_solver.choose_targets(
+            game, controller, req, preferred=targets,
+            key=lambda c: _nonland_permanent_threat(c, opp_battlefield))
+        from .rules_audit import enabled as _audit_on, check as _audit_check
+        if _audit_on():
+            # CR 115.3: one object is not chosen twice for one target word,
+            # and no more objects than the count.
+            _audit_check("115.3/distinct_targets",
+                         len({c.instance_id for c in chosen}) == len(chosen)
+                         and len(chosen) <= count,
+                         f"{card.name} chose {len(chosen)} target(s)", game=game)
+        for target in chosen:
+            if _meets_condition(target):
+                _apply(target)
+        return
 
     # No pre-chosen target (dies-trigger fan-out, blink/reanimation
     # re-entry via zone_transfer._fire_etb_triggers, or a synthetic
