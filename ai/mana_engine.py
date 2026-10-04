@@ -18,32 +18,37 @@ per-mana rate as mana now, discounted by `urgency_factor`.
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Iterable
 
 if TYPE_CHECKING:
+    from engine.cards import CardTemplate
     from engine.game_state import GameState
 
 NORMAL_LAND_DROPS = 1   # CR 305.2: one land per turn before any extra drop
 
 
-def engine_mana_next_turn(game: "GameState", player_idx: int) -> float:
+def engine_mana_next_turn(game: "GameState", player_idx: int,
+                          extra: Iterable["CardTemplate"] = (),
+                          hand_delta: int = 0) -> float:
     """Expected extra mana `player_idx`'s permanents add on their next
-    turn (see the module docstring)."""
+    turn (see the module docstring). `extra` adds permanents not yet on
+    the battlefield and `hand_delta` adjusts the hand size — the cast
+    projection's view of the board after a spell resolves."""
     player = game.players[player_idx]
     library = list(player.library)
-    hand_size = len(player.hand)
-    if not library or not hand_size:
+    hand_size = len(player.hand) + hand_delta
+    if not library or hand_size <= 0:
         return 0.0
     templates = [c.template for c in library]
+    permanents = [p.template for p in player.battlefield] + list(extra)
     lands_expected = hand_size * sum(t.is_land for t in templates) / len(templates)
 
-    extra_drops = sum(getattr(p.template, 'extra_land_drops', 0) or 0
-                      for p in player.battlefield)
+    extra_drops = sum(getattr(t, 'extra_land_drops', 0) or 0 for t in permanents)
     mana = min(float(extra_drops), max(0.0, lands_expected - NORMAL_LAND_DROPS))
 
     from engine.oracle_resolver import _cost_rule_applies
-    for perm in player.battlefield:
-        rule = getattr(perm.template, 'cost_reduction_rule', None)
+    for perm in permanents:
+        rule = getattr(perm, 'cost_reduction_rule', None)
         if not rule:
             continue
         saved = sum(min(rule['amount'], t.mana_cost.generic)

@@ -117,3 +117,31 @@ def test_a_mana_engine_has_threat_and_a_vanilla_enchantment_has_none():
     p = game.players[0]
     assert _threat_score(engine, game, p) > 0
     assert _threat_score(vanilla, game, p) == 0
+
+
+def _hand_card(game, tmpl):
+    return _card(game, tmpl, 0, "hand")
+
+
+def test_casting_a_mana_engine_projects_its_next_turn_mana():
+    from ai.ev_evaluator import _project_spell, snapshot_from_game
+    game = GameState(rng=random.Random(0))
+    _player(game, hand=5, lands=10, spells=10)
+    rule = {"target": "instant_sorcery", "amount": 1, "color": None}
+    reducer = _hand_card(game, _tmpl("Reducer", [CardType.ARTIFACT], generic=2,
+                                     cost_reduction_rule=rule))
+    snap = snapshot_from_game(game, 0)
+    projected = _project_spell(reducer, snap, game=game, player_idx=0)
+    # After the cast the hand holds 5 spells' worth of draws (6 - 1 cast);
+    # half the library matches -> 2.5 expected matching spells, 1 mana each.
+    assert projected.my_engine_mana == pytest.approx(2.5)
+
+
+def test_casting_a_non_engine_leaves_projected_engine_mana_unchanged():
+    from ai.ev_evaluator import _project_spell, snapshot_from_game
+    game = GameState(rng=random.Random(0))
+    _player(game, hand=5, lands=10, spells=10)
+    vanilla = _hand_card(game, _tmpl("Vanilla", [CardType.ENCHANTMENT], generic=2))
+    snap = snapshot_from_game(game, 0)
+    projected = _project_spell(vanilla, snap, game=game, player_idx=0)
+    assert projected.my_engine_mana == snap.my_engine_mana

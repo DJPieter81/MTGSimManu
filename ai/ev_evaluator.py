@@ -2090,9 +2090,18 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
         opp_artifact_scaling_active=snap.opp_artifact_scaling_active,
     )
 
+    # A permanent spell that is a mana engine adds its next-turn mana
+    # (ai/mana_engine), read against the board after the cast resolves.
+    from engine.cards import CardType
+    if (game is not None and not as_ability and not t.is_land
+            and CardType.INSTANT not in t.card_types
+            and CardType.SORCERY not in t.card_types):
+        from ai.mana_engine import engine_mana_next_turn
+        projected.my_engine_mana = engine_mana_next_turn(
+            game, player_idx, extra=(t,), hand_delta=-spell_count)
+
     # Increment count fields when the cast puts an artifact or
     # enchantment onto the battlefield (non-land permanent only).
-    from engine.cards import CardType
     if not t.is_land:
         if CardType.ARTIFACT in t.card_types:
             projected.my_artifact_count += 1
