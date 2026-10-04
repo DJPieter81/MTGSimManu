@@ -118,6 +118,7 @@ class CombatManager:
 
         for attacker in attackers:
             attacker.attacking = True
+            attacker.attacked_planeswalker = attack_targets.get(attacker.instance_id)
             # CR 508.1f: Tap attacking creatures (unless vigilance)
             if Keyword.VIGILANCE not in attacker.keywords:
                 attacker.tap()

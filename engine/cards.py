@@ -1691,6 +1691,8 @@ class CardInstance:
     other_counters: Dict[str, int] = field(default_factory=dict)
     # Combat state
     attacking: bool = False
+    # CR 508.1b: the planeswalker this creature attacks (None = a player).
+    attacked_planeswalker: Optional["CardInstance"] = None
     blocking: Optional[int] = None  # instance_id of creature being blocked
     blocked_by: List[int] = field(default_factory=list)
     # Damage
@@ -2509,6 +2511,7 @@ class CardInstance:
 
     def reset_combat(self):
         self.attacking = False
+        self.attacked_planeswalker = None
         self.blocking = None
         self.blocked_by = []
 

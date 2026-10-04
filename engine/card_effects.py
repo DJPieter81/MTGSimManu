@@ -2776,10 +2776,18 @@ def phelia_attack(game, card, controller, targets=None, item=None):
         target = max(own_etb, key=lambda c: _threat_score(c))
         target_owner = controller
     elif opp_nonlands:
-        # Tempo: exile opponent's best nonland (it returns at end step)
-        target = max(opp_nonlands,
-                     key=lambda c: _threat_score(c, game, opp))
-        target_owner = opp_idx
+        # Tempo: exile the opponent's nonland whose exile until the end
+        # step removes the most (ai.temporary_exile: a planeswalker returns
+        # at printed loyalty and the attack on it is lost). "Up to one":
+        # when nothing is worth exiling, exile nothing.
+        from ai.temporary_exile import temporary_exile_share
+        valued = [(c, _threat_score(c, game, opp)
+                   * temporary_exile_share(c, game, controller))
+                  for c in opp_nonlands]
+        valued = [cv for cv in valued if cv[1] > 0]
+        if valued:
+            target = max(valued, key=lambda cv: cv[1])[0]
+            target_owner = opp_idx
 
     if target is None:
         return

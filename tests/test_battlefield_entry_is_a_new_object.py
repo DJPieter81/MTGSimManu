@@ -56,13 +56,14 @@ def _phelia_exiles(game, card_db, target, attacker_controller=0):
 def test_a_planeswalker_exiled_until_end_step_returns_with_printed_loyalty(card_db):
     from engine.card_effects import EFFECT_REGISTRY, EffectTiming
     game = GameState(rng=random.Random(0))
-    pw = _walker(game, 1, loyalty=4)
-    pw.zone = "battlefield"
+    t = card_db.get_card("Teferi, Time Raveler")   # printed loyalty 4
+    pw = CardInstance(template=t, owner=1, controller=1,
+                      instance_id=game.next_instance_id(), zone="battlefield")
     pw._game_state = game
     game.players[1].battlefield.append(pw)
-    pw.loyalty_counters = 1          # damaged down to 1
+    pw.loyalty_counters = 7          # grown above printed, so the exile picks it
     phelia = _phelia_exiles(game, card_db, pw)
     assert pw.zone == "exile" and pw in game.players[1].exile
     EFFECT_REGISTRY.execute(phelia.template.name, EffectTiming.END_STEP, game, phelia, 0)
     assert pw.zone == "battlefield"
-    assert pw.loyalty_counters == 4, "a returned walker is a new object at printed loyalty"
+    assert pw.loyalty_counters == t.loyalty, "a returned walker is a new object at printed loyalty"
