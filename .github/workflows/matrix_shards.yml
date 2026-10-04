@@ -96,7 +96,7 @@ jobs:
         run: |
           SEED="matrix_requests/${{ needs.plan.outputs.tag }}_seed.jsonl"
           python3 -m tools.resumable_matrix -n "${{ needs.plan.outputs.n }}" --workers 2 \
-            --checkpoint "row-${{ matrix.row.slug }}.jsonl" --rules-audit \
+            --checkpoint "row-${{ matrix.row.slug }}.jsonl" --rules-audit --neutralise-deadline \
             --row "${{ matrix.row.deck }}" --seed-checkpoint "$SEED"
       - name: Print the row's rule violations (seed, pair, turn)
         if: always()
@@ -146,7 +146,7 @@ jobs:
         run: |
           SEED="matrix_requests/${{ needs.plan.outputs.tag }}_seed.jsonl"
           python3 -m tools.resumable_matrix -n "${{ needs.plan.outputs.n }}" --workers 2 \
-            --checkpoint merged.jsonl --rules-audit \
+            --checkpoint merged.jsonl --rules-audit --neutralise-deadline \
             --seed-checkpoint shards/*.jsonl "$SEED"
           python3 -c "
           import json; r = json.load(open('metagame_results.json'))

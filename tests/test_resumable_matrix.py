@@ -121,3 +121,22 @@ def test_an_audited_run_records_its_violation_count_in_the_results(tmp_path, mon
            run_matchup_fn=_fake_matchup, merge=False, rules_audit=True)
     saved = json.loads(out.read_text())
     assert saved["rules_audit"] == {"violations": 2, "findings": 4}
+
+
+def test_a_neutralised_run_records_outcomes_that_depend_on_the_seed_alone(monkeypatch):
+    """The game deadline abandons a game on a slow or loaded machine, so a
+    recorded cell would depend on machine speed as well as the seed (the
+    same reason the anchor test and the baseline refresher neutralise it).
+    `--neutralise-deadline` raises it to the shared anchor constant before
+    any worker starts."""
+    import ai.constants as c
+    from tests.test_wr_baseline_anchor import _ANCHOR_TIMEOUT_SECONDS
+    monkeypatch.setattr(c, "GAME_TIMEOUT_SECONDS", 1.0)
+    seen = {}
+
+    def _fake_run(decks, **kw):
+        seen["timeout"] = c.GAME_TIMEOUT_SECONDS
+        return None
+    monkeypatch.setattr(rm, "run", _fake_run)
+    rm.main(["--checkpoint", "/dev/null", "--neutralise-deadline", "--no-merge"])
+    assert seen["timeout"] == _ANCHOR_TIMEOUT_SECONDS

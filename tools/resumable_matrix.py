@@ -122,6 +122,17 @@ def run(decks: List[str], *, n_games: int, workers: int, checkpoint: Path,
     return Path(results_path)
 
 
+def neutralise_game_deadline() -> None:
+    """Raise GAME_TIMEOUT_SECONDS to the anchor test's constant before any
+    worker forks: the deadline abandons a game on a slow or loaded machine,
+    which makes a recorded outcome depend on machine speed as well as on the
+    seed. Imported, not duplicated, so the tools cannot diverge (the same
+    constant tools/refresh_wr_baseline.py and tools/seeded_game_digest.py use)."""
+    import ai.constants as _ai_constants
+    from tests.test_wr_baseline_anchor import _ANCHOR_TIMEOUT_SECONDS
+    _ai_constants.GAME_TIMEOUT_SECONDS = _ANCHOR_TIMEOUT_SECONDS
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("-n", "--games", type=int, default=60)
@@ -133,9 +144,14 @@ def main(argv=None) -> int:
                                   "never writes results")
     ap.add_argument("--seed-checkpoint", nargs="*", default=[],
                     help="checkpoints whose cells are merged in before running")
+    ap.add_argument("--neutralise-deadline", action="store_true",
+                    help="raise the per-game deadline so every outcome depends "
+                         "on the seed alone, not on machine speed")
     a = ap.parse_args(argv)
     if a.rules_audit:
         os.environ["MTG_RULES_AUDIT"] = "1"
+    if a.neutralise_deadline:
+        neutralise_game_deadline()
     from decks.modern_meta import get_all_deck_names
     decks = get_all_deck_names()
     ck = Path(a.checkpoint)
