@@ -6310,3 +6310,30 @@ An on-disk cache is held in reserve if the pool tools become too slow.
 - **Conclusion:** every row was an unblocked attacker whose attacked planeswalker had left the battlefield before damage. CR 506.4 / 510.1b say it deals no combat damage. The engine was right and the auditor's restatement was missing the clause.
   - The 10-04 page count of 119 is therefore 119 false positives. No engine change, so the game digest is unaffected.
 - **Seen along the way (AI quality, not rules):** Phelia's attack handler picks "the opponent's best nonland permanent" (`engine/card_effects.py`, `phelia_attack`) and often exiles the planeswalker Phelia herself is attacking. That removes her own damage, and the walker returns at the end step with fresh loyalty. The choice is also strategic logic living in an engine handler. Candidate unit: move the target choice to the AI layer and value "the walker I'm attacking" by the damage it would have taken.
+
+**Planeswalker entry loyalty and the end-step exile (`c933190`, `a429077`, `cd8f48d`):**
+- **Symptom:** while checking the 510.2 rows, Phelia's attack trigger was seen exiling the walker Phelia attacked. Reading the handler surfaced two rules gaps under it.
+- **Rules (engine):**
+  - **CR 306.5b:** a planeswalker enters with its printed loyalty by any path. Only the cast path set it; any other entry left the counters zeroed by the leave-battlefield cleanup, so the walker died to SBA 704.5i.
+    - **Owner:** `CardInstance.enter_battlefield`; the `spell_resolution` copy was removed.
+    - **Class:** every planeswalker × every non-cast entry (blink return, put onto the battlefield, reanimation).
+  - **CR 400.7:** the delayed-return exile moved cards by hand, so a returned permanent kept its counters, damage and attachments. It now goes through `zone_mgr.move_card` both ways. Zone-mutation baseline 66 → 64.
+  - **Auditor:** `306.5b/entry_loyalty` at the funnel's battlefield entry, pinned both ways.
+- **Decision (AI):** `ai/temporary_exile.temporary_exile_share`.
+  - An "exile until the next end step" removes, from a walker, only its loyalty above printed less the combat damage already aimed at it (CR 506.4). Every other permanent counts whole.
+  - The handler drops a candidate whose share is 0 and ranks the rest by threat × share.
+  - **Class:** 33 pool cards carry the delayed-return exile shape (`class_census`); Phelia is the registered member.
+- **Measurement:** same seeds, the three Phelia rows, n=20 Bo3 on Actions (diagnostic `rows` requests with per-cell print).
+
+  | Deck | A `fece3d7` | B +loyalty | C2 +AI | C2 − A |
+  |---|---|---|---|---|
+  | 4c Omnath | 70.2 | 70.8 | 70.8 | +0.6 |
+  | Azorius Blink | 34.2 | 34.4 | 35.0 | +0.8 |
+  | Jeskai Blink | 49.2 | 49.4 | 49.0 | −0.2 |
+
+  Cells changed: 23 (A → B) and 7 (B → C2), none by 10 pp or more. Audit: 0 violations on every arm.
+- **Caught by the measurement:** the first AI cut (arm C) dropped any candidate whose threat × share was 0. Because the threat primitive scores some engine permanents 0 (Spelunking, Cultivator Colossus), Jeskai Blink vs Amulet Titan went 75 → 65. `cd8f48d` filters on the share alone (pinned red-first). C2 is flat.
+- **Leads not built:**
+  - `permanent_threat` scores engine permanents (Spelunking, Amulet-style enablers, land-count bodies on an empty board) at 0. That is a primitive calibration unit.
+  - The rest of the 33-card delayed-return class still has no typed field or generic handler (only Phelia is registered).
+  - Throwaway branches `claude/exile-arm-a`, `claude/exile-arm-b` and `claude/audit510-pre` remain on the remote; the session cannot delete branches.
