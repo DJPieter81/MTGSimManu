@@ -468,15 +468,8 @@ class CombatManager:
                 # the rule, not a miss.
                 blocked_and_alone = bool(a.blocker_ids) and not live_blockers \
                     and Keyword.TRAMPLE not in a.attacker.keywords
-                # CR 506.4 / 510.1b: an unblocked creature whose attacked
-                # planeswalker left the battlefield or changed controller
-                # is still attacking but assigns no combat damage.
-                pw = a.defender
-                walker_gone = (not a.blocker_ids and pw is not None
-                               and (pw.zone != "battlefield"
-                                    or pw.controller != self._defending_player))
                 if (a.attacker.power > 0 and _rule_says_deals(a.attacker)
-                        and not blocked_and_alone and not walker_gone):
+                        and not blocked_and_alone):
                     expected.append(a.attacker)
                 for b in live_blockers:
                     if b.power > 0 and _rule_says_deals(b):
