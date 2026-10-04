@@ -1,0 +1,139 @@
+name: Matrix (sharded)
+
+# A full Bo3 metagame matrix, one runner per deck row. Triggered by pushing a
+# request file to matrix_requests/ on a claude/* branch (the branch's own copy
+# of this workflow runs), or by hand once this file is on main.
+#
+# Request file matrix_requests/<tag>.json: {"tag": "...", "n": 60}
+# Optional matrix_requests/<tag>_seed.jsonl: cells already played (a
+# tools/resumable_matrix.py checkpoint); no runner repeats them.
+#
+# Each shard runs tools/resumable_matrix.py --row <deck> (that deck's 24
+# ordered pairs). The assemble job merges every shard checkpoint, writes
+# metagame_results.json + the rules-audit JSONL, rebuilds the site
+# (data/meta_site.json and the pages), and commits them to the branch.
+
+on:
+  push:
+    branches: ['claude/**']
+    paths: ['matrix_requests/*.json']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Request tag (matrix_requests/<tag>.json)'
+        required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: matrix-shards-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  MTG_LLM_DECISION_SCORER_OFFLINE: '1'
+  MTG_RULES_AUDIT: '1'
+  PYTHONUNBUFFERED: '1'
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.req.outputs.tag }}
+      n: ${{ steps.req.outputs.n }}
+      decks: ${{ steps.req.outputs.decks }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Read the request
+        id: req
+        run: |
+          TAG="${{ inputs.tag }}"
+          if [ -z "$TAG" ]; then
+            F=$(git diff --name-only HEAD~1 HEAD -- 'matrix_requests/*.json' | head -1)
+            TAG=$(basename "$F" .json)
+          fi
+          test -f "matrix_requests/$TAG.json" || { echo "no request matrix_requests/$TAG.json"; exit 1; }
+          N=$(python3 -c "import json;print(int(json.load(open('matrix_requests/$TAG.json'))['n']))")
+          DECKS=$(python3 -c "
+          import json, re
+          from decks.modern_meta import get_all_deck_names
+          print(json.dumps([{'deck': d, 'slug': re.sub(r'[^a-z0-9]+', '-', d.lower()).strip('-')}
+                            for d in get_all_deck_names()]))")
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "n=$N" >> "$GITHUB_OUTPUT"
+          echo "decks=$DECKS" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG n=$N decks=$(echo "$DECKS" | python3 -c 'import json,sys;print(len(json.load(sys.stdin)))')"
+
+  shard:
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    strategy:
+      fail-fast: false
+      matrix:
+        row: ${{ fromJSON(needs.plan.outputs.decks) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install pydantic
+      - name: Assemble the card database
+        run: python3 merge_db.py
+      - name: Play the row
+        run: |
+          SEED="matrix_requests/${{ needs.plan.outputs.tag }}_seed.jsonl"
+          python3 -m tools.resumable_matrix -n "${{ needs.plan.outputs.n }}" --workers 2 \
+            --checkpoint "row-${{ matrix.row.slug }}.jsonl" --rules-audit \
+            --row "${{ matrix.row.deck }}" --seed-checkpoint "$SEED"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: row-${{ matrix.row.slug }}
+          path: row-${{ matrix.row.slug }}.jsonl
+          if-no-files-found: error
+
+  assemble:
+    needs: [plan, shard]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install pydantic
+      - name: Assemble the card database
+        run: python3 merge_db.py
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: row-*
+          path: shards
+          merge-multiple: true
+      - name: Merge shards, write results, rebuild the site
+        run: |
+          SEED="matrix_requests/${{ needs.plan.outputs.tag }}_seed.jsonl"
+          python3 -m tools.resumable_matrix -n "${{ needs.plan.outputs.n }}" --workers 2 \
+            --checkpoint merged.jsonl --rules-audit \
+            --seed-checkpoint shards/*.jsonl "$SEED"
+          python3 -c "
+          import json; r = json.load(open('metagame_results.json'))
+          cells = len(r['matrix']); print('cells', cells, 'aborted', r.get('aborted'), 'draws', r.get('draws'))
+          assert cells == len(r['names']) * (len(r['names']) - 1), 'incomplete matrix'"
+      - name: Commit the refreshed data and pages
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add metagame_results.json data/meta_site.json metagame_data.jsx \
+            modern_meta_matrix_full.html templates/reference_showcase.html mtgsimmanu_showcase.html \
+            audits/ 2>/dev/null || true
+          git commit -m "data: n=${{ needs.plan.outputs.n }} matrix refresh (${{ needs.plan.outputs.tag }}), sharded on GitHub Actions" || exit 0
+          for i in 1 2 3 4; do git pull --rebase && git push && break; sleep $((i * 5)); done

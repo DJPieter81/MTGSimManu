@@ -56,13 +56,29 @@ def _append(path: Path, d1: str, d2: str, cell: PairCell) -> None:
         os.fsync(f.fileno())
 
 
+def merge_checkpoints(sources: List[Path], dest: Path) -> int:
+    """Concatenate checkpoints (shards of one run) into `dest`; a pair that
+    appears in several keeps its first record. Returns the cell count."""
+    seen: Dict[Tuple[str, str], PairCell] = {}
+    for src in sources:
+        for pair, cell in load_checkpoint(Path(src)).items():
+            seen.setdefault(pair, cell)
+    Path(dest).write_text("")
+    for (d1, d2), cell in seen.items():
+        _append(Path(dest), d1, d2, cell)
+    return len(seen)
+
+
 def run_cells(decks: List[str], *, n_games: int, workers: int, checkpoint: Path,
-              run_matchup_fn: Optional[Callable] = None) -> Dict[Tuple[str, str], PairCell]:
-    """Every ordered pair's cell: from the checkpoint when present, else run
-    and appended to it the moment it finishes."""
+              run_matchup_fn: Optional[Callable] = None,
+              row: Optional[str] = None) -> Dict[Tuple[str, str], PairCell]:
+    """Every ordered pair's cell (only `row`'s pairs when given): from the
+    checkpoint when present, else run and appended to it the moment it
+    finishes."""
     checkpoint = Path(checkpoint)
     cells = load_checkpoint(checkpoint)
-    todo = [(a, b) for a in decks for b in decks if a != b and (a, b) not in cells]
+    rows = [row] if row else decks
+    todo = [(a, b) for a in rows for b in decks if a != b and (a, b) not in cells]
     print(f"resumable matrix: {len(cells)} cell(s) checkpointed, {len(todo)} to run",
           file=sys.stderr)
     fn = partial(_run_pair, n_games=n_games, run_matchup_fn=run_matchup_fn)
@@ -76,7 +92,7 @@ def run_cells(decks: List[str], *, n_games: int, workers: int, checkpoint: Path,
             for k, (d1, d2, cell) in enumerate(pool.imap_unordered(fn, todo), 1):
                 _append(checkpoint, d1, d2, cell)
                 cells[(d1, d2)] = cell
-                print(f"  [{len(cells)}/{len(decks) * (len(decks) - 1)}] {d1} vs {d2}: "
+                print(f"  [{len(cells)}] {d1} vs {d2}: "
                       f"{cell.wr:.0f}%", file=sys.stderr, flush=True)
     return cells
 
@@ -113,12 +129,25 @@ def main(argv=None) -> int:
     ap.add_argument("--checkpoint", required=True)
     ap.add_argument("--rules-audit", action="store_true")
     ap.add_argument("--no-merge", action="store_true")
+    ap.add_argument("--row", help="run only this deck's ordered pairs (one shard); "
+                                  "never writes results")
+    ap.add_argument("--seed-checkpoint", nargs="*", default=[],
+                    help="checkpoints whose cells are merged in before running")
     a = ap.parse_args(argv)
     if a.rules_audit:
         os.environ["MTG_RULES_AUDIT"] = "1"
     from decks.modern_meta import get_all_deck_names
-    out = run(get_all_deck_names(), n_games=a.games, workers=a.workers,
-              checkpoint=Path(a.checkpoint), results_path=ROOT / "metagame_results.json",
+    decks = get_all_deck_names()
+    ck = Path(a.checkpoint)
+    seeds = [Path(p) for p in a.seed_checkpoint if Path(p).exists()]
+    if seeds:
+        merge_checkpoints(([ck] if ck.exists() else []) + seeds, ck)
+    if a.row:
+        cells = run_cells(decks, n_games=a.games, workers=a.workers, checkpoint=ck,
+                          row=a.row)
+        return 0 if len([p for p in cells if p[0] == a.row]) == len(decks) - 1 else 1
+    out = run(decks, n_games=a.games, workers=a.workers,
+              checkpoint=ck, results_path=ROOT / "metagame_results.json",
               merge=not a.no_merge, rules_audit=a.rules_audit)
     return 0 if out else 1
 

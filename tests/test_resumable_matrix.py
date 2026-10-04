@@ -74,3 +74,33 @@ def test_a_partial_checkpoint_never_writes_results(tmp_path):
         pass
     assert not out.exists()
     assert len(ck.read_text().splitlines()) == 2
+
+
+def test_a_row_run_plays_only_that_decks_ordered_pairs(tmp_path):
+    ck = tmp_path / "row.jsonl"
+    CALLS.clear()
+    cells = rm.run_cells(DECKS, n_games=2, workers=1, checkpoint=ck,
+                         run_matchup_fn=_fake_matchup, row="Bravo")
+    assert sorted(CALLS) == [("Bravo", "Alpha"), ("Bravo", "Charlie")]
+    assert set(cells) == {("Bravo", "Alpha"), ("Bravo", "Charlie")}
+
+
+def test_merged_row_checkpoints_assemble_like_one_full_run(tmp_path):
+    shards = []
+    for d in DECKS:
+        ck = tmp_path / f"{d}.jsonl"
+        rm.run_cells(DECKS, n_games=2, workers=1, checkpoint=ck,
+                     run_matchup_fn=_fake_matchup, row=d)
+        shards.append(ck)
+    merged = tmp_path / "merged.jsonl"
+    rm.merge_checkpoints(shards, merged)
+    out = tmp_path / "metagame_results.json"
+    CALLS.clear()
+    rm.run(DECKS, n_games=2, workers=1, checkpoint=merged, results_path=out,
+           run_matchup_fn=_fake_matchup, merge=False)
+    assert CALLS == [], "every cell came from the shards"
+    direct = run_matrix_parallel_cells(DECKS, n_games=2, workers=1,
+                                       run_matchup_fn=_fake_matchup)
+    saved = json.loads(out.read_text())
+    for (d1, d2), cell in direct.items():
+        assert saved["matrix"][f"{d1}|{d2}"] == cell.wr
