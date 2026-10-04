@@ -65,6 +65,29 @@ STORM_HARD_HOLD = -50.0
 _BASELINE_CACHE: dict = {}
 
 
+def _cached_baseline(snap, me, archetype: str, compute):
+    """The baseline projection for this exact (snapshot, player,
+    archetype), computed once per snapshot. An id is only a lookup key: a
+    hit must hold the very same objects (CPython reuses a freed object's
+    id), and an entry is dropped when its snapshot is collected, so a
+    stale baseline can never reach a new snapshot and the cache cannot
+    grow without bound."""
+    import weakref
+    key = (id(snap), archetype, id(me))
+    entry = _BASELINE_CACHE.get(key)
+    if entry is not None and entry[0]() is snap and entry[1] is me:
+        return entry[2]
+    value = compute()
+    try:
+        snap_ref = weakref.ref(snap, lambda _r, k=key: _BASELINE_CACHE.pop(k, None))
+    except TypeError:
+        return value    # not weak-referenceable: computed, never cached
+    # The entry lives exactly as long as its snapshot, so holding the
+    # player strongly cannot keep anything alive past that.
+    _BASELINE_CACHE[key] = (snap_ref, me, value)
+    return value
+
+
 # ─── Diagnostic trace (env-gated, zero overhead by default) ────────
 #
 # Set MTGSIM_COMBO_TRACE=1 in the environment to emit a structured
@@ -357,10 +380,7 @@ def card_combo_evaluation(
     # Pass sideboard + library so the simulator can run the
     # tutor-as-finisher-access fallback when a tutor is in hand
     # but the closer lives in SB/library (Wish→Grapeshot).
-    cache_key = (id(snap), archetype, id(me))
-    if cache_key in _BASELINE_CACHE:
-        baseline_proj, chain_card_ids = _BASELINE_CACHE[cache_key]
-    else:
+    def _compute():
         sb = getattr(me, 'sideboard', None) or []
         lib = list(me.library)
         # Plumb the EVPlayer's BHI tracker through to v3 if the
@@ -368,12 +388,12 @@ def card_combo_evaluation(
         # tracker; EVPlayer.bhi is the source of truth). v2 path
         # ignores this kwarg entirely.
         bhi_state = getattr(me, 'bhi', None)
-        baseline_proj, chain_card_ids = _project_baseline(
+        return _project_baseline(
             snap, list(me.hand), list(me.battlefield),
             list(me.graveyard), library_size, storm_count, archetype,
             sideboard=sb, library=lib, bhi_state=bhi_state,
         )
-        _BASELINE_CACHE[cache_key] = (baseline_proj, chain_card_ids)
+    baseline_proj, chain_card_ids = _cached_baseline(snap, me, archetype, _compute)
 
     # ── 2. Orthogonal terms ──
     flip_bonus = _flip_transform_bonus(card, snap, me, storm_count)

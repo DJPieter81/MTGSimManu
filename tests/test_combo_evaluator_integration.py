@@ -289,5 +289,5 @@ class TestChainProgressCredit:
         # Verify cache populated with SB-aware projection
         cached = list(_BASELINE_CACHE.values())
         assert len(cached) == 1
-        proj, _ids = cached[0]
+        proj, _ids = cached[0][2]     # entry = (snapshot ref, player, value)
         assert proj.expected_damage > 0.0
