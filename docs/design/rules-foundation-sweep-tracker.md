@@ -6337,3 +6337,22 @@ An on-disk cache is held in reserve if the pool tools become too slow.
   - `permanent_threat` scores engine permanents (Spelunking, Amulet-style enablers, land-count bodies on an empty board) at 0. That is a primitive calibration unit.
   - The rest of the 33-card delayed-return class still has no typed field or generic handler (only Phelia is registered).
   - Throwaway branches `claude/exile-arm-a`, `claude/exile-arm-b` and `claude/audit510-pre` remain on the remote; the session cannot delete branches.
+
+**Mana engines in the threat primitive (`aa28da8`):**
+- **Symptom:** `permanent_threat` scored mana engines 0 (Spelunking, an extra-land-drop enchantment, a cost reducer). Every removal and exile picker built on it walked past them, which the end-step-exile measurement exposed.
+- **Rule (AI):** a permanent that adds mana on future turns is worth that mana, at the per-mana rate `position_value` already gives mana now (`mana_clock_impact`), discounted by `urgency_factor`.
+- **Owner:** `ai/mana_engine.engine_mana_next_turn` feeds `EVSnapshot.my_/opp_engine_mana`, which feeds a `position_value` term. `permanent_threat`'s remove-and-compare sees it with no special branch.
+- **Public information only:** hand size and library composition.
+  - An extra land drop adds a mana per drop that a land beyond the normal drop is expected to fill (CR 305.2).
+  - A cost reducer saves its amount, capped at the generic cost, on each expected matching spell (`oracle_resolver._cost_rule_applies`).
+- **Class:** 27 extra-land-drop and 100 cost-reducer pool cards.
+  - **Refused:** the untap-on-enter watcher (Amulet of Vigor, Spelunking, The Wandering Minstrel: 3 cards) is below the class rule. It stays a runtime oracle match in `land_manager` and scores 0 as before.
+- **Tests:** `tests/test_mana_engine_value.py` (7). The digest moved one Bo3 (Azorius Control vs Ruby Storm 58500). Anchor: 29 passed.
+- **Measurement:** full 25-row matrix, n=20 Bo3, same seeds on Actions (pre `1924594`, post `9e57bb4`).
+  - 23 of 600 cells changed. Every deck's field WR is within ±0.5 pp (largest: Ruby Storm +0.5, Grixis Reanimator −0.3).
+  - One cell moved 15 pp or more: Azorius Control (WST v2) vs Ruby Storm, 80 → 95. Control now removes the Medallions as threats.
+  - Neutral on the field; kept as a correctness fix to the primitive.
+- **Leads not built:**
+  - The cast projection (`_project_spell`) does not add the cast card's own engine mana, so casting an engine is still valued without it.
+  - The untap-watcher shape above.
+  - Cost reducers keyed on spell type beyond the parser's four targets.
