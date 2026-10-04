@@ -6356,3 +6356,13 @@ An on-disk cache is held in reserve if the pool tools become too slow.
   - The cast projection (`_project_spell`) does not add the cast card's own engine mana, so casting an engine is still valued without it.
   - The untap-watcher shape above.
   - Cost reducers keyed on spell type beyond the parser's four targets.
+
+**Cast projection credits an engine's own mana (`aae2de6`):**
+- `_project_spell` now calls `engine_mana_next_turn(game, idx, extra=(cast template,), hand_delta=-1)`, the same single owner, so casting a cost reducer or an extra-land-drop permanent is valued with the mana it brings. Pinned red-first (`tests/test_mana_engine_value.py`, 9 tests). Digest unchanged; anchor 29 passed.
+- **Measurement:** full 25-row n=20 Bo3 on Actions, same seeds. The pre baseline is the previous unit's post run (`9e57bb4`, the same engine code as `8adb288`); post is `a592fdb`.
+  - 36 of 600 cells changed. Every deck within ±0.6 pp except Ruby Storm −1.2.
+  - Three Storm cells moved by 15 pp or more, in both directions: Storm vs Broodscale 10 → 30; Living End vs Storm 65 → 85; Eldrazi Ramp vs Storm 70 → 85.
+- **Noise floor (new finding):** a second run of identical code (`claude/engine-arm-pre2`, 432 cells extracted) differed from the first on 3 cells by 5 pp each. Two of them were Storm cells (Storm vs Living End, Storm vs Creatures Toolbox) and the third Goryo's vs Broodscale.
+  - These are long combo games, so this is the wall-clock `GAME_TIMEOUT_SECONDS` truncating on loaded runners (the CLAUDE.md sequencing rule 2).
+  - Storm's −1.2 sits inside that floor. The unit reads as neutral and stays as a correctness fix.
+  - **Lead:** sharded diagnostic runs should neutralise the deadline, as `tools/refresh_wr_baseline.py` does, before small per-cell deltas are trusted.
