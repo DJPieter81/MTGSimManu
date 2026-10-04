@@ -130,7 +130,7 @@ def test_a_neutralised_run_records_outcomes_that_depend_on_the_seed_alone(monkey
     `--neutralise-deadline` raises it to the shared anchor constant before
     any worker starts."""
     import ai.constants as c
-    from tests.test_wr_baseline_anchor import _ANCHOR_TIMEOUT_SECONDS
+    from ai.scoring_constants import SEEDED_REPLAY_TIMEOUT_SECONDS
     monkeypatch.setattr(c, "GAME_TIMEOUT_SECONDS", 1.0)
     seen = {}
 
@@ -139,4 +139,23 @@ def test_a_neutralised_run_records_outcomes_that_depend_on_the_seed_alone(monkey
         return None
     monkeypatch.setattr(rm, "run", _fake_run)
     rm.main(["--checkpoint", "/dev/null", "--neutralise-deadline", "--no-merge"])
-    assert seen["timeout"] == _ANCHOR_TIMEOUT_SECONDS
+    assert seen["timeout"] == SEEDED_REPLAY_TIMEOUT_SECONDS
+
+
+def _imports_of(module):
+    import ast
+    from pathlib import Path
+    tree = ast.parse(Path(module.__file__).read_text())
+    out = []
+    for n in ast.walk(tree):
+        if isinstance(n, ast.ImportFrom) and n.module:
+            out.append(n.module)
+        elif isinstance(n, ast.Import):
+            out.extend(a.name for a in n.names)
+    return out
+
+
+def test_the_matrix_driver_never_imports_the_test_tree():
+    """Shard runners install only the runtime dependencies; an import from
+    tests/ pulls pytest in and kills every shard."""
+    assert not [m for m in _imports_of(rm) if m.split(".")[0] == "tests"]

@@ -106,7 +106,7 @@ jobs:
           findings = violations = 0
           for line in open('row-${{ matrix.row.slug }}.jsonl'):
               cell = json.loads(line)
-              print('CELL', cell['d1'], '|', cell['d2'], '|', cell['wr'])
+              print('CELL', cell['d1'], '|', cell['d2'], '|', cell['wr'], '|', cell.get('draws'), '|', cell.get('aborted'))
               for f in cell.get('audit') or []:
                   findings += 1
                   if f.get('kind') == 'violation':

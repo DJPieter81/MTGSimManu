@@ -129,8 +129,8 @@ def neutralise_game_deadline() -> None:
     seed. Imported, not duplicated, so the tools cannot diverge (the same
     constant tools/refresh_wr_baseline.py and tools/seeded_game_digest.py use)."""
     import ai.constants as _ai_constants
-    from tests.test_wr_baseline_anchor import _ANCHOR_TIMEOUT_SECONDS
-    _ai_constants.GAME_TIMEOUT_SECONDS = _ANCHOR_TIMEOUT_SECONDS
+    from ai.scoring_constants import SEEDED_REPLAY_TIMEOUT_SECONDS
+    _ai_constants.GAME_TIMEOUT_SECONDS = SEEDED_REPLAY_TIMEOUT_SECONDS
 
 
 def main(argv=None) -> int:

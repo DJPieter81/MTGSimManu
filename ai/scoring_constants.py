@@ -4797,6 +4797,13 @@ The name is kept because `tests/test_wr_baseline_anchor.py` and
 `tools/refresh_wr_baseline.py` rebind it to neutralise the valve.
 """
 
+SEEDED_REPLAY_TIMEOUT_SECONDS: float = 600.0
+"""Rules-constant: the budget a seeded replay rebinds GAME_TIMEOUT_SECONDS
+to, far above any legitimate game (the slowest recorded is ~4 s), so a
+recorded outcome is a function of the seed alone. One home, outside the
+test tree, so the anchor test, the baseline refresher, the digest tool and
+the sharded matrix driver share it without importing pytest."""
+
 SHOCK_LETHAL_LIFE_THRESHOLD: int = 2
 """Rules-constant: life total below which the AI should not
 voluntarily pay 2 life for an untapped shockland (the loss would

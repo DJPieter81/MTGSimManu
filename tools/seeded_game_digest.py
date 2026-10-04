@@ -24,7 +24,7 @@ Determinism guards (CLAUDE.md "Sequencing rules"):
   merely collects the roster test.
 * The CPU safety budget is neutralised through the same constant the WR
   anchor test and ``tools/refresh_wr_baseline.py`` use
-  (``tests.test_wr_baseline_anchor._ANCHOR_TIMEOUT_SECONDS``), so a
+  (``ai.scoring_constants.SEEDED_REPLAY_TIMEOUT_SECONDS``), so a
   recorded digest is a function of the seed alone, not of machine speed.
 
 This is a per-commit proof tool, not a standing CI gate. The roster lives in
@@ -88,8 +88,8 @@ def compute_digests(pairs=None) -> dict:
     logging.disable(logging.CRITICAL)
 
     import ai.constants as _ai_constants
-    from tests.test_wr_baseline_anchor import _ANCHOR_TIMEOUT_SECONDS
-    _ai_constants.GAME_TIMEOUT_SECONDS = _ANCHOR_TIMEOUT_SECONDS
+    from ai.scoring_constants import SEEDED_REPLAY_TIMEOUT_SECONDS
+    _ai_constants.GAME_TIMEOUT_SECONDS = SEEDED_REPLAY_TIMEOUT_SECONDS
 
     from decks.modern_meta import MODERN_DECKS
     from engine.card_database import CardDatabase
