@@ -175,19 +175,18 @@ def _commit(root: Path) -> str:
         return ""
 
 
-def _audit_violations(root: Path) -> Optional[int]:
-    """Rule violations (not census rows) in the newest audit JSONL."""
-    files = sorted((root / "audits").glob("rules_audit_*.jsonl")) if (root / "audits").exists() else []
-    if not files:
-        return None
-    n = 0
-    for line in files[-1].read_text().splitlines():
-        try:
-            if json.loads(line).get("kind") == "violation":
-                n += 1
-        except json.JSONDecodeError:
-            continue
-    return n
+def _audit_violations(results: dict) -> Optional[int]:
+    """Rule violations the results file records for its own run (None when
+    the run was not audited). An audit JSONL on disk may belong to another
+    run, so it is never consulted."""
+    audit = results.get("rules_audit")
+    return int(audit["violations"]) if audit else None
+
+
+def _repo_relative_command(command: str) -> str:
+    """The run command with any absolute path to a repository script cut to
+    the path from the repository root (a CI runner records its own dirs)."""
+    return re.sub(r"\S*/((?:tools|engine|ai)/\S+|run_meta\.py)", r"\1", command)
 
 
 def build_site_data(root: Path, *, shares: Optional[Dict[str, float]] = None,
@@ -255,8 +254,8 @@ def build_site_data(root: Path, *, shares: Optional[Dict[str, float]] = None,
         total_matches=n * len(names) * (len(names) - 1) // 2,
         seed_start=int(geom.get("seed_start", 0)), seed_step=int(geom.get("step", 0)),
         draws=int(results.get("draws", 0)), aborted=int(results.get("aborted", 0)),
-        rules_audit_violations=_audit_violations(root),
-        command=str((results.get("generated_by") or {}).get("command", "")))
+        rules_audit_violations=_audit_violations(results),
+        command=_repo_relative_command(str((results.get("generated_by") or {}).get("command", ""))))
     cal = Calibration(decks_in_band=in_band, decks_total=len(decks),
                       matchups_in_band=sum(c.band_verdict == "in" for c in banded),
                       matchups_total=len(banded))

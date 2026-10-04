@@ -6250,3 +6250,50 @@ An on-disk cache is held in reserve if the pool tools become too slow.
 - **Outcome:** every deck within ±0.8 pp except Grixis Reanimator, 57.5 → 60.8 (+3.3), almost all of it from Instant Reanimator vs Grixis, 65 → 45 (4 of 20 seeds flipped). Draws 173/175, aborted 0.
 - **Root cause, from a seed-51000 Bo3 diff:** Jev tagged Archon of Cruelty `ON_OWN_DRAW_LIFE_GAIN`, which it does not have. `engine/zone_transfer.py` reads that tag and gave Grixis 3 life per draw.
 - **Decision:** the committed cache is unchanged. The lasting fix is structural: five engine rules read classifier tags (on-draw triggers, ETB surveil, ETB graveyard return, impulse draw, the sorcery-speed lockout). They should read parsed effects (`CardTemplate.effects`) in an E-family switch, leaving the tags as AI hints only. One wrong model answer must not become a game rule.
+
+**Meta refresh 2026-10-04: sharded n=60 Bo3 matrix, and the new site pipeline (`ce1995f`…):**
+- **Pipeline:** `tools/meta_site/` builds `data/meta_site.json` (pydantic schema) from the results, card detail, gameplan archetypes, meta shares, calibration bands and narrative JSON. One renderer writes the matrix dashboard, both showcase copies and the legacy `metagame_data.jsx`. Data is embedded as one JSON block, so no name can break a script. `build_dashboard.py` / `build_showcase.py` are thin wrappers.
+- **The run:**
+  - `.github/workflows/matrix_shards.yml`, run 37184389810: 25 row shards + plan + assemble, 27/27 jobs green, about 20 minutes.
+  - `tools/resumable_matrix.py --row` per runner; 62 cells seeded from the local checkpoint.
+  - 600 cells × 60 Bo3 matches = 18,000 matches. **Aborted 0**, draws 578.
+- **Calibration:** 20 of 25 decks in band (09-27: 18). Out of band:
+  - above: Domain Zoo;
+  - below: Affinity, Amulet Titan, Ruby Storm, Boros Ponza.
+- **Movement vs the 09-27 n=60 run:** Azorius Control 8.7 → 30.4 (+21.7), consistent with the rules units measured since (CP/WH, S3a). Every other deck moved by at most 6.3 pp.
+
+| Deck | 09-27 flat | 10-04 flat | Δ | 10-04 weighted | band | verdict |
+|---|---|---|---|---|---|---|
+| Domain Zoo | 78.0 | 76.7 | -1.3 | 77.2 | 50–65 | above |
+| 4c Omnath | 70.5 | 69.7 | -0.8 | 62.0 | 30–70 | in |
+| Boros Energy | 67.7 | 65.8 | -1.9 | 69.2 | 50–70 | in |
+| 4/5c Control | 59.1 | 63.7 | +4.6 | 61.2 | 30–70 | in |
+| Living End | 65.6 | 63.1 | -2.5 | 62.0 | 30–70 | in |
+| Broodscale Bloodchief | 66.2 | 61.8 | -4.4 | 61.2 | 30–70 | in |
+| Izzet Prowess | 61.1 | 61.5 | +0.4 | 65.9 | 50–65 | in |
+| Azorius Control (WST v2) | 58.8 | 59.7 | +0.9 | 56.2 | 30–70 | in |
+| Pinnacle Affinity | 63.9 | 57.6 | -6.3 | 60.0 | 30–70 | in |
+| Grixis Reanimator | 61.7 | 57.6 | -4.1 | 61.1 | 30–70 | in |
+| Jeskai Blink | 52.2 | 53.1 | +0.9 | 56.9 | 45–60 | in |
+| Instant Reanimator | 56.5 | 52.4 | -4.1 | 51.9 | 45–60 | in |
+| Eldrazi Tron | 49.1 | 50.8 | +1.7 | 43.8 | 50–65 | in |
+| Azorius Control (WST) | 46.9 | 50.5 | +3.6 | 46.9 | 30–70 | in |
+| Eldrazi Ramp | 52.0 | 48.4 | -3.6 | 46.9 | 30–70 | in |
+| Goryo's Vengeance | 51.0 | 48.3 | -2.7 | 49.8 | 30–70 | in |
+| Affinity | 50.2 | 45.3 | -4.9 | 46.8 | 50–65 | below |
+| Dimir Midrange | 45.8 | 45.1 | -0.7 | 46.8 | 45–60 | in |
+| Azorius Blink | 37.4 | 35.6 | -1.8 | 33.7 | 30–70 | in |
+| Creatures Toolbox | 36.2 | 35.2 | -1.0 | 38.7 | 30–70 | in |
+| Hollow One | 34.5 | 33.3 | -1.2 | 31.4 | 30–70 | in |
+| Azorius Control | 8.7 | 30.4 | +21.7 | 25.0 | 30–70 | in |
+| Amulet Titan | 33.3 | 27.6 | -5.7 | 26.9 | 45–60 | below |
+| Ruby Storm | 24.2 | 18.8 | -5.4 | 18.5 | 40–55 | below |
+| Boros Ponza | 17.0 | 16.9 | -0.1 | 15.1 | 30–70 | below |
+
+- **Rules audit on the run:** 626 findings.
+  - 119 violations, all `510.2/creature_dealt` (top detail: Phelia, Exuberant Shepherd), across 103 games and 43 pairs. **Next unit:** decide engine gap or auditor false positive from a replay of one flagged game.
+  - Census: `keyword/unmodelled` 398, `unhandled/spell` 74 (Hex Magic), `unhandled/replacement` 35 (Sanctifier en-Vec).
+- **Provenance fixes found while publishing:**
+  - The audit JSONL is gitignored and per-machine. The site was counting an unrelated 09-15 file, so it showed 0 violations. An audited run now records `rules_audit: {violations, findings}` in its own results file (`run_meta.save_results`), and the site reads only that. The 10-04 results were stamped with the counts from the assemble job's log.
+  - The footer showed the runner's absolute script path, which overflowed phone width by 68 px. It is now shown relative to the repository, and footer text wraps.
+- **Card-level detail** is still the 09-27 `card_data.json`. A sharded `extract_card_data` workflow is the follow-up.

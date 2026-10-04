@@ -202,3 +202,32 @@ def test_a_partial_matrix_run_never_replaces_the_site_data(tmp_path):
     (root / "metagame_results.json").write_text(json.dumps(partial))
     assert build_dashboard.merge(root=root) == []
     assert (root / "data" / "meta_site.json").read_text() == before
+
+
+def test_the_provenance_command_is_shown_relative_to_the_repository(tmp_path):
+    """A run on a CI runner records its absolute script path; the pages show
+    the command from the repository root, never a machine's directories."""
+    root, shares = _repo(tmp_path)
+    res = json.loads((root / "metagame_results.json").read_text())
+    res["generated_by"] = {"command": "/home/runner/work/R/R/tools/resumable_matrix.py -n 60"}
+    (root / "metagame_results.json").write_text(json.dumps(res))
+    data = build_data.build_site_data(root, shares=shares)
+    assert data.provenance.command == "tools/resumable_matrix.py -n 60"
+
+
+def test_the_audit_count_is_read_from_the_results_it_describes(tmp_path):
+    """The violation count shown is the one the results file records for its
+    own run; an audit file left from another run is never counted."""
+    root, shares = _repo(tmp_path)
+    res = json.loads((root / "metagame_results.json").read_text())
+    res["rules_audit"] = {"violations": 119, "findings": 626}
+    (root / "metagame_results.json").write_text(json.dumps(res))
+    (root / "audits").mkdir()
+    (root / "audits" / "rules_audit_20200101T000000Z.jsonl").write_text(
+        json.dumps({"kind": "census"}) + "\n")
+    assert build_data.build_site_data(root, shares=shares).provenance \
+        .rules_audit_violations == 119
+    del res["rules_audit"]
+    (root / "metagame_results.json").write_text(json.dumps(res))
+    assert build_data.build_site_data(root, shares=shares).provenance \
+        .rules_audit_violations is None, "an unaudited run shows no count"

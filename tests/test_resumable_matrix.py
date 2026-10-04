@@ -104,3 +104,20 @@ def test_merged_row_checkpoints_assemble_like_one_full_run(tmp_path):
     saved = json.loads(out.read_text())
     for (d1, d2), cell in direct.items():
         assert saved["matrix"][f"{d1}|{d2}"] == cell.wr
+
+
+def test_an_audited_run_records_its_violation_count_in_the_results(tmp_path, monkeypatch):
+    import run_meta
+    monkeypatch.setenv("MTG_RULES_AUDIT", "1")
+    monkeypatch.setattr(run_meta, "_AUDIT_SINK", [])
+    ck = tmp_path / "ck.jsonl"
+    finding = {"kind": "violation", "rule": "510.2"}
+    rows = [{"d1": a, "d2": b, "wr": 50.0, "wr_reverse": 50.0, "draws": 0,
+             "aborted": 0, "audit": [finding, {"kind": "census"}] if a == "Alpha" else []}
+            for a in DECKS for b in DECKS if a != b]
+    ck.write_text("".join(json.dumps(r) + "\n" for r in rows))
+    out = tmp_path / "metagame_results.json"
+    rm.run(DECKS, n_games=2, workers=1, checkpoint=ck, results_path=out,
+           run_matchup_fn=_fake_matchup, merge=False, rules_audit=True)
+    saved = json.loads(out.read_text())
+    assert saved["rules_audit"] == {"violations": 2, "findings": 4}

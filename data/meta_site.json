@@ -70715,7 +70715,7 @@
  ],
  "provenance": {
   "generated": "2026-10-04T07:19:33.840657",
-  "commit": "13aed60",
+  "commit": "902932e",
   "format": "bo3",
   "n_per_pair": 60,
   "total_matches": 18000,
@@ -70724,7 +70724,7 @@
   "draws": 578,
   "aborted": 0,
   "rules_audit_violations": 119,
-  "command": "/home/runner/work/MTGSimManu/MTGSimManu/tools/resumable_matrix.py -n 60 --workers 2 --checkpoint merged.jsonl --rules-audit --seed-checkpoint shards/row-4-5c-control.jsonl shards/row-4c-omnath.jsonl shards/row-affinity.jsonl shards/row-amulet-titan.jsonl shards/row-azorius-blink.jsonl shards/row-azorius-control-wst-v2.jsonl shards/row-azorius-control-wst.jsonl shards/row-azorius-control.jsonl shards/row-boros-energy.jsonl shards/row-boros-ponza.jsonl shards/row-broodscale-bloodchief.jsonl shards/row-creatures-toolbox.jsonl shards/row-dimir-midrange.jsonl shards/row-domain-zoo.jsonl shards/row-eldrazi-ramp.jsonl shards/row-eldrazi-tron.jsonl shards/row-goryo-s-vengeance.jsonl shards/row-grixis-reanimator.jsonl shards/row-hollow-one.jsonl shards/row-instant-reanimator.jsonl shards/row-izzet-prowess.jsonl shards/row-jeskai-blink.jsonl shards/row-living-end.jsonl shards/row-pinnacle-affinity.jsonl shards/row-ruby-storm.jsonl matrix_requests/2026-10-04-n60_seed.jsonl"
+  "command": "tools/resumable_matrix.py -n 60 --workers 2 --checkpoint merged.jsonl --rules-audit --seed-checkpoint shards/row-4-5c-control.jsonl shards/row-4c-omnath.jsonl shards/row-affinity.jsonl shards/row-amulet-titan.jsonl shards/row-azorius-blink.jsonl shards/row-azorius-control-wst-v2.jsonl shards/row-azorius-control-wst.jsonl shards/row-azorius-control.jsonl shards/row-boros-energy.jsonl shards/row-boros-ponza.jsonl shards/row-broodscale-bloodchief.jsonl shards/row-creatures-toolbox.jsonl shards/row-dimir-midrange.jsonl shards/row-domain-zoo.jsonl shards/row-eldrazi-ramp.jsonl shards/row-eldrazi-tron.jsonl shards/row-goryo-s-vengeance.jsonl shards/row-grixis-reanimator.jsonl shards/row-hollow-one.jsonl shards/row-instant-reanimator.jsonl shards/row-izzet-prowess.jsonl shards/row-jeskai-blink.jsonl shards/row-living-end.jsonl shards/row-pinnacle-affinity.jsonl shards/row-ruby-storm.jsonl matrix_requests/2026-10-04-n60_seed.jsonl"
  },
  "calibration": {
   "decks_in_band": 20,

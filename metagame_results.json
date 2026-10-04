@@ -1980,5 +1980,9 @@
       "n_games": 60
     },
     "timestamp": "2026-10-04T07:19:33.840657"
+  },
+  "rules_audit": {
+    "violations": 119,
+    "findings": 626
   }
 }
