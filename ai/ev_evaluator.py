@@ -423,8 +423,11 @@ def snapshot_from_game(game: "GameState", player_idx: int) -> EVSnapshot:
     me_deck = getattr(me, "deck_name", None)
     if me_deck:
         try:
-            from decks.gameplan_loader import load_gameplan
-            _gp = load_gameplan(me_deck)
+            # The one gameplan path (decklist + db supplied): a bare
+            # loader call here cached a JSON-only plan, so the plan a
+            # process held depended on which caller ran first.
+            from ai.gameplan import get_gameplan
+            _gp = get_gameplan(me_deck)
             if _gp is not None:
                 archetype_subtype = getattr(_gp, "archetype_subtype", None)
         except Exception:
