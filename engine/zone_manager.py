@@ -132,6 +132,13 @@ class ZoneManager:
                 card.controller = controller_override
             card.enter_battlefield()
             card._game_state = game
+            from .rules_audit import enabled as _audit_on, check as _audit_check
+            if _audit_on() and any(getattr(t, "name", "") == "PLANESWALKER"
+                                   for t in card.template.card_types):
+                printed = card.template.loyalty or 0
+                _audit_check("306.5b/entry_loyalty", card.loyalty_counters == printed,
+                             f"{card.name} entered with {card.loyalty_counters} loyalty "
+                             f"(printed {printed})", game=game)
 
         # Log the move
         if cause:

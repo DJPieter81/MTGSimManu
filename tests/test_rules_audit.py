@@ -840,3 +840,37 @@ def test_object_identity_audit_is_silent_when_the_effect_stays_with_its_object(a
     game.continuous_effects.recalculate(game)
     assert bear.power == 2
     assert "400.7/effect_follows_old_object" not in _rules(rules_audit.drain())
+
+
+def _exiled_walker(game, loyalty=4):
+    tmpl = CardTemplate(
+        name="Walker", card_types=[CardType.PLANESWALKER], mana_cost=ManaCost(generic=3),
+        supertypes=[], subtypes=[], power=None, toughness=None, loyalty=loyalty,
+        keywords=set(), abilities=[], color_identity=set(), produces_mana=[],
+        enters_tapped=False, oracle_text="", tags=set())
+    pw = CardInstance(template=tmpl, owner=0, controller=0,
+                      instance_id=game.next_instance_id(), zone="exile")
+    game.players[0].exile.append(pw)
+    return pw
+
+
+def test_entry_audit_sees_a_planeswalker_entering_without_its_printed_loyalty(audit, monkeypatch):
+    # The pre-fix defect, re-created: entry leaves loyalty at the zeroed
+    # leave-battlefield value.
+    game = GameState(rng=random.Random(0))
+    pw = _exiled_walker(game)
+    orig = CardInstance.enter_battlefield
+
+    def _old_entry(self):
+        orig(self)
+        self.loyalty_counters = 0
+    monkeypatch.setattr(CardInstance, "enter_battlefield", _old_entry)
+    game.zone_mgr.move_card(game, pw, "exile", "battlefield")
+    assert "306.5b/entry_loyalty" in _rules(rules_audit.drain())
+
+
+def test_entry_audit_is_silent_when_a_planeswalker_enters_at_printed_loyalty(audit):
+    game = GameState(rng=random.Random(0))
+    pw = _exiled_walker(game)
+    game.zone_mgr.move_card(game, pw, "exile", "battlefield")
+    assert _rules(rules_audit.drain()) == []

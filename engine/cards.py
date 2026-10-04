@@ -2584,6 +2584,12 @@ class CardInstance:
             self.tapped = True
         # CR 400.7: a new object gets a fresh activation budget.
         self.activations_this_turn.clear()
+        # CR 306.5b: a planeswalker enters with loyalty counters equal to its
+        # printed loyalty, by whatever path it enters (cast, blink return,
+        # put onto the battlefield). A transform sets its back-face loyalty
+        # after this call.
+        if CardType.PLANESWALKER in self.template.card_types:
+            self.loyalty_counters = self.template.loyalty or 0
 
     def __hash__(self):
         return self.instance_id

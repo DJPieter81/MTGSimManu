@@ -398,10 +398,6 @@ class ResolutionManager:
             from .permanent_effects import PermanentEffects
             PermanentEffects.attach_aura(game, card, controller)
 
-        # Planeswalker: set loyalty counters from template (oracle-derived)
-        if CardType.PLANESWALKER in template.card_types:
-            card.loyalty_counters = template.loyalty or 0
-
         # Modular (CR 702.43): enters with N +1/+1 counters.
         # Keyed on Keyword.MODULAR in template.keywords (populated at DB load via
         # KEYWORD_MAP / word-boundary scan) and template.modular_n > 0 (parsed

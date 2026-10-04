@@ -2784,14 +2784,12 @@ def phelia_attack(game, card, controller, targets=None, item=None):
     if target is None:
         return
 
-    # Exile the target
+    # Exile the target through the zone funnel (CR 400.7: it leaves as
+    # this object — counters, damage and attachments do not come back).
     owner_player = game.players[target_owner]
     if target in owner_player.battlefield:
-        owner_player.battlefield.remove(target)
-        if target.template.is_creature and target in owner_player.creatures:
-            owner_player.creatures.remove(target)
-        target.zone = "exile"
-        owner_player.exile.append(target)
+        game.zone_mgr.move_card(game, target, "battlefield", "exile",
+                                cause="exiled until the next end step")
         game.log.append(
             f"T{game.display_turn} P{controller+1}: "
             f"Phelia exiles {target.name} (P{target_owner+1}'s)")
@@ -2830,12 +2828,10 @@ def phelia_end_step(game, card, controller, targets=None, item=None):
     for exiled_card, owner_idx, phelia_controller, source in mine:
         owner = game.players[owner_idx]
         if exiled_card in owner.exile:
-            owner.exile.remove(exiled_card)
-            exiled_card.zone = "battlefield"
-            owner.battlefield.append(exiled_card)
-            if exiled_card.template.is_creature:
-                exiled_card.enter_battlefield()
-                owner.creatures.append(exiled_card)
+            # CR 400.7 / 306.5b: it returns as a new object under its
+            # owner's control (a planeswalker at printed loyalty).
+            game.zone_mgr.move_card(game, exiled_card, "exile", "battlefield",
+                                    controller_override=owner_idx)
             game.log.append(
                 f"T{game.display_turn}: "
                 f"{exiled_card.name} returns to battlefield (P{owner_idx+1})")
