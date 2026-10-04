@@ -6297,3 +6297,8 @@ An on-disk cache is held in reserve if the pool tools become too slow.
   - The audit JSONL is gitignored and per-machine. The site was counting an unrelated 09-15 file, so it showed 0 violations. An audited run now records `rules_audit: {violations, findings}` in its own results file (`run_meta.save_results`), and the site reads only that. The 10-04 results were stamped with the counts from the assemble job's log.
   - The footer showed the runner's absolute script path, which overflowed phone width by 68 px. It is now shown relative to the repository, and footer text wraps.
 - **Card-level detail** is still the 09-27 `card_data.json`. A sharded `extract_card_data` workflow is the follow-up.
+
+**510.2 audit rows, first pass (`6b2c4c0`):**
+- **Auditor fix:** the restated 510.2 now also knows CR 506.4. An unblocked attacker whose attacked planeswalker left the battlefield or changed controller is not expected to deal damage. This is restated independently of the engine's `_planeswalker_still_attackable`, and a broken engine check is still caught (pinned).
+- **Probe, inconclusive:** 120 audited Bo1 games (Azorius Blink vs Jeskai Blink, Jeskai Blink vs Azorius Control (WST), Azorius Blink vs Azorius Control; 40 each from seed 50000) showed **0 excused cases and 0 violations**. So the 506.4 path is not shown to be the source of the 119 rows, and the rows did not reproduce at this sample size (expected rate about 1 per 75 Phelia-deck games).
+- **Next:** get the exact seed and pair of a flagged game. The runner's audit JSONL was not kept, so re-run one audited shard on Actions with the JSONL uploaded as an artifact, then replay that game.
