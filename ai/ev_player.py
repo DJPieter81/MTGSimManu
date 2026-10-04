@@ -255,12 +255,12 @@ class EVPlayer:
         # Phase 2c.3 cache: `assess_combo` is O(chains) expensive
         # (worst case ~10K simulations per call) and `_score_spell`
         # invokes it for every legal play.  All spells scored within
-        # one `decide_main_phase` call share the same EVSnapshot, so
-        # identity-based caching is sufficient and correct: the snap
-        # changes when the game state changes, and a new snap means
-        # a new id().
-        self._assess_snap_id: int = 0
-        self._assess_value = None
+        # one `decide_main_phase` call share the same EVSnapshot, so a
+        # per-snapshot memo is correct, but only by identity: a new snap
+        # can reuse a freed one's id(), so the memo checks the object
+        # itself (ai.object_memo).
+        # Per-snapshot combo assessment memo (ai.object_memo.memo_on).
+        self._assess_memo: dict = {}
         # The main phase's assembly state (engine / sink / lethal-line
         # facts, `ai.assembly_state`) — built once per decide_main_phase
         # iteration and threaded into every reader, like `bhi`.
@@ -1341,12 +1341,13 @@ class EVPlayer:
         # composition / draw-probability modelling — beyond v2).
         if self.profile.has_combo_chain and self.goal_engine is not None:
             from ai.combo_calc import assess_combo, card_combo_modifier
-            snap_id = id(snap)
-            if snap_id != self._assess_snap_id:
-                self._assess_snap_id = snap_id
-                self._assess_value = assess_combo(
-                    game, self.player_idx, self.goal_engine, snap)
-            ev += card_combo_modifier(card, self._assess_value, snap, me, game,
+            # Once per live snapshot (ai.object_memo: an id-only memo
+            # served a freed snapshot's assessment to a new one).
+            from ai.object_memo import memo_on
+            assess_value = memo_on(
+                self._assess_memo, snap, (),
+                lambda: assess_combo(game, self.player_idx, self.goal_engine, snap))
+            ev += card_combo_modifier(card, assess_value, snap, me, game,
                                        self.player_idx)
 
         # Land-sacrifice tutor (Scapeshift shape) fizzle gate.

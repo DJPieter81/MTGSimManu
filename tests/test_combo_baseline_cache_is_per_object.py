@@ -22,7 +22,8 @@ class _Me:
 
 def test_a_reused_object_id_never_serves_another_snapshots_baseline(monkeypatch):
     monkeypatch.setattr(ce, "_BASELINE_CACHE", {})
-    monkeypatch.setattr(ce, "id", lambda o: 1, raising=False)   # address reuse
+    from ai import object_memo
+    monkeypatch.setattr(object_memo, "id", lambda o: 1, raising=False)   # address reuse
     me = _Me()
     first = ce._cached_baseline(EVSnapshot(), me, "combo", lambda: "first")
     second = ce._cached_baseline(EVSnapshot(), me, "combo", lambda: "second")

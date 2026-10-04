@@ -67,24 +67,16 @@ _BASELINE_CACHE: dict = {}
 
 def _cached_baseline(snap, me, archetype: str, compute):
     """The baseline projection for this exact (snapshot, player,
-    archetype), computed once per snapshot. An id is only a lookup key: a
-    hit must hold the very same objects (CPython reuses a freed object's
-    id), and an entry is dropped when its snapshot is collected, so a
-    stale baseline can never reach a new snapshot and the cache cannot
-    grow without bound."""
-    import weakref
-    key = (id(snap), archetype, id(me))
-    entry = _BASELINE_CACHE.get(key)
-    if entry is not None and entry[0]() is snap and entry[1] is me:
-        return entry[2]
+    archetype), computed once per live snapshot (ai.object_memo: a freed
+    snapshot's reused id can never serve a stale baseline). The player is
+    part of the value and checked by identity too."""
+    from ai.object_memo import memo_on
+    by_player = memo_on(_BASELINE_CACHE, snap, (archetype,), dict)
+    entry = by_player.get(id(me))
+    if entry is not None and entry[0] is me:
+        return entry[1]
     value = compute()
-    try:
-        snap_ref = weakref.ref(snap, lambda _r, k=key: _BASELINE_CACHE.pop(k, None))
-    except TypeError:
-        return value    # not weak-referenceable: computed, never cached
-    # The entry lives exactly as long as its snapshot, so holding the
-    # player strongly cannot keep anything alive past that.
-    _BASELINE_CACHE[key] = (snap_ref, me, value)
+    by_player[id(me)] = (me, value)
     return value
 
 
