@@ -2779,14 +2779,14 @@ def phelia_attack(game, card, controller, targets=None, item=None):
         # Tempo: exile the opponent's nonland whose exile until the end
         # step removes the most (ai.temporary_exile: a planeswalker returns
         # at printed loyalty and the attack on it is lost). "Up to one":
-        # when nothing is worth exiling, exile nothing.
+        # a target whose exile removes nothing (share 0) is never chosen.
         from ai.temporary_exile import temporary_exile_share
-        valued = [(c, _threat_score(c, game, opp)
-                   * temporary_exile_share(c, game, controller))
+        shared = [(c, temporary_exile_share(c, game, controller))
                   for c in opp_nonlands]
-        valued = [cv for cv in valued if cv[1] > 0]
-        if valued:
-            target = max(valued, key=lambda cv: cv[1])[0]
+        shared = [cs for cs in shared if cs[1] > 0]
+        if shared:
+            target = max(shared,
+                         key=lambda cs: _threat_score(cs[0], game, opp) * cs[1])[0]
             target_owner = opp_idx
 
     if target is None:

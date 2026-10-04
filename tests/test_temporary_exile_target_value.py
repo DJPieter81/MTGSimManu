@@ -97,3 +97,19 @@ def test_the_attack_trigger_exile_skips_the_walker_its_source_attacks(card_db):
     src.attacked_planeswalker = walker
     EFFECT_REGISTRY.execute(t.name, EffectTiming.ATTACK, game, src, 0)
     assert walker.zone == "battlefield", "the walker stays to take the attack"
+
+
+def test_a_nonwalker_the_threat_primitive_scores_zero_is_still_exiled(card_db):
+    """The exile declines only targets whose exile removes nothing (share
+    0). A permanent the threat primitive happens to score 0 is still a
+    target, as before this rule."""
+    from engine.card_effects import EFFECT_REGISTRY, EffectTiming
+    game = GameState(rng=random.Random(0))
+    inert = _perm(game, 1, types=[CardType.ENCHANTMENT], name="Engine")
+    t = card_db.get_card("Phelia, Exuberant Shepherd")
+    src = CardInstance(template=t, owner=0, controller=0,
+                       instance_id=game.next_instance_id(), zone="battlefield")
+    src._game_state = game
+    game.players[0].battlefield.append(src)
+    EFFECT_REGISTRY.execute(t.name, EffectTiming.ATTACK, game, src, 0)
+    assert inert.zone == "exile"
