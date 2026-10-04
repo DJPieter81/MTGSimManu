@@ -219,6 +219,55 @@ def test_combat_audit_is_silent_when_every_creature_dealt_its_damage(audit):
     assert _rules(rules_audit.drain()) == []
 
 
+def _planeswalker(game, controller):
+    tmpl = CardTemplate(
+        name="Walker", card_types=[CardType.PLANESWALKER], mana_cost=ManaCost(generic=3),
+        supertypes=[], subtypes=[], power=None, toughness=None, loyalty=4,
+        keywords=set(), abilities=[], color_identity=set(), produces_mana=[],
+        enters_tapped=False, oracle_text="", tags=set())
+    pw = CardInstance(template=tmpl, owner=controller, controller=controller,
+                      instance_id=game.next_instance_id(), zone="battlefield")
+    pw._game_state = game
+    game.players[controller].battlefield.append(pw)
+    return pw
+
+
+def test_combat_audit_expects_no_damage_from_an_attacker_whose_planeswalker_left(audit):
+    # CR 506.4 / 510.1b: a planeswalker that leaves the battlefield is
+    # removed from combat; an unblocked creature attacking it keeps
+    # attacking but assigns no combat damage. The engine deals none, and
+    # the auditor must not call that a 510.2 miss.
+    game = GameState(rng=random.Random(0))
+    a = _creature(game, "Vanilla", 1, power=2, toughness=2)
+    pw = _planeswalker(game, 0)
+    cm = CombatManager()
+    cm.declare_attackers(game, [a], active_player=1,
+                         attack_targets={a.instance_id: pw})
+    cm.declare_blockers(game, {})
+    game.players[0].battlefield.remove(pw)
+    pw.zone = "exile"
+    game.players[0].exile.append(pw)
+    life = game.players[0].life
+    cm.resolve_combat_damage(game)
+    assert game.players[0].life == life, "fixture: no damage redirects to the player"
+    assert _rules(rules_audit.drain()) == []
+
+
+def test_combat_audit_still_expects_damage_at_a_planeswalker_that_stayed(audit, monkeypatch):
+    game = GameState(rng=random.Random(0))
+    a = _creature(game, "Vanilla", 1, power=2, toughness=2)
+    pw = _planeswalker(game, 0)
+    cm = CombatManager()
+    cm.declare_attackers(game, [a], active_player=1,
+                         attack_targets={a.instance_id: pw})
+    cm.declare_blockers(game, {})
+    # Break the deal: the planeswalker is wrongly read as gone.
+    monkeypatch.setattr(CombatManager, "_planeswalker_still_attackable",
+                        lambda self, p: False)
+    cm.resolve_combat_damage(game)
+    assert "510.2/creature_dealt" in _rules(rules_audit.drain())
+
+
 def test_target_audit_sees_a_hexproof_creature_chosen_as_a_target(audit, card_db, monkeypatch):
     from engine.cast_manager import CastManager
     game = GameState(rng=random.Random(0))
