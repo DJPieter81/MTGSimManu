@@ -5,6 +5,8 @@ name: Matrix (sharded)
 # of this workflow runs), or by hand once this file is on main.
 #
 # Request file matrix_requests/<tag>.json: {"tag": "...", "n": 60}
+# Optional "rows": [deck, ...] runs only those row shards and skips the
+# assemble job (a diagnostic run; each shard prints its rule violations).
 # Optional matrix_requests/<tag>_seed.jsonl: cells already played (a
 # tools/resumable_matrix.py checkpoint); no runner repeats them.
 #
@@ -42,6 +44,7 @@ jobs:
       tag: ${{ steps.req.outputs.tag }}
       n: ${{ steps.req.outputs.n }}
       decks: ${{ steps.req.outputs.decks }}
+      partial: ${{ steps.req.outputs.partial }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -62,11 +65,14 @@ jobs:
           DECKS=$(python3 -c "
           import json, re
           from decks.modern_meta import get_all_deck_names
+          rows = json.load(open('matrix_requests/$TAG.json')).get('rows') or get_all_deck_names()
           print(json.dumps([{'deck': d, 'slug': re.sub(r'[^a-z0-9]+', '-', d.lower()).strip('-')}
-                            for d in get_all_deck_names()]))")
+                            for d in rows]))")
+          PARTIAL=$(python3 -c "import json;print('true' if json.load(open('matrix_requests/$TAG.json')).get('rows') else 'false')")
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "n=$N" >> "$GITHUB_OUTPUT"
           echo "decks=$DECKS" >> "$GITHUB_OUTPUT"
+          echo "partial=$PARTIAL" >> "$GITHUB_OUTPUT"
           echo "tag=$TAG n=$N decks=$(echo "$DECKS" | python3 -c 'import json,sys;print(len(json.load(sys.stdin)))')"
 
   shard:
@@ -92,6 +98,17 @@ jobs:
           python3 -m tools.resumable_matrix -n "${{ needs.plan.outputs.n }}" --workers 2 \
             --checkpoint "row-${{ matrix.row.slug }}.jsonl" --rules-audit \
             --row "${{ matrix.row.deck }}" --seed-checkpoint "$SEED"
+      - name: Print the row's rule violations (seed, pair, turn)
+        if: always()
+        run: |
+          python3 -c "
+          import json, sys
+          for line in open('row-${{ matrix.row.slug }}.jsonl'):
+              cell = json.loads(line)
+              for f in cell.get('audit') or []:
+                  if f.get('kind') == 'violation':
+                      print('VIOLATION', json.dumps(f, sort_keys=True))
+          " || true
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -101,6 +118,8 @@ jobs:
 
   assemble:
     needs: [plan, shard]
+    # A request naming `rows` is a diagnostic run: no full matrix to assemble.
+    if: needs.plan.outputs.partial != 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
