@@ -844,6 +844,11 @@ def position_value(snap: "EVSnapshot") -> float:
 
     mana_diff = snap.my_mana - snap.opp_mana
     mana_value = mana_clock_impact(snap) * max(0, mana_diff)
+    # Mana engines (ai/mana_engine): next turn's extra mana, at the same
+    # per-mana rate, discounted by the share of future turns we get.
+    engine_diff = snap.my_engine_mana - snap.opp_engine_mana
+    mana_value += (mana_clock_impact(snap) * max(0.0, engine_diff)
+                   * snap.urgency_factor)
 
     # Survival margin: how comfortable is my life total?
     survival = life_as_resource(snap.my_life, snap.opp_power)

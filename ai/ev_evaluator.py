@@ -243,6 +243,10 @@ class EVSnapshot(BaseModel):
     opp_artifact_count: Numeric = 0
     my_enchantment_count: Numeric = 0
     opp_enchantment_count: Numeric = 0
+    # Expected extra mana each side's permanents add next turn (extra land
+    # drops, cost reducers) — ai/mana_engine.engine_mana_next_turn.
+    my_engine_mana: float = 0.0
+    opp_engine_mana: float = 0.0
     # Conditional activation flags — set True during snapshot_from_game
     # when an oracle-visible card on my / opp's visible zones references
     # the relevant count threshold (metalcraft, affinity for artifacts,
@@ -508,6 +512,9 @@ def snapshot_from_game(game: "GameState", player_idx: int) -> EVSnapshot:
             snap.opp_artifact_count += 1
         if CardType.ENCHANTMENT in types:
             snap.opp_enchantment_count += 1
+    from ai.mana_engine import engine_mana_next_turn
+    snap.my_engine_mana = engine_mana_next_turn(game, player_idx)
+    snap.opp_engine_mana = engine_mana_next_turn(game, 1 - player_idx)
 
     # Scaling-active detection — only accept count-based resource bonuses
     # when a card in the relevant player's visible zones has oracle text
@@ -2077,6 +2084,8 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
         opp_artifact_count=snap.opp_artifact_count,
         my_enchantment_count=snap.my_enchantment_count,
         opp_enchantment_count=snap.opp_enchantment_count,
+        my_engine_mana=snap.my_engine_mana,
+        opp_engine_mana=snap.opp_engine_mana,
         my_artifact_scaling_active=snap.my_artifact_scaling_active,
         opp_artifact_scaling_active=snap.opp_artifact_scaling_active,
     )

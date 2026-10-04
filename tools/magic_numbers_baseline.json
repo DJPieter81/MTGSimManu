@@ -22,6 +22,7 @@
   "ai/gameplan.py": 0,
   "ai/hand_denial.py": 0,
   "ai/land_denial.py": 0,
+  "ai/mana_engine.py": 0,
   "ai/mana_planner.py": 0,
   "ai/modal.py": 0,
   "ai/mulligan.py": 0,
