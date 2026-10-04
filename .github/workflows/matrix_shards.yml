@@ -103,11 +103,15 @@ jobs:
         run: |
           python3 -c "
           import json, sys
+          findings = violations = 0
           for line in open('row-${{ matrix.row.slug }}.jsonl'):
               cell = json.loads(line)
               for f in cell.get('audit') or []:
+                  findings += 1
                   if f.get('kind') == 'violation':
+                      violations += 1
                       print('VIOLATION', json.dumps(f, sort_keys=True))
+          print(f'AUDIT findings={findings} violations={violations}')
           " || true
       - uses: actions/upload-artifact@v4
         if: always()
