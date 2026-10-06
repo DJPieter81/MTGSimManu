@@ -6366,3 +6366,21 @@ An on-disk cache is held in reserve if the pool tools become too slow.
   - These are long combo games, so this is the wall-clock `GAME_TIMEOUT_SECONDS` truncating on loaded runners (the CLAUDE.md sequencing rule 2).
   - Storm's −1.2 sits inside that floor. The unit reads as neutral and stays as a correctness fix.
   - **Lead:** sharded diagnostic runs should neutralise the deadline, as `tools/refresh_wr_baseline.py` does, before small per-cell deltas are trusted.
+
+**Determinism of sharded matrix runs (`e35c96f`, `c9a3859`, `707a028`, `ed884e2`, `84f5442`):**
+- **Symptom:** two runs of identical code disagreed on 1–3 cells per run, 5 pp each, mostly in Storm, Goryo's and other long combo games. There were 0 aborts. The earlier A/B notes (the projection unit's "noise floor") were partly this.
+- **Ruled out, by measurement:**
+  - The per-game deadline: 0 aborts, and it is now neutralised for sharded runs anyway (`--neutralise-deadline`, with `SEEDED_REPLAY_TIMEOUT_SECONDS` moved to `ai/scoring_constants` so shards need no pytest).
+  - Hash seeds: `PYTHONHASHSEED` 1 vs 2 gave identical cells.
+  - The filesystem: no unsorted listing reaches game code.
+- **Reproduced:** each cell alone was stable, but two concurrent local 2-worker runs of the Storm row disagreed. The cause is state that survives across cells in a worker process.
+- **Causes:** two per-snapshot memos keyed on `id(snap)`. CPython reuses a freed object's id, so a new snapshot could receive a dead one's value, depending on the worker's allocation history:
+  - the combo evaluator's baseline cache (`_BASELINE_CACHE`), which was also never evicted, so it grew without bound;
+  - EVPlayer's combo-assessment memo (`_assess_snap_id`).
+- **Fix:** `ai/object_memo.memo_on`, one memo that checks identity through a weak reference and evicts an entry when its object is collected. Both memos use it.
+  - Also, by the same "order must not matter" rule: a deck's gameplan no longer depends on which caller loads it first (`snapshot_from_game` loaded bare, and Jeskai Blink / 4/5c Control would otherwise cache a JSON-only `always_early`; latent in practice, digest unchanged).
+- **Evidence:**
+  - Before: every pair of concurrent local Storm-row runs disagreed on 1–2 cells; on Actions, C/D 2/48 and pre/pre2 3/432.
+  - After: local E/F agree on 24/24, Actions G/H on 48/48, and the runner and this container agree cell for cell (24/24).
+  - Digest unchanged; anchor 29 passed.
+- **Consequence:** same-seed A/Bs on Actions are now exact, so any per-cell difference is a real effect of the change.
