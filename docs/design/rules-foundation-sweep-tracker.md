@@ -6409,3 +6409,24 @@ An on-disk cache is held in reserve if the pool tools become too slow.
   - **Next unit:** removal targeting prices only the MANA part of ward (`_threat_score`). Tron aimed 17 removal spells at a ward it then declined to pay, so target choice should price ward with the same pay/skip projection the payment decision uses.
   - "Ward—Discard a card" (12 pool cards) through the discard funnel.
   - Ward granted to another object (80 cards: equipment, anthems) needs the continuous-effects layer.
+
+**Ward follow-ups: target choice (`c630b5b`) and targeted ETB triggers (`c6dca3e`):**
+- **Target choice (AI):** `ai/ward_targeting.ward_rules_out_target` asks the resolution's own question before casting.
+  - Can the caster pay (mana left after the spell itself; life at least the life part, CR 119.4)?
+  - Would `decide_optional_cost` over the ward's OptionalCost pay?
+  - If not, the permanent is not a target. Applied at both pickers: the main-phase `_choose_targets` (burn, removal and exile branches) and the response picker `_pick_best_removal_target`.
+  - Same-seed replays of Eldrazi Ramp vs Eldrazi Tron: wasted removal 17 → 6 (main-phase picker only) → 0 (both).
+- **Anchor flip accepted as rules-correct** (`771f2bd`): Affinity vs Domain Zoo s50500, replayed from pinned worktrees.
+  - Before: a 0-mana Leyline Binding exiled Kappa Cannoneer (Ward {4}) for free.
+  - After: Zoo exiles Claws of Gix, and Affinity wins on turn 7.
+- **ETB triggers (engine, CR 702.21a "spell or ability"):**
+  - A permanent's targeted ETB trigger carries its target on the permanent spell's item, which the spell-level check skips, so every ETB trigger passed ward free.
+  - Fix: `optional_costs.ward_gate` is now the one ward check over a target list, used by spell resolution and by the ETB dispatch. An unpaid ward counters the ETB ability; the permanent still enters.
+  - Shared audit `ResolutionManager._audit_ward_paid` (702.21a/ward_paid), pinned both ways on the ETB path.
+- **Measurement** (full 25-row same-seed A/Bs, n=20 Bo3, deterministic):
+  - Target choice: 26 cells changed. Domain Zoo −1.5, 4c Omnath −0.9; Pinnacle Affinity and Eldrazi Ramp +0.6; Affinity +0.3; all others within ±0.3.
+  - ETB gate: 8 cells changed, all a warded-threat deck vs an ETB-removal deck; every deck within ±1.
+  - Whole ward cluster from `ddb08ed`: Eldrazi Ramp +1.6, Pinnacle Affinity +0.7, Affinity +0.5 (toward its 50–65 band), Domain Zoo −1.5 (toward its 50–65 band from above), 4c Omnath −1.1. 0 aborts throughout.
+- **Leads:**
+  - Triggered abilities that pick their target at resolution inside a handler (an attack trigger, the generic oracle ETB resolver) still bypass the gate, and the auditor cannot see them. Routing those picks through `target_solver` closes both; the `target_pick` single-owner ratchet tracks the sites.
+  - The engine-side `_threat_score` still deducts a mana-only ward literal for handler picks.
