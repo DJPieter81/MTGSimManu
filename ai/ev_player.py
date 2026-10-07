@@ -4249,10 +4249,14 @@ class EVPlayer:
 
         # ── Opp creatures (only if killable by this damage) ──
         from engine.target_solver import can_be_targeted
+        from ai.ward_targeting import ward_rules_out_target
         for c in opp.creatures:
             # Hexproof / protection from this spell's colour (CR
-            # 702.11d / 702.16b): not a target at all.
+            # 702.11d / 702.16b): not a target at all; a ward the caster
+            # would not get past (CR 702.21a) only gets it countered.
             if not can_be_targeted(c, spell, self.player_idx):
+                continue
+            if ward_rules_out_target(game, self.player_idx, spell, c):
                 continue
             remaining_toughness = (c.toughness or 0) - getattr(
                 c, "damage_marked", 0)
@@ -4449,11 +4453,15 @@ class EVPlayer:
 
             from engine.target_solver import can_be_targeted as _targetable
 
+            from ai.ward_targeting import ward_rules_out_target
+
             def _reachable(c):
-                # The X bound AND the permanent's own targeting
-                # restrictions (hexproof / protection, CR 702.16b).
+                # The X bound, the permanent's own targeting restrictions
+                # (hexproof / protection, CR 702.16b), and a ward this
+                # spell's caster would not get past (CR 702.21a).
                 return ((_x_ceiling is None or (c.template.cmc or 0) <= _x_ceiling)
-                        and _targetable(c, spell, self.player_idx))
+                        and _targetable(c, spell, self.player_idx)
+                        and not ward_rules_out_target(game, self.player_idx, spell, c))
 
             if can_hit_noncreature:
                 # Evaluate all nonland permanents via marginal threat
@@ -4515,9 +4523,11 @@ class EVPlayer:
         if spell.template.can_exile_permanent and 'blink' not in tags:
             from engine.cards import CardType
             from engine.target_solver import can_be_targeted as _targetable
+            from ai.ward_targeting import ward_rules_out_target
             nonland = [c for c in opp.battlefield
                        if not c.template.is_land
-                       and _targetable(c, spell, self.player_idx)]
+                       and _targetable(c, spell, self.player_idx)
+                       and not ward_rules_out_target(game, self.player_idx, spell, c)]
             # An X-bound target ("with mana value X or less") is legal only
             # up to the X the caster can pay — the same engine formula
             # cast-time legality uses (CR 601.2b/c). Before this the pick
@@ -4590,9 +4600,13 @@ class EVPlayer:
         from ai.ev_evaluator import snapshot_from_game
         from engine.target_solver import can_be_targeted
         snap = snapshot_from_game(game, player_idx)
-        # Hexproof / protection from this spell's colour: not targets.
+        # Hexproof / protection from this spell's colour: not targets; a
+        # ward this caster would not get past only gets the spell
+        # countered (CR 702.21a, ai/ward_targeting).
+        from ai.ward_targeting import ward_rules_out_target
         candidates = [c for c in creatures
-                      if can_be_targeted(c, card, card.controller)]
+                      if can_be_targeted(c, card, card.controller)
+                      and not ward_rules_out_target(game, self.player_idx, card, c)]
         if not candidates:
             return None
         # For burn removal, filter out creatures this spell cannot kill.

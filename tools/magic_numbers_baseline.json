@@ -38,5 +38,6 @@
   "ai/strategic_logger.py": 2,
   "ai/temporary_exile.py": 0,
   "ai/turn_planner.py": 0,
+  "ai/ward_targeting.py": 0,
   "ai/win_probability.py": 10
 }
