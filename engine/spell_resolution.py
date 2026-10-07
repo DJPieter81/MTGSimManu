@@ -172,46 +172,18 @@ class ResolutionManager:
         _is_aura_ward = getattr(card.template, 'aura_enchant_restriction', None) is not None
         _ward_can_counter = not (item.item_type == StackItemType.SPELL
                                  and _is_permanent_spell_ward and not _is_aura_ward)
-        _ward_paid_ids: set = set()
-        for _tid in (list(item.targets) if _ward_can_counter else []):
-            if not isinstance(_tid, int) or _tid < 0:
-                continue  # face/player target — permanents only have ward
-            _target = game.get_card_by_id(_tid)
-            if _target is None or _target.zone != "battlefield":
-                continue
-            from . import optional_costs as _oc
-            if not _oc.ward_owed(_target.template):
-                continue
-            if _target.controller == item.controller:
-                continue  # CR 702.21a: only vs an OPPONENT's spell/ability
-            _paid = _oc.offer_ward_tax(game, _target, card, item.controller)
-            if _paid:
-                _ward_paid_ids.add(_tid)
-                game.log.append(
-                    f"T{game.display_turn}: {card.name}'s controller "
-                    f"pays {_oc.ward_cost_text(_target.template)} — not "
-                    f"countered by {_target.name}'s ward")
-            else:
-                ResolutionManager._move_countered_stack_item(game, item, card)
-                game.log.append(
-                    f"T{game.display_turn}: {card.name} is countered "
-                    f"by {_target.name}'s ward")
-                return
+        from . import optional_costs as _oc
+        _survives, _ward_paid_ids = (
+            _oc.ward_gate(game, card, item.controller, item.targets)
+            if _ward_can_counter else (True, set()))
+        if not _survives:
+            ResolutionManager._move_countered_stack_item(game, item, card)
+            return
         # Rules audit (CR 702.21a): a spell or ability still resolving
         # paid the ward cost of every opposing permanent it targets.
-        # Restated from the raw typed fields (both cost parts), not
-        # through the scan's own predicate.
-        from .rules_audit import enabled as _audit_on, check as _audit_check
-        if _audit_on() and _ward_can_counter:
-            for _tid in list(item.targets):
-                _t = game.get_card_by_id(_tid) if isinstance(_tid, int) and _tid >= 0 else None
-                if _t is None or _t.zone != "battlefield" or _t.controller == item.controller:
-                    continue
-                _owes = ((getattr(_t.template, 'ward_cost', 0) or 0) > 0
-                         or (getattr(_t.template, 'ward_life_cost', 0) or 0) > 0)
-                _audit_check("702.21a/ward_paid", not _owes or _tid in _ward_paid_ids,
-                             f"{card.name} resolves through {_t.name}'s unpaid ward",
-                             game=game)
+        if _ward_can_counter:
+            ResolutionManager._audit_ward_paid(
+                game, card, item.controller, item.targets, _ward_paid_ids)
 
         # CR 608.2b: re-check target legality on resolution. A spell
         # whose targets are ALL illegal doesn't resolve — it fizzles
@@ -394,6 +366,27 @@ class ResolutionManager:
         return True  # every target verifiably left its cast-time zone
 
     @staticmethod
+    def _audit_ward_paid(game, source, controller, target_ids, paid_ids,
+                         countered: bool = False) -> None:
+        """Rules audit (CR 702.21a): a spell or ability that goes on to
+        resolve paid the ward of every opposing permanent it targets.
+        Restated from the raw typed fields (both cost parts), not through
+        the gate's own predicate."""
+        from .rules_audit import enabled as _audit_on, check as _audit_check
+        if not _audit_on() or countered:
+            return
+        for _tid in list(target_ids or ()):
+            _t = (game.get_card_by_id(_tid)
+                  if isinstance(_tid, int) and _tid >= 0 else None)
+            if _t is None or _t.zone != "battlefield" or _t.controller == controller:
+                continue
+            _owes = ((getattr(_t.template, 'ward_cost', 0) or 0) > 0
+                     or (getattr(_t.template, 'ward_life_cost', 0) or 0) > 0)
+            _audit_check("702.21a/ward_paid", not _owes or _tid in paid_ids,
+                         f"{source.name} resolves through {_t.name}'s unpaid ward",
+                         game=game)
+
+    @staticmethod
     def _handle_permanent_etb(game: "GameState", card: CardInstance, controller: int,
                                item: "StackItem" = None):
         """Handle all enter-the-battlefield effects for a permanent.
@@ -532,11 +525,26 @@ class ResolutionManager:
             if not card.is_transformed:
                 has_specific_handler = EFFECT_REGISTRY.has_handler(
                     template.name, EffectTiming.ETB)
-                EFFECT_REGISTRY.execute(
-                    template.name, EffectTiming.ETB, game, card, controller,
-                    targets=(item.targets if item else None),
-                    item=item,
-                )
+                # CR 702.21a: the targeted ETB trigger is an ability an
+                # opponent's ward can counter. Its targets ride on this
+                # (permanent) spell's item, which the spell-level ward
+                # check skips — so the trigger meets ward here.
+                _etb_targets = (item.targets if item else None) or []
+                _etb_survives, _etb_paid = True, set()
+                if has_specific_handler and _etb_targets:
+                    from . import optional_costs as _oc
+                    _etb_survives, _etb_paid = _oc.ward_gate(
+                        game, card, controller, _etb_targets,
+                        what=f"{template.name}'s ETB ability")
+                    ResolutionManager._audit_ward_paid(
+                        game, card, controller, _etb_targets, _etb_paid,
+                        countered=not _etb_survives)
+                if _etb_survives:
+                    EFFECT_REGISTRY.execute(
+                        template.name, EffectTiming.ETB, game, card, controller,
+                        targets=(item.targets if item else None),
+                        item=item,
+                    )
 
                 # Generic oracle-text-based ETB resolution for cards WITHOUT specific handlers
                 if not has_specific_handler:

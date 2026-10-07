@@ -315,6 +315,39 @@ def parse_ward_tax_cost(warded_card: "CardInstance",
     )
 
 
+def ward_gate(game: "GameState", source_card: "CardInstance",
+              controller: int, target_ids, what: str = "") -> tuple:
+    """CR 702.21a over one spell's or ability's targets: every opposing
+    permanent with ward it targets demands its cost; the first one left
+    unpaid counters the spell or ability. The single check both the stack
+    resolution of a spell and a permanent's targeted ETB trigger use.
+
+    Returns ``(survives, paid_ids)``. `what` names the countered object in
+    the log (the source's name by default)."""
+    label = what or source_card.name
+    paid: set = set()
+    for tid in list(target_ids or ()):
+        if not isinstance(tid, int) or tid < 0:
+            continue    # a player target: ward lives on permanents
+        target = game.get_card_by_id(tid)
+        if target is None or target.zone != "battlefield":
+            continue
+        if not ward_owed(target.template) or target.controller == controller:
+            continue    # CR 702.21a: only an OPPONENT's spell or ability
+        if offer_ward_tax(game, target, source_card, controller):
+            paid.add(tid)
+            game.log.append(
+                f"T{game.display_turn}: {label}'s controller pays "
+                f"{ward_cost_text(target.template)} — not countered by "
+                f"{target.name}'s ward")
+        else:
+            game.log.append(
+                f"T{game.display_turn}: {label} is countered by "
+                f"{target.name}'s ward")
+            return False, paid
+    return True, paid
+
+
 def offer_ward_tax(game: "GameState", warded_card: "CardInstance",
                     casting_card: "CardInstance",
                     casting_player_idx: int) -> bool:

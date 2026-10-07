@@ -906,3 +906,26 @@ def test_ward_audit_is_silent_when_the_ward_cost_is_paid(audit):
     _life_ward_scenario(game)
     game.resolve_stack()
     assert _rules(rules_audit.drain()) == []
+
+
+def test_ward_audit_sees_an_etb_trigger_resolving_through_an_unpaid_ward(audit, card_db, monkeypatch):
+    # The pre-fix defect, re-created: the targeted ETB trigger never meets
+    # ward (the gate waves everything through).
+    from engine import optional_costs
+    from tests.test_ward_on_etb_triggers import _setup
+    from tests.test_ward_framework import _NeverPayCallbacks
+    monkeypatch.setattr(optional_costs, "ward_gate",
+                        lambda game, src, ctrl, tids, what="": (True, set()))
+    game, binding, warded = _setup(card_db, _NeverPayCallbacks())
+    game.resolve_stack()
+    assert warded.zone == "exile", "fixture: the broken gate lets it resolve"
+    assert "702.21a/ward_paid" in _rules(rules_audit.drain())
+
+
+def test_ward_audit_is_silent_when_an_etb_trigger_is_countered_by_ward(audit, card_db):
+    from tests.test_ward_on_etb_triggers import _setup
+    from tests.test_ward_framework import _NeverPayCallbacks
+    game, binding, warded = _setup(card_db, _NeverPayCallbacks())
+    game.resolve_stack()
+    assert warded.zone == "battlefield"
+    assert _rules(rules_audit.drain()) == []
