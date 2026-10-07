@@ -6384,3 +6384,28 @@ An on-disk cache is held in reserve if the pool tools become too slow.
   - After: local E/F agree on 24/24, Actions G/H on 48/48, and the runner and this container agree cell for cell (24/24).
   - Digest unchanged; anchor 29 passed.
 - **Consequence:** same-seed A/Bs on Actions are now exact, so any per-cell difference is a real effect of the change.
+
+**Ward: every cost the engine can pay, wherever the keyword is printed (`b98883f`):**
+- **Chosen by the census, per CLAUDE.md:**
+  - The 10-04 audit's top coverage row was `keyword/unmodelled` (398 findings).
+  - The census is unchanged since 09-27, but the per-card breakdown showed real ward gaps behind it.
+  - Colossal Skyturtle's "Flying, ward {2}" and Sire of Seven Deaths' "Ward—Pay 7 life" both parsed to no ward.
+- **Rule (CR 702.21a; CR 119.4 for life payment):** "counter it unless that player pays [cost]". The cost is whatever follows the keyword, which may be mana, life, or both. Life is payable only from a total at least the payment.
+- **Defects** (parser read only clause-initial ward and only mana):
+  - 34 pool cards print ward after another keyword;
+  - 15 "Pay N life" cards;
+  - 3 combined "Ward—{2}, Pay 2 life" cards owed only the mana.
+- **Fix:**
+  - `oracle_parser.parse_ward` is the one parser: (mana, life), own keyword-list ward only.
+  - Refused shapes (discard, sacrifice, collect evidence, variable life) yield (0, 0) and are never half-applied.
+  - New field `ward_life_cost`.
+  - `optional_costs.ward_owed` / `offer_ward_tax` pay both parts, through the existing mana payment and the existing `_game_pay_life`.
+  - Auditor `702.21a/ward_paid`, pinned both ways.
+  - Pool: 109 mana, 15 life, 3 combined, 27 refused, 80 granted-only.
+- **Measurement:** full 25-row same-seed A/B, n=20 Bo3, deterministic since `84f5442`. Pre `ddb08ed`, post `efcc13b`, 599 cells compared.
+  - 7 cells changed, **every one involving Eldrazi Ramp** (2 Sire of Seven Deaths main). Eldrazi Ramp vs Eldrazi Tron 65 → 80; the rest ±5. Eldrazi Ramp field +0.6; every other deck within ±0.5. 0 aborts in both arms.
+  - Mechanism confirmed in 20 `--bo3` replays of Eldrazi Ramp vs Eldrazi Tron: Tron's targeted removal hit Sire's 7-life ward 17 times and was countered each time (Kozilek's Command 9, Dismember 5, Warping Wail 3). Before the fix those spells resolved free.
+- **Leads:**
+  - **Next unit:** removal targeting prices only the MANA part of ward (`_threat_score`). Tron aimed 17 removal spells at a ward it then declined to pay, so target choice should price ward with the same pay/skip projection the payment decision uses.
+  - "Ward—Discard a card" (12 pool cards) through the discard funnel.
+  - Ward granted to another object (80 cards: equipment, anthems) needs the continuous-effects layer.
