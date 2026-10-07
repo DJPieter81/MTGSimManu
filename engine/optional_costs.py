@@ -259,31 +259,55 @@ def offer_counter_tax(game: "GameState", source_card: "CardInstance",
 # ward isn't a property of a specific spell — it can be triggered by
 # ANY spell or ability that targets a warded permanent.
 
+def ward_owed(template) -> bool:
+    """Does this permanent's own Ward impose a cost the engine enforces
+    (a mana part, a life part, or both — `oracle_parser.parse_ward`)?"""
+    return ((getattr(template, "ward_cost", 0) or 0) > 0
+            or (getattr(template, "ward_life_cost", 0) or 0) > 0)
+
+
+def ward_cost_text(template) -> str:
+    """"{2}", "7 life" or "{2} and 2 life" — for logs and decision names."""
+    mana = getattr(template, "ward_cost", 0) or 0
+    life = getattr(template, "ward_life_cost", 0) or 0
+    parts = ([f"{{{mana}}}"] if mana else []) + ([f"{life} life"] if life else [])
+    return " and ".join(parts)
+
+
 def parse_ward_tax_cost(warded_card: "CardInstance",
                          casting_card: "CardInstance"
                          ) -> Optional[OptionalCost]:
-    """Build the OptionalCost for `warded_card`'s Ward tax, from
+    """Build the OptionalCost for `warded_card`'s Ward cost, from
     `casting_card`'s controller's perspective (the caster whose
     spell/ability targeted `warded_card` and now risks having it
-    countered). None if `warded_card` has no (mana-shaped) ward."""
-    amount = getattr(warded_card.template, "ward_cost", 0) or 0
-    if amount <= 0:
+    countered). Both parts of a combined cost are owed together
+    ("Ward—{2}, Pay 2 life"). None if `warded_card` owes no ward."""
+    template = warded_card.template
+    if not ward_owed(template):
         return None
+    mana = getattr(template, "ward_cost", 0) or 0
+    life = getattr(template, "ward_life_cost", 0) or 0
 
-    cost = CostDescriptor(kind="mana", amount=amount)
+    cost = CostDescriptor(kind="mana" if mana else "life",
+                          amount=mana if mana else life)
     effect = EffectDescriptor(kind="counter_target", magnitude=1)
 
-    def _to_game(g, p, amt=amount):
-        from .mana import ManaCost
-        from .mana_payment import ManaPayment
-        return ManaPayment.tap_lands_for_mana(g, p, ManaCost(generic=amt))
+    def _to_game(g, p, m=mana, l=life):
+        if m:
+            from .mana import ManaCost
+            from .mana_payment import ManaPayment
+            if not ManaPayment.tap_lands_for_mana(g, p, ManaCost(generic=m)):
+                return False
+        if l:
+            _game_pay_life(g, p, l)
+        return True
 
-    def _to_snap(s, cc=casting_card, amt=amount):
+    def _to_snap(s, cc=casting_card, m=mana, l=life):
         from ai.ev_evaluator import project_ward_tax_payment
-        return project_ward_tax_payment(cc, s, amt)
+        return project_ward_tax_payment(cc, s, m, life=l)
 
     return OptionalCost(
-        name=(f"{warded_card.template.name}: pay {amount} to save "
+        name=(f"{template.name}: pay {ward_cost_text(template)} to save "
               f"{casting_card.template.name} from being countered "
               f"by ward"),
         cost=cost, effect=effect,
@@ -295,21 +319,24 @@ def offer_ward_tax(game: "GameState", warded_card: "CardInstance",
                     casting_card: "CardInstance",
                     casting_player_idx: int) -> bool:
     """Ask `casting_card`'s controller (the player whose spell/ability
-    targeted `warded_card`) whether to pay `warded_card`'s Ward tax.
+    targeted `warded_card`) whether to pay `warded_card`'s Ward cost.
     Returns True iff paid (the spell/ability survives, not countered).
 
     Affordability is an engine-side rules gate, not a strategic
-    choice: if the caster cannot produce the mana, no decision is
-    offered at all — the spell/ability is simply countered, matching
-    a real game where an unpayable "unless" clause never triggers a
-    choice.
+    choice: if the caster cannot produce the mana, or has less life
+    than the life part (CR 119.4), no decision is offered at all — the
+    spell/ability is simply countered, matching a real game where an
+    unpayable "unless" clause never triggers a choice.
     """
     opt = parse_ward_tax_cost(warded_card, casting_card)
     if opt is None:
         return False
+    template = warded_card.template
     player = game.players[casting_player_idx]
-    if player.available_mana_estimate < opt.cost.amount:
+    if player.available_mana_estimate < (getattr(template, "ward_cost", 0) or 0):
         return False
+    if player.life < (getattr(template, "ward_life_cost", 0) or 0):
+        return False    # CR 119.4: life can be paid only from at least as much
     if not game.callbacks.decide_optional_cost(game, casting_player_idx, opt):
         return False
     return bool(opt.apply_to_game(game, casting_player_idx))

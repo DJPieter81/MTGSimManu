@@ -2763,7 +2763,7 @@ NON_EFFECT_FIELDS: Mapping[str, str] = MappingProxyType({
     "spectacle_cost": _KEYWORD, "madness_cost": _KEYWORD,
     "flashback_cost": _KEYWORD, "flashback_sacrifice_subtype": _KEYWORD,
     "kicker_cost": _KEYWORD, "multikicker": _KEYWORD,
-    "modular_n": _KEYWORD, "ward_cost": _KEYWORD,
+    "modular_n": _KEYWORD, "ward_cost": _KEYWORD, "ward_life_cost": _KEYWORD,
     "protection_from_colors": _KEYWORD, "has_mobilize": _KEYWORD,
     "is_storm_spell": _KEYWORD, "has_converge": _KEYWORD,
     "has_alternate_exile_cost": _COST, "x_cost_data": _COST,

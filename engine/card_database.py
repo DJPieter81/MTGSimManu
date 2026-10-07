@@ -1875,7 +1875,7 @@ class CardDatabase:
             parse_ritual_mana, parse_cycling_cost, parse_cycling_variant,
             parse_energy_production, has_cascade, parse_x_cost,
             parse_domain_reduction, detect_power_scaling, parse_splice_cost,
-            parse_counter_tax, parse_protection_from, parse_ward_cost,
+            parse_counter_tax, parse_protection_from, parse_ward,
             parse_is_land_sacrifice_tutor, parse_x_creature_tutor,
             parse_modal_spell,
             parse_targeted_removal,
@@ -2031,7 +2031,7 @@ class CardDatabase:
             team_pump = None
         template.team_pump_data = team_pump
         template.protection_from_colors = parse_protection_from(oracle)
-        template.ward_cost = parse_ward_cost(oracle)
+        template.ward_cost, template.ward_life_cost = parse_ward(oracle)
         template.can_target_player = parse_can_target_player(oracle)
         template.can_target_planeswalker = parse_can_target_planeswalker(oracle)
         template.has_attack_trigger = parse_has_attack_trigger(oracle, name)

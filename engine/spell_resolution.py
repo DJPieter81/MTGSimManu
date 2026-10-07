@@ -172,30 +172,46 @@ class ResolutionManager:
         _is_aura_ward = getattr(card.template, 'aura_enchant_restriction', None) is not None
         _ward_can_counter = not (item.item_type == StackItemType.SPELL
                                  and _is_permanent_spell_ward and not _is_aura_ward)
+        _ward_paid_ids: set = set()
         for _tid in (list(item.targets) if _ward_can_counter else []):
             if not isinstance(_tid, int) or _tid < 0:
                 continue  # face/player target — permanents only have ward
             _target = game.get_card_by_id(_tid)
             if _target is None or _target.zone != "battlefield":
                 continue
-            _ward_amount = getattr(_target.template, 'ward_cost', 0) or 0
-            if _ward_amount <= 0:
+            from . import optional_costs as _oc
+            if not _oc.ward_owed(_target.template):
                 continue
             if _target.controller == item.controller:
                 continue  # CR 702.21a: only vs an OPPONENT's spell/ability
-            from .optional_costs import offer_ward_tax
-            _paid = offer_ward_tax(game, _target, card, item.controller)
+            _paid = _oc.offer_ward_tax(game, _target, card, item.controller)
             if _paid:
+                _ward_paid_ids.add(_tid)
                 game.log.append(
                     f"T{game.display_turn}: {card.name}'s controller "
-                    f"pays {_ward_amount} — not countered by "
-                    f"{_target.name}'s ward")
+                    f"pays {_oc.ward_cost_text(_target.template)} — not "
+                    f"countered by {_target.name}'s ward")
             else:
                 ResolutionManager._move_countered_stack_item(game, item, card)
                 game.log.append(
                     f"T{game.display_turn}: {card.name} is countered "
                     f"by {_target.name}'s ward")
                 return
+        # Rules audit (CR 702.21a): a spell or ability still resolving
+        # paid the ward cost of every opposing permanent it targets.
+        # Restated from the raw typed fields (both cost parts), not
+        # through the scan's own predicate.
+        from .rules_audit import enabled as _audit_on, check as _audit_check
+        if _audit_on() and _ward_can_counter:
+            for _tid in list(item.targets):
+                _t = game.get_card_by_id(_tid) if isinstance(_tid, int) and _tid >= 0 else None
+                if _t is None or _t.zone != "battlefield" or _t.controller == item.controller:
+                    continue
+                _owes = ((getattr(_t.template, 'ward_cost', 0) or 0) > 0
+                         or (getattr(_t.template, 'ward_life_cost', 0) or 0) > 0)
+                _audit_check("702.21a/ward_paid", not _owes or _tid in _ward_paid_ids,
+                             f"{card.name} resolves through {_t.name}'s unpaid ward",
+                             game=game)
 
         # CR 608.2b: re-check target legality on resolution. A spell
         # whose targets are ALL illegal doesn't resolve — it fizzles

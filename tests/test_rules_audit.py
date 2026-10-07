@@ -874,3 +874,35 @@ def test_entry_audit_is_silent_when_a_planeswalker_enters_at_printed_loyalty(aud
     pw = _exiled_walker(game)
     game.zone_mgr.move_card(game, pw, "exile", "battlefield")
     assert _rules(rules_audit.drain()) == []
+
+
+def _life_ward_scenario(game, life=3):
+    import copy
+    from tests.test_ward_framework import _push_ward_scenario
+    warded, removal = _push_ward_scenario(game, ward_cost=0)
+    warded.template = copy.copy(warded.template)
+    warded.template.ward_life_cost = life
+    warded.template.oracle_text = "Ward—Pay %d life." % life
+    return warded, removal
+
+
+def test_ward_audit_sees_a_spell_resolving_through_an_unpaid_ward(audit, monkeypatch):
+    # The pre-fix defect, re-created: the resolution scan recognises only
+    # a mana ward, so a life ward is never offered and the spell resolves.
+    from engine import optional_costs
+    from tests.test_ward_framework import _NeverPayCallbacks
+    monkeypatch.setattr(optional_costs, "ward_owed",
+                        lambda t: (getattr(t, "ward_cost", 0) or 0) > 0)
+    game = GameState(rng=random.Random(0), callbacks=_NeverPayCallbacks())
+    warded, _ = _life_ward_scenario(game)
+    game.resolve_stack()
+    assert warded.zone != "battlefield", "fixture: the broken scan lets it resolve"
+    assert "702.21a/ward_paid" in _rules(rules_audit.drain())
+
+
+def test_ward_audit_is_silent_when_the_ward_cost_is_paid(audit):
+    from tests.test_ward_framework import _AlwaysPayCallbacks
+    game = GameState(rng=random.Random(0), callbacks=_AlwaysPayCallbacks())
+    _life_ward_scenario(game)
+    game.resolve_stack()
+    assert _rules(rules_audit.drain()) == []

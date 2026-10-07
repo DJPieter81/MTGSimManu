@@ -2808,7 +2808,8 @@ def project_counter_tax_payment(card: "CardInstance", snap: EVSnapshot,
 def project_ward_tax_payment(card: "CardInstance", snap: EVSnapshot,
                               tax_amount: int,
                               game: "GameState" = None,
-                              player_idx: int = 0) -> EVSnapshot:
+                              player_idx: int = 0,
+                              life: int = 0) -> EVSnapshot:
     """Project the board state if a Ward "counter this spell/ability
     unless its controller pays {N}" tax (CR 702.21a) is paid, and
     `card` — the CASTER'S OWN spell/ability, already on the stack,
@@ -2836,8 +2837,13 @@ def project_ward_tax_payment(card: "CardInstance", snap: EVSnapshot,
     stack item alive", not evidence the two mechanics are the same
     thing.
     """
-    return project_counter_tax_payment(card, snap, tax_amount,
-                                        game=game, player_idx=player_idx)
+    projected = project_counter_tax_payment(card, snap, tax_amount,
+                                             game=game, player_idx=player_idx)
+    # A life part of the ward cost ("Ward—Pay 7 life") is paid from the
+    # caster's life on top of any mana part.
+    if life:
+        projected = projected.model_copy(update={"my_life": projected.my_life - life})
+    return projected
 
 
 def _projected_real_draws(card: "CardInstance") -> int:

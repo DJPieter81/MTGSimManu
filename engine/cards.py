@@ -733,6 +733,10 @@ class CardTemplate:
     # parse_ward_cost's docstring). Consumed by
     # engine.optional_costs.offer_ward_tax via the resolve_stack hook.
     ward_cost: int = 0                         # {N} from "Ward {N}"; 0 = no mana-shaped ward
+    # The life part of the same Ward cost ("Ward—Pay 7 life" -> 7,
+    # "Ward—{2}, Pay 2 life" -> 2 with ward_cost 2): both parts are owed
+    # (oracle_parser.parse_ward). 0 = no life part.
+    ward_life_cost: int = 0
     # Spell targeting capability (CR 601.2c) — derived at load time by
     # engine.oracle_parser.parse_can_target_player/planeswalker.
     # Replace runtime `'any target' in oracle_text` inline checks in ai/.
