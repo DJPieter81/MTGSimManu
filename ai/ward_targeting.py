@@ -15,7 +15,7 @@ payment can never disagree.
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
     from engine.cards import CardInstance
@@ -23,16 +23,21 @@ if TYPE_CHECKING:
 
 
 def ward_rules_out_target(game: "GameState", caster_idx: int,
-                          spell: "CardInstance", target: "CardInstance") -> bool:
-    """True when `target`'s ward would counter `spell` (see module docs)."""
+                          spell: "CardInstance", target: "CardInstance",
+                          mana_committed: Optional[int] = None) -> bool:
+    """True when `target`'s ward would counter `spell` (see module docs).
+    `mana_committed` is the mana the spell or ability still has to spend
+    before the ward is paid: its effective cost before casting (the
+    default), 0 for a pick made on resolution (already paid)."""
     from engine.optional_costs import parse_ward_tax_cost, ward_owed
     template = target.template
     if target.controller == caster_idx or not ward_owed(template):
         return False
-    from ai.effective_cmc import effective_cmc
     player = game.players[caster_idx]
-    mana_after_spell = (player.available_mana_estimate
-                        - effective_cmc(spell, game=game, player_idx=caster_idx))
+    if mana_committed is None:
+        from ai.effective_cmc import effective_cmc
+        mana_committed = effective_cmc(spell, game=game, player_idx=caster_idx)
+    mana_after_spell = player.available_mana_estimate - mana_committed
     if mana_after_spell < (getattr(template, "ward_cost", 0) or 0):
         return True
     if player.life < (getattr(template, "ward_life_cost", 0) or 0):

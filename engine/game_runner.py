@@ -2183,6 +2183,7 @@ class GameRunner:
                     break
 
     def _activate_utility_artifacts(self, game: GameState, active: int):
+        # single-owner-allow: not a target pick — library searches and the controller's own lands
         """Activate utility artifacts: Expedition Map (find Tron piece), Ratchet Bomb."""
         player = game.players[active]
 
@@ -2340,7 +2341,7 @@ class GameRunner:
         permanent per turn (the tap state itself enforces this)."""
         import re
         from engine.cards import CardType
-        from engine.oracle_resolver import _pick_damage_target
+        from engine.oracle_resolver import resolve_any_target_damage
         player = game.players[active]
         opponent_idx = 1 - active
 
@@ -2365,26 +2366,10 @@ class GameRunner:
                 oracle)
             if m_ping:
                 amount = int(m_ping.group(1))
-                target = _pick_damage_target(game, active, amount)
                 perm.tapped = True
-                if target is not None:
-                    target.damage_marked = getattr(target, 'damage_marked', 0) + amount
-                    game.log.append(
-                        f"T{game.display_turn} P{active+1}: "
-                        f"{perm.name} pings {target.name} for {amount}")
-                    game.check_state_based_actions()
-                else:
-                    opp = game.players[opponent_idx]
-                    opp.life -= amount
-                    player.damage_dealt_this_turn += amount
-                    game.log.append(
-                        f"T{game.display_turn} P{active+1}: "
-                        f"{perm.name} pings opponent for {amount} "
-                        f"(life: {opp.life})")
-                    if opp.life <= 0:
-                        game.game_over = True
-                        game.winner = active
-                        return
+                resolve_any_target_damage(game, perm, active, amount)
+                if game.game_over:
+                    return
                 continue  # one activation per permanent per turn
 
             # ── {C}{C}, {T}: Draw a card. ──
@@ -2603,6 +2588,7 @@ class GameRunner:
 
     def _resolve_sac_effect(self, game: GameState, controller: int, sacrificed,
                             effect_text: str, charge: Optional[int] = None):
+        # single-owner-allow: not a target pick — destroys EACH permanent of a mana value; searches the own library
         """Execute sacrifice ability effect, parsed from oracle text.
         `charge` is the sacrificed permanent's charge count as last-known
         information (CR 608.2h); when omitted it is read off the card."""

@@ -1104,3 +1104,32 @@ def targeted_player(game: "GameState", controller: int,
         if idx is not None:
             return idx
     return (1 - controller) if default_opponent else None
+
+
+def pick_resolution_target(game: "GameState", controller: int,
+                           source: "CardInstance", candidates,
+                           preferred=(), key=None) -> Optional["CardInstance"]:
+    """The permanent a resolving spell or ability acts on — the one owner
+    of a handler's target choice.
+
+    CR 601.2c / 608.2b: the target chosen when it was put on the stack
+    (`preferred`) is the one it affects while still legal. When none was
+    chosen then, the pick made here is the best legal candidate (`key`,
+    highest first): never one `source` may not target (hexproof,
+    protection — `can_be_targeted`), never one whose ward its controller
+    would not get past, and it meets that ward now (CR 702.21a) — an
+    unpaid ward counters the effect, so the pick is None."""
+    legal = [c for c in candidates if can_be_targeted(c, source, controller)]
+    by_id = {c.instance_id: c for c in legal}
+    for tid in (preferred or ()):
+        if tid in by_id:
+            return by_id[tid]      # met ward when it was put on the stack
+    from ai.ward_targeting import ward_rules_out_target
+    pool = [c for c in legal
+            if not ward_rules_out_target(game, controller, source, c, mana_committed=0)]
+    if not pool:
+        return None
+    pick = max(pool, key=key) if key is not None else pool[0]
+    from .optional_costs import ward_gate
+    survives, _ = ward_gate(game, source, controller, [pick.instance_id])
+    return pick if survives else None

@@ -39,7 +39,8 @@ _WORD_TO_NUM = {'a': 1, 'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5,
 
 
 def _pick_damage_target(game: "GameState", controller: int,
-                         amount: int) -> Optional["CardInstance"]:
+                         amount: int,
+                         source: "CardInstance" = None) -> Optional["CardInstance"]:
     """Oracle-driven target picker for "deal N damage to any target".
 
     Returns the best killable opposing creature, or None (meaning
@@ -62,6 +63,16 @@ def _pick_damage_target(game: "GameState", controller: int,
         if ((c.toughness or 0) - getattr(c, 'damage_marked', 0)) <= amount
         and (c.toughness or 0) > 0
     ]
+    if source is not None:
+        # A pick made on resolution: only a creature `source` may target
+        # (hexproof, protection) and whose ward its controller would get
+        # past (CR 702.11d / 702.16b / 702.21a).
+        from .target_solver import can_be_targeted
+        from ai.ward_targeting import ward_rules_out_target
+        killable = [c for c in killable
+                    if can_be_targeted(c, source, controller)
+                    and not ward_rules_out_target(game, controller, source, c,
+                                                  mana_committed=0)]
     if not killable:
         return None
 
@@ -97,6 +108,34 @@ def _pick_damage_target(game: "GameState", controller: int,
     # threats (Murktide, Tarmogoyf, Cranial Plating-attached bombs).
     FACE_VALUE_PER_DAMAGE = 1.0
     return best if threat_score(best) > amount * FACE_VALUE_PER_DAMAGE else None
+
+
+
+def resolve_any_target_damage(game: "GameState", source: "CardInstance",
+                              controller: int, amount: int) -> None:
+    """Resolve "deal N damage to any target" whose target is picked on
+    resolution: the best legal opposing creature (`_pick_damage_target`
+    with `source`), else the opponent. A creature pick meets its ward
+    (CR 702.21a: an unpaid ward counters the ability); the damage goes
+    through `engine.damage.deal_damage`."""
+    from .damage import deal_damage
+    opponent = game.players[1 - controller]
+    target = _pick_damage_target(game, controller, amount, source=source)
+    if target is not None:
+        from .optional_costs import ward_gate
+        survives, _ = ward_gate(game, source, controller, [target.instance_id])
+        if not survives:
+            return
+        deal_damage(source, target, amount)
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
+                        f"{source.name} deals {amount} damage to {target.name}")
+    else:
+        deal_damage(source, opponent, amount)
+        game.players[controller].damage_dealt_this_turn += amount
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
+                        f"{source.name} deals {amount} damage to the opponent "
+                        f"(life: {opponent.life})")
+    game.check_state_based_actions()
 
 
 def resolve_damage_to_chosen_target(
@@ -1201,16 +1240,11 @@ def resolve_attack_trigger(game: "GameState", attacker: "CardInstance",
         m = re.search(r'deals?\s+(\d+)\s+damage', _dmg_ability)
         if m:
             amount = int(m.group(1))
-            target = _pick_damage_target(game, controller, amount) \
-                if 'any target' in _dmg_ability else None
-            if target is not None:
-                target.damage_marked = getattr(target, 'damage_marked', 0) + amount
-                game.log.append(
-                    f"T{game.display_turn} P{controller+1}: "
-                    f"{attacker.name} attack trigger: {amount} damage to {target.name}")
-                game.check_state_based_actions()
+            if 'any target' in _dmg_ability:
+                resolve_any_target_damage(game, attacker, controller, amount)
             else:
-                game.players[opponent].life -= amount
+                from .damage import deal_damage
+                deal_damage(attacker, game.players[opponent], amount)
                 game.players[controller].damage_dealt_this_turn += amount
 
     # ── "Whenever this creature attacks, gain N life" ──

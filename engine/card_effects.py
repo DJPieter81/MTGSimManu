@@ -214,12 +214,12 @@ def solitude_etb(game, card, controller, targets=None, item=None):
     # target creature. That creature's controller gains life equal to its power."
     # Key rules: targets opponent's creature, gives THEM life equal to power.
     opponent = 1 - controller
-    opp_creatures = legal_targets(game, controller, card,
-                                  game.players[opponent].creatures)
-    if not opp_creatures:
-        return  # No legal targets — the ETB does nothing
-    # Pick the most threatening creature (highest power, then CMC)
-    target = max(opp_creatures, key=_threat_score)
+    from .target_solver import pick_resolution_target
+    target = pick_resolution_target(game, controller, card,
+                                    game.players[opponent].creatures,
+                                    preferred=targets, key=_threat_score)
+    if target is None:
+        return  # No legal target (or its ward countered the trigger)
     life_gain = target.power or 0
     game._exile_permanent(target)
     game.players[opponent].life += life_gain
@@ -1307,10 +1307,13 @@ def wear_tear_resolve(game, card, controller, targets=None, item=None):
     opp = game.players[opponent]
     destroyed = 0
     # Wear: destroy best artifact
+    from .target_solver import pick_resolution_target
     artifacts = [c for c in opp.battlefield
                  if CardType.ARTIFACT in c.template.card_types]
-    if artifacts:
-        target = max(artifacts, key=lambda c: _threat_score(c, game, opp))
+    target = pick_resolution_target(game, controller, card, artifacts,
+                                    preferred=targets,
+                                    key=lambda c: _threat_score(c, game, opp))
+    if target is not None:
         game._permanent_destroyed(target)
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Wear // Tear destroys {target.name}")
@@ -1319,8 +1322,10 @@ def wear_tear_resolve(game, card, controller, targets=None, item=None):
     enchantments = [c for c in opp.battlefield
                     if CardType.ENCHANTMENT in c.template.card_types
                     and not c.template.is_creature]
-    if enchantments:
-        target = max(enchantments, key=lambda c: _threat_score(c, game, opp))
+    target = pick_resolution_target(game, controller, card, enchantments,
+                                    preferred=targets,
+                                    key=lambda c: _threat_score(c, game, opp))
+    if target is not None:
         game._permanent_destroyed(target)
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Wear // Tear destroys {target.name}")
@@ -1368,6 +1373,7 @@ def pick_your_poison_resolve(game, card, controller, targets=None, item=None):
 @EFFECT_REGISTRY.register("Meltdown", EffectTiming.SPELL_RESOLVE,
                            description="Destroy all artifacts with MV <= X")
 def meltdown_resolve(game, card, controller, targets=None, item=None):
+    # single-owner-allow: not a target pick — destroys EACH artifact with mana value X or less
     from .cards import CardType
     # X = mana spent beyond R (cmc - 1)
     player = game.players[controller]
@@ -1409,16 +1415,21 @@ def kolaghans_command_resolve(game, card, controller, targets=None, item=None):
     opp = game.players[opponent]
 
     # Mode selection: destroy artifact if available, else deal 2 damage
+    from .target_solver import pick_resolution_target
     artifacts = [c for c in opp.battlefield
                  if CardType.ARTIFACT in c.template.card_types]
-    if artifacts:
-        target = max(artifacts, key=lambda c: _threat_score(c, game, opp))
+    target = pick_resolution_target(game, controller, card, artifacts,
+                                    preferred=targets,
+                                    key=lambda c: _threat_score(c, game, opp))
+    if target is not None:
         game._permanent_destroyed(target)
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Kolaghan's Command destroys {target.name}")
     else:
-        # Deal 2 damage to opponent
-        opp.life -= 2
+        # Deal 2 damage to opponent (through the damage owner: prevention,
+        # redirection and life loss live there).
+        from .damage import deal_damage
+        deal_damage(card, opp, 2)
         game.players[controller].damage_dealt_this_turn += 2
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Kolaghan's Command deals 2 to opponent")
@@ -1774,6 +1785,7 @@ def archon_of_cruelty_etb(game, card, controller, targets=None, item=None):
 @EFFECT_REGISTRY.register("Arboreal Grazer", EffectTiming.ETB,
                            description="Put a land from hand onto the battlefield tapped")
 def arboreal_grazer_etb(game, card, controller, targets=None, item=None):
+    # single-owner-allow: not a target pick — puts a land from its controller's own hand
     """Arboreal Grazer: ETB put a land from hand onto battlefield tapped."""
     player = game.players[controller]
     lands_in_hand = [c for c in player.hand if c.template.is_land]
@@ -1808,6 +1820,7 @@ def primeval_titan_etb(game, card, controller, targets=None, item=None):
 
 
 def _primeval_titan_search(game, controller):
+    # single-owner-allow: not a target pick — searches its controller's own library
     """Shared logic for Primeval Titan ETB and attack trigger."""
     player = game.players[controller]
     lands_in_library = [c for c in player.library if c.template.is_land]
@@ -2606,8 +2619,11 @@ def celestial_purge_resolve(game, card, controller, targets=None, item=None):
     red_black = [c for c in opp.battlefield
                  if not c.template.is_land
                  and any(col.value in ('R', 'B') for col in c.template.color_identity)]
-    if red_black:
-        target = max(red_black, key=lambda c: _threat_score(c, game, opp))
+    from .target_solver import pick_resolution_target
+    target = pick_resolution_target(game, controller, card, red_black,
+                                    preferred=targets,
+                                    key=lambda c: _threat_score(c, game, opp))
+    if target is not None:
         game._exile_permanent(target)
         game.log.append(
             f"T{game.display_turn} P{controller+1}: "
@@ -3142,6 +3158,7 @@ def doorkeeper_thrull_etb(game, card, controller, targets=None, item=None):
 @EFFECT_REGISTRY.register("Scapeshift", EffectTiming.SPELL_RESOLVE,
                            description="Sacrifice any number of lands, search for that many")
 def scapeshift_resolve(game, card, controller, targets=None, item=None):
+    # single-owner-allow: not a target pick — sacrifices and searches its controller's own lands
     """Scapeshift: sacrifice N lands → search library for N lands → battlefield tapped.
 
     With Amulet of Vigor: all enter untapped → massive mana.
