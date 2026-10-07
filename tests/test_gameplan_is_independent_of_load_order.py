@@ -44,3 +44,14 @@ def test_a_snapshot_first_load_yields_the_same_plan_as_the_goal_engine_load(deck
     after = get_gameplan(deck)
     assert after.always_early == reference.always_early
     assert after.reactive_only == reference.reactive_only
+
+
+@pytest.mark.parametrize("deck", _decks_with_derived_fields())
+def test_a_bare_bulk_load_never_changes_the_plan_a_game_reads(deck, monkeypatch):
+    monkeypatch.setattr(gameplan_loader, "_cache", {})
+    reference = get_gameplan(deck)
+    monkeypatch.setattr(gameplan_loader, "_cache", {})
+    gameplan_loader.load_all_gameplans()        # no decklists: JSON-only plans
+    after = get_gameplan(deck)
+    assert after.always_early == reference.always_early
+    assert after.reactive_only == reference.reactive_only
