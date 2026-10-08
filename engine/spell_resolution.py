@@ -113,23 +113,35 @@ class ResolutionManager:
     @staticmethod
     def _audit_resolution_targets(game: "GameState", item: "StackItem",
                                   card: "CardInstance") -> None:
-        """Rules audit (CR 608.2b): every chosen target still on the
-        battlefield is one this source may target (hexproof 702.11d,
-        protection 702.16b). Observes only; a no-op with the audit off."""
+        """Rules audit (CR 608.2b, 400.7, 702.11b, 702.16b): a spell or
+        ability that goes on to resolve still has a legal target -- a
+        player, or a card target still in the zone it was chosen in, the
+        same object there, and one the source may target. Restated from
+        the raw snapshot fields, not through the fizzle check. Observes
+        only; a no-op with the audit off."""
         from .rules_audit import enabled as _audit_on, check as _audit_check
         if not _audit_on() or not getattr(item, 'targets', None):
             return
         from .target_solver import can_be_targeted
-        for tid in item.targets:
-            if not isinstance(tid, int):
-                continue
+
+        def _legal(tid) -> bool:
+            if not isinstance(tid, int) or tid < 0:
+                return True
+            zone = item.target_zones.get(tid)
+            if zone is None:
+                return True
             tgt = game.get_card_by_id(tid)
-            if tgt is None or tgt.zone != "battlefield":
-                continue
-            _audit_check("608.2b/resolve_target",
-                         can_be_targeted(tgt, card, item.controller),
-                         f"{card.name} resolves against {tgt.name}, which it may not target",
-                         game=game)
+            if tgt is None or tgt.zone != zone:
+                return False
+            entry = item.target_entry_seqs.get(tid)
+            if entry is not None and tgt.battlefield_entry_seq != entry:
+                return False
+            return can_be_targeted(tgt, card, item.controller)
+
+        _audit_check("608.2b/resolve_target",
+                     any(_legal(tid) for tid in item.targets),
+                     f"{card.name} resolves with every target illegal",
+                     game=game)
 
     @staticmethod
     def resolve_stack(game: "GameState"):
@@ -198,20 +210,26 @@ class ResolutionManager:
         # its target (recorded on this item and exiled by the trigger)
         # must not fizzle the permanent. Only instants, sorceries, and
         # Auras fizzle on all-illegal targets.
-        # Rules audit (CR 608.2b / 702.11d / 702.16b): a target still on
-        # the battlefield must be one this source may target. A target
-        # that left the battlefield is a legitimate fizzle; a hexproof or
-        # protected one still sitting there was chosen illegally.
-        ResolutionManager._audit_resolution_targets(game, item, card)
+        # Activated and triggered abilities check their targets exactly as
+        # spells do (CR 608.2b): every target illegal, the ability does
+        # not resolve -- it is removed from the stack with no effect.
         _pt = getattr(card.template, 'card_types', None) or []
         _is_permanent_spell = any(
             t in _pt for t in (CardType.CREATURE, CardType.ARTIFACT,
                                CardType.ENCHANTMENT, CardType.PLANESWALKER))
         _is_aura = getattr(card.template, 'aura_enchant_restriction', None) is not None
         _fizzle_eligible = not (_is_permanent_spell and not _is_aura)
-        if (item.item_type == StackItemType.SPELL and item.targets
-                and _fizzle_eligible
-                and ResolutionManager._spell_fizzles(game, item)):
+        _is_ability = item.item_type in (StackItemType.ACTIVATED_ABILITY,
+                                         StackItemType.TRIGGERED_ABILITY)
+        _targets_checked = bool(item.targets) and (
+            _is_ability or (item.item_type == StackItemType.SPELL
+                            and _fizzle_eligible))
+        if _targets_checked and ResolutionManager._spell_fizzles(game, item):
+            if _is_ability:
+                game.log.append(
+                    f"T{game.display_turn}: {card.name}'s ability fizzles "
+                    f"(all targets illegal, CR 608.2b)")
+                return
             game.log.append(
                 f"T{game.display_turn}: {card.name} fizzles "
                 f"(all targets illegal, CR 608.2b)")
@@ -223,6 +241,10 @@ class ResolutionManager:
             # stay in sync and route through the zone funnel.
             ResolutionManager._move_resolved_spell_off_stack(game, card)
             return
+        # Rules audit (CR 608.2b / 400.7 / 702.11b / 702.16b): what goes on
+        # to resolve still has a legal target.
+        if _targets_checked:
+            ResolutionManager._audit_resolution_targets(game, item, card)
 
         # Only log "Resolve" for spells — not for triggered/activated abilities
         if item.item_type == StackItemType.SPELL:
@@ -327,8 +349,9 @@ class ResolutionManager:
 
     @staticmethod
     def _spell_fizzles(game: "GameState", item: StackItem) -> bool:
-        """CR 608.2b — true when EVERY target chosen at cast time is
-        now illegal, in which case the spell doesn't resolve.
+        """CR 608.2b — true when EVERY target chosen for the spell or
+        activated ability is now illegal, in which case it doesn't
+        resolve.
 
         Target-entry shapes handled (see ai/ev_player._choose_targets
         and ai/response.py for the producers):
@@ -337,33 +360,44 @@ class ResolutionManager:
           remain legal targets while the game is live — the game-over
           path never reaches resolution — so these always count as
           valid.
-        * positive int: instance_id of a card. Legal iff the card
-          still exists AND still occupies the zone it was in when
-          targeted (cast-time snapshot in ``StackItem.target_zones``
-          — battlefield for removal, stack for counterspells,
-          graveyard for reanimation). Changing zone makes the target
-          illegal (CR 608.2b).
+        * positive int: instance_id of a card. Legal iff it is still
+          the object that was targeted and may still be targeted
+          (`_card_target_still_legal`, against the snapshot taken when
+          it was chosen: ``StackItem.target_zones`` /
+          ``target_entry_seqs``).
         * anything else (direct object ref, player index without a
           snapshot, items built outside CastManager e.g. in tests):
           cannot be proven illegal — counts as valid, so the spell
           resolves. Fizzling is only ever asserted on positive
-          evidence that a target left its zone.
+          evidence.
         """
         for tid in item.targets:
             if not isinstance(tid, int) or tid < 0:
                 return False  # player target / object ref — valid
-            cast_zone = item.target_zones.get(tid)
-            if cast_zone is None:
-                return False  # no snapshot — can't prove illegal
-            target = game.get_card_by_id(tid)
-            if target is not None and target.zone == cast_zone:
-                # CR 702.16b: a target that is (or became) protected
-                # from the spell's colour is illegal on resolution too.
-                from .target_solver import _blocked_by_protection
-                if _blocked_by_protection(target, item.source):
-                    continue
-                return False  # still where it was targeted — valid
-        return True  # every target verifiably left its cast-time zone
+            if ResolutionManager._card_target_still_legal(game, item, tid):
+                return False
+        return True  # every target verifiably illegal now
+
+    @staticmethod
+    def _card_target_still_legal(game: "GameState", item: StackItem,
+                                 tid: int) -> bool:
+        """CR 608.2b for one card target: it is still the object that was
+        targeted -- in its snapshot zone and, on the battlefield, the same
+        entry (CR 400.7: a permanent that left and returned is a new
+        object) -- and the source may still target it (hexproof 702.11b,
+        protection 702.16b; `target_solver.can_be_targeted`). A target with
+        no snapshot cannot be proven illegal and counts as legal."""
+        cast_zone = item.target_zones.get(tid)
+        if cast_zone is None:
+            return True  # no snapshot — can't prove illegal
+        target = game.get_card_by_id(tid)
+        if target is None or target.zone != cast_zone:
+            return False
+        entry = item.target_entry_seqs.get(tid)
+        if entry is not None and target.battlefield_entry_seq != entry:
+            return False
+        from .target_solver import can_be_targeted
+        return can_be_targeted(target, item.source, item.controller)
 
     @staticmethod
     def _audit_ward_paid(game, source, controller, target_ids, paid_ids,

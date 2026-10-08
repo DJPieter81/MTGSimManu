@@ -2002,17 +2002,14 @@ class CastManager:
             # Surface the updated color set for the stack item / Converge resolvers
             game._last_colors_spent = xpay_colors
 
-        # CR 608.2b support: snapshot each card-target's zone at cast
-        # time. ResolutionManager re-checks target legality on
-        # resolution against this snapshot — battlefield for removal,
-        # stack for counterspells, graveyard for reanimation. Player-
-        # target markers (negative ids) have no zone to snapshot.
-        target_zones = {}
-        for _tid in (targets or []):
-            if isinstance(_tid, int) and _tid > 0:
-                _tc = game.get_card_by_id(_tid)
-                if _tc is not None:
-                    target_zones[_tid] = _tc.zone
+        # CR 608.2b / 400.7 support: snapshot what each card target is
+        # at cast time -- its zone (battlefield for removal, stack for
+        # counterspells, graveyard for reanimation) and a permanent's
+        # battlefield entry. ResolutionManager re-checks target legality
+        # on resolution against this snapshot. Player-target markers
+        # (negative ids) have nothing to snapshot.
+        from .stack import snapshot_targets
+        target_zones, target_entry_seqs = snapshot_targets(game, targets)
 
         stack_item = StackItem(
             item_type=StackItemType.SPELL,
@@ -2020,6 +2017,7 @@ class CastManager:
             controller=player_idx,
             targets=targets or [],
             target_zones=target_zones,
+            target_entry_seqs=target_entry_seqs,
             x_value=x_value,
             # Propagate the evoke flag so StackItem.evoked mirrors
             # card._evoked — replay logging and any future code that

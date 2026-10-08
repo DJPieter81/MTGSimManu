@@ -642,15 +642,11 @@ class ActivationManager:
             game._activations_this_game = (
                 getattr(game, '_activations_this_game', 0) + 1)
 
-            # `target_zones` must be populated exactly as the cast path does,
-            # or the CR 608.2b fizzle check reads a missing snapshot and is
-            # silently inert.
-            target_zones = {}
-            for tid in (targets or []):
-                found = game.find_card_by_id(tid) if hasattr(
-                    game, 'find_card_by_id') else None
-                if found is not None:
-                    target_zones[tid] = found.zone
+            # The targets' snapshot is the one the cast path records
+            # (`stack.snapshot_targets`), so the CR 608.2b / 400.7
+            # re-check on resolution reads the same thing for an ability.
+            from .stack import snapshot_targets
+            target_zones, target_entry_seqs = snapshot_targets(game, targets)
 
             # `ability=None` is MANDATORY: StackItem.ability is typed as the
             # legacy Ability dataclass and resolution tests `item.ability.effect`
@@ -710,6 +706,7 @@ class ActivationManager:
                                          x_value=chosen_x),
                 ability=None,
                 target_zones=target_zones,
+                target_entry_seqs=target_entry_seqs,
                 x_value=chosen_x,
             ))
             game.log.append(

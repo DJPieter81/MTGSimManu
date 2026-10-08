@@ -7,7 +7,7 @@ is a plain LIFO. Resolution lives in ResolutionManager
 """
 from __future__ import annotations
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Set, TYPE_CHECKING, Callable
+from typing import Callable, Dict, List, Optional, Set, Tuple, TYPE_CHECKING
 from enum import Enum
 
 if TYPE_CHECKING:
@@ -58,12 +58,38 @@ class StackItem:
     # illegal fizzles. Player-target markers (negative ids) have no
     # zone and are never snapshotted.
     target_zones: Dict[int, str] = field(default_factory=dict)
+    # CR 400.7 support: the battlefield entry (`battlefield_entry_seq`)
+    # of each permanent target when it was chosen. A permanent that left
+    # the battlefield and came back is a new object -- an illegal target on
+    # resolution (CR 608.2b) even though it is back in its zone.
+    target_entry_seqs: Dict[int, int] = field(default_factory=dict)
 
     @property
     def name(self) -> str:
         if self.item_type == StackItemType.SPELL:
             return self.source.name
         return f"{self.source.name} ability"
+
+
+def snapshot_targets(game: "GameState", targets) -> Tuple[Dict[int, str],
+                                                           Dict[int, int]]:
+    """CR 608.2b / 400.7: what each card target is when it is chosen -- the
+    zone it occupies and, for a permanent, its battlefield entry. The one
+    snapshot casting and activating both record, so the resolution re-check
+    reads the same thing for a spell and an ability. Player markers
+    (negative ids) and non-card entries have neither."""
+    zones: Dict[int, str] = {}
+    entries: Dict[int, int] = {}
+    for tid in targets or ():
+        if not isinstance(tid, int) or isinstance(tid, bool) or tid <= 0:
+            continue
+        card = game.get_card_by_id(tid)
+        if card is None:
+            continue
+        zones[tid] = card.zone
+        if card.zone == "battlefield":
+            entries[tid] = card.battlefield_entry_seq
+    return zones, entries
 
 
 class Stack:
