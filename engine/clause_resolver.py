@@ -407,9 +407,19 @@ def _g_direct_damage(ctx):
 
 
 def _a_direct_damage(ctx):
-    # "Deals N damage to any target" through the shared damage owner; the
-    # CR 608.2 upgrade audit is restated independently.
+    # "Deals N damage to any target" through the shared damage owner.
+    # A strict, executable spell host resolves through the effect
+    # dispatcher (design doc 2026-09-29, section 11); any other takes the
+    # legacy apply below, whose CR 608.2 upgrade audit is restated
+    # independently.
+    from engine import effect_carrier
     from engine import effect_conditions as ec
+    effects = ctx.template.effects
+    if effect_carrier.dispatch(ctx.game, ctx.card, ctx.controller,
+                               effects.spell(0), ctx.targets, family="damage",
+                               x_value=ctx.x_value,
+                               face_hosts=effects.front()) is not None:
+        return True
     orr = _or()
     game, card, controller = ctx.game, ctx.card, ctx.controller
     dd = card.template.direct_damage_data

@@ -241,3 +241,21 @@ def test_the_legacy_self_check_is_deterministic_on_every_registered_deck_host(ca
     assert rep["state_changing_hosts"] >= pinned["state_changing_floor"]
     # the hosts with no single legacy apply are reported by kind
     assert set(rep["skipped_by_kind"]) >= {"TRIGGERED", "STATIC"}
+
+
+# Each registered-deck pair on the new path, on every board and seed, both
+# ways. Measured 2026-10-08: ~2 s CPU for the 7 pairs, plus the closure's
+# deck parse and, when first in the process, ~18 s for the shared card DB.
+@pytest.mark.timeout(900)
+def test_every_registered_deck_host_on_the_new_path_resolves_as_its_legacy_apply(card_db):
+    """A38: a switched carrier takes the dispatcher for a strict,
+    executable host. Through it and through its legacy apply
+    (`legacy_only`), every board and seed gives the same state digest, log
+    bytes and result, and the dispatcher was entered, so the proof is about
+    the new path. Every proven pair is in the record gate parity reads."""
+    h = _h()
+    rep = h.switched_check(card_db, h.deck_templates(card_db))
+    assert rep["divergences"] == []
+    assert rep["undispatched"] == [] and rep["no_case"] == []
+    assert rep["proven"] and len(rep["proven"]) == rep["pairs"]
+    assert {tuple(k) for k in rep["proven"]} <= h.load_switched_record()

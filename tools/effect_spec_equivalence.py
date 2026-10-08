@@ -92,6 +92,10 @@ SNAPSHOT_DIR = REPO / "tools" / "effect_legacy_snapshots"
 # legacy handler with the hosts its gate accepts; `--update` writes it and
 # a full `--check` fails when it is stale.
 CLOSURE_PATH = REPO / "tools" / "effect_closure_report.json"
+# The switched pairs proven harness-identical (A38): written by
+# `tools/host_resolution_equivalence.py --switched --pool --record`; gate
+# parity holds every pair on the new path to it.
+HARNESS_RECORD_PATH = REPO / "tools" / "host_harness_switched.json"
 CARD_DATABASE = REPO / "engine" / "card_database.py"
 
 AGREE = "AGREE"
@@ -923,11 +927,25 @@ def _clause_contexts(t, ce):
             yield kc, None, h, _host_label(h) + ":kicked"
 
 
+def _spell_reaches_clause_handlers(t) -> bool:
+    """Does the whole spell's resolution reach the clause handlers? A
+    card-name SPELL_RESOLVE registry handler runs first and ends it, and a
+    counterspell takes the per-ability path
+    (`ResolutionManager._execute_spell_effects`): for either, a switched
+    clause handler is not the path its host resolves on."""
+    from engine.card_effects import EFFECT_REGISTRY, EffectTiming
+    return not (EFFECT_REGISTRY.has_handler(t.name, EffectTiming.SPELL_RESOLVE)
+                or getattr(t, "is_counterspell", False))
+
+
 def closure(templates: Iterable[Any], effects: Mapping[str, Any]
             ) -> List[Pair]:
-    """Every (legacy handler, host) pair a legacy gate accepts."""
+    """Every (legacy handler, host) pair a legacy gate accepts. A pair is
+    switched when its handler's apply reaches the dispatcher AND the host
+    resolves through that handler (`_spell_reaches_clause_handlers`)."""
     from engine import clause_resolver as CR
     from engine import activated_effects, planeswalker_manager
+    from engine.effect_carrier import places_legacy_targets
     from engine.cards import CardInstance, LoyaltyEffectKind
     from engine.effect_spec import EventHint, HostKind
     v = _views()
@@ -946,8 +964,11 @@ def closure(templates: Iterable[Any], effects: Mapping[str, Any]
         part = _part(t.name, mb, sb)
         card = CardInstance(template=t, owner=0, controller=0,
                             instance_id=0, zone="stack")
+        whole_reached = _spell_reaches_clause_handlers(t)
         for override, removal, h, label in _clause_contexts(t, ce):
             ctx = CR._static_context(card, 0, override, removal)
+            reached = override is not None or (
+                whole_reached and places_legacy_targets(h, ce.front()))
             for hd in handlers:
                 if hd.name in oracle_handlers and not ctx.oracle:
                     continue
@@ -957,7 +978,8 @@ def closure(templates: Iterable[Any], effects: Mapping[str, Any]
                     ok = False
                 if ok:
                     out.append(_pair(hd.name, HANDLER_FAMILY.get(
-                        hd.name, "?"), t, h, label, part, switched[hd.name]))
+                        hd.name, "?"), t, h, label, part,
+                        switched[hd.name] and reached))
         # loyalty lines: kind branches, and CLAUSE through the registry
         for face, attr in ((0, "loyalty_abilities"),
                            (1, "back_face_loyalty_abilities")):
@@ -997,7 +1019,8 @@ def closure(templates: Iterable[Any], effects: Mapping[str, Any]
                 continue
             out.append(_pair(f"activated_effects:{kind}",
                              rec.family if rec else "?", t, h,
-                             _host_label(h), part, act_switched))
+                             _host_label(h), part,
+                             act_switched and places_legacy_targets(h)))
         # ETB carriers
         enters = [h for h in ce.front() if h.kind is HostKind.TRIGGERED
                   and h.trigger is not None
@@ -1039,6 +1062,33 @@ def gate_parity(pairs: Iterable[Pair],
             "legacy_fallback": len(pairs) - new,
             "fallback_by_handler": dict(sorted(by_handler.items())),
             "failures": sorted(set(failures))}
+
+
+def _recorded_pairs(path: Optional[Path] = None) -> set:
+    path = HARNESS_RECORD_PATH if path is None else path
+    if not path.is_file():
+        return set()
+    return {tuple(k) for k in json.loads(path.read_text())["pairs"]}
+
+
+def recorded_harness_ok(path: Optional[Path] = None
+                        ) -> Callable[[Pair], bool]:
+    """`harness_ok` for gate parity: the pair's switched carrier was
+    proven against its legacy apply by the committed harness record."""
+    proven = _recorded_pairs(path)
+    return lambda p: (p.handler, p.card, p.host) in proven
+
+
+def stale_harness_record(pairs: Iterable[Pair],
+                         path: Optional[Path] = None) -> List[str]:
+    """Recorded pairs that are no longer on the new path (a full pool
+    closure only): the record must be refreshed in the same commit."""
+    path = HARNESS_RECORD_PATH if path is None else path
+    on_new = {(p.handler, p.card, p.host) for p in pairs if p.new_path}
+    return [f"harness record {path.name} lists {list(k)}, which is not on "
+            f"the new path: refresh it with host_resolution_equivalence.py "
+            f"--switched --pool --record"
+            for k in sorted(_recorded_pairs(path) - on_new)]
 
 
 def closure_json(rep: Mapping[str, Any]) -> str:
@@ -1137,7 +1187,9 @@ def main(argv: Optional[List[str]] = None) -> int:
         t0 = time.process_time()
         pairs = closure(templates, effects)
         timing["closure"] = time.process_time() - t0
-        parity = gate_parity(pairs)
+        parity = gate_parity(pairs, harness_ok=recorded_harness_ok())
+        if full:
+            parity["failures"] += stale_harness_record(pairs)
     if args.closure or args.gate_parity:
         if args.closure:
             rep = closure_report(pairs)

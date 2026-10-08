@@ -1,0 +1,672 @@
+{
+ "boards": [
+  "empty",
+  "opponent_creatures",
+  "own_creatures",
+  "lands",
+  "stack",
+  "graveyards"
+ ],
+ "description": "Switched (handler, card, host) pairs proven harness-identical: the switched carrier against its legacy apply on every board and seed, the dispatcher entered (tools/host_resolution_equivalence.py --switched --pool --record; design doc 2026-09-29, section 10, A38). Gate parity holds every pair on the new path to this record.",
+ "pairs": [
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Aetherflux Reservoir",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Aladdin's Ring",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Anaba Shaman",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Apocalypse Hydra",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Arc-Slogger",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Ballista Watcher // Ballista Wielder",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Barbarian Ring",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Barrage Ogre",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Barrage of Expendables",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Blasting Station",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Blazing Hellhound",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Blighted Gorge",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Blood Rites",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Bolrac-Clan Crusher",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Bullseye, Death Dealer",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Crackleburr",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Crackling Triton",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Cunning Sparkmage",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Deathbringer Thoctar",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Dynavolt Tower",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Elaborate Firecannon",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Ember Hauler",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Endbringer",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Explosive Apparatus",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Fallen Ferromancer",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Fanatical Firebrand",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Fire Whip",
+   "ACTIVATED:0:2"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Fireforger's Puzzleknot",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Firemind's Research",
+   "ACTIVATED:0:2"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Five-Alarm Fire",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Flamekin Spitfire",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Fledgling Mawcor",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Frostwielder",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Gelectrode",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Ghirapur Aether Grid",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Goblin Bombardment",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Granite Shard",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Grim Lavamancer",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Hagi Mob",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Hatchet Bully",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "High Noon",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Hurler Cyclops",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Icatian Javelineers",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Inferno Fist",
+   "ACTIVATED:0:2"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Ion Storm",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Jolene, Plundering Pugilist",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Kamahl, Pit Fighter",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Keldon Megaliths",
+   "ACTIVATED:0:2"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Kumano, Master Yamabushi",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Lightning Crafter",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Lightning Spear",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Living Twister",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Loot, the Pathfinder",
+   "ACTIVATED:0:3"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Magmaw",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Makeshift Munitions",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Mogg Fanatic",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Molten Vortex",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Molten-Tail Masticore",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Monoskelion",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Moonglove Extract",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Nightfire Giant",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Olivia's Attendants",
+   "ACTIVATED:0:2"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Orcish Bloodpainter",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Orcish Vandal",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Pirate Ship",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Prodigal Pyromancer",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Prodigal Sorcerer",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Pyrite Spellbomb",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Realm-Scorcher Hellkite",
+   "ACTIVATED:0:3"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Retributive Wand",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Rod of Ruin",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Scaldkin",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Seal of Fire",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Seismic Assault",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Shivan Hellkite",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Shock Troops",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Siege-Gang Commander",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Skirsdag Cultist",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Skoa, Embermage",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Slag Strider",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Spawn-Gang Commander",
+   "ACTIVATED:0:2"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Springjaw Trap",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Staff of Nin",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Stone-Giant of High Pass",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Stormbind",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Tar Pitcher",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "The Filigree Sylex",
+   "ACTIVATED:0:2"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Triskelion",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Twinshot Sniper",
+   "ACTIVATED:0:2"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Unyaro Bees",
+   "ACTIVATED:0:2"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Valakut Invoker",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Vengeful Devil",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Viashino Fangtail",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Vithian Stinger",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Vulshok Sorcerer",
+   "ACTIVATED:0:1"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Walking Ballista",
+   "ACTIVATED:0:2"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Weaponize the Monsters",
+   "ACTIVATED:0:0"
+  ],
+  [
+   "activated_effects:DAMAGE_ANY_TARGET",
+   "Weather Maker",
+   "ACTIVATED:0:3"
+  ],
+  [
+   "direct_damage",
+   "Assault // Battery",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Burn Trail",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Channeled Dragonfire",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Direct Current",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Explosive Impact",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Fiery Temper",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Firebolt",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Fires of Undeath",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Flame Jab",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Flame Javelin",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Flame Lash",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Galvanic Blast",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Geistflame",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Glacial Ray",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Gut Shot",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Hornet Sting",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Lava Dart",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Lightning Blast",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Lightning Bolt",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Lightning Strike",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Open Fire",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Precision Bolt",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Rift Bolt",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Searing Spear",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Searing Wind",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Shock",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Staggershock",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Tarfire",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Thunderblade Charge",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Thunderous Wrath",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Tome Blast",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Unfriendly Fire",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
+   "Volcanic Hammer",
+   "SPELL:0:0"
+  ]
+ ],
+ "seeds": [
+  0,
+  1
+ ]
+}

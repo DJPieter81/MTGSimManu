@@ -18,10 +18,15 @@ The six boards (section 10, "Per-host resolution harness"): ``empty``;
 from the pool by type and characteristics, in name order -- never by name --
 so the boards are the same on every run.
 
-**In E0** no executor exists, so both sides are the legacy apply: the run
-is the harness's self-check, proving the comparison deterministic (exit
-criterion 5). A family's switch commit replaces one side with
-`effect_resolver.resolve_ability` (``--side new``, once executors land).
+The default run is the harness's self-check, both sides the same apply,
+proving the comparison deterministic (exit criterion 5). ``--switched``
+compares, for every (handler, host) pair the gate-parity closure puts on the
+new path, the switched carrier (which takes `effect_resolver.resolve_ability`
+for the host) against its legacy apply (`effect_resolver.legacy_only`), and
+requires the dispatcher to have been entered; ``--pool --record`` writes the
+proven pairs to ``tools/host_harness_switched.json``, the record gate parity
+holds every new-path pair to (A38), and ``--pool --check`` fails when that
+record is stale.
 
 Legacy applies by host kind: a SPELL host resolves through the spell
 resolution path (`GameState._execute_spell_effects` on a StackItem); a MODE
@@ -44,6 +49,9 @@ Usage::
     python tools/host_resolution_equivalence.py            # deck MB + SB
     python tools/host_resolution_equivalence.py --pool     # whole pool
     python tools/host_resolution_equivalence.py --card NAME --json
+    python tools/host_resolution_equivalence.py --switched          # deck MB + SB
+    python tools/host_resolution_equivalence.py --switched --pool --record
+    python tools/host_resolution_equivalence.py --switched --pool --check
 """
 from __future__ import annotations
 
@@ -518,6 +526,93 @@ def self_check(db, templates: Iterable[Any], *, seeds=SEEDS,
             "cpu_s": round(time.process_time() - t0, 2)}
 
 
+SWITCHED_RECORD_PATH = REPO / "tools" / "host_harness_switched.json"
+
+
+def legacy_only_apply(game, template, case: HostCase) -> Any:
+    """`legacy_apply` with every switched carrier on its legacy apply
+    (`effect_resolver.legacy_only`): the legacy side of a switched host."""
+    from engine.effect_resolver import legacy_only
+    with legacy_only():
+        return legacy_apply(game, template, case)
+
+
+def switched_check(db, templates: Iterable[Any], *, seeds=SEEDS,
+                   boards: Iterable[str] = BOARDS) -> dict:
+    """A38: every (handler, host) pair of `templates` the closure puts on
+    the new path, resolved through its switched carrier against its legacy
+    apply on every board and seed. A pair is proven when no board diverges
+    (digest, log bytes, result) and the carrier entered the dispatcher on
+    some board, so the proof is about the new path, not a silent fallback."""
+    if str(REPO / "tools") not in sys.path:
+        sys.path.insert(0, str(REPO / "tools"))
+    import effect_spec_equivalence as eq
+    from engine import effect_resolver as er
+    templates = list(templates)
+    effects = eq.parse_effects_of(templates)
+    pairs = [p for p in eq.closure(templates, effects) if p.new_path]
+    by_name = {t.name: t for t in templates}
+    pool = BoardPool(db)
+    built = {b: build_board(pool, b) for b in boards}
+    proven: List[List[str]] = []
+    divergences: List[Divergence] = []
+    undispatched: List[List[str]] = []
+    no_case: List[List[str]] = []
+    entered = [0]
+    real = er.resolve_ability
+
+    def counting(*a, **k):
+        entered[0] += 1
+        return real(*a, **k)
+
+    t0 = time.process_time()
+    er.resolve_ability = counting
+    try:
+        for p in pairs:
+            key = [p.handler, p.card, p.host]
+            t = by_name[p.card]
+            ok, _ = host_cases(t, effects[p.card])
+            case = next((c for c in ok if c.host == p.host), None)
+            if case is None:
+                no_case.append(key)
+                continue
+            before = entered[0]
+            divs = compare_host(built, t, case, seeds=seeds,
+                                left=legacy_only_apply, right=legacy_apply)
+            divergences += divs
+            if entered[0] == before:
+                undispatched.append(key)
+            elif not divs:
+                proven.append(key)
+    finally:
+        er.resolve_ability = real
+    return {"pairs": len(pairs), "proven": sorted(proven),
+            "boards": list(built), "seeds": list(seeds),
+            "divergences": [dataclasses.asdict(d) for d in divergences],
+            "undispatched": sorted(undispatched), "no_case": sorted(no_case),
+            "cpu_s": round(time.process_time() - t0, 2)}
+
+
+def load_switched_record(path: Path = SWITCHED_RECORD_PATH) -> set:
+    """The (handler, card, host) pairs the committed record proves."""
+    if not path.is_file():
+        return set()
+    return {tuple(k) for k in json.loads(path.read_text())["pairs"]}
+
+
+def switched_record_json(rep: dict) -> str:
+    return json.dumps({
+        "description": (
+            "Switched (handler, card, host) pairs proven harness-identical: "
+            "the switched carrier against its legacy apply on every board "
+            "and seed, the dispatcher entered (tools/host_resolution_"
+            "equivalence.py --switched --pool --record; design doc "
+            "2026-09-29, section 10, A38). Gate parity holds every pair on "
+            "the new path to this record."),
+        "boards": rep["boards"], "seeds": rep["seeds"],
+        "pairs": rep["proven"]}, indent=1, sort_keys=True) + "\n"
+
+
 def deck_templates(db) -> List[Any]:
     from decks.modern_meta import MODERN_DECKS
     names = {c for d in MODERN_DECKS.values()
@@ -534,6 +629,15 @@ def main(argv: Optional[List[str]] = None) -> int:
     ap.add_argument("--card", action="append")
     ap.add_argument("--json", action="store_true")
     ap.add_argument("--seeds", type=int, nargs="+", default=list(SEEDS))
+    ap.add_argument("--switched", action="store_true",
+                    help="each pair on the new path: switched carrier "
+                         "against its legacy apply")
+    ap.add_argument("--record", action="store_true",
+                    help="with --switched --pool: write the proven pairs "
+                         "to " + SWITCHED_RECORD_PATH.name)
+    ap.add_argument("--check", action="store_true",
+                    help="with --switched --pool: fail unless the proven "
+                         "pairs equal the committed record")
     args = ap.parse_args(argv)
     import contextlib
     import io
@@ -549,6 +653,34 @@ def main(argv: Optional[List[str]] = None) -> int:
                            key=lambda t: t.name)
     else:
         templates = deck_templates(db)
+    if args.switched:
+        rep = switched_check(db, templates, seeds=tuple(args.seeds))
+        failed = bool(rep["divergences"] or rep["undispatched"]
+                      or rep["no_case"])
+        if args.json:
+            print(json.dumps(rep, indent=1, sort_keys=True))
+        else:
+            print(f"{rep['pairs']} pairs on the new path x "
+                  f"{len(rep['boards'])} boards x {len(rep['seeds'])} seeds "
+                  f"(switched against legacy): {len(rep['proven'])} proven, "
+                  f"{len(rep['divergences'])} divergences, "
+                  f"{len(rep['undispatched'])} never dispatched, "
+                  f"{len(rep['no_case'])} with no harness case; "
+                  f"{rep['cpu_s']} s CPU")
+            for d in rep["divergences"][:20]:
+                print(f"  {d}")
+            for k in rep["undispatched"][:20] + rep["no_case"][:20]:
+                print(f"  {k}")
+        if args.record and args.pool and not failed:
+            SWITCHED_RECORD_PATH.write_text(switched_record_json(rep))
+        if args.check and args.pool:
+            recorded = load_switched_record()
+            proven = {tuple(k) for k in rep["proven"]}
+            for k in sorted(proven ^ recorded):
+                print(f"  record {'lacks' if k in proven else 'is stale for'}"
+                      f" {list(k)}")
+            failed |= proven != recorded
+        return 1 if failed else 0
     rep = self_check(db, templates, seeds=tuple(args.seeds))
     if args.json:
         print(json.dumps(rep, indent=1, sort_keys=True))

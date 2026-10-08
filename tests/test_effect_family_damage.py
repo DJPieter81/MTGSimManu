@@ -289,3 +289,66 @@ def test_the_executors_read_no_oracle_text_and_write_no_state_themselves():
                 own_attr = (isinstance(t, ast.Attribute) and t.attr == "supports"
                             and isinstance(t.value, ast.Name))
                 assert own_table or own_attr, f"line {node.lineno}"
+
+
+# ── Carriers ───────────────────────────────────────────────────────────
+
+def _activated(card_db, name, kind="DAMAGE_ANY_TARGET"):
+    t = card_db.get_card(name)
+    ab = next(a for a in t.activated_abilities if a.effect_kind.name == kind)
+    return t, ab
+
+
+def test_an_activated_damage_ability_that_hits_a_player_reports_it_applied(card_db):
+    """resolve_activated_ability returns True when an effect applied:
+    damage dealt to a player applied as much as damage to a creature."""
+    from engine.activated_effects import resolve_activated_ability
+    t, ab = _activated(card_db, "Goblin Bombardment")
+    game = _game()
+    perm = _put(game, 0, t)
+    assert resolve_activated_ability(game, perm, 0, [-1], ability=ab) is True
+    assert game.players[1].life == 20 - ab.amount
+
+
+def test_a_fixed_burn_spell_with_a_flashback_line_resolves_only_its_damage(card_db, monkeypatch):
+    """A1 / 18.3: a flashback line is a keyword host of its own, so the
+    spell resolves its one DAMAGE spec, through the dispatcher; the
+    flashback cost (sacrificing a Mountain) is no part of it."""
+    from engine.stack import StackItem, StackItemType
+    entered = []
+    real = er.resolve_ability
+    monkeypatch.setattr(er, "resolve_ability",
+                        lambda *a, **k: (entered.append(a[3]), real(*a, **k))[1])
+    game = _game()
+    mountain = _put(game, 0, _template("Mountain", [CardType.LAND],
+                                       subtypes=["Mountain"]))
+    dart = _put(game, 0, card_db.get_card("Lava Dart"), "stack")
+    game._execute_spell_effects(StackItem(item_type=StackItemType.SPELL,
+                                          source=dart, controller=0,
+                                          targets=[-1]))
+    assert [h.kind.name for h in entered] == ["SPELL"]
+    assert game.players[1].life == 19
+    assert mountain.zone == "battlefield"
+
+
+def test_the_switch_declines_a_host_whose_targets_it_cannot_place_and_when_dispatch_is_off():
+    """Section 11: a switched carrier offers its host to the dispatcher and
+    keeps its legacy apply when the dispatcher declines -- the legacy list
+    shared with another targeting host of the face, or dispatch off for
+    the harness's legacy side."""
+    from engine import effect_carrier
+    game = _game()
+    spell = _put(game, 0, _template("Burn", [CardType.INSTANT]), "stack")
+    host = _host(_damage(amount=3))
+    cycling = AbilityEffects(kind=HostKind.TRIGGERED, face=0, index=1,
+                             targets=(ANY,))
+    assert effect_carrier.dispatch(game, spell, 0, host, [-1],
+                                   family="damage",
+                                   face_hosts=(host, cycling)) is None
+    with er.legacy_only():
+        assert effect_carrier.dispatch(game, spell, 0, host, [-1],
+                                       family="damage") is None
+    assert game.players[1].life == 20
+    assert effect_carrier.dispatch(game, spell, 0, host, [-1],
+                                   family="damage", face_hosts=(host,)) is True
+    assert game.players[1].life == 17

@@ -84,7 +84,7 @@
     "strict": true
    }
   ],
-  "executable": 79,
+  "executable": 98,
   "family": "damage",
   "hosts": {
    "mainboard": 2,
@@ -850,7 +850,7 @@
     "host": "SPELL:0:0",
     "part": "mainboard",
     "step": "E1",
-    "strict": false
+    "strict": true
    },
    {
     "card": "Grapeshot",
@@ -885,7 +885,7 @@
    "E1": 35,
    "none": 3
   },
-  "strict": 34,
+  "strict": 35,
   "sub_kinds": {},
   "verb_sets": {
    "DAMAGE": 35,
@@ -1702,7 +1702,7 @@
    "E6": 2,
    "none": 60
   },
-  "strict": 22,
+  "strict": 23,
   "sub_kinds": {
    "REFLEXIVE": 2
   },

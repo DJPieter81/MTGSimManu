@@ -310,15 +310,20 @@ def test_the_views_module_reads_no_oracle_text_and_is_policed_by_the_runtime_par
     assert not reads, reads
 
 
-def test_no_engine_or_ai_module_calls_the_views_in_e0():
-    hits = []
+# Modules that may read the views: the carrier switch (section 11), which
+# reads the family's strict shape of the host a switched carrier offers it.
+VIEW_READERS = {"engine/effect_carrier.py"}
+
+
+def test_only_the_carrier_switch_reads_the_views():
+    hits = set()
     for d in ("engine", "ai"):
         for p in sorted((REPO / d).rglob("*.py")):
             if p == VIEWS:
                 continue
             if "effect_views" in p.read_text():
-                hits.append(str(p.relative_to(REPO)))
-    assert not hits, hits
+                hits.add(str(p.relative_to(REPO)))
+    assert hits == VIEW_READERS
 
 
 def test_the_views_hold_no_card_names(card_db):
@@ -1522,8 +1527,15 @@ def test_the_check_command_runs_gate_parity(monkeypatch, tmp_path):
     closure = tmp_path / "closure.json"
     closure.write_text(t.closure_json(t.closure_report([_pair()])))
     monkeypatch.setattr(t, "CLOSURE_PATH", closure)
+    monkeypatch.setattr(t, "HARNESS_RECORD_PATH", tmp_path / "none.json")
     monkeypatch.setattr(t, "closure", lambda templates, effects: [_pair()])
     assert t.main(["--check", "--baseline", str(base)]) == 0
+    # a recorded pair that is not on the new path is a stale record
+    stale = tmp_path / "stale.json"
+    stale.write_text('{"pairs": [["direct_damage", "X", "SPELL:0:0"]]}')
+    monkeypatch.setattr(t, "HARNESS_RECORD_PATH", stale)
+    assert t.main(["--check", "--baseline", str(base)]) == 1
+    monkeypatch.setattr(t, "HARNESS_RECORD_PATH", tmp_path / "none.json")
     monkeypatch.setattr(t, "closure", lambda templates, effects:
                         [_pair(family="?")])
     assert t.main(["--check", "--baseline", str(base)]) == 1
@@ -1605,10 +1617,10 @@ def test_a_handler_that_reaches_the_dispatcher_through_a_helper_is_switched():
     assert t._is_switched(_switched_helper, within=anywhere)
     assert t._is_switched(_switched_through_a_helper, within=anywhere)
     assert not t._is_switched(_legacy_apply, within=anywhere)
-    # E0: no engine handler reaches the dispatcher
+    # The clause handlers that reach the dispatcher: the landed families'.
     from engine import clause_resolver as CR
-    assert not any(t._is_switched(h.apply) for h in
-                   list(CR.PRE_ORACLE_HANDLERS) + list(CR.HANDLERS))
+    assert {h.name for h in list(CR.PRE_ORACLE_HANDLERS) + list(CR.HANDLERS)
+            if t._is_switched(h.apply)} == {"direct_damage"}
 
 
 def test_every_etb_carrier_and_the_self_cast_handler_name_an_apply_that_reads_it():
@@ -1622,13 +1634,33 @@ def test_every_etb_carrier_and_the_self_cast_handler_name_an_apply_that_reads_it
 
 
 def test_the_closure_takes_every_pairs_switch_from_its_apply_never_a_constant(card_db, monkeypatch):
+    from engine import effect_carrier
     t = _eq_tool()
     monkeypatch.setattr(t, "_is_switched", lambda fn, **kw: True)
+    monkeypatch.setattr(t, "_spell_reaches_clause_handlers", lambda tpl: True)
+    monkeypatch.setattr(effect_carrier, "places_legacy_targets",
+                        lambda host, face_hosts=(): True)
     templates = t.deck_templates(card_db)
     pairs = t.closure(templates, t.parse_effects_of(templates))
     kinds = {p.handler.split(":")[0] for p in pairs}
     assert {"etb", t.SELF_CAST_HANDLER} <= kinds
     assert all(p.switched for p in pairs)
+
+
+def test_a_switched_handler_does_not_switch_a_host_its_carrier_never_dispatches(card_db):
+    """A pair is switched only when its host resolves through the switched
+    handler and the switch can place its targets: a card-name registry
+    handler that intercepts the spell, or a cast-time target list shared
+    with another targeting host of the face, keeps it on legacy fallback."""
+    t = _eq_tool()
+    names = ["Grapeshot", "Resounding Thunder", "Lightning Bolt"]
+    templates = [card_db.get_card(n) for n in names]
+    pairs = {p.card: p for p in t.closure(templates, t.parse_effects_of(templates))
+             if p.handler == "direct_damage"}
+    assert not t._spell_reaches_clause_handlers(templates[0])
+    assert (pairs["Grapeshot"].switched, pairs["Resounding Thunder"].switched,
+            pairs["Lightning Bolt"].switched) == (False, False, True)
+    assert all(pairs[n].strict and pairs[n].executable for n in names)
 
 
 def test_gate_parity_counts_every_accepted_host_of_an_unswitched_handler_as_legacy_fallback():
@@ -1650,7 +1682,7 @@ def test_gate_parity_fails_a_new_path_host_without_a_harness_identical_run_and_a
     assert t.gate_parity([_pair(family="?")])["failures"]
 
 
-def test_the_closure_lists_the_registered_deck_hosts_legacy_gates_accept_and_none_is_on_the_new_path(card_db):
+def test_the_closure_lists_the_registered_deck_hosts_legacy_gates_accept_and_only_switched_proven_ones_take_the_new_path(card_db):
     t = _eq_tool()
     templates = t.deck_templates(card_db)
     pairs = t.closure(templates, t.parse_effects_of(templates))
@@ -1662,9 +1694,12 @@ def test_the_closure_lists_the_registered_deck_hosts_legacy_gates_accept_and_non
                     "oracle_resolver.resolve_self_cast_trigger"):
         assert handler in rep, handler
     assert all(p.part in ("mainboard", "sideboard") for p in pairs)
-    parity = t.gate_parity(pairs)
+    parity = t.gate_parity(pairs, harness_ok=t.recorded_harness_ok())
     assert parity["failures"] == []
-    assert parity["new_path"] == 0 and parity["legacy_fallback"] == len(pairs)
+    # E1: the damage family's switched carriers, and nothing else.
+    assert {p.handler for p in pairs if p.new_path} == {
+        "direct_damage", "activated_effects:DAMAGE_ANY_TARGET"}
+    assert parity["new_path"] + parity["legacy_fallback"] == len(pairs)
 
 
 # One full pool run over the session's shared eager parse (`pool_effects`,
@@ -1681,7 +1716,8 @@ def test_the_pool_equivalence_and_gate_parity_hold_their_committed_baselines(car
     rep = t.run(templates, effects, full=True)
     base = json.loads(t.BASELINE_PATH.read_text())
     pairs = t.closure(templates, effects)
-    parity = t.gate_parity(pairs)
+    parity = t.gate_parity(pairs, harness_ok=t.recorded_harness_ok())
+    assert t.stale_harness_record(pairs) == []
     assert t.check(base, rep, templates=templates, effects=effects,
                    parity=parity, closure=t.closure_report(pairs)) == []
     assert parity["legacy_fallback"] == base["gate_parity"]["legacy_fallback"]

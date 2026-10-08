@@ -456,12 +456,9 @@ def test_counter_upgrade_audit_sees_a_ferocious_counter_left_soft(audit, card_db
     assert "601.2b/counter_upgrade" in _rules(rules_audit.drain())
 
 
-def test_damage_upgrade_audit_sees_a_metalcraft_burn_left_at_base(audit, card_db, monkeypatch):
-    """CR 608.2: a metalcraft Galvanic Blast deals 4, not 2. Re-create the
-    pre-fix engine (the resolved amount stays base despite metalcraft) and
-    the auditor must record it."""
-    from engine import oracle_resolver
-    from engine.oracle_resolver import resolve_spell_from_oracle
+def _metalcraft_blast_board(card_db):
+    """Three artifacts for P1, a 1/4 for P2, and a Galvanic Blast on the
+    stack aimed at it: metalcraft holds, so the spell deals 4."""
     from engine.cards import CardTemplate, CardType, ManaCost
     game = GameState(rng=random.Random(0))
     game.current_phase = Phase.MAIN1
@@ -486,11 +483,38 @@ def test_damage_upgrade_audit_sees_a_metalcraft_burn_left_at_base(audit, card_db
     gb = CardInstance(template=card_db.get_card("Galvanic Blast"), owner=0, controller=0,
                       instance_id=game.next_instance_id(), zone="stack")
     gb._game_state = game
-    # Break the rule: keep the base amount despite metalcraft.
+    return game, gb, v
+
+
+def test_damage_upgrade_audit_sees_a_metalcraft_burn_left_at_base(audit, card_db, monkeypatch):
+    """CR 608.2: a metalcraft Galvanic Blast deals 4, not 2. Re-create the
+    pre-fix engine (the resolved amount stays base despite metalcraft) and
+    the auditor must record it -- on the legacy apply and on the effect
+    dispatcher alike -- and stay silent when the rule holds."""
     from engine import effect_conditions
-    monkeypatch.setattr(effect_conditions, "effective_direct_damage",
-                        lambda g, c, t: (getattr(t, "direct_damage_data", None) or {}).get("amount", 0))
+    from engine.effect_resolver import legacy_only
+    from engine.oracle_resolver import resolve_spell_from_oracle
+    # The rule holds on the dispatcher: no finding.
+    game, gb, v = _metalcraft_blast_board(card_db)
     resolve_spell_from_oracle(game, gb, 0, [v.instance_id])
+    assert v.damage_marked == 4
+    assert "608.2/damage_upgrade" not in _rules(rules_audit.drain())
+    # Break the dispatcher's condition: it deals the base amount.
+    game, gb, v = _metalcraft_blast_board(card_db)
+    with monkeypatch.context() as m:
+        m.setattr(effect_conditions, "state_condition_holds",
+                  lambda g, c, cond: False)
+        resolve_spell_from_oracle(game, gb, 0, [v.instance_id])
+    assert v.damage_marked == 2
+    assert "608.2/damage_upgrade" in _rules(rules_audit.drain())
+    # Break the legacy evaluator on the legacy apply.
+    game, gb, v = _metalcraft_blast_board(card_db)
+    with monkeypatch.context() as m:
+        m.setattr(effect_conditions, "effective_direct_damage",
+                  lambda g, c, t: (getattr(t, "direct_damage_data", None) or {}).get("amount", 0))
+        with legacy_only():
+            resolve_spell_from_oracle(game, gb, 0, [v.instance_id])
+    assert v.damage_marked == 2
     assert "608.2/damage_upgrade" in _rules(rules_audit.drain())
 
 

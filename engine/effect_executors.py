@@ -71,11 +71,12 @@ def _amount(ctx: Resolution, s: EffectSpec) -> int:
 def _damage_supported(s: EffectSpec) -> bool:
     """"~ deals <amount> damage to any target": the source deals it (CR
     120.1) to the one object or player chosen for an "any target" slot
-    (CR 115.4)."""
+    (CR 115.4). A source sacrificed to pay the cost deals it as it last
+    existed (CR 608.2h): the carrier's source object is that object."""
     if s.verb is not Verb.DAMAGE or not _plain_participants(s) or s.flags:
         return False
     src = s.other
-    if not (isinstance(src, Ref) and src.kind is RefKind.SELF and not src.lki):
+    if not (isinstance(src, Ref) and src.kind is RefKind.SELF):
         return False
     req = s.target
     if s.target_slot is None or s.subject is not None or s.ref is not None \
@@ -85,10 +86,30 @@ def _damage_supported(s: EffectSpec) -> bool:
     return conditions.amount_supported(s.amount)
 
 
+def _audit_damage_upgrade(ctx: Resolution, source: Any, amount: int) -> None:
+    """CR 608.2c, restated from the card's other parse: when the printed
+    upgrade condition of a burn spell (`direct_damage_data`, the legacy
+    parser's reading of the same text) holds for its controller, the
+    damage dealt is the upgrade amount. Observation only."""
+    from . import rules_audit
+    if not rules_audit.enabled():
+        return
+    dd = getattr(getattr(source, "template", None), "direct_damage_data",
+                 None) or {}
+    up = dd.get("upgrade_amount")
+    if up and conditions.direct_damage_condition_met(
+            ctx.game, ctx.controller, dd.get("upgrade_condition")):
+        rules_audit.check(
+            "608.2/damage_upgrade", amount == up,
+            f"{getattr(source, 'name', '?')}: {dd.get('upgrade_condition')} "
+            f"met but dealt {amount}, not {up}", game=ctx.game)
+
+
 def execute_damage(ctx: Resolution, s: EffectSpec,
                    actors: Tuple[int, ...]) -> Outcome:
     from .oracle_resolver import resolve_damage_to_chosen_target
     amount = _amount(ctx, s)
+    _audit_damage_upgrade(ctx, _source_object(ctx), amount)
     slot = ctx.chosen[s.target_slot] if s.target_slot < len(ctx.chosen) else ()
     # The owner's legacy target list: an object by id, the opponent's face
     # by its -1 sentinel (`chosen_from_legacy` is the inverse mapping).

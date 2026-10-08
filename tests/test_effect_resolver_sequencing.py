@@ -198,7 +198,7 @@ def test_the_dispatcher_tables_hold_exactly_the_landed_families(er):
 
 # Modules that may import the dispatcher: the families' executors, and the
 # carriers whose legacy apply has switched (section 11, "Carrier switch").
-DISPATCHER_IMPORTERS = {"engine/effect_executors.py"}
+DISPATCHER_IMPORTERS = {"engine/effect_executors.py", "engine/effect_carrier.py"}
 
 
 def test_only_the_executors_and_switched_carriers_import_the_dispatcher():

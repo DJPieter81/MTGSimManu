@@ -88,6 +88,17 @@ jobs:
         # (handler, host) pairs on legacy fallback, which needs the pool.
         run: python tools/check_effect_parsers.py --pool
 
+      - name: Switched hosts resolve as their legacy apply (needs the card DB)
+        # Design doc 2026-09-29 section 10 (A38): every (handler, host) pair
+        # the gate-parity closure puts on the effect dispatcher is resolved
+        # through its switched carrier and through its legacy apply on six
+        # boards x two seeds; any divergence, a pair that never reaches the
+        # dispatcher, or a stale tools/host_harness_switched.json fails.
+        # Measured 2026-10-08: ~42 s CPU for 131 pairs, plus the DB load.
+        env:
+          MTG_LLM_DECISION_SCORER_OFFLINE: "1"
+        run: python tools/host_resolution_equivalence.py --switched --pool --check
+
       - name: Classifier coverage gate (tag-gated engine behavior)
         run: python tools/check_classifier_coverage.py
 

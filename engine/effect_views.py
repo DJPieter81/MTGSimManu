@@ -292,9 +292,22 @@ _STACK_MANA_VERBS = frozenset({Verb.COUNTER, Verb.ADD_MANA, Verb.PAY,
 
 
 def strict_damage(h: AbilityEffects) -> bool:
-    """Exactly one top-level DAMAGE and no other spec (10.1, loyalty row)."""
-    return (_strict_host(h, _DAMAGE_VERBS) and len(h.specs) == 1
-            and _plain(h.specs[0]))
+    """One top-level DAMAGE (10.1, loyalty row), optionally replaced by
+    printed upgrades -- "~ deals M damage instead if <condition>" (10.1,
+    direct_damage_data row; 18.3 E1): each a conditional DAMAGE from the
+    same source to the same target slot that replaces it and nothing
+    else."""
+    if not _strict_host(h, _DAMAGE_VERBS, conditions=True):
+        return False
+    base = [s for s in h.specs if not s.replaces]
+    if len(base) != 1 or not _plain(base[0]):
+        return False
+    b = base[0]
+    return all(r.replaces == (b.seq,) and r.condition is not None
+               and not r.optional and not r.then and not r.otherwise
+               and not r.alternatives and r.duration is None
+               and r.target_slot == b.target_slot and r.other == b.other
+               for r in h.specs if r is not b)
 
 
 def strict_removal(h: AbilityEffects) -> bool:

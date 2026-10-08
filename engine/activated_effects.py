@@ -489,10 +489,22 @@ def resolve_activated_ability(game: "GameState", source: "CardInstance",
                 f"({ability.delayed_timing.value})")
             return True
 
+        # Design doc 2026-09-29, section 11: an ability whose parsed host
+        # is in its family's strict shape and executable resolves through
+        # the effect dispatcher; any other takes its branch below.
+        from .effect_carrier import dispatch_activation
+        dispatched = dispatch_activation(game, source, controller, ability,
+                                         targets, x_value=x_value)
+        if dispatched is not None:
+            return dispatched
+
         if kind is ActivationEffectKind.DAMAGE_ANY_TARGET:
             from .oracle_resolver import resolve_damage_to_chosen_target
-            return bool(resolve_damage_to_chosen_target(
-                game, source, controller, ability.amount, targets))
+            resolve_damage_to_chosen_target(
+                game, source, controller, ability.amount, targets)
+            # Applied whenever damage was dealt (CR 120.8: 0 is not),
+            # to a player as much as to a creature or planeswalker.
+            return ability.amount > 0
 
         if kind is ActivationEffectKind.DRAW_N:
             drawn = game.draw_cards(controller, ability.amount)
