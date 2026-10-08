@@ -6443,3 +6443,57 @@ An on-disk cache is held in reserve if the pool tools become too slow.
   - Bisecting 296 files, then per test, gave `test_load_all_gameplans`. `load_all_gameplans()` without decklists cached a JSON-only plan for every deck under the bare name, and games then read it (`always_early` differs for Jeskai Blink and 4/5c Control). It is the same defect class as `707a028`, through the other loader.
   - The cache is now keyed on (deck, derived-with-decklist). Pinned red-first; the polluting pair passes; 708 gameplan tests and the anchor pass.
 - **Order-dependence sources fixed so far:** two `id()`-keyed memos and both gameplan loaders.
+
+## E1 — damage and life on the effect dispatcher (2026-10-08)
+
+Design doc `docs/design/2026-09-29_clause_and_trigger_grammar.md`, sections 11 ("As built in E1"), 14 and 18.3. The first verb family resolves through the typed effect grammar. Class: 616 pool cards deal damage to a chosen target (13 registered-deck cards).
+
+**Byte-identical steps (seeded digest unchanged on each):**
+- **E1.0 `61f1358`:** `engine/effect_conditions.py` is the one owner of resolution-time counts. It holds:
+  - the primitives: graveyard card types, permanents controlled, opponents who lost life;
+  - the legacy adapters (`scaler_count`, `direct_damage_condition_met`, `effective_direct_damage`), moved out of `clause_resolver` and `oracle_resolver`;
+  - later, the typed evaluators for STATE `count` / `card_types` and the amounts LITERAL, X, and X_DEFINED over domain.
+- **E1.1 `496c220`:** `engine/effect_executors.py` holds DAMAGE, LOSE_LIFE and GAIN_LIFE through their owners. Each executor and evaluator declares `supports`, so `can_execute` fails closed per shape. The dispatcher carries the carrier's live source object (a resolving spell is in no zone) and a `legacy_only()` switch for the harness.
+- **E1.2 `8c53adb`:** `engine/effect_carrier.py` is the switch.
+  - The burn-spell handler offers its SPELL host. Every activated ability offers its host under its kind's family.
+  - Strict damage now admits printed "instead" upgrades.
+  - Harness proof (`tools/host_resolution_equivalence.py --switched`): 131 pool pairs, 131 identical to their legacy apply on six boards × two seeds, the dispatcher entered on each. The record `tools/host_harness_switched.json` is what gate parity holds new-path pairs to, and a CI step re-runs it.
+  - Pairs a card-name handler intercepts (Grapeshot then) or whose cast-time list another targeting host shares (Resounding Thunder) stay on legacy fallback.
+
+**Behaviour changes, each red first, with its auditor invariant:**
+- **E1.b1 `dfe0986` — a target is the object that was targeted (CR 608.2b, 400.7).**
+  - Before: a removal spell aimed at a creature blinked in response (the AI's "blink: save own targeted creature") still killed the returned creature. A ping activated at a creature that died went to the opponent's face. A target that gained hexproof was still hit.
+  - Fix: one snapshot helper (`stack.snapshot_targets`) records each card target's zone and battlefield entry when chosen, for a cast and for an activation; the activation snapshot had looked targets up through a method that does not exist. `ResolutionManager` re-checks identity and targetability, and abilities fizzle like spells.
+  - Auditor `608.2b/resolve_target`, restated from the snapshot.
+  - **Measured:** 0 of 600 cells changed (n=20 Bo3, full matrix). The lines it fixes did not decide any of these games.
+- **`bd837d1` (+ pins `cfef3a4`) — a target's zone is named by its own sentence (CR 115.1, 601.2c).**
+  - `target_solver.parse`'s loose graveyard fallback fired on any "target <type>" whenever the oracle held a graveyard phrase anywhere. So Unholy Heat's "target creature or planeswalker" became "a creature card in your graveyard", and the spell could not be cast at a creature unless its caster had a creature card in their own graveyard. Violent Urge was affected the same way.
+  - 137 pool cards' cast-time requirements change, every one a wrong graveyard requirement removed. Registered-deck cards: Unholy Heat, Violent Urge, Kraul Harpooner, Tyvar, Grist.
+  - Auditor `601.2c/target_zone`, restated from the grammar's typed slot.
+- **E1.b2 `d2b4fd2` — burn spells with no card-name handler.**
+  - Grapeshot, Unholy Heat and Tribal Flames registry handlers deleted: registry 85 → 82. Tribal Flames' handler went face and never dealt less than 2.
+  - A family-generic clause handler, "dispatched", last in the registry, carries a spell no legacy handler claims.
+  - The DAMAGE executor binds each chosen value itself: an illegal target is not affected and never redirected. An unbound slot keeps the owner's rule. The caster's -2 marker reaches the caster.
+  - 66 pool spells moved off the legacy per-ability fallback. Each difference is recorded as an intended change with its class: unlogged damage now logged; a creature-only spell no longer hits face with no legal target; the fallback resolved nothing; the fallback misread the spell.
+  - Digest: Ruby Storm games lose only the deleted handler's duplicate Grapeshot lines.
+  - **Measured together with `bd837d1`** (pre = E1.b1 arm): 30 cells changed, **every one involving Izzet Prowess**. Izzet Prowess field +0.2; every deck within ±0.3; 0 aborts; audit violations 0.
+  - Mechanism confirmed in replays (Izzet Prowess vs Boros Energy s50000/s51000): Unholy Heat is now cast on turn 3 at a creature (Guide of Souls, Ajani). Before, it was cast only once its controller's graveyard held a creature card, usually later and for 6.
+- **E1.b3 `dfa4a21` — loyalty-line and land damage through the damage owner.**
+  - A planeswalker's damage line picks its recipient through the shared resolution-time picker: legal, ward met, killable creatures first, else the opponent. Its damage goes through the owner, so a killed creature dies by state-based action (CR 704.5g) and face damage is life lost.
+  - A pain land's damage to its controller goes through `deal_damage`, so it is life lost this turn (CR 120.3a).
+  - `damage_write` 35 → 32 (36 → 35 with Tribal Flames).
+  - Auditor `115.4/loyalty_damage_target`.
+  - Digest: two Wrenn and Six games only gain the now-logged face damage.
+  - **Measured:** pending (Actions run 37840484628, pre = the E1.b2 arm).
+
+**Ratchets:**
+- card-name registry 85 → 82;
+- `damage_write` 36 → 32;
+- effect-parser (f) legacy-fallback pairs 5223 → 5091;
+- gate parity 234 pairs on the new path of 5325 (166 proven identical, 68 intended changes, each with its reason).
+
+**Leads (not built):**
+- **Activated "any target" abilities never choose a target.** `ActivatedAbility.target_requirements` is empty for Goblin Bombardment and its class, so the engine's empty-list rule always sends them face. The AI should choose on activation (CR 602.2b). That also unblocks the next item.
+- **Loyalty damage lines onto the dispatcher:** waits for the AI to choose a loyalty line's target on activation. One unbound-slot rule cannot serve both the activated "face" convention and the loyalty "engine pick".
+- The non-battlefield `Handle` ordinal (CR 400.7 outside the battlefield), needed by E2.
+- Multi-target and divided damage slots (`count_max > 1`), and a CAST_FACT (kicked) evaluator, so upgrades like "if kicked, 4 instead" become executable.
