@@ -6484,7 +6484,11 @@ Design doc `docs/design/2026-09-29_clause_and_trigger_grammar.md`, sections 11 (
   - `damage_write` 35 → 32 (36 → 35 with Tribal Flames).
   - Auditor `115.4/loyalty_damage_target`.
   - Digest: two Wrenn and Six games only gain the now-logged face damage.
-  - **Measured:** pending (Actions run 37840484628, pre = the E1.b2 arm).
+  - **Measured** (pre = the E1.b2 arm): 2 cells changed, Domain Zoo vs Ruby Storm and Azorius Control (WST) vs Ruby Storm, each one game toward Ruby Storm; Ruby Storm +0.2; every other deck within ±0.1; 0 aborts; audit violations 0. Mechanism: Ruby Storm's only DAMAGE loyalty line, Ral, Leyline Prodigy's −2 (the back face of Ral, Monsoon Mage), now picks a legal target through the shared picker and deals its damage through the owner. None of the three decks plays a pain land.
+- **Whole E1, from the pre arm (`57a8384`, = E1.2) to E1.b3:**
+  - 32 of 600 cells changed (30 involving Izzet Prowess, 2 involving Ruby Storm).
+  - Every deck within ±0.3; 0 aborts in all four arms; audit violations 0 throughout.
+  - Arms, n=20 Bo3, all 25 rows: e1-arm-pre `57a8384`, e1-b1-post `cf96099`, e1-b2-post `2aa23e1`, e1-b3-post `e1bd0ac`.
 
 **Ratchets:**
 - card-name registry 85 → 82;
