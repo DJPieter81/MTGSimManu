@@ -697,10 +697,13 @@ class ManaPayment:
             bonus = cond_bonus_cache.get(id(land), 0)
             if bonus > 0:
                 player.mana_pool.add("C", bonus)
-            # Pain land: self-damage when tapping for colored mana
+            # Pain land: self-damage when tapping for colored mana -- the
+            # land deals it to its controller through the damage owner,
+            # so it is life lost this turn (CR 120.3a).
             if land.template.tap_damage > 0 and any(
                     c != "C" for c in yielded):
-                player.life -= land.template.tap_damage
+                from .damage import deal_damage
+                deal_damage(land, player, land.template.tap_damage)
 
         ok = player.mana_pool.pay(cost)
 

@@ -239,7 +239,16 @@ class PlaneswalkerManager:
                         pw_card: CardInstance,
                         ability: LoyaltyAbility) -> None:
         """Printed "<walker> deals N damage to …" — kill a creature when the
-        damage is lethal to one, otherwise go face."""
+        damage is lethal to one, otherwise go face.
+
+        The line chose no target when it was activated, so its recipient
+        is picked on resolution by the shared picker
+        (`target_solver.pick_resolution_target`: never a creature the
+        walker may not target, ward met) among the killable opposing
+        creatures, highest mana value first; else the opponent. The damage
+        goes through the damage owner (`oracle_resolver.deal_damage_to`):
+        a creature it kills is destroyed by state-based actions (CR
+        704.5g), and damage to the opponent is life lost (CR 120.3a)."""
         effect_desc = ability.text
         dmg_match = re.search(r'(\d+)\s+damage', effect_desc)
         if dmg_match:
@@ -251,23 +260,33 @@ class PlaneswalkerManager:
         else:
             dmg = 1  # printed-but-unparsed amount: the smallest real one
 
+        from . import target_solver
+        from .oracle_resolver import deal_damage_to
         opponent = 1 - controller
-        opp = game.players[opponent]
-        pw_name = pw_card.template.name
-        if opp.creatures:
-            killable = [c for c in opp.creatures
-                        if (c.toughness or 0) - c.damage_marked <= dmg]
-            if killable:
-                target = max(killable,
-                             key=lambda c: (c.template.cmc, c.power or 0))
-                target.damage_marked += dmg
-                game.log.append(f"T{game.display_turn} P{controller+1}: "
-                                f"{pw_name} deals {dmg} to {target.name}")
-                if target.is_dead:
-                    game._creature_dies(target)
-                return
-        opp.life -= dmg
-        game.players[controller].damage_dealt_this_turn += dmg
+        killable = [c for c in game.players[opponent].creatures
+                    if (c.toughness or 0) - c.damage_marked <= dmg]
+        target = target_solver.pick_resolution_target(
+            game, controller, pw_card, killable,
+            key=lambda c: (c.template.cmc, c.power or 0))
+        PlaneswalkerManager._audit_damage_target(game, controller, pw_card,
+                                                 target)
+        deal_damage_to(game, pw_card, controller, dmg,
+                       target if target is not None else opponent)
+
+    @staticmethod
+    def _audit_damage_target(game: "GameState", controller: int,
+                             pw_card: CardInstance, target) -> None:
+        """Rules audit (CR 115.4 / 702.11b / 702.16b): a creature a
+        loyalty damage line picked on resolution is one its walker may
+        target. Observation only."""
+        from .rules_audit import enabled as _audit_on, check as _audit_check
+        if not _audit_on() or target is None:
+            return
+        from .target_solver import can_be_targeted
+        _audit_check("115.4/loyalty_damage_target",
+                     can_be_targeted(target, pw_card, controller),
+                     f"{pw_card.name} damages {target.name}, which it may "
+                     f"not target", game=game)
 
     @staticmethod
     def _resolve_gain_life_and_draw(game: "GameState", controller: int,

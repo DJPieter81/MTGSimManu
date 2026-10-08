@@ -1,10 +1,10 @@
 {
-  "combined": "923d36d95346353efed07c0913c95cffa7ba99a10ea12f5c6ce480d5aed2dc69",
+  "combined": "2a1d2f009c48a1a53b796cf10af3e8298fe8f6f1446b829b5b753fefff6cfe5c",
   "comment": "sha256 of each seeded verbose game log (tools/seeded_game_digest.py). A pure refactor must reproduce every digest byte for byte.",
   "games": {
     "bo1|4c Omnath|Ruby Storm|57500": {
-      "lines": 741,
-      "sha256": "e7514386c05d50016429522ce8b611c20999b8337e1e5c127f1ebb0fc058063c",
+      "lines": 742,
+      "sha256": "f0b0c76b13dd38e7109dff5111159d7b609da73f243e026bf6e6d23fe5fab126",
       "turns": 11,
       "winner": "4c Omnath"
     },
@@ -87,8 +87,8 @@
       "winner": "Jeskai Blink"
     },
     "bo1|Pinnacle Affinity|4/5c Control|52500": {
-      "lines": 803,
-      "sha256": "05c2f431382d0d83ce6070147c29803905093baf9be418e4916cbe88bf755f62",
+      "lines": 807,
+      "sha256": "70159324286602ea08a9998f4b29764776f93c8c13da89503cb6a81da53ea151",
       "turns": 11,
       "winner": "4/5c Control"
     },
