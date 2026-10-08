@@ -42,6 +42,10 @@ def test_handler_order_is_the_inline_branch_order():
         "land_destruction", "direct_damage", "board_sweep", "targeted_removal",
         "library_dig", "hand_attack", "bounce", "reanimate_target",
         "impulse_reveal", "card_flow", "create_token",
+        # the effect dispatcher's own carrier for a spell no legacy handler
+        # claims (design doc 2026-09-29, section 11): last, so it never
+        # takes a host from a legacy handler
+        "dispatched",
     ]
 
 
