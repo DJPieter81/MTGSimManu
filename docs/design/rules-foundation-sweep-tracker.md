@@ -6430,3 +6430,16 @@ An on-disk cache is held in reserve if the pool tools become too slow.
 - **Leads:**
   - Triggered abilities that pick their target at resolution inside a handler (an attack trigger, the generic oracle ETB resolver) still bypass the gate, and the auditor cannot see them. Routing those picks through `target_solver` closes both; the `target_pick` single-owner ratchet tracks the sites.
   - The engine-side `_threat_score` still deducts a mana-only ward literal for handler picks.
+
+**Resolution-time target picks (`571dd90`) and the gameplan cache key (`1c03d99`):**
+- **Rule (CR 601.2c / 608.2b / 702.11d / 702.16b / 702.21a):** a resolving spell or ability affects the target chosen when it was put on the stack. A pick made on resolution never chooses a permanent the source may not target, and it meets that permanent's ward.
+- **Defect:** handlers re-picked their own "best" target at resolution and ignored the cast-time target: Kolaghan's Command, Wear // Tear, Celestial Purge, Solitude's ETB. Several skipped the legality check; none met ward for a pick of their own. The {T} ping activation and attack triggers dealt "any target" damage with direct life/damage writes.
+- **Owners:**
+  - `engine/target_solver.pick_resolution_target`: the cast-time target while legal, else the best legal candidate whose ward the controller would get past, which meets that ward now.
+  - `oracle_resolver.resolve_any_target_damage`: the same for "N damage to any target", with damage through `engine/damage.deal_damage`.
+- **Ratchets:** `target_pick` 11 → 0. Four handlers were routed. Six non-targeting functions are marked with the reason (library searches, "each" effects). The detector learned the owner's entry points. `damage_write` 39 → 36.
+- **Digest unchanged; anchor passes.**
+- **Order-dependence, bisected:** the local sweep failed anchor[24] (Grixis Reanimator vs Azorius Blink s53000) reproducibly, but only after other tests; CI and the anchor alone passed.
+  - Bisecting 296 files, then per test, gave `test_load_all_gameplans`. `load_all_gameplans()` without decklists cached a JSON-only plan for every deck under the bare name, and games then read it (`always_early` differs for Jeskai Blink and 4/5c Control). It is the same defect class as `707a028`, through the other loader.
+  - The cache is now keyed on (deck, derived-with-decklist). Pinned red-first; the polluting pair passes; 708 gameplan tests and the anchor pass.
+- **Order-dependence sources fixed so far:** two `id()`-keyed memos and both gameplan loaders.
