@@ -2061,6 +2061,23 @@ class CastManager:
                     _audit_check("601.2c/cast_target", _cbt(_tgt, card, player_idx),
                                  f"{card.name} cast at {_tgt.name}, which it may not target",
                                  game=game)
+            # CR 601.2c, restated from the card's other parse (the effect
+            # grammar's typed slot): a spell whose one target slot is an
+            # object on the battlefield (or "any target") is never cast at
+            # a card in a graveyard.
+            _host = (template.effects.spell(0)
+                     if template.is_instant or template.is_sorcery else None)
+            if _host is not None and len(_host.targets) == 1 \
+                    and _host.targets[0].zone in ("battlefield", "any"):
+                for _tid in targets:
+                    _tgt = (game.get_card_by_id(_tid)
+                            if isinstance(_tid, int) and _tid > 0 else None)
+                    if _tgt is not None:
+                        _audit_check("601.2c/target_zone",
+                                     _tgt.zone != "graveyard",
+                                     f"{card.name} cast at {_tgt.name} in a "
+                                     f"graveyard; its target is a permanent",
+                                     game=game)
 
         # ── Splice onto Arcane: when casting an Arcane spell, splice cards
         # from hand that have splice_cost. Pay splice cost, add their effects,

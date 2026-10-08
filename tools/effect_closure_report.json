@@ -1469,13 +1469,13 @@
    "sideboard": 10
   },
   "steps": {
-   "E1": 154,
+   "E1": 155,
    "E2": 347,
    "E3": 139,
    "E4": 155,
    "E5": 251,
    "E6": 33,
-   "none": 422
+   "none": 421
   },
   "strict": 251,
   "sub_kinds": {
@@ -1485,13 +1485,13 @@
    "CONTINUOUS": 187,
    "COUNTER": 31,
    "CREATE_TOKEN": 83,
-   "DAMAGE": 100,
+   "DAMAGE": 101,
    "DESTROY": 154,
    "EXILE": 47,
    "GAIN_LIFE": 35,
    "MOVE": 103,
    "PUT_COUNTERS": 50,
-   "UNMODELLED": 307
+   "UNMODELLED": 306
   }
  },
  "mass_reanimate": {

@@ -153,26 +153,26 @@
    "UNMODELLED_CLAUSE": 104
   },
   "can_target_planeswalker": {
-   "AGREE": 22011,
+   "AGREE": 22012,
    "DERIVED_COVERAGE_GROWTH": 17,
    "UNEXPLAINED": 300,
-   "UNMODELLED_CLAUSE": 410
+   "UNMODELLED_CLAUSE": 409
   },
   "can_target_player": {
    "AGREE": 21602,
    "DERIVED_COVERAGE_GROWTH": 22,
-   "UNEXPLAINED": 501,
-   "UNMODELLED_CLAUSE": 613
+   "UNEXPLAINED": 502,
+   "UNMODELLED_CLAUSE": 612
   },
   "cast_prohibition": {
    "AGREE": 22734,
    "DERIVED_COVERAGE_GROWTH": 4
   },
   "cast_targets": {
-   "AGREE": 4351,
+   "AGREE": 4388,
    "LEGACY_TARGET_ZONE": 10,
-   "UNEXPLAINED": 355,
-   "UNMODELLED_CLAUSE": 520
+   "UNEXPLAINED": 319,
+   "UNMODELLED_CLAUSE": 519
   },
   "cast_trigger_token": {
    "AGREE": 22675,
@@ -235,10 +235,10 @@
    "UNEXPLAINED": 2
   },
   "deals_targeted_damage": {
-   "AGREE": 20969,
+   "AGREE": 20972,
    "DERIVED_COVERAGE_GROWTH": 23,
    "UNEXPLAINED": 876,
-   "UNMODELLED_CLAUSE": 870
+   "UNMODELLED_CLAUSE": 867
   },
   "destroys_target_land": {
    "AGREE": 22726,
@@ -377,16 +377,16 @@
    "DERIVED_COVERAGE_GROWTH": 35
   },
   "has_damage_equal_scaling": {
-   "AGREE": 22531,
+   "AGREE": 22533,
    "DERIVED_COVERAGE_GROWTH": 5,
-   "UNEXPLAINED": 54,
-   "UNMODELLED_CLAUSE": 148
+   "UNEXPLAINED": 55,
+   "UNMODELLED_CLAUSE": 145
   },
   "has_destroy_or_exile": {
    "AGREE": 20671,
    "DERIVED_COVERAGE_GROWTH": 28,
-   "UNEXPLAINED": 910,
-   "UNMODELLED_CLAUSE": 1129
+   "UNEXPLAINED": 911,
+   "UNMODELLED_CLAUSE": 1128
   },
   "has_discard_effect": {
    "AGREE": 22268,
@@ -671,10 +671,10 @@
    "AGREE": 22738
   },
   "requires_creature_target": {
-   "AGREE": 19080,
+   "AGREE": 19081,
    "DERIVED_COVERAGE_GROWTH": 2,
    "UNEXPLAINED": 3375,
-   "UNMODELLED_CLAUSE": 281
+   "UNMODELLED_CLAUSE": 280
   },
   "ritual_mana": {
    "AGREE": 22513,
@@ -753,7 +753,7 @@
  },
  "templates": 22738,
  "totals": {
-  "AGREE": 2813152,
+  "AGREE": 2813196,
   "DERIVED_COVERAGE_GROWTH": 7842,
   "LEGACY_COST_REDUCTION_SCOPE": 13,
   "LEGACY_HASH_ORDER": 13,
@@ -761,7 +761,7 @@
   "LEGACY_TARGET_ZONE": 14,
   "MASKED_GROWTH": 68,
   "REMINDER_TEXT": 190,
-  "UNEXPLAINED": 17949,
-  "UNMODELLED_CLAUSE": 10361
+  "UNEXPLAINED": 17916,
+  "UNMODELLED_CLAUSE": 10350
  }
 }

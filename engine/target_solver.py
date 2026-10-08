@@ -411,6 +411,21 @@ def _parse_singular(oracle_text: str) -> List[TargetRequirement]:
         hint_text = strip_reminder_text(oracle_text).lower()
         if any(h in hint_text for h in _GRAVEYARD_ZONE_HINTS):
             gy_match = _GRAVEYARD_LOOSE_PATTERN.search(oracle_l)
+            # A target's zone is named by its own sentence (CR 115.1):
+            # the graveyard phrase must follow the target phrase before
+            # the sentence ends -- "... among cards in your graveyard" in
+            # a later delirium / threshold sentence does not move a
+            # battlefield target into the graveyard.
+            if gy_match is not None:
+                end = len(oracle_l)
+                for stop in (".", "\n"):
+                    at = oracle_l.find(stop, gy_match.end())
+                    if at != -1:
+                        end = min(end, at)
+                sentence = strip_reminder_text(
+                    oracle_l[gy_match.start():end])
+                if not any(h in sentence for h in _GRAVEYARD_ZONE_HINTS):
+                    gy_match = None
     if gy_match is not None:
         super_word = (gy_match.group(1) or "").strip() or None
         type_word = gy_match.group(2)
