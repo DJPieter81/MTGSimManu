@@ -5,5 +5,5 @@
   "d": 0,
   "description": "Effect-parser ratchet (design doc 2026-09-29 section 13): counts (a)-(f) may only fall; (e) is pinned at 0. See tools/check_effect_parsers.py.",
   "e": 0,
-  "f": 5092
+  "f": 5091
 }

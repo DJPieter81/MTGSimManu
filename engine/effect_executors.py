@@ -17,11 +17,12 @@ Every executor and evaluator declares the shapes it binds (`supports`), and
 predicate nothing here evaluates -- so the carrier keeps its legacy apply
 (fail closed, A37).
 
-Family `damage` (E1): DAMAGE to a chosen "any target" slot, LOSE_LIFE and
-GAIN_LIFE by acting players, and the STATE conditions printed upgrades read.
-Until the family's behaviour-change commits (E1.b), a chosen target reaches
-the owner as the legacy target list, so the owner's own illegal-target rule
-applies unchanged (A36).
+Family `damage` (E1): DAMAGE to the one creature, planeswalker or player
+chosen for a slot, LOSE_LIFE and GAIN_LIFE by acting players, and the STATE
+conditions printed upgrades read. A chosen target is re-checked on
+resolution (CR 608.2b): an illegal one is not affected and its damage is
+never redirected; a slot no target was chosen for reaches the owner unbound
+and the owner's own rule decides (A36).
 """
 from __future__ import annotations
 
@@ -68,11 +69,17 @@ def _amount(ctx: Resolution, s: EffectSpec) -> int:
 
 # ── DAMAGE ────────────────────────────────────────────────────────────
 
+# The target types the DAMAGE executor binds: "any target" (a creature,
+# player or planeswalker, CR 115.4) and its single-type and paired forms.
+_DAMAGE_SLOT_TYPES = frozenset({"any", "creature", "planeswalker", "player"})
+
+
 def _damage_supported(s: EffectSpec) -> bool:
-    """"~ deals <amount> damage to any target": the source deals it (CR
-    120.1) to the one object or player chosen for an "any target" slot
-    (CR 115.4). A source sacrificed to pay the cost deals it as it last
-    existed (CR 608.2h): the carrier's source object is that object."""
+    """"~ deals <amount> damage to <one target>": the source deals it (CR
+    120.1) to the one creature, planeswalker or player chosen for the slot,
+    re-checked on resolution (CR 608.2b). A source sacrificed to pay the
+    cost deals it as it last existed (CR 608.2h): the carrier's source
+    object is that object."""
     if s.verb is not Verb.DAMAGE or not _plain_participants(s) or s.flags:
         return False
     src = s.other
@@ -80,10 +87,52 @@ def _damage_supported(s: EffectSpec) -> bool:
         return False
     req = s.target
     if s.target_slot is None or s.subject is not None or s.ref is not None \
-            or s.actor is not None or req is None \
-            or set(req.types) != {"any"} or req.count_max != 1:
+            or s.actor is not None or req is None or req.count_max != 1:
+        return False
+    if not req.types or not set(req.types) <= _DAMAGE_SLOT_TYPES \
+            or req.zone not in ("any", "battlefield") \
+            or req.supertype is not None or req.subtype is not None \
+            or req.max_mana_value is not None or req.max_mana_value_is_x \
+            or req.mode_group is not None:
         return False
     return conditions.amount_supported(s.amount)
+
+
+def _bind_recipient(ctx: Resolution, req: Any, source: Any, value: Any) -> Any:
+    """CR 608.2b for one chosen value of a damage slot: the permanent it
+    names if that is still the object chosen (its zone and battlefield
+    entry, CR 400.7), may still be targeted by the source, and is still of
+    a type the slot admits (its current types: CR 115.4 "any target" is a
+    creature, planeswalker or player); the player it names if the slot
+    admits players and the controller scope allows. Otherwise None: an
+    illegal target is not affected, and nothing is redirected."""
+    types = set(req.types)
+    scope = getattr(req, "owner_scope", "any")
+    if isinstance(value, int) and not isinstance(value, bool):
+        if not types & {"any", "player"}:
+            return None
+        if (scope == "opponent" and value == ctx.controller) or \
+                (scope == "you" and value != ctx.controller):
+            return None
+        return value
+    if not isinstance(value, Handle):
+        return None
+    card = ctx.game.get_card_by_id(value.instance_id)
+    if card is None or card.zone != "battlefield" or value.zone != "battlefield" \
+            or card.battlefield_entry_seq != value.entry_seq:
+        return None
+    if (scope == "opponent" and card.controller == ctx.controller) or \
+            (scope == "you" and card.controller != ctx.controller):
+        return None
+    current = {t.value for t in card.effective_card_types}
+    admitted = ({"creature", "planeswalker"} if "any" in types
+                else types - {"player"})
+    if not current & admitted:
+        return None
+    from .target_solver import can_be_targeted
+    if not can_be_targeted(card, source, ctx.controller):
+        return None
+    return card
 
 
 def _audit_damage_upgrade(ctx: Resolution, source: Any, amount: int) -> None:
@@ -107,21 +156,31 @@ def _audit_damage_upgrade(ctx: Resolution, source: Any, amount: int) -> None:
 
 def execute_damage(ctx: Resolution, s: EffectSpec,
                    actors: Tuple[int, ...]) -> Outcome:
-    from .oracle_resolver import resolve_damage_to_chosen_target
+    from .oracle_resolver import deal_damage_to
     amount = _amount(ctx, s)
-    _audit_damage_upgrade(ctx, _source_object(ctx), amount)
-    slot = ctx.chosen[s.target_slot] if s.target_slot < len(ctx.chosen) else ()
-    # The owner's legacy target list: an object by id, the opponent's face
-    # by its -1 sentinel (`chosen_from_legacy` is the inverse mapping).
-    face = 1 - ctx.controller
-    legacy = [v.instance_id if isinstance(v, Handle) else -1
-              for v in slot if isinstance(v, Handle) or v == face]
-    hit = resolve_damage_to_chosen_target(ctx.game, _source_object(ctx),
-                                          ctx.controller, amount, legacy)
+    source = _source_object(ctx)
+    _audit_damage_upgrade(ctx, source, amount)
     if amount <= 0:                 # CR 120.8: no damage is dealt
         return Outcome(False, {})
-    recipient = handle_of(hit) if hit is not None else face
-    return Outcome(True, {ctx.controller: (recipient,)})
+    slot = ctx.chosen[s.target_slot] if s.target_slot < len(ctx.chosen) else ()
+    if not slot:
+        # A36: a slot no target was chosen for reaches the owner unbound
+        # and the owner's own rule decides -- a slot that admits a player
+        # goes to the opponent's face, the legacy owner's empty-list rule.
+        if not set(s.target.types) & {"any", "player"}:
+            return Outcome(False, {})
+        face = 1 - ctx.controller
+        deal_damage_to(ctx.game, source, ctx.controller, amount, face)
+        return Outcome(True, {ctx.controller: (face,)})
+    dealt = []
+    for value in slot:
+        recipient = _bind_recipient(ctx, s.target, source, value)
+        if recipient is None:
+            continue
+        deal_damage_to(ctx.game, source, ctx.controller, amount, recipient)
+        dealt.append(recipient if isinstance(recipient, int)
+                     else handle_of(recipient))
+    return Outcome(bool(dealt), {ctx.controller: tuple(dealt)})
 
 
 execute_damage.supports = _damage_supported

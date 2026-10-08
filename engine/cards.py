@@ -1615,6 +1615,13 @@ class CardTemplate:
         return Keyword.HASTE in self.keywords
 
     @property
+    def is_loyalty_clause(self) -> bool:
+        """Is this a planeswalker loyalty line's clause template (built
+        at load from the line's text, its effects the walker's LOYALTY
+        host), not a card's own template?"""
+        return self._effects_slice is not None
+
+    @property
     def effects(self):
         """This card's `CardEffects` (every face), parsed on first access
         and memoised on the complete parse input; see `_effects`. A loyalty

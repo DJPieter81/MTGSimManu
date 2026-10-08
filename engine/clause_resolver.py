@@ -435,6 +435,35 @@ def _a_direct_damage(ctx):
     return True
 
 
+def _g_dispatched(ctx):
+    # A spell whose whole parsed SPELL host a landed effect family runs
+    # (strict, executable, its targets placeable) and that no handler above
+    # claims: the effect dispatcher is its carrier (design doc 2026-09-29,
+    # section 11). Last in the registry, so it never takes a host from a
+    # legacy handler; reads typed effects only.
+    if ctx.oracle_override is not None:
+        return False
+    from engine import effect_carrier
+    return effect_carrier.spell_family(ctx.template) is not None
+
+
+def _a_dispatched(ctx):
+    # Under `effect_resolver.legacy_only()` the dispatcher declines and the
+    # spell falls through to the legacy per-ability path, as before this
+    # handler existed (the per-host harness's legacy side).
+    from engine import effect_carrier
+    if ctx.handled:          # a handler above already applied part of it
+        return None
+    family = effect_carrier.spell_family(ctx.template)
+    effects = ctx.template.effects
+    if family is not None and effect_carrier.dispatch(
+            ctx.game, ctx.card, ctx.controller, effects.spell(0), ctx.targets,
+            family=family, x_value=ctx.x_value,
+            face_hosts=effects.front()) is not None:
+        return True
+    return None
+
+
 def _g_board_sweep(ctx):
     return ctx.oracle_override is None and bool(
         getattr(ctx.template, 'board_sweep_data', None))
@@ -917,6 +946,7 @@ HANDLERS: List[ClauseHandler] = [
     ClauseHandler("impulse_reveal", _g_impulse, _a_impulse),
     ClauseHandler("card_flow", _g_card_flow, _a_card_flow),
     ClauseHandler("create_token", _g_token, _a_token),
+    ClauseHandler("dispatched", _g_dispatched, _a_dispatched),
 ]
 
 

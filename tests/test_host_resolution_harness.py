@@ -247,15 +247,20 @@ def test_the_legacy_self_check_is_deterministic_on_every_registered_deck_host(ca
 # ways. Measured 2026-10-08: ~2 s CPU for the 7 pairs, plus the closure's
 # deck parse and, when first in the process, ~18 s for the shared card DB.
 @pytest.mark.timeout(900)
-def test_every_registered_deck_host_on_the_new_path_resolves_as_its_legacy_apply(card_db):
+def test_every_registered_deck_host_on_the_new_path_resolves_as_its_legacy_apply_or_records_why_not(card_db):
     """A38: a switched carrier takes the dispatcher for a strict,
     executable host. Through it and through its legacy apply
     (`legacy_only`), every board and seed gives the same state digest, log
-    bytes and result, and the dispatcher was entered, so the proof is about
-    the new path. Every proven pair is in the record gate parity reads."""
+    bytes and result -- or the pair is a recorded intended change with its
+    reason -- and the dispatcher was entered, so the proof is about the
+    new path. Every pair is in the record gate parity reads."""
     h = _h()
     rep = h.switched_check(card_db, h.deck_templates(card_db))
-    assert rep["divergences"] == []
     assert rep["undispatched"] == [] and rep["no_case"] == []
-    assert rep["proven"] and len(rep["proven"]) == rep["pairs"]
-    assert {tuple(k) for k in rep["proven"]} <= h.load_switched_record()
+    intended = h.load_intended_changes()
+    diverging = {tuple(k) for k in rep["diverging"]}
+    assert diverging <= set(intended)
+    assert all(intended[k] for k in diverging)
+    proven = {tuple(k) for k in rep["proven"]}
+    assert proven and len(proven) + len(diverging) == rep["pairs"]
+    assert proven <= h.load_switched_record()

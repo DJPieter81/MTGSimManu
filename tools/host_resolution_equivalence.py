@@ -586,31 +586,51 @@ def switched_check(db, templates: Iterable[Any], *, seeds=SEEDS,
                 proven.append(key)
     finally:
         er.resolve_ability = real
+    diverging = sorted({(d.card, d.host) for d in divergences})
+    by_card_host = {(k[1], k[2]): k for k in
+                    [[p.handler, p.card, p.host] for p in pairs]}
     return {"pairs": len(pairs), "proven": sorted(proven),
+            "diverging": sorted(list(by_card_host[k]) for k in diverging),
             "boards": list(built), "seeds": list(seeds),
             "divergences": [dataclasses.asdict(d) for d in divergences],
             "undispatched": sorted(undispatched), "no_case": sorted(no_case),
             "cpu_s": round(time.process_time() - t0, 2)}
 
 
+def _record(path: Path) -> dict:
+    return json.loads(path.read_text()) if path.is_file() else {}
+
+
 def load_switched_record(path: Path = SWITCHED_RECORD_PATH) -> set:
-    """The (handler, card, host) pairs the committed record proves."""
-    if not path.is_file():
-        return set()
-    return {tuple(k) for k in json.loads(path.read_text())["pairs"]}
+    """The (handler, card, host) pairs the committed record proves
+    harness-identical."""
+    return {tuple(k) for k in _record(path).get("pairs", ())}
 
 
-def switched_record_json(rep: dict) -> str:
+def load_intended_changes(path: Path = SWITCHED_RECORD_PATH) -> Dict[tuple, str]:
+    """(handler, card, host) -> why its new path differs from its legacy
+    apply: a behaviour change made on purpose, each with its reason."""
+    return {tuple(e["pair"]): e["reason"]
+            for e in _record(path).get("intended", ())}
+
+
+def switched_record_json(rep: dict, intended: Dict[tuple, str]) -> str:
     return json.dumps({
         "description": (
-            "Switched (handler, card, host) pairs proven harness-identical: "
-            "the switched carrier against its legacy apply on every board "
-            "and seed, the dispatcher entered (tools/host_resolution_"
-            "equivalence.py --switched --pool --record; design doc "
-            "2026-09-29, section 10, A38). Gate parity holds every pair on "
+            "Switched (handler, card, host) pairs: `pairs` proven "
+            "harness-identical -- the switched carrier against its legacy "
+            "apply on every board and seed, the dispatcher entered -- and "
+            "`intended`, the pairs whose new path differs from the legacy "
+            "apply on purpose, each with its reason (a behaviour-change "
+            "commit). tools/host_resolution_equivalence.py --switched --pool "
+            "--record writes `pairs` and keeps `intended`; design doc "
+            "2026-09-29, section 10, A38. Gate parity holds every pair on "
             "the new path to this record."),
         "boards": rep["boards"], "seeds": rep["seeds"],
-        "pairs": rep["proven"]}, indent=1, sort_keys=True) + "\n"
+        "pairs": rep["proven"],
+        "intended": [{"pair": list(k), "reason": intended[k]}
+                     for k in sorted(intended)]},
+        indent=1, sort_keys=True) + "\n"
 
 
 def deck_templates(db) -> List[Any]:
@@ -655,8 +675,10 @@ def main(argv: Optional[List[str]] = None) -> int:
         templates = deck_templates(db)
     if args.switched:
         rep = switched_check(db, templates, seeds=tuple(args.seeds))
-        failed = bool(rep["divergences"] or rep["undispatched"]
-                      or rep["no_case"])
+        intended = load_intended_changes()
+        diverging = {tuple(k) for k in rep["diverging"]}
+        unexplained = sorted(diverging - set(intended))
+        failed = bool(unexplained or rep["undispatched"] or rep["no_case"])
         if args.json:
             print(json.dumps(rep, indent=1, sort_keys=True))
         else:
@@ -667,19 +689,26 @@ def main(argv: Optional[List[str]] = None) -> int:
                   f"{len(rep['undispatched'])} never dispatched, "
                   f"{len(rep['no_case'])} with no harness case; "
                   f"{rep['cpu_s']} s CPU")
-            for d in rep["divergences"][:20]:
-                print(f"  {d}")
+            print(f"  {len(diverging)} diverging pairs, "
+                  f"{len(diverging) - len(unexplained)} of them intended "
+                  f"changes with a recorded reason")
+            for k in unexplained[:20]:
+                print(f"  UNEXPLAINED divergence {list(k)}")
             for k in rep["undispatched"][:20] + rep["no_case"][:20]:
                 print(f"  {k}")
         if args.record and args.pool and not failed:
-            SWITCHED_RECORD_PATH.write_text(switched_record_json(rep))
+            kept = {k: r for k, r in intended.items() if k in diverging}
+            SWITCHED_RECORD_PATH.write_text(switched_record_json(rep, kept))
         if args.check and args.pool:
             recorded = load_switched_record()
             proven = {tuple(k) for k in rep["proven"]}
             for k in sorted(proven ^ recorded):
                 print(f"  record {'lacks' if k in proven else 'is stale for'}"
                       f" {list(k)}")
-            failed |= proven != recorded
+            stale_intended = sorted(set(intended) - diverging)
+            for k in stale_intended:
+                print(f"  intended change no longer diverges: {list(k)}")
+            failed |= proven != recorded or bool(stale_intended)
         return 1 if failed else 0
     rep = self_check(db, templates, seeds=tuple(args.seeds))
     if args.json:

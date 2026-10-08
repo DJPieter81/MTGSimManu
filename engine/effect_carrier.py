@@ -51,6 +51,27 @@ def dispatch(game: Any, source: Any, controller: int, host: Any,
                               source_object=source)
 
 
+def spell_family(template: Any, effects: Any = None) -> Optional[str]:
+    """The landed family (`effect_executors.FAMILIES`) whose strict shape
+    and executors take this template's whole SPELL host, with its targets
+    placeable from the cast-time list; None when no family does. A loyalty
+    line's clause template has no spell host of its own. `effects` is the
+    template's parsed effects when the caller already holds them."""
+    if getattr(template, "is_loyalty_clause", False):
+        return None
+    effects = template.effects if effects is None else effects
+    host = effects.spell(0)
+    if host is None or not places_legacy_targets(host, effects.front()):
+        return None
+    from .effect_executors import FAMILIES
+    from .effect_views import STRICT
+    for family in FAMILIES:
+        strict = STRICT.get(family)
+        if strict is not None and strict(host) and er.can_execute(host, family):
+            return family
+    return None
+
+
 def dispatch_activation(game: Any, source: Any, controller: int, ability: Any,
                         legacy_targets: Optional[Sequence[Any]], *,
                         x_value: int = 0) -> Optional[bool]:
@@ -87,8 +108,13 @@ def places_legacy_targets(host: Any, face_hosts: Iterable[Any] = ()) -> bool:
 
 
 def _slot_span(host: Any) -> Optional[tuple]:
-    return next((s.span for s in iter_specs(host.specs)
+    """The printed span of slot 0's spec, when it lies inside the host's
+    text (an empty or out-of-text span places nothing)."""
+    span = next((s.span for s in iter_specs(host.specs)
                  if s.target_slot == 0), None)
+    if span is None or not 0 <= span[0] < span[1] <= len(host.text or ""):
+        return None
+    return span
 
 
 def _chosen(game: Any, controller: int, host: Any, legacy: list,
@@ -104,6 +130,6 @@ def _chosen(game: Any, controller: int, host: Any, legacy: list,
     try:
         return er.chosen_from_legacy(
             host, legacy, [span[0]] * len(legacy), slot_spans=[span],
-            game=game, face=1 - controller)    # -1: the opponent's face
+            game=game, face=1 - controller, self_face=controller)
     except ValueError:                         # no slot holds the position
         return None

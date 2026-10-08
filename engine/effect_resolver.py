@@ -41,6 +41,7 @@ from functools import partial
 from typing import (Any, Callable, Dict, FrozenSet, Iterator, List, Mapping,
                     Optional, Sequence, Tuple, Union)
 
+from .constants import PLAYER_TARGET_OPPONENT, PLAYER_TARGET_SELF
 from .delayed_triggers import DelayedTrigger
 from .effect_model import (APPLIED_MODKINDS, CLOCKED_DURATIONS, Selector,
                            SelectorKind, is_supported_filter_entry)
@@ -561,7 +562,7 @@ def legacy_only():
 def chosen_from_legacy(ability: AbilityEffects, item_targets: Sequence[int],
                        positions: Sequence[int], *,
                        slot_spans: Sequence[Tuple[int, int]], game: Any,
-                       face: int) -> Chosen:
+                       face: int, self_face: Optional[int] = None) -> Chosen:
     """Map the legacy flat `item.targets` onto this host's per-slot tuples.
 
     `positions[i]` is the printed position, in `ability.text`, of the
@@ -576,9 +577,11 @@ def chosen_from_legacy(ability: AbilityEffects, item_targets: Sequence[int],
     An entry outside the host (another host's target, or -1 = unlocated)
     is not this host's. An in-host position no slot's span holds, or one
     two spans hold, is a disagreement between the legacy parse and the
-    host: ValueError. The -1 face sentinel becomes the `face` player; an
-    id is the Handle of that object now. A slot nothing maps to stays
-    empty: the owner's picker decides (A36)."""
+    host: ValueError. The legacy player markers become players -- the
+    opponent's face (-1) the `face` player, the caster's own (-2) the
+    `self_face` player when given; an id is the Handle of that object now.
+    A slot nothing maps to stays empty: the owner's picker decides
+    (A36)."""
     if len(item_targets) != len(positions):
         raise ValueError("one position per legacy target")
     if len(slot_spans) != len(ability.targets):
@@ -590,7 +593,12 @@ def chosen_from_legacy(ability: AbilityEffects, item_targets: Sequence[int],
         ks = [k for k, (a, b) in enumerate(slot_spans) if a <= p < b]
         if len(ks) != 1:
             raise ValueError(f"position {p} is held by {len(ks)} host slots")
-        slots[ks[0]].append(face if tid == -1 else _legacy_handle(game, tid))
+        if tid == PLAYER_TARGET_OPPONENT:
+            slots[ks[0]].append(face)
+        elif tid == PLAYER_TARGET_SELF and self_face is not None:
+            slots[ks[0]].append(self_face)
+        else:
+            slots[ks[0]].append(_legacy_handle(game, tid))
     return tuple(tuple(s) for s in slots)
 
 

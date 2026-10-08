@@ -417,30 +417,12 @@ def springleaf_drum_etb(game, card, controller, targets=None, item=None):
 # Lightning Bolt (N=3) and Lava Dart (N=1) were the two registered pure
 # fixed-N handlers; both are DELETED here, verified redundant with the typed
 # path first (tests/test_direct_damage_shared_resolver.py::
-# TestRegisteredBurnHandlersRetired). Unholy Heat (delirium-scaled amount)
-# and Grapeshot (storm-copied) keep their handlers — a derived/conditional
-# amount is a different mechanic the typed field deliberately does not carry.
-# See docs/design/rules-foundation-sweep-tracker.md (Phase 3) for the full
-# cluster research — which cards were included/excluded and why.
-
-
-@EFFECT_REGISTRY.register("Unholy Heat", EffectTiming.SPELL_RESOLVE,
-                           description="Deal 2 (or 6 with delirium) damage")
-def unholy_heat_resolve(game, card, controller, targets=None, item=None):
-    # The only real per-card quirk in this cluster: the printed amount
-    # is conditional on delirium (CR-style card-specific AMOUNT
-    # computation, not a target-resolution difference) — this stays
-    # here; only the target application delegates to the shared
-    # resolver.
-    from .oracle_resolver import resolve_damage_to_chosen_target
-    gy = game.players[controller].graveyard
-    types_in_gy = set()
-    for c in gy:
-        for ct in c.template.card_types:
-            types_in_gy.add(ct)
-    delirium = len(types_in_gy) >= 4
-    damage = 6 if delirium else 2
-    resolve_damage_to_chosen_target(game, card, controller, damage, targets)
+# TestRegisteredBurnHandlersRetired). Unholy Heat (a printed "instead"
+# upgrade under a graveyard condition), Grapeshot (storm-copied) and Tribal
+# Flames (domain-scaled) followed in E1.b2 (design doc 2026-09-29): their
+# parsed spell hosts resolve through the effect dispatcher's damage family
+# (`clause_resolver` "direct_damage" / "dispatched"). See
+# docs/design/rules-foundation-sweep-tracker.md for the cluster history.
 
 
 @EFFECT_REGISTRY.register("Goryo's Vengeance", EffectTiming.SPELL_RESOLVE,
@@ -500,37 +482,6 @@ def unmarked_grave_resolve(game, card, controller, targets=None, item=None):
     else:
         game.log.append(f"T{game.display_turn} P{controller+1}: "
                         f"Unmarked Grave finds nothing (no nonlegendary creatures)")
-
-
-@EFFECT_REGISTRY.register("Grapeshot", EffectTiming.SPELL_RESOLVE,
-                           description="Deal 1 damage to any target")
-def grapeshot_resolve(game, card, controller, targets=None, item=None):
-    # Grapeshot deals 1 damage (base effect) to its declared "any
-    # target". Storm copies are handled by _handle_storm, which calls
-    # this again for each copy, re-declaring the same `item.targets`
-    # (correct: CR 706.10c — Storm copies keep the original targets
-    # unless the caster is offered new ones, which this engine does
-    # not yet model).
-    #
-    # Pre-migration bug: this handler ignored `targets` entirely and
-    # always mutated `opponent.life` directly, bypassing
-    # `engine.damage.deal_damage` — real damage-application drift from
-    # the shared funnel (see
-    # tests/test_burn_damage_shared_resolver.py::TestGrapeshotRespectsDeclaredTarget).
-    # The live AI always casts Grapeshot with `targets=[-1]`
-    # (ai/ev_player.py's storm-finisher target policy), so this fix
-    # does not change any current sim outcome — it just makes the
-    # engine correct for any other caller of a "deal N damage to any
-    # target" storm spell.
-    from .oracle_resolver import resolve_damage_to_chosen_target
-    hit = resolve_damage_to_chosen_target(game, card, controller, 1, targets)
-    if hit is not None:
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Grapeshot deals 1 damage to {hit.name}")
-    else:
-        game.log.append(f"T{game.display_turn} P{controller+1}: "
-                        f"Grapeshot deals 1 damage"
-                        f" (opponent life: {game.players[1 - controller].life})")
 
 
 @EFFECT_REGISTRY.register("Past in Flames", EffectTiming.SPELL_RESOLVE,
@@ -1060,24 +1011,6 @@ def expressive_iteration_resolve(game, card, controller, targets=None, item=None
 # Preordain handler removed — oracle_resolver.resolve_spell_from_oracle
 # now matches "draw a card" and fires the draw. Scry portion is approximated
 # as no-op (AI doesn't model deck order).
-
-
-@EFFECT_REGISTRY.register("Tribal Flames", EffectTiming.SPELL_RESOLVE,
-                           description="Deal damage equal to domain (basic land types)")
-def tribal_flames_resolve(game, card, controller, targets=None, item=None):
-    opponent = 1 - controller
-    player = game.players[controller]
-    land_types = set()
-    for c in player.battlefield:
-        if c.template.is_land:
-            for st in c.template.subtypes:
-                if st in ("Plains", "Island", "Swamp", "Mountain", "Forest"):
-                    land_types.add(st)
-    damage = min(len(land_types), 5)
-    if damage < 2:
-        damage = 2
-    game.players[opponent].life -= damage
-    game.players[controller].damage_dealt_this_turn += damage
 
 
 @EFFECT_REGISTRY.register("Wish", EffectTiming.SPELL_RESOLVE,

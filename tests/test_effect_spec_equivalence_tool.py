@@ -1581,11 +1581,16 @@ def test_the_earliest_step_of_a_host_is_the_latest_family_step_among_its_verbs()
 
 
 def test_every_clause_resolver_handler_belongs_to_a_family_step():
+    """Every legacy handler has a fixed family; the dispatcher's own
+    carrier takes the family of the landed one that runs the host."""
     from engine import clause_resolver as CR
+    from engine.effect_executors import FAMILIES
     t = _eq_tool()
     names = {h.name for h in list(CR.PRE_ORACLE_HANDLERS) + list(CR.HANDLERS)}
+    names -= {t.DISPATCHED_HANDLER}
     assert names <= set(t.HANDLER_FAMILY), names - set(t.HANDLER_FAMILY)
     assert set(t.HANDLER_FAMILY.values()) <= set(_views().STRICT)
+    assert set(FAMILIES) <= set(_views().STRICT)
 
 
 def _pair(**kw):
@@ -1620,7 +1625,7 @@ def test_a_handler_that_reaches_the_dispatcher_through_a_helper_is_switched():
     # The clause handlers that reach the dispatcher: the landed families'.
     from engine import clause_resolver as CR
     assert {h.name for h in list(CR.PRE_ORACLE_HANDLERS) + list(CR.HANDLERS)
-            if t._is_switched(h.apply)} == {"direct_damage"}
+            if t._is_switched(h.apply)} == {"direct_damage", "dispatched"}
 
 
 def test_every_etb_carrier_and_the_self_cast_handler_name_an_apply_that_reads_it():
@@ -1647,18 +1652,24 @@ def test_the_closure_takes_every_pairs_switch_from_its_apply_never_a_constant(ca
     assert all(p.switched for p in pairs)
 
 
-def test_a_switched_handler_does_not_switch_a_host_its_carrier_never_dispatches(card_db):
+def test_a_switched_handler_does_not_switch_a_host_its_carrier_never_dispatches(card_db, monkeypatch):
     """A pair is switched only when its host resolves through the switched
     handler and the switch can place its targets: a card-name registry
     handler that intercepts the spell, or a cast-time target list shared
     with another targeting host of the face, keeps it on legacy fallback."""
+    from engine.card_effects import EFFECT_REGISTRY
     t = _eq_tool()
-    names = ["Grapeshot", "Resounding Thunder", "Lightning Bolt"]
+    intercepted = "Grapeshot"
+    real = EFFECT_REGISTRY.has_handler
+    monkeypatch.setattr(EFFECT_REGISTRY, "has_handler",
+                        lambda name, timing: name == intercepted
+                        or real(name, timing))
+    names = [intercepted, "Resounding Thunder", "Lightning Bolt"]
     templates = [card_db.get_card(n) for n in names]
     pairs = {p.card: p for p in t.closure(templates, t.parse_effects_of(templates))
              if p.handler == "direct_damage"}
     assert not t._spell_reaches_clause_handlers(templates[0])
-    assert (pairs["Grapeshot"].switched, pairs["Resounding Thunder"].switched,
+    assert (pairs[intercepted].switched, pairs["Resounding Thunder"].switched,
             pairs["Lightning Bolt"].switched) == (False, False, True)
     assert all(pairs[n].strict and pairs[n].executable for n in names)
 
@@ -1698,7 +1709,7 @@ def test_the_closure_lists_the_registered_deck_hosts_legacy_gates_accept_and_onl
     assert parity["failures"] == []
     # E1: the damage family's switched carriers, and nothing else.
     assert {p.handler for p in pairs if p.new_path} == {
-        "direct_damage", "activated_effects:DAMAGE_ANY_TARGET"}
+        "direct_damage", "activated_effects:DAMAGE_ANY_TARGET", "dispatched"}
     assert parity["new_path"] + parity["legacy_fallback"] == len(pairs)
 
 

@@ -7,7 +7,553 @@
   "stack",
   "graveyards"
  ],
- "description": "Switched (handler, card, host) pairs proven harness-identical: the switched carrier against its legacy apply on every board and seed, the dispatcher entered (tools/host_resolution_equivalence.py --switched --pool --record; design doc 2026-09-29, section 10, A38). Gate parity holds every pair on the new path to this record.",
+ "description": "Switched (handler, card, host) pairs: `pairs` proven harness-identical -- the switched carrier against its legacy apply on every board and seed, the dispatcher entered -- and `intended`, the pairs whose new path differs from the legacy apply on purpose, each with its reason (a behaviour-change commit). tools/host_resolution_equivalence.py --switched --pool --record writes `pairs` and keeps `intended`; design doc 2026-09-29, section 10, A38. Gate parity holds every pair on the new path to this record.",
+ "intended": [
+  {
+   "pair": [
+    "dispatched",
+    "Alchemist's Greeting",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Artillerize",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Bathe in Dragonfire",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Bituminous Blast",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Bombard",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Boulder Salvo",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Collateral Damage",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Command the Storm",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Cut // Ribbons",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Dead // Gone",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Demon Bolt",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Devour in Flames",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Electrify",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Electro's Bolt",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Engulfing Eruption",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Explosive Singularity",
+    "SPELL:0:2"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Fiery Conclusion",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Fiery Fall",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the legacy per-ability fallback misread the spell (it put the spell onto the battlefield, and with no creature target dealt its damage to the opponent's face); the dispatcher deals the parsed damage to the chosen creature and nothing else."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Fiery Finish",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Final Flare",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Flame Slash",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Ghostfire Slice",
+    "SPELL:0:2"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Goblin Grenade",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Hammer of Bogardan",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Heartfire",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Heated Debate",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Improvised Club",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Inescapable Blaze",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Inferno Trap",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Light 'Em Up",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Lightning Axe",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Magma Rift",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Magmatic Sinkhole",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Magnificent End",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Mine Collapse",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Molten Exhale",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Moonrager's Slash",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Photon Blast Barrage",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Processor Assault",
+    "SPELL:0:2"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Pumpkin Bombardment",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Puncture Blast",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Pyromatics",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Ragefire",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Reality Hemorrhage",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Reiterating Bolt",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Rekindled Flame",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Repeating Barrage",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Scorching Shot",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Sear",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Shard Volley",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Shivan Meteor",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Shrapnel Blast",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Skewer the Critics",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Spit Flame",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Squash",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Stoke the Flames",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Strangle",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Sudden Shock",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Surging Flame",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Suspicious Detonation",
+    "SPELL:0:2"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Thundering Rebuke",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Torrent of Stone",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Tribal Flames",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the legacy per-ability fallback resolved nothing; the dispatcher deals the parsed amount (domain: basic land types among lands you control)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Truck Toss",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Unholy Heat",
+    "SPELL:0:0"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Witchstalker Frenzy",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Wizard's Lightning",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state)."
+  },
+  {
+   "pair": [
+    "dispatched",
+    "Wrath of the Bloodmane",
+    "SPELL:0:1"
+   ],
+   "reason": "E1.b2 (no legacy clause handler; the dispatcher is its carrier): the dispatcher logs the damage the legacy per-ability fallback dealt without a log line (same state); a spell that targets only creatures or planeswalkers, with no legal target chosen: the legacy per-ability fallback dealt its damage to the opponent's face (CR 115.1), the dispatcher deals none."
+  }
+ ],
  "pairs": [
   [
    "activated_effects:DAMAGE_ANY_TARGET",
@@ -571,6 +1117,11 @@
   ],
   [
    "direct_damage",
+   "Grapeshot",
+   "SPELL:0:0"
+  ],
+  [
+   "direct_damage",
    "Gut Shot",
    "SPELL:0:0"
   ],
@@ -661,6 +1212,176 @@
   ],
   [
    "direct_damage",
+   "Volcanic Hammer",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Assault // Battery",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Burn Trail",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Channeled Dragonfire",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Direct Current",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Explosive Impact",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Fiery Temper",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Firebolt",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Fires of Undeath",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Flame Jab",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Flame Javelin",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Flame Lash",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Galvanic Blast",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Geistflame",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Glacial Ray",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Grapeshot",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Gut Shot",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Hornet Sting",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Lava Dart",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Lightning Blast",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Lightning Bolt",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Lightning Strike",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Open Fire",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Precision Bolt",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Rift Bolt",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Searing Spear",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Searing Wind",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Shock",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Staggershock",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Tarfire",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Thunderblade Charge",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Thunderous Wrath",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Tome Blast",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
+   "Unfriendly Fire",
+   "SPELL:0:0"
+  ],
+  [
+   "dispatched",
    "Volcanic Hammer",
    "SPELL:0:0"
   ]

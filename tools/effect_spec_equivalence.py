@@ -714,6 +714,10 @@ HANDLER_FAMILY = {
     "reanimate_target": "removal", "impulse_reveal": "card_flow",
     "card_flow": "card_flow", "create_token": "tokens_counters",
 }
+# The clause handler that is the dispatcher's own carrier for a spell no
+# legacy handler claims: its family is the landed family that runs the
+# host (`effect_carrier.spell_family`), not a fixed one.
+DISPATCHED_HANDLER = "dispatched"
 # The planeswalker_manager branches by LoyaltyEffectKind (10.1 rows).
 LOYALTY_FAMILY = {
     "DAMAGE": "damage", "GAIN_LIFE_AND_DRAW": "damage",
@@ -945,7 +949,7 @@ def closure(templates: Iterable[Any], effects: Mapping[str, Any]
     resolves through that handler (`_spell_reaches_clause_handlers`)."""
     from engine import clause_resolver as CR
     from engine import activated_effects, planeswalker_manager
-    from engine.effect_carrier import places_legacy_targets
+    from engine.effect_carrier import places_legacy_targets, spell_family
     from engine.cards import CardInstance, LoyaltyEffectKind
     from engine.effect_spec import EventHint, HostKind
     v = _views()
@@ -972,14 +976,21 @@ def closure(templates: Iterable[Any], effects: Mapping[str, Any]
             for hd in handlers:
                 if hd.name in oracle_handlers and not ctx.oracle:
                     continue
-                try:
-                    ok = hd.gate(ctx)
-                except Exception:
-                    ok = False
+                family = HANDLER_FAMILY.get(hd.name, "?")
+                if hd.name == DISPATCHED_HANDLER:
+                    # its gate is the landed family that runs the spell
+                    # host; asked with the parse in hand (no second parse)
+                    family = (spell_family(t, ce) if override is None
+                              else None)
+                    ok = family is not None
+                else:
+                    try:
+                        ok = hd.gate(ctx)
+                    except Exception:
+                        ok = False
                 if ok:
-                    out.append(_pair(hd.name, HANDLER_FAMILY.get(
-                        hd.name, "?"), t, h, label, part,
-                        switched[hd.name] and reached))
+                    out.append(_pair(hd.name, family, t, h, label, part,
+                                     switched[hd.name] and reached))
         # loyalty lines: kind branches, and CLAUSE through the registry
         for face, attr in ((0, "loyalty_abilities"),
                            (1, "back_face_loyalty_abilities")):
@@ -1065,16 +1076,21 @@ def gate_parity(pairs: Iterable[Pair],
 
 
 def _recorded_pairs(path: Optional[Path] = None) -> set:
+    """Every pair the harness record accounts for: proven identical to
+    its legacy apply, or an intended change with its reason."""
     path = HARNESS_RECORD_PATH if path is None else path
     if not path.is_file():
         return set()
-    return {tuple(k) for k in json.loads(path.read_text())["pairs"]}
+    rec = json.loads(path.read_text())
+    return ({tuple(k) for k in rec.get("pairs", ())}
+            | {tuple(e["pair"]) for e in rec.get("intended", ())})
 
 
 def recorded_harness_ok(path: Optional[Path] = None
                         ) -> Callable[[Pair], bool]:
     """`harness_ok` for gate parity: the pair's switched carrier was
-    proven against its legacy apply by the committed harness record."""
+    proven against its legacy apply by the committed harness record, or
+    the record names why it differs on purpose."""
     proven = _recorded_pairs(path)
     return lambda p: (p.handler, p.card, p.host) in proven
 

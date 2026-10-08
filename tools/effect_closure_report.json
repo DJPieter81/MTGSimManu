@@ -668,7 +668,7 @@
     "strict": true
    }
   ],
-  "executable": 1,
+  "executable": 0,
   "family": "card_flow",
   "hosts": {
    "mainboard": 14,
@@ -891,6 +891,60 @@
    "DAMAGE": 35,
    "DAMAGE,MOVE,REVEAL,UNMODELLED": 1,
    "DAMAGE,UNMODELLED": 2
+  }
+ },
+ "dispatched": {
+  "deck_hosts": [
+   {
+    "card": "Galvanic Blast",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E1",
+    "strict": true
+   },
+   {
+    "card": "Grapeshot",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E1",
+    "strict": true
+   },
+   {
+    "card": "Lava Dart",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E1",
+    "strict": true
+   },
+   {
+    "card": "Lightning Bolt",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E1",
+    "strict": true
+   },
+   {
+    "card": "Unholy Heat",
+    "host": "SPELL:0:0",
+    "part": "mainboard",
+    "step": "E1",
+    "strict": true
+   }
+  ],
+  "executable": 102,
+  "family": "damage",
+  "hosts": {
+   "mainboard": 5,
+   "pool": 97,
+   "sideboard": 0
+  },
+  "steps": {
+   "E1": 102
+  },
+  "strict": 102,
+  "sub_kinds": {},
+  "verb_sets": {
+   "DAMAGE": 102
   }
  },
  "energy_damage": {
@@ -1461,7 +1515,7 @@
     "strict": false
    }
   ],
-  "executable": 56,
+  "executable": 46,
   "family": "removal",
   "hosts": {
    "mainboard": 25,
@@ -1687,7 +1741,7 @@
     "strict": true
    }
   ],
-  "executable": 12,
+  "executable": 18,
   "family": "damage",
   "hosts": {
    "mainboard": 3,

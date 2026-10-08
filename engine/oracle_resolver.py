@@ -195,7 +195,6 @@ def resolve_damage_to_chosen_target(
     forcing a specific log shape on every caller — see the two
     different log-message conventions already in `card_effects.py`).
     """
-    from .damage import deal_damage
     from .cards import CardType
     opponent = 1 - controller
     if amount <= 0:
@@ -210,20 +209,31 @@ def resolve_damage_to_chosen_target(
         if (target is not None and target.zone == "battlefield"
                 and (target.template.is_creature
                      or CardType.PLANESWALKER in target.template.card_types)):
-            deal_damage(source, target, amount)
-            # Name the burn's target so a legal kill (e.g. "6 damage
-            # kills a 7/7") isn't invisible to a log-only reader.
-            game.log.append(
-                f"T{game.display_turn} P{controller+1}: "
-                f"{getattr(source, 'name', 'source')} deals {amount} to "
-                f"{target.name}")
+            deal_damage_to(game, source, controller, amount, target)
             return target
-    deal_damage(source, game.players[opponent], amount)
-    game.log.append(
-        f"T{game.display_turn} P{controller+1}: "
-        f"{getattr(source, 'name', 'source')} deals {amount} to "
-        f"P{opponent+1} (face)")
+    deal_damage_to(game, source, controller, amount, opponent)
     return None
+
+
+def deal_damage_to(game: "GameState", source, controller: int, amount: int,
+                   recipient) -> None:
+    """`source` deals `amount` damage to one recipient -- a permanent, or
+    a player by index -- through `engine.damage.deal_damage`, logged. The
+    one log shape for resolved spell and ability damage to a chosen
+    recipient, which the legacy target walk above and the effect
+    dispatcher's DAMAGE executor share."""
+    from .damage import deal_damage
+    name = getattr(source, 'name', 'source')
+    if isinstance(recipient, int):
+        deal_damage(source, game.players[recipient], amount)
+        game.log.append(f"T{game.display_turn} P{controller+1}: "
+                        f"{name} deals {amount} to P{recipient+1} (face)")
+        return
+    deal_damage(source, recipient, amount)
+    # Name the target so a legal kill (e.g. "6 damage kills a 7/7")
+    # isn't invisible to a log-only reader.
+    game.log.append(f"T{game.display_turn} P{controller+1}: "
+                    f"{name} deals {amount} to {recipient.name}")
 
 
 # ---------------------------------------------------------------------------

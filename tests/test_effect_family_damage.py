@@ -64,17 +64,21 @@ def _lit(n):
     return Amount(AmountKind.LITERAL, n=n)
 
 
+TEXT = "~ deals 3 damage to any target."
+
+
 def _damage(seq=0, amount=3, **kw):
     kw.setdefault("target", ANY)
     kw.setdefault("target_slot", 0)
     kw.setdefault("other", Ref(RefKind.SELF))
+    kw.setdefault("span", (0, len(TEXT) - 1))
     return EffectSpec(verb=Verb.DAMAGE, seq=seq,
                       amount=amount if isinstance(amount, Amount) else _lit(amount),
                       **kw)
 
 
 def _host(*specs, targets=(ANY,)):
-    return AbilityEffects(kind=HostKind.SPELL, face=0, index=0,
+    return AbilityEffects(kind=HostKind.SPELL, face=0, index=0, text=TEXT,
                           specs=tuple(specs), targets=tuple(targets))
 
 
@@ -198,14 +202,14 @@ def test_card_types_among_cards_in_your_graveyard_count_each_type_once():
 @pytest.mark.parametrize("spec", [
     _damage(amount=Amount(AmountKind.FOR_EACH, n=1)),           # amount kind
     _damage(target=TargetRequirement(zone="battlefield",
-                                     types=frozenset({"creature"}))),  # slot type
+                                     types=frozenset({"artifact"}))),  # slot type
     _damage(target=TargetRequirement(zone="any", types=frozenset({"any"}),
                                      count_min=0, count_max=2)),  # several targets
     _damage(optional=True),                                        # "you may"
     _damage(other=Ref(RefKind.TARGET, index=0)),                   # another source
     _damage(target_slot=None, target=None,
             subject=Selector(SelectorKind.OPPONENTS)),             # player set
-], ids=["for_each", "creature_slot", "two_targets", "optional",
+], ids=["for_each", "artifact_slot", "two_targets", "optional",
         "other_source", "player_set"])
 def test_a_damage_shape_the_family_does_not_bind_is_not_executable(spec):
     assert er.can_execute(_host(spec), "damage") is False
@@ -269,8 +273,11 @@ def test_the_executors_read_no_oracle_text_and_write_no_state_themselves():
                     else [node.module or ""])
             for m in mods:
                 assert m not in ("re", "regex"), node.lineno
-                assert not any(p in m for p in ("effect_grammar", "oracle_parser",
-                                                "target_solver")), node.lineno
+                assert not any(p in m for p in ("effect_grammar",
+                                                "oracle_parser")), node.lineno
+                if "target_solver" in m:      # the legality owner, no parse
+                    assert [a.name for a in node.names] == ["can_be_targeted"], \
+                        node.lineno
         if isinstance(node, (ast.Assign, ast.AugAssign, ast.AnnAssign)):
             targets = list(node.targets if isinstance(node, ast.Assign)
                            else [node.target])
@@ -352,3 +359,93 @@ def test_the_switch_declines_a_host_whose_targets_it_cannot_place_and_when_dispa
     assert effect_carrier.dispatch(game, spell, 0, host, [-1],
                                    family="damage", face_hosts=(host,)) is True
     assert game.players[1].life == 17
+
+
+# ── E1.b2: burn spells with no card-name handler ───────────────────────
+
+def _cast(game, card_db, name, targets, controller=0):
+    from engine.stack import StackItem, StackItemType
+    spell = _put(game, controller, card_db.get_card(name), "stack")
+    game._execute_spell_effects(StackItem(item_type=StackItemType.SPELL,
+                                          source=spell, controller=controller,
+                                          targets=list(targets)))
+    return spell
+
+
+@pytest.mark.parametrize("basics,dealt", [(["Mountain"], 1),
+                                          (["Mountain", "Forest", "Island"], 3)])
+def test_a_domain_burn_spell_deals_the_basic_land_types_among_its_controllers_lands(card_db, basics, dealt):
+    """"X damage to any target, where X is the number of basic land types
+    among lands you control" (CR 305.6): exactly that many, to the chosen
+    target -- no floor, no redirect to a player."""
+    game = _game()
+    for i, sub in enumerate(basics):
+        _put(game, 0, _template(f"L{i}", [CardType.LAND], subtypes=[sub]))
+    _put(game, 1, _template("Theirs", [CardType.LAND], subtypes=["Plains"]))
+    wall = _put(game, 1, _template("Wall", [CardType.CREATURE], 0, 6))
+    _cast(game, card_db, "Tribal Flames", [wall.instance_id])
+    assert wall.damage_marked == dealt
+    assert game.players[1].life == 20
+
+
+def test_a_creature_or_planeswalker_burn_spell_never_damages_a_player(card_db):
+    """CR 115.1: a spell that targets only creatures or planeswalkers
+    deals its damage to the one chosen, and to no player when it has
+    none."""
+    game = _game()
+    _cast(game, card_db, "Unholy Heat", [])
+    assert game.players[1].life == 20 and game.players[0].life == 20
+    bear = _put(game, 1, _template("Bear", [CardType.CREATURE], 2, 8))
+    _cast(game, card_db, "Unholy Heat", [bear.instance_id])
+    assert bear.damage_marked == 2 and game.players[1].life == 20
+
+
+def test_a_storm_copy_deals_its_damage_once_per_copy_and_logs_it_once(card_db):
+    """Each copy of a storm spell resolves the spell's own damage once
+    (CR 702.40a, 707.10), logged once per resolution."""
+    game = _game()
+    for _ in range(3):
+        _cast(game, card_db, "Grapeshot", [-1])
+    assert game.players[1].life == 17
+    hits = [line for line in game.log if "Grapeshot deals 1" in line]
+    assert len(hits) == 3
+
+
+# ── The DAMAGE binding (CR 608.2b, A36) ────────────────────────────────
+
+CREATURE_OR_PW = TargetRequirement(zone="battlefield",
+                                   types=frozenset({"creature", "planeswalker"}))
+
+
+def test_a_chosen_target_that_is_no_longer_of_the_slots_type_is_not_affected_and_nothing_is_redirected():
+    game = _game()
+    spell = _put(game, 0, _template("Burn", [CardType.INSTANT]), "stack")
+    rock = _put(game, 1, _template("Rock", [CardType.ARTIFACT]))
+    assert _resolve(game, spell, _host(_damage(amount=3)),
+                    ((er.handle_of(rock),),)) is False
+    assert rock.damage_marked == 0 and game.players[1].life == 20
+
+
+def test_the_casters_own_face_marker_reaches_the_caster():
+    """The legacy -2 marker is the caster as a player target (A36); the
+    legacy walk sent it to the opponent."""
+    from engine import effect_carrier
+    game = _game()
+    spell = _put(game, 0, _template("Burn", [CardType.INSTANT]), "stack")
+    assert effect_carrier.dispatch(game, spell, 0, _host(_damage(amount=3)),
+                                   [-2], family="damage") is True
+    assert (game.players[0].life, game.players[1].life) == (17, 20)
+
+
+def test_an_unchosen_slot_follows_the_owners_rule():
+    """A36: an unbound any-target slot reaches the owner unbound -- the
+    opponent's face; an unbound creature-or-planeswalker slot deals
+    nothing (no player is a legal recipient)."""
+    game = _game()
+    spell = _put(game, 0, _template("Burn", [CardType.INSTANT]), "stack")
+    assert _resolve(game, spell, _host(_damage(amount=2)), ((),)) is True
+    assert game.players[1].life == 18
+    only_creatures = _host(_damage(amount=2, target=CREATURE_OR_PW),
+                           targets=(CREATURE_OR_PW,))
+    assert _resolve(game, spell, only_creatures, ((),)) is False
+    assert game.players[1].life == 18
