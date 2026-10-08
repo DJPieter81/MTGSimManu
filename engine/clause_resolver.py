@@ -409,14 +409,15 @@ def _g_direct_damage(ctx):
 def _a_direct_damage(ctx):
     # "Deals N damage to any target" through the shared damage owner; the
     # CR 608.2 upgrade audit is restated independently.
+    from engine import effect_conditions as ec
     orr = _or()
     game, card, controller = ctx.game, ctx.card, ctx.controller
     dd = card.template.direct_damage_data
-    amt = orr.effective_direct_damage(game, controller, card.template)
+    amt = ec.effective_direct_damage(game, controller, card.template)
     from engine.rules_audit import check as audit_check
     up = dd.get('upgrade_amount')
-    if up and orr._direct_damage_condition_met(game, controller,
-                                               dd.get('upgrade_condition')):
+    if up and ec.direct_damage_condition_met(game, controller,
+                                             dd.get('upgrade_condition')):
         audit_check("608.2/damage_upgrade", amt == up,
                     f"{card.name}: {dd.get('upgrade_condition')} met but "
                     f"dealt {amt}, not {up}", game=game)
@@ -678,22 +679,6 @@ def _scaler_shape(phrase: str):
     return None
 
 
-def _scaler_count(game, controller: int, shape, source=None) -> int:
-    if shape[0] == 'opponents_lost_life':
-        return sum(1 for i, p in enumerate(game.players)
-                   if i != controller and p.life_lost_this_turn > 0)
-    _, word, other = shape
-    count = 0
-    for perm in game.players[controller].battlefield:
-        if other and source is not None and perm.instance_id == source.instance_id:
-            continue
-        types = {t.value for t in perm.effective_card_types}
-        subtypes = {s.lower() for s in perm.effective_subtypes}
-        if word in types or word == 'permanent' or word in subtypes:
-            count += 1
-    return count
-
-
 def _card_flow_effects(ctx):
     """Scry / surveil / draw / loot in oracle-text order (CR 601.2 / 608.2)."""
     oracle, tpl = ctx.oracle, ctx.template
@@ -761,7 +746,8 @@ def _a_card_flow(ctx):
             _or()._resolve_loot(game, card, controller, count)
         elif kind == 'draw':
             per, scaler = count
-            count = (per * _scaler_count(game, controller, scaler, source=card)
+            from engine.effect_conditions import scaler_count
+            count = (per * scaler_count(game, controller, scaler, source=card)
                      if scaler else per)
             if count <= 0:
                 continue

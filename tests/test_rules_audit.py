@@ -487,7 +487,8 @@ def test_damage_upgrade_audit_sees_a_metalcraft_burn_left_at_base(audit, card_db
                       instance_id=game.next_instance_id(), zone="stack")
     gb._game_state = game
     # Break the rule: keep the base amount despite metalcraft.
-    monkeypatch.setattr(oracle_resolver, "effective_direct_damage",
+    from engine import effect_conditions
+    monkeypatch.setattr(effect_conditions, "effective_direct_damage",
                         lambda g, c, t: (getattr(t, "direct_damage_data", None) or {}).get("amount", 0))
     resolve_spell_from_oracle(game, gb, 0, [v.instance_id])
     assert "608.2/damage_upgrade" in _rules(rules_audit.drain())

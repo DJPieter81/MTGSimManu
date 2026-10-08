@@ -2683,7 +2683,7 @@ LEGACY_PREDICATES: Tuple[str, ...] = tuple(sorted(
 RUNTIME_CARRIERS: Mapping[str, Tuple[str, str]] = MappingProxyType({
     # Tier B (10.1): the burn amount the resolver and the AI recompute
     # over direct_damage_data plus its upgrade.
-    "oracle_resolver.effective_direct_damage": (FAMILY_DAMAGE, "E1"),
+    "effect_conditions.effective_direct_damage": (FAMILY_DAMAGE, "E1"),
     "ai.card_classes.burn_damage": (FAMILY_DAMAGE, "E1"),
     "oracle_resolver.resolve_self_cast_trigger": (FAMILY_REMOVAL, "E2"),
     "clause_resolver._reanimate_ability": (FAMILY_REMOVAL, "E2"),

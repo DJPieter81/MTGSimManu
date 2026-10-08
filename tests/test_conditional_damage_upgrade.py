@@ -85,7 +85,7 @@ def test_the_parser_types_the_conditional_damage_upgrade(card_db):
 
 
 def test_effective_damage_applies_the_upgrade_only_when_the_condition_holds(card_db):
-    from engine.oracle_resolver import effective_direct_damage
+    from engine.effect_conditions import effective_direct_damage
     game = _game()
     gb = card_db.get_card("Galvanic Blast")
     assert effective_direct_damage(game, 0, gb) == 2      # no artifacts

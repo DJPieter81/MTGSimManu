@@ -156,7 +156,7 @@ TABLE_ROWS = {
 # The runtime rows of 10.1: functions the handlers and the AI recompute,
 # not template fields, each with the step that row gives it.
 TABLE_CARRIERS = {
-    "oracle_resolver.effective_direct_damage": "E1",
+    "effect_conditions.effective_direct_damage": "E1",
     "ai.card_classes.burn_damage": "E1",
     "clause_resolver._a_energy_damage": "E1",
     "oracle_resolver.resolve_self_cast_trigger": "E2",
