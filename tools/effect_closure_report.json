@@ -84,7 +84,7 @@
     "strict": true
    }
   ],
-  "executable": 0,
+  "executable": 79,
   "family": "damage",
   "hosts": {
    "mainboard": 2,
@@ -668,7 +668,7 @@
     "strict": true
    }
   ],
-  "executable": 0,
+  "executable": 1,
   "family": "card_flow",
   "hosts": {
    "mainboard": 14,
@@ -874,7 +874,7 @@
     "strict": true
    }
   ],
-  "executable": 0,
+  "executable": 35,
   "family": "damage",
   "hosts": {
    "mainboard": 4,
@@ -1461,7 +1461,7 @@
     "strict": false
    }
   ],
-  "executable": 0,
+  "executable": 56,
   "family": "removal",
   "hosts": {
    "mainboard": 25,
@@ -1618,7 +1618,7 @@
     "strict": true
    }
   ],
-  "executable": 0,
+  "executable": 1,
   "family": "removal",
   "hosts": {
    "mainboard": 6,
@@ -1687,7 +1687,7 @@
     "strict": true
    }
   ],
-  "executable": 0,
+  "executable": 12,
   "family": "damage",
   "hosts": {
    "mainboard": 3,

@@ -17,9 +17,12 @@ This module reads no oracle text and writes no game state.
 """
 from __future__ import annotations
 
+import operator
 from typing import Any, Callable, Optional
 
 from .cards import CardType
+from .effect_spec import (Amount, AmountKind, CardFilter, Condition,
+                          ConditionKind, Quantity, QuantityKind)
 
 
 # Thresholds of the two ability-word conditions legacy burn upgrades carry
@@ -53,6 +56,121 @@ def opponents_who_lost_life(game: Any, player_idx: int) -> int:
     """How many of the player's opponents lost life this turn."""
     return sum(1 for i, p in enumerate(game.players)
                if i != player_idx and p.life_lost_this_turn > 0)
+
+
+def basic_land_types(game: Any, player_idx: int) -> int:
+    """Domain: the basic land types among lands the player controls, from
+    each land's current types (the engine's one domain count)."""
+    from .mana_payment import ManaPayment
+    return ManaPayment.count_domain(game, player_idx)
+
+
+# ── Typed evaluators (the dispatcher's, through effect_executors) ─────
+#
+# Each shape is supported only exactly as printed here; any other field set
+# on the condition, quantity or filter makes `*_supported` refuse it, so the
+# dispatcher's `can_execute` refuses the host and its carrier keeps the
+# legacy apply (fail closed).
+
+_OPS = {">=": operator.ge, "<=": operator.le, "==": operator.eq,
+        ">": operator.gt, "<": operator.lt}
+_CARD_TYPE_VALUES = frozenset(t.value for t in CardType)
+
+
+def _only(f: Optional[CardFilter], **want: Any) -> bool:
+    """Is `f` exactly the filter whose non-default entries are `want`?"""
+    return isinstance(f, CardFilter) and dict(f.as_tuple()) == want
+
+
+def _literal(a: Optional[Amount]) -> Optional[int]:
+    if isinstance(a, Amount) and a.kind is AmountKind.LITERAL \
+            and isinstance(a.n, int) and not isinstance(a.n, bool):
+        return a.n
+    return None
+
+
+def _controlled_types_filter(f: Optional[CardFilter]) -> bool:
+    """"<types> you control": battlefield permanents of any of the card
+    types, controlled by the condition's controller."""
+    if not isinstance(f, CardFilter) or not f.types \
+            or not f.types <= _CARD_TYPE_VALUES:
+        return False
+    return _only(f, types=tuple(sorted(f.types)), controller="you")
+
+
+def state_condition_supported(cond: Condition) -> bool:
+    """The STATE conditions evaluated here: a count of permanents of some
+    card types you control (metalcraft's shape) and the number of card
+    types among cards in your graveyard (delirium's), each compared with a
+    printed number."""
+    if not isinstance(cond, Condition) or cond.kind is not ConditionKind.STATE:
+        return False
+    if cond.op not in _OPS or _literal(cond.n) is None or cond.ref is not None \
+            or cond.payer is not None or cond.cost is not None or cond.children:
+        return False
+    if cond.pred == "count":
+        return _controlled_types_filter(cond.filter)
+    if cond.pred == "card_types":
+        return _only(cond.filter, zone="graveyard", owner="you")
+    return False
+
+
+def state_condition_holds(game: Any, controller: int, cond: Condition) -> bool:
+    """Evaluate a supported STATE condition for `controller` now."""
+    if cond.pred == "count":
+        types = cond.filter.types
+        count = permanents_controlled(
+            game, controller,
+            lambda p: any(t.value in types for t in p.effective_card_types))
+    else:
+        count = graveyard_card_types(game, controller)
+    return _OPS[cond.op](count, _literal(cond.n))
+
+
+def quantity_supported(q: Optional[Quantity]) -> bool:
+    """The quantities evaluated here: domain over lands you control."""
+    if not isinstance(q, Quantity) or q.ref is not None or q.stat is not None \
+            or q.counter_kind is not None or q.event is not None:
+        return False
+    if q.kind is QuantityKind.BASIC_LAND_TYPES:
+        return q.player in ("any", "you") and _only(
+            q.filter, types=("land",), controller="you")
+    return False
+
+
+def quantity_value(game: Any, controller: int, q: Quantity) -> int:
+    """Evaluate a supported quantity for `controller` now."""
+    return basic_land_types(game, controller)
+
+
+def amount_supported(a: Optional[Amount]) -> bool:
+    """The amounts evaluated here: a printed number, X (the value chosen
+    on casting, CR 107.3), and "X, where X is <quantity>" / "equal to
+    <quantity>" over a supported quantity."""
+    if not isinstance(a, Amount) or a.ref is not None or a.rounding \
+            or a.evenly:
+        return False
+    if a.kind is AmountKind.LITERAL:
+        n = _literal(a)
+        return n is not None and n >= 0 and a.quantity is None and a.inner is None
+    if a.kind is AmountKind.X:
+        return a.n == 1 and a.quantity is None and a.inner is None
+    if a.kind is AmountKind.X_DEFINED:
+        return a.quantity is None and amount_supported(a.inner)
+    if a.kind is AmountKind.EQUAL_TO:
+        return a.inner is None and quantity_supported(a.quantity)
+    return False
+
+
+def amount_value(game: Any, controller: int, a: Amount, x_value: int = 0) -> int:
+    """Evaluate a supported amount for `controller` now."""
+    if a.kind is AmountKind.LITERAL:
+        return a.n
+    if a.kind is AmountKind.X:
+        return max(0, x_value)
+    if a.kind is AmountKind.X_DEFINED:
+        return amount_value(game, controller, a.inner, x_value)
+    return quantity_value(game, controller, a.quantity)
 
 
 # ── Legacy adapters (deleted with their callers) ──────────────────────

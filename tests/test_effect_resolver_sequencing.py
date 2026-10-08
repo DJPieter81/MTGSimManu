@@ -183,19 +183,29 @@ def run(er, monkeypatch):
     return SimpleNamespace(register=register, evaluator=evaluator)
 
 
-# ── E0 ships the skeleton with nothing in it, and nothing calls it ─────
+# ── The tables hold the landed families; only their carriers call it ───
 
-def test_dispatcher_tables_are_empty_in_e0(er):
-    assert er.EXECUTORS == {}
+def test_the_dispatcher_tables_hold_exactly_the_landed_families(er):
+    """A family lands by registering its verbs' executors (section 14);
+    no other verb is executable, and no family has widened its filters or
+    tolerated residue yet."""
+    from engine.effect_executors import FAMILIES
+    assert set(er.EXECUTORS) == set().union(*FAMILIES.values())
+    assert set(er.CONDITION_EVALUATORS) == {ConditionKind.STATE}
     assert er.EXECUTOR_FILTER_KEYS == {}
     assert er.LEGACY_RESIDUE_TOLERATED == {}
-    assert er.CONDITION_EVALUATORS == {}
 
 
-def test_no_engine_or_ai_module_imports_the_dispatcher_in_e0():
-    """E0 is data + tooling: the dispatcher exists with no caller, so no
-    resolution path can reach it until a family switches (section 11)."""
-    hits = []
+# Modules that may import the dispatcher: the families' executors, and the
+# carriers whose legacy apply has switched (section 11, "Carrier switch").
+DISPATCHER_IMPORTERS = {"engine/effect_executors.py"}
+
+
+def test_only_the_executors_and_switched_carriers_import_the_dispatcher():
+    """A resolution path reaches the dispatcher only through a switched
+    carrier, which falls back to its legacy apply for any host the
+    dispatcher cannot execute (A37)."""
+    importers = set()
     for root in ("engine", "ai"):
         for path in sorted((REPO / root).rglob("*.py")):
             if path == RESOLVER:
@@ -209,13 +219,13 @@ def test_no_engine_or_ai_module_imports_the_dispatcher_in_e0():
                         f"{node.module or ''}.{a.name}" for a in node.names]
                 if any(m.split(".")[-1] == "effect_resolver"
                        or m.endswith(".effect_resolver") for m in mods):
-                    hits.append(f"{path.relative_to(REPO)}:{node.lineno}")
+                    importers.add(str(path.relative_to(REPO)))
                 if (isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
                         and node.func.id in ("__import__", "import_module")
                         and node.args and isinstance(node.args[0], ast.Constant)
                         and "effect_resolver" in str(node.args[0].value)):
-                    hits.append(f"{path.relative_to(REPO)}:{node.lineno}")
-    assert hits == []
+                    importers.add(str(path.relative_to(REPO)))
+    assert importers == DISPATCHER_IMPORTERS
 
 
 def test_dispatcher_reads_no_oracle_text_and_writes_no_game_state():

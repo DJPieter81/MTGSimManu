@@ -2,11 +2,12 @@
 
 Design doc: docs/design/2026-09-29_clause_and_trigger_grammar.md, section 11.
 
-E0 ships the skeleton only. Its tables are empty and NOTHING calls it
-(tests/test_effect_resolver_sequencing.py pins both), so no game behaviour
-changes. A family switches later (E1-E7) by registering its executors and
-calling `resolve_ability` from its carrier, falling back to the legacy apply
-whenever `can_execute` refuses the host (A37, A38).
+E0 shipped the skeleton. A family switches (E1-E7) by registering its
+executors and condition evaluators (`engine/effect_executors.py`, imported at
+the end of this module) and calling `resolve_ability` from its carrier,
+falling back to the legacy apply whenever `can_execute` refuses the host
+(A37, A38). tests/test_effect_resolver_sequencing.py pins which families'
+verbs the tables hold and which carriers reach the dispatcher.
 
 What this module owns is SEQUENCING (CR 608.2c): printed order, conditions,
 "if you do" / "otherwise" branches, optional effects, "instead"
@@ -31,8 +32,10 @@ its sub-ability hosts.
 """
 from __future__ import annotations
 
+import contextvars
 import dataclasses
 from collections import namedtuple
+from contextlib import contextmanager
 from dataclasses import dataclass, field
 from functools import partial
 from typing import (Any, Callable, Dict, FrozenSet, Iterator, List, Mapping,
@@ -117,6 +120,11 @@ class Resolution:
     performed: Dict[int, bool] = field(default_factory=dict)
     instead_holds: Dict[int, bool] = field(default_factory=dict)         # replacing seq -> evaluated once
     pending_reflexive: List[Tuple[SubAbility, Snapshot]] = field(default_factory=list)
+    # The source object as its carrier holds it. A resolving spell is in no
+    # zone (it has left the stack), so its Handle cannot be looked up; an
+    # executor that hands the source to an owner (a damage source) reads
+    # this. A sub-ability has none and looks its source up by Handle.
+    source_object: Any = None
 
     def snapshot(self) -> Snapshot:
         return Snapshot(
@@ -236,6 +244,11 @@ def _spec_executable(s: EffectSpec, family: Optional[str],
         executor = EXECUTORS.get(verb)
         if executor is None:
             return False
+        # An executor that binds only some shapes of its verb says which
+        # (amount kinds, recipients, sources); any other shape is refused.
+        supports = getattr(executor, "supports", None)
+        if supports is not None and not supports(s):
+            return False
     # Defence in depth: every spec a RESULT ref can name (this host's, an
     # outer host's) is itself walked and refused if UNMODELLED, so this
     # never changes the verdict today; it keeps the rule local to the ref.
@@ -303,7 +316,12 @@ def _condition_executable(cond: Condition) -> bool:
     if cond.kind in _COMBINATORS:
         return bool(cond.children) and all(_condition_executable(c)
                                            for c in cond.children)
-    return cond.kind in CONDITION_EVALUATORS
+    evaluator = CONDITION_EVALUATORS.get(cond.kind)
+    if evaluator is None:
+        return False
+    # An evaluator that owns only some predicates of its kind says which.
+    supports = getattr(evaluator, "supports", None)
+    return supports is None or bool(supports(cond))
 
 
 def _member_condition(cond: Condition) -> bool:
@@ -350,7 +368,8 @@ def resolve_ability(game: Any, source: Handle, controller: int,
                     event: Optional[object] = None,
                     cast_facts: FrozenSet[str] = frozenset(),
                     modes: Tuple[int, ...] = (),
-                    division: Optional[Dict[int, Tuple[int, ...]]] = None) -> bool:
+                    division: Optional[Dict[int, Tuple[int, ...]]] = None,
+                    source_object: Any = None) -> bool:
     """Resolve `ability` (with its chosen `modes`) in printed order.
 
     Returns False without raising -- and without touching the game -- when
@@ -365,7 +384,8 @@ def resolve_ability(game: Any, source: Handle, controller: int,
                      ability=ability, chosen=tuple(chosen),
                      division=dict(division or {}), x_value=x_value,
                      event=event, cast_facts=frozenset(cast_facts),
-                     modes=tuple(modes), family=family)
+                     modes=tuple(modes), family=family,
+                     source_object=source_object)
     if not _intervening_if_holds(ctx, ability):
         return False
     specs = ability.specs + tuple(s for i in modes for s in ability.modes[i].specs)
@@ -512,6 +532,30 @@ def resolve_sub_ability(game: Any, sub: SubAbility, snap: Snapshot) -> bool:
     return any(ctx.performed.get(k, False) for k in own)
 
 
+# ── Dispatch on/off (the per-host harness's legacy side) ───────────────
+
+_DISPATCH = contextvars.ContextVar("effect_dispatch", default=True)
+
+
+def dispatch_enabled() -> bool:
+    """Do switched carriers take the dispatcher for their strict,
+    executable hosts? Always, except inside `legacy_only()`."""
+    return _DISPATCH.get()
+
+
+@contextmanager
+def legacy_only():
+    """Resolve every switched carrier through its legacy apply for the
+    duration: the legacy side of the per-host harness
+    (tools/host_resolution_equivalence.py, A42), which proves a switched
+    host resolves identically both ways. Play never enters it."""
+    token = _DISPATCH.set(False)
+    try:
+        yield
+    finally:
+        _DISPATCH.reset(token)
+
+
 # ── The legacy target adapter (A36) ────────────────────────────────────
 
 def chosen_from_legacy(ability: AbilityEffects, item_targets: Sequence[int],
@@ -555,3 +599,9 @@ def _legacy_handle(game: Any, tid: int) -> Handle:
     if card is None:
         return Handle(tid, _UNKNOWN_ZONE, _UNKNOWN_ENTRY)
     return handle_of(card)
+
+
+# The families' executors and condition evaluators register into the tables
+# above when their module is imported; imported last, so the tables and the
+# binding types they use already exist.
+from . import effect_executors  # noqa: E402,F401
