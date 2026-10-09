@@ -32,10 +32,15 @@ Legacy applies by host kind: a SPELL host resolves through the spell
 resolution path (`GameState._execute_spell_effects` on a StackItem); a MODE
 through `resolve_spell_from_oracle` with the mode's clause; an ACTIVATED host
 through `activated_effects.resolve_activated_ability`; a LOYALTY host
-through `PlaneswalkerManager._resolve` when its kind is executable. Every
-other host kind has no single legacy apply in E0 (triggered and static
-abilities resolve through their own carriers) and is reported as skipped,
-by kind: exit criterion 5 does not cover them yet.
+through `PlaneswalkerManager._resolve` when its kind is executable; an
+enter trigger (a front-face TRIGGERED host whose head is SELF_ENTERS)
+through the card's ETB registry handler when it has one, else
+`oracle_resolver.resolve_etb_from_oracle`, the enter resolver -- the
+engine's order on entry -- with the source on the battlefield and no
+targets (the engine resolves enter triggers on entry). Every other host
+kind has no single legacy apply (other
+triggered and static abilities resolve through their own carriers) and is
+reported as skipped, by kind.
 
 Each apply gets the legacy targets one deterministic rule chooses on that
 board from the host's requirements (`legacy_targets`), so a targeted host
@@ -280,7 +285,7 @@ class HostCase:
 def host_cases(template, effects) -> Tuple[List[HostCase], List[HostCase]]:
     """(resolvable cases, skipped cases) of every host of `template`."""
     from engine.cards import ActivationEffectKind, CardType
-    from engine.effect_spec import HostKind
+    from engine.effect_spec import EventHint, HostKind
     from engine.planeswalker_manager import EXECUTABLE_LOYALTY_KINDS
     ok, skipped = [], []
     types = set(template.card_types or ())
@@ -315,6 +320,11 @@ def host_cases(template, effects) -> Tuple[List[HostCase], List[HostCase]]:
                 EXECUTABLE_LOYALTY_KINDS:
             ok.append(HostCase(template.name, label, "LOYALTY",
                                (h.face, h.loyalty_slot)))
+        elif h.kind is HostKind.TRIGGERED and h.face == 0 and \
+                h.trigger is not None and \
+                EventHint.SELF_ENTERS in h.trigger.event_hints:
+            # an enter trigger: its legacy apply is the enter resolver
+            ok.append(HostCase(template.name, label, "ETB", h.index))
         else:
             skipped.append(HostCase(template.name, label, h.kind.name))
     return ok, skipped
@@ -408,6 +418,17 @@ def legacy_apply(game, template, case: HostCase) -> Any:
         return resolve_activated_ability(game, card, CONTROLLER,
                                          list(targets),
                                          ability=_activated(template, case))
+    if case.kind == "ETB":
+        # the engine's order on entry: a card-name registry handler runs
+        # instead of the enter resolver (ResolutionManager.
+        # _handle_permanent_etb)
+        from engine.card_effects import EFFECT_REGISTRY, EffectTiming
+        if EFFECT_REGISTRY.has_handler(template.name, EffectTiming.ETB):
+            return EFFECT_REGISTRY.execute(template.name, EffectTiming.ETB,
+                                           game, card, CONTROLLER,
+                                           targets=None, item=None)
+        from engine.oracle_resolver import resolve_etb_from_oracle
+        return resolve_etb_from_oracle(game, card, CONTROLLER)
     from engine.planeswalker_manager import PlaneswalkerManager
     face, slot = case.key
     attr = "loyalty_abilities" if face == 0 else \

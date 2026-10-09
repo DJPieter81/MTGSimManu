@@ -1722,9 +1722,11 @@ def test_the_closure_lists_the_registered_deck_hosts_legacy_gates_accept_and_onl
     assert all(p.part in ("mainboard", "sideboard") for p in pairs)
     parity = t.gate_parity(pairs, harness_ok=t.recorded_harness_ok())
     assert parity["failures"] == []
-    # E1: the damage family's switched carriers, and nothing else.
+    # E1: the damage family's switched carriers; unit E: the enter-trigger
+    # carrier's card-flow hosts. Nothing else.
     assert {p.handler for p in pairs if p.new_path} == {
-        "direct_damage", "activated_effects:DAMAGE_ANY_TARGET", "dispatched"}
+        "direct_damage", "activated_effects:DAMAGE_ANY_TARGET", "dispatched",
+        "etb:dispatch"}
     assert parity["new_path"] + parity["legacy_fallback"] == len(pairs)
 
 

@@ -134,7 +134,7 @@ def test_a_side_whose_resolution_is_not_a_function_of_the_board_and_seed_diverge
 def test_every_host_of_a_card_is_either_resolvable_through_a_legacy_apply_or_reported_skipped(card_db):
     from engine.effect_grammar import parse_template
     h = _h()
-    seen = {"SPELL": 0, "MODE": 0, "ACTIVATED": 0, "LOYALTY": 0}
+    seen = {"SPELL": 0, "MODE": 0, "ACTIVATED": 0, "LOYALTY": 0, "ETB": 0}
     for t in h.deck_templates(card_db):
         ce = parse_template(t)
         ok, skipped = h.host_cases(t, ce)
@@ -206,11 +206,11 @@ NOOP_FIXTURE = REPO / "tests" / "fixtures" / "host_harness_noop_hosts.json"
 
 
 # The E0 self-check over every registered-deck MB and SB host with a
-# legacy apply: 175 hosts x 6 boards x 2 seeds x 2 sides, plus one
-# placed-only copy per (host, board) for the no-op report. Measured
-# 2026-10-02: ~53 s CPU (4-core box under a concurrent 4-worker matrix
-# run), plus ~18 s when first in the process to load the shared card DB.
-# 900 s bounds a hang on a 2-core CI runner.
+# legacy apply: 237 hosts (enter triggers included since unit E) x 6
+# boards x 2 seeds x 2 sides, plus one placed-only copy per (host, board)
+# for the no-op report. Measured 2026-10-09: ~95 s on a quiet 4-core box
+# (2026-10-02, 175 hosts: ~53 s CPU), plus ~18 s when first in the process
+# to load the shared card DB. 900 s bounds a hang on a 2-core CI runner.
 @pytest.mark.timeout(900)
 def test_the_legacy_self_check_is_deterministic_on_every_registered_deck_host(card_db):
     h = _h()

@@ -738,6 +738,10 @@ ETB_CARRIER_APPLY = {
     "etb_return_land":
         "engine.land_manager:LandManager.apply_land_etb_static",
 }
+# The enter-trigger carrier (`effect_carrier.dispatch_etb`): its pairs are
+# the hosts `effect_carrier.etb_plan` takes, through the enter resolver.
+ETB_DISPATCH_HANDLER = "etb:dispatch"
+ETB_DISPATCH_APPLY = "engine.oracle_resolver:resolve_etb_from_oracle"
 SELF_CAST_HANDLER = "oracle_resolver.resolve_self_cast_trigger"
 SELF_CAST_APPLY = "engine.oracle_resolver:resolve_self_cast_trigger"
 # The dispatcher entry point a switched apply reaches (section 10,
@@ -942,6 +946,15 @@ def _spell_reaches_clause_handlers(t) -> bool:
                 or getattr(t, "is_counterspell", False))
 
 
+def _enter_reaches_resolver(t) -> bool:
+    """Does the permanent's entry reach the enter resolver? A card-name ETB
+    registry handler runs instead of it (`ResolutionManager.
+    _handle_permanent_etb`, `zone_transfer._fire_etb_triggers`): for such a
+    card the enter-trigger carrier is not the path its hosts resolve on."""
+    from engine.card_effects import EFFECT_REGISTRY, EffectTiming
+    return not EFFECT_REGISTRY.has_handler(t.name, EffectTiming.ETB)
+
+
 def closure(templates: Iterable[Any], effects: Mapping[str, Any]
             ) -> List[Pair]:
     """Every (legacy handler, host) pair a legacy gate accepts. A pair is
@@ -962,6 +975,8 @@ def closure(templates: Iterable[Any], effects: Mapping[str, Any]
     etb_switched = {f: _is_switched(_resolve_path(p))
                     for f, p in ETB_CARRIER_APPLY.items()}
     self_cast_switched = _is_switched(_resolve_path(SELF_CAST_APPLY))
+    etb_dispatch_switched = _is_switched(_resolve_path(ETB_DISPATCH_APPLY))
+    from engine.effect_carrier import etb_plan
     out: List[Pair] = []
     for t in templates:
         ce = effects.get(t.name) or t.effects
@@ -1042,6 +1057,11 @@ def closure(templates: Iterable[Any], effects: Mapping[str, Any]
                 out.append(_pair(f"etb:{field}", rec.family, t, enters[0],
                                  _host_label(enters[0]), part,
                                  etb_switched[field]))
+        for h, family in etb_plan(ce.front()) or ():
+            out.append(_pair(ETB_DISPATCH_HANDLER, family, t, h,
+                             _host_label(h), part,
+                             etb_dispatch_switched
+                             and _enter_reaches_resolver(t)))
         # the spell's own cast triggers
         if "when you cast this spell" in _printed_text(t):
             for h in ce.front():

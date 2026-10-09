@@ -1,19 +1,43 @@
 {
- "description": "Registered-deck MB and SB hosts whose legacy apply changes no game state on any of the six harness boards (seed 0), with the legacy targets the harness chooses (tools/host_resolution_equivalence.py legacy_targets). Each is a legacy no-op there: the board offers no legal object for its deterministic pick (no enchantment, no land card in a graveyard, a too-large creature for a mana-value bound, an empty graveyard), or legacy has no apply for the clause (e.g. an each-opponent sacrifice). The harness self-check claims determinism only over the other hosts; this list is pinned so a harness that stops choosing targets, or a host that starts or stops doing something, fails the test. Regenerate: python tools/host_resolution_equivalence.py --json (noop_hosts, state_changing_hosts, hosts).",
- "hosts": 175,
- "state_changing_floor": 135,
+ "description": "Registered-deck MB and SB hosts whose legacy apply changes no game state on any of the six harness boards (seed 0), with the legacy targets the harness chooses (tools/host_resolution_equivalence.py legacy_targets). Each is a legacy no-op there: the board offers no legal object for its deterministic pick (no enchantment, no land card in a graveyard, a too-large creature for a mana-value bound, an empty graveyard), or legacy has no apply for the clause (e.g. an each-opponent sacrifice). An enter trigger (an ETB host) is a no-op there when another carrier resolves it -- a land's enter static (LandManager.apply_land_etb_static), the generic trigger_etb pass, a typed ETB field read elsewhere -- so neither its ETB registry handler nor the enter resolver does anything for it. The harness self-check claims determinism only over the other hosts; this list is pinned so a harness that stops choosing targets, or a host that starts or stops doing something, fails the test. Regenerate: python tools/host_resolution_equivalence.py --json (noop_hosts, state_changing_hosts, hosts).",
+ "hosts": 237,
+ "state_changing_floor": 165,
  "noop_hosts": [
   [
    "Abrade",
    "MODE:0:0:mode0"
   ],
   [
+   "Arboreal Grazer",
+   "TRIGGERED:0:1"
+  ],
+  [
    "Avengers Disassembled",
    "MODE:0:1:mode1"
   ],
   [
+   "Badgermole Cub",
+   "TRIGGERED:0:0"
+  ],
+  [
+   "Beza, the Bounding Spring",
+   "TRIGGERED:0:0"
+  ],
+  [
+   "Bojuka Bog",
+   "TRIGGERED:0:1"
+  ],
+  [
    "Consign to Memory",
    "SPELL:0:1"
+  ],
+  [
+   "Crumbling Vestige",
+   "TRIGGERED:0:1"
+  ],
+  [
+   "Cultivator Colossus",
+   "TRIGGERED:0:2"
   ],
   [
    "Devoted Druid",
@@ -32,8 +56,28 @@
    "SPELL:0:0"
   ],
   [
+   "Extinguisher Battleship",
+   "TRIGGERED:0:0"
+  ],
+  [
    "Fatal Push",
    "SPELL:0:0"
+  ],
+  [
+   "Formidable Speaker",
+   "TRIGGERED:0:0"
+  ],
+  [
+   "Generous Ent",
+   "TRIGGERED:0:1"
+  ],
+  [
+   "Gruul Turf",
+   "TRIGGERED:0:1"
+  ],
+  [
+   "Haliya, Guided by Light",
+   "TRIGGERED:0:0"
   ],
   [
    "Hex Magic",
@@ -42,6 +86,14 @@
   [
    "Inevitable Betrayal",
    "SPELL:0:1"
+  ],
+  [
+   "Isochron Scepter",
+   "TRIGGERED:0:0"
+  ],
+  [
+   "Kappa Cannoneer",
+   "TRIGGERED:0:2"
   ],
   [
    "Kozilek's Command",
@@ -64,6 +116,10 @@
    "SPELL:0:0"
   ],
   [
+   "Kraul Harpooner",
+   "TRIGGERED:0:1"
+  ],
+  [
    "Lorehold Charm",
    "MODE:0:0:mode0"
   ],
@@ -84,8 +140,28 @@
    "SPELL:0:2"
   ],
   [
+   "Obsidian Charmaw",
+   "TRIGGERED:0:2"
+  ],
+  [
+   "Ox of Agonas",
+   "TRIGGERED:0:0"
+  ],
+  [
    "Prismatic Ending",
    "SPELL:0:0"
+  ],
+  [
+   "Rest in Peace",
+   "TRIGGERED:0:0"
+  ],
+  [
+   "Risen Reef",
+   "TRIGGERED:0:0"
+  ],
+  [
+   "Sanctifier en-Vec",
+   "TRIGGERED:0:1"
   ],
   [
    "Sheoldred's Edict",
@@ -104,8 +180,40 @@
    "SPELL:0:0"
   ],
   [
+   "Simic Growth Chamber",
+   "TRIGGERED:0:1"
+  ],
+  [
+   "Skateboard",
+   "TRIGGERED:0:0"
+  ],
+  [
+   "Snapcaster Mage",
+   "TRIGGERED:0:1"
+  ],
+  [
+   "Soul-Guide Lantern",
+   "TRIGGERED:0:0"
+  ],
+  [
+   "Spelunking",
+   "TRIGGERED:0:0"
+  ],
+  [
    "Spider-Sense",
    "SPELL:0:1"
+  ],
+  [
+   "Starfield Shepherd",
+   "TRIGGERED:0:1"
+  ],
+  [
+   "Static Prison",
+   "TRIGGERED:0:0"
+  ],
+  [
+   "Subtlety",
+   "TRIGGERED:0:2"
   ],
   [
    "Summoner's Pact",
@@ -140,8 +248,16 @@
    "SPELL:0:1"
   ],
   [
+   "Ugin's Labyrinth",
+   "TRIGGERED:0:0"
+  ],
+  [
    "Untimely Malfunction",
    "MODE:0:1:mode1"
+  ],
+  [
+   "Wan Shi Tong, Librarian",
+   "TRIGGERED:0:2"
   ],
   [
    "Warping Wail",
@@ -156,8 +272,20 @@
    "SPELL:0:0"
   ],
   [
+   "White Orchid Phantom",
+   "TRIGGERED:0:1"
+  ],
+  [
    "Wish",
    "SPELL:0:0"
+  ],
+  [
+   "Wistfulness",
+   "TRIGGERED:0:0"
+  ],
+  [
+   "Wistfulness",
+   "TRIGGERED:0:1"
   ],
   [
    "Wrenn and Six",

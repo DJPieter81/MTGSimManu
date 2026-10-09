@@ -668,7 +668,7 @@
     "strict": true
    }
   ],
-  "executable": 0,
+  "executable": 9,
   "family": "card_flow",
   "hosts": {
    "mainboard": 14,
@@ -971,6 +971,95 @@
   "sub_kinds": {},
   "verb_sets": {
    "CHOOSE,DAMAGE,PAY,PLAYER_COUNTERS": 1
+  }
+ },
+ "etb:dispatch": {
+  "deck_hosts": [
+   {
+    "card": "Commercial District",
+    "host": "TRIGGERED:0:1",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
+    "card": "Elegant Parlor",
+    "host": "TRIGGERED:0:1",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
+    "card": "Hedge Maze",
+    "host": "TRIGGERED:0:1",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
+    "card": "Lush Portico",
+    "host": "TRIGGERED:0:1",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
+    "card": "Meticulous Archive",
+    "host": "TRIGGERED:0:1",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
+    "card": "Raucous Theater",
+    "host": "TRIGGERED:0:1",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
+    "card": "Shadowy Backstreet",
+    "host": "TRIGGERED:0:1",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
+    "card": "Thundering Falls",
+    "host": "TRIGGERED:0:1",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
+    "card": "Undercity Sewers",
+    "host": "TRIGGERED:0:1",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
+    "card": "Underground Mortuary",
+    "host": "TRIGGERED:0:1",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   }
+  ],
+  "executable": 47,
+  "family": "card_flow",
+  "hosts": {
+   "mainboard": 10,
+   "pool": 37,
+   "sideboard": 0
+  },
+  "steps": {
+   "E3": 47
+  },
+  "strict": 47,
+  "sub_kinds": {},
+  "verb_sets": {
+   "SURVEIL": 47
   }
  },
  "etb:etb_exile_returns_on_leave": {
@@ -1515,7 +1604,7 @@
     "strict": false
    }
   ],
-  "executable": 46,
+  "executable": 49,
   "family": "removal",
   "hosts": {
    "mainboard": 25,

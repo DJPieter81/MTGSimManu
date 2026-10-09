@@ -51,9 +51,16 @@ def dispatch(game: Any, source: Any, controller: int, host: Any,
                               source_object=source)
 
 
+# The families whose spell hosts the family-generic clause handler
+# ("dispatched") takes. A family joins when its spell carriers switch; card
+# flow is switched for enter triggers only (`ETB_FAMILIES`), so a card-flow
+# spell keeps its legacy clause handler.
+SPELL_FAMILIES = ("damage",)
+
+
 def spell_family(template: Any, effects: Any = None) -> Optional[str]:
-    """The landed family (`effect_executors.FAMILIES`) whose strict shape
-    and executors take this template's whole SPELL host, with its targets
+    """The landed spell family (`SPELL_FAMILIES`) whose strict shape and
+    executors take this template's whole SPELL host, with its targets
     placeable from the cast-time list; None when no family does. A loyalty
     line's clause template has no spell host of its own. `effects` is the
     template's parsed effects when the caller already holds them."""
@@ -63,9 +70,8 @@ def spell_family(template: Any, effects: Any = None) -> Optional[str]:
     host = effects.spell(0)
     if host is None or not places_legacy_targets(host, effects.front()):
         return None
-    from .effect_executors import FAMILIES
     from .effect_views import STRICT
-    for family in FAMILIES:
+    for family in SPELL_FAMILIES:
         strict = STRICT.get(family)
         if strict is not None and strict(host) and er.can_execute(host, family):
             return family
@@ -92,6 +98,62 @@ def dispatch_activation(game: Any, source: Any, controller: int, ability: Any,
     return dispatch(game, source, controller,
                     template.effects.activated(ability.index), legacy_targets,
                     family=rec.family, x_value=x_value)
+
+
+# The families whose hosts the enter-trigger carrier takes. Card flow only:
+# an enter trigger with a target (damage, removal) is still chosen by its
+# legacy resolver, which picks on entry; the dispatcher's unbound slot would
+# not choose the same object (A36).
+ETB_FAMILIES = ("card_flow",)
+
+
+def etb_plan(face_hosts: Iterable[Any]) -> Optional[list]:
+    """The enter-trigger carrier's plan for one face: ``[(host, family)]``
+    for every TRIGGERED(SELF_ENTERS) host of `face_hosts` when each is in an
+    `ETB_FAMILIES` family's strict shape, executable and untargeted; None
+    when the face has no such host or any one of them does not qualify (a
+    card is taken whole or not at all, so no trigger of it resolves twice
+    or not at all). One owner, read by the carrier and the closure."""
+    from .effect_spec import EventHint, HostKind
+    from .effect_views import STRICT
+    hosts = [h for h in face_hosts
+             if h.kind is HostKind.TRIGGERED and h.trigger is not None
+             and EventHint.SELF_ENTERS in h.trigger.event_hints]
+    if not hosts:
+        return None
+    plan = []
+    for h in hosts:
+        family = next((f for f in ETB_FAMILIES
+                       if STRICT[f](h) and er.can_execute(h, f)
+                       and not h.targets), None)
+        if family is None:
+            return None
+        plan.append((h, family))
+    return plan
+
+
+def dispatch_etb(game: Any, card: Any, controller: int) -> Optional[bool]:
+    """The enter-trigger carrier (CR 603.2, 603.6a): the entering
+    permanent's TRIGGERED(SELF_ENTERS) hosts on the face it shows, resolved
+    through the dispatcher when `etb_plan` takes the face; None otherwise,
+    and the legacy resolver runs. The engine resolves enter triggers on
+    entry, with no targets: a slot reaches its owner unbound. Returns
+    whether any host performed anything."""
+    template = getattr(card, "template", None)
+    if template is None or getattr(template, "is_loyalty_clause", False) \
+            or not er.dispatch_enabled():
+        return None
+    faces = template.effects.faces
+    face = 1 if getattr(card, "is_transformed", False) and len(faces) > 1 \
+        else 0
+    plan = etb_plan(faces[face] if faces else ())
+    if plan is None:
+        return None
+    performed = False
+    for h, family in plan:
+        performed |= bool(dispatch(game, card, controller, h, (),
+                                   family=family))
+    return performed
 
 
 def places_legacy_targets(host: Any, face_hosts: Iterable[Any] = ()) -> bool:

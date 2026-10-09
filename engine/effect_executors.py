@@ -35,11 +35,13 @@ from .effect_spec import (Chooser, Condition, ConditionKind, EffectSpec, Ref,
                           RefKind, Verb)
 
 FAMILY_DAMAGE = "damage"
+FAMILY_CARD_FLOW = "card_flow"
 
 # The verbs each family's executors own (the tables' contents, pinned by
 # tests/test_effect_resolver_sequencing.py).
 FAMILIES = {FAMILY_DAMAGE: frozenset({Verb.DAMAGE, Verb.LOSE_LIFE,
-                                      Verb.GAIN_LIFE})}
+                                      Verb.GAIN_LIFE}),
+            FAMILY_CARD_FLOW: frozenset({Verb.SURVEIL})}
 
 
 # ── Binding helpers ───────────────────────────────────────────────────
@@ -218,6 +220,32 @@ execute_lose_life.supports = _life_supported
 execute_gain_life.supports = _life_supported
 
 
+# ── SURVEIL (family card_flow, E3) ────────────────────────────────────
+
+def _surveil_supported(s: EffectSpec) -> bool:
+    """"Surveil <amount>": the acting players (the controller when none is
+    printed) each surveil (CR 701.42) through the owner, `GameState.surveil`."""
+    if s.verb is not Verb.SURVEIL or not _plain_participants(s) or s.flags:
+        return False
+    if s.subject is not None or s.ref is not None or s.other is not None \
+            or s.target is not None or s.target_slot is not None:
+        return False
+    return conditions.amount_supported(s.amount)
+
+
+def execute_surveil(ctx: Resolution, s: EffectSpec,
+                    actors: Tuple[int, ...]) -> Outcome:
+    amount = _amount(ctx, s)
+    if amount <= 0 or not actors:
+        return Outcome(False, {})
+    for p in actors:
+        ctx.game.surveil(p, amount)
+    return Outcome(True, {p: (amount,) for p in actors})
+
+
+execute_surveil.supports = _surveil_supported
+
+
 # ── Conditions ────────────────────────────────────────────────────────
 
 def evaluate_state(ctx: Resolution, cond: Condition) -> bool:
@@ -232,4 +260,5 @@ evaluate_state.supports = conditions.state_condition_supported
 EXECUTORS[Verb.DAMAGE] = execute_damage
 EXECUTORS[Verb.LOSE_LIFE] = execute_lose_life
 EXECUTORS[Verb.GAIN_LIFE] = execute_gain_life
+EXECUTORS[Verb.SURVEIL] = execute_surveil
 CONDITION_EVALUATORS[ConditionKind.STATE] = evaluate_state

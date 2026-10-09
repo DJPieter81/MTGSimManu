@@ -415,6 +415,14 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
         )
         return True
 
+    # ── Enter triggers the effect dispatcher resolves from the card's
+    #     parsed text (CR 603.2): the card-flow family's strict hosts
+    #     ("When ~ enters, surveil N"), taken whole or not at all by the
+    #     enter-trigger carrier. Anything it declines falls through. ──
+    from .effect_carrier import dispatch_etb
+    if dispatch_etb(game, card, controller) is not None:
+        return True
+
     oracle = (card.template.oracle_text or '').lower()
     if not oracle:
         return False
