@@ -877,9 +877,6 @@ class CardTemplate:
     # ('whenever ...' or 'at the beginning of ...').
     # Populated by oracle_parser.parse_has_recurring_trigger.
     has_recurring_trigger: bool = False
-    # Limits opponent spell timing -- True for Teferi-style 'cast only as sorcery' statics.
-    # Populated by oracle_parser.parse_limits_opponent_spell_timing.
-    limits_opponent_spell_timing: bool = False
     # Charge-counter board wipe -- True for Ratchet Bomb / EE pattern.
     # Populated by oracle_parser.parse_has_charge_counter_wipe.
     has_charge_counter_wipe: bool = False

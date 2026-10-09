@@ -347,11 +347,15 @@ class PlayerState:
         game = getattr(self, "_game", None)
         if game is None:
             return []
+        from .effect_conditions import rule_condition_holds
         from .effect_model import ModKind
         kind = ModKind.PROHIBIT if action == "cast" else ModKind.PERMIT
+        # The effects covering this player now: a printed condition ("during
+        # your turn") holds, as the read path evaluates it (CR 611.3a).
         return [e for e in game.continuous_effects.rule_effects(game)
                 if e.modification.kind is kind and e.modification.action == action
-                and e.selector.covers_player(self.player_idx)]
+                and e.selector.covers_player(self.player_idx)
+                and rule_condition_holds(game, e.controller, e.condition)]
 
     @property
     def silenced_this_turn(self) -> bool:

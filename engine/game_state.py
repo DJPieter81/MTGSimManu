@@ -242,24 +242,6 @@ class GameState:
                     return card
         return None
 
-    # ─── Sorcery-speed-lockout static-effect registry (R4) ──────────
-    # Per-game registry of player indices currently restricted to
-    # sorcery-speed casts by an opposing battlefield permanent. Rebuilt
-    # on demand from battlefield permanents whose classifier tag is
-    # ``Tag.SORCERY_SPEED_LOCKOUT`` (cached in
-    # ``decks/gameplans/_oracle_classifier.json``). Consulted by
-    # ``CastManager.can_cast`` — opponents in the set cannot cast
-    # outside sorcery-speed windows. Card-name branches, oracle-text
-    # parsing, and per-card flags are forbidden by the abstraction
-    # contract; the classifier tag IS the dispatch.
-    def _sorcery_speed_lockout_set(self) -> set[int]:
-        """Player indices restricted to sorcery-speed casts — the players
-        covered by a static `cast_outside_sorcery_timing` prohibition
-        (engine/continuous_effects._derive_static_rule_effects)."""
-        from . import rules_query
-        return {i for i in range(len(self.players))
-                if rules_query.sorcery_speed_only(self, i)}
-
     def setup_game(self, deck1: List[CardTemplate], deck2: List[CardTemplate],
                     forced_first_player: Optional[int] = None):
         """Initialize the game with two decks.

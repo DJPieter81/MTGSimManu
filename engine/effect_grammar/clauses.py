@@ -287,6 +287,24 @@ def _cond(t: str, a: int, b: int):
     return _condition.parse_condition(t, (a, b))
 
 
+def _during_lead(t: str, pos: int, end: int) -> Optional[Condition]:
+    """The TURN condition of a leading "<during phrase>, " at `pos`."""
+    for phrase in _condition.DURING_TURN:
+        if t.startswith(phrase + ", ", pos, end):
+            return _condition.parse_during(t, (pos, pos + len(phrase)))
+    return None
+
+
+def _during_trail(t: str, pos: int, end: int) -> Optional[Condition]:
+    """The TURN condition of a trailing " <during phrase>" before `end`,
+    unless it closes an "only during" restriction."""
+    for phrase in _condition.DURING_TURN:
+        if t.endswith(" " + phrase, pos, end) and \
+                not t.endswith(" only " + phrase, pos, end):
+            return _condition.parse_during(t, (end - len(phrase), end))
+    return None
+
+
 def _set_condition(f: _F, c: Condition) -> None:
     old = f.fields.get("condition")
     f.fields["condition"] = c if old is None else Condition(
@@ -434,6 +452,14 @@ def _leading(t: str, pos: int, end: int, f: _F) -> Optional[int]:
             if r is not None and r.unmodelled is not None:
                 f.unm.append((r.unmodelled, (pos, end)))
                 return None
+        c = _during_lead(t, pos, end)
+        if c is not None:
+            # "During your turn, ..." -- the TURN condition of "as long as
+            # it's your turn" (CR 611.3a), never a duration.
+            _set_condition(f, c)
+            f.consumed.append(("condition", (pos, pos + len(c.raw))))
+            pos += len(c.raw) + 2
+            continue
         if _DURATION_LEAD_RE.match(t, pos, end):
             r = _duration.parse_duration(t, (pos, end))
             if r is not None and r.span[0] == pos and r.rest_spans:
@@ -536,6 +562,15 @@ def _trailing(t: str, pos: int, end: int, f: _F) -> Optional[int]:
                               else _um(Stage.CONDITION, "empty_body"),
                               (i + 9, end)))
             end = i
+            changed = True
+            continue
+        c = _during_trail(t, pos, end)
+        if c is not None:
+            # "... during your turn" -- the same TURN condition. "<act> only
+            # during your turn" is a restriction on the act, not this frame.
+            _set_condition(f, c)
+            f.consumed.append(("condition", (end - len(c.raw), end)))
+            end -= len(c.raw) + 1
             changed = True
             continue
         if t.endswith(" instead", pos, end):

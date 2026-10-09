@@ -4512,19 +4512,6 @@ def parse_has_recurring_trigger(oracle: str) -> bool:
     return bool(re.search(r'whenever ', lo))
 
 
-def parse_limits_opponent_spell_timing(oracle: str) -> bool:
-    """Return True for cards that restrict opponents to sorcery-speed casts.
-
-    Matches Teferi, Time Raveler's static: 'cast spells only any time they
-    could cast a sorcery'.  Replaces the full-phrase runtime substring check.
-
-    Class size: ~5-10 Modern-legal cards with this static (Teferi family).
-    """
-    if not oracle:
-        return False
-    return 'cast spells only any time they could cast a sorcery' in oracle.lower()
-
-
 def parse_has_charge_counter_wipe(oracle: str) -> bool:
     """Return True for charge-counter permanents that destroy by mana value.
 

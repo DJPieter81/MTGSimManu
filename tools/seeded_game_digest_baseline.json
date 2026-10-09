@@ -1,5 +1,5 @@
 {
-  "combined": "2a1d2f009c48a1a53b796cf10af3e8298fe8f6f1446b829b5b753fefff6cfe5c",
+  "combined": "e38f25a57bd3c9db4fe491c3ef21f3325874a0919428e7d5e03eb59ef2480fc9",
   "comment": "sha256 of each seeded verbose game log (tools/seeded_game_digest.py). A pure refactor must reproduce every digest byte for byte.",
   "games": {
     "bo1|4c Omnath|Ruby Storm|57500": {
@@ -21,9 +21,9 @@
       "winner": "Azorius Blink"
     },
     "bo1|Azorius Control (WST v2)|Boros Energy|53500": {
-      "lines": 692,
-      "sha256": "83a27c30f56761b194a5a8734b81d106558d1d03292c2c8bde7522c77a32d2f8",
-      "turns": 9,
+      "lines": 525,
+      "sha256": "d39cea047364f9a5a742a20eea4ef7f016e3a67979efc43e3f25fcda01e3a475",
+      "turns": 7,
       "winner": "Boros Energy"
     },
     "bo1|Azorius Control|Azorius Control (WST)|53000": {

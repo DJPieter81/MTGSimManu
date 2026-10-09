@@ -744,6 +744,10 @@ _COLOR_OF_CHOICE_RE = re.compile(
 # second "or" action) is a qualifier the leaf does not type, so the clause
 # is Unmodelled rather than a broader prohibition than the printed rule.
 _PROHIBIT_ACTIONS = (
+    # Casting, and activating the abilities of the listed permanent types
+    # (CR 602.5): the cast object is "spells", the activate object the list
+    # (`_ABILITY_SOURCES_RE`).
+    ("cast spells or activate abilities of", ("cast", "activate")),
     ("attack or block", ("attack", "block")),
     ("block or be blocked", ("block", "be_blocked")),
     ("be blocked", ("be_blocked",)),
@@ -774,6 +778,16 @@ _PROHIBIT_BOUNDARY_RE = re.compile(
 # the prohibition's boundary.
 _PROHIBIT_OBJECT_RE = re.compile(r" ([^,.;]+?)(?= %s|[,.;]|$)" % DURATION_START)
 _CANT_RE = re.compile(r"(?:can't|cannot) ")
+# "can cast spells only <when>" (CR 101.2, 307.1): casting at any other time
+# is prohibited -- outside sorcery timing, or outside the caster's own turn.
+_CAN_ONLY_RE = re.compile(
+    r"can cast spells only (?:(?P<sorcery>any time they could cast a sorcery)"
+    r"|during their own turns?)\b")
+_SOURCE_TYPE = r"(?:artifacts|creatures|enchantments|planeswalkers|lands|battles)"
+# The permanent types whose abilities a prohibition names: "artifacts,
+# creatures, or enchantments".
+_ABILITY_SOURCES_RE = re.compile(
+    r" (?P<types>%s(?:,? (?:or |and )?%s)*)" % (_SOURCE_TYPE, _SOURCE_TYPE))
 _LIMIT_RE = re.compile(r"(?:can't|cannot) (?P<act>draw|cast) more than "
                        r"(?P<n>%s) (?:cards?|spells?) each turn\b" % _COUNT_RE)
 _UNTAP_RE = re.compile(r"(?:doesn't|don't) untap during (?:its|their) "
@@ -899,6 +913,12 @@ def _modification_rel(t: str) -> _Rel:
     if m:
         return (_mod(ModKind.LIMIT, action=m.group("act"),
                      max=_count(m.group("n"))), None, m.end(), None, (), ())
+    m = _CAN_ONLY_RE.match(t)
+    if m:
+        action = ("cast_outside_sorcery_timing" if m.group("sorcery")
+                  else "cast_outside_own_turn")
+        return (_mod(ModKind.PROHIBIT, action=action), None, m.end(), None,
+                (), ())
     m = _CANT_RE.match(t)
     if m:
         code = "prohibit_action"
@@ -914,6 +934,15 @@ def _modification_rel(t: str) -> _Rel:
                 if obj:
                     data["filter"] = obj.group(1).strip()
                     end = obj.end()
+            elif actions == ("cast", "activate"):
+                src = _ABILITY_SOURCES_RE.match(t, end)
+                if src is None:
+                    continue
+                data["filter"] = "spells"
+                data["sources"] = tuple(sorted(
+                    {w[:-1] for w in re.findall(_SOURCE_TYPE,
+                                                src.group("types"))}))
+                end = src.end()
             if _PROHIBIT_BOUNDARY_RE.match(t, end) is None:
                 code = "prohibit_qualifier"
                 continue

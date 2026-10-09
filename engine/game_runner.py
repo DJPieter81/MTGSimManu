@@ -64,20 +64,6 @@ def _saga_iii_eligible_targets(
     return eligible
 
 
-def _sorcery_speed_only_active(player: PlayerState) -> bool:
-    """True if the player controls a "cast at sorcery speed only" effect.
-
-    Generic oracle-pattern match — handles Teferi, Time Raveler and any
-    future card with the same static. Used to shut down opponent instant-
-    speed response windows (counterspells, removal, evoke) during this
-    player's turn.
-    """
-    for c in player.battlefield:
-        if getattr(c.template, 'limits_opponent_spell_timing', False):
-            return True
-    return False
-
-
 class AICallbacks(GameCallbacks):
     """Wires engine callbacks to AI decision functions.
 
@@ -1228,11 +1214,13 @@ class GameRunner:
         begin-combat or end-step could ever be countered, however many
         counters the active player held with mana open (2026-09-08).
 
-        Teferi gate: a "cast at sorcery speed only" effect controlled by
-        the CASTER's side denies the responder instant-speed casting.
+        A responder a rule effect restricts to sorcery timing (CR 101.2,
+        307.1; `rules_query.sorcery_speed_only`) has no window here.
         """
-        caster_player = game.players[caster_ai.player_idx]
-        if _sorcery_speed_only_active(caster_player):
+        # The one read path: a responder restricted to sorcery timing has
+        # no window while a spell is on the stack.
+        from . import rules_query
+        if rules_query.sorcery_speed_only(game, responder_ai.player_idx):
             return
         if game.stack.is_empty:
             return
@@ -1279,12 +1267,13 @@ class GameRunner:
         so a pump could only be cast in a main phase, where it is worth
         nothing (2026-09-08, Prowess replays).
 
-        Teferi gate: a "cast at sorcery speed only" effect on the DEFENDING
-        side denies the active player instant-speed casting in combat.
+        An active player a rule effect restricts to sorcery timing (CR
+        101.2, 307.1) casts nothing in combat.
         """
         if game.game_over or not combat_mgr.attackers:
             return
-        if _sorcery_speed_only_active(game.players[opponent_ai.player_idx]):
+        from . import rules_query
+        if rules_query.sorcery_speed_only(game, active_ai.player_idx):
             return
         decide = getattr(active_ai, 'decide_combat_trick', None)
         if decide is None:
@@ -1344,17 +1333,17 @@ class GameRunner:
         creatures as threats to remove. Lowered thresholds so removal fires
         more aggressively against value engines and early threats.
 
-        Teferi gate: if the ACTIVE player controls a "cast at sorcery speed
-        only" permanent (Teferi, Time Raveler et al.), opponents cannot
-        cast anything at instant speed during this window. Detect via oracle
-        pattern and bail out early.
+        A player a rule effect restricts to sorcery timing (CR 101.2,
+        307.1) casts nothing in this window; every other restriction is
+        `can_cast`'s, through the same read path (`rules_query`).
         """
         from ai.evaluator import _permanent_value
 
         opponent_idx = opponent_ai.player_idx
         opponent = game.players[opponent_idx]  # the player holding removal
         active_player = game.players[active_ai.player_idx]  # the player whose turn it is
-        if _sorcery_speed_only_active(active_player):
+        from . import rules_query
+        if rules_query.sorcery_speed_only(game, opponent_idx):
             return
 
         cast_count = 0

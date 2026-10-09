@@ -232,6 +232,11 @@ class Effect:
     source_id: int = 0
     controller: Optional[int] = None
     timestamp: int = 0
+    # A printed condition the rule applies under, evaluated at each query
+    # (CR 611.3a: "during your turn" / "as long as it's your turn"), an
+    # `effect_spec.Condition`; None applies always. Only the kinds
+    # `effect_conditions.rule_condition_supported` accepts are ever set.
+    condition: Optional[Any] = None
 
 
 # ── Constructors for the rule families (one shape each) ───────────────

@@ -2787,7 +2787,7 @@ NON_EFFECT_FIELDS: Mapping[str, str] = MappingProxyType({
     "power_scales_with": "characteristic-defining ability (CR 604.3)",
     "stax_class": _STATIC, "stax_forced_basic": _STATIC,
     "has_stax_ability": _STATIC, "has_pithing_needle_lock": _STATIC,
-    "has_spell_chain_hate": _STATIC, "limits_opponent_spell_timing": _STATIC,
+    "has_spell_chain_hate": _STATIC,
     "draw_limit": _STATIC, "prevents_graveyard_etb": _REPLACEMENT,
     "prevents_graveyard_casting": _STATIC,
     "exiles_cards_bound_for_graveyard": _REPLACEMENT,

@@ -97,6 +97,13 @@ class ActivationManager:
         if not ability.from_battlefield or perm.zone != "battlefield":
             return False
 
+        # 8b. CR 101.2 / 602.5: a rule effect prohibits this player from
+        # activating this permanent's abilities ("your opponents can't ...
+        # activate abilities of artifacts, creatures, or enchantments").
+        from . import rules_query
+        if rules_query.activation_prohibited(game, player_idx, perm):
+            return False
+
         # 9. A free, repeatable ability has no resource that depletes, so
         # nothing terminates the loop. Cost exhaustion is the real bound.
         # Sacrifice-self is inherently self-limiting (the source leaves), a

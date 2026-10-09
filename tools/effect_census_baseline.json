@@ -20,15 +20,15 @@
    "target.union:triggered": 1,
    "target.unparsed": 9
   },
-  "deck_typed_share": 0.7393,
+  "deck_typed_share": 0.7431,
   "deck_unmodelled_by_stage": {
    "AMOUNT": 7,
    "CLAUSE": 29,
-   "CONDITION": 20,
-   "DURATION": 9,
+   "CONDITION": 19,
+   "DURATION": 8,
    "FILTER": 29,
    "ITERATION": 2,
-   "NO_LEMMA": 15,
+   "NO_LEMMA": 14,
    "RECOGNIZED_UNSUPPORTED": 6,
    "REFERENCE": 26,
    "REPLACEMENT": 59,
@@ -95,7 +95,7 @@
    "UNPARSED": 390,
    "WIDENING": 865
   },
-  "typed_share": 0.7234,
+  "typed_share": 0.7251,
   "typed_share_by_host_kind": {
    "ACTIVATED": 0.7843,
    "ALTERNATIVE_COST": 0.0,
@@ -106,22 +106,22 @@
    "MODE": 0.7685,
    "REPLACEMENT": 0.0,
    "SPELL": 0.7251,
-   "STATIC": 0.6077,
+   "STATIC": 0.6223,
    "TRIGGERED": 0.7845,
    "UNKNOWN": 0.0
   },
   "unmodelled_by_stage": {
-   "AMOUNT": 779,
-   "CLAUSE": 1934,
-   "CONDITION": 1164,
+   "AMOUNT": 784,
+   "CLAUSE": 1935,
+   "CONDITION": 1163,
    "DELAY": 16,
-   "DURATION": 108,
-   "FILTER": 1617,
+   "DURATION": 100,
+   "FILTER": 1543,
    "ITERATION": 110,
-   "NO_LEMMA": 1190,
+   "NO_LEMMA": 1186,
    "QUANTITY": 133,
    "RECOGNIZED_UNSUPPORTED": 478,
-   "REFERENCE": 1524,
+   "REFERENCE": 1527,
    "REPLACEMENT": 1543,
    "STRUCTURE": 231,
    "TARGET": 1185,
@@ -177,9 +177,9 @@
     "typed": 7245
    },
    "STATIC": {
-    "share": 0.6077,
-    "specs": 5376,
-    "typed": 3267
+    "share": 0.6223,
+    "specs": 5377,
+    "typed": 3346
    },
    "TRIGGERED": {
     "share": 0.7845,
@@ -248,9 +248,9 @@
      "typed": 153
     },
     "STATIC": {
-     "share": 0.3684,
-     "specs": 76,
-     "typed": 28
+     "share": 0.4156,
+     "specs": 77,
+     "typed": 32
     },
     "TRIGGERED": {
      "share": 0.8634,
@@ -273,8 +273,8 @@
     "typed": 216,
     "typed_share": 0.834
    },
-   "specs": 867,
-   "typed": 641
+   "specs": 868,
+   "typed": 645
   },
   "keyword_lines": [
    [
@@ -1194,7 +1194,7 @@
    ]
   ],
   "residue": 1547,
-  "specs": 44316,
+  "specs": 44317,
   "sub_abilities": [
    [
     "DELAYED",
@@ -1233,9 +1233,9 @@
     2
    ]
   ],
-  "typed": 32057,
-  "unmodelled": 12259,
-  "unmodelled_row_count": 1976,
+  "typed": 32136,
+  "unmodelled": 12181,
+  "unmodelled_row_count": 1978,
   "unmodelled_rows": [
    [
     "REPLACEMENT",
@@ -1247,7 +1247,7 @@
     "NO_LEMMA",
     "",
     "lexicon.no_lemma",
-    1190
+    1186
    ],
    [
     "REFERENCE",
@@ -1376,12 +1376,6 @@
     58
    ],
    [
-    "FILTER",
-    "have",
-    "filter.unparsed:during",
-    58
-   ],
-   [
     "STRUCTURE",
     "",
     "structure.die_table",
@@ -1406,16 +1400,16 @@
     52
    ],
    [
+    "AMOUNT",
+    "prevent",
+    "amount.scaler:to",
+    51
+   ],
+   [
     "STRUCTURE",
     "",
     "structure.level_band",
     50
-   ],
-   [
-    "AMOUNT",
-    "prevent",
-    "amount.scaler:to",
-    49
    ],
    [
     "CLAUSE",
@@ -1550,6 +1544,12 @@
     28
    ],
    [
+    "AMOUNT",
+    "be",
+    "amount.scaler:with",
+    27
+   ],
+   [
     "CLAUSE",
     "add",
     "payload.mana_tail",
@@ -1574,12 +1574,6 @@
     27
    ],
    [
-    "AMOUNT",
-    "be",
-    "amount.scaler:with",
-    26
-   ],
-   [
     "REFERENCE",
     "put",
     "participant.reference:the",
@@ -1596,8 +1590,14 @@
     "must",
     "amount.scaler:if",
     25
+   ],
+   [
+    "RECOGNIZED_UNSUPPORTED",
+    "lose the game",
+    "lexicon.unsupported:lose_the_game",
+    25
    ]
   ]
  },
- "session": "2026-10-08"
+ "session": "2026-10-09"
 }

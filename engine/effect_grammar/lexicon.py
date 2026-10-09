@@ -365,6 +365,9 @@ _ROWS: Tuple[_Row, ...] = (
     _r("switch", _C, r"(?= [^.;]*?\bpower and toughness\b)", ModKind.SWITCH_PT),
     _r("can't", _C, r"(?= (?:draw|cast) more than\b)", ModKind.LIMIT),
     _r("can't", _C, mod=ModKind.PROHIBIT),
+    # "<players> can cast spells only <when>" (CR 101.2): a prohibition on
+    # casting at any other time; the payload leaf reads the time.
+    _r("can", _C, r"(?= cast spells only\b)", ModKind.PROHIBIT),
     _r("doesn't", _C, r"(?= untap during\b)", ModKind.PROHIBIT),
     _r("attack", _C, r"(?= [^.;]*?\bif able\b)", ModKind.REQUIRE),
     _r("block", _C, r"(?= [^.;]*?\bif able\b)", ModKind.REQUIRE),
@@ -424,7 +427,8 @@ VERB_ONLY_WORDS = frozenset({
 def _inflections(lemma: str) -> Tuple[str, ...]:
     """The printed base and third-person forms of a lemma's first word."""
     irregular = {"have": ("have", "has"), "be": ("is", "are"),
-                 "can't": ("can't", "cannot"), "doesn't": ("doesn't", "don't"),
+                 "can't": ("can't", "cannot"), "can": ("can",),
+                 "doesn't": ("doesn't", "don't"),
                  "must": ("must",), "the": ("the",)}
     w = lemma.split()[0]
     if w in irregular:

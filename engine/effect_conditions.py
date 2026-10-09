@@ -127,6 +127,28 @@ def state_condition_holds(game: Any, controller: int, cond: Condition) -> bool:
     return _OPS[cond.op](count, _literal(cond.n))
 
 
+# The TURN predicates a rule effect's condition may carry (CR 611.3a: a
+# static rule applies while its printed condition holds).
+_TURN_PREDICATES = frozenset({"your_turn", "not_your_turn"})
+
+
+def rule_condition_supported(cond: Optional[Condition]) -> bool:
+    """Can a rule effect carry this printed condition? None (no condition)
+    and the TURN predicates `rule_condition_holds` evaluates."""
+    return cond is None or (cond.kind is ConditionKind.TURN
+                            and cond.pred in _TURN_PREDICATES)
+
+
+def rule_condition_holds(game: Any, controller: int,
+                         cond: Optional[Condition]) -> bool:
+    """Does a supported rule-effect condition hold now? "your turn" is
+    the turn of the effect's controller (CR 500.1, the active player)."""
+    if cond is None:
+        return True
+    yours = game.active_player == controller
+    return yours if cond.pred == "your_turn" else not yours
+
+
 def quantity_supported(q: Optional[Quantity]) -> bool:
     """The quantities evaluated here: domain over lands you control."""
     if not isinstance(q, Quantity) or q.ref is not None or q.stat is not None \

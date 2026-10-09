@@ -1403,6 +1403,21 @@ SECTION_10_SEED_ROWS = {
 # Rows the follow-up review added beyond the section-10 seeds.
 REVIEW_ROWS = {"pump_keyword_set_order"}
 
+# Section 10, rows unmasked by typing "during your turn" (2026-10-09): the
+# legacy-side readings whose pairs a refused static on the same card had
+# explained until the frame was typed as the TURN condition.
+UNMASKED_ROWS = {
+    "pump_grant_reads_static_pt_modifier",
+    "team_keyword_grant_reads_subset_grant",
+    "may_play_or_cast_reads_keyword_reminder",
+    "graveyard_recursion_reads_cast_permission",
+    "token_effect_reads_keyword_reminder",
+    "equip_grant_under_turn_condition",
+    "targeted_damage_reads_untargeted_damage",
+    "destroy_or_exile_reads_reminder_and_cost",
+    "graveyard_hate_reads_self_exile_cost",
+}
+
 
 def test_the_committed_allowlist_is_valid_and_accounts_for_every_section_10_seed_row():
     t = _eq_tool()
@@ -1410,7 +1425,7 @@ def test_the_committed_allowlist_is_valid_and_accounts_for_every_section_10_seed
     assert t.validate_allowlist(rows) == []
     assert t.validate_unsurfaced(unsurfaced) == []
     ids = {r.id for r in rows} | {u["id"] for u in unsurfaced}
-    assert ids == SECTION_10_SEED_ROWS | REVIEW_ROWS
+    assert ids == SECTION_10_SEED_ROWS | REVIEW_ROWS | UNMASKED_ROWS
     assert all(r.source.startswith("design doc section 10") for r in rows)
 
 

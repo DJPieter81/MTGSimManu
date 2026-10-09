@@ -21,15 +21,20 @@ if TYPE_CHECKING:  # pragma: no cover
 # ── Casting ──────────────────────────────────────────────────────────
 
 def _covering(game: "GameState", player_idx: int, kind, action: str):
-    """Rule effects of `kind`/`action` whose selector covers the player —
-    resolved (stored) and static (derived) alike."""
+    """Rule effects of `kind`/`action` whose selector covers the player and
+    whose printed condition holds now (CR 611.3a) — resolved (stored) and
+    static (derived) alike."""
+    from engine.effect_conditions import rule_condition_holds
     return [e for e in game.continuous_effects.rule_effects(game)
             if e.modification.kind is kind and e.modification.action == action
-            and e.selector.covers_player(player_idx)]
+            and e.selector.covers_player(player_idx)
+            and rule_condition_holds(game, e.controller, e.condition)]
 
 
 def cast_prohibited(game: "GameState", player_idx: int, template) -> bool:
-    """A cast prohibition covers this spell (CR 101.2)."""
+    """A cast prohibition covers this spell (CR 101.2): a "can't cast"
+    whose filter it matches, or "can cast spells only during their own
+    turns" on another player's turn."""
     from engine.effect_model import ModKind
     is_creature = template.is_creature
     for e in _covering(game, player_idx, ModKind.PROHIBIT, "cast"):
@@ -37,7 +42,18 @@ def cast_prohibited(game: "GameState", player_idx: int, template) -> bool:
         if (f == "all" or (f == "noncreature" and not is_creature)
                 or (f == "creature" and is_creature)):
             return True
-    return False
+    return (game.active_player != player_idx and bool(
+        _covering(game, player_idx, ModKind.PROHIBIT, "cast_outside_own_turn")))
+
+
+def activation_prohibited(game: "GameState", player_idx: int, perm) -> bool:
+    """A prohibition covers this player activating this permanent's
+    abilities (CR 101.2, 602.5): one naming any of its current types."""
+    from engine.effect_model import ModKind
+    types = {t.value for t in perm.effective_card_types}
+    return any(types & set(e.modification.get("sources") or ())
+               for e in _covering(game, player_idx, ModKind.PROHIBIT,
+                                  "activate"))
 
 
 def sorcery_speed_only(game: "GameState", player_idx: int) -> bool:

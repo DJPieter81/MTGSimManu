@@ -155,8 +155,8 @@
   "can_target_planeswalker": {
    "AGREE": 22012,
    "DERIVED_COVERAGE_GROWTH": 17,
-   "UNEXPLAINED": 300,
-   "UNMODELLED_CLAUSE": 409
+   "UNEXPLAINED": 301,
+   "UNMODELLED_CLAUSE": 408
   },
   "can_target_player": {
    "AGREE": 21602,
@@ -237,8 +237,9 @@
   "deals_targeted_damage": {
    "AGREE": 20972,
    "DERIVED_COVERAGE_GROWTH": 23,
+   "LEGACY_TARGETED_DAMAGE_SCOPE": 5,
    "UNEXPLAINED": 876,
-   "UNMODELLED_CLAUSE": 867
+   "UNMODELLED_CLAUSE": 862
   },
   "destroys_target_land": {
    "AGREE": 22726,
@@ -265,14 +266,16 @@
   },
   "equip_keyword_grant": {
    "AGREE": 22716,
+   "LEGACY_TURN_CONDITION": 8,
    "UNEXPLAINED": 11,
-   "UNMODELLED_CLAUSE": 11
+   "UNMODELLED_CLAUSE": 3
   },
   "equip_power_grant": {
    "AGREE": 22718,
    "DERIVED_COVERAGE_GROWTH": 2,
+   "LEGACY_TURN_CONDITION": 2,
    "UNEXPLAINED": 14,
-   "UNMODELLED_CLAUSE": 4
+   "UNMODELLED_CLAUSE": 2
   },
   "equip_toughness_grant": {
    "AGREE": 22724,
@@ -385,8 +388,9 @@
   "has_destroy_or_exile": {
    "AGREE": 20671,
    "DERIVED_COVERAGE_GROWTH": 28,
+   "REMINDER_TEXT": 5,
    "UNEXPLAINED": 911,
-   "UNMODELLED_CLAUSE": 1128
+   "UNMODELLED_CLAUSE": 1123
   },
   "has_discard_effect": {
    "AGREE": 22268,
@@ -422,14 +426,16 @@
   "has_graveyard_hate": {
    "AGREE": 22307,
    "DERIVED_COVERAGE_GROWTH": 23,
+   "LEGACY_GRAVEYARD_HATE": 1,
    "UNEXPLAINED": 216,
-   "UNMODELLED_CLAUSE": 192
+   "UNMODELLED_CLAUSE": 191
   },
   "has_graveyard_recursion": {
    "AGREE": 21472,
    "DERIVED_COVERAGE_GROWTH": 29,
+   "LEGACY_GRAVEYARD_RECURSION": 3,
    "UNEXPLAINED": 700,
-   "UNMODELLED_CLAUSE": 537
+   "UNMODELLED_CLAUSE": 534
   },
   "has_graveyard_target": {
    "AGREE": 22121,
@@ -465,8 +471,9 @@
   },
   "has_may_play_or_cast": {
    "AGREE": 21223,
+   "REMINDER_TEXT": 4,
    "UNEXPLAINED": 639,
-   "UNMODELLED_CLAUSE": 876
+   "UNMODELLED_CLAUSE": 872
   },
   "has_noncreature_spell_cast_trigger": {
    "AGREE": 22644,
@@ -483,8 +490,9 @@
   "has_pump_grant": {
    "AGREE": 20581,
    "DERIVED_COVERAGE_GROWTH": 720,
+   "LEGACY_PUMP_GRANT_SCOPE": 11,
    "UNEXPLAINED": 873,
-   "UNMODELLED_CLAUSE": 564
+   "UNMODELLED_CLAUSE": 553
   },
   "has_recurring_draw_trigger": {
    "AGREE": 21783,
@@ -540,8 +548,9 @@
   "has_token_effect": {
    "AGREE": 21997,
    "DERIVED_COVERAGE_GROWTH": 52,
+   "REMINDER_TEXT": 3,
    "UNEXPLAINED": 299,
-   "UNMODELLED_CLAUSE": 390
+   "UNMODELLED_CLAUSE": 387
   },
   "has_x_counter_scaling": {
    "AGREE": 22633,
@@ -726,8 +735,9 @@
   "team_keyword_grant": {
    "AGREE": 22651,
    "DERIVED_COVERAGE_GROWTH": 14,
+   "LEGACY_TEAM_GRANT_SCOPE": 1,
    "UNEXPLAINED": 63,
-   "UNMODELLED_CLAUSE": 10
+   "UNMODELLED_CLAUSE": 9
   },
   "team_pump_data": {
    "AGREE": 22701,
@@ -756,12 +766,18 @@
   "AGREE": 2813196,
   "DERIVED_COVERAGE_GROWTH": 7842,
   "LEGACY_COST_REDUCTION_SCOPE": 13,
+  "LEGACY_GRAVEYARD_HATE": 1,
+  "LEGACY_GRAVEYARD_RECURSION": 3,
   "LEGACY_HASH_ORDER": 13,
+  "LEGACY_PUMP_GRANT_SCOPE": 11,
   "LEGACY_RITUAL_MANA": 1,
+  "LEGACY_TARGETED_DAMAGE_SCOPE": 5,
   "LEGACY_TARGET_ZONE": 14,
+  "LEGACY_TEAM_GRANT_SCOPE": 1,
+  "LEGACY_TURN_CONDITION": 10,
   "MASKED_GROWTH": 68,
-  "REMINDER_TEXT": 190,
-  "UNEXPLAINED": 17916,
-  "UNMODELLED_CLAUSE": 10350
+  "REMINDER_TEXT": 202,
+  "UNEXPLAINED": 17917,
+  "UNMODELLED_CLAUSE": 10306
  }
 }

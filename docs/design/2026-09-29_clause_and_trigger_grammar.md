@@ -999,6 +999,18 @@ Further seed rows from the E0 integration review (2026-10-01; legacy-wrong, gram
 - **Activation tutor filter** (`parse_activation_tutor`). A relative clause becomes subtypes ("card with the same name as that ..." -> subtypes ['card', 'with', ...]); the grammar refuses it (`filter.unparsed:with`). The other 73 tutor filters and all 75 destinations agree.
 - **Keyword-scoped cost reductions** (`CardTemplate.cost_reduction_rule`). "Equip / Dash / Unlock costs you pay cost {N} less" and "Plotting cards from your hand costs {2} less" are stored as `{'target': 'all', ...}`, a reduction of every spell; rules-correct they are scoped to that keyword's cost or special action (CR 601.2f, 118.7). The grammar refuses them (`payload.cost_delta_subject`). Pool class: 5 faces.
 
+Rows unmasked by typing "during your turn" (2026-10-09). The cast-timing unit types the frame "during your turn" (leading or trailing) as the TURN condition of "as long as it's your turn" (CR 611.3a). That typed 73 statics the grammar had refused. On 44 pool comparisons the view keeps the value it had, but the pair is no longer explained by a refusal on the same card (UNMODELLED_CLAUSE took any refused host). 43 are legacy-side readings, recorded with exact cards (9 allowlist rows):
+- **Equip grants under the TURN condition** (`equip_keyword_grant`, `equip_power_grant`). "During your turn, equipped creature gets +1/+0 and has first strike" applies only on its controller's turn. Legacy reads it as unconditional; the view reads only unconditional "equipped creature ..." statics.
+- **Static P/T modifiers read as pump grants** (`has_pump_grant`). "This creature gets +2/+0" is not a pump until end of turn.
+- **A team grant to a typed subset** (`team_keyword_grant`, Bayek of Siwa). "Other historic creatures you control", applying only during your turn.
+- **Keyword reminder text** (`has_may_play_or_cast`, `has_token_effect`, `has_destroy_or_exile`):
+  - "you may cast", "create ... token" or "exile" inside the reminder of disguise, flashback, retrace, warp, mobilize, job select, For Mirrodin!, shield counters or madness;
+  - a cost that exiles the card itself.
+- **Graveyard reads** (`has_graveyard_recursion`, `has_graveyard_hate`). A granted permission to cast from the graveyard, and a graveyard-activated cost, read as recursion or as hate.
+- **Untargeted damage read as targeted** (`deals_targeted_damage`). Combat damage to a player, damage to each opponent, "dealt damage by", and reminder text.
+
+One unmasked pair is grammar-side and stays UNEXPLAINED (`can_target_planeswalker`, Sorin, Vengeful Bloodlord): `target_solver.parse` types "target player or planeswalker" as players only. That is a target-solver lead, not an allowlist row.
+
 Lines checked and found in full agreement: loot draw/discard (174), put-counter kind and amount (135), pump P/T (290), direct-damage amount (79), the soft-counter condition, and delayed timing (102 agree, grammar strictly broader).
 
 **Diff classes.** As before (REMINDER_TEXT, UNMODELLED_CLAUSE, RESIDUE_WIDENING, LEGACY_* quirk classes, DERIVED_COVERAGE_GROWTH, SEMANTIC_FIX, UNEXPLAINED), plus three:

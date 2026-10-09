@@ -9,9 +9,8 @@ parse_has_cast_trigger fires for any oracle with 'when you cast' phrasing.
 parse_has_recurring_trigger fires for 'whenever ...' or
 'at the beginning of ...' triggered abilities.
 
-# Mechanic: opponent spell timing restriction (rule, not a card)
-
-parse_limits_opponent_spell_timing fires for Teferi-class statics.
+# Mechanic: opponent spell timing restriction -- moved to the effect grammar
+(tests/test_cast_timing_restrictions_from_text.py).
 
 # Mechanic: charge-counter board wipe (rule, not a card)
 
@@ -32,7 +31,6 @@ import pytest
 from engine.oracle_parser import (
     parse_has_cast_trigger,
     parse_has_recurring_trigger,
-    parse_limits_opponent_spell_timing,
     parse_has_charge_counter_wipe,
     parse_has_mana_value_wipe,
     parse_has_sacrifice_for_damage,
@@ -94,28 +92,6 @@ class TestParseHasRecurringTrigger:
     def test_empty_oracle_is_false(self):
         assert parse_has_recurring_trigger("") is False
         assert parse_has_recurring_trigger(None) is False
-
-
-class TestParseLimitsOpponentSpellTiming:
-    def test_teferi_static_detected(self):
-        # Teferi, Time Raveler
-        assert parse_limits_opponent_spell_timing(
-            "Each opponent can cast spells only any time they could cast a sorcery."
-        ) is True
-
-    def test_partial_phrase_is_false(self):
-        assert parse_limits_opponent_spell_timing(
-            "Cast spells only when you have priority."
-        ) is False
-
-    def test_counterspell_is_false(self):
-        assert parse_limits_opponent_spell_timing(
-            "Counter target spell."
-        ) is False
-
-    def test_empty_oracle_is_false(self):
-        assert parse_limits_opponent_spell_timing("") is False
-        assert parse_limits_opponent_spell_timing(None) is False
 
 
 class TestParseHasChargeCounterWipe:

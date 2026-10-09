@@ -1937,7 +1937,7 @@ class CardDatabase:
             parse_has_x_damage, parse_has_artifact_pump_equipment,
             parse_has_artifact_or_enchantment_scaling,
             parse_channel_clause,
-            parse_limits_opponent_spell_timing, parse_has_charge_counter_wipe,
+            parse_has_charge_counter_wipe,
             parse_has_mana_value_wipe, parse_has_sacrifice_for_damage,
             parse_prevents_graveyard_etb, parse_prevents_graveyard_casting,
             parse_reanimates_from_graveyard,
@@ -2169,7 +2169,6 @@ class CardDatabase:
         template.has_artifact_pump_equipment = parse_has_artifact_pump_equipment(oracle)
         template.has_artifact_or_enchantment_scaling = parse_has_artifact_or_enchantment_scaling(oracle)
         template.channel_clause = parse_channel_clause(oracle)
-        template.limits_opponent_spell_timing = parse_limits_opponent_spell_timing(oracle)
         template.has_charge_counter_wipe = parse_has_charge_counter_wipe(oracle)
         template.has_mana_value_wipe = parse_has_mana_value_wipe(oracle)
         template.has_sacrifice_for_damage = parse_has_sacrifice_for_damage(oracle)

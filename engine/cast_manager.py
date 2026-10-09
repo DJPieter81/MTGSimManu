@@ -248,6 +248,51 @@ def pick_converge_x_value(
     return best_x, best_target
 
 
+def _audit_cast_timing(game: "GameState", player_idx: int, card) -> None:
+    """Rules audit (CR 101.2, 307.1), restated from the battlefield's
+    printed statics -- each permanent's parsed specs on the face it shows,
+    not the rule-effect read path: no spell is cast while a printed
+    restriction on when players may cast covers its caster. Observes only."""
+    from .effect_model import ModKind, SelectorKind
+    from .effect_spec import ConditionKind, HostKind, Verb, iter_specs
+    from .game_state import Phase
+    from .rules_audit import check
+    sorcery_timing = (game.active_player == player_idx and game.stack.is_empty
+                      and game.current_phase in (Phase.MAIN1, Phase.MAIN2))
+    for owner in game.players:
+        for perm in owner.battlefield:
+            faces = perm.template.effects.faces
+            face = 1 if perm.is_transformed and len(faces) > 1 else 0
+            for host in (faces[face] if faces else ()):
+                if host.kind is not HostKind.STATIC:
+                    continue
+                for s in iter_specs(host.specs):
+                    mod = s.payload
+                    if s.verb is not Verb.CONTINUOUS or \
+                            getattr(mod, "kind", None) is not ModKind.PROHIBIT:
+                        continue
+                    who = getattr(s.subject, "kind", None)
+                    if not (who is SelectorKind.ALL_PLAYERS or (
+                            who is SelectorKind.OPPONENTS
+                            and player_idx != perm.controller)):
+                        continue
+                    cond = s.condition
+                    if cond is not None and (
+                            cond.kind is not ConditionKind.TURN
+                            or (cond.pred == "your_turn")
+                            != (game.active_player == perm.controller)):
+                        continue
+                    acts = set(mod.get("actions") or (mod.action,))
+                    broken = (("cast" in acts and mod.get("filter") == "spells")
+                              or ("cast_outside_sorcery_timing" in acts
+                                  and not sorcery_timing)
+                              or ("cast_outside_own_turn" in acts
+                                  and game.active_player != player_idx))
+                    check("101.2/cast_timing", not broken,
+                          f"{card.name} cast by P{player_idx+1} against "
+                          f"{perm.name}'s printed restriction", game=game)
+
+
 class CastManager:
     """Cast-time legality + special-case handlers. Stateless."""
 
@@ -409,12 +454,10 @@ class CastManager:
         is_main_phase = game.current_phase in (Phase.MAIN1, Phase.MAIN2)
         is_active = game.active_player == player_idx
 
-        # R4: sorcery-speed-lockout static abilities (Teferi, Time
-        # Raveler; Grand Abolisher; Conqueror's Flail; ...) collapse
-        # the instant/flash exemption for opponents who are in the
-        # per-game lockout registry. Registry is rebuilt on demand
-        # from ``Tag.SORCERY_SPEED_LOCKOUT``-tagged permanents — no
-        # card-name branches, no oracle-text parse at runtime.
+        # A printed "can cast spells only any time they could cast a
+        # sorcery" (CR 101.2, 307.1) collapses the instant/flash exemption
+        # for the players it covers; the rule effect is derived from the
+        # permanent's parsed text (continuous_effects._printed_prohibitions).
         from . import rules_query
         sorcery_locked = rules_query.sorcery_speed_only(game, player_idx)
 
@@ -2052,6 +2095,9 @@ class CastManager:
             _audit_check("723.1/cast_after_turn_end",
                          not getattr(game, 'end_turn_requested', False),
                          f"{card.name} cast after the turn was ended", game=game)
+            # CR 101.2 / 307.1: no printed restriction on when players may
+            # cast covers this cast.
+            _audit_cast_timing(game, player_idx, card)
         if _audit_on() and targets:
             from .rules_audit import check as _audit_check
             from .target_solver import can_be_targeted as _cbt

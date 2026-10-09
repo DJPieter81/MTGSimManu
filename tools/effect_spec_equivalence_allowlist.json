@@ -65,6 +65,78 @@
    "cards": ["Aerial Maneuver", "Alchemist's Gift", "Archon's Glory", "Ferocification", "Fervent Strike", "Leap of Flame", "Rig for War", "Rush of Vitality", "Scales of Shale", "Slayers' Stronghold", "Smaug's Fury", "The Royal Scions", "Whirling Strike"],
    "reason": "A pump spell whose 'gains/has' window names two or more keywords: oracle_parser._pt_mod_keyword returns the first member of the _KEYWORD_WORDS set literal found in the window, so the legacy keyword is decided by the process's hash seed, not by printed order, and the comparison is none. The row classes every comparison on these cards (an equal one included) so the pinned counts are seed-free. The legacy fix (a printed-order pick) changes game behaviour: a legacy unit, not E0.",
    "source": "design doc section 10, hash-order legacy value (follow-up review 2026-10-02)"
+  },
+  {
+   "id": "pump_grant_reads_static_pt_modifier",
+   "class": "LEGACY_PUMP_GRANT_SCOPE",
+   "fields": ["has_pump_grant"],
+   "cards": ["Dapper Shieldmate", "Dragoon's Lance", "Hardy Veteran", "Hunter's Blowgun", "Jousting Lance", "Knife", "Prickleboar", "Quick-Draw Katana", "Skophos Reaver", "Sporeback Wolf", "Wildwood Geist"],
+   "reason": "parse_has_pump_grant reads a static P/T modifier ('this creature gets +2/+0', 'equipped creature gets +1/+0') as a pump grant; the view's pump grant is a MODIFY_PT until end of turn (a pump spell or ability). Masked until 2026-10-09 by an unrelated refused 'during your turn' static on the same card (the UNMODELLED_CLAUSE class takes any refusal on a host the derivation reads); the cast-timing unit types that frame as the TURN condition, which unmasks the pair.",
+   "source": "design doc section 10, rows unmasked by typing 'during your turn' (2026-10-09)"
+  },
+  {
+   "id": "team_keyword_grant_reads_subset_grant",
+   "class": "LEGACY_TEAM_GRANT_SCOPE",
+   "fields": ["team_keyword_grant"],
+   "cards": ["Bayek of Siwa"],
+   "reason": "The legacy team grant reads a keyword grant to a typed subset ('other historic creatures you control'), applying only during your turn, as a grant to the team; the view's team filter does not type 'historic' and reads only unconditional grants. Masked until 2026-10-09 by an unrelated refused 'during your turn' static on the same card (the UNMODELLED_CLAUSE class takes any refusal on a host the derivation reads); the cast-timing unit types that frame as the TURN condition, which unmasks the pair.",
+   "source": "design doc section 10, rows unmasked by typing 'during your turn' (2026-10-09)"
+  },
+  {
+   "id": "may_play_or_cast_reads_keyword_reminder",
+   "class": "REMINDER_TEXT",
+   "fields": ["has_may_play_or_cast"],
+   "cards": ["Bayek of Siwa", "Iroh, Grand Lotus", "Memorial Team Leader", "Six"],
+   "reason": "parse_has_may_play_or_cast reads 'you may cast' inside a keyword's reminder text (disguise, flashback, retrace, warp); the reminder is not the card's own permission, and the view reads PERMIT specs only. Masked until 2026-10-09 by an unrelated refused 'during your turn' static on the same card (the UNMODELLED_CLAUSE class takes any refusal on a host the derivation reads); the cast-timing unit types that frame as the TURN condition, which unmasks the pair.",
+   "source": "design doc section 10, rows unmasked by typing 'during your turn' (2026-10-09)"
+  },
+  {
+   "id": "graveyard_recursion_reads_cast_permission",
+   "class": "LEGACY_GRAVEYARD_RECURSION",
+   "fields": ["has_graveyard_recursion"],
+   "cards": ["Iroh, Grand Lotus", "Leonin Surveyor", "Six"],
+   "reason": "The legacy flag reads a permission to cast cards from the graveyard (granted flashback, retrace) and a graveyard-activated cost ('Exile this card from your graveyard: Draw a card') as recursion; the view's recursion is a MOVE out of the graveyard to hand or battlefield. Masked until 2026-10-09 by an unrelated refused 'during your turn' static on the same card (the UNMODELLED_CLAUSE class takes any refusal on a host the derivation reads); the cast-timing unit types that frame as the TURN condition, which unmasks the pair.",
+   "source": "design doc section 10, rows unmasked by typing 'during your turn' (2026-10-09)"
+  },
+  {
+   "id": "token_effect_reads_keyword_reminder",
+   "class": "REMINDER_TEXT",
+   "fields": ["has_token_effect"],
+   "cards": ["Dragoon's Lance", "Hexgold Halberd", "Voice of Victory"],
+   "reason": "parse_has_token_effect reads 'create ... token' inside a keyword's reminder text (mobilize, job select, For Mirrodin!); the keyword is a KEYWORD host the grammar does not expand into specs, so the view sees no CREATE_TOKEN. Masked until 2026-10-09 by an unrelated refused 'during your turn' static on the same card (the UNMODELLED_CLAUSE class takes any refusal on a host the derivation reads); the cast-timing unit types that frame as the TURN condition, which unmasks the pair.",
+   "source": "design doc section 10, rows unmasked by typing 'during your turn' (2026-10-09)"
+  },
+  {
+   "id": "equip_grant_under_turn_condition",
+   "class": "LEGACY_TURN_CONDITION",
+   "fields": ["equip_keyword_grant", "equip_power_grant"],
+   "cards": ["Bilbo's Ring", "Dragoon's Lance", "Hexgold Halberd", "Hookblade", "Hunter's Blowgun", "Jousting Lance", "Knife", "Quick-Draw Katana"],
+   "reason": "An equip grant printed under 'during your turn' ('During your turn, equipped creature gets +1/+0 and has first strike') applies only on its controller's turn (CR 611.3a). The legacy equip parser reads it as unconditional; the view reads only unconditional 'equipped creature ...' statics. The frame was refused (FILTER) until the cast-timing unit typed it as the TURN condition, so the pair counted as UNMODELLED_CLAUSE.",
+   "source": "design doc section 10, rows unmasked by typing 'during your turn' (2026-10-09)"
+  },
+  {
+   "id": "targeted_damage_reads_untargeted_damage",
+   "class": "LEGACY_TARGETED_DAMAGE_SCOPE",
+   "fields": ["deals_targeted_damage"],
+   "cards": ["Kain, Traitorous Dragoon", "Kutzil, Malamet Exemplar", "Quick-Draw Katana", "Shao Jun", "Zurgo Helmsmasher"],
+   "reason": "The legacy flag reads damage text with no target -- combat damage to a player, damage to each opponent, 'dealt damage by', or reminder text ('It deals combat damage before ...', 'Attach to target creature') -- as targeted damage; the view requires a DAMAGE spec with a target slot. Masked until 2026-10-09 by an unrelated refused 'during your turn' static on the same card (the UNMODELLED_CLAUSE class takes any refusal on a host the derivation reads); the cast-timing unit types that frame as the TURN condition, which unmasks the pair.",
+   "source": "design doc section 10, rows unmasked by typing 'during your turn' (2026-10-09)"
+  },
+  {
+   "id": "destroy_or_exile_reads_reminder_and_cost",
+   "class": "REMINDER_TEXT",
+   "fields": ["has_destroy_or_exile"],
+   "cards": ["Dapper Shieldmate", "Iroh, Grand Lotus", "Leonin Surveyor", "Memorial Team Leader", "Skophos Reaver"],
+   "reason": "The legacy flag reads 'destroy' / 'exile' inside reminder text (shield counter, flashback, warp, madness) and in a cost that exiles the card itself; the view reads DESTROY / EXILE effect specs. Masked until 2026-10-09 by an unrelated refused 'during your turn' static on the same card (the UNMODELLED_CLAUSE class takes any refusal on a host the derivation reads); the cast-timing unit types that frame as the TURN condition, which unmasks the pair.",
+   "source": "design doc section 10, rows unmasked by typing 'during your turn' (2026-10-09)"
+  },
+  {
+   "id": "graveyard_hate_reads_self_exile_cost",
+   "class": "LEGACY_GRAVEYARD_HATE",
+   "fields": ["has_graveyard_hate"],
+   "cards": ["Leonin Surveyor"],
+   "reason": "The legacy flag reads a cost that exiles the card itself from its owner's graveyard ('Exile this card from your graveyard: Draw a card') as graveyard hate; the view reads an EXILE effect on graveyard cards. Masked until 2026-10-09 by an unrelated refused 'during your turn' static on the same card (the UNMODELLED_CLAUSE class takes any refusal on a host the derivation reads); the cast-timing unit types that frame as the TURN condition, which unmasks the pair.",
+   "source": "design doc section 10, rows unmasked by typing 'during your turn' (2026-10-09)"
   }
  ],
  "unsurfaced": [

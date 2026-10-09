@@ -517,6 +517,12 @@ _TURN = {
     "it is not your turn": "not_your_turn",
     "it's your main phase": "your_main_phase",
 }
+# "during <turn>" frame phrases -- leading ("During your turn, ...") or
+# trailing ("... during your turn") -- whose rule is the TURN condition of
+# "as long as it's your turn": the effect applies while it holds (CR
+# 611.3a). Only these designations are typed; any other "during ..." stays
+# refused by the duration leaf and the frames, never a broader rule.
+DURING_TURN = {"during your turn": "your_turn"}
 # A turn, phase or step designation the closed TURN table lacks.
 _TURN_SHAPE_RE = re.compile(
     r"^it(?:'s| is| isn't| is not) (?:not )?(?:your|an opponent's|the|their"
@@ -1374,6 +1380,17 @@ def _structural(inner: str) -> bool:
     that clause's, never the condition's."""
     return bool(_PERFORMED_RE.match(inner) or _STRUCTURAL_RE.search(inner)
                 or inner == "able")
+
+
+def parse_during(host: str, span: Span) -> Optional[Condition]:
+    """The TURN condition of the "during <turn>" frame phrase exactly
+    ``host[span]`` (`DURING_TURN`), or None when it designates no turn the
+    table types."""
+    phrase = host[span[0]:span[1]]
+    pred = DURING_TURN.get(phrase)
+    if pred is None:
+        return None
+    return Condition(ConditionKind.TURN, pred=pred, raw=phrase)
 
 
 def parse_condition(host: str, span: Optional[Span] = None, *,

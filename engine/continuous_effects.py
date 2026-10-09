@@ -684,14 +684,86 @@ def create_pump_spell_effect(source_id: int, source_name: str,
     return effects
 
 
+# The printed static prohibitions the rule-effect read path enforces
+# (`rules_query`): casting (by spell filter), casting outside sorcery timing
+# or outside the caster's own turn (CR 101.2, 307.1), and activating the
+# abilities of named permanent types (CR 602.5).
+_RULE_ACTIONS = frozenset({"cast", "activate", "cast_outside_sorcery_timing",
+                           "cast_outside_own_turn"})
+# The grammar's printed cast objects, in the read path's filter vocabulary.
+_CAST_FILTERS = {"spells": "all", "noncreature spells": "noncreature",
+                 "creature spells": "creature"}
+# id(CardEffects) -> (that CardEffects, its per-face records).
+_PRINTED_RULES: dict = {}
+
+
+def _printed_prohibitions(perm) -> tuple:
+    """The rule prohibitions a permanent's printed static abilities state,
+    on the face it shows, read from its parsed text (CR 113.1, 604.1): one
+    ``(action, data, selector_kind, condition)`` record per prohibited act.
+    A spec the read path cannot run whole -- an action, filter, subject,
+    duration or condition outside its vocabulary, or residue -- yields
+    nothing, never part of its rule. Memoised per parsed-effects object."""
+    effects = perm.template.effects
+    hit = _PRINTED_RULES.get(id(effects))
+    if hit is None or hit[0] is not effects:
+        hit = (effects, tuple(_face_prohibitions(face)
+                              for face in effects.faces))
+        _PRINTED_RULES[id(effects)] = hit
+    faces = hit[1]
+    face = 1 if getattr(perm, "is_transformed", False) and len(faces) > 1 \
+        else 0
+    return faces[face] if faces else ()
+
+
+def _face_prohibitions(hosts) -> tuple:
+    from .effect_conditions import rule_condition_supported
+    from .effect_model import DurationKind, Modification, ModKind, SelectorKind
+    from .effect_spec import HostKind, Verb, iter_specs
+    out = []
+    for host in hosts:
+        if host.kind is not HostKind.STATIC:
+            continue
+        for s in iter_specs(host.specs):
+            mod = s.payload
+            if s.verb is not Verb.CONTINUOUS or not isinstance(mod, Modification) \
+                    or mod.kind is not ModKind.PROHIBIT or s.residue:
+                continue
+            actions = tuple(mod.get("actions") or (mod.action,))
+            who = getattr(s.subject, "kind", None)
+            if not set(actions) <= _RULE_ACTIONS \
+                    or who not in (SelectorKind.OPPONENTS, SelectorKind.ALL_PLAYERS) \
+                    or not rule_condition_supported(s.condition) \
+                    or (s.duration is not None and s.duration.kind
+                        is not DurationKind.WHILE_SOURCE_ON_BATTLEFIELD):
+                continue
+            records = []
+            for action in actions:
+                if action == "cast":
+                    spell_filter = _CAST_FILTERS.get(mod.get("filter"))
+                    if spell_filter is None:
+                        break
+                    data = (("filter", spell_filter),)
+                elif action == "activate":
+                    if not mod.get("sources"):
+                        break
+                    data = (("sources", tuple(mod.get("sources"))),)
+                else:
+                    data = ()
+                records.append((action, data, who, s.condition))
+            else:
+                out.extend(records)
+    return tuple(out)
+
+
 def _derive_static_rule_effects(game: "GameState") -> list:
     """Rule-modifying effects that permanents have by being on the
-    battlefield (CR 611.3a): cost reducers, draw limits and the
-    sorcery-speed lockout apply while their source is there."""
-    from ai.oracle_classifier import Tag, tags_for
-    from .effect_model import (Effect, Modification, ModKind, OriginKind,
-                               Selector, SelectorKind, WHILE_SOURCE)
-    from .effect_model import cost_delta_effect, draw_limit_effect
+    battlefield (CR 611.3a): cost reducers, draw limits and the printed
+    static prohibitions (`_printed_prohibitions`) apply while their source
+    is there."""
+    from .effect_model import (Effect, Modification, OriginKind, Selector,
+                               WHILE_SOURCE)
+    from .effect_model import ModKind, cost_delta_effect, draw_limit_effect
     out = []
     for controller, player in enumerate(game.players):
         for perm in player.battlefield:
@@ -716,10 +788,13 @@ def _derive_static_rule_effects(game: "GameState") -> list:
                 out.append(draw_limit_effect(controller, lim['who'], lim['max'],
                                              WHILE_SOURCE, source_id=perm.instance_id,
                                              origin=OriginKind.STATIC))
-            if Tag.SORCERY_SPEED_LOCKOUT in tags_for(perm.name):
+            for action, data, who, cond in _printed_prohibitions(perm):
+                # CR 101.2 / 604.1: a printed prohibition binds the players
+                # it names, relative to this permanent's controller.
                 out.append(Effect(
-                    Selector(SelectorKind.OPPONENTS, player=controller),
-                    Modification(ModKind.PROHIBIT, action="cast_outside_sorcery_timing"),
+                    Selector(who, player=controller),
+                    Modification(ModKind.PROHIBIT, action=action, data=data),
                     WHILE_SOURCE, OriginKind.STATIC, source_id=perm.instance_id,
-                    controller=controller, timestamp=perm.instance_id))
+                    controller=controller, timestamp=perm.instance_id,
+                    condition=cond))
     return out
