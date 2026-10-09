@@ -359,29 +359,28 @@ def _resolve_team_pump(game: "GameState", card: "CardInstance",
 
 def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
                              controller: int) -> bool:
-    """Resolve ETB effects via classifier-tag dispatch.
+    """Resolve an entering permanent's own enter triggers (CR 603.2) that
+    no card-name handler owns.
 
-    Returns True when a tag-gated branch fired; False otherwise. The return
-    value lets the caller distinguish "no oracle-driven ETB effect" from
-    "ETB effect handled here" (used by the silent-miss diagnostic).
+    Returns True when a branch here resolved the card's enter trigger;
+    False otherwise. The return value lets the caller distinguish "no
+    generic ETB effect" from "ETB effect handled here" (used by the
+    silent-miss diagnostic).
 
-    Scope (R3): the surveil-N land cycle is the audit's named target.
-    Card-specific ETB handlers continue to live in `EFFECT_REGISTRY`
-    (which `zone_transfer._fire_etb_triggers` invokes BEFORE falling
-    through to this resolver). This generic resolver handles only
-    oracle patterns the W0-A classifier has been trained to recognise.
+    Card-specific ETB handlers live in `EFFECT_REGISTRY`, which the entry
+    paths (`ResolutionManager._handle_permanent_etb`,
+    `zone_transfer._fire_etb_triggers`) run INSTEAD of this resolver.
+    Here, in order: typed-field branches, the enter-trigger carrier
+    (`effect_carrier.dispatch_etb`: the hosts the effect grammar typed
+    from the card's text, resolved through the effect dispatcher), then
+    the remaining legacy branches.
 
-    Adding a new ETB shape goes through:
-      1. Declare a `Tag.ETB_<SHAPE>` in `ai/oracle_classifier.py`.
-      2. Append the shape's description to
-         `ai/llm_prompts/classify_oracle_v1.md`.
-      3. Run `tools/build_oracle_classifier_cache.py` to populate.
-      4. Add a tag-gated branch here whose only oracle parse is
-         for the rule's numeric amount (assert-fail on mismatch).
-
-    Inline oracle substring chains are forbidden by the abstraction
-    contract — they are the patchwork pattern Wave 2 will delete
-    elsewhere; we don't ADD them here.
+    Adding a new ETB shape: type it in the effect grammar
+    (`engine/effect_grammar`) and give its verb an executor in a family
+    the enter-trigger carrier takes (`effect_carrier.ETB_FAMILIES`). A
+    classifier tag never decides an engine rule (CR 113.1: an object's
+    abilities are what its text says); inline oracle substring chains are
+    forbidden by the abstraction contract.
     """
     # ── "When this ~ enters, [other] creatures you control get +N/+N
     #     [and gain <kw>] until end of turn" (Overrun shape on a body) ──
@@ -427,29 +426,6 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
     if not oracle:
         return False
 
-    # ── "When this ~ enters, surveil N" (CR 701.42) ──
-    # Class size: the surveil-dual cycle (Meticulous Archive, Elegant
-    # Parlor, Thundering Falls, Hedge Maze, Underground Mortuary,
-    # Raucous Theater, Commercial District, Undercity Sewers, Shadowy
-    # Backstreet, Lush Portico) plus any future printing with the
-    # same ETB shape. The dispatch is gated by the oracle classifier
-    # tag `Tag.ETB_SURVEIL_N` — same gated-amount-parse pattern as
-    # `zone_transfer._fire_on_draw_triggers` uses for ON_DRAW_DAMAGE:
-    # the tag confirms the card has the trigger, then the amount N
-    # is parsed targetedly from oracle text. Card-name special cases
-    # are explicitly forbidden by the abstraction contract.
-    from ai.oracle_classifier import Tag, has_tag
-    if has_tag(card.name, Tag.ETB_SURVEIL_N):
-        m = re.search(r'surveil\s+(\d+)', oracle)
-        if m is None:
-            raise AssertionError(
-                f"{card.name!r} carries Tag.ETB_SURVEIL_N but its "
-                f"oracle text does not match the 'surveil N' shape — "
-                f"classifier and oracle are out of sync."
-            )
-        game.surveil(controller, int(m.group(1)))
-        return True
-
     # ── "When this ~ enters, (you may) return target card from your
     #     graveyard to your hand" (Eternal Witness class) ──
     # Class size: every regrowth-on-a-body printing — Eternal Witness,
@@ -459,7 +435,8 @@ def resolve_etb_from_oracle(game: "GameState", card: "CardInstance",
     # the same clause. Dispatch is gated by the classifier tag
     # `Tag.ETB_RETURN_FROM_GY_TO_HAND`; the only oracle parse is the
     # targeted clause parse for the optional type restriction
-    # (assert-fail on tag/oracle desync, same as the surveil branch).
+    # (assert-fail on tag/oracle desync).
+    from ai.oracle_classifier import Tag, has_tag
     if has_tag(card.name, Tag.ETB_RETURN_FROM_GY_TO_HAND):
         m = re.search(
             r'return target ([a-z ]*?)cards? from your graveyard to your hand',

@@ -559,7 +559,7 @@
     "A.I.M. Synthoids",
     "TRIGGERED:0:0"
    ],
-   "reason": "Unit E (enter-trigger carrier): the legacy enter resolver resolved nothing for this card -- its tag-gated surveil branch fired only for the cards in the classifier cache -- and the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil). Verified per board: the legacy side leaves the state exactly as placed."
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
   },
   {
    "pair": [
@@ -567,7 +567,7 @@
     "Barrier of Bones",
     "TRIGGERED:0:1"
    ],
-   "reason": "Unit E (enter-trigger carrier): the legacy enter resolver resolved nothing for this card -- its tag-gated surveil branch fired only for the cards in the classifier cache -- and the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil). Verified per board: the legacy side leaves the state exactly as placed."
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
   },
   {
    "pair": [
@@ -575,7 +575,7 @@
     "Broodspinner",
     "TRIGGERED:0:1"
    ],
-   "reason": "Unit E (enter-trigger carrier): the legacy enter resolver resolved nothing for this card -- its tag-gated surveil branch fired only for the cards in the classifier cache -- and the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil). Verified per board: the legacy side leaves the state exactly as placed."
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
   },
   {
    "pair": [
@@ -583,7 +583,15 @@
     "Cephalid Inkmage",
     "TRIGGERED:0:0"
    ],
-   "reason": "Unit E (enter-trigger carrier): the legacy enter resolver resolved nothing for this card -- its tag-gated surveil branch fired only for the cards in the classifier cache -- and the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil). Verified per board: the legacy side leaves the state exactly as placed."
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Commercial District",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
   },
   {
    "pair": [
@@ -591,7 +599,7 @@
     "Conduit Pylons",
     "TRIGGERED:0:0"
    ],
-   "reason": "Unit E (enter-trigger carrier): the legacy enter resolver resolved nothing for this card -- its tag-gated surveil branch fired only for the cards in the classifier cache -- and the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil). Verified per board: the legacy side leaves the state exactly as placed."
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
   },
   {
    "pair": [
@@ -599,7 +607,15 @@
     "Dimir Informant",
     "TRIGGERED:0:0"
    ],
-   "reason": "Unit E (enter-trigger carrier): the legacy enter resolver resolved nothing for this card -- its tag-gated surveil branch fired only for the cards in the classifier cache -- and the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil). Verified per board: the legacy side leaves the state exactly as placed."
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Elegant Parlor",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
   },
   {
    "pair": [
@@ -607,7 +623,7 @@
     "Faerie Dreamthief",
     "TRIGGERED:0:1"
    ],
-   "reason": "Unit E (enter-trigger carrier): the legacy enter resolver resolved nothing for this card -- its tag-gated surveil branch fired only for the cards in the classifier cache -- and the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil). Verified per board: the legacy side leaves the state exactly as placed."
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
   },
   {
    "pair": [
@@ -615,7 +631,7 @@
     "Foraging Wickermaw",
     "TRIGGERED:0:0"
    ],
-   "reason": "Unit E (enter-trigger carrier): the legacy enter resolver resolved nothing for this card -- its tag-gated surveil branch fired only for the cards in the classifier cache -- and the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil). Verified per board: the legacy side leaves the state exactly as placed."
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
   },
   {
    "pair": [
@@ -623,7 +639,15 @@
     "Foul Watcher",
     "TRIGGERED:0:1"
    ],
-   "reason": "Unit E (enter-trigger carrier): the legacy enter resolver resolved nothing for this card -- its tag-gated surveil branch fired only for the cards in the classifier cache -- and the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil). Verified per board: the legacy side leaves the state exactly as placed."
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Hedge Maze",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
   },
   {
    "pair": [
@@ -631,7 +655,7 @@
     "Hidden Grotto",
     "TRIGGERED:0:0"
    ],
-   "reason": "Unit E (enter-trigger carrier): the legacy enter resolver resolved nothing for this card -- its tag-gated surveil branch fired only for the cards in the classifier cache -- and the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil). Verified per board: the legacy side leaves the state exactly as placed."
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
   },
   {
    "pair": [
@@ -639,7 +663,7 @@
     "Imperious Inkmage",
     "TRIGGERED:0:1"
    ],
-   "reason": "Unit E (enter-trigger carrier): the legacy enter resolver resolved nothing for this card -- its tag-gated surveil branch fired only for the cards in the classifier cache -- and the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil). Verified per board: the legacy side leaves the state exactly as placed."
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
   },
   {
    "pair": [
@@ -647,7 +671,7 @@
     "Lazav, the Multifarious",
     "TRIGGERED:0:0"
    ],
-   "reason": "Unit E (enter-trigger carrier): the legacy enter resolver resolved nothing for this card -- its tag-gated surveil branch fired only for the cards in the classifier cache -- and the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil). Verified per board: the legacy side leaves the state exactly as placed."
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
   },
   {
    "pair": [
@@ -655,7 +679,15 @@
     "Lightshell Duo",
     "TRIGGERED:0:1"
    ],
-   "reason": "Unit E (enter-trigger carrier): the legacy enter resolver resolved nothing for this card -- its tag-gated surveil branch fired only for the cards in the classifier cache -- and the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil). Verified per board: the legacy side leaves the state exactly as placed."
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Lush Portico",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
   },
   {
    "pair": [
@@ -663,7 +695,7 @@
     "Lys Alana Informant",
     "TRIGGERED:0:0"
    ],
-   "reason": "Unit E (enter-trigger carrier): the legacy enter resolver resolved nothing for this card -- its tag-gated surveil branch fired only for the cards in the classifier cache -- and the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil). Verified per board: the legacy side leaves the state exactly as placed."
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
   },
   {
    "pair": [
@@ -671,7 +703,15 @@
     "Master of Death",
     "TRIGGERED:0:0"
    ],
-   "reason": "Unit E (enter-trigger carrier): the legacy enter resolver resolved nothing for this card -- its tag-gated surveil branch fired only for the cards in the classifier cache -- and the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil). Verified per board: the legacy side leaves the state exactly as placed."
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Meticulous Archive",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
   },
   {
    "pair": [
@@ -679,7 +719,7 @@
     "Naga Oracle",
     "TRIGGERED:0:0"
    ],
-   "reason": "Unit E (enter-trigger carrier): the legacy enter resolver resolved nothing for this card -- its tag-gated surveil branch fired only for the cards in the classifier cache -- and the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil). Verified per board: the legacy side leaves the state exactly as placed."
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
   },
   {
    "pair": [
@@ -687,7 +727,7 @@
     "Nightblade Brigade",
     "TRIGGERED:0:2"
    ],
-   "reason": "Unit E (enter-trigger carrier): the legacy enter resolver resolved nothing for this card -- its tag-gated surveil branch fired only for the cards in the classifier cache -- and the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil). Verified per board: the legacy side leaves the state exactly as placed."
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
   },
   {
    "pair": [
@@ -695,7 +735,7 @@
     "Owlin Historian",
     "TRIGGERED:0:1"
    ],
-   "reason": "Unit E (enter-trigger carrier): the legacy enter resolver resolved nothing for this card -- its tag-gated surveil branch fired only for the cards in the classifier cache -- and the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil). Verified per board: the legacy side leaves the state exactly as placed."
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
   },
   {
    "pair": [
@@ -703,7 +743,15 @@
     "Proctor of Potential",
     "TRIGGERED:0:0"
    ],
-   "reason": "Unit E (enter-trigger carrier): the legacy enter resolver resolved nothing for this card -- its tag-gated surveil branch fired only for the cards in the classifier cache -- and the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil). Verified per board: the legacy side leaves the state exactly as placed."
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Raucous Theater",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
   },
   {
    "pair": [
@@ -711,7 +759,7 @@
     "Rubblebelt Maverick",
     "TRIGGERED:0:0"
    ],
-   "reason": "Unit E (enter-trigger carrier): the legacy enter resolver resolved nothing for this card -- its tag-gated surveil branch fired only for the cards in the classifier cache -- and the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil). Verified per board: the legacy side leaves the state exactly as placed."
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
   },
   {
    "pair": [
@@ -719,7 +767,7 @@
     "Sanitation Automaton",
     "TRIGGERED:0:0"
    ],
-   "reason": "Unit E (enter-trigger carrier): the legacy enter resolver resolved nothing for this card -- its tag-gated surveil branch fired only for the cards in the classifier cache -- and the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil). Verified per board: the legacy side leaves the state exactly as placed."
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
   },
   {
    "pair": [
@@ -727,7 +775,15 @@
     "Semester Foreseer // Peer Review",
     "TRIGGERED:0:1"
    ],
-   "reason": "Unit E (enter-trigger carrier): the legacy enter resolver resolved nothing for this card -- its tag-gated surveil branch fired only for the cards in the classifier cache -- and the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil). Verified per board: the legacy side leaves the state exactly as placed."
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Shadowy Backstreet",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
   },
   {
    "pair": [
@@ -735,7 +791,7 @@
     "Shore Lurker",
     "TRIGGERED:0:1"
    ],
-   "reason": "Unit E (enter-trigger carrier): the legacy enter resolver resolved nothing for this card -- its tag-gated surveil branch fired only for the cards in the classifier cache -- and the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil). Verified per board: the legacy side leaves the state exactly as placed."
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
   },
   {
    "pair": [
@@ -743,7 +799,7 @@
     "Starbreach Whale",
     "TRIGGERED:0:1"
    ],
-   "reason": "Unit E (enter-trigger carrier): the legacy enter resolver resolved nothing for this card -- its tag-gated surveil branch fired only for the cards in the classifier cache -- and the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil). Verified per board: the legacy side leaves the state exactly as placed."
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
   },
   {
    "pair": [
@@ -751,7 +807,7 @@
     "Sterling Hound",
     "TRIGGERED:0:0"
    ],
-   "reason": "Unit E (enter-trigger carrier): the legacy enter resolver resolved nothing for this card -- its tag-gated surveil branch fired only for the cards in the classifier cache -- and the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil). Verified per board: the legacy side leaves the state exactly as placed."
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
   },
   {
    "pair": [
@@ -759,7 +815,7 @@
     "Surveillance Room",
     "TRIGGERED:0:0"
    ],
-   "reason": "Unit E (enter-trigger carrier): the legacy enter resolver resolved nothing for this card -- its tag-gated surveil branch fired only for the cards in the classifier cache -- and the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil). Verified per board: the legacy side leaves the state exactly as placed."
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
   },
   {
    "pair": [
@@ -767,7 +823,7 @@
     "Textbook Tabulator",
     "TRIGGERED:0:1"
    ],
-   "reason": "Unit E (enter-trigger carrier): the legacy enter resolver resolved nothing for this card -- its tag-gated surveil branch fired only for the cards in the classifier cache -- and the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil). Verified per board: the legacy side leaves the state exactly as placed."
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
   },
   {
    "pair": [
@@ -775,7 +831,15 @@
     "Thawbringer",
     "TRIGGERED:0:0"
    ],
-   "reason": "Unit E (enter-trigger carrier): the legacy enter resolver resolved nothing for this card -- its tag-gated surveil branch fired only for the cards in the classifier cache -- and the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil). Verified per board: the legacy side leaves the state exactly as placed."
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Thundering Falls",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
   },
   {
    "pair": [
@@ -783,7 +847,7 @@
     "Twilight Diviner",
     "TRIGGERED:0:0"
    ],
-   "reason": "Unit E (enter-trigger carrier): the legacy enter resolver resolved nothing for this card -- its tag-gated surveil branch fired only for the cards in the classifier cache -- and the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil). Verified per board: the legacy side leaves the state exactly as placed."
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
   },
   {
    "pair": [
@@ -791,7 +855,23 @@
     "Ultimecia, Time Sorceress // Ultimecia, Omnipotent",
     "TRIGGERED:0:0"
    ],
-   "reason": "Unit E (enter-trigger carrier): the legacy enter resolver resolved nothing for this card -- its tag-gated surveil branch fired only for the cards in the classifier cache -- and the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil). Verified per board: the legacy side leaves the state exactly as placed."
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Undercity Sewers",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
+  },
+  {
+   "pair": [
+    "etb:dispatch",
+    "Underground Mortuary",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
   },
   {
    "pair": [
@@ -799,7 +879,7 @@
     "Valkyrie Aerial Unit",
     "TRIGGERED:0:2"
    ],
-   "reason": "Unit E (enter-trigger carrier): the legacy enter resolver resolved nothing for this card -- its tag-gated surveil branch fired only for the cards in the classifier cache -- and the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil). Verified per board: the legacy side leaves the state exactly as placed."
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
   },
   {
    "pair": [
@@ -807,7 +887,7 @@
     "Wary Thespian",
     "TRIGGERED:0:0"
    ],
-   "reason": "Unit E (enter-trigger carrier): the legacy enter resolver resolved nothing for this card -- its tag-gated surveil branch fired only for the cards in the classifier cache -- and the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil). Verified per board: the legacy side leaves the state exactly as placed."
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
   },
   {
    "pair": [
@@ -815,7 +895,7 @@
     "Wary Watchdog",
     "TRIGGERED:0:0"
    ],
-   "reason": "Unit E (enter-trigger carrier): the legacy enter resolver resolved nothing for this card -- its tag-gated surveil branch fired only for the cards in the classifier cache -- and the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil). Verified per board: the legacy side leaves the state exactly as placed."
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
   },
   {
    "pair": [
@@ -823,7 +903,7 @@
     "Watcher in the Mist",
     "TRIGGERED:0:1"
    ],
-   "reason": "Unit E (enter-trigger carrier): the legacy enter resolver resolved nothing for this card -- its tag-gated surveil branch fired only for the cards in the classifier cache -- and the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil). Verified per board: the legacy side leaves the state exactly as placed."
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
   },
   {
    "pair": [
@@ -831,7 +911,7 @@
     "Whisper Agent",
     "TRIGGERED:0:1"
    ],
-   "reason": "Unit E (enter-trigger carrier): the legacy enter resolver resolved nothing for this card -- its tag-gated surveil branch fired only for the cards in the classifier cache -- and the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil). Verified per board: the legacy side leaves the state exactly as placed."
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
   },
   {
    "pair": [
@@ -839,7 +919,7 @@
     "Wreckage Wickerfolk",
     "TRIGGERED:0:1"
    ],
-   "reason": "Unit E (enter-trigger carrier): the legacy enter resolver resolved nothing for this card -- its tag-gated surveil branch fired only for the cards in the classifier cache -- and the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil). Verified per board: the legacy side leaves the state exactly as placed."
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
   },
   {
    "pair": [
@@ -847,7 +927,7 @@
     "Wurmwall Sweeper",
     "TRIGGERED:0:0"
    ],
-   "reason": "Unit E (enter-trigger carrier): the legacy enter resolver resolved nothing for this card -- its tag-gated surveil branch fired only for the cards in the classifier cache -- and the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil). Verified per board: the legacy side leaves the state exactly as placed."
+   "reason": "Unit E (enter-trigger carrier; no legacy enter branch since E.1b retired the tag-gated surveil branch, which fired only for the cards in the classifier cache): with the dispatcher off, the enter resolver surveils for no card, so the legacy side leaves the state exactly as placed (verified per board); the dispatcher surveils as printed (CR 701.42, the card-flow family's SURVEIL through GameState.surveil)."
   }
  ],
  "pairs": [
@@ -1680,56 +1760,6 @@
    "dispatched",
    "Volcanic Hammer",
    "SPELL:0:0"
-  ],
-  [
-   "etb:dispatch",
-   "Commercial District",
-   "TRIGGERED:0:1"
-  ],
-  [
-   "etb:dispatch",
-   "Elegant Parlor",
-   "TRIGGERED:0:1"
-  ],
-  [
-   "etb:dispatch",
-   "Hedge Maze",
-   "TRIGGERED:0:1"
-  ],
-  [
-   "etb:dispatch",
-   "Lush Portico",
-   "TRIGGERED:0:1"
-  ],
-  [
-   "etb:dispatch",
-   "Meticulous Archive",
-   "TRIGGERED:0:1"
-  ],
-  [
-   "etb:dispatch",
-   "Raucous Theater",
-   "TRIGGERED:0:1"
-  ],
-  [
-   "etb:dispatch",
-   "Shadowy Backstreet",
-   "TRIGGERED:0:1"
-  ],
-  [
-   "etb:dispatch",
-   "Thundering Falls",
-   "TRIGGERED:0:1"
-  ],
-  [
-   "etb:dispatch",
-   "Undercity Sewers",
-   "TRIGGERED:0:1"
-  ],
-  [
-   "etb:dispatch",
-   "Underground Mortuary",
-   "TRIGGERED:0:1"
   ]
  ],
  "seeds": [

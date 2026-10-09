@@ -65,6 +65,20 @@ def test_a_surveil_land_surveils_exactly_as_before(card_db):
     assert len(game.players[0].graveyard) == 1
 
 
+def test_a_classifier_tag_alone_never_makes_a_permanent_surveil(card_db, monkeypatch):
+    """A tag with no matching printed trigger changes nothing: a permanent
+    whose enter trigger does something else does not surveil, however it
+    is tagged."""
+    import ai.oracle_classifier as oc
+    monkeypatch.setattr(oc, "tags_for",
+                        lambda name: frozenset({oc.Tag.ETB_SURVEIL_N}))
+    game = _game()
+    _library(game, card_db, 3)
+    _enters(game, card_db, "Thraben Inspector")
+    assert len(game.players[0].library) == 3
+    assert game.players[0].graveyard == []
+
+
 def test_the_surveil_executor_is_the_card_flow_familys(card_db):
     """The dispatcher's card-flow family owns SURVEIL; damage ETBs stay on
     their own path (the carrier takes card-flow hosts only)."""
