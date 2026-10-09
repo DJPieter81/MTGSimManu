@@ -6501,3 +6501,47 @@ Design doc `docs/design/2026-09-29_clause_and_trigger_grammar.md`, sections 11 (
 - **Loyalty damage lines onto the dispatcher:** waits for the AI to choose a loyalty line's target on activation. One unbound-slot rule cannot serve both the activated "face" convention and the loyalty "engine pick".
 - The non-battlefield `Handle` ordinal (CR 400.7 outside the battlefield), needed by E2.
 - Multi-target and divided damage slots (`count_max > 1`), and a CAST_FACT (kicked) evaluator, so upgrades like "if kicked, 4 instead" become executable.
+
+## Aimed damage activations — one owner of where declared damage goes (2026-10-09)
+
+Class: 101 pool abilities read "deals N damage to any target" (Goblin Bombardment, High Noon, Walking Ballista, The Filigree Sylex and every pinger). Every one carried an empty `target_requirements`, so the AI declared nothing and the engine's empty-list rule sent all of them to the opponent's face. Two runner paths also made damage activations outside the AI and the activation owner.
+
+**U1 `2de1ec4` — the requirement is typed at load (CR 602.2b), byte-identical.**
+- `parse_activated_abilities` gives DAMAGE_ANY_TARGET its requirement from `target_solver.parse(body)`: ("any", {"any"}) on all 101.
+- Auditor `602.2b/activation_target`: every permanent declared as a target of an activated ability is one its source may target (the activation counterpart of `601.2c/cast_target`).
+- Tests: the requirement on a real member and pool-wide; the audit both ways.
+
+**U2 `7293caf` (+ baseline row `2f02dc3`) — `ai/damage_targets.py`, the one AI owner.**
+- `choose_damage_recipient` compares, in the attack chooser's currency (the opponent's position value lost), N damage to the face (`face_damage_value`, moved from `attack_targets._face_value`) against each opposing creature or planeswalker the damage destroys (`permanent_threat`).
+  - Lethal damage goes to the face; ties go to the face.
+  - Candidates pass slot admission, `can_be_targeted` and `ward_rules_out_target` (with the ability's own mana committed).
+- `damage_destroys`: lethal damage (CR 120.6/704.5g), deathtouch (702.2b), indestructible (702.12b), planeswalker loyalty (120.3c/704.5i).
+- `ai/activation_ev`'s damage branch declares the chosen target. A kill is worth the cost terms plus `permanent_threat` (the removal scorer's currency); the face keeps its projection exactly; the first step of a lethal line declares the face.
+- `target_solver.slot_admits_player` / `slot_admits_permanent`: one owner of what a slot admits, lifted out of the damage executor's binding (harness unchanged).
+- Digest byte-identical: no seeded game has the AI choose a damage activation.
+
+**U3 `edc1177` — the runner's damage shortcuts retire.**
+- `_activate_goblin_bombardment` (end step, oracle-gated) removed creatures from the battlefield list, wrote `opponent.life -= 1` and set `game_over` itself; its non-lethal branch did nothing. It is replaced by:
+  - `ai/activation_ev.lethal_damage_outlet_plan`: the sacrifice-outlet activations (13 pool abilities) whose summed damage is lethal now, counted from their costs — one victim each in the sacrifice callback's order, mana out of `available_mana_estimate`, a {T} or once-each-turn outlet once — or `[]` short of lethal;
+  - `GameRunner._activate_lethal_damage_outlets`, which executes the plan through `ActivationManager.activate` at the opponent, re-planning before each activation. Costs go through the zone funnel (dies triggers fire), damage through the owner, and the game ends by SBA.
+- The "{T}: this creature deals N damage to any target" regex branch of `_activate_tap_abilities` is gone: the AI activates such abilities through `ActivationManager`, aimed by U2. No registered deck plays one.
+- Ratchets: `damage_write` 32 → 31, zone mutation `game_runner` 16 → 15, oracle runtime parse 176 → 173.
+
+**Measured:** same-seed full matrix, n=20 Bo3, all 25 rows. Pre = e1-b3-post (`e1bd0ac`; its engine, AI, deck and tool code is identical to `ce02660`, the head before U1); post = aim-post (`7b8c4e3`, code `edc1177`).
+- 36 of 600 cells changed: 25 involve Boros Energy and 11 Boros Ponza; no other cell moved.
+- Boros Energy 64.8 → 68.1 (+3.3, +32 matches of its 960; band 50–70, still in). Boros Ponza 19.5 → 20.1 (+0.6, High Noon in its main deck). Every other deck within ±0.7, each from its cells against those two.
+- 0 aborts in both arms; draws 173 → 177; audit violations 0 in both (findings 465 → 467, census rows), the new `602.2b/activation_target` included.
+- **Mechanism, replayed exactly on the matrix path** (Boros Energy vs Azorius Blink, the cell 55 → 70: seeds 50000, 55500, 56000 and 57000 flipped toward Boros Energy, 51000 away; match s55500, lost 1–2 before, won 2–1 after):
+  - Before, Goblin Bombardment only ever pinged the face (four main-phase face pings in the match).
+  - After, it sacrifices tokens to kill Azorius Blink's Ocelot Pride (three times) and Phelia: game 2 turn 5 is the first divergence.
+  - In game 3, combat leaves the opponent at 4, and the end-step plan sacrifices four creatures for exactly lethal through the activation owner (each victim through the zone funnel, the loss by SBA).
+- No deck moved more than 5 pp, so no bisect was required. The replay names the change in Boros Energy's cells: U2's aim plus U3's end-step lethal.
+- This closes the E1 lead "Activated 'any target' abilities never choose a target".
+
+**Context:** a sacrifice cost is priced by the cost projection's `my_power` drop, which inherits `position_value`'s known sentinel cliff: a slow clock facing a faster one reads worse than no clock, so feeding a lone 1-power attacker to an outlet can project as a gain. Fixing the cliff was A/B-measured and falsified (`docs/diagnostics/2026-08-30_clock_sign_inversion_fix_falsified.md`); this unit does not change it.
+
+**Leads (not built):**
+- Loyalty damage lines choose their target on activation: a loyalty ability resolves with no stack item, and the chooser returns only a slot. Ral −2 (divided), Ajani 0 (reflexive) and both Chandra lines are misclassified as DAMAGE, and the AI double-counts a damage line.
+- The spell burn chooser (`EVPlayer._enumerate_burn_targets`, profile-weighted with planeswalker constants) and the engine's resolution-time pick (`oracle_resolver._pick_damage_target`, literal weights in the engine) onto `ai/damage_targets`.
+- `enumerate_legal_targets` returns `[]` for zone "any": an "any target" slot has creature and planeswalker candidates (CR 115.4).
+- Planeswalker chip damage short of death (no primitive prices lost loyalty).
