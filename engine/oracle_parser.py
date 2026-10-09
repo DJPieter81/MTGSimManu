@@ -2036,6 +2036,14 @@ def parse_activated_abilities(oracle: str):
                     types=frozenset(spec['types']),
                     owner_scope=spec['owner'],
                     raw_phrase=body.strip().lower())]
+        elif kind is K.DAMAGE_ANY_TARGET:
+            # CR 602.2b: "deals N damage to any target" is chosen when the
+            # ability is activated -- a creature, planeswalker or player
+            # (CR 115.4). The requirement is the target solver's own parse
+            # of the body, the one owner of what a target phrase admits.
+            from .target_solver import parse as parse_targets
+            target_requirements = list(parse_targets(body))
+            targets_required = len(target_requirements)
         # TUTOR_* kinds carry their structured search constraint on the
         # ability — parsed here, at load time, never re-derived at runtime.
         tutor_data = None

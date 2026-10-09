@@ -540,6 +540,26 @@ class ActivationManager:
         return list(game.players[player_idx].graveyard)[:max(0, count)]
 
     @staticmethod
+    def _audit_activation_targets(game: "GameState", player_idx: int,
+                                  perm: "CardInstance",
+                                  targets: Optional[List[int]]) -> None:
+        """CR 602.2b / 601.2c, restated at activation (the counterpart of
+        `601.2c/cast_target`): every permanent declared as a target of an
+        activated ability is one its source may target. Observation only."""
+        from . import rules_audit
+        if not targets or not rules_audit.enabled():
+            return
+        from .target_solver import can_be_targeted
+        for tid in targets:
+            tgt = game.get_card_by_id(tid) if isinstance(tid, int) else None
+            if tgt is not None and tgt.zone == "battlefield":
+                rules_audit.check(
+                    "602.2b/activation_target",
+                    can_be_targeted(tgt, perm, player_idx),
+                    f"{perm.name} activated at {tgt.name}, which it may "
+                    f"not target", game=game)
+
+    @staticmethod
     def activate(game: "GameState", player_idx: int, perm: "CardInstance",
                  ability: "ActivatedAbility",
                  targets: Optional[List[int]] = None) -> bool:
@@ -647,6 +667,8 @@ class ActivationManager:
             # re-check on resolution reads the same thing for an ability.
             from .stack import snapshot_targets
             target_zones, target_entry_seqs = snapshot_targets(game, targets)
+            ActivationManager._audit_activation_targets(game, player_idx,
+                                                        perm, targets)
 
             # `ability=None` is MANDATORY: StackItem.ability is typed as the
             # legacy Ability dataclass and resolution tests `item.ability.effect`
