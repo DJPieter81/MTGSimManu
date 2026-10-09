@@ -9,7 +9,8 @@ in the same units and no tuned constant is needed:
 * killing a planeswalker is worth ``permanent_threat(pw)`` — the opponent's
   position value with it minus without it (``ai/permanent_threat.py``);
 * the same damage to face is worth the opponent's position value at their
-  current life minus at ``life − damage`` (``ai/clock.position_value``).
+  current life minus at ``life − damage`` (``ai/damage_targets.
+  face_damage_value``, shared with the aim of declared damage).
 
 A group is sent at a planeswalker only when that power kills it (loyalty ≤
 power) and killing it is worth more than the face damage it gives up. A
@@ -20,18 +21,11 @@ from __future__ import annotations
 from itertools import combinations
 from typing import TYPE_CHECKING, Dict, List
 
+from ai.damage_targets import face_damage_value
+
 if TYPE_CHECKING:
     from engine.cards import CardInstance
     from engine.game_state import GameState
-
-
-def _face_value(game: "GameState", opp_idx: int, damage: int) -> float:
-    """Opponent's position-value loss from taking ``damage`` to the face."""
-    from ai.clock import position_value
-    from ai.ev_evaluator import snapshot_from_game
-    snap = snapshot_from_game(game, opp_idx)
-    hit = snap.model_copy(update={'my_life': snap.my_life - damage})
-    return position_value(snap) - position_value(hit)
 
 
 def _smallest_killing_group(pool: List["CardInstance"], loyalty: int) -> List["CardInstance"]:
@@ -70,7 +64,8 @@ def choose_attack_targets(game: "GameState", my_idx: int,
         if not group:
             continue
         given_up = sum(max(c.power or 0, 0) for c in group)
-        if permanent_threat(pw, opp, game) > _face_value(game, opp_idx, given_up):
+        if permanent_threat(pw, opp, game) > face_damage_value(game, opp_idx,
+                                                               given_up):
             for c in group:
                 targets[c.instance_id] = pw
                 pool.remove(c)

@@ -607,6 +607,7 @@ def activation_candidates(game, player_idx, snap, excluded=None,
             # Merge effect deltas ON TOP of the cost terms — a discard-cost
             # draw must net the two hand-size changes, not overwrite one.
             updates = dict(cost_updates)
+            declared: list = []     # the targets a kind declares (CR 602.2b)
             kind = ability.effect_kind
             if kind is _K.DRAW_N:
                 updates["my_hand_size"] = (
@@ -628,16 +629,36 @@ def activation_candidates(game, player_idx, snap, excluded=None,
                           + (f" ({ability.delayed_timing.value})"
                              if ability.delayed_timing is not None else ""))
             elif kind is _K.DAMAGE_ANY_TARGET:
+                # CR 602.2b: the target is declared on activation, chosen
+                # by the one owner of where damage goes (ai/damage_targets).
+                _line = _state().best_line
+                _first_of_line = _line is not None and _line.first_step == (
+                    _STEP_ACTIVATE, perm.instance_id, ability.index)
+                aim = _aim_activated_damage(game, player_idx, perm, ability,
+                                            line_to_face=_first_of_line)
+                if ability.target_requirements and aim is None:
+                    continue    # the slot admits nothing worth declaring
+                if aim is not None and aim.permanent is not None:
+                    # Damage that destroys an opposing permanent is worth
+                    # what its controller loses with it (`permanent_threat`,
+                    # the removal scorer's currency), net of the cost terms.
+                    after = snap.fast_replace(**updates)
+                    ev = (position_value(after) - base) + aim.value
+                    if ev <= 0.0:
+                        continue
+                    out.append((perm, ability.index, [aim.target_id], ev,
+                                f"activate: {ability.amount} damage to "
+                                f"{aim.permanent.name} (destroys it)"))
+                    continue
+                declared = [aim.target_id] if aim is not None else []
                 updates["opp_life"] = snap.opp_life - ability.amount
                 after = snap.fast_replace(**updates)
                 reason = f"activate: {ability.amount} damage"
-                _line = _state().best_line
-                if _line is not None and _line.first_step == (
-                        _STEP_ACTIVATE, perm.instance_id, ability.index):
+                if _first_of_line:
                     # The first ping of a lethal counter-stack line is
                     # credited the line, not one point of damage.
                     ev = (position_value(after) - base) + _line.swing
-                    out.append((perm, ability.index, [], ev,
+                    out.append((perm, ability.index, declared, ev,
                                 reason + " — first step of a lethal line"))
                     continue
             elif kind is _K.PUT_COUNTER_TEAM:
@@ -967,5 +988,32 @@ def activation_candidates(game, player_idx, snap, excluded=None,
             if ev <= 0.0:
                 continue  # an activation that does not improve position is
                           # not made; principled, not a tuned threshold
-            out.append((perm, ability.index, [], ev, reason))
+            out.append((perm, ability.index, declared, ev, reason))
     return out
+
+
+def _aim_activated_damage(game, player_idx, perm, ability, *,
+                          line_to_face=False):
+    """The target an activated "deals N damage to any target" declares
+    (CR 602.2b), as a `DamageAim`, or None when it declares none: an
+    ability parsed with no target slot (nothing to declare -- the owner
+    sends its damage to the face), or a slot that admits nothing worth
+    declaring. The first step of a lethal line (`line_to_face`) declares
+    the face: the line is credited its damage there. Otherwise the one
+    owner chooses (`ai.damage_targets.choose_damage_recipient`), with the
+    ability's own mana as what is spent before any ward is paid."""
+    if not ability.target_requirements:
+        return None
+    from ai.damage_targets import (DamageAim, choose_damage_recipient,
+                                   face_damage_value)
+    req = ability.target_requirements[0]
+    if line_to_face:
+        from engine.constants import PLAYER_TARGET_OPPONENT
+        from engine.target_solver import slot_admits_player
+        if not slot_admits_player(req, 1 - player_idx, player_idx):
+            return None
+        return DamageAim(PLAYER_TARGET_OPPONENT, None,
+                         face_damage_value(game, 1 - player_idx,
+                                           ability.amount))
+    return choose_damage_recipient(game, player_idx, perm, ability.amount,
+                                   req, mana_committed=ability.cost.mana.cmc)

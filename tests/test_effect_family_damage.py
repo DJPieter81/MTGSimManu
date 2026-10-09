@@ -276,8 +276,9 @@ def test_the_executors_read_no_oracle_text_and_write_no_state_themselves():
                 assert not any(p in m for p in ("effect_grammar",
                                                 "oracle_parser")), node.lineno
                 if "target_solver" in m:      # the legality owner, no parse
-                    assert [a.name for a in node.names] == ["can_be_targeted"], \
-                        node.lineno
+                    assert {a.name for a in node.names} <= {
+                        "can_be_targeted", "slot_admits_permanent",
+                        "slot_admits_player"}, node.lineno
         if isinstance(node, (ast.Assign, ast.AugAssign, ast.AnnAssign)):
             targets = list(node.targets if isinstance(node, ast.Assign)
                            else [node.target])

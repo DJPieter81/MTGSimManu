@@ -777,6 +777,36 @@ def can_be_targeted(card: "CardInstance", source, controller: int) -> bool:
     return True
 
 
+def slot_admits_player(req: TargetRequirement, player_idx: int,
+                       controller: int) -> bool:
+    """Does a target slot admit this player? "Any target" and "target
+    player" do (CR 115.4), within the slot's controller scope ("target
+    opponent" admits only an opponent of `controller`). One owner for the
+    check, read by the binding on resolution and the AI's aim alike."""
+    if not set(req.types) & {"any", "player"}:
+        return False
+    scope = getattr(req, "owner_scope", "any")
+    return not ((scope == "opponent" and player_idx == controller)
+                or (scope == "you" and player_idx != controller))
+
+
+def slot_admits_permanent(req: TargetRequirement, card: "CardInstance",
+                          controller: int) -> bool:
+    """Does a target slot admit this permanent by its CURRENT types (CR
+    608.2b reads them on resolution, CR 601.2c when it is chosen)? "Any
+    target" admits a creature or a planeswalker (CR 115.4); a typed slot
+    admits its own types; the slot's controller scope applies. Whether the
+    source may target it is `can_be_targeted`'s question, not this one."""
+    scope = getattr(req, "owner_scope", "any")
+    if (scope == "opponent" and card.controller == controller) or \
+            (scope == "you" and card.controller != controller):
+        return False
+    types = set(req.types)
+    admitted = ({"creature", "planeswalker"} if "any" in types
+                else types - {"player"})
+    return bool({t.value for t in card.effective_card_types} & admitted)
+
+
 def _matches_supertype(card: "CardInstance",
                        supertype: Optional[str]) -> bool:
     """Filter by supertype. None = no filter. Mirrors the legendary /

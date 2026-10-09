@@ -106,30 +106,19 @@ def _bind_recipient(ctx: Resolution, req: Any, source: Any, value: Any) -> Any:
     creature, planeswalker or player); the player it names if the slot
     admits players and the controller scope allows. Otherwise None: an
     illegal target is not affected, and nothing is redirected."""
-    types = set(req.types)
-    scope = getattr(req, "owner_scope", "any")
+    from .target_solver import (can_be_targeted, slot_admits_permanent,
+                                slot_admits_player)
     if isinstance(value, int) and not isinstance(value, bool):
-        if not types & {"any", "player"}:
-            return None
-        if (scope == "opponent" and value == ctx.controller) or \
-                (scope == "you" and value != ctx.controller):
-            return None
-        return value
+        return (value if slot_admits_player(req, value, ctx.controller)
+                else None)
     if not isinstance(value, Handle):
         return None
     card = ctx.game.get_card_by_id(value.instance_id)
     if card is None or card.zone != "battlefield" or value.zone != "battlefield" \
             or card.battlefield_entry_seq != value.entry_seq:
         return None
-    if (scope == "opponent" and card.controller == ctx.controller) or \
-            (scope == "you" and card.controller != ctx.controller):
+    if not slot_admits_permanent(req, card, ctx.controller):
         return None
-    current = {t.value for t in card.effective_card_types}
-    admitted = ({"creature", "planeswalker"} if "any" in types
-                else types - {"player"})
-    if not current & admitted:
-        return None
-    from .target_solver import can_be_targeted
     if not can_be_targeted(card, source, ctx.controller):
         return None
     return card

@@ -126,7 +126,8 @@ def test_an_on_board_planeswalker_has_positive_worth(card_db):
 
 
 def test_ai_attacks_a_planeswalker_exactly_when_killing_it_beats_the_face_damage(card_db):
-    from ai.attack_targets import _face_value, choose_attack_targets
+    from ai.attack_targets import choose_attack_targets
+    from ai.damage_targets import face_damage_value
     from ai.permanent_threat import permanent_threat
     for life in (20, 60):
         game = _game()
@@ -136,7 +137,7 @@ def test_ai_attacks_a_planeswalker_exactly_when_killing_it_beats_the_face_damage
                            name="Ugin, Eye of the Storms")
         game.players[1].life = life
         worth = permanent_threat(pw, game.players[1], game)
-        face = _face_value(game, 1, small.power)
+        face = face_damage_value(game, 1, small.power)
         targets = choose_attack_targets(game, 0, [small, big])
         if worth > face:
             # The smallest group whose power reaches the loyalty is sent.
