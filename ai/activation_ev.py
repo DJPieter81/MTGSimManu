@@ -992,6 +992,72 @@ def activation_candidates(game, player_idx, snap, excluded=None,
     return out
 
 
+def _pays_only_victim_and_mana(cost) -> bool:
+    """A cost whose only items are one sacrificed permanent of a type,
+    mana and at most {T}: what `lethal_damage_outlet_plan` can count."""
+    return (cost.sacrifice_type is not None and not cost.unpayable
+            and not (cost.life or cost.sacrifice_self or cost.exile_self
+                     or cost.untap_self or cost.discard_cards
+                     or cost.exile_from_graveyard_cards or cost.x_count
+                     or cost.remove_counter_kind or cost.put_counter_kind))
+
+
+def lethal_damage_outlet_plan(game, player_idx):
+    """The activations, in order, by which this player's sacrifice-outlet
+    damage abilities ("Sacrifice a creature: ~ deals N damage to any
+    target") deal the opponent lethal damage now, as ``[(permanent,
+    ability), ...]`` -- or ``[]`` when what they can deal falls short of the
+    opponent's life total. Short of lethal nothing is planned: the main
+    phase's EV owns every non-lethal activation, aimed by
+    `ai.damage_targets`.
+
+    Feasibility is counted from the costs without touching the game: each
+    activation spends one victim its cost admits (`legal_sacrifice_victims`,
+    taken in the order the sacrifice callback takes them,
+    `choose_sacrifice_victim`), its mana out of `available_mana_estimate`,
+    and a {T} or once-each-turn outlet once; a victim that is itself an
+    outlet activates no more. An outlet whose cost has any other item is
+    not planned. Outlets dealing the most damage per activation go first:
+    lethal with the fewest permanents spent."""
+    from engine.activation import ActivationManager
+    from engine.cards import ActivationEffectKind as _K
+
+    me = game.players[player_idx]
+    life = game.players[1 - player_idx].life
+    outlets = [(perm, ab) for perm in list(me.battlefield)
+               for ab in (perm.template.activated_abilities or ())
+               if ab.effect_kind is _K.DAMAGE_ANY_TARGET and ab.amount > 0
+               and _pays_only_victim_and_mana(ab.cost)
+               and ActivationManager.can_activate(game, player_idx, perm, ab)]
+    outlets.sort(key=lambda pa: -pa[1].amount)
+    mana = me.available_mana_estimate
+    spent, used_once, plan, dealt = set(), set(), [], 0
+    while outlets and dealt < life:
+        step = None
+        for perm, ab in outlets:
+            once = ab.cost.tap_self or ab.once_each_turn
+            if perm.instance_id in spent or ab.cost.mana.cmc > mana \
+                    or (once and (perm.instance_id, ab.index) in used_once):
+                continue
+            victim = choose_sacrifice_victim(game, player_idx, [
+                v for v in ActivationManager.legal_sacrifice_victims(
+                    game, player_idx, perm, ab.cost)
+                if v.instance_id not in spent])
+            if victim is not None:
+                step = (perm, ab, victim, once)
+                break
+        if step is None:
+            return []
+        perm, ab, victim, once = step
+        spent.add(victim.instance_id)
+        if once:
+            used_once.add((perm.instance_id, ab.index))
+        mana -= ab.cost.mana.cmc
+        plan.append((perm, ab))
+        dealt += ab.amount
+    return plan if dealt >= life else []
+
+
 def _aim_activated_damage(game, player_idx, perm, ability, *,
                           line_to_face=False):
     """The target an activated "deals N damage to any target" declares

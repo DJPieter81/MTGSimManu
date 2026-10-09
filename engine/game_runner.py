@@ -1040,8 +1040,8 @@ class GameRunner:
                     game.current_phase = Phase.END_STEP
                     _vlog(f'  [End Step]')
                     _emit(KIND_PHASE, phase="EndStep", pidx=active)
-                    # Goblin Bombardment: sacrifice tokens/small creatures to deal damage
-                    self._activate_goblin_bombardment(game, active)
+                    # Sacrifice outlets convert creatures into lethal damage.
+                    self._activate_lethal_damage_outlets(game, active)
                     if game.game_over:
                         break
                     # Activated artifacts: Expedition Map, Ratchet Bomb
@@ -2106,81 +2106,29 @@ class GameRunner:
             if game.game_over:
                 return
 
-    def _activate_goblin_bombardment(self, game: GameState, active: int):
-        """Activate Goblin Bombardment: sacrifice tokens/small creatures to deal 1 damage each."""
-        player = game.players[active]
-        opponent_idx = 1 - active
-        opponent = game.players[opponent_idx]
-
-        # Check if player has Goblin Bombardment on the battlefield
-        # Generic: any permanent with "sacrifice a creature: deal 1 damage"
-        has_bombardment = any(
-            'sacrifice a creature' in (c.template.oracle_text or '').lower()
-            and 'damage' in (c.template.oracle_text or '').lower()
-            for c in player.battlefield if not c.template.is_creature
-        )
-        if not has_bombardment:
-            return
-
-        # Sacrifice tokens and low-value creatures to deal damage
-        # Priority: tokens first, then creatures with power <= 1
-        sacrificeable = []
-        for c in player.creatures:
-            if "token" in c.template.tags:
-                sacrificeable.append((0, c))  # tokens are free to sacrifice
-            elif c.template.cmc <= 1 and c.template.power <= 1:
-                sacrificeable.append((1, c))  # small creatures are ok to sacrifice
-
-        # Sort: tokens first, then by value (lowest first)
-        sacrificeable.sort(key=lambda x: x[0])
-
-        # Only sacrifice if it would deal meaningful damage or if we have excess tokens
-        # Keep at least 2 creatures for blocking/attacking
-        real_creatures = [c for c in player.creatures if "token" not in c.template.tags]
-        token_count = len([c for c in player.creatures if "token" in c.template.tags])
-
-        # Sacrifice all tokens if opponent is at low life (lethal range)
-        if opponent.life <= token_count:
-            # Go for lethal!
-            for _, creature in sacrificeable:
-                if game.game_over:
-                    return
-                if creature in player.battlefield:
-                    player.battlefield.remove(creature)
-                    creature.zone = "graveyard"
-                    player.graveyard.append(creature)
-                    opponent.life -= 1
-                    player.damage_dealt_this_turn += 1
-                    game.log.append(
-                        f"T{game.display_turn} P{active+1}: Goblin Bombardment "
-                        f"sacrifice {creature.name} -> 1 damage to P{opponent_idx+1} "
-                        f"(life: {opponent.life})"
-                    )
-                    if opponent.life <= 0:
-                        game.game_over = True
-                        game.winner = active
-                        return
-        else:
-            # Not lethal: sacrifice tokens when they provide race value.
-            # Keep 1 blocker; sacrifice the rest if we can deal meaningful damage
-            # or if opponent is in reach (life <= 8).
-            real_blocker_count = len(real_creatures)
-            min_keep = 1  # always keep at least 1 non-token creature for blocking
-            tokens_to_sac = token_count  # all tokens by default
-            if real_blocker_count < min_keep:
-                # Keep one token as a blocker
-                tokens_to_sac = max(0, token_count - 1)
-            # Sacrifice tokens when they contribute to the race.
-            # If opponent is out of reach AND we have few tokens, hold them for blocking.
-            # But if we are racing (opponent life <= our total power * 2), sacrifice freely.
-            my_total_pwr = sum(c.power or 0 for c in player.creatures)
-            is_racing_now = my_total_pwr > 0 and opponent.life <= my_total_pwr * 3
-            if not is_racing_now and opponent.life > 15 and tokens_to_sac < 2:
-                tokens_to_sac = 0
-            sacced = 0
-            for priority_val, creature in sacrificeable:
-                if sacced >= tokens_to_sac:
-                    break
+    def _activate_lethal_damage_outlets(self, game: GameState, active: int):
+        """End step: when the sacrifice-outlet damage abilities this player
+        controls can, between them, deal the opponent lethal damage, the AI
+        activates them at the opponent (`lethal_damage_outlet_plan`), one at
+        a time through the activation owner -- costs paid through the zone
+        funnel (dies triggers fire), damage dealt through the damage owner,
+        the game ended by state-based actions (CR 704.5a). The plan is made
+        again before every activation, so nothing more is sacrificed once
+        lethal is out of reach; each activation spends a victim, which
+        bounds the loop."""
+        from ai.activation_ev import lethal_damage_outlet_plan
+        from .activation import ActivationManager
+        from .constants import PLAYER_TARGET_OPPONENT
+        plan = lethal_damage_outlet_plan(game, active)
+        for _ in range(len(plan)):
+            if game.game_over or not plan:
+                return
+            perm, ability = plan[0]
+            if not ActivationManager.activate(game, active, perm, ability,
+                                              [PLAYER_TARGET_OPPONENT]):
+                return
+            self._resolve_stack_loop(game)
+            plan = lethal_damage_outlet_plan(game, active)
 
     def _activate_utility_artifacts(self, game: GameState, active: int):
         # single-owner-allow: not a target pick — library searches and the controller's own lands
@@ -2333,17 +2281,18 @@ class GameRunner:
         return False
 
     def _activate_tap_abilities(self, game: GameState, active: int):
+        # single-owner-allow: not a target pick among the opponent's permanents — its own permanents' {T} abilities and a card in its own graveyard
         """Generic {T}: ability dispatch for non-planeswalker permanents.
 
-        Oracle-driven — no card names. Covers patterns like Endbringer's
-        {T}: ping / {C}{C}{T}: draw and Emry's {T}: cast-artifact-from-GY.
-        Skips tapped or summoning-sick creatures. One activation per
-        permanent per turn (the tap state itself enforces this)."""
-        import re
+        Oracle-driven — no card names. Covers patterns like {C}{C}{T}: draw
+        and Emry's {T}: cast-artifact-from-GY. A "{T}: deals N damage to
+        any target" ability is not fired here: it is a parsed activated
+        ability the AI activates through `ActivationManager`, aimed by
+        `ai.damage_targets`. Skips tapped or summoning-sick creatures. One
+        activation per permanent per turn (the tap state itself enforces
+        this)."""
         from engine.cards import CardType
-        from engine.oracle_resolver import resolve_any_target_damage
         player = game.players[active]
-        opponent_idx = 1 - active
 
         for perm in list(player.battlefield):
             if perm.tapped:
@@ -2359,18 +2308,6 @@ class GameRunner:
             oracle = (perm.template.oracle_text or '').lower()
             if '{t}' not in oracle:
                 continue
-
-            # ── {T}: This creature deals N damage to any target. ──
-            m_ping = re.search(
-                r'\{t\}\s*:\s*this creature deals\s+(\d+)\s+damage to any target',
-                oracle)
-            if m_ping:
-                amount = int(m_ping.group(1))
-                perm.tapped = True
-                resolve_any_target_damage(game, perm, active, amount)
-                if game.game_over:
-                    return
-                continue  # one activation per permanent per turn
 
             # ── {C}{C}, {T}: Draw a card. ──
             # Generic colourless-only card-draw activation. Gated on hand
