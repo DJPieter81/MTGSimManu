@@ -63,6 +63,18 @@ def sorcery_speed_only(game: "GameState", player_idx: int) -> bool:
                           "cast_outside_sorcery_timing"))
 
 
+def cast_time_restricted(game: "GameState", player_idx: int) -> bool:
+    """A printed timing restriction forbids this player casting now (CR
+    101.2, 307.1): "can cast spells only any time they could cast a
+    sorcery" outside the player's own main phase with an empty stack. Every
+    cast route asks it -- a free or alternative cast is still a cast."""
+    from engine.game_state import Phase
+    if not sorcery_speed_only(game, player_idx):
+        return False
+    return not (game.active_player == player_idx and game.stack.is_empty
+                and game.current_phase in (Phase.MAIN1, Phase.MAIN2))
+
+
 def cast_as_though_flash(game: "GameState", player_idx: int, template) -> bool:
     """This player may cast this spell as though it had flash (CR 702.8d)."""
     from engine.effect_model import ModKind

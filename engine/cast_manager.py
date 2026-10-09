@@ -337,6 +337,12 @@ class CastManager:
         from . import rules_query
         if rules_query.cast_prohibited(game, player_idx, template):
             return False
+        # CR 101.2 / 307.1: a printed timing restriction binds every cast
+        # route below, the ones that skip the normal timing check included
+        # (madness, warp, escape). Playing a land is not casting.
+        if not template.is_land and \
+                rules_query.cast_time_restricted(game, player_idx):
+            return False
 
         # Madness (CR 702.35b): a card just discarded into exile may be
         # cast from there for its madness cost. The offer is made while
@@ -1279,6 +1285,19 @@ class CastManager:
         return True
 
     @staticmethod
+    def free_cast_allowed(game: "GameState", player_idx: int,
+                          template) -> bool:
+        """May this player cast this spell now by a route that skips the
+        normal timing check -- a free cast (cascade, suspend, rebound, plot,
+        a copy)? A free cast is still a cast (CR 601.2): no cast prohibition
+        covers it (CR 101.2) and no printed timing restriction forbids
+        casting now (CR 307.1). One owner, asked by `cast_spell` and by each
+        route before it moves a card it might not be able to cast."""
+        from . import rules_query
+        return not (rules_query.cast_prohibited(game, player_idx, template)
+                    or rules_query.cast_time_restricted(game, player_idx))
+
+    @staticmethod
     def can_cast_plotted(game: "GameState", player_idx: int,
                          card: "CardInstance") -> bool:
         """A plotted card in exile may be cast (free, as a sorcery) on a turn
@@ -1295,6 +1314,8 @@ class CastManager:
         the standard free-cast path so ETB/storm/cascade triggers fire."""
         if not CastManager.can_cast_plotted(game, player_idx, card):
             return False
+        if not CastManager.free_cast_allowed(game, player_idx, card.template):
+            return False                # it stays plotted in exile
         # Move exile -> hand through the funnel, then cast from hand for free so
         # the standard free-cast path (ETB/storm/cascade wiring) applies.
         game.zone_mgr.move_card(game, card, "exile", "hand", cause="cast plotted")
@@ -1318,8 +1339,17 @@ class CastManager:
             card.suspend_counters = max(0, card.suspend_counters - 1)
             if card.suspend_counters > 0:
                 continue
-            # Last counter removed: cast for free.
+            # Last counter removed: cast for free. A card its owner may not
+            # cast now stays exiled (CR 702.62a: "If you don't [cast it], it
+            # remains exiled") -- checked before it leaves exile.
             card.suspended = False
+            if not CastManager.free_cast_allowed(game, player_idx,
+                                                 card.template):
+                game.log.append(
+                    f"T{game.display_turn} P{player_idx+1}: "
+                    f"Suspend {card.template.name} cannot be cast now; it "
+                    f"stays exiled")
+                continue
             if card in player.exile:
                 player.exile.remove(card)
             # Route through the standard free-cast path so cascade /
@@ -1385,6 +1415,14 @@ class CastManager:
                 found_card = top
                 break
 
+        if found_card and not CastManager.free_cast_allowed(
+                game, controller, found_card.template):
+            # A hit its caster may not cast now is not cast; it goes to the
+            # bottom with the rest (CR 702.85a).
+            game.log.append(
+                f"T{game.display_turn}: Cascade hits {found_card.name}, "
+                f"which cannot be cast now")
+            found_card = None
         if found_card:
             game.log.append(
                 f"T{game.display_turn}: Cascade hits {found_card.name}")
@@ -1452,10 +1490,9 @@ class CastManager:
 
         if not free_cast and not game.can_cast(player_idx, card):
             return False
-        if free_cast:
-            from . import rules_query
-            if rules_query.cast_prohibited(game, player_idx, card.template):
-                return False
+        if free_cast and not CastManager.free_cast_allowed(
+                game, player_idx, card.template):
+            return False
 
         # Pay mana cost (unless free cast)
         evoked = False

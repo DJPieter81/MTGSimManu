@@ -1836,6 +1836,13 @@ class GameRunner:
                         f"T{game.display_turn} P{active+1}: "
                         f"Rebound {rc.name} declined (CR 702.88b)")
                     continue
+            from .cast_manager import CastManager
+            if not CastManager.free_cast_allowed(game, active, rc.template):
+                # CR 702.88a: a rebound card not cast stays exiled.
+                game.log.append(
+                    f"T{game.display_turn} P{active+1}: Rebound {rc.name} "
+                    f"cannot be cast now; it stays exiled")
+                continue
             if rc in player.exile:
                 player.exile.remove(rc)
             rc._free_cast_opportunity = True  # rebound: free cast
@@ -2069,6 +2076,12 @@ class GameRunner:
             requirements = _parse_targets(template.oracle_text or "")
             if requirements and not has_legal_target_for_spell(
                     game, active, requirements):
+                continue
+
+            # A copy its controller may not cast now (a cast prohibition or a
+            # printed timing restriction, CR 101.2) is not paid for.
+            from .cast_manager import CastManager
+            if not CastManager.free_cast_allowed(game, active, template):
                 continue
 
             # Pay {2} through the real solver — no blind land taps.
