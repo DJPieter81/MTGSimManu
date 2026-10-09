@@ -6545,3 +6545,84 @@ Class: 101 pool abilities read "deals N damage to any target" (Goblin Bombardmen
 - The spell burn chooser (`EVPlayer._enumerate_burn_targets`, profile-weighted with planeswalker constants) and the engine's resolution-time pick (`oracle_resolver._pick_damage_target`, literal weights in the engine) onto `ai/damage_targets`.
 - `enumerate_legal_targets` returns `[]` for zone "any": an "any target" slot has creature and planeswalker candidates (CR 115.4).
 - Planeswalker chip damage short of death (no primitive prices lost loyalty).
+
+## Engine rules read card text, never classifier tags — unit C: static cast-timing restrictions (2026-10-09)
+
+Program: the engine rules that read oracle-classifier tags move onto the card's parsed text, so one wrong model answer can never become a game rule. Prompted by the rejected Jev tag-cache A/B, where a false `ON_OWN_DRAW_LIFE_GAIN` tag gave Grixis life on every draw. Five engine sites read seven tags; the committed cache holds 36 cards, so each rule fired only for the cards someone tagged.
+
+**Pin:** `tests/test_engine_reads_no_classifier_tags.py` lists the engine modules still reading tags. The list may only shrink: 4 → 3 with this unit.
+
+**Rule (CR 101.2, 307.1, 604.1, 611.3a):** a printed restriction on when players may cast applies as printed, read from the card's own text.
+
+**Class:** four printed sentences on nine pool cards.
+
+| Printed sentence | Cards |
+|---|---|
+| "Your opponents can't cast spells during your turn." | Voice of Victory (Boros Energy MB ×4), Dromoka, Kutzil, Jennifer Walters |
+| The leading "During your turn, ... can't cast spells or activate abilities of artifacts, creatures, or enchantments." | Grand Abolisher, Myrel |
+| "Each opponent can cast spells only any time they could cast a sorcery." | Teferi, Time Raveler (11 decks); Teferi, Mage of Zhalfir |
+| "Players can cast spells only during their own turns." | Dosan |
+
+**Before:**
+- Two owners decided the sorcery-speed lockout:
+  - a classifier tag read by `can_cast`;
+  - a substring field read only by the runner's instant windows.
+- They disagreed: Teferi, Mage of Zhalfir only closed the windows, and Grand Abolisher got Teferi's rule.
+- Voice of Victory and the rest were enforced nowhere.
+
+**`eaf209f`:**
+- **Grammar:**
+  - "during your turn", leading or trailing, is the TURN condition of "as long as it's your turn". It is one table in the condition leaf; every other "during ..." stays refused.
+  - "can cast spells only any time they could cast a sorcery / during their own turns" and the cast-or-activate conjunction are typed PROHIBIT specs.
+- **Read path:**
+  - `Effect` carries a printed condition, and `rules_query` evaluates it.
+  - `cast_prohibited` answers own-turn-only.
+  - New `activation_prohibited`, read by `can_activate`.
+- **Derivation:** `continuous_effects` builds these effects from each permanent's printed static PROHIBIT specs. The tag read is deleted, and the player-flag views apply the same condition.
+- **One owner:** the runner's windows ask `rules_query`. Deleted: the legacy field, its parser and the dead lockout set.
+- **Auditor:** `101.2/cast_timing`, restated from the battlefield's printed specs.
+- **Tests:** red first.
+
+**Grammar side effects, recorded:**
+- 73 "during your turn" statics are now typed: STATIC typed share 0.6077 → 0.6223.
+- 9 still-refused ones now stop at their own leaf.
+- 44 spec-equivalence comparisons lost their coincidental UNMODELLED_CLAUSE explanation; no view value changed:
+  - 43 are legacy-side readings, recorded as 9 allowlist rows in design doc section 10;
+  - one is grammar-side and stays UNEXPLAINED: Sorin, where `target_solver.parse` types "target player or planeswalker" as players only.
+- The Kaito witness's known gap closes.
+
+**Digest:** one game changes. In Azorius Control (WST v2) vs Boros Energy s53500, Azorius no longer flashes in Wan Shi Tong at Boros Energy's end step under Voice of Victory. Same winner, 7 turns instead of 9.
+
+**Measured:** same-seed full matrix, n=20 Bo3, all 25 rows; pre = aim-post (`7b8c4e3`, code `edc1177`).
+- **C1** (post arm ctime-post, `56e8c72`):
+  - 9 of 600 cells changed, every one involving Boros Energy (Voice of Victory).
+  - Boros Energy 68.1 → 69.0 (+0.8); every other deck within ±0.5; 0 aborts.
+  - The new auditor recorded **465** `101.2/cast_timing` violations, all against Teferi, Time Raveler's printed restriction, every one through a route that skipped the timing check:
+    - Isochron Scepter copies of Orim's Chant (212) and Silence (142), fired in the opponent's upkeep;
+    - Ephemerate rebound recasts at upkeep (102);
+    - Blazing Rootwalla madness casts (9).
+- **C2 `a8868f4` — a printed cast-timing restriction binds every cast route** (red first; one predicate, `rules_query.cast_time_restricted`):
+  - `can_cast` asks it before every route (madness, warp, escape included).
+  - `CastManager.free_cast_allowed` gates the free path, and each route asks it before moving or paying, so a refused cast leaves the card where its rules put it:
+    - the Scepter copy is not paid for;
+    - rebound and suspend stay exiled (CR 702.88a, 702.62a);
+    - a cascade hit goes to the bottom (CR 702.85a);
+    - plot stays plotted;
+    - madness goes to the graveyard.
+- **C2 measured** (post arm ctime2-post, `4c0a99a`, against C1):
+  - 18 cells changed, all among the Teferi / Scepter / Ephemerate / madness decks.
+  - Azorius Control −0.5; every other deck within ±0.2.
+  - **Audit violations 465 → 0.**
+  - Largest cell: Azorius Control vs 4c Omnath, 25 → 10. Its 32 violating casts under C1 (9 seeds) were Scepter copies of Orim's Chant / Silence and Ephemerate rebounds against 4c Omnath's Teferi, and now none happen.
+- **Whole unit C** (pre → C2): 27 cells changed.
+  - Boros Energy +0.8, Dimir Midrange −0.5, Azorius Control −0.5; every other deck within ±0.2.
+  - 0 aborts; audit violations 0.
+- No deck moved more than 5 pp.
+
+**Leads (not built):**
+- **Cascade is modelled at the cascading spell's resolution**, not at its cast trigger. When the stack is already empty there, the printed sorcery-timing restriction cannot see it. Separately, the mass-reanimation cascade shortcut resolves Living End without casting it, so counterspells cannot interact (CR 702.85a).
+- **Warp and escape recasts skip the normal timing check** (CR 307.1). The printed restrictions now bind them; the ordinary sorcery timing does not.
+- **A suspended card whose free cast fails for another reason** (no legal target) still goes to the graveyard instead of staying exiled (CR 702.62a).
+- **"Target player or planeswalker" is typed players-only** in `target_solver.parse`: Lava Spike-class burn, Sorin's +2.
+- **Fires of Invention's self-restriction** stays refused.
+- **Mana abilities:** a your-turn activation restriction (Grand Abolisher, Myrel) covers mana abilities of artifacts, creatures and enchantments, which the payment path does not consult.
