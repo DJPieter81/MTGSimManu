@@ -746,6 +746,12 @@ ETB_DISPATCH_APPLY = "engine.oracle_resolver:resolve_etb_from_oracle"
 # the hosts `effect_carrier.draw_plan` takes, through the DRAW fan-out.
 DRAW_DISPATCH_HANDLER = "draw:dispatch"
 DRAW_DISPATCH_APPLY = "engine.zone_transfer:_fire_on_draw_triggers"
+# The combat-damage carrier (`effect_carrier.dispatch_combat_damage_triggers`):
+# its pairs are the hosts `effect_carrier.combat_damage_plan` takes, through
+# the combat manager's one entry point for those triggers.
+COMBAT_DAMAGE_DISPATCH_HANDLER = "combat_damage:dispatch"
+COMBAT_DAMAGE_DISPATCH_APPLY = \
+    "engine.combat_manager:CombatManager.combat_damage_triggers"
 SELF_CAST_HANDLER = "oracle_resolver.resolve_self_cast_trigger"
 SELF_CAST_APPLY = "engine.oracle_resolver:resolve_self_cast_trigger"
 # The dispatcher entry point a switched apply reaches (section 10,
@@ -981,7 +987,9 @@ def closure(templates: Iterable[Any], effects: Mapping[str, Any]
     self_cast_switched = _is_switched(_resolve_path(SELF_CAST_APPLY))
     etb_dispatch_switched = _is_switched(_resolve_path(ETB_DISPATCH_APPLY))
     draw_dispatch_switched = _is_switched(_resolve_path(DRAW_DISPATCH_APPLY))
-    from engine.effect_carrier import draw_plan, etb_plan
+    combat_dispatch_switched = _is_switched(
+        _resolve_path(COMBAT_DAMAGE_DISPATCH_APPLY))
+    from engine.effect_carrier import combat_damage_plan, draw_plan, etb_plan
     out: List[Pair] = []
     for t in templates:
         ce = effects.get(t.name) or t.effects
@@ -1078,6 +1086,9 @@ def closure(templates: Iterable[Any], effects: Mapping[str, Any]
         for h, family in draw_plan(ce.front()) or ():
             out.append(_pair(DRAW_DISPATCH_HANDLER, family, t, h,
                              _host_label(h), part, draw_dispatch_switched))
+        for h, family in combat_damage_plan(ce.front()) or ():
+            out.append(_pair(COMBAT_DAMAGE_DISPATCH_HANDLER, family, t, h,
+                             _host_label(h), part, combat_dispatch_switched))
         # the spell's own cast triggers
         if "when you cast this spell" in _printed_text(t):
             for h in ce.front():

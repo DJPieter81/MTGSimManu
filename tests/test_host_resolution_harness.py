@@ -135,7 +135,7 @@ def test_every_host_of_a_card_is_either_resolvable_through_a_legacy_apply_or_rep
     from engine.effect_grammar import parse_template
     h = _h()
     seen = {"SPELL": 0, "MODE": 0, "ACTIVATED": 0, "LOYALTY": 0, "ETB": 0,
-            "DRAW": 0}
+            "DRAW": 0, "COMBAT_DAMAGE": 0}
     for t in h.deck_templates(card_db):
         ce = parse_template(t)
         ok, skipped = h.host_cases(t, ce)

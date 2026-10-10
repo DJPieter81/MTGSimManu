@@ -1,7 +1,6 @@
 {
  "description": "Registered-deck MB and SB hosts whose legacy apply changes no game state on any of the six harness boards (seed 0), with the legacy targets the harness chooses (tools/host_resolution_equivalence.py legacy_targets). Each is a legacy no-op there: the board offers no legal object for its deterministic pick (no enchantment, no land card in a graveyard, a too-large creature for a mana-value bound, an empty graveyard), or legacy has no apply for the clause (e.g. an each-opponent sacrifice). An enter trigger (an ETB host) is a no-op there when another carrier resolves it -- a land's enter static (LandManager.apply_land_etb_static), the generic trigger_etb pass, a typed ETB field read elsewhere -- so neither its ETB registry handler nor the enter resolver does anything for it. The harness self-check claims determinism only over the other hosts; this list is pinned so a harness that stops choosing targets, or a host that starts or stops doing something, fails the test. Regenerate: python tools/host_resolution_equivalence.py --json (noop_hosts, state_changing_hosts, hosts).",
- "hosts": 239,
- "state_changing_floor": 167,
+ "hosts": 241,
  "noop_hosts": [
   [
    "Abrade",
@@ -291,5 +290,6 @@
    "Wrenn and Six",
    "LOYALTY:0:0"
   ]
- ]
+ ],
+ "state_changing_floor": 169
 }

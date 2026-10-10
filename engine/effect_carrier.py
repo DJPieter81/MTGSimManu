@@ -246,6 +246,95 @@ def draw_plan(face_hosts: Iterable[Any]) -> Optional[list]:
     return plan
 
 
+# ── The combat-damage carrier (CR 510.2, 603.2, 603.3d) ────────────────
+
+# The strict shape the combat-damage carrier takes (`effect_views.
+# strict_combat_damage_trigger`, A38) and the family label its
+# resolutions carry.
+COMBAT_DAMAGE_FAMILY = "combat_damage_trigger"
+
+
+def combat_damage_matches(event: Any, controller: int, damaged: int,
+                          to_planeswalker: bool = False) -> bool:
+    """Does combat damage the source dealt to player `damaged` -- or, with
+    `to_planeswalker`, to a planeswalker that player controls -- trigger a
+    head typed `event` (`effect_spec.CombatDamageEvent`, dealer "~") on a
+    source `controller` controls? "A player" and "a player or battle"
+    name any player; "an opponent" one of the controller's opponents; "a
+    player or planeswalker" a planeswalker too."""
+    if to_planeswalker:
+        return event.recipient == "player_or_planeswalker"
+    if event.recipient == "opponent":
+        return damaged != controller
+    return event.recipient in ("player", "player_or_planeswalker",
+                               "player_or_battle")
+
+
+def _combat_damage_family(h: Any) -> Optional[str]:
+    """`COMBAT_DAMAGE_FAMILY` when the combat-damage-triggered host `h` is
+    in its strict shape and executable; None otherwise."""
+    from .effect_views import STRICT
+    if h.trigger is None or not STRICT[COMBAT_DAMAGE_FAMILY](h) \
+            or not er.can_execute(h, COMBAT_DAMAGE_FAMILY):
+        return None
+    return COMBAT_DAMAGE_FAMILY
+
+
+def combat_damage_plan(face_hosts: Iterable[Any]) -> Optional[list]:
+    """The combat-damage carrier's plan for one face: ``[(host, family)]``
+    for every host whose head is a combat-damage event, when each is
+    takeable (`_combat_damage_family`); None when the face has no such
+    host or any one is not (a card is taken whole or not at all). One
+    owner, read by the carrier and the closure."""
+    from .effect_spec import EventHint, HostKind
+    hosts = [h for h in face_hosts
+             if h.kind is HostKind.TRIGGERED and h.trigger is not None
+             and EventHint.COMBAT_DAMAGE_TO_PLAYER in h.trigger.event_hints]
+    if not hosts:
+        return None
+    plan = []
+    for h in hosts:
+        family = _combat_damage_family(h)
+        if family is None:
+            return None
+        plan.append((h, family))
+    return plan
+
+
+def dispatch_combat_damage_triggers(game: Any, dealer: Any, damaged: int, *,
+                                    to_planeswalker: bool = False
+                                    ) -> Optional[bool]:
+    """The combat-damage carrier (CR 510.2, 603.2): `dealer` dealt combat
+    damage to player `damaged` (or to a planeswalker that player controls).
+    Each of the dealer's combat-damage-triggered abilities whose typed head
+    names that damage resolves through the dispatcher -- "that player" is
+    the damaged player -- its targets picked as it is put on the stack
+    (`trigger_targets`). None when the carrier does not take the dealer's
+    card (no such host, or one it cannot take: the card keeps its legacy
+    path whole); else whether any host performed anything."""
+    if not er.dispatch_enabled():
+        return None
+    plan = combat_damage_plan(_face_hosts(dealer))
+    if plan is None:
+        return None
+    performed = False
+    controller = dealer.controller
+    event = er.TriggerEvent(player=damaged)
+    for h, family in plan:
+        if not combat_damage_matches(h.trigger.combat_damage, controller,
+                                     damaged, to_planeswalker):
+            continue
+        chosen = trigger_targets(game, dealer, controller, h)
+        if chosen is None:
+            continue
+        performed |= bool(er.resolve_ability(
+            game, er.handle_of(dealer), controller, h, chosen,
+            family=family, event=event, source_object=dealer))
+        if game.game_over:
+            break
+    return performed
+
+
 def _member(v: Any, players: Sequence[int], permanents: Sequence[Any]) -> bool:
     if isinstance(v, int) and not isinstance(v, bool):
         return v in players

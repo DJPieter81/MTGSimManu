@@ -11,6 +11,214 @@
  "intended": [
   {
    "pair": [
+    "combat_damage:dispatch",
+    "Barbed Servitor",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller draws and loses the printed 1 life (CR 119.3); legacy drew on the substring 'draw a card' and skipped the life loss."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Beast, Erudite Aerialist",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Eager Trufflesnout",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller creates the printed Food token (CR 111.10); legacy created a token only on the substring 'treasure'."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Frostbite Pyromental",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed two cards; legacy's substring 'draw a card' never matched 'draw two cards', and it drew none."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Gateway Sneak",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Grotag Night-Runner",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the top card of the controller's OWN library goes to exile with a permission to play it this turn (CR 406, 601.2a); legacy exiled the defending player's top card on the substring 'exile the top card' and granted no permission."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Illvoi Infiltrator",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Jeskai Shrinekeeper",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller gains the printed 1 life and draws; legacy drew on the substring 'draw a card' and skipped the life gain."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Jhessian Thief",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Mischievous Catgeist // Catlike Curiosity",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Nimble Brigand",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Oakhame Adversary",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Oroku Saki, Shredder Rising",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller draws and loses the printed 1 life (CR 119.3); legacy drew on the substring 'draw a card' and skipped the life loss."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Prophetic Flamespeaker",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the top card of the controller's OWN library goes to exile with a permission to play it this turn (CR 406, 601.2a); legacy exiled the defending player's top card on the substring 'exile the top card' and granted no permission."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Psychic Frog",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Ragavan, Nimble Pilferer",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the Treasure, the exile of the damaged player's top card into their exile (CR 400.3) and the cast permission are the same; the zone funnel logs the exile, and legacy's own two log lines are gone."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Scream Puff",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller creates the printed Food token (CR 111.10); legacy created a token only on the substring 'treasure'."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Scroll Thief",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Sea-Dasher Octopus",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Silent Submersible",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Snooping Page",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller draws and loses the printed 1 life (CR 119.3); legacy drew on the substring 'draw a card' and skipped the life loss."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Soulknife Spy",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Stealer of Secrets",
+    "TRIGGERED:0:0"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Stromkirk Occultist",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the top card of the controller's OWN library goes to exile with a permission to play it this turn (CR 406, 601.2a); legacy exiled the defending player's top card on the substring 'exile the top card' and granted no permission."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Sturmgeist",
+    "TRIGGERED:0:2"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs."
+  },
+  {
+   "pair": [
+    "combat_damage:dispatch",
+    "Sure-Footed Infiltrator",
+    "TRIGGERED:0:1"
+   ],
+   "reason": "Combat-damage trigger from text (R2): the controller draws the printed card through the draw owner (CR 121.1), which logs the draw; legacy drew one card on the substring 'draw a card' and added its own log line. The same card is drawn; only the log line differs."
+  },
+  {
+   "pair": [
     "dispatched",
     "Act on Impulse",
     "SPELL:0:0"
@@ -2164,6 +2372,16 @@
    "activated_effects:DAMAGE_ANY_TARGET",
    "Weather Maker",
    "ACTIVATED:0:3"
+  ],
+  [
+   "combat_damage:dispatch",
+   "Bilbo, Retired Burglar",
+   "TRIGGERED:0:1"
+  ],
+  [
+   "combat_damage:dispatch",
+   "Hoard Robber",
+   "TRIGGERED:0:0"
   ],
   [
    "direct_damage",

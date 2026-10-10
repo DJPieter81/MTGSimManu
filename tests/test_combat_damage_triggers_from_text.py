@@ -155,3 +155,54 @@ def test_a_new_executor_switches_no_other_carriers_host(card_db):
         include_sub=False) if h.kind is HostKind.SPELL)
     assert er.can_execute(spell, "card_flow")
     assert not STRICT["card_flow"](spell)
+
+
+# ── The carrier (R2.3) ────────────────────────────────────────────────
+
+def _attack(game, attacker, planeswalker=None):
+    from engine.combat_manager import CombatManager
+    cm = CombatManager()
+    cm.declare_attackers(game, [attacker], 0, attack_targets=(
+        {attacker.instance_id: planeswalker} if planeswalker else None))
+    cm.resolve_combat_damage(game)
+
+
+def test_a_trigger_that_exiles_its_controllers_top_card_reads_its_own_text(
+        card_db):
+    """"Exile the top card of YOUR library. You may play it this turn":
+    the legacy substring exiled the defending player's top card."""
+    from engine import rules_query
+    game = _game()
+    speaker = _put(game, card_db, "Prophetic Flamespeaker", "battlefield")
+    mine = _put(game, card_db, "Mountain", "library")
+    theirs = _put(game, card_db, "Island", "library", idx=1)
+    _attack(game, speaker)
+    assert mine.zone == "exile" and mine in game.players[0].exile
+    assert theirs in game.players[1].library
+    assert rules_query.permitted_cards(game, 0) == [mine]   # a land: "play"
+
+
+def test_ragavan_connects_through_the_carrier(card_db):
+    from engine import rules_query
+    game = _game()
+    ragavan = _put(game, card_db, "Ragavan, Nimble Pilferer", "battlefield")
+    top = _put(game, card_db, "Lightning Bolt", "library", idx=1)
+    _attack(game, ragavan)
+    assert top in game.players[1].exile
+    assert rules_query.permitted_cards(game, 0) == [top]
+    assert [c.name for c in game.players[0].battlefield
+            if c is not ragavan] == ["Treasure Token"]
+
+
+def test_combat_damage_to_a_planeswalker_triggers_a_player_or_planeswalker_head(
+        card_db):
+    """Psychic Frog: "Whenever ~ deals combat damage to a player or
+    planeswalker, draw a card." The legacy path ran only for damage to a
+    player."""
+    game = _game()
+    frog = _put(game, card_db, "Psychic Frog", "battlefield")
+    top = _put(game, card_db, "Island", "library")
+    walker = _put(game, card_db, "Wrenn and Six", "battlefield", idx=1)
+    walker.loyalty = 5
+    _attack(game, frog, planeswalker=walker)
+    assert top in game.players[0].hand

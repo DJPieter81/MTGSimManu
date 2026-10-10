@@ -327,15 +327,23 @@ def host_cases(template, effects) -> Tuple[List[HostCase], List[HostCase]]:
                 h.trigger is not None and (
                     EventHint.SELF_ENTERS in h.trigger.event_hints or (
                         EventHint.DRAW in h.trigger.event_hints
-                        and h.trigger.draw is not None)):
+                        and h.trigger.draw is not None) or (
+                        h.trigger.combat_damage is not None
+                        and h.trigger.combat_damage.dealer == "self")):
             # an enter trigger: its legacy apply is the enter resolver; a
             # typed draw trigger: a draw (a head naming both -- "When ~
-            # enters and whenever an opponent draws" -- has both cases)
+            # enters and whenever an opponent draws" -- has both cases); a
+            # typed combat-damage trigger dealt by the source itself: the
+            # source dealing combat damage to the opponent
             if EventHint.SELF_ENTERS in h.trigger.event_hints:
                 ok.append(HostCase(template.name, label, "ETB", h.index))
             if EventHint.DRAW in h.trigger.event_hints and \
                     h.trigger.draw is not None:
                 ok.append(HostCase(template.name, label, "DRAW", h.index))
+            if h.trigger.combat_damage is not None and \
+                    h.trigger.combat_damage.dealer == "self":
+                ok.append(HostCase(template.name, label, "COMBAT_DAMAGE",
+                                   h.index))
         else:
             skipped.append(HostCase(template.name, label, h.kind.name))
     return ok, skipped
@@ -456,6 +464,12 @@ def legacy_apply(game, template, case: HostCase) -> Any:
         game.players[drawer].cards_drawn_this_turn = \
             (draw.nth - 1) if draw.nth else 0
         return len(game.draw_cards(drawer, 1))
+    if case.kind == "COMBAT_DAMAGE":
+        # the source deals combat damage to the opponent: the combat
+        # manager's one entry point for those triggers
+        from engine.combat_manager import CombatManager
+        return CombatManager.combat_damage_triggers(
+            game, card, CONTROLLER, 1 - CONTROLLER)
     from engine.planeswalker_manager import PlaneswalkerManager
     face, slot = case.key
     attr = "loyalty_abilities" if face == 0 else \
@@ -579,7 +593,8 @@ SWITCHED_RECORD_PATH = REPO / "tools" / "host_harness_switched.json"
 
 # The host case a carrier's pairs resolve through, where one host has two
 # (a head naming both an enter and a draw event).
-_HANDLER_CASE_KIND = {"etb:dispatch": "ETB", "draw:dispatch": "DRAW"}
+_HANDLER_CASE_KIND = {"etb:dispatch": "ETB", "draw:dispatch": "DRAW",
+                      "combat_damage:dispatch": "COMBAT_DAMAGE"}
 
 
 def legacy_only_apply(game, template, case: HostCase) -> Any:

@@ -398,6 +398,55 @@ def strict_draw_trigger(h: AbilityEffects) -> bool:
             and _strict_host(h, _DRAW_TRIGGER_VERBS, conditions=True))
 
 
+# The combat-damage carrier (R2, `effect_carrier.
+# dispatch_combat_damage_triggers`): the verbs it resolves.
+FAMILY_COMBAT_DAMAGE_TRIGGER = "combat_damage_trigger"
+_COMBAT_DAMAGE_TRIGGER_VERBS = frozenset({
+    Verb.DRAW, Verb.CREATE_TOKEN, Verb.EXILE, Verb.CONTINUOUS, Verb.DAMAGE,
+    Verb.LOSE_LIFE, Verb.GAIN_LIFE, Verb.KEYWORD_ACTION})
+# The dealers it resolves: the source itself ("~"). An Equipment's or an
+# Aura's "equipped / enchanted creature deals" waits for its own step.
+_COMBAT_DAMAGE_DEALERS = frozenset({"self"})
+
+
+def _event_library_top_exile(s) -> bool:
+    """"Exile the top <N> cards of that player's library": the library of
+    the player the trigger event names."""
+    f = s.filter
+    return (s.verb is Verb.EXILE and f is not None
+            and (getattr(f, "zone", None), getattr(f, "position", None))
+            == ("library", "top")
+            and _ref_kind(getattr(f, "owner", None)) is RefKind.EVENT_PLAYER)
+
+
+def strict_combat_damage_trigger(h: AbilityEffects) -> bool:
+    """A combat-damage-triggered host the combat-damage carrier takes
+    (A38): the trigger family's strict shape with a typed combat-damage
+    head whose dealer the carrier reads, every spec one of
+    `_COMBAT_DAMAGE_TRIGGER_VERBS` with no residue or sub-ability, an
+    exile only of the top of a library and a continuous effect only a
+    permission over what it exiled (the one spec with a duration), and
+    every target slot one the carrier picks as the trigger is put on the
+    stack."""
+    cd = getattr(getattr(h, "trigger", None), "combat_damage", None)
+    if not (strict_trigger(h) and cd is not None
+            and cd.dealer in _COMBAT_DAMAGE_DEALERS
+            and all(r.zone in _TRIGGER_TARGET_ZONES for r in h.targets)
+            and _strict_host(h, _COMBAT_DAMAGE_TRIGGER_VERBS,
+                             durations=True, conditions=True)):
+        return False
+    exiled = {s.seq for s in iter_specs(h.specs)
+              if _event_library_top_exile(s) or _library_top_exile(s)}
+    for s in iter_specs(h.specs):
+        if s.verb is Verb.EXILE and s.seq not in exiled:
+            return False
+        if s.verb is Verb.CONTINUOUS and not _permission_over(s, exiled):
+            return False
+        if s.duration is not None and s.verb is not Verb.CONTINUOUS:
+            return False
+    return True
+
+
 def strict_trigger(h: AbilityEffects) -> bool:
     """A typed TRIGGERED host with no intervening-if (stage T)."""
     return (h is not None and h.kind is HostKind.TRIGGERED
@@ -416,6 +465,7 @@ STRICT: Mapping[str, Callable[[AbilityEffects], bool]] = MappingProxyType({
     FAMILY_STACK_MANA: strict_stack_mana,
     FAMILY_TRIGGER: strict_trigger,
     FAMILY_DRAW_TRIGGER: strict_draw_trigger,
+    FAMILY_COMBAT_DAMAGE_TRIGGER: strict_combat_damage_trigger,
 })
 
 

@@ -738,6 +738,46 @@
    "CONTINUOUS,MOVE": 1
   }
  },
+ "combat_damage:dispatch": {
+  "deck_hosts": [
+   {
+    "card": "Psychic Frog",
+    "host": "TRIGGERED:0:0",
+    "part": "mainboard",
+    "step": "E3",
+    "strict": true
+   },
+   {
+    "card": "Ragavan, Nimble Pilferer",
+    "host": "TRIGGERED:0:0",
+    "part": "mainboard",
+    "step": "E5",
+    "strict": true
+   }
+  ],
+  "executable": 28,
+  "family": "combat_damage_trigger",
+  "hosts": {
+   "mainboard": 2,
+   "pool": 26,
+   "sideboard": 0
+  },
+  "steps": {
+   "E3": 20,
+   "E4": 4,
+   "E5": 4
+  },
+  "strict": 28,
+  "sub_kinds": {},
+  "verb_sets": {
+   "CONTINUOUS,CREATE_TOKEN,EXILE": 1,
+   "CONTINUOUS,EXILE": 3,
+   "CREATE_TOKEN": 4,
+   "DRAW": 16,
+   "DRAW,GAIN_LIFE": 1,
+   "DRAW,LOSE_LIFE": 3
+  }
+ },
  "combat_prevention": {
   "deck_hosts": [
    {
