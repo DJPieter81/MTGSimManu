@@ -7012,3 +7012,76 @@ In the same 48 games Omnath is pitched 8 times; the rest are mostly the only car
 **Leads (not built):**
 - The AI activates only the impulse shape. An UNCLASSIFIED surveil or regrowth activation is executable, but no AI value is projected for it yet.
 - A "this turn" impulse activation is valued at 0 held cards; its worth is the card played now.
+
+## Unit COL: an object's colour is its characteristic, never its colour identity (2026-10-10)
+
+**Rule (CR 105.2, 202.2, 702.114a):** an object's colour comes from the mana symbols in its mana cost, its colour indicator and its characteristic-defining abilities; devoid makes a card colourless. Colour identity (CR 903.4) also counts the symbols in rules text and exists for Commander deck construction only. No game rule reads it.
+
+**Defect:** six engine paths and two AI paths read colour identity where the rule reads colour:
+- **Consign to Memory** ("counter target triggered ability or colorless spell") fizzled against Cranial Plating (equip {B}{B}, black identity) and against devoid spells (Sowing Mycospawn, Basking Broodscale). The AI's target check reads the colour, so it cast Consign there, and the card was wasted.
+- **Celestial Purge** ("exile target red or black permanent") could take Cranial Plating. A land exclusion compensated for the identity read on dual lands.
+- **Sanctifier en-Vec** ("exile all black and red cards from all graveyards") exiled colourless dual and basic lands and colourless artifacts.
+- **Summoner's Pact** and the tutor-spec matcher ("a green creature card") found devoid creatures. The matcher fell back to the identity whenever a template had no colours, which is exactly the colourless case.
+- The **cost-rule matcher** ("red spells you cast cost {1} less") reduced devoid spells with a red symbol, and so did the AI storm chain's copy of that rule.
+- The **AI response enumerator's pitch check** read a classifier tag and the identity. A land "paid" Force of Negation, and "if it's not your turn" was ignored.
+
+**Class:** 627 pool cards condition on an object's colour, 22 of them registered (213 copies). 127 pool cards are devoid; devoid is the coverage census's top "none" row. 12 registered nonland cards have a colour that differs from their identity. Consign to Memory is in Jeskai Blink's main deck ×4 and in 12 sideboards.
+
+**Steps (`aeb97af`; census follow-up `fee19c0`):**
+- Every rule reads the colour:
+  - `CardInstance.colors` (layer 5 included) for an object;
+  - `CardTemplate.colors` (MTGJSON `colors`) for a template-level matcher.
+  - Sites: the tutor matcher (identity fallback deleted), Consign, Purge (land exclusion deleted), Sanctifier, Summoner's Pact, `_cost_rule_applies`, `CardDatabase.search`, and the AI chain's red-spell discount.
+- The AI's pitch candidate asks the engine's owners, `CastManager.alternative_exile_candidates` and `evoke_exile_candidates`. The tag read `_has_pitch_alt_cost` is deleted.
+- The mana planner keeps the identity as a mana-symbol demand (flashback, split halves and abilities), annotated `# color-identity-allow:`.
+- **Auditor:** `105.2/colour_restricted_reduction` in `rules_query.cost_delta`. A reduction for spells of one colour applied only to a spell of that colour, restated from the printed colours.
+- **Ratchet:** a static scan pins identity reads in `engine/` and `ai/` at zero, outside annotated lines.
+
+**Tests (red first):** `tests/test_color_is_a_characteristic_not_identity.py` (12). Nine MockTemplate fixtures gain the `colors` field the code reads.
+
+**Digest / anchor / suites:** the digest is byte-identical (26 games, `ed54ead8`); none of its games reaches a colourless spell with a coloured identity under one of these rules. Anchor 29 passed, unchanged. Ratchets at baseline; census, spec equivalence and the switched-host harness unchanged. Suites 4536 + 2712 passed; CI green.
+
+**Census follow-up (`fee19c0`):** devoid's only rule ("this object is colorless") is a characteristic MTGJSON encodes in `colors`, which every colour rule now reads. The coverage census counts such a word as modelled (`rules_audit_census._CHARACTERISTIC_FOR_WORD`, status "characteristic (colors)"). The next rows with no model are metalcraft (10), ferocious (4), harmonize (4) and ninjutsu (2).
+
+**Measured (same-seed n=20 Bo3, all 25 rows, `col-post` `32c3f6a`, pre = `v3a-post`):** 6 of 600 cells change, each a predicted pairing:
+- Jeskai Blink +0.4: its four main-deck Consign to Memory now counter Cranial Plating and devoid spells (vs Pinnacle Affinity 55 → 60, vs Broodscale Bloodchief 45 → 50).
+- Pinnacle Affinity −0.2, Broodscale Bloodchief −0.2.
+- Every other deck's row is identical.
+Audit findings 472 → 472, violations 0; 0 aborts.
+
+**Leads (not built):**
+- **Pact upkeep payment.** "At the beginning of your next upkeep, pay {2}{G}{G}. If you don't, you lose the game." is not modelled, so Summoner's Pact (Amulet Titan ×2) is a free tutor. There are 5 Pacts; the class is delayed upkeep pay-or-lose and pay-or-sacrifice triggers.
+- **Stack exits bypass the zone funnel.** Consign's counter writes the graveyard directly, so a flashback spell is not exiled (CR 702.34a). Subtlety's stack → library and Spell Queller's stack → exile do the same. The owners are `ResolutionManager._move_countered_stack_item` and `zone_mgr.move_card_from_stack`.
+- **The AI storm chain re-implements cost reduction:** a count of `cost_reducer`-tagged permanents, applied to red instants and sorceries. It should read each reducer's typed `cost_reduction_rule` through `_cost_rule_applies`: Medallion reduces red creatures too, and Ral reduces every instant and sorcery.
+- **Orcish Bowmasters' enter half** is still name-keyed, with direct `life -=` writes. The 84 pool enter-trigger damage hosts stay legacy.
+- **Cast refusals at head:** 5 of 2,092 casts in 100 games across all 25 decks (Pinnacle Emissary 4 of 26, Kappa Cannoneer 1 of 5). The Endurance refusal lead is resolved by unit V (0 refusals in 20 Living End games).
+## Ruby Storm: Bo3 replay root cause (2026-10-10, at `aeb97af`)
+
+Ruby Storm is at about 18% in the v3a arm (band 40–55). Its row is low across the field, from 5% to 35%, so the deficit is Storm's own execution, not one matchup.
+
+**Replay:** Ruby Storm vs Eldrazi Ramp, Bo3 s50000 (`run_meta.py --bo3`) plus `--trace` of game 1. Storm wins game 1 on turn 9 and loses games 2 and 3 (turns 9 and 8).
+
+**Divergent turn (game 1, Storm's turn 3; trace global T5).** The hand is Ral, Wrenn's Resolve, Pyretic Ritual ×2 and Manamorphose, with Artist's Talent on the battlefield and three lands. The sequence:
+- Ral, then Wrenn's Resolve, which exiles Bloodstained Mire and Pyretic Ritual.
+- Three Pyretic Rituals, scored −1.0, −1.5 and then from exile. That is 7 red mana with nothing to spend it on.
+- Pass. The mana empties, and Manamorphose stays in hand, scored −989.9.
+
+Storm then has one card in hand and does nothing on turns 4–5.
+
+**AI mechanism** (`ai/combo_calc.card_combo_modifier`, the ritual gates):
+- **Storm 0:** a ritual with no finisher path is held (`STORM_HARD_HOLD`). Correct.
+- **Storm ≥ 1, the mid-chain gate:** with no finisher and no Past in Flames line, "a draw remains in hand" (`_has_draw_in_hand`, here Manamorphose) turns the hard hold into a soft −1.0. The rituals are cast on the promise of a dig.
+- **The dig itself is then hard-held.** Manamorphose is tagged a ritual, its net mana is 0, and no *other* draw is in hand, so the same gate holds it at −989.9. The chain spends three rituals on a draw it refuses to make. Manamorphose also never burns mana (it costs 2 and adds 2), so the gate's premise, "its mana empties at phase end" (CR 500.4), is false for it.
+
+**Engine defects seen in the same turn** (each makes Storm's spells cheaper than the rules allow):
+- **`parse_cost_reduction`:** "Noncreature spells you cast cost {1} less" is parsed as `target: creature`, because "creature spell" is a substring of "noncreature spells". Artist's Talent therefore reduced Ral.
+- **Over-wide and false reductions.** The field holds 148 rules.
+  - 25 come from sentences that reduce no spell: activated, equip and keyword costs, and affinity reminder text. Training Grounds' "activated abilities … cost {2} less" became a 2-mana discount on every red spell, because "reduce" contains "red".
+  - About 55 restricted subjects parse to `target: all` and reduce every spell: artifact (6), enchantment (5), Equipment (3), subtype spells (Dinosaur, Dragon, Goblin, …), legendary, historic, colorless.
+  - A card with two reducer sentences keeps only the first (Grand Arbiter Augustin IV).
+- **Class levels (CR 716) are not modelled.** Artist's Talent's level-2 static applies from level 1. There are 27 Classes in the pool; Artist's Talent is the only registered one (Ruby Storm ×2).
+- **A transformed DFC keeps its front face's cost-reduction static** (`cost_reduction_rule` is per template, not per face). Ral, Leyline Prodigy kept Monsoon Mage's "instant and sorcery spells cost {1} less" after transforming: the first post-flip Pyretic Ritual cost one mana. Back-face reducers (Curious Homunculus, Duskwatch Recruiter, Heliod) are never parsed.
+
+**Units this names:**
+- **Engine:** "a cost reduction reduces exactly the spells its text names, on the face and level that print it" (CR 601.2f, 712.8e, 716). 148 parsed rules; the 3 registered reducers are all Ruby Storm's. Expected effect: Storm down.
+- **AI:** "a ritual gate counts only the digs the AI will make; a mana-neutral cantrip is a dig, not a ritual". Expected effect: Storm up.
