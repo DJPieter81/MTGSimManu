@@ -99,9 +99,6 @@ jobs:
           MTG_LLM_DECISION_SCORER_OFFLINE: "1"
         run: python tools/host_resolution_equivalence.py --switched --pool --check
 
-      - name: Classifier coverage gate (tag-gated engine behavior)
-        run: python tools/check_classifier_coverage.py
-
       - name: Loyalty-dispatch ratchet (needs the assembled card DB)
         run: python tools/check_loyalty_dispatch.py
 

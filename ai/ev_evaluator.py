@@ -2784,9 +2784,10 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
     # REAL draw (impulse-reveal excluded, CR 121.1c).  The projection
     # must price the same events or every cast decision walks into
     # damage the chain estimator already knows about (seed 60101 T5:
-    # Manamorphose at 2 life into two Bowmasters).  Single source of
-    # truth mirrored from the engine: `Tag.IMPULSE_DRAW` zeroes the
-    # draw count; `opp_static_damage_per_card_event` prices the board.
+    # Manamorphose at 2 life into two Bowmasters).  An impulse draw's
+    # cards go to exile, not hand (`predicates.is_impulse_draw`, read
+    # from the parsed spell): zero draws; `opp_static_damage_per_card_event`
+    # prices the board.
     if game is not None:
         from ai.bhi import opp_static_damage_per_card_event
         _cast_tax = opp_static_damage_per_card_event(game, player_idx,
@@ -2874,17 +2875,16 @@ def project_ward_tax_payment(card: "CardInstance", snap: EVSnapshot,
 
 
 def _projected_real_draws(card: "CardInstance") -> int:
-    """Projected REAL draw events from resolving `card` — the mirror
-    of the engine's impulse split in `oracle_resolver`.
+    """Projected REAL draw events from resolving `card`.
 
-    Impulse-tagged cards (Tag.IMPULSE_DRAW, the same classifier
-    verdict the engine branch gates on) are NOT draws (CR 121.1c) →
-    0.  Otherwise: 'draw N cards' parses N; the look-and-keep shape
-    ('put one of them into your hand') counts as one draw, matching
-    the engine's real-draw branch.
+    An impulse draw (`predicates.is_impulse_draw`: the parsed spell
+    exiles the top of its controller's library) is NOT a draw (CR
+    121.1c) → 0.  Otherwise: 'draw N cards' parses N; the look-and-keep
+    shape ('put one of them into your hand') counts as one draw,
+    matching the engine's real-draw branch.
     """
-    from ai.oracle_classifier import Tag, tags_for
-    if Tag.IMPULSE_DRAW in tags_for(card.template.name):
+    from ai.predicates import is_impulse_draw
+    if is_impulse_draw(card.template):
         return 0
     oracle = (card.template.oracle_text or '').lower()
     import re as _re
@@ -3094,12 +3094,13 @@ def estimate_opponent_response(card: "CardInstance", projected: EVSnapshot,
 
 def _draw_count_for_chain_step(card_template) -> int:
     """How many real-draw events a chain-step draw spell triggers.
-    IMPULSE_DRAW-tagged → 0 (CR 121.1c reveal, not draw). Else parse
-    "draws N cards" from oracle; default 1. Numeral tuple index IS
-    the integer value — no per-N constants. Mirrors the parser in
-    `_project_spell` so chain & per-spell projections agree."""
-    from ai.oracle_classifier import has_tag, Tag
-    if has_tag(card_template.name, Tag.IMPULSE_DRAW):
+    An impulse draw (`predicates.is_impulse_draw`, read from the parsed
+    spell) → 0 (CR 121.1c: exile, not draw). Else parse "draws N cards"
+    from oracle; default 1. Numeral tuple index IS the integer value —
+    no per-N constants. Mirrors the parser in `_project_spell` so chain
+    & per-spell projections agree."""
+    from ai.predicates import is_impulse_draw
+    if is_impulse_draw(card_template):
         return 0
     _NUMERALS = ('zero', 'one', 'two', 'three', 'four',
                  'five', 'six', 'seven')

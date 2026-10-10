@@ -1288,7 +1288,8 @@ class CardTemplate:
     # predicate-matching card to your hand, put the rest on the bottom / into
     # your graveyard" family (Ancient Stirrings, Malevolent Rumble, Consult
     # the Star Charts, …).  None when the card is not in the class.  Distinct
-    # from the exile-and-play "impulse draw" shape (Tag.IMPULSE_DRAW).  The
+    # from the exile-and-play "impulse draw" shape (the card-flow EXILE and
+    # PERMIT executors, read from the typed spell).  The
     # resolver moves cards through the zone funnel, never game.draw_cards, so
     # on-draw watchers do not fire (CR 121.1c).
     # Populated by oracle_parser.parse_library_dig.

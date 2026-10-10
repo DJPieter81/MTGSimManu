@@ -241,23 +241,21 @@ def test_a_capped_impulse_is_never_a_draw():
 
 def _deck_pool_impulse_spells():
     """Every registered-deck instant/sorcery whose parsed spell exiles
-    the top of its controller's library -- the durable per-card
-    regression surface, read from the cards' text."""
-    from tools.check_classifier_coverage import collect_deck_pool_oracles
-    from engine.effect_spec import Verb, iter_specs
+    the top of its controller's library (`ai.predicates.is_impulse_draw`)
+    -- the durable per-card regression surface, read from the cards'
+    text."""
+    from ai.predicates import is_impulse_draw
+    from decks.modern_meta import MODERN_DECKS
     from tests._card_db_cache import shared_card_database
     db = shared_card_database()
+    names = sorted({n for deck in MODERN_DECKS.values()
+                    for zone in ("mainboard", "sideboard")
+                    for n in (deck.get(zone) or {})})
     out = []
-    for name in collect_deck_pool_oracles():
+    for name in names:
         tmpl = db.get_card(name)
-        if not tmpl or not (tmpl.is_instant or tmpl.is_sorcery):
-            continue
-        host = tmpl.effects.spell(0)
-        if host is not None and any(
-                s.verb is Verb.EXILE and s.filter is not None
-                and getattr(s.filter, "position", None) == "top"
-                and s.filter.zone == "library"
-                for s in iter_specs(host.specs)):
+        if tmpl and (tmpl.is_instant or tmpl.is_sorcery) \
+                and is_impulse_draw(tmpl):
             out.append((name, tmpl.oracle_text))
     return out
 

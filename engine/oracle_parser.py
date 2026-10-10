@@ -5574,7 +5574,8 @@ def parse_has_look_hand_selection(oracle: str) -> bool:
 # resolver moves cards through the zone funnel and must NOT fire on-draw
 # watchers (Orcish Bowmasters / Sheoldred — CR 121.1c).  The exile-and-play
 # "impulse draw" shape ("exile the top N, you may play those cards") is a
-# SEPARATE mechanic already handled by the Tag.IMPULSE_DRAW branch.
+# SEPARATE mechanic, resolved from the typed spell by the effect
+# dispatcher's card-flow family (exile, then a permission to play).
 _DIG_WORD_NUM = {'a': 1, 'an': 1, 'one': 1, 'two': 2, 'three': 3, 'four': 4,
                  'five': 5, 'six': 6, 'seven': 7, 'eight': 8, 'nine': 9,
                  'ten': 10}

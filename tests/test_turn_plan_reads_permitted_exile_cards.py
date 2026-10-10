@@ -266,3 +266,39 @@ def test_a_land_playable_only_this_turn_is_played_before_a_land_in_hand(
     me = game.players[0]
     assert player._score_land(exiled, me, [], game) > \
         player._score_land(in_hand, me, [], game)
+
+
+# ── An impulse draw is no draw (CR 121.1c), read from the parsed spell:
+#    a classifier tag neither makes a spell one nor unmakes it. ──
+
+@pytest.mark.parametrize("name,impulse", [("Reckless Impulse", True),
+                                          ("Act on Impulse", True),
+                                          ("Opt", False),
+                                          ("Consult the Star Charts", False)])
+def test_an_impulse_draw_is_read_from_the_spell(card_db, name, impulse):
+    from ai.predicates import is_impulse_draw
+    assert is_impulse_draw(card_db.get_card(name)) is impulse
+
+
+def test_a_chain_step_counts_no_draw_for_an_impulse_spell_tagged_or_not(
+        card_db, monkeypatch):
+    from ai import oracle_classifier as oc
+    from ai.ev_evaluator import _draw_count_for_chain_step
+    monkeypatch.setattr(oc, "_LOADED_CACHE", {})
+    monkeypatch.setattr(oc, "_LOADED_PATH", None)
+    monkeypatch.setattr(oc, "load_oracle_tags", lambda **kw: {})
+    assert _draw_count_for_chain_step(card_db.get_card("Act on Impulse")) == 0
+    assert _draw_count_for_chain_step(card_db.get_card("Opt")) == 1
+
+
+def test_an_impulse_tag_alone_never_unmakes_a_draw(card_db, monkeypatch):
+    from ai import oracle_classifier as oc
+    from ai.ev_evaluator import _projected_real_draws
+    monkeypatch.setattr(oc, "tags_for",
+                        lambda name: frozenset({oc.Tag.IMPULSE_DRAW}))
+    monkeypatch.setattr(oc, "has_tag", lambda name, tag: True)
+    game = _game()
+    opt = CardInstance(template=card_db.get_card("Opt"), owner=0,
+                       controller=0, instance_id=game.next_instance_id(),
+                       zone="hand")
+    assert _projected_real_draws(opt) == 1

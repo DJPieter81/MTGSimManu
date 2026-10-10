@@ -91,6 +91,25 @@ def is_draw_engine(card: "CardInstance") -> bool:
     return bool(DRAW_ENGINE_TAGS & getattr(card.template, 'tags', set()))
 
 
+def is_impulse_draw(template) -> bool:
+    """The spell exiles the top of its controller's library (an impulse
+    draw: "exile the top N cards of your library ... you may play those
+    cards"). Its cards go to exile, never into the hand, so it is no draw
+    (CR 121.1c) and no on-draw trigger counts it. Read from the parsed
+    spell (the effect grammar's library-position exile), never a tag."""
+    from engine.effect_spec import Verb, iter_specs
+    effects = getattr(template, 'effects', None)
+    host = effects.spell(0) if effects is not None else None
+    if host is None:
+        return False
+    return any(s.verb is Verb.EXILE
+               and (getattr(s.filter, 'zone', None),
+                    getattr(s.filter, 'owner', None),
+                    getattr(s.filter, 'position', None))
+               == ('library', 'you', 'top')
+               for s in iter_specs(host.specs))
+
+
 def is_storm_payoff(card: "CardInstance") -> bool:
     """Card is a chain-payoff finisher — its effect scales with the
     storm count or its damage/token output ends the chain.
