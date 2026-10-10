@@ -6924,3 +6924,91 @@ Quantum Riddler (×4 in Jeskai Blink, Domain Zoo, 4c Omnath, 4/5c Control and Az
 - Across the unit (R1's arm to V.2's): 4c Omnath −4.3, Instant Reanimator −2.3, Azorius Control (WST) +1.5. No deck crosses the 5 pp replay threshold.
 
 **Lead:** 4c Omnath's −4.3 is the unit's largest move. Its four Solitudes and one Endurance now follow the AI's evoke and pitch decisions instead of the engine's. Its worst cells (vs Eldrazi Ramp, Jeskai Blink, Azorius Control (WST v2)) are where to replay first.
+
+
+## Unit R2: combat-damage-to-a-player triggers from text (2026-10-10)
+
+**Rule (CR 510.2, 603.2, 603.3d):** a "whenever ~ deals combat damage to a player" ability triggers on that damage, and does what its text says. "That player" is the player dealt the damage.
+
+**Defect:** an oracle-substring block in combat ran for every attacker that dealt damage to a player:
+- any "draw a card" drew;
+- any "treasure" made a Treasure;
+- any "exile the top card" exiled the defending player's top card.
+
+So Prophetic Flamespeaker exiled the opponent's card instead of its own, "draw two cards" drew nothing, printed life loss and gain and Food were skipped, Equipment triggers never ran, and damage to a planeswalker triggered nothing. The class is 465 pool hosts; registered: Ragavan, Nimble Pilferer and Psychic Frog.
+
+**Steps:**
+- **R2.1 (`3a91ad9`, grammar):**
+  - A combat-damage head types its dealer and recipient (`TriggerHead.combat_damage`, a closed table; 365 of 465 heads).
+  - "The top card of that player's library" is the damaged player's: the participant leaf leaves its player `Anaphor` in the filter's owner, and the linker binds it like the participant "that player".
+- **R2.2 (`8713022`, executors):**
+  - DRAW (the controller draws N, through `draw_cards`), CREATE_TOKEN (a predefined Treasure, Food or Clue, through `create_token`), and the EXILE of the event player's library.
+  - A38: `strict_card_flow` had admitted every card-flow verb, relying on DRAW having no executor. It now names the switched verbs (SURVEIL, MOVE, and the impulse pair). Without that, the new executor would silently have switched 379 activated "draw a card" hosts.
+- **R2.3 (`eee2141`, carrier):**
+  - `effect_carrier.dispatch_combat_damage_triggers`, with one combat entry point and the "a player or planeswalker" heads on planeswalker damage.
+  - Harness case COMBAT_DAMAGE, and closure handler `combat_damage:dispatch` (28 pool hosts).
+- **R2.4 (`61a55d7`, retire):**
+  - The substring block is deleted.
+  - Census `603.2/combat_damage_trigger_unresolved` ranks the hosts no carrier takes yet.
+  - Oracle runtime parse 170 → 165.
+
+**Gate parity:** 403 new-path pairs: 167 proven, 236 intended, all with reasons. The 28 combat-damage pairs are each a recorded change: 15 draws whose legacy added a log line, the "draw two cards", printed life loss and gain, Food, three own-library impulse exiles, and Ragavan's log lines.
+
+**Digest:** byte-identical at R2.1, R2.2 and R2.4. R2.3 changes 6 games, every one a Ragavan or Psychic Frog game, in log lines only (`80379502`). Anchor unchanged.
+
+**Measured (same-seed n=20 Bo3, all 25 rows, `combat-r2-post`, pre = `evoke-v2-post`):** 6 of 600 cells change, in the Instant and Grixis Reanimator, Azorius Control and Azorius Blink rows; every deck is within ±0.3 (Grixis Reanimator +0.3, Azorius Control −0.3), and the Ragavan and Psychic Frog decks are unchanged, as the log-only digest predicted. Audit findings 485 → 471, violations 0; 0 aborts.
+
+**Leads (not built):**
+- The carrier takes 28 of 465 hosts. The next shapes by count:
+  - "put a +1/+1 counter on ~" (30 hosts; PUT_COUNTERS has no executor);
+  - "that player discards" (DISCARD);
+  - optional draws ("you may draw");
+  - Equipment and Aura dealers ("equipped creature", 38 hosts);
+  - batched heads ("one or more creatures you control").
+
+## V.3: the strip value weighs creature keystones, and graveyard hate needs a graveyard (2026-10-10)
+
+**From unit V's lead:** 4c Omnath was down 4.3 pp. In 48 seeded games against its four worst opponents, it pitched Omnath, Locus of Creation (its namesake payoff) 13 times, against 6 before unit V. The engine's old pitch veto had been hiding two AI defects.
+
+**Defects:**
+- **The strip value** (`ai.ev_evaluator.score_card_for_opponent_strip`) is what a card in hand is worth to its owner. It is read by a discard spell aimed at that hand and by the AI's pitch. It added the declared keystone weights (critical pieces, always-early, mulligan keys) to non-creatures only: Omnath, a mulligan key, scored 6 against Ephemerate's 100.
+- **`_eval_evoke`** evoked a graveyard-hate enter trigger at a graveyard holding nothing but lands: 4c Omnath evoked Endurance on its own turn 1, pitching Omnath.
+
+**Fix (`93ae8cd`):**
+- The keystone weights apply to every card type.
+- Such an evoke is refused.
+
+In the same 48 games Omnath is pitched 8 times; the rest are mostly the only card of its colour, spent on a reanimated Griselbrand or a Hollow One at 9 life. Discard follows the same value: Dimir's Thoughtseize now takes Shardless Agent (Living End's critical piece).
+
+**Digest:** 2 games change, with no winner change (`ed54ead8`). **Anchor:** Creatures Toolbox vs Grixis Reanimator s52000 flips to Creatures Toolbox. Grixis's Thoughtseize takes Birds of Paradise, a declared Toolbox keystone, over Nature's Rhythm.
+
+**Measured** with unit A in one arm (below).
+
+## Unit A: an activated ability the legacy classifier does not read resolves from its typed text (2026-10-10)
+
+**Rule (CR 602.2, 406, 601.2a):** an activated ability does what its text says. "{3}{R}, {T}: Exile the top card of your library. Until the end of your next turn, you may play that card." exiles the card and grants the permission, exactly as the spell form does (unit I).
+
+**Defect:** the legacy activation classifier leaves such an ability UNCLASSIFIED, which has no legacy apply. `can_activate` refused it, so the engine never offered it and the AI never activated it: Boros Ponza's Cori Mountain Monastery (×4) was a Mountain. 23 pool cards print an activated or loyalty impulse draw.
+
+**Step (`8c52a79`):**
+- `effect_carrier.activation_family`, one owner read by the carrier, the closure and the harness:
+  - a classified ability dispatches in its derivation's family, as before;
+  - an UNCLASSIFIED ability dispatches in card flow when its typed host is in `strict_card_flow` and the dispatcher can execute it (the impulse pair, SURVEIL, or MOVE from graveyard to hand).
+  - A classified ability never changes path; an UNCLASSIFIED one had nothing to regress.
+- `ActivationManager.can_activate` admits such an ability (rule 9b: a kind is resolvable when an owner resolves it).
+- AI (`activation_candidates`): the ability is projected as the cards it lets the player play past this turn (`ai.predicates.impulse_cards_held`: N when the permission outlasts the turn, 0 when it ends this turn, read from the typed host).
+
+**Gate parity:** 471 new-path pairs, 174 proven and 297 intended, all with reasons. Of the 68 new pairs, 61 diverge and 7 are identical. Every divergence is an ability that did nothing before: 30 surveils, 17 regrowths (Colossal Skyturtle's channel among them), 10 impulse draws (Cori among them) and 4 top-of-library exiles. The registered-deck self-check pins 243 hosts (Cori and Colossal Skyturtle join), with no new no-ops.
+
+**Digest:** byte-identical; the roster's Boros Ponza game never reaches four spare mana with Cori untapped. **Anchor:** Boros Ponza vs Boros Energy s51000 flips to Boros Ponza (turn 14, was a turn-7 loss); Cori is activated on turns 6, 9, 10 and 11. **Suites:** 4524 + 2712 passed.
+
+**Measured:** shared with V.3: one arm, `v3a-post` (`ab42167`), pre = `combat-r2-post`, same-seed n=20 Bo3, all 25 rows. 233 of 600 cells change, because V.3's strip value is what every discard spell and every pitch reads.
+- Living End +4.4 (58.0 → 62.4), the largest move and under the 5 pp replay threshold. It runs four each of Endurance, Subtlety and Force of Negation, whose evoke and pitch choices V.3 changes; its largest cells are vs Domain Zoo 20 → 40 and vs Affinity 50 → 65.
+- Goryo's Vengeance +2.7, Boros Ponza +2.6 (unit A: Cori; vs Azorius Blink 5 → 30, vs Instant Reanimator 35 → 55), 4c Omnath +1.6 (V.3's target; it recovers a third of unit V's −4.3), Dimir Midrange +1.1.
+- Azorius Blink −2.4, Grixis Reanimator −2.0, Broodscale Bloodchief −1.9, Affinity −1.6, Creatures Toolbox −1.5; every other deck within ±1.0.
+- Audit findings 471 → 472, violations 0; 0 aborts. No deck crosses the 5 pp replay threshold.
+- Provenance: the shard results were read from each job's log tail (the CELL rows and the AUDIT line) and every row set was checked for shape (24 rows, the 24 other decks once each).
+
+**Leads (not built):**
+- The AI activates only the impulse shape. An UNCLASSIFIED surveil or regrowth activation is executable, but no AI value is projected for it yet.
+- A "this turn" impulse activation is valued at 0 held cards; its worth is the card played now.
