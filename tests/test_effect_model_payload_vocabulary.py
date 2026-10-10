@@ -76,8 +76,25 @@ def test_a_requirement_is_a_rule_modification_and_the_rest_are_characteristic():
 def test_every_duration_kind_is_clocked_and_no_kind_is_added():
     assert CLOCKED_DURATIONS == frozenset(DurationKind)
     assert {k.name for k in DurationKind} == {
-        "THIS_TURN", "UNTIL_YOUR_NEXT_TURN", "WHILE_SOURCE_ON_BATTLEFIELD",
-        "UNTIL_LEAVES", "PERMANENT"}
+        "THIS_TURN", "UNTIL_YOUR_NEXT_TURN", "UNTIL_END_OF_YOUR_NEXT_TURN",
+        "WHILE_SOURCE_ON_BATTLEFIELD", "UNTIL_LEAVES", "PERMANENT"}
+
+
+def test_until_the_end_of_your_next_turn_ends_at_that_turns_cleanup():
+    """CR 611.2: created in turn T by player 0, it lasts through player 0's
+    first turn after T and ends at that turn's cleanup -- not at T's own
+    cleanup, not at another player's, not as the next turn begins."""
+    from engine.effect_model import until_end_of_your_next_turn
+    from engine.turn_clock import Clock, ClockEvent
+    own = until_end_of_your_next_turn(0, turn=4)        # created on P0's turn 4
+    assert not own.expired_by(ClockEvent(Clock.CLEANUP, 0, turn=4))
+    assert not own.expired_by(ClockEvent(Clock.CLEANUP, 1, turn=5))
+    assert not own.expired_by(ClockEvent(Clock.TURN_BEGINS, 0, turn=6))
+    assert own.expired_by(ClockEvent(Clock.CLEANUP, 0, turn=6))
+    theirs = until_end_of_your_next_turn(0, turn=5)     # created on P1's turn 5
+    assert theirs.expired_by(ClockEvent(Clock.CLEANUP, 0, turn=6))
+    assert not until_end_of_your_next_turn(0, turn=4).expired_by(
+        ClockEvent(Clock.CLEANUP, 0))                   # an unstamped event
 
 
 def _obj(controller, keywords=()):

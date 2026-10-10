@@ -1285,14 +1285,14 @@
     "card": "Reckless Impulse",
     "host": "SPELL:0:0",
     "part": "mainboard",
-    "step": null,
+    "step": "E5",
     "strict": false
    },
    {
     "card": "Wrenn's Resolve",
     "host": "SPELL:0:0",
     "part": "mainboard",
-    "step": null,
+    "step": "E5",
     "strict": false
    }
   ],
@@ -1304,7 +1304,8 @@
    "sideboard": 0
   },
   "steps": {
-   "none": 5
+   "E5": 3,
+   "none": 2
   },
   "strict": 0,
   "sub_kinds": {
@@ -1312,7 +1313,8 @@
   },
   "verb_sets": {
    "CONTINUOUS,CREATE_TRIGGER,EXILE,UNMODELLED": 1,
-   "EXILE,UNMODELLED": 4
+   "CONTINUOUS,EXILE": 3,
+   "EXILE,UNMODELLED": 1
   }
  },
  "land_destruction": {
@@ -1657,9 +1659,9 @@
    "E2": 347,
    "E3": 139,
    "E4": 155,
-   "E5": 252,
+   "E5": 256,
    "E6": 33,
-   "none": 420
+   "none": 416
   },
   "strict": 251,
   "sub_kinds": {
@@ -2132,8 +2134,8 @@
   },
   "steps": {
    "E4": 3,
-   "E5": 310,
-   "none": 91
+   "E5": 311,
+   "none": 90
   },
   "strict": 178,
   "sub_kinds": {},

@@ -20,12 +20,12 @@
    "target.union:triggered": 1,
    "target.unparsed": 9
   },
-  "deck_typed_share": 0.7523,
+  "deck_typed_share": 0.7569,
   "deck_unmodelled_by_stage": {
    "AMOUNT": 7,
-   "CLAUSE": 26,
+   "CLAUSE": 27,
    "CONDITION": 19,
-   "DURATION": 8,
+   "DURATION": 3,
    "FILTER": 29,
    "ITERATION": 2,
    "NO_LEMMA": 14,
@@ -95,33 +95,33 @@
    "UNPARSED": 390,
    "WIDENING": 865
   },
-  "typed_share": 0.7308,
+  "typed_share": 0.732,
   "typed_share_by_host_kind": {
-   "ACTIVATED": 0.7932,
+   "ACTIVATED": 0.7936,
    "ALTERNATIVE_COST": 0.0,
-   "CHAPTER": 0.7454,
+   "CHAPTER": 0.7496,
    "KEYWORD": 0.0,
    "LOYALTY": 0.7711,
    "MANA_ABILITY": 0.9498,
-   "MODE": 0.7736,
+   "MODE": 0.777,
    "REPLACEMENT": 0.0,
-   "SPELL": 0.729,
+   "SPELL": 0.7308,
    "STATIC": 0.6223,
-   "TRIGGERED": 0.792,
+   "TRIGGERED": 0.7935,
    "UNKNOWN": 0.0
   },
   "unmodelled_by_stage": {
    "AMOUNT": 788,
-   "CLAUSE": 1802,
+   "CLAUSE": 1806,
    "CONDITION": 1163,
    "DELAY": 16,
-   "DURATION": 113,
+   "DURATION": 53,
    "FILTER": 1550,
    "ITERATION": 110,
    "NO_LEMMA": 1186,
    "QUANTITY": 133,
    "RECOGNIZED_UNSUPPORTED": 478,
-   "REFERENCE": 1387,
+   "REFERENCE": 1389,
    "REPLACEMENT": 1543,
    "STRUCTURE": 231,
    "TARGET": 1185,
@@ -132,9 +132,9 @@
  "report": {
   "by_host_kind": {
    "ACTIVATED": {
-    "share": 0.7932,
+    "share": 0.7936,
     "specs": 6634,
-    "typed": 5262
+    "typed": 5265
    },
    "ALTERNATIVE_COST": {
     "share": 0.0,
@@ -142,9 +142,9 @@
     "typed": 0
    },
    "CHAPTER": {
-    "share": 0.7454,
+    "share": 0.7496,
     "specs": 699,
-    "typed": 521
+    "typed": 524
    },
    "KEYWORD": {
     "share": 0.0,
@@ -162,9 +162,9 @@
     "typed": 1513
    },
    "MODE": {
-    "share": 0.7736,
+    "share": 0.777,
     "specs": 1758,
-    "typed": 1360
+    "typed": 1366
    },
    "REPLACEMENT": {
     "share": 0.0,
@@ -172,9 +172,9 @@
     "typed": 0
    },
    "SPELL": {
-    "share": 0.729,
+    "share": 0.7308,
     "specs": 9992,
-    "typed": 7284
+    "typed": 7302
    },
    "STATIC": {
     "share": 0.6223,
@@ -182,9 +182,9 @@
     "typed": 3346
    },
    "TRIGGERED": {
-    "share": 0.792,
+    "share": 0.7935,
     "specs": 15272,
-    "typed": 12095
+    "typed": 12119
    },
    "UNKNOWN": {
     "share": 0.0,
@@ -213,14 +213,14 @@
   "deck": {
    "by_host_kind": {
     "ACTIVATED": {
-     "share": 0.8077,
+     "share": 0.8141,
      "specs": 156,
-     "typed": 126
+     "typed": 127
     },
     "CHAPTER": {
-     "share": 0.8667,
+     "share": 0.9333,
      "specs": 15,
-     "typed": 13
+     "typed": 14
     },
     "LOYALTY": {
      "share": 0.7818,
@@ -243,9 +243,9 @@
      "typed": 0
     },
     "SPELL": {
-     "share": 0.8478,
+     "share": 0.8587,
      "specs": 184,
-     "typed": 156
+     "typed": 158
     },
     "STATIC": {
      "share": 0.4156,
@@ -274,7 +274,7 @@
     "typed_share": 0.8533
    },
    "specs": 868,
-   "typed": 653
+   "typed": 657
   },
   "keyword_lines": [
    [
@@ -1233,9 +1233,9 @@
     2
    ]
   ],
-  "typed": 32385,
-  "unmodelled": 11932,
-  "unmodelled_row_count": 1988,
+  "typed": 32439,
+  "unmodelled": 11878,
+  "unmodelled_row_count": 1985,
   "unmodelled_rows": [
    [
     "REPLACEMENT",
@@ -1289,13 +1289,13 @@
     "CLAUSE",
     "cast",
     "payload.modification_unknown",
-    132
+    133
    ],
    [
     "CLAUSE",
     "can't",
     "payload.prohibit_action",
-    125
+    126
    ],
    [
     "CLAUSE",
@@ -1331,7 +1331,7 @@
     "CLAUSE",
     "play",
     "payload.modification_unknown",
-    77
+    79
    ],
    [
     "CONDITION",
@@ -1380,12 +1380,6 @@
     "",
     "structure.class_level",
     54
-   ],
-   [
-    "DURATION",
-    "play",
-    "duration.until_end_of_your_next_turn",
-    53
    ],
    [
     "CLAUSE",
@@ -1596,6 +1590,12 @@
     "lose the game",
     "lexicon.unsupported:lose_the_game",
     25
+   ],
+   [
+    "AMOUNT",
+    "can't",
+    "amount.scaler:and",
+    24
    ]
   ]
  },

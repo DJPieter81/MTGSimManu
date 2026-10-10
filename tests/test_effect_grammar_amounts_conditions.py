@@ -70,7 +70,6 @@ def test_a_duration_before_a_scaled_amount_does_not_hide_the_scaler():
 
 
 @pytest.mark.parametrize("clause", [
-    "you may play that card until the end of your next turn",
     "it doesn't untap during its controller's next untap step",
     "target creature gets +2/+0 until end of combat",
     "gain control of target creature for as long as you control ~",
@@ -82,10 +81,17 @@ def test_a_duration_the_effect_model_cannot_expire_is_unmodelled_not_a_new_durat
     assert m.value is None
     assert m.unmodelled == Unmodelled(Stage.DURATION, detail=m.unmodelled.detail)
     assert m.unmodelled.detail
-    # F6: the model's vocabulary is unchanged.
+    # F6: the model's vocabulary grows only with a clock that expires it
+    # ("until the end of your next turn": the impulse unit's turn-stamped
+    # clock events).
     assert {k.name for k in DurationKind} == {
-        "THIS_TURN", "UNTIL_YOUR_NEXT_TURN", "WHILE_SOURCE_ON_BATTLEFIELD",
-        "UNTIL_LEAVES", "PERMANENT"}
+        "THIS_TURN", "UNTIL_YOUR_NEXT_TURN", "UNTIL_END_OF_YOUR_NEXT_TURN",
+        "WHILE_SOURCE_ON_BATTLEFIELD", "UNTIL_LEAVES", "PERMANENT"}
+
+
+def test_until_the_end_of_your_next_turn_is_a_modelled_duration():
+    m = parse_duration("you may play that card until the end of your next turn")
+    assert m.value == Duration(DurationKind.UNTIL_END_OF_YOUR_NEXT_TURN)
 
 
 @pytest.mark.parametrize("clause, timing", [

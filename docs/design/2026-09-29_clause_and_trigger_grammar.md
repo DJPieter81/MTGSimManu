@@ -1035,6 +1035,13 @@ About 45 further pairs on 27 cards are unmasked: the hosts printing a permission
 - `has_graveyard_recursion` 5: a permission to cast an exiled graveyard card, read as recursion.
 - `deals_targeted_damage` 3, `has_pump_grant` 3, `can_target_player` 3, and 1-2 each in nine other fields: the legacy flags read the whole printed text, the views read the typed specs.
 
+"Until the end of your next turn" is then a modelled duration: `DurationKind.UNTIL_END_OF_YOUR_NEXT_TURN`. A bound duration records its creation turn. It ends at the cleanup of its player's first turn after that, read from clock events, which `turn_clock.emit` now stamps with the game turn. F6 holds: the kind lands with the clock that expires it.
+
+Effects:
+- 60 more clauses leave the DURATION refusal.
+- `has_may_play_or_cast` agrees on 51 more cards.
+- About 27 further pairs are unmasked, with the same causes and the same treatment.
+
 Lines checked and found in full agreement: loot draw/discard (174), put-counter kind and amount (135), pump P/T (290), direct-damage amount (79), the soft-counter condition, and delayed timing (102 agree, grammar strictly broader).
 
 **Diff classes.** As before (REMINDER_TEXT, UNMODELLED_CLAUSE, RESIDUE_WIDENING, LEGACY_* quirk classes, DERIVED_COVERAGE_GROWTH, SEMANTIC_FIX, UNEXPLAINED), plus three:

@@ -30,6 +30,9 @@ from typing import Any, FrozenSet, Optional, Tuple
 class DurationKind(Enum):
     THIS_TURN = "this_turn"                       # "this turn" / "until end of turn"
     UNTIL_YOUR_NEXT_TURN = "until_your_next_turn"
+    # "until the end of your next turn" (CR 611.2): through the cleanup of
+    # `player`'s first turn after the one it was created in.
+    UNTIL_END_OF_YOUR_NEXT_TURN = "until_end_of_your_next_turn"
     WHILE_SOURCE_ON_BATTLEFIELD = "while_source"  # static abilities (CR 611.3a)
     UNTIL_LEAVES = "until_leaves"                 # "for as long as <obj> …"
     PERMANENT = "permanent"
@@ -38,10 +41,14 @@ class DurationKind(Enum):
 @dataclass(frozen=True)
 class Duration:
     kind: DurationKind
-    # UNTIL_YOUR_NEXT_TURN: whose next turn ends it.
+    # UNTIL_YOUR_NEXT_TURN / UNTIL_END_OF_YOUR_NEXT_TURN: whose next turn
+    # ends it.
     player: Optional[int] = None
     # UNTIL_LEAVES: (instance_id, battlefield_entry_seq) of the tracked object.
     obj: Optional[Tuple[int, int]] = None
+    # UNTIL_END_OF_YOUR_NEXT_TURN: the game turn it was created in (bound
+    # when the effect is created; a parsed duration carries None).
+    turn: Optional[int] = None
 
     def expired_by(self, event) -> bool:
         """Does this clock event end the effect? `event` is a
@@ -54,6 +61,14 @@ class Duration:
             return event.kind in (Clock.CLEANUP, Clock.TURN_BEGINS)
         if k is DurationKind.UNTIL_YOUR_NEXT_TURN:
             return event.kind is Clock.TURN_BEGINS and event.player == self.player
+        if k is DurationKind.UNTIL_END_OF_YOUR_NEXT_TURN:
+            # The cleanup of `player`'s first turn after the creation turn
+            # (created on their own turn: the turn after next; on another
+            # player's turn: their next turn).
+            at = getattr(event, "turn", None)
+            return (event.kind is Clock.CLEANUP and event.player == self.player
+                    and at is not None and self.turn is not None
+                    and at > self.turn)
         if k is DurationKind.UNTIL_LEAVES:
             return getattr(event, "obj", None) == self.obj
         return False   # PERMANENT, WHILE_SOURCE (retracted by derivation)
@@ -66,6 +81,12 @@ WHILE_SOURCE = Duration(DurationKind.WHILE_SOURCE_ON_BATTLEFIELD)
 
 def until_your_next_turn(player: int) -> Duration:
     return Duration(DurationKind.UNTIL_YOUR_NEXT_TURN, player=player)
+
+
+def until_end_of_your_next_turn(player: int, turn: int) -> Duration:
+    """"Until the end of your next turn", created in game turn `turn`."""
+    return Duration(DurationKind.UNTIL_END_OF_YOUR_NEXT_TURN, player=player,
+                    turn=turn)
 
 
 # The duration kinds `Duration.expired_by` (or source retraction) ends. A

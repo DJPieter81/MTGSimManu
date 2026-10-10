@@ -12,7 +12,7 @@ logs when the clock was introduced).
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from enum import Enum
 from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Tuple
 
@@ -31,6 +31,10 @@ class Clock(Enum):
 class ClockEvent:
     kind: Clock
     player: Optional[int] = None
+    # The game turn the event happens in (`GameState.turn_number`), stamped
+    # by `emit`: a duration that counts turns ("until the end of your next
+    # turn") reads it.
+    turn: Optional[int] = None
 
 
 _SUBSCRIBERS: Dict[Clock, List[Tuple[str, Callable]]] = {k: [] for k in Clock}
@@ -50,6 +54,8 @@ def subscribers(kind: Clock) -> List[str]:
 
 
 def emit(game: "GameState", event: ClockEvent) -> None:
+    if event.turn is None:
+        event = replace(event, turn=getattr(game, "turn_number", None))
     for _name, fn in _SUBSCRIBERS[event.kind]:
         fn(game, event)
 

@@ -57,6 +57,10 @@ def _um(stage: Stage, lemma: str, code: str):
 # first; overlapping matches resolve leftmost-longest.
 _MODELLED = (
     (r"until end of turn", DurationKind.THIS_TURN),
+    # Longest first: "until the end of your next turn" before "until your
+    # next turn" never overlaps, but before "this turn" it must win.
+    (r"until (?:the )?end of your next turn",
+     DurationKind.UNTIL_END_OF_YOUR_NEXT_TURN),
     (r"until your next turn", DurationKind.UNTIL_YOUR_NEXT_TURN),
     (r"until ~ leaves the battlefield", DurationKind.UNTIL_LEAVES),
     (r"for as long as ~ remains on the battlefield", DurationKind.UNTIL_LEAVES),
@@ -68,7 +72,6 @@ _MODELLED = (
 # Printed durations `effect_model` cannot expire yet (F6). The code names
 # the shape so the census groups them.
 _UNMODELLED = (
-    (r"until (?:the )?end of your next turn", "until_end_of_your_next_turn"),
     (r"until (?:the )?end of combat", "until_end_of_combat"),
     (r"during [\w' ~]+? next untap step", "during_next_untap_step"),
     (r"(?:%s)[^,.;]+" % "|".join(re.escape(m) for m in _DURATION_MARKERS),

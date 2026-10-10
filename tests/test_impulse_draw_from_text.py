@@ -100,3 +100,29 @@ def test_a_free_cast_and_a_flash_permission_are_no_play_permission(card_db):
     assert not any(s.verb is Verb.CONTINUOUS
                    and s.payload.kind is ModKind.PERMIT
                    and s.payload.action in ("play", "cast") for s in specs)
+
+
+def test_until_the_end_of_your_next_turn_types_the_impulse_permission(card_db):
+    from engine.effect_model import DurationKind, ModKind
+    from engine.effect_spec import Verb
+    permit = next(s for s in _specs(card_db, "Reckless Impulse")
+                  if s.verb is Verb.CONTINUOUS)
+    assert permit.payload.kind is ModKind.PERMIT
+    assert permit.duration.kind is DurationKind.UNTIL_END_OF_YOUR_NEXT_TURN
+
+
+def test_a_clock_event_carries_the_turn_it_happens_in():
+    """The clock stamps each event with the game turn, so a duration that
+    counts turns can end."""
+    import random
+    from engine.game_state import GameState
+    from engine.turn_clock import Clock, ClockEvent, emit, _SUBSCRIBERS
+    seen = []
+    game = GameState(rng=random.Random(0))
+    game.turn_number = 7
+    _SUBSCRIBERS[Clock.END_STEP].append(("t", lambda g, e: seen.append(e.turn)))
+    try:
+        emit(game, ClockEvent(Clock.END_STEP, 0))
+    finally:
+        _SUBSCRIBERS[Clock.END_STEP].pop()
+    assert seen == [7]
