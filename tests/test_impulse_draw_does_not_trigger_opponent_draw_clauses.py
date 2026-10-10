@@ -77,16 +77,17 @@ def _make_classified_card(game: GameState, name: str, controller: int,
 
 
 def _put_bowmasters(game: GameState, controller: int) -> CardInstance:
-    """Bowmasters-shape opp-draw damage source. Classifier carries
-    `Tag.ON_DRAW_DAMAGE` for the real card name."""
+    """Bowmasters-shape opp-draw damage source, with its printed text:
+    the draw fan-out reads the trigger from the text, not a tag."""
     return _make_classified_card(
         game,
         name="Orcish Bowmasters",
         controller=controller,
         oracle_text=(
-            "Whenever an opponent draws a card, except the first one "
-            "they draw in each of their draw steps, this creature deals "
-            "1 damage to that player."
+            "Flash\nWhen this creature enters and whenever an opponent "
+            "draws a card except the first one they draw in each of "
+            "their draw steps, this creature deals 1 damage to any "
+            "target. Then amass Orcs 1."
         ),
         zone="battlefield",
         card_types=[CardType.CREATURE],
@@ -95,14 +96,15 @@ def _put_bowmasters(game: GameState, controller: int) -> CardInstance:
 
 
 def _put_sheoldred(game: GameState, controller: int) -> CardInstance:
-    """Sheoldred-shape on-draw life-swing. Classifier carries
-    `Tag.ON_OPP_DRAW_LIFE_LOSS` and `Tag.ON_OWN_DRAW_LIFE_GAIN`."""
+    """Sheoldred-shape on-draw life swing, with its printed text (two
+    abilities, two paragraphs): the draw fan-out reads both triggers
+    from the text, not from tags."""
     return _make_classified_card(
         game,
         name="Sheoldred, the Apocalypse",
         controller=controller,
         oracle_text=(
-            "Whenever you draw a card, you gain 2 life. "
+            "Deathtouch\nWhenever you draw a card, you gain 2 life.\n"
             "Whenever an opponent draws a card, they lose 2 life."
         ),
         zone="battlefield",
