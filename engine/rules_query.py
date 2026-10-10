@@ -105,6 +105,39 @@ def play_permitted(game: "GameState", player_idx: int, card,
                                  and "cast" in actions)
 
 
+def permitted_cards(game: "GameState", player_idx: int) -> list:
+    """The cards a permission lets this player play from where they are
+    now (CR 305.1, 601.2a), in zone order. Timing and cost are the play's
+    own checks (`can_cast`, the land play). Every permission the engine
+    creates names cards its controller exiled from their own library (the
+    card-flow EXILE executor), so the player's own exile is read; a
+    permission over another player's card is its carrier's to add."""
+    exile = game.players[player_idx].exile
+    if not exile:
+        return []
+    permitted = permitted_objects(game, player_idx)
+    if not permitted:
+        return []
+    return [c for c in exile if play_permitted(game, player_idx, c, permitted)]
+
+
+def permission_ends_this_turn(game: "GameState", player_idx: int,
+                              card) -> bool:
+    """Every permission that lets this player play this object ends at
+    this turn's cleanup (CR 514.2, 611.2): playing it is now or never.
+    Asked of the one expiry predicate, `Duration.expired_by`, with this
+    turn's cleanup event."""
+    from engine.effect_model import ModKind
+    from engine.turn_clock import Clock, ClockEvent
+    naming = [e for e in _covering(game, player_idx, ModKind.PERMIT,
+                                   ("play", "cast"))
+              if card.instance_id in (e.modification.get("objects") or ())]
+    cleanup = ClockEvent(Clock.CLEANUP, game.active_player,
+                         turn=game.turn_number)
+    return bool(naming) and all(e.duration.expired_by(cleanup)
+                                for e in naming)
+
+
 def cast_as_though_flash(game: "GameState", player_idx: int, template) -> bool:
     """This player may cast this spell as though it had flash (CR 702.8d)."""
     from engine.effect_model import ModKind

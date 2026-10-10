@@ -2627,6 +2627,17 @@ class EVPlayer:
                 land.name, 0.0)
             ev += declared * LAND_GAMEPLAN_PRIORITY_SCALE
 
+        # ── A land a permission lets us play only this turn ──
+        # (an impulse draw's last turn, CR 611.2) is gone at cleanup
+        # unless played; a land in hand stays held. When one in hand
+        # competes for the same land play, playing the expiring one keeps
+        # that held card: it is worth one held card more, at the
+        # position's own per-card rate (`card_clock_impact`).
+        from ai.playable_cards import expires_this_turn
+        if (expires_this_turn(game, self.player_idx, land)
+                and any(c.template.is_land for c in me.hand)):
+            ev += card_clock_impact(snap)
+
         return ev
 
     def _reanimation_readiness_boost(self, snap: EVSnapshot) -> float:

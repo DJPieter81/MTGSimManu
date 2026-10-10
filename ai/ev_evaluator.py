@@ -433,11 +433,16 @@ def snapshot_from_game(game: "GameState", player_idx: int) -> EVSnapshot:
         except Exception:
             archetype_subtype = None
 
+    # The cards each player holds: the hand and the exiled cards a
+    # permission lets them play past this turn (`ai.playable_cards`) -- an
+    # impulse draw's cards are held resources while the permission lasts,
+    # as the spell's own projection counted them.
+    from ai.playable_cards import held_cards
     snap = EVSnapshot(
         my_life=me.life,
         opp_life=opp.life,
-        my_hand_size=len(me.hand),
-        opp_hand_size=len(opp.hand),
+        my_hand_size=len(held_cards(game, player_idx)),
+        opp_hand_size=len(held_cards(game, 1 - player_idx)),
         my_mana=me.available_mana_estimate + me.mana_pool.total(),
         opp_mana=opp.available_mana_estimate,
         my_total_lands=len(me.lands),
@@ -1226,7 +1231,8 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
     if ('cost_reducer' in tags
             and not t.is_instant and not t.is_sorcery
             and game is not None):
-        me_hand = game.players[player_idx].hand
+        from ai.playable_cards import playable_cards
+        me_hand = playable_cards(game, player_idx)
         if any(c is not card and not c.template.is_land
                and (c.template.cmc or 0) > 0
                for c in me_hand):
@@ -1387,6 +1393,15 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
             if payoff_reach:
                 signals.append('flashback_combo_with_gy_fuel')
 
+    # 17. A card a permission lets the player play only until this turn
+    #     ends (an impulse draw's last turn, CR 611.2): casting it next
+    #     turn is not an option, so it is never deferrable. The engine's
+    #     one expiry predicate answers (`rules_query`).
+    if game is not None and getattr(card, 'zone', None) == 'exile':
+        from engine import rules_query
+        if rules_query.permission_ends_this_turn(game, player_idx, card):
+            signals.append('permission_ends_this_turn')
+
     return signals
 
 
@@ -1493,8 +1508,11 @@ def _payoff_reachable_this_turn(card: "CardInstance",
     payoffs, tutor-tagged enablers, or cascade payoffs.
     """
     from engine.cards import Keyword as _Kw
+    from ai.playable_cards import playable_cards
     me = game.players[player_idx]
-    hand = me.hand
+    # The cards the plan can play this turn: the hand and the exiled cards
+    # a permission names (`ai.playable_cards`).
+    hand = playable_cards(game, player_idx)
     for c in hand:
         kws = c.template.keywords or set()
         tags_c = c.template.tags or set()
@@ -2030,6 +2048,11 @@ def expected_future_value(card: "CardInstance",
     return loyalty_pool_value(activations, snap)
 
 
+def _expires_this_turn(game, player_idx, card) -> bool:
+    from ai.playable_cards import expires_this_turn
+    return expires_this_turn(game, player_idx, card)
+
+
 def _project_spell(card: "CardInstance", snap: EVSnapshot,
                    dk: Optional[DeckKnowledge] = None,
                    game: "GameState" = None, player_idx: int = 0,
@@ -2041,7 +2064,11 @@ def _project_spell(card: "CardInstance", snap: EVSnapshot,
     no spell is cast (storm)."""
     t = card.template
     tags = getattr(t, 'tags', set())
-    spell_count = 0 if as_ability else len([card])
+    # The cast spends a held card -- except a card whose permission ends
+    # this turn, which is gone at cleanup either way (`ai.playable_cards`).
+    spends_held = not as_ability and not (
+        game is not None and _expires_this_turn(game, player_idx, card))
+    spell_count = len([card]) if spends_held else 0
     projected = EVSnapshot(
         my_life=snap.my_life,
         opp_life=snap.opp_life,
@@ -3089,7 +3116,8 @@ def _draw_count_for_chain_step(card_template) -> int:
 
 
 def _estimate_combo_chain(game, player_idx: int, first_card=None):
-    """Simulate casting all chainable spells from hand to estimate kill potential.
+    """Simulate casting all chainable spells the player can play (hand and
+    permitted exile, `ai.playable_cards`) to estimate kill potential.
 
     Returns (can_kill: bool, storm_count: int, total_damage: int, chain: list[str])
 
@@ -3108,8 +3136,10 @@ def _estimate_combo_chain(game, player_idx: int, first_card=None):
     from ai.bhi import (opp_static_damage_per_card_event,
                         _parse_event_amount)
     from ai.oracle_classifier import has_tag, Tag
+    from ai.playable_cards import plan_view
 
-    me = game.players[player_idx]
+    # The chain's cards: the hand and the exiled cards a permission names.
+    me = plan_view(game, player_idx)
 
     # Count cost reducers on battlefield
     reducers = sum(1 for c in me.battlefield

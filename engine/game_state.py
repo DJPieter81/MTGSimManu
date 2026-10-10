@@ -1010,11 +1010,8 @@ class GameState:
         # play those cards", CR 305.1, 601.2a): a land as the land play, a
         # spell when can_cast allows it (normal timing and cost).
         from . import rules_query
-        permitted = rules_query.permitted_objects(self, player_idx) \
-            if player.exile else {}
-        for card in (player.exile if permitted else ()):
-            if card in legal or not rules_query.play_permitted(
-                    self, player_idx, card, permitted):
+        for card in rules_query.permitted_cards(self, player_idx):
+            if card in legal:
                 continue
             if card.template.is_land:
                 if self.land_play_available(player_idx):

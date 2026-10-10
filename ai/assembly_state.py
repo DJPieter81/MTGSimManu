@@ -428,8 +428,10 @@ def assemble(game: "GameState", player_idx: int, snap: "EVSnapshot",
             _add(SHAPE_X_DAMAGE, VIA_ACTIVATE, perm, None, None, 0, 0,
                  1.0, perm)
 
-    # Hand: castable sinks and X creature tutors.
-    for card in list(player.hand):
+    # Hand (and the exiled cards a permission names, `ai.playable_cards`):
+    # castable sinks and X creature tutors.
+    from ai.playable_cards import playable_cards
+    for card in playable_cards(game, player_idx):
         t = card.template
         shape = is_mana_sink(t)
         if shape is not None and not t.is_land:

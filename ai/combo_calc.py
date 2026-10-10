@@ -88,7 +88,9 @@ def assess_combo(game: "GameState", player_idx: int,
     if not assessor:
         return _null_assessment()
 
-    me = game.players[player_idx]
+    # The plan's cards: the hand and the exiled cards a permission names.
+    from ai.playable_cards import plan_view
+    me = plan_view(game, player_idx)
     opp = game.players[1 - player_idx]
     return assessor(game, player_idx, goal_engine, snap, zone, target, min_cmc,
                     me, opp, bhi)
@@ -936,6 +938,9 @@ def card_combo_modifier(card, assessment, snap, me, game, player_idx):
     a = assessment
     if not a or not a.resource_zone:
         return 0.0
+    # The plan's cards: the hand and the exiled cards a permission names.
+    from ai.playable_cards import plan_view
+    me = plan_view(game, player_idx)
 
     tags = getattr(card.template, 'tags', set())
     opp_life = max(1, snap.opp_life)
