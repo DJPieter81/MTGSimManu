@@ -397,6 +397,11 @@ class ResponseDecider:
 
             v_responses = []
             for inst in instants:
+                # A counter whose printed target restriction refuses this
+                # stack item is no response (the legacy path's own check).
+                if ("counterspell" in inst.template.tags
+                        and not self._counter_can_target(inst, stack_item)):
+                    continue
                 # Triage: drop redundant counters when a post-resolution
                 # creature-exile is available.
                 if (skip_counter_for_this_creature
@@ -484,13 +489,7 @@ class ResponseDecider:
         for instant in instants:
             if "counterspell" not in instant.template.tags:
                 continue
-            # CR 701.5: a counterspell counters a SPELL. `template.is_spell`
-            # describes the SOURCE CARD (it is merely `not is_land`), not the
-            # stack object, so it admitted triggered/activated abilities whose
-            # source happens to be a non-land permanent. The stack item's own
-            # type is the correct discriminator.
-            from engine.stack import StackItemType as _SIT
-            if getattr(stack_item, 'item_type', None) != _SIT.SPELL:
+            if not self._counter_can_target(instant, stack_item):
                 continue
             # Triage: skip redundant counters when a post-resolution
             # creature-exile in hand can answer the same threat.  Free
@@ -499,20 +498,6 @@ class ResponseDecider:
             cost = self._effective_counter_cost(game, instant)
             if (skip_counter_for_this_creature
                     and cost > PITCH_COUNTER_FREE_COST):
-                continue
-            # Targeting restrictions from typed field (counter_target_kind).
-            target_spell = stack_item.source.template
-            if (instant.template.counter_target_kind == 'noncreature_spell'
-                    and target_spell.is_creature):
-                continue
-            if (instant.template.counter_target_kind == 'instant_or_sorcery_spell'
-                    and not (target_spell.is_instant or target_spell.is_sorcery)):
-                continue
-            # "Counter target ... colorless spell" (Consign to Memory)
-            # can never counter a colored spell — CR 105 colour, not
-            # colour identity.
-            if (getattr(instant.template, 'counters_colorless_only', False)
-                    and (target_spell.colors or set())):
                 continue
             # Symmetric EV of the 1a counter-tax framework: a "counter
             # unless its controller pays {N}" candidate is DEAD when the
@@ -931,6 +916,35 @@ class ResponseDecider:
             getattr(instant.template, 'has_alternate_exile_cost', False)
             and getattr(game, 'active_player', None) != self.player_idx
         )
+
+    @staticmethod
+    def _counter_can_target(instant: "CardInstance", stack_item) -> bool:
+        """The counterspell's printed target admits this stack item (CR
+        115.1, 701.5) -- the one check both response paths read:
+
+        * a counterspell counters a SPELL: the stack item's own type, not
+          `template.is_spell` (which describes the source card, and so
+          admitted triggered and activated abilities of a nonland
+          permanent);
+        * the typed restriction (`counter_target_kind`): a noncreature
+          spell, an instant or sorcery spell;
+        * "counter target ... colorless spell" (`counters_colorless_only`)
+          never counters a colored spell -- CR 105 colour, not colour
+          identity."""
+        from engine.stack import StackItemType as _SIT
+        if getattr(stack_item, 'item_type', None) != _SIT.SPELL:
+            return False
+        target_spell = stack_item.source.template
+        kind = instant.template.counter_target_kind
+        if kind == 'noncreature_spell' and target_spell.is_creature:
+            return False
+        if kind == 'instant_or_sorcery_spell' and not (
+                target_spell.is_instant or target_spell.is_sorcery):
+            return False
+        if (getattr(instant.template, 'counters_colorless_only', False)
+                and (target_spell.colors or set())):
+            return False
+        return True
 
     def _effective_counter_cost(self, game: "GameState", instant: "CardInstance") -> int:
         """Cost paid to actually fire this counter, after alternative-cost paths.
