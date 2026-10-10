@@ -258,3 +258,49 @@ def test_the_ai_projects_an_evoked_creature_into_the_graveyard(card_db):
     cast = _project_spell(drifter, snap, game=game, player_idx=0)
     assert cast.my_power == snap.my_power + 2
     assert cast.my_creature_count == snap.my_creature_count + 1
+
+
+def test_a_creature_the_gameplan_declares_a_keystone_is_worth_its_declaration(
+        card_db):
+    """The strip value -- what a card in hand is worth to its owner, read
+    by a discard spell aimed at that hand and by the AI's pitch -- adds the
+    owner's declared keystone weight to every card type. A creature got its
+    body's threat value alone, so 4c Omnath pitched Omnath, Locus of
+    Creation (its namesake payoff, a mulligan key) before every
+    non-creature keystone."""
+    from ai.discard_advisor import choose_card_to_exile_from_hand
+    from ai.ev_evaluator import (creature_threat_value,
+                                 score_card_for_opponent_strip,
+                                 snapshot_from_game)
+    from ai.gameplan import get_gameplan
+    game = _game()
+    game.players[0].deck_name = "4c Omnath"
+    omnath = _put(game, card_db, "Omnath, Locus of Creation", "hand")
+    teferi = _put(game, card_db, "Teferi, Time Raveler", "hand")
+    for _ in range(3):
+        _put(game, card_db, "Omnath, Locus of Creation", "library")
+    gp = get_gameplan("4c Omnath")
+    snap = snapshot_from_game(game, 1)
+    assert omnath.name in gp.mulligan_keys
+    assert score_card_for_opponent_strip(omnath, snap, gp) > \
+        creature_threat_value(omnath, snap)
+    assert choose_card_to_exile_from_hand(game, 0, [omnath, teferi]) \
+        is teferi
+
+
+def test_the_ai_does_not_evoke_graveyard_hate_at_a_graveyard_holding_nothing(
+        card_db):
+    """Endurance's enter trigger puts a player's graveyard on the bottom of
+    their library: with nothing but lands in the opposing graveyard it acts
+    on nothing, and evoking it only spends two cards. 4c Omnath evoked it
+    on its own turn 1, pitching Omnath, Locus of Creation, once the engine
+    no longer vetoed the pitch."""
+    from ai.board_eval import Action, ActionType, evaluate_action
+    game = _game(DefaultCallbacks())
+    endurance = _put(game, card_db, "Endurance", "hand")
+    _put(game, card_db, "Llanowar Elves", "hand")
+    _put(game, card_db, "Bloodstained Mire", "graveyard", idx=1)
+    evoke = Action(ActionType.EVOKE, {"card": endurance})
+    assert evaluate_action(game, 0, evoke) < 0
+    _put(game, card_db, "Griselbrand", "graveyard", idx=1)
+    assert evaluate_action(game, 0, evoke) > 0

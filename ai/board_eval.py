@@ -325,6 +325,14 @@ def _eval_evoke(game, me, a: BoardAssessment, ctx: dict,
         if not opp.creatures:
             return -BOARD_EVAL_HARD_VETO  # No valid targets, evoke would waste a card
     
+    # Graveyard-hate ETBs ("up to one target player puts all the cards
+    # from their graveyard on the bottom of their library"): with nothing
+    # but lands in the opposing graveyard the trigger acts on nothing, and
+    # the evoke spends two cards for it.
+    if 'graveyard_hate' in tags and not any(
+            not c.template.is_land for c in opp.graveyard):
+        return -BOARD_EVAL_HARD_VETO
+
     # Removal ETBs (Solitude, Fury): check if opponent has creatures
     if 'removal' in tags and card.template.is_creature:
         if not opp.creatures and not opp.battlefield:

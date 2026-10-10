@@ -3745,10 +3745,13 @@ def score_card_for_opponent_strip(card: "CardInstance", snap: EVSnapshot,
         `None` if the gameplan can't be resolved — tag-based fallback
         still applies.
 
-    For creatures the threat is delegated to `creature_threat_value`,
-    which is the same oracle-driven scorer used everywhere else for
-    "how scary is this creature?". For non-creatures we combine
-    gameplan-role membership (highest signal) with tag-based weights.
+    The victim's declared keystones (critical pieces, always-early,
+    mulligan keys) weigh every card type: a creature the deck lists is as
+    much its plan as a spell it lists. A creature's own worth is then
+    `creature_threat_value`, the same oracle-driven scorer used everywhere
+    else for "how scary is this creature?" (it already credits ETB and
+    scaling, so no tag weight is added); a non-creature's is its tag
+    weights.
 
     Returns 0.0 for an unrecognised non-creature with no tags / no
     gameplan listing — the caller's fallback (highest-CMC non-land)
@@ -3758,15 +3761,7 @@ def score_card_for_opponent_strip(card: "CardInstance", snap: EVSnapshot,
     t = card.template
     name = getattr(t, 'name', '') or ''
 
-    # Creatures: route through the existing oracle-driven threat
-    # function. Returns ~1-15 for typical Modern bodies; large
-    # threats can score higher. We do NOT add a creature-only bonus
-    # here — `creature_threat_value` already credits ETB / scaling.
-    if getattr(t, 'is_creature', False):
-        return float(creature_threat_value(card, snap))
-
-    # Non-creatures: gameplan signal first (data-driven, no card
-    # names in this file), then tag-based weighting.
+    # Gameplan signal first (data-driven, no card names in this file).
     score = 0.0
     if opp_gameplan is not None:
         critical = getattr(opp_gameplan, 'critical_pieces', None) or set()
@@ -3778,6 +3773,11 @@ def score_card_for_opponent_strip(card: "CardInstance", snap: EVSnapshot,
             score += _DISCARD_SCORE_ALWAYS_EARLY
         if name in keys:
             score += _DISCARD_SCORE_MULLIGAN_KEY
+
+    # Creatures: the oracle-driven threat function. Returns ~1-15 for
+    # typical Modern bodies; large threats can score higher.
+    if getattr(t, 'is_creature', False):
+        return score + float(creature_threat_value(card, snap))
 
     tags = getattr(t, 'tags', set()) or set()
     for tag, weight in _DISCARD_TAG_WEIGHTS.items():

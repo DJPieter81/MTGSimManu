@@ -1,5 +1,5 @@
 {
-  "combined": "80379502084a7bd3e05f37671d87a6afc5b39a905f11bb196b1ffe3085b096e2",
+  "combined": "ed54ead855d67703ba18370b047a61b5070f09fe32d1de42400803f98642191d",
   "comment": "sha256 of each seeded verbose game log (tools/seeded_game_digest.py). A pure refactor must reproduce every digest byte for byte.",
   "games": {
     "bo1|4c Omnath|Ruby Storm|57500": {
@@ -81,9 +81,9 @@
       "winner": "4c Omnath"
     },
     "bo1|Living End|Jeskai Blink|54000": {
-      "lines": 831,
-      "sha256": "28b7a24434e4eb18ac844b55d718fd03e9ac31d1b73a4feea484cb77a195b543",
-      "turns": 13,
+      "lines": 687,
+      "sha256": "77c694769d297f37138b410674c6679c99e7a6e1cfd56e4620ffcdc453704c45",
+      "turns": 11,
       "winner": "Jeskai Blink"
     },
     "bo1|Pinnacle Affinity|4/5c Control|52500": {
@@ -147,8 +147,8 @@
       "winner": "Eldrazi Tron"
     },
     "bo3|Living End|Dimir Midrange|59000|g1": {
-      "lines": 701,
-      "sha256": "b88744423753663ed13d8ff06ad8b585ee62974e3bca27b03a1afe0fb46508dc",
+      "lines": 703,
+      "sha256": "f7210b7e9ec670d52d506b26eb9e7c106d8464372c0904b069e12b78d34867d2",
       "turns": 11,
       "winner": "Living End"
     },
