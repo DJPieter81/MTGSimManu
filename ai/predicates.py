@@ -91,6 +91,22 @@ def is_draw_engine(card: "CardInstance") -> bool:
     return bool(DRAW_ENGINE_TAGS & getattr(card.template, 'tags', set()))
 
 
+def spell_draws(template) -> bool:
+    """Casting the spell makes its controller draw (CR 121.1): a DRAW in
+    the spell's typed effects with no other drawer printed, whatever the
+    count's wording ("draw four cards", "draw that many cards"). Read from
+    the parsed spell, never a substring list. An impulse draw is no draw
+    (CR 121.1c; `is_impulse_draw`), and a permanent's later ability is not
+    what casting it draws."""
+    from engine.effect_spec import Verb, iter_specs
+    effects = getattr(template, 'effects', None)
+    host = effects.spell(0) if effects is not None else None
+    if host is None:
+        return False
+    return any(s.verb is Verb.DRAW and s.actor is None
+               for s in iter_specs(host.specs))
+
+
 def is_impulse_draw(template) -> bool:
     """The spell exiles the top of its controller's library (an impulse
     draw: "exile the top N cards of your library ... you may play those

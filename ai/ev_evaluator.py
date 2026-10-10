@@ -1163,9 +1163,13 @@ def _enumerate_this_turn_signals(card: "CardInstance", snap: EVSnapshot,
     # 5. Card draw this turn — includes true draw, library-dig
     #    "put X into your hand", and impulse-draw "exile top N, may
     #    play".  All three deliver same-turn card advantage even
-    #    though only the first uses the literal verb "draw".
+    #    though only the first uses the literal verb "draw".  A true
+    #    draw is read from the spell's typed DRAW (`spell_draws`), so
+    #    "draw four cards" and "draw that many cards" count too.
+    from ai.predicates import spell_draws
     if (_oracle_signals_card_draw(oracle)
-            or getattr(t, 'has_draw_effect', False)):
+            or getattr(t, 'has_draw_effect', False)
+            or spell_draws(t)):
         signals.append('card_draw')
 
     # 6. Tutor — library search OR Wish-style play-from-outside.
@@ -1480,8 +1484,12 @@ def _is_real_dig(card: "CardInstance") -> bool:
     t = card.template
     # ``has_draw_effect`` covers: "draw a card", "draw N cards",
     # "look at the top", "exile the top … you may play/cast".
+    # ``spell_draws`` reads the spell's typed DRAW, whatever the count's
+    # wording ("draw four cards", "draw that many cards").
     # ``is_tutor`` covers: "search your library", Wish-style fetch.
-    return getattr(t, 'has_draw_effect', False) or t.is_tutor
+    from ai.predicates import spell_draws
+    return (getattr(t, 'has_draw_effect', False) or spell_draws(t)
+            or t.is_tutor)
 
 
 def _payoff_reachable_this_turn(card: "CardInstance",
