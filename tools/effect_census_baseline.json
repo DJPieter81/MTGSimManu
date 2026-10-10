@@ -2,7 +2,7 @@
  "description": "Clause-grammar census (design doc 2026-09-29 section 9): pinned typed shares may only rise, pinned refusal totals may only fall. Regenerate with `python tools/effect_census.py --update`.",
  "pinned": {
   "deck_removal_ready_share": 0.027,
-  "deck_removal_typed_share": 0.8533,
+  "deck_removal_typed_share": 0.8571,
   "deck_residue_by_code": {
    "target.colored": 3,
    "target.exclude_source": 4,
@@ -20,7 +20,7 @@
    "target.union:triggered": 1,
    "target.unparsed": 9
   },
-  "deck_typed_share": 0.7569,
+  "deck_typed_share": 0.7581,
   "deck_unmodelled_by_stage": {
    "AMOUNT": 7,
    "CLAUSE": 27,
@@ -30,7 +30,7 @@
    "ITERATION": 2,
    "NO_LEMMA": 14,
    "RECOGNIZED_UNSUPPORTED": 6,
-   "REFERENCE": 21,
+   "REFERENCE": 20,
    "REPLACEMENT": 59,
    "STRUCTURE": 3,
    "TARGET": 19,
@@ -95,7 +95,7 @@
    "UNPARSED": 390,
    "WIDENING": 865
   },
-  "typed_share": 0.732,
+  "typed_share": 0.7321,
   "typed_share_by_host_kind": {
    "ACTIVATED": 0.7936,
    "ALTERNATIVE_COST": 0.0,
@@ -107,7 +107,7 @@
    "REPLACEMENT": 0.0,
    "SPELL": 0.7308,
    "STATIC": 0.6223,
-   "TRIGGERED": 0.7935,
+   "TRIGGERED": 0.7939,
    "UNKNOWN": 0.0
   },
   "unmodelled_by_stage": {
@@ -121,7 +121,7 @@
    "NO_LEMMA": 1186,
    "QUANTITY": 133,
    "RECOGNIZED_UNSUPPORTED": 478,
-   "REFERENCE": 1389,
+   "REFERENCE": 1384,
    "REPLACEMENT": 1543,
    "STRUCTURE": 231,
    "TARGET": 1185,
@@ -182,9 +182,9 @@
     "typed": 3346
    },
    "TRIGGERED": {
-    "share": 0.7935,
+    "share": 0.7939,
     "specs": 15272,
-    "typed": 12119
+    "typed": 12124
    },
    "UNKNOWN": {
     "share": 0.0,
@@ -253,9 +253,9 @@
      "typed": 32
     },
     "TRIGGERED": {
-     "share": 0.8683,
+     "share": 0.8732,
      "specs": 205,
-     "typed": 178
+     "typed": 179
     },
     "UNKNOWN": {
      "share": 0.0,
@@ -270,11 +270,11 @@
     "met": false,
     "ready": 7,
     "ready_share": 0.027,
-    "typed": 221,
-    "typed_share": 0.8533
+    "typed": 222,
+    "typed_share": 0.8571
    },
    "specs": 868,
-   "typed": 657
+   "typed": 658
   },
   "keyword_lines": [
    [
@@ -1233,8 +1233,8 @@
     2
    ]
   ],
-  "typed": 32439,
-  "unmodelled": 11878,
+  "typed": 32444,
+  "unmodelled": 11873,
   "unmodelled_row_count": 1985,
   "unmodelled_rows": [
    [
@@ -1400,12 +1400,6 @@
     51
    ],
    [
-    "REFERENCE",
-    "exile",
-    "participant.library_position",
-    51
-   ],
-   [
     "STRUCTURE",
     "",
     "structure.level_band",
@@ -1422,6 +1416,12 @@
     "",
     "condition.history_event",
     47
+   ],
+   [
+    "REFERENCE",
+    "exile",
+    "participant.library_position",
+    46
    ],
    [
     "TARGET",

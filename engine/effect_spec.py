@@ -594,6 +594,17 @@ class DrawEvent:
 
 
 @dataclass(**_FROZEN)
+class CombatDamageEvent:
+    """The combat damage a combat-damage-triggered head names (CR 510.2,
+    603.2): who deals it -- 'self' ("~"), 'equipped' or 'enchanted' (the
+    creature this permanent is attached to) -- and to what: 'player' ("a
+    player"), 'opponent', 'player_or_planeswalker' or 'player_or_battle'.
+    "That player" in the body is the player dealt the damage."""
+    dealer: str
+    recipient: str
+
+
+@dataclass(**_FROZEN)
 class TriggerHead:
     event_hints: Tuple[EventHint, ...] = ()      # disjunctive heads keep every hint (A11)
     raw: str = ""
@@ -611,6 +622,10 @@ class TriggerHead:
     # (`structure._draw_event`); None on a DRAW head with a rider the table
     # does not read, which no carrier resolves as a plain draw trigger.
     draw: Optional[DrawEvent] = None
+    # The combat damage a COMBAT_DAMAGE_TO_PLAYER head names, from a closed
+    # table (`structure._combat_damage_event`); None for a dealer or rider
+    # the table does not read.
+    combat_damage: Optional[CombatDamageEvent] = None
 
 
 @dataclass(**_FROZEN)

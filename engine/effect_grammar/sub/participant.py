@@ -72,6 +72,7 @@ The leaf reads no card name and no game state.
 from __future__ import annotations
 
 import re
+import dataclasses
 from dataclasses import dataclass
 from typing import Optional, Tuple
 
@@ -582,7 +583,7 @@ def _participant_rel(host: str, a: int, b: int, zone: str,
         if lemma in _LIBRARY_POSITION_LEMMAS:
             r = _group(t, zone)
             if r[4] is None:
-                return r
+                return _library_owner(r)
         return _fail("library_position")
     r = _single(t)
     if r is not None:
@@ -603,6 +604,19 @@ def _participant_rel(host: str, a: int, b: int, zone: str,
     if head in _REFERENCE_HEADS or head.endswith("'s"):
         return _fail("reference", head)
     return _group(t, zone)
+
+
+def _library_owner(r: _Rel) -> _Rel:
+    """A library position whose possessor is a player anaphor ("the top
+    card of that player's library"): the filter's owner is that player, an
+    `Anaphor` the linker binds like any other ("that player" in a head that
+    names a player is the event's player)."""
+    value, flags, amount, pending, fail = r
+    if not any(k == "owner" for k, _text in pending):
+        return r
+    owner = Anaphor(noun="player", player=True)
+    return (dataclasses.replace(value, owner=owner), flags, amount,
+            tuple(p for p in pending if p[0] != "owner"), fail)
 
 
 def parse_participant(host: str, span: Optional[Span] = None, *,

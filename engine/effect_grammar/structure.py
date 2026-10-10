@@ -104,7 +104,8 @@ from engine.effect_grammar.sub import (CACHE_SIZE, COUNT_WORDS, NUMBER_WORDS,
                                        unmodelled)
 from engine.effect_grammar.sub import filter as _filter
 from engine.effect_model import Modification
-from engine.effect_spec import (Amount, Condition, CostSnapshot, DrawEvent,
+from engine.effect_spec import (Amount, CombatDamageEvent, Condition,
+                                CostSnapshot, DrawEvent,
                                 EventHint, HostKind, KeywordSpec, Stage,
                                 TriggerHead, Unmodelled, freeze_cost)
 from engine.oracle_parser import (loyalty_slot_for, parse_activation_cost,
@@ -444,6 +445,37 @@ def _draw_event(head: str) -> Optional[DrawEvent]:
                      except_first_in_draw_step=m.group("exc") is not None)
 
 
+# A combat-damage event's head (CR 510.2): the closed table of single
+# dealers and recipients. "One or more creatures you control deal ..." (one
+# event for the batch, CR 603.2c), "a creature you control", and every
+# other dealer or rider leave the head untyped.
+_DEALERS = {"~": "self", "equipped creature": "equipped",
+            "enchanted creature": "enchanted"}
+_RECIPIENTS = {"a player": "player", "an opponent": "opponent",
+               "a player or planeswalker": "player_or_planeswalker",
+               "a player or battle": "player_or_battle"}
+_COMBAT_DAMAGE_EVENT_RE = re.compile(
+    r"(?:whenever|when) (?P<who>%s) deals combat damage to (?P<to>%s)"
+    % ("|".join(map(re.escape, _DEALERS)),
+       "|".join(sorted(_RECIPIENTS, key=len, reverse=True))))
+
+
+def _combat_damage_event(head: str) -> Optional[CombatDamageEvent]:
+    """The combat damage the head's one COMBAT_DAMAGE_TO_PLAYER disjunct
+    names (`_COMBAT_DAMAGE_EVENT_RE`); None when there is no such
+    disjunct, more than one, or a dealer or recipient the table does not
+    read."""
+    parts = [p for p in _DISJUNCT_RE.split(head)
+             if EventHint.COMBAT_DAMAGE_TO_PLAYER in _part_hints(p)[0]]
+    if len(parts) != 1:
+        return None
+    m = _COMBAT_DAMAGE_EVENT_RE.fullmatch(parts[0])
+    if m is None:
+        return None
+    return CombatDamageEvent(dealer=_DEALERS[m.group("who")],
+                             recipient=_RECIPIENTS[m.group("to")])
+
+
 def _event_hints(head: str) -> Tuple[Tuple[EventHint, ...], str]:
     out, step = [], ""
     for part in _DISJUNCT_RE.split(head):
@@ -745,8 +777,11 @@ def _head(hints, raw: str, **kw) -> TriggerHead:
     leaf (the one noun table)."""
     player, obj = participant.head_names(raw)
     draw = _draw_event(raw) if EventHint.DRAW in hints else None
+    combat = (_combat_damage_event(raw)
+              if EventHint.COMBAT_DAMAGE_TO_PLAYER in hints else None)
     return TriggerHead(event_hints=hints, raw=raw, names_player=player,
-                       names_object=obj, draw=draw, **kw)
+                       names_object=obj, draw=draw, combat_damage=combat,
+                       **kw)
 
 
 def _triggered(ctx: _Ctx, p: int, t: str, label: str) -> _B:

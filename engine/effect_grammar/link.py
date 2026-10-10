@@ -696,6 +696,11 @@ def _fill_holes(ctx: _Ctx, node: _Node) -> None:
             if isinstance(v, Amount) and v.kind is AmountKind.THAT_MUCH and \
                     v.ref is None:
                 return _copy_with(v, ref=result_ref(True))
+            if isinstance(v, _participant.Anaphor) and v.player is True:
+                # A player anaphor a leaf left in a field ("the top card of
+                # that player's library"): bound like the participant
+                # "that player".
+                return _bind(ctx, node, _Want(player=True))
             return None
         return fn
 

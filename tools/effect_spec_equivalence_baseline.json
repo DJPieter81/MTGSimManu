@@ -238,8 +238,8 @@
    "AGREE": 20972,
    "DERIVED_COVERAGE_GROWTH": 23,
    "LEGACY_TARGETED_DAMAGE_SCOPE": 6,
-   "UNEXPLAINED": 880,
-   "UNMODELLED_CLAUSE": 857
+   "UNEXPLAINED": 881,
+   "UNMODELLED_CLAUSE": 856
   },
   "destroys_target_land": {
    "AGREE": 22726,
@@ -386,11 +386,11 @@
    "UNMODELLED_CLAUSE": 145
   },
   "has_destroy_or_exile": {
-   "AGREE": 20804,
+   "AGREE": 20809,
    "DERIVED_COVERAGE_GROWTH": 32,
    "REMINDER_TEXT": 5,
    "UNEXPLAINED": 912,
-   "UNMODELLED_CLAUSE": 985
+   "UNMODELLED_CLAUSE": 980
   },
   "has_discard_effect": {
    "AGREE": 22268,
@@ -504,8 +504,8 @@
   },
   "has_recurring_trigger": {
    "AGREE": 17533,
-   "UNEXPLAINED": 4159,
-   "UNMODELLED_CLAUSE": 1046
+   "UNEXPLAINED": 4162,
+   "UNMODELLED_CLAUSE": 1043
   },
   "has_sacrifice_for_damage": {
    "AGREE": 22691,
@@ -767,7 +767,7 @@
  },
  "templates": 22738,
  "totals": {
-  "AGREE": 2813483,
+  "AGREE": 2813488,
   "DERIVED_COVERAGE_GROWTH": 7832,
   "LEGACY_COST_REDUCTION_SCOPE": 13,
   "LEGACY_DRAW_SCOPE": 162,
@@ -782,7 +782,7 @@
   "LEGACY_TURN_CONDITION": 10,
   "MASKED_GROWTH": 68,
   "REMINDER_TEXT": 202,
-  "UNEXPLAINED": 17990,
-  "UNMODELLED_CLAUSE": 9790
+  "UNEXPLAINED": 17994,
+  "UNMODELLED_CLAUSE": 9781
  }
 }
