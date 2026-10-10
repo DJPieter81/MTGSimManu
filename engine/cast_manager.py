@@ -374,7 +374,7 @@ class CastManager:
         # from exile on a later turn, CR 702.185a): the cast then meets
         # every normal check below -- timing, cost, targets.
         exile_permitted = (card.zone == "exile"
-                           and card in player.exile
+                           and card in game.players[card.owner].exile
                            and rules_query.play_permitted(game, player_idx,
                                                           card))
         if card.zone != "hand" and card.zone != "graveyard" \
@@ -1858,8 +1858,11 @@ class CastManager:
 
         # Remove from zone and track cast-from-graveyard for flashback exile
         cast_with_flashback = False
-        if card in player.exile:
-            player.exile.remove(card)
+        owner_exile = game.players[card.owner].exile
+        if card in owner_exile:
+            # An exiled card is in its owner's exile (CR 400.3), whoever
+            # casts it under a permission.
+            owner_exile.remove(card)
             # CR 400.7: the spell is a new object; a permission that named
             # the exiled card no longer names it.
             game.continuous_effects.forget_object(card.instance_id)

@@ -678,27 +678,27 @@ class CombatManager:
                     if 'exile the top card' in a_oracle:
                         opp = game.players[self._defending_player]
                         if opp.library:
-                            exiled = opp.library.pop(0)
-                            exiled.zone = "exile"
-                            opp.exile.append(exiled)
+                            exiled = opp.library[0]
+                            game.zone_mgr.move_card(game, exiled, "library",
+                                                    "exile", cause=attacker.name)
                             game.log.append(
                                 f"T{game.display_turn} P{self._active_player+1}: "
                                 f"{attacker.name} exiles {exiled.name} "
                                 f"from top of P{self._defending_player+1}'s library"
                             )
                             # "Until end of turn, you may cast that card"
-                            # Holistic fix: put the card in the active player's hand.
-                            # The engine already handles hand cards fully — no special
-                            # zone logic needed. EOT cleanup exiles uncast copies.
-                            if 'until end of turn, you may cast' in a_oracle or 'you may cast that card' in a_oracle:
-                                # Remove from opp exile, give to active player
-                                opp.exile.remove(exiled)
-                                active_player = game.players[self._active_player]
-                                exiled.zone = "hand"
-                                exiled.controller = self._active_player
-                                exiled._free_cast_opportunity = True
-                                exiled._ragavan_return_to_exile = True  # EOT: exile if uncast
-                                active_player.hand.append(exiled)
+                            # (CR 601.2a): a permission over the card in its
+                            # owner's exile (CR 400.3), never the hand -- a
+                            # land in it is not castable, and its controller
+                            # does not change until it is cast.
+                            may_cast = 'until end of turn, you may cast' in a_oracle or 'you may cast that card' in a_oracle
+                            if exiled.zone == "exile" and may_cast:
+                                from .effect_model import THIS_TURN, permit_play
+                                game.continuous_effects.register_effect(
+                                    permit_play(self._active_player,
+                                                [exiled.instance_id], "cast",
+                                                THIS_TURN,
+                                                source_id=attacker.instance_id))
                                 game.log.append(
                                     f"T{game.display_turn} P{self._active_player+1}: "
                                     f"{attacker.name} — may cast {exiled.name} this turn"

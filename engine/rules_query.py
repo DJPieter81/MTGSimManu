@@ -111,17 +111,17 @@ def play_permitted(game: "GameState", player_idx: int, card,
 def permitted_cards(game: "GameState", player_idx: int) -> list:
     """The cards a permission lets this player play from where they are
     now (CR 305.1, 601.2a), in zone order. Timing and cost are the play's
-    own checks (`can_cast`, the land play). Every permission the engine
-    creates names cards its controller exiled from their own library (the
-    card-flow EXILE executor), so the player's own exile is read; a
-    permission over another player's card is its carrier's to add."""
-    exile = game.players[player_idx].exile
-    if not exile:
+    own checks (`can_cast`, the land play). An exiled card stays in its
+    OWNER's exile (CR 108.3, 400.3) -- "exile the top card of that
+    player's library ... you may cast that card" -- so every player's
+    exile is read."""
+    if not any(p.exile for p in game.players):
         return []
     permitted = permitted_objects(game, player_idx)
     if not permitted:
         return []
-    return [c for c in exile if play_permitted(game, player_idx, c, permitted)]
+    return [c for p in game.players for c in p.exile
+            if play_permitted(game, player_idx, c, permitted)]
 
 
 def permission_ends_this_turn(game: "GameState", player_idx: int,

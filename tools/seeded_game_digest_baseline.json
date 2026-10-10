@@ -1,5 +1,5 @@
 {
-  "combined": "1230c85c13bba41ada58cfe1f39ece023ec4c07b6c5c312db99b17d1b8b3215d",
+  "combined": "80905e6b07efe216a10d8f4b3a0663bab8a539bbbb4481a9f6c17a483a2e8e6f",
   "comment": "sha256 of each seeded verbose game log (tools/seeded_game_digest.py). A pure refactor must reproduce every digest byte for byte.",
   "games": {
     "bo1|4c Omnath|Ruby Storm|57500": {
@@ -33,8 +33,8 @@
       "winner": "Azorius Control"
     },
     "bo1|Boros Energy|Affinity|50000": {
-      "lines": 463,
-      "sha256": "da1b5c3f3b5c5b1bbbb4b9bdd9a413a7b97f97198704433d1030b9fa0603d3e4",
+      "lines": 468,
+      "sha256": "67455679e7ae1d0a77ab8dda9f11705cdb67b0e4c37041f6ebd5a1e4bd88befd",
       "turns": 6,
       "winner": "Affinity"
     },
@@ -46,7 +46,7 @@
     },
     "bo1|Dimir Midrange|Domain Zoo|57000": {
       "lines": 617,
-      "sha256": "ef00b2c8c807bc4f0110752127a4f70993ba54a0c878bf42490924805c6fc345",
+      "sha256": "f444e9e614a31b43d7c4d21ecc8d61579bad1fd6da88c59851c6a2191956ad01",
       "turns": 9,
       "winner": "Dimir Midrange"
     },
@@ -81,8 +81,8 @@
       "winner": "4c Omnath"
     },
     "bo1|Living End|Jeskai Blink|54000": {
-      "lines": 763,
-      "sha256": "b30b30cdd42199a45acbf6a6479447ec5d8915c36d75d22ec73eb10a8deb2f8f",
+      "lines": 764,
+      "sha256": "9dbc1ce6d2953221440aef60b0839aaa3ae7926bc2caa60729f58a0c6d5ae136",
       "turns": 12,
       "winner": "Jeskai Blink"
     },
@@ -130,7 +130,7 @@
     },
     "bo3|Boros Energy|Domain Zoo|58000|g3": {
       "lines": 584,
-      "sha256": "b7b88a6f088ecec8afefd9326f7e450813b43c37f617893e2bfad06218a4c417",
+      "sha256": "f0c07dc59174474cc1cebeb1f1788642f93a2b7578f6d2a4527d1d57edb17e74",
       "turns": 8,
       "winner": "Domain Zoo"
     },
@@ -142,7 +142,7 @@
     },
     "bo3|Jeskai Blink|Eldrazi Tron|59500|g2": {
       "lines": 621,
-      "sha256": "91f5d36b0fb0fe415407879059562df923d279bd43eec69993ecb708cded6445",
+      "sha256": "2462bbbdfa66b3128ae2b9918922fc069eaa1f63497ab4c078fdc4d5b5c04dca",
       "turns": 9,
       "winner": "Eldrazi Tron"
     },

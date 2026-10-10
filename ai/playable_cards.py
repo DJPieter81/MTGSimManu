@@ -25,9 +25,10 @@ def playable_cards(game: Any, player_idx: int) -> List[Any]:
     exile (no timing or cost check: each play makes its own)."""
     player = game.players[player_idx]
     hand = list(player.hand)
-    if not getattr(player, "exile", None):
+    if not any(getattr(p, "exile", None) for p in game.players):
         return hand          # nothing exiled, nothing a permission names
     from engine import rules_query
+    # Any player's exile: an exiled card stays in its owner's (CR 400.3).
     return hand + rules_query.permitted_cards(game, player_idx)
 
 

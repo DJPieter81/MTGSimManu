@@ -185,20 +185,10 @@ class TurnManager:
         game._global_storm_count = 0
 
     def end_of_turn_cleanup(self, game: "GameState") -> None:
-        """End-of-turn delayed triggers: Ragavan "may cast this turn"
-        cleanup, Dash return-to-hand, Goryo's end-of-turn exile."""
-        # Ragavan "may cast this turn": if card is still in hand, exile it
-        for player in game.players:
-            to_exile = [c for c in list(player.hand)
-                        if getattr(c, "_ragavan_return_to_exile", False)]
-            for card in to_exile:
-                player.hand.remove(card)
-                card.zone = "exile"
-                player.exile.append(card)
-                card._ragavan_return_to_exile = False
-                game.log.append(f"T{game.display_turn}: "
-                                f"{card.name} returned to exile (uncast)")
-
+        """End-of-turn delayed triggers: Dash return-to-hand, warp exile,
+        Goryo's end-of-turn exile. (A "until end of turn, you may cast
+        that card" permission ends in the cleanup step with the turn's
+        other "until end of turn" effects, CR 514.2.)"""
         # Dash: return dashed creatures to their owner's hand
         for player in game.players:
             dashed_creatures = [c for c in player.battlefield

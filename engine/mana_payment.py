@@ -291,12 +291,16 @@ class ManaPayment:
         # Domain cost reduction (from oracle-derived template property)
         # Replaces hardcoded "Scion of Draco" / "Leyline Binding" checks
         # The zones a spell is cast from: hand, graveyard (flashback,
-        # escape) and exile (a permission to cast it, warp; CR 601.2a). A
-        # reduction applies wherever the spell is cast from (CR 601.2f),
-        # so the payment reads the same zones `can_cast` admits.
+        # escape) and exile (a permission to cast it, warp; CR 601.2a) --
+        # including a permitted card in another player's exile, where an
+        # exiled card stays (CR 400.3). A reduction applies wherever the
+        # spell is cast from (CR 601.2f), so the payment reads the same
+        # zones `can_cast` admits.
+        from . import rules_query as _rq
         cast_zones = (game.players[player_idx].hand,
                       game.players[player_idx].graveyard,
-                      game.players[player_idx].exile)
+                      game.players[player_idx].exile,
+                      _rq.permitted_cards(game, player_idx))
         if card_name:
             for c in [c for z in cast_zones for c in z]:
                 if c.template.name == card_name and c.template.domain_reduction > 0:

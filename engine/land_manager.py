@@ -56,14 +56,15 @@ class LandManager:
         # the turn's land play (CR 305.2).
         from . import rules_query
         if card in player.hand:
-            src_zone = "hand"
-        elif card in player.exile and rules_query.play_permitted(
-                game, player_idx, card):
-            src_zone = "exile"
+            src_zone, src_list = "hand", player.hand
+        elif (card.zone == "exile" and card in game.players[card.owner].exile
+              and rules_query.play_permitted(game, player_idx, card)):
+            # In its owner's exile (CR 400.3), whoever plays it.
+            src_zone, src_list = "exile", game.players[card.owner].exile
         else:
             return
 
-        getattr(player, src_zone).remove(card)
+        src_list.remove(card)
         if src_zone == "exile":
             # CR 400.7: the land is a new object; the permission that
             # named the exiled card no longer names it.
